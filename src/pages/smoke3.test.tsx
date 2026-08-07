@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @vitest-environment jsdom
  */
@@ -108,7 +107,7 @@ vi.mock('@/engines', () => ({
 // ---------------------------------------------------------------------------
 
 vi.mock('@/components/ui', () => {
-  const stub = (props: Record<string, unknown>) => <div data-testid="ui-stub" {...props} />;
+  const _stub = (props: Record<string, unknown>) => <div data-testid="ui-stub" {...props} />;
   return {
     Button: (props: Record<string, unknown>) => <button data-testid="button" {...props} />,
     Card: (props: Record<string, unknown>) => <div data-testid="card" {...props} />,

@@ -1,13 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import DependencyGraph from '../../components/admin/DependencyGraph';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-} from '../../components/ui/Card';
 
 export default function DebugPage() {
   return (

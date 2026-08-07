@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, jsx-a11y/no-autofocus */
 import { INDUSTRIES } from '@/utils/constants';
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -18,8 +17,6 @@ import {
   Calendar,
   ChevronRight,
   ChevronLeft,
-  BarChart3,
-  TrendingUp,
 } from 'lucide-react';
 
 type OrgForm = {
@@ -29,7 +26,7 @@ type OrgForm = {
   fiscalYearStart: string;
 };
 
-const INDUSTRY_OPTIONS = [
+const _INDUSTRY_OPTIONS = [
   {
     id: 'technology',
     label: 'Technology/SaaS',
@@ -113,7 +110,7 @@ export default function OnboardingWizard() {
     }
   }, [step]);
 
-  const handleComplete = () => {
+  const _handleComplete = () => {
     updatePreferences({ activeSector: org.industry });
     navigate('/');
   };
@@ -191,7 +188,6 @@ export default function OnboardingWizard() {
                       onChange={(e) => setOrg({ ...org, companyName: e.target.value })}
                       placeholder="Acme Corp"
                       className="w-full mt-1 px-3 py-2 bg-slate-800 border border-slate-700 rounded-md text-sm"
-                      autoFocus
                     />
                   </div>
                   <div>

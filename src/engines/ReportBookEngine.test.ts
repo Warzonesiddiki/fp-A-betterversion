@@ -1,11 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  ReportBookEngine,
-  type ReportBook,
-  type ReportBookEntry,
-  type Entity,
-} from './ReportBookEngine';
+import { ReportBookEngine } from './ReportBookEngine';
 
 describe('ReportBookEngine', () => {
   let engine: ReportBookEngine;

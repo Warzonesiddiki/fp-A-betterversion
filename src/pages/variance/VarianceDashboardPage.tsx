@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
 
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -14,7 +12,6 @@ import {
   TrendingUp,
   TrendingDown,
   DollarSign,
-  Download,
   FileText,
   Table as TableIcon,
 } from 'lucide-react';
@@ -35,7 +32,7 @@ import { AnomalyHighlight } from '@/components/ai/AnomalyHighlight';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney, subtractMoney } from '@/utils/money';
 import type { GLEntry } from '@/types';
-import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -366,7 +363,7 @@ export default function VarianceDashboardPage() {
               <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
               <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(v) => `$${formatCompact(v)}`} />
               <Tooltip
-                formatter={(v: any) => formatCurrency(v)}
+                formatter={(v) => formatCurrency(Number(v))}
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
               />
               <Legend />

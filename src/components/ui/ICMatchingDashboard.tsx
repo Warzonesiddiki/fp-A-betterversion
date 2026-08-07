@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useCallback, useMemo, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from './Card';
 import { Button } from './Button';
@@ -175,8 +174,11 @@ export function ICMatchingDashboard({
           <div className="flex flex-wrap items-end gap-4">
             {/* Tolerance Settings */}
             <div className="space-y-1">
-              <label className="text-sm font-medium">Amount Tolerance</label>
+              <label htmlFor="amount-tolerance" className="text-sm font-medium">
+                Amount Tolerance
+              </label>
               <Input
+                id="amount-tolerance"
                 type="number"
                 value={tolerance.amountTolerance}
                 onChange={(e) =>
@@ -186,8 +188,11 @@ export function ICMatchingDashboard({
               />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium">% Tolerance</label>
+              <label htmlFor="tolerance" className="text-sm font-medium">
+                % Tolerance
+              </label>
               <Input
+                id="tolerance"
                 type="number"
                 value={tolerance.percentageTolerance}
                 onChange={(e) =>
@@ -197,8 +202,11 @@ export function ICMatchingDashboard({
               />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium">Date Tolerance (days)</label>
+              <label htmlFor="date-tolerance-days" className="text-sm font-medium">
+                Date Tolerance (days)
+              </label>
               <Input
+                id="date-tolerance-days"
                 type="number"
                 value={tolerance.dateToleranceDays}
                 onChange={(e) =>

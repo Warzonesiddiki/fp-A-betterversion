@@ -1,22 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useSettingsStore } from '@/store/settingsStore';
-import { BackupRestore, type BackupData } from '@/utils/backupRestore';
+import { BackupRestore } from '@/utils/backupRestore';
 import {
   Download,
   Upload,
   Trash2,
   ShieldCheck,
   Clock,
-  FileJson,
   AlertTriangle,
   CheckCircle,
   HardDrive,
   Globe,
 } from 'lucide-react';
-import { FinPlanFileEngine } from '@/engines/FinPlanFileEngine';
 import {
   getCurrentStorageBackend,
   performLegacyToTauriMigration,

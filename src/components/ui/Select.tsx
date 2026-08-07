@@ -19,6 +19,8 @@ export interface SelectProps {
   className?: string;
   label?: string;
   required?: boolean;
+  /** id for the trigger, so an external <label htmlFor> can associate with it */
+  id?: string;
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -31,6 +33,7 @@ export const Select: React.FC<SelectProps> = ({
   className,
   label,
   required = false,
+  id,
 }) => {
   return (
     <div
@@ -48,6 +51,7 @@ export const Select: React.FC<SelectProps> = ({
       )}
       <SelectPrimitive.Root value={value} onValueChange={onChange} disabled={disabled}>
         <SelectPrimitive.Trigger
+          id={id}
           className={cn(
             'flex h-10 w-full items-center justify-between rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-2 text-sm text-[var(--text-primary)] transition-all outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50',
             error ? 'border-red-500 focus:ring-red-500' : 'hover:border-gray-400'

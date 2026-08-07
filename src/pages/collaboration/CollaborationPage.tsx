@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCollaborationStore } from '@/store/collaborationStore';
@@ -12,7 +11,7 @@ import { MessageSquare, Users, Clock, Activity, Plus, Send } from 'lucide-react'
 
 type Tab = 'comments' | 'tasks' | 'activity';
 
-interface CommentRow extends Record<string, any> {
+interface CommentRow {
   id: string;
   author: string;
   content: string;
@@ -22,7 +21,7 @@ interface CommentRow extends Record<string, any> {
   replyCount: number;
 }
 
-interface TaskRow extends Record<string, any> {
+interface TaskRow {
   id: string;
   title: string;
   assignee: string;
@@ -31,7 +30,7 @@ interface TaskRow extends Record<string, any> {
   dueDate: string;
 }
 
-interface ActivityRow extends Record<string, any> {
+interface ActivityRow {
   id: string;
   user: string;
   action: string;
@@ -195,7 +194,7 @@ export default function CollaborationPage() {
       key: 'createdAt',
       header: 'Date',
       width: '140px',
-      render: (v) => new Date(v).toLocaleDateString(),
+      render: (v) => new Date(String(v)).toLocaleDateString(),
     },
     { key: 'replyCount', header: 'Replies', width: '80px', align: 'center' },
   ];
@@ -210,10 +209,14 @@ export default function CollaborationPage() {
       render: (v) => (
         <span
           className={
-            v === 'Critical' ? 'text-red-600 font-semibold' : v === 'High' ? 'text-orange-500' : ''
+            String(v) === 'Critical'
+              ? 'text-red-600 font-semibold'
+              : String(v) === 'High'
+                ? 'text-orange-500'
+                : ''
           }
         >
-          {v}
+          {String(v)}
         </span>
       ),
     },
@@ -223,7 +226,7 @@ export default function CollaborationPage() {
       width: '120px',
       render: (v, row) => (
         <select
-          value={v}
+          value={String(v)}
           onChange={(e) => handleStatusChange(row.id, e.target.value as TaskRow['status'])}
           className="bg-transparent border rounded px-2 py-1 text-sm"
         >
@@ -238,7 +241,7 @@ export default function CollaborationPage() {
       key: 'dueDate',
       header: 'Due',
       width: '120px',
-      render: (v) => new Date(v).toLocaleDateString(),
+      render: (v) => new Date(String(v)).toLocaleDateString(),
     },
   ];
 
@@ -250,7 +253,7 @@ export default function CollaborationPage() {
       key: 'timestamp',
       header: 'Time',
       width: '160px',
-      render: (v) => new Date(v).toLocaleString(),
+      render: (v) => new Date(String(v)).toLocaleString(),
     },
   ];
 

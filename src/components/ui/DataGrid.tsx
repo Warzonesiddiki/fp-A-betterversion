@@ -183,9 +183,9 @@ export const DataGrid: React.FC<DataGridProps> = ({
 
   const handleKeyDown = useCallback(
     async (e: React.KeyboardEvent) => {
-      if (!gridRef.current || !selectedCell) return;
-
-      // Ctrl+F for find
+      // Ctrl+F for find — must work without a selected cell (the grid is
+      // focusable before any cell is clicked, so the shortcut would otherwise
+      // be dead on first focus). Same for Escape, which closes transient UI.
       if ((e.ctrlKey || e.metaKey) && e.key === 'f' && enableFindReplace) {
         e.preventDefault();
         setShowFindReplace(true);
@@ -203,6 +203,9 @@ export const DataGrid: React.FC<DataGridProps> = ({
           return;
         }
       }
+
+      // Cell operations below require an active cell and a mounted grid.
+      if (!gridRef.current || !selectedCell) return;
 
       const action = ExcelKeyboardEngine.handleKey(
         e.key,
@@ -258,7 +261,6 @@ export const DataGrid: React.FC<DataGridProps> = ({
           break;
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       selectedCell,
       rows.length,
@@ -269,6 +271,9 @@ export const DataGrid: React.FC<DataGridProps> = ({
       showFindReplace,
       showColumnMenu,
       enableFindReplace,
+      closeFindReplace,
+      setShowFindReplace,
+      setShowColumnMenu,
     ]
   );
 

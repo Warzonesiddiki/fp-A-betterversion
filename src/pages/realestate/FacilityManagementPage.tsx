@@ -1,17 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
-import {
-  Wrench,
-  Zap,
-  Droplets,
-  ShieldCheck,
-  AlertTriangle,
-  BarChart3,
-  TrendingDown,
-  Download,
-  Clock,
-  Settings,
-} from 'lucide-react';
+import { Wrench, Zap, Droplets, ShieldCheck, Download, Settings } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -26,9 +14,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  Cell,
-  LineChart,
-  Line,
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
 
@@ -119,14 +104,14 @@ const columns: Column[] = [
     render: (v) => (
       <span
         className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-          v.startsWith('A')
+          String(v).startsWith('A')
             ? 'bg-green-100 text-green-700'
-            : v.startsWith('B')
+            : String(v).startsWith('B')
               ? 'bg-blue-100 text-blue-700'
               : 'bg-yellow-100 text-yellow-700'
         }`}
       >
-        {v}
+        {String(v)}
       </span>
     ),
   },

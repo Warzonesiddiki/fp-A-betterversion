@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -8,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import { HelpPanel } from '@/components/ui/HelpPanel';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
+import { formatCurrency, formatCompactNumber } from '@/utils/formatters';
 import { roundTo, subtractMoney, sumMoney } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 import { Truck, DollarSign, Layers, TrendingUp, HelpCircle, Plus } from 'lucide-react';
@@ -119,7 +118,7 @@ export function CapexTracker() {
     () => projects.filter((p) => p.status !== 'cancelled'),
     [projects]
   );
-  const totalAssetCost = useMemo(() => sumAssetCosts(assets), [assets]);
+  const _totalAssetCost = useMemo(() => sumAssetCosts(assets), [assets]);
   const totalNBV = useMemo(() => sumAssetNBV(assets), [assets]);
 
   const projectData = useMemo(

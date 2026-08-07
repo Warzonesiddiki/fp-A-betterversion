@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -11,10 +10,9 @@ import { Select } from '@/components/ui/Select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, Column } from '@/components/ui/DataTable';
-import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
+import { formatCurrency, formatNumber } from '@/utils/formatters';
 import {
   Users,
-  MessageSquare,
   CheckSquare,
   Activity,
   Search,
@@ -149,12 +147,6 @@ const STATUS_OPTIONS = [
   { value: 'away', label: 'Away' },
   { value: 'offline', label: 'Offline' },
 ];
-
-const STATUS_COLOR: Record<string, string> = {
-  online: 'text-green-700 dark:text-green-300',
-  away: 'text-yellow-700 dark:text-yellow-300',
-  offline: 'text-slate-500 dark:text-slate-400',
-};
 
 function formatLastActive(timestamp: number, now: number): string {
   const diffMs = now - timestamp;

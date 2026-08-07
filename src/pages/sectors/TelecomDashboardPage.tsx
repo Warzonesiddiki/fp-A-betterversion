@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ChartCard } from '@/components/ui/ChartCard';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { Button } from '@/components/ui/Button';
 import { Wifi, Users, DollarSign, Signal, TrendingUp, BarChart3 } from 'lucide-react';
 import { useTelecomStore } from '@/store/telecomStore';
 import {
@@ -70,9 +68,8 @@ const mockArpuTrend = [
 ];
 
 export function TelecomDashboardPage() {
-  const [activeSegment, setActiveSegment] = useState<string | null>(null);
-  const { subscribers, arpuTrends, networkMetrics, getTotalSubscribers, getAverageARPU } =
-    useTelecomStore();
+  const [_activeSegment, setActiveSegment] = useState<string | null>(null);
+  const { arpuTrends, getTotalSubscribers, getAverageARPU } = useTelecomStore();
 
   const totalSubscribers = getTotalSubscribers();
   const avgARPU = getAverageARPU();

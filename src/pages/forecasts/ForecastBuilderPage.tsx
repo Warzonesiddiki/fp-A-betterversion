@@ -1,26 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForecastStore } from '@/store/forecastStore';
-import { useGLStore } from '@/store/glStore';
+
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { TrendingUp, FileText, Table as TableIcon, Brain, BarChart3 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
-import {
-  sumMoney,
-  roundTo,
-  addMoney,
-  subtractMoney,
-  multiplyMoney,
-  divideMoney,
-  toDecimal,
-} from '@/utils/money';
+import { sumMoney, roundTo, multiplyMoney, divideMoney } from '@/utils/money';
 import {
   ResponsiveContainer,
-  LineChart,
   Line,
   XAxis,
   YAxis,
@@ -163,8 +151,6 @@ const accuracyMetrics = [
 ];
 
 export default function ForecastBuilderPage() {
-  const { forecasts } = useForecastStore();
-  const { entries } = useGLStore();
   const _navigate = useNavigate();
   const [method, setMethod] = useState<ForecastMethod>('linear');
   const [seasonality, setSeasonality] = useState<SeasonalityPreset>('standard');
@@ -428,7 +414,7 @@ export default function ForecastBuilderPage() {
                 <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${formatCompact(v)}`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v) => formatCurrency(Number(v))}
                 />
                 <Legend />
                 <Area dataKey="high" fill="#3b82f6" fillOpacity={0.1} stroke="none" name="High" />

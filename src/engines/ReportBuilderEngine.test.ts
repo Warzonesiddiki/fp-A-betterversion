@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect } from 'vitest';
 import {
   ReportBuilderEngine,
@@ -15,7 +14,6 @@ import {
   type TextCellContent,
   type PDFExportMetadata,
   type TemplateType,
-  type RowType,
   type PermissionLevel,
   type CubeData,
   type CellBinding,
@@ -23,8 +21,6 @@ import {
   type ReportParameter,
   type ExcelExportResult,
   type CSVExportResult,
-  type FormulaDependency,
-  type ReportSection,
 } from './ReportBuilderEngine';
 
 // =============================================================================

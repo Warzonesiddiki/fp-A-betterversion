@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // Real-time Collaboration Manager
 // Singleton orchestrator: WebSocket + Presence + Change Broadcasting
 // =============================================================================
 
-import { WebSocketManager, type WebSocketConfig, type ConnectionState } from './WebSocketManager';
+import { WebSocketManager, type ConnectionState } from './WebSocketManager';
 import { PresenceService, type UserPresence, type PresenceChange } from './PresenceService';
 import {
   ChangeBroadcaster,

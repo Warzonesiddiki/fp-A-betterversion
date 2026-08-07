@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // REPORT BUILDER ENGINE
 // Custom financial report creation with grid-based layout
@@ -296,35 +295,12 @@ export interface ReportSection {
 
 // --- Default Styles ---
 
-const DEFAULT_CELL_STYLE: CellStyle = {
-  bold: false,
-  italic: false,
-  underline: false,
-  fontSize: 11,
-  fontFamily: 'Inter, sans-serif',
-  textColor: '#1F2937',
-  backgroundColor: 'transparent',
-  borderTop: 'none',
-  borderBottom: 'none',
-  borderLeft: 'none',
-  borderRight: 'none',
-  alignment: 'left',
-  indent: 0,
-  wrap: false,
-};
-
 const _HEADER_STYLE: Partial<CellStyle> = {
   bold: true,
   fontSize: 12,
   backgroundColor: '#F3F4F6',
   borderBottom: 'medium',
   alignment: 'center',
-};
-
-const TOTAL_STYLE: Partial<CellStyle> = {
-  bold: true,
-  borderTop: 'medium',
-  borderBottom: 'medium',
 };
 
 const _SUBTOTAL_STYLE: Partial<CellStyle> = {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -8,7 +7,6 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, type Column } from '@/components/ui/DataTable';
 import {
   ChartArea,
-  Download,
   FileText,
   Table as TableIcon,
   Gauge,
@@ -26,12 +24,11 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   LineChart,
   Line,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { formatNumber, formatPercent } from '@/utils/financialFormatting';
+import { formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -154,7 +151,7 @@ export default function ProductionDashboardPage() {
     {
       key: 'status',
       header: 'Status',
-      render: (r) => (
+      render: (_, r) => (
         <span
           className={
             r.status === 'Running'
@@ -178,14 +175,14 @@ export default function ProductionDashboardPage() {
       key: 'output',
       header: 'Output',
       align: 'right',
-      render: (r) => r.output.toLocaleString(),
+      render: (_, r) => r.output.toLocaleString(),
       sortable: true,
     },
     {
       key: 'efficiency',
       header: 'Efficiency',
       align: 'right',
-      render: (r) => (
+      render: (_, r) => (
         <span
           className={
             r.efficiency >= 90
@@ -204,7 +201,7 @@ export default function ProductionDashboardPage() {
       key: 'downtime',
       header: 'Downtime',
       align: 'right',
-      render: (r) => formatPercent(r.downtime, 1),
+      render: (_, r) => formatPercent(r.downtime, 1),
       sortable: true,
     },
   ];

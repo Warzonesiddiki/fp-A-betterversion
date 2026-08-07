@@ -1,11 +1,8 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
-import { Badge } from '@/components/ui/Badge';
 import { FXEngine, MissingFXRateError } from '@/engines/FXEngine';
 import { useFxRateStore } from '@/store/fxRateStore';
-import { TrendingUp, TrendingDown, Globe } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { multiplyMoney, roundTo, sumMoney } from '@/utils/money';
 import { formatNumber } from '@/utils/financialFormatting';
 import { CURRENCIES, formatMoney } from './constants';
@@ -221,8 +218,11 @@ export function MultiCurrencyReporting() {
 
       <div className="flex items-center justify-between">
         <div>
-          <label className="block text-xs text-slate-400 mb-1">Reporting Currency</label>
+          <label htmlFor="reporting-currency" className="block text-xs text-slate-400 mb-1">
+            Reporting Currency
+          </label>
           <select
+            id="reporting-currency"
             value={parentCurrency}
             onChange={(e) => setParentCurrency(e.target.value)}
             className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"

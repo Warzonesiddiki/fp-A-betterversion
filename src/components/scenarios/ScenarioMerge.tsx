@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GitMerge, Check, ChevronDown, ChevronUp, Trophy, AlertTriangle } from 'lucide-react';
@@ -188,11 +187,15 @@ export function ScenarioMerge({ scenarios = [], onMerge }: ScenarioMergeProps) {
                 />
               </div>
               <div className="relative">
-                <label className="mb-1 block text-sm font-medium text-[var(--text-primary)]">
+                <span
+                  id="merge-strategy-label"
+                  className="mb-1 block text-sm font-medium text-[var(--text-primary)]"
+                >
                   Merge Strategy
-                </label>
+                </span>
                 <button
                   type="button"
+                  aria-labelledby="merge-strategy-label"
                   onClick={() => setShowDropdown((v) => !v)}
                   className="flex w-full items-center justify-between rounded-md border border-[var(--border-default)] bg-[var(--bg-surface)] px-3 py-2 text-sm"
                 >

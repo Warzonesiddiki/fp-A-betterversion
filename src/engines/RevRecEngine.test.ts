@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect } from 'vitest';
-import { RevRecEngine, type Contract, type PerformanceObligation } from './RevRecEngine';
+import { RevRecEngine, type Contract } from './RevRecEngine';
 
 describe('RevRecEngine', () => {
   const baseContract: Contract = {

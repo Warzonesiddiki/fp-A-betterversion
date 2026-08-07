@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -10,7 +8,6 @@ import { DataTable, type Column } from '@/components/ui/DataTable';
 import {
   Store,
   TrendingUp,
-  Download,
   FileText,
   Table as TableIcon,
   ShoppingCart,
@@ -30,7 +27,7 @@ import {
   Legend,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
+import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -227,7 +224,7 @@ export default function StoreDashboardPage() {
                     tickFormatter={(v) => `$${formatCompact(v)}`}
                   />
                   <Tooltip
-                    formatter={(v: any) => formatCurrency(v)}
+                    formatter={(v) => formatCurrency(Number(v))}
                     contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                   />
                   <Legend />

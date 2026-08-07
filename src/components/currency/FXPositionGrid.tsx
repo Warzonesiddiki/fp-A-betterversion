@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -8,9 +7,9 @@ import { FXEngine, MissingFXRateError } from '@/engines/FXEngine';
 import { useFxRateStore } from '@/store/fxRateStore';
 import { TrendingUp, TrendingDown, Eye, EyeOff, AlertTriangle, BarChart3 } from 'lucide-react';
 import Decimal from 'decimal.js';
-import { addMoney, multiplyMoney, roundTo, subtractMoney, sumMoney } from '@/utils/money';
+import { multiplyMoney, roundTo, subtractMoney, sumMoney } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
-import { CURRENCIES, formatMoney } from './constants';
+import { formatMoney } from './constants';
 
 /**
  * GAP-1 (F-0006) — exact-decimal FX exposure aggregations.
@@ -162,7 +161,7 @@ const SAMPLE_POSITIONS: FXPosition[] = [
 
 export function FXPositionGrid() {
   const storeRates = useFxRateStore((s) => s.rates);
-  const [positions, setPositions] = useState<FXPosition[]>(SAMPLE_POSITIONS);
+  const [positions, _setPositions] = useState<FXPosition[]>(SAMPLE_POSITIONS);
   const [hideZero, setHideZero] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<string | null>(null);
 

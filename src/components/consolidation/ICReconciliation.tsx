@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control, react/no-unescaped-entities */
 import { useMemo, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -194,8 +193,11 @@ export function ICReconciliation({
         <CardContent>
           <div className="flex flex-wrap gap-4">
             <div className="space-y-1">
-              <label className="text-sm font-medium">Amount ($)</label>
+              <label htmlFor="amount" className="text-sm font-medium">
+                Amount ($)
+              </label>
               <Input
+                id="amount"
                 type="number"
                 value={tolerance.amountTolerance}
                 onChange={(e) => handleToleranceUpdate('amountTolerance', Number(e.target.value))}
@@ -203,8 +205,11 @@ export function ICReconciliation({
               />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium">Percentage (%)</label>
+              <label htmlFor="percentage" className="text-sm font-medium">
+                Percentage (%)
+              </label>
               <Input
+                id="percentage"
                 type="number"
                 value={tolerance.percentageTolerance}
                 onChange={(e) =>
@@ -333,10 +338,9 @@ export function ICReconciliation({
                 .map((line) => (
                   <div
                     key={`${line.entityA}:${line.entityB}:${line.accountCode}`}
+                    role="alert"
                     className="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950/20"
                   >
-                    {' '}
-                    role="alert"
                     <div>
                       <span className="font-medium">
                         {line.entityA} ↔ {line.entityB}
@@ -346,9 +350,10 @@ export function ICReconciliation({
                       </span>
                     </div>
                     <div className="text-right">
-                      <div className="font-mono font-semibold text-red-600 dark:text-red-400">
-                        {' '}
+                      <div
                         role="alert"
+                        className="font-mono font-semibold text-red-600 dark:text-red-400"
+                      >
                         {formatCurrency(line.difference)} difference
                       </div>
                       <div className="text-xs text-muted-foreground">

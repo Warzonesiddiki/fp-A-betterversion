@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import type { ConditionalFormatRule, DataBarStyle } from '@/engines/ConditionalFormattingEngine';
 
 interface DataBarOptionsProps {
@@ -10,10 +9,14 @@ export function DataBarOptions({ rule, onChange }: DataBarOptionsProps) {
   return (
     <div className="space-y-3" role="region" aria-label="DataBarOptions">
       <div>
-        <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+        <label
+          htmlFor="bar-style"
+          className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+        >
           Bar Style
         </label>
         <select
+          id="bar-style"
           value={rule.dataBar?.style ?? 'solid'}
           onChange={(e) =>
             onChange({
@@ -33,8 +36,11 @@ export function DataBarOptions({ rule, onChange }: DataBarOptionsProps) {
         </select>
       </div>
       <div className="flex items-center gap-2">
-        <label className="text-xs font-medium text-[var(--text-secondary)]">Bar Color</label>
+        <label htmlFor="bar-color" className="text-xs font-medium text-[var(--text-secondary)]">
+          Bar Color
+        </label>
         <input
+          id="bar-color"
           type="color"
           value={rule.dataBar?.barColor ?? '#3b82f6'}
           onChange={(e) =>

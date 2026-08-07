@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { PersistStorage } from 'zustand/middleware';
+import type { RawStorage } from './chunkedStorage';
 import Database from '@tauri-apps/plugin-sql';
 import { createLogger } from '@/utils/logger';
 
@@ -14,7 +13,7 @@ async function getDb() {
   return dbInstance;
 }
 
-export const tauriSqlStorage: PersistStorage<any> = {
+export const tauriSqlStorage: RawStorage = {
   getItem: async (name) => {
     try {
       const db = await getDb();

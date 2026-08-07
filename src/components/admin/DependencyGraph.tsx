@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { CalculationGraph, CellNode } from '../../engines/CalculationGraph';
@@ -12,7 +11,7 @@ try {
   import('@tauri-apps/api/webviewWindow').then((module) => {
     WebviewWindow = module.WebviewWindow as unknown as typeof WebviewWindow;
   });
-} catch (e) {
+} catch (_e) {
   // Ignore
 }
 

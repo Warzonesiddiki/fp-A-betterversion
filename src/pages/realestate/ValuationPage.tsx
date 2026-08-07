@@ -1,16 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from 'react';
-import {
-  Building2,
-  DollarSign,
-  TrendingUp,
-  BarChart3,
-  Calculator,
-  Download,
-  ArrowUpRight,
-  ArrowDownRight,
-} from 'lucide-react';
+import { DollarSign, TrendingUp, BarChart3, Calculator, Download } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -25,9 +14,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  Cell,
-  LineChart,
-  Line,
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';
@@ -272,7 +258,7 @@ export default function ValuationPage() {
                     tickLine={false}
                     tickFormatter={(v) => `$${v / 1000000}M`}
                   />
-                  <Tooltip formatter={(v: any) => `$${v.toLocaleString()}`} />
+                  <Tooltip formatter={(v) => `$${Number(v).toLocaleString()}`} />
                   <Legend verticalAlign="top" align="right" />
                   <Bar dataKey="cost" name="Cost Basis" fill="#e2e8f0" radius={[4, 4, 0, 0]} />
                   <Bar

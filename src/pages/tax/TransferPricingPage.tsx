@@ -1,32 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGLStore } from '@/store/glStore';
+
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, Column } from '@/components/ui/DataTable';
-import {
-  ArrowLeftRight,
-  Download,
-  FileText,
-  Table as TableIcon,
-  CheckCircle,
-  AlertCircle,
-  Clock,
-} from 'lucide-react';
+import { FileText, Table as TableIcon, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
@@ -117,7 +98,6 @@ const methodDistribution = [
 ];
 
 export default function TransferPricingPage() {
-  const { entries } = useGLStore();
   const _navigate = useNavigate();
   const [methodFilter, setMethodFilter] = useState<string>('all');
 
@@ -279,7 +259,7 @@ export default function TransferPricingPage() {
               <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${formatCompact(v)}`} />
               <Tooltip
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                formatter={(v: any) => formatCurrency(v)}
+                formatter={(v) => formatCurrency(Number(v))}
               />
               <Bar dataKey="amount" fill="#3b82f6" name="Total Amount" />
             </BarChart>

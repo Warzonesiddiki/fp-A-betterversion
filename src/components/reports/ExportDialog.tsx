@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useCallback, useState } from 'react';
 import { X, FileText, Table, Download, Loader2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -278,8 +277,8 @@ export function ExportDialog({ report, cubeData, onClose, className }: ExportDia
           </div>
 
           <div>
-            <label className="text-xs text-[var(--text-muted)] block mb-1">Watermark (optional)</label>
-            <input
+            <label htmlFor="watermark-optional" className="text-xs text-[var(--text-muted)] block mb-1">Watermark (optional)</label>
+            <input id="watermark-optional"
               type="text"
               value={pdfOptions.watermark}
               onChange={(e) => setPdfOptions((prev) => ({ ...prev, watermark: e.target.value }))}

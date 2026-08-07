@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -260,8 +259,11 @@ export default function HedgeManagementPage() {
           </h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-xs text-slate-400 mb-1">Instrument</label>
+              <label htmlFor="instrument" className="block text-xs text-slate-400 mb-1">
+                Instrument
+              </label>
               <select
+                id="instrument"
                 value={form.instrument}
                 onChange={(e) => setForm((f) => ({ ...f, instrument: e.target.value }))}
                 className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
@@ -278,8 +280,11 @@ export default function HedgeManagementPage() {
               )}
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Currency</label>
+              <label htmlFor="currency" className="block text-xs text-slate-400 mb-1">
+                Currency
+              </label>
               <select
+                id="currency"
                 value={form.currency}
                 onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}
                 className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
@@ -292,8 +297,11 @@ export default function HedgeManagementPage() {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Notional Amount</label>
+              <label htmlFor="notional-amount" className="block text-xs text-slate-400 mb-1">
+                Notional Amount
+              </label>
               <input
+                id="notional-amount"
                 type="number"
                 value={form.notionalAmount}
                 onChange={(e) => setForm((f) => ({ ...f, notionalAmount: e.target.value }))}
@@ -305,8 +313,11 @@ export default function HedgeManagementPage() {
               )}
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Contracted Rate</label>
+              <label htmlFor="contracted-rate" className="block text-xs text-slate-400 mb-1">
+                Contracted Rate
+              </label>
               <input
+                id="contracted-rate"
                 type="number"
                 step="any"
                 value={form.contractedRate}
@@ -319,8 +330,11 @@ export default function HedgeManagementPage() {
               )}
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Maturity Date</label>
+              <label htmlFor="maturity-date" className="block text-xs text-slate-400 mb-1">
+                Maturity Date
+              </label>
               <input
+                id="maturity-date"
                 type="date"
                 value={form.maturityDate}
                 onChange={(e) => setForm((f) => ({ ...f, maturityDate: e.target.value }))}
@@ -331,8 +345,11 @@ export default function HedgeManagementPage() {
               )}
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Status</label>
+              <label htmlFor="status" className="block text-xs text-slate-400 mb-1">
+                Status
+              </label>
               <select
+                id="status"
                 value={form.status}
                 onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as HedgeStatus }))}
                 className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"

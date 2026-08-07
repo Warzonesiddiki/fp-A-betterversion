@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 
 import { Activity, BarChart3, Download, FileText } from 'lucide-react';
@@ -129,14 +128,14 @@ const columns: Column[] = [
     render: (v) => (
       <span
         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-          v === 'Improving'
+          String(v) === 'Improving'
             ? 'bg-green-100 text-green-700'
-            : v === 'Worsening'
+            : String(v) === 'Worsening'
               ? 'bg-red-100 text-red-700'
               : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
         }`}
       >
-        {v}
+        {String(v)}
       </span>
     ),
   },
@@ -228,11 +227,11 @@ export default function InsuranceDashboardPage() {
                     axisLine={false}
                     tickLine={false}
                     domain={[0, 100]}
-                    tickFormatter={(v) => `${v}%`}
+                    tickFormatter={(v) => `${String(v)}%`}
                   />
                   <Tooltip
                     contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                    formatter={(v: any) => `${formatPercent(v, 1)}`}
+                    formatter={(v) => `${formatPercent(Number(v), 1)}`}
                   />
                   <Legend verticalAlign="top" align="right" />
                   <Area
@@ -291,7 +290,7 @@ export default function InsuranceDashboardPage() {
                   />
                   <Tooltip
                     cursor={{ fill: 'transparent' }}
-                    formatter={(v: any) => `$${formatCompact(v)}`}
+                    formatter={(v) => `$${formatCompact(Number(v))}`}
                   />
                   <Legend />
                   <Bar

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -9,7 +7,7 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { SaaSMetricsEngine } from '@/engines/SaaSMetricsEngine';
 import { roundTo, sumMoney, subtractMoney } from '@/utils/money';
-import { Users, TrendingDown, AlertTriangle, Download, RefreshCw, BarChart4 } from 'lucide-react';
+import { TrendingDown, AlertTriangle, Download, RefreshCw, BarChart4 } from 'lucide-react';
 import {
   ResponsiveContainer,
   LineChart,
@@ -283,7 +281,7 @@ export default function ChurnAnalysisPage() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v: any) => `${v}%`}
+                  formatter={(v) => `${v}%`}
                 />
                 <Legend />
                 <Line
@@ -319,7 +317,7 @@ export default function ChurnAnalysisPage() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v: any) => `${v}%`}
+                  formatter={(v) => `${v}%`}
                 />
                 <Bar dataKey="churn" name="Churn %" fill="#ef4444" radius={[4, 4, 0, 0]} />
               </BarChart>

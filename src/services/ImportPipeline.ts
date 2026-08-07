@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   GLImportService,
   type GLImportOptions,
@@ -73,7 +72,7 @@ export class ImportPipeline {
         {
           name: parsed.fileName,
           size: file.size,
-          format: parsed.format as any,
+          format: parsed.format,
           rowCount: parsed.rowCount,
           columnCount: parsed.columnCount,
           columns: parsed.headers,
@@ -168,7 +167,7 @@ export class ImportPipeline {
         fileInfo: {
           name: parsed.fileName,
           size: file.size,
-          format: parsed.format as any,
+          format: parsed.format,
           rowCount: parsed.rowCount,
           columnCount: parsed.columnCount,
           columns: parsed.headers,

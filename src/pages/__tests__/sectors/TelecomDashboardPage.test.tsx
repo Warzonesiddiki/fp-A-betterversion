@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('@/store/telecomStore', () => ({
@@ -39,7 +38,7 @@ vi.mock('recharts', () => ({
   Line: () => null,
 }));
 
-import { render, screen, fireEvent } from '@/test/testUtils';
+import { render, screen } from '@/test/testUtils';
 import { TelecomDashboardPage } from '@/pages/sectors/TelecomDashboardPage';
 
 describe('sectors/TelecomDashboardPage', () => {

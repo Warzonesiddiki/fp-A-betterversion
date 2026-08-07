@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import {
@@ -26,14 +25,14 @@ export interface FinPlanGridColumn {
   pinned?: 'left' | 'right';
   isVariance?: boolean;
   accountType?: 'Revenue' | 'Expense';
-  cellRenderer?: React.ComponentType<any>;
-  valueFormatter?: (params: any) => string;
+  cellRenderer?: React.ComponentType<{ value: unknown }>;
+  valueFormatter?: (params: { value: unknown }) => string;
 }
 
 export interface FinPlanGridProps {
   preset?: GridPreset;
   columns: FinPlanGridColumn[];
-  rows: any[];
+  rows: Record<string, unknown>[];
   loading?: boolean;
   showFormulaBar?: boolean;
   showToolbar?: boolean;
@@ -41,7 +40,7 @@ export interface FinPlanGridProps {
   showSelectionStats?: boolean;
   gridOptions?: GridOptions;
   onCellValueChanged?: (event: CellValueChangedEvent) => void;
-  onSelectionChanged?: (selectedRows: any[]) => void;
+  onSelectionChanged?: (selectedRows: Record<string, unknown>[]) => void;
   className?: string;
 }
 
@@ -178,7 +177,7 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
       }
 
       if (col.type === 'badge') {
-        colDef.cellRenderer = (params: any) => {
+        colDef.cellRenderer = (params: { value: unknown }) => {
           const val = params.value;
           if (!val) return null;
           return (
@@ -405,7 +404,7 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
   );
 
   const getRowStyle = useCallback(
-    (params: any) => {
+    (params: { data?: { isSubtotal?: boolean; type?: string } }) => {
       if (preset === 'report' && showSubtotals) {
         if (params.data?.isSubtotal || params.data?.type === 'subtotal') {
           return {

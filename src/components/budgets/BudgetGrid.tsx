@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo } from 'react';
 import { DataGrid, type DataGridColumn } from '@/components/ui/DataGrid';
 import { FormulaBar } from '@/components/ui/FormulaBar';
@@ -70,11 +69,7 @@ export function BudgetGrid({
         <FormulaBar className="flex-1" />
       </div>
       <div className="flex-1 overflow-hidden">
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          onCellValueChanged={handleCellValueChanged as any}
-        />
+        <DataGrid rows={rows} columns={columns} onCellValueChanged={handleCellValueChanged} />
       </div>
     </div>
   );

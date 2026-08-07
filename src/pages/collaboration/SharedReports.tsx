@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -21,8 +20,6 @@ import {
   Search,
   RefreshCw,
   Eye,
-  Calendar,
-  Filter,
 } from 'lucide-react';
 import type { GLEntry } from '@/types';
 import { roundTo, sumMoney, formatMoney } from '@/utils/money';
@@ -110,7 +107,7 @@ export function SharedReports() {
     document.title = 'FinPlan Pro — Shared Reports';
   }, []);
 
-  const stats = useMemo(() => computeReportStats(entries), [entries]);
+  const _stats = useMemo(() => computeReportStats(entries), [entries]);
 
   // Apply date range + search filter to entries
   const filteredEntries = useMemo(() => {
@@ -195,7 +192,7 @@ export function SharedReports() {
     }
   };
 
-  const secondsSinceRefresh = Math.max(0, Math.floor((nowTick - nowTick) / 1000));
+  const _secondsSinceRefresh = Math.max(0, Math.floor((nowTick - nowTick) / 1000));
 
   if (entries.length === 0) {
     return (

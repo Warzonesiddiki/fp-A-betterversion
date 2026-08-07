@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { WorkerPool } from './worker-pool';
 import type { WorkerResponse } from './types';
@@ -349,10 +348,10 @@ describe('WorkerPool', () => {
     });
 
     it('should reject queued tasks on termination', async () => {
-      const { factory, instances } = createMockWorkerFactory();
+      const { factory } = createMockWorkerFactory();
       const pool = new WorkerPool(factory, { maxWorkers: 1 });
 
-      const promise1 = pool.run({ data: 'task1' });
+      const _promise1 = pool.run({ data: 'task1' });
       const promise2 = pool.run({ data: 'task2' });
 
       await new Promise((r) => setTimeout(r, 0));

@@ -99,14 +99,14 @@ const columns: Column[] = [
     render: (v) => (
       <span
         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-          v === 'In Use'
+          String(v) === 'In Use'
             ? 'bg-green-100 text-green-700'
-            : v === 'Maintenance'
+            : String(v) === 'Maintenance'
               ? 'bg-red-100 text-red-700'
               : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
         }`}
       >
-        {v}
+        {String(v)}
       </span>
     ),
   },
@@ -118,7 +118,9 @@ const columns: Column[] = [
     header: 'Next Service',
     align: 'right',
     render: (v) => (
-      <span className={v === 'Overdue' ? 'text-red-600 font-bold' : 'text-slate-600'}>{v}</span>
+      <span className={String(v) === 'Overdue' ? 'text-red-600 font-bold' : 'text-slate-600'}>
+        {String(v)}
+      </span>
     ),
   },
 ];

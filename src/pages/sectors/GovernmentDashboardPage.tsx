@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ChartCard } from '@/components/ui/ChartCard';
@@ -26,7 +24,7 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'
 
 export function GovernmentDashboardPage() {
   const [activeTab, setActiveTab] = useState<'revenue' | 'spending'>('revenue');
-  const { funds, compliance, budgetLines } = useGovernmentStore();
+  const { budgetLines } = useGovernmentStore();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Government Dashboard';
@@ -76,8 +74,6 @@ export function GovernmentDashboardPage() {
   const spendingDistribution = budgetLines.length
     ? budgetLines.map((l) => ({ name: l.category, value: l.actual }))
     : mockSpendingDistribution;
-
-  const fundAllocations = funds.length ? funds : null;
 
   const fiscalYearComparison = [
     { metric: 'Total Revenue', fy2024: 10800, fy2025: 11800, change: 9.3 },
@@ -165,7 +161,7 @@ export function GovernmentDashboardPage() {
                 tickFormatter={(v: number) => formatCompact(v)}
               />
               <Tooltip
-                formatter={((value: number) => [`$${value.toLocaleString()}M`, 'Amount']) as any}
+                formatter={(value) => [`$${Number(value).toLocaleString()}M`, 'Amount']}
                 contentStyle={{
                   background: 'var(--card-bg, #1e293b)',
                   border: '1px solid var(--border-color)',
@@ -201,7 +197,7 @@ export function GovernmentDashboardPage() {
                 ))}
               </Pie>
               <Tooltip
-                formatter={((value: number) => [`$${value.toLocaleString()}M`, 'Amount']) as any}
+                formatter={(value) => [`$${Number(value).toLocaleString()}M`, 'Amount']}
                 contentStyle={{
                   background: 'var(--card-bg, #1e293b)',
                   border: '1px solid var(--border-color)',

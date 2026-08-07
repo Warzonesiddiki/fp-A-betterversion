@@ -1,17 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
-import {
-  HeartPulse,
-  Scale,
-  TrendingUp,
-  Users,
-  ShieldCheck,
-  Target,
-  Award,
-  Download,
-  Filter,
-  BarChart3,
-} from 'lucide-react';
+import { Target, Award, Download, BarChart3 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -112,8 +100,12 @@ const columns: Column[] = [
     header: 'Net Savings/Loss',
     align: 'right',
     render: (v) => (
-      <span className={v.startsWith('+') ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}>
-        {v}
+      <span
+        className={
+          String(v).startsWith('+') ? 'text-green-600 font-bold' : 'text-red-600 font-bold'
+        }
+      >
+        {String(v)}
       </span>
     ),
   },
@@ -123,14 +115,14 @@ const columns: Column[] = [
     render: (v) => (
       <span
         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-          v === 'High'
+          String(v) === 'High'
             ? 'bg-green-100 text-green-700'
-            : v === 'Watch'
+            : String(v) === 'Watch'
               ? 'bg-red-100 text-red-700'
               : 'bg-blue-100 text-blue-700'
         }`}
       >
-        {v}
+        {String(v)}
       </span>
     ),
   },

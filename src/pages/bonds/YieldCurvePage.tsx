@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from 'react';
-import { TrendingUp, BarChart3, Calculator, Download, ArrowRight, GitBranch } from 'lucide-react';
+import { TrendingUp, BarChart3, Calculator, Download, GitBranch } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -15,8 +13,6 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  AreaChart,
-  Area,
 } from 'recharts';
 import { useGLStore } from '@/store/glStore';
 import { YieldCurveEngine, type CurvePoint } from '@/engines/YieldCurveEngine';
@@ -240,7 +236,7 @@ export default function YieldCurvePage() {
                   tickFormatter={(v) => `${v}%`}
                   domain={['auto', 'auto']}
                 />
-                <Tooltip formatter={(v: any) => `${formatPercent(v, 3)}`} />
+                <Tooltip formatter={(v) => `${formatPercent(Number(v), 3)}`} />
                 <Legend verticalAlign="top" align="right" />
                 <Line
                   type="monotone"

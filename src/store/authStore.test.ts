@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   useAuthStore,
@@ -10,7 +8,7 @@ import {
   isManagerOrAbove,
   canApprove,
 } from './authStore';
-import type { User, Role } from '../types';
+import type { User } from '../types';
 
 const mockAdmin: User = {
   id: 'user-admin-001',
@@ -149,7 +147,7 @@ describe('authStore', () => {
 
   it('should refresh access token', async () => {
     await useAuthStore.getState().login('admin@finplan.com', 'pass');
-    const oldToken = useAuthStore.getState().accessToken;
+    const _oldToken = useAuthStore.getState().accessToken;
     await useAuthStore.getState().refreshAccessToken();
     // Token should be regenerated (may look same due to mock, but no error)
     expect(useAuthStore.getState().accessToken).not.toBeNull();

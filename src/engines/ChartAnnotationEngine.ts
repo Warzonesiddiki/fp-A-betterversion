@@ -1,6 +1,5 @@
 import { formatMoney } from '../utils/money';
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * ChartAnnotationEngine — Annotations for financial charts
  * Add notes, markers, and highlights to chart data points
@@ -16,13 +15,6 @@ interface ChartAnnotation {
   style?: 'solid' | 'dashed' | 'dotted';
   createdBy: string;
   createdAt: string;
-}
-
-interface AnnotationConfig {
-  showOnHover: boolean;
-  showAlways: boolean;
-  maxWidth: number;
-  fontSize: number;
 }
 
 export class ChartAnnotationEngine {
@@ -49,7 +41,7 @@ export class ChartAnnotationEngine {
    * Remove annotation
    */
   static remove(annotationId: string): boolean {
-    for (const [chartId, anns] of this.annotations) {
+    for (const [, anns] of this.annotations) {
       const idx = anns.findIndex((a) => a.id === annotationId);
       if (idx !== -1) {
         anns.splice(idx, 1);

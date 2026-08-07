@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useMemo, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -113,7 +112,7 @@ export function ICMatchingPanel({
   }, [engine, matches, icTransactions, onEliminationsGenerated]);
 
   // Unique entities for the unmatched panels
-  const entities = useMemo(() => {
+  const _entities = useMemo(() => {
     const set = new Set(icTransactions.map((t) => t.entityId));
     return Array.from(set);
   }, [icTransactions]);

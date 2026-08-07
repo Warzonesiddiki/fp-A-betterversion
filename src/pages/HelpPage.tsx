@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Card, CardContent } from '@/components/ui/Card';
 import {
-  HelpCircle,
   Search,
   Keyboard,
   BookOpen,

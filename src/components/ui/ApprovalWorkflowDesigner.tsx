@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState } from 'react';
 import { cn } from '@/utils/cn';
 import { Button } from './Button';
@@ -68,16 +67,22 @@ export function ApprovalWorkflowDesigner({ onSave, initial, className }: Props) 
       <CardContent className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="text-sm font-medium">Name</label>
+            <label htmlFor="name" className="text-sm font-medium">
+              Name
+            </label>
             <Input
+              id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Budget Approval"
             />
           </div>
           <div>
-            <label className="text-sm font-medium">Description</label>
+            <label htmlFor="description" className="text-sm font-medium">
+              Description
+            </label>
             <Input
+              id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Approval workflow"
@@ -145,15 +150,21 @@ export function ApprovalWorkflowDesigner({ onSave, initial, className }: Props) 
                 <div className="mt-3 space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs font-medium">Step Name</label>
+                      <label htmlFor="step-name" className="text-xs font-medium">
+                        Step Name
+                      </label>
                       <Input
+                        id="step-name"
                         value={step.name}
                         onChange={(e) => updateStep(idx, { name: e.target.value })}
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-medium">Type</label>
+                      <label htmlFor="type" className="text-xs font-medium">
+                        Type
+                      </label>
                       <select
+                        id="type"
                         value={step.type}
                         onChange={(e) => updateStep(idx, { type: e.target.value as StepType })}
                         className="w-full border rounded px-2 py-1 text-sm"
@@ -165,8 +176,11 @@ export function ApprovalWorkflowDesigner({ onSave, initial, className }: Props) 
                   </div>
 
                   <div>
-                    <label className="text-xs font-medium">Approvers (comma-separated)</label>
+                    <label htmlFor="approvers-comma-separated" className="text-xs font-medium">
+                      Approvers (comma-separated)
+                    </label>
                     <Input
+                      id="approvers-comma-separated"
                       value={step.approvers.join(', ')}
                       onChange={(e) =>
                         updateStep(idx, {
@@ -181,8 +195,11 @@ export function ApprovalWorkflowDesigner({ onSave, initial, className }: Props) 
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs font-medium">Timeout (hours, optional)</label>
+                      <label htmlFor="timeout-hours-optional" className="text-xs font-medium">
+                        Timeout (hours, optional)
+                      </label>
                       <Input
+                        id="timeout-hours-optional"
                         type="number"
                         value={step.timeoutHours ?? ''}
                         onChange={(e) =>
@@ -193,8 +210,11 @@ export function ApprovalWorkflowDesigner({ onSave, initial, className }: Props) 
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-medium">Amount Threshold</label>
+                      <label htmlFor="amount-threshold" className="text-xs font-medium">
+                        Amount Threshold
+                      </label>
                       <Input
+                        id="amount-threshold"
                         type="number"
                         value={step.condition?.value ?? ''}
                         onChange={(e) =>

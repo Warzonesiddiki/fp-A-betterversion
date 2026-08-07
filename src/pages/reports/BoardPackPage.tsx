@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
@@ -188,9 +187,11 @@ export default function BoardPackPage() {
     createReport({
       name: templateName.trim(),
       description: 'Board Pack template with 6 sections',
-      type: 'BoardPack' as any,
-      period: 'Monthly' as any,
-      status: 'Draft' as any,
+      format: 'BoardPack',
+      createdAt: new Date().toISOString(),
+      type: 'BoardPack',
+      period: 'Monthly',
+      status: 'Draft',
       columns: [],
       filters: [],
       groupBy: null,
@@ -200,21 +201,21 @@ export default function BoardPackPage() {
         commentary,
         varianceHighlights,
         sections: ['Cover', 'Exec Summary', 'P&L', 'BS', 'CF & Budgets', 'Variance Commentary'],
-      } as any,
+      },
       createdBy: 'user',
       createdByName: 'User',
       isPublic: false,
-    } as any);
+    });
     setTemplateName('');
     setShowTemplateModal(false);
   };
 
   const handleLoadTemplate = (templateId: string) => {
     setSelectedTemplateId(templateId);
-    const tmpl = reports.find((r) => r.id === templateId) as any;
+    const tmpl = reports.find((r) => r.id === templateId);
     if (tmpl?.data) {
       if (typeof tmpl.data.commentary === 'string') setCommentary(tmpl.data.commentary);
-      if (Array.isArray(tmpl.data.varianceHighlights)) setVarianceHighlights(tmpl.data.varianceHighlights);
+      if (Array.isArray(tmpl.data.varianceHighlights)) setVarianceHighlights(tmpl.data.varianceHighlights as VarianceHighlight[]);
     }
   };
 

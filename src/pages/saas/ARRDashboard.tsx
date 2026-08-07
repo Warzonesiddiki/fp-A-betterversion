@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -74,7 +73,7 @@ export default function ARRDashboard() {
         </div>
         <h2 className="text-xl font-semibold mb-2">No SaaS Data Found</h2>
         <p className="text-slate-400 mb-6">
-          We couldn't find any subscription revenue in your GL. Import data with account codes
+          We couldn&apos;t find any subscription revenue in your GL. Import data with account codes
           starting with 41xx.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import GL Data</Button>

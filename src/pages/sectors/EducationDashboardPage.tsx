@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from 'react';
 import { GraduationCap, TrendingUp } from 'lucide-react';
 import {
@@ -17,7 +15,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ChartCard } from '@/components/ui/ChartCard';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { useEducationStore } from '@/store/educationStore';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
@@ -135,10 +132,7 @@ export function EducationDashboardPage() {
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
               <XAxis dataKey="source" {...axisProps} />
               <YAxis {...axisProps} tickFormatter={(v) => `$${formatCompact(v)}`} />
-              <Tooltip
-                contentStyle={tooltipStyle}
-                formatter={((v: number) => [fmt(v), 'Revenue']) as any}
-              />
+              <Tooltip contentStyle={tooltipStyle} formatter={(v) => [fmt(Number(v)), 'Revenue']} />
               <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={48}>
                 {revenueBySource.map((_, i) => (
                   <Cell key={`bar-${i}`} fill={COLORS[i % COLORS.length]} fillOpacity={0.85} />
@@ -169,10 +163,7 @@ export function EducationDashboardPage() {
                   />
                 ))}
               </Pie>
-              <Tooltip
-                contentStyle={tooltipStyle}
-                formatter={((v: number) => [fmt(v), 'Amount']) as any}
-              />
+              <Tooltip contentStyle={tooltipStyle} formatter={(v) => [fmt(Number(v)), 'Amount']} />
             </PieChart>
           </ResponsiveContainer>
           <div className="mt-2 space-y-1.5">

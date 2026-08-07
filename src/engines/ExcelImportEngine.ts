@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // =============================================================================
 // EXCEL IMPORT ENGINE
 // Parse Excel (.xlsx/.xls) and CSV files, auto-detect columns, validate data
@@ -222,12 +221,12 @@ export class ExcelImportEngine {
 
       worksheet.eachRow((row, rowNumber) => {
         if (rowNumber === 1) {
-          headers = (row.values as any[]).slice(1).map(String);
+          headers = (Array.isArray(row.values) ? row.values : []).slice(1).map((v) => String(v));
           return;
         }
 
         const rowData: Record<string, unknown> = {};
-        const values = row.values as any[];
+        const values = Array.isArray(row.values) ? row.values : [];
         headers.forEach((header, index) => {
           // values[0] is empty, values[1] is first col
           const val = values[index + 1];

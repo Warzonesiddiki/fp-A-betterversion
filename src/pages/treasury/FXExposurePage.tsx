@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGLStore } from '@/store/glStore';
+
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -133,7 +131,6 @@ export function computeFXExposureTotals(exposures: readonly FXExposure[]): FXExp
 }
 
 export default function FXExposurePage() {
-  const { entries } = useGLStore();
   const _navigate = useNavigate();
 
   useEffect(() => {
@@ -290,7 +287,7 @@ export default function FXExposurePage() {
                 <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${v}M`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                  formatter={(v: any) => `$${Math.round(v * 10) / 10}M`}
+                  formatter={(v) => `$${Math.round(Number(v) * 10) / 10}M`}
                 />
                 <Legend />
                 <Bar dataKey="hedged" stackId="a" fill="#10b981" name="Hedged" />
@@ -321,7 +318,7 @@ export default function FXExposurePage() {
                 </Pie>
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v) => formatCurrency(Number(v))}
                 />
                 <Legend />
               </PieChart>

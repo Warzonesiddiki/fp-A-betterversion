@@ -1,10 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  WorkflowBuilderEngine,
-  type WorkflowNode,
-  type WorkflowEdge,
-} from './WorkflowBuilderEngine';
+import { WorkflowBuilderEngine, type WorkflowNode } from './WorkflowBuilderEngine';
 
 describe('WorkflowBuilderEngine', () => {
   let engine: WorkflowBuilderEngine;

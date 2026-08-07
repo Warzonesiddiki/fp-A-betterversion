@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { PersistStorage } from 'zustand/middleware';
+import type { RawStorage } from './chunkedStorage';
 import { DB_NAME, DB_VERSION } from './storageConstants';
 
 export function openDB(): Promise<IDBDatabase> {
@@ -19,7 +18,7 @@ export function openDB(): Promise<IDBDatabase> {
   });
 }
 
-export const indexedDBStorage: PersistStorage<any> & { isFirstRun: () => Promise<boolean> } = {
+export const indexedDBStorage: RawStorage & { isFirstRun: () => Promise<boolean> } = {
   isFirstRun: async (): Promise<boolean> => {
     try {
       const db = await openDB();

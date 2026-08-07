@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   ConsolidationEngine,
@@ -6,7 +5,6 @@ import {
   type OwnershipStructure,
   type ICPair,
   type FXRate,
-  type VIENotification,
 } from './ConsolidationEngine';
 import { CubeEngine } from './CubeEngine';
 import type { GLEntry } from '@/types';

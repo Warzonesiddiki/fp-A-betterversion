@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -170,7 +169,7 @@ export default function ChurnDashboard() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v: any) => `${v}%`}
+                  formatter={(v) => `${v}%`}
                 />
                 <Legend />
                 <Line
@@ -206,7 +205,7 @@ export default function ChurnDashboard() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v: any) => `${v}%`}
+                  formatter={(v) => `${v}%`}
                 />
                 <Bar dataKey="churn" name="Churn %" fill="#ef4444" radius={[4, 4, 0, 0]} />
               </BarChart>

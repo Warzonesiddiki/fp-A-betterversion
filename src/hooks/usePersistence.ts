@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useEffect, useState } from 'react';
 import { masterStorage } from '@/utils/masterStorage';
 
@@ -52,7 +51,7 @@ export function usePersistence<T>(options: PersistenceOptions) {
       if (options.storage === 'localstorage') {
         localStorage.setItem(options.key, serialized);
       } else {
-        await masterStorage.setItem(options.key, serialized as any);
+        await masterStorage.setItem(options.key, serialized);
       }
       setData(newData);
     } catch {

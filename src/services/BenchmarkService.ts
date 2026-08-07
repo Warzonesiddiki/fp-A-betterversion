@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AIEngine } from '@/engines/AIEngine';
 import { masterStorage } from '@/utils/masterStorage';
 
@@ -6,7 +5,7 @@ export interface BenchmarkResult {
   timestamp: number;
   name: string;
   duration: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface BenchmarkReport {
@@ -34,7 +33,7 @@ export class BenchmarkService {
 
     // Write
     let start = performance.now();
-    await masterStorage.setItem('benchmark_test', testData as any);
+    await masterStorage.setItem('benchmark_test', testData);
     report.storage!.write = performance.now() - start;
 
     // Read
@@ -85,6 +84,6 @@ export class BenchmarkService {
 
     // Keep only last 100 entries per type to avoid bloating storage
     const limitedHistory = newResults.slice(-600);
-    await masterStorage.setItem('benchmark_history', { state: limitedHistory, version: 1 } as any);
+    await masterStorage.setItem('benchmark_history', { state: limitedHistory, version: 1 });
   }
 }

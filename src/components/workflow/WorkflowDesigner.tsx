@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useCallback, useState } from 'react';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/ui/Button';
@@ -164,8 +163,11 @@ export function WorkflowDesigner({ onSave, initial, className }: WorkflowDesigne
       <CardContent className="space-y-5">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="text-sm font-medium">Name *</label>
+            <label htmlFor="name" className="text-sm font-medium">
+              Name *
+            </label>
             <input
+              id="name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -174,8 +176,11 @@ export function WorkflowDesigner({ onSave, initial, className }: WorkflowDesigne
             />
           </div>
           <div>
-            <label className="text-sm font-medium">Description</label>
+            <label htmlFor="description" className="text-sm font-medium">
+              Description
+            </label>
             <input
+              id="description"
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -261,8 +266,11 @@ export function WorkflowDesigner({ onSave, initial, className }: WorkflowDesigne
             </h4>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium">Step Name *</label>
+                <label htmlFor="step-name" className="text-xs font-medium">
+                  Step Name *
+                </label>
                 <input
+                  id="step-name"
                   type="text"
                   value={stepForm.name}
                   onChange={(e) => setStepForm({ ...stepForm, name: e.target.value })}
@@ -271,8 +279,11 @@ export function WorkflowDesigner({ onSave, initial, className }: WorkflowDesigne
                 />
               </div>
               <div>
-                <label className="text-xs font-medium">Type</label>
+                <label htmlFor="type" className="text-xs font-medium">
+                  Type
+                </label>
                 <select
+                  id="type"
                   value={stepForm.type}
                   onChange={(e) => setStepForm({ ...stepForm, type: e.target.value as StepType })}
                   className="w-full border rounded px-2 py-1 text-sm"
@@ -284,8 +295,11 @@ export function WorkflowDesigner({ onSave, initial, className }: WorkflowDesigne
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-medium">Approvers (comma-separated) *</label>
+                <label htmlFor="approvers-comma-separated" className="text-xs font-medium">
+                  Approvers (comma-separated) *
+                </label>
                 <input
+                  id="approvers-comma-separated"
                   type="text"
                   value={stepForm.approvers}
                   onChange={(e) => setStepForm({ ...stepForm, approvers: e.target.value })}
@@ -294,8 +308,11 @@ export function WorkflowDesigner({ onSave, initial, className }: WorkflowDesigne
                 />
               </div>
               <div>
-                <label className="text-xs font-medium">Delegate To (optional)</label>
+                <label htmlFor="delegate-to-optional" className="text-xs font-medium">
+                  Delegate To (optional)
+                </label>
                 <input
+                  id="delegate-to-optional"
                   type="text"
                   value={stepForm.delegateTo}
                   onChange={(e) => setStepForm({ ...stepForm, delegateTo: e.target.value })}
@@ -306,8 +323,11 @@ export function WorkflowDesigner({ onSave, initial, className }: WorkflowDesigne
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="text-xs font-medium">Timeout (hours)</label>
+                <label htmlFor="timeout-hours" className="text-xs font-medium">
+                  Timeout (hours)
+                </label>
                 <input
+                  id="timeout-hours"
                   type="number"
                   value={stepForm.timeoutHours}
                   onChange={(e) => setStepForm({ ...stepForm, timeoutHours: e.target.value })}
@@ -316,8 +336,11 @@ export function WorkflowDesigner({ onSave, initial, className }: WorkflowDesigne
                 />
               </div>
               <div>
-                <label className="text-xs font-medium">Condition Operator</label>
+                <label htmlFor="condition-operator" className="text-xs font-medium">
+                  Condition Operator
+                </label>
                 <select
+                  id="condition-operator"
                   value={stepForm.conditionOperator}
                   onChange={(e) =>
                     setStepForm({
@@ -336,8 +359,11 @@ export function WorkflowDesigner({ onSave, initial, className }: WorkflowDesigne
                 </select>
               </div>
               <div>
-                <label className="text-xs font-medium">Condition Value</label>
+                <label htmlFor="condition-value" className="text-xs font-medium">
+                  Condition Value
+                </label>
                 <input
+                  id="condition-value"
                   type="number"
                   value={stepForm.conditionValue}
                   onChange={(e) => setStepForm({ ...stepForm, conditionValue: e.target.value })}

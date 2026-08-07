@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSettingsStore } from '@/store/settingsStore';
@@ -72,16 +71,22 @@ export default function ProfilePage() {
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="text-sm text-slate-400 block mb-1">Name</label>
+              <label htmlFor="name" className="text-sm text-slate-400 block mb-1">
+                Name
+              </label>
               <input
+                id="name"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"
               />
             </div>
             <div>
-              <label className="text-sm text-slate-400 block mb-1">Department</label>
+              <label htmlFor="department" className="text-sm text-slate-400 block mb-1">
+                Department
+              </label>
               <input
+                id="department"
                 value={form.department}
                 onChange={(e) => setForm({ ...form, department: e.target.value })}
                 className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"
@@ -101,11 +106,15 @@ export default function ProfilePage() {
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="text-sm text-slate-400 flex items-center gap-1 mb-1">
+              <label
+                htmlFor="globe-classname-h-3-w-3-timezone"
+                className="text-sm text-slate-400 flex items-center gap-1 mb-1"
+              >
                 <Globe className="h-3 w-3" />
                 Timezone
               </label>
               <select
+                id="globe-classname-h-3-w-3-timezone"
                 value={form.timezone}
                 onChange={(e) => setForm({ ...form, timezone: e.target.value })}
                 className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"
@@ -120,11 +129,15 @@ export default function ProfilePage() {
               </select>
             </div>
             <div>
-              <label className="text-sm text-slate-400 flex items-center gap-1 mb-1">
+              <label
+                htmlFor="clock-classname-h-3-w-3-date-format"
+                className="text-sm text-slate-400 flex items-center gap-1 mb-1"
+              >
                 <Clock className="h-3 w-3" />
                 Date Format
               </label>
               <select
+                id="clock-classname-h-3-w-3-date-format"
                 value={form.dateFormat}
                 onChange={(e) => setForm({ ...form, dateFormat: e.target.value })}
                 className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"
@@ -135,11 +148,15 @@ export default function ProfilePage() {
               </select>
             </div>
             <div>
-              <label className="text-sm text-slate-400 flex items-center gap-1 mb-1">
+              <label
+                htmlFor="dollarsign-classname-h-3-w-3-base-currency"
+                className="text-sm text-slate-400 flex items-center gap-1 mb-1"
+              >
                 <DollarSign className="h-3 w-3" />
                 Base Currency
               </label>
               <select
+                id="dollarsign-classname-h-3-w-3-base-currency"
                 value={form.baseCurrency}
                 onChange={(e) => setForm({ ...form, baseCurrency: e.target.value })}
                 className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"
@@ -152,11 +169,15 @@ export default function ProfilePage() {
               </select>
             </div>
             <div>
-              <label className="text-sm text-slate-400 flex items-center gap-1 mb-1">
+              <label
+                htmlFor="palette-classname-h-3-w-3-theme"
+                className="text-sm text-slate-400 flex items-center gap-1 mb-1"
+              >
                 <Palette className="h-3 w-3" />
                 Theme
               </label>
               <select
+                id="palette-classname-h-3-w-3-theme"
                 value={form.theme}
                 onChange={(e) => setForm({ ...form, theme: e.target.value })}
                 className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"

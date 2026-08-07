@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @vitest-environment jsdom
  */
@@ -95,9 +94,9 @@ vi.mock('@/engines/ConsolidationEngine', () => ({
 // ---------------------------------------------------------------------------
 vi.mock('@/components/ui', () => {
   const stub = (props: Record<string, unknown>) => <div data-testid="ui-stub" {...props} />;
-  const forwardRefStub = React.forwardRef<HTMLDivElement, Record<string, unknown>>((props, ref) => (
-    <div ref={ref} data-testid="ui-stub" {...props} />
-  ));
+  const _forwardRefStub = React.forwardRef<HTMLDivElement, Record<string, unknown>>(
+    (props, ref) => <div ref={ref} data-testid="ui-stub" {...props} />
+  );
   return {
     Button: (props: Record<string, unknown>) => <button data-testid="button" {...props} />,
     Card: (props: Record<string, unknown>) => <div data-testid="card" {...props} />,

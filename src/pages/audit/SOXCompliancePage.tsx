@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, jsx-a11y/label-has-associated-control */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -221,7 +220,7 @@ export default function SOXCompliancePage() {
     document.title = 'FinPlan Pro - SOX Compliance';
   }, []);
 
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
   const [report, setReport] = useState<SOXReport | null>(null);
   const [filterCategory, setFilterCategory] = useState<SOXControlCategory | 'all'>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -539,8 +538,11 @@ export default function SOXCompliancePage() {
           <CardContent className="p-4">
             <div className="flex gap-3 items-end flex-wrap">
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Category</label>
+                <label htmlFor="category" className="block text-xs text-slate-500 mb-1">
+                  Category
+                </label>
                 <select
+                  id="category"
                   className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"
                   value={filterCategory}
                   onChange={(e) => setFilterCategory(e.target.value as SOXControlCategory | 'all')}
@@ -554,8 +556,11 @@ export default function SOXCompliancePage() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-slate-500 mb-1">Status</label>
+                <label htmlFor="status" className="block text-xs text-slate-500 mb-1">
+                  Status
+                </label>
                 <select
+                  id="status"
                   className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}

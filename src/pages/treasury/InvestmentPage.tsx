@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -18,7 +17,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   LineChart,
   Line,
 } from 'recharts';
@@ -234,7 +232,7 @@ export default function InvestmentPage() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v) => formatCurrency(Number(v))}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -257,7 +255,7 @@ export default function InvestmentPage() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v: any) => `${v}%`}
+                  formatter={(v) => `${v}%`}
                 />
                 <Line
                   type="monotone"
@@ -289,7 +287,7 @@ export default function InvestmentPage() {
                   border: '1px solid #334155',
                   borderRadius: 8,
                 }}
-                formatter={(v: any) => formatCurrency(v)}
+                formatter={(v) => formatCurrency(Number(v))}
               />
               <Bar dataKey="value" name="Value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
             </BarChart>

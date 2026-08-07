@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
-import { RBACEngine, type Role, type Permission } from './RBACEngine';
+import { RBACEngine, type Permission } from './RBACEngine';
 
 describe('RBACEngine', () => {
   let engine: RBACEngine;

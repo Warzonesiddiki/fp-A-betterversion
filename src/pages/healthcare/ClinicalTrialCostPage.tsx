@@ -1,17 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react';
-import {
-  Microscope,
-  Beaker,
-  FileText,
-  DollarSign,
-  Users,
-  Timer,
-  TrendingUp,
-  Download,
-  Plus,
-  ArrowRight,
-} from 'lucide-react';
+import { Beaker, FileText, Timer, Plus, ArrowRight } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -116,16 +104,16 @@ const columns: Column[] = [
     render: (v) => (
       <span
         className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-          v === 'Active'
+          String(v) === 'Active'
             ? 'bg-green-100 text-green-700'
-            : v === 'Warning'
+            : String(v) === 'Warning'
               ? 'bg-yellow-100 text-yellow-700'
-              : v === 'Over Budget'
+              : String(v) === 'Over Budget'
                 ? 'bg-red-100 text-red-700'
                 : 'bg-blue-100 text-blue-700'
         }`}
       >
-        {v}
+        {String(v)}
       </span>
     ),
   },

@@ -1,17 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
-import {
-  Store,
-  TrendingUp,
-  DollarSign,
-  Users,
-  ShoppingCart,
-  BarChart3,
-  Download,
-  RefreshCw,
-  Eye,
-} from 'lucide-react';
+import { TrendingUp, Users, Download, Eye } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -137,12 +125,12 @@ const columns: Column[] = [
     render: (v) => (
       <span
         className={
-          v.startsWith('+') || parseFloat(v) > 0
+          String(v).startsWith('+') || parseFloat(String(v)) > 0
             ? 'text-green-600 font-bold'
             : 'text-red-600 font-bold'
         }
       >
-        {v}
+        {String(v)}
       </span>
     ),
   },
@@ -242,7 +230,7 @@ export default function RetailDashboardPage() {
                   />
                   <Tooltip
                     contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                    formatter={(v: any) => [`$${v.toLocaleString()}`, '']}
+                    formatter={(v) => [`$${Number(v).toLocaleString()}`, '']}
                   />
                   <Legend
                     verticalAlign="top"

@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
@@ -141,10 +140,13 @@ export default function ForgotPasswordPage() {
 
           <div className="space-y-4">
             <div>
-              <label className="text-sm text-slate-400 mb-1 block">Email Address</label>
+              <label htmlFor="email-address" className="text-sm text-slate-400 mb-1 block">
+                Email Address
+              </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
                 <Input
+                  id="email-address"
                   type="email"
                   value={email}
                   onChange={(e) => {

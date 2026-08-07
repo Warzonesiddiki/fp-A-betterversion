@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { AccountType } from '../types';
 import Decimal from 'decimal.js';
-import { toDecimal, roundTo, DEFAULT_CURRENCY_PLACES } from '@/utils/money';
+import { toDecimal, roundTo } from '@/utils/money';
 
 export interface VarianceResult {
   absolute: number;

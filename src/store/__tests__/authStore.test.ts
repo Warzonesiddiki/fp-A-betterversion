@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useAuthStore } from '../authStore';
 import { masterStorage } from '../../utils/masterStorage';
 import type { User } from '../../types';
 
-const mockUser: User = {
+const _mockUser: User = {
   id: 'user-test-001',
   email: 'tester@finplan.com',
   firstName: 'Test',

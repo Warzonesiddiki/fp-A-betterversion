@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @fileoverview Anomaly Detection Engine — On-device statistical anomaly detection, trend analysis, outlier identification
  * @purity-tier 1 PURE
@@ -343,7 +342,6 @@ export class AnomalyDetectionEngine {
     if (stats.mad === 0) return [];
 
     const anomalies: Anomaly[] = [];
-    const consistencyConstant = 1.4826; // For normally distributed data
 
     for (const dp of dataPoints) {
       const modifiedZScore = Math.abs((0.6745 * (dp.value - stats.median)) / stats.mad);
@@ -656,7 +654,7 @@ export class AnomalyDetectionEngine {
     const sumY = y.reduce((s, v) => s + v, 0);
     const sumXY = x.reduce((s, v, i) => s + v * y[i]!, 0);
     const sumX2 = x.reduce((s, v) => s + v * v, 0);
-    const sumY2 = y.reduce((s, v) => s + v * v, 0);
+    const _sumY2 = y.reduce((s, v) => s + v * v, 0);
 
     const denom = n * sumX2 - sumX * sumX;
     if (denom === 0) return { slope: 0, intercept: sumY / n, rSquared: 0 };

@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { AdvancedOLAPEngine, OLAPMember } from './AdvancedOLAPEngine';
+import { AdvancedOLAPEngine } from './AdvancedOLAPEngine';
 
 const engine = new AdvancedOLAPEngine();
 

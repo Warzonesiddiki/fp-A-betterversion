@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect } from 'react';
 import * as Tabs from '@radix-ui/react-tabs';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -116,8 +115,11 @@ export default function SettingsPage() {
                     Organization Profile
                   </legend>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-300">Company Name</label>
+                    <label htmlFor="company-name" className="text-sm font-bold text-slate-300">
+                      Company Name
+                    </label>
                     <input
+                      id="company-name"
                       type="text"
                       value={organization.name}
                       onChange={(e) => updateOrganization({ name: e.target.value })}
@@ -215,8 +217,11 @@ export default function SettingsPage() {
                 <fieldset className="m-0 border-0 p-0">
                   <legend className="text-base font-semibold text-white mb-4">Preferences</legend>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-300">Decimal Places</label>
+                    <label htmlFor="decimal-places" className="text-sm font-bold text-slate-300">
+                      Decimal Places
+                    </label>
                     <input
+                      id="decimal-places"
                       type="number"
                       value={organization.decimalPlaces}
                       onChange={(e) =>
@@ -228,8 +233,11 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-bold text-slate-300">Date Format</label>
+                    <label htmlFor="date-format" className="text-sm font-bold text-slate-300">
+                      Date Format
+                    </label>
                     <select
+                      id="date-format"
                       aria-describedby="settings-date-format-help"
                       value={organization.dateFormat}
                       onChange={(e) => updateOrganization({ dateFormat: e.target.value })}

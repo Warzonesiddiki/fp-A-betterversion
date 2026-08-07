@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -8,14 +7,7 @@ import { DataTable, Column } from '@/components/ui/DataTable';
 import { HelpPanel } from '@/components/ui/HelpPanel';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
-import {
-  FileSignature,
-  DollarSign,
-  Calendar,
-  TrendingUp,
-  HelpCircle,
-  Building,
-} from 'lucide-react';
+import { FileSignature, DollarSign, Calendar, HelpCircle, Building } from 'lucide-react';
 import type { GLEntry } from '@/types';
 import { roundTo, sumMoney } from '@/utils/money';
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useAuthStore } from './authStore';
 import { useGLStore } from './glStore';
@@ -192,7 +191,7 @@ describe('glStore', () => {
   // --- addEntry ---
 
   it('should add an entry with generated id', async () => {
-    const id = `gl-${Date.now()}`;
+    const _id = `gl-${Date.now()}`;
     const entry = {
       id: 'e-new-1',
       accountId: 'acct-1',

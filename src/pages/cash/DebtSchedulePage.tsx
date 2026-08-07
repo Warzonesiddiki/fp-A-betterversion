@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -359,7 +358,7 @@ export default function DebtSchedulePage() {
                 <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${Math.round(v / 1000000)}M`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v) => formatCurrency(Number(v))}
                 />
                 <Legend />
                 <Bar dataKey="principal" fill="#3b82f6" name="Principal" stackId="a" />
@@ -380,7 +379,7 @@ export default function DebtSchedulePage() {
                 <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${Math.round(v / 1000000)}M`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v) => formatCurrency(Number(v))}
                 />
                 <Line
                   dataKey="balance"

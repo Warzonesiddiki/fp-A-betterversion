@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import type { ConditionalFormatRule, IconSetType } from '@/engines/ConditionalFormattingEngine';
 import { ICON_SET_TYPES } from '../ConditionalFormattingConstants';
 
@@ -11,10 +10,14 @@ export function IconSetOptions({ rule, onChange }: IconSetOptionsProps) {
   return (
     <div className="space-y-3" role="region" aria-label="IconSetOptions">
       <div>
-        <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
+        <label
+          htmlFor="icon-set"
+          className="block text-xs font-medium text-[var(--text-secondary)] mb-1"
+        >
           Icon Set
         </label>
         <select
+          id="icon-set"
           value={rule.iconSet?.type ?? '3-arrows'}
           onChange={(e) =>
             onChange({

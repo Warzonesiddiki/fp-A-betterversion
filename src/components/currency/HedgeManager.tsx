@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -382,8 +381,11 @@ export const HedgeManager = memo(function HedgeManager() {
           </h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-xs text-slate-400 mb-1">Instrument</label>
+              <label htmlFor="instrument" className="block text-xs text-slate-400 mb-1">
+                Instrument
+              </label>
               <select
+                id="instrument"
                 value={form.instrument}
                 onChange={(e) => setForm((f) => ({ ...f, instrument: e.target.value }))}
                 className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
@@ -400,8 +402,11 @@ export const HedgeManager = memo(function HedgeManager() {
               )}
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Hedge Type</label>
+              <label htmlFor="hedge-type" className="block text-xs text-slate-400 mb-1">
+                Hedge Type
+              </label>
               <select
+                id="hedge-type"
                 value={form.hedgeType}
                 onChange={(e) => setForm((f) => ({ ...f, hedgeType: e.target.value as HedgeType }))}
                 className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
@@ -414,8 +419,11 @@ export const HedgeManager = memo(function HedgeManager() {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Status</label>
+              <label htmlFor="status" className="block text-xs text-slate-400 mb-1">
+                Status
+              </label>
               <select
+                id="status"
                 value={form.status}
                 onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as HedgeStatus }))}
                 className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
@@ -426,8 +434,11 @@ export const HedgeManager = memo(function HedgeManager() {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Entity Currency</label>
+              <label htmlFor="entity-currency" className="block text-xs text-slate-400 mb-1">
+                Entity Currency
+              </label>
               <select
+                id="entity-currency"
                 value={form.entityCurrency}
                 onChange={(e) => setForm((f) => ({ ...f, entityCurrency: e.target.value }))}
                 className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
@@ -440,8 +451,11 @@ export const HedgeManager = memo(function HedgeManager() {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Hedged Currency</label>
+              <label htmlFor="hedged-currency" className="block text-xs text-slate-400 mb-1">
+                Hedged Currency
+              </label>
               <select
+                id="hedged-currency"
                 value={form.currency}
                 onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}
                 className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
@@ -454,8 +468,11 @@ export const HedgeManager = memo(function HedgeManager() {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Notional</label>
+              <label htmlFor="notional" className="block text-xs text-slate-400 mb-1">
+                Notional
+              </label>
               <input
+                id="notional"
                 type="number"
                 value={form.notionalAmount}
                 onChange={(e) => setForm((f) => ({ ...f, notionalAmount: e.target.value }))}
@@ -467,8 +484,11 @@ export const HedgeManager = memo(function HedgeManager() {
               )}
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Contracted Rate</label>
+              <label htmlFor="contracted-rate" className="block text-xs text-slate-400 mb-1">
+                Contracted Rate
+              </label>
               <input
+                id="contracted-rate"
                 type="number"
                 step="any"
                 value={form.contractedRate}
@@ -481,8 +501,11 @@ export const HedgeManager = memo(function HedgeManager() {
               )}
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Current Rate</label>
+              <label htmlFor="current-rate" className="block text-xs text-slate-400 mb-1">
+                Current Rate
+              </label>
               <input
+                id="current-rate"
                 type="number"
                 step="any"
                 value={form.currentRate}
@@ -495,8 +518,11 @@ export const HedgeManager = memo(function HedgeManager() {
               )}
             </div>
             <div>
-              <label className="block text-xs text-slate-400 mb-1">Maturity</label>
+              <label htmlFor="maturity" className="block text-xs text-slate-400 mb-1">
+                Maturity
+              </label>
               <input
+                id="maturity"
                 type="date"
                 value={form.maturityDate}
                 onChange={(e) => setForm((f) => ({ ...f, maturityDate: e.target.value }))}

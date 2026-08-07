@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // BOOK & BURST BUILDER — Generate 100+ entity-specific reports in one batch
 // Matrix: reports x entities with parallel generation, ZIP download, board pack
@@ -13,7 +12,6 @@ import {
   REPORT_TEMPLATE_PRESETS,
   type Entity,
   type ReportBook,
-  type ReportBookEntry,
   type GenerationProgress,
   type GeneratedReport,
   type BoardPackConfig,

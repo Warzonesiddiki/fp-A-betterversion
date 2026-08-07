@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { memo } from 'react';
 import { Check } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -32,7 +31,6 @@ export const ProgressStepper: React.FC<ProgressStepperProps> = memo(
           const isLast = idx === steps.length - 1;
           const isDone = step.status === 'done' || idx < currentStep;
           const isCurrent = step.status === 'current' || idx === currentStep;
-          const isPending = !isDone && !isCurrent;
 
           return (
             <div

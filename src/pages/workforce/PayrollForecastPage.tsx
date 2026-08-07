@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -179,31 +178,31 @@ export default function PayrollForecastPage() {
     {
       key: 'baseSalary',
       header: 'Base Salary',
-      render: (r) => formatCurrency(r.baseSalary),
+      render: (_, r) => formatCurrency(r.baseSalary),
       sortable: true,
     },
     {
       key: 'benefits',
       header: 'Benefits',
-      render: (r) => formatCurrency(r.benefits),
+      render: (_, r) => formatCurrency(r.benefits),
       sortable: true,
     },
     {
       key: 'totalCost',
       header: 'Total Cost',
-      render: (r) => formatCurrency(r.totalCost),
+      render: (_, r) => formatCurrency(r.totalCost),
       sortable: true,
     },
     {
       key: 'costPerHead',
       header: 'Cost/Head',
-      render: (r) => formatCurrency(r.costPerHead),
+      render: (_, r) => formatCurrency(r.costPerHead),
       sortable: true,
     },
     {
       key: 'yoyChange',
       header: 'YoY Change',
-      render: (r) => (
+      render: (_, r) => (
         <span className={r.yoyChange > 5 ? 'text-red-400' : 'text-green-400'}>
           {r.yoyChange > 0 ? '+' : ''}
           {r.yoyChange}%
@@ -310,7 +309,7 @@ export default function PayrollForecastPage() {
                   tickFormatter={(v) => `$${formatCompact(v)}`}
                 />
                 <Tooltip
-                  formatter={(v: any) => formatCurrency(v)}
+                  formatter={(v) => formatCurrency(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Legend />
@@ -380,7 +379,7 @@ export default function PayrollForecastPage() {
                 tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
               />
               <Tooltip
-                formatter={(v: any) => formatCurrency(v)}
+                formatter={(v) => formatCurrency(Number(v))}
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
               />
               <Area

@@ -138,14 +138,14 @@ export default function ApprovalQueuePage() {
       key: 'amount',
       header: 'Amount',
       align: 'right',
-      render: (r) => formatCurrency(r.amount),
+      render: (_, r) => formatCurrency(r.amount),
       sortable: true,
     },
     { key: 'submitted', header: 'Submitted', align: 'right', sortable: true },
     {
       key: 'status',
       header: 'Status',
-      render: (r) => (
+      render: (_, r) => (
         <span
           className={
             r.status === 'Approved'

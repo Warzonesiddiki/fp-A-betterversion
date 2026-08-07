@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo } from 'react';
-import { useGLStore } from '@/store/glStore';
-import { useEntityStore } from '@/store/entityStore';
+
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -19,7 +17,7 @@ import {
   Cell,
 } from 'recharts';
 import { PieChart, Pie } from 'recharts';
-import { Layers, TrendingUp, Download, Filter } from 'lucide-react';
+import { Layers, TrendingUp, Download } from 'lucide-react';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';;
@@ -36,8 +34,8 @@ const COLORS = [
 ];
 
 export default function SegmentReportingPage() {
-  const { entries } = useGLStore();
-  const { entities } = useEntityStore();
+ 
+ 
   const [segmentType, setSegmentType] = useState<'geographic' | 'product' | 'customer'>(
     'geographic'
   );
@@ -134,7 +132,7 @@ export default function SegmentReportingPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip formatter={(v: any) => `$${formatCompact(v)}`} />
+                <Tooltip formatter={(v) => `$${formatCompact(Number(v))}`} />
                 <Bar dataKey="revenue" name="Revenue">
                   {segmentData.map((_, i) => (
                     <Cell key={i} fill={COLORS[i % COLORS.length]} />
@@ -163,7 +161,7 @@ export default function SegmentReportingPage() {
                     <Cell key={i} fill={COLORS[i % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(v: any) => `$${formatCompact(v)}`} />
+                <Tooltip formatter={(v) => `$${formatCompact(Number(v))}`} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>

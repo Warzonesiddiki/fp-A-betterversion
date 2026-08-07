@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 
 // The chunked storage layer offloads stringify/chunking to a Web Worker. In
@@ -28,7 +26,7 @@ import { generateGLEntries } from '../services/mockData/generators';
 import * as fs from 'fs';
 
 // Mock IndexedDB since jsdom might not have it or it might be incomplete
-const mockIndexedDB = () => {
+const _mockIndexedDB = () => {
   const storage: Record<string, any> = {};
   return {
     open: () => ({

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, jsx-a11y/label-has-associated-control */
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +9,6 @@ import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
-import { FileDropZone } from '@/components/ui/FileDropZone';
 import { parseCSV } from '@/utils/csv';
 import {
   getDescendantAccountIds,
@@ -25,7 +23,6 @@ import type { AccountType, GLAccount } from '@/types';
 import {
   Plus,
   Search,
-  Filter,
   Pencil,
   Trash2,
   ToggleLeft,
@@ -60,7 +57,7 @@ export default function ChartOfAccountsPage() {
     document.title = 'FinPlan Pro — Chart Of Accounts';
   }, []);
 
-  const { accounts, addAccount, updateAccount, deleteAccount, toggleAccountActive, setAccounts } =
+  const { accounts, addAccount, updateAccount, deleteAccount, toggleAccountActive } =
     useDataStore();
   const { entries } = useGLStore(); // to check usage for soft-delete warning
   const navigate = useNavigate();
@@ -534,8 +531,14 @@ export default function ChartOfAccountsPage() {
           </h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Account Code</label>
+              <label
+                htmlFor="account-code"
+                className="block text-xs font-medium text-slate-400 mb-1"
+              >
+                Account Code
+              </label>
               <Input
+                id="account-code"
                 value={form.code}
                 onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
                 placeholder="e.g. 4100"
@@ -544,8 +547,14 @@ export default function ChartOfAccountsPage() {
               {formErrors.code && <p className="text-xs text-red-400 mt-1">{formErrors.code}</p>}
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Account Name</label>
+              <label
+                htmlFor="account-name"
+                className="block text-xs font-medium text-slate-400 mb-1"
+              >
+                Account Name
+              </label>
               <Input
+                id="account-name"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="e.g. Subscription Revenue"
@@ -554,26 +563,39 @@ export default function ChartOfAccountsPage() {
               {formErrors.name && <p className="text-xs text-red-400 mt-1">{formErrors.name}</p>}
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Account Type</label>
+              <label
+                htmlFor="account-type"
+                className="block text-xs font-medium text-slate-400 mb-1"
+              >
+                Account Type
+              </label>
               <Select
+                id="account-type"
                 options={accountTypes}
                 value={form.type}
                 onChange={(val) => setForm({ ...form, type: val as AccountType })}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Category</label>
+              <label htmlFor="category" className="block text-xs font-medium text-slate-400 mb-1">
+                Category
+              </label>
               <Input
+                id="category"
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
                 placeholder="e.g. Operating Revenue"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">
+              <label
+                htmlFor="parent-account-optional"
+                className="block text-xs font-medium text-slate-400 mb-1"
+              >
                 Parent Account (optional)
               </label>
               <Select
+                id="parent-account-optional"
                 options={parentOptions}
                 value={form.parentId || ''}
                 onChange={(val) => setForm({ ...form, parentId: val || null })}

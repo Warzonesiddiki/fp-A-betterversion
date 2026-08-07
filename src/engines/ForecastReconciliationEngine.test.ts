@@ -1,10 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect } from 'vitest';
-import {
-  ForecastReconciliationEngine,
-  type ForecastSource,
-  type MergeStrategy,
-} from './ForecastReconciliationEngine';
+import { ForecastReconciliationEngine, type ForecastSource } from './ForecastReconciliationEngine';
 
 function makeSource(
   name: string,

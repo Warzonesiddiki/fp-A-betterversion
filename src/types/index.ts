@@ -483,6 +483,22 @@ export interface FinanceReport {
   readonly format: string;
   readonly createdAt: string;
   readonly createdBy: string;
+  // Extended fields used by rich report templates (e.g. Board Pack)
+  readonly description?: string;
+  readonly period?: string;
+  readonly status?: string;
+  readonly columns?: unknown[];
+  readonly filters?: unknown[];
+  readonly groupBy?: string | null;
+  readonly sortBy?: string | null;
+  readonly sortDirection?: 'asc' | 'desc';
+  readonly data?: {
+    commentary?: string;
+    varianceHighlights?: unknown[];
+    sections?: string[];
+  };
+  readonly createdByName?: string;
+  readonly isPublic?: boolean;
 }
 
 export interface ScheduledReport {

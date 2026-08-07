@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * AdvancedPDFEngine — Professional PDF generation for FinPlan Pro
  * Features: TOC, watermarks, headers/footers, charts, financial tables
@@ -62,7 +61,7 @@ export class AdvancedPDFEngine {
    * Add watermark to every page
    */
   static addWatermark(doc: jsPDF, options: WatermarkOptions): void {
-    const { text, fontSize = 50, color = '#cccccc', opacity = 0.3, angle = -45 } = options;
+    const { text, fontSize = 50, color = '#cccccc', angle = -45 } = options;
     const pages = doc.getNumberOfPages();
 
     for (let i = 1; i <= pages; i++) {

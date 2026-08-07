@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -14,7 +12,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
-import { Scale, TrendingUp, Download, Filter } from 'lucide-react';
+import { Scale, TrendingUp, Download } from 'lucide-react';
 import { FairValueEngine } from '@/engines/FairValueEngine';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatCompact } from '@/utils/financialFormatting';
@@ -240,7 +238,7 @@ export default function FairValuePage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip formatter={(v: any) => `$${v ? formatCompact(v) : '—'}`} />
+                <Tooltip formatter={(v) => `$${v ? formatCompact(Number(v)) : '—'}`} />
                 <Bar dataKey="value" name="Fair Value">
                   {levelData.map((d, i) => (
                     <Cell key={i} fill={d.color} />

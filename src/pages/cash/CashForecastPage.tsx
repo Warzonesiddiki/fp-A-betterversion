@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -9,7 +7,6 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, type Column } from '@/components/ui/DataTable';
 import {
   DollarSign,
-  Download,
   FileText,
   Table as TableIcon,
   TrendingUp,
@@ -28,17 +25,14 @@ import {
 
 import {
   ResponsiveContainer,
-  BarChart,
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
-  LineChart,
   Line,
   ComposedChart,
-  Area,
 } from 'recharts';
 import { SparklineChart } from '@/components/charts/SparklineChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
@@ -178,21 +172,21 @@ export default function CashForecastPage() {
       key: 'inflows',
       header: 'Inflows',
       align: 'right',
-      render: (r) => <span className="text-green-400">{formatCurrency(r.inflows)}</span>,
+      render: (_, r) => <span className="text-green-400">{formatCurrency(r.inflows)}</span>,
       sortable: true,
     },
     {
       key: 'outflows',
       header: 'Outflows',
       align: 'right',
-      render: (r) => <span className="text-red-400">{formatCurrency(r.outflows)}</span>,
+      render: (_, r) => <span className="text-red-400">{formatCurrency(r.outflows)}</span>,
       sortable: true,
     },
     {
       key: 'net',
       header: 'Net',
       align: 'right',
-      render: (r) => (
+      render: (_, r) => (
         <span className={r.net >= 0 ? 'text-green-400' : 'text-red-400'}>
           {formatCurrency(r.net)}
         </span>
@@ -280,7 +274,7 @@ export default function CashForecastPage() {
                 tickFormatter={(v) => `$${Math.round(v / 1000)}k`}
               />
               <Tooltip
-                formatter={(v: any) => formatCurrency(v)}
+                formatter={(v) => formatCurrency(Number(v))}
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
               />
               <Legend />

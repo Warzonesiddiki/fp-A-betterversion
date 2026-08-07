@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react';
 import { useSettingsStore } from '@/store/settingsStore';
 import { Button } from '@/components/ui/Button';
@@ -16,7 +15,7 @@ const defaultRoles: { id: string; name: string; permissions: string[] }[] = [
 ];
 
 export default function UserManagementPage() {
-  const { users, addUser, updateUser, deleteUser } = useSettingsStore();
+  const { users, addUser, deleteUser } = useSettingsStore();
   const [showAddForm, setShowAddForm] = useState(false);
   const [_editingId, setEditingId] = useState<string | null>(null);
   const [newUser, setNewUser] = useState({ name: '', email: '', role: 'Analyst' });
@@ -73,13 +72,13 @@ export default function UserManagementPage() {
       key: 'name',
       header: 'Name',
       sortable: true,
-      render: (r) => (
+      render: (_, r) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-sm font-medium">
-            {r.name.charAt(0).toUpperCase()}
+            {(r.name ?? '').charAt(0).toUpperCase()}
           </div>
           <div>
-            <div className="font-medium">{r.name}</div>
+            <div className="font-medium">{r.name ?? ''}</div>
             <div className="text-xs text-slate-400">{r.email}</div>
           </div>
         </div>
@@ -89,7 +88,7 @@ export default function UserManagementPage() {
       key: 'role',
       header: 'Role',
       sortable: true,
-      render: (r) => (
+      render: (_, r) => (
         <span
           className={`text-xs px-2 py-1 rounded-full ${roleColors[r.role] || 'bg-slate-700 text-slate-400'}`}
         >
@@ -109,7 +108,7 @@ export default function UserManagementPage() {
     {
       key: 'id' as keyof (typeof users)[0],
       header: 'Actions',
-      render: (r) => (
+      render: (_, r) => (
         <div className="flex gap-1">
           <Button variant="ghost" size="sm" onClick={() => setEditingId(r.id)}>
             <Edit2 className="h-3 w-3" />
@@ -187,16 +186,22 @@ export default function UserManagementPage() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="text-sm text-slate-400 mb-1 block">Name</label>
+                <label htmlFor="name" className="text-sm text-slate-400 mb-1 block">
+                  Name
+                </label>
                 <Input
+                  id="name"
                   value={newUser.name}
                   onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
                   placeholder="Full name"
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-400 mb-1 block">Email</label>
+                <label htmlFor="email" className="text-sm text-slate-400 mb-1 block">
+                  Email
+                </label>
                 <Input
+                  id="email"
                   type="email"
                   value={newUser.email}
                   onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
@@ -204,8 +209,11 @@ export default function UserManagementPage() {
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-400 mb-1 block">Role</label>
+                <label htmlFor="role" className="text-sm text-slate-400 mb-1 block">
+                  Role
+                </label>
                 <select
+                  id="role"
                   value={newUser.role}
                   onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
                   className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-md text-sm"

@@ -1,14 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // ROLLING FORECAST ENGINE TESTS — 40+ tests for auto-extending forecasts
 // =============================================================================
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  RollingForecastEngine,
-  type ForecastPeriod,
-  type RollingForecastConfig,
-} from './RollingForecastEngine';
+import { RollingForecastEngine, type ForecastPeriod } from './RollingForecastEngine';
 
 describe('RollingForecastEngine', () => {
   let engine: RollingForecastEngine;

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type {
   DimensionDefinition,
   DimensionMember,
@@ -16,7 +15,6 @@ import type {
   DimensionType,
   MeasureDefinition,
   CubeStorageMode,
-  CellDataType,
 } from '@/types/cube-types';
 import { CubeEnginePersistence } from './CubeEnginePersistence';
 

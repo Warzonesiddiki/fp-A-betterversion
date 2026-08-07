@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * @vitest-environment jsdom
  */
@@ -31,7 +29,7 @@ vi.mock('@/services/RealtimeCollaborationManager', () => ({
 }));
 
 import { useWebSocket, useRealtimeChanges, useCellBroadcaster } from './useWebSocket';
-import type { DataChange, ResourceType } from '@/services/ChangeBroadcaster';
+import type { DataChange } from '@/services/ChangeBroadcaster';
 
 describe('useWebSocket', () => {
   beforeEach(() => {

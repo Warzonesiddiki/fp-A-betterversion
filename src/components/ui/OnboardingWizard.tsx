@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ProgressStepper, type Step } from './ProgressStepper';
@@ -114,7 +113,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
     // Save preferences
     updatePreferences({
-      activeSector: companyInfo.sector as any,
+      activeSector: companyInfo.sector ?? 'technology',
     });
 
     // Save imported data if any
@@ -135,7 +134,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         description: 'Initial import during onboarding',
         reference: 'ONBOARDING',
       }));
-      setEntries(entries as any);
+      setEntries(entries);
     }
 
     onComplete();

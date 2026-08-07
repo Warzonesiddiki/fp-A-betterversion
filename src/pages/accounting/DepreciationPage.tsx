@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -270,7 +269,7 @@ export default function DepreciationPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="year" tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip formatter={(v: any) => `$${Math.round(v / 1000)}K`} />
+                <Tooltip formatter={(v) => `$${Math.round(Number(v) / 1000)}K`} />
                 <Line dataKey="book" name="Book Value" stroke="#3B82F6" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>

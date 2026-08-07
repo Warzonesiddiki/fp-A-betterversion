@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('react-router-dom', async () => {
@@ -59,7 +57,7 @@ function makeIcon() {
   return ({ className }: any) => <span data-testid="mock-icon" className={className} />;
 }
 
-import { render, screen, fireEvent } from '@/test/testUtils';
+import { render, screen } from '@/test/testUtils';
 import TemplatePreviewPage from '../TemplatePreviewPage';
 
 describe('TemplatePreviewPage', () => {

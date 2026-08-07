@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock openDB from indexedDBStorage
 const { mockOpenDB, mockObjectStore, mockTransaction, mockDB } = vi.hoisted(() => {
@@ -44,7 +43,6 @@ import {
   cacheSet,
   cacheGet,
   cacheIsStale,
-  cacheGetMetadata,
   cacheRemove,
   cacheClearStore,
   cacheClearAll,

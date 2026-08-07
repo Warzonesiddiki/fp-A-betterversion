@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { GLEntry } from '@/types';
-import type { ICPair, EliminationEntry } from './ConsolidationEngine';
+import type { EliminationEntry } from './ConsolidationEngine';
 import { toDecimal, roundTo, sumMoney, subtractMoney, divideMoney } from '../utils/money';
 
 /**

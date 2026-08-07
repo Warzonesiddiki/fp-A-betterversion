@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useCallback, useState } from 'react';
 import type {
   ExportTemplate,
@@ -204,10 +203,10 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
       <div className="flex-1 p-6 overflow-y-auto">
         <div className="max-w-2xl space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+            <label htmlFor="template-name" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
               Template Name
             </label>
-            <input
+            <input id="template-name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -217,10 +216,10 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+              <label htmlFor="type" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
                 Type
               </label>
-              <select
+              <select id="type"
                 value={type}
                 onChange={(e) => setType(e.target.value as TemplateType)}
                 className="w-full px-3 py-2 border border-[var(--border-default)] rounded-md bg-[var(--bg-elevated)] text-[var(--text-primary)]"
@@ -233,10 +232,10 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+              <label htmlFor="company-name" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
                 Company Name
               </label>
-              <input
+              <input id="company-name"
                 type="text"
                 value={style.companyName}
                 onChange={(e) => setStyle((s) => ({ ...s, companyName: e.target.value }))}
@@ -246,10 +245,10 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+            <label htmlFor="description" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
               Description
             </label>
-            <textarea
+            <textarea id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
@@ -259,10 +258,10 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+              <label htmlFor="primary-color" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
                 Primary Color
               </label>
-              <input
+              <input id="primary-color"
                 type="color"
                 value={style.primaryColor}
                 onChange={(e) => setStyle((s) => ({ ...s, primaryColor: e.target.value }))}
@@ -270,10 +269,10 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+              <label htmlFor="secondary-color" className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
                 Secondary Color
               </label>
-              <input
+              <input id="secondary-color"
                 type="color"
                 value={style.secondaryColor}
                 onChange={(e) => setStyle((s) => ({ ...s, secondaryColor: e.target.value }))}
@@ -289,10 +288,10 @@ export function TemplateDesigner({ template, onSave, onCancel }: TemplateDesigne
                 Edit: {active.type.replace(/_/g, ' ')}
               </h4>
               <div>
-                <label className="block text-xs font-medium text-[var(--text-muted)] dark:text-[var(--text-muted)] mb-1">
+                <label htmlFor="section-title" className="block text-xs font-medium text-[var(--text-muted)] dark:text-[var(--text-muted)] mb-1">
                   Section Title
                 </label>
-                <input
+                <input id="section-title"
                   type="text"
                   value={active.title}
                   onChange={(e) => updateSectionTitle(active.id, e.target.value)}

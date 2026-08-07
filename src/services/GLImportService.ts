@@ -1,11 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ImportEngine, type ImportProgress } from '@/engines/ImportEngine';
-import {
-  ExcelImportEngine,
-  type AutoColumnMapping,
-  type TargetField,
-} from '@/engines/ExcelImportEngine';
-import { SmartImportMapper, type ColumnMapping as SmartMapping } from '@/engines/SmartImportMapper';
+import type { ImportFormat } from '@/store/glUploadStore';
+import { ExcelImportEngine, type AutoColumnMapping } from '@/engines/ExcelImportEngine';
 
 export type ImportStage =
   | 'detect'
@@ -35,7 +30,7 @@ export interface GLImportStageProgress {
 
 export interface GLParseResult {
   fileName: string;
-  format: string;
+  format: ImportFormat;
   headers: string[];
   rowCount: number;
   columnCount: number;
@@ -62,7 +57,7 @@ export interface GLValidationResult {
 
 export interface GLImportSummary {
   fileName: string;
-  format: string;
+  format: ImportFormat;
   totalRows: number;
   importedRows: number;
   skippedRows: number;
@@ -98,7 +93,7 @@ export class GLImportService {
 
   detectFormat(file: File): { format: string; supported: boolean } {
     const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
-    const supported = ['csv', 'xlsx', 'xls'].includes(ext);
+    const supported = ext === 'csv' || ext === 'xlsx' || ext === 'xls';
     return { format: ext, supported };
   }
 
@@ -109,10 +104,14 @@ export class GLImportService {
     if (!supported) {
       throw new Error(`Unsupported file format: .${format}. Please use .csv, .xlsx, or .xls.`);
     }
+    // Narrow the raw extension to the supported import formats (guaranteed by
+    // the supported check above) so it satisfies ImportFormat without a cast.
+    const importFormat: ImportFormat =
+      format === 'csv' || format === 'xlsx' || format === 'xls' ? format : 'unknown';
 
     if (format === 'csv') {
       this.emitProgress('parse', 20, 'Parsing CSV file...');
-      const { result, snapshot } = await this.importEngine.importCSV(file, {
+      const { result } = await this.importEngine.importCSV(file, {
         requiredColumns: options.requiredColumns,
         numericColumns: options.numericColumns,
         dateColumns: options.dateColumns,
@@ -128,7 +127,7 @@ export class GLImportService {
 
       return {
         fileName: file.name,
-        format,
+        format: importFormat,
         headers: result.columns,
         rowCount: result.rowCount,
         columnCount: result.columnCount,
@@ -155,7 +154,7 @@ export class GLImportService {
 
     return {
       fileName: file.name,
-      format,
+      format: importFormat,
       headers,
       rowCount: sheet.rowCount,
       columnCount: headers.length,
@@ -170,13 +169,9 @@ export class GLImportService {
     const autoMappings = this.excelEngine.autoDetectMappings(headers, sampleRows);
 
     const userMappings: Record<string, string> = {};
-    let unmappedRequired = 0;
     for (const m of autoMappings) {
       if (m.targetField !== 'skip') {
         userMappings[m.sourceColumn] = m.targetField;
-      }
-      if (m.targetField === 'skip' || m.confidence < 0.5) {
-        unmappedRequired++;
       }
     }
 
@@ -267,7 +262,7 @@ export class GLImportService {
 
   async confirmImport(
     fileName: string,
-    format: string,
+    format: ImportFormat,
     validRows: Record<string, unknown>[],
     totalRows: number,
     errorCount: number,

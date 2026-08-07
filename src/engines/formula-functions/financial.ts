@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // =============================================================================
 // FORMULA FUNCTION REGISTRY — Financial, Growth, Allocation & Currency
 // =============================================================================
@@ -419,9 +418,9 @@ export function YIELD(
 // =============================================================================
 
 export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): void {
-  // Helper to cast typed functions to FormulaFunction['impl']
-  const impl = (fn: (...args: any[]) => any): FormulaFunction['impl'] =>
-    fn as FormulaFunction['impl'];
+  // Concrete impls are numeric-typed and the registry coerces args with toNum
+  // before dispatch, so no cast is required across this boundary.
+  const impl = (fn: (...args: number[]) => number | number[]): FormulaFunction['impl'] => fn;
   // Financial
   r({
     name: 'EBITDA',

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // SOX COMPLIANCE ENGINE
 // Sarbanes-Oxley compliance: approval workflows, segregation of duties,
@@ -7,8 +6,8 @@
 // =============================================================================
 
 import { AuditLogEngine, type AuditEntry, type AuditAction } from './AuditLogEngine';
-import { WorkflowEngine, type ApprovalRequest, type ApprovalState } from './WorkflowEngine';
-import { RBACEngine, type Role, type UserRole } from './RBACEngine';
+import { WorkflowEngine, type ApprovalRequest } from './WorkflowEngine';
+import { RBACEngine, type Role } from './RBACEngine';
 import { addMoney, sumMoney, roundMoney, toDecimal } from '../utils/money';
 
 // ---------------------------------------------------------------------------
@@ -829,7 +828,7 @@ export class SOXComplianceEngine {
     const expectedD = addMoney(totalLiabilities, totalEquity);
     const expected = expectedD.toNumber();
     const diffD = toDecimal(totalAssets).minus(expectedD).abs();
-    const diff = diffD.toNumber();
+    const _diff = diffD.toNumber();
     const passed = diffD.lessThanOrEqualTo(toDecimal(tolerance));
     const DP = 2;
     const m = (v: number | typeof diffD): string => roundMoney(v, DP).toFixed(DP);

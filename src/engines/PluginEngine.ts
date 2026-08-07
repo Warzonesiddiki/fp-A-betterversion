@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // =============================================================================
 // PLUGIN ENGINE — Part 15 Plugin Architecture
 // Manages plugin lifecycle: discovery, validation, loading, initialization
@@ -9,7 +8,6 @@ import type {
   Plugin,
   PluginInstance,
   PluginAPI,
-  PluginStatus,
   PluginType,
   FormulaSpec,
   ReportTemplate,
@@ -235,7 +233,7 @@ export class PluginEngine {
     if (!instance) throw new Error(`Plugin not found: ${pluginId}`);
     try {
       instance.plugin.destroy();
-    } catch (err) {
+    } catch (_err) {
       // Ignore destroy errors on disable
     }
     instance.status = 'disabled';

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { CubeEnginePersistence } from './CubeEnginePersistence';
 import type {
@@ -49,7 +48,7 @@ function createMockTransaction(storeNames: string[], mode: IDBTransactionMode): 
   } as unknown as IDBTransaction;
 }
 
-function createMockObjectStore(storeName: string, mode: IDBTransactionMode): IDBObjectStore {
+function createMockObjectStore(storeName: string, _mode: IDBTransactionMode): IDBObjectStore {
   const store = mockStores.get(storeName) ?? new Map();
 
   return {
@@ -78,7 +77,7 @@ function createMockObjectStore(storeName: string, mode: IDBTransactionMode): IDB
       store.clear();
       return createIDBRequest(undefined);
     },
-    index: (indexName: string) => ({
+    index: (_indexName: string) => ({
       getAll: (key: string) => {
         const results = Array.from(store.values()).filter((v: unknown) => {
           const item = v as { cellId: string };
@@ -115,7 +114,7 @@ function createIDBRequest<T>(result: T): IDBRequest<T> {
 
 const _originalWindow = global.window;
 
-function mockTauriEnvironment() {
+function _mockTauriEnvironment() {
   (global as Record<string, unknown>).window = {
     __TAURI_INTERNALS__: {},
   };
@@ -125,7 +124,7 @@ function mockBrowserEnvironment() {
   (global as Record<string, unknown>).window = {};
 }
 
-function restoreWindow() {
+function _restoreWindow() {
   (global as Record<string, unknown>).window = _originalWindow;
 }
 

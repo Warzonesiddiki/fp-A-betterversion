@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * @vitest-environment jsdom
  */
@@ -11,9 +10,6 @@ import {
   columnIndexToLetter,
   buildBindingKey,
   buildMetricKey,
-  detectCircularReferences,
-  calculateColumnSum,
-  identifySectionRanges,
 } from './report-builder-formulas';
 
 describe('Report Builder Formulas', () => {

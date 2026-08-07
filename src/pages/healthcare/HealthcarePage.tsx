@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -62,7 +61,7 @@ const columns: Column[] = [
 
 export function HealthcarePage() {
   const { entries } = useGLStore();
-  const { qualityMetrics, savingsData, programs } = useHealthcareStore();
+  const { programs } = useHealthcareStore();
   const navigate = useNavigate();
 
   useEffect(() => {

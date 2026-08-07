@@ -1252,18 +1252,6 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
     title: 'Data Flow',
     sections: [{ title: 'What is this page?', content: 'Visualize data pipelines.' }],
   },
-  '/data/data-summary': {
-    title: 'Data Summary',
-    sections: [{ title: 'What is this page?', content: 'Overview of imported data.' }],
-  },
-  '/data/import-history': {
-    title: 'Import History',
-    sections: [{ title: 'What is this page?', content: 'Past data import runs.' }],
-  },
-  '/data/migration-wizard': {
-    title: 'Data Migration Wizard',
-    sections: [{ title: 'What is this page?', content: 'Migrate data from another system.' }],
-  },
   '/data/reconciliation': {
     title: 'Data Reconciliation',
     sections: [{ title: 'What is this page?', content: 'Reconcile data between sources.' }],
