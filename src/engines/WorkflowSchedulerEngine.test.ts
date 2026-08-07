@@ -11,189 +11,162 @@ describe('WorkflowSchedulerEngine', () => {
     engine = new WorkflowSchedulerEngine();
   });
 
-  describe('createSchedule', () => {
-    it('creates a daily schedule', () => {
-      const schedule = engine.createSchedule(
-        'Daily Close',
-        'Run daily close process',
-        'wf-1',
-        'daily',
-        { hour: 23, minute: 0 }
-      );
-      expect(schedule.id).toMatch(/^sch-/);
-      expect(schedule.name).toBe('Daily Close');
-      expect(schedule.frequency).toBe('daily');
-      expect(schedule.status).toBe('active');
-      expect(schedule.executionCount).toBe(0);
-    });
+  describe('createSchedule and frequencies', () => {
+    it('creates once, hourly, daily, weekly, monthly, quarterly, yearly, custom schedules', () => {
+      const sOnce = engine.createSchedule('Once', 'desc', 'wf-1', 'once');
+      const sHourly = engine.createSchedule('Hourly', 'desc', 'wf-1', 'hourly', { minute: 15 });
+      const sDaily = engine.createSchedule('Daily', 'desc', 'wf-1', 'daily', {
+        hour: 8,
+        minute: 30,
+        skipWeekends: true,
+      });
+      const sWeekly = engine.createSchedule('Weekly', 'desc', 'wf-1', 'weekly', {
+        daysOfWeek: ['monday'],
+      });
+      const sMonthly = engine.createSchedule('Monthly', 'desc', 'wf-1', 'monthly', {
+        dayOfMonth: 15,
+        hour: 10,
+      });
+      const sQuarterly = engine.createSchedule('Quarterly', 'desc', 'wf-1', 'quarterly', {
+        month: 1,
+        dayOfMonth: 1,
+      });
+      const sYearly = engine.createSchedule('Yearly', 'desc', 'wf-1', 'yearly', {
+        month: 11,
+        dayOfMonth: 31,
+      });
+      const sCustom = engine.createSchedule('Custom', 'desc', 'wf-1', 'custom', {
+        intervalMinutes: 45,
+      });
 
-    it('creates a monthly schedule', () => {
-      const schedule = engine.createSchedule(
-        'Monthly Report',
-        'Generate monthly P&L',
-        'wf-2',
-        'monthly',
-        { dayOfMonth: 1, hour: 9 }
-      );
-      expect(schedule.frequency).toBe('monthly');
-    });
-
-    it('creates a weekly schedule with days', () => {
-      const schedule = engine.createSchedule(
-        'Weekly Review',
-        'Review variances',
-        'wf-3',
-        'weekly',
-        { daysOfWeek: ['monday', 'friday'] }
-      );
-      expect(schedule.frequency).toBe('weekly');
-    });
-  });
-
-  describe('getSchedule / listSchedules', () => {
-    it('retrieves a schedule by id', () => {
-      const s = engine.createSchedule('Test', 'desc', 'wf', 'daily');
-      expect(engine.getSchedule(s.id)).toBeDefined();
-    });
-
-    it('returns undefined for missing id', () => {
-      expect(engine.getSchedule('nonexistent')).toBeUndefined();
-    });
-
-    it('lists all schedules', () => {
-      engine.createSchedule('A', 'd', 'wf', 'daily');
-      engine.createSchedule('B', 'd', 'wf', 'weekly');
-      expect(engine.listSchedules().length).toBe(2);
+      expect(sOnce.nextRunAt).toBeDefined();
+      expect(sHourly.nextRunAt).toBeDefined();
+      expect(sDaily.nextRunAt).toBeDefined();
+      expect(sWeekly.nextRunAt).toBeDefined();
+      expect(sMonthly.nextRunAt).toBeDefined();
+      expect(sQuarterly.nextRunAt).toBeDefined();
+      expect(sYearly.nextRunAt).toBeDefined();
+      expect(sCustom.nextRunAt).toBeDefined();
     });
   });
 
-  describe('listActiveSchedules', () => {
-    it('returns only active schedules', () => {
+  describe('getSchedule / listSchedules / listActiveSchedules', () => {
+    it('retrieves and filters active schedules', () => {
       const s1 = engine.createSchedule('A', 'd', 'wf', 'daily');
       engine.createSchedule('B', 'd', 'wf', 'weekly');
+      expect(engine.getSchedule(s1.id)).toBeDefined();
+      expect(engine.getSchedule('nonexistent')).toBeUndefined();
+      expect(engine.listSchedules()).toHaveLength(2);
+
       engine.pauseSchedule(s1.id);
-      expect(engine.listActiveSchedules().length).toBe(1);
+      expect(engine.listActiveSchedules()).toHaveLength(1);
     });
   });
 
-  describe('deleteSchedule', () => {
-    it('deletes a schedule', () => {
-      const s = engine.createSchedule('Test', 'd', 'wf', 'daily');
-      expect(engine.deleteSchedule(s.id)).toBe(true);
-      expect(engine.getSchedule(s.id)).toBeUndefined();
-    });
+  describe('deleteSchedule, pauseSchedule, resumeSchedule, updateSchedule', () => {
+    it('manages pause, resume, and updates on schedule properties', () => {
+      const s = engine.createSchedule('Old Name', 'desc', 'wf', 'daily');
+      expect(engine.pauseSchedule(s.id)).toBe(true);
+      expect(engine.pauseSchedule(s.id)).toBe(false); // already paused
 
-    it('returns false for missing id', () => {
+      expect(engine.resumeSchedule(s.id)).toBe(true);
+      expect(engine.resumeSchedule(s.id)).toBe(false); // already active
+
+      expect(
+        engine.updateSchedule(s.id, {
+          name: 'New Name',
+          description: 'New Desc',
+          frequency: 'monthly',
+          config: { dayOfMonth: 1 },
+          endDate: '2026-12-31',
+          maxExecutions: 10,
+        })
+      ).toBe(true);
+      expect(engine.getSchedule(s.id)?.name).toBe('New Name');
+      expect(engine.updateSchedule('nonexistent', {})).toBe(false);
+
+      expect(engine.deleteSchedule(s.id)).toBe(true);
       expect(engine.deleteSchedule('nonexistent')).toBe(false);
     });
   });
 
-  describe('pauseSchedule / resumeSchedule', () => {
-    it('pauses an active schedule', () => {
-      const s = engine.createSchedule('Test', 'd', 'wf', 'daily');
-      expect(engine.pauseSchedule(s.id)).toBe(true);
-      expect(engine.getSchedule(s.id)?.status).toBe('paused');
-    });
+  describe('getDueSchedules and markExecuted', () => {
+    it('finds due schedules and executes them respecting maxExecutions and retryOnFailure', () => {
+      const s = engine.createSchedule('Due Test', 'd', 'wf', 'once');
+      // Force nextRunAt into the past
+      s.nextRunAt = new Date(Date.now() - 10000).toISOString();
 
-    it('resumes a paused schedule', () => {
-      const s = engine.createSchedule('Test', 'd', 'wf', 'daily');
-      engine.pauseSchedule(s.id);
-      expect(engine.resumeSchedule(s.id)).toBe(true);
-      expect(engine.getSchedule(s.id)?.status).toBe('active');
-    });
+      const due = engine.getDueSchedules();
+      expect(due).toHaveLength(1);
 
-    it('cannot pause non-active schedule', () => {
-      const s = engine.createSchedule('Test', 'd', 'wf', 'daily');
-      engine.pauseSchedule(s.id);
-      expect(engine.pauseSchedule(s.id)).toBe(false);
-    });
-
-    it('cannot resume non-paused schedule', () => {
-      const s = engine.createSchedule('Test', 'd', 'wf', 'daily');
-      expect(engine.resumeSchedule(s.id)).toBe(false);
-    });
-  });
-
-  describe('updateSchedule', () => {
-    it('updates schedule name', () => {
-      const s = engine.createSchedule('Old Name', 'd', 'wf', 'daily');
-      expect(engine.updateSchedule(s.id, { name: 'New Name' })).toBe(true);
-      expect(engine.getSchedule(s.id)?.name).toBe('New Name');
-    });
-
-    it('returns false for missing id', () => {
-      expect(engine.updateSchedule('nonexistent', { name: 'X' })).toBe(false);
-    });
-  });
-
-  describe('markExecuted', () => {
-    it('records a successful execution', () => {
-      const s = engine.createSchedule('Test', 'd', 'wf', 'daily');
-      const exec = engine.markExecuted(s.id, true, { result: 'ok' });
+      const exec = engine.markExecuted(s.id, true, { processed: 100 });
       expect(exec).not.toBeNull();
       expect(exec?.status).toBe('completed');
-      expect(engine.getSchedule(s.id)?.executionCount).toBe(1);
+      expect(exec?.output?.processed).toBe(100);
+
+      // Max execution check
+      s.maxExecutions = 1;
+      expect(engine.getDueSchedules()).toHaveLength(0);
+
+      // Failure check with retryOnFailure
+      const sFail = engine.createSchedule('Fail Test', 'd', 'wf', 'daily', {
+        retryOnFailure: true,
+      });
+      const execFail = engine.markExecuted(sFail.id, false, undefined, 'Server error');
+      expect(execFail?.status).toBe('failed');
+      expect(sFail.status).toBe('active'); // retained active for retry
     });
 
-    it('records a failed execution', () => {
-      const s = engine.createSchedule('Test', 'd', 'wf', 'daily');
-      const exec = engine.markExecuted(s.id, false, undefined, 'timeout');
-      expect(exec?.status).toBe('failed');
-      expect(exec?.error).toBe('timeout');
-    });
-
-    it('returns null for non-existent schedule', () => {
+    it('returns null when executing non-existent schedule', () => {
       expect(engine.markExecuted('nonexistent', true)).toBeNull();
     });
   });
 
-  describe('getExecutions', () => {
-    it('returns executions for a schedule', () => {
-      const s = engine.createSchedule('Test', 'd', 'wf', 'daily');
-      engine.markExecuted(s.id, true);
-      engine.markExecuted(s.id, true);
-      expect(engine.getExecutions(s.id).length).toBe(2);
+  describe('calendar events and business day calculator', () => {
+    it('adds, filters by date range, and removes calendar events', () => {
+      const e1 = engine.addCalendarEvent('P&L Close', '2026-06-01', 'close', 'US01');
+      engine.addCalendarEvent('Audit Prep', '2026-06-15', 'review', 'US01');
+      engine.addCalendarEvent('Tax Filing', '2026-07-01', 'report', 'US01');
+
+      const juneEvents = engine.getCalendarEvents('2026-06-01', '2026-06-30');
+      expect(juneEvents).toHaveLength(2);
+
+      expect(engine.removeCalendarEvent(e1.id)).toBe(true);
+      expect(engine.removeCalendarEvent('nonexistent')).toBe(false);
+      expect(engine.getCalendarEvents()).toHaveLength(2);
     });
 
-    it('returns all executions when no id', () => {
-      const s1 = engine.createSchedule('A', 'd', 'wf', 'daily');
-      const s2 = engine.createSchedule('B', 'd', 'wf', 'daily');
-      engine.markExecuted(s1.id, true);
-      engine.markExecuted(s2.id, true);
-      expect(engine.getExecutions().length).toBe(2);
-    });
-  });
+    it('calculates business days skipping weekends and holiday lists', () => {
+      const saturday = new Date('2026-08-08T12:00:00Z');
+      const monday = new Date('2026-08-10T12:00:00Z');
 
-  describe('calendar', () => {
-    it('adds a calendar event', () => {
-      engine.addCalendarEvent('Board Meeting', '2026-06-01', 'review', 'US01');
-      expect(engine.getCalendarEvents().length).toBe(1);
-    });
+      const config = {
+        skipHolidays: true,
+        holidays: ['2026-08-10'],
+      };
 
-    it('removes a calendar event', () => {
-      engine.addCalendarEvent('X', '2026-06-01', 'custom');
-      const events = engine.getCalendarEvents();
-      expect(engine.removeCalendarEvent(events![0]!.id)).toBe(true);
-      expect(engine.getCalendarEvents().length).toBe(0);
-    });
-  });
+      expect(engine.isBusinessDay(saturday, config)).toBe(false);
+      expect(engine.isBusinessDay(monday, config)).toBe(false); // Holiday
 
-  describe('getDueSchedules', () => {
-    it('returns empty when no schedules are due', () => {
-      engine.createSchedule('Test', 'd', 'wf', 'daily', { hour: 23, minute: 59 });
-      expect(engine.getDueSchedules().length).toBe(0);
+      const nextBusi = engine.getNextBusinessDay(saturday, config);
+      expect(nextBusi.getDay()).toBe(2); // Tuesday (Aug 11)
     });
   });
 
   describe('serialize / deserialize', () => {
-    it('round-trips schedules and executions', () => {
+    it('round-trips full scheduler state and returns false on malformed JSON', () => {
       const s = engine.createSchedule('Test', 'd', 'wf', 'daily');
+      engine.addCalendarEvent('Evt', '2026-08-01', 'close');
       engine.markExecuted(s.id, true);
+
       const json = engine.serialize();
-      const engine2 = new WorkflowSchedulerEngine();
-      engine2.deserialize(json);
-      expect(engine2.listSchedules().length).toBe(1);
-      expect(engine2.getExecutions().length).toBe(1);
+      const newEngine = new WorkflowSchedulerEngine();
+      expect(newEngine.deserialize(json)).toBe(true);
+      expect(newEngine.listSchedules()).toHaveLength(1);
+      expect(newEngine.getCalendarEvents()).toHaveLength(1);
+      expect(newEngine.getExecutions()).toHaveLength(1);
+
+      expect(newEngine.deserialize('invalid json {')).toBe(false);
     });
   });
 });

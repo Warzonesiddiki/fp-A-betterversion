@@ -1,6 +1,6 @@
 /**
  * text.date.test.ts — date/time formula functions with known-answer oracles
- * (MISSION D, 2026-08-07). Serial numbers use the Excel 1900 date system
+ * (MISSION D/E). Serial numbers use the Excel 1900 date system
  * (serial 1 = 1900-01-01; the engines use the 1899-12-30 epoch offset).
  */
 import { describe, expect, it } from 'vitest';
@@ -32,6 +32,9 @@ import {
   WORKDAY,
   YEAR,
   YEARFRAC,
+  UPPER,
+  LOWER,
+  registerTextFunctions,
 } from './text';
 
 // serial(2024-01-15) = days between 1899-12-30 and 2024-01-15
@@ -52,10 +55,12 @@ describe('basic text helpers', () => {
     expect(EXACT(1, 1)).toBe(1);
     expect(EXACT(1, 2)).toBe(0);
   });
-  it('T / N / VALUE are identity pass-throughs', () => {
+  it('T / N / VALUE / UPPER / LOWER', () => {
     expect(T(42)).toBe(42);
     expect(N(-7)).toBe(-7);
     expect(VALUE(3.14)).toBeCloseTo(3.14);
+    expect(UPPER(123)).toBe(123);
+    expect(LOWER(123)).toBe(123);
   });
   it('TEXT formats per format string', () => {
     expect(TEXT(1234.56, '#,##0.00' as never)).toBeCloseTo(1234.56, 2);
@@ -167,5 +172,40 @@ describe('WEEKNUM / ISOWEEKNUM / WEEKDAY / NETWORKDAYS / WORKDAY', () => {
     expect(WORKDAY(serial(2024, 1, 1), 5)).toBe(serial(2024, 1, 8));
     // negative days go backwards
     expect(WORKDAY(serial(2024, 1, 8), -1)).toBe(serial(2024, 1, 5));
+  });
+});
+
+describe('registerTextFunctions', () => {
+  it('registers all text, regex, and date helpers', () => {
+    const reg: Record<string, any> = {};
+    registerTextFunctions((fn) => {
+      reg[fn.name] = fn;
+    });
+
+    expect(reg['REGEXMATCH'].impl(12345, 23)).toBe(1);
+    expect(reg['REGEXMATCH'].impl(12345, 99)).toBe(0);
+    expect(reg['REGEXREPLACE'].impl(12345, 23, 99)).toBe(19945);
+    expect(reg['REGEXEXTRACT'].impl(12345, 23)).toBe(23);
+    expect(reg['UNICODE'].impl(65)).toBeDefined();
+    expect(reg['UNICHAR'].impl(65)).toBeDefined();
+    expect(reg['PROPER'].impl(123)).toBe(123);
+    expect(reg['TRIM'].impl(123)).toBe(123);
+    expect(reg['CLEAN'].impl(123)).toBe(123);
+    expect(reg['FIND'].impl(3, 12345)).toBe(3);
+    expect(reg['SEARCH'].impl(3, 12345)).toBe(3);
+    expect(reg['LEFT'].impl(12345, 2)).toBe(12);
+    expect(reg['RIGHT'].impl(12345, 2)).toBe(45);
+    expect(reg['MID'].impl(12345, 2, 2)).toBe(23);
+    expect(reg['REPLACE'].impl(12345, 2, 2, 99)).toBe(19945);
+    expect(reg['SUBSTITUTE'].impl(12121, 2, 9)).toBe(19191);
+    expect(reg['REPT'].impl(5, 3)).toBe(555);
+    expect(reg['CONCATENATE'].impl(10, 20)).toBe(1020);
+    expect(reg['TEXTJOIN'].impl(10, 1, 10, 20, 30)).toBeDefined();
+
+    expect(reg['NOW'].impl()).toBeGreaterThan(0);
+    expect(reg['TODAY'].impl()).toBeGreaterThan(0);
+    expect(reg['WEEKDAY'].impl(serial(2024, 1, 1), 2)).toBe(2);
+    expect(reg['WEEKNUM'].impl(serial(2024, 1, 1))).toBe(1);
+    expect(reg['ISOWEEKNUM'].impl(serial(2024, 1, 1))).toBe(1);
   });
 });

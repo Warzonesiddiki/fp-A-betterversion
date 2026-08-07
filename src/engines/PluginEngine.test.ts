@@ -15,10 +15,10 @@ function makeManifest(overrides: Partial<PluginManifest> = {}): PluginManifest {
     license: 'MIT',
     type: 'formula',
     entry: './test-plugin',
-    permissions: ['read-data'],
+    permissions: ['read-data', 'write-data'],
     dependencies: [],
     conflicts: [],
-    tags: [],
+    tags: ['finance', 'tax'],
     ...overrides,
   };
 }
@@ -172,10 +172,14 @@ describe('PluginEngine', () => {
     });
   });
 
-  describe('plugin API — formula registration', () => {
-    it('registers formula function via plugin API', async () => {
+  describe('plugin API — formula, UI, reports, dashboards, workflows, and storage', () => {
+    it('registers and unregisters formula functions, report templates, dashboards and rules', async () => {
       const instance = await engine.install(makeManifest(), pluginModule);
       const plugin = instance.plugin as unknown as TestPlugin;
+
+      plugin.api.ui.showNotification('Hello Plugin', 'info');
+      plugin.api.ui.registerMenuItem('file', { label: 'Custom Item', action: () => {} });
+
       plugin.api.formula.registerFunction('CUSTOM_FUNC', {
         description: 'Test function',
         category: 'custom',
@@ -183,39 +187,65 @@ describe('PluginEngine', () => {
         returnType: 'number',
         execute: () => 42,
       });
-      const funcs = engine.getRegisteredFormulaFunctions();
-      expect(funcs.has('CUSTOM_FUNC')).toBe(true);
-    });
+      expect(engine.getRegisteredFormulaFunctions().has('CUSTOM_FUNC')).toBe(true);
+      expect(plugin.api.formula.listFunctions().length).toBe(1);
 
-    it('unregisters formula function', async () => {
-      const instance = await engine.install(makeManifest(), pluginModule);
-      const plugin = instance.plugin as unknown as TestPlugin;
-      plugin.api.formula.registerFunction('TEMP_FUNC', {
-        description: '',
-        category: 'custom',
-        parameters: [],
-        returnType: 'number',
-        execute: () => 0,
+      plugin.api.formula.unregisterFunction('CUSTOM_FUNC');
+      expect(engine.getRegisteredFormulaFunctions().has('CUSTOM_FUNC')).toBe(false);
+
+      plugin.api.reports.registerTemplate({ id: 'tmpl-1', name: 'Custom Report', sections: [] });
+      plugin.api.reports.unregisterTemplate('tmpl-1');
+
+      plugin.api.dashboards.registerWidget({
+        id: 'widget-1',
+        name: 'Custom Widget',
+        type: 'chart',
       });
-      plugin.api.formula.unregisterFunction('TEMP_FUNC');
-      expect(engine.getRegisteredFormulaFunctions().has('TEMP_FUNC')).toBe(false);
-    });
-  });
+      plugin.api.dashboards.unregisterWidget('widget-1');
 
-  describe('plugin API — storage', () => {
-    it('stores and retrieves data', async () => {
+      plugin.api.workflows.registerRule({
+        id: 'rule-1',
+        name: 'Approval Rule',
+        trigger: 'close',
+        action: 'notify',
+      });
+      plugin.api.workflows.unregisterRule('rule-1');
+
+      plugin.api.export.registerFormat({
+        id: 'custom-fmt',
+        name: 'Custom Export',
+        extension: 'cx',
+      });
+      plugin.api.import.registerConnector({
+        id: 'custom-conn',
+        name: 'Custom DB',
+        connect: async () => true,
+      });
+
+      plugin.api.log.info('Info message');
+      plugin.api.log.warn('Warn message');
+      plugin.api.log.error('Error message');
+
+      const cells = await plugin.api.data.readCells();
+      const model = await plugin.api.data.readModel();
+      expect(cells).toEqual([]);
+      expect(model).toEqual({});
+    });
+
+    it('stores, retrieves, deletes, and clears data', async () => {
       const instance = await engine.install(makeManifest(), pluginModule);
       const plugin = instance.plugin as unknown as TestPlugin;
+
       await plugin.api.storage.set('key1', { value: 42 });
       const result = await plugin.api.storage.get('key1');
       expect(result).toEqual({ value: 42 });
-    });
 
-    it('returns null for missing key', async () => {
-      const instance = await engine.install(makeManifest(), pluginModule);
-      const plugin = instance.plugin as unknown as TestPlugin;
-      const result = await plugin.api.storage.get('nonexistent');
-      expect(result).toBeNull();
+      await plugin.api.storage.delete('key1');
+      expect(await plugin.api.storage.get('key1')).toBeNull();
+
+      await plugin.api.storage.set('k2', 'val');
+      await plugin.api.storage.clear();
+      expect(await plugin.api.storage.get('k2')).toBeNull();
     });
   });
 

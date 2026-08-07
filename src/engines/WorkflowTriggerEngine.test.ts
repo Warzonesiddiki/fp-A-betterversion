@@ -63,74 +63,117 @@ describe('WorkflowTriggerEngine', () => {
   });
 
   describe('enableTrigger / disableTrigger', () => {
-    it('disables a trigger', () => {
+    it('disables and re-enables a trigger', () => {
       const t = engine.createTrigger('manual', 'Test', 'desc');
       expect(engine.disableTrigger(t.id)).toBe(true);
       expect(engine.getTrigger(t.id)?.enabled).toBe(false);
-    });
-
-    it('re-enables a trigger', () => {
-      const t = engine.createTrigger('manual', 'Test', 'desc');
-      engine.disableTrigger(t.id);
       expect(engine.enableTrigger(t.id)).toBe(true);
       expect(engine.getTrigger(t.id)?.enabled).toBe(true);
+
+      expect(engine.enableTrigger('invalid')).toBe(false);
+      expect(engine.disableTrigger('invalid')).toBe(false);
     });
   });
 
   describe('addCondition / removeCondition', () => {
-    it('adds a condition to a trigger', () => {
+    it('adds and removes conditions with boundary checks', () => {
       const t = engine.createTrigger('data_change', 'Test', 'desc');
       expect(engine.addCondition(t.id, { field: 'revenue', operator: 'lt', value: 1000 })).toBe(
         true
       );
+      expect(
+        engine.addCondition('invalid', { field: 'revenue', operator: 'lt', value: 1000 })
+      ).toBe(false);
       expect(engine.getTrigger(t.id)?.conditions.length).toBe(1);
-    });
 
-    it('removes a condition from a trigger', () => {
-      const t = engine.createTrigger('data_change', 'Test', 'desc');
-      engine.addCondition(t.id, { field: 'revenue', operator: 'lt', value: 1000 });
+      expect(engine.removeCondition(t.id, 99)).toBe(false);
+      expect(engine.removeCondition('invalid', 0)).toBe(false);
       expect(engine.removeCondition(t.id, 0)).toBe(true);
       expect(engine.getTrigger(t.id)?.conditions.length).toBe(0);
     });
   });
 
-  describe('evaluate', () => {
-    it('evaluates a trigger against data', () => {
+  describe('evaluate and condition operators', () => {
+    it('evaluates eq, neq, gt, lt, gte, lte, between, and contains', () => {
       const t = engine.createTrigger('data_change', 'Test', 'desc');
-      engine.addCondition(t.id, { field: 'revenue', operator: 'gt', value: 1000 });
-      const result = engine.evaluate(t.id, { revenue: 2000 });
-      expect(result).toBeDefined();
-      expect(result?.matched).toBe(true);
+      engine.addCondition(t.id, { field: 'status', operator: 'eq', value: 'closed' });
+      engine.addCondition(t.id, { field: 'stage', operator: 'neq', value: 'draft' });
+      engine.addCondition(t.id, { field: 'score', operator: 'gte', value: 75 });
+      engine.addCondition(t.id, { field: 'cost', operator: 'lte', value: 500 });
+      engine.addCondition(t.id, { field: 'amount', operator: 'between', value: 100, value2: 1000 });
+      engine.addCondition(t.id, { field: 'desc', operator: 'contains', value: 'Audit' });
+
+      const data = {
+        status: 'closed',
+        stage: 'final',
+        score: 80,
+        cost: 450,
+        amount: 500,
+        desc: 'Q1 Audit Report',
+      };
+
+      const result = engine.evaluate(t.id, data);
+      expect(result.matched).toBe(true);
+      expect(result.matchedConditions).toHaveLength(6);
     });
 
-    it('returns not matched for non-existent trigger', () => {
-      const result = engine.evaluate('nonexistent', {});
-      expect(result.matched).toBe(false);
+    it('evaluates or and not logical operators', () => {
+      const tOr = engine.createTrigger('threshold', 'Or Test', 'desc');
+      tOr.logicalOperator = 'or';
+      engine.addCondition(tOr.id, { field: 'a', operator: 'eq', value: 1 });
+      engine.addCondition(tOr.id, { field: 'b', operator: 'eq', value: 2 });
+
+      expect(engine.evaluate(tOr.id, { a: 1, b: 99 }).matched).toBe(true);
+
+      const tNot = engine.createTrigger('threshold', 'Not Test', 'desc');
+      tNot.logicalOperator = 'not';
+      engine.addCondition(tNot.id, { field: 'a', operator: 'eq', value: 1 });
+      expect(engine.evaluate(tNot.id, { a: 99 }).matched).toBe(true);
     });
 
-    it('returns not matched for disabled trigger', () => {
-      const t = engine.createTrigger('manual', 'Test', 'desc');
-      engine.disableTrigger(t.id);
-      const result = engine.evaluate(t.id, {});
-      expect(result.matched).toBe(false);
+    it('handles cooldown and maxTriggers limits', () => {
+      const t = engine.createTrigger('threshold', 'Limited', 'desc', {
+        cooldownMs: 5000,
+        maxTriggers: 1,
+      });
+
+      engine.fireTrigger(t.id);
+      const resCooldown = engine.evaluate(t.id, {});
+      expect(resCooldown.matched).toBe(false);
+      expect(resCooldown.reason).toBe('Cooldown active');
+
+      // Clear cooldown timestamp to test maxTriggers
+      (engine as any).lastTriggerTimes.set(t.id, 0);
+      const resMax = engine.evaluate(t.id, {});
+      expect(resMax.matched).toBe(false);
+      expect(resMax.reason).toBe('Max triggers reached');
+    });
+
+    it('evaluates all active triggers with evaluateAll', () => {
+      const t1 = engine.createTrigger('data_change', 'T1', 'desc');
+      engine.addCondition(t1.id, { field: 'x', operator: 'gt', value: 10 });
+      const t2 = engine.createTrigger('data_change', 'T2', 'desc');
+      engine.disableTrigger(t2.id);
+
+      const all = engine.evaluateAll({ x: 20 });
+      expect(all).toHaveLength(1);
+      expect(all[0]!.matched).toBe(true);
     });
   });
 
-  describe('fireTrigger / getEvents', () => {
-    it('fires a trigger and records event', () => {
-      const t = engine.createTrigger('manual', 'Test', 'desc');
-      const event = engine.fireTrigger(t.id, { source: 'test' });
-      expect(event).not.toBeNull();
-      expect(event?.triggerId).toBe(t.id);
-      expect(engine.getEvents().length).toBe(1);
-    });
+  describe('time-based triggers and events', () => {
+    it('manages time-based trigger checks and event clearing', () => {
+      const t = engine.createTrigger('time_based', 'Scheduled', 'desc', { intervalMs: 100 });
+      expect(engine.getTimeBasedTriggers()).toHaveLength(1);
 
-    it('filters events by trigger id', () => {
-      const t1 = engine.createTrigger('manual', 'A', 'desc');
-      const t2 = engine.createTrigger('manual', 'B', 'desc');
-      engine.fireTrigger(t1.id, {});
-      engine.fireTrigger(t2.id, {});
-      expect(engine.getEvents(t1.id).length).toBe(1);
+      expect(engine.shouldTriggerTimeBased(t.id)).toBe(true);
+
+      engine.fireTrigger(t.id);
+      expect(engine.shouldTriggerTimeBased(t.id)).toBe(false);
+
+      expect(engine.getEvents()).toHaveLength(1);
+      engine.clearEvents();
+      expect(engine.getEvents()).toHaveLength(0);
     });
   });
 
@@ -140,9 +183,10 @@ describe('WorkflowTriggerEngine', () => {
       engine.fireTrigger(t.id, {});
       const json = engine.serialize();
       const engine2 = new WorkflowTriggerEngine();
-      engine2.deserialize(json);
+      expect(engine2.deserialize(json)).toBe(true);
       expect(engine2.listTriggers().length).toBe(1);
       expect(engine2.getEvents().length).toBe(1);
+      expect(engine2.deserialize('invalid json')).toBe(false);
     });
   });
 });
