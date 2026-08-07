@@ -146,6 +146,7 @@ import ApprovalQueuePage from '@/pages/collaboration/ApprovalQueuePage';
 import CollaborationPage from '@/pages/collaboration/CollaborationPage';
 import ConsolidationDashboard from '@/pages/consolidation/ConsolidationDashboard';
 import OwnershipTreePage from '@/pages/consolidation/OwnershipTreePage';
+import { useEntityStore } from '@/store/entityStore';
 
 // ---------------------------------------------------------------------------
 // Helper
@@ -310,7 +311,21 @@ describe('Page Smoke Tests — 5 Uncovered Pages', () => {
       expect(getByText(/Ownership Structure/i)).toBeInTheDocument();
     });
 
-    it('shows the entity hierarchy', () => {
+    it('shows the entity hierarchy from the real entityStore', () => {
+      // WIRED (C-3): the tree renders entityStore entities — seed one.
+      useEntityStore.setState({
+        entities: [
+          {
+            id: 'ent-1',
+            name: 'Global Corp',
+            code: 'GLB001',
+            currency: 'USD',
+            country: 'USA',
+            isParent: true,
+            parentId: null,
+          },
+        ],
+      });
       const { getByText } = renderPage(
         OwnershipTreePage,
         '/consolidation/ownership-tree',

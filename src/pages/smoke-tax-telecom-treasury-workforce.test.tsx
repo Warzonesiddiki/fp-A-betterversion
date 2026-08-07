@@ -132,6 +132,7 @@ import VarianceDashboardPage from '@/pages/variance/VarianceDashboardPage';
 import CompModelingPage from '@/pages/workforce/CompModelingPage';
 import HeadcountPlanPage from '@/pages/workforce/HeadcountPlanPage';
 import PayrollForecastPage from '@/pages/workforce/PayrollForecastPage';
+import { useWorkforceStore } from '@/store/workforceStore';
 
 // ---------------------------------------------------------------------------
 // Helper
@@ -302,6 +303,11 @@ describe('Workforce pages smoke tests', () => {
       expect(container).toBeTruthy();
     });
     it('displays the page heading', () => {
+      // WIRED (C-3): the page renders from the real workforceStore — seed one
+      // department so the full page (h1) renders instead of the empty state.
+      useWorkforceStore.setState({
+        departments: [{ id: 'd1', name: 'Engineering', budget: 100000, managerId: 'm1' }],
+      });
       renderPage(PayrollForecastPage, '/workforce/payroll');
       expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/Payroll Forecast/i);
     });
