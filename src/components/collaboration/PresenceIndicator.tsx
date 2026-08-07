@@ -151,20 +151,6 @@ export function PresenceCount({
 }
 
 /**
- * Cell-level lock indicator. Shows when another user is editing a specific cell.
- */
-export function CellLockIndicator({
-  cellId: _cellId,
-  className: _className,
-}: {
-  cellId: string;
-  className?: string;
-}) {
-  // We need the raw hook here for cell-level granularity
-  return null; // Placeholder — implemented in usePresence hook integration
-}
-
-/**
  * Cell overlay that shows another user's avatar and a colored border
  * when they are editing a cell.
  */
