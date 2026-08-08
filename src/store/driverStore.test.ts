@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useDriverStore, resetEngine, loadDriverTemplate, DRIVER_TEMPLATES } from './driverStore';
+import { masterStorage } from '@/utils/masterStorage';
 
 // Mock rbacEnforcer to just call the function
 vi.mock('@/utils/rbacEnforcer', () => ({
@@ -54,6 +55,66 @@ describe('driverStore', () => {
 
     // Should clear selection
     expect(useDriverStore.getState().selectedDriverId).toBeNull();
+  });
+
+  it('keeps the selection when removing a driver that is not selected', () => {
+    const store = useDriverStore.getState();
+    const d1 = store.addDriver({
+      name: 'Selected Driver',
+      category: 'revenue',
+      unit: 'absolute',
+      baseValue: 100,
+      currentValue: 100,
+    });
+    const d2 = store.addDriver({
+      name: 'Other Driver',
+      category: 'cost',
+      unit: 'absolute',
+      baseValue: 50,
+      currentValue: 50,
+    });
+
+    store.selectDriver(d1.id);
+    expect(useDriverStore.getState().selectedDriverId).toBe(d1.id);
+
+    // Removing the non-selected driver leaves the selection intact
+    const removed = store.removeDriver(d2.id);
+    expect(removed).toBe(true);
+    expect(useDriverStore.getState().selectedDriverId).toBe(d1.id);
+    expect(
+      useDriverStore
+        .getState()
+        .engine.listDrivers()
+        .map((d) => d.id)
+    ).toEqual([d1.id]);
+
+    // Removing an unknown id is a no-op that reports false
+    expect(store.removeDriver('missing-id')).toBe(false);
+  });
+
+  it('selectDriver accepts null to clear the selection', () => {
+    const store = useDriverStore.getState();
+    store.selectDriver('anything');
+    expect(useDriverStore.getState().selectedDriverId).toBe('anything');
+    store.selectDriver(null);
+    expect(useDriverStore.getState().selectedDriverId).toBeNull();
+  });
+
+  it('persists engine changes through the storage adapter', async () => {
+    useDriverStore.getState().addDriver({
+      name: 'Persisted Driver',
+      category: 'revenue',
+      unit: 'absolute',
+      baseValue: 25,
+      currentValue: 25,
+    });
+    await new Promise((r) => setTimeout(r, 0));
+    // every store mutation flows through persist partialize -> storage.setItem
+    expect(masterStorage.setItem).toHaveBeenCalled();
+    const serialized = (masterStorage.setItem as ReturnType<typeof vi.fn>).mock.lastCall?.[1] as {
+      state?: { engine?: unknown };
+    };
+    expect(serialized?.state).toBeDefined();
   });
 
   it('updates a driver', () => {

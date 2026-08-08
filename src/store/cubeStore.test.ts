@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { useCubeStore, getEngine, resetEngine } from './cubeStore';
+import { useCubeStore, getEngine, resetEngine, cubeSelectors } from './cubeStore';
 
 describe('cubeStore', () => {
   beforeEach(() => {
@@ -555,6 +555,83 @@ describe('cubeStore', () => {
       store.undo();
       expect(store.canUndo()).toBe(false);
       expect(store.canRedo()).toBe(true);
+    });
+
+    it('caps the undo stack at MAX_UNDO_DEPTH by dropping the oldest snapshot', () => {
+      const store = useCubeStore.getState();
+      // Exceed the undo depth (100) — the oldest snapshot must be shifted out
+      const coords = {
+        Account: 'Account:1000',
+        Entity: 'Entity:ent1',
+        Time: 'Time:2026-Q1-M01',
+        Scenario: 'Scenario:Actual',
+        Currency: 'Currency:USD',
+      };
+      for (let i = 0; i < 105; i++) {
+        store.writeCell('GL_Actuals', coords, 'debit', 100 + i, 'input');
+      }
+      // Undo works all the way back through the retained depth
+      let undoCount = 0;
+      while (store.canUndo()) {
+        store.undo();
+        undoCount++;
+      }
+      // At least MAX_UNDO_DEPTH undos succeeded, and the stack never grew unbounded
+      expect(undoCount).toBeLessThanOrEqual(100);
+      expect(undoCount).toBe(100);
+    });
+  });
+
+  describe('memoized selectors', () => {
+    beforeEach(() => {
+      useCubeStore.setState({ cellCount: 0, historyCount: 0, snapshots: [] });
+      useCubeStore.getState().resetUndoRedo();
+      useCubeStore.getState().initialize();
+      useCubeStore.setState({ cellCount: 0, historyCount: 0, snapshots: [] });
+    });
+
+    it('exposes engine, initialization, and counter selectors', () => {
+      useCubeStore.setState({
+        isInitialized: true,
+        cellCount: 42,
+        historyCount: 7,
+        snapshots: [{ id: 's1' }, { id: 's2' }] as never,
+      });
+      expect(cubeSelectors.engine(useCubeStore.getState())).toBe(useCubeStore.getState().engine);
+      expect(cubeSelectors.isInitialized(useCubeStore.getState())).toBe(true);
+      expect(cubeSelectors.cellCount(useCubeStore.getState())).toBe(42);
+      expect(cubeSelectors.historyCount(useCubeStore.getState())).toBe(7);
+      expect(cubeSelectors.snapshots(useCubeStore.getState())).toHaveLength(2);
+    });
+
+    it('derives snapshotCount, hasData, canUndo and canRedo', () => {
+      const state = useCubeStore.getState();
+      expect(cubeSelectors.snapshotCount(state)).toBe(0);
+      expect(cubeSelectors.hasData(state)).toBe(false);
+      expect(cubeSelectors.canUndo(state)).toBe(false);
+      expect(cubeSelectors.canRedo(state)).toBe(false);
+
+      useCubeStore.setState({ cellCount: 5, snapshots: [{ id: 's1' }] as never });
+      const s2 = useCubeStore.getState();
+      expect(cubeSelectors.hasData(s2)).toBe(true);
+      expect(cubeSelectors.snapshotCount(s2)).toBe(1);
+
+      // After a write, canUndo becomes true
+      const coords = {
+        Account: 'Account:1000',
+        Entity: 'Entity:ent1',
+        Time: 'Time:2026-Q1-M01',
+        Scenario: 'Scenario:Actual',
+        Currency: 'Currency:USD',
+      };
+      s2.writeCell('GL_Actuals', coords, 'debit', 100, 'input');
+      const s3 = useCubeStore.getState();
+      expect(cubeSelectors.canUndo(s3)).toBe(true);
+      expect(cubeSelectors.canRedo(s3)).toBe(false);
+      s3.undo();
+      const s4 = useCubeStore.getState();
+      expect(cubeSelectors.canUndo(s4)).toBe(false);
+      expect(cubeSelectors.canRedo(s4)).toBe(true);
     });
   });
 

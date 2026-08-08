@@ -66,4 +66,42 @@ describe('energyMetrics — known answers (GAP-1)', () => {
     expect(m.ebitda).toBe(-200_000);
     expect(m.operatingMarginPct).toBe(-20);
   });
+
+  it('guards zero production (lifting cost per MWh falls back to 0)', () => {
+    const m = computeEnergyMetrics({
+      revenue: 1_000_000,
+      cogs: 600_000,
+      operatingExpenses: 150_000,
+      productionMWh: 0,
+      scope1Emissions: 1_000,
+      scope2Emissions: 500,
+      scope3Emissions: 1_500,
+      renewableMWh: 0,
+      liftingCost: 200_000,
+      totalCapacityMWh: 0,
+    });
+    expect(m.liftingCostPerMWh).toBe(0);
+    expect(m.renewableMixPct).toBe(0);
+    expect(m.capacityUtilizationPct).toBe(0);
+    // emissions totals still compute
+    expect(m.totalEmissions).toBe(3_000);
+    expect(m.ebitda).toBe(250_000);
+  });
+
+  it('guards zero production while capacity exists', () => {
+    const m = computeEnergyMetrics({
+      revenue: 1_000_000,
+      cogs: 600_000,
+      operatingExpenses: 150_000,
+      productionMWh: 0,
+      scope1Emissions: 0,
+      scope2Emissions: 0,
+      scope3Emissions: 0,
+      renewableMWh: 0,
+      liftingCost: 200_000,
+      totalCapacityMWh: 100_000,
+    });
+    expect(m.liftingCostPerMWh).toBe(0);
+    expect(m.capacityUtilizationPct).toBe(0);
+  });
 });
