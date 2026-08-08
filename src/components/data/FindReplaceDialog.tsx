@@ -131,7 +131,7 @@ export function FindReplaceDialog({ gridApi, isOpen, onClose }: FindReplaceDialo
       } else {
         const idx = matchCase
           ? oldValue.indexOf(findText)
-          : oldValue.toLowerCase().indexOf(findText);
+          : oldValue.toLowerCase().indexOf(findText.toLowerCase());
         if (idx >= 0) {
           newValue =
             oldValue.substring(0, idx) + replaceText + oldValue.substring(idx + findText.length);

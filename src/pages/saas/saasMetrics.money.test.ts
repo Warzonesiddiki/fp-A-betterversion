@@ -73,4 +73,42 @@ describe('saasMetrics — known answers (GAP-1)', () => {
     expect(m.ebitda).toBe(-30_000);
     expect(m.operatingMarginPct).toBe(-25);
   });
+
+  it('guards zero customer count (ARPU falls back to 0, no NaN)', () => {
+    const m = computeSaaSMetrics({
+      mrr: 100_000,
+      newARR: 240_000,
+      cogs: 200_000,
+      operatingExpenses: 600_000,
+      salesMarketingExpense: 200_000,
+      customerCount: 0,
+      lostCustomers: 0,
+      expansionARR: 120_000,
+      contractionARR: 30_000,
+      cac: 500,
+    });
+    expect(m.arpu).toBe(0);
+    expect(m.churnRatePct).toBe(0);
+    // revenue side remains intact
+    expect(m.arr).toBe(1_200_000);
+    expect(m.grossMarginPct).toBe(83.33);
+  });
+
+  it('guards zero customer count with non-zero churn inputs', () => {
+    const m = computeSaaSMetrics({
+      mrr: 50_000,
+      newARR: 100_000,
+      cogs: 100_000,
+      operatingExpenses: 300_000,
+      salesMarketingExpense: 100_000,
+      customerCount: 0,
+      lostCustomers: 5,
+      expansionARR: 10_000,
+      contractionARR: 5_000,
+      cac: 1_000,
+    });
+    expect(m.arpu).toBe(0);
+    expect(m.churnRatePct).toBe(0);
+    expect(m.ltvToCacRatio).toBe(0);
+  });
 });

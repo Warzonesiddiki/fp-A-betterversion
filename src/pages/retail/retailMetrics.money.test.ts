@@ -65,4 +65,55 @@ describe('retailMetrics — known answers (GAP-1)', () => {
     expect(m.sameStoreSalesGrowthPct).toBe(-16.67);
     expect(m.operatingMarginPct).toBe(-20);
   });
+
+  it('guards zero square footage and zero inventory (no division by zero)', () => {
+    const m = computeRetailMetrics({
+      revenue: 500_000,
+      cogs: 300_000,
+      operatingExpenses: 100_000,
+      priorYearRevenue: 450_000,
+      totalSqFt: 0,
+      averageInventory: 0,
+      storeCount: 1,
+      shrinkageAmount: 10_000,
+      promoCost: 20_000,
+    });
+    expect(m.salesPerSqFt).toBe(0);
+    expect(m.inventoryTurnover).toBe(0);
+    expect(m.gmroi).toBe(0);
+    // other metrics still compute from revenue
+    expect(m.grossProfit).toBe(200_000);
+    expect(m.ebitda).toBe(100_000);
+  });
+
+  it('guards only one of the two zero denominators independently', () => {
+    const noSqFt = computeRetailMetrics({
+      revenue: 1_000_000,
+      cogs: 600_000,
+      operatingExpenses: 200_000,
+      priorYearRevenue: 900_000,
+      totalSqFt: 0,
+      averageInventory: 250_000,
+      storeCount: 2,
+      shrinkageAmount: 5_000,
+      promoCost: 10_000,
+    });
+    expect(noSqFt.salesPerSqFt).toBe(0);
+    expect(noSqFt.inventoryTurnover).toBe(2.4);
+
+    const noInventory = computeRetailMetrics({
+      revenue: 1_000_000,
+      cogs: 600_000,
+      operatingExpenses: 200_000,
+      priorYearRevenue: 900_000,
+      totalSqFt: 25_000,
+      averageInventory: 0,
+      storeCount: 2,
+      shrinkageAmount: 5_000,
+      promoCost: 10_000,
+    });
+    expect(noInventory.salesPerSqFt).toBe(40);
+    expect(noInventory.inventoryTurnover).toBe(0);
+    expect(noInventory.gmroi).toBe(0);
+  });
 });

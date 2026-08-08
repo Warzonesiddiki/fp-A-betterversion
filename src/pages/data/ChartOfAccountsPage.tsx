@@ -97,7 +97,9 @@ export default function ChartOfAccountsPage() {
   );
 
   const filteredAccounts = useMemo(() => {
-    let list = accounts;
+    // Never mutate the store's (frozen, immer-managed) array in place — copy
+    // before filtering/sorting so re-renders cannot throw on a frozen entry.
+    let list = [...accounts];
     if (filterType !== 'all') list = list.filter((a) => a.type === filterType);
     if (search) {
       const q = search.toLowerCase();
