@@ -445,7 +445,10 @@ export const useAutoUpdate = (sheetId: string | null) => {
     // compatibility with the previous useRef-based implementation).
     for (const [ref, cell] of Object.entries(cells)) {
       if (cell.formula) {
-        cell.dependencies = parseCellRefs(cell.formula);
+        // Only set dependencies if not frozen (prevent crash with immer middleware)
+        if (!Object.isFrozen(cell)) {
+          cell.dependencies = parseCellRefs(cell.formula);
+        }
         const value = evalFormula(cell.formula, getCellValue);
         newValues.set(ref, value);
       }

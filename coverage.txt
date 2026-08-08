@@ -1,0 +1,329 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.7 [39m[90m/home/user/fp-A-betterversion[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+ [32m✓[39m src/engines/SafeMathParser.test.ts [2m([22m[2m381 tests[22m[2m)[22m[32m 171[2mms[22m[39m
+ [32m✓[39m src/engines/ConsolidationEngine.test.ts [2m([22m[2m75 tests[22m[2m)[22m[32m 101[2mms[22m[39m
+ [32m✓[39m src/engines/ReportBuilderEngine.test.ts [2m([22m[2m236 tests[22m[2m)[22m[32m 226[2mms[22m[39m
+ [32m✓[39m src/engines/ValidationEngine.test.ts [2m([22m[2m59 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+ [32m✓[39m src/engines/ConsolidationEngine.integration.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 91[2mms[22m[39m
+ [32m✓[39m src/engines/VersionControlEngine.test.ts [2m([22m[2m70 tests[22m[2m)[22m[32m 96[2mms[22m[39m
+ [32m✓[39m src/engines/SOXComplianceEngine.test.ts [2m([22m[2m75 tests[22m[2m)[22m[32m 110[2mms[22m[39m
+ [32m✓[39m src/engines/CubeEnginePersistence.test.ts [2m([22m[2m65 tests[22m[2m)[22m[33m 364[2mms[22m[39m
+ [32m✓[39m src/engines/MonteCarloEngine.test.ts [2m([22m[2m67 tests[22m[2m)[22m[33m 835[2mms[22m[39m
+ [32m✓[39m src/engines/FormulaEngine.test.ts [2m([22m[2m121 tests[22m[2m)[22m[32m 89[2mms[22m[39m
+ [32m✓[39m src/engines/AllocationEngine.test.ts [2m([22m[2m63 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+ [32m✓[39m src/services/IncidentResponse.test.ts [2m([22m[2m67 tests[22m[2m)[22m[32m 87[2mms[22m[39m
+ [32m✓[39m src/services/ThreatModel.test.ts [2m([22m[2m75 tests[22m[2m)[22m[32m 85[2mms[22m[39m
+ [32m✓[39m src/engines/AnomalyDetectionEngine.test.ts [2m([22m[2m68 tests[22m[2m)[22m[32m 83[2mms[22m[39m
+ [32m✓[39m src/engines/SafeMathParser.oracle.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 139[2mms[22m[39m
+ [32m✓[39m src/services/SecretsVault.test.ts [2m([22m[2m75 tests[22m[2m)[22m[33m 14625[2mms[22m[39m
+     [33m[2m✓[22m[39m QUORUM_NOT_REACHED: returns error when fewer than 2 shards ack the write [33m 320[2mms[22m[39m
+     [33m[2m✓[22m[39m onRotationProgress returns a disposer that stops delivery [33m 308[2mms[22m[39m
+     [33m[2m✓[22m[39m error messages never leak secret material [33m 302[2mms[22m[39m
+     [33m[2m✓[22m[39m set() emits an audit event that excludes the plaintext value [33m 330[2mms[22m[39m
+     [33m[2m✓[22m[39m round-trips null [33m 318[2mms[22m[39m
+     [33m[2m✓[22m[39m reads from shard-1 when shard-0 is missing [33m 326[2mms[22m[39m
+     [33m[2m✓[22m[39m returns DECRYPT_FAILED when ALL shards have wrong IV [33m 368[2mms[22m[39m
+     [33m[2m✓[22m[39m emits a TRACE_GENERATED audit event for every operation [33m 321[2mms[22m[39m
+     [33m[2m✓[22m[39m rotation preserves all stored values [33m 345[2mms[22m[39m
+     [33m[2m✓[22m[39m 100 sequential set/get round-trips complete within 5s [33m 1302[2mms[22m[39m
+ [32m✓[39m src/store/migration/storeMigrators.test.ts [2m([22m[2m58 tests[22m[2m)[22m[32m 64[2mms[22m[39m
+ [32m✓[39m src/engines/DriverCascadeEngine.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 73[2mms[22m[39m
+ [32m✓[39m src/engines/TemplateLibrary.test.ts [2m([22m[2m75 tests[22m[2m)[22m[32m 216[2mms[22m[39m
+ [32m✓[39m src/engines/ThreeStatementEngine.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+ [32m✓[39m src/services/SecretRotation-AuditLogger.test.ts [2m([22m[2m63 tests[22m[2m)[22m[32m 120[2mms[22m[39m
+ [32m✓[39m src/engines/CubeEngine.test.ts [2m([22m[2m42 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+ [32m✓[39m src/services/RateLimiter-CircuitBreaker.test.ts [2m([22m[2m52 tests[22m[2m)[22m[32m 121[2mms[22m[39m
+ [32m✓[39m src/utils/validation.test.ts [2m([22m[2m102 tests[22m[2m)[22m[32m 98[2mms[22m[39m
+ [32m✓[39m src/plugins/PluginSandbox.test.ts [2m([22m[2m88 tests[22m[2m)[22m[33m 994[2mms[22m[39m
+ [32m✓[39m src/services/PIIRedactor.test.ts [2m([22m[2m70 tests[22m[2m)[22m[33m 1000[2mms[22m[39m
+ [32m✓[39m src/services/SecurityHeaders-CsrfProtection.test.ts [2m([22m[2m61 tests[22m[2m)[22m[33m 570[2mms[22m[39m
+ [32m✓[39m src/store/cubeStore.test.ts [2m([22m[2m39 tests[22m[2m)[22m[32m 79[2mms[22m[39m
+ [32m✓[39m src/utils/security.test.ts [2m([22m[2m102 tests[22m[2m)[22m[32m 101[2mms[22m[39m
+ [32m✓[39m src/components/ui/DataGrid.test.tsx [2m([22m[2m52 tests[22m[2m)[22m[33m 3226[2mms[22m[39m
+       [33m[2m✓[22m[39m renders without crashing [33m 451[2mms[22m[39m
+       [33m[2m✓[22m[39m handles large row count [33m 1313[2mms[22m[39m
+ [32m✓[39m src/store/glStore.test.ts [2m([22m[2m36 tests[22m[2m)[22m[32m 133[2mms[22m[39m
+ [32m✓[39m src/engines/FormulaEngine.integration.test.ts [2m([22m[2m63 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m src/engines/ProfessionalExportEngine.test.ts [2m([22m[2m27 tests[22m[2m)[22m[33m 520[2mms[22m[39m
+       [33m[2m✓[22m[39m should fall back to the bundled jsPDF when no global is injected [33m 322[2mms[22m[39m
+ [32m✓[39m src/services/api-integration/DynamicsConnector.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 78[2mms[22m[39m
+ [32m✓[39m src/utils/offlineCache.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+ [32m✓[39m src/__tests__/a11y/q5-11-19-persona-aliases.test.tsx [2m([22m[2m365 tests[22m[2m)[22m[32m 263[2mms[22m[39m
+ [32m✓[39m src/engines/PeriodCloseStateMachine.test.ts [2m([22m[2m42 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m src/engines/EncryptionEngine.test.ts [2m([22m[2m70 tests[22m[2m)[22m[33m 14009[2mms[22m[39m
+       [33m[2m✓[22m[39m should encrypt and decrypt a string round-trip [33m 491[2mms[22m[39m
+       [33m[2m✓[22m[39m should encrypt empty string [33m 320[2mms[22m[39m
+       [33m[2m✓[22m[39m should encrypt unicode characters [33m 343[2mms[22m[39m
+       [33m[2m✓[22m[39m should encrypt large text [33m 504[2mms[22m[39m
+       [33m[2m✓[22m[39m should fail decryption with wrong password [33m 539[2mms[22m[39m
+       [33m[2m✓[22m[39m should fail decryption with tampered ciphertext [33m 557[2mms[22m[39m
+       [33m[2m✓[22m[39m should fail decryption with tampered IV [33m 495[2mms[22m[39m
+       [33m[2m✓[22m[39m should encrypt and decrypt a string field [33m 460[2mms[22m[39m
+       [33m[2m✓[22m[39m should encrypt and decrypt an object [33m 624[2mms[22m[39m
+       [33m[2m✓[22m[39m should encrypt and decrypt an array [33m 628[2mms[22m[39m
+       [33m[2m✓[22m[39m should encrypt and decrypt null [33m 422[2mms[22m[39m
+       [33m[2m✓[22m[39m should encrypt and decrypt a number [33m 428[2mms[22m[39m
+       [33m[2m✓[22m[39m should fail with wrong password [33m 549[2mms[22m[39m
+       [33m[2m✓[22m[39m should derive deterministic key from same salt [33m 340[2mms[22m[39m
+       [33m[2m✓[22m[39m should derive different keys from different salts [33m 473[2mms[22m[39m
+       [33m[2m✓[22m[39m should use 256-bit key length [33m 688[2mms[22m[39m
+       [33m[2m✓[22m[39m should use PBKDF2 with SHA-256 for key derivation [33m 517[2mms[22m[39m
+       [33m[2m✓[22m[39m should handle very long password [33m 543[2mms[22m[39m
+       [33m[2m✓[22m[39m should handle special characters in password [33m 396[2mms[22m[39m
+       [33m[2m✓[22m[39m should handle JSON with nested objects in encryptField [33m 562[2mms[22m[39m
+     [33m[2m✓[22m[39m round-trips plaintext with aadContext [33m 341[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects decryption when wrong aadContext is supplied to decryptField [33m 312[2mms[22m[39m
+ [32m✓[39m src/services/TauriSecureStorage.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 167[2mms[22m[39m
+ [32m✓[39m src/services/api-integration/GhostShaValidator.test.ts [2m([22m[2m54 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+ [32m✓[39m src/engines/temporal/TemporalDate.test.ts [2m([22m[2m43 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+ [32m✓[39m src/engines/MasterDataEngine.test.ts [2m([22m[2m47 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32m✓[39m src/components/ui/SpreadsheetGrid.test.tsx [2m([22m[2m40 tests[22m[2m)[22m[33m 1302[2mms[22m[39m
+       [33m[2m✓[22m[39m grid container is focusable [33m 315[2mms[22m[39m
+ [32m✓[39m src/engines/WhatIfSandboxEngine.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m src/components/ui/OnboardingWizard.integration.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 4877[2mms[22m[39m
+     [33m[2m✓[22m[39m int-01: complete onboarding flow with imported data → onComplete + setEntries called [33m 1550[2mms[22m[39m
+     [33m[2m✓[22m[39m int-02: skip import flow → onComplete called + setEntries NOT called [33m 592[2mms[22m[39m
+     [33m[2m✓[22m[39m int-03: stores updated correctly on confirm — updateOrganization + updatePreferences [33m 847[2mms[22m[39m
+     [33m[2m✓[22m[39m int-04: GL entries generated from imported data with date conversion [33m 454[2mms[22m[39m
+     [33m[2m✓[22m[39m int-05: empty importedData → setEntries NOT called [33m 508[2mms[22m[39m
+     [33m[2m✓[22m[39m int-06: date format conversion — fiscalYearStart="January" → "2024-01-01" [33m 330[2mms[22m[39m
+     [33m[2m✓[22m[39m int-08: onComplete called exactly once per wizard completion (idempotent guard) [33m 483[2mms[22m[39m
+ [32m✓[39m src/engines/report-builder-formulas.ext.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 58[2mms[22m[39m
+ [32m✓[39m src/engines/FormulaFunctionRegistry.test.ts [2m([22m[2m84 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+ [32m✓[39m src/pages/smoke.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[33m 1248[2mms[22m[39m
+       [33m[2m✓[22m[39m displays the settings heading [33m 592[2mms[22m[39m
+ [32m✓[39m src/store/migration/cubeMigration.test.ts [2m([22m[2m51 tests[22m[2m)[22m[32m 215[2mms[22m[39m
+ [32m✓[39m src/pages/smoke2.test.tsx [2m([22m[2m21 tests[22m[2m)[22m[33m 1028[2mms[22m[39m
+ [32m✓[39m src/pages/audit/AuditTrailPage.test.tsx [2m([22m[2m19 tests[22m[2m)[22m[33m 1712[2mms[22m[39m
+     [33m[2m✓[22m[39m renders audit entries from the page audit engine [33m 698[2mms[22m[39m
+ [32m✓[39m src/services/api-integration/SageConnector.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32m✓[39m src/engines/ScenarioEngine.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 89[2mms[22m[39m
+ [32m✓[39m src/components/ui/OnboardingWizard.a11y.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 2556[2mms[22m[39m
+     [33m[2m✓[22m[39m a11y-02: focus management — step container receives focus on step change [33m 659[2mms[22m[39m
+     [33m[2m✓[22m[39m a11y-03: heading hierarchy — h1 on welcome/done, h2 on setup/import/review [33m 411[2mms[22m[39m
+     [33m[2m✓[22m[39m a11y-05: decorative SVG checkmark has aria-hidden=true on done step [33m 345[2mms[22m[39m
+     [33m[2m✓[22m[39m a11y-06: decorative dots on done step next-steps have aria-hidden=true [33m 355[2mms[22m[39m
+ [32m✓[39m src/engines/MultiBookEngine.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 82[2mms[22m[39m
+ [32m✓[39m src/engines/FXEngine.test.ts [2m([22m[2m46 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/store/budgetStore.test.ts [2m([22m[2m27 tests[22m[2m)[22m[33m 1073[2mms[22m[39m
+     [33m[2m✓[22m[39m should change budget status to InReview after submission [33m 1003[2mms[22m[39m
+ [32m✓[39m src/store/auditTrailGdprEvents.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 89[2mms[22m[39m
+ [32m✓[39m src/utils/backupRestore.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 528[2mms[22m[39m
+ [32m✓[39m src/engines/DataClassificationEngine.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+ [32m✓[39m src/engines/FormulaEngine.performance.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 743[2mms[22m[39m
+       [33m[2m✓[22m[39m should not leak memory with repeated evaluations [33m 368[2mms[22m[39m
+ [32m✓[39m src/components/ui/OnboardingWizard.formValidation.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 4533[2mms[22m[39m
+     [33m[2m✓[22m[39m renders company name input with label "Company Name" and required indicator [33m 661[2mms[22m[39m
+     [33m[2m✓[22m[39m updates company name state on user input [33m 618[2mms[22m[39m
+     [33m[2m✓[22m[39m accepts long company names up to 100 characters [33m 1792[2mms[22m[39m
+ [32m✓[39m src/services/nim.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 180[2mms[22m[39m
+ [32m✓[39m src/pages/cash/__tests__/debtDataEntry.integration.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 5461[2mms[22m[39m
+     [33m[2m✓[22m[39m shows a reachable empty state with an Add Debt action [33m 540[2mms[22m[39m
+     [33m[2m✓[22m[39m persists an instrument entered in the UI into the store [33m 1281[2mms[22m[39m
+     [33m[2m✓[22m[39m surfaces the UI-entered instrument on a fresh render with an engine-computed schedule [33m 1010[2mms[22m[39m
+     [33m[2m✓[22m[39m updates an existing instrument through the edit form [33m 555[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects invalid input without writing to the store [33m 837[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects a duplicate instrument id rather than silently overwriting [33m 846[2mms[22m[39m
+ [32m✓[39m src/pages/smoke3.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 755[2mms[22m[39m
+ [32m✓[39m src/engines/TaxEngine.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m src/engines/formula-functions/financial.oracle.test.ts [2m([22m[2m37 tests[22m[2m)[22m[32m 72[2mms[22m[39m
+ [32m✓[39m src/engines/FinanceCopilotEngine.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 55[2mms[22m[39m
+ [32m✓[39m src/services/api-integration/SalesforceConnector.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/components/dashboard/DashboardTemplate.test.tsx [2m([22m[2m35 tests[22m[2m)[22m[33m 2406[2mms[22m[39m
+         [33m[2m✓[22m[39m renders a tablist with an accessible label [33m 349[2mms[22m[39m
+ [32m✓[39m src/engines/__tests__/financialStatementOracles.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+ [32m✓[39m src/__tests__/a11y/wcag-aa.test.tsx [2m([22m[2m22 tests[22m[2m)[22m[33m 3730[2mms[22m[39m
+       [33m[2m✓[22m[39m LoginPage has no detectable a11y violations [33m 783[2mms[22m[39m
+       [33m[2m✓[22m[39m SettingsPage has no detectable a11y violations [33m 533[2mms[22m[39m
+       [33m[2m✓[22m[39m ContextMenu has no detectable a11y violations [33m 388[2mms[22m[39m
+       [33m[2m✓[22m[39m AppLayout focusable elements are not obscured by sticky/fixed author content [33m 375[2mms[22m[39m
+ [32m✓[39m src/services/SecureStorage.test.ts [2m([22m[2m33 tests[22m[2m)[22m[33m 8194[2mms[22m[39m
+     [33m[2m✓[22m[39m round-trips a string value [33m 346[2mms[22m[39m
+     [33m[2m✓[22m[39m isolates namespaces (same key, different namespace = different value) [33m 845[2mms[22m[39m
+     [33m[2m✓[22m[39m overwrites a previous value on second setItem [33m 794[2mms[22m[39m
+     [33m[2m✓[22m[39m returns null and removes expired items on read [33m 312[2mms[22m[39m
+     [33m[2m✓[22m[39m respects custom ttlMs on setItem [33m 458[2mms[22m[39m
+     [33m[2m✓[22m[39m clearNamespace removes only that namespace [33m 988[2mms[22m[39m
+     [33m[2m✓[22m[39m clearAll wipes every namespace under the prefix [33m 514[2mms[22m[39m
+     [33m[2m✓[22m[39m counts non-expired items in a namespace [33m 505[2mms[22m[39m
+     [33m[2m✓[22m[39m skips and removes expired items when counting [33m 409[2mms[22m[39m
+     [33m[2m✓[22m[39m re-encrypts items under the new password [33m 1399[2mms[22m[39m
+ [32m✓[39m src/engines/CubeSecurityEngine.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m src/pages/smoke-energy-esg.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[33m 1050[2mms[22m[39m
+       [33m[2m✓[22m[39m shows the import data button in empty state [33m 347[2mms[22m[39m
+ [32m✓[39m src/pages/smoke-five-pages.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 859[2mms[22m[39m
+       [33m[2m✓[22m[39m shows the import data button in empty state [33m 339[2mms[22m[39m
+ [32m✓[39m src/services/api-integration/XeroConnector.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/workers/worker-pool.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 81[2mms[22m[39m
+ [32m✓[39m src/services/api-integration/BaseConnector.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32m✓[39m src/engines/MigrationEngine.test.ts [2m([22m[2m23 tests[22m[2m)[22m[33m 713[2mms[22m[39m
+       [33m[2m✓[22m[39m should auto-detect Planful format [33m 332[2mms[22m[39m
+ [32m✓[39m src/pages/smoke-sectors.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 487[2mms[22m[39m
+ [32m✓[39m src/store/dataStore.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 109[2mms[22m[39m
+ [32m✓[39m src/engines/LeaseEngine.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 174[2mms[22m[39m
+ [32m✓[39m src/engines/temporal/multiJurisdictionFiscal.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m src/components/ui/OnboardingWizard.i18n.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 3046[2mms[22m[39m
+     [33m[2m✓[22m[39m renders setup step with onboarding.setup.title key [33m 467[2mms[22m[39m
+ [32m✓[39m src/workers/worker-compute.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m src/components/ui/FormulaBar.test.tsx [2m([22m[2m38 tests[22m[2m)[22m[33m 2135[2mms[22m[39m
+       [33m[2m✓[22m[39m renders without crashing [33m 524[2mms[22m[39m
+ [32m✓[39m src/engines/temporal/temporalEdgeCasesV2.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/pages/smoke-all-pages.test.tsx [2m([22m[2m43 tests[22m[2m)[22m[33m 4683[2mms[22m[39m
+     [33m[2m✓[22m[39m renders TemplateGalleryPage without crashing [33m 431[2mms[22m[39m
+     [33m[2m✓[22m[39m renders MigrationPage without crashing [33m 936[2mms[22m[39m
+ [32m✓[39m src/engines/ConditionalFormattingEngine.ext.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m src/engines/ScenarioEngine.money.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+ [32m✓[39m src/store/periodCloseStore.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 192[2mms[22m[39m
+ [32m✓[39m src/store/glTrialBalanceStore.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 82[2mms[22m[39m
+ [32m✓[39m src/pages/lease/__tests__/leaseDataEntry.integration.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 4228[2mms[22m[39m
+     [33m[2m✓[22m[39m shows a reachable empty state with an Add Lease action [33m 570[2mms[22m[39m
+     [33m[2m✓[22m[39m persists a lease entered in the UI into the store [33m 858[2mms[22m[39m
+     [33m[2m✓[22m[39m surfaces the UI-entered lease on the dashboard with an engine-computed liability [33m 699[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the entered lease on the detail page after submit [33m 486[2mms[22m[39m
+     [33m[2m✓[22m[39m updates an existing lease through the edit form [33m 458[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects invalid input without writing to the store [33m 454[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects a duplicate lease id rather than silently overwriting [33m 547[2mms[22m[39m
+ [32m✓[39m src/engines/AdvancedPDFEngine.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+ [32m✓[39m src/plugins/PluginAPI.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m src/engines/formula-functions/math.ext.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m src/pages/smoke-uncovered-pages.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 1023[2mms[22m[39m
+       [33m[2m✓[22m[39m shows filter buttons [33m 552[2mms[22m[39m
+ [32m✓[39m src/engines/BankingEngine.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m src/pages/smoke-data-pages.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 436[2mms[22m[39m
+ [32m✓[39m src/store/glStore.cube.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 119[2mms[22m[39m
+ [32m✓[39m src/pages/smoke-sector-subpages.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 967[2mms[22m[39m
+       [33m[2m✓[22m[39m renders without crashing [33m 469[2mms[22m[39m
+ [32m✓[39m src/engines/RevRecEngine.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+ [32m✓[39m src/engines/WorkflowEngine.ext.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 121[2mms[22m[39m
+ [32m✓[39m src/store/auditTrailIntegrity.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 336[2mms[22m[39m
+ [32m✓[39m src/engines/AggregationDesigner.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m src/services/KeyManager.test.ts [2m([22m[2m28 tests[22m[2m)[22m[33m 4020[2mms[22m[39m
+     [33m[2m✓[22m[39m treats different salts as different keys [33m 478[2mms[22m[39m
+     [33m[2m✓[22m[39m treats different namespaces as separate cache buckets (PATCH 6: namespace is part of the cache key) [33m 400[2mms[22m[39m
+     [33m[2m✓[22m[39m evicts expired entries on the next getKey call (TTL=0) [33m 311[2mms[22m[39m
+     [33m[2m✓[22m[39m derives a new key and stores it under the new fingerprint [33m 434[2mms[22m[39m
+     [33m[2m✓[22m[39m emits a key.rotated audit event [33m 512[2mms[22m[39m
+     [33m[2m✓[22m[39m evicts all keys for a namespace and emits revoke events [33m 561[2mms[22m[39m
+     [33m[2m✓[22m[39m wipes the entire cache [33m 531[2mms[22m[39m
+ [32m✓[39m src/engines/ReportBookEngine.ext.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/utils/periodCloseReadiness.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32m✓[39m src/engines/LeaseEngine.money.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 193[2mms[22m[39m
+ [32m✓[39m src/pages/smoke-banking-bonds-credit-data.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 212[2mms[22m[39m
+ [32m✓[39m src/engines/WorkflowActionEngine.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32m✓[39m src/pages/smoke-retail-saas.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[33m 478[2mms[22m[39m
+ [32m✓[39m src/engines/RollingForecastEngine.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/components/dashboard/TrafficLightIndicator.test.tsx [2m([22m[2m27 tests[22m[2m)[22m[33m 408[2mms[22m[39m
+ [32m✓[39m src/engines/MDXEngine.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m src/pages/smoke-tax-telecom-treasury-workforce.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 992[2mms[22m[39m
+       [33m[2m✓[22m[39m displays the page heading [33m 402[2mms[22m[39m
+ [32m✓[39m src/engines/FinanceCopilotEngine.money.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 60[2mms[22m[39m
+ [32m✓[39m src/utils/localeFormatting.test.ts [2m([22m[2m46 tests[22m[2m)[22m[32m 69[2mms[22m[39m
+ [32m✓[39m src/pages/smoke-5-untested-pages.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 454[2mms[22m[39m
+ [32m✓[39m src/store/entityStore.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 79[2mms[22m[39m
+ [32m✓[39m src/utils/__tests__/validation.test.ts [2m([22m[2m47 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+[90mstdout[2m | src/engines/PluginEngine.test.ts[2m > [22m[2mPluginEngine[2m > [22m[2mplugin API — formula, UI, reports, dashboards, workflows, and storage[2m > [22m[2mregisters and unregisters formula functions, report templates, dashboards and rules
+[22m[39m[INFO] [PluginEngine] [Plugin:test-plugin] Info message
+
+ [32m✓[39m src/engines/PluginEngine.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+ [32m✓[39m src/components/reports/ReportBuilder.test.tsx [2m([22m[2m22 tests[22m[2m)[22m[33m 2102[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the save button [33m 469[2mms[22m[39m
+       [33m[2m✓[22m[39m clicking the toggle flips aria-pressed and enables high-contrast [33m 344[2mms[22m[39m
+ [32m✓[39m src/pages/smoke-reports-retail-saas-1.test.tsx [2m([22m[2m12 tests[22m[2m)[22m[33m 314[2mms[22m[39m
+ [32m✓[39m src/components/ui/OnboardingWizard.stepNavigation.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 1442[2mms[22m[39m
+     [33m[2m✓[22m[39m advances from welcome (step 0) to setup (step 1) on Start button click [33m 542[2mms[22m[39m
+     [33m[2m✓[22m[39m advances from review (step 3) to done (step 4) on Confirm button click [33m 317[2mms[22m[39m
+ [32m✓[39m src/sdk/FpaClient.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 242[2mms[22m[39m
+ [32m✓[39m src/engines/CellAuditTrailEngine.ext.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+ [32m✓[39m src/__tests__/a11y/q5-3-session-fixation.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 559[2mms[22m[39m
+ [32m✓[39m src/engines/ExcelImportEngine.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32m✓[39m src/engines/CubeMigrationEngine.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/engines/RetailEngine.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+ [32m✓[39m src/services/PresenceService.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32m✓[39m src/components/dashboard/KPICardEnhanced.test.tsx [2m([22m[2m34 tests[22m[2m)[22m[33m 675[2mms[22m[39m
+ [32m✓[39m src/utils/__tests__/masterStorage.security.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+ [32m✓[39m src/plugins/PluginRegistry.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 60[2mms[22m[39m
+ [32m✓[39m src/sdk/realtime/RealtimeChannel.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 68[2mms[22m[39m
+ [32m✓[39m src/engines/formula-functions/statistical.ext.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m src/services/api-integration/RestApiClient.test.ts [2m([22m[2m17 tests[22m[2m)[22m[33m 10283[2mms[22m[39m
+       [33m[2m✓[22m[39m should throw ApiError for network errors [33m 6446[2mms[22m[39m
+       [33m[2m✓[22m[39m should retry on 500 errors [33m 2802[2mms[22m[39m
+       [33m[2m✓[22m[39m should retry on 429 (rate limit) [33m 1002[2mms[22m[39m
+ [32m✓[39m src/engines/RealEstateEngine.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/engines/temporal/relativeTime.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/workers/consolidation.worker.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+ [32m✓[39m src/store/auditTrailStore.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 114[2mms[22m[39m
+ [32m✓[39m src/pages/forecasts/DriverPlanningPage.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[33m 1171[2mms[22m[39m
+ [32m✓[39m src/utils/__tests__/security.test.ts [2m([22m[2m50 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+ [32m✓[39m src/engines/AICopilotEngine.test.ts [2m([22m[2m39 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32m✓[39m src/engines/IntercompanyMatchingEngine.ext.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/components/dashboard/ActivityFeed.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[32m 249[2mms[22m[39m
+ [32m✓[39m src/engines/AuditLogEngine.ext.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/components/help/MergedHelpResolver.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/engines/ICMatchingEngine.money.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m src/components/reports/ReportGrid.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[33m 793[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the grid table with role [33m 411[2mms[22m[39m
+ [32m✓[39m src/store/rbacNegativeAuthorization.test.ts [2m([22m[2m35 tests[22m[2m)[22m[32m 54[2mms[22m[39m
+ [32m✓[39m src/services/api-integration/QuickBooksConnector.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32m✓[39m src/plugins/PluginManager.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+ [32m✓[39m src/engines/__tests__/threeStatementMoneyVerification.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32m✓[39m src/engines/CascadeCalculationEngine.money.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m src/components/dashboard/SankeyDiagram.test.tsx [2m([22m[2m23 tests[22m[2m)[22m[33m 542[2mms[22m[39m
+ [32m✓[39m src/engines/ImportEngine.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32m✓[39m src/pages/periods/PeriodClosePage.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 4977[2mms[22m[39m
+     [33m[2m✓[22m[39m renders the page with a fiscal-period grid and current period highlighted [33m 1032[2mms[22m[39m
+     [33m[2m✓[22m[39m empty state: no GL data blocks the close with an explicit reason [33m 682[2mms[22m[39m
+     [33m[2m✓[22m[39m balanced GL lets Admin start the close and the state persists [33m 867[2mms[22m[39m
+     [33m[2m✓[22m[39m unbalanced trial balance blocks the close with an explicit reason [33m 370[2mms[22m[39m
+     [33m[2m✓[22m[39m hard-close becomes blocked reactively when entries go out of balance [33m 592[2mms[22m[39m
+     [33m[2m✓[22m[39m audit trail panel lists events after a close [33m 449[2mms[22m[39m
+ [32m✓[39m src/components/ui/Heatmap.test.tsx [2m([22m[2m24 tests[22m[2m)[22m[33m 2465[2mms[22m[39m
+     [33m[2m✓[22m[39m should handle 1000+ data points without crashing [33m 1565[2mms[22m[39m
+ [32m✓[39m src/store/capexStore.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 86[2mms[22m[39m
+ [32m✓[39m src/utils/__tests__/dataPermissionFilter.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/components/dashboard/KPICard.test.tsx [2m([22m[2m27 tests[22m[2m)[22m[33m 690[2mms[22m[39m
+       [33m[2m✓[22m[39m calls onClick when card is clicked [33m 301[2mms[22m[39m
+ [32m✓[39m src/components/dashboard/HeatmapGrid.test.tsx [2m([22m[2m24 tests[22m[2m)[22m[33m 1175[2mms[22m[39m
+     [33m[2m✓[22m[39m renders without crashing [33m 693[2mms[22m[39m
+ [32m✓[39m src/engines/FinancialInstrumentsEngine.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 117[2mms[22m[39m
+ [32m✓[39m src/engines/UndoRedoEngine.ext.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m src/workers/batch-calc.worker.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m src/engines/BankingEngine.money.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m src/store/workforceStore.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/engines/CascadeCalculationEngine.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m src/sdk/types.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32m✓[39m src/engines/DataRetentionEngine.ext.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/utils/storageSerialization.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1094[2mms[22m[39m
+       [33m[2m✓[22m[39m writes and reads back a value larger than one chunk [33m 568[2mms[22m[39m
+       [33m[2m✓[22m[39m round-trips a chunked store through the real record shape [33m 422[2mms[22m[39m
+ [32m✓[39m src/utils/money.test.ts [2m([22m[2m30 tests[22m[2m)[22m[33m 2485[2mms[22m[39m
+     [33m[2m✓[22m[39m allocations always sum exactly to the original (zero penny drift) over 5000 random inputs [33m 2416[2mms[22m[39m
+ [32m✓[39m src/engines/AnomalyDetectionEngine.lovelace.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32m✓[39m src/engines/AuditEngine.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m src/store/rbacMatrixCompleteness.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 138[2mms[22m[39m
+ [32m✓[39m src/utils/rbacEnforcer.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+ [32m✓[39m src/utils/financialFormatting.test.ts [2m([22m[2m53 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m src/components/reports/ReportTemplateLibrary.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[33m 1910[2mms[22m[39m
+     [33m[2m✓[22m[39m renders clone button when onCloneReport is provided [33m 619[2mms[22m[39m
+[90mstdout[2m | src/utils/migration/legacyStorageMigration.test.ts[2m > [22m[2mlegacyStorageMigration[2m > [22m[2mperformLegacyToTauriMigration[2m > [22m[2mskips migration when not in desktop and force=false
+[22m[39m[INFO] [LegacyStorageMigration] Migration skipped: not running in Tauri desktop context
+
+[90mstdout[2m | src/utils/migration/legacyStorageMigration.test.ts[2m > [22m[2mlegacyStorageMigration[2m > [22m[2mperformLegacyToTauriMigration[2m > [22m[2mperforms migration when in desktop and legacy data exists
+[22m[39m[INFO] [LegacyStorageMigration] Legacy migration completed { migrated: [33m2[39m, errors: [33m0[39m, checksum: [32m'sha256sim-7f7cc7e6'[39m }
+
+[90mstdout[2m | src/utils/migration/legacyStorageMigration.test.ts[2m > [22m[2mlegacyStorageMigration[2m > [22m[2mperformLegacyToTauriMigration[2m > [22m[2mis idempotent — second call does not duplicate work if already migrated
+[22m[39m[INFO] [LegacyStorageMigration] Legacy migration completed { migrated: [33m2[39m, errors: [33m0[39m, checksum: [32m'sha256sim-7f7cc7e6'[39m }
+
+[90mstdout[2m | src/utils/migration/legacyStorageMigration.test.ts[2m > [22m[2mlegacyStorageMigration[2m > [22m[2mperformLegacyToTauriMigration[2m > [22m[2mis idempotent — second call does not duplicate work if already migrated
+[22m[39m[INFO] [LegacyStorageMigration] Legacy migration completed { migrated: [33m2[39m, errors: [33m0[39m, checksum: [32m'sha256sim-7f7cc7e6'[39m }
+
+[90mstdout[2m | src/utils/migration/legacyStorageMigration.test.ts[2m > [22m[2mlegacyStorageMigration[2m > [22m[2mperformLegacyToTauriMigration[2m > [22m[2mhandles partial failure gracefully
+[22m[39m[INFO] [LegacyStorageMigration] Legacy migration completed { migrated: [33m1[39m, errors: [33m1[39m, checksum: [32m'sha256sim-7f7cc7e6'[39m }
+
+[90mstdout[2m | src/utils/migration/legacyStorageMigration.test.ts[2m > [22m[2mlegacyStorageMigration[2m > [22m[2mperformLegacyToTauriMigration[2m > [22m[2mrecords migration metadata on success
+[22m[39m[INFO] [LegacyStorageMigration] Legacy migration completed { migrated: [33m15[39m, errors: [33m0[39m, checksum: [32m'sha256sim-47351a58'[39m }
+
+ [32m✓[39m src/utils/migration/legacyStorageMigration.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32m✓[39m src/engines/__tests__/moneyPropertyTests.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 90[2mms[22m[39m
+ [32m✓[39m src/components/auth/ProtectedRoute.test.tsx [2m([22m[2m30 tests[22m[2m)[22m[32m 183[2mms[22m[39m

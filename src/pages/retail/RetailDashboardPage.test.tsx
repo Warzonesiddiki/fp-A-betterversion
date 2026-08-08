@@ -1,76 +1,196 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
+import RetailDashboard from './RetailDashboard';
+import { useGLStore } from '@/store/glStore';
+import { ExportEngine } from '@/engines/ExportEngine';
+import userEvent from '@testing-library/user-event';
+import { type GLEntry } from '@/types';
 
-vi.mock('@/components/ui/KPIValue', () => ({
-  KPIValue: ({ label }: { label: string }) => <div data-testid="kpi-value">{label}</div>,
-}));
-
-vi.mock('@/components/ui/PeriodPicker', () => ({
-  PeriodPicker: () => <div data-testid="period-picker" />,
-}));
-
-vi.mock('@/components/ui/DataTable', () => ({
-  DataTable: () => <div data-testid="data-table" />,
-}));
-
-vi.mock('recharts', () => ({
-  AreaChart: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  Area: () => null,
-  BarChart: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  Bar: () => null,
-  Cell: () => null,
-  XAxis: () => null,
-  YAxis: () => null,
-  CartesianGrid: () => null,
-  Tooltip: () => null,
-  Legend: () => null,
-  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
-
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
+// Mock Recharts to render the text content of charts
+vi.mock('recharts', async () => {
+  const OriginalRecharts = await vi.importActual<typeof import('recharts')>('recharts');
   return {
-    Store: makeIcon(),
-    TrendingUp: makeIcon(),
-    DollarSign: makeIcon(),
-    Users: makeIcon(),
-    ShoppingCart: makeIcon(),
-    BarChart3: makeIcon(),
-    Download: makeIcon(),
-    RefreshCw: makeIcon(),
-    Eye: makeIcon(),
-    ArrowUpRight: makeIcon(),
-    ArrowDownRight: makeIcon(),
-    Minus: makeIcon(),
+    ...OriginalRecharts,
+    ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
+    BarChart: ({ children, data }: any) => (
+      <div data-testid="bar-chart">
+        {data?.map((d: any, i: number) => (
+          <div key={i} data-testid={`bar-data-${i}`}>
+            {JSON.stringify(d)}
+          </div>
+        ))}
+        {children}
+      </div>
+    ),
+    Bar: () => null,
+    XAxis: () => null,
+    YAxis: () => null,
+    CartesianGrid: () => null,
+    Tooltip: () => null,
+    Legend: () => null,
   };
 });
 
-import RetailDashboardPage from '@/pages/retail/RetailDashboardPage';
+vi.mock('@/engines/ExportEngine', () => ({
+  ExportEngine: {
+    exportToPDF: vi.fn().mockResolvedValue(true),
+  },
+}));
 
-describe('RetailDashboardPage smoke test', () => {
-  it('renders without crashing', () => {
-    const { container } = render(
-      <MemoryRouter>
-        <RetailDashboardPage />
-      </MemoryRouter>
-    );
-    expect(container).toBeTruthy();
+const mockEntries: GLEntry[] = [
+  // Store 1: S-01
+  {
+    id: '1',
+    date: '2023-01-15',
+    accountCode: '4000',
+    amount: 100000,
+    description: 'Rev',
+    entityId: 'S-01',
+    currency: 'USD',
+  },
+  {
+    id: '2',
+    date: '2023-01-15',
+    accountCode: '5000',
+    amount: 40000,
+    description: 'COGS',
+    entityId: 'S-01',
+    currency: 'USD',
+  },
+  {
+    id: '3',
+    date: '2023-01-15',
+    accountCode: '5100',
+    amount: 20000,
+    description: 'Labor',
+    entityId: 'S-01',
+    currency: 'USD',
+  },
+  {
+    id: '4',
+    date: '2023-01-15',
+    accountCode: '5200',
+    amount: 10000,
+    description: 'Occ',
+    entityId: 'S-01',
+    currency: 'USD',
+  },
+  // Store 2: S-02
+  {
+    id: '5',
+    date: '2023-02-15',
+    accountCode: '4000',
+    amount: 200000,
+    description: 'Rev',
+    entityId: 'S-02',
+    currency: 'USD',
+  },
+  {
+    id: '6',
+    date: '2023-02-15',
+    accountCode: '5000',
+    amount: 100000,
+    description: 'COGS',
+    entityId: 'S-02',
+    currency: 'USD',
+  },
+  {
+    id: '7',
+    date: '2023-02-15',
+    accountCode: '5100',
+    amount: 30000,
+    description: 'Labor',
+    entityId: 'S-02',
+    currency: 'USD',
+  },
+  {
+    id: '8',
+    date: '2023-02-15',
+    accountCode: '5200',
+    amount: 20000,
+    description: 'Occ',
+    entityId: 'S-02',
+    currency: 'USD',
+  },
+];
+
+describe('RetailDashboard (Data-Driven)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    useGLStore.setState({ entries: mockEntries });
   });
 
-  it('displays the retail dashboard heading', () => {
-    const { getByText } = render(
+  it('renders KPI values computed from GL entries', () => {
+    render(
       <MemoryRouter>
-        <RetailDashboardPage />
+        <RetailDashboard />
       </MemoryRouter>
     );
-    expect(getByText(/Retail Dashboard/i)).toBeInTheDocument();
+
+    // Total Revenue is $300,000
+    expect(screen.getByText(/\$300,000/)).toBeInTheDocument();
+
+    // Avg Rev per store = $150,000
+    expect(screen.getByText(/\$150,000/)).toBeInTheDocument();
+
+    // Avg Net Margin (80k / 300k = 26.7%)
+    expect(screen.getByText(/26\.7%/)).toBeInTheDocument();
+  });
+
+  it('renders data table rows correctly', () => {
+    render(
+      <MemoryRouter>
+        <RetailDashboard />
+      </MemoryRouter>
+    );
+
+    // Store 2 row should have $200,000 revenue
+    expect(screen.getByText('Store S-02')).toBeInTheDocument();
+    // 25% margin should be displayed
+    const rowsWithMargin = screen.getAllByText('25.0%');
+    expect(rowsWithMargin.length).toBeGreaterThan(0);
+  });
+
+  it('renders the PnL trend chart data', () => {
+    render(
+      <MemoryRouter>
+        <RetailDashboard />
+      </MemoryRouter>
+    );
+
+    // Look for chart output text: '2023-01' should have 100000 revenue
+    expect(screen.getByText(/"month":"2023-01".*"revenue":100000/)).toBeInTheDocument();
+    expect(screen.getByText(/"month":"2023-02".*"revenue":200000/)).toBeInTheDocument();
+  });
+
+  it('triggers PDF export with the computed store stats', async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <RetailDashboard />
+      </MemoryRouter>
+    );
+
+    const exportBtn = screen.getByRole('button', { name: /export/i });
+    await user.click(exportBtn);
+
+    expect(ExportEngine.exportToPDF).toHaveBeenCalledTimes(1);
+    const exportArgs = vi.mocked(ExportEngine.exportToPDF).mock.calls[0][0];
+
+    expect(exportArgs.headers).toEqual([
+      'Store',
+      'Revenue',
+      'COGS',
+      'Labor',
+      'Gross Profit',
+      'Net Profit',
+      'Margin %',
+    ]);
+    expect(exportArgs.rows).toHaveLength(2); // 2 stores
+    const firstRow = exportArgs.rows.find((r: any) => r[0] === 'Store S-01');
+    expect(firstRow).toBeDefined();
+    expect(firstRow).toEqual(['Store S-01', 100000, 40000, 20000, 60000, 30000, '30.0%']);
   });
 });
