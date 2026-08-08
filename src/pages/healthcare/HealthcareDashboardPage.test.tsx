@@ -1,94 +1,121 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
+import HealthcareDashboardPage from './HealthcareDashboardPage';
+import { useGLStore } from '@/store/glStore';
+import { type GLEntry } from '@/types';
 
-vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+vi.mock('@/components/ui/DataTable', () => ({
+  DataTable: ({ data }: any) => (
+    <div data-testid="data-table">
+      {data?.map((row: any, i: number) => (
+        <div key={i} data-testid={`table-row-${i}`}>
+          {JSON.stringify(row)}
+        </div>
+      ))}
+    </div>
+  ),
 }));
 
-vi.mock('@/hooks/usePeriods', () => ({
-  usePeriods: vi.fn(() => []),
-}));
-
-vi.mock('@/engines', () => ({
-  HealthcareEngine: {
-    calculatePatientRevenue: vi.fn(() => ({
-      netRevenue: 0,
-      grossCharges: 0,
-      contractuals: 0,
-      cashCollected: 0,
-      badDebt: 0,
-      denialRate: 0,
-      collectionRate: 0,
-      daysInAR: 0,
-    })),
-  },
-}));
-
-vi.mock('@/components/ui/PeriodPicker', () => ({
-  PeriodPicker: () => <div data-testid="period-picker" />,
-}));
-
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
+vi.mock('recharts', async () => {
+  const OriginalRecharts = await vi.importActual<typeof import('recharts')>('recharts');
   return {
-    Users: makeIcon(),
-    Activity: makeIcon(),
-    DollarSign: makeIcon(),
-    HeartPulse: makeIcon(),
-    TrendingUp: makeIcon(),
-    Stethoscope: makeIcon(),
-    Building2: makeIcon(),
-    Calendar: makeIcon(),
-    Download: makeIcon(),
-    Share2: makeIcon(),
-    MoreHorizontal: makeIcon(),
+    ...OriginalRecharts,
+    ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
+    AreaChart: ({ children, data }: any) => (
+      <div data-testid="area-chart">
+        {data?.map((d: any, i: number) => (
+          <div key={i} data-testid={`area-data-${i}`}>
+            {JSON.stringify(d)}
+          </div>
+        ))}
+        {children}
+      </div>
+    ),
+    Area: () => null,
+    XAxis: () => null,
+    YAxis: () => null,
+    CartesianGrid: () => null,
+    Tooltip: () => null,
+    Legend: () => null,
   };
 });
 
-vi.mock('recharts', () => ({
-  ResponsiveContainer: ({ children }: { children?: React.ReactNode }) => (
-    <div data-testid="responsive-container">{children}</div>
-  ),
-  AreaChart: () => <div data-testid="area-chart" />,
-  Area: () => <div />,
-  BarChart: () => <div data-testid="bar-chart" />,
-  Bar: () => <div />,
-  Cell: () => <div />,
-  XAxis: () => <div />,
-  YAxis: () => <div />,
-  CartesianGrid: () => <div />,
-  Tooltip: () => <div />,
-  Legend: () => <div />,
-}));
+const mockEntries: GLEntry[] = [
+  // Gross Charges for Cardiology (ends in '01')
+  {
+    id: '1',
+    date: '2023-01-15',
+    accountCode: '4001',
+    amount: 50000,
+    description: 'Rev',
+    currency: 'USD',
+  },
+  // Gross Charges for Neurology (ends in '02')
+  {
+    id: '4',
+    date: '2023-01-15',
+    accountCode: '4002',
+    amount: 30000,
+    description: 'Rev',
+    currency: 'USD',
+  },
+  // Contractuals
+  {
+    id: '2',
+    date: '2023-01-15',
+    accountCode: '4100',
+    amount: -10000,
+    description: 'Cont',
+    currency: 'USD',
+  },
+  // Bad Debt
+  {
+    id: '3',
+    date: '2023-01-15',
+    accountCode: '4200',
+    amount: 5000,
+    description: 'Debt',
+    currency: 'USD',
+  },
+];
 
-import HealthcareDashboardPage from '@/pages/healthcare/HealthcareDashboardPage';
-
-function renderPage() {
-  return render(
-    <MemoryRouter initialEntries={['/healthcare']}>
-      <HealthcareDashboardPage />
-    </MemoryRouter>
-  );
-}
-
-describe('HealthcareDashboardPage smoke test', () => {
+describe('HealthcareDashboardPage (Data-Driven)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useGLStore.setState({ entries: mockEntries });
   });
-  it('renders without crashing', () => {
-    const { container } = renderPage();
-    expect(container).toBeTruthy();
+
+  it('renders KPI values computed from GL entries', () => {
+    render(
+      <MemoryRouter>
+        <HealthcareDashboardPage />
+      </MemoryRouter>
+    );
+
+    // Gross Charges = $80,000
+    // Net Patient Revenue = 80k - 10k(contractuals) = $70,000
+    // Let's check Net Patient Revenue is rendered as compact
+    expect(screen.getByText(/\$70\.0K/)).toBeInTheDocument();
   });
-  it('displays expected empty state', () => {
-    renderPage();
-    expect(screen.getByText(/No Healthcare Data/i)).toBeTruthy();
+
+  it('renders data table rows with department performance', () => {
+    render(
+      <MemoryRouter>
+        <HealthcareDashboardPage />
+      </MemoryRouter>
+    );
+
+    // Cardiology revenue = $50,000
+    // patients = 50000 / 2500 = 20
+    expect(screen.getByText(/Cardiology/)).toBeInTheDocument();
+    // In DataTable, currency is formatted. Let's see how it formats.
+    // revenue: deptRevenue, and format is:
+    // If it's compact or normal? We'll just check for '$50' or '50'
+    expect(screen.getByText(/50000/)).toBeInTheDocument();
+
+    // Check if Neurology is rendered
+    expect(screen.getByTestId('data-table')).toHaveTextContent(/Neurology/);
   });
 });
