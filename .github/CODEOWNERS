@@ -1,0 +1,24 @@
+# FinPlan Pro — CODEOWNERS
+# Added 2026-08-09 (completion audit, governance loop). Every change gets at
+# least one review from a responsible owner before merge.
+
+# Default owners for everything in the repo.
+* @Warzonesiddiki
+
+# Security-sensitive surfaces — require the repo owner's explicit review.
+/security/ @Warzonesiddiki
+server/src/middleware/ @Warzonesiddiki
+server/src/config/ @Warzonesiddiki
+src/services/auth/ @Warzonesiddiki
+.github/workflows/ @Warzonesiddiki
+
+# Financial-correctness surfaces (money math, engines, close lifecycle).
+src/utils/money* @Warzonesiddiki
+src/utils/decimalUtils.ts @Warzonesiddiki
+src/engines/ @Warzonesiddiki
+server/src/routes/gl.ts @Warzonesiddiki
+server/src/routes/periods.ts @Warzonesiddiki
+
+# Compliance evidence and deferrals register.
+docs/security-deferrals.md @Warzonesiddiki
+compliance-evidence.json @Warzonesiddiki

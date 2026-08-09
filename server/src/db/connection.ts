@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import path from 'node:path';
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,16 +14,51 @@ if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
+/**
+ * Decide whether the in-memory mock DB fallback is permitted.
+ *
+ * SECURITY/DATA-INTEGRITY FIX (2026-08-09 completion audit):
+ * Previously the mock fallback was taken silently in EVERY environment
+ * whenever loading better-sqlite3 threw — including production, where it
+ * meant all "persisted" data lived in a process-local Map and was silently
+ * lost on every restart. The fallback is now:
+ *   - ALLOWED in development/test (keeps sandbox/CI runs working);
+ *   - FORBIDDEN in production unless FINPLAN_ALLOW_MOCK_DB=true is set
+ *     explicitly (ephemeral storage knowingly accepted).
+ */
+export function mockDbFallbackAllowed(
+  nodeEnv: string | undefined,
+  allowFlag: string | undefined
+): boolean {
+  if (allowFlag === 'true' || allowFlag === '1') return true;
+  return (nodeEnv ?? 'development') !== 'production';
+}
+
 let db: any;
 try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const Database = require('better-sqlite3');
+  // This package is ESM ("type": "module"); a bare `require()` call here is a
+  // ReferenceError at runtime and was being silently swallowed by the catch
+  // below, forcing the mock DB even when native bindings were installed.
+  // createRequire restores CJS loading for the native addon correctly.
+  const requireModule = createRequire(import.meta.url);
+  const Database = requireModule('better-sqlite3');
   db = new Database(DB_PATH);
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
-} catch (_err) {
+} catch (err) {
+  if (!mockDbFallbackAllowed(process.env.NODE_ENV, process.env.FINPLAN_ALLOW_MOCK_DB)) {
+    console.error(
+      '[db] FATAL: better-sqlite3 is unavailable in production ' +
+        `(reason: ${err instanceof Error ? err.message : String(err)}). ` +
+        'Refusing to start with the in-memory mock database — that would silently ' +
+        'lose all data on restart. Fix the native module (e.g. `npm rebuild better-sqlite3`), ' +
+        'or set FINPLAN_ALLOW_MOCK_DB=true ONLY if ephemeral, non-persisted storage is acceptable.'
+    );
+    process.exit(1);
+  }
   console.warn(
-    '[db] better-sqlite3 native bindings unavailable, using in-memory mock DB fallback for tests/sandbox.'
+    '[db] better-sqlite3 native bindings unavailable, using in-memory mock DB fallback for tests/sandbox. ' +
+      'DATA WILL NOT PERSIST. Never run this mode in production.'
   );
   const tables = new Map<string, any[]>();
   class MockStatement {

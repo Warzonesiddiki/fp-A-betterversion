@@ -9,7 +9,7 @@
  * Pattern: leaf-UI mocks + lucide enumeration + MigrationEngine mock.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
 import React from 'react';
 
 // ---------------------------------------------------------------------------
@@ -265,18 +265,27 @@ describe('MigrationWizard (data-driven)', () => {
     expect(stepper.dataset.step).toBe('0'); // source = index 0
   });
 
-  it('Back from mapping returns to upload', async () => {
+  it('failed upload keeps the wizard on the upload step and surfaces an error', async () => {
     renderWizard();
     act(() => {
       screen.getByText('Excel (.xlsx/.xls)').click();
     });
-    // Try to upload — but ExcelJS will fail on empty buffer
+    // Try to upload — the mocked file has an empty arrayBuffer, so ExcelJS
+    // throws and handleFileSelect's catch must set the error state.
     await act(async () => {
       screen.getByTestId('upload-btn').click();
     });
-    // Even if the upload throws, the error is caught — check that we
-    // either see the mapping step or the upload error
-    expect(true).toBe(true);
+    // The wizard must NOT have advanced to the mapping step (index 2)…
+    const stepper = screen.getByTestId('progress-stepper');
+    expect(stepper.dataset.step).toBe('1'); // still on upload
+    // …and the error banner must be visible with a non-empty message. The
+    // failing path runs through a dynamic import('exceljs'), so the error
+    // state may settle a tick after act() returns — wait for it explicitly.
+    await waitFor(() => {
+      const banner = document.querySelector('.bg-red-50');
+      expect(banner).not.toBeNull();
+      expect(banner!.textContent!.trim().length).toBeGreaterThan(0);
+    });
   });
 
   it('handles the progress step with completed status', async () => {
@@ -321,7 +330,14 @@ describe('MigrationWizard (data-driven)', () => {
     await act(async () => {
       screen.getByTestId('upload-btn').click();
     });
-    // The wizard should be on the upload step (error caught) and not crash
-    expect(true).toBe(true);
+    // The wizard stays on the upload step (index 1) — the failed parse must
+    // not advance the flow — and renders the error banner instead of crashing.
+    const stepper = screen.getByTestId('progress-stepper');
+    expect(stepper.dataset.step).toBe('1');
+    await waitFor(() => {
+      expect(document.querySelector('.bg-red-50')).not.toBeNull();
+    });
+    // The upload affordance is still usable so the user can retry.
+    expect(screen.getByTestId('upload-btn')).toBeInTheDocument();
   });
 });

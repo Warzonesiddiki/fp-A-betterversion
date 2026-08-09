@@ -225,11 +225,16 @@ describe('SafeMathParser financial function branch coverage', () => {
     });
 
     it('HLOOKUP returns the matching column row', () => {
-      // Table: 1,2,3,4 / 5,6,7,8 (2 rows, 4 cols)
-      // HLOOKUP(2, table, 2, exactMatch) → col 1, row 2 = 5
-      // (Note: HLOOKUP isn't called in our HLOOKUP block; the test
-      // verifies the test infra works.)
-      expect(true).toBe(true);
+      // Table (3x3, row-major): 1,2,3 / 4,5,6 / 7,8,9.
+      // HLOOKUP(2, table, 3, exact) → 2 is found at column 1 of the first
+      // row; row_index 3 → returns table[2*3 + 1] = 8.
+      const h = parser.evaluate('HLOOKUP(2,1,2,3,4,5,6,7,8,9,3,0)');
+      expect(h).toBe(8);
+    });
+
+    it('HLOOKUP returns NaN when the lookup value is not in the first row', () => {
+      const h = parser.evaluate('HLOOKUP(99,1,2,3,4,5,6,7,8,9,2,0)');
+      expect(Number.isNaN(h)).toBe(true);
     });
   });
 

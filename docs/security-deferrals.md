@@ -21,7 +21,7 @@ description: Living register of known security findings, data-integrity bugs, an
 **Reporter:** Athena (test-triage cycle)
 **Reviewer:** Hephaestus (security/data-integrity)
 **Severity:** Medium (data-integrity, not security)
-**Status:** DEFERRED — fix in next sprint
+**Status:** ✅ RESOLVED — 2026-08-09 (completion audit). Contract documented, regression-pinned, FIXME replaced. See Resolution record below.
 **Component:** `src/engines/AnomalyDetectionEngine.ts:193-214` (function `percentile()`)
 **Test evidence:** `src/engines/AnomalyDetectionEngine.lovelace.test.ts:26` — `expect(stats.q3).toBe(20)` for `computeStatistics([10, 20])`; actual returns `17.5`.
 
@@ -69,10 +69,50 @@ Located directly above the `percentile` function definition in `AnomalyDetection
 - 2026-06-12 14:30 UTC: Reviewed by Hephaestus; severity Medium confirmed; deferred to next sprint.
 - 2026-06-12 14:35 UTC: In-code FIXME added by Athena (commit pending).
 - 2026-06-12 14:40 UTC: This deferral entry filed by Athena.
+- 2026-08-09 (completion audit): RESOLVED. Evidence below.
+
+### Resolution record (2026-08-09, autonomous completion audit)
+
+**Root cause.** Two percentile conventions collided: the implementation used
+linear interpolation (quantile type **R-7**, Excel `PERCENTILE.INC` / NumPy
+`method='linear'`), while a former Lovelace assertion expected nearest-rank
+(type-1) Q3 for `[10, 20]`. The in-code FIXME additionally mislabelled the
+implemented formula as "PERCENTILE.EXC family" — it is R-7/`PERCENTILE.INC`
+(`idx = p/100 · (n−1)`); `PERCENTILE.EXC` uses `(n+1)` spacing.
+
+**State verified at audit time.** The conflicting nearest-rank assertion no
+longer existed in `AnomalyDetectionEngine.lovelace.test.ts` (that file's
+`computeStatistics([10, 20])` call only exercises the `n < 3` skewness
+branch). Running both suites confirmed 85/85 tests passing with the R-7
+implementation, and the known-answer suite
+(`AnomalyDetectionEngine.test.ts`) asserts R-7 values (Q1=4, Q3=5.5 on
+`[2,4,4,4,5,5,7,9]`) which would FAIL under the nearest-rank fix proposed
+above. The proposed fix was therefore stale and would have broken the oracle
+suite — it was rejected in favour of pinning the implemented convention.
+
+**Fix applied.**
+
+1. `src/engines/AnomalyDetectionEngine.ts` — FIXME replaced with a CONTRACT
+   comment naming the exact method (R-7 / `PERCENTILE.INC`), its history, and
+   the regression test that pins it.
+2. `src/engines/AnomalyDetectionEngine.test.ts` — new regression test
+   `percentile method is R-7 linear interpolation (DEFER-2026-001)` pins the
+   small-dataset contract (`[10,20] → q1 12.5, q3 17.5, iqr 5`;
+   `[1,2,3,4] → q1 1.75, q3 3.25`) so any future method change fails loudly.
+3. This register entry updated to RESOLVED.
+
+**Re-test method.** `npx vitest run src/engines/AnomalyDetectionEngine.test.ts src/engines/AnomalyDetectionEngine.lovelace.test.ts`
+— observed 2026-08-09: 2 files, 85 tests passed pre-fix; the added regression
+test re-verified after the edit (see audit evidence log).
+
+**Residual risk.** None identified: the convention is deterministic,
+documented, and oracle-pinned. Downstream consumers (AnomalyHighlight,
+MonteCarloEngine) consume Q1/Q3 through the same function, so behaviour is
+uniform.
 
 ### Cross-references
 
-- Test evidence: `src/engines/AnomalyDetectionEngine.lovelace.test.ts:26`
+- Test evidence: `src/engines/AnomalyDetectionEngine.test.ts` (R-7 oracle suite + regression pin)
 - Triage report + fix design: archived in the 2026-08-07 docs triage (Pattern D section)
 
 ---
@@ -152,7 +192,7 @@ To be added at line 1 of `src/utils/decimalUtils.ts` by Apollo during the decima
 **Reporter:** Hephaestus (post-Mnemosyne v0.3 cascade reclassification, Pattern E; co-owned with Prometheus for race-detection rigor)
 **Reviewer:** Hephaestus (data-integrity lane, primary); Prometheus (concurrency / queueing rigor, secondary)
 **Severity:** Medium (data-integrity, not security)
-**Status:** DEFERRED — needs design discussion (mutex vs. IndexedDB vs. OCC version-stamps)
+**Status:** ✅ RESOLVED (in-process) — 2026-08-09 (completion audit), option (a) mutex implemented + 7-test race regression suite. Cross-tab races remain scoped out (IndexedDB migration, see Resolution record).
 **Component:** `src/utils/chunkedStorage.ts:17-92` (`wrapChunkedStorage` — `getItem` L19-42, `setItem` L44-79, `removeItem` L81-91)
 **Test evidence:** 1 failing test in `src/utils/chunkedStorage.test.ts` per Mnemosyne v0.3 (TBD exact line; mock-based tests do not exercise concurrency — the latent races below are NOT covered by existing tests)
 
@@ -210,6 +250,110 @@ To be added at line 17 of `src/utils/chunkedStorage.ts` by Apollo (or whoever pi
 - Downstream consumer: `src/utils/masterStorage.ts:5` (used by 13+ zustand stores per ADR-008)
 - Related ADRs: ADR-008 (data-storage-scoping — defines which stores go through masterStorage)
 - Sibling deferral: DEFER-2026-001 (AnomalyDetectionEngine percentile — same float/precision class; also a data-integrity bug)
+
+### Resolution record (2026-08-09, autonomous completion audit)
+
+**Fix applied — Option (a) mutex, zero new dependencies.**
+
+1. `src/utils/chunkedStorage.ts`
+   - Added `withKeyLock(storage, key, op)` — a promise-chain mutex keyed by
+     `(underlying storage instance, storage key)` via a `WeakMap`. All three
+     operations (`getItem`, `setItem`, `removeItem`) now execute under the
+     per-key lock, closing race windows 1 (torn write), 2 (read-tear) and
+     3 (resurrection). Different keys remain fully parallel; rejections never
+     cascade (the chain promise always settles clean, so a failed op cannot
+     poison later operations — regression-tested).
+   - Race window 4 (cleanup leak) fixed twice over: `setItem` now reads the
+     previous record's `chunkCount` **before** overwriting and removes exactly
+     that many stale chunks on the small-payload path (floor of 10 kept to
+     sweep pre-fix orphans), and on the chunked path removes surplus chunks
+     beyond the new `chunkCount` when shrinking between two chunked writes.
+   - Added `isChunkedMetadata()` type guard (replaces three duplicated
+     inline shape checks).
+2. `src/utils/chunkedStorage.race.test.ts` — new 7-test regression suite
+   using a delay-injected mock storage to widen race windows:
+   - concurrent writers → metadata.chunkCount == persisted chunk count AND
+     reassembled value is exactly one of the written values (no torn mix);
+   - readers racing a writer observe only complete values;
+   - remove→set preserves the new record; set→remove fully deletes it;
+   - > 10-chunk write → small write leaves zero orphaned chunk keys;
+   - shrinking chunked→chunked removes surplus chunks exactly;
+   - per-key isolation (different keys unaffected);
+   - failed write does not poison the lock.
+
+**Verification.** `npx vitest run src/utils/chunkedStorage.test.ts src/utils/chunkedStorage.race.test.ts`
+— observed 2026-08-09: 15/15 tests passing (8 pre-existing + 7 new), plus the
+full anomaly-engine re-verification. No behavioural change for sequential
+callers: the lock serializes only same-key operations.
+
+**Residual risk / explicit scope boundary.** The mutex is **in-process only**.
+Cross-tab races (two browser tabs writing the same localStorage key) are NOT
+closed by this fix — they require option (b) IndexedDB migration with real
+transactions, which remains future architectural work per the remediation plan
+above. The product's primary deployment is a single-tab desktop app (Tauri
+webview) where in-process serialization covers the dominant store-contention
+path (13+ stores sharing one storage pool). The cross-tab residual is
+acknowledged here as a tracked, documented limitation rather than a silent one.
+
+---
+
+## DEFER-2026-004 — dev-only brace-expansion@1.1.16 advisory (minimatch@3.1.5, eslint chain)
+
+**Date opened:** 2026-08-09 (autonomous completion audit)
+**Reporter/Reviewer:** Arena completion audit (supply-chain loop)
+**Severity:** Low effective risk (HIGH advisory rating, dev-only exposure)
+**Status:** DEFERRED — blocked by upstream; re-check on every eslint/minimatch upgrade
+
+**Component:** `node_modules/minimatch/node_modules/brace-expansion@1.1.16`, reached via
+`eslint@9.39.4 → @eslint/config-array / @eslint/eslintrc`, `eslint-plugin-react`,
+`eslint-plugin-jsx-a11y` — all pinning `minimatch@^3.x`.
+
+### Advisories
+
+- GHSA-mh99-v99m-4gvg — DoS via unbounded expansion length (OOM crash).
+- GHSA-rgw5-rvv9-x895 — DoS via unbounded intermediate arrays (CVE-2026-14257 mitigation bypass).
+- Affects `brace-expansion <=1.1.17`; patched in `1.1.18` and `>=2.1.4`.
+
+### Blast radius
+
+- **Production bundle: NOT affected.** `npm audit --omit=dev` reports **0 vulnerabilities**;
+  the F-0021 gate (`scripts/check-dependency-audit.mjs`) passes with an EMPTY allowlist
+  (nothing waived). brace-expansion never reaches the shipped app or server.
+- **Runtime exposure: none.** minimatch@3 is consumed by ESLint's file-ignore matching
+  with patterns from our own `eslint.config.js` and CLI args — no untrusted-input path.
+- **Worst case:** a crafted brace pattern fed to the local/CI linter could OOM the lint
+  process. An actor able to inject patterns into our lint invocation already has code
+  execution in the repo/CI context, so this adds no meaningful attack surface.
+
+### Why the fix is deferred (evidence of attempted remediation, 2026-08-09)
+
+1. `minimatch@3.1.5` is the FINAL 3.x release — no patched minimatch@3 exists upstream.
+2. Override `"minimatch@3.1.5": { "brace-expansion": "^1.1.18" }` → npm de-duplicated the
+   nested copy and hoisted `brace-expansion@5.0.9` (object-export ESM build required by
+   `minimatch@10`), breaking ESLint with `TypeError: expand is not a function`. Verified
+   twice; evidence snapshots in `.arena-audit/lockfile-broken-minimatch-override.json`.
+3. Scoped override `"eslint-plugin-jsx-a11y": { "minimatch": { "brace-expansion": ... } }`
+   → no effect on the shared de-duplicated minimatch instance.
+4. `npm update brace-expansion` → does not touch the nested 1.x copy while 5.0.9 occupies
+   the root slot.
+5. Upgrading eslint/plugins to minimatch@10-based majors mid-audit is a regression risk
+   disproportionate to a dev-only DoS advisory.
+
+### Remediation plan
+
+**Trigger:** next routine dev-dependency upgrade cycle.
+**Owner:** whoever bumps eslint 9.x / eslint-plugin-\*.
+**Action:** re-run `npm audit`; if minimatch≥4 (or a brace-expansion≥1.1.18-resolving
+release) lands in the eslint chain, delete this entry. Alternatively, if npm gains a
+dedup-safe nested override, apply it and delete this entry.
+**Test that proves closure:** `npm audit` reports the brace-expansion advisories gone AND
+`npx eslint src/utils/chunkedStorage.ts` exits 0 (toolchain intact).
+
+### Audit trail
+
+- 2026-08-09: Advisory observed in full `npm audit` (dev tree). Production gate verified
+  green (`npm audit --omit=dev` → 0 vulns). Two override fix attempts made and REVERTED
+  after proving they break the ESLint toolchain. This entry filed.
 
 ---
 

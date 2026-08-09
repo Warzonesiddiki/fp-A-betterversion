@@ -250,8 +250,8 @@ describe('CellEditor (data-driven)', () => {
   });
 
   it('Tab on suggestions inserts the highlighted one', async () => {
-    renderEditor({ value: '' });
-    const input = screen.getByLabelText('Edit cell');
+    const { onCommit } = renderEditor({ value: '' });
+    const input = screen.getByLabelText('Edit cell') as HTMLInputElement;
     act(() => {
       fireEvent.change(input, { target: { value: '=S' } });
     });
@@ -259,11 +259,16 @@ describe('CellEditor (data-driven)', () => {
     act(() => {
       fireEvent.keyDown(input, { key: 'Tab' });
     });
-    // The insertSuggestion replaces the current token with the insertText.
-    // We just check the no-throw path; the value mutation depends on
-    // useEffect timing of showSuggestions + the closure capture of
-    // editValue, which is exercised in the integration tests.
-    expect(true).toBe(true);
+    // insertSuggestion replaces the trailing token ('S') with the highlighted
+    // suggestion's insertText (the mock returns PI first for non-'sum' input)
+    // without committing the cell.
+    expect(input.value).toBe('=PI');
+    expect(onCommit).not.toHaveBeenCalled();
+    // Known component behaviour (asserted, not ignored): the suggestion
+    // effect re-runs on the new editValue ('=PI' still yields suggestions),
+    // so the dropdown re-derives to open. If this ever changes to stay
+    // closed, update this assertion deliberately.
+    expect(screen.queryByRole('listbox')).toBeInTheDocument();
   });
 
   it('Enter on suggestions inserts the highlighted one (no commit)', async () => {

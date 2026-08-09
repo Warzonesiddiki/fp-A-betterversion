@@ -109,13 +109,30 @@ check('store count matches src/store/*.ts', () => {
 });
 
 check('engine count matches src/engines/*.ts', () => {
+  // Canonical counting convention — MUST stay aligned with
+  // scripts/verify-readme-stats.mjs and scripts/generate-engine-manifest.mjs
+  // (the manifest is the canonical registry of loadable engines). Benchmark
+  // fixtures (.benchmark.ts), type-only modules, and internal plumbing are
+  // NOT engines; counting them produced a false 191-module figure that
+  // contradicted the manifest's 181 shipped engines and the docs:verify gate
+  // (fixed 2026-08-09, completion audit — the two gates previously demanded
+  // mutually exclusive values for the same README claim).
+  const ENGINE_PLUMBING = new Set([
+    'index.ts',
+    'types.ts',
+    'engineManifest.generated.ts',
+    'EngineRegistry.ts',
+    'ReportBuilderTypes.ts',
+    'report-builder-types.ts',
+  ]);
   const actual = readdirSync(join(ROOT, 'src', 'engines')).filter(
     (n) =>
       n.endsWith('.ts') &&
       !n.includes('.test.') &&
       !n.includes('.bench.') &&
-      // Generated plumbing, not an engine module (N-0013).
-      n !== 'engineManifest.generated.ts'
+      !n.includes('.benchmark.') &&
+      !n.includes('.spec.') &&
+      !ENGINE_PLUMBING.has(n)
   ).length;
   const claimed = readme.match(/Financial Engines \((\d+) modules\)/);
   if (!claimed) throw new Error('no "Financial Engines (N modules)" claim found to verify');
