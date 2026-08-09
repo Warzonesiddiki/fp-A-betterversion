@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-30T12:17:11.148Z",
+  "timestamp": "2026-08-09T16:38:16.659Z",
   "checks": [
     {
       "id": "MONEY-001",
@@ -112,13 +112,13 @@
     {
       "id": "CI-003",
       "label": "A11y gate is blocking",
-      "status": "FAIL",
+      "status": "PASS",
       "details": null
     },
     {
       "id": "CI-004",
       "label": "Actions are SHA-pinned",
-      "status": "FAIL",
+      "status": "PASS",
       "details": null
     },
     {
