@@ -233,7 +233,7 @@ export class EncryptionEngine {
     if (data.aadContext) {
       decryptParams.additionalData = new TextEncoder().encode(data.aadContext);
     }
-    const decrypted = await crypto.subtle.decrypt(decryptParams, key, ciphertext);
+    const decrypted = await crypto.subtle.decrypt(decryptParams, key, new Uint8Array(ciphertext));
     return decoder.decode(decrypted);
   }
 

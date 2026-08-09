@@ -63,29 +63,33 @@ FinPlan Pro attacks each failure mode directly.
 
 ```bash
 # 1. Install (root + server)
-npm install
+npm ci --no-audit --no-fund
+(cd server && npm ci --no-audit --no-fund)
 
 # 2. Run the dev server (web UI on http://localhost:5173)
 npm run dev
 
-# 3. Run the full quality gate (TypeScript · ESLint · Prettier · 13,290 tests)
-npm run check
+# 3. Run the core quality gates (TypeScript · ESLint · build · tests)
+npx tsc --noEmit
+npx eslint src --max-warnings 0
+npm test
+npm run build
 ```
 
 **Common scripts:**
 
-| Command                     | Purpose                                        |
-| --------------------------- | ---------------------------------------------- |
-| `npm run dev`               | Start the Vite dev server                      |
-| `npm run build`             | Production build (vite)                        |
-| `npm test`                  | Full Vitest suite (1,174 files / 13,290 tests) |
-| `npm run tsc`               | TypeScript strict check (`--noEmit`)           |
-| `npm run lint`              | ESLint (`--max-warnings 0`)                    |
-| `npm run format`            | Prettier write                                 |
-| `npm run money:adoption`    | Money-primitive ratchet (CI gate)              |
-| `npm run docs:verify`       | README/architecture claims audit               |
-| `npm run engines:verify`    | Engine manifest / reachability audit           |
-| `cd server && npm run test` | Server-side suite (107 tests)                  |
+| Command                  | Purpose                                        |
+| ------------------------ | ---------------------------------------------- |
+| `npm run dev`            | Start the Vite dev server                      |
+| `npm run build`          | Production build (vite)                        |
+| `npm test`               | Full Vitest suite (1,174 files / 13,290 tests) |
+| `npx tsc --noEmit`       | TypeScript strict check                        |
+| `npm run lint`           | ESLint (`--max-warnings 0`)                    |
+| `npm run format`         | Prettier write                                 |
+| `npm run money:adoption` | Money-primitive ratchet (CI gate)              |
+| `npm run docs:verify`    | README/architecture claims audit               |
+| `npm run engines:verify` | Engine manifest / reachability audit           |
+| `cd server && npm test`  | Server-side suite (113 tests)                  |
 
 ---
 

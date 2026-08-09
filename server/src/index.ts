@@ -194,9 +194,11 @@ try {
   process.exit(1);
 }
 
-app.listen(PORT, () => {
-  console.log(`[server] FinPlan Pro API running on http://localhost:${PORT}`);
-  console.log(`[server] Health check: http://localhost:${PORT}/api/health`);
-});
+if (process.env.VITEST !== 'true') {
+  app.listen(PORT, () => {
+    console.log(`[server] FinPlan Pro API running on http://localhost:${PORT}`);
+    console.log(`[server] Health check: http://localhost:${PORT}/api/health`);
+  });
+}
 
 export default app;
