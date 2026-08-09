@@ -78,6 +78,53 @@ export interface StorageMetadata {
   timestamp: number;
 }
 
+function isChunkedMetadata(value: unknown): value is StorageMetadata {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    '_isChunked' in (value as Record<string, unknown>) &&
+    (value as StorageMetadata)._isChunked === true
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Per-key serialization lock (DEFER-2026-003 fix, 2026-08-09)
+// ---------------------------------------------------------------------------
+// `setItem` performs a multi-step write (metadata first, then N chunk records).
+// Without serialization, two concurrent writers on the same key interleave
+// those steps and produce torn state (metadata from writer A, chunks from
+// writer B), a concurrent reader can observe a half-written payload
+// (read-tear), and `removeItem` racing `setItem` can delete the NEW metadata
+// after the new chunks were written (resurrection + orphans).
+//
+// The lock is a promise-chain mutex keyed by (underlying storage instance,
+// storage key). It serializes all operations for one key while leaving
+// different keys fully parallel. Rejections never cascade: the chain promise
+// always settles clean, so a failed write cannot poison later operations.
+// This is in-process serialization only — cross-tab races require IndexedDB
+// transactions (tracked in docs/security-deferrals.md DEFER-2026-003).
+const keyChains = new WeakMap<RawStorage, Map<string, Promise<void>>>();
+
+function withKeyLock<T>(storage: RawStorage, key: string, op: () => Promise<T>): Promise<T> {
+  let chains = keyChains.get(storage);
+  if (!chains) {
+    chains = new Map();
+    keyChains.set(storage, chains);
+  }
+  const previous = chains.get(key) ?? Promise.resolve();
+  const run = previous.then(op, op);
+  const chain = run.then(
+    () => undefined,
+    () => undefined
+  );
+  chains.set(key, chain);
+  // Opportunistic cleanup so the chain map does not grow without bound.
+  void chain.then(() => {
+    if (chains.get(key) === chain) chains.delete(key);
+  });
+  return run;
+}
+
 /**
  * A raw key-value storage adapter. Values are arbitrary serializable data
  * (strings pass through, objects are JSON-serialized by the backends); this
@@ -92,100 +139,108 @@ export interface RawStorage {
 
 export function wrapChunkedStorage(storage: RawStorage): RawStorage {
   return {
-    getItem: async (name) => {
-      const meta = await storage.getItem(name);
+    getItem: (name) =>
+      withKeyLock(storage, name, async () => {
+        const meta = await storage.getItem(name);
 
-      if (
-        meta &&
-        typeof meta === 'object' &&
-        '_isChunked' in meta &&
-        (meta as StorageMetadata)._isChunked
-      ) {
-        const { chunkCount } = meta as unknown as StorageMetadata;
-        const chunkPromises = [];
+        if (isChunkedMetadata(meta)) {
+          const { chunkCount } = meta;
+          const chunkPromises = [];
 
-        for (let i = 0; i < chunkCount; i++) {
-          chunkPromises.push(storage.getItem(`${name}:chunk:${i}`));
-        }
-
-        const records = await Promise.all(chunkPromises);
-
-        // setItem persists each slice as `{ value: chunk }`, so the raw records
-        // must be unwrapped before joining. Passing them through as objects
-        // produced the literal string "[object Object]" and made every store
-        // larger than CHUNK_SIZE permanently unreadable — the write succeeded,
-        // the read threw a JSON SyntaxError, and masterStorage reported the
-        // store as empty. Missing slices are a corrupt backup, not "no data".
-        const chunks = records.map((record, index) => {
-          if (typeof record === 'string') return record;
-          if (
-            record &&
-            typeof record === 'object' &&
-            typeof (record as { value?: unknown }).value === 'string'
-          ) {
-            return (record as { value: string }).value;
+          for (let i = 0; i < chunkCount; i++) {
+            chunkPromises.push(storage.getItem(`${name}:chunk:${i}`));
           }
-          throw new Error(
-            `Chunked store "${name}" is corrupt: slice ${index} of ${chunkCount} is missing or malformed`
+
+          const records = await Promise.all(chunkPromises);
+
+          // setItem persists each slice as `{ value: chunk }`, so the raw records
+          // must be unwrapped before joining. Passing them through as objects
+          // produced the literal string "[object Object]" and made every store
+          // larger than CHUNK_SIZE permanently unreadable — the write succeeded,
+          // the read threw a JSON SyntaxError, and masterStorage reported the
+          // store as empty. Missing slices are a corrupt backup, not "no data".
+          const chunks = records.map((record, index) => {
+            if (typeof record === 'string') return record;
+            if (
+              record &&
+              typeof record === 'object' &&
+              typeof (record as { value?: unknown }).value === 'string'
+            ) {
+              return (record as { value: string }).value;
+            }
+            throw new Error(
+              `Chunked store "${name}" is corrupt: slice ${index} of ${chunkCount} is missing or malformed`
+            );
+          });
+
+          return (await runParse(chunks)) as never;
+        }
+
+        return meta;
+      }),
+
+    setItem: (name, value) =>
+      withKeyLock(storage, name, async () => {
+        // Read the previous record BEFORE overwriting it so stale chunks from
+        // the previous write can be removed exactly. (DEFER-2026-003 fix:
+        // the old code blindly deleted only chunks 0..9, leaking chunks 10..N
+        // whenever a key shrank from a >10-chunk write to a smaller record.)
+        const previous = await storage.getItem(name);
+        const previousChunkCount = isChunkedMetadata(previous) ? previous.chunkCount : 0;
+
+        const result = await runStringify(value);
+
+        if (result.chunks) {
+          // Large payload - store in chunks
+          const metadata: StorageMetadata = {
+            _isChunked: true,
+            chunkCount: result.chunks.length,
+            totalSize: result.totalSize!,
+            timestamp: Date.now(),
+          };
+
+          // Store metadata first
+          await storage.setItem(name, metadata);
+
+          // Store chunks in parallel
+          await Promise.all(
+            result.chunks.map((chunk: string, i: number) =>
+              storage.setItem(`${name}:chunk:${i}`, { value: chunk })
+            )
           );
-        });
 
-        return (await runParse(chunks)) as never;
-      }
+          // Remove surplus chunks left behind by a larger previous write.
+          for (let i = result.chunks.length; i < previousChunkCount; i++) {
+            await storage.removeItem(`${name}:chunk:${i}`);
+          }
+        } else {
+          // Small payload - store normally (pre-stringified to avoid jank in engine if it does stringify)
+          if (result.payload === undefined) {
+            throw new Error(`Serialization of "${name}" produced neither chunks nor a payload`);
+          }
+          await storage.setItem(name, result.payload as never);
 
-      return meta;
-    },
-
-    setItem: async (name, value) => {
-      const result = await runStringify(value);
-
-      if (result.chunks) {
-        // Large payload - store in chunks
-        const metadata: StorageMetadata = {
-          _isChunked: true,
-          chunkCount: result.chunks.length,
-          totalSize: result.totalSize!,
-          timestamp: Date.now(),
-        };
-
-        // Store metadata first
-        await storage.setItem(name, metadata);
-
-        // Store chunks in parallel
-        await Promise.all(
-          result.chunks.map((chunk: string, i: number) =>
-            storage.setItem(`${name}:chunk:${i}`, { value: chunk })
-          )
-        );
-      } else {
-        // Small payload - store normally (pre-stringified to avoid jank in engine if it does stringify)
-        if (result.payload === undefined) {
-          throw new Error(`Serialization of "${name}" produced neither chunks nor a payload`);
+          // Cleanup safety: remove every chunk of the previous chunked write.
+          // The floor of 10 also sweeps orphans left by pre-fix builds that
+          // could only leak chunks beyond index 9.
+          const cleanupCount = Math.max(previousChunkCount, 10);
+          for (let i = 0; i < cleanupCount; i++) {
+            await storage.removeItem(`${name}:chunk:${i}`);
+          }
         }
-        await storage.setItem(name, result.payload as never);
+      }),
 
-        // Cleanup safety (limit to 10 chunks as mentioned before)
-        for (let i = 0; i < 10; i++) {
-          await storage.removeItem(`${name}:chunk:${i}`);
+    removeItem: (name) =>
+      withKeyLock(storage, name, async () => {
+        const meta = await storage.getItem(name);
+        await storage.removeItem(name);
+
+        if (isChunkedMetadata(meta)) {
+          const { chunkCount } = meta;
+          for (let i = 0; i < chunkCount; i++) {
+            await storage.removeItem(`${name}:chunk:${i}`);
+          }
         }
-      }
-    },
-
-    removeItem: async (name) => {
-      const meta = await storage.getItem(name);
-      await storage.removeItem(name);
-
-      if (
-        meta &&
-        typeof meta === 'object' &&
-        '_isChunked' in meta &&
-        (meta as StorageMetadata)._isChunked
-      ) {
-        const { chunkCount } = meta as unknown as StorageMetadata;
-        for (let i = 0; i < chunkCount; i++) {
-          await storage.removeItem(`${name}:chunk:${i}`);
-        }
-      }
-    },
+      }),
   };
 }
