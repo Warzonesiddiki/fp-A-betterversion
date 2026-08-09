@@ -20,7 +20,7 @@
 
 |                                                                                               <!-- -->                                                                                                |                                                                                           <!-- -->                                                                                            |                                                                                            <!-- -->                                                                                            |                                                                                                  <!-- -->                                                                                                   |
 | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">181</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines Shipped</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">78</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Industry Verticals</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">11,647</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Automated Tests</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">181</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines (181 modules)</div></div> |
+| <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">181</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines Shipped</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">78</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Industry Verticals</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">13,290</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Automated Tests</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">181</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines (181 modules)</div></div> |
 
 <br/>
 
@@ -68,24 +68,24 @@ npm install
 # 2. Run the dev server (web UI on http://localhost:5173)
 npm run dev
 
-# 3. Run the full quality gate (TypeScript · ESLint · Prettier · 11,647 tests)
+# 3. Run the full quality gate (TypeScript · ESLint · Prettier · 13,290 tests)
 npm run check
 ```
 
 **Common scripts:**
 
-| Command                     | Purpose                                      |
-| --------------------------- | -------------------------------------------- |
-| `npm run dev`               | Start the Vite dev server                    |
-| `npm run build`             | Production build (vite)                      |
-| `npm test`                  | Full Vitest suite (995 files / 11,647 tests) |
-| `npm run tsc`               | TypeScript strict check (`--noEmit`)         |
-| `npm run lint`              | ESLint (`--max-warnings 0`)                  |
-| `npm run format`            | Prettier write                               |
-| `npm run money:adoption`    | Money-primitive ratchet (CI gate)            |
-| `npm run docs:verify`       | README/architecture claims audit             |
-| `npm run engines:verify`    | Engine manifest / reachability audit         |
-| `cd server && npm run test` | Server-side suite (107 tests)                |
+| Command                     | Purpose                                        |
+| --------------------------- | ---------------------------------------------- |
+| `npm run dev`               | Start the Vite dev server                      |
+| `npm run build`             | Production build (vite)                        |
+| `npm test`                  | Full Vitest suite (1,174 files / 13,290 tests) |
+| `npm run tsc`               | TypeScript strict check (`--noEmit`)           |
+| `npm run lint`              | ESLint (`--max-warnings 0`)                    |
+| `npm run format`            | Prettier write                                 |
+| `npm run money:adoption`    | Money-primitive ratchet (CI gate)              |
+| `npm run docs:verify`       | README/architecture claims audit               |
+| `npm run engines:verify`    | Engine manifest / reachability audit           |
+| `cd server && npm run test` | Server-side suite (107 tests)                  |
 
 ---
 
@@ -151,7 +151,7 @@ QuickBooks · NetSuite · Xero · Sage Intacct · Microsoft Dynamics 365 · Sale
 ```
 src/
 ├── engines/        # Financial Engines (181 modules) — lazy-reachable via manifest
-├── store/          # Zustand Stores (41 stores)
+├── store/          # Zustand Stores (42 stores)
 ├── pages/          # routed page modules
 ├── components/     # UI, charts, sectors, AI copilot, spreadsheet
 ├── workers/        # Web Workers (4 active) — consolidation, Monte Carlo, batch calc, storage
@@ -162,10 +162,10 @@ scripts/            # CI ratchets, engine manifest, audit, SHA-pinning tooling
 ```
 
 > **Measured repository composition** (enforced by `npm run docs:verify` and `scripts/check-readme-claims.mjs`):
-> **Financial Engines (181 modules)**, **Zustand Stores (41 stores)**, **Web Workers (4 active)**.
+> **Financial Engines (181 modules)**, **Zustand Stores (42 stores)**, **Web Workers (4 active)**.
 > Coverage thresholds in `vite.config.ts` are 50% (statements/branches/functions/lines) — this is a
 > floor, not a claim of production coverage; no full-suite coverage run completes inside CI.
-> **Measured adoption: 84 of 262 engine/store modules** route through the canonical money primitive
+> **Measured adoption: 85 of 258 engine/store modules** route through the canonical money primitive
 > at the engine/store layer (with UI-layer adoption continuing in GAP-1; see the ratchet for total
 > financial-path counts).
 
@@ -212,7 +212,7 @@ Every one of these is pinned by a `*.money.test.ts` that fails against the origi
 | **TypeScript** (`tsc --noEmit`) | ✅                                     | Strict mode, zero errors                      |
 | **ESLint** (`--max-warnings 0`) | ✅                                     | Zero warnings tolerated                       |
 | **Prettier**                    | ✅                                     | Enforced in CI                                |
-| **Vitest** — frontend           | ✅ **995 files / 11,647 tests**        | Full suite green                              |
+| **Vitest** — frontend           | ✅ **1,174 files / 13,290 tests**      | Full suite green                              |
 | **Vitest** — server             | ✅ **107 tests / 9 files**             | Supertest + mock DB                           |
 | **Money adoption ratchet**      | ✅ **98/380 + 2/23** · 0 raw `toFixed` | Never regresses                               |
 | **Engine reachability**         | ✅ **180/180 reachable, 0 orphans**    | Manifest + direct + lazy                      |
