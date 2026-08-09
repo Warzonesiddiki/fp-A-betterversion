@@ -93,6 +93,24 @@ describe('AnomalyDetectionEngine', () => {
       expect(stats.stdDev).toBeGreaterThan(0);
     });
 
+    it('percentile method is R-7 linear interpolation (DEFER-2026-001)', () => {
+      // Regression pin for the documented percentile contract: quantile type
+      // R-7 (Excel PERCENTILE.INC / NumPy 'linear'), idx = p/100 * (n − 1).
+      // This dataset formerly had a conflicting nearest-rank expectation
+      // (q3 = 20) in the Lovelace audit suite — see
+      // docs/security-deferrals.md DEFER-2026-001 for the resolution.
+      const two = engine.computeStatistics([10, 20]);
+      // idx(25) = 0.25 → 10 + 10*0.25 = 12.5 ; idx(75) = 0.75 → 17.5
+      expect(two.q1).toBe(12.5);
+      expect(two.q3).toBe(17.5);
+      expect(two.iqr).toBe(5);
+
+      const four = engine.computeStatistics([1, 2, 3, 4]);
+      // idx(25) = 0.75 → 1.75 ; idx(75) = 2.25 → 3.25
+      expect(four.q1).toBe(1.75);
+      expect(four.q3).toBe(3.25);
+    });
+
     it('should handle single value', () => {
       const stats = engine.computeStatistics([42]);
       expect(stats.count).toBe(1);
