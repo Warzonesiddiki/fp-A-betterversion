@@ -73,6 +73,17 @@ mandatory checks PASS. Including blocked items: NOT certifiable as 100% — see 
 | F-8 | MEDIUM       | Supply chain                    | 5 advisories: dompurify ≤3.4.12 (prod, moderate→XSS), nanoid, js-yaml, fast-uri, brace-expansion@filelist (dev)                                                                                                                                                                             | `npm audit`                                                                                                                                            | Lockfile patches: dompurify 3.4.13, nanoid 3.3.18, js-yaml 4.3.1, fast-uri 3.1.5, brace-expansion 2.1.4                                                           | `npm audit --omit=dev` → **0 vulns**; full audit → 1 residual (DEFER-2026-004)                                                                                         |
 | F-9 | LOW          | Governance                      | No CODEOWNERS, no PR template, no Code of Conduct; compliance-evidence false-negative on a11y gate (matched a comment string)                                                                                                                                                               | repo listing; compliance run 20/22                                                                                                                     | Added all three; hardened comment wording; compliance 21/22 (1 informational)                                                                                     | `npm run compliance:evidence`                                                                                                                                          |
 
+### Delivery note for workflow fixes (F-2/F-3/F-4)
+
+The arena agent's GitHub App token **lacks the `workflows` permission**; GitHub refuses pushes of
+commits touching `.github/workflows/**` (reproduced 2026-08-09 — same blocker the project documents
+for GAP-7 in `ci-patches/GAP-7-SHA-PINNING.md`). The three workflow fixes are therefore delivered
+as **`ci-patches/0004-completion-audit-workflow-hardening.patch`** (verified `git apply --check`
+clean; `pin-workflow-actions.mjs --check` and `architecture:guardrails` both exit 0 on the patched
+tree) with apply instructions in `ci-patches/0004-COMPLETION-AUDIT-WORKFLOWS.md`. They must be
+applied by a human or token holding `workflows` scope. Until applied, the guardrail check stays ❌
+on `main` by design — this is an access blocker, not a code defect.
+
 ### Residuals deliberately NOT forced (documented, not waived silently)
 
 | ID                   | Sev                    | Why left                                                                                                                                                                                                                                                                                        | Safeguard                                                                                         |
@@ -181,13 +192,14 @@ response service wired to `/api/incidents` (RBAC-gated), health endpoint `/api/h
 
 ## 12. ASSUMPTIONS & UNVERIFIED AREAS
 
-| Item                          | Why                                                                         | Unblock                                                                                                         |
-| ----------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| Playwright E2E execution      | Sandbox refuses browser CDN downloads; `--with-deps` lacks apt packages     | Run `npx playwright install chromium && npx playwright test` on a normal runner (CI does this)                  |
-| Tauri native compile          | Rust toolchain not exercised in this audit                                  | `npm run tauri:build` on a desktop build agent (CI release.yml covers)                                          |
-| better-sqlite3 native runtime | Bindings not built for this sandbox's Node ABI                              | `npm rebuild better-sqlite3` on target platform; prod-guard now fails closed if absent                          |
-| GitHub push/PR                | **GH_TOKEN expired mid-session**                                            | Reconnect GitHub in Arena; branch `arena/019fe71b-fp-a-betterversion` is fully committed locally and push-ready |
-| Load/soak/bench suites        | Exist (`vitest.bench.config.ts`, `tests/load`) but not run (runtime budget) | `npm run test:bench` on perf hardware                                                                           |
+| Item                                                       | Why                                                                                                                                       | Unblock                                                                                                                                          |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Playwright E2E execution                                   | Sandbox refuses browser CDN downloads; `--with-deps` lacks apt packages                                                                   | Run `npx playwright install chromium && npx playwright test` on a normal runner (CI does this)                                                   |
+| Tauri native compile                                       | Rust toolchain not exercised in this audit                                                                                                | `npm run tauri:build` on a desktop build agent (CI release.yml covers)                                                                           |
+| better-sqlite3 native runtime                              | Bindings not built for this sandbox's Node ABI                                                                                            | `npm rebuild better-sqlite3` on target platform; prod-guard now fails closed if absent                                                           |
+| GitHub push/PR                                             | **GH_TOKEN expired mid-session** (reconnected by operator)                                                                                | Reconnect GitHub in Arena; branch `arena/019fe71b-fp-a-betterversion` is fully committed locally and push-ready                                  |
+| Workflow files (SHA pinning, a11y gate, release input fix) | Agent token lacks GitHub `workflows` permission — pushes of workflow edits are rejected (reproduced 2026-08-09; same as documented GAP-7) | Maintainer applies `ci-patches/0004-completion-audit-workflow-hardening.patch` (instructions in `ci-patches/0004-COMPLETION-AUDIT-WORKFLOWS.md`) |
+| Load/soak/bench suites                                     | Exist (`vitest.bench.config.ts`, `tests/load`) but not run (runtime budget)                                                               | `npm run test:bench` on perf hardware                                                                                                            |
 
 ---
 
@@ -204,7 +216,7 @@ response service wired to `/api/incidents` (RBAC-gated), health endpoint `/api/h
 - [x] Prod dependency audit 0 vulns; full audit residual documented (DEFER-2026-004)
 - [x] No secrets in repo; NIM keys cannot reach prod bundle; mock-auth cannot mount in prod
 - [x] Server cannot silently lose data (prod guard + createRequire fix + tests + runtime proof)
-- [x] CI workflows SHA-pinned; no pull_request_target; no untrusted-input shell interpolation
+- [x] CI workflow hardening verified & delivered as ci-patch 0004 (SHA pinning, a11y hard gate, release input fix) — **pending application by a maintainer with `workflows` permission** (agent token lacks it; GAP-7 precedent); no pull_request_target anywhere; no other untrusted-input shell interpolation
 - [x] README claims match measured reality (two independent truth gates agree)
 - [x] Governance docs present (CODEOWNERS, PR template, CoC)
 - [ ] E2E execution in CI (BLOCKED locally — unblock: any runner with browser access)
