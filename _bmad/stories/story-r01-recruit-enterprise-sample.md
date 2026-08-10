@@ -11,7 +11,7 @@ Owner direction is enterprise, hybrid, multi-stakeholder; this is not market val
 
 ## Dependencies
 - Requires: Gate G5 approval.
-- Files: `_bmad/research/participant-screener.md`, `recruitment-outreach-template.md`, `evidence-log.md`.
+- Files: `_bmad/research/participant-screener.md`, `_bmad/research/recruitment-outreach-template.md`, `_bmad/research/evidence-log.md`.
 - Depended on by: R-02.
 
 ## Acceptance Criteria

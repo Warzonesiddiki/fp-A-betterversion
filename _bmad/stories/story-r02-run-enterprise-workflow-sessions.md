@@ -7,7 +7,7 @@
 Observes real close, forecast, reporting, decision, security, and procurement behavior before requirements become implementation commitments.
 
 ## Research Context
-R-01 recruits the roles; `validation-plan.md` and `usability-prototype-test-plan.md` define the hypotheses and pivot rules.
+R-01 recruits the roles; `_bmad/research/validation-plan.md` and `_bmad/research/usability-prototype-test-plan.md` define the hypotheses and pivot rules.
 
 ## Dependencies
 - Requires: R-01 DONE.

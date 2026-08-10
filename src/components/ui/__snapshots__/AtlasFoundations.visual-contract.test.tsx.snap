@@ -1,5 +1,195 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Atlas foundation visual structure contract > omits purpose and actions containers when not provided (minimal PageHeader) 1`] = `
+<div>
+  <header
+    class="fp-page-header"
+  >
+    <div>
+      <div
+        class="flex flex-wrap items-center gap-3"
+      >
+        <h1
+          class="fp-page-header__title"
+        >
+          Period Close
+        </h1>
+      </div>
+    </div>
+  </header>
+</div>
+`;
+
+exports[`Atlas foundation visual structure contract > preserves the canonical badge set in a deterministic structural snapshot 1`] = `
+<div>
+  <div
+    class="fp-badge-set"
+    data-testid="badge-set"
+  >
+    <span
+      aria-label="Draft; not published"
+      class="fp-financial-status fp-financial-status--draft"
+      data-financial-status="draft"
+      role="status"
+    >
+      <span
+        aria-hidden="true"
+        class="fp-financial-status__icon"
+      >
+        ✎
+      </span>
+      <span>
+        Draft
+      </span>
+    </span>
+    <span
+      aria-label="Calculated from formula; inspect dependencies"
+      class="fp-financial-status fp-financial-status--calculated"
+      data-financial-status="calculated"
+      role="status"
+    >
+      <span
+        aria-hidden="true"
+        class="fp-financial-status__icon"
+      >
+        ƒ
+      </span>
+      <span>
+        Calculated
+      </span>
+    </span>
+    <span
+      aria-label="Manual financial input"
+      class="fp-financial-status fp-financial-status--manual"
+      data-financial-status="manual"
+      role="status"
+    >
+      <span
+        aria-hidden="true"
+        class="fp-financial-status__icon"
+      >
+        •
+      </span>
+      <span>
+        Manual input
+      </span>
+    </span>
+    <span
+      aria-label="Awaiting approval"
+      class="fp-financial-status fp-financial-status--pendingApproval"
+      data-financial-status="pendingApproval"
+      role="status"
+    >
+      <span
+        aria-hidden="true"
+        class="fp-financial-status__icon"
+      >
+        ◷
+      </span>
+      <span>
+        Pending approval
+      </span>
+    </span>
+    <span
+      aria-label="Locked; edits are prohibited"
+      class="fp-financial-status fp-financial-status--locked"
+      data-financial-status="locked"
+      role="status"
+    >
+      <span
+        aria-hidden="true"
+        class="fp-financial-status__icon"
+      >
+        ⌁
+      </span>
+      <span>
+        Locked
+      </span>
+    </span>
+    <span
+      aria-label="Certified financial result"
+      class="fp-financial-status fp-financial-status--certified"
+      data-financial-status="certified"
+      role="status"
+    >
+      <span
+        aria-hidden="true"
+        class="fp-financial-status__icon"
+      >
+        ✓
+      </span>
+      <span>
+        Certified
+      </span>
+    </span>
+    <span
+      aria-label="Data may be stale; refresh or inspect source health"
+      class="fp-financial-status fp-financial-status--stale"
+      data-financial-status="stale"
+      role="status"
+    >
+      <span
+        aria-hidden="true"
+        class="fp-financial-status__icon"
+      >
+        !
+      </span>
+      <span>
+        Stale
+      </span>
+    </span>
+    <span
+      aria-label="Offline; queued changes are not official"
+      class="fp-financial-status fp-financial-status--offlineQueued"
+      data-financial-status="offlineQueued"
+      role="status"
+    >
+      <span
+        aria-hidden="true"
+        class="fp-financial-status__icon"
+      >
+        ↟
+      </span>
+      <span>
+        Offline — queued
+      </span>
+    </span>
+    <span
+      aria-label="Action failed; inspect recovery options"
+      class="fp-financial-status fp-financial-status--failed"
+      data-financial-status="failed"
+      role="status"
+    >
+      <span
+        aria-hidden="true"
+        class="fp-financial-status__icon"
+      >
+        ×
+      </span>
+      <span>
+        Failed
+      </span>
+    </span>
+    <span
+      aria-label="AI-generated draft; review sources before use"
+      class="fp-financial-status fp-financial-status--aiGenerated"
+      data-financial-status="aiGenerated"
+      role="status"
+    >
+      <span
+        aria-hidden="true"
+        class="fp-financial-status__icon"
+      >
+        ✦
+      </span>
+      <span>
+        AI-generated draft
+      </span>
+    </span>
+  </div>
+</div>
+`;
+
 exports[`Atlas foundation visual structure contract > preserves the canonical finance workspace hierarchy and state semantics 1`] = `
 <div>
   <main

@@ -59,6 +59,15 @@ This extension does NOT close the pixel-baseline rejection reason. It strengthen
 - Verification: Atlas structural suite now 4 tests; full root suite **1,184 files / 13,333 tests passed** (1 skipped); root + server `tsc` 0 errors; changed-file ESLint 0 warnings; `git diff --check` clean.
 - This extension also does NOT close the pixel-baseline rejection reason (theme contrast, fonts, and responsive layout still require a browser).
 
+## Interim evidence extension — full status set + PageHeader anatomy (2026-08-10, later same session)
+
+- `AtlasFoundations.visual-contract.test.tsx` extended to 8 tests (runbook scenarios 1–2, structural equivalents):
+  - **All ten `FinancialStatusBadge` lifecycle states** render with a non-empty text label, a non-colour icon/pattern (`[aria-hidden="true"]`), `role="status"`, a stable `data-financial-status` attribute, and the `fp-financial-status--{state}` class — i.e., no state is colour-only at the DOM contract level. A deterministic snapshot pins the canonical badge set in fixed order.
+  - **PageHeader full anatomy** (title `h1.fp-page-header__title`, purpose, status, actions) and **minimal variant** (title only; purpose/actions containers omitted) are pinned by assertions and a snapshot.
+- Verification: Atlas structural suite 8 tests passed; root `tsc --noEmit` 0 errors; changed-file ESLint 0 warnings; docs-link strict check clean (0 broken links/citations repo-wide); production build + bundle check green.
+- Still does NOT close the pixel-baseline rejection reason (theme contrast, fonts, responsive layout require a browser).
+
+
 ## Stale-test reconciliation (2026-08-10, same session)
 
 The first full-suite run on merged main surfaced two tests asserting the pre-merge Dashboard empty state ("Welcome to FinPlan Pro"). Verified pre-existing on clean merged main via a temporary worktree at HEAD (not caused by this session's changes):
