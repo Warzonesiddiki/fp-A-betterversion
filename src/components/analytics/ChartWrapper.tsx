@@ -16,6 +16,12 @@ export interface ChartWrapperProps {
   onExport?: () => void;
   onRetry?: () => void;
   className?: string;
+  /**
+   * Semantic heading level for the title. Defaults to h3 for backward
+   * compatibility; pages that place the chart directly under a page h1
+   * should pass 'h2' so heading order remains valid.
+   */
+  headingLevel?: 'h2' | 'h3';
 }
 
 export const ChartWrapper = memo(function ChartWrapper({
@@ -30,12 +36,14 @@ export const ChartWrapper = memo(function ChartWrapper({
   onExport,
   onRetry,
   className,
+  headingLevel = 'h3',
 }: ChartWrapperProps) {
+  const TitleTag = headingLevel === 'h2' ? 'h2' : 'h3';
   return (
     <Card className={className}>
       <CardHeader className="flex items-center justify-between px-4 py-3">
         <div>
-          <h3 className="font-semibold text-sm text-[var(--text-primary)]">{title}</h3>
+          <TitleTag className="font-semibold text-sm text-[var(--text-primary)]">{title}</TitleTag>
           {subtitle && <p className="text-xs text-[var(--text-muted)] mt-0.5">{subtitle}</p>}
         </div>
         {exportable && (

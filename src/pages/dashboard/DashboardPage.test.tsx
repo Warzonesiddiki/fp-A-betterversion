@@ -156,8 +156,10 @@ describe('DashboardPage smoke test', () => {
     expect(container).toBeTruthy();
   });
 
-  it('displays the welcome message when no data exists', () => {
+  it('displays the finance-workspace setup state when no data exists', () => {
     renderPage();
-    expect(screen.getByText(/Welcome to FinPlan Pro/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Set up your finance workspace' })
+    ).toBeInTheDocument();
   });
 });

@@ -215,4 +215,22 @@ describe('ChartWrapper', () => {
     expect(screen.getByText('Error')).toBeInTheDocument();
     expect(screen.queryByText('No data available for this period')).not.toBeInTheDocument();
   });
+
+  it('renders the title as h3 by default for backward compatibility', () => {
+    render(
+      <ChartWrapper title="Default Level">
+        <div>content</div>
+      </ChartWrapper>
+    );
+    expect(screen.getByRole('heading', { level: 3, name: 'Default Level' })).toBeInTheDocument();
+  });
+
+  it('renders the title as h2 when headingLevel="h2" is set', () => {
+    render(
+      <ChartWrapper title="Section Level" headingLevel="h2">
+        <div>content</div>
+      </ChartWrapper>
+    );
+    expect(screen.getByRole('heading', { level: 2, name: 'Section Level' })).toBeInTheDocument();
+  });
 });

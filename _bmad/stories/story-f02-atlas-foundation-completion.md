@@ -33,6 +33,13 @@ Use Atlas contracts in `docs/design/FINPLAN_ATLAS.md`. Existing `DashboardPage` 
 - Close, reporting, planning, or API redesign
 - Broad visual repaint or route migration
 
+## Progress log (2026-08-10, post-merge session)
+
+- Added populated-Dashboard interim structural baseline (`src/pages/DashboardPage.populated.contract.test.tsx` + snapshot): seeded fixture entries; truth-state markup (Draft — Local workspace data), h1 header, KPI grid, h2 sections are all pinned deterministically. Pixels/fonts/theme/responsive remain unclaimed (browser baseline still blocked in this environment).
+- Fixed a real accessibility defect the new baseline surfaced: populated Dashboard heading order jumped h1 → h3. Page-scoped fix — section headings now h2; `ChartWrapper` gained backward-compatible `headingLevel` prop (default h3) with unit tests.
+- `jest-axe` passes on the populated Dashboard state.
+- QA report updated: `_bmad/qa/story-f02-atlas-foundation-review.md`. Verdict remains REJECTED — REQUIRES COMPLETION (pixel baseline).
+
 ## Definition of Done
 - [ ] All acceptance criteria verified.
 - [ ] Tests cover new branches/components.

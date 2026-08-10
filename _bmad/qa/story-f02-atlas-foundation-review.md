@@ -38,6 +38,28 @@ An interim deterministic DOM/class snapshot baseline now protects Atlas hierarch
 - **2026-08-10 (new session, after merge):** Playwright Chromium install re-attempted per the runbook (`node node_modules/@playwright/test/cli.js install chromium`). Download still fails with TLS `ECONNRESET` / `SSL_ERROR_SYSCALL` against `cdn.playwright.dev`, `playwright.azureedge.net`, and `cdn.npmmirror.com`; no system Chromium binary is present and no package-manager install is permitted in this sandbox. The browser pixel baseline therefore remains **BLOCKED / NOT IMPLEMENTED**.
 - Verdict unchanged: **REJECTED — REQUIRES COMPLETION** until the visual-regression runbook is executed in a browser-capable environment.
 
+## Interim evidence extension — populated Dashboard baseline (2026-08-10, same session)
+
+Extends the interim structural baseline (still DOM/class only; pixels, fonts, theme, and responsive layout remain unverified and are NOT claimed):
+
+- New deterministic structural baseline for the **populated** Dashboard state: `src/pages/DashboardPage.populated.contract.test.tsx` + `src/pages/__snapshots__/DashboardPage.populated.contract.test.tsx.snap`. Seeded fixture entries (fixed periods, no dates/random) preserve the truth-state markup (`data-financial-status="draft"`, role="status", text "Draft — Local workspace data"), the h1 page header, and the KPI/h2-section hierarchy.
+- The new baseline immediately surfaced a real accessibility defect: the populated Dashboard skipped heading levels (h1 → h3). Fixed page-scoped, without broad repaint:
+  - `DashboardPage.tsx` section headings (Budget Status, Key Ratios, Recent Activity, Sector KPIs) changed h3 → h2.
+  - `ChartWrapper` gained a backward-compatible `headingLevel` prop (default `h3`; Dashboard passes `h2`), covered by new unit tests.
+- `jest-axe` now passes on the populated Dashboard state (was previously only covered for the setup/empty state).
+- Verification: targeted suite 7 files / 44 tests pass; root `tsc --noEmit` 0 errors; changed-file ESLint 0 warnings/errors; `git diff --check` clean.
+
+This extension does NOT close the pixel-baseline rejection reason. It strengthens the interim signal only.
+
+## Stale-test reconciliation (2026-08-10, same session)
+
+The first full-suite run on merged main surfaced two tests asserting the pre-merge Dashboard empty state ("Welcome to FinPlan Pro"). Verified pre-existing on clean merged main via a temporary worktree at HEAD (not caused by this session's changes):
+
+- `src/pages/dashboard/DashboardPage.test.tsx` — "displays the welcome message when no data exists"
+- `src/pages/smoke.test.tsx` — "Page Smoke Tests > DashboardPage > displays the welcome message when no data exists"
+
+Both updated to assert the merged `FinancialWorkspaceEmptyState` heading ("Set up your finance workspace") and renamed truthfully. Full-suite status after the fix is recorded in the QA log of the final verification run.
+
 ## Security / regression review
 
-No new authorization, financial calculation, or external-data behavior was added. Dashboard explicitly labels populated data as local workspace draft state, reducing the risk of false authority claims.
+No new authorization, financial calculation, or external-data behavior was added. Dashboard explicitly labels populated data as local workspace draft state, reducing the risk of false authority claims. The heading-level change is presentational/semantic only; no route, store, engine, or calculation behavior changed.

@@ -87,7 +87,7 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | secondary-voice-triangulation-2026-08-10.md | SECONDARY | Public review signals used only to refine research questions, never as primary validation |
 | FinancialWorkspaceEmptyState component | VERIFIED FOUNDATION | Added to Dashboard no-data state; targeted UI tests and root typecheck passed on 2026-08-10 |
 | F-01 Capability evidence governance | DONE / QA APPROVED | All route/module rows classified with role/disposition; 0 unresolved route source mappings; maturity claims remain UNVERIFIED |
-| F-02 Atlas foundation | IN PROGRESS / QA REJECTED | Lint/type/tests, canonical automated a11y, and structural snapshot baseline pass; browser pixel baseline remains blocked by Playwright Chromium TLS download failures |
+| F-02 Atlas foundation | IN PROGRESS / QA REJECTED | Lint/type/tests, canonical automated a11y (empty + populated states), and structural snapshot baselines (empty + populated) pass; populated-state baseline surfaced and fixed a real heading-order defect; browser pixel baseline remains blocked by Playwright Chromium TLS download failures |
 | brainstorm strategic wedge | DIRECTION SET | hypothesis direction, not primary validation |
 | product-brief.md | REVALIDATION REQUIRED | created before Phase 0 research restart |
 | prd.md | REVALIDATION REQUIRED | must trace to approved research |
@@ -123,6 +123,8 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | 2026-08-10 | Amelia / Quinn | Added Atlas status/header foundations and verified focused tests/typecheck before research restart. |
 | 2026-08-10 | Bob | Created prior Story Pack A; now paused pending research reconciliation. |
 | 2026-08-10 | System | Investigated merged-main CI failures in a healthy `gh` environment: every workflow job fails before starting with GitHub annotation "recent account payments have failed or your spending limit needs to be increased" — repo-wide billing block predating PR #53, not a code regression. Owner action required on GitHub billing; local verification of merged main (`f3834e2`) passes. See `_bmad/qa/ci-actions-billing-block-2026-08-10.md`. |
+| 2026-08-10 | Amelia / Quinn | Extended F-02 interim evidence: populated-Dashboard structural baseline + jest-axe (`DashboardPage.populated.contract.test.tsx`); fixed real heading-order defect found by it (Dashboard sections h3 → h2; `ChartWrapper` gained backward-compatible `headingLevel` prop). Pixel baseline remains blocked; F-02 verdict unchanged (REJECTED — REQUIRES COMPLETION). |
+| 2026-08-10 | Amelia / Quinn | Reconciled two stale tests broken by the merged Dashboard empty-state change (`src/pages/dashboard/DashboardPage.test.tsx`, `src/pages/smoke.test.tsx`): verified pre-existing on clean merged main via temp worktree, then updated assertions to the merged `FinancialWorkspaceEmptyState` heading. |
 
 ## 14. CI / GitHub Actions status
 

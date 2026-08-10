@@ -1,0 +1,399 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DashboardPage populated-state contract (interim structural baseline) > preserves the populated hierarchy in the deterministic DOM baseline 1`] = `
+<div>
+  <div
+    class="fp-page space-y-6"
+  >
+    <header
+      class="fp-page-header dashboard-header"
+    >
+      <div>
+        <div
+          class="flex flex-wrap items-center gap-3"
+        >
+          <h1
+            class="fp-page-header__title"
+          >
+            Executive Dashboard
+          </h1>
+          <span
+            aria-label="Draft; not published: Local workspace data"
+            class="fp-financial-status fp-financial-status--draft"
+            data-financial-status="draft"
+            role="status"
+          >
+            <span
+              aria-hidden="true"
+              class="fp-financial-status__icon"
+            >
+              ✎
+            </span>
+            <span>
+              Draft
+            </span>
+            <span
+              class="fp-financial-status__detail"
+            >
+              Local workspace data
+            </span>
+          </span>
+        </div>
+        <div
+          class="fp-page-header__purpose"
+        >
+          4 entries · 1 accounts · 0 budgets
+        </div>
+        <div
+          class="mt-2 flex items-center gap-3"
+        >
+          <button
+            aria-label="Help"
+            class="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+          >
+            <span
+              class="h-5 w-5"
+              data-testid="mock-icon"
+            />
+          </button>
+          <button
+            class="inline-flex items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 h-9 px-3 rounded-md text-blue-400"
+          >
+            Start Guide
+          </button>
+        </div>
+      </div>
+      <div
+        class="fp-page-header__actions"
+      >
+        <button
+          aria-label="Import financial data"
+          class="inline-flex items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-gray-100 text-[var(--text-primary)] hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 h-9 px-3 rounded-md"
+        >
+          <span
+            class="h-3.5 w-3.5 mr-1.5"
+            data-testid="mock-icon"
+          />
+          Import
+        </button>
+      </div>
+    </header>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 kpi-grid"
+    >
+      <div
+        class="cursor-pointer"
+        role="button"
+        tabindex="0"
+      >
+        <div
+          data-testid="kpi-card"
+        >
+          Total Revenue
+        </div>
+      </div>
+      <div
+        class="cursor-pointer"
+        role="button"
+        tabindex="0"
+      >
+        <div
+          data-testid="kpi-card"
+        >
+          Gross Profit
+        </div>
+      </div>
+      <div
+        class="cursor-pointer"
+        role="button"
+        tabindex="0"
+      >
+        <div
+          data-testid="kpi-card"
+        >
+          Net Income
+        </div>
+      </div>
+      <div
+        class="cursor-pointer"
+        role="button"
+        tabindex="0"
+      >
+        <div
+          data-testid="kpi-card"
+        >
+          Total Expenses
+        </div>
+      </div>
+    </div>
+    <div
+      class="grid grid-cols-1 lg:grid-cols-3 gap-4"
+    >
+      <div
+        class="rounded-xl border bg-card text-card-foreground shadow-sm dark:border-gray-700 dark:bg-gray-800"
+      >
+        <div
+          class="flex flex-col space-y-1.5 p-6 px-4 py-3 border-b border-slate-800"
+        >
+          <h2
+            class="font-semibold text-sm flex items-center gap-2"
+          >
+            <span
+              class="h-4 w-4 text-blue-400"
+              data-testid="mock-icon"
+            />
+            Budget Status
+          </h2>
+        </div>
+        <div
+          class="p-4"
+        >
+          <div
+            class="text-sm space-y-3"
+          >
+            <div
+              class="flex justify-between"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Active Budgets
+              </span>
+              <span
+                class="font-semibold"
+              >
+                0
+              </span>
+            </div>
+            <div
+              class="flex justify-between"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Total Budget
+              </span>
+              <span
+                class="font-semibold tabular-nums"
+              >
+                $0
+              </span>
+            </div>
+            <div
+              class="flex justify-between"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Utilization
+              </span>
+              <span
+                class="font-semibold text-green-400"
+              >
+                0.0%
+              </span>
+            </div>
+            <div
+              class="w-full bg-slate-800 rounded-full h-2 mt-1"
+            >
+              <div
+                aria-hidden="true"
+                class="h-full rounded-full transition-all bg-green-500"
+                style="width: 0%;"
+              />
+            </div>
+            <div
+              class="flex justify-center mt-3"
+            >
+              <div
+                data-testid="gauge-chart"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="rounded-xl border bg-card text-card-foreground shadow-sm dark:border-gray-700 dark:bg-gray-800"
+      >
+        <div
+          class="flex flex-col space-y-1.5 p-6 px-4 py-3 border-b border-slate-800"
+        >
+          <h2
+            class="font-semibold text-sm flex items-center gap-2"
+          >
+            <span
+              class="h-4 w-4 text-purple-400"
+              data-testid="mock-icon"
+            />
+            Key Ratios
+          </h2>
+        </div>
+        <div
+          class="p-4"
+        >
+          <div
+            class="text-sm space-y-3"
+          >
+            <div
+              class="flex justify-between"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Gross Margin
+              </span>
+              <span
+                class="font-semibold tabular-nums"
+              >
+                72.7%
+              </span>
+            </div>
+            <div
+              class="flex justify-between"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Expense Ratio
+              </span>
+              <span
+                class="font-semibold tabular-nums"
+              >
+                9.1%
+              </span>
+            </div>
+            <div
+              class="flex justify-between"
+            >
+              <span
+                class="text-slate-400"
+              >
+                Net Margin
+              </span>
+              <span
+                class="font-semibold tabular-nums text-green-400"
+              >
+                63.6%
+              </span>
+            </div>
+            <div
+              class="pt-2"
+            >
+              <button
+                aria-label="View detailed Profit and Loss report"
+                class="inline-flex items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none hover:bg-[var(--bg-hover)] dark:hover:bg-gray-700 h-9 px-3 rounded-md w-full"
+              >
+                View Full P&L
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="rounded-xl border bg-card text-card-foreground shadow-sm dark:border-gray-700 dark:bg-gray-800"
+      >
+        <div
+          class="flex flex-col space-y-1.5 p-6 px-4 py-3 border-b border-slate-800"
+        >
+          <h2
+            class="font-semibold text-sm"
+          >
+            Recent Activity
+          </h2>
+        </div>
+        <div
+          class="p-4"
+        >
+          <div
+            data-testid="activity-feed"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      data-testid="chart-wrapper"
+    >
+      <h2>
+        Monthly Financial Trend
+      </h2>
+      <div
+        data-testid="responsive-container"
+      >
+        <div
+          data-testid="area-chart"
+        >
+          <defs>
+            <lineargradient
+              id="colorRevenue"
+              x1="0"
+              x2="0"
+              y1="0"
+              y2="1"
+            >
+              <stop
+                offset="5%"
+                stop-color="#10b981"
+                stop-opacity="0.3"
+              />
+              <stop
+                offset="95%"
+                stop-color="#10b981"
+                stop-opacity="0"
+              />
+            </lineargradient>
+            <lineargradient
+              id="colorExpenses"
+              x1="0"
+              x2="0"
+              y1="0"
+              y2="1"
+            >
+              <stop
+                offset="5%"
+                stop-color="#ef4444"
+                stop-opacity="0.3"
+              />
+              <stop
+                offset="95%"
+                stop-color="#ef4444"
+                stop-opacity="0"
+              />
+            </lineargradient>
+          </defs>
+        </div>
+      </div>
+    </div>
+    <div
+      class="grid grid-cols-1 lg:grid-cols-3 gap-4"
+    >
+      <div
+        class="lg:col-span-1"
+      >
+        <div
+          data-testid="ai-copilot-panel"
+        />
+      </div>
+      <div
+        class="lg:col-span-1"
+      >
+        <div
+          data-testid="nlq-chat"
+        />
+      </div>
+      <div
+        class="lg:col-span-1"
+      >
+        <div
+          data-testid="anomaly-highlight"
+        />
+      </div>
+    </div>
+    <div
+      data-testid="help-panel"
+    />
+    <div
+      data-testid="drill-down-modal"
+    />
+  </div>
+</div>
+`;
