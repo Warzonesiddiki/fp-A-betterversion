@@ -71,9 +71,9 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 
 | Artifact | Version / status | Notes |
 |---|---|---|
-| research-report.md | v2.0 REBASELINED | Hypothesis baseline re-baselined 2026-08-10; v1 preserved below; primary validation mandatory |
-| assumption-registry.md | v2.0 ACTIVE | 14 tracked assumptions, all UNVALIDATED (evidence links column added; E-004/E-005 are technical/environmental only) |
-| validation-plan.md | v2.0 ACTIVE | Primary research thresholds/interview guides; R-01 ops ready, externally blocked |
+| research-report.md | v2.1 REBASELINED (v5 re-certified) | Hypothesis baseline re-baselined 2026-08-10; v1 preserved below; primary validation mandatory |
+| assumption-registry.md | v2.1 ACTIVE | 14 tracked assumptions, all UNVALIDATED, confidence-scored (v5); E-004/E-005 technical/environmental only |
+| validation-plan.md | v2.0 ACTIVE (v5 re-certified) | Primary research thresholds/interview guides; R-01 ops ready, externally blocked |
 | participant-screener.md | v1 ACTIVE | Sample and bias-control protocol |
 | evidence-log.md | ACTIVE — no primary customer evidence | E-001/E-002 owner direction; E-003 secondary; E-004 technical verification; E-005 CI billing block |
 | research-to-requirements-traceability.md | v2.0 ACTIVE | Added R-06/R-07; safe-foundation rows F-01/F-02 recorded |
@@ -160,6 +160,7 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | 2026-08-10 | Amelia / Quinn | Extended Atlas structural baseline to 8 tests: all ten `FinancialStatusBadge` lifecycle states (text + icon + role + data attribute, never colour-only; deterministic badge-set snapshot) and PageHeader full/minimal anatomy. Fixed 11 broken backtick citations found by `docs-link-check --strict` across 6 BMAD docs (0 broken links/citations repo-wide now). Production build + bundle check green. F-02 verdict unchanged (pixel baseline blocked). |
 | 2026-08-10 | Amelia / Quinn | Completed F-04 client side: `src/api/commandClient.ts` typed Control-Plane transport (`submitCommand`/`getCommandResult`, bearer auth, typed errors, `isCommandResult` validation, feature-flag gated via `VITE_CONTROL_PLANE_URL`/`VITE_ENABLE_CONTROL_PLANE`); contract types (`CommandResult`/`CommandError`/`CommandStatus`) mirrored in `src/types/commandEnvelope.ts`. 14 client/contract tests (mocked fetch). Not wired into any screen until a Control Plane deployment is configured. QA addendum filed; architecture §11.1 updated. |
 | 2026-08-10 | System / All agents | **BMAD v5.0 ULTRA-YOLO upgrade (owner direction):** new `_bmad/BMAD_V5_OPERATING_CHARTER.md` (DRP + reasoning ledger + autonomy matrix + repo-mapped escalations); v4 charter superseded (historical); `_bmad/reasoning-ledger.md` established and backfilled (entries #1–#8); path-lock updated to v5; project-context gains §10 autonomy tracker and §13 ledger reference. Locked delivery path and hypothesis gates unchanged. |
+| 2026-08-10 | System / All agents | **BMAD v5.0 restart from Step 1 (owner direction, reusing existing docs):** `_bmad/v5-restart-2026-08-10.md` records phase-by-phase DRP re-certification — Step 1 Phase 0 (research v2.1 + assumption-registry v2.1 with Confidence/Last-reviewed columns), Step 2 Phase 1 (brief v2.3), Step 3 Phase 2 (PRD/UX v5 headers), Step 4 Phase 3 (architecture v5 header + F-04 spike evidence), Step 5 Phase 4 (sprint-plan v2.2 + story/QA status verification). Reasoning ledger entries #9–#13 appended. No market assumption status changed; gates G0–G5 remain approved hypotheses. |
 
 ## 16. CI / GitHub Actions status
 

@@ -1,6 +1,6 @@
 # Product Requirements Document — FinPlan Pro Enterprise Decision System
 
-> **Status:** APPROVED HYPOTHESIS PRD — Gate G2 approved by owner on 2026-08-10; re-baselined 2026-08-10 (YOLO mode); primary validation remains mandatory
+> **Status:** APPROVED HYPOTHESIS PRD — Gate G2 approved by owner on 2026-08-10; re-baselined 2026-08-10 (YOLO mode); **BMAD v5.0 re-certified 2026-08-10** (restart Step 3, see `_bmad/v5-restart-2026-08-10.md`); primary validation remains mandatory
 > **BMAD phase:** 2 — Planning & Requirements complete
 > **Depends on:** approved hypothesis Product Brief (G1), `_bmad/research/research-report.md`, `_bmad/research/assumption-registry.md`, `_bmad/research/research-to-requirements-traceability.md`, `_bmad/project-context.md`, `docs/CAPABILITY_TRUTH_MATRIX.md`
 > **Scope:** First enterprise release hypothesis plus sequenced capability boundaries. This is not authorization to implement.

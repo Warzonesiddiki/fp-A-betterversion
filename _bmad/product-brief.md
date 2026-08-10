@@ -1,6 +1,6 @@
 # Product Brief — FinPlan Pro, Research-Informed v2
 
-> **Version:** 2.2 · **Status:** APPROVED HYPOTHESIS BRIEF — Gate G1 approved by owner on 2026-08-10; re-baselined 2026-08-10 (YOLO mode) · **Phase:** BMAD v4 Discovery complete
+> **Version:** 2.3 · **Status:** APPROVED HYPOTHESIS BRIEF — Gate G1 approved by owner on 2026-08-10; re-baselined 2026-08-10 (YOLO mode); **BMAD v5.0 re-certified 2026-08-10** (restart Step 2, see `_bmad/v5-restart-2026-08-10.md`) · **Phase:** BMAD v5 Discovery complete
 > **Inputs:** approved Phase 0 hypothesis baseline, `_bmad/research/assumption-registry.md`, `_bmad/research/validation-plan.md`, `_bmad/research/owner-direction-record-2026-08-10.md`, `_bmad/brainstorm/session-strategic-wedge-2026-08-10.md`
 
 > **v2.2 rebaseline notes (2026-08-10):** No thesis, scope, or success-criteria change. Merged delivery (PR #53) verified; full-suite/type/lint/build/audit verification recorded (E-004); CI red explained as account billing block (E-005); F-02 pixel baseline still blocked. All market claims remain hypothesis-level. See §2 evidence table below.

@@ -1,6 +1,6 @@
 # Architecture — FinPlan Pro Enterprise Decision System
 
-> **Status:** APPROVED HYPOTHESIS ARCHITECTURE — Gate G4 approved by owner on 2026-08-10; re-baselined 2026-08-10 (YOLO mode); primary validation remains mandatory
+> **Status:** APPROVED HYPOTHESIS ARCHITECTURE — Gate G4 approved by owner on 2026-08-10; re-baselined 2026-08-10 (YOLO mode); **BMAD v5.0 re-certified 2026-08-10** (restart Step 4, see `_bmad/v5-restart-2026-08-10.md`); primary validation remains mandatory
 > **BMAD phase:** 3 — Solutioning & Architecture complete
 > **Inputs:** approved hypothesis Product Brief (G1), PRD (G2), UX specification (G3), `_bmad/research/research-report.md`, `_bmad/research/research-to-requirements-traceability.md`, `_bmad/project-context.md`
 > **Architecture principle:** Incrementally make official finance operations authoritative, auditable, tenant-safe, and operable. Do not rewrite working calculation/UI code merely to match a fashionable stack.

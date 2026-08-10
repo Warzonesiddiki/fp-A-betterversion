@@ -180,4 +180,84 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 
 ## New entries (from this method-upgrade session)
 
+## Ledger Entry #9 — 2026-08-10 — Rex
+
+### Decision/Topic: v5 restart Step 1 — re-certify Phase 0 (research baseline + assumptions with confidence scoring)
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | v5 requires confidence-governed autonomy: every assumption needs an explicit confidence score in addition to its validation status. |
+| Evidence | research-report v2.0, assumption-registry v2.0 (14 assumptions), validation-plan v2.0, evidence-log E-001..E-005; no new primary evidence. |
+| Options Considered | Rewrite research (rejected: churn, no evidence change); re-certify + add Confidence/Last-reviewed columns (ADOPTED); skip (rejected: v5 standard unmet). |
+| Risk Probe | Confidence scores misread as validation — mitigated: scores are confidence-in-hypothesis; Status column remains UNVALIDATED; header note explains. |
+| Consequence Projection | Registry v2.1; every assumption scored honestly (A-05 40% highest, A-01 10% lowest); gates unchanged. |
+| Confidence Score | 94% |
+| Autonomy Level | A5 |
+
+### Adopted Path: registry v2.1 + research-report v2.1 header + `_bmad/v5-restart-2026-08-10.md` Step 1.
+
+## Ledger Entry #10 — 2026-08-10 — Ana
+
+### Decision/Topic: v5 restart Step 2 — re-certify Phase 1 (Product Brief)
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | Brief must stay traceable to research/assumptions; v5 adds the reasoning ledger requirement. |
+| Evidence | product-brief v2.2 (G1-approved); thesis, evidence table, A-13-tagged target customer all intact. |
+| Options Considered | Rewrite (rejected); re-certify (ADOPTED); skip (rejected). |
+| Risk Probe | Stale claims — verified sections still match research v2.x. |
+| Confidence Score | 93% · Autonomy Level | A5 |
+
+### Adopted Path: brief v2.3 header + restart record Step 2.
+
+## Ledger Entry #11 — 2026-08-10 — Percy/Uxie
+
+### Decision/Topic: v5 restart Step 3 — re-certify Phase 2 (PRD + UX)
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | Every requirement/UX pattern must trace to research or assumptions; NFRs measurable. |
+| Evidence | prd v2.1 (G2), ux-design v2.1 (G3), traceability matrix; F-03 implemented the UX §4 trust-language contract (context bar + badges). |
+| Options Considered | Rewrite (rejected); re-certify (ADOPTED); skip (rejected). |
+| Risk Probe | Requirements drift — traceability matrix verified current (R-01..R-07, A-01..A-14). |
+| Confidence Score | 93% · Autonomy Level | A5 |
+
+### Adopted Path: PRD/UX v5 headers + restart record Step 3.
+
+## Ledger Entry #12 — 2026-08-10 — Archie
+
+### Decision/Topic: v5 restart Step 4 — re-certify Phase 3 (Architecture + ADRs)
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | Architecture decisions trace to requirements; rejected alternatives documented; spike evidence recorded. |
+| Evidence | architecture v2.1 (G4) with ADR register; F-04 spike outcome §11.1 (envelope, scope, idempotency, audit; migration path); alignment report. |
+| Options Considered | Rewrite (rejected); re-certify (ADOPTED); skip (rejected). |
+| Risk Probe | Spike claims overread — §11.1 explicitly marks spike-only and sandbox mock-DB caveat. |
+| Confidence Score | 92% · Autonomy Level | A5 |
+
+### Adopted Path: architecture v5 header + restart record Step 4.
+
+## Ledger Entry #13 — 2026-08-10 — Bob/Amelia/Quinn
+
+### Decision/Topic: v5 restart Step 5 — re-certify Phase 4 (Delivery: sprint plan, stories, verification)
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | Delivery must sequence evidence (R) before pilot commitments (P), with safe foundations (F) that do not pre-decide market choices; statuses must match QA evidence. |
+| Evidence | sprint-plan v2.1 status table; stories R-01 (IN PROGRESS), R-02..04 (BLOCKED), F-01/F-03/F-04 (DONE/QA-APPROVED), F-02 (IN PROGRESS); QA reports filed. |
+| Options Considered | Re-shard (rejected: approved plan stands); re-certify statuses (ADOPTED); skip (rejected). |
+| Risk Probe | Status drift — each status cross-checked against its QA report before this entry. |
+| Consequence Projection | Restart record complete; open escalations (CI billing, workflows permission, R-01, F-02 browser) carried forward. |
+| Confidence Score | 94% · Autonomy Level | A5 |
+
+### Adopted Path: sprint-plan v2.2 header + restart record Step 5 + this ledger set.
+
+---
+
 <!-- Future entries append below this line. -->

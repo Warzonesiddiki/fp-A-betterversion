@@ -1,6 +1,6 @@
 # FinPlan Pro — Research-Informed Delivery Plan
 
-> **Version:** 2.1 · **Status:** APPROVED HYPOTHESIS DELIVERY PLAN — Gate G5 approved by owner on 2026-08-10; re-baselined 2026-08-10 (YOLO mode)
+> **Version:** 2.2 · **Status:** APPROVED HYPOTHESIS DELIVERY PLAN — Gate G5 approved by owner on 2026-08-10; re-baselined 2026-08-10 (YOLO mode); **BMAD v5.0 re-certified 2026-08-10** (restart Step 5, see `_bmad/v5-restart-2026-08-10.md`)
 > **Inputs:** G0–G4 approved hypothesis artifacts, traceability matrix, assumption registry, capability truth matrix
 > **Rule:** No implementation story may turn an unvalidated market/user/deployment assumption into an irreversible product commitment.
 

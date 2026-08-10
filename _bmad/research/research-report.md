@@ -1,6 +1,6 @@
 # Research Report — FinPlan Pro Enterprise Decision System
 
-> **Version:** 2.0 · **Status:** REBASELINED HYPOTHESIS BASELINE — Gate G0 approved by owner on 2026-08-10; re-baselined in a new session 2026-08-10 under YOLO mode; primary validation remains mandatory
+> **Version:** 2.1 · **Status:** REBASELINED HYPOTHESIS BASELINE — Gate G0 approved by owner on 2026-08-10; re-baselined 2026-08-10 under YOLO mode; **BMAD v5.0 re-certified 2026-08-10** (restart Step 1, see `_bmad/v5-restart-2026-08-10.md`); primary validation remains mandatory
 > **Research Director:** Rex · **Date:** 2026-08-10
 > **Method:** Brownfield code/document audit plus desk research. Vendor claims are treated as competitive signals, not independent proof.
 
