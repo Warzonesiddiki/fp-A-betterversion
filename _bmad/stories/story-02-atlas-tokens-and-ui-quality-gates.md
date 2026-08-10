@@ -1,6 +1,6 @@
 # Story 02: FinPlan Atlas Tokens and UI Quality Gates
 
-## Status: IN PROGRESS — initial financial-state primitive added; validation blocked because node_modules is absent
+## Status: SUPERSEDED — 2026-08-10 (replaced by `story-f02-atlas-foundation-completion.md`; foundation merged via PR #53; F-02 remains IN PROGRESS pending browser pixel baseline)
 
 ## Context & Purpose
 Fulfils PRD E1 and UX §6. Replaces ad-hoc/generic styling foundations before screen migration.

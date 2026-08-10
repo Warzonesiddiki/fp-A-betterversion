@@ -1,6 +1,7 @@
 # Research Validation Plan — FinPlan Strategic Wedge
 
-> **Status:** ACTIVE · **Owner:** Rex + Ana · **Purpose:** Turn desk-research hypotheses into buyer, user, security, and economic evidence before Release 1 scope is finalized.
+> **Status:** ACTIVE · **Version:** 2.0 (rebaselined 2026-08-10, YOLO mode) · **Owner:** Rex + Ana · **Purpose:** Turn desk-research hypotheses into buyer, user, security, and economic evidence before Release 1 scope is finalized.
+> **Session status:** R-01 recruitment operations are prepared (screener, outreach template, tracker, session-notes template); no participants or anonymized notes have been received. No primary evidence recorded (E-004/E-005 are technical/environmental, not market evidence). Do not fabricate sessions to "complete" this plan.
 
 ## Decision to validate
 

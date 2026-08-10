@@ -1,6 +1,6 @@
 # Project Context — FinPlan Pro
 
-> **Last updated:** 2026-08-10 · **Updated by:** Rex / Blaze
+> **Last updated:** 2026-08-10 · **Updated by:** Rex / Blaze (new-session rebaseline, YOLO mode)
 
 ## 1. Project name & description
 
@@ -8,10 +8,12 @@ FinPlan Pro is a brownfield React/Tauri FP&A application being transformed into 
 
 ## 2. Current phase & status
 
-- **Current phase:** 4b — Evidence-track delivery. Gates G0–G5 approved hypothesis artifacts/planning on 2026-08-10; primary validation remains active.
-- **Active story:** R-01 Recruit enterprise buying-committee sample — IN PROGRESS. Story 02 remains PAUSED; its Atlas foundation changes are retained but broad UI migration remains blocked.
+- **Current phase:** 4b — Evidence-track delivery. Gates G0–G5 approved hypothesis artifacts/planning on 2026-08-10; **full artifact stack re-baselined on 2026-08-10 (v2.x) in a new session under YOLO mode**; primary validation remains active.
+- **Active story:** R-01 Recruit enterprise buying-committee sample — IN PROGRESS, externally blocked (no participants/anonymized notes; nothing fabricated).
+- **Safe foundations:** F-01 DONE / QA APPROVED. F-02 IN PROGRESS / QA REJECTED (structural + a11y baselines pass incl. populated state; browser pixel baseline blocked). F-03/F-04 stories approved and research-contextualized — implementation pending.
+- **Pilot track (P-01…P-07):** BLOCKED until R-04.
 - **Operating mode:** YOLO delivery authorized by owner; no conversational pauses, but research, assumptions, tests, QA evidence, and documented decisions remain mandatory.
-- **Next action:** Owner selected both unblockers (E-002): execute R-01/R-02 when anonymized participant material/access is available and execute F-02 visual baseline when a browser-capable environment is available.
+- **Next action:** (1) Execute R-01/R-02 when anonymized participant material/access is available; (2) execute F-02 visual baseline when a browser-capable environment is available; (3) owner resolves GitHub billing block so CI can run; (4) implement F-03/F-04 from their approved stories once this doc/verification cycle is committed.
 
 ## 3. Research intelligence summary
 
@@ -55,11 +57,12 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 
 | Artifact | Version / status | Notes |
 |---|---|---|
-| research-report.md | v1 DRAFT | Desk-research intelligence baseline |
-| assumption-registry.md | v1 ACTIVE | 13 tracked assumptions |
-| validation-plan.md | v1 ACTIVE | Primary research thresholds/interview guides |
+| research-report.md | v2.0 REBASELINED | Hypothesis baseline re-baselined 2026-08-10; v1 preserved below; primary validation mandatory |
+| assumption-registry.md | v2.0 ACTIVE | 14 tracked assumptions, all UNVALIDATED (evidence links column added; E-004/E-005 are technical/environmental only) |
+| validation-plan.md | v2.0 ACTIVE | Primary research thresholds/interview guides; R-01 ops ready, externally blocked |
 | participant-screener.md | v1 ACTIVE | Sample and bias-control protocol |
-| evidence-log.md | EMPTY | No primary evidence recorded yet |
+| evidence-log.md | ACTIVE — no primary customer evidence | E-001/E-002 owner direction; E-003 secondary; E-004 technical verification; E-005 CI billing block |
+| research-to-requirements-traceability.md | v2.0 ACTIVE | Added R-06/R-07; safe-foundation rows F-01/F-02 recorded |
 | materiality-decision-policy-model.md | v1 DRAFT | Decision Workspace policy hypothesis; requires primary validation |
 | financial-metric-lineage-model.md | v1 DRAFT | Official-number/evidence contract; requires controller/auditor/security validation |
 | financial-model-workspace-contract.md | v1 DRAFT | Analyst grid/formula/version/conflict/offline contract; requires primary workflow validation |
@@ -89,11 +92,14 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | F-01 Capability evidence governance | DONE / QA APPROVED | All route/module rows classified with role/disposition; 0 unresolved route source mappings; maturity claims remain UNVERIFIED |
 | F-02 Atlas foundation | IN PROGRESS / QA REJECTED | Lint/type/tests, canonical automated a11y (empty + populated states), and structural snapshot baselines (empty + populated) pass; populated-state baseline surfaced and fixed a real heading-order defect; browser pixel baseline remains blocked by Playwright Chromium TLS download failures |
 | brainstorm strategic wedge | DIRECTION SET | hypothesis direction, not primary validation |
-| product-brief.md | REVALIDATION REQUIRED | created before Phase 0 research restart |
-| prd.md | REVALIDATION REQUIRED | must trace to approved research |
-| ux-design.md | REVALIDATION REQUIRED | must trace to user research |
-| architecture.md | REVALIDATION REQUIRED | must trace to technical feasibility research |
-| sprint-plan/stories | PAUSED | no further story execution until Phase 0 reconciliation |
+| product-brief.md | v2.2 APPROVED HYPOTHESIS BRIEF | Re-baselined 2026-08-10; no scope/thesis change |
+| prd.md | v2.1 APPROVED HYPOTHESIS PRD | Re-baselined 2026-08-10; no requirement change |
+| ux-design.md | v2.1 APPROVED HYPOTHESIS UX | Re-baselined 2026-08-10; heading-hierarchy rule implemented |
+| architecture.md | v2.1 APPROVED HYPOTHESIS ARCHITECTURE | Re-baselined 2026-08-10; no ADR change |
+| alignment-report.md | v2.1 COMPLETE | Verdict unchanged; 5 open decisions remain |
+| sprint-plan | v2.1 APPROVED HYPOTHESIS DELIVERY PLAN | Live execution-status table added |
+| story-f01 / story-f02 | DONE / IN PROGRESS | F-02 QA REJECTED only for pixel baseline |
+| story-f03 / story-f04 | APPROVED — implementation pending | Research-contextualized 2026-08-10 |
 | capability truth matrix | ACTIVE | mechanical source/test evidence baseline |
 
 ## 11. Brainstorm sessions conducted
@@ -125,10 +131,13 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | 2026-08-10 | System | Investigated merged-main CI failures in a healthy `gh` environment: every workflow job fails before starting with GitHub annotation "recent account payments have failed or your spending limit needs to be increased" — repo-wide billing block predating PR #53, not a code regression. Owner action required on GitHub billing; local verification of merged main (`f3834e2`) passes. See `_bmad/qa/ci-actions-billing-block-2026-08-10.md`. |
 | 2026-08-10 | Amelia / Quinn | Extended F-02 interim evidence: populated-Dashboard structural baseline + jest-axe (`DashboardPage.populated.contract.test.tsx`); fixed real heading-order defect found by it (Dashboard sections h3 → h2; `ChartWrapper` gained backward-compatible `headingLevel` prop). Pixel baseline remains blocked; F-02 verdict unchanged (REJECTED — REQUIRES COMPLETION). |
 | 2026-08-10 | Amelia / Quinn | Reconciled two stale tests broken by the merged Dashboard empty-state change (`src/pages/dashboard/DashboardPage.test.tsx`, `src/pages/smoke.test.tsx`): verified pre-existing on clean merged main via temp worktree, then updated assertions to the merged `FinancialWorkspaceEmptyState` heading. |
+| 2026-08-10 | System / Rex | New-session P0: local refs reconciled to remote branch `4d6d402` (fast-forward via `update-ref` + index refresh; no destructive commands, nothing discarded). Baseline verified: full suite 1,179 files / 13,315 tests passed, tsc 0 errors, inventory/docs/audit/diff green. |
+| 2026-08-10 | Rex / Blaze | BMAD v4 Phase 0–4 restart: full artifact stack re-baselined to v2.x (research-report v2.0, assumption-registry v2.0, traceability v2.0, validation-plan v2.0, brief v2.2, PRD v2.1, UX v2.1, architecture v2.1, alignment v2.1, sprint-plan v2.1) with evidence entries E-004/E-005; story-02/03/04 superseded; story-f03/f04 created and approved for implementation; no market assumption status changed. |
+| 2026-08-10 | Rex | F-02 environment re-check: Playwright Chromium download re-attempted in new sandbox — still TLS `ECONNRESET` (cdn.playwright.dev). Pixel baseline remains BLOCKED; verdict unchanged. |
 
 ## 14. CI / GitHub Actions status
 
 - **2026-08-10:** All workflow runs fail before any job step runs. GitHub check-run annotation: *"The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings"*. Affects every workflow (CI, tsc, lint, test-unit, build, deploy, cascade-hold, sentry-self-test) on commits predating PR #53 as well as merged main — a repo-wide infrastructure block, **not** a code regression.
-- Local verification of merged main (commit `f3834e2`) passes: typecheck, Atlas/Dashboard suite (5 files / 18 tests), changed-file lint, capability inventory, docs truth, production dependency audit, diff hygiene.
+- Local verification of merged main + session branch passes (re-run in new session 2026-08-10): full unit suite **1,179 files / 13,315 tests passed** (1 skipped), root `tsc --noEmit` 0 errors, full-src ESLint 0 warnings, production build passed, capability inventory deterministic, docs truth passed, production dependency audit 0 vulnerabilities, diff hygiene clean. Evidence: E-004.
 - Owner action required: resolve the GitHub account billing / spending limit, then re-run workflows. Until jobs execute, CI status must not be treated as code evidence.
 - Details: `_bmad/qa/ci-actions-billing-block-2026-08-10.md`

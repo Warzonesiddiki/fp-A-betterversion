@@ -1,6 +1,12 @@
 # Research → Requirement → Architecture Traceability Matrix
 
-> **Status:** ACTIVE · **Purpose:** Enforce BMAD v4 Q1: no orphaned decisions. This records the current hypothesis chain and makes missing evidence explicit.
+> **Status:** ACTIVE · **Version:** 2.0 (rebaselined 2026-08-10, YOLO mode) · **Purpose:** Enforce BMAD v4 Q1: no orphaned decisions. This records the current hypothesis chain and makes missing evidence explicit.
+
+## v2.0 rebaseline notes
+
+- Added R-06 (technical verification evidence) and R-07 (CI billing-block environmental finding) to the finding table.
+- Safe-foundation rows F-01/F-02 recorded as completed-with-evidence (capability governance QA-approved; Atlas structural/a11y baselines). Market rows unchanged.
+- All market/economic/deployment rows remain UNVALIDATED; E-004/E-005 do not change their status.
 
 ## Finding identifiers
 
@@ -11,10 +17,13 @@
 | R-03 | Finance credibility requires authoritative evidence, reconciliation, and immutable reporting. | research report + control research | High |
 | R-04 | Generic KPI dashboards do not demonstrate a decision/action loop. | codebase audit + UX hypothesis | Medium |
 | R-05 | Existing codebase breadth does not establish connected/governed/readiness maturity. | capability matrix | High |
+| R-06 | Merged main passes full local verification: 1,179 files / 13,315 tests, tsc 0 errors, lint 0 warnings, build + audit pass. | session verification runs (E-004) | High (technical) |
+| R-07 | GitHub Actions jobs fail before starting due to account billing/spending-limit block; repo-wide, predates PR #53; not a code regression. | GitHub check-run annotations (E-005) | High (environmental) |
 | A-01 | $500k+ willingness-to-pay is viable. | assumption registry | Low / unvalidated |
 | A-02 | Local-first/hybrid is a buyer differentiator. | assumption registry | Low / unvalidated |
 | A-03 | Close-to-decision-to-board-pack is the best strategic wedge. | brainstorm + registry | Low / unvalidated |
-| A-13 | Upper-mid-market multi-entity ICP is optimal. | assumption registry | Low / unvalidated |
+| A-13 | Enterprise multi-entity ICP is optimal (owner-directed). | assumption registry | Low / unvalidated |
+
 
 ## Traceability matrix
 
@@ -33,7 +42,7 @@
 
 ## Decision classification
 
-- **Safe foundation decisions:** maintain truth matrix, precision/audit controls, design-system accessibility, source/test evidence discipline. These are supported by direct code/control need.
+- **Safe foundation decisions:** maintain truth matrix, precision/audit controls, design-system accessibility, source/test evidence discipline. These are supported by direct code/control need. Completed to date: F-01 capability evidence governance (QA APPROVED); F-02 interim structural/a11y baselines (empty + populated Dashboard; real heading-order defect fixed; pixel baseline still blocked).
 - **Hypothesis decisions:** ICP, price point, local-first differentiation, first connector/vertical, materiality defaults, deployment pattern. Do not hard-code or market without validation.
 - **Deferred decisions:** Graph database, Kafka, multi-database analytics, autonomous AI, broad vertical parity. No evidence currently justifies early commitment.
 

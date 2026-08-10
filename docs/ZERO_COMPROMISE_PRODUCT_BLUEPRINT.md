@@ -1,6 +1,6 @@
 # FinPlan Pro — Zero-Compromise Product, Experience & Delivery Blueprint
 
-> **Status:** Research-revalidation required — BMAD v4 Phase 0 restarted on 2026-08-10. This blueprint remains a proposed direction, not validated market truth.
+> **Status:** REBASELINED hypothesis blueprint — BMAD v4 Phase 0–4 artifact stack re-baselined on 2026-08-10 (research-report v2.0, assumption-registry v2.0, brief v2.2, PRD v2.1, UX v2.1, architecture v2.1, sprint-plan v2.1). This blueprint remains a proposed direction, not validated market truth; all market/economic assumptions stay UNVALIDATED.
 >
 > **Research inputs:** `_bmad/research/research-report.md` · `_bmad/research/assumption-registry.md` · `_bmad/brainstorm/session-strategic-wedge-2026-08-10.md`
 >

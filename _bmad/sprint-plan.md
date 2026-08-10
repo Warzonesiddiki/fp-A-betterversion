@@ -1,8 +1,22 @@
 # FinPlan Pro — Research-Informed Delivery Plan
 
-> **Version:** 2.0 · **Status:** APPROVED HYPOTHESIS DELIVERY PLAN — Gate G5 approved by owner on 2026-08-10  
-> **Inputs:** G0–G4 approved hypothesis artifacts, traceability matrix, assumption registry, capability truth matrix  
+> **Version:** 2.1 · **Status:** APPROVED HYPOTHESIS DELIVERY PLAN — Gate G5 approved by owner on 2026-08-10; re-baselined 2026-08-10 (YOLO mode)
+> **Inputs:** G0–G4 approved hypothesis artifacts, traceability matrix, assumption registry, capability truth matrix
 > **Rule:** No implementation story may turn an unvalidated market/user/deployment assumption into an irreversible product commitment.
+
+## Current execution status (2026-08-10, v2.1)
+
+| Track | Item | Status | Evidence / blocker |
+|---|---|---|---|
+| R | R-01 Recruit enterprise sample | IN PROGRESS | Operations prepared; externally blocked — no participants/anonymized notes yet; nothing fabricated |
+| R | R-02–R-04 | BLOCKED | Require R-01 evidence |
+| F | F-01 Capability evidence governance | DONE / QA APPROVED | 0 unresolved route source mappings; QA report filed |
+| F | F-02 Atlas foundation | IN PROGRESS / QA REJECTED | Structural baselines + a11y pass (empty + populated); pixel baseline blocked by Playwright TLS download; verdict unchanged |
+| F | F-03 Context/trust-state shell | Story approved — implementation pending | `_bmad/stories/story-f03-financial-context-shell.md` |
+| F | F-04 Control-plane contract spike | Story approved — implementation pending | `_bmad/stories/story-f04-control-plane-contract-spike.md` |
+| P | P-01…P-07 | BLOCKED | Require R-04 pilot slice selection |
+| — | CI on GitHub | RED — account billing block | Owner must resolve Billing & plans; not a code regression (E-005) |
+| — | Local verification | PASS | 1,179 files / 13,315 tests; tsc/lint/build/audit green (E-004) |
 
 ## Delivery strategy
 

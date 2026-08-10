@@ -36,6 +36,7 @@ An interim deterministic DOM/class snapshot baseline now protects Atlas hierarch
 ## Environment re-attempt log
 
 - **2026-08-10 (new session, after merge):** Playwright Chromium install re-attempted per the runbook (`node node_modules/@playwright/test/cli.js install chromium`). Download still fails with TLS `ECONNRESET` / `SSL_ERROR_SYSCALL` against `cdn.playwright.dev`, `playwright.azureedge.net`, and `cdn.npmmirror.com`; no system Chromium binary is present and no package-manager install is permitted in this sandbox. The browser pixel baseline therefore remains **BLOCKED / NOT IMPLEMENTED**.
+- **2026-08-10 (second sandbox, BMAD rebaseline session):** re-attempted `node node_modules/@playwright/test/cli.js install chromium` — identical TLS `ECONNRESET` against `cdn.playwright.dev`. No system browser; no apt access. Pixel baseline remains **BLOCKED**.
 - Verdict unchanged: **REJECTED — REQUIRES COMPLETION** until the visual-regression runbook is executed in a browser-capable environment.
 
 ## Interim evidence extension — populated Dashboard baseline (2026-08-10, same session)

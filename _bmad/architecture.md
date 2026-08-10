@@ -1,9 +1,11 @@
 # Architecture — FinPlan Pro Enterprise Decision System
 
-> **Status:** APPROVED HYPOTHESIS ARCHITECTURE — Gate G4 approved by owner on 2026-08-10; primary validation remains mandatory  
-> **BMAD phase:** 3 — Solutioning & Architecture complete  
-> **Inputs:** approved hypothesis Product Brief (G1), PRD (G2), UX specification (G3), `_bmad/research/research-report.md`, `_bmad/research/research-to-requirements-traceability.md`, `_bmad/project-context.md`  
+> **Status:** APPROVED HYPOTHESIS ARCHITECTURE — Gate G4 approved by owner on 2026-08-10; re-baselined 2026-08-10 (YOLO mode); primary validation remains mandatory
+> **BMAD phase:** 3 — Solutioning & Architecture complete
+> **Inputs:** approved hypothesis Product Brief (G1), PRD (G2), UX specification (G3), `_bmad/research/research-report.md`, `_bmad/research/research-to-requirements-traceability.md`, `_bmad/project-context.md`
 > **Architecture principle:** Incrementally make official finance operations authoritative, auditable, tenant-safe, and operable. Do not rewrite working calculation/UI code merely to match a fashionable stack.
+
+> **v2.1 rebaseline notes (2026-08-10):** No architecture decision or ADR changed. Merged delivery verified with full-suite/type/lint/build/audit evidence (E-004). CI red is an account billing block (E-005), not an architecture regression. F-04 remains a contract spike (not production migration); the workspace draft/cache boundary and server authority boundary statements below are unchanged and still unvalidated.
 
 ## 1. Architecture outcomes traced to requirements
 

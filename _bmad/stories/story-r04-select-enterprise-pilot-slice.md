@@ -1,6 +1,6 @@
 # Story R-04: Select Enterprise Pilot Slice
 
-## Status: DRAFT
+## Status: BLOCKED — requires R-01 participant evidence (2026-08-10)
 ## Size: M | Risk: HIGH
 
 ## Why This Story Exists

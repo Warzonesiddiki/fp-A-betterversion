@@ -1,6 +1,6 @@
 # Story 04: Control-Plane API Foundation
 
-## Status: DRAFT
+## Status: SUPERSEDED — research-contextualized and renamed (see `story-f03-financial-context-shell.md` / `story-f04-control-plane-contract-spike.md`, 2026-08-10)
 
 ## Context & Purpose
 Fulfils Architecture §§3 and 6, PRD E2/E8. Establishes the incremental authoritative API boundary.
