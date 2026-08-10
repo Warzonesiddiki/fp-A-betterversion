@@ -433,13 +433,13 @@ export function generateCSRFToken(): string {
     return token;
   }
 
-  // Fallback for environments without crypto
-  let token = '';
-  for (let i = 0; i < length; i++) {
-    token += chars[Math.floor(Math.random() * chars.length)];
-  }
-  _csrfToken = token;
-  return token;
+  // Security rule (project standard): security tokens must NEVER degrade to
+  // Math.random. A runtime without crypto.getRandomValues cannot mint a CSRF
+  // token safely — fail closed loudly instead of silently weakening the token.
+  throw new Error(
+    'CSRF token generation requires a CSPRNG (crypto.getRandomValues). ' +
+      'Refusing to fall back to Math.random for a security token.'
+  );
 }
 
 /**

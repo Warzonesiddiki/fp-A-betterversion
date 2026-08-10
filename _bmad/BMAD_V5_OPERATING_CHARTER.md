@@ -2,7 +2,8 @@
 
 > **Effective:** 2026-08-10 (upgraded from v4.0 at owner direction)
 > **Mode:** ULTRA-YOLO · ZERO COMPROMISE · MAXIMUM AUTONOMY, with **mandatory Deep Reasoning Protocol (DRP)** at every step.
-> **Supersedes:** `_bmad/BMAD_V4_OPERATING_CHARTER.md` (kept as historical record).
+> **Supersedes:** `_bmad/BMAD_V4_OPERATING_CHARTER.md` (kept as historical record).  
+> **Elevated by:** `_bmad/BMAD_V5_REASONING_QUALITY_ADDON.md` (Reasoning & Quality Addon — Proof of Thought, Reasoning Depth Score, quality gates, steelman audit, pre-mortem loop). The addon applies to every agent, artifact, and action.
 
 ## Purpose
 

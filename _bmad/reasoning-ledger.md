@@ -260,4 +260,46 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 
 ---
 
+## Ledger Entry #14 — 2026-08-10 — System (All agents)
+
+### Decision/Topic: Activate the BMAD v5.0 Reasoning & Quality Addon (Ultimate Thought Protocol) as a durable operating layer
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | The owner supplied the addon to elevate reasoning rigor and quality standards; Law 4 (context on disk) requires it to live in the repo, not chat. |
+| Evidence | Owner-provided addon prompt; existing v5 charter/ledger structure ready to receive it. |
+| Options Considered | (a) Chat-only application — rejected: violates context-on-disk; lost across sessions. (b) Durable artifact `_bmad/BMAD_V5_REASONING_QUALITY_ADDON.md` + charter link + ledger entry — ADOPTED. (c) Rewrite existing artifacts to addon format — rejected: churn without content change. |
+| Risk Probe | Risk: addon becomes ceremony — mitigation: charter mandates PoT for QA verdicts/ACs/assumptions/ADRs and RDS ≥ 8 gate; this turn applies it to real work. |
+| Consequence Projection | Every future artifact carries PoT where mandated, an RDS score, and passes the final execution check; QA verdicts now require explicit reasoning evidence. |
+| Confidence Score | 94% |
+| Autonomy Level | A5 |
+
+### Adopted Path: `_bmad/BMAD_V5_REASONING_QUALITY_ADDON.md` (full addon text), linked from `BMAD_V5_OPERATING_CHARTER.md` and `project-context.md`.
+
+### Rejected Alternatives: chat-only application (lost state); wholesale artifact rewrite (churn).
+
+---
+
+## Ledger Entry #15 — 2026-08-10 — Quinn (security audit under v5 addon)
+
+### Decision/Topic: Fix CSRF token fallback — fail closed instead of Math.random (security finding)
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | Stated rule: "Never use Math.random for security IDs/tokens." Audit found `generateCSRFToken()` fallback using `Math.floor(Math.random() * chars.length)` when `crypto.getRandomValues` is absent. |
+| Evidence | `src/utils/security.ts` lines 437–441 (pre-fix); `src/utils/cryptoId.ts` documents the same rule; `auditTrailStore.ts` already enforces CSPRNG for audit IDs. |
+| Options Considered | (a) Keep Math.random fallback — rejected: violates the rule and the "no silent security failures" standard. (b) Fail closed with a descriptive throw — ADOPTED. (c) Alternate PRNG fallback — rejected: still not cryptographically secure. |
+| Risk Probe | Risk: a crypto-less runtime now throws at token time — acceptable: crypto exists in all realistic runtimes; failing loudly is correct. Tests stub crypto, so primary path coverage is unaffected. |
+| Consequence Projection | `security.test.ts` gains a fail-closed regression test (51/51 pass); lint + tsc green; full suite re-run in progress. |
+| Confidence Score | 95% |
+| Autonomy Level | A5 |
+
+### Adopted Path: fail-closed throw + regression test; evidence logged.
+
+### Rejected Alternatives: keep weak fallback (rule violation); alternate PRNG (not secure).
+
+---
+
 <!-- Future entries append below this line. -->

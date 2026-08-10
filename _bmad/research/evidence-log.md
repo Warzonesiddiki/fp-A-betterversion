@@ -34,3 +34,4 @@ A finding is **validated** only when it appears across at least three relevant p
 4. What would make a buyer switch or refuse to switch?
 5. What deployment/control expectation is non-negotiable?
 6. What must be removed from Release 1 because it is not tied to validated pain?
+| E-006 | 2026-08-10 | Technical verification (security audit, not customer evidence) | src/utils/security.ts + tests | Math.random audit across src/ and server/src: all remaining uses are legitimate (Monte Carlo simulation RNG, spreadsheet RAND functions, seeded PRNGs, mock-data generators) EXCEPT the CSRF token fallback, which used Math.random when crypto.getRandomValues was absent. Fixed to fail closed (throw) with regression test; security suite 51/51. | A-05 (health only) | Supports foundation security posture; does **not** validate market/buyer/deployment assumptions | Technical / high | Re-run audit after security-adjacent changes |

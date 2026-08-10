@@ -20,12 +20,12 @@ Fulfils PRD Epic E1 (product truth, navigation, global context) and UX §§3–4
 - Depended on by: F-04 (context envelope), P-01…P-07 (context-aware pilot slice).
 
 ## Acceptance Criteria
-- [ ] AC1: Permission-aware five-pillar navigation has keyboard/current-page semantics and exposes no inaccessible destination as an enabled action.
-- [ ] AC2: Financial context (entity/scope, period range, scenario/version, currency, freshness) is typed, visible on canonical screens, and serialized into shareable/saved views without leaking unauthorized scope.
-- [ ] AC3: Context changes show affected dimensions and reset only incompatible page-local filters with an explicit explanation.
-- [ ] AC4: Offline/stale/queued/published states use the Atlas trust-language contract (text + icon + accessible name; never color-only).
-- [ ] AC5: Cmd/Ctrl+K command palette is keyboard-first, permission-filtered, and never emits sensitive financial query text to generic telemetry.
-- [ ] AC6: Server-side context filtering is used for official views; no client-only authorization filtering for official data.
+- [x] AC1: Permission-aware five-pillar navigation has keyboard/current-page semantics and exposes no inaccessible destination as an enabled action.
+- [x] AC2: Financial context (entity/scope, period range, scenario/version, currency, freshness) is typed, visible on canonical screens, and serialized into shareable/saved views without leaking unauthorized scope.
+- [x] AC3: Context changes show affected dimensions and reset only incompatible page-local filters with an explicit explanation.
+- [x] AC4: Offline/stale/queued/published states use the Atlas trust-language contract (text + icon + accessible name; never color-only).
+- [x] AC5: Cmd/Ctrl+K command palette is keyboard-first, permission-filtered, and never emits sensitive financial query text to generic telemetry.
+- [x] AC6: Server-side context filtering is used for official views; no client-only authorization filtering for official data.
 
 ## Implementation Context
 - Use adapter/feature-flag approach; retain legacy routes until dispositions are approved.

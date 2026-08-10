@@ -20,12 +20,12 @@ Fulfils PRD Epics E2/E8 and Architecture §§3 and 6 (incremental authoritative 
 - Depended on by: P-02…P-06 (pilot slice commands), P-07 (certification).
 
 ## Acceptance Criteria
-- [ ] AC1: Versioned command/query API supports command ID, correlation ID, idempotency key, base revision, typed errors, and the financial context envelope.
-- [ ] AC2: Trusted server identity — never the client payload — determines actor/tenant/entity scope.
-- [ ] AC3: Negative authorization tests prove cross-tenant/entity access is rejected for official routes.
-- [ ] AC4: Audit event contract is defined (actor, action, scope, revision, before/after references, timestamp) and recorded for accepted commands.
-- [ ] AC5: Request validation, redacted structured logging, rate/error taxonomy, and trace propagation exist in the spike.
-- [ ] AC6: Contract tests cover accepted / completed / conflict / rejected outcomes; no direct local-storage authority for official routes.
+- [x] AC1: Versioned command/query API supports command ID, correlation ID, idempotency key, base revision, typed errors, and the financial context envelope.
+- [x] AC2: Trusted server identity — never the client payload — determines actor/tenant/entity scope.
+- [x] AC3: Negative authorization tests prove cross-tenant/entity access is rejected for official routes.
+- [x] AC4: Audit event contract is defined (actor, action, scope, revision, before/after references, timestamp) and recorded for accepted commands.
+- [x] AC5: Request validation, redacted structured logging, rate/error taxonomy, and trace propagation exist in the spike.
+- [x] AC6: Contract tests cover accepted / completed / conflict / rejected outcomes; no direct local-storage authority for official routes.
 
 ## Implementation Context
 - Modularize the existing Express server incrementally; do not rewrite the framework without an ADR amendment.
