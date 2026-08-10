@@ -12,6 +12,9 @@ import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { HelpPanel } from '@/components/ui/HelpPanel';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { FinancialWorkspaceEmptyState } from '@/components/ui/FinancialWorkspaceEmptyState';
+import { FinancialStatusBadge } from '@/components/ui/FinancialStatusBadge';
 import { DrillDownModal } from '@/components/ui/DrillDownModal';
 import { PAGE_HELP } from './_docs';
 import { LayoutDashboard, TrendingUp, BarChart3, Upload, Target, HelpCircle } from 'lucide-react';
@@ -213,58 +216,37 @@ export default function DashboardPage() {
 
   if (entries.length === 0 && budgets.length === 0) {
     return (
-      <div className="p-12 text-center max-w-lg mx-auto">
-        <div className="p-4 bg-blue-50 rounded-full inline-block mb-4">
-          <LayoutDashboard className="h-10 w-10 text-blue-600" />
-        </div>
-        <h2 className="text-xl font-semibold mb-2">Welcome to FinPlan Pro</h2>
-        <p className="text-slate-400 mb-8">
-          Your financial planning and analysis workspace. Get started in three steps:
-        </p>
-        <div className="grid gap-4 text-left mb-8">
-          <div className="p-4 bg-slate-900 rounded-lg border border-slate-800 flex items-start gap-3">
-            <div className="w-8 h-8 rounded-full bg-blue-900/50 text-blue-400 flex items-center justify-center text-sm font-bold shrink-0">
-              1
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">Import Your Data</h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Upload CSV or Excel files containing your General Ledger.
-              </p>
-            </div>
-          </div>
-          <div className="p-4 bg-slate-900 rounded-lg border border-slate-800 flex items-start gap-3">
-            <div className="w-8 h-8 rounded-full bg-green-900/50 text-green-400 flex items-center justify-center text-sm font-bold shrink-0">
-              2
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">Set Up Accounts</h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Define your Chart of Accounts structure.
-              </p>
-            </div>
-          </div>
-          <div className="p-4 bg-slate-900 rounded-lg border border-slate-800 flex items-start gap-3">
-            <div className="w-8 h-8 rounded-full bg-purple-900/50 text-purple-400 flex items-center justify-center text-sm font-bold shrink-0">
-              3
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm">Create Budgets</h3>
-              <p className="text-xs text-slate-400 mt-1">Build your budgets and start planning.</p>
-            </div>
-          </div>
-        </div>
-        <div className="flex gap-3 justify-center">
-          <Button onClick={() => navigate('/data/gl-upload')}>
-            <Upload className="h-4 w-4 mr-2" />
-            Import Data
-          </Button>
-          <Button variant="secondary" onClick={() => navigate('/data/chart-of-accounts')}>
-            <Target className="h-4 w-4 mr-2" />
-            Set Up Accounts
-          </Button>
-        </div>
-      </div>
+      <FinancialWorkspaceEmptyState
+        icon={<LayoutDashboard className="h-10 w-10" />}
+        title="Set up your finance workspace"
+        description="Load and validate your financial inputs before you begin planning, forecasting, and reporting."
+        steps={[
+          {
+            title: 'Import actuals',
+            description: 'Load a CSV or Excel general-ledger source into your workspace.',
+          },
+          {
+            title: 'Confirm reporting accounts',
+            description: 'Set up the chart of accounts used to organize your financial view.',
+          },
+          {
+            title: 'Create your first plan',
+            description: 'Build a budget or forecast once your finance structure is ready.',
+          },
+        ]}
+        actions={
+          <>
+            <Button onClick={() => navigate('/data/gl-upload')}>
+              <Upload className="h-4 w-4 mr-2" />
+              Import actuals
+            </Button>
+            <Button variant="secondary" onClick={() => navigate('/data/chart-of-accounts')}>
+              <Target className="h-4 w-4 mr-2" />
+              Set up accounts
+            </Button>
+          </>
+        }
+      />
     );
   }
 
@@ -283,37 +265,37 @@ export default function DashboardPage() {
   });
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between dashboard-header">
-        <div>
-          <div className="flex items-center gap-4 mb-2">
-            <h1 className="text-2xl font-bold">Executive Dashboard</h1>
-            <button
-              onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
-              aria-label="Help"
-            >
-              <HelpCircle className="h-5 w-5" />
-            </button>
-            <Button variant="ghost" size="sm" onClick={handleStartTour} className="text-blue-400">
-              Start Guide
-            </Button>
-          </div>
-          <p className="text-sm text-slate-400">
-            {entries.length.toLocaleString()} entries · {accounts.length} accounts ·{' '}
-            {budgets.length} budgets
-          </p>
+    <div className="fp-page space-y-6">
+      <PageHeader
+        className="dashboard-header"
+        title="Executive Dashboard"
+        purpose={`${entries.length.toLocaleString()} entries · ${accounts.length} accounts · ${budgets.length} budgets`}
+        status={<FinancialStatusBadge status="draft" detail="Local workspace data" />}
+        actions={
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => navigate('/data/gl-upload')}
+            aria-label="Import financial data"
+          >
+            <Upload className="h-3.5 w-3.5 mr-1.5" />
+            Import
+          </Button>
+        }
+      >
+        <div className="mt-2 flex items-center gap-3">
+          <button
+            onClick={() => setHelpOpen(true)}
+            className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+            aria-label="Help"
+          >
+            <HelpCircle className="h-5 w-5" />
+          </button>
+          <Button variant="ghost" size="sm" onClick={handleStartTour} className="text-blue-400">
+            Start Guide
+          </Button>
         </div>
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => navigate('/data/gl-upload')}
-          aria-label="Import financial data"
-        >
-          <Upload className="h-3.5 w-3.5 mr-1.5" />
-          Import
-        </Button>
-      </div>
+      </PageHeader>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 kpi-grid">
         <div
