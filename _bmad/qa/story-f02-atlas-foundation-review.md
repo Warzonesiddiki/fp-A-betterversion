@@ -33,6 +33,11 @@ An interim deterministic DOM/class snapshot baseline now protects Atlas hierarch
 1. Make a Playwright Chromium browser available in the validation environment (the attempted download failed with TLS connection resets), then follow `docs/design/VISUAL_REGRESSION_RUNBOOK.md` to establish deterministic Atlas snapshots for shared components and Dashboard empty/populated states.
 2. Re-run this QA review. Until then, Story F-02 remains IN PROGRESS.
 
+## Environment re-attempt log
+
+- **2026-08-10 (new session, after merge):** Playwright Chromium install re-attempted per the runbook (`node node_modules/@playwright/test/cli.js install chromium`). Download still fails with TLS `ECONNRESET` / `SSL_ERROR_SYSCALL` against `cdn.playwright.dev`, `playwright.azureedge.net`, and `cdn.npmmirror.com`; no system Chromium binary is present and no package-manager install is permitted in this sandbox. The browser pixel baseline therefore remains **BLOCKED / NOT IMPLEMENTED**.
+- Verdict unchanged: **REJECTED — REQUIRES COMPLETION** until the visual-regression runbook is executed in a browser-capable environment.
+
 ## Security / regression review
 
 No new authorization, financial calculation, or external-data behavior was added. Dashboard explicitly labels populated data as local workspace draft state, reducing the risk of false authority claims.

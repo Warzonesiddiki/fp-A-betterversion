@@ -122,3 +122,11 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | 2026-08-10 | Amelia / Quinn | Completed safe Story F-01 capability evidence governance; generator now classifies all routes/modules and resolves all route sources; QA approved. |
 | 2026-08-10 | Amelia / Quinn | Added Atlas status/header foundations and verified focused tests/typecheck before research restart. |
 | 2026-08-10 | Bob | Created prior Story Pack A; now paused pending research reconciliation. |
+| 2026-08-10 | System | Investigated merged-main CI failures in a healthy `gh` environment: every workflow job fails before starting with GitHub annotation "recent account payments have failed or your spending limit needs to be increased" — repo-wide billing block predating PR #53, not a code regression. Owner action required on GitHub billing; local verification of merged main (`f3834e2`) passes. See `_bmad/qa/ci-actions-billing-block-2026-08-10.md`. |
+
+## 14. CI / GitHub Actions status
+
+- **2026-08-10:** All workflow runs fail before any job step runs. GitHub check-run annotation: *"The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings"*. Affects every workflow (CI, tsc, lint, test-unit, build, deploy, cascade-hold, sentry-self-test) on commits predating PR #53 as well as merged main — a repo-wide infrastructure block, **not** a code regression.
+- Local verification of merged main (commit `f3834e2`) passes: typecheck, Atlas/Dashboard suite (5 files / 18 tests), changed-file lint, capability inventory, docs truth, production dependency audit, diff hygiene.
+- Owner action required: resolve the GitHub account billing / spending limit, then re-run workflows. Until jobs execute, CI status must not be treated as code evidence.
+- Details: `_bmad/qa/ci-actions-billing-block-2026-08-10.md`
