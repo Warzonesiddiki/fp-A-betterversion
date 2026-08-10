@@ -2,7 +2,7 @@
 
 > **File history:** created as `story-04-control-plane-api-foundation.md`; research-contextualized and renamed F-04 on 2026-08-10 (YOLO mode).
 
-## Status: APPROVED — ready for implementation (research-contextualized 2026-08-10); implementation not yet started
+## Status: DONE — implemented and QA approved 2026-08-10 (see `_bmad/qa/story-f04-control-plane-spike-review.md`)
 ## Size: M | Risk: MEDIUM
 
 ## Why This Story Exists

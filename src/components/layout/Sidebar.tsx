@@ -1,107 +1,45 @@
 import { memo } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-  LayoutDashboard,
-  FileBarChart,
-  TrendingUp,
-  BarChart3,
-  PieChart,
-  GitCompareArrows,
-  FlaskConical,
-  Brain,
-  BookOpen,
-  Database,
-  MessageSquare,
-  CheckSquare,
-  Settings,
-  Puzzle,
-  HelpCircle,
-  ChevronLeft,
-  ChevronRight,
-  Search,
-  X,
-  Cpu,
-  Factory,
-  ShoppingCart,
-  Landmark,
-  Activity,
-  Zap,
-  Leaf,
-  Truck,
-  Package,
-  Coins,
-  FileCheck2,
-  GraduationCap,
-  Users,
-  CalendarCheck,
-} from 'lucide-react';
+import { HelpCircle, ChevronLeft, ChevronRight, Search, X, BookOpen } from 'lucide-react';
 import { useUIStore } from '@/store/uiStore';
 import { useTheme } from '@/context/ThemeContext';
+import { usePillarNavigation } from '@/hooks/usePillarNavigation';
+import { isItemActive, type PillarNavItem } from '@/types/navigation';
+
+function NavItemLink({
+  item,
+  collapsed,
+  onNavigate,
+}: {
+  item: PillarNavItem;
+  collapsed: boolean;
+  onNavigate: () => void;
+}) {
+  const location = useLocation();
+  const active = isItemActive(location.pathname, item.path);
+  const Icon = item.icon;
+  return (
+    <NavLink
+      to={item.path}
+      onClick={onNavigate}
+      aria-current={active ? 'page' : undefined}
+      className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 ${
+        active ? 'text-white' : ''
+      }`}
+      style={active ? { background: 'var(--accent-primary)' } : { color: 'var(--text-secondary)' }}
+    >
+      <Icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+      {!collapsed && <span>{item.label}</span>}
+    </NavLink>
+  );
+}
 
 export const Sidebar = memo(function Sidebar() {
   const { t } = useTranslation();
   const { sidebarCollapsed, toggleSidebar, closeMobileSidebar } = useUIStore();
   const { theme, toggleTheme } = useTheme();
-  const location = useLocation();
-
-  const navItems = [
-    {
-      section: t('sidebar.sections.main'),
-      items: [
-        { path: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
-        { path: '/budgets', label: t('nav.budgets'), icon: FileBarChart },
-        { path: '/budgets/bva', label: t('nav.bva'), icon: GitCompareArrows },
-        { path: '/forecasts', label: t('nav.forecasts'), icon: TrendingUp },
-        { path: '/reports', label: t('nav.reports'), icon: BarChart3 },
-        { path: '/analytics', label: t('nav.analytics'), icon: PieChart },
-        { path: '/analytics/pivot-explorer', label: 'Pivot Explorer', icon: BarChart3 },
-      ],
-    },
-    {
-      section: t('sidebar.sections.analysis'),
-      items: [
-        { path: '/variance', label: t('nav.variance'), icon: GitCompareArrows },
-        { path: '/scenarios', label: t('nav.scenarios'), icon: FlaskConical },
-        { path: '/ai', label: t('nav.aiAnalyst'), icon: Brain },
-      ],
-    },
-    {
-      section: t('sidebar.sections.industries'),
-      items: [
-        { path: '/saas/arr', label: t('nav.saas'), icon: Cpu },
-        { path: '/manufacturing/production', label: t('nav.manufacturing'), icon: Factory },
-        { path: '/retail/stores', label: t('nav.retail'), icon: ShoppingCart },
-        { path: '/banking/nim', label: t('nav.banking'), icon: Landmark },
-        { path: '/healthcare/dashboard', label: t('nav.healthcare'), icon: Activity },
-        { path: '/energy/dashboard', label: t('nav.energy'), icon: Zap },
-        { path: '/esg/carbon', label: t('nav.esg'), icon: Leaf },
-        { path: '/logistics', label: 'Logistics', icon: Truck },
-        { path: '/logistics/fleet-cost', label: 'Fleet Cost', icon: Truck },
-        { path: '/logistics/warehouse-cost', label: 'Warehouse Cost', icon: Package },
-        { path: '/government', label: 'Government', icon: Landmark },
-        { path: '/government/grants', label: 'Grants', icon: Coins },
-        { path: '/government/procurement', label: 'Procurement', icon: FileCheck2 },
-        { path: '/education', label: 'Education', icon: GraduationCap },
-        { path: '/education/enrollment', label: 'Enrollment', icon: Users },
-        { path: '/education/research-grants', label: 'Research Grants', icon: FlaskConical },
-      ],
-    },
-    {
-      section: t('sidebar.sections.management'),
-      items: [
-        { path: '/data', label: t('nav.dataManagement'), icon: Database },
-        { path: '/collaboration', label: t('nav.collaboration'), icon: MessageSquare },
-        { path: '/collaboration/approvals', label: t('nav.approvals'), icon: CheckSquare },
-        // N-0013: the calculation engines were unreachable from the UI. This
-        // is the entry point that makes the full catalogue genuinely usable.
-        { path: '/admin/engines', label: 'Engine Catalog', icon: Cpu },
-        // F-01: month-end close workflow — the audit's one FAIL in the
-        // all-in-one claim; the close page is the missing client surface.
-        { path: '/periods/close', label: 'Period Close', icon: CalendarCheck },
-      ],
-    },
-  ];
+  const { pillars, legacyItems } = usePillarNavigation();
 
   const handleNavClick = () => {
     // Close mobile sidebar when navigating
@@ -171,83 +109,77 @@ export const Sidebar = memo(function Sidebar() {
         </button>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-2 space-y-4">
-        {navItems.map((section) => (
-          <div key={section.section}>
+      <nav className="flex-1 overflow-y-auto px-2 space-y-4" aria-label="Primary">
+        {pillars.map((pillar) =>
+          pillar.items.length === 0 ? null : (
+            <div key={pillar.id}>
+              {!sidebarCollapsed && (
+                <p
+                  className="px-3 py-1 text-[10px] font-semibold uppercase tracking-widest"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  {pillar.label}
+                </p>
+              )}
+              <div className="space-y-0.5">
+                {pillar.items.map((item) => (
+                  <NavItemLink
+                    key={item.path}
+                    item={item}
+                    collapsed={sidebarCollapsed}
+                    onNavigate={handleNavClick}
+                  />
+                ))}
+              </div>
+            </div>
+          )
+        )}
+
+        {/* Legacy / experimental module group — explicitly labeled, never a
+            supported-breadth claim (PRD E1.1 AC4). */}
+        {legacyItems.length > 0 && (
+          <div>
             {!sidebarCollapsed && (
               <p
                 className="px-3 py-1 text-[10px] font-semibold uppercase tracking-widest"
                 style={{ color: 'var(--text-muted)' }}
               >
-                {section.section}
+                Legacy modules
               </p>
             )}
             <div className="space-y-0.5">
-              {section.items.map((item) => (
-                <NavLink
+              {legacyItems.map((item) => (
+                <NavItemLink
                   key={item.path}
-                  to={item.path}
-                  onClick={handleNavClick}
-                  className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 ${
-                    location.pathname === item.path || location.pathname.startsWith(item.path + '/')
-                      ? 'text-white'
-                      : ''
-                  }`}
-                  style={
-                    location.pathname === item.path || location.pathname.startsWith(item.path + '/')
-                      ? { background: 'var(--accent-primary)' }
-                      : { color: 'var(--text-secondary)' }
-                  }
-                >
-                  <item.icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-                  {!sidebarCollapsed && <span>{item.label}</span>}
-                </NavLink>
+                  item={item}
+                  collapsed={sidebarCollapsed}
+                  onNavigate={handleNavClick}
+                />
               ))}
             </div>
           </div>
-        ))}
+        )}
       </nav>
 
       <div
         className="px-2 py-3 border-t space-y-0.5"
         style={{ borderColor: 'var(--border-subtle)' }}
       >
-        <NavLink
-          to="/plugins"
-          onClick={handleNavClick}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-          style={{ color: 'var(--text-secondary)' }}
-        >
-          <Puzzle className="w-4 h-4" aria-hidden="true" />
-          {!sidebarCollapsed && <span>Plugins</span>}
-        </NavLink>
-        <NavLink
-          to="/settings"
-          onClick={handleNavClick}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-          style={{ color: 'var(--text-secondary)' }}
-        >
-          <Settings className="w-4 h-4" aria-hidden="true" />
-          {!sidebarCollapsed && <span>{t('nav.settings')}</span>}
-        </NavLink>
-        <NavLink
-          to="/docs/api"
-          onClick={handleNavClick}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-          style={{ color: 'var(--text-secondary)' }}
-        >
-          <BookOpen className="w-4 h-4" aria-hidden="true" />
-          {!sidebarCollapsed && <span>API Reference</span>}
-        </NavLink>
-        <NavLink
-          to="/help"
-          onClick={handleNavClick}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-          style={{ color: 'var(--text-secondary)' }}
-        >
-          <HelpCircle className="w-4 h-4" aria-hidden="true" />
-          {!sidebarCollapsed && <span>{t('nav.help')}</span>}
-        </NavLink>
+        <NavItemLink
+          item={{ path: '/plugins', label: 'Plugins', icon: BookOpen }}
+          collapsed={sidebarCollapsed}
+          onNavigate={handleNavClick}
+        />
+        <NavItemLink
+          item={{ path: '/docs/api', label: 'API Reference', icon: BookOpen }}
+          collapsed={sidebarCollapsed}
+          onNavigate={handleNavClick}
+        />
+        <NavItemLink
+          item={{ path: '/help', label: t('nav.help'), icon: HelpCircle }}
+          collapsed={sidebarCollapsed}
+          onNavigate={handleNavClick}
+        />
         <button
           className="flex items-center gap-2.5 w-full px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
           style={{ color: 'var(--text-secondary)' }}

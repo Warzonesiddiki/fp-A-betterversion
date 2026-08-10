@@ -1,7 +1,8 @@
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useUIStore } from '@/store/uiStore';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
+import { FinancialContextBar, type FinancialEntityOption } from './FinancialContextBar';
 import { HelpPanel } from './HelpPanel';
 import { ToastContainer } from '@/components/ui/ToastContainer';
 import { CommandPalette } from '@/components/ui/CommandPalette';
@@ -12,8 +13,20 @@ import { useTranslation } from 'react-i18next';
 import { getLocaleDirection } from '@/utils/localeFormatting';
 import type { SupportedLocale } from '@/utils/localeFormatting';
 import type { CommandItem } from '@/components/ui/CommandPalette';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useCollaborationSetup } from '@/hooks/useCollaborationInit';
+import { useFinancialContextStore } from '@/store/financialContextStore';
+import { financialContextFromParams, serializeFinancialContext } from '@/types/financialContext';
+import { filterNavItemsByRole } from '@/hooks/usePillarNavigation';
+import { useAuthStore } from '@/store/authStore';
+
+// Draft entity options until the server master-data contract is connected
+// (F-04 / P-01). The context bar never authorizes data access client-side.
+const DRAFT_ENTITY_OPTIONS: readonly FinancialEntityOption[] = [
+  { id: 'ent-1', label: 'US Parent', currency: 'USD' },
+  { id: 'ent-2', label: 'UK Subsidiary', currency: 'GBP' },
+  { id: 'ent-3', label: 'DE Subsidiary', currency: 'EUR' },
+];
 export default function AppLayout() {
   const {
     mobileSidebarOpen,
@@ -28,6 +41,29 @@ export default function AppLayout() {
   const dir = getLocaleDirection((i18n.language?.split('-')[0] ?? 'en') as SupportedLocale);
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // F-03: hydrate the financial context from the URL once; then keep the URL
+  // in sync with store changes (deterministic canonical serialization).
+  const { context, setContext } = useFinancialContextStore();
+  const activeRole = useAuthStore((s) => s.user?.role ?? 'Viewer');
+
+  useEffect(() => {
+    const patch = financialContextFromParams(searchParams);
+    if (Object.keys(patch).length > 0) {
+      setContext(patch);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const serializedContext = useMemo(() => serializeFinancialContext(context), [context]);
+
+  useEffect(() => {
+    const current = searchParams.toString();
+    if (serializedContext !== current) {
+      setSearchParams(serializedContext, { replace: true });
+    }
+  }, [serializedContext, searchParams, setSearchParams]);
 
   // Initialize real-time collaboration
   useCollaborationSetup();
@@ -42,6 +78,7 @@ export default function AppLayout() {
       },
       {
         id: 'budgets',
+        permission: 'budget:read',
         label: 'Go to Budgets',
         category: 'Navigation',
         shortcut: 'Ctrl+2',
@@ -49,6 +86,7 @@ export default function AppLayout() {
       },
       {
         id: 'forecasts',
+        permission: 'forecast:read',
         label: 'Go to Forecasts',
         category: 'Navigation',
         shortcut: 'Ctrl+3',
@@ -56,6 +94,7 @@ export default function AppLayout() {
       },
       {
         id: 'scenarios',
+        permission: 'scenario:read',
         label: 'Go to Scenarios',
         category: 'Navigation',
         shortcut: 'Ctrl+4',
@@ -63,6 +102,7 @@ export default function AppLayout() {
       },
       {
         id: 'reports',
+        permission: 'report:read',
         label: 'Go to Reports',
         category: 'Navigation',
         shortcut: 'Ctrl+5',
@@ -89,24 +129,28 @@ export default function AppLayout() {
       },
       {
         id: 'gl-explorer',
+        permission: 'gl:read',
         label: 'Go to GL Explorer',
         category: 'Data',
         onSelect: () => navigate('/data/gl-explorer'),
       },
       {
         id: 'trial-balance',
+        permission: 'gl:read',
         label: 'Go to Trial Balance',
         category: 'Data',
         onSelect: () => navigate('/data/trial-balance'),
       },
       {
         id: 'chart-of-accounts',
+        permission: 'gl:read',
         label: 'Go to Chart of Accounts',
         category: 'Data',
         onSelect: () => navigate('/data/chart-of-accounts'),
       },
       {
         id: 'import',
+        permission: 'import:read',
         label: 'Go to Data Import',
         category: 'Data',
         onSelect: () => navigate('/data/import'),
@@ -131,6 +175,11 @@ export default function AppLayout() {
       },
     ],
     [navigate]
+  );
+  // F-03 AC5: command palette is permission-filtered by role.
+  const permittedCommandItems = useMemo(
+    () => filterNavItemsByRole(commandItems, activeRole),
+    [commandItems, activeRole]
   );
   useKeyboardShortcuts([
     { key: 'k', ctrl: true, handler: toggleCommandPalette, description: 'Open command palette' },
@@ -178,6 +227,7 @@ export default function AppLayout() {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <Navbar />
+        <FinancialContextBar entities={DRAFT_ENTITY_OPTIONS} />
         <main
           id="main-content"
           ref={mainContentRef}
@@ -196,7 +246,7 @@ export default function AppLayout() {
         onClose={() => toggleHelpPanel?.()}
       />
       <CommandPalette
-        items={commandItems}
+        items={permittedCommandItems}
         isOpen={commandPaletteOpen}
         onClose={toggleCommandPalette}
       />

@@ -90,6 +90,8 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | secondary-voice-triangulation-2026-08-10.md | SECONDARY | Public review signals used only to refine research questions, never as primary validation |
 | FinancialWorkspaceEmptyState component | VERIFIED FOUNDATION | Added to Dashboard no-data state; targeted UI tests and root typecheck passed on 2026-08-10 |
 | F-01 Capability evidence governance | DONE / QA APPROVED | All route/module rows classified with role/disposition; 0 unresolved route source mappings; maturity claims remain UNVERIFIED |
+| F-03 Context/trust-state shell | DONE / QA APPROVED | Typed FinancialContext, URL serialization, five-pillar permission-aware nav, context bar, palette filtering; 46 targeted tests + axe; pixel baseline still part of F-02 |
+| F-04 Control-plane contract spike | DONE / QA APPROVED | Typed command envelope, idempotency, base revisions, negative authz, audit evidence; 8 contract tests + 122 server tests; spike only |
 | F-02 Atlas foundation | IN PROGRESS / QA REJECTED | Lint/type/tests, canonical automated a11y (empty + populated states), and structural snapshot baselines (empty + populated) pass; populated-state baseline surfaced and fixed a real heading-order defect; browser pixel baseline remains blocked by Playwright Chromium TLS download failures |
 | brainstorm strategic wedge | DIRECTION SET | hypothesis direction, not primary validation |
 | product-brief.md | v2.2 APPROVED HYPOTHESIS BRIEF | Re-baselined 2026-08-10; no scope/thesis change |
@@ -99,7 +101,7 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | alignment-report.md | v2.1 COMPLETE | Verdict unchanged; 5 open decisions remain |
 | sprint-plan | v2.1 APPROVED HYPOTHESIS DELIVERY PLAN | Live execution-status table added |
 | story-f01 / story-f02 | DONE / IN PROGRESS | F-02 QA REJECTED only for pixel baseline |
-| story-f03 / story-f04 | APPROVED — implementation pending | Research-contextualized 2026-08-10 |
+| story-f03 / story-f04 | DONE / QA APPROVED | Implemented and verified 2026-08-10 |
 | capability truth matrix | ACTIVE | mechanical source/test evidence baseline |
 
 ## 11. Brainstorm sessions conducted
@@ -134,6 +136,7 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | 2026-08-10 | System / Rex | New-session P0: local refs reconciled to remote branch `4d6d402` (fast-forward via `update-ref` + index refresh; no destructive commands, nothing discarded). Baseline verified: full suite 1,179 files / 13,315 tests passed, tsc 0 errors, inventory/docs/audit/diff green. |
 | 2026-08-10 | Rex / Blaze | BMAD v4 Phase 0–4 restart: full artifact stack re-baselined to v2.x (research-report v2.0, assumption-registry v2.0, traceability v2.0, validation-plan v2.0, brief v2.2, PRD v2.1, UX v2.1, architecture v2.1, alignment v2.1, sprint-plan v2.1) with evidence entries E-004/E-005; story-02/03/04 superseded; story-f03/f04 created and approved for implementation; no market assumption status changed. |
 | 2026-08-10 | Rex | F-02 environment re-check: Playwright Chromium download re-attempted in new sandbox — still TLS `ECONNRESET` (cdn.playwright.dev). Pixel baseline remains BLOCKED; verdict unchanged. |
+| 2026-08-10 | Amelia / Quinn | Implemented Story F-03 (typed FinancialContext + URL serialization + five-pillar permission-aware navigation + context bar + command-palette filtering) and Story F-04 (control-plane command-envelope spike with idempotency, base revisions, negative authorization, audit evidence; client mirror). QA APPROVED for both; server suite 12 files / 122 tests; targeted client suites green; root tsc + changed-file lint clean. |
 
 ## 14. CI / GitHub Actions status
 

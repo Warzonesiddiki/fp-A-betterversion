@@ -12,8 +12,8 @@
 | R | R-02–R-04 | BLOCKED | Require R-01 evidence |
 | F | F-01 Capability evidence governance | DONE / QA APPROVED | 0 unresolved route source mappings; QA report filed |
 | F | F-02 Atlas foundation | IN PROGRESS / QA REJECTED | Structural baselines + a11y pass (empty + populated); pixel baseline blocked by Playwright TLS download; verdict unchanged |
-| F | F-03 Context/trust-state shell | Story approved — implementation pending | `_bmad/stories/story-f03-financial-context-shell.md` |
-| F | F-04 Control-plane contract spike | Story approved — implementation pending | `_bmad/stories/story-f04-control-plane-contract-spike.md` |
+| F | F-03 Context/trust-state shell | DONE / QA APPROVED | `_bmad/stories/story-f03-financial-context-shell.md`; QA report in `_bmad/qa/` |
+| F | F-04 Control-plane contract spike | DONE / QA APPROVED (spike only) | `_bmad/stories/story-f04-control-plane-contract-spike.md`; QA report in `_bmad/qa/` |
 | P | P-01…P-07 | BLOCKED | Require R-04 pilot slice selection |
 | — | CI on GitHub | RED — account billing block | Owner must resolve Billing & plans; not a code regression (E-005) |
 | — | Local verification | PASS | 1,179 files / 13,315 tests; tsc/lint/build/audit green (E-004) |

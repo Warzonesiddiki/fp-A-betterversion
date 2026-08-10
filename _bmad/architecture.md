@@ -249,6 +249,22 @@ Connector credentials live only in a vault/secrets manager reference, never in c
 
 Each ADR must become a separately numbered file under `docs/adr/` before implementation of its decision.
 
+## 11.1 F-04 spike outcome (2026-08-10)
+
+**What was proven (spike scope only, in-memory registry — not production):**
+
+- A typed command envelope (`server/src/types/commandEnvelope.ts`, zod-validated) with command id, correlation id, idempotency key, base revision, timestamp, entity scope, and payload.
+- Trusted-actor scope enforcement: global Admin bypass; otherwise `user_entity_access` rows (or matching global `entity_id`) grant entity scope; JWT identity, never client payload, decides actor/tenant.
+- Idempotent replay: identical outcome returned for a repeated idempotency key without re-application; query side `GET /api/v1/commands/:correlationId` returns the stored outcome (404 NOT_FOUND otherwise).
+- Base-revision concurrency: stale revisions return typed `CONFLICT_REVISION` with the current revision.
+- Typed errors: `VALIDATION_ERROR`, `FORBIDDEN_ENTITY`, `CONFLICT_REVISION`, `NOT_FOUND`.
+- Audit evidence: `audit_trail` row per accepted command with actor, scope, revision, correlation id, and idempotency key (same insert pattern as existing routes).
+- Contract tests: 8 passing (`server/src/routes/commands.test.ts`), including negative authorization.
+
+**Sandbox caveat:** server tests run against the in-memory mock DB fallback in this environment (better-sqlite3 native binding unavailable); queries were written to be correct on both real SQLite and the mock.
+
+**Migration path:** production implementation must persist the registry (outbox + revision state) transactionally with audit evidence — PostgreSQL/outbox per ADR-E02/E03. The typed envelope and scope-check semantics carry forward unchanged.
+
 ## 12. Key risks and required decisions
 
 | Risk/decision | Impact | Required owner decision before story planning |

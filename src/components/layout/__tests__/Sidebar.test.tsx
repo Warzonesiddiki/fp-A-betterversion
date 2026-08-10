@@ -41,6 +41,24 @@ vi.mock('@/store/uiStore', () => ({
 vi.mock('@/context/ThemeContext', () => ({
   useTheme: () => ({ theme: 'dark', toggleTheme: vi.fn() }),
 }));
+vi.mock('@/hooks/usePillarNavigation', () => ({
+  usePillarNavigation: () => ({
+    pillars: [
+      {
+        id: 'workspace',
+        label: 'Workspace',
+        items: [{ path: '/dashboard', label: 'Dashboard', icon: () => null }],
+      },
+      {
+        id: 'admin',
+        label: 'Admin',
+        items: [{ path: '/settings', label: 'Settings', icon: () => null }],
+      },
+    ],
+    legacyItems: [],
+    role: 'Admin',
+  }),
+}));
 
 describe('Sidebar', () => {
   beforeEach(() => vi.clearAllMocks());
@@ -51,10 +69,9 @@ describe('Sidebar', () => {
     expect(screen.getByText('Dashboard')).toBeTruthy();
   });
 
-  it('renders section headers', () => {
+  it('renders pillar section headers', () => {
     render(<Sidebar />);
-    expect(screen.getByText('Main')).toBeTruthy();
-    expect(screen.getByText('Analysis')).toBeTruthy();
-    expect(screen.getByText('Management')).toBeTruthy();
+    expect(screen.getByText('Workspace')).toBeTruthy();
+    expect(screen.getByText('Admin')).toBeTruthy();
   });
 });

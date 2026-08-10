@@ -2,7 +2,7 @@
 
 > **File history:** created as `story-03-financial-context-and-shell.md`; research-contextualized and renamed F-03 on 2026-08-10 (YOLO mode).
 
-## Status: APPROVED — ready for implementation (research-contextualized 2026-08-10); implementation not yet started
+## Status: DONE — implemented and QA approved 2026-08-10 (see `_bmad/qa/story-f03-financial-context-review.md`)
 ## Size: L | Risk: MEDIUM
 
 ## Why This Story Exists

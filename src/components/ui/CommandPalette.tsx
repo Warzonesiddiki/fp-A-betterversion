@@ -14,6 +14,8 @@ export interface CommandItem {
   description?: string;
   category: string;
   shortcut?: string;
+  /** Optional ROLE_PERMISSIONS key; items without one are visible to all roles. */
+  permission?: string;
   onSelect: () => void;
 }
 interface CommandPaletteProps {

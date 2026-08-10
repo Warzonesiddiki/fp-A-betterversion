@@ -28,8 +28,8 @@ For every row, create a tracked evidence record in the delivery system with: own
 | Routed screens found in `src/App.tsx` | 199 |
 | Page modules | 216 |
 | Engine modules | 213 |
-| State-store modules | 45 |
-| UI component modules | 332 |
+| State-store modules | 46 |
+| UI component modules | 333 |
 | Service modules | 60 |
 
 ## Route-by-route inventory
@@ -700,6 +700,7 @@ For every row, create a tracked evidence record in the delivery system with: own
 | Entity Store | Client state | REVIEW — authority boundary required | Frontend platform owner | `src/store/entityStore.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Esg Store | Client state | REVIEW — authority boundary required | Frontend platform owner | `src/store/esgStore.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Event Ledger | Client state | REVIEW — authority boundary required | Frontend platform owner | `src/store/eventLedger.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
+| Financial Context Store | Client state | REVIEW — authority boundary required | Frontend platform owner | `src/store/financialContextStore.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Forecast Store | Client state | REVIEW — authority boundary required | Frontend platform owner | `src/store/forecastStore.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Fx Rate Store | Client state | REVIEW — authority boundary required | Frontend platform owner | `src/store/fxRateStore.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Gl Store | Client state | REVIEW — authority boundary required | Frontend platform owner | `src/store/glStore.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
@@ -838,6 +839,7 @@ For every row, create a tracked evidence record in the delivery system with: own
 | Index | Domain experience | REVIEW — disposition required | Finance product owner | `src/components/insurance/index.ts` | BUILT — TEST NOT FOUND | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | About Dialog | Shared experience | RETAIN — Atlas certification required | Design system owner | `src/components/layout/AboutDialog.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | App Layout | Shared experience | RETAIN — Atlas certification required | Design system owner | `src/components/layout/AppLayout.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
+| Financial Context Bar | Shared experience | RETAIN — Atlas certification required | Design system owner | `src/components/layout/FinancialContextBar.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Help Panel | Shared experience | RETAIN — Atlas certification required | Design system owner | `src/components/layout/HelpPanel.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Navbar | Shared experience | RETAIN — Atlas certification required | Design system owner | `src/components/layout/Navbar.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Sidebar | Shared experience | RETAIN — Atlas certification required | Design system owner | `src/components/layout/Sidebar.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
