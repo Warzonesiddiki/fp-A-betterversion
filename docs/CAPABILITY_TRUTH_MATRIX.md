@@ -30,7 +30,7 @@ For every row, create a tracked evidence record in the delivery system with: own
 | Engine modules | 213 |
 | State-store modules | 46 |
 | UI component modules | 333 |
-| Service modules | 60 |
+| Service modules | 61 |
 
 ## Route-by-route inventory
 
@@ -1130,6 +1130,7 @@ For every row, create a tracked evidence record in the delivery system with: own
 | Nim | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/nim.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Writeback | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/writeback.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Zero Retention Enforcer | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/zeroRetentionEnforcer.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
+| Command Client | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/api/commandClient.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 
 ## Manual audit queue
 
