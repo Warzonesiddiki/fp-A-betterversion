@@ -1,7 +1,7 @@
 # FinPlan Pro — Capability Truth Matrix
 
-> **Generated:** 2026-08-10T06:43:04.399Z  
-> **Generator:** `node scripts/generate-capability-truth-matrix.mjs`  
+> **Generated:** from current working tree
+> **Generator:** `node scripts/generate-capability-truth-matrix.mjs`
 > **Purpose:** A reproducible, route-by-route and module-by-module static evidence baseline for the zero-compromise roadmap.
 
 ## Read this before using the matrix
