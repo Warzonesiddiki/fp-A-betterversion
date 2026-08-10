@@ -128,3 +128,274 @@ exports[`Atlas foundation visual structure contract > preserves the canonical fi
   </main>
 </div>
 `;
+
+exports[`Atlas foundation visual structure contract > preserves the financial context bar hierarchy and trust semantics (F-03) 1`] = `
+<div>
+  <main
+    class="fp-page"
+  >
+    <section
+      aria-label="Financial context"
+      class="flex flex-wrap items-center gap-x-5 gap-y-2 px-3 sm:px-4 py-2 border-b text-xs"
+      style="background: var(--bg-surface); border-color: var(--border-subtle);"
+    >
+      <div
+        class="flex items-center gap-1.5"
+      >
+        <span
+          class="text-[10px] font-semibold uppercase tracking-widest"
+          style="color: var(--text-muted);"
+        >
+          Scope
+        </span>
+        <label
+          class="sr-only"
+          for="fctx-scope"
+        >
+          Entity scope
+        </label>
+        <select
+          class="rounded-md border px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+          id="fctx-scope"
+          style="background: var(--bg-elevated); color: var(--text-primary); border-color: var(--border-subtle);"
+        >
+          <option
+            value=""
+          >
+            No entity selected
+          </option>
+          <option
+            value="ent-1"
+          >
+            US Parent
+             (
+            USD
+            )
+          </option>
+          <option
+            value="ent-2"
+          >
+            UK Subsidiary
+             (
+            GBP
+            )
+          </option>
+        </select>
+      </div>
+      <div
+        class="flex items-center gap-1.5"
+      >
+        <span
+          class="text-[10px] font-semibold uppercase tracking-widest"
+          style="color: var(--text-muted);"
+        >
+          Time
+        </span>
+        <label
+          class="sr-only"
+          for="fctx-period"
+        >
+          Fiscal period
+        </label>
+        <select
+          class="rounded-md border px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+          id="fctx-period"
+          style="background: var(--bg-elevated); color: var(--text-primary); border-color: var(--border-subtle);"
+        >
+          <option
+            value=""
+          >
+            Period not set
+          </option>
+          <option
+            value="2026-01..2026-03"
+          >
+            Q1 2026 (Jan–Mar)
+          </option>
+          <option
+            value="2026-04..2026-06"
+          >
+            Q2 2026 (Apr–Jun)
+          </option>
+          <option
+            value="2026-07..2026-09"
+          >
+            Q3 2026 (Jul–Sep)
+          </option>
+          <option
+            value="2026-10..2026-12"
+          >
+            Q4 2026 (Oct–Dec)
+          </option>
+          <option
+            value="2026-01..2026-12"
+          >
+            FY 2026
+          </option>
+        </select>
+      </div>
+      <div
+        class="flex items-center gap-1.5"
+      >
+        <span
+          class="text-[10px] font-semibold uppercase tracking-widest"
+          style="color: var(--text-muted);"
+        >
+          Version
+        </span>
+        <label
+          class="sr-only"
+          for="fctx-version"
+        >
+          Scenario or version
+        </label>
+        <select
+          class="rounded-md border px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+          id="fctx-version"
+          style="background: var(--bg-elevated); color: var(--text-primary); border-color: var(--border-subtle);"
+        >
+          <option
+            value=""
+          >
+            No version
+          </option>
+          <option
+            value="v-2026"
+          >
+            2026 Plan
+          </option>
+        </select>
+      </div>
+      <div
+        class="flex items-center gap-1.5"
+      >
+        <span
+          class="text-[10px] font-semibold uppercase tracking-widest"
+          style="color: var(--text-muted);"
+        >
+          Currency
+        </span>
+        <label
+          class="sr-only"
+          for="fctx-currency"
+        >
+          Reporting currency
+        </label>
+        <select
+          class="rounded-md border px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+          id="fctx-currency"
+          style="background: var(--bg-elevated); color: var(--text-primary); border-color: var(--border-subtle);"
+        >
+          <option
+            value="USD"
+          >
+            USD
+          </option>
+          <option
+            value="EUR"
+          >
+            EUR
+          </option>
+          <option
+            value="GBP"
+          >
+            GBP
+          </option>
+          <option
+            value="INR"
+          >
+            INR
+          </option>
+        </select>
+      </div>
+      <div
+        class="flex items-center gap-2"
+      >
+        <span
+          class="text-[10px] font-semibold uppercase tracking-widest"
+          style="color: var(--text-muted);"
+        >
+          Freshness
+        </span>
+        <span
+          role="status"
+          style="color: var(--text-secondary);"
+        >
+          Freshness unknown
+        </span>
+        <span
+          aria-label="Draft; not published: Local workspace data"
+          class="fp-financial-status fp-financial-status--draft"
+          data-financial-status="draft"
+          role="status"
+        >
+          <span
+            aria-hidden="true"
+            class="fp-financial-status__icon"
+          >
+            ✎
+          </span>
+          <span>
+            Draft
+          </span>
+          <span
+            class="fp-financial-status__detail"
+          >
+            Local workspace data
+          </span>
+        </span>
+      </div>
+    </section>
+    <header
+      class="fp-page-header"
+    >
+      <div>
+        <div
+          class="flex flex-wrap items-center gap-3"
+        >
+          <h1
+            class="fp-page-header__title"
+          >
+            Executive Dashboard
+          </h1>
+          <span
+            aria-label="Draft; not published: Local workspace data"
+            class="fp-financial-status fp-financial-status--draft"
+            data-financial-status="draft"
+            role="status"
+          >
+            <span
+              aria-hidden="true"
+              class="fp-financial-status__icon"
+            >
+              ✎
+            </span>
+            <span>
+              Draft
+            </span>
+            <span
+              class="fp-financial-status__detail"
+            >
+              Local workspace data
+            </span>
+          </span>
+        </div>
+        <div
+          class="fp-page-header__purpose"
+        >
+          Workspace data is a local draft until a server-authorized context exists.
+        </div>
+      </div>
+      <div
+        class="fp-page-header__actions"
+      >
+        <button
+          type="button"
+        >
+          Import
+        </button>
+      </div>
+    </header>
+  </main>
+</div>
+`;

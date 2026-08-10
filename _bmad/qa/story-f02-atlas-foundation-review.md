@@ -52,6 +52,13 @@ Extends the interim structural baseline (still DOM/class only; pixels, fonts, th
 
 This extension does NOT close the pixel-baseline rejection reason. It strengthens the interim signal only.
 
+## Interim evidence extension — FinancialContextBar baseline (2026-08-10, later same session)
+
+- `AtlasFoundations.visual-contract.test.tsx` extended with two new snapshot/structural cases: the **financial context bar hierarchy** (Scope → Time → Version → Currency → Freshness with sr-only labels, native selects, and the `Draft — Local workspace data` truth badge) inside the canonical page shell, and the **freshness/trust text semantics** when no sync state exists.
+- New explicit structural assertions: trust state carries `data-financial-status`, `role="status"`, the `fp-financial-status--draft` class, text label + detail, and a consequence-bearing `aria-label` — i.e., state is never color-only at the DOM contract level.
+- Verification: Atlas structural suite now 4 tests; full root suite **1,184 files / 13,333 tests passed** (1 skipped); root + server `tsc` 0 errors; changed-file ESLint 0 warnings; `git diff --check` clean.
+- This extension also does NOT close the pixel-baseline rejection reason (theme contrast, fonts, and responsive layout still require a browser).
+
 ## Stale-test reconciliation (2026-08-10, same session)
 
 The first full-suite run on merged main surfaced two tests asserting the pre-merge Dashboard empty state ("Welcome to FinPlan Pro"). Verified pre-existing on clean merged main via a temporary worktree at HEAD (not caused by this session's changes):
