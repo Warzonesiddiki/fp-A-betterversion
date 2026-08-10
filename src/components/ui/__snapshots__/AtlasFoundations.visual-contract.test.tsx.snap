@@ -1,0 +1,130 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Atlas foundation visual structure contract > preserves the canonical finance workspace hierarchy and state semantics 1`] = `
+<div>
+  <main
+    class="fp-page"
+  >
+    <header
+      class="fp-page-header"
+    >
+      <div>
+        <div
+          class="flex flex-wrap items-center gap-3"
+        >
+          <h1
+            class="fp-page-header__title"
+          >
+            Executive Dashboard
+          </h1>
+          <span
+            aria-label="Draft; not published: Local workspace data"
+            class="fp-financial-status fp-financial-status--draft"
+            data-financial-status="draft"
+            role="status"
+          >
+            <span
+              aria-hidden="true"
+              class="fp-financial-status__icon"
+            >
+              ✎
+            </span>
+            <span>
+              Draft
+            </span>
+            <span
+              class="fp-financial-status__detail"
+            >
+              Local workspace data
+            </span>
+          </span>
+        </div>
+        <div
+          class="fp-page-header__purpose"
+        >
+          Review financial data and complete the next safe action.
+        </div>
+      </div>
+      <div
+        class="fp-page-header__actions"
+      >
+        <button
+          type="button"
+        >
+          Import actuals
+        </button>
+      </div>
+    </header>
+    <section
+      aria-labelledby="workspace-empty-title"
+      class="fp-workspace-empty-state"
+    >
+      <h1
+        class="fp-page-header__title"
+        id="workspace-empty-title"
+      >
+        Set up your finance workspace
+      </h1>
+      <p
+        class="fp-page-header__purpose"
+      >
+        Load and validate financial inputs before planning and reporting.
+      </p>
+      <ol
+        aria-label="Setup steps"
+        class="fp-workspace-empty-state__steps"
+      >
+        <li
+          class="fp-workspace-empty-state__step"
+        >
+          <span
+            aria-hidden="true"
+            class="fp-workspace-empty-state__number"
+          >
+            1
+          </span>
+          <span>
+            <strong>
+              Import actuals
+            </strong>
+            <span
+              class="fp-workspace-empty-state__description"
+            >
+              Load a controlled financial source.
+            </span>
+          </span>
+        </li>
+        <li
+          class="fp-workspace-empty-state__step"
+        >
+          <span
+            aria-hidden="true"
+            class="fp-workspace-empty-state__number"
+          >
+            2
+          </span>
+          <span>
+            <strong>
+              Confirm reporting accounts
+            </strong>
+            <span
+              class="fp-workspace-empty-state__description"
+            >
+              Verify the reporting hierarchy.
+            </span>
+          </span>
+        </li>
+      </ol>
+      <div
+        class="fp-workspace-empty-state__actions"
+      >
+        <button
+          type="button"
+        >
+          Set up accounts
+        </button>
+      </div>
+    </section>
+  </main>
+</div>
+`;

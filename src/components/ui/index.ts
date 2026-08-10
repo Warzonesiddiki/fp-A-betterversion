@@ -26,6 +26,17 @@ export { AsyncErrorBoundary } from './AsyncErrorBoundary';
 export { ExportMenu } from './ExportMenu';
 export { FileDropZone } from './FileDropZone';
 export { FinancialTable } from './FinancialTable';
+export {
+  FinancialWorkspaceEmptyState,
+  type FinancialWorkspaceEmptyStateProps,
+  type FinancialWorkspaceEmptyStateStep,
+} from './FinancialWorkspaceEmptyState';
+export {
+  FinancialStatusBadge,
+  financialStatusValues,
+  type FinancialStatus,
+  type FinancialStatusBadgeProps,
+} from './FinancialStatusBadge';
 export { FormulaBar } from './FormulaBar';
 export { GaugeChart } from './GaugeChart';
 export { GuidedTour } from './GuidedTour';
@@ -35,6 +46,7 @@ export { KPIValue } from './KPIValue';
 export { LoadingScreen } from './LoadingScreen';
 export { Modal } from './Modal';
 export { Pagination } from './Pagination';
+export { PageHeader, type PageHeaderProps } from './PageHeader';
 export { PeriodPicker } from './PeriodPicker';
 export { PresenceIndicator } from './PresenceIndicator';
 export { Progress } from './Progress';

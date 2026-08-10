@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { axe, toHaveNoViolations } from 'jest-axe';
+
+expect.extend(toHaveNoViolations);
 vi.mock('@/store/glStore', () => ({
   useGLStore: vi.fn(() => ({ entries: [], accounts: [] })),
 }));
@@ -93,8 +96,16 @@ describe('DashboardPage smoke test', () => {
     expect(container).toBeTruthy();
   });
 
-  it('displays welcome message when no data', () => {
+  it('displays an actionable finance-workspace setup state when no data exists', () => {
     renderPage();
-    expect(screen.getByText(/Welcome to FinPlan Pro/)).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Set up your finance workspace' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Import actuals' })).toBeTruthy();
+  });
+
+  it('has no automated accessibility violations in the finance-workspace setup state', async () => {
+    const { container } = renderPage();
+
+    const results = await axe(container);
+    expect(results).toHaveNoViolations();
   });
 });

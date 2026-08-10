@@ -22,6 +22,7 @@
     "canary:stage3": "node --experimental-strip-types scripts/canary-2.0/stage3-integration/stage3-runner.ts",
     "prepare": "husky",
     "repo:hygiene": "node scripts/repo-hygiene-check.mjs",
+    "capability:inventory": "node scripts/generate-capability-truth-matrix.mjs",
     "test:a11y": "node node_modules/vitest/vitest.mjs run __tests__/a11y .a11y.test",
     "audit:prod": "npm audit --omit=dev --audit-level=high",
     "money:adoption": "node scripts/money-adoption.mjs",
