@@ -263,6 +263,8 @@ Each ADR must become a separately numbered file under `docs/adr/` before impleme
 
 **Sandbox caveat:** server tests run against the in-memory mock DB fallback in this environment (better-sqlite3 native binding unavailable); queries were written to be correct on both real SQLite and the mock.
 
+**Client completion (same session):** `src/api/commandClient.ts` provides the typed browser transport — `CommandClient.submitCommand(envelope)` / `getCommandResult(correlationId)` against `/api/v1/commands`, bearer auth, typed error mapping (`CommandRequestError`, `ControlPlaneDisabledError`), and response validation via `isCommandResult` (no zod import, keeping the client bundle lean). Feature-flagged: `isControlPlaneEnabled()` reads `VITE_CONTROL_PLANE_URL` / `VITE_ENABLE_CONTROL_PLANE`; when unset the client is never constructed. Client contract types (`CommandResult`, `CommandError`, `CommandStatus`, `isCommandResult`) mirror the server envelope in `src/types/commandEnvelope.ts`. Tests: 14 (client + contract) with mocked fetch, including 401 and 409 mapping. The client is intentionally not wired into any screen until a Control Plane deployment is configured (no pre-decided deployment).
+
 **Migration path:** production implementation must persist the registry (outbox + revision state) transactionally with audit evidence — PostgreSQL/outbox per ADR-E02/E03. The typed envelope and scope-check semantics carry forward unchanged.
 
 ## 12. Key risks and required decisions

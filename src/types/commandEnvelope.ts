@@ -53,3 +53,51 @@ export function createCommandEnvelope(
     payload,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Command outcomes (mirror of server/src/types/commandEnvelope.ts)
+// ---------------------------------------------------------------------------
+
+export const COMMAND_ERROR_CODES = [
+  'VALIDATION_ERROR',
+  'UNAUTHORIZED',
+  'FORBIDDEN_ENTITY',
+  'CONFLICT_REVISION',
+  'DUPLICATE_IDEMPOTENCY',
+  'NOT_FOUND',
+  'INTERNAL',
+] as const;
+
+export type CommandErrorCode = (typeof COMMAND_ERROR_CODES)[number];
+
+export type CommandStatus = 'accepted' | 'completed' | 'conflict' | 'rejected';
+
+export interface CommandError {
+  code: CommandErrorCode;
+  message: string;
+  details?: unknown;
+}
+
+export interface CommandResult {
+  status: CommandStatus;
+  /** Null when the envelope failed validation before ids were parsed. */
+  commandId: string | null;
+  correlationId: string | null;
+  /** Revision after apply; null when the command was rejected/conflicted. */
+  revision: string | null;
+  /** Present on the accept path (server recorded audit evidence). */
+  auditRecorded?: boolean;
+  error?: CommandError;
+}
+
+export function isCommandResult(value: unknown): value is CommandResult {
+  if (typeof value !== 'object' || value === null) return false;
+  const v = value as Record<string, unknown>;
+  return (
+    typeof v.status === 'string' &&
+    (v.status === 'accepted' ||
+      v.status === 'completed' ||
+      v.status === 'conflict' ||
+      v.status === 'rejected')
+  );
+}

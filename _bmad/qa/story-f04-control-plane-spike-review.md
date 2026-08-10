@@ -48,6 +48,14 @@ Changes limited to `server/src/types/commandEnvelope.ts`, `server/src/services/C
 
 Sandbox runs the mock DB fallback (native better-sqlite3 binding unavailable); queries written to behave identically on real SQLite and the mock. Production spike validation on real PostgreSQL remains a P-track activity.
 
+## Client completion addendum (2026-08-10, later same session)
+
+- Added `src/api/commandClient.ts`: typed browser transport for `POST /api/v1/commands` and `GET /api/v1/commands/:correlationId` (bearer auth, typed `CommandRequestError` mapping, `isCommandResult` response validation — no zod import to protect the client bundle).
+- Feature-flag gating: `isControlPlaneEnabled()` / `resolveControlPlaneBaseUrl()` read `VITE_CONTROL_PLANE_URL` / `VITE_ENABLE_CONTROL_PLANE`; the client is never constructed when unset. Client contract types mirror the server envelope in `src/types/commandEnvelope.ts` (`CommandResult`, `CommandError`, `CommandStatus`, `isCommandResult`).
+- Tests: `src/api/commandClient.test.ts` + extended `commandEnvelope.test.ts` — 14 tests with mocked fetch, covering enabled/disabled gating, URL normalization, POST body/auth header, 409 conflict mapping, 401 typed error, correlation query, network failure, and no-token requests.
+- Verification: targeted suites pass; root `tsc --noEmit` 0 errors; changed-file ESLint 0 warnings.
+- Scope note: the client is intentionally NOT wired into any screen until a Control Plane deployment is configured (no deployment/ICP decision pre-made).
+
 ## Final verdict
 
-**APPROVED** — story F-04 is DONE as a technical spike. Its migration path and caveats are recorded in `_bmad/architecture.md` §11.1.
+**APPROVED** — story F-04 is DONE as a technical spike (server + typed client). Its migration path and caveats are recorded in `_bmad/architecture.md` §11.1.
