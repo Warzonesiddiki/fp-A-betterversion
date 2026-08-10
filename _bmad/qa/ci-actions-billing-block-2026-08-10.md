@@ -48,3 +48,14 @@ All GitHub Actions workflow runs on this repository fail **before any job step e
 
 - CI remains RED for infrastructure reasons outside the repository's control.
 - No code change is proposed by this note; the merged PR #53 content is unaffected.
+
+## Follow-up governance hardening (2026-08-10, session branch)
+
+While CI could not execute, the CI configuration itself was brought into compliance with the repository's own governance scripts (all verified locally; no workflow can run until the billing block clears):
+
+1. **Actions SHA-pinned** across all 9 workflows (`.github/workflows/*.yml`): every `uses:` now references an immutable 40-hex commit SHA with a `# vN` comment, replacing mutable `@vN`/`@stable` tags. Architecture guardrail check now passes.
+2. **Test sharding (CI-002):** `ci.yml` unit-test job runs a 2-shard matrix with `--shard=${{ matrix.shard }}/${{ strategy.job-total }}`; shard coverage artifacts are named per shard. `--shard` verified working against local vitest.
+3. **Blocking a11y gate (CI-003):** removed `continue-on-error: true` from the A11Y job; `npm run test:a11y` is defined and passes locally (10 files / 448 tests); runner-missing detection now emits `::error::`. Upload step uses `if-no-files-found: warn`.
+4. `node scripts/compliance-evidence.mjs` now reports **22/22 passed** (was 19/22); `node scripts/architecture-guardrails.mjs` passes; all workflow YAML parses.
+
+When the billing block is resolved these changes will be exercised for the first time; any environment-only failures (e.g., native modules in the server suite) must be triaged as environment/bootstrap, not code regressions.
