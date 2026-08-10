@@ -1,7 +1,7 @@
 # BMAD Path Lock — FinPlan Pro
 
-> **Recorded:** 2026-08-10  
-> **Instruction:** Work according to the BMAD v4 research-first method. Do not change the agreed path without explicit owner direction.
+> **Recorded:** 2026-08-10 · **Updated:** 2026-08-10 (BMAD v5.0 upgrade)
+> **Instruction:** Work according to the BMAD v5.0 ULTRA-YOLO method (`_bmad/BMAD_V5_OPERATING_CHARTER.md`). Research-first ordering, the reasoning ledger, and the autonomy matrix govern execution; the locked delivery path below is unchanged and requires explicit owner direction to deviate.
 
 ## Locked delivery path
 

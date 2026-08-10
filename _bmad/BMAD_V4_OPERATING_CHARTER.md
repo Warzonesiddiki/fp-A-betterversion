@@ -1,6 +1,6 @@
 # BMAD v4.0 Operating Charter — FinPlan Pro
 
-> **Effective:** 2026-08-10  
+> **Effective:** 2026-08-10 · **Status:** SUPERSEDED 2026-08-10 by `_bmad/BMAD_V5_OPERATING_CHARTER.md` (ULTRA-YOLO edition). Kept as the historical record of v4.0 semantics.
 > **Mode:** Research-first, artifact-driven, continuous execution inside the owner-approved path.
 
 ## Purpose

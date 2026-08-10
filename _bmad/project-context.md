@@ -1,6 +1,6 @@
 # Project Context — FinPlan Pro
 
-> **Last updated:** 2026-08-10 · **Updated by:** Rex / Blaze (new-session rebaseline, YOLO mode)
+> **Last updated:** 2026-08-10 · **Updated by:** Rex / Blaze (BMAD v5.0 ULTRA-YOLO upgrade)
 
 ## 1. Project name & description
 
@@ -53,7 +53,21 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 - Focused tests: `node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run <file> --reporter=dot --pool=forks`.
 - Capability inventory: `npm run capability:inventory`.
 
-## 10. Artifact registry
+## 10. YOLO autonomy tracker (BMAD v5.0)
+
+| Agent | Current autonomy level | Basis | Last certified |
+|---|---|---|---|
+| Rex (Research) | A5 — FULL YOLO | Research path locked; evidence sovereignty enforced; R-01 externally blocked (no fabrication) | 2026-08-10 |
+| Blaze (Brainstorm) | A5 — FULL YOLO | Ideation only; no direction change without owner | 2026-08-10 |
+| Ana / Percy / Uxie / Archie | A5 — FULL YOLO within approved hypothesis artifacts | Gates G1–G4 approved; no rebaseline without evidence | 2026-08-10 |
+| Bob (Planning) | A5 — FULL YOLO | Sprint plan v2.1 approved (G5); P-track blocked by R-04 | 2026-08-10 |
+| Amelia (Developer) | A5 — FULL YOLO on safe foundations | F-01/F-03/F-04 approved stories; story ambiguity → A1 | 2026-08-10 |
+| Quinn (QA) | A5 — FULL YOLO | Adversarial review; critical security → A1 | 2026-08-10 |
+| System (reconciliation) | A5 — verified fast-forward only | Never destructive; documented procedure | 2026-08-10 |
+
+**Escalation status (open):** A3 — workflow-file push blocked (missing `workflows` permission; changes preserved in worktree). A2 — R-01 participants, F-02 browser environment, CI billing block (all external). No A1 active.
+
+## 11. Artifact registry
 
 | Artifact | Version / status | Notes |
 |---|---|---|
@@ -79,7 +93,7 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | commercial-implementation-gtm-contract.md | v1 DRAFT | ICP, economic value, pilot, packaging and implementation model |
 | research-to-requirements-traceability.md | ACTIVE | Evidence/assumption to requirement/architecture chain |
 | path-lock.md | ACTIVE | Owner-directed BMAD v4 delivery path; deviations require explicit documentation |
-| BMAD_V4_OPERATING_CHARTER.md | ACTIVE | Durable interpretation of the owner-provided BMAD v4 process and YOLO semantics |
+| BMAD_V5_OPERATING_CHARTER.md | ACTIVE | Durable interpretation of the owner-provided BMAD v5.0 ULTRA-YOLO process (DRP + reasoning ledger + autonomy matrix); v4 charter superseded and kept as historical record |
 | research-session-notes-template.md | ACTIVE | Structured, anonymized primary-research evidence capture |
 | recruitment-outreach-template.md | ACTIVE | Bias-controlled participant recruitment script |
 | usability-prototype-test-plan.md | READY | Task scenarios, metrics and pivot rules for primary research |
@@ -104,7 +118,7 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | story-f03 / story-f04 | DONE / QA APPROVED | Implemented and verified 2026-08-10 |
 | capability truth matrix | ACTIVE | mechanical source/test evidence baseline |
 
-## 11. Brainstorm sessions conducted
+## 12. Brainstorm sessions conducted
 
 | Topic | Date | Outcome |
 |---|---|---|
@@ -112,11 +126,15 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | Executive workspace | 2026-08-10 | materiality-first decision workspace is the leading UX hypothesis |
 | Enterprise research pre-mortem | 2026-08-10 | R-01 requires cohort balance, workflow-first interviews, and bias controls |
 
-## 12. Glossary
+## 13. Reasoning ledger reference (BMAD v5.0)
+
+`_bmad/reasoning-ledger.md` is the permanent intellectual record: every meaningful decision logs its DRP summary (first principles, evidence, options, risks, consequences), confidence score, and autonomy level. Backfilled through Ledger Entry #8 (session history); new entries append. This file is required reading for any agent inheriting ambiguous state.
+
+## 14. Glossary
 
 **Authoritative:** server-enforced, versioned, audited state used for official finance. **Connected:** real data/contract plus lifecycle-state evidence. **Governed:** policy/audit/tenant/lifecycle evidence. **Enterprise-ready:** governed plus performance, accessibility, operations, and customer-workflow proof.
 
-## 13. Change log
+## 15. Change log
 
 | Date | Agent | Change |
 |---|---|---|
@@ -141,8 +159,9 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | 2026-08-10 | Amelia / Quinn | Full-suite verification post-sandbox-recycle: **1,184 files / 13,333 tests passed** (1 skipped) — cleanest full run to date (no flakes). Extended Atlas structural baseline with FinancialContextBar hierarchy + trust-state semantics tests (4 tests in `AtlasFoundations.visual-contract.test.tsx`); updated E-004 with full verification battery (build, a11y 448, governance 22/22). F-02 interim evidence strengthened; pixel baseline remains blocked. |
 | 2026-08-10 | Amelia / Quinn | Extended Atlas structural baseline to 8 tests: all ten `FinancialStatusBadge` lifecycle states (text + icon + role + data attribute, never colour-only; deterministic badge-set snapshot) and PageHeader full/minimal anatomy. Fixed 11 broken backtick citations found by `docs-link-check --strict` across 6 BMAD docs (0 broken links/citations repo-wide now). Production build + bundle check green. F-02 verdict unchanged (pixel baseline blocked). |
 | 2026-08-10 | Amelia / Quinn | Completed F-04 client side: `src/api/commandClient.ts` typed Control-Plane transport (`submitCommand`/`getCommandResult`, bearer auth, typed errors, `isCommandResult` validation, feature-flag gated via `VITE_CONTROL_PLANE_URL`/`VITE_ENABLE_CONTROL_PLANE`); contract types (`CommandResult`/`CommandError`/`CommandStatus`) mirrored in `src/types/commandEnvelope.ts`. 14 client/contract tests (mocked fetch). Not wired into any screen until a Control Plane deployment is configured. QA addendum filed; architecture §11.1 updated. |
+| 2026-08-10 | System / All agents | **BMAD v5.0 ULTRA-YOLO upgrade (owner direction):** new `_bmad/BMAD_V5_OPERATING_CHARTER.md` (DRP + reasoning ledger + autonomy matrix + repo-mapped escalations); v4 charter superseded (historical); `_bmad/reasoning-ledger.md` established and backfilled (entries #1–#8); path-lock updated to v5; project-context gains §10 autonomy tracker and §13 ledger reference. Locked delivery path and hypothesis gates unchanged. |
 
-## 14. CI / GitHub Actions status
+## 16. CI / GitHub Actions status
 
 - **2026-08-10:** All workflow runs fail before any job step runs. GitHub check-run annotation: *"The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings"*. Affects every workflow (CI, tsc, lint, test-unit, build, deploy, cascade-hold, sentry-self-test) on commits predating PR #53 as well as merged main — a repo-wide infrastructure block, **not** a code regression.
 - Local verification of merged main + session branch passes (re-run in new session 2026-08-10): full unit suite **1,179 files / 13,315 tests passed** (1 skipped), root `tsc --noEmit` 0 errors, full-src ESLint 0 warnings, production build passed, capability inventory deterministic, docs truth passed, production dependency audit 0 vulnerabilities, diff hygiene clean. Evidence: E-004.
