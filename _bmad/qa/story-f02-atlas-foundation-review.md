@@ -64,6 +64,13 @@ This extension does NOT close the pixel-baseline rejection reason. It strengthen
 - `AtlasFoundations.visual-contract.test.tsx` now 9 tests: added a structural contract asserting the global stylesheet carries `@media (prefers-reduced-motion: reduce)` blocks that override `animation-duration` and `transition-duration` (runbook review-checklist item, structural proxy for browser-level motion behavior).
 - Verification: Atlas suite 9/9; lint clean. Pixel/animation-timing baselines still require a browser.
 
+## Interim evidence extension — theme-token contract (2026-08-11)
+
+- `AtlasFoundations.visual-contract.test.tsx` now 11 tests: dark/light theme blocks both define the core Atlas tokens (`--bg-root`, `--bg-surface`, `--text-primary`), and the financial state tokens are asserted **theme-invariant by design** (single `:root` source consumed by `.fp-financial-status--*` classes; no `.light` duplication) — the design decision is now locked by contract so a future change cannot silently split the palettes.
+- Light-theme contrast verification remains a browser-pixel-baseline item (blocked).
+- Verification: Atlas suite 11/11; lint clean.
+
+
 
 ## Interim evidence extension — full status set + PageHeader anatomy (2026-08-10, later same session)
 

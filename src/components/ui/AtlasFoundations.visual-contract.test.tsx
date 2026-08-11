@@ -180,4 +180,47 @@ describe('Atlas foundation visual structure contract', () => {
     expect(combined).toContain('animation-duration');
     expect(combined).toContain('transition-duration');
   });
+
+  it('defines dark and light theme token sets with the required Atlas tokens (runbook dark/light)', () => {
+    // Runbook scenarios render components in dark/light. Until a browser
+    // pixel baseline exists, assert the structural contract: both theme
+    // blocks exist and both define the tokens components consume, so a
+    // theme switch cannot silently drop a token.
+    const cssPath = path.resolve(__dirname, '../../index.css');
+    const css = fs.readFileSync(cssPath, 'utf-8');
+
+    const rootBlock = css.match(/:root\s*{[^}]*}/)?.[0] ?? '';
+    const lightBlock = css.match(/\.light\s*{[^}]*}/)?.[0] ?? '';
+    expect(rootBlock, 'expected :root (dark) theme block').toContain('--bg-root');
+    expect(lightBlock, 'expected .light theme block').toContain('--bg-root');
+
+    const requiredTokens = ['--bg-root', '--bg-surface', '--text-primary'];
+    for (const token of requiredTokens) {
+      expect(rootBlock, `:root missing ${token}`).toContain(token);
+      expect(lightBlock, `.light missing ${token}`).toContain(token);
+    }
+  });
+
+  it('keeps financial state tokens theme-invariant by design (single source of truth)', () => {
+    // Financial lifecycle colors are defined ONCE in :root and consumed by
+    // both themes (no .light duplication). This is a deliberate design
+    // decision, recorded here so a future change cannot silently split the
+    // palettes. Actual light-theme contrast verification remains a
+    // browser-pixel-baseline item (blocked in this environment).
+    const cssPath = path.resolve(__dirname, '../../index.css');
+    const css = fs.readFileSync(cssPath, 'utf-8');
+
+    const rootBlock = css.match(/:root\s*{[^}]*}/)?.[0] ?? '';
+    const lightBlock = css.match(/\.light\s*{[^}]*}/)?.[0] ?? '';
+    expect(rootBlock).toContain('--financial-draft');
+    expect(rootBlock).toContain('--financial-certified');
+    expect(rootBlock).toContain('--financial-failed');
+
+    // The state classes consume the shared tokens.
+    expect(css).toMatch(/\.fp-financial-status--draft\s*{[^}]*var\(--financial-draft\)/);
+    expect(css).toMatch(/\.fp-financial-status--certified\s*{[^}]*var\(--financial-certified\)/);
+
+    // By design, .light does not re-declare financial tokens.
+    expect(lightBlock).not.toContain('--financial-draft');
+  });
 });
