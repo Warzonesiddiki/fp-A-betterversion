@@ -449,4 +449,25 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 
 ---
 
+## Ledger Entry #23 — 2026-08-11 — Amelia/Quinn (F-05)
+
+### Decision/Topic: Implement flag-gated browser beta enablement (solo-dev validation loop enabler)
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | The solo-dev evidence strategy needs a public beta; the app hard-blocks non-Tauri. Enable browser rendering ONLY behind an explicit flag so the default runtime behavior is unchanged and no unsupported-capability claim is made. |
+| Evidence | App.tsx gate (`!isTauri` → alert + null); 14 files import @tauri-apps (most already guarded: DashboardPage modal fallback, useTauriMenu dynamic import). Owner direction 2026-08-11 (solo dev). |
+| Options Considered | (a) Remove the gate entirely — rejected: silently broadens supported runtime, contradicts honesty rules. (b) Flag-gated (VITE_BETA_WEB) with pure testable gate module + honest marker — ADOPTED. (c) Full browser hardening now — deferred: needs the remaining-work list (storage/shortcuts no-ops). |
+| Risk Probe | Risk: beta mode crashes on unguarded Tauri calls — mitigated: remaining-work list + full-suite verification; DashboardPage already falls back. Risk: overclaim — mitigated: marker + console note + A-12 unchanged. |
+| Consequence Projection | Beta channel exists; P-track re-scoped to public-beta segment becomes actionable; browser hardening continues as F-05 remaining work. |
+| Confidence Score | 90% |
+| Autonomy Level | A5 (within story scope) |
+
+### Adopted Path: betaMode.ts + tests (5/5) + App.tsx gate + env typing; story F-05 AC1-AC6.
+
+### Rejected Alternatives: remove gate (overclaim); full hardening in one turn (too broad without browser env).
+
+---
+
 <!-- Future entries append below this line. -->
