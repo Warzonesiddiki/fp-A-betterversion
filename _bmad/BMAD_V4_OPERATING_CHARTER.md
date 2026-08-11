@@ -1,6 +1,6 @@
 # BMAD v4.0 Operating Charter — FinPlan Pro
 
-> **Effective:** 2026-08-10  
+> **Effective:** 2026-08-10 · **Status:** SUPERSEDED 2026-08-10 by `_bmad/BMAD_V5_OPERATING_CHARTER.md` (ULTRA-YOLO edition). Kept as the historical record of v4.0 semantics.
 > **Mode:** Research-first, artifact-driven, continuous execution inside the owner-approved path.
 
 ## Purpose
@@ -11,7 +11,7 @@ This file is the durable operational interpretation of the owner-provided BMAD v
 
 | Phase | Required artifacts | Current status |
 |---|---|---|
-| 0 — Intelligence | `research-report.md`, `assumption-registry.md`, relevant Blaze sessions | Gate G0 approved hypothesis baseline; primary validation remains open |
+| 0 — Intelligence | `_bmad/research/research-report.md`, `_bmad/research/assumption-registry.md`, relevant Blaze sessions | Gate G0 approved hypothesis baseline; primary validation remains open |
 | 1 — Discovery | research validation plan, evidence log, research-informed product brief | Gate G1 approved hypothesis brief; no primary participant evidence entered yet |
 | 2 — Planning | research-traceable PRD and UX specification | Gates G2/G3 approved hypothesis artifacts; assumptions remain open |
 | 3 — Solutioning | research-traceable architecture and ADRs | Gate G4 approved hypothesis architecture; primary validation remains open |
@@ -38,4 +38,4 @@ This file is the durable operational interpretation of the owner-provided BMAD v
 
 ## Current authoritative next action
 
-Run primary validation according to `_bmad/research/validation-plan.md`, capture sessions using `research-session-notes-template.md`, and record evidence in `evidence-log.md`. Then synthesize findings and revise downstream artifacts only where evidence warrants it.
+Run primary validation according to `_bmad/research/validation-plan.md`, capture sessions using `_bmad/research/research-session-notes-template.md`, and record evidence in `_bmad/research/evidence-log.md`. Then synthesize findings and revise downstream artifacts only where evidence warrants it.

@@ -3,7 +3,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import AppLayout from './AppLayout';
 
 vi.mock('react-i18next', () => ({
@@ -128,5 +128,30 @@ describe('AppLayout', () => {
     const { container } = renderWithRouter(<AppLayout />);
     const root = container.querySelector('.responsive-root');
     expect(root?.getAttribute('dir')).toBe('ltr');
+  });
+
+  it('renders the financial context bar', () => {
+    renderWithRouter(<AppLayout />);
+    expect(screen.getByRole('region', { name: 'Financial context' })).toBeInTheDocument();
+  });
+
+  it('shows the local-workspace truth state in the context bar', () => {
+    renderWithRouter(<AppLayout />);
+    expect(screen.getAllByText('Local workspace data').length).toBeGreaterThan(0);
+  });
+
+  it('serializes context changes into the URL', () => {
+    function UrlProbe() {
+      const location = useLocation();
+      return <span data-testid="url-probe">{location.search}</span>;
+    }
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <AppLayout />
+        <UrlProbe />
+      </MemoryRouter>
+    );
+    fireEvent.change(screen.getByLabelText('Entity scope'), { target: { value: 'ent-2' } });
+    expect(screen.getByTestId('url-probe').textContent).toContain('entity=ent-2');
   });
 });

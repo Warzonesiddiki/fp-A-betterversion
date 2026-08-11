@@ -374,10 +374,10 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="px-4 py-3 border-b border-slate-800">
-            <h3 className="font-semibold text-sm flex items-center gap-2">
+            <h2 className="font-semibold text-sm flex items-center gap-2">
               <BarChart3 className="h-4 w-4 text-blue-400" />
               Budget Status
-            </h3>
+            </h2>
           </CardHeader>
           <CardContent className="p-4">
             <div className="text-sm space-y-3">
@@ -436,10 +436,10 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader className="px-4 py-3 border-b border-slate-800">
-            <h3 className="font-semibold text-sm flex items-center gap-2">
+            <h2 className="font-semibold text-sm flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-purple-400" />
               Key Ratios
-            </h3>
+            </h2>
           </CardHeader>
           <CardContent className="p-4">
             <div className="text-sm space-y-3">
@@ -487,7 +487,7 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader className="px-4 py-3 border-b border-slate-800">
-            <h3 className="font-semibold text-sm">Recent Activity</h3>
+            <h2 className="font-semibold text-sm">Recent Activity</h2>
           </CardHeader>
           <CardContent className="p-4">
             <ActivityFeed maxItems={5} />
@@ -500,6 +500,7 @@ export default function DashboardPage() {
         subtitle="Last 12 months · Revenue vs Expenses vs Net Income"
         height={400}
         empty={monthlyTrend.length < 2}
+        headingLevel="h2"
         className="trend-chart"
       >
         <ResponsiveContainer width="100%" height={350}>
@@ -584,7 +585,7 @@ export default function DashboardPage() {
       {sectorKPIs && sectorKPIs.length > 0 && (
         <Card>
           <CardHeader className="px-4 py-3 border-b border-slate-800">
-            <h3 className="font-semibold text-sm">{sectorConfig?.name || 'Sector'} KPIs</h3>
+            <h2 className="font-semibold text-sm">{sectorConfig?.name || 'Sector'} KPIs</h2>
           </CardHeader>
           <CardContent className="p-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

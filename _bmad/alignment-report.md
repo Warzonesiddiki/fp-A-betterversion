@@ -1,7 +1,9 @@
 # PRD ↔ Architecture Alignment Report
 
-> **Status:** COMPLETE — reviewed during Phase 4a on 2026-08-10  
+> **Status:** COMPLETE — reviewed during Phase 4a on 2026-08-10; re-baselined 2026-08-10 (YOLO mode)
 > **Inputs:** approved PRD G2, UX G3, Architecture G4
+
+> **v2.1 rebaseline note:** Verdict unchanged (ALIGNED WITH EXPLICIT DECISIONS REQUIRED). All five open decisions remain open and correctly gated by research/evidence: design partner + first connector, deployment/residency model, browser/PWA support level, pilot vertical/workflow, named business owners.
 
 ## Verdict
 

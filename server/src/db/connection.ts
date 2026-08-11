@@ -3,15 +3,19 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { ensureSchema } from './schema.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const DATA_DIR = path.resolve(__dirname, '../../data');
-const DB_PATH = path.join(DATA_DIR, 'finplan.db');
 
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+// FINPLAN_DB_PATH override: test suites point this at a disposable file so
+// each test file starts from a clean, real-SQLite database.
+const DB_PATH = process.env.FINPLAN_DB_PATH ?? path.join(DATA_DIR, 'finplan.db');
+
+if (!fs.existsSync(path.dirname(DB_PATH))) {
+  fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
 }
 
 /**
@@ -35,6 +39,7 @@ export function mockDbFallbackAllowed(
 }
 
 let db: any;
+let usingMockDb = false;
 try {
   // This package is ESM ("type": "module"); a bare `require()` call here is a
   // ReferenceError at runtime and was being silently swallowed by the catch
@@ -46,6 +51,7 @@ try {
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
 } catch (err) {
+  usingMockDb = true;
   if (!mockDbFallbackAllowed(process.env.NODE_ENV, process.env.FINPLAN_ALLOW_MOCK_DB)) {
     console.error(
       '[db] FATAL: better-sqlite3 is unavailable in production ' +
@@ -281,6 +287,20 @@ try {
       (...args: unknown[]) =>
         fn(...args),
   };
+}
+
+// ---------------------------------------------------------------------------
+// Schema guarantee (real DB only)
+// ---------------------------------------------------------------------------
+// Migrations must exist BEFORE any module-level prepared statement executes
+// (e.g., `accountLockout.ts` prepares INSERT/UPDATE statements at import
+// time). Previously migrations only ran at server start — after module
+// evaluation — so a fresh real-SQLite database crashed at import with
+// "no such table". Running the idempotent schema here, immediately after the
+// real DB is created, closes that ordering gap for both the app and the test
+// suites. The mock fallback needs no DDL.
+if (!usingMockDb) {
+  ensureSchema(db);
 }
 
 export { db };

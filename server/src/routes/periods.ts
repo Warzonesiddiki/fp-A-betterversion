@@ -237,13 +237,16 @@ router.post(
       // Execute transition
       const isClosed = isClosedState(targetState);
       const closedAt = isClosed ? "datetime('now')" : 'NULL';
-      const closedBy = isClosed ? req.user!.id : 'NULL';
 
+      // closedAt is a fixed whitelist of two SQL literals (datetime('now') /
+      // NULL) so it stays inline; closedBy is always bound as a parameter —
+      // interpolating the raw actor id produced broken SQL (e.g.
+      // "closed_by = admin-id" -> no such column) on real SQLite.
       db.prepare(
         `UPDATE fiscal_periods
-         SET close_state = ?, is_closed = ?, closed_at = ${closedAt}, closed_by = ${closedBy}, updated_at = datetime('now')
+         SET close_state = ?, is_closed = ?, closed_at = ${closedAt}, closed_by = ?, updated_at = datetime('now')
          WHERE id = ?`
-      ).run(targetState, isClosed ? 1 : 0, periodId);
+      ).run(targetState, isClosed ? 1 : 0, isClosed ? req.user!.id : null, periodId);
 
       // Audit the transition
       auditPeriodClose(
@@ -324,11 +327,10 @@ router.post(
       // Execute transition
       const isClosed = isClosedState(targetState);
       const closedAt = isClosed ? "datetime('now')" : 'NULL';
-      const closedBy = isClosed ? req.user!.id : 'NULL';
 
       db.prepare(
-        `UPDATE fiscal_periods SET close_state = ?, is_closed = ?, closed_at = ${closedAt}, closed_by = ${closedBy}, updated_at = datetime('now') WHERE id = ?`
-      ).run(targetState, isClosed ? 1 : 0, periodId);
+        `UPDATE fiscal_periods SET close_state = ?, is_closed = ?, closed_at = ${closedAt}, closed_by = ?, updated_at = datetime('now') WHERE id = ?`
+      ).run(targetState, isClosed ? 1 : 0, isClosed ? req.user!.id : null, periodId);
 
       // Audit the transition
       auditPeriodClose(periodId, currentState, targetState, req.user!.id, parsed.data.reason);

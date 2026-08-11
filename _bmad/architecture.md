@@ -1,9 +1,11 @@
 # Architecture — FinPlan Pro Enterprise Decision System
 
-> **Status:** APPROVED HYPOTHESIS ARCHITECTURE — Gate G4 approved by owner on 2026-08-10; primary validation remains mandatory  
-> **BMAD phase:** 3 — Solutioning & Architecture complete  
-> **Inputs:** approved hypothesis Product Brief (G1), PRD (G2), UX specification (G3), `_bmad/research/research-report.md`, `_bmad/research/research-to-requirements-traceability.md`, `_bmad/project-context.md`  
+> **Status:** APPROVED HYPOTHESIS ARCHITECTURE — Gate G4 approved by owner on 2026-08-10; re-baselined 2026-08-10 (YOLO mode); **BMAD v5.0 re-certified 2026-08-10** (restart Step 4, see `_bmad/v5-restart-2026-08-10.md`); primary validation remains mandatory
+> **BMAD phase:** 3 — Solutioning & Architecture complete
+> **Inputs:** approved hypothesis Product Brief (G1), PRD (G2), UX specification (G3), `_bmad/research/research-report.md`, `_bmad/research/research-to-requirements-traceability.md`, `_bmad/project-context.md`
 > **Architecture principle:** Incrementally make official finance operations authoritative, auditable, tenant-safe, and operable. Do not rewrite working calculation/UI code merely to match a fashionable stack.
+
+> **v2.1 rebaseline notes (2026-08-10):** No architecture decision or ADR changed. Merged delivery verified with full-suite/type/lint/build/audit evidence (E-004). CI red is an account billing block (E-005), not an architecture regression. F-04 remains a contract spike (not production migration); the workspace draft/cache boundary and server authority boundary statements below are unchanged and still unvalidated.
 
 ## 1. Architecture outcomes traced to requirements
 
@@ -246,6 +248,24 @@ Connector credentials live only in a vault/secrets manager reference, never in c
 | ADR-E08 | AI is supervised/cited | Finance risk control; reject autonomous posting/publishing. |
 
 Each ADR must become a separately numbered file under `docs/adr/` before implementation of its decision.
+
+## 11.1 F-04 spike outcome (2026-08-10)
+
+**What was proven (spike scope only, in-memory registry — not production):**
+
+- A typed command envelope (`server/src/types/commandEnvelope.ts`, zod-validated) with command id, correlation id, idempotency key, base revision, timestamp, entity scope, and payload.
+- Trusted-actor scope enforcement: global Admin bypass; otherwise `user_entity_access` rows (or matching global `entity_id`) grant entity scope; JWT identity, never client payload, decides actor/tenant.
+- Idempotent replay: identical outcome returned for a repeated idempotency key without re-application; query side `GET /api/v1/commands/:correlationId` returns the stored outcome (404 NOT_FOUND otherwise).
+- Base-revision concurrency: stale revisions return typed `CONFLICT_REVISION` with the current revision.
+- Typed errors: `VALIDATION_ERROR`, `FORBIDDEN_ENTITY`, `CONFLICT_REVISION`, `NOT_FOUND`.
+- Audit evidence: `audit_trail` row per accepted command with actor, scope, revision, correlation id, and idempotency key (same insert pattern as existing routes).
+- Contract tests: 8 passing (`server/src/routes/commands.test.ts`), including negative authorization.
+
+**Verification status (2026-08-10):** server tests now run against **real SQLite** (native better-sqlite3 built from local Node headers). The migration to real-DB testing surfaced and fixed schema/FK/ordering issues the mock had masked — see `_bmad/research/evidence-log.md` E-007 and reasoning-ledger entry #16. The schema is guaranteed at connection time (idempotent `ensureSchema`), `audit_trail` and server-route columns are canonicalized, and tests use per-worker disposable databases. The in-memory mock remains only as a documented dev/sandbox fallback when the native binding cannot be built.
+
+**Client completion (same session):** `src/api/commandClient.ts` provides the typed browser transport — `CommandClient.submitCommand(envelope)` / `getCommandResult(correlationId)` against `/api/v1/commands`, bearer auth, typed error mapping (`CommandRequestError`, `ControlPlaneDisabledError`), and response validation via `isCommandResult` (no zod import, keeping the client bundle lean). Feature-flagged: `isControlPlaneEnabled()` reads `VITE_CONTROL_PLANE_URL` / `VITE_ENABLE_CONTROL_PLANE`; when unset the client is never constructed. Client contract types (`CommandResult`, `CommandError`, `CommandStatus`, `isCommandResult`) mirror the server envelope in `src/types/commandEnvelope.ts`. Tests: 14 (client + contract) with mocked fetch, including 401 and 409 mapping. The client is intentionally not wired into any screen until a Control Plane deployment is configured (no pre-decided deployment).
+
+**Migration path:** production implementation must persist the registry (outbox + revision state) transactionally with audit evidence — PostgreSQL/outbox per ADR-E02/E03. The typed envelope and scope-check semantics carry forward unchanged.
 
 ## 12. Key risks and required decisions
 

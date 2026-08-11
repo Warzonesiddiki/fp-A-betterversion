@@ -1,9 +1,11 @@
 # UX & UI Design Specification — FinPlan Atlas
 
-> **Status:** APPROVED HYPOTHESIS UX SPECIFICATION — Gate G3 approved by owner on 2026-08-10; primary validation remains mandatory  
-> **BMAD phase:** 2 — UX Design complete  
-> **Depends on:** approved hypothesis Product Brief (G1), `_bmad/prd.md` (G2 pending), `_bmad/research/research-report.md`, `session-executive-workspace-2026-08-10.md`, `usability-prototype-test-plan.md`  
+> **Status:** APPROVED HYPOTHESIS UX SPECIFICATION — Gate G3 approved by owner on 2026-08-10; re-baselined 2026-08-10 (YOLO mode); **BMAD v5.0 re-certified 2026-08-10** (restart Step 3, see `_bmad/v5-restart-2026-08-10.md`); primary validation remains mandatory
+> **BMAD phase:** 2 — UX Design complete
+> **Depends on:** approved hypothesis Product Brief (G1), `_bmad/prd.md` (G2 pending), `_bmad/research/research-report.md`, `_bmad/brainstorm/session-executive-workspace-2026-08-10.md`, `_bmad/research/usability-prototype-test-plan.md`
 > **Design goal:** Replace generic dark-admin-dashboard behavior with a finance-native operating environment without treating desk research as completed user validation.
+
+> **v2.1 rebaseline notes (2026-08-10):** Heading-hierarchy rule now implemented and documented (`docs/design/FINPLAN_ATLAS.md` § Heading hierarchy): page h1 via `PageHeader`; top-level sections h2; nested panels h3 (`CardTitle`, `ChartWrapper` default; `headingLevel="h2"` opt-in). Populated-Dashboard structural baseline + `jest-axe` added; real h1→h3 defect found and fixed. Pixel/theme/responsive baselines remain blocked (F-02). No persona, journey, or interaction-pattern changes.
 
 ---
 

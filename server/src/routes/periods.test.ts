@@ -22,6 +22,29 @@ describe('Period Close (F-0013) & Server-Side Enforcement', () => {
       { expiresIn: '15m' }
     );
 
+    // Real-SQLite FK enforcement: audit_log.user_id references users, so
+    // every JWT actor must exist as a users row.
+    for (const [id, email, role] of [
+      ['admin-id', 'admin@finplan.test', 'Admin'],
+      ['viewer-id', 'viewer@finplan.test', 'Viewer'],
+    ]) {
+      db.prepare(
+        `INSERT OR REPLACE INTO users (id, email, password_hash, first_name, last_name, role, is_active)
+         VALUES (?, ?, ?, ?, ?, ?, 1)`
+      ).run(id, email, 'not-a-real-hash', 'Seed', 'User', role);
+    }
+
+    // Real-SQLite FK enforcement: gl_entries.account_id/entity_id reference
+    // accounts/entities, so the GL-post test needs both parent rows.
+    db.prepare(
+      `INSERT OR REPLACE INTO accounts (id, name, code, type, is_active)
+       VALUES ('10000000-0000-0000-0000-000000000001', 'Test Account', '1000', 'Asset', 1)`
+    ).run();
+    db.prepare(
+      `INSERT OR REPLACE INTO entities (id, name, code, is_active)
+       VALUES ('20000000-0000-0000-0000-000000000001', 'Test Entity', 'T-ENT', 1)`
+    ).run();
+
     // Ensure a test period exists in DB
     testPeriodId = 'period-' + Date.now();
     db.prepare(

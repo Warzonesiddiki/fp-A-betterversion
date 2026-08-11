@@ -1,10 +1,11 @@
 import { db } from './connection.js';
+import type { SqliteDdl } from './schema.js';
 
 /**
  * Creates all audit-related tables and indexes.
  * Called during server startup migrations.
  */
-export function createAuditTables(): void {
+export function createAuditTables(db: SqliteDdl): void {
   db.exec(`
     -- =============================================================================
     -- AUDIT LOG — Unified audit trail for all system events

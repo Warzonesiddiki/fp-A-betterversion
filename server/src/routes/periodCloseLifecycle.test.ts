@@ -54,6 +54,22 @@ const glEntryPayload = (description: string, postDate: string) => ({
 const token = (role: string, id = `${role.toLowerCase()}-id`) =>
   jwt.sign({ id, email: `${id}@finplan.test`, role }, JWT_SECRET, { expiresIn: '15m' });
 
+// Real-SQLite FK enforcement: audit_log.user_id references users, so every
+// JWT actor used below must exist as a users row.
+const SEED_ACTORS: ReadonlyArray<readonly [string, string, string]> = [
+  ['admin-id', 'admin@finplan.test', 'Admin'],
+  ['manager-id', 'manager@finplan.test', 'Manager'],
+  ['fpa-id', 'fpa@finplan.test', 'FP&A_Manager'],
+  ['viewer-id', 'viewer@finplan.test', 'Viewer'],
+  ['compliance-id', 'compliance@finplan.test', 'Compliance'],
+];
+for (const [id, email, role] of SEED_ACTORS) {
+  db.prepare(
+    `INSERT OR REPLACE INTO users (id, email, password_hash, first_name, last_name, role, is_active)
+     VALUES (?, ?, ?, ?, ?, ?, 1)`
+  ).run(id, email, 'not-a-real-hash', 'Seed', 'User', role);
+}
+
 describe('GAP-4: period close full lifecycle (UI contract -> server -> durable state -> audit)', () => {
   let admin: string;
   let manager: string;

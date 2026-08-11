@@ -1,6 +1,6 @@
 # Story R-04: Select Enterprise Pilot Slice
 
-## Status: DRAFT
+## Status: RE-BASELINED — 2026-08-11 owner direction (solo development): executes on solo-achievable evidence (Tier 2-4 per validation-plan v2.2) instead of enterprise interviews; interview-track kits retained for future revival
 ## Size: M | Risk: HIGH
 
 ## Why This Story Exists
@@ -27,3 +27,10 @@ No broad platform implementation begins until this story is complete. Pilot must
 - [ ] Charter populated and evidence-linked.
 - [ ] Pilot go/no-go owner decision documented.
 - [ ] QA confirms scope/evidence/security criteria.
+## Progress log (2026-08-11)
+
+- R-04 execution kit built by the multi-agent research squad (see `_bmad/research/r04-pilot-selection-framework-2026-08-11.md` and `_bmad/research/validation-plan.md` v2.1). Real participant evidence remains required — nothing fabricated.
+
+## Re-baseline note (2026-08-11)
+
+Owner direction: enterprise participants unavailable (solo development). Execution uses the solo-dev evidence strategy (`_bmad/research/validation-plan.md` §Solo-dev evidence strategy, v2.2). No fabrication; all evidence labeled by tier; assumption statuses remain UNVALIDATED without Tier-1 evidence.

@@ -21,6 +21,30 @@ FinPlan Atlas prevents the product from degrading into a generic dashboard. It p
 - **Page header:** title, concise decision purpose, status/freshness, primary action, and secondary actions.
 - **Context bar:** Scope → Time → Version → Currency → Freshness. Global controls do not mix with page-local filters.
 - **Panel:** quiet surface with purpose-bearing heading; panels are not used merely to make every datum look important.
+
+## Heading hierarchy
+
+- Page title is `h1` (rendered by `PageHeader`).
+- Top-level sections under the page title use `h2` (cards and chart panels on the canonical Dashboard).
+- Nested panel/group titles use `h3` (`CardTitle`, `ChartWrapper` default).
+- Do not skip levels. `ChartWrapper` accepts `headingLevel="h2"` when it is a top-level section under the page `h1`; the default remains `h3` for panels nested under section headings.
+
+## Financial context contract (F-03)
+
+The canonical context bar (`src/components/layout/FinancialContextBar.tsx`) renders, in fixed order:
+
+1. **Scope** — entity selection (draft options until the server master-data contract is connected).
+2. **Time** — fiscal period range (`YYYY-MM..YYYY-MM`).
+3. **Version** — scenario/version with lifecycle.
+4. **Currency** — reporting currency (ISO 4217).
+5. **Freshness** — sync/queue state, plus the data-authority truth badge (`Draft — Local workspace data` for draft contexts).
+
+Contract rules:
+
+- Typed `FinancialContext` lives in `src/types/financialContext.ts`; state in `src/store/financialContextStore.ts`.
+- URL serialization is deterministic (fixed parameter order) and excludes freshness (ephemeral runtime state). Saved views therefore never freeze a stale-freshness claim.
+- Invalid URL values are ignored, never silently coerced.
+- Context options are a presentation surface. Official views resolve scope/filtering server-side (F-04 command/query envelope); the context bar never authorizes data access client-side.
 - **Inspector:** a resizable contextual pane that preserves selection and reveals evidence, formula, comments, audit, or workflow.
 
 ## Financial state contract

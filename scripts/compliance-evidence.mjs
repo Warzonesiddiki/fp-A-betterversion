@@ -20,7 +20,10 @@ const ROOT = process.cwd();
 let failures = 0;
 
 const evidence = {
-  timestamp: new Date().toISOString(),
+  // Deterministic marker (matching the capability-matrix convention): the
+  // script is the source of truth, and git history records when the checks
+  // changed. A wall-clock timestamp here would dirty the tree on every run.
+  generatedAt: 'from current working tree',
   checks: [],
 };
 

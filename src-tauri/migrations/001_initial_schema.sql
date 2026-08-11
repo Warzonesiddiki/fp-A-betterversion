@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS gl_entries (
     description TEXT,
     reference TEXT,
     batch_id TEXT,
+    created_by TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (account_id) REFERENCES accounts(id),
     FOREIGN KEY (entity_id) REFERENCES entities(id),
@@ -77,6 +78,8 @@ CREATE TABLE IF NOT EXISTS budgets (
     status TEXT NOT NULL DEFAULT 'Draft' CHECK (status IN ('Draft', 'InReview', 'Approved', 'Locked', 'Rejected')),
     base_currency TEXT NOT NULL DEFAULT 'USD',
     total_amount REAL DEFAULT 0,
+    entity_id TEXT,
+    deleted_at TEXT,
     created_by TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -106,17 +109,19 @@ CREATE TABLE IF NOT EXISTS budget_line_items (
 );
 
 -- 7. Audit Trail
+-- Canonical audit_trail shape. The server routes (budgets, entities, export,
+-- forecasts, gl, periods, reports, scenarios, commands) all insert:
+--   (id TEXT PK, action, entity_type, entity_id, user_id, details, created_at)
+-- Server-side reconciliation (ensureCanonicalAuditTrail) migrates databases
+-- that still carry the earlier resource_type/resource_id shape.
 CREATE TABLE IF NOT EXISTS audit_trail (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id TEXT PRIMARY KEY,
     user_id TEXT,
     action TEXT NOT NULL,
-    resource_type TEXT NOT NULL,
-    resource_id TEXT NOT NULL,
-    field_name TEXT,
-    old_value TEXT,
-    new_value TEXT,
-    reason TEXT,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    entity_type TEXT,
+    entity_id TEXT,
+    details TEXT,
+    created_at TEXT DEFAULT (datetime('now'))
 );
 
 -- 8. Key-Value Store (For Zustand Persistence)
@@ -135,6 +140,8 @@ CREATE TABLE IF NOT EXISTS scenarios (
     status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'active', 'archived', 'locked')),
     base_scenario_id TEXT,
     fiscal_year INTEGER,
+    entity_id TEXT,
+    budget_id TEXT,
     created_by TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -169,6 +176,7 @@ CREATE TABLE IF NOT EXISTS forecasts (
     fiscal_year INTEGER,
     start_period TEXT,
     end_period TEXT,
+    entity_id TEXT,
     created_by TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -215,6 +223,7 @@ CREATE TABLE IF NOT EXISTS reports (
     config TEXT,
     filters TEXT,
     layout TEXT,
+    entity_id TEXT,
     created_by TEXT,
     is_template INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -460,8 +469,8 @@ CREATE INDEX IF NOT EXISTS idx_gl_entries_entity ON gl_entries(entity_id);
 CREATE INDEX IF NOT EXISTS idx_gl_entries_batch ON gl_entries(batch_id);
 CREATE INDEX IF NOT EXISTS idx_budget_items_lookup ON budget_line_items(budget_id, account_id);
 CREATE INDEX IF NOT EXISTS idx_budget_items_period ON budget_line_items(period_id);
-CREATE INDEX IF NOT EXISTS idx_audit_trail_resource ON audit_trail(resource_type, resource_id);
-CREATE INDEX IF NOT EXISTS idx_audit_trail_timestamp ON audit_trail(timestamp);
+CREATE INDEX IF NOT EXISTS idx_audit_trail_entity ON audit_trail(entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_audit_trail_created_at ON audit_trail(created_at);
 CREATE INDEX IF NOT EXISTS idx_audit_trail_user ON audit_trail(user_id);
 CREATE INDEX IF NOT EXISTS idx_scenarios_year ON scenarios(fiscal_year);
 CREATE INDEX IF NOT EXISTS idx_scenario_items_scenario ON scenario_line_items(scenario_id);

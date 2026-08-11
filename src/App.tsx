@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import AppLayout from './components/layout/AppLayout';
 import LoadingScreen from './components/ui/LoadingScreen';
@@ -10,6 +10,7 @@ import {
 } from './components/errors/RouteGroupErrorBoundary';
 import { useFirstRun } from './hooks/useFirstRun';
 import { StorageFailureBanner } from './components/system/StorageFailureBanner';
+import { isRenderAllowed } from './utils/betaMode';
 
 // Core (not route-dependent)
 const OnboardingWizard = lazy(() =>
@@ -317,7 +318,20 @@ const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window
 export default function App() {
   const { isFirstRun, completeSetup } = useFirstRun();
 
-  if (!isTauri) {
+  // F-05: beta browser enablement (solo-dev validation loop). Tauri remains
+  // the default runtime; a plain browser renders ONLY when VITE_BETA_WEB is
+  // explicitly enabled. This is not a claim that browser/PWA is supported
+  // (A-12 stays UNVALIDATED).
+  useEffect(() => {
+    if (!isTauri && typeof document !== 'undefined') {
+      document.documentElement.dataset.betaWeb = 'true';
+      console.info(
+        '[beta-web] FinPlan running in browser beta mode (VITE_BETA_WEB). Not a supported runtime claim.'
+      );
+    }
+  }, []);
+
+  if (!isRenderAllowed(import.meta.env)) {
     alert(
       'This application is designed to run exclusively as a desktop app via Tauri. It is not supported in a standard web browser.'
     );

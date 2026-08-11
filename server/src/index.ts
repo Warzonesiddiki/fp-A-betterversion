@@ -13,6 +13,7 @@ import reportsRouter from './routes/reports.js';
 import entitiesRouter from './routes/entities.js';
 import exportRouter from './routes/export.js';
 import periodsRouter from './routes/periods.js';
+import commandsRouter from './routes/commands.js';
 import { authMiddleware, requireRole } from './middleware/auth.js';
 import { auditRequestMiddleware } from './middleware/auditMiddleware.js';
 import { authLimiter, generalLimiter } from './middleware/rateLimit.js';
@@ -116,6 +117,10 @@ app.use('/api/reports', generalLimiter, reportsRouter);
 app.use('/api/entities', generalLimiter, entitiesRouter);
 app.use('/api/export', generalLimiter, exportRouter);
 app.use('/api/periods', generalLimiter, periodsRouter);
+
+// F-04 spike: authoritative command boundary (typed envelope, idempotency,
+// base revisions, trusted-actor scope, typed errors, audit evidence).
+app.use('/api/v1', generalLimiter, commandsRouter);
 
 // ---------------------------------------------------------------------------
 // Incident Response — wired (SECURITY FIX M-05)

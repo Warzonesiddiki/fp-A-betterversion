@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-09T16:38:16.659Z",
+  "generatedAt": "from current working tree",
   "checks": [
     {
       "id": "MONEY-001",
@@ -106,7 +106,7 @@
     {
       "id": "CI-002",
       "label": "CI has sharded tests",
-      "status": "FAIL",
+      "status": "PASS",
       "details": null
     },
     {

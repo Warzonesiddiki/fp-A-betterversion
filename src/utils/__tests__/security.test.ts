@@ -217,6 +217,13 @@ describe('security', () => {
       expect(token.length).toBe(32);
     });
 
+    it('fails closed without a CSPRNG instead of degrading to Math.random', () => {
+      // Security rule: security tokens must never fall back to Math.random.
+      vi.stubGlobal('crypto', undefined);
+      expect(() => generateCSRFToken()).toThrow(/CSPRNG/);
+      expect(() => getCSRFToken()).toThrow(/CSPRNG/);
+    });
+
     it('getCSRFToken generates token if not set', () => {
       const token = getCSRFToken();
       expect(token.length).toBe(32);

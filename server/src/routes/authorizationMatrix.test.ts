@@ -53,6 +53,21 @@ describe('F-0016 Per-Route Authorization Matrix (GAP-2)', () => {
       JWT_SECRET,
       { expiresIn: '15m' }
     );
+    // Real-SQLite FK enforcement: the request-audit middleware writes
+    // audit_log.user_id (FK to users), so every JWT actor must exist.
+    for (const [id, email, role] of [
+      [`admin-${suffix}`, 'admin@finplan.test', ADMIN_ROLE],
+      [`viewer-${suffix}`, 'viewer@finplan.test', VIEWER_ROLE],
+      // NOTE: the forged-token actor gets a distinct email — users.email is
+      // UNIQUE, and INSERT OR REPLACE on an email conflict would delete the
+      // real viewer row.
+      ['forged-viewer', 'forged@finplan.test', VIEWER_ROLE],
+    ]) {
+      db.prepare(
+        `INSERT OR REPLACE INTO users (id, email, password_hash, first_name, last_name, role, is_active)
+         VALUES (?, ?, ?, ?, ?, ?, 1)`
+      ).run(id, email, 'not-a-real-hash', 'Seed', 'User', role);
+    }
   });
 
   /** A readable list endpoint for every route file (Admin must reach 200). */

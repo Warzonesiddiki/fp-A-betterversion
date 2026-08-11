@@ -1,6 +1,6 @@
 # Story 03: Financial Context Contract and Atlas Shell
 
-## Status: DRAFT
+## Status: SUPERSEDED — research-contextualized and renamed (see `story-f03-financial-context-shell.md` / `story-f04-control-plane-contract-spike.md`, 2026-08-10)
 
 ## Context & Purpose
 Fulfils PRD E1.1–E1.3 and UX §§3–4. Introduces a five-pillar shell and global Scope → Time → Version → Currency → Freshness context contract.

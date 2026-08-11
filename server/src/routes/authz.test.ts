@@ -24,6 +24,17 @@ describe('Server-Side Authorization (F-0016) and Keyed Audit Hash Chain (F-0015)
       JWT_SECRET,
       { expiresIn: '15m' }
     );
+    // Real-SQLite FK enforcement: audit_log.user_id references users.
+    for (const [id, email, role] of [
+      [testUserId, 'admin@finplan.test', 'Admin'],
+      ['viewer-uuid', 'viewer@finplan.test', 'Viewer'],
+      ['admin-1', 'admin1@finplan.test', 'Admin'],
+    ]) {
+      db.prepare(
+        `INSERT OR REPLACE INTO users (id, email, password_hash, first_name, last_name, role, is_active)
+         VALUES (?, ?, ?, ?, ?, ?, 1)`
+      ).run(id, email, 'not-a-real-hash', 'Seed', 'User', role);
+    }
   });
 
   describe('F-0016: Server-side RBAC and Tenant Isolation', () => {

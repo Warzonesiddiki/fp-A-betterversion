@@ -1,6 +1,6 @@
 # Project Context — FinPlan Pro
 
-> **Last updated:** 2026-08-10 · **Updated by:** Rex / Blaze
+> **Last updated:** 2026-08-10 · **Updated by:** Rex / Blaze (BMAD v5.0 ULTRA-YOLO upgrade)
 
 ## 1. Project name & description
 
@@ -8,10 +8,12 @@ FinPlan Pro is a brownfield React/Tauri FP&A application being transformed into 
 
 ## 2. Current phase & status
 
-- **Current phase:** 4b — Evidence-track delivery. Gates G0–G5 approved hypothesis artifacts/planning on 2026-08-10; primary validation remains active.
-- **Active story:** R-01 Recruit enterprise buying-committee sample — IN PROGRESS. Story 02 remains PAUSED; its Atlas foundation changes are retained but broad UI migration remains blocked.
+- **Current phase:** 4b — Evidence-track delivery. Gates G0–G5 approved hypothesis artifacts/planning on 2026-08-10; **full artifact stack re-baselined on 2026-08-10 (v2.x) in a new session under YOLO mode**; primary validation remains active.
+- **Active story:** R-track re-baselined 2026-08-11 (solo development): enterprise recruitment unavailable → solo-dev evidence strategy (validation-plan v2.2 Tier 2–4). F-track continues; P-track re-scopes to public-beta segment once beta evidence exists. Nothing fabricated.
+- **Safe foundations:** F-01 DONE / QA APPROVED. F-02 IN PROGRESS / QA REJECTED (structural + a11y baselines pass incl. populated state; browser pixel baseline blocked). F-03/F-04 stories approved and research-contextualized — implementation pending.
+- **Pilot track (P-01…P-07):** BLOCKED until R-04.
 - **Operating mode:** YOLO delivery authorized by owner; no conversational pauses, but research, assumptions, tests, QA evidence, and documented decisions remain mandatory.
-- **Next action:** Owner selected both unblockers (E-002): execute R-01/R-02 when anonymized participant material/access is available and execute F-02 visual baseline when a browser-capable environment is available.
+- **Next action:** (1) Execute R-01/R-02 when anonymized participant material/access is available; (2) execute F-02 visual baseline when a browser-capable environment is available; (3) owner resolves GitHub billing block so CI can run; (4) implement F-03/F-04 from their approved stories once this doc/verification cycle is committed.
 
 ## 3. Research intelligence summary
 
@@ -51,15 +53,30 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 - Focused tests: `node --max-old-space-size=4096 node_modules/vitest/vitest.mjs run <file> --reporter=dot --pool=forks`.
 - Capability inventory: `npm run capability:inventory`.
 
-## 10. Artifact registry
+## 10. YOLO autonomy tracker (BMAD v5.0)
+
+| Agent | Current autonomy level | Basis | Last certified |
+|---|---|---|---|
+| Rex (Research) | A5 — FULL YOLO | Research path locked; evidence sovereignty enforced; R-01 externally blocked (no fabrication) | 2026-08-10 |
+| Blaze (Brainstorm) | A5 — FULL YOLO | Ideation only; no direction change without owner | 2026-08-10 |
+| Ana / Percy / Uxie / Archie | A5 — FULL YOLO within approved hypothesis artifacts | Gates G1–G4 approved; no rebaseline without evidence | 2026-08-10 |
+| Bob (Planning) | A5 — FULL YOLO | Sprint plan v2.1 approved (G5); P-track blocked by R-04 | 2026-08-10 |
+| Amelia (Developer) | A5 — FULL YOLO on safe foundations | F-01/F-03/F-04 approved stories; story ambiguity → A1 | 2026-08-10 |
+| Quinn (QA) | A5 — FULL YOLO | Adversarial review; critical security → A1 | 2026-08-10 |
+| System (reconciliation) | A5 — verified fast-forward only | Never destructive; documented procedure | 2026-08-10 |
+
+**Escalation status (open):** A3 — workflow-file push blocked (missing `workflows` permission; changes preserved in worktree). A2 — R-01 participants, F-02 browser environment, CI billing block (all external). No A1 active.
+
+## 11. Artifact registry
 
 | Artifact | Version / status | Notes |
 |---|---|---|
-| research-report.md | v1 DRAFT | Desk-research intelligence baseline |
-| assumption-registry.md | v1 ACTIVE | 13 tracked assumptions |
-| validation-plan.md | v1 ACTIVE | Primary research thresholds/interview guides |
+| research-report.md | v2.1 REBASELINED (v5 re-certified) | Hypothesis baseline re-baselined 2026-08-10; v1 preserved below; primary validation mandatory |
+| assumption-registry.md | v2.1 ACTIVE | 14 tracked assumptions, all UNVALIDATED, confidence-scored (v5); E-004/E-005 technical/environmental only |
+| validation-plan.md | v2.0 ACTIVE (v5 re-certified) | Primary research thresholds/interview guides; R-01 ops ready, externally blocked |
 | participant-screener.md | v1 ACTIVE | Sample and bias-control protocol |
-| evidence-log.md | EMPTY | No primary evidence recorded yet |
+| evidence-log.md | ACTIVE — no primary customer evidence | E-001/E-002 owner direction; E-003 secondary; E-004 technical verification; E-005 CI billing block |
+| research-to-requirements-traceability.md | v2.0 ACTIVE | Added R-06/R-07; safe-foundation rows F-01/F-02 recorded |
 | materiality-decision-policy-model.md | v1 DRAFT | Decision Workspace policy hypothesis; requires primary validation |
 | financial-metric-lineage-model.md | v1 DRAFT | Official-number/evidence contract; requires controller/auditor/security validation |
 | financial-model-workspace-contract.md | v1 DRAFT | Analyst grid/formula/version/conflict/offline contract; requires primary workflow validation |
@@ -76,7 +93,8 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | commercial-implementation-gtm-contract.md | v1 DRAFT | ICP, economic value, pilot, packaging and implementation model |
 | research-to-requirements-traceability.md | ACTIVE | Evidence/assumption to requirement/architecture chain |
 | path-lock.md | ACTIVE | Owner-directed BMAD v4 delivery path; deviations require explicit documentation |
-| BMAD_V4_OPERATING_CHARTER.md | ACTIVE | Durable interpretation of the owner-provided BMAD v4 process and YOLO semantics |
+| BMAD_V5_OPERATING_CHARTER.md | ACTIVE | Durable interpretation of the owner-provided BMAD v5.0 ULTRA-YOLO process (DRP + reasoning ledger + autonomy matrix); v4 charter superseded and kept as historical record |
+| BMAD_V5_REASONING_QUALITY_ADDON.md | ACTIVE | Reasoning & Quality Addon (Ultimate Thought Protocol): PoT blocks, RDS ≥ 8 gate, universal + artifact-specific quality gates, steelman audit, pre-mortem loop, final execution check |
 | research-session-notes-template.md | ACTIVE | Structured, anonymized primary-research evidence capture |
 | recruitment-outreach-template.md | ACTIVE | Bias-controlled participant recruitment script |
 | usability-prototype-test-plan.md | READY | Task scenarios, metrics and pivot rules for primary research |
@@ -87,16 +105,21 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | secondary-voice-triangulation-2026-08-10.md | SECONDARY | Public review signals used only to refine research questions, never as primary validation |
 | FinancialWorkspaceEmptyState component | VERIFIED FOUNDATION | Added to Dashboard no-data state; targeted UI tests and root typecheck passed on 2026-08-10 |
 | F-01 Capability evidence governance | DONE / QA APPROVED | All route/module rows classified with role/disposition; 0 unresolved route source mappings; maturity claims remain UNVERIFIED |
-| F-02 Atlas foundation | IN PROGRESS / QA REJECTED | Lint/type/tests, canonical automated a11y, and structural snapshot baseline pass; browser pixel baseline remains blocked by Playwright Chromium TLS download failures |
+| F-03 Context/trust-state shell | DONE / QA APPROVED | Typed FinancialContext, URL serialization, five-pillar permission-aware nav, context bar, palette filtering; 46 targeted tests + axe; pixel baseline still part of F-02 |
+| F-04 Control-plane contract spike | DONE / QA APPROVED | Typed command envelope, idempotency, base revisions, negative authz, audit evidence; 8 contract tests + 122 server tests; spike only |
+| F-02 Atlas foundation | IN PROGRESS / QA REJECTED | Lint/type/tests, canonical automated a11y (empty + populated states), and structural snapshot baselines (empty + populated) pass; populated-state baseline surfaced and fixed a real heading-order defect; browser pixel baseline remains blocked by Playwright Chromium TLS download failures |
 | brainstorm strategic wedge | DIRECTION SET | hypothesis direction, not primary validation |
-| product-brief.md | REVALIDATION REQUIRED | created before Phase 0 research restart |
-| prd.md | REVALIDATION REQUIRED | must trace to approved research |
-| ux-design.md | REVALIDATION REQUIRED | must trace to user research |
-| architecture.md | REVALIDATION REQUIRED | must trace to technical feasibility research |
-| sprint-plan/stories | PAUSED | no further story execution until Phase 0 reconciliation |
+| product-brief.md | v2.2 APPROVED HYPOTHESIS BRIEF | Re-baselined 2026-08-10; no scope/thesis change |
+| prd.md | v2.1 APPROVED HYPOTHESIS PRD | Re-baselined 2026-08-10; no requirement change |
+| ux-design.md | v2.1 APPROVED HYPOTHESIS UX | Re-baselined 2026-08-10; heading-hierarchy rule implemented |
+| architecture.md | v2.1 APPROVED HYPOTHESIS ARCHITECTURE | Re-baselined 2026-08-10; no ADR change |
+| alignment-report.md | v2.1 COMPLETE | Verdict unchanged; 5 open decisions remain |
+| sprint-plan | v2.1 APPROVED HYPOTHESIS DELIVERY PLAN | Live execution-status table added |
+| story-f01 / story-f02 | DONE / IN PROGRESS | F-02 QA REJECTED only for pixel baseline |
+| story-f03 / story-f04 | DONE / QA APPROVED | Implemented and verified 2026-08-10 |
 | capability truth matrix | ACTIVE | mechanical source/test evidence baseline |
 
-## 11. Brainstorm sessions conducted
+## 12. Brainstorm sessions conducted
 
 | Topic | Date | Outcome |
 |---|---|---|
@@ -104,11 +127,15 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | Executive workspace | 2026-08-10 | materiality-first decision workspace is the leading UX hypothesis |
 | Enterprise research pre-mortem | 2026-08-10 | R-01 requires cohort balance, workflow-first interviews, and bias controls |
 
-## 12. Glossary
+## 13. Reasoning ledger reference (BMAD v5.0)
+
+`_bmad/reasoning-ledger.md` is the permanent intellectual record: every meaningful decision logs its DRP summary (first principles, evidence, options, risks, consequences), confidence score, and autonomy level. Backfilled through Ledger Entry #8 (session history); new entries append. This file is required reading for any agent inheriting ambiguous state.
+
+## 14. Glossary
 
 **Authoritative:** server-enforced, versioned, audited state used for official finance. **Connected:** real data/contract plus lifecycle-state evidence. **Governed:** policy/audit/tenant/lifecycle evidence. **Enterprise-ready:** governed plus performance, accessibility, operations, and customer-workflow proof.
 
-## 13. Change log
+## 15. Change log
 
 | Date | Agent | Change |
 |---|---|---|
@@ -122,3 +149,33 @@ Current: React client, Zustand stores, pure engines, local persistence, optional
 | 2026-08-10 | Amelia / Quinn | Completed safe Story F-01 capability evidence governance; generator now classifies all routes/modules and resolves all route sources; QA approved. |
 | 2026-08-10 | Amelia / Quinn | Added Atlas status/header foundations and verified focused tests/typecheck before research restart. |
 | 2026-08-10 | Bob | Created prior Story Pack A; now paused pending research reconciliation. |
+| 2026-08-10 | System | Investigated merged-main CI failures in a healthy `gh` environment: every workflow job fails before starting with GitHub annotation "recent account payments have failed or your spending limit needs to be increased" — repo-wide billing block predating PR #53, not a code regression. Owner action required on GitHub billing; local verification of merged main (`f3834e2`) passes. See `_bmad/qa/ci-actions-billing-block-2026-08-10.md`. |
+| 2026-08-10 | Amelia / Quinn | Extended F-02 interim evidence: populated-Dashboard structural baseline + jest-axe (`DashboardPage.populated.contract.test.tsx`); fixed real heading-order defect found by it (Dashboard sections h3 → h2; `ChartWrapper` gained backward-compatible `headingLevel` prop). Pixel baseline remains blocked; F-02 verdict unchanged (REJECTED — REQUIRES COMPLETION). |
+| 2026-08-10 | Amelia / Quinn | Reconciled two stale tests broken by the merged Dashboard empty-state change (`src/pages/dashboard/DashboardPage.test.tsx`, `src/pages/smoke.test.tsx`): verified pre-existing on clean merged main via temp worktree, then updated assertions to the merged `FinancialWorkspaceEmptyState` heading. |
+| 2026-08-10 | System / Rex | New-session P0: local refs reconciled to remote branch `4d6d402` (fast-forward via `update-ref` + index refresh; no destructive commands, nothing discarded). Baseline verified: full suite 1,179 files / 13,315 tests passed, tsc 0 errors, inventory/docs/audit/diff green. |
+| 2026-08-10 | Rex / Blaze | BMAD v4 Phase 0–4 restart: full artifact stack re-baselined to v2.x (research-report v2.0, assumption-registry v2.0, traceability v2.0, validation-plan v2.0, brief v2.2, PRD v2.1, UX v2.1, architecture v2.1, alignment v2.1, sprint-plan v2.1) with evidence entries E-004/E-005; story-02/03/04 superseded; story-f03/f04 created and approved for implementation; no market assumption status changed. |
+| 2026-08-10 | Rex | F-02 environment re-check: Playwright Chromium download re-attempted in new sandbox — still TLS `ECONNRESET` (cdn.playwright.dev). Pixel baseline remains BLOCKED; verdict unchanged. |
+| 2026-08-10 | Amelia / Quinn | Implemented Story F-03 (typed FinancialContext + URL serialization + five-pillar permission-aware navigation + context bar + command-palette filtering) and Story F-04 (control-plane command-envelope spike with idempotency, base revisions, negative authorization, audit evidence; client mirror). QA APPROVED for both; server suite 12 files / 122 tests; targeted client suites green; root tsc + changed-file lint clean. |
+| 2026-08-10 | Amelia / Quinn | Governance hardening: pinned all GitHub Actions to commit SHAs across 9 workflows (supply-chain hardening — architecture guardrail now passes), added vitest test sharding to ci.yml (CI-002), made the a11y gate blocking with runner-detection error (CI-003, runner exists and passes locally: 448 tests). Compliance evidence now 22/22. CI execution still blocked by the account billing issue (E-005). **PUSH CAVEAT:** the `.github/workflows/*.yml` edits could not be pushed (GitHub App token lacks `workflows` permission) and are preserved as UNCOMMITTED working-tree changes — see `_bmad/qa/ci-actions-billing-block-2026-08-10.md`; commit them with a token that has `workflows` permission. |
+| 2026-08-10 | Amelia / Quinn | Full-suite verification post-sandbox-recycle: **1,184 files / 13,333 tests passed** (1 skipped) — cleanest full run to date (no flakes). Extended Atlas structural baseline with FinancialContextBar hierarchy + trust-state semantics tests (4 tests in `AtlasFoundations.visual-contract.test.tsx`); updated E-004 with full verification battery (build, a11y 448, governance 22/22). F-02 interim evidence strengthened; pixel baseline remains blocked. |
+| 2026-08-10 | Amelia / Quinn | Extended Atlas structural baseline to 8 tests: all ten `FinancialStatusBadge` lifecycle states (text + icon + role + data attribute, never colour-only; deterministic badge-set snapshot) and PageHeader full/minimal anatomy. Fixed 11 broken backtick citations found by `docs-link-check --strict` across 6 BMAD docs (0 broken links/citations repo-wide now). Production build + bundle check green. F-02 verdict unchanged (pixel baseline blocked). |
+| 2026-08-10 | Amelia / Quinn | Completed F-04 client side: `src/api/commandClient.ts` typed Control-Plane transport (`submitCommand`/`getCommandResult`, bearer auth, typed errors, `isCommandResult` validation, feature-flag gated via `VITE_CONTROL_PLANE_URL`/`VITE_ENABLE_CONTROL_PLANE`); contract types (`CommandResult`/`CommandError`/`CommandStatus`) mirrored in `src/types/commandEnvelope.ts`. 14 client/contract tests (mocked fetch). Not wired into any screen until a Control Plane deployment is configured. QA addendum filed; architecture §11.1 updated. |
+| 2026-08-10 | System / All agents | **BMAD v5.0 ULTRA-YOLO upgrade (owner direction):** new `_bmad/BMAD_V5_OPERATING_CHARTER.md` (DRP + reasoning ledger + autonomy matrix + repo-mapped escalations); v4 charter superseded (historical); `_bmad/reasoning-ledger.md` established and backfilled (entries #1–#8); path-lock updated to v5; project-context gains §10 autonomy tracker and §13 ledger reference. Locked delivery path and hypothesis gates unchanged. |
+| 2026-08-10 | Quinn | Verification: full suite 1,185 files / 13,349 tests — 13,344 passed, 4 perf-budget timing flakes (SecretsVault/DataGrid perf under parallel load; both files pass in isolation 79/79). Security suite 51/51 incl. new CSRF fail-closed test. Evidence E-004 updated. |
+| 2026-08-11 | Amelia / Quinn | F-05 flag-gated browser beta enablement implemented: `betaMode.ts` gate module (5/5 tests), App renders in browser only with `VITE_BETA_WEB=true` (+ honest marker), env typed; default Tauri behavior unchanged; A-12 stays UNVALIDATED; deeper Tauri-import hardening is F-05 remaining work. Evidence E-015; ledger #23. |
+| 2026-08-11 | Owner / System | **PR #54 merged into main at owner request** (23 commits; BMAD v5 execution, F-03/F-04/F-05, real-SQLite verification, solo-dev research re-baseline). Risk decision documented: merged despite CI red because the GitHub Actions billing block (E-005) prevents all jobs from starting — local verification (13,356 root + 207 server + 68 security + 448 a11y tests green) is the evidence basis. Handover prompt written: `HANDOVER_PROMPT_SESSION10.md`. |
+| 2026-08-11 | Owner / System | **Solo-dev evidence re-baseline (owner direction):** enterprise participant recruitment unavailable — R-01 REDIRECTED; validation-plan v2.2 adds the solo-dev evidence strategy (Tier 2–4: beta signals, public artifacts, secondary); assumption registry v2.2 note; stories R-01..R-04 re-baselined; P-track re-scopes to public-beta segment selection. No fabrication; all statuses stay UNVALIDATED; interview track revivable. Owner-direction record: `_bmad/research/owner-direction-record-2026-08-11-solo-dev.md`. |
+| 2026-08-11 | Rex / Squad | R-track readiness completed: round-2 multi-agent web research (secondary-evidence synthesis E-012) + full execution stack — outreach kit (per-channel variants), R-02 session kit (role probes), R-03 synthesis framework (thresholds + decision memo), R-04 pilot selection framework (evidence matrix + go/no-go). Stories R-02/03/04 → READY (blocked only on R-01 participants). Evidence E-012/E-013; ledger #21. |
+| 2026-08-10 | Quinn | compliance-evidence.json made deterministic (no more timestamp-only diffs); cryptoId security audit closed (CSPRNG-only, no finding); server coverage confirmed (native runs all 15 files / 207 tests). Evidence E-010; ledger #19. |
+| 2026-08-10 | Quinn | Boot-contract test (`bootSchema.test.ts`): fresh DB exposes all 17 route tables + canonical audit_trail + server columns; `runMigrations()` idempotent. Mock-fallback honesty resolved (dev-only; real SQLite is the verification path). Server suites 130/130 default, 207/207 native. Evidence E-009; ledger #18. |
+| 2026-08-10 | Quinn | Added real-SQLite reconciliation regression tests (6, `schemaReconciliation.test.ts`); hardened `ensureServerColumns` to skip absent tables; verified no Tauri consumer of the legacy audit_trail shape. Server suites 127/127 default, 204/204 native. Evidence E-008; ledger #17. |
+| 2026-08-10 | Quinn / Amelia | Real-SQLite server verification: native better-sqlite3 built; server suite now runs on real SQLite (198 tests / 13 files). Fixed 7 masked suites: schema-guarantee ordering, canonical audit_trail + server columns with reconciliation migrations, production bug in periods.ts (raw actor-id interpolation in closed_by → bound params), per-worker test DB isolation, FK-compliant seeding. Evidence E-007; ledger #16. |
+| 2026-08-10 | System / All agents | **BMAD v5.0 Reasoning & Quality Addon activated (owner direction):** `_bmad/BMAD_V5_REASONING_QUALITY_ADDON.md` created and linked from the v5 charter; PoT/RDS/quality-gates apply to every artifact from this point. |
+| 2026-08-10 | System / All agents | **BMAD v5.0 restart from Step 1 (owner direction, reusing existing docs):** `_bmad/v5-restart-2026-08-10.md` records phase-by-phase DRP re-certification — Step 1 Phase 0 (research v2.1 + assumption-registry v2.1 with Confidence/Last-reviewed columns), Step 2 Phase 1 (brief v2.3), Step 3 Phase 2 (PRD/UX v5 headers), Step 4 Phase 3 (architecture v5 header + F-04 spike evidence), Step 5 Phase 4 (sprint-plan v2.2 + story/QA status verification). Reasoning ledger entries #9–#13 appended. No market assumption status changed; gates G0–G5 remain approved hypotheses. |
+
+## 16. CI / GitHub Actions status
+
+- **2026-08-10:** All workflow runs fail before any job step runs. GitHub check-run annotation: *"The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings"*. Affects every workflow (CI, tsc, lint, test-unit, build, deploy, cascade-hold, sentry-self-test) on commits predating PR #53 as well as merged main — a repo-wide infrastructure block, **not** a code regression.
+- Local verification of merged main + session branch passes (re-run in new session 2026-08-10): full unit suite **1,179 files / 13,315 tests passed** (1 skipped), root `tsc --noEmit` 0 errors, full-src ESLint 0 warnings, production build passed, capability inventory deterministic, docs truth passed, production dependency audit 0 vulnerabilities, diff hygiene clean. Evidence: E-004.
+- Owner action required: resolve the GitHub account billing / spending limit, then re-run workflows. Until jobs execute, CI status must not be treated as code evidence.
+- Details: `_bmad/qa/ci-actions-billing-block-2026-08-10.md`

@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { db } from '../db/connection.js';
+import type { SqliteDdl } from '../db/schema.js';
 
 /**
  * Entity role hierarchy (least to most privileged):
@@ -351,7 +352,7 @@ export function requireParentEntityAccess(parentTable: string, parentForeignKey:
 // ---------------------------------------------------------------------------
 
 /** Creates the user_entity_access table if it doesn't exist. */
-export function ensureEntityAccessTable(): void {
+export function ensureEntityAccessTable(db: SqliteDdl): void {
   db.exec(`
     CREATE TABLE IF NOT EXISTS user_entity_access (
       id TEXT PRIMARY KEY,

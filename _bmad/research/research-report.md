@@ -1,8 +1,28 @@
 # Research Report — FinPlan Pro Enterprise Decision System
 
-> **Version:** 1.0 · **Status:** APPROVED HYPOTHESIS BASELINE — Gate G0 approved by owner on 2026-08-10; primary validation remains mandatory  
-> **Research Director:** Rex · **Date:** 2026-08-10  
+> **Version:** 2.1 · **Status:** REBASELINED HYPOTHESIS BASELINE — Gate G0 approved by owner on 2026-08-10; re-baselined 2026-08-10 under YOLO mode; **BMAD v5.0 re-certified 2026-08-10** (restart Step 1, see `_bmad/v5-restart-2026-08-10.md`); primary validation remains mandatory
+> **Research Director:** Rex · **Date:** 2026-08-10
 > **Method:** Brownfield code/document audit plus desk research. Vendor claims are treated as competitive signals, not independent proof.
+
+---
+
+## v2.0 rebaseline summary (2026-08-10)
+
+**What changed since v1.0:**
+
+1. **Merged delivery verified.** PR #53 (`feat: establish research-driven finance UX foundations`) is merged at `f3834e2` on `main`. All merged artifacts confirmed present (BMAD charter, capability matrix, Atlas UI foundation, Dashboard adoption).
+2. **Technical verification evidence added (non-market).** On merged `main` and the session branch (`4d6d402`): full unit suite **1,179 files / 13,315 tests passed** (1 skipped), root `tsc --noEmit` 0 errors, full-src ESLint 0 warnings, production build passed, capability inventory deterministic, docs-truth passed, production audit 0 vulnerabilities. Two stale tests asserting the pre-merge Dashboard empty state were reconciled (verified pre-existing on clean merged main).
+3. **Real accessibility defect found and fixed.** The populated-Dashboard interim baseline surfaced a genuine heading-order violation (h1 → h3). Fixed page-scoped (section headings now h2; `ChartWrapper` gained backward-compatible `headingLevel` prop). Safe-foundation evidence, not market validation.
+4. **GitHub Actions CI is blocked by account billing, not code.** Every workflow job on every recent commit fails before starting, with GitHub's annotation: *"recent account payments have failed or your spending limit needs to be increased."* Repo-wide and pre-existing (affects commits from 2026-08-09); no code regression. Owner action required in Billing & plans.
+5. **F-02 pixel baseline remains blocked.** Playwright Chromium download still fails with TLS `ECONNRESET` in this environment. Structural DOM baselines (empty + populated Dashboard) and `jest-axe` pass; pixels/fonts/theme/responsive remain unverified.
+6. **No primary market evidence added.** R-01 remains externally blocked; nothing fabricated. All market/user/economic assumptions stay `UNVALIDATED`.
+
+**Unchanged strategic hypothesis (owner-directed, unvalidated):**
+> FinPlan Pro should prove a controlled **close → decision → board-pack** operating loop, backed by an analyst-grade workspace and an authoritative enterprise Control Plane.
+
+---
+
+## v1.0 baseline (preserved below)
 
 ## Executive intelligence summary
 
