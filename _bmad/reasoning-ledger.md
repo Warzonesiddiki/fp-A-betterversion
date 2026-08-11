@@ -365,4 +365,25 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 
 ---
 
+## Ledger Entry #19 — 2026-08-10 — Quinn
+
+### Decision/Topic: compliance-evidence determinism + security audit completion (cryptoId) + server coverage confirmation
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | (1) compliance-evidence.json produced timestamp-only diffs on every run — violating the repo's deterministic-governance standard (capability matrix is deterministic). (2) E-006 flagged cryptoId.ts's fallback as "previously weakened" — needed verification. (3) Server coverage completeness was unverified. |
+| Evidence | compliance-evidence.mjs line 23 wrote `new Date().toISOString()`; only the script + package.json reference the file (no runtime consumer of `timestamp`). cryptoId.ts uses randomUUID → getRandomValues hex → throws (never Math.random) and has full test coverage (format/prefix/uniqueness/no-CSPRNG-throw). Native vitest config runs all 15 server test files (207 tests); default runs 13 (excludes the 2 native-DB suites by design). |
+| Options Considered | (a) Keep the timestamp — rejected: perpetual dirty tree. (b) Deterministic `generatedAt: 'from current working tree'` matching the capability-matrix convention — ADOPTED. (c) Gitignore the file — rejected: it is a committed evidence artifact; determinism is the right fix. |
+| Risk Probe | Risk: losing "when evidence was produced" — mitigated: git history records when checks changed; the script is the source of truth. |
+| Consequence Projection | compliance-evidence.json is now deterministic (hash-stable across runs); security audit closed (no finding in cryptoId); coverage confirmed complete. |
+| Confidence Score | 95% |
+| Autonomy Level | A5 |
+
+### Adopted Path: deterministic generatedAt marker; security audit closed; coverage confirmed.
+
+### Rejected Alternatives: keep timestamp (dirty tree); gitignore (loses committed evidence).
+
+---
+
 <!-- Future entries append below this line. -->
