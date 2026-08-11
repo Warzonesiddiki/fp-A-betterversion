@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+> **Operating method:** this project runs under **BMAD v5.0 ULTRA-YOLO** — read `_bmad/BMAD_V5_OPERATING_CHARTER.md`, `_bmad/BMAD_V5_REASONING_QUALITY_ADDON.md`, and `_bmad/path-lock.md` before any work; every significant decision is logged in `_bmad/reasoning-ledger.md`.
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Commands

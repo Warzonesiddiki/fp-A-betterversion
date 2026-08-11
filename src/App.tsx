@@ -10,7 +10,7 @@ import {
 } from './components/errors/RouteGroupErrorBoundary';
 import { useFirstRun } from './hooks/useFirstRun';
 import { StorageFailureBanner } from './components/system/StorageFailureBanner';
-import { isRenderAllowed } from './utils/betaMode';
+import { isBrowserBetaAllowed, isRenderAllowed, isTauriRuntime } from './utils/betaMode';
 
 // Core (not route-dependent)
 const OnboardingWizard = lazy(() =>
@@ -313,8 +313,6 @@ const _DOMAIN_MAP = {
   utility: 'utility' as const,
 };
 
-const isTauri = typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
-
 export default function App() {
   const { isFirstRun, completeSetup } = useFirstRun();
 
@@ -322,8 +320,17 @@ export default function App() {
   // the default runtime; a plain browser renders ONLY when VITE_BETA_WEB is
   // explicitly enabled. This is not a claim that browser/PWA is supported
   // (A-12 stays UNVALIDATED).
+  //
+  // The honest `data-beta-web` marker is set ONLY when the app actually
+  // renders in beta mode — never on the blocked path, never in Tauri. The
+  // runtime check is evaluated per render (isTauriRuntime), not captured at
+  // module load, so the gate stays correct across runtime changes.
   useEffect(() => {
-    if (!isTauri && typeof document !== 'undefined') {
+    if (
+      typeof document !== 'undefined' &&
+      !isTauriRuntime() &&
+      isBrowserBetaAllowed(import.meta.env)
+    ) {
       document.documentElement.dataset.betaWeb = 'true';
       console.info(
         '[beta-web] FinPlan running in browser beta mode (VITE_BETA_WEB). Not a supported runtime claim.'

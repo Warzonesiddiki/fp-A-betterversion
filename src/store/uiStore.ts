@@ -5,12 +5,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { UIState } from '@/types';
 import { masterStorage } from '../utils/masterStorage';
 
-import { isTauri } from '@tauri-apps/api/core';
-import {
-  isPermissionGranted,
-  requestPermission,
-  sendNotification,
-} from '@tauri-apps/plugin-notification';
+import { isTauriRuntime } from '@/utils/betaMode';
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
 import { createLogger } from '@/utils/logger';
 
@@ -50,29 +45,35 @@ export const useUIStore = create<UIState>()(
             toast.duration || 5000
           );
 
-          // Native notification for high-priority alerts
+          // Native notification for high-priority alerts. F-05 browser-beta
+          // hardening: @tauri-apps/plugin-notification is imported lazily and
+          // only when running inside Tauri, so a browser (beta mode or
+          // blocked) never evaluates the plugin module.
           if (
             toast.type === 'error' ||
             (toast.title &&
               (toast.title.toLowerCase().includes('import complete') ||
                 toast.title.toLowerCase().includes('security')))
           ) {
-            if (isTauri()) {
-              isPermissionGranted()
-                .then((granted) => {
-                  if (!granted) {
-                    return requestPermission();
-                  }
-                  return granted ? 'granted' : 'denied';
-                })
-                .then((permission) => {
-                  if (permission === 'granted') {
-                    sendNotification({
-                      title: toast.title || 'Notification',
-                      body: toast.message || '',
-                    });
-                  }
-                })
+            if (isTauriRuntime()) {
+              void import('@tauri-apps/plugin-notification')
+                .then(({ isPermissionGranted, requestPermission, sendNotification }) =>
+                  isPermissionGranted()
+                    .then((granted) => {
+                      if (!granted) {
+                        return requestPermission();
+                      }
+                      return granted ? 'granted' : 'denied';
+                    })
+                    .then((permission) => {
+                      if (permission === 'granted') {
+                        sendNotification({
+                          title: toast.title || 'Notification',
+                          body: toast.message || '',
+                        });
+                      }
+                    })
+                )
                 .catch((err) => {
                   uiStoreLogger.error('Failed to send native notification', {
                     error: err instanceof Error ? err.message : String(err),

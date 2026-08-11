@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { register, unregisterAll, type ShortcutEvent } from '@tauri-apps/plugin-global-shortcut';
 import { useCopilotSidebar } from './useCopilotSidebar';
 import { createLogger } from '@/utils/logger';
 
@@ -14,27 +13,40 @@ export function useTauriGlobalShortcuts() {
     if (!isTauri) return;
 
     let mounted = true;
+    // F-05 browser-beta hardening: the plugin is resolved lazily inside the
+    // effect so a browser never statically evaluates the plugin module.
+    let unregisterAll: (() => Promise<void>) | undefined;
 
     async function setupShortcuts() {
       try {
-        await unregisterAll();
+        const { register, unregisterAll: unregisterAllFn } =
+          await import('@tauri-apps/plugin-global-shortcut');
+        unregisterAll = unregisterAllFn;
+
+        await unregisterAllFn();
 
         if (!mounted) return;
 
         // Ctrl+Shift+A for AI Copilot
-        await register('CommandOrControl+Shift+A', (event: ShortcutEvent) => {
-          if (event.state === 'Pressed') {
-            toggleCopilot();
+        await register(
+          'CommandOrControl+Shift+A',
+          (event: import('@tauri-apps/plugin-global-shortcut').ShortcutEvent) => {
+            if (event.state === 'Pressed') {
+              toggleCopilot();
+            }
           }
-        });
+        );
 
         // Ctrl+Alt+S for Quick Save
-        await register('CommandOrControl+Alt+S', (event: ShortcutEvent) => {
-          if (event.state === 'Pressed') {
-            // Emit a custom event that components can listen to for saving
-            window.dispatchEvent(new CustomEvent('app:quick-save'));
+        await register(
+          'CommandOrControl+Alt+S',
+          (event: import('@tauri-apps/plugin-global-shortcut').ShortcutEvent) => {
+            if (event.state === 'Pressed') {
+              // Emit a custom event that components can listen to for saving
+              window.dispatchEvent(new CustomEvent('app:quick-save'));
+            }
           }
-        });
+        );
       } catch (error) {
         tauriShortcutsLogger.error('Failed to register global shortcuts', {
           error: error instanceof Error ? error.message : String(error),
@@ -46,7 +58,7 @@ export function useTauriGlobalShortcuts() {
 
     return () => {
       mounted = false;
-      if (isTauri) {
+      if (unregisterAll) {
         unregisterAll().catch((err) =>
           tauriShortcutsLogger.error('Failed to unregister global shortcuts', {
             error: err instanceof Error ? err.message : String(err),

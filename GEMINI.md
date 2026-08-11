@@ -1,4 +1,5 @@
 <!-- LEGACY: Superseded by FINPLAN_PROJECT_BLUEPRINT.md + MASTER_PLAN_V2.md (2026-05-24) -->
+<!-- Operating method (2026-08-11): BMAD v5.0 ULTRA-YOLO — see _bmad/BMAD_V5_OPERATING_CHARTER.md, _bmad/BMAD_V5_REASONING_QUALITY_ADDON.md, _bmad/path-lock.md; decisions logged in _bmad/reasoning-ledger.md -->
 # FinPlan Pro — Gemini CLI Project Context
 
 ## Overview

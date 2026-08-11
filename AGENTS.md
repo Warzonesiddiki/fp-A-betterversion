@@ -1,5 +1,7 @@
 # FinPlan Pro — Agent Instructions
 
+> **Operating method:** this project runs under **BMAD v5.0 ULTRA-YOLO** — read `_bmad/BMAD_V5_OPERATING_CHARTER.md`, `_bmad/BMAD_V5_REASONING_QUALITY_ADDON.md`, and `_bmad/path-lock.md` before any work; every significant decision is logged in `_bmad/reasoning-ledger.md`.
+
 Offline-first FP&A desktop app. React 19 + TypeScript strict + Vite 8 + Tailwind 4 + Zustand/Immer + AG Grid + Recharts. Optional Tauri shell.
 
 ## Commands

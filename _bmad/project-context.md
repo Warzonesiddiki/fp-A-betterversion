@@ -1,6 +1,6 @@
 # Project Context — FinPlan Pro
 
-> **Last updated:** 2026-08-10 · **Updated by:** Rex / Blaze (BMAD v5.0 ULTRA-YOLO upgrade)
+> **Last updated:** 2026-08-11 · **Updated by:** Amelia/Quinn (F-05 hardening slice)
 
 ## 1. Project name & description
 
@@ -10,10 +10,11 @@ FinPlan Pro is a brownfield React/Tauri FP&A application being transformed into 
 
 - **Current phase:** 4b — Evidence-track delivery. Gates G0–G5 approved hypothesis artifacts/planning on 2026-08-10; **full artifact stack re-baselined on 2026-08-10 (v2.x) in a new session under YOLO mode**; primary validation remains active.
 - **Active story:** R-track re-baselined 2026-08-11 (solo development): enterprise recruitment unavailable → solo-dev evidence strategy (validation-plan v2.2 Tier 2–4). F-track continues; P-track re-scopes to public-beta segment once beta evidence exists. Nothing fabricated.
-- **Safe foundations:** F-01 DONE / QA APPROVED. F-02 IN PROGRESS / QA REJECTED (structural + a11y baselines pass incl. populated state; browser pixel baseline blocked). F-03/F-04 stories approved and research-contextualized — implementation pending.
-- **Pilot track (P-01…P-07):** BLOCKED until R-04.
+- **Safe foundations:** F-01 DONE / QA APPROVED. F-02 IN PROGRESS / QA REJECTED (structural + a11y baselines pass incl. populated state; browser pixel baseline blocked; compact-viewport structural tests added 2026-08-11 — 390px empty, 1024px populated). F-03/F-04 stories approved and research-contextualized — implementation pending.
+- **F-05 browser beta:** IN PROGRESS — AC1–AC6 + remaining hardening slice DONE 2026-08-11 (lazy Tauri imports, no-op fallbacks, in-memory cube backend, beta smoke test 4/4, full beta-mode suite 1,188 files / 13,373 tests green, QA review PASS). Beta deploy decision stays owner's (T-06). A-12 remains UNVALIDATED.
+- **Pilot track (P-01…P-07):** BLOCKED until R-04. Legacy DRAFT stories 05–12 re-baselined 2026-08-11 to the research-contextualized format (P-track prep, T-17).
 - **Operating mode:** YOLO delivery authorized by owner; no conversational pauses, but research, assumptions, tests, QA evidence, and documented decisions remain mandatory.
-- **Next action:** (1) Execute R-01/R-02 when anonymized participant material/access is available; (2) execute F-02 visual baseline when a browser-capable environment is available; (3) owner resolves GitHub billing block so CI can run; (4) implement F-03/F-04 from their approved stories once this doc/verification cycle is committed.
+- **Next action:** (1) Owner: resolve GitHub billing block + workflows permission → land the 9 hardened workflow files (T-13/T-14); (2) owner: hosting/domain decision → launch beta via `VITE_BETA_WEB=true` per `_bmad/research/beta-launch-kit-2026-08-11.md` (T-06/T-07); (3) execute F-02 visual baseline when a browser-capable environment is available (T-10); (4) implement F-03/F-04 from their approved stories once this doc/verification cycle is committed.
 
 ## 3. Research intelligence summary
 

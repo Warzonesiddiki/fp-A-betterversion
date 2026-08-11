@@ -8,9 +8,15 @@ import { useUIStore } from '../../store/uiStore';
 // Optional: if Tauri is available for a true native window popout
 let WebviewWindow: { new (label: string, options: Record<string, unknown>): unknown } | null = null;
 try {
-  import('@tauri-apps/api/webviewWindow').then((module) => {
-    WebviewWindow = module.WebviewWindow as unknown as typeof WebviewWindow;
-  });
+  import('@tauri-apps/api/webviewWindow')
+    .then((module) => {
+      WebviewWindow = module.WebviewWindow as unknown as typeof WebviewWindow;
+    })
+    // F-05 browser-beta hardening: a rejected dynamic import must never
+    // surface as an unhandled promise rejection in browser mode.
+    .catch(() => {
+      // Not running in Tauri — native window popout stays unavailable.
+    });
 } catch (_e) {
   // Ignore
 }

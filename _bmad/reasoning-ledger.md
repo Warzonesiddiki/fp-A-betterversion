@@ -470,4 +470,50 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 
 ---
 
+## Ledger Entry #24 — 2026-08-11 — Amelia/Quinn (F-05 hardening slice)
+
+### Decision/Topic: Complete F-05 remaining work — Tauri-import hardening, in-browser no-op fallbacks, beta smoke test, full beta-mode suite
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | Browser beta mode must render without crashing, must never silently claim Tauri capabilities, and must degrade gracefully when a Tauri-only facility is unavailable (storage, shortcuts, native windows, notifications). The solo-dev validation loop (Tier 2 BETA-USAGE) needs this channel to be crash-proof. |
+| Evidence | Import-time probe of `@tauri-apps/api`, `plugin-sql`, `plugin-notification`, `plugin-global-shortcut`, `api/webviewWindow` in a non-Tauri runtime: ALL imports safe; ALL calls throw without Tauri internals. Audit of all 14 `@tauri-apps` import sites: 7 runtime sites (all previously guarded at call time), 7 test/mock/type sites. Full default suite 1,188 files / 13,372 tests + full beta-mode suite 1,188 files / 13,373 tests, both 0 failures. |
+| Options Considered | (a) Smoke test only, no code change — rejected: leaves top-level Tauri imports in the browser bundle; latent risk; handover explicitly lists stubs. (b) Guarded lazy imports + no-op fallbacks + smoke test — ADOPTED. (c) Vite alias mocking of `@tauri-apps` for browser builds — rejected: masks real behavior, more surface. |
+| Risk Probe | Risk: lazy-import refactor changes Tauri behavior — mitigated: identical modules/calls, full default suite green. Risk: tests encoded the old storage contract — updated to the new no-op contract (storage tests 24/24). Risk: marker set on blocked path (minor honesty bug found by smoke test) — fixed: marker only when beta actually active; runtime check per-render. Risk: IndexedDB absent in some browsers — CubeEnginePersistence now falls back to an in-memory backend (8 new tests). |
+| Consequence Projection | F-05 hardening complete; beta channel crash-proof; T-05 launch kit drafted; R-track Tier-2 loop unblocked (deploy decision stays owner's). |
+| Confidence Score | 90% |
+| Autonomy Level | A5 (within F-05 story scope; handover §12 item 1) |
+
+### Adopted Path: 6 runtime files hardened, 2 test files updated to the no-op contract, 3 new test files (smoke 4 tests, in-memory fallback 8 tests, viewport contract 5 tests), `.env.example` feature-flag docs, server test-DB litter cleanup (vitest 4 `afterAll` per-file; native config gains setup isolation), dead `server/src/test/seedHelpers.ts` deleted, vitest exclusion decision documented, F-05 QA review recorded.
+
+### Rejected Alternatives: smoke-test-only (latent risk); vite-alias mocking (masks behavior); `globalTeardown` for DB cleanup (vitest 4 removed it — per-file `afterAll` used instead).
+
+### Open Items: F-05 final visual sign-off needs a browser-capable environment (T-10-style); beta deploy decision remains owner's (T-06).
+
+---
+
+## Ledger Entry #25 — 2026-08-11 — Rex/Amelia (V-series verification gaps + canary disposition)
+
+### Decision/Topic: Run the never-run verification commands (D1) and dispose of the dangling canary scripts
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | Handover addon D1 lists five verification commands as NEVER RUN: canary:stage1\|2\|3, sbom, release:dry-run, full audit, test:bench. Running them is required before any "verified" claim; a command that cannot run must be disposed of honestly, not silently. |
+| Evidence | `npm run sbom`: PASS — 40 components (CycloneDX to stdout). `npm run release:dry-run`: PASS — all 7 checks (root tsc, eslint src, production build, money:adoption, engines:verify, docs:verify, server tests 130/130). `npm run test:bench`: PASS — 13 files / 59 tests. `npm audit` (full): 0 vulnerabilities (after brace-expansion override). `npm run canary:stage1\|2\|3`: FAIL — the scripts reference `scripts/canary-2.0/...` runner files that were never committed; verified via `git log --all` (no such files in history) and repo grep (no CI/docs references). |
+| Options Considered | (a) Invent canary runners — rejected: no contract exists for what stage1/2/3 should check; fabricating a verification tool is fabrication-adjacent. (b) Remove the 3 dangling scripts from package.json — ADOPTED: restores manifest truth; the handover's "NEVER RUN" item is disposed of as "runners never existed — removed 2026-08-11". (c) Leave broken — rejected: guaranteed failure for any reviewer/CI invoking them. |
+| Risk Probe | Risk: removing scripts breaks CI — verified none reference them. Risk: `@huggingface/transformers` "missing" flagged by `npm ls` — verified it is an OPTIONAL peer dependency (peerDependenciesMeta.optional, AIEngine runtime-computed specifier, N-0004/N-0005 CVE rationale) and intentionally not installed; NOT drift. Risk: release dry-run failure initially — root-caused to missing native better-sqlite3 binding after a node_modules recycle (mock fallback masks server columns), not a code regression; rebuild fixed it, 7/7 passed. |
+| Consequence Projection | All D1 commands now have recorded PASS dispositions; package.json no longer advertises broken scripts; environment note: node_modules does not persist across sandbox turn boundaries (snapshot exclusion) — every session must re-run `npm ci` + server native rebuild before verification, and a missing-binding failure must be treated as environment, not regression. |
+| Confidence Score | 92% |
+| Autonomy Level | A5 (hygiene/verification scope, handover addon D1/D3) |
+
+### Adopted Path: removed 3 dangling canary scripts; ran and recorded sbom / release:dry-run / test:bench / full audit; documented optional-peer by-design for @huggingface/transformers.
+
+### Rejected Alternatives: invented canary runners (fabrication-adjacent); leaving broken scripts; treating optional-peer "missing" as lock drift.
+
+### Open Items: none new; owner-side blockers unchanged (billing, workflows permission, browser env, hosting decision).
+
+---
+
 <!-- Future entries append below this line. -->
