@@ -386,4 +386,25 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 
 ---
 
+## Ledger Entry #20 — 2026-08-11 — Rex (multi-agent R-01 squad)
+
+### Decision/Topic: Advance R-01 via a multi-agent research squad — real public recruitment channels, no fabricated participants
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | R-01 needs real participants. The owner directed using multiple agent personas with real-world/internet access. Compliance boundary: I can research REAL public channels and build an outreach-ready pool; I must NOT fabricate participants or impersonate interviewees (repo evidence rules; R-01 blocker text). |
+| Evidence | Live web research on 2026-08-11 verified 19 real channels across five cohorts (conferences, associations, communities, implementation partners) — all with public URLs. Secondary practitioner signals captured and labeled (r/FPandA EPM thread). |
+| Options Considered | (a) Simulate participants to "complete" R-01 — rejected: fabrication, violates the core evidence rule. (b) Multi-agent real research → source map + tracker OUTREACH-READY + owner executes outreach — ADOPTED. (c) Leave R-01 untouched — rejected: owner asked for progress. |
+| Risk Probe | Risk: channels treated as evidence — mitigated: E-011 explicitly SECONDARY; no assumption validated. Risk: PII in repo — mitigated: no contact details stored; owner executes outreach. |
+| Consequence Projection | R-01 is now outreach-ready with 19 real venues; owner action converts channels to participants; R-02..R-04 remain gated on real evidence. |
+| Confidence Score | 93% |
+| Autonomy Level | A5 (within the fabrication boundary) |
+
+### Adopted Path: participant-source-map + tracker update + E-011 + this entry.
+
+### Rejected Alternatives: simulated participants (fabrication — never); no-op (ignores direction).
+
+---
+
 <!-- Future entries append below this line. -->

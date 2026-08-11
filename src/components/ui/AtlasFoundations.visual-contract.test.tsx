@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
 import { render } from '@/test/testUtils';
 import { FinancialStatusBadge, financialStatusValues } from './FinancialStatusBadge';
 import { FinancialWorkspaceEmptyState } from './FinancialWorkspaceEmptyState';
@@ -161,5 +163,21 @@ describe('Atlas foundation visual structure contract', () => {
     expect(header!.querySelector('.fp-page-header__purpose')).toBeNull();
     expect(header!.querySelector('.fp-page-header__actions')).toBeNull();
     expect(container).toMatchSnapshot();
+  });
+
+  it('honors prefers-reduced-motion in the global stylesheet (runbook checklist)', () => {
+    // Runbook review checklist: motion is optional and disabled under
+    // prefers-reduced-motion. Assert the global CSS carries the contract
+    // (structural proxy for the browser-level behavior; pixels/animation
+    // timing remain part of the blocked pixel baseline).
+    const cssPath = path.resolve(__dirname, '../../index.css');
+    const css = fs.readFileSync(cssPath, 'utf-8');
+
+    const blocks = css.match(/@media\s*\(prefers-reduced-motion:\s*reduce\)\s*{[^}]*}/g) ?? [];
+    expect(blocks.length, 'expected at least one prefers-reduced-motion block').toBeGreaterThan(0);
+
+    const combined = blocks.join('\n');
+    expect(combined).toContain('animation-duration');
+    expect(combined).toContain('transition-duration');
   });
 });

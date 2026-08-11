@@ -1,6 +1,6 @@
 # Story R-01: Recruit Enterprise Buying-Committee Research Sample
 
-## Status: IN PROGRESS — recruitment operations prepared; external participant evidence pending
+## Status: IN PROGRESS — outreach-ready: real public channel map built by multi-agent research squad (2026-08-11); owner executes outreach; participant evidence pending (never fabricated)
 ## Size: M | Risk: HIGH
 
 ## Why This Story Exists
@@ -27,3 +27,9 @@ No product code. Follow screener quotas, disqualification, and bias controls. Do
 - [ ] AC evidence recorded.
 - [ ] project-context and evidence log updated.
 - [ ] Research QA checks consent, bias, and sample coverage.
+## Progress log (2026-08-11)
+
+- Multi-agent research squad (Ana/Percy/Uxie/Archie/Bob + Rex synthesis) ran live web research and produced `_bmad/research/participant-source-map-2026-08-11.md`: 19 real, verifiable public channels across the five cohorts (conferences, associations, communities, implementation partners).
+- Tracker updated to OUTREACH-READY with the channel map.
+- Secondary practitioner signals (r/FPandA EPM thread) captured as E-011 — labeled SECONDARY; they refine R-02 questions only.
+- Owner action: execute outreach; return anonymized outcomes.

@@ -59,6 +59,12 @@ This extension does NOT close the pixel-baseline rejection reason. It strengthen
 - Verification: Atlas structural suite now 4 tests; full root suite **1,184 files / 13,333 tests passed** (1 skipped); root + server `tsc` 0 errors; changed-file ESLint 0 warnings; `git diff --check` clean.
 - This extension also does NOT close the pixel-baseline rejection reason (theme contrast, fonts, and responsive layout still require a browser).
 
+## Interim evidence extension — reduced-motion contract (2026-08-11)
+
+- `AtlasFoundations.visual-contract.test.tsx` now 9 tests: added a structural contract asserting the global stylesheet carries `@media (prefers-reduced-motion: reduce)` blocks that override `animation-duration` and `transition-duration` (runbook review-checklist item, structural proxy for browser-level motion behavior).
+- Verification: Atlas suite 9/9; lint clean. Pixel/animation-timing baselines still require a browser.
+
+
 ## Interim evidence extension — full status set + PageHeader anatomy (2026-08-10, later same session)
 
 - `AtlasFoundations.visual-contract.test.tsx` extended to 8 tests (runbook scenarios 1–2, structural equivalents):
