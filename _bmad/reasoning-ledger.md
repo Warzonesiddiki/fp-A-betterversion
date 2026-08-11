@@ -407,4 +407,25 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 
 ---
 
+## Ledger Entry #21 — 2026-08-11 — Rex (multi-agent squad round 2)
+
+### Decision/Topic: Complete all research-part readiness — round-2 squad research + full R-02/03/04 execution kits
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | The owner directed: "COMPLETE ALL RESEARCH PART FIRST" and earlier authorized multi-agent personas with real internet access. The research part has two halves: (a) real secondary intelligence to sharpen questions, (b) an execution stack so R-02/03/04 run the moment participants exist. Primary validation cannot be completed without real participants — that remains owner-executed outreach. |
+| Evidence | Round-2 live web research (5 searches across commercial/close/FP&A/deployment/implementation domains) produced the secondary-evidence synthesis (E-012) with real, citable public sources. All five kits built (E-013) extending the existing templates. |
+| Options Considered | (a) Fabricate participants to "complete" R-02/03/04 — rejected: violates the core evidence rule permanently. (b) Build readiness + secondary intelligence, mark stories READY with explicit participant gate — ADOPTED. (c) Stop at R-01 channels — rejected: leaves the research part under-prepared. |
+| Risk Probe | Risk: kits mistaken for evidence — mitigated: E-012/E-013 explicitly NOT participant evidence; stories say READY not DONE; no assumption status changed. |
+| Consequence Projection | The moment the owner returns anonymized participant outcomes, R-02/03/04 execute with zero further preparation. |
+| Confidence Score | 94% |
+| Autonomy Level | A5 (within the fabrication boundary) |
+
+### Adopted Path: 5 research artifacts + validation-plan v2.1 + story statuses READY + evidence E-012/E-013.
+
+### Rejected Alternatives: fabricated participants (never); partial readiness (under-prepared).
+
+---
+
 <!-- Future entries append below this line. -->
