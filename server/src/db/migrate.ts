@@ -170,6 +170,13 @@ export function ensureServerColumns(db: SqliteDdl): void {
   ];
   for (const [table, column, type] of serverColumns) {
     const columns = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
+    if (columns.length === 0) {
+      // Table absent (partial/legacy database). 001_initial_schema.sql is the
+      // table-creation authority; reconciliation only aligns columns on
+      // tables that actually exist.
+      console.warn(`[migrate] Skipping ${table}.${column}: table not present`);
+      continue;
+    }
     if (!columns.some((c) => c.name === column)) {
       db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${type}`);
       console.log(`[migrate] Added ${table}.${column} ${type}`);

@@ -323,4 +323,25 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 
 ---
 
+## Ledger Entry #17 — 2026-08-10 — Quinn
+
+### Decision/Topic: Add real-SQLite regression tests for the schema reconciliation; harden ensureServerColumns for absent tables
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | The reconciliation logic fixed real bugs (E-007) but had no regression coverage — the addon mandates tests for every new code path. |
+| Evidence | ensureCanonicalAuditTrail/ensureServerColumns were exercised only implicitly via the server suite; a direct test exposed that ensureServerColumns threw on absent tables (partial/legacy DBs). |
+| Options Considered | (a) Test only the happy paths — rejected: leaves the throw-on-missing-table landmine. (b) Harden the function (skip absent tables with a warning; 001 remains the table-creation authority) + cover happy, no-op, idempotent, legacy-migration, and missing-table cases — ADOPTED. |
+| Risk Probe | Risk: skipping absent tables could mask a genuinely broken schema — mitigated: 001 runs first in ensureSchema (table creation), so absence here means partial/legacy DBs, logged explicitly. |
+| Consequence Projection | 6 new real-SQLite tests; server suites 127/127 (default) and 204/204 (native). Tauri-side verified: no Rust/SQL consumer of the legacy audit_trail shape. |
+| Confidence Score | 94% |
+| Autonomy Level | A5 |
+
+### Adopted Path: schemaReconciliation.test.ts + skip-absent-table hardening in ensureServerColumns.
+
+### Rejected Alternatives: happy-path-only tests (landmine remains); throwing on absent tables (breaks partial DBs).
+
+---
+
 <!-- Future entries append below this line. -->
