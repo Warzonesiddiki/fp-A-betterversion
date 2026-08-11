@@ -428,4 +428,25 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 
 ---
 
+## Ledger Entry #22 — 2026-08-11 — Rex (owner direction)
+
+### Decision/Topic: Re-baseline the research/validation path for solo development (no enterprise participants)
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | Owner: "we don't have such option available — we are solo developing the project." The R-track as specified (enterprise interviews → sessions → synthesis → pilot) cannot execute; keeping it blocked stalls the project; fabricating participants destroys integrity permanently. |
+| Evidence | Owner direction (verbal, recorded 2026-08-11); existing R-01 kits (source map, outreach kit, session kit) now retained for future revival; validation-plan v2.1 with thresholds. |
+| Options Considered | (a) Keep R-track blocked indefinitely — rejected: project stalls. (b) Fabricate participants — rejected: permanent integrity violation. (c) Solo-achievable evidence strategy (Tier 2–4: beta signals, artifacts, secondary) with strict honesty labels, R-01 REDIRECTED, P-track re-scoped to public-beta segment — ADOPTED. (d) Silent continuation without documentation — rejected: violates no-silent-state-change. |
+| Risk Probe | Risk: beta signals overread as validation — mitigated: only Tier 1 changes VALIDATED; tiers 2–4 update confidence/scope only. Risk: losing the enterprise path — mitigated: kits retained; revivable. Risk: P-track scope creep — mitigated: re-scoped explicitly to public-beta segment. |
+| Consequence Projection | Browser/PWA unblocking (A-12) becomes a beta prerequisite; F-track continues; assumption statuses unchanged. |
+| Confidence Score | 92% |
+| Autonomy Level | A5 (direction explicitly owner-given) |
+
+### Adopted Path: owner-direction record + path-lock update + validation-plan v2.2 + registry v2.2 + stories R-01..R-04 re-baselined + sprint-plan + evidence E-014.
+
+### Rejected Alternatives: indefinite block (stall); fabrication (integrity); silent change (path-lock violation).
+
+---
+
 <!-- Future entries append below this line. -->

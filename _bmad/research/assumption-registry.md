@@ -1,6 +1,7 @@
 # Assumption Registry — FinPlan Pro
 
 > **Maintained by:** Rex · **Version:** 2.1 · **Date:** 2026-08-10 · **Status:** ACTIVE / UNVALIDATED
+> **v2.2 (2026-08-11, owner re-baseline):** Enterprise participant interviews are unavailable (solo development — `owner-direction-record-2026-08-11-solo-dev.md`). Validation approaches below are re-interpreted to solo-achievable evidence per `validation-plan.md` §Solo-dev evidence strategy (Tier 2–4), and `UNVALIDATED` status is retained for every assumption. Interview-based validation (Tier 1) is revivable if access appears.
 > **v2.1 (BMAD v5.0 restart Step 1):** Confidence column added per v5 confidence-governed autonomy. Scores are confidence-in-the-hypothesis (0–100%), NOT validation status; every assumption remains `UNVALIDATED` until primary evidence meets the validation-plan thresholds. v2.0 rebaseline note: no market assumption changed status — the only new evidence is technical/environmental (E-004, E-005), which does **not** validate any buyer/market/deployment assumption.
 
 | ID | Assumption | Domain | Risk | Validation approach | Status | Confidence | Last reviewed | Evidence links |

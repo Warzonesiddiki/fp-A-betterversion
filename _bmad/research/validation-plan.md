@@ -1,6 +1,7 @@
 # Research Validation Plan — FinPlan Strategic Wedge
 
-> **Status:** ACTIVE · **Version:** 2.1 (research kits built 2026-08-11) · **Owner:** Rex + Ana · **Purpose:** Turn desk-research hypotheses into buyer, user, security, and economic evidence before Release 1 scope is finalized.
+> **Status:** ACTIVE · **Version:** 2.2 (solo-dev evidence strategy 2026-08-11) · **Owner:** Rex + Ana · **Purpose:** Turn desk-research hypotheses into buyer, user, security, and economic evidence before Release 1 scope is finalized.
+> **Owner re-baseline (2026-08-11):** enterprise participant interviews are unavailable (solo development — `owner-direction-record-2026-08-11-solo-dev.md`). See §Solo-dev evidence strategy below.
 > **Execution kits (2026-08-11):** `_bmad/research/r02-session-kit-2026-08-11.md` (per-role runbook + probes sharpened by secondary evidence), `_bmad/research/outreach-execution-kit-2026-08-11.md` (per-channel outreach variants + scheduling), `_bmad/research/r03-synthesis-framework-2026-08-11.md` (evidence → status rules + decision memo), `_bmad/research/r04-pilot-selection-framework-2026-08-11.md` (evidence-sourced selection matrix + charter pre-draft), `_bmad/research/secondary-evidence-synthesis-2026-08-11.md` (secondary calibration only).
 > **Session status:** R-01 recruitment operations are prepared (screener, outreach template, tracker, session-notes template); no participants or anonymized notes have been received. No primary evidence recorded (E-004/E-005 are technical/environmental, not market evidence). Do not fabricate sessions to "complete" this plan.
 
@@ -62,3 +63,31 @@ For every research session record role/segment, system landscape, verbatim pain 
 - Weekly: update assumption registry with evidence and confidence.
 - After 10 completed interviews: hold a research synthesis/Blaze challenge session.
 - Do not reapprove PRD/UX/architecture until A-01, A-02, A-03, A-07, and A-13 have evidence-based disposition.
+
+---
+
+## Solo-dev evidence strategy (2026-08-11, owner re-baseline)
+
+### Rationale
+Solo development cannot recruit enterprise interviewees. Validation must use evidence a solo developer can genuinely collect, while keeping the honesty bar intact.
+
+### Evidence tiers (label in evidence-log)
+| Tier | Type | Label | Threshold for use | What it can change |
+|---|---|---|---|---|
+| 1 | Enterprise interviews (future) | PRIMARY | ≥3 participants + contradictions documented | Assumption VALIDATED/INVALIDATED |
+| 2 | Product-led: beta usage, waitlist, workflow completion, retention, unsolicited demand | BETA-USAGE | real, consent-aware, anonymized | PARTIAL-validation signals; scope/pilot-segment selection |
+| 3 | Public practitioner artifacts (threads, case studies, conference content) | ARTIFACT | real public sources cited | Hypothesis refinement; competitive calibration |
+| 4 | Secondary surveys/vendor analysis | SECONDARY | public sources cited | Question sharpening only |
+
+### Product-led validation loop (what a solo dev can run)
+1. **Public beta / waitlist**: deploy a real beta (browser/PWA unblocking is a prerequisite — A-12), collect signups; threshold: ≥30 qualified signups for a demand signal.
+2. **Real usage**: ≥10 weekly active beta users; ≥5 complete a real close→decision→board-pack loop with their own data.
+3. **Feedback**: structured session-notes from volunteer beta users (anonymized, consent-aware) — these are real users, not invented ones.
+4. **Community engagement**: r/FPandA, Indie Hackers, HN — share the real product, collect real reactions (ARTIFACT evidence).
+5. **Unsolicited demand**: ≥3 "I'd pay for this" signals from unrelated users → PARTIAL A-01 signal (never VALIDATED).
+
+### Honesty rules (unchanged)
+- No fabrication; every evidence row labeled by tier.
+- Only Tier 1 (or verified operational artifact equivalent) changes `VALIDATED` status.
+- Tiers 2–4 update Confidence + scope decisions; assumption Status column remains UNVALIDATED until Tier 1.
+- If enterprise access ever appears, revive the interview kits (R-01 source map + outreach kit + session kit).

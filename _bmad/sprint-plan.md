@@ -8,8 +8,8 @@
 
 | Track | Item | Status | Evidence / blocker |
 |---|---|---|---|
-| R | R-01 Recruit enterprise sample | IN PROGRESS | Operations prepared; externally blocked — no participants/anonymized notes yet; nothing fabricated |
-| R | R-02–R-04 | BLOCKED | Require R-01 evidence |
+| R | R-01 Enterprise sample (as specified) | REDIRECTED (2026-08-11) | Owner direction: unavailable (solo development); replaced by solo-dev evidence strategy (validation-plan v2.2); interview track revivable |
+| R | R-02–R-04 (re-baselined) | READY on solo-achievable evidence | Execute via validation-plan v2.2 Tier 2–4 evidence (beta signals, artifacts, secondary); P-track re-scopes to public-beta segment selection |
 | F | F-01 Capability evidence governance | DONE / QA APPROVED | 0 unresolved route source mappings; QA report filed |
 | F | F-02 Atlas foundation | IN PROGRESS / QA REJECTED | Structural baselines + a11y pass (empty + populated); pixel baseline blocked by Playwright TLS download; verdict unchanged |
 | F | F-03 Context/trust-state shell | DONE / QA APPROVED | `_bmad/stories/story-f03-financial-context-shell.md`; QA report in `_bmad/qa/` |

@@ -33,3 +33,7 @@ No product code. Follow screener quotas, disqualification, and bias controls. Do
 - Tracker updated to OUTREACH-READY with the channel map.
 - Secondary practitioner signals (r/FPandA EPM thread) captured as E-011 — labeled SECONDARY; they refine R-02 questions only.
 - Owner action: execute outreach; return anonymized outcomes.
+
+## Re-baseline note (2026-08-11)
+
+Owner direction: enterprise participants unavailable (solo development). Execution uses the solo-dev evidence strategy (`_bmad/research/validation-plan.md` §Solo-dev evidence strategy, v2.2). No fabrication; all evidence labeled by tier; assumption statuses remain UNVALIDATED without Tier-1 evidence.
