@@ -302,4 +302,25 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 
 ---
 
+## Ledger Entry #16 — 2026-08-10 — Quinn/Amelia (real-SQLite server verification)
+
+### Decision/Topic: Run the server suite against REAL SQLite (native better-sqlite3) and fix everything the mock DB had masked
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | The server suite ran against an in-memory mock DB (native binding unavailable) — meaning schema, FK, and SQL-correctness bugs were invisible. Real verification requires the real database. |
+| Evidence | `node-gyp` needs nodejs.org headers (TLS-blocked); local headers exist at /usr/local/include/node → `npm_config_nodedir=/usr/local` built the native binding. First real-DB run: 7/11 suites failed. |
+| Options Considered | (a) Keep mock and claim 121 passing — rejected: masks bugs. (b) Build native + fix all surfaced issues — ADOPTED. (c) Skip server verification — rejected. |
+| Risk Probe | Risk: test isolation — parallel files shared one DB file (one file's cleanup deleted another's live DB) → fixed with per-worker FINPLAN_DB_PATH. Risk: schema changes affect Tauri — audit_trail reconciled in place; Tauri never reads it. |
+| Consequence Projection | All 198 server tests now pass on real SQLite (13 files, native config). |
+| Confidence Score | 93% |
+| Autonomy Level | A5 |
+
+### Adopted Path: native binding + schema guarantee + canonicalization + seeding. See Evidence E-007.
+
+### Rejected Alternatives: keep mock (masks bugs); change routes to legacy schema (loses semantics).
+
+---
+
 <!-- Future entries append below this line. -->

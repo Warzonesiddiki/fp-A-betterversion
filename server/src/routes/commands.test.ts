@@ -52,6 +52,23 @@ describe('POST /api/v1/commands (F-04 spike)', () => {
       JWT_SECRET,
       { expiresIn: '15m' }
     );
+    // Real-SQLite FK enforcement: user_entity_access references users.id and
+    // entities.id, and the request-audit middleware writes audit_log.user_id
+    // (FK to users). Every JWT actor must therefore exist as a users row
+    // (the mock DB ignored foreign keys).
+    const seedUser = (id: string, email: string, role: string): void => {
+      db.prepare(
+        `INSERT OR REPLACE INTO users (id, email, password_hash, first_name, last_name, role, is_active)
+         VALUES (?, ?, ?, ?, ?, ?, 1)`
+      ).run(id, email, 'not-a-real-hash', 'Seed', 'User', role);
+    };
+    seedUser('admin-uuid', 'admin@finplan.test', 'Admin');
+    seedUser('outsider-uuid', 'outsider@finplan.test', 'Analyst');
+    seedUser(userId, 'granted@finplan.test', 'Analyst');
+    db.prepare(
+      `INSERT OR REPLACE INTO entities (id, name, code, is_active)
+       VALUES (?, ?, ?, 1)`
+    ).run('ent-command-1', 'Command Test Entity', 'CMD-1');
     db.prepare(
       `INSERT OR REPLACE INTO user_entity_access (user_id, entity_id, role)
        VALUES (?, ?, ?)`
