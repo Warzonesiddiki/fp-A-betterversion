@@ -20,5 +20,10 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
+    // Same per-worker real-SQLite isolation and after-file cleanup as the
+    // default config (vitest 4: no globalTeardown — cleanup lives in the
+    // setup file). The two native-only suites create their own `:memory:`
+    // databases and are unaffected by FINPLAN_DB_PATH.
+    setupFiles: ['./vitest.setup.ts'],
   },
 });

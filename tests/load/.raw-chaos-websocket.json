@@ -18,7 +18,7 @@
     "editsDuringDisconnect": 100,
     "editsReplayedOnReconnect": 100,
     "editOrderPreserved": true,
-    "reconnectTimeMs": 0.13,
+    "reconnectTimeMs": 0.08,
     "dataLoss": false,
     "passed": true,
     "target": "100 rapid edits preserved in order",

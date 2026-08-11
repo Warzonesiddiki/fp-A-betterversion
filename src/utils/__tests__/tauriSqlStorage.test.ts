@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { tauriSqlStorage, isTauri } from '../tauriSqlStorage';
 
 const { mockDb } = vi.hoisted(() => ({
@@ -13,7 +13,59 @@ vi.mock('@tauri-apps/plugin-sql', () => ({
   },
 }));
 
-describe('tauriSqlStorage', () => {
+const WINDOW_ANY = window as unknown as Record<string, unknown>;
+
+function enableTauriRuntime(): void {
+  WINDOW_ANY.__TAURI__ = true;
+}
+
+function disableTauriRuntime(): void {
+  delete WINDOW_ANY.__TAURI__;
+  delete WINDOW_ANY.__TAURI_INTERNALS__;
+}
+
+afterEach(() => {
+  disableTauriRuntime();
+  vi.clearAllMocks();
+});
+
+describe('isTauri', () => {
+  it('returns false in test environment', async () => {
+    disableTauriRuntime();
+    expect(await isTauri()).toBe(false);
+  });
+
+  it('returns true when __TAURI__ is present', async () => {
+    enableTauriRuntime();
+    expect(await isTauri()).toBe(true);
+  });
+});
+
+// F-05 browser-beta contract: outside a Tauri runtime the storage is a
+// no-op — it never touches @tauri-apps/plugin-sql and never throws.
+describe('tauriSqlStorage (non-Tauri browser)', () => {
+  beforeEach(() => {
+    disableTauriRuntime();
+  });
+
+  it('getItem is a no-op returning null without touching the plugin', async () => {
+    const value = await tauriSqlStorage.getItem('test-key');
+    expect(value).toBeNull();
+    expect(mockDb.select).not.toHaveBeenCalled();
+  });
+
+  it('setItem and removeItem are no-ops in a browser', async () => {
+    await expect(tauriSqlStorage.setItem('test-key', { state: 1 })).resolves.toBeUndefined();
+    await expect(tauriSqlStorage.removeItem('test-key')).resolves.toBeUndefined();
+    expect(mockDb.execute).not.toHaveBeenCalled();
+  });
+});
+
+describe('tauriSqlStorage (Tauri runtime)', () => {
+  beforeEach(() => {
+    enableTauriRuntime();
+  });
+
   it('getItem returns parsed value', async () => {
     const value = await tauriSqlStorage.getItem('test-key');
     expect(value).toEqual({ user: 'test' });
@@ -31,17 +83,5 @@ describe('tauriSqlStorage', () => {
     mockDb.select.mockResolvedValueOnce([]);
     const value = await tauriSqlStorage.getItem('missing-key');
     expect(value).toBeNull();
-  });
-
-  it('isTauri returns false in test environment', async () => {
-    const result = await isTauri();
-    expect(result).toBe(false);
-  });
-
-  it('isTauri returns true when __TAURI__ is present', async () => {
-    (globalThis as any).__TAURI__ = true;
-    const result = await isTauri();
-    expect(result).toBe(true);
-    delete (globalThis as any).__TAURI__;
   });
 });

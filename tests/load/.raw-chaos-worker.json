@@ -2,7 +2,7 @@
   {
     "scenario": "chaos-worker-crash-monte-carlo-50pct",
     "crashDuringOperation": "Monte Carlo at 5000/10000 iterations",
-    "respawnTimeMs": 0.54,
+    "respawnTimeMs": 0.53,
     "statePreserved": true,
     "operationResumed": true,
     "userNotified": true,

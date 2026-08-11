@@ -27,7 +27,6 @@ import { AnomalyHighlight } from '@/components/ai/AnomalyHighlight';
 import { createLogger } from '@/utils/logger';
 
 const dashboardLogger = createLogger('Dashboard');
-import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { formatPercent } from '@/utils/financialFormatting';
 import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
 import {
@@ -60,6 +59,9 @@ export default function DashboardPage() {
   const openDrill = async (title: string, accountPrefix: string) => {
     try {
       if ('__TAURI_INTERNALS__' in window || '__TAURI__' in window) {
+        // F-05 browser-beta hardening: resolved lazily so a plain browser
+        // never statically evaluates @tauri-apps/api/webviewWindow.
+        const { WebviewWindow } = await import('@tauri-apps/api/webviewWindow');
         const url = `/drill-down?title=${encodeURIComponent(title)}&accountPrefix=${encodeURIComponent(accountPrefix)}`;
         const label = `drill-down-${Date.now()}`;
         const webview = new WebviewWindow(label, {

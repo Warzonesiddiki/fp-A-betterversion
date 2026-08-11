@@ -1,7 +1,7 @@
 [
   {
     "benchmark": "monte-carlo-10k",
-    "timestamp": "2026-08-06T17:46:03.431Z",
+    "timestamp": "2026-08-11T20:29:09.780Z",
     "hardware": {
       "cpu": "Intel(R) Xeon(R) Processor @ 2.60GHz",
       "ram": "3940MB",
@@ -9,10 +9,10 @@
       "node": "v22.22.3"
     },
     "iterations": 10000,
-    "coldMs": 44.72,
-    "warmMs": 15.49,
-    "warmAvgMs": 14.14,
-    "memoryPeakMB": 0,
+    "coldMs": 27.88,
+    "warmMs": 12.96,
+    "warmAvgMs": 13.36,
+    "memoryPeakMB": 12.3,
     "passed": true,
     "target": "<30000ms",
     "engineFile": "src/engines/MonteCarloEngine.ts",

@@ -1,5 +1,8 @@
 # HANDOVER PROMPT — FinPlan Pro FP&A (Session 4)
 
+> **SUPERSEDED (2026-08-11):** Historical handover. The current authoritative handover is `HANDOVER_PROMPT_SESSION10.md` (plus its addon, `HANDOVER_ADDON_SESSION10.md` if present / the SESSION10 file itself), and live state is in `_bmad/project-context.md` + `_bmad/reasoning-ledger.md`. Do not act on this file's statuses or next-actions.
+
+
 **Repo:** `Warzonesiddiki/fp-A-betterversion`
 **Previous working branch (PR #41, OPEN):** `arena/019fdb06-fp-a-betterversion` — **PR #41** "Forensic audit v1.0.0 (20-section): residual leftovers + P0/P1 remediations"
 **Base:** `main` @ `b426149` (PR #40 merge). **Working dir:** `/home/user/fp-A-betterversion`

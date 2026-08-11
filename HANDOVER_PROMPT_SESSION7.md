@@ -1,5 +1,8 @@
 # HANDOVER PROMPT — FinPlan Pro FP&A (Session 7) — POST-MISSION D
 
+> **SUPERSEDED (2026-08-11):** Historical handover. The current authoritative handover is `HANDOVER_PROMPT_SESSION10.md` (plus its addon, `HANDOVER_ADDON_SESSION10.md` if present / the SESSION10 file itself), and live state is in `_bmad/project-context.md` + `_bmad/reasoning-ledger.md`. Do not act on this file's statuses or next-actions.
+
+
 **Repo:** `Warzonesiddiki/fp-A-betterversion`
 
 **Base:** `main` @ `60e0d4a` (PR #42 MERGED) + MISSION D branch `arena/019fdccc-fp-a-betterversion` → **PR #43 OPEN** (docs triage + coverage + defect fixes).

@@ -17,9 +17,6 @@
     "test:bench": "node --max-old-space-size=8192 node_modules/vitest/vitest.mjs run --config vitest.bench.config.ts",
     "test:bench:ci": "node --max-old-space-size=8192 node_modules/vitest/vitest.mjs run --reporter=json --outputFile=./bench-results.json --config vitest.bench.config.ts",
     "bundle-check": "node scripts/bundle-check.js",
-    "canary:stage1": "node --experimental-strip-types scripts/canary-2.0/stage1-health/stage1-runner.ts",
-    "canary:stage2": "node --experimental-strip-types scripts/canary-2.0/stage2-sanity/stage2-runner.ts",
-    "canary:stage3": "node --experimental-strip-types scripts/canary-2.0/stage3-integration/stage3-runner.ts",
     "prepare": "husky",
     "repo:hygiene": "node scripts/repo-hygiene-check.mjs",
     "capability:inventory": "node scripts/generate-capability-truth-matrix.mjs",
@@ -85,6 +82,9 @@
   "overrides": {
     "minimatch@10.2.6": {
       "brace-expansion": "^5.0.9"
+    },
+    "minimatch@3.1.5": {
+      "brace-expansion": "2.1.4"
     },
     "@opentelemetry/auto-instrumentations-node": "^0.76.0",
     "@opentelemetry/sdk-node": "^0.218.0",

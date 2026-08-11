@@ -1,5 +1,8 @@
 # HANDOVER PROMPT — FinPlan Pro FP&A (Session 6) — POST-MISSION C
 
+> **SUPERSEDED (2026-08-11):** Historical handover. The current authoritative handover is `HANDOVER_PROMPT_SESSION10.md` (plus its addon, `HANDOVER_ADDON_SESSION10.md` if present / the SESSION10 file itself), and live state is in `_bmad/project-context.md` + `_bmad/reasoning-ledger.md`. Do not act on this file's statuses or next-actions.
+
+
 **Repo:** `Warzonesiddiki/fp-A-betterversion`
 
 **Base:** `main` @ `f5a4844` (PR #41 merge) → **PR #42 OPEN** from `arena/019fdbe0-fp-a-betterversion` ("Month-end close workflow (F-01): period-close UI + pre-close validation + zero-mock-data completion")

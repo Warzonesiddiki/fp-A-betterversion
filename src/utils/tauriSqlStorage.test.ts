@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Use vi.hoisted to create mock functions before vi.mock hoisting
 const { mockSelect, mockExecute, mockLoad } = vi.hoisted(() => ({
@@ -36,13 +36,50 @@ describe('isTauri', () => {
   });
 });
 
+// F-05 browser-beta contract: outside a Tauri runtime the storage is a
+// no-op — it never touches @tauri-apps/plugin-sql and never throws.
+describe('tauriSqlStorage (non-Tauri browser)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    delete (window as unknown as Record<string, unknown>).__TAURI__;
+    delete (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__;
+  });
+
+  it('getItem is a no-op returning null without touching the plugin', async () => {
+    mockLoad.mockResolvedValue({ select: mockSelect, execute: mockExecute });
+
+    const result = await tauriSqlStorage.getItem('ui-store');
+
+    expect(result).toBeNull();
+    expect(mockLoad).not.toHaveBeenCalled();
+    expect(mockSelect).not.toHaveBeenCalled();
+  });
+
+  it('setItem is a no-op in a browser', async () => {
+    mockLoad.mockResolvedValue({ select: mockSelect, execute: mockExecute });
+
+    await tauriSqlStorage.setItem('ui-store', { state: { theme: 'dark' }, version: 1 });
+
+    expect(mockLoad).not.toHaveBeenCalled();
+    expect(mockExecute).not.toHaveBeenCalled();
+  });
+});
+
 describe('tauriSqlStorage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // The Tauri runtime flag makes getDb() take the lazy @tauri-apps/plugin-sql
+    // path (mocked above), mirroring the desktop runtime.
+    (window as unknown as Record<string, unknown>).__TAURI__ = true;
     mockLoad.mockResolvedValue({
       select: mockSelect,
       execute: mockExecute,
     });
+  });
+
+  afterEach(() => {
+    delete (window as unknown as Record<string, unknown>).__TAURI__;
+    delete (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__;
   });
 
   describe('getItem', () => {

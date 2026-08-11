@@ -94,7 +94,7 @@ interface SerializedSnapshot {
   cellValues: Record<string, unknown>;
 }
 
-type StorageBackend = 'indexeddb' | 'tauri';
+type StorageBackend = 'indexeddb' | 'tauri' | 'memory';
 
 // =============================================================================
 // BACKEND DETECTION
@@ -109,6 +109,10 @@ async function detectBackend(): Promise<StorageBackend> {
   } catch {
     // window not available in test environment
   }
+  // F-05 browser-beta hardening: IndexedDB is absent in jsdom and some
+  // restricted webviews/private modes — degrade to the in-memory backend
+  // instead of crashing on an undefined `indexedDB` reference.
+  if (typeof indexedDB === 'undefined') return 'memory';
   return 'indexeddb';
 }
 
@@ -263,6 +267,27 @@ export class CubeEnginePersistence {
   private tauriDb: import('@tauri-apps/plugin-sql').default | null = null;
   private initialized = false;
 
+  /**
+   * In-memory fallback (F-05 browser-beta hardening). Used when IndexedDB is
+   * unavailable (jsdom, private browsing, restricted webviews). Same shape
+   * contract as the IndexedDB store; data is intentionally ephemeral.
+   */
+  private memory: {
+    cells: Map<string, SerializedCell>;
+    dimensions: Map<string, SerializedDimension>;
+    cubes: Map<string, SerializedCube>;
+    history: SerializedHistoryEntry[];
+    snapshots: Map<string, SerializedSnapshot>;
+    snapshotCells: Map<string, Map<string, unknown>>;
+  } = {
+    cells: new Map(),
+    dimensions: new Map(),
+    cubes: new Map(),
+    history: [],
+    snapshots: new Map(),
+    snapshotCells: new Map(),
+  };
+
   // ---------------------------------------------------------------------------
   // INITIALIZATION
   // ---------------------------------------------------------------------------
@@ -275,8 +300,15 @@ export class CubeEnginePersistence {
     if (this.backend === 'tauri') {
       this.tauriDb = await getTauriDB();
       await this.createTauriTables();
-    } else {
-      this.idb = await openCubeDB();
+    } else if (this.backend === 'indexeddb') {
+      try {
+        this.idb = await openCubeDB();
+      } catch {
+        // IndexedDB open failed (quota/security/private mode): degrade to the
+        // in-memory backend rather than crash the browser beta.
+        this.backend = 'memory';
+        this.idb = null;
+      }
     }
 
     this.initialized = true;
@@ -404,6 +436,8 @@ export class CubeEnginePersistence {
       );
     } else if (this.idb) {
       await idbPut(this.idb, 'cells', serialized);
+    } else if (this.backend === 'memory') {
+      this.memory.cells.set(cellKey, serialized);
     }
   }
 
@@ -427,6 +461,20 @@ export class CubeEnginePersistence {
           attachment: cell.attachment,
         };
         await idbPut(this.idb, 'cells', serialized);
+      }
+    } else if (this.backend === 'memory') {
+      for (const { cube, cell, cellKey } of cells) {
+        const serialized: SerializedCell = {
+          id: cellKey,
+          cube,
+          coords: { ...cell.coords },
+          measure: cell.measure,
+          value: cell.value as number | string | boolean,
+          dataType: cell.dataType,
+          comment: cell.comment,
+          attachment: cell.attachment,
+        };
+        this.memory.cells.set(cellKey, serialized);
       }
     }
   }
@@ -456,6 +504,15 @@ export class CubeEnginePersistence {
         cellKey: row.id,
         cell: this.deserializeCell(row),
       }));
+    } else if (this.backend === 'memory') {
+      const all = cubeFilter
+        ? [...this.memory.cells.values()].filter((c) => c.cube === cubeFilter)
+        : [...this.memory.cells.values()];
+
+      return all.map((row) => ({
+        cellKey: row.id,
+        cell: this.deserializeCell(row),
+      }));
     }
 
     return [];
@@ -480,6 +537,8 @@ export class CubeEnginePersistence {
 
       await idbDelete(this.idb, 'cells', cellKey);
       return true;
+    } else if (this.backend === 'memory') {
+      return this.memory.cells.delete(cellKey);
     }
 
     return false;
@@ -492,6 +551,8 @@ export class CubeEnginePersistence {
       await tauriExec(this.tauriDb, 'DELETE FROM cube_cells');
     } else if (this.idb) {
       await idbClear(this.idb, 'cells');
+    } else if (this.backend === 'memory') {
+      this.memory.cells.clear();
     }
   }
 
@@ -543,6 +604,8 @@ export class CubeEnginePersistence {
         );
       } else if (this.idb) {
         await idbPut(this.idb, 'dimensions', serialized);
+      } else if (this.backend === 'memory') {
+        this.memory.dimensions.set(name, serialized);
       }
     }
   }
@@ -564,6 +627,10 @@ export class CubeEnginePersistence {
     } else if (this.idb) {
       const all = await idbGetAll<SerializedDimension>(this.idb, 'dimensions');
       for (const dim of all) {
+        result.set(dim.name, this.deserializeDimension(dim));
+      }
+    } else if (this.backend === 'memory') {
+      for (const dim of this.memory.dimensions.values()) {
         result.set(dim.name, this.deserializeDimension(dim));
       }
     }
@@ -602,6 +669,8 @@ export class CubeEnginePersistence {
         );
       } else if (this.idb) {
         await idbPut(this.idb, 'cubes', serialized);
+      } else if (this.backend === 'memory') {
+        this.memory.cubes.set(name, serialized);
       }
     }
   }
@@ -618,22 +687,16 @@ export class CubeEnginePersistence {
       );
       for (const row of rows) {
         const parsed = JSON.parse(row.data) as SerializedCube;
-        result.set(parsed.name, {
-          name: parsed.name,
-          dimensions: parsed.dimensions,
-          measures: parsed.measures,
-          storage: parsed.storage,
-        });
+        result.set(parsed.name, this.deserializeCubeDefinition(parsed));
       }
     } else if (this.idb) {
       const all = await idbGetAll<SerializedCube>(this.idb, 'cubes');
       for (const cube of all) {
-        result.set(cube.name, {
-          name: cube.name,
-          dimensions: cube.dimensions,
-          measures: cube.measures,
-          storage: cube.storage,
-        });
+        result.set(cube.name, this.deserializeCubeDefinition(cube));
+      }
+    } else if (this.backend === 'memory') {
+      for (const cube of this.memory.cubes.values()) {
+        result.set(cube.name, this.deserializeCubeDefinition(cube));
       }
     }
 
@@ -677,6 +740,19 @@ export class CubeEnginePersistence {
         };
         await idbPut(this.idb, 'history', serialized);
       }
+    } else if (this.backend === 'memory') {
+      for (const entry of history) {
+        const serialized: SerializedHistoryEntry = {
+          id: entry.id,
+          cellId: entry.cellId,
+          oldValue: entry.oldValue,
+          newValue: entry.newValue,
+          dataType: entry.dataType,
+          reason: entry.reason,
+          timestamp: entry.timestamp,
+        };
+        this.memory.history.push(serialized);
+      }
     }
   }
 
@@ -688,27 +764,13 @@ export class CubeEnginePersistence {
         this.tauriDb,
         'SELECT * FROM cube_history ORDER BY timestamp ASC'
       );
-      return rows.map((row) => ({
-        id: row.id,
-        cellId: row.cellId,
-        oldValue: row.oldValue as number | string | Date | boolean | null,
-        newValue: row.newValue as number | string | Date | boolean,
-        dataType: row.dataType as CellHistoryEntry['dataType'],
-        reason: row.reason,
-        timestamp: row.timestamp,
-      }));
+      return rows.map((row) => this.deserializeHistoryEntry(row));
     } else if (this.idb) {
       return idbGetAll<SerializedHistoryEntry>(this.idb, 'history').then((rows) =>
-        rows.map((row) => ({
-          id: row.id,
-          cellId: row.cellId,
-          oldValue: row.oldValue as number | string | Date | boolean | null,
-          newValue: row.newValue as number | string | Date | boolean,
-          dataType: row.dataType as CellHistoryEntry['dataType'],
-          reason: row.reason,
-          timestamp: row.timestamp,
-        }))
+        rows.map((row) => this.deserializeHistoryEntry(row))
       );
+    } else if (this.backend === 'memory') {
+      return this.memory.history.map((row) => this.deserializeHistoryEntry(row));
     }
 
     return [];
@@ -757,6 +819,9 @@ export class CubeEnginePersistence {
         );
       } else if (this.idb) {
         await idbPut(this.idb, 'snapshots', serialized);
+      } else if (this.backend === 'memory') {
+        this.memory.snapshots.set(snap.id, serialized);
+        this.memory.snapshotCells.set(snap.id, cellMap ?? new Map());
       }
     }
   }
@@ -806,6 +871,16 @@ export class CubeEnginePersistence {
         }
         snapshotCells.set(row.id, cellMap);
       }
+    } else if (this.backend === 'memory') {
+      for (const row of this.memory.snapshots.values()) {
+        snapshots.push({
+          id: row.id,
+          name: row.name,
+          createdAt: row.createdAt,
+          description: row.description,
+        });
+        snapshotCells.set(row.id, this.memory.snapshotCells.get(row.id) ?? new Map());
+      }
     }
 
     return { snapshots, snapshotCells };
@@ -823,6 +898,27 @@ export class CubeEnginePersistence {
       dataType: row.dataType as CubeCell['dataType'],
       comment: row.comment,
       attachment: row.attachment,
+    };
+  }
+
+  private deserializeCubeDefinition(parsed: SerializedCube): CubeDefinition {
+    return {
+      name: parsed.name,
+      dimensions: parsed.dimensions,
+      measures: parsed.measures,
+      storage: parsed.storage,
+    };
+  }
+
+  private deserializeHistoryEntry(row: SerializedHistoryEntry): CellHistoryEntry {
+    return {
+      id: row.id,
+      cellId: row.cellId,
+      oldValue: row.oldValue as number | string | Date | boolean | null,
+      newValue: row.newValue as number | string | Date | boolean,
+      dataType: row.dataType as CellHistoryEntry['dataType'],
+      reason: row.reason,
+      timestamp: row.timestamp,
     };
   }
 
