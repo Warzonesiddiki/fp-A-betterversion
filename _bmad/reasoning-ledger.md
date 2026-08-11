@@ -344,4 +344,25 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 
 ---
 
+## Ledger Entry #18 — 2026-08-10 — Quinn
+
+### Decision/Topic: Boot-contract verification + mock-fallback honesty resolution
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | After the real-SQLite migration, the boot path (fresh DB -> ensureSchema/runMigrations -> route tables) had no direct contract test, and the mock-fallback path's post-migration behavior was unknown. |
+| Evidence | bootSchema.test.ts (3 tests, both configs): fresh per-worker DB has all 17 route tables, canonical audit_trail shape, server columns. runMigrations() probe: idempotent, no throw. Mock-fallback probe: the fallback cannot be forced under vitest while the native binding exists (createRequire resolves the real module), and production forbids the fallback (fail-fast) — so it is a dev-only escape hatch, not a product path. |
+| Options Considered | (a) Invest in refactoring connection.ts to make the mock unit-testable — rejected: the mock is a deliberately-ephemeral dev fallback; production fails fast without native; testing it adds surface without product value. (b) Boot-contract test + explicit fallback-honesty note — ADOPTED. (c) Remove the mock entirely — rejected: it keeps sandbox/CI dev runs alive when the native binding cannot be built. |
+| Risk Probe | Risk: a future change breaks boot without CI noticing — mitigated: bootSchema.test.ts is in both server suites. Risk: someone trusts the mock as verification — mitigated: architecture/QA notes state real SQLite is the verification path; mock is dev-only. |
+| Consequence Projection | Server suites 130/130 default, 207/207 native; boot path locked by contract test. |
+| Confidence Score | 93% |
+| Autonomy Level | A5 |
+
+### Adopted Path: bootSchema.test.ts (durable) + fallback-honesty documentation.
+
+### Rejected Alternatives: mock-refactor for testability (no product value); mock removal (breaks dev fallback).
+
+---
+
 <!-- Future entries append below this line. -->
