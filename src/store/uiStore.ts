@@ -17,7 +17,7 @@ export const useUIStore = create<UIState>()(
       immer((set) => ({
         sidebarCollapsed: false,
         mobileSidebarOpen: false,
-        theme: 'dark',
+        theme: 'light',
         commandPaletteOpen: false,
         helpPanelOpen: false,
         toasts: [],

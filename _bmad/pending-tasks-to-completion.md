@@ -37,11 +37,11 @@ These gates are **green right now**. This is the floor the work must not break.
 | Architecture | `npm run architecture:guardrails` | all pass |
 | Money ratchet | `npm run money:adoption` | holds (209 modules, 0 `toFixed`) |
 
-**Not yet established:** a full-suite run in this environment. The last recorded
-full run was on `main` @ `729da51` (979 files, 11,572 tests). The box has 2 CPUs
-/ 3 GB RAM, so the 8 GB-heap `npm test` script cannot run as configured — see
-**P-00** below. Until it runs here, "all tests pass" is an inherited claim, not
-a verified one.
+**Established (P-00 ✅).** The full suite now runs in this environment via
+`npm run test:sharded`: **1199 files, 13,447 tests** (1 skipped), ~13 min across
+8 shards. The stock `npm test` still cannot run here (it requests an 8 GB heap
+on a 3 GB / 2-CPU box); the sharded runner is the supported path. "All tests
+pass" is now a verified claim in this environment, not an inherited one.
 
 **Scale (measured):** 200 routed screens · 217 page modules · 214 engine modules
 · 47 stores · 335 UI component modules · 64 services.
@@ -139,21 +139,54 @@ Remaining steps to drive one palette instead of three:
 Measured surface: 305 of 490 non-test `.tsx` files use raw `slate-`/`gray-`
 utilities; 146 use `dark:`; 247 use `var(--…)`.
 
-### UI-02 — Flip to light-first
+### UI-02 — Flip to light-first ✅ DONE
 
-Zoho Books is a light product. FinPlan defaults to Bloomberg-dark
-(`--bg-root:#080c14`). Dark must remain available (it is a genuine strength for
-a finance terminal), but the default and the polished path become light.
+Zoho Books is a light product. FinPlan defaulted to Bloomberg-dark
+(`--bg-root:#080c14`). Dark remains available (a genuine strength for a finance
+terminal); the default and the polished path are now light.
 
-Touches, in order: `src/index.css` `:root`/`.light` token sets → `uiStore`
-default (`theme: 'dark'`) → the inline bootstrap in `index.html`, whose
-`localStorage.getItem('finplan-theme') || 'dark'` and `#080c14` fallback both
-change. **`index.html` is CSP-hash-locked** — re-run `node
-scripts/csp-hash-check.js` and update the `sha256-` in the meta tag, or the
-build fails.
+Shipped: `uiStore` seed `dark`→`light`; the `index.html` bootstrap no longer
+falls back to dark (it only opts *in* to dark, and re-resolves `'system'`
+against the OS); `.light` gained overrides for every contrast-sensitive token.
+CSP hash updated to `sha256-7Fr6DsWabQ…` and verified against both `index.html`
+and `dist/index.html`.
 
-Verified by: `darkVariant.contract.test.ts` (already asserts bootstrap/variant
-agreement), plus a token contrast test asserting WCAG AA on the light palette.
+**Two further defects surfaced while doing this, neither previously known:**
+
+- **Persistence was broken end to end.** The bootstrap read
+  `localStorage['finplan-theme']`, but *nothing in the codebase ever wrote that
+  key* — the real preference is persisted by `uiStore` into an **encrypted
+  SQLite blob** (`finplan-sqljs-db`), which a synchronous inline script cannot
+  read. The read therefore always returned `null`, so every reload painted the
+  default theme and a user's saved choice never survived. `ThemeContext` now
+  mirrors the preference into that key. This is why the flip alone would not
+  have held.
+- **WCAG failures latent in the light palette.** Tokens declared only in
+  `:root` inherited into light mode and were never checked against a light
+  canvas: `--text-muted` #94a3b8 **2.56:1**, `--warning` #f59e0b **2.15:1**,
+  `--negative` #f43f5e 3.67:1, `--accent-primary` #0284c7 4.10:1, `--info`
+  4.47:1. All now clear **4.5:1 on all four light surfaces**. `--negative`
+  moved to the `#DC2626` that AGENTS.md mandates. `--bg-root` lightened
+  `#f1f5f9`→`#f8fafc` and `--bg-hover`→`#f5f8fa` (also closer to Zoho's
+  near-white canvas), which is what let `#DC2626` clear AA on hovered rows.
+  Dark-canvas glass/shadows (black at 0.3–0.4 alpha) were re-tuned to a slate
+  tint for light.
+
+Verified by `src/theme/lightMode.contract.test.ts` — 9 tests that **recompute**
+contrast ratios from the CSS rather than asserting hexes, so they keep holding
+as the palette evolves. Mutation-verified 6/6 (store default, bootstrap
+fallback, muted regression, `#DC2626` drift, mirror-write removal, shadow
+leak). Full gate run: tsc, eslint, 109 theme/layout/smoke tests, `vite build`,
+both CSP hashes.
+
+**Deferred, recorded so it is not lost:** `--financial-draft` (#64748b) is the
+one token that cannot satisfy both themes — **4.46:1** on light hover and, more
+importantly, **2.89:1 in dark mode today** (a pre-existing failure). It is
+deliberately left alone because
+`AtlasFoundations.visual-contract.test.tsx` pins financial tokens as
+theme-invariant by design (single source of truth). Fixing it means either
+relaxing that contract or re-picking the lifecycle palette — folded into
+**UI-07**, where the status palette is revisited as a whole.
 
 ### UI-03 — Navigation and IA `[highest user-visible value]`
 
@@ -230,9 +263,11 @@ critical/serious; keyboard paths through grids and modals; 1024×600 minimum.
 
 ## 4. Performance track
 
-- **P-00 — Make the suite runnable here `[blocking]`.** `npm test` requests an
-  8 GB heap on a 3 GB box. Until it runs, no full-suite claim is verifiable.
-  Either shard it or provide a low-memory config.
+- **P-00 — Make the suite runnable here `[blocking]` ✅ DONE.** `npm test`
+  requests an 8 GB heap on a 3 GB box. Solved with `scripts/test-sharded.mjs`
+  (`npm run test:sharded`, `--shards/--workers/--heap/--only`): 1199 files /
+  13,447 tests in ~13 min. Single shard: `node scripts/test-sharded.mjs
+  --shards=8 --only=N`.
 - **P-01** — Bundle budget: main ≤150 KB gzip, total ≤2 MB (`npm run
   bundle-check`), with 200 lazy routes and heavy vendor chunks already split.
 - **P-02** — 100k-row grid at ≥30 fps; 10k-row GL import <30 s; 500-row PDF <3 s.
@@ -261,10 +296,10 @@ critical/serious; keyboard paths through grids and modals; 1024×600 minimum.
 
 ## 6. Sequence
 
-1. **P-00** — get the suite running; everything else is unverifiable without it.
-2. **UI-01 → UI-02** — one token layer, then light-first. Restyling before
-   collapsing the duplicate systems means doing it twice.
-3. **UI-03** — navigation. Largest jump in usable surface (35 → 200 screens).
+1. ~~**P-00**~~ ✅ — suite runs here (`npm run test:sharded`).
+2. ~~**UI-01 → UI-02**~~ ✅ — token layer collapsed, then light-first. (Doing
+   the restyle first would have meant doing it twice.)
+3. **UI-03 ← NEXT** — navigation. Largest jump in usable surface (35 → 200 screens).
 4. **UI-06** — money formatting. Correctness, and cheap.
 5. **UI-04 / UI-05** — density and per-page consistency, incrementally.
 6. **D-01** — sector depth truth table; drives what "all industries" can claim.

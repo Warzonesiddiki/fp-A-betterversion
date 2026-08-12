@@ -14,16 +14,29 @@
       build`'s gate set) — if you edit that script, run the checker and paste
       the hash it prints, otherwise the bootstrap is blocked in production.
     -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-BjyiEMuHdOmAbS4mllDxuO/KmwHfGyCkVl5ax7Bs/+o=' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:; connect-src 'self' https://*.tauri.app https://*.huggingface.co; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-7Fr6DsWabQDzPoL03QSJK5P+7Tyhuh55h1OvhBTuJuU=' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:; connect-src 'self' https://*.tauri.app https://*.huggingface.co; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';">
     <title>FinPlan Pro - FP&A Platform</title>
     <script>
       (function() {
         try {
-          const theme = localStorage.getItem('finplan-theme') || 'dark';
-          const isDark = theme === 'dark';
+          // Light is the default: FinPlan's UI language is a light, near-white
+          // canvas. Only an explicit stored preference of 'dark' (or 'system'
+          // on a dark OS) switches away from it.
+          //
+          // This mirror key is written by ThemeContext. It exists because the
+          // real preference lives in the persisted UI store, which is an
+          // ENCRYPTED SQLite blob under 'finplan-sqljs-db' — unreadable from a
+          // synchronous bootstrap. Reading the store's key here previously
+          // always returned null, so the app hard-defaulted to dark and a
+          // user's saved choice never survived a reload.
+          var stored = localStorage.getItem('finplan-theme');
+          var isDark =
+            stored === 'dark' ||
+            (stored === 'system' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches);
           document.documentElement.classList.toggle('dark', isDark);
           document.documentElement.classList.toggle('light', !isDark);
-          document.documentElement.style.backgroundColor = isDark ? '#080c14' : '#f1f5f9';
+          document.documentElement.style.backgroundColor = isDark ? '#080c14' : '#f8fafc';
         } catch (e) {}
       })();
     </script>
