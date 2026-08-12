@@ -115,6 +115,44 @@
   --action-primary-hover: var(--accent-hover);
   --state-focus: var(--focus-ring);
 
+  /* -------------------------------------------------------------------------
+   * Compatibility aliases (UI-01)
+   *
+   * 287 `var(--…)` references across 50 modules pointed at names that were
+   * never declared anywhere — `var(--border)`, `var(--text-tertiary)`,
+   * `var(--bg-primary)` and friends. An undeclared custom property with no
+   * fallback makes the whole declaration invalid at computed-value time, so
+   * those elements silently fell back to transparent backgrounds, inherited
+   * text colour and missing borders. That is why several panels render as
+   * unreadable dark-on-dark blocks. `--bg-muted` (78 uses) was worse: it
+   * resolved ONLY under [data-high-contrast='true'], so it worked in the
+   * accessibility mode and nowhere else.
+   *
+   * These are deliberately aliases onto the canonical scale rather than new
+   * colours: the intent is one palette, not a second one. Each mapping was
+   * derived from how the name is actually used in the call sites.
+   * ---------------------------------------------------------------------- */
+  --border: var(--border-default);
+  --border-color: var(--border-default);
+  --bg-primary: var(--bg-elevated); /* form control fill (inputs/selects) */
+  --bg-secondary: var(--bg-elevated); /* inset row / secondary panel fill */
+  --bg-tertiary: var(--bg-hover);
+  --bg-muted: var(--bg-elevated); /* zebra + hover rows in data tables */
+  --bg-subtle: var(--bg-hover);
+  --bg-surface-hover: var(--bg-hover);
+  --bg-surface-active: var(--bg-active);
+  --surface-primary: var(--bg-surface);
+  --surface-secondary: var(--bg-elevated);
+  --surface-tertiary: var(--bg-hover);
+  --surface-hover: var(--bg-hover);
+  --text-tertiary: var(--text-muted);
+  --text-on-accent: #ffffff;
+  --accent: var(--accent-primary);
+  --accent-secondary: var(--info);
+  --accent-primary-light: var(--accent-subtle);
+  --color-success: var(--positive);
+  --color-error: var(--negative);
+
   /* Spacing Scale */
   --space-xs: 4px;
   --space-sm: 8px;
@@ -154,6 +192,49 @@
   --negative-subtle: #fee2e2;
   --warning-subtle: #fef3c7;
   --info-subtle: #e0e7ff;
+}
+
+/* ---------------------------------------------------------------------------
+ * Tailwind theme bridge (UI-01)
+ *
+ * The codebase mixes two vocabularies: Atlas CSS custom properties
+ * (`bg-[var(--bg-surface)]`) and shadcn/ui semantic utilities (`bg-card`,
+ * `text-muted-foreground`, `ring-ring`). The shadcn names only exist if the
+ * matching `--color-*` theme keys are registered with Tailwind — and they
+ * never were, because this project has no `tailwind.config.*` and no `@theme`
+ * block. Every one of those utilities compiled to nothing: 248 usages across
+ * 42 files, `text-muted-foreground` alone accounting for 160. Verified by
+ * compiling src/index.css with Tailwind's own compiler and grepping the
+ * output for each class.
+ *
+ * `@theme inline` registers them WITHOUT freezing their value: the emitted
+ * utility is `color: var(--text-muted)`, so it keeps tracking the light/dark
+ * toggle instead of baking in whichever theme was active at build time. Using
+ * a plain `@theme` block here would hard-code the dark values and break the
+ * light theme.
+ *
+ * Mappings point at the existing Atlas scale so this adds no new colours.
+ * ------------------------------------------------------------------------- */
+@theme inline {
+  --color-background: var(--bg-root);
+  --color-foreground: var(--text-primary);
+  --color-card: var(--bg-surface);
+  --color-card-foreground: var(--text-primary);
+  --color-popover: var(--bg-elevated);
+  --color-popover-foreground: var(--text-primary);
+  --color-primary: var(--accent-primary);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--bg-elevated);
+  --color-secondary-foreground: var(--text-primary);
+  --color-muted: var(--bg-elevated);
+  --color-muted-foreground: var(--text-muted);
+  --color-accent: var(--bg-hover);
+  --color-accent-foreground: var(--text-primary);
+  --color-destructive: var(--negative);
+  --color-destructive-foreground: #ffffff;
+  --color-border: var(--border-default);
+  --color-input: var(--border-default);
+  --color-ring: var(--focus-ring);
 }
 
 * {
