@@ -97,10 +97,37 @@ control looks different depending on which layer a page happened to use. There
 is also a third source of truth, `src/config/designTokens.ts` (344 lines), which
 is **not** connected to either.
 
-Pick the token layer as canonical and drive both others from it:
+**Step 1 of this task is DONE (commit `1b5cf48`).** Investigating it surfaced
+two silent defect classes that no build, lint or test could catch:
 
-1. Emit the CSS custom properties from `designTokens.ts` (or generate the
-   `@theme` block) so there is one palette, not three.
+- **248 shadcn utility usages across 42 files compiled to zero CSS.**
+  `text-muted-foreground` (×160), `bg-muted` (×30), `bg-primary` (×10),
+  `ring-ring`, `bg-card` … all parsed fine and emitted nothing, because no
+  `--color-*` keys were registered (no `tailwind.config.*`, no `@theme`).
+  This hit the core primitives: `Button` (`ring-ring`), `Card` (`bg-card`),
+  `Input` (`placeholder:text-muted-foreground`).
+- **287 `var(--…)` references across 50 files pointed at properties that were
+  never declared** (`--border` ×44, `--text-tertiary` ×43, `--bg-primary` ×21,
+  `--accent` ×17 …), silently invalidating the whole declaration.
+  `--bg-muted` (78 uses) was declared *only* under
+  `[data-high-contrast='true']`, so table zebra striping worked in the
+  accessibility mode and nowhere else.
+
+Both are fixed in `src/index.css` via an `@theme inline` bridge plus alias
+declarations onto the canonical scale, and pinned by
+`src/theme/tokenBridge.contract.test.ts` (mutation-tested, 4/4 caught).
+This removes a large share of the "styling looks off" surface area, and it
+had to land before any restyling work — the light theme could not have been
+correct while these tokens resolved to nothing.
+
+Remaining steps to drive one palette instead of three:
+
+1. ~~Register the shadcn `--color-*` keys and resolve the dangling vars.~~
+   **Done.** Still open: `src/config/designTokens.ts` (344 lines) remains a
+   third, **provably unconsumed** source of truth (only its own test imports
+   it) and it *conflicts* with the CSS (radius `xs` 4px vs 2px;
+   `--negative:#f43f5e` vs `financial.negative:#dc2626`). Either delete it or
+   convert it into the generator for the `@theme` block — do not leave both.
 2. Restate the Tailwind primitives in terms of semantic tokens
    (`--action-primary`, `--surface-panel`, `--text-body`) instead of raw
    `blue-600`/`gray-800`.
