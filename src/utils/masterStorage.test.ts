@@ -77,8 +77,9 @@ describe('masterStorage', () => {
       const result = await masterStorage.getItem('test-store');
 
       expect(mockTauriSqlGetItem).toHaveBeenCalledWith('test-store');
-      // getItem returns the decrypted serialized payload; zustand's persist
-      // middleware performs the JSON.parse. Assert the decrypted content.
+      // getItem returns the DESERIALIZED payload (JSON.parse of the decrypted
+      // plaintext) — zustand persist v5 reads `.state`/`.version` directly and
+      // never parses a string (P0-2026-08-12). Assert the round-tripped value.
       const decoded = typeof result === 'string' ? JSON.parse(result) : result;
       expect(decoded).toEqual(value);
     });

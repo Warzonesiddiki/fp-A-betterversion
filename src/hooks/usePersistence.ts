@@ -21,8 +21,9 @@ export function usePersistence<T>(options: PersistenceOptions) {
         const val = localStorage.getItem(options.key);
         stored = val ? JSON.parse(val) : null;
       } else {
-        const val = await masterStorage.getItem(options.key);
-        stored = val ? JSON.parse(String(val)) : null;
+        // masterStorage.getItem returns the deserialized value (JSON.parse of
+        // the persisted payload), so no further parsing is needed here.
+        stored = (await masterStorage.getItem(options.key)) ?? null;
       }
 
       const storedRecord = stored as Record<string, unknown> | null;

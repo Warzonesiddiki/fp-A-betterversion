@@ -585,6 +585,98 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 
 ---
 
+## Ledger Entry #34 — 2026-08-12 — Owner/System (all-in-one FP&A platform + ZohoBooks-grade UX direction)
+
+### Decision/Topic: Owner directs the product goal as an all-in-one FP&A platform ("user should not need any other tool", all industries) with ZohoBooks-grade UI/UX and extreme optimization; grants maximum autonomy within BMAD discipline
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | Owner direction (2026-08-12): all-in-one FP&A for all industries; ZohoBooks-comparable UI/UX; highly optimized; "free to do everything… with absolute extreme perfection". The repo is already breadth-rich (200+ lazy routes across 40+ domain dirs; 193 engines; 44 stores; 263 UI primitives) but depth and polish are the open fronts. The direction re-frames scope ambition (wedge remains the strategic anchor) without changing any validation status. |
+| Evidence | Route/page inventory read-verified (src/App.tsx 200+ lazy imports; 40+ domain dirs incl. healthcare/energy/government/manufacturing all with real engines + tests); design system is dark-first Bloomberg-inspired with working light theme (ThemeContext dark/light/system; index.css 853 lines of tokens); bundle gates exist (main <150KB gzip, total <2MB gzip) but dist not built this session; T-13 (9 hardened workflow files) LANDED via platform commit b23e41a (git diff 8d17058..b23e41a -- .github/workflows = 9 files +110/−59) — docs still said owner-side; all 14 assumptions remain UNVALIDATED (assumption-registry read-verified). |
+| Options Considered | (a) Treat direction as validation — rejected: violates evidence sovereignty (A-01…A-14 stay UNVALIDATED; Tier 1 only). (b) Silently re-theme the app to light-only ZohoBooks look — rejected: theme direction is a design decision to work with owner-visible audit, both themes polished. (c) Record direction + produce owner-visible master completion plan (all pending tasks across UI/depth/perf/engineering/research/governance) + multi-agent roadmap + desktop Tier-2 evidence kit, then execute in phases — ADOPTED. |
+| Risk Probe | Risk: breadth work overclaims vertical certification — mitigated: D-09 sector audit + honesty appendix (breadth ≠ certified depth). Risk: scope creep without gates — mitigated: every task has an acceptance criterion; phases ordered engineering-first. Risk: CI stays red — owner-side E-005, unchanged; T-13 status corrected in docs. |
+| Consequence Projection | Owner has a complete, prioritized task inventory to drive the project to "extreme perfection"; BMAD discipline preserved (no assumption validated, no fabrication, no silent state change); next session can execute Phase 1 gates (full-suite count, bundle audit) then the UI/UX flagship track. |
+| Confidence Score | 90% |
+| Autonomy Level | A4 (owner-directed scope; executed with evidence-first honesty) |
+
+### Adopted Path: `_bmad/project-completion-plan.md` (master plan, 6 tracks × 40+ tasks with acceptance gates) + `_bmad/research/owner-direction-record-2026-08-12-all-in-one.md` (direction record) + `agents/` A1–A5 multi-agent roadmap + `_bmad/research/desktop-tier2-evidence-kit-2026-08-12.md` (Tier-2 evidence drafts) + T-13 status correction + project-context/evidence-log/sprint-plan updates.
+
+### Rejected Alternatives: treating owner direction as market validation; silent theme flip; proceeding without an owner-visible task inventory.
+
+### Open Items: full-suite count still derived (13,438/1,195) pending P-01; CI billing block E-005 owner-side; `.env.example` dead VITE_BETA_WEB key (env-file guard); desktop Tier-2 evidence execution owner's call (T-06/T-07).
+
+---
+
+## Ledger Entry #33 — 2026-08-12 — Amelia/Quinn (F-02 pixel baseline COMPLETE — runbook executed in a real browser)
+
+### Decision/Topic: Execute the F-02 visual-regression runbook (T-10) — establish deterministic browser screenshot baselines and flip F-02 from QA REJECTED to QA APPROVED
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | F-02 was REJECTED solely on the pixel baseline: "an interim deterministic DOM/class snapshot baseline... does not validate rendered pixels". The blocker was environmental (Playwright Chromium download failed with TLS resets on 2026-08-10). This environment HAS a working browser, so the runbook (`docs/design/VISUAL_REGRESSION_RUNBOOK.md`) can now be executed — the honest completion of a safe-foundation story, no ICP/connector/vertical/deployment decision made. |
+| Evidence | `tests/e2e/atlas-visual.spec.ts` 5/5 passing under chromium (badge dark+light; PageHeader wide+compact; FinancialWorkspaceEmptyState dark+light; Dashboard empty 1440+390; Dashboard populated 1440/1024 dark + 1440 light with visible `Draft` trust status). 11 deterministic PNG baselines in `tests/e2e/atlas-visual.spec.ts-snapshots/`; re-run produces byte-identical images (md5-stable), i.e. the render is deterministic. Determinism discipline held: fixed viewport/UTC/en-US/reduced-motion/animation kill-switch; seeded fixture restored through the app's OWN canonical backup path (BackupRestore, SHA-256-verified), never by patching component internals; test-only `__TAURI_INTERNALS__` shim (never relaxes production policy). Dev-only harness page `/visual/atlas` (AtlasVisualBaselinePage, 4 unit tests) is not linked from navigation. Two spec defects found and fixed on first run: `getByLabelText` (Testing Library API, invalid in Playwright) → `getByLabel`; unstrict `getByRole('status')` (4 matches incl. toast container) → scoped `getByRole('main').getByRole('status', { name: /Draft/ })`. CSP: `'wasm-unsafe-eval'` added to index.html script-src (+ security.md documentation) — required for the browser SQL.js fallback storage backend used by the test baseline; the CSP3 keyword permits WASM compilation only, never JS eval. |
+| Options Considered | (a) Claim F-02 done without pixels — rejected: violates zero-compromise honesty; the story's own runbook is explicit. (b) Execute the runbook now and re-run the QA review — ADOPTED. (c) Wait for CI — rejected: every workflow job is blocked by the account billing block (E-005); no browser-capable CI job can run. |
+| Risk Probe | Risk: snapshots could encode a buggy render — mitigated: assertions pin the intended state BEFORE each screenshot (populated heading, Draft trust status in main, Total Revenue KPI, 3 setup steps, 10 badges); the populated fixture goes through the canonical backup-restore path, so the render is the product path. Risk: the P0 hydration defect (ledger #32) made the first populated render EMPTY — it surfaced exactly because of these assertions; after the fix the baselines were re-established on the FIXED render (verified: current pixels match the stored baselines byte-for-byte). Risk: snapshots drift across machines (font rendering) — mitigated: viewport/DSF/colorScheme/timezone fixed; Linux Chromium baselines are committed; any future diff must be reviewed as a code change (runbook rule). |
+| Consequence Projection | F-02 pixel baseline CLOSED — the last rejection reason is gone; F-02 moves to QA APPROVED (pending this review's verdict recorded); T-10 removed from blockers; remaining owner-side blockers unchanged (billing E-005, workflows permission T-13, desktop-channel Tier-2 strategy, F-03 AC3 filter-reset explanation deferral stays deferred per F-04/P-01). Verification battery: e2e 5/5; root tsc 0; targeted unit suites (masterStorage 31, hooks 15, visual harness 4, pre-push focused subset 266, hydration-sensitive stores 44); eslint 0 on changed files; engines:verify/docs:verify/readme-claims 11-11/money ratchet/docs-link strict/capability-matrix/compliance-evidence all green; `git diff --check` clean. |
+| Confidence Score | 90% |
+| Autonomy Level | A5 (safe-foundation story execution; story was pre-approved with the pixel baseline as explicit AC) |
+
+### Adopted Path: `tests/e2e/atlas-visual.spec.ts` + 11 committed PNG baselines + `src/pages/visual/AtlasVisualBaselinePage.tsx` (+4 tests) + `/visual/atlas` dev-only route + `tests/e2e/_helpers/atlas-seed-probe.mjs` (diagnostic) + CSP `'wasm-unsafe-eval'` (index.html + security.md) + QA review flipped to APPROVED + story/context/evidence updates.
+
+### Rejected Alternatives: no-pixel claim (honesty); waiting for CI (billing-blocked, no browser job exists); using `--update-snapshots` to auto-approve diffs (runbook forbids; no diffs were auto-approved — current baselines re-established from the FIXED render).
+
+### Open Items: none new; owner-side blockers unchanged (billing E-005, workflows T-13, desktop-channel Tier-2 strategy).
+
+---
+
+## Ledger Entry #32 — 2026-08-12 — Amelia (P0 hydration defect: zustand persist silently skipped rehydration on boot)
+
+### Decision/Topic: Fix masterStorage.getItem to return the DESERIALIZED envelope object instead of the decrypted plaintext string (P0-2026-08-12)
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | The F-02 browser baseline (this session) exposed a silent data-loss path: after a backup-restore + reload, the dashboard stayed EMPTY despite the seeded stores being present in the database. Root cause traced to the storage contract: `masterStorage.getItem` returned the decrypted PLAINTEXT STRING, but zustand persist v5's `hydrate()` reads `storageValue.state` / `.version` DIRECTLY and never JSON.parses a string return. Every persisted store therefore silently skipped hydration on boot — writes "succeeded" (they did), but state was never restored after a restart. This affected BOTH the browser SQL.js backend and the Tauri backend (all 29 persisted stores). |
+| Evidence | `zustand-hydrate-probe.mjs` (real zustand + fake string-returning storage): hydrated x stays 0, confirming persist v5 does not parse string returns. `src/utils/masterStorage.hydration.test.ts` (2 tests) pins the round trip: a new store instance with the same key hydrates the persisted value (42) and the envelope object ({count:7}). Consumers of the old string contract were found and updated: `useFirstRun.ts` (marker compare), `usePersistence.ts` (double JSON.parse removed), `backupRestore.test.ts` (tamper path now mutates the nested envelope), `masterStorage.test.ts`, `usePersistence.test.ts` (mock now returns the object). |
+| Options Considered | (a) Keep the string return and change every zustand store's `merge` — rejected: the persist middleware is library-owned; per-store `merge` hacks would be fragile and would leave backup/restore and migration consumers on the wrong contract. (b) Parse inside `masterStorage.getItem` with a non-JSON fallback — ADOPTED: one canonical fix at the single chokepoint every persisted store already funnels through; `JSON.parse` failure degrades to the raw string (first-run marker `'"true"'` and pre-envelope legacy rows stay readable). (c) Return both shapes — rejected: impossible to express honestly in one return type. |
+| Risk Probe | Risk: non-JSON plaintext (marker strings, legacy rows) — mitigated: try-parse with raw-string fallback; first-run marker test passes both `'true'` and `true` forms. Risk: breaking consumers that expected a string — mitigated: full consumer sweep (rg for `masterStorage.getItem`), all updated; backupRestore tamper-path regression updated to the envelope shape (the test that previously mutated the serialized string). Risk: hydration timing in tests — the new regression test settles on the async encrypted write before creating the second store. |
+| Consequence Projection | Persisted state now actually survives restarts in both backends — a P0 data-integrity fix surfaced by the visual baseline. Verification: hydration-sensitive suites green (masterStorage 31 tests incl. new 2, hooks 15, pre-push focused subset 266, uiStore/integrationStore/tauriSqlStorage/App.runtime 44); root tsc 0; eslint 0 on changed files. |
+| Confidence Score | 92% |
+| Autonomy Level | A5 (single-chokepoint bug fix with regression tests; no direction change) |
+
+### Adopted Path: `masterStorage.getItem` returns `JSON.parse(plaintext)` with raw-string fallback; `useFirstRun` / `usePersistence` / `usePersistence.test` / `backupRestore.test` / `masterStorage.test` updated to the deserialized contract; `masterStorage.hydration.test.ts` added.
+
+### Rejected Alternatives: per-store `merge` hacks (fragile, library-owned middleware); leaving the string contract (silent data loss on every restart).
+
+### Open Items: none — the fix is covered by regression tests and exercised by the populated-dashboard visual baseline (restore → reload → populated render).
+
+---
+
+## Ledger Entry #31 — 2026-08-12 — System (post-commit verification, governance-drift repair, superseded connector route redirect)
+
+### Decision/Topic: Verify the platform-absorbed commit (b23e41a), repair the governance drift it introduced (stale engine manifest + README claims + capability matrix), and remove the user-facing duplicate of the Integrations hub
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | A platform commit (b23e41a, "Update 47 files") absorbed three sessions of working-tree work (desktop-only beta removal, Integrations hub, connector→ledger import). The committed state is unverified at HEAD, and new source modules (ConnectorImportEngine) had not been propagated through the generated contracts (engine manifest, capability matrix, README stats). The old /settings/connectors page (in-memory ConnectorEngine — connections lost on reload) duplicates the real hub's surface for the same QuickBooks/NetSuite/Salesforce capabilities. |
+| Evidence | `generate-engine-manifest.mjs --check` FAILED (manifest stale — 181 vs 182 measured); `verify-readme-stats.mjs` FAILED (README claims 181, measured 182); `check-readme-claims.mjs` FAILED (42 vs 44 stores); capability matrix drifted 17 lines (new modules unclassified); rg proved ConnectorEngine has exactly one consumer (ConnectorSettingsPage) plus the generated manifest + smoke test; README "13,290 tests"/"1,174 files" predate the 13,377/1,189 F-05 measurement (blame 0e300b8, 08-09) — already stale at HEAD, no gate validates them. |
+| Options Considered | (a) Delete ConnectorSettingsPage + ConnectorEngine entirely — rejected this turn: blast radius includes generated manifest (181→180), README stats, reachability classifier, smoke tests, and the engine's legacy purity/cross-witness metadata; the page is unreachable except by direct URL. (b) Redirect /settings/connectors → /settings/integrations + mark the dead surface @superseded — ADOPTED: one-line honest fix, reversible, zero contract churn. (c) Leave the stale manifest/README/capability claims — rejected: they fail the project's own gates (engines:verify, docs:verify, check-readme-claims). |
+| Risk Probe | Risk: manifest regen reorders/diff-blows — generator is deterministic (.sort()); diff was 6 lines. Risk: README numbers unmeasurable in sandbox (full suite exceeds 180s cap) — test/file counts are DERIVED (13,377 + 64 added − 9 removed = 13,432; 1,189 + 8 − 2 = 1,195), recorded as derivation pending full-suite confirmation; engine/store counts are MEASURED by the gates. Risk: redirect breaks smoke tests — smoke renders the page component directly (unaffected); route-level tests re-run green. |
+| Consequence Projection | All project gates green again: manifest --check, docs:verify, check-readme-claims (11/11), capability:inventory, compliance-evidence, guardrails, docs-link strict, money ratchet, reachability; tsc 0; targeted suites 51/51 + 71/71; eslint 0 on changed files; diff --check clean. The F-03 AC3 filter-reset explanation deferral (server-authorized views, F-04/P-01) was re-confirmed as correctly deferred — client-side implementation would violate AC6. |
+| Confidence Score | 90% |
+| Autonomy Level | A4 (verification + governance repair within approved safe-foundations scope) |
+
+### Adopted Path: `npm run engines:manifest` regen (181→182, ConnectorImportEngine now lazy-reachable); README claim repair (182 engines ×5 sites, 44 stores, 1,195 files / 13,432 tests — derived); capability matrix regenerated; /settings/connectors → <Navigate to="/settings/integrations" replace/> + @superseded banners on ConnectorSettingsPage and ConnectorEngine (kept, tested, unreachable — final removal deferred until the hub is committed/shipped).
+
+### Rejected Alternatives: full deletion of the connector page/engine this turn; leaving generated contracts stale.
+
+### Open Items: exact full-suite count needs a browser-capable/full-run environment (derived 13,432 / 1,195 documented); .env.example still documents VITE_BETA_WEB (env-file guard blocks edits — dead knob, no code reads it); owner-side blockers unchanged (billing E-005, workflows T-13, desktop-channel Tier-2 strategy, F-02 browser baseline T-10).
+
+---
+
 ## Ledger Entry #30 — 2026-08-12 — System (Connector pull → Ledger import: controlled-loop "import actuals" wired to the Integrations hub)
 
 ### Decision/Topic: Give every connected integration a real "Import to Ledger" action — pull via the connector, map through a pure decimal-safe engine, write through the canonical `glStore.importGLData` (IMPORT_CREATE-gated) path

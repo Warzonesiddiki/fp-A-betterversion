@@ -1,7 +1,7 @@
 # FinPlan Atlas Visual Regression Runbook
 
-> **Status:** Required to complete BMAD Story F-02.  
-> **Current sandbox note:** Playwright Chromium download failed with TLS connection resets on 2026-08-10; run this in a browser-capable CI or developer environment.
+> **Status:** Required to complete BMAD Story F-02 — **EXECUTED AND CLOSED 2026-08-12** (5/5 scenarios pass; 11 committed PNG baselines; F-02 QA APPROVED).
+> **Current sandbox note (2026-08-12):** executed in this environment's real Chromium via `tests/e2e/atlas-visual.spec.ts` — see the completion record in `_bmad/qa/story-f02-atlas-foundation-review.md` and ledger #33. Earlier 2026-08-10 sandboxes could not download Playwright Chromium (TLS `ECONNRESET`); that blocker is resolved here. Re-run with `npm run test:e2e -- tests/e2e/atlas-visual.spec.ts`; any `--update-snapshots` diff must be reviewed as a code change, never auto-approved.
 
 ## Purpose
 

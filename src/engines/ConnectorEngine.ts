@@ -1,4 +1,10 @@
 /**
+ * @superseded 2026-08-12 — by src/services/api-integration/ (real, tested,
+ * persisted connectors behind the Integrations hub, ledger #29/#30). This
+ * engine is in-memory only (static Maps — connections lost on reload) and no
+ * longer reachable from any routed page (/settings/connectors redirects to the
+ * hub). Kept (tested) pending final removal once the hub is committed/shipped.
+ *
  * ConnectorEngine — External system connector (NetSuite/QuickBooks/Salesforce/Custom)
  * Handles auth (OAuth/API key), rate limiting, retry with exponential backoff.
  *

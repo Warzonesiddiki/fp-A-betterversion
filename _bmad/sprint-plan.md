@@ -4,19 +4,22 @@
 > **Inputs:** G0–G4 approved hypothesis artifacts, traceability matrix, assumption registry, capability truth matrix
 > **Rule:** No implementation story may turn an unvalidated market/user/deployment assumption into an irreversible product commitment.
 
-## Current execution status (2026-08-10, v2.1)
+## Current execution status (2026-08-12, v2.3)
+
+> **Owner direction 2026-08-12 (ledger #34, E-019):** all-in-one FP&A platform for all industries + ZohoBooks-grade UI/UX + extreme optimization. Master task inventory: `_bmad/project-completion-plan.md` (6 tracks × 40+ tasks with acceptance gates); multi-agent assignments: `agents/A1-A5-multi-agent-roadmap.md`. Scope intent only — assumptions stay UNVALIDATED; breadth ≠ certified vertical depth.
 
 | Track | Item | Status | Evidence / blocker |
 |---|---|---|---|
 | R | R-01 Enterprise sample (as specified) | REDIRECTED (2026-08-11) | Owner direction: unavailable (solo development); replaced by solo-dev evidence strategy (validation-plan v2.2); interview track revivable |
 | R | R-02–R-04 (re-baselined) | READY on solo-achievable evidence | Execute via validation-plan v2.2 Tier 2–4 evidence (beta signals, artifacts, secondary); P-track re-scopes to public-beta segment selection |
 | F | F-01 Capability evidence governance | DONE / QA APPROVED | 0 unresolved route source mappings; QA report filed |
-| F | F-02 Atlas foundation | IN PROGRESS / QA REJECTED | Structural baselines + a11y pass (empty + populated); pixel baseline blocked by Playwright TLS download; verdict unchanged |
+| F | F-02 Atlas foundation | **DONE / QA APPROVED (2026-08-12)** | Pixel baseline executed in real browser — `tests/e2e/atlas-visual.spec.ts` 5/5, 11 committed PNGs (byte-stable); surfaced + fixed P0 storage hydration defect (ledger #32); QA flipped to APPROVED (ledger #33, evidence E-018) |
 | F | F-03 Context/trust-state shell | DONE / QA APPROVED | `_bmad/stories/story-f03-financial-context-shell.md`; QA report in `_bmad/qa/` |
 | F | F-04 Control-plane contract spike | DONE / QA APPROVED (spike only) | `_bmad/stories/story-f04-control-plane-contract-spike.md`; QA report in `_bmad/qa/` |
 | P | P-01…P-07 | BLOCKED | Require R-04 pilot slice selection |
-| — | CI on GitHub | RED — account billing block | Owner must resolve Billing & plans; not a code regression (E-005) |
-| — | Local verification | PASS | 1,179 files / 13,315 tests; tsc/lint/build/audit green (E-004) |
+
+| — | Local verification | PASS | 1,195 files / 13,438 tests (derived — exact count pending full-suite run, P-01); tsc/lint green; e2e atlas 5/5 (E-018) |
+| — | CI on GitHub | RED — **billing block only** | The 9 hardened workflow files LANDED via platform commit b23e41a (T-13 closed 2026-08-12); owner must resolve GitHub billing (E-005); not a code regression |
 
 ## Delivery strategy
 

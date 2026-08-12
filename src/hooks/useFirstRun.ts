@@ -13,10 +13,13 @@ export function useFirstRun() {
         if (setupDone) {
           setIsFirstRun(false);
         } else {
-          // If setup not done in localStorage, check if we have data in DB
-          const val = await masterStorage.getItem('finplan-setup-complete');
-          const hasNoData = !val || (val as { state: unknown }).state !== '"true"';
-          setIsFirstRun(hasNoData);
+          // If setup not done in localStorage, check if we have data in DB.
+          // masterStorage.getItem returns the DESERIALIZED value: the marker is
+          // persisted as the JSON string '"true"' (→ parsed to the string
+          // 'true'), or the bare boolean true. Accept both forms.
+          const val = (await masterStorage.getItem('finplan-setup-complete')) as unknown;
+          const setupComplete = val === 'true' || val === true;
+          setIsFirstRun(!setupComplete);
         }
       } catch {
         setIsFirstRun(true);

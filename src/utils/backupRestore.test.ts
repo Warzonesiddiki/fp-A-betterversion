@@ -133,10 +133,10 @@ describe('F-0010 backup/restore', () => {
       await wipeAllStores();
       await BackupRestore.restoreFromJSON(serialized);
 
-      // masterStorage round-trips the persisted value as a JSON string (the
-      // zustand persist contract), so parse before asserting on fields.
-      const raw = (await masterStorage.getItem('gl-store')) as string;
-      const gl = JSON.parse(raw) as {
+      // masterStorage.getItem returns the deserialized envelope object (zustand
+      // persist v5 reads `.state` directly), so assert on the fields directly.
+      const raw = await masterStorage.getItem('gl-store');
+      const gl = raw as {
         state: { entries: Array<{ credit: string; debit: string }> };
       };
       expect(gl.state.entries[0]!.credit).toBe('150000.00');
@@ -170,7 +170,7 @@ describe('F-0010 backup/restore', () => {
       const result = await BackupRestore.restoreFromJSON(serialized);
       expect(result.success).toBe(true);
 
-      const restored = JSON.parse((await masterStorage.getItem('gl-store')) as string) as {
+      const restored = (await masterStorage.getItem('gl-store')) as {
         state: { entries: unknown[] };
       };
       expect(restored.state.entries).toHaveLength(5000);
@@ -215,15 +215,16 @@ describe('F-0010 backup/restore', () => {
       await seedStores();
       const backup = await BackupRestore.createBackupData();
 
-      // Alter a monetary value while keeping the original checksum. Store
-      // payloads are JSON strings, so tamper inside the string — exactly what
-      // an attacker editing the backup file would do.
+      // Alter a monetary value while keeping the original checksum. Backup
+      // payloads are the deserialized persist envelopes (objects), so tamper
+      // inside the nested state — exactly what an attacker editing the backup
+      // file would do.
       const tampered = JSON.parse(BackupRestore.serialize(backup)) as typeof backup;
-      tampered.data['budget-store'] = (tampered.data['budget-store'] as string).replace(
-        '1000000.00',
-        '9999999.00'
-      );
-      expect(tampered.data['budget-store']).toContain('9999999.00');
+      const budgetStore = tampered.data['budget-store'] as {
+        state: { budgets: Array<{ totalAmount: string }> };
+      };
+      budgetStore.state.budgets[0]!.totalAmount = '9999999.00';
+      expect(budgetStore.state.budgets[0]!.totalAmount).toBe('9999999.00');
 
       await wipeAllStores();
       const result = await BackupRestore.restoreFromJSON(JSON.stringify(tampered));

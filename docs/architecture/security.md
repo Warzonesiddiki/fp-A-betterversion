@@ -162,8 +162,11 @@ Defined twice and kept consistent: `index.html` (web) and
 
 Enforced in both surfaces: `default-src 'self'`; `script-src` **without**
 `'unsafe-inline'` and **without** `'unsafe-eval'` (web uses a SHA-256 hash for
-the single inline bootstrap; desktop adds only `'wasm-unsafe-eval'` for sql.js);
-`object-src 'none'`; `base-uri 'self'`; `form-action 'self'`;
+the single inline bootstrap; both surfaces add `'wasm-unsafe-eval'` for
+sql.js — desktop for the Tauri SQL storage, web for the browser fallback
+storage and the browser test baseline). `'wasm-unsafe-eval'` is the CSP3
+keyword that permits WebAssembly compilation ONLY (it never allows JS
+`eval`); `object-src 'none'`; `base-uri 'self'`; `form-action 'self'`;
 `frame-ancestors 'none'`; no wildcard or scheme-wide `http:` source.
 
 ### Accepted exception: `style-src 'unsafe-inline'` (F-0032)

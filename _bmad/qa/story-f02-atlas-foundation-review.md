@@ -1,6 +1,7 @@
 # QA Review — Story F-02: Complete FinPlan Atlas Foundation Contract
 
-> **Verdict:** REJECTED — REQUIRES COMPLETION
+> **Verdict:** APPROVED (2026-08-12) — pixel baseline executed in a real browser; all acceptance criteria verified.
+> Prior verdict (2026-08-10 … 08-11): REJECTED — REQUIRES COMPLETION (pixel baseline). Rejection lifted below.
 
 ## Automated checks
 
@@ -10,8 +11,8 @@
 | Type-check | PASS | `tsc --noEmit`, zero errors |
 | Unit / interaction tests | PASS | 4 files, 16 tests: status badge, page header, workspace empty state, dashboard |
 | Diff hygiene | PASS | `git diff --check` |
-| Structural visual contract baseline | PASS (interim) | Deterministic Vitest DOM/class snapshot covers PageHeader, FinancialStatusBadge, FinancialWorkspaceEmptyState hierarchy and trust semantics; it does not validate rendered pixels | 
-| Browser screenshot baseline | BLOCKED / NOT IMPLEMENTED | Playwright Chromium download failed with TLS connection resets from both default CDN and Azure Edge mirror; no approved pixel screenshot baseline exists |
+| Structural visual contract baseline | PASS | Deterministic Vitest DOM/class snapshot covers PageHeader, FinancialStatusBadge, FinancialWorkspaceEmptyState hierarchy and trust semantics |
+| Browser screenshot baseline | **PASS (2026-08-12)** | Playwright Chromium ran `tests/e2e/atlas-visual.spec.ts` — **5/5 tests**, 11 deterministic PNG baselines committed (badge dark/light; PageHeader wide/compact; empty-state dark/light; Dashboard empty 1440/390; Dashboard populated 1440+1024 dark + 1440 light). Re-run produces byte-identical images (md5-stable). See completion record below. |
 | Canonical Dashboard automated accessibility audit | PASS | `jest-axe` run on the finance-workspace setup state; no violations |
 
 ## Acceptance criteria verification
@@ -28,10 +29,27 @@
 
 An interim deterministic DOM/class snapshot baseline now protects Atlas hierarchy and trust-state markup. The Atlas component certification contract still requires browser screenshot/visual-diff evidence for pixels, fonts, responsive layout, and theme rendering. Passing structural snapshot, unit/type/lint/a11y checks is insufficient to declare the visual foundation complete.
 
-## Required follow-up
+## Required follow-up (RESOLVED 2026-08-12)
 
-1. Make a Playwright Chromium browser available in the validation environment (the attempted download failed with TLS connection resets), then follow `docs/design/VISUAL_REGRESSION_RUNBOOK.md` to establish deterministic Atlas snapshots for shared components and Dashboard empty/populated states.
-2. Re-run this QA review. Until then, Story F-02 remains IN PROGRESS.
+1. ~~Make a Playwright Chromium browser available in the validation environment~~ — **RESOLVED**: this environment has a working browser; the runbook was executed and the baselines established (see completion record below).
+2. ~~Re-run this QA review~~ — **DONE**: verdict flipped to APPROVED below.
+
+## Browser pixel baseline — COMPLETION RECORD (2026-08-12)
+
+Executed `docs/design/VISUAL_REGRESSION_RUNBOOK.md` in a real Chromium browser:
+
+- **Spec:** `tests/e2e/atlas-visual.spec.ts` — 5 scenarios / 5 passed:
+  1. FinancialStatusBadge — all ten lifecycle states, dark + light.
+  2. PageHeader — full anatomy + minimal variant, wide (1440) + compact (390).
+  3. FinancialWorkspaceEmptyState — canonical setup state, dark + light.
+  4. Dashboard empty workspace — 1440px desktop + 390px compact.
+  5. Dashboard populated workspace — Draft trust status visible, 1440px + 1024px (dark) and 1440px (light).
+- **Baselines:** 11 PNGs in `tests/e2e/atlas-visual.spec.ts-snapshots/` (chromium-linux). Determinism verified: re-run yields **byte-identical** images (md5 match) — fixed viewport, UTC timezone, en-US locale, reduced-motion + animation kill-switch, fixed fixture data.
+- **Populated state seeding:** restored through the app's OWN canonical backup path (`BackupRestore`, SHA-256-verified JSON) — never by patching component internals. This surfaced and pinned the P0 hydration defect (ledger #32): the restored dashboard initially rendered EMPTY because `masterStorage.getItem` returned a plaintext string zustand persist v5 never parses. After the fix, the populated baselines were re-established on the CORRECT render and the assertions (Executive Dashboard heading, Draft status in main, Total Revenue KPI) hold.
+- **Harness:** dev-only `/visual/atlas` route (`src/pages/visual/AtlasVisualBaselinePage.tsx`, 4 unit tests) — not linked from navigation; fixed fixtures only.
+- **CSP:** `'wasm-unsafe-eval'` added to `index.html` script-src (documented in `docs/architecture/security.md`) for the browser SQL.js storage fallback used by the test baseline — permits WASM compilation only, never JS eval.
+- **Spec fixes on first run (self-inflicted, not product defects):** `getByLabelText` (Testing Library API) → Playwright `getByLabel`; unstrict `getByRole('status')` (4 matches incl. toast container) → scoped `getByRole('main').getByRole('status', { name: /Draft/ })`.
+- **Review checklist (runbook):** status text/icon/pattern never color-only (role=status + data-financial-status asserted); authority/freshness visible; page title/purpose/action hierarchy intact; empty state actionable, not error-like; compact layouts do not clip actions/status/steps; dark/light contrast rendered and captured.
 
 ## Environment re-attempt log
 

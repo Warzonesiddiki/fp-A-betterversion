@@ -5,7 +5,7 @@
 ## v2.0 rebaseline notes
 
 - Added R-06 (technical verification evidence) and R-07 (CI billing-block environmental finding) to the finding table.
-- Safe-foundation rows F-01/F-02 recorded as completed-with-evidence (capability governance QA-approved; Atlas structural/a11y baselines). Market rows unchanged.
+- Safe-foundation rows F-01/F-02 recorded as completed-with-evidence (capability governance QA-approved; Atlas structural/a11y baselines + browser pixel baseline 2026-08-12). Market rows unchanged.
 - All market/economic/deployment rows remain UNVALIDATED; E-004/E-005 do not change their status.
 
 ## Finding identifiers
@@ -42,7 +42,7 @@
 
 ## Decision classification
 
-- **Safe foundation decisions:** maintain truth matrix, precision/audit controls, design-system accessibility, source/test evidence discipline. These are supported by direct code/control need. Completed to date: F-01 capability evidence governance (QA APPROVED); F-02 interim structural/a11y baselines (empty + populated Dashboard; real heading-order defect fixed; pixel baseline still blocked).
+- **Safe foundation decisions:** maintain truth matrix, precision/audit controls, design-system accessibility, source/test evidence discipline. These are supported by direct code/control need. Completed to date: F-01 capability evidence governance (QA APPROVED); **F-02 Atlas foundation DONE / QA APPROVED 2026-08-12** — structural/a11y baselines (empty + populated Dashboard; real heading-order defect fixed) plus the browser pixel baseline (`tests/e2e/atlas-visual.spec.ts` 5/5, 11 committed PNGs; ledger #33) and the P0 storage hydration fix it surfaced (ledger #32, evidence E-018).
 - **Hypothesis decisions:** ICP, price point, local-first differentiation, first connector/vertical, materiality defaults, deployment pattern. Do not hard-code or market without validation.
 - **Deferred decisions:** Graph database, Kafka, multi-database analytics, autonomous AI, broad vertical parity. No evidence currently justifies early commitment.
 
