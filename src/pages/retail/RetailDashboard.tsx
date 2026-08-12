@@ -30,16 +30,7 @@ import type { GLEntry } from '@/types';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /** Bridge glStore entries to the GLEntry shape the engines expect. */
 function toSectorEntries(entries: readonly GLEntry[]): GLEntry[] {
   return entries.map((e) => ({
@@ -50,6 +41,7 @@ function toSectorEntries(entries: readonly GLEntry[]): GLEntry[] {
 }
 
 export default function RetailDashboard() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -98,16 +90,16 @@ export default function RetailDashboard() {
       key: 'revenue',
       header: 'Revenue',
       align: 'right',
-      render: (_, r) => formatCurrency(r.revenue),
+      render: (_, r) => fmt.currency0(r.revenue),
       sortable: true,
     },
-    { key: 'cogs', header: 'COGS', align: 'right', render: (_, r) => formatCurrency(r.cogs) },
-    { key: 'labor', header: 'Labor', align: 'right', render: (_, r) => formatCurrency(r.labor) },
+    { key: 'cogs', header: 'COGS', align: 'right', render: (_, r) => fmt.currency0(r.cogs) },
+    { key: 'labor', header: 'Labor', align: 'right', render: (_, r) => fmt.currency0(r.labor) },
     {
       key: 'grossProfit',
       header: 'Gross Profit',
       align: 'right',
-      render: (_, r) => formatCurrency(r.grossProfit),
+      render: (_, r) => fmt.currency0(r.grossProfit),
     },
     {
       key: 'netProfit',
@@ -115,7 +107,7 @@ export default function RetailDashboard() {
       align: 'right',
       render: (_, r) => (
         <span className={r.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}>
-          {formatCurrency(r.netProfit)}
+          {fmt.currency0(r.netProfit)}
         </span>
       ),
       sortable: true,
@@ -152,7 +144,7 @@ export default function RetailDashboard() {
         <div>
           <h1 className="text-2xl font-bold">Retail Dashboard</h1>
           <p className="text-sm text-slate-400">
-            {storeStats.length} stores | Total Revenue: {formatCurrency(totalRevenue)}
+            {storeStats.length} stores | Total Revenue: {fmt.currency0(totalRevenue)}
           </p>
         </div>
         <div className="flex gap-2">
@@ -181,7 +173,7 @@ export default function RetailDashboard() {
       >
         <KPIValue
           label="Avg Revenue/Store"
-          value={formatCurrency(dashboardStats.avgRevenuePerStore)}
+          value={fmt.currency0(dashboardStats.avgRevenuePerStore)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
@@ -223,7 +215,7 @@ export default function RetailDashboard() {
                     tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                   />
                   <Tooltip
-                    formatter={(v) => formatCurrency(Number(v))}
+                    formatter={(v) => fmt.currency0(Number(v))}
                     contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                   />
                   <Legend />

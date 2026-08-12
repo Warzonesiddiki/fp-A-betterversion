@@ -22,16 +22,7 @@ import {
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 function formatPct(n: number): string {
   return `${formatPercent(n, 1)}`;
 }
@@ -158,6 +149,7 @@ function buildAtRiskCustomers(
 }
 
 export default function ChurnAnalysisPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -258,7 +250,7 @@ export default function ChurnAnalysisPage() {
         />
         <KPIValue
           label="At-Risk MRR"
-          value={formatCurrency(metrics.totalAtRiskMRR)}
+          value={fmt.currency0(metrics.totalAtRiskMRR)}
           icon={<AlertTriangle className="h-4 w-4" />}
           trend="down"
         />
@@ -363,7 +355,7 @@ export default function ChurnAnalysisPage() {
                     <tr key={c.name} className="border-b border-slate-800">
                       <td className="py-2 px-3 font-medium">{c.name}</td>
                       <td className="py-2 px-3">{c.segment}</td>
-                      <td className="text-right py-2 px-3">{formatCurrency(c.mrr)}</td>
+                      <td className="text-right py-2 px-3">{fmt.currency0(c.mrr)}</td>
                       <td className="text-right py-2 px-3">
                         <span
                           className={`px-2 py-0.5 rounded text-xs ${

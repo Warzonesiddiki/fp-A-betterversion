@@ -6,17 +6,9 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 
 import { BarChart3 } from 'lucide-react';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 export default function AnalyticsPage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -119,7 +111,7 @@ export default function AnalyticsPage() {
                       />
                     </div>
                     <span className="w-24 text-right tabular-nums text-xs">
-                      {formatCurrency(data.total)}
+                      {fmt.currency0(data.total)}
                     </span>
                     <span className="w-12 text-right text-xs text-slate-500">({data.count})</span>
                   </div>

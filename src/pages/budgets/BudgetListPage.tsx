@@ -8,21 +8,13 @@ import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Plus, Search, Copy, Trash2, Eye, Send, CheckCircle, XCircle } from 'lucide-react';
 import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
 // CHRONOS 2026-06-15: replaced local formatRelativeTime (BUG-CHR-D-1) with
 // canonical import. Uses 30-day cap (matches old behavior), "Just now" cap.
 import { formatRelativeTimeBudget as formatRelativeTime } from '@/engines/temporal';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 export default function BudgetListPage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -199,7 +191,7 @@ export default function BudgetListPage() {
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums font-medium" role="gridcell">
-                        {formatCurrency(b.totalAmount || 0)}
+                        {fmt.currency0(b.totalAmount || 0)}
                       </td>
                       <td className="px-4 py-3 text-xs text-slate-400" role="gridcell">
                         {(b.departments || []).join(', ') || '-'}

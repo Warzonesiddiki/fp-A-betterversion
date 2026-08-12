@@ -3,6 +3,7 @@ import { BookTemplate, ChevronDown, Copy, Check } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { formatNumber, formatPercent } from '@/utils/financialFormatting';
 import { AutoCommentaryEngine } from '@/engines/AutoCommentaryEngine';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 interface VarianceCommentaryPanelProps {
   actual: number;
@@ -16,15 +17,6 @@ interface VarianceCommentaryPanelProps {
 }
 
 const templates = AutoCommentaryEngine.getTemplates();
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
 export function VarianceCommentaryPanel({
   actual,
   budget,
@@ -35,6 +27,7 @@ export function VarianceCommentaryPanel({
   onInsert,
   className,
 }: VarianceCommentaryPanelProps) {
+  const fmt = useCurrencyFormatter();
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(true);
 
@@ -72,14 +65,14 @@ export function VarianceCommentaryPanel({
       category,
       actual,
       budget,
-      amount: formatCurrency(Math.abs(variance)),
+      amount: fmt.currency0(Math.abs(variance)),
       variance: formatNumber(Math.abs(variancePct), 1),
       drivers: drivers?.join(', ') ?? '',
       fiscal_year: period,
       periods: '3',
       metric: category,
-      start: formatCurrency(budget),
-      end: formatCurrency(actual),
+      start: fmt.currency0(budget),
+      end: fmt.currency0(actual),
     });
   };
 

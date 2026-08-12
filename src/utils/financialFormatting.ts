@@ -52,13 +52,29 @@ export function formatCurrency(
   return formatted;
 }
 
+/**
+ * Currency symbol for a code ('USD' → '$', 'EUR' → '€'). Falls back to the
+ * code itself when the runtime has no symbol, so output is never empty.
+ */
+export function currencySymbol(currency: string, locale = 'en-US'): string {
+  const parts = new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).formatToParts(0);
+  return parts.find((part) => part.type === 'currency')?.value ?? currency;
+}
+
 export function formatCompact(value: number | null | undefined, currency = 'USD'): string {
   if (value == null || value === 0) return '—';
   const abs = Math.abs(value);
   const sign = value < 0 ? '-' : '';
-  if (abs >= 1_000_000_000) return `${sign}$${formatMoney(abs / 1_000_000_000, { places: 1 })}B`;
-  if (abs >= 1_000_000) return `${sign}$${formatMoney(abs / 1_000_000, { places: 1 })}M`;
-  if (abs >= 1_000) return `${sign}$${formatMoney(abs / 1_000, { places: 0 })}K`;
+  const symbol = currencySymbol(currency);
+  if (abs >= 1_000_000_000)
+    return `${sign}${symbol}${formatMoney(abs / 1_000_000_000, { places: 1 })}B`;
+  if (abs >= 1_000_000) return `${sign}${symbol}${formatMoney(abs / 1_000_000, { places: 1 })}M`;
+  if (abs >= 1_000) return `${sign}${symbol}${formatMoney(abs / 1_000, { places: 0 })}K`;
   return formatCurrency(value, { currency });
 }
 

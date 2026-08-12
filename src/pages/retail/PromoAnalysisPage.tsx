@@ -25,16 +25,7 @@ import {
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
 // demo defaults — replaced by real data when promotion data comes from retail store imports
@@ -134,6 +125,7 @@ const scatterData = mockPromos.map((p) => ({
 }));
 
 export default function PromoAnalysisPage() {
+  const fmt = useCurrencyFormatter();
   const { entries: _entries } = useGLStore();
   const _navigate = useNavigate();
 
@@ -150,25 +142,24 @@ export default function PromoAnalysisPage() {
   const avgLift =
     totalBaseline > 0 ? ((totalPromoRevenue - totalBaseline) / totalBaseline) * 100 : 0;
 
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const columns: Column[] = useMemo(
     () => [
       { key: 'id', header: 'ID', width: '100px' },
       { key: 'name', header: 'Promotion', sortable: true },
       { key: 'type', header: 'Type', sortable: true },
       { key: 'discount', header: 'Discount', align: 'right', render: (v) => `${v}%` },
-      { key: 'cost', header: 'Cost', align: 'right', render: (v) => formatCurrency(v as number) },
+      { key: 'cost', header: 'Cost', align: 'right', render: (v) => fmt.currency0(v as number) },
       {
         key: 'revenue',
         header: 'Revenue',
         align: 'right',
-        render: (v) => formatCurrency(v as number),
+        render: (v) => fmt.currency0(v as number),
       },
       {
         key: 'baselineRevenue',
         header: 'Baseline',
         align: 'right',
-        render: (v) => formatCurrency(v as number),
+        render: (v) => fmt.currency0(v as number),
       },
       {
         key: 'lift',
@@ -215,7 +206,7 @@ export default function PromoAnalysisPage() {
         },
       },
     ],
-    []
+    [fmt]
   );
 
   const handleExportPDF = () => {
@@ -225,9 +216,9 @@ export default function PromoAnalysisPage() {
         rows: mockPromos.map((p) => [
           p.name,
           p.type,
-          formatCurrency(p.cost),
-          formatCurrency(p.revenue),
-          formatCurrency(p.baselineRevenue),
+          fmt.currency0(p.cost),
+          fmt.currency0(p.revenue),
+          fmt.currency0(p.baselineRevenue),
           `${formatPercent(((p.revenue - p.baselineRevenue - p.cost) / p.cost) * 100, 0)}`,
         ]),
       },
@@ -274,10 +265,10 @@ export default function PromoAnalysisPage() {
       </div>
 
       <div className="grid grid-cols-4 gap-4">
-        <KPIValue label="Total Promo Spend" value={formatCurrency(totalPromoCost)} />
+        <KPIValue label="Total Promo Spend" value={fmt.currency0(totalPromoCost)} />
         <KPIValue
           label="Incremental Revenue"
-          value={formatCurrency(incrementalRevenue)}
+          value={fmt.currency0(incrementalRevenue)}
           trend="up"
         />
         <KPIValue
@@ -332,7 +323,7 @@ export default function PromoAnalysisPage() {
                 </Pie>
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                  formatter={(v: unknown) => formatCurrency(Number(v))}
+                  formatter={(v: unknown) => fmt.currency0(Number(v))}
                 />
                 <Legend />
               </PieChart>

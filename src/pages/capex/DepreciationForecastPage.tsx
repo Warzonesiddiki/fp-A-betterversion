@@ -22,16 +22,7 @@ import { reportExportFailure } from '@/utils/exportErrorHandler';
 import Decimal from 'decimal.js';
 import { divideMoney, roundTo, subtractMoney, sumMoney } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /**
  * GAP-1 (F-0006) — exact-decimal depreciation forecast totals.
  *
@@ -164,6 +155,7 @@ const NBV_TREND = [
 ];
 
 export default function DepreciationForecastPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
   const [method, setMethod] = useState<string>('all');
@@ -233,17 +225,17 @@ export default function DepreciationForecastPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <KPIValue
           label="Total Asset Cost"
-          value={formatCurrency(totals.totalCost)}
+          value={fmt.currency0(totals.totalCost)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Net Book Value"
-          value={formatCurrency(totals.totalNBV)}
+          value={fmt.currency0(totals.totalNBV)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Annual Depreciation"
-          value={formatCurrency(totals.totalAnnualDep)}
+          value={fmt.currency0(totals.totalAnnualDep)}
           icon={<TrendingDown className="h-4 w-4" />}
         />
         <KPIValue
@@ -318,12 +310,12 @@ export default function DepreciationForecastPage() {
                         {a.category}
                       </span>
                     </td>
-                    <td className="text-right py-2 px-3">{formatCurrency(a.cost)}</td>
+                    <td className="text-right py-2 px-3">{fmt.currency0(a.cost)}</td>
                     <td className="text-right py-2 px-3">{a.usefulLife}</td>
                     <td className="py-2 px-3 text-xs text-slate-400">{a.method}</td>
-                    <td className="text-right py-2 px-3">{formatCurrency(a.nbv)}</td>
+                    <td className="text-right py-2 px-3">{fmt.currency0(a.nbv)}</td>
                     <td className="text-right py-2 px-3 text-yellow-400">
-                      {formatCurrency(a.annualDep)}
+                      {fmt.currency0(a.annualDep)}
                     </td>
                   </tr>
                 ))}
@@ -331,12 +323,12 @@ export default function DepreciationForecastPage() {
                   <td className="py-2 px-3" colSpan={2}>
                     Total
                   </td>
-                  <td className="text-right py-2 px-3">{formatCurrency(totals.totalCost)}</td>
+                  <td className="text-right py-2 px-3">{fmt.currency0(totals.totalCost)}</td>
                   <td></td>
                   <td></td>
-                  <td className="text-right py-2 px-3">{formatCurrency(totals.totalNBV)}</td>
+                  <td className="text-right py-2 px-3">{fmt.currency0(totals.totalNBV)}</td>
                   <td className="text-right py-2 px-3 text-yellow-400">
-                    {formatCurrency(totals.totalAnnualDep)}
+                    {fmt.currency0(totals.totalAnnualDep)}
                   </td>
                 </tr>
               </tbody>
@@ -362,7 +354,7 @@ export default function DepreciationForecastPage() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                 />
                 <Legend />
                 <Bar dataKey="expense" name="Depreciation" fill="#f59e0b" radius={[4, 4, 0, 0]} />
@@ -388,7 +380,7 @@ export default function DepreciationForecastPage() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                 />
                 <Line
                   type="monotone"

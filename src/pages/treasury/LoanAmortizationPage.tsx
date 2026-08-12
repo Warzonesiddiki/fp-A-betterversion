@@ -15,6 +15,7 @@ import { FEATURE_FLAGS, isFeatureActive, type FeatureFlagKey } from '@/utils/fea
 import { Button } from '@/components/ui/Button';
 import { sumMoney, roundTo } from '@/utils/money';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 const FLAG: FeatureFlagKey = 'treasury.loan-amortization';
 
@@ -32,16 +33,6 @@ function getSessionId(): string {
     return 'fallback';
   }
 }
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(n);
-}
-
 interface FormState {
   principal: string;
   annualRatePct: string;
@@ -73,6 +64,7 @@ export function computeLoanScheduleTotals(
 }
 
 export default function LoanAmortizationPage() {
+  const fmt = useCurrencyFormatter();
   const [form, setForm] = useState<FormState>(DEFAULTS);
   const [schedule, setSchedule] = useState<ReturnType<
     typeof LoanAmortizationEngine.schedule
@@ -196,7 +188,7 @@ export default function LoanAmortizationPage() {
                 <CardTitle>Monthly payment</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xl font-semibold">{formatCurrency(schedule.monthlyPayment)}</p>
+                <p className="text-xl font-semibold">{fmt.currency(schedule.monthlyPayment)}</p>
               </CardContent>
             </Card>
             <Card>
@@ -205,7 +197,7 @@ export default function LoanAmortizationPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-xl font-semibold" data-testid="total-interest">
-                  {formatCurrency(totalInterest)}
+                  {fmt.currency(totalInterest)}
                 </p>
               </CardContent>
             </Card>
@@ -214,7 +206,7 @@ export default function LoanAmortizationPage() {
                 <CardTitle>Principal repaid</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xl font-semibold">{formatCurrency(totalPrincipal)}</p>
+                <p className="text-xl font-semibold">{fmt.currency(totalPrincipal)}</p>
               </CardContent>
             </Card>
           </div>
@@ -242,10 +234,10 @@ export default function LoanAmortizationPage() {
                   {schedule.schedule.map((row) => (
                     <tr key={row.month} className="border-b border-slate-800">
                       <td className="py-1.5 pr-4">{row.month}</td>
-                      <td className="py-1.5 pr-4">{formatCurrency(row.payment)}</td>
-                      <td className="py-1.5 pr-4">{formatCurrency(row.principal)}</td>
-                      <td className="py-1.5 pr-4">{formatCurrency(row.interest)}</td>
-                      <td className="py-1.5 pr-4">{formatCurrency(row.balance)}</td>
+                      <td className="py-1.5 pr-4">{fmt.currency(row.payment)}</td>
+                      <td className="py-1.5 pr-4">{fmt.currency(row.principal)}</td>
+                      <td className="py-1.5 pr-4">{fmt.currency(row.interest)}</td>
+                      <td className="py-1.5 pr-4">{fmt.currency(row.balance)}</td>
                     </tr>
                   ))}
                 </tbody>

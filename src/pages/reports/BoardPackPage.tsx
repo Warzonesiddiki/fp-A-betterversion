@@ -13,16 +13,7 @@ import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
 import { roundTo, sumMoney, subtractMoney, divideMoney } from '@/utils/money';
 import type { GLEntry } from '@/types';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 export interface BoardPackReport {
   revenue: number;
   expenses: number;
@@ -98,6 +89,7 @@ interface VarianceHighlight {
 }
 
 export default function BoardPackPage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, _setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -133,18 +125,18 @@ export default function BoardPackPage() {
       rows: [
         ['1. Cover', 'Title', 'Board Pack — Financial Review'],
         ['1. Cover', 'Date', new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })],
-        ['2. Exec Summary', 'Revenue', formatCurrency(report.revenue)],
-        ['2. Exec Summary', 'Expenses', formatCurrency(report.expenses)],
-        ['2. Exec Summary', 'Net Income', formatCurrency(report.netIncome)],
+        ['2. Exec Summary', 'Revenue', fmt.currency0(report.revenue)],
+        ['2. Exec Summary', 'Expenses', fmt.currency0(report.expenses)],
+        ['2. Exec Summary', 'Net Income', fmt.currency0(report.netIncome)],
         ['2. Exec Summary', 'Gross Margin', formatPercent(report.grossMargin, 1)],
-        ['3. P&L', 'Revenue', formatCurrency(report.revenue)],
-        ['3. P&L', 'Expenses', formatCurrency(report.expenses)],
-        ['3. P&L', 'Net Income', formatCurrency(report.netIncome)],
-        ['4. Balance Sheet', 'Total Assets', formatCurrency(report.assets)],
-        ['4. Balance Sheet', 'Total Liabilities', formatCurrency(report.liabilities)],
-        ['4. Balance Sheet', 'Total Equity', formatCurrency(report.equity)],
-        ['5. CF & Budgets', 'Total Budget', formatCurrency(report.totalBudget)],
-        ['5. CF & Budgets', 'Actual Spending', formatCurrency(report.expenses)],
+        ['3. P&L', 'Revenue', fmt.currency0(report.revenue)],
+        ['3. P&L', 'Expenses', fmt.currency0(report.expenses)],
+        ['3. P&L', 'Net Income', fmt.currency0(report.netIncome)],
+        ['4. Balance Sheet', 'Total Assets', fmt.currency0(report.assets)],
+        ['4. Balance Sheet', 'Total Liabilities', fmt.currency0(report.liabilities)],
+        ['4. Balance Sheet', 'Total Equity', fmt.currency0(report.equity)],
+        ['5. CF & Budgets', 'Total Budget', fmt.currency0(report.totalBudget)],
+        ['5. CF & Budgets', 'Actual Spending', fmt.currency0(report.expenses)],
         ['5. CF & Budgets', 'Budget Count', String(report.budgetCount)],
         ['6. Variance Commentary', 'Executive Commentary', commentary],
         ...varianceHighlights.map((vh) => ['6. Variance Commentary', vh.category, `${vh.variance} — ${vh.comment}`]),
@@ -290,7 +282,7 @@ export default function BoardPackPage() {
           <CardContent className="p-4 text-center">
             <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Revenue</div>
             <div className="text-xl font-black text-green-400 tabular-nums">
-              {report ? formatCurrency(report.revenue) : '-'}
+              {report ? fmt.currency0(report.revenue) : '-'}
             </div>
           </CardContent>
         </Card>
@@ -298,7 +290,7 @@ export default function BoardPackPage() {
           <CardContent className="p-4 text-center">
             <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Expenses</div>
             <div className="text-xl font-black text-red-400 tabular-nums">
-              {report ? formatCurrency(report.expenses) : '-'}
+              {report ? fmt.currency0(report.expenses) : '-'}
             </div>
           </CardContent>
         </Card>
@@ -311,7 +303,7 @@ export default function BoardPackPage() {
                 (report && report.netIncome >= 0 ? 'text-green-400' : 'text-red-400')
               }
             >
-              {report ? formatCurrency(report.netIncome) : '-'}
+              {report ? fmt.currency0(report.netIncome) : '-'}
             </div>
           </CardContent>
         </Card>
@@ -337,7 +329,7 @@ export default function BoardPackPage() {
                     Total Revenue
                   </td>
                   <td className="py-2 text-right tabular-nums text-green-400" role="gridcell">
-                    {report ? formatCurrency(report.revenue) : '-'}
+                    {report ? fmt.currency0(report.revenue) : '-'}
                   </td>
                 </tr>
                 <tr role="row">
@@ -345,7 +337,7 @@ export default function BoardPackPage() {
                     Total Expenses
                   </td>
                   <td className="py-2 text-right tabular-nums text-red-400" role="gridcell">
-                    {report ? formatCurrency(report.expenses) : '-'}
+                    {report ? fmt.currency0(report.expenses) : '-'}
                   </td>
                 </tr>
                 <tr className="font-bold border-t-2 border-slate-700" role="row">
@@ -359,7 +351,7 @@ export default function BoardPackPage() {
                     }
                     role="gridcell"
                   >
-                    {report ? formatCurrency(report.netIncome) : '-'}
+                    {report ? fmt.currency0(report.netIncome) : '-'}
                   </td>
                 </tr>
               </tbody>
@@ -380,7 +372,7 @@ export default function BoardPackPage() {
                     Total Assets
                   </td>
                   <td className="py-2 text-right tabular-nums text-blue-400" role="gridcell">
-                    {report ? formatCurrency(report.assets) : '-'}
+                    {report ? fmt.currency0(report.assets) : '-'}
                   </td>
                 </tr>
                 <tr role="row">
@@ -388,7 +380,7 @@ export default function BoardPackPage() {
                     Total Liabilities
                   </td>
                   <td className="py-2 text-right tabular-nums text-red-400" role="gridcell">
-                    {report ? formatCurrency(report.liabilities) : '-'}
+                    {report ? fmt.currency0(report.liabilities) : '-'}
                   </td>
                 </tr>
                 <tr role="row">
@@ -396,7 +388,7 @@ export default function BoardPackPage() {
                     Total Equity
                   </td>
                   <td className="py-2 text-right tabular-nums text-green-400" role="gridcell">
-                    {report ? formatCurrency(report.equity) : '-'}
+                    {report ? fmt.currency0(report.equity) : '-'}
                   </td>
                 </tr>
               </tbody>
@@ -418,12 +410,12 @@ export default function BoardPackPage() {
               <div className="space-y-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-400">Total Budget</span>
-                  <span className="font-bold tabular-nums">{formatCurrency(report?.totalBudget || 0)}</span>
+                  <span className="font-bold tabular-nums">{fmt.currency0(report?.totalBudget || 0)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-slate-400">Actual Spending</span>
                   <span className="font-bold tabular-nums text-red-400">
-                    {formatCurrency(report?.expenses || 0)}
+                    {fmt.currency0(report?.expenses || 0)}
                   </span>
                 </div>
                 <div className="w-full bg-slate-800 rounded-full h-3 overflow-hidden">

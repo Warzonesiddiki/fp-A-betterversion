@@ -9,16 +9,7 @@ import { Scale, FileText, Table as TableIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /** Money-primitive Balance Sheet totals (GAP-1 F-0006).
  *  Assets/liabilities/equity roll up from GL entries grouped by account-code
  *  prefix. The "is balanced" check verifies the fundamental accounting
@@ -72,6 +63,7 @@ export function computeBalanceSheet(
 }
 
 export default function BalanceSheetPage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -92,12 +84,12 @@ export default function BalanceSheetPage() {
     const data = {
       headers: ['Account', 'Amount'],
       rows: [
-        ['Total Assets', formatCurrency(report.totalAssets)],
-        ['Total Liabilities', formatCurrency(report.totalLiabilities)],
-        ['Total Equity', formatCurrency(report.totalEquity)],
+        ['Total Assets', fmt.currency0(report.totalAssets)],
+        ['Total Liabilities', fmt.currency0(report.totalLiabilities)],
+        ['Total Equity', fmt.currency0(report.totalEquity)],
         [
           'Total Liabilities + Equity',
-          formatCurrency(report.totalLiabilities + report.totalEquity),
+          fmt.currency0(report.totalLiabilities + report.totalEquity),
         ],
       ],
     };
@@ -185,7 +177,7 @@ export default function BalanceSheetPage() {
           <Scale className="h-4 w-4" />
           {report.isBalanced
             ? 'Balance Sheet is Balanced'
-            : 'Off by ' + formatCurrency(Math.abs(report.diff))}
+            : 'Off by ' + fmt.currency0(Math.abs(report.diff))}
         </div>
       )}
 
@@ -214,7 +206,7 @@ export default function BalanceSheetPage() {
                   className="px-6 py-3 text-right tabular-nums font-semibold text-green-400"
                   role="gridcell"
                 >
-                  {formatCurrency(report.totalAssets)}
+                  {fmt.currency0(report.totalAssets)}
                 </td>
               </tr>
               <tr className="bg-slate-900/50 font-medium" role="row">
@@ -225,7 +217,7 @@ export default function BalanceSheetPage() {
                   className="px-6 py-3 text-right tabular-nums font-semibold text-red-400"
                   role="gridcell"
                 >
-                  {formatCurrency(report.totalLiabilities)}
+                  {fmt.currency0(report.totalLiabilities)}
                 </td>
               </tr>
               <tr className="bg-slate-900/50 font-medium" role="row">
@@ -236,7 +228,7 @@ export default function BalanceSheetPage() {
                   className="px-6 py-3 text-right tabular-nums font-semibold text-blue-400"
                   role="gridcell"
                 >
-                  {formatCurrency(report.totalEquity)}
+                  {fmt.currency0(report.totalEquity)}
                 </td>
               </tr>
               <tr
@@ -247,7 +239,7 @@ export default function BalanceSheetPage() {
                   Liabilities + Equity
                 </td>
                 <td className="px-6 py-4 text-right tabular-nums text-lg" role="gridcell">
-                  {formatCurrency(report.totalLiabilities + report.totalEquity)}
+                  {fmt.currency0(report.totalLiabilities + report.totalEquity)}
                 </td>
               </tr>
             </tbody>

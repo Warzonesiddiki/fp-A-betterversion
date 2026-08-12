@@ -8,16 +8,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { FileText, Download, Calendar } from 'lucide-react';
 import { sumMoney, subtractMoney, roundTo, toDecimal } from '@/utils/money';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /** Money-primitive GL reporting account-type totals (GAP-1 F-0006). */
 export interface AccountTypeTotalRow {
   debit: number;
@@ -99,6 +90,7 @@ export function computeGLReportingSummary(
 }
 
 export default function GLReportingPage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -253,15 +245,15 @@ export default function GLReportingPage() {
                           </td>
                           <td className="py-3 pr-4 text-right tabular-nums">{typeCount}</td>
                           <td className="py-3 pr-4 text-right tabular-nums text-blue-400">
-                            {formatCurrency(data.debit)}
+                            {fmt.currency0(data.debit)}
                           </td>
                           <td className="py-3 pr-4 text-right tabular-nums text-green-400">
-                            {formatCurrency(data.credit)}
+                            {fmt.currency0(data.credit)}
                           </td>
                           <td
                             className={`py-3 pr-4 text-right tabular-nums font-medium ${net >= 0 ? 'text-green-400' : 'text-red-400'}`}
                           >
-                            {formatCurrency(net)}
+                            {fmt.currency0(net)}
                           </td>
                           <td className="py-3 pr-4 text-right tabular-nums">
                             {data.count.toLocaleString()}

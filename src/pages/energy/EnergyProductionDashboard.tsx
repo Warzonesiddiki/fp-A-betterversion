@@ -24,16 +24,7 @@ import {
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 const COLORS = ['#f59e0b', '#3b82f6', '#06b6d4', '#6b7280'];
 
 const SOURCES = [
@@ -53,6 +44,7 @@ const MONTHLY = [
 ];
 
 export default function EnergyProductionDashboard() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
   useEffect(() => {
@@ -75,7 +67,7 @@ export default function EnergyProductionDashboard() {
     void ExportEngine.exportToPDF(
       {
         headers: ['Source', 'MWh', 'Cost/MWh', 'Revenue'],
-        rows: SOURCES.map((s) => [s.name, s.value, `$${s.cost}`, formatCurrency(s.revenue)]),
+        rows: SOURCES.map((s) => [s.name, s.value, `$${s.cost}`, fmt.currency0(s.revenue)]),
       },
       { title: 'Energy Production Dashboard' }
     ).catch(reportExportFailure);
@@ -121,7 +113,7 @@ export default function EnergyProductionDashboard() {
         />
         <KPIValue
           label="Total Revenue"
-          value={formatCurrency(totalRevenue)}
+          value={fmt.currency0(totalRevenue)}
           icon={<TrendingUp className="h-4 w-4" />}
           trend="up"
         />
@@ -177,7 +169,7 @@ export default function EnergyProductionDashboard() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                 />
                 <Legend />
                 <Bar dataKey="revenue" name="Revenue" fill="#22c55e" radius={[4, 4, 0, 0]} />

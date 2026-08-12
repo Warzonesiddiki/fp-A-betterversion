@@ -8,15 +8,7 @@ import { useGLStore } from '@/store/glStore';
 import { toCSV } from '@/utils/csv';
 import { filterGLEntriesByPermission } from '@/utils/dataPermissionFilter';
 import { sumMoney, subtractMoney, roundTo, toDecimal } from '@/utils/money';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /** Money-primitive GL explorer totals (GAP-1 F-0006). */
 export interface GLExplorerTotals {
   debits: number;
@@ -99,6 +91,7 @@ export function computeAccountSummaries(
 }
 
 export default function GLExplorerPage() {
+  const fmt = useCurrencyFormatter();
   const { entries, accounts } = useGLStore();
   const navigate = useNavigate();
   const [isPending, startTransition] = useTransition();
@@ -198,7 +191,7 @@ export default function GLExplorerPage() {
           <CardContent className="p-4">
             <div className="text-xs text-slate-400 uppercase tracking-wide">Debits</div>
             <div className="text-2xl font-bold tabular-nums mt-1 text-blue-400">
-              {formatCurrency(totals.debits)}
+              {fmt.currency0(totals.debits)}
             </div>
           </CardContent>
         </Card>
@@ -206,7 +199,7 @@ export default function GLExplorerPage() {
           <CardContent className="p-4">
             <div className="text-xs text-slate-400 uppercase tracking-wide">Credits</div>
             <div className="text-2xl font-bold tabular-nums mt-1 text-green-400">
-              {formatCurrency(totals.credits)}
+              {fmt.currency0(totals.credits)}
             </div>
           </CardContent>
         </Card>
@@ -275,10 +268,10 @@ export default function GLExplorerPage() {
                       {entry.description || '-'}
                     </td>
                     <td className="px-4 py-2 text-right tabular-nums text-blue-400 text-xs">
-                      {entry.debit > 0 ? formatCurrency(entry.debit) : ''}
+                      {entry.debit > 0 ? fmt.currency0(entry.debit) : ''}
                     </td>
                     <td className="px-4 py-2 text-right tabular-nums text-green-400 text-xs">
-                      {entry.credit > 0 ? formatCurrency(entry.credit) : ''}
+                      {entry.credit > 0 ? fmt.currency0(entry.credit) : ''}
                     </td>
                     <td className="px-2 py-2">
                       <Button

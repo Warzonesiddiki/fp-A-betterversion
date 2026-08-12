@@ -33,16 +33,7 @@ import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney, subtractMoney } from '@/utils/money';
 import type { GLEntry } from '@/types';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface VarianceRow {
   account: string;
   budget: number;
@@ -100,6 +91,7 @@ export function computeCategoryBudget(
 }
 
 export default function VarianceDashboardPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   // Defensive default: some legacy test doubles for useBudgetStore mock only
   // a subset of the real store shape. Rather than crash with "Cannot read
@@ -210,9 +202,9 @@ export default function VarianceDashboardPage() {
         headers: ['Account', 'Budget', 'Actual', 'Variance', 'Variance %', 'Driver'],
         rows: data.rows.map((r) => [
           r.account,
-          formatCurrency(r.budget),
-          formatCurrency(r.actual),
-          formatCurrency(r.variance),
+          fmt.currency0(r.budget),
+          fmt.currency0(r.actual),
+          fmt.currency0(r.variance),
           formatPercent(r.variancePct, 1),
           r.driver,
         ]),
@@ -228,9 +220,9 @@ export default function VarianceDashboardPage() {
         headers: ['Account', 'Budget', 'Actual', 'Variance', 'Variance %', 'Driver'],
         rows: data.rows.map((r) => [
           r.account,
-          formatCurrency(r.budget),
-          formatCurrency(r.actual),
-          formatCurrency(r.variance),
+          fmt.currency0(r.budget),
+          fmt.currency0(r.actual),
+          fmt.currency0(r.variance),
           formatPercent(r.variancePct, 1),
           r.driver,
         ]),
@@ -245,14 +237,14 @@ export default function VarianceDashboardPage() {
       key: 'budget',
       header: 'Budget',
       align: 'right',
-      render: (_value, row) => formatCurrency(row.budget),
+      render: (_value, row) => fmt.currency0(row.budget),
       sortable: true,
     },
     {
       key: 'actual',
       header: 'Actual',
       align: 'right',
-      render: (_value, row) => formatCurrency(row.actual),
+      render: (_value, row) => fmt.currency0(row.actual),
       sortable: true,
     },
     {
@@ -262,7 +254,7 @@ export default function VarianceDashboardPage() {
       render: (_value, row) => {
         const v = Number(row.variance ?? 0);
         return (
-          <span className={v >= 0 ? 'text-green-400' : 'text-red-400'}>{formatCurrency(v)}</span>
+          <span className={v >= 0 ? 'text-green-400' : 'text-red-400'}>{fmt.currency0(v)}</span>
         );
       },
       sortable: true,
@@ -321,17 +313,17 @@ export default function VarianceDashboardPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue
           label="Actual Revenue"
-          value={formatCurrency(data.actualRevenue)}
+          value={fmt.currency0(data.actualRevenue)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Budget Revenue"
-          value={formatCurrency(data.budgetRevenue)}
+          value={fmt.currency0(data.budgetRevenue)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Revenue Variance"
-          value={formatCurrency(data.revenueVar)}
+          value={fmt.currency0(data.revenueVar)}
           icon={
             data.revenueVar >= 0 ? (
               <TrendingUp className="h-4 w-4" />
@@ -363,7 +355,7 @@ export default function VarianceDashboardPage() {
               <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
               <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(v) => `$${formatCompact(v)}`} />
               <Tooltip
-                formatter={(v) => formatCurrency(Number(v))}
+                formatter={(v) => fmt.currency0(Number(v))}
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
               />
               <Legend />

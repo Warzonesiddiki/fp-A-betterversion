@@ -1,13 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  SummaryTable,
-  DetailTable,
-  JournalEntryTable,
-  formatCurrency,
-  computeJournalTotals,
-} from './DrillTables';
+import { SummaryTable, DetailTable, JournalEntryTable, computeJournalTotals } from './DrillTables';
 import type { SummaryRow, DetailRow, JournalEntry } from './DrillThroughChain';
 
 describe('DrillTables (deep tests)', () => {
@@ -92,13 +86,11 @@ describe('DrillTables (deep tests)', () => {
     },
   ];
 
-  describe('formatCurrency and computeJournalTotals helper functions', () => {
-    it('formats currency numbers accurately', () => {
-      expect(formatCurrency(150000)).toBe('$150,000');
-      expect(formatCurrency(0)).toBe('$0');
-      expect(formatCurrency(-5000)).toBe('-$5,000');
-    });
-
+  // The former local `formatCurrency` export was removed by UI-06: money display
+  // now goes through the shared reporting-currency formatter
+  // (`useCurrencyFormatter`), which is covered by its own unit tests. Rendered
+  // currency output is still asserted through the table components below.
+  describe('computeJournalTotals helper function', () => {
     it('computes exact journal debit and credit totals', () => {
       const totals = computeJournalTotals([
         { debit: 12.34, credit: 0 },

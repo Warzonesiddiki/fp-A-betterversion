@@ -15,16 +15,7 @@ import {
   Target,
   HelpCircle,
 } from 'lucide-react';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 const HELP_SECTIONS = [
   {
     title: 'What is a Rolling Forecast?',
@@ -49,6 +40,7 @@ const HELP_SECTIONS = [
 ];
 
 export default function RollingForecastPage() {
+  const fmt = useCurrencyFormatter();
   const [helpOpen, setHelpOpen] = useState(false);
   const { entries, isLoading, importError } = useGLStore();
   const [period, setPeriod] = useState<'3m' | '6m' | '12m'>('12m');
@@ -240,7 +232,7 @@ export default function RollingForecastPage() {
               Forecast Revenue
             </div>
             <div className="text-xl font-bold text-green-400">
-              {stats ? formatCurrency(stats.revenue) : '-'}
+              {stats ? fmt.currency0(stats.revenue) : '-'}
             </div>
           </CardContent>
         </Card>
@@ -251,7 +243,7 @@ export default function RollingForecastPage() {
               Forecast Expenses
             </div>
             <div className="text-xl font-bold text-red-400">
-              {stats ? formatCurrency(stats.expenses) : '-'}
+              {stats ? fmt.currency0(stats.expenses) : '-'}
             </div>
           </CardContent>
         </Card>
@@ -265,7 +257,7 @@ export default function RollingForecastPage() {
               className="text-xl font-bold"
               style={{ color: stats && stats.netIncome >= 0 ? '#22c55e' : '#ef4444' }}
             >
-              {stats ? formatCurrency(stats.netIncome) : '-'}
+              {stats ? fmt.currency0(stats.netIncome) : '-'}
             </div>
           </CardContent>
         </Card>
@@ -310,12 +302,12 @@ export default function RollingForecastPage() {
                             <div
                               className="h-full bg-blue-500 rounded-t transition-all"
                               style={{ width: `${Math.max(actualPct, 1)}%`, maxHeight: '100%' }}
-                              title={`Actual: ${formatCurrency(d.actual)}`}
+                              title={`Actual: ${fmt.currency0(d.actual)}`}
                             />
                             <div
                               className="h-full bg-blue-300/40 rounded-t border border-dashed border-blue-400"
                               style={{ width: `${Math.max(forecastPct, 1)}%`, maxHeight: '100%' }}
-                              title={`Forecast: ${formatCurrency(d.forecast || 0)}`}
+                              title={`Forecast: ${fmt.currency0(d.forecast || 0)}`}
                             />
                           </div>
                           <span className="w-20 text-xs text-right tabular-nums">
@@ -404,10 +396,10 @@ export default function RollingForecastPage() {
                         <tr key={d.month} className="hover:bg-slate-900/50">
                           <td className="px-4 py-2 text-slate-300">{d.month}</td>
                           <td className="px-4 py-2 text-right tabular-nums">
-                            {d.actual !== 0 ? formatCurrency(d.actual) : '-'}
+                            {d.actual !== 0 ? fmt.currency0(d.actual) : '-'}
                           </td>
                           <td className="px-4 py-2 text-right tabular-nums">
-                            {d.forecast ? formatCurrency(d.forecast) : '-'}
+                            {d.forecast ? fmt.currency0(d.forecast) : '-'}
                           </td>
                           <td
                             className={`px-4 py-2 text-right tabular-nums ${

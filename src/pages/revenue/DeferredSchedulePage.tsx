@@ -28,16 +28,7 @@ import {
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface ContractRecord {
   id: string;
   customer: string;
@@ -151,6 +142,7 @@ const deferredTrend = [
 ];
 
 export default function DeferredSchedulePage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -191,21 +183,19 @@ export default function DeferredSchedulePage() {
     {
       key: 'contractValue',
       header: 'Contract Value',
-      render: (_, r) => formatCurrency(r.contractValue),
+      render: (_, r) => fmt.currency0(r.contractValue),
       sortable: true,
     },
     {
       key: 'deferredBalance',
       header: 'Deferred Balance',
-      render: (_, r) => (
-        <span className="text-yellow-400">{formatCurrency(r.deferredBalance)}</span>
-      ),
+      render: (_, r) => <span className="text-yellow-400">{fmt.currency0(r.deferredBalance)}</span>,
       sortable: true,
     },
     {
       key: 'recognizedYTD',
       header: 'Recognized YTD',
-      render: (_, r) => <span className="text-green-400">{formatCurrency(r.recognizedYTD)}</span>,
+      render: (_, r) => <span className="text-green-400">{fmt.currency0(r.recognizedYTD)}</span>,
       sortable: true,
     },
     {
@@ -271,17 +261,17 @@ export default function DeferredSchedulePage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue
           label="Total Deferred"
-          value={formatCurrency(totalDeferred)}
+          value={fmt.currency0(totalDeferred)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Recognized YTD"
-          value={formatCurrency(totalRecognizedYTD)}
+          value={fmt.currency0(totalRecognizedYTD)}
           icon={<TrendingUp className="h-4 w-4" />}
         />
         <KPIValue
           label="Contract Value"
-          value={formatCurrency(totalContractValue)}
+          value={fmt.currency0(totalContractValue)}
           icon={<Calendar className="h-4 w-4" />}
         />
         <KPIValue
@@ -307,7 +297,7 @@ export default function DeferredSchedulePage() {
                   tickFormatter={(v) => `$${formatCompact(v)}`}
                 />
                 <Tooltip
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Area
@@ -338,7 +328,7 @@ export default function DeferredSchedulePage() {
                   tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                 />
                 <Tooltip
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Legend />
@@ -384,19 +374,19 @@ export default function DeferredSchedulePage() {
                   <div className="flex items-center gap-6">
                     <div className="text-right">
                       <div className="text-sm font-semibold">
-                        {formatCurrency(contract.contractValue)}
+                        {fmt.currency0(contract.contractValue)}
                       </div>
                       <div className="text-xs text-slate-400">Contract Value</div>
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-semibold text-yellow-400">
-                        {formatCurrency(contract.deferredBalance)}
+                        {fmt.currency0(contract.deferredBalance)}
                       </div>
                       <div className="text-xs text-slate-400">Deferred</div>
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-semibold text-green-400">
-                        {formatCurrency(contract.recognizedYTD)}
+                        {fmt.currency0(contract.recognizedYTD)}
                       </div>
                       <div className="text-xs text-slate-400">Recognized</div>
                     </div>
@@ -419,7 +409,7 @@ export default function DeferredSchedulePage() {
                       <div>
                         <div className="text-xs text-slate-400">Monthly Recognition</div>
                         <div className="font-medium">
-                          {formatCurrency(contract.monthlyRecognition)}
+                          {fmt.currency0(contract.monthlyRecognition)}
                         </div>
                       </div>
                       <div>

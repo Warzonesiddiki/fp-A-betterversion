@@ -30,16 +30,7 @@ import {
 } from 'recharts';
 import { TreemapChart } from '@/components/charts/TreemapChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface DeptRow {
   department: string;
   current: number;
@@ -49,6 +40,7 @@ interface DeptRow {
 }
 
 export default function HeadcountPlanPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -106,7 +98,7 @@ export default function HeadcountPlanPage() {
           d.current.toString(),
           d.planned.toString(),
           d.variance.toString(),
-          formatCurrency(d.cost),
+          fmt.currency0(d.cost),
         ]),
       },
       { title: 'Headcount Plan Report', companyName: 'FinPlan Pro' }
@@ -123,7 +115,7 @@ export default function HeadcountPlanPage() {
           d.current.toString(),
           d.planned.toString(),
           d.variance.toString(),
-          formatCurrency(d.cost),
+          fmt.currency0(d.cost),
         ]),
       },
       { title: 'Headcount_Plan_Report' }
@@ -150,7 +142,7 @@ export default function HeadcountPlanPage() {
       key: 'cost',
       header: 'Annual Cost',
       align: 'right',
-      render: (_, r) => formatCurrency(r.cost),
+      render: (_, r) => fmt.currency0(r.cost),
       sortable: true,
     },
   ];
@@ -190,10 +182,10 @@ export default function HeadcountPlanPage() {
             />
             <KPIValue
               label="Total Cost"
-              value={formatCurrency(data.totalCost)}
+              value={fmt.currency0(data.totalCost)}
               icon={<DollarSign className="h-4 w-4" />}
             />
-            <KPIValue label="Avg Cost/Head" value={formatCurrency(data.avgCost)} />
+            <KPIValue label="Avg Cost/Head" value={fmt.currency0(data.avgCost)} />
             <KPIValue
               label="Attrition Rate"
               value={`${data!.trend[data.trend.length - 1]!.attrition}%`}

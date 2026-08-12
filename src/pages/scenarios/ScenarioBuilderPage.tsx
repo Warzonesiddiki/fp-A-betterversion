@@ -31,16 +31,7 @@ import {
 import { VarianceChart } from '@/components/charts/VarianceChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 const baseMetrics = {
   revenue: 48000000,
   cogs: 28800000,
@@ -153,6 +144,7 @@ export function simulateScenarioComparison(
 }
 
 export default function ScenarioBuilderPage() {
+  const fmt = useCurrencyFormatter();
   const { scenarios, createScenario } = useScenarioStore();
 
   const _navigate = useNavigate();
@@ -357,33 +349,33 @@ export default function ScenarioBuilderPage() {
         rows: [
           [
             'Revenue',
-            formatCurrency(baseMetrics.revenue),
-            formatCurrency(scenarioComparison.newRevenue),
-            formatCurrency(scenarioComparison.revenueVariance),
+            fmt.currency0(baseMetrics.revenue),
+            fmt.currency0(scenarioComparison.newRevenue),
+            fmt.currency0(scenarioComparison.revenueVariance),
           ],
           [
             'COGS',
-            formatCurrency(baseMetrics.cogs),
-            formatCurrency(scenarioComparison.newCogs),
-            formatCurrency(scenarioComparison.cogsImpact),
+            fmt.currency0(baseMetrics.cogs),
+            fmt.currency0(scenarioComparison.newCogs),
+            fmt.currency0(scenarioComparison.cogsImpact),
           ],
           [
             'OpEx',
-            formatCurrency(baseMetrics.opex),
-            formatCurrency(scenarioComparison.newOpex),
-            formatCurrency(scenarioComparison.opexImpact),
+            fmt.currency0(baseMetrics.opex),
+            fmt.currency0(scenarioComparison.newOpex),
+            fmt.currency0(scenarioComparison.opexImpact),
           ],
-          ['Net Impact', '', '', formatCurrency(scenarioComparison.netImpact)],
+          ['Net Impact', '', '', fmt.currency0(scenarioComparison.netImpact)],
           [
             'Prob. Weighted Rev',
             '',
-            formatCurrency(scenarioComparison.probabilityWeightedRevenue),
+            fmt.currency0(scenarioComparison.probabilityWeightedRevenue),
             `${probability}% prob`,
           ],
           [
             'Revenue Variance',
-            formatCurrency(baseMetrics.revenue),
-            formatCurrency(scenarioComparison.newRevenue),
+            fmt.currency0(baseMetrics.revenue),
+            fmt.currency0(scenarioComparison.newRevenue),
             `${scenarioComparison.variancePct}%`,
           ],
         ],
@@ -472,13 +464,13 @@ export default function ScenarioBuilderPage() {
       >
         <KPIValue
           label="Revenue Impact"
-          value={formatCurrency(scenarioComparison.revenueVariance)}
+          value={fmt.currency0(scenarioComparison.revenueVariance)}
           trend="up"
         />
-        <KPIValue label="Cost Impact" value={formatCurrency(costImpactExact)} trend="down" />
+        <KPIValue label="Cost Impact" value={fmt.currency0(costImpactExact)} trend="down" />
         <KPIValue
           label="Net Impact"
-          value={formatCurrency(scenarioComparison.netImpact)}
+          value={fmt.currency0(scenarioComparison.netImpact)}
           trend={scenarioComparison.netImpact >= 0 ? 'up' : 'down'}
         />
         <KPIValue label="Scenarios Saved" value={String(scenarios.length)} />
@@ -492,7 +484,7 @@ export default function ScenarioBuilderPage() {
               Prob. Weighted Rev
             </div>
             <div className="text-xl font-black tabular-nums" data-testid="prob-weighted-rev">
-              {formatCurrency(scenarioComparison.probabilityWeightedRevenue)}
+              {fmt.currency0(scenarioComparison.probabilityWeightedRevenue)}
             </div>
             <div className="text-xs text-slate-500">{probability}% probability</div>
           </CardContent>
@@ -503,7 +495,7 @@ export default function ScenarioBuilderPage() {
               Revenue Variance
             </div>
             <div className="text-xl font-black tabular-nums" data-testid="revenue-variance">
-              {formatCurrency(scenarioComparison.revenueVariance)}
+              {fmt.currency0(scenarioComparison.revenueVariance)}
             </div>
             <div className="text-xs text-slate-500">{scenarioComparison.variancePct}% vs base</div>
           </CardContent>
@@ -557,19 +549,19 @@ export default function ScenarioBuilderPage() {
               <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-center">
                 <div className="text-xs uppercase tracking-widest text-slate-500">Avg Profit</div>
                 <div className="text-lg font-black tabular-nums" data-testid="mc-avg">
-                  {formatCurrency(mcResults.avgProfit)}
+                  {fmt.currency0(mcResults.avgProfit)}
                 </div>
               </div>
               <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-center">
                 <div className="text-xs uppercase tracking-widest text-slate-500">Median</div>
                 <div className="text-lg font-black tabular-nums" data-testid="mc-median">
-                  {formatCurrency(mcResults.median)}
+                  {fmt.currency0(mcResults.median)}
                 </div>
               </div>
               <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-center">
                 <div className="text-xs uppercase tracking-widest text-slate-500">P10</div>
                 <div className="text-lg font-black tabular-nums text-red-400" data-testid="mc-p10">
-                  {formatCurrency(mcResults.p10)}
+                  {fmt.currency0(mcResults.p10)}
                 </div>
               </div>
               <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-center">
@@ -578,7 +570,7 @@ export default function ScenarioBuilderPage() {
                   className="text-lg font-black tabular-nums text-emerald-400"
                   data-testid="mc-p90"
                 >
-                  {formatCurrency(mcResults.p90)}
+                  {fmt.currency0(mcResults.p90)}
                 </div>
               </div>
               <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-center">
@@ -703,7 +695,7 @@ export default function ScenarioBuilderPage() {
                   <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${formatCompact(v)}`} />
                   <Tooltip
                     contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                    formatter={(v) => formatCurrency(Number(v))}
+                    formatter={(v) => fmt.currency0(Number(v))}
                   />
                   <Legend />
                   <Bar dataKey="base" fill="#64748b" name="Base" />

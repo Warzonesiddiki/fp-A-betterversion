@@ -38,17 +38,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 export default function DashboardPage() {
+  const fmt = useCurrencyFormatter();
   const { pathname } = useLocation();
   const [helpOpen, setHelpOpen] = useState(false);
   const [drillOpen, setDrillOpen] = useState(false);
@@ -390,7 +382,7 @@ export default function DashboardPage() {
               <div className="flex justify-between">
                 <span className="text-slate-400">Total Budget</span>
                 <span className="font-semibold tabular-nums">
-                  {formatCurrency(kpis.totalBudgetAmount)}
+                  {fmt.currency0(kpis.totalBudgetAmount)}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -528,7 +520,7 @@ export default function DashboardPage() {
               axisLine={false}
               tickLine={false}
               tick={{ fill: '#94a3b8', fontSize: 12 }}
-              tickFormatter={(v) => formatCurrency(v).replace('.00', '')}
+              tickFormatter={(v) => fmt.currency0(v).replace('.00', '')}
             />
             <Tooltip
               contentStyle={{
@@ -537,7 +529,7 @@ export default function DashboardPage() {
                 borderRadius: '8px',
               }}
               itemStyle={{ fontSize: '12px' }}
-              formatter={(value) => formatCurrency(Number(value))}
+              formatter={(value) => fmt.currency0(Number(value))}
             />
             <Area
               type="monotone"
@@ -597,7 +589,7 @@ export default function DashboardPage() {
                   className="text-center p-3 bg-slate-900 rounded-lg border border-slate-800"
                 >
                   <div className="text-xs text-slate-400 mb-1">{kpi.label}</div>
-                  <div className="text-lg font-bold tabular-nums">{formatCurrency(kpi.value)}</div>
+                  <div className="text-lg font-bold tabular-nums">{fmt.currency0(kpi.value)}</div>
                   <div className="mt-2 flex justify-center">
                     <SparklineChart
                       data={monthlyTrend.map((m) => m.revenue)}

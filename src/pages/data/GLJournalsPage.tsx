@@ -11,16 +11,7 @@ import { toCSV } from '@/utils/csv';
 import { filterGLEntriesByPermission } from '@/utils/dataPermissionFilter';
 import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
 import { BookOpen, ChevronLeft, ChevronRight, Download, Search, BarChart3 } from 'lucide-react';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /** Money-primitive journal totals (GAP-1 F-0006). */
 export interface GLJournalTotals {
   debits: number;
@@ -38,6 +29,7 @@ export function computeJournalTotals(
 }
 
 export default function GLJournalsPage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -296,10 +288,10 @@ export default function GLJournalsPage() {
                         {e.description || '-'}
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums text-blue-400">
-                        {e.debit > 0 ? formatCurrency(e.debit) : ''}
+                        {e.debit > 0 ? fmt.currency0(e.debit) : ''}
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums text-green-400">
-                        {e.credit > 0 ? formatCurrency(e.credit) : ''}
+                        {e.credit > 0 ? fmt.currency0(e.credit) : ''}
                       </td>
                       <td className="px-4 py-3 text-xs text-slate-500">{e.reference || '-'}</td>
                       <td className="px-2 py-3">
@@ -328,10 +320,10 @@ export default function GLJournalsPage() {
                       Total ({filtered.length.toLocaleString()} entries)
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums text-blue-400">
-                      {formatCurrency(totals.debits)}
+                      {fmt.currency0(totals.debits)}
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums text-green-400">
-                      {formatCurrency(totals.credits)}
+                      {fmt.currency0(totals.credits)}
                     </td>
                     <td className="px-4 py-3" colSpan={2}></td>
                   </tr>

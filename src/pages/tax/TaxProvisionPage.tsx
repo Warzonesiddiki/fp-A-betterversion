@@ -32,16 +32,7 @@ import {
 import { WaterfallChart, type WaterfallDataPoint } from '@/components/charts/WaterfallChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface JurisdictionRow {
   jurisdiction: string;
   pretaxIncome: number;
@@ -64,6 +55,7 @@ export function computeTaxExpenses(entries: readonly GLEntry[]): number {
 }
 
 export default function TaxProvisionPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -144,11 +136,11 @@ export default function TaxProvisionPage() {
         headers: ['Jurisdiction', 'Pre-Tax Income', 'Tax Rate', 'Provision', 'Deferred', 'Current'],
         rows: data.jurisdictions.map((j) => [
           j.jurisdiction,
-          formatCurrency(j.pretaxIncome),
+          fmt.currency0(j.pretaxIncome),
           formatPercent(j.taxRate, 2),
-          formatCurrency(j.provision),
-          formatCurrency(j.deferred),
-          formatCurrency(j.current),
+          fmt.currency0(j.provision),
+          fmt.currency0(j.deferred),
+          fmt.currency0(j.current),
         ]),
       },
       { title: 'Tax Provision Report', companyName: 'FinPlan Pro' }
@@ -162,11 +154,11 @@ export default function TaxProvisionPage() {
         headers: ['Jurisdiction', 'Pre-Tax Income', 'Tax Rate', 'Provision', 'Deferred', 'Current'],
         rows: data.jurisdictions.map((j) => [
           j.jurisdiction,
-          formatCurrency(j.pretaxIncome),
+          fmt.currency0(j.pretaxIncome),
           formatPercent(j.taxRate, 2),
-          formatCurrency(j.provision),
-          formatCurrency(j.deferred),
-          formatCurrency(j.current),
+          fmt.currency0(j.provision),
+          fmt.currency0(j.deferred),
+          fmt.currency0(j.current),
         ]),
       },
       { title: 'Tax_Provision_Report' }
@@ -179,7 +171,7 @@ export default function TaxProvisionPage() {
       key: 'pretaxIncome',
       header: 'Pre-Tax Income',
       align: 'right',
-      render: (_value, row) => formatCurrency(row.pretaxIncome),
+      render: (_value, row) => fmt.currency0(row.pretaxIncome),
       sortable: true,
     },
     {
@@ -193,21 +185,21 @@ export default function TaxProvisionPage() {
       key: 'provision',
       header: 'Provision',
       align: 'right',
-      render: (_value, row) => formatCurrency(row.provision),
+      render: (_value, row) => fmt.currency0(row.provision),
       sortable: true,
     },
     {
       key: 'deferred',
       header: 'Deferred',
       align: 'right',
-      render: (_value, row) => formatCurrency(row.deferred),
+      render: (_value, row) => fmt.currency0(row.deferred),
       sortable: true,
     },
     {
       key: 'current',
       header: 'Current',
       align: 'right',
-      render: (_value, row) => formatCurrency(row.current),
+      render: (_value, row) => fmt.currency0(row.current),
       sortable: true,
     },
   ];
@@ -240,12 +232,12 @@ export default function TaxProvisionPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue
           label="Pre-Tax Income"
-          value={formatCurrency(data.pretaxIncome)}
+          value={fmt.currency0(data.pretaxIncome)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Total Provision"
-          value={formatCurrency(data.totalProvision)}
+          value={fmt.currency0(data.totalProvision)}
           icon={<Landmark className="h-4 w-4" />}
         />
         <KPIValue
@@ -255,7 +247,7 @@ export default function TaxProvisionPage() {
         />
         <KPIValue
           label="Deferred Tax"
-          value={formatCurrency(data.totalDeferred)}
+          value={fmt.currency0(data.totalDeferred)}
           icon={<TrendingUp className="h-4 w-4" />}
         />
       </div>
@@ -275,7 +267,7 @@ export default function TaxProvisionPage() {
                   tickFormatter={(v) => `$${formatCompact(v)}`}
                 />
                 <Tooltip
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Legend />

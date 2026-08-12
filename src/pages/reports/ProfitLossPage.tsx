@@ -10,16 +10,7 @@ import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
 import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /** Money-primitive P&L statement totals (GAP-1 F-0006). The three account-class
  *  sums (Revenue/COGS/Expenses) accumulate via decimal to keep a balanced
  *  ledger on the cent; grossProfit/netIncome are subtractions; grossMargin
@@ -87,6 +78,7 @@ export function computeProfitLoss(
 }
 
 export default function ProfitLossPage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -110,11 +102,11 @@ export default function ProfitLossPage() {
     const data = {
       headers: ['Account', 'Amount'],
       rows: [
-        ['Total Revenue', formatCurrency(report.totalRevenue)],
-        ['Cost of Goods Sold', formatCurrency(report.totalCOGS)],
-        ['Gross Profit', formatCurrency(report.grossProfit)],
-        ['Operating Expenses', formatCurrency(report.totalExpenses)],
-        ['Net Income', formatCurrency(report.netIncome)],
+        ['Total Revenue', fmt.currency0(report.totalRevenue)],
+        ['Cost of Goods Sold', fmt.currency0(report.totalCOGS)],
+        ['Gross Profit', fmt.currency0(report.grossProfit)],
+        ['Operating Expenses', fmt.currency0(report.totalExpenses)],
+        ['Net Income', fmt.currency0(report.netIncome)],
       ],
     };
     void ExportEngine.exportToPDF(data, {
@@ -219,7 +211,7 @@ export default function ProfitLossPage() {
                   className="px-6 py-3 text-right tabular-nums font-medium text-green-400"
                   role="gridcell"
                 >
-                  {formatCurrency(report.totalRevenue)}
+                  {fmt.currency0(report.totalRevenue)}
                 </td>
               </tr>
               <tr className="hover:bg-slate-900/50" role="row">
@@ -227,7 +219,7 @@ export default function ProfitLossPage() {
                   Cost of Goods Sold
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums text-red-400" role="gridcell">
-                  {formatCurrency(report.totalCOGS)}
+                  {fmt.currency0(report.totalCOGS)}
                 </td>
               </tr>
               <tr className="bg-slate-900/50 font-medium" role="row">
@@ -235,7 +227,7 @@ export default function ProfitLossPage() {
                   Gross Profit
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums font-semibold" role="gridcell">
-                  {formatCurrency(report.grossProfit)}
+                  {fmt.currency0(report.grossProfit)}
                 </td>
               </tr>
               <tr className="border-t-2 border-slate-700 hover:bg-slate-900/50" role="row">
@@ -251,7 +243,7 @@ export default function ProfitLossPage() {
                   Operating Expenses
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums text-red-400" role="gridcell">
-                  {formatCurrency(report.totalExpenses)}
+                  {fmt.currency0(report.totalExpenses)}
                 </td>
               </tr>
               <tr className="bg-slate-800/50 font-semibold text-base" role="row">
@@ -265,7 +257,7 @@ export default function ProfitLossPage() {
                   }
                   role="gridcell"
                 >
-                  {formatCurrency(report.netIncome)}
+                  {fmt.currency0(report.netIncome)}
                 </td>
               </tr>
               <tr className="hover:bg-slate-900/50" role="row">

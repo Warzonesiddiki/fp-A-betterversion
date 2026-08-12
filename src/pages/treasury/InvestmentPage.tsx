@@ -23,16 +23,7 @@ import {
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { sumMoney, roundTo } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 const INVESTMENTS = [
   {
     instrument: 'US Treasury 10Y',
@@ -135,6 +126,7 @@ export function computeInvestmentTotals(
 }
 
 export default function InvestmentPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
   useEffect(() => {
@@ -187,7 +179,7 @@ export default function InvestmentPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <KPIValue
           label="Total Portfolio"
-          value={formatCurrency(totalValue)}
+          value={fmt.currency0(totalValue)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
@@ -232,7 +224,7 @@ export default function InvestmentPage() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -287,7 +279,7 @@ export default function InvestmentPage() {
                   border: '1px solid #334155',
                   borderRadius: 8,
                 }}
-                formatter={(v) => formatCurrency(Number(v))}
+                formatter={(v) => fmt.currency0(Number(v))}
               />
               <Bar dataKey="value" name="Value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -336,7 +328,7 @@ export default function InvestmentPage() {
                     <td className="text-right py-2 px-3 text-green-400">
                       {formatPercent(inv.yield)}
                     </td>
-                    <td className="text-right py-2 px-3">{formatCurrency(inv.value)}</td>
+                    <td className="text-right py-2 px-3">{fmt.currency0(inv.value)}</td>
                     <td className="text-right py-2 px-3">
                       <span className="px-2 py-0.5 rounded text-xs bg-blue-900/50 text-blue-300">
                         {inv.rating}
@@ -348,7 +340,7 @@ export default function InvestmentPage() {
                   <td className="py-2 px-3" colSpan={4}>
                     Total
                   </td>
-                  <td className="text-right py-2 px-3">{formatCurrency(totalValue)}</td>
+                  <td className="text-right py-2 px-3">{fmt.currency0(totalValue)}</td>
                   <td></td>
                 </tr>
               </tbody>

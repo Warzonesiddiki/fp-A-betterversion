@@ -6,6 +6,7 @@ import { Button } from './Button';
 import { Modal } from './Modal';
 import type { ScenarioMetrics } from '@/types';
 import { Lock, Unlock, Download, AlertTriangle, Shield } from 'lucide-react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 interface ScenarioLockingProps {
   scenarioId: string;
@@ -17,15 +18,6 @@ interface ScenarioLockingProps {
   className?: string;
 }
 
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
 export const ScenarioLocking = memo(function ScenarioLocking({
   scenarioId,
   scenarioName,
@@ -35,6 +27,7 @@ export const ScenarioLocking = memo(function ScenarioLocking({
   onExport,
   className,
 }: ScenarioLockingProps) {
+  const fmt = useCurrencyFormatter();
   const [showUnlockConfirm, setShowUnlockConfirm] = useState(false);
   const [showLockConfirm, setShowLockConfirm] = useState(false);
 
@@ -94,12 +87,12 @@ export const ScenarioLocking = memo(function ScenarioLocking({
 
         const tbody = doc.createElement('tbody');
         const rows: Array<[string, string]> = [
-          ['Revenue', formatCurrency(metrics.revenue)],
-          ['EBITDA', formatCurrency(metrics.ebitda)],
-          ['Net Income', formatCurrency(metrics.netIncome)],
-          ['Cash Flow', formatCurrency(metrics.cashFlow)],
+          ['Revenue', fmt.currency0(metrics.revenue)],
+          ['EBITDA', fmt.currency0(metrics.ebitda)],
+          ['Net Income', fmt.currency0(metrics.netIncome)],
+          ['Cash Flow', fmt.currency0(metrics.cashFlow)],
           ['Headcount', metrics.headcount.toString()],
-          ['Burn Rate', formatCurrency(metrics.burnRate)],
+          ['Burn Rate', fmt.currency0(metrics.burnRate)],
           ['Runway', `${formatNumber(metrics.runway, 1)} months`],
           ['Gross Margin', formatPercent(metrics.grossMargin, 1)],
           ['EBITDA Margin', formatPercent(metrics.ebitdaMargin, 1)],
@@ -127,7 +120,7 @@ export const ScenarioLocking = memo(function ScenarioLocking({
         printWindow.print();
       }
     }
-  }, [scenarioId, scenarioName, metrics, onExport]);
+  }, [scenarioId, scenarioName, metrics, onExport, fmt]);
 
   return (
     <>
@@ -159,13 +152,13 @@ export const ScenarioLocking = memo(function ScenarioLocking({
                 Revenue
               </span>
               <div className="font-mono font-medium text-[var(--text-primary)] dark:text-gray-100">
-                {formatCurrency(metrics.revenue)}
+                {fmt.currency0(metrics.revenue)}
               </div>
             </div>
             <div className="rounded bg-[var(--bg-surface)] dark:bg-gray-800 p-2">
               <span className="text-[var(--text-muted)] dark:text-[var(--text-muted)]">EBITDA</span>
               <div className="font-mono font-medium text-[var(--text-primary)] dark:text-gray-100">
-                {formatCurrency(metrics.ebitda)}
+                {fmt.currency0(metrics.ebitda)}
               </div>
             </div>
             <div className="rounded bg-[var(--bg-surface)] dark:bg-gray-800 p-2">
@@ -243,15 +236,15 @@ export const ScenarioLocking = memo(function ScenarioLocking({
           <div className="rounded-lg bg-[var(--bg-surface)] dark:bg-gray-800 p-3 space-y-1 text-xs">
             <div className="flex justify-between">
               <span className="text-[var(--text-muted)]">Revenue</span>
-              <span className="font-mono">{formatCurrency(metrics.revenue)}</span>
+              <span className="font-mono">{fmt.currency0(metrics.revenue)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--text-muted)]">EBITDA</span>
-              <span className="font-mono">{formatCurrency(metrics.ebitda)}</span>
+              <span className="font-mono">{fmt.currency0(metrics.ebitda)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-[var(--text-muted)]">Net Income</span>
-              <span className="font-mono">{formatCurrency(metrics.netIncome)}</span>
+              <span className="font-mono">{fmt.currency0(metrics.netIncome)}</span>
             </div>
           </div>
 

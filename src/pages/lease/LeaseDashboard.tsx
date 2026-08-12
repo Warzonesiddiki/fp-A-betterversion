@@ -24,16 +24,7 @@ import { LeaseEngine, type LeaseContract } from '@/engines/LeaseEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { useLeaseStore, type LeaseInput } from '@/store/leaseStore';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 function addMonths(iso: string, months: number): string {
   const d = new Date(iso);
   d.setMonth(d.getMonth() + months);
@@ -90,6 +81,7 @@ function summarize(input: LeaseInput): LeaseSummary {
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b'];
 
 export default function LeaseDashboard() {
+  const fmt = useCurrencyFormatter();
   const navigate = useNavigate();
   const leaseInputs = useLeaseStore((s) => s.leases);
   const LEASES = useMemo(() => leaseInputs.map(summarize), [leaseInputs]);
@@ -202,12 +194,12 @@ export default function LeaseDashboard() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue
           label="Total Liability"
-          value={formatCurrency(totalLiability)}
+          value={fmt.currency0(totalLiability)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Monthly Payment"
-          value={formatCurrency(totalMonthlyPayment)}
+          value={fmt.currency0(totalMonthlyPayment)}
           icon={<Calendar className="h-4 w-4" />}
         />
         <KPIValue
@@ -244,7 +236,7 @@ export default function LeaseDashboard() {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
               </PieChart>
@@ -267,7 +259,7 @@ export default function LeaseDashboard() {
                   tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                 />
                 <Tooltip
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Legend />
@@ -303,7 +295,7 @@ export default function LeaseDashboard() {
                       <div>
                         <div className="font-medium">{lease.property}</div>
                         <div className="text-xs text-slate-400">
-                          {lease.type} | {formatCurrency(lease.monthlyPayment)}/mo
+                          {lease.type} | {fmt.currency0(lease.monthlyPayment)}/mo
                         </div>
                       </div>
                     </div>
@@ -357,7 +349,7 @@ export default function LeaseDashboard() {
                 <div className="flex items-center gap-6">
                   <div className="text-right">
                     <div className="font-semibold" data-testid={`liability-${lease.id}`}>
-                      {formatCurrency(lease.liability)}
+                      {fmt.currency0(lease.liability)}
                     </div>
                     <div className="text-xs text-slate-400">Liability</div>
                   </div>

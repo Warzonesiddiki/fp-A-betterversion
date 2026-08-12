@@ -22,6 +22,7 @@ import {
   FileJson,
   FileSpreadsheet,
 } from 'lucide-react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -119,16 +120,10 @@ function nextId(): string {
   return `msg-${Date.now()}-${++msgCounter}`;
 }
 
-const formatCurrency = (v: number): string =>
-  new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(v);
-
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export function NLQChatPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const { pathname } = useLocation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -425,7 +420,7 @@ export function NLQChatPage() {
                                   >
                                     <td className="py-1.5 px-2 text-slate-300">{dp.label}</td>
                                     <td className="py-1.5 px-2 text-right font-mono text-slate-200">
-                                      {formatCurrency(dp.value)}
+                                      {fmt.currency0(dp.value)}
                                     </td>
                                   </tr>
                                 ))}

@@ -10,15 +10,7 @@ import { sumMoney, roundTo } from '@/utils/money';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 function formatPct(n: number): string {
   return `${formatPercent(n, 1)}`;
 }
@@ -44,6 +36,7 @@ function buildCohortSizes() {
 }
 
 export default function CohortAnalysisPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
   useEffect(() => {
@@ -133,7 +126,7 @@ export default function CohortAnalysisPage() {
         />
         <KPIValue
           label="Avg Revenue / Cohort"
-          value={formatCurrency(metrics.avgRevPerCohort)}
+          value={fmt.currency0(metrics.avgRevPerCohort)}
           icon={<DollarSign className="h-4 w-4" />}
         />
       </div>

@@ -36,16 +36,7 @@ import {
 } from 'recharts';
 import { SparklineChart } from '@/components/charts/SparklineChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface CategoryRow {
   category: string;
   inflows: number;
@@ -103,6 +94,7 @@ export function burnRateMonthly(outflows: number): number {
 }
 
 export default function CashForecastPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -141,9 +133,9 @@ export default function CashForecastPage() {
         headers: ['Category', 'Inflows', 'Outflows', 'Net'],
         rows: data.categories.map((c) => [
           c.category,
-          formatCurrency(c.inflows),
-          formatCurrency(c.outflows),
-          formatCurrency(c.net),
+          fmt.currency0(c.inflows),
+          fmt.currency0(c.outflows),
+          fmt.currency0(c.net),
         ]),
       },
       { title: 'Cash Forecast Report', companyName: 'FinPlan Pro' }
@@ -157,9 +149,9 @@ export default function CashForecastPage() {
         headers: ['Category', 'Inflows', 'Outflows', 'Net'],
         rows: data.categories.map((c) => [
           c.category,
-          formatCurrency(c.inflows),
-          formatCurrency(c.outflows),
-          formatCurrency(c.net),
+          fmt.currency0(c.inflows),
+          fmt.currency0(c.outflows),
+          fmt.currency0(c.net),
         ]),
       },
       { title: 'Cash_Forecast_Report' }
@@ -172,14 +164,14 @@ export default function CashForecastPage() {
       key: 'inflows',
       header: 'Inflows',
       align: 'right',
-      render: (_, r) => <span className="text-green-400">{formatCurrency(r.inflows)}</span>,
+      render: (_, r) => <span className="text-green-400">{fmt.currency0(r.inflows)}</span>,
       sortable: true,
     },
     {
       key: 'outflows',
       header: 'Outflows',
       align: 'right',
-      render: (_, r) => <span className="text-red-400">{formatCurrency(r.outflows)}</span>,
+      render: (_, r) => <span className="text-red-400">{fmt.currency0(r.outflows)}</span>,
       sortable: true,
     },
     {
@@ -188,7 +180,7 @@ export default function CashForecastPage() {
       align: 'right',
       render: (_, r) => (
         <span className={r.net >= 0 ? 'text-green-400' : 'text-red-400'}>
-          {formatCurrency(r.net)}
+          {fmt.currency0(r.net)}
         </span>
       ),
       sortable: true,
@@ -223,22 +215,22 @@ export default function CashForecastPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue
           label="Operating Cash"
-          value={formatCurrency(data.net)}
+          value={fmt.currency0(data.net)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Total Inflows"
-          value={formatCurrency(data.inflows)}
+          value={fmt.currency0(data.inflows)}
           icon={<TrendingUp className="h-4 w-4" />}
         />
         <KPIValue
           label="Total Outflows"
-          value={formatCurrency(data.outflows)}
+          value={fmt.currency0(data.outflows)}
           icon={<TrendingDown className="h-4 w-4" />}
         />
         <KPIValue
           label="Ending Cash"
-          value={formatCurrency(data.endingCash)}
+          value={fmt.currency0(data.endingCash)}
           icon={<Flame className="h-4 w-4" />}
         />
         <div className="col-span-2 md:col-span-4">
@@ -274,7 +266,7 @@ export default function CashForecastPage() {
                 tickFormatter={(v) => `$${Math.round(v / 1000)}k`}
               />
               <Tooltip
-                formatter={(v) => formatCurrency(Number(v))}
+                formatter={(v) => fmt.currency0(Number(v))}
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
               />
               <Legend />

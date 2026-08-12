@@ -22,6 +22,7 @@ import { BudgetVsActualTable, type VarianceDataRow } from './components/BudgetVs
 import { PAGE_HELP } from '../_docs';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { sumMoney, subtractMoney, roundTo, divideMoney } from '@/utils/money';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { formatPercent } from '@/utils/financialFormatting';;
 
 const MATERIAL_THRESHOLD = 10;
@@ -30,16 +31,6 @@ const ACCOUNT_TYPE_OPTIONS = ['All', 'Revenue', 'Expense'] as const;
 
 type PeriodMode = (typeof PERIOD_OPTIONS)[number];
 type AccountTypeFilter = (typeof ACCOUNT_TYPE_OPTIONS)[number];
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
 function formatCurrencyFull(n: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -99,6 +90,7 @@ interface VarianceRow {
 }
 
 export default function BudgetVsActualPage() {
+  const fmt = useCurrencyFormatter();
   const { pathname } = useLocation();
   const [helpOpen, setHelpOpen] = useState(false);
 
@@ -282,8 +274,8 @@ export default function BudgetVsActualPage() {
 
     const tableRows: VarianceDataRow[] = filteredRows.map((r) => ({
       account: r.accountName,
-      budget: formatCurrency(r.budget),
-      actual: formatCurrency(r.actual),
+      budget: fmt.currency0(r.budget),
+      actual: fmt.currency0(r.actual),
       variance: formatCurrencyFull(r.variance),
       percentVar: !isFinite(r.variancePct) ? '\u221E' : `${formatPercent(r.variancePct, 1)}`,
       isFavorable: r.isFavorable,
@@ -292,8 +284,8 @@ export default function BudgetVsActualPage() {
     }));
 
     return {
-      totalBudget: formatCurrency(totalBudget),
-      totalActual: formatCurrency(totalActual),
+      totalBudget: fmt.currency0(totalBudget),
+      totalActual: fmt.currency0(totalActual),
       netVariance: formatCurrencyFull(Math.abs(totalVar)),
       utilization: totalUtilization,
       isVarianceFavorable: isTotalFavorable,
@@ -315,6 +307,7 @@ export default function BudgetVsActualPage() {
     accountTypeFilter,
     departmentFilter,
     minVarianceThreshold,
+    fmt,
   ]);
 
   const handleExportPDF = () => {

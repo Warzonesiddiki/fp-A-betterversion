@@ -14,6 +14,7 @@ import type { AllocationResult, AllocationEntry } from '@/engines/AllocationEngi
 import { AllocationJournalTable } from './AllocationJournalTable';
 import type { JournalEntry } from './AllocationJournalTable';
 import { formatPercent as formatPercentLocal } from '@/utils/financialFormatting';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -30,19 +31,6 @@ export interface AllocationPreviewProps {
   onModify?: () => void;
   className?: string;
 }
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-  }).format(value);
-}
-
 function formatAllocPct(value: number): string {
   return formatPercentLocal(value, 2);
 }
@@ -77,6 +65,7 @@ function BeforeAfterBar({
   after: number;
   label: string;
 }) {
+  const fmt = useCurrencyFormatter();
   const max = Math.max(before, after, 1);
   const isIncrease = after > before;
   return (
@@ -84,7 +73,7 @@ function BeforeAfterBar({
       <div className="flex items-center justify-between">
         <span className="text-[10px] text-[var(--text-secondary)] truncate">{label}</span>
         <span className="text-[10px] font-medium text-[var(--text-primary)]">
-          {formatCurrency(after)}
+          {fmt.currency(after)}
         </span>
       </div>
       <div className="flex items-center gap-1">
@@ -123,6 +112,7 @@ export function AllocationPreview({
   onModify,
   className,
 }: AllocationPreviewProps) {
+  const fmt = useCurrencyFormatter();
   const [accepted, setAccepted] = useState(false);
 
   const results = useMemo<AllocationResult[]>(
@@ -179,14 +169,14 @@ export function AllocationPreview({
         <div className="rounded-md border border-[var(--border-subtle)] p-3">
           <span className="text-[10px] text-slate-500 uppercase tracking-wide">Source</span>
           <p className="text-sm font-semibold text-[var(--text-primary)]">
-            {formatCurrency(sourceAmount)}
+            {fmt.currency(sourceAmount)}
           </p>
           <p className="text-[10px] text-slate-500">{sourceLabel}</p>
         </div>
         <ArrowRight className="h-5 w-5 text-slate-500" />
         <div className="rounded-md border border-[var(--border-subtle)] p-3">
           <span className="text-[10px] text-slate-500 uppercase tracking-wide">Allocated</span>
-          <p className="text-sm font-semibold text-blue-400">{formatCurrency(totalAllocated)}</p>
+          <p className="text-sm font-semibold text-blue-400">{fmt.currency(totalAllocated)}</p>
           <p className="text-[10px] text-slate-500">
             {allAllocations.length} target{allAllocations.length !== 1 ? 's' : ''}
           </p>
@@ -203,7 +193,7 @@ export function AllocationPreview({
           )}
         >
           <ArrowLeftRight className="inline h-3.5 w-3.5 mr-1" />
-          {remaining > 0 ? 'Remaining' : 'Over-allocated'}: {formatCurrency(Math.abs(remaining))}
+          {remaining > 0 ? 'Remaining' : 'Over-allocated'}: {fmt.currency(Math.abs(remaining))}
         </div>
       )}
 
@@ -266,7 +256,7 @@ export function AllocationPreview({
                       {formatAllocPct(entry.percentage)}
                     </td>
                     <td className="px-3 py-1.5 text-xs text-right text-[var(--text-primary)] font-medium">
-                      {formatCurrency(entry.amount)}
+                      {fmt.currency(entry.amount)}
                     </td>
                     <td className="px-3 py-1.5">
                       <div className="w-20 h-2 rounded-full bg-[var(--bg-elevated)] overflow-hidden ml-auto">
@@ -289,7 +279,7 @@ export function AllocationPreview({
                   {formatAllocPct(allAllocations.reduce((s, e) => s + e.percentage, 0))}
                 </td>
                 <td className="px-3 py-2 text-xs text-right font-semibold text-blue-400">
-                  {formatCurrency(totalAllocated)}
+                  {fmt.currency(totalAllocated)}
                 </td>
                 <td />
               </tr>

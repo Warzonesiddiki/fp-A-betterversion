@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './Card';
 import { ExportMenu } from './ExportMenu';
 import type { ScenarioMetrics } from '@/types';
 import { TrendingUp, TrendingDown } from 'lucide-react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 interface ScenarioColumn {
   id: string;
@@ -18,16 +19,6 @@ interface ScenarioComparisonGridProps {
   scenarios: ScenarioColumn[];
   className?: string;
 }
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
 function varianceColor(current: number, base: number, metric: string): string {
   const diff = current - base;
   if (Math.abs(diff) < 0.01) return 'text-[var(--text-muted)]';
@@ -46,6 +37,7 @@ function VarianceCell({
   base: number;
   metric: string;
 }) {
+  const fmt = useCurrencyFormatter();
   const diff = current - base;
   const pctDiff = base !== 0 ? (diff / base) * 100 : 0;
   const isNeutral = Math.abs(pctDiff) < 0.01;
@@ -55,7 +47,7 @@ function VarianceCell({
     <div className="flex flex-col items-end">
       <span className={cn('text-xs font-medium', color)}>
         {diff >= 0 ? '+' : ''}
-        {formatCurrency(diff)}
+        {fmt.currency0(diff)}
       </span>
       <span className={cn('text-[10px]', color)}>
         {isNeutral ? '—' : `${pctDiff >= 0 ? '+' : ''}${formatNumber(pctDiff, 1)}%`}
@@ -69,6 +61,7 @@ export function ScenarioComparisonGrid({
   scenarios,
   className,
 }: ScenarioComparisonGridProps) {
+  const fmt = useCurrencyFormatter();
   const metricRows: { key: keyof ScenarioMetrics; label: string; isPercent: boolean }[] = [
     { key: 'revenue', label: 'Revenue', isPercent: false },
     { key: 'ebitda', label: 'EBITDA', isPercent: false },
@@ -85,7 +78,7 @@ export function ScenarioComparisonGrid({
     if (key === 'headcount') return Math.round(val).toLocaleString();
     if (key === 'runway') return `${formatNumber(val, 1)} mo`;
     if (isPercent) return formatPercent(val, 1);
-    return formatCurrency(val);
+    return fmt.currency0(val);
   };
 
   // Impact ranking: sort scenarios by revenue delta from base
@@ -233,7 +226,7 @@ export function ScenarioComparisonGrid({
                   )}
                 >
                   {isPositive ? '+' : ''}
-                  {formatCurrency(revenueDelta)}
+                  {fmt.currency0(revenueDelta)}
                 </div>
                 <div className="text-[10px] text-[var(--text-muted)]">revenue impact</div>
               </div>

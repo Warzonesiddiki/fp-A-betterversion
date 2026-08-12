@@ -10,20 +10,7 @@ import { DollarSign, HelpCircle, FileText, Table as TableIcon, AlertTriangle } f
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
-function formatSigned(n: number): string {
-  const abs = formatCurrency(Math.abs(n));
-  return n < 0 ? `(${abs})` : abs;
-}
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 const HELP_SECTIONS = [
   {
@@ -54,6 +41,7 @@ const HELP_SECTIONS = [
 ];
 
 export default function CashFlowPage() {
+  const fmt = useCurrencyFormatter();
   const [helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -186,7 +174,7 @@ export default function CashFlowPage() {
 
   const handleExportPDF = () => {
     if (!report) return;
-    const r = (n: number) => formatCurrency(n);
+    const r = (n: number) => fmt.currency0(n);
     const data = {
       headers: ['Category', 'Amount'],
       rows: [
@@ -296,7 +284,7 @@ export default function CashFlowPage() {
           role="alert"
         >
           <AlertTriangle className="h-4 w-4" />
-          Negative cash balance: {formatCurrency(report.endingCash)}. Immediate action recommended.
+          Negative cash balance: {fmt.currency0(report.endingCash)}. Immediate action recommended.
         </div>
       )}
 
@@ -346,7 +334,7 @@ export default function CashFlowPage() {
                   Net Income
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums font-medium" role="gridcell">
-                  {formatCurrency(report.netIncome)}
+                  {fmt.currency0(report.netIncome)}
                 </td>
               </tr>
               <tr className="hover:bg-slate-900/50" role="row">
@@ -354,7 +342,7 @@ export default function CashFlowPage() {
                   Depreciation &amp; Amortization
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums font-medium" role="gridcell">
-                  {formatCurrency(report.depreciation)}
+                  {fmt.currency0(report.depreciation)}
                 </td>
               </tr>
               <tr className="hover:bg-slate-900/50" role="row">
@@ -368,7 +356,7 @@ export default function CashFlowPage() {
                   }
                   role="gridcell"
                 >
-                  {formatSigned(report.deltaAR)}
+                  {fmt.currency0(report.deltaAR)}
                 </td>
               </tr>
               <tr className="hover:bg-slate-900/50" role="row">
@@ -382,7 +370,7 @@ export default function CashFlowPage() {
                   }
                   role="gridcell"
                 >
-                  {formatSigned(report.deltaInventory)}
+                  {fmt.currency0(report.deltaInventory)}
                 </td>
               </tr>
               <tr className="hover:bg-slate-900/50" role="row">
@@ -396,7 +384,7 @@ export default function CashFlowPage() {
                   }
                   role="gridcell"
                 >
-                  {formatSigned(report.deltaAP)}
+                  {fmt.currency0(report.deltaAP)}
                 </td>
               </tr>
               <tr className="hover:bg-slate-900/50" role="row">
@@ -410,7 +398,7 @@ export default function CashFlowPage() {
                   }
                   role="gridcell"
                 >
-                  {formatSigned(report.deltaPrepaids)}
+                  {fmt.currency0(report.deltaPrepaids)}
                 </td>
               </tr>
               <tr className="border-t border-slate-700 font-semibold" role="row">
@@ -424,7 +412,7 @@ export default function CashFlowPage() {
                   }
                   role="gridcell"
                 >
-                  {formatSigned(report.operating)}
+                  {fmt.currency0(report.operating)}
                 </td>
               </tr>
 
@@ -447,7 +435,7 @@ export default function CashFlowPage() {
                   }
                   role="gridcell"
                 >
-                  {formatSigned(report.capex)}
+                  {fmt.currency0(report.capex)}
                 </td>
               </tr>
               <tr className="border-t border-slate-700 font-semibold" role="row">
@@ -461,7 +449,7 @@ export default function CashFlowPage() {
                   }
                   role="gridcell"
                 >
-                  {formatSigned(report.investing)}
+                  {fmt.currency0(report.investing)}
                 </td>
               </tr>
 
@@ -484,7 +472,7 @@ export default function CashFlowPage() {
                   }
                   role="gridcell"
                 >
-                  {formatSigned(report.debtChange)}
+                  {fmt.currency0(report.debtChange)}
                 </td>
               </tr>
               <tr className="hover:bg-slate-900/50" role="row">
@@ -498,7 +486,7 @@ export default function CashFlowPage() {
                   }
                   role="gridcell"
                 >
-                  {formatSigned(-report.dividends)}
+                  {fmt.currency0(-report.dividends)}
                 </td>
               </tr>
               <tr className="border-t border-slate-700 font-semibold" role="row">
@@ -512,7 +500,7 @@ export default function CashFlowPage() {
                   }
                   role="gridcell"
                 >
-                  {formatSigned(report.financing)}
+                  {fmt.currency0(report.financing)}
                 </td>
               </tr>
 
@@ -527,7 +515,7 @@ export default function CashFlowPage() {
                   }
                   role="gridcell"
                 >
-                  {formatSigned(report.netChange)}
+                  {fmt.currency0(report.netChange)}
                 </td>
               </tr>
 
@@ -536,7 +524,7 @@ export default function CashFlowPage() {
                   Beginning Cash Balance
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums font-medium" role="gridcell">
-                  {formatCurrency(report.beginningCash)}
+                  {fmt.currency0(report.beginningCash)}
                 </td>
               </tr>
               <tr className="border-t-2 border-slate-700 bg-slate-800/30 font-bold" role="row">
@@ -550,7 +538,7 @@ export default function CashFlowPage() {
                   }
                   role="gridcell"
                 >
-                  {formatCurrency(report.endingCash)}
+                  {fmt.currency0(report.endingCash)}
                 </td>
               </tr>
             </tbody>

@@ -28,16 +28,7 @@ import {
 import type { GLEntry } from '@/types';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent as formatPercentDisplay } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /** Local formatPercent delegates to financialFormatting (GAP-1 F-0006). */
 function formatPercent(n: number): string {
   return formatPercentDisplay(n);
@@ -53,6 +44,7 @@ function toSectorEntries(entries: readonly GLEntry[]): GLEntry[] {
 }
 
 export default function BankingDashboard() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -79,14 +71,14 @@ export default function BankingDashboard() {
       {
         headers: ['Metric', 'Value'],
         rows: [
-          ['Gross Loans', formatCurrency(loanStats.grossLoans)],
-          ['Loan Loss Reserve', formatCurrency(loanStats.reserveBalance)],
+          ['Gross Loans', fmt.currency0(loanStats.grossLoans)],
+          ['Loan Loss Reserve', fmt.currency0(loanStats.reserveBalance)],
           ['NPL Ratio', formatPercent(loanStats.nplRatio)],
           ['Coverage Ratio', formatPercent(loanStats.coverageRatio)],
-          ['Provision Expense', formatCurrency(loanStats.provisionExpense)],
-          ['Tier 1 Capital', formatCurrency(capitalStats.tier1Capital)],
-          ['Total Capital', formatCurrency(capitalStats.totalCapital)],
-          ['RWA', formatCurrency(capitalStats.rwa)],
+          ['Provision Expense', fmt.currency0(loanStats.provisionExpense)],
+          ['Tier 1 Capital', fmt.currency0(capitalStats.tier1Capital)],
+          ['Total Capital', fmt.currency0(capitalStats.totalCapital)],
+          ['RWA', fmt.currency0(capitalStats.rwa)],
           ['Tier 1 Ratio', formatPercent(capitalStats.tier1Ratio)],
           ['Total Capital Ratio', formatPercent(capitalStats.totalRatio)],
           ['Leverage Ratio', formatPercent(capitalStats.leverageRatio)],
@@ -144,7 +136,7 @@ export default function BankingDashboard() {
       >
         <KPIValue
           label="Gross Loans"
-          value={formatCurrency(loanStats.grossLoans)}
+          value={fmt.currency0(loanStats.grossLoans)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
@@ -174,11 +166,11 @@ export default function BankingDashboard() {
             <div className="space-y-3">
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">Reserve Balance</span>
-                <span className="font-semibold">{formatCurrency(loanStats.reserveBalance)}</span>
+                <span className="font-semibold">{fmt.currency0(loanStats.reserveBalance)}</span>
               </div>
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">NPL Balance</span>
-                <span className="font-semibold">{formatCurrency(loanStats.nplBalance)}</span>
+                <span className="font-semibold">{fmt.currency0(loanStats.nplBalance)}</span>
               </div>
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">Coverage Ratio</span>
@@ -186,7 +178,7 @@ export default function BankingDashboard() {
               </div>
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">Provision Expense</span>
-                <span className="font-semibold">{formatCurrency(loanStats.provisionExpense)}</span>
+                <span className="font-semibold">{fmt.currency0(loanStats.provisionExpense)}</span>
               </div>
             </div>
           </CardContent>
@@ -201,15 +193,15 @@ export default function BankingDashboard() {
             <div className="space-y-3">
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">Tier 1 Capital</span>
-                <span className="font-semibold">{formatCurrency(capitalStats.tier1Capital)}</span>
+                <span className="font-semibold">{fmt.currency0(capitalStats.tier1Capital)}</span>
               </div>
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">Tier 2 Capital</span>
-                <span className="font-semibold">{formatCurrency(capitalStats.tier2Capital)}</span>
+                <span className="font-semibold">{fmt.currency0(capitalStats.tier2Capital)}</span>
               </div>
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">Risk-Weighted Assets</span>
-                <span className="font-semibold">{formatCurrency(capitalStats.rwa)}</span>
+                <span className="font-semibold">{fmt.currency0(capitalStats.rwa)}</span>
               </div>
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">Total Capital Ratio</span>
@@ -233,17 +225,17 @@ export default function BankingDashboard() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div className="p-3 bg-slate-800 rounded-lg text-center">
               <div className="text-xs text-slate-400 mb-1">Interest Income</div>
-              <div className="font-semibold">{formatCurrency(nimStats.interestIncome ?? 0)}</div>
+              <div className="font-semibold">{fmt.currency0(nimStats.interestIncome ?? 0)}</div>
             </div>
             <div className="p-3 bg-slate-800 rounded-lg text-center">
               <div className="text-xs text-slate-400 mb-1">Interest Expense</div>
               <div className="font-semibold">
-                {formatCurrency(nimStats.interestExpense ?? nimStats.interestExpense ?? 0)}
+                {fmt.currency0(nimStats.interestExpense ?? nimStats.interestExpense ?? 0)}
               </div>
             </div>
             <div className="p-3 bg-slate-800 rounded-lg text-center">
               <div className="text-xs text-slate-400 mb-1">Net Interest Income</div>
-              <div className="font-semibold">{formatCurrency(nimStats.netInterestMargin ?? 0)}</div>
+              <div className="font-semibold">{fmt.currency0(nimStats.netInterestMargin ?? 0)}</div>
             </div>
             <div className="p-3 bg-slate-800 rounded-lg text-center">
               <div className="text-xs text-slate-400 mb-1">NIM</div>

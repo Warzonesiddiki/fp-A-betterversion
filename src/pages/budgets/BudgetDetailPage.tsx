@@ -25,6 +25,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { roundTo, sumMoney } from '@/utils/money';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 /**
  * GAP-1 (F-0006) — exact-decimal budget-detail totals.
@@ -45,16 +46,6 @@ export function computeMonthColumnTotal(
 ): number {
   return roundTo(sumMoney(groups.map((g) => g.items[monthIdx]?.amount ?? 0)));
 }
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 interface Snapshot {
@@ -80,6 +71,7 @@ interface AuditEntry {
 }
 
 export default function BudgetDetailPage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
   const { user } = useAuthStore();
 
@@ -430,7 +422,7 @@ export default function BudgetDetailPage() {
             </div>
             <p className="text-sm text-slate-400 mt-0.5">
               FY{budget.fiscalYear} · {budgetLineItems.length} line items ·{' '}
-              {formatCurrency(grandTotal)}
+              {fmt.currency0(grandTotal)}
             </p>
           </div>
         </div>
@@ -714,7 +706,7 @@ export default function BudgetDetailPage() {
                             );
                           })}
                           <td className="px-4 py-2 text-right font-medium tabular-nums">
-                            {formatCurrency(group.total)}
+                            {fmt.currency0(group.total)}
                           </td>
                         </tr>
                       ))
@@ -727,12 +719,12 @@ export default function BudgetDetailPage() {
                         const monthTotal = computeMonthColumnTotal(groupedByAccount, idx);
                         return (
                           <td key={m} className="px-2 py-3 text-right tabular-nums">
-                            {formatCurrency(monthTotal)}
+                            {fmt.currency0(monthTotal)}
                           </td>
                         );
                       })}
                       <td className="px-4 py-3 text-right tabular-nums">
-                        {formatCurrency(grandTotal)}
+                        {fmt.currency0(grandTotal)}
                       </td>
                     </tr>
                   </tfoot>

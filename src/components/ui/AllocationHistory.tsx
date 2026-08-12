@@ -3,6 +3,7 @@ import { History, RotateCcw, Filter, ChevronDown, ChevronRight, Clock } from 'lu
 import { cn } from '@/utils/cn';
 import { formatPercent } from '@/utils/financialFormatting';
 import type { AllocationResult, AllocationMethod } from '@/engines/AllocationEngine';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -42,16 +43,6 @@ const STATUS_STYLES: Record<string, string> = {
   rejected: 'bg-red-500/10 text-red-400 border-red-500/30',
   pending: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
 };
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -71,6 +62,7 @@ const HistoryRow: React.FC<{
   onRerun?: (entry: AllocationHistoryEntry) => void;
   onViewDetail?: (entry: AllocationHistoryEntry) => void;
 }> = ({ entry, onRerun, onViewDetail }) => {
+  const fmt = useCurrencyFormatter();
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -110,7 +102,7 @@ const HistoryRow: React.FC<{
 
         <div className="flex items-center gap-4 shrink-0">
           <span className="text-xs font-medium text-blue-400">
-            {formatCurrency(entry.result.totalAllocated)}
+            {fmt.currency0(entry.result.totalAllocated)}
           </span>
           <span className="text-[10px] text-slate-500">
             {entry.result.allocations.length} targets
@@ -175,7 +167,7 @@ const HistoryRow: React.FC<{
                   <tr key={alloc.target} className="border-t border-[var(--border-subtle)]">
                     <td className="px-2 py-1 text-xs text-[var(--text-primary)]">{alloc.target}</td>
                     <td className="px-2 py-1 text-xs text-right text-[var(--text-primary)]">
-                      {formatCurrency(alloc.amount)}
+                      {fmt.currency0(alloc.amount)}
                     </td>
                     <td className="px-2 py-1 text-xs text-right text-[var(--text-secondary)]">
                       {formatPercent(alloc.percentage, 2)}
@@ -223,6 +215,7 @@ export const AllocationHistory: React.FC<AllocationHistoryProps> = ({
   onViewDetail,
   className,
 }) => {
+  const fmt = useCurrencyFormatter();
   const [methodFilter, setMethodFilter] = useState<AllocationMethod | 'all'>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -264,7 +257,7 @@ export const AllocationHistory: React.FC<AllocationHistoryProps> = ({
         <div className="flex items-center gap-3 text-[10px] text-slate-500">
           <span>{totalCount} total</span>
           <span>{appliedCount} applied</span>
-          <span className="text-blue-400 font-medium">{formatCurrency(totalValue)}</span>
+          <span className="text-blue-400 font-medium">{fmt.currency0(totalValue)}</span>
         </div>
       </div>
 

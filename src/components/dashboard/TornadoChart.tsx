@@ -11,7 +11,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { cn } from '@/utils/cn';
-import { formatCompact, formatNumber } from '@/utils/financialFormatting';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 export interface TornadoVariable {
   name: string;
@@ -48,6 +48,7 @@ export const TornadoChart = memo(function TornadoChart({
   className,
   onVariableClick,
 }: TornadoChartProps) {
+  const fmt = useCurrencyFormatter();
   const base = baseCase ?? 0;
 
   const chartData = useMemo<ChartDataItem[]>(() => {
@@ -70,9 +71,9 @@ export const TornadoChart = memo(function TornadoChart({
 
   const maxAbs = Math.max(...chartData.map((d) => d.absMax), 1);
 
-  const formatCurrency = (v: number) => {
-    if (Math.abs(v) >= 1e3) return formatCompact(v);
-    return formatNumber(v, 0);
+  const formatValue = (v: number) => {
+    if (Math.abs(v) >= 1e3) return fmt.compact(v);
+    return fmt.number(v, 0);
   };
 
   return (
@@ -102,7 +103,7 @@ export const TornadoChart = memo(function TornadoChart({
             <XAxis
               type="number"
               domain={[-maxAbs, maxAbs]}
-              tickFormatter={formatCurrency}
+              tickFormatter={formatValue}
               tick={{ fontSize: 10, fill: '#64748b' }}
               axisLine={false}
               tickLine={false}
@@ -126,20 +127,20 @@ export const TornadoChart = memo(function TornadoChart({
                   <div className="bg-[var(--bg-surface)] p-3 border border-[var(--border-subtle)] shadow-xl rounded-lg text-xs">
                     <p className="font-bold text-gray-700 dark:text-gray-300 mb-1">{d.name}</p>
                     <p className="text-[var(--text-muted)]">
-                      Base: <span className="font-semibold">{formatCurrency(d.baseValue)}</span>
+                      Base: <span className="font-semibold">{formatValue(d.baseValue)}</span>
                     </p>
                     <p className="fin-positive">
-                      High: <span className="font-semibold">{formatCurrency(d.highValue)}</span>
+                      High: <span className="font-semibold">{formatValue(d.highValue)}</span>
                       <span className="text-gray-400 dark:text-gray-500 ml-1">
                         ({d.highDelta >= 0 ? '+' : ''}
-                        {formatCurrency(d.highDelta)})
+                        {formatValue(d.highDelta)})
                       </span>
                     </p>
                     <p className="fin-negative">
-                      Low: <span className="font-semibold">{formatCurrency(d.lowValue)}</span>
+                      Low: <span className="font-semibold">{formatValue(d.lowValue)}</span>
                       <span className="text-gray-400 dark:text-gray-500 ml-1">
                         ({d.lowDelta >= 0 ? '+' : ''}
-                        {formatCurrency(d.lowDelta)})
+                        {formatValue(d.lowDelta)})
                       </span>
                     </p>
                   </div>

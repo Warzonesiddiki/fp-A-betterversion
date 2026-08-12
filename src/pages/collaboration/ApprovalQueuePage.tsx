@@ -17,16 +17,7 @@ import {
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface ApprovalRow {
   id: string;
   name: string;
@@ -38,6 +29,7 @@ interface ApprovalRow {
 }
 
 export default function ApprovalQueuePage() {
+  const fmt = useCurrencyFormatter();
   const _navigate = useNavigate();
   const { approvals, addComment } = useCollaborationStore();
   const { budgets } = useBudgetStore();
@@ -104,7 +96,7 @@ export default function ApprovalQueuePage() {
           r.name,
           r.type,
           r.requester,
-          formatCurrency(r.amount),
+          fmt.currency0(r.amount),
           r.submitted,
           r.status,
         ]),
@@ -121,7 +113,7 @@ export default function ApprovalQueuePage() {
           r.name,
           r.type,
           r.requester,
-          formatCurrency(r.amount),
+          fmt.currency0(r.amount),
           r.submitted,
           r.status,
         ]),
@@ -138,7 +130,7 @@ export default function ApprovalQueuePage() {
       key: 'amount',
       header: 'Amount',
       align: 'right',
-      render: (_, r) => formatCurrency(r.amount),
+      render: (_, r) => fmt.currency0(r.amount),
       sortable: true,
     },
     { key: 'submitted', header: 'Submitted', align: 'right', sortable: true },

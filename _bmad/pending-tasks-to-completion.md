@@ -254,13 +254,47 @@ too. 140 non-test modules use inline `style={{…}}` against an explicit
 oversized pages, and remove inline styles as each page is touched — not as a
 separate sweep.
 
-### UI-06 — Money formatting
+### UI-06 — Money formatting ✅ SHIPPED
 
-**72 modules re-implement `formatCurrency` locally** and **160 hardcode
-`currency: 'USD'`**, while `@/utils/financialFormatting` and `@/utils/money`
-exist. For a multi-entity, multi-currency product this is a correctness bug, not
-a style issue: a GBP entity renders as dollars. Replace the local copies, then
-add a lint rule to stop new ones.
+**Was:** 75 modules re-implemented `formatCurrency` locally (the plan's original
+count of 72/160 was stale; the measured debt was 75 local copies and 185
+hardcoded `currency: 'USD'` sites). The global reporting-currency selector in
+`FinancialContextBar` was decorative — selecting GBP changed the dropdown and
+nothing else, because every local copy had `currency: 'USD'` baked in. For a
+multi-entity product that is a correctness bug, not a style issue.
+
+**Done:**
+
+- Added `useCurrencyFormatter()` (`src/hooks/useCurrencyFormatter.ts`) — the
+  single display entry point, bound to `context.currency.code`. Exposes
+  `currency` / `currency0` / `compact` / `percent` / `number` / `currencyCode`.
+  **Display only:** it never converts. `@/utils/money` (decimal.js) remains the
+  arithmetic engine and `FXEngine` still owns conversion.
+- Fixed a latent bug in `formatCompact`, which hardcoded `$` even when passed a
+  non-USD currency. Added the `currencySymbol()` helper behind it.
+- Migrated **70 modules** off local copies (64 by AST codemod, 6 by hand for
+  `memo()` wrappers, compact/tick formatters and multi-component files).
+- `FinanceCopilotEngine` runs outside React, so it reads the currency
+  non-reactively via `getState()` rather than a hook.
+- `TranslationResultPage` deliberately keeps its own per-currency formatter: it
+  renders source vs target currency side by side, which is not the reporting
+  currency. It is exempted explicitly, not by omission.
+- Added a `no-restricted-syntax` guard so a new local `formatCurrency` fails
+  lint, with the canonical formatter modules exempted.
+
+**Verification:** whole-repo `tsc --noEmit` clean; `eslint src --max-warnings 0`
+clean; full 8-shard suite green (**13,495 tests**, up from 13,485). Both the hook
+unit tests and the propagation tests are mutation-verified — reverting the hook
+to a hardcoded USD fails 3 tests. Bundle 2068.83 KB gzip (marginally smaller).
+
+Two test expectations changed meaning and were updated deliberately: zero now
+renders as `—` (the canonical `zeroDisplay`) instead of `$0.00` in
+`DrillDownWindowPage` and `LoanAmortizationPage`. `DrillTables` no longer
+exports a test-only `formatCurrency`.
+
+**Not yet done (follow-up):** the ~185 hardcoded `currency: 'USD'` occurrences
+outside the migrated `formatCurrency` copies — chart tooltips, export builders
+and `Intl` calls inline at their use site.
 
 ### UI-07 — States, a11y, responsive
 
@@ -324,8 +358,8 @@ critical/serious; keyboard paths through grids and modals; 1024×600 minimum.
 2. ~~**UI-01 → UI-02**~~ ✅ — token layer collapsed, then light-first. (Doing
    the restyle first would have meant doing it twice.)
 3. ~~**UI-03**~~ ✅ — navigation. Usable surface went 30 → 190 screens.
-4. **UI-06 ← NEXT** — money formatting. Correctness, and cheap.
-5. **UI-04 / UI-05** — density and per-page consistency, incrementally.
+4. ~~**UI-06**~~ ✅ — money display now follows the reporting-currency selector.
+5. **UI-04 / UI-05 ← NEXT** — density and per-page consistency, incrementally.
 6. **D-01** — sector depth truth table; drives what "all industries" can claim.
 7. **P-01…P-04**, then **R-01…R-04**.
 

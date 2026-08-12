@@ -13,6 +13,7 @@ import {
   Area,
   AreaChart,
 } from 'recharts';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 interface ScenarioTimelineProps {
   /** Time periods (e.g., months, quarters) */
@@ -38,17 +39,6 @@ interface ScenarioTimelineProps {
   className?: string;
 }
 
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-    notation: 'compact',
-    compactDisplay: 'short',
-  }).format(n);
-}
-
 function CustomTooltip({
   active,
   payload,
@@ -58,6 +48,7 @@ function CustomTooltip({
   payload?: Array<{ dataKey: string; value: number; color: string }>;
   label?: string;
 }) {
+  const fmt = useCurrencyFormatter();
   if (!active || !payload) return null;
   return (
     <div
@@ -75,7 +66,7 @@ function CustomTooltip({
             <span className="text-[var(--text-secondary)] dark:text-gray-300">{entry.dataKey}</span>
           </div>
           <span className="font-mono font-medium text-[var(--text-primary)] dark:text-gray-100">
-            {formatCurrency(entry.value)}
+            {fmt.compact(entry.value)}
           </span>
         </div>
       ))}
@@ -92,6 +83,7 @@ export function ScenarioTimeline({
   showInflectionPoints = true,
   className,
 }: ScenarioTimelineProps) {
+  const fmt = useCurrencyFormatter();
   const chartData = useMemo(() => {
     return periods.map((period, i) => {
       const point: Record<string, number | string> = { period };
@@ -153,7 +145,7 @@ export function ScenarioTimeline({
                   className="text-[var(--text-muted)]"
                 />
                 <YAxis
-                  tickFormatter={(v) => formatCurrency(v)}
+                  tickFormatter={(v) => fmt.compact(v)}
                   tick={{ fontSize: 10 }}
                   className="text-[var(--text-muted)]"
                 />
@@ -204,7 +196,7 @@ export function ScenarioTimeline({
                   className="text-[var(--text-muted)]"
                 />
                 <YAxis
-                  tickFormatter={(v) => formatCurrency(v)}
+                  tickFormatter={(v) => fmt.compact(v)}
                   tick={{ fontSize: 10 }}
                   className="text-[var(--text-muted)]"
                 />

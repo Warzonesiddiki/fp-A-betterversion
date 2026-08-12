@@ -19,16 +19,7 @@ import {
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatCompact } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 const LEVELS = [
   { level: 'Junior', min: 50000, max: 75000, headcount: 45, avgPerf: 3.2 },
   { level: 'Mid', min: 75000, max: 110000, headcount: 80, avgPerf: 3.5 },
@@ -39,6 +30,7 @@ const LEVELS = [
 ];
 
 export default function CompModelingPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
   const [meritPct, setMeritPct] = useState(3.5);
@@ -137,12 +129,12 @@ export default function CompModelingPage() {
         />
         <KPIValue
           label="Current Total Comp"
-          value={formatCurrency(totals.currentTotal)}
+          value={fmt.currency0(totals.currentTotal)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Budget Impact"
-          value={formatCurrency(totals.budgetImpact)}
+          value={fmt.currency0(totals.budgetImpact)}
           icon={<TrendingUp className="h-4 w-4" />}
           trend="down"
         />
@@ -213,14 +205,14 @@ export default function CompModelingPage() {
                     <td className="py-2 px-3 font-medium">{l.level}</td>
                     <td className="text-right py-2 px-3">{l.headcount}</td>
                     <td className="text-right py-2 px-3">
-                      {formatCurrency(l.min)} – {formatCurrency(l.max)}
+                      {fmt.currency0(l.min)} – {fmt.currency0(l.max)}
                     </td>
-                    <td className="text-right py-2 px-3">{formatCurrency(l.totalCost)}</td>
+                    <td className="text-right py-2 px-3">{fmt.currency0(l.totalCost)}</td>
                     <td className="text-right py-2 px-3 text-blue-400">
-                      {formatCurrency(l.newCost)}
+                      {fmt.currency0(l.newCost)}
                     </td>
                     <td className="text-right py-2 px-3 text-green-400">
-                      +{formatCurrency(l.increase)}
+                      +{fmt.currency0(l.increase)}
                     </td>
                   </tr>
                 ))}
@@ -228,12 +220,12 @@ export default function CompModelingPage() {
                   <td className="py-2 px-3">Total</td>
                   <td className="text-right py-2 px-3">{totals.totalHeadcount}</td>
                   <td className="text-right py-2 px-3">—</td>
-                  <td className="text-right py-2 px-3">{formatCurrency(totals.currentTotal)}</td>
+                  <td className="text-right py-2 px-3">{fmt.currency0(totals.currentTotal)}</td>
                   <td className="text-right py-2 px-3 text-blue-400">
-                    {formatCurrency(totals.newTotal)}
+                    {fmt.currency0(totals.newTotal)}
                   </td>
                   <td className="text-right py-2 px-3 text-green-400">
-                    +{formatCurrency(totals.budgetImpact)}
+                    +{fmt.currency0(totals.budgetImpact)}
                   </td>
                 </tr>
               </tbody>
@@ -258,7 +250,7 @@ export default function CompModelingPage() {
                   border: '1px solid #334155',
                   borderRadius: 8,
                 }}
-                formatter={(v) => formatCurrency(Number(v))}
+                formatter={(v) => fmt.currency0(Number(v))}
               />
               <Legend />
               <Line dataKey="current" name="Current Path" stroke="#64748b" strokeDasharray="5 5" />

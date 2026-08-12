@@ -3,12 +3,9 @@ import { useSearchParams } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { DataTable } from '@/components/ui/DataTable';
 import { format } from 'date-fns';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 export default function DrillDownWindowPage() {
+  const fmt = useCurrencyFormatter();
   const [searchParams] = useSearchParams();
   const { entries } = useGLStore();
 
@@ -46,12 +43,12 @@ export default function DrillDownWindowPage() {
     {
       header: 'Debit',
       key: 'debit',
-      render: (v: unknown) => formatCurrency(v as number),
+      render: (v: unknown) => fmt.currency(v as number),
     },
     {
       header: 'Credit',
       key: 'credit',
-      render: (v: unknown) => formatCurrency(v as number),
+      render: (v: unknown) => fmt.currency(v as number),
     },
   ];
 

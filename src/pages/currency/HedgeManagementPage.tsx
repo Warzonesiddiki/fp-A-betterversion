@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
 import { Shield, Plus, Pencil, Trash2, AlertCircle } from 'lucide-react';
 import { formatNumber } from '@/utils/financialFormatting';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 type HedgeStatus = 'Active' | 'Expired' | 'Settled';
 
@@ -53,16 +54,8 @@ const INSTRUMENTS = [
   'Cross-Currency Swap',
   'Non-Deliverable Forward',
 ];
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-  }).format(n);
-}
-
 export default function HedgeManagementPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
   const [hedges, setHedges] = useState<HedgePosition[]>(INITIAL_HEDGES);
@@ -216,7 +209,7 @@ export default function HedgeManagementPage() {
                     <td className="px-4 py-3">{h.instrument}</td>
                     <td className="px-4 py-3 font-mono">{h.currency}</td>
                     <td className="px-4 py-3 text-right tabular-nums">
-                      {formatCurrency(h.notionalAmount)}
+                      {fmt.currency0(h.notionalAmount)}
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums">
                       {formatNumber(h.contractedRate, 4)}

@@ -28,16 +28,7 @@ import {
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface StoreRow {
   store: string;
   revenue: number;
@@ -47,6 +38,7 @@ interface StoreRow {
 }
 
 export default function StoreDashboardPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -93,9 +85,9 @@ export default function StoreDashboardPage() {
         headers: ['Store', 'Revenue', 'Transactions', 'Avg Basket', 'YoY Growth'],
         rows: data.storeData.map((s) => [
           s.store,
-          formatCurrency(s.revenue),
+          fmt.currency0(s.revenue),
           s.transactions.toString(),
-          formatCurrency(s.avgBasket),
+          fmt.currency0(s.avgBasket),
           formatPercent(s.yoyGrowth, 1),
         ]),
       },
@@ -110,9 +102,9 @@ export default function StoreDashboardPage() {
         headers: ['Store', 'Revenue', 'Transactions', 'Avg Basket', 'YoY Growth'],
         rows: data.storeData.map((s) => [
           s.store,
-          formatCurrency(s.revenue),
+          fmt.currency0(s.revenue),
           s.transactions.toString(),
-          formatCurrency(s.avgBasket),
+          fmt.currency0(s.avgBasket),
           formatPercent(s.yoyGrowth, 1),
         ]),
       },
@@ -126,7 +118,7 @@ export default function StoreDashboardPage() {
       key: 'revenue',
       header: 'Revenue',
       align: 'right',
-      render: (_value, row) => formatCurrency((row as unknown as StoreRow).revenue),
+      render: (_value, row) => fmt.currency0((row as unknown as StoreRow).revenue),
       sortable: true,
     },
     {
@@ -140,7 +132,7 @@ export default function StoreDashboardPage() {
       key: 'avgBasket',
       header: 'Avg Basket',
       align: 'right',
-      render: (_value, row) => formatCurrency((row as unknown as StoreRow).avgBasket),
+      render: (_value, row) => fmt.currency0((row as unknown as StoreRow).avgBasket),
       sortable: true,
     },
     {
@@ -190,12 +182,12 @@ export default function StoreDashboardPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <KPIValue
               label="Total Revenue"
-              value={formatCurrency(data.totalRevenue)}
+              value={fmt.currency0(data.totalRevenue)}
               icon={<DollarSign className="h-4 w-4" />}
             />
             <KPIValue
               label="Total COGS"
-              value={formatCurrency(data.totalCOGS)}
+              value={fmt.currency0(data.totalCOGS)}
               icon={<ShoppingCart className="h-4 w-4" />}
             />
             <KPIValue
@@ -224,7 +216,7 @@ export default function StoreDashboardPage() {
                     tickFormatter={(v) => `$${formatCompact(v)}`}
                   />
                   <Tooltip
-                    formatter={(v) => formatCurrency(Number(v))}
+                    formatter={(v) => fmt.currency0(Number(v))}
                     contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                   />
                   <Legend />

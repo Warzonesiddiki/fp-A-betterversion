@@ -28,16 +28,7 @@ import {
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface ComponentRow {
   component: string;
   amount: number;
@@ -157,6 +148,7 @@ export function computeWorkingCapital(entries: readonly WCEntry[]): WCSummary {
 }
 
 export default function WorkingCapitalPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -187,7 +179,7 @@ export default function WorkingCapitalPage() {
         headers: ['Component', 'Amount', 'Type', 'Days'],
         rows: data.components.map((c) => [
           c.component,
-          formatCurrency(c.amount),
+          fmt.currency0(c.amount),
           c.ratio,
           c.days.toString(),
         ]),
@@ -203,7 +195,7 @@ export default function WorkingCapitalPage() {
         headers: ['Component', 'Amount', 'Type', 'Days'],
         rows: data.components.map((c) => [
           c.component,
-          formatCurrency(c.amount),
+          fmt.currency0(c.amount),
           c.ratio,
           c.days.toString(),
         ]),
@@ -218,7 +210,7 @@ export default function WorkingCapitalPage() {
       key: 'amount',
       header: 'Amount',
       align: 'right',
-      render: (_, r) => formatCurrency(r.amount),
+      render: (_, r) => fmt.currency0(r.amount),
       sortable: true,
     },
     { key: 'ratio', header: 'Type', sortable: true },
@@ -259,7 +251,7 @@ export default function WorkingCapitalPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue
           label="Working Capital"
-          value={formatCurrency(data.wc)}
+          value={fmt.currency0(data.wc)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
@@ -323,7 +315,7 @@ export default function WorkingCapitalPage() {
                 tickFormatter={(v) => `$${Math.round(v / 1000)}k`}
               />
               <Tooltip
-                formatter={(v) => formatCurrency(Number(v))}
+                formatter={(v) => fmt.currency0(Number(v))}
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
               />
               <Legend />

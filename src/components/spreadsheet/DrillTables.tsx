@@ -3,17 +3,7 @@ import { cn } from '@/utils/cn';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 import type { SummaryRow, DetailRow, JournalEntry } from './DrillThroughChain';
-
-// --- Helpers ---
-
-export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /**
  * GAP-1 (F-0006) — exact-decimal journal-entry totals.
  *
@@ -45,6 +35,7 @@ export function SummaryTable({
   data: readonly SummaryRow[];
   onSelect: (row: SummaryRow) => void;
 }) {
+  const fmt = useCurrencyFormatter();
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm" role="grid" aria-label="Summary view">
@@ -94,20 +85,20 @@ export function SummaryTable({
               }}
               tabIndex={0}
               role="row"
-              aria-label={`${row.category}: actual ${formatCurrency(row.actual)}, budget ${formatCurrency(row.budget)}`}
+              aria-label={`${row.category}: actual ${fmt.currency0(row.actual)}, budget ${fmt.currency0(row.budget)}`}
             >
               <td className="flex items-center gap-2 px-4 py-3 font-medium text-[var(--text-primary)]">
                 <Layers className="h-4 w-4 text-[var(--accent-primary)]" />
                 {row.category}
               </td>
               <td className="px-4 py-3 text-right tabular-nums text-[var(--text-primary)]">
-                {formatCurrency(row.actual)}
+                {fmt.currency0(row.actual)}
               </td>
               <td className="px-4 py-3 text-right tabular-nums text-[var(--text-secondary)]">
-                {formatCurrency(row.budget)}
+                {fmt.currency0(row.budget)}
               </td>
               <td className={cn('px-4 py-3 text-right tabular-nums', varianceColor(row.variance))}>
-                {formatCurrency(row.variance)}
+                {fmt.currency0(row.variance)}
               </td>
               <td className={cn('px-4 py-3 text-right tabular-nums', varianceColor(row.variance))}>
                 {formatPercent(row.variancePct, 1)}
@@ -134,6 +125,7 @@ export function DetailTable({
   category: string;
   onSelect: (row: DetailRow) => void;
 }) {
+  const fmt = useCurrencyFormatter();
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
@@ -210,15 +202,15 @@ export function DetailTable({
                   {row.accountCode}
                 </td>
                 <td className="px-4 py-3 text-right tabular-nums text-[var(--text-primary)]">
-                  {formatCurrency(row.actual)}
+                  {fmt.currency0(row.actual)}
                 </td>
                 <td className="px-4 py-3 text-right tabular-nums text-[var(--text-secondary)]">
-                  {formatCurrency(row.budget)}
+                  {fmt.currency0(row.budget)}
                 </td>
                 <td
                   className={cn('px-4 py-3 text-right tabular-nums', varianceColor(row.variance))}
                 >
-                  {formatCurrency(row.variance)}
+                  {fmt.currency0(row.variance)}
                 </td>
                 <td
                   className={cn('px-4 py-3 text-right tabular-nums', varianceColor(row.variance))}
@@ -248,6 +240,7 @@ export function JournalEntryTable({
   data: readonly JournalEntry[];
   lineItem: string;
 }) {
+  const fmt = useCurrencyFormatter();
   const { totalDebit, totalCredit } = computeJournalTotals(data);
 
   return (
@@ -306,10 +299,10 @@ export function JournalEntryTable({
                 </td>
                 <td className="px-4 py-3 text-[var(--text-secondary)]">{entry.description}</td>
                 <td className="px-4 py-3 text-right tabular-nums text-[var(--text-primary)]">
-                  {entry.debit > 0 ? formatCurrency(entry.debit) : ''}
+                  {entry.debit > 0 ? fmt.currency0(entry.debit) : ''}
                 </td>
                 <td className="px-4 py-3 text-right tabular-nums text-[var(--text-primary)]">
-                  {entry.credit > 0 ? formatCurrency(entry.credit) : ''}
+                  {entry.credit > 0 ? fmt.currency0(entry.credit) : ''}
                 </td>
                 <td className="px-4 py-3 font-mono text-xs text-[var(--text-tertiary)]">
                   {entry.reference}
@@ -323,10 +316,10 @@ export function JournalEntryTable({
                 Total
               </td>
               <td className="px-4 py-3 text-right tabular-nums text-[var(--text-primary)]">
-                {formatCurrency(totalDebit)}
+                {fmt.currency0(totalDebit)}
               </td>
               <td className="px-4 py-3 text-right tabular-nums text-[var(--text-primary)]">
-                {formatCurrency(totalCredit)}
+                {fmt.currency0(totalCredit)}
               </td>
               <td />
             </tr>

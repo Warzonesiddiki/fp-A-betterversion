@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './Card';
 import { ScenarioEngine, type ScenarioDriver } from '@/engines/ScenarioEngine';
 import type { ScenarioMetrics } from '@/types';
 import { Plus, X, GitMerge, Lock, Unlock, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 interface ScenarioDefinition {
   id: string;
@@ -23,16 +24,6 @@ interface WhatIfSandboxProps {
 }
 
 const SCENARIO_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
 function formatPctWithSign(n: number): string {
   return `${n >= 0 ? '+' : ''}${formatNumber(n, 1)}%`;
 }
@@ -66,6 +57,7 @@ function DiffIndicator({ current, base }: { current: number; base: number }) {
 }
 
 export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: WhatIfSandboxProps) {
+  const fmt = useCurrencyFormatter();
   const [scenarios, setScenarios] = useState<ScenarioDefinition[]>([
     {
       id: 'scenario-1',
@@ -278,7 +270,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
                 <span className="font-medium text-[var(--text-primary)] dark:text-gray-100">
                   {key.includes('Margin')
                     ? formatPercent(baseMetrics[key]!, 1)
-                    : formatCurrency(baseMetrics[key]!)}
+                    : fmt.currency0(baseMetrics[key]!)}
                 </span>
               </div>
             ))}
@@ -338,7 +330,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
                     <span className="font-medium text-[var(--text-primary)] dark:text-gray-100">
                       {key.includes('Margin')
                         ? formatPercent(scenario.metrics![key], 1)
-                        : formatCurrency(scenario.metrics![key])}
+                        : fmt.currency0(scenario.metrics![key])}
                     </span>
                     <DiffIndicator current={scenario.metrics![key]} base={baseMetrics[key]} />
                   </div>
@@ -377,7 +369,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
                             revenueDiff >= 0 ? 'fin-positive' : 'fin-negative'
                           )}
                         >
-                          {formatCurrency(revenueDiff)}
+                          {fmt.currency0(revenueDiff)}
                         </span>
                       </div>
                       <div className="flex justify-between text-xs">
@@ -388,7 +380,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
                             ebitdaDiff >= 0 ? 'fin-positive' : 'fin-negative'
                           )}
                         >
-                          {formatCurrency(ebitdaDiff)}
+                          {fmt.currency0(ebitdaDiff)}
                         </span>
                       </div>
                     </div>
@@ -442,7 +434,7 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
                     <span className="text-sm font-mono w-16 text-right text-[var(--text-primary)] dark:text-gray-100">
                       {driver.impactType === 'percentage'
                         ? `${driver.value > 0 ? '+' : ''}${driver.value}%`
-                        : formatCurrency(driver.value)}
+                        : fmt.currency0(driver.value)}
                     </span>
                   </div>
                 ))}

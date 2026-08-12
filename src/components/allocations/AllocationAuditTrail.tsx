@@ -3,6 +3,7 @@ import { History, RotateCcw, Filter, ChevronDown, ChevronRight, Clock } from 'lu
 import { cn } from '@/utils/cn';
 import type { AllocationMethod } from '@/engines/AllocationEngine';
 import { formatPercent } from '@/utils/financialFormatting';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -46,16 +47,6 @@ const STATUS_STYLES: Record<string, string> = {
   rejected: 'bg-red-500/10 text-red-400 border-red-500/30',
   pending: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30',
 };
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -79,6 +70,7 @@ function HistoryRow({
   onRerun?: (e: AllocationAuditEntry) => void;
   onViewDetail?: (e: AllocationAuditEntry) => void;
 }) {
+  const fmt = useCurrencyFormatter();
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -109,7 +101,7 @@ function HistoryRow({
         </div>
         <div className="flex items-center gap-4 shrink-0">
           <span className="text-xs font-medium text-blue-400">
-            {formatCurrency(entry.totalAllocated)}
+            {fmt.currency0(entry.totalAllocated)}
           </span>
           <span className="text-[10px] text-slate-500">{entry.allocationCount} targets</span>
           <span className="text-[10px] text-slate-500 flex items-center gap-1">
@@ -169,7 +161,7 @@ function HistoryRow({
                   <tr key={alloc.target} className="border-t border-[var(--border-subtle)]">
                     <td className="px-2 py-1 text-xs text-[var(--text-primary)]">{alloc.target}</td>
                     <td className="px-2 py-1 text-xs text-right text-[var(--text-primary)]">
-                      {formatCurrency(alloc.amount)}
+                      {fmt.currency0(alloc.amount)}
                     </td>
                     <td className="px-2 py-1 text-xs text-right text-[var(--text-secondary)]">
                       {formatPercent(alloc.percentage, 2)}
@@ -214,6 +206,7 @@ export function AllocationAuditTrail({
   onViewDetail,
   className,
 }: AllocationAuditTrailProps) {
+  const fmt = useCurrencyFormatter();
   const [methodFilter, setMethodFilter] = useState<AllocationMethod | 'all'>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -252,7 +245,7 @@ export function AllocationAuditTrail({
         <div className="flex items-center gap-3 text-[10px] text-slate-500">
           <span>{entries.length} total</span>
           <span>{appliedCount} applied</span>
-          <span className="text-blue-400 font-medium">{formatCurrency(totalValue)}</span>
+          <span className="text-blue-400 font-medium">{fmt.currency0(totalValue)}</span>
         </div>
       </div>
 

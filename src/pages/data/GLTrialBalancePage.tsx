@@ -19,16 +19,7 @@ import {
   ArrowDown,
   ArrowUpDown,
 } from 'lucide-react';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /** Money-primitive trial-balance totals (GAP-1 F-0006). */
 export interface TrialBalanceTotals {
   totalDebits: number;
@@ -67,6 +58,7 @@ export function computeTrialBalanceTotals(
 }
 
 export default function GLTrialBalancePage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -204,7 +196,7 @@ export default function GLTrialBalancePage() {
         <div>
           {isBalanced
             ? 'Trial Balance is Balanced — Total Debits = Total Credits'
-            : `Trial Balance is Off by ${formatCurrency(Math.abs(diff))}`}
+            : `Trial Balance is Off by ${fmt.currency0(Math.abs(diff))}`}
         </div>
       </div>
 
@@ -326,13 +318,13 @@ export default function GLTrialBalancePage() {
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums text-slate-300">
-                      {formatCurrency(row.beginningBalance)}
+                      {fmt.currency0(row.beginningBalance)}
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums text-blue-400">
-                      {formatCurrency(row.debit)}
+                      {fmt.currency0(row.debit)}
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums text-green-400">
-                      {formatCurrency(row.credit)}
+                      {fmt.currency0(row.credit)}
                     </td>
                     <td
                       className={`px-4 py-3 text-right tabular-nums font-medium ${
@@ -343,7 +335,7 @@ export default function GLTrialBalancePage() {
                             : 'text-slate-300'
                       }`}
                     >
-                      {formatCurrency(row.netChange)}
+                      {fmt.currency0(row.netChange)}
                     </td>
                     <td
                       className={`px-4 py-3 text-right tabular-nums font-semibold ${
@@ -354,7 +346,7 @@ export default function GLTrialBalancePage() {
                             : 'text-slate-300'
                       }`}
                     >
-                      {formatCurrency(row.endingBalance)}
+                      {fmt.currency0(row.endingBalance)}
                     </td>
                     <td className="px-2 py-3 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="flex gap-1">
@@ -397,19 +389,19 @@ export default function GLTrialBalancePage() {
                     Total
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
-                    {formatCurrency(totalBeginningBalance)}
+                    {fmt.currency0(totalBeginningBalance)}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums text-blue-400">
-                    {formatCurrency(totalDebits)}
+                    {fmt.currency0(totalDebits)}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums text-green-400">
-                    {formatCurrency(totalCredits)}
+                    {fmt.currency0(totalCredits)}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
-                    {formatCurrency(totalNetChange)}
+                    {fmt.currency0(totalNetChange)}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
-                    {formatCurrency(totalEndingBalance)}
+                    {fmt.currency0(totalEndingBalance)}
                   </td>
                 </tr>
               </tfoot>

@@ -20,16 +20,7 @@ import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface InventoryItem {
   id: string;
   name: string;
@@ -159,6 +150,7 @@ const mockInventory: InventoryItem[] = [
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 export default function InventoryPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -217,11 +209,11 @@ export default function InventoryPage() {
     { key: 'name', header: 'Item', sortable: true },
     { key: 'category', header: 'Category', sortable: true },
     { key: 'quantity', header: 'Qty', sortable: true },
-    { key: 'unitCost', header: 'Unit Cost', render: (_, r) => formatCurrency(r.unitCost) },
+    { key: 'unitCost', header: 'Unit Cost', render: (_, r) => fmt.currency0(r.unitCost) },
     {
       key: 'totalValue',
       header: 'Total Value',
-      render: (_, r) => formatCurrency(r.totalValue),
+      render: (_, r) => fmt.currency0(r.totalValue),
       sortable: true,
     },
     {
@@ -289,7 +281,7 @@ export default function InventoryPage() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <KPIValue
           label="Total Value"
-          value={formatCurrency(totalValue)}
+          value={fmt.currency0(totalValue)}
           icon={<Package className="h-4 w-4" />}
         />
         <KPIValue
@@ -331,7 +323,7 @@ export default function InventoryPage() {
                   tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                 />
                 <Tooltip
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>

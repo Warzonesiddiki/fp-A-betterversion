@@ -29,16 +29,7 @@ import {
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface ProductionLine {
   line: string;
   status: 'Running' | 'Idle' | 'Maintenance';
@@ -48,6 +39,7 @@ interface ProductionLine {
 }
 
 export default function ProductionDashboardPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -233,8 +225,8 @@ export default function ProductionDashboardPage() {
       {data && (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <KPIValue label="Revenue" value={formatCurrency(data.revenue)} />
-            <KPIValue label="COGS" value={formatCurrency(data.cogs)} />
+            <KPIValue label="Revenue" value={fmt.currency0(data.revenue)} />
+            <KPIValue label="COGS" value={fmt.currency0(data.cogs)} />
             <KPIValue label="Gross Margin" value={`${formatPercent(data.margin, 1)}`} />
             <KPIValue
               label="OEE"

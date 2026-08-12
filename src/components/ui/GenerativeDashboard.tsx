@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { formatPercent as fmtPct, formatNumber as fmtNum } from '@/utils/financialFormatting';
 import { KPIValue } from '@/components/ui/KPIValue';
 import {
@@ -19,14 +20,6 @@ import {
 } from 'recharts';
 
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
-
-function formatCurrency(v: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(v);
-}
 function formatPercent(v: number): string {
   return fmtPct(v * 100, 1);
 }
@@ -43,8 +36,13 @@ function DashboardCard({
   value: number;
   format?: string;
 }) {
+  const currencyFmt = useCurrencyFormatter();
   const fmt =
-    format === 'currency' ? formatCurrency : format === 'percent' ? formatPercent : formatNumber;
+    format === 'currency'
+      ? currencyFmt.currency0
+      : format === 'percent'
+        ? formatPercent
+        : formatNumber;
   return (
     <Card>
       <CardContent className="p-4">
@@ -63,9 +61,10 @@ function DashboardMetric({
   value: number;
   trend?: string;
 }) {
+  const fmt = useCurrencyFormatter();
   return (
     <div className="text-center p-2">
-      <div className="text-2xl font-bold">{formatCurrency(value)}</div>
+      <div className="text-2xl font-bold">{fmt.currency0(value)}</div>
       <div className="text-sm text-muted-foreground">{label}</div>
       {trend && (
         <div
