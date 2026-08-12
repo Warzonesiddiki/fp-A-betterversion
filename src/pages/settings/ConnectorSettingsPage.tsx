@@ -1,3 +1,10 @@
+/**
+ * @superseded 2026-08-12 — by the Integrations hub at /settings/integrations
+ * (ledger #29/#30). This page was backed by the in-memory ConnectorEngine (no
+ * persistence; connections lost on reload) and is no longer routed — the
+ * /settings/connectors route redirects to the hub. Kept (tested, unreachable)
+ * pending final removal once the hub is committed and shipped.
+ */
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';

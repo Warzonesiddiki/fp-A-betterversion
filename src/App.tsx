@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import AppLayout from './components/layout/AppLayout';
@@ -235,12 +235,12 @@ const FinancialStatementTemplates = lazy(
 );
 const TemplatePreviewPage = lazy(() => import('./pages/templates/TemplatePreviewPage'));
 const ChartShowcasePage = lazy(() => import('./pages/charts/ChartShowcasePage'));
+const AtlasVisualBaselinePage = lazy(() => import('./pages/visual/AtlasVisualBaselinePage'));
 const ChartOfAccountsPageCharts = lazy(() => import('./pages/charts/ChartOfAccountsPage'));
 const ActivityFeed = lazy(() => import('./pages/collaboration/ActivityFeed'));
 const SharedReports = lazy(() => import('./pages/collaboration/SharedReports'));
 const TeamWorkspace = lazy(() => import('./pages/collaboration/TeamWorkspace'));
 const BackupRestorePage = lazy(() => import('./pages/settings/BackupRestorePage'));
-const ConnectorSettingsPage = lazy(() => import('./pages/settings/ConnectorSettingsPage'));
 const IntegrationSettingsPage = lazy(() => import('./pages/settings/IntegrationSettingsPage'));
 const SecuritySettingsPage = lazy(() => import('./pages/settings/SecuritySettingsPage'));
 
@@ -401,6 +401,15 @@ export default function App() {
                   </ErrorBoundary>
                 }
               />
+              {/* Dev-only Atlas visual-regression harness (BMAD F-02 runbook) — not linked from navigation. */}
+              <Route
+                path="/visual/atlas"
+                element={
+                  <ErrorBoundary>
+                    <AtlasVisualBaselinePage />
+                  </ErrorBoundary>
+                }
+              />
 
               {/* Core Modules Group */}
               <Route element={<RouteGroupWrapper domain="core" />}>
@@ -489,7 +498,11 @@ export default function App() {
                 <Route path="/collaboration/shared" element={<SharedReports />} />
                 <Route path="/collaboration/team" element={<TeamWorkspace />} />
                 <Route path="/settings/backup" element={<BackupRestorePage />} />
-                <Route path="/settings/connectors" element={<ConnectorSettingsPage />} />
+                {/* Superseded by /settings/integrations (Integrations hub, ledger #29/#30); kept as a redirect so stale bookmarks/links land on the real surface. */}
+                <Route
+                  path="/settings/connectors"
+                  element={<Navigate to="/settings/integrations" replace />}
+                />
                 <Route path="/settings/integrations" element={<IntegrationSettingsPage />} />
                 <Route path="/settings/security" element={<SecuritySettingsPage />} />
                 <Route path="/templates/preview" element={<TemplatePreviewPage />} />

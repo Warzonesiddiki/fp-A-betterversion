@@ -43,10 +43,12 @@ describe('usePersistence', () => {
   const options = { key: 'test-key' };
 
   it('should initialize with isLoading=true and then load data', async () => {
-    // Arrange
-    mockMasterStorage.getItem.mockResolvedValue(
-      JSON.stringify({ _data: { value: 'test' }, _version: 1 }) as any
-    );
+    // Arrange — masterStorage.getItem returns the DESERIALIZED payload
+    // (P0-2026-08-12: the storage layer now JSON.parses before returning).
+    mockMasterStorage.getItem.mockResolvedValue({
+      _data: { value: 'test' },
+      _version: 1,
+    } as any);
 
     // Act
     const { result } = renderHook(() => usePersistence({ ...options, version: 1 }));

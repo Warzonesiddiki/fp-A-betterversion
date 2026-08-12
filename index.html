@@ -14,7 +14,7 @@
       build`'s gate set) — if you edit that script, run the checker and paste
       the hash it prints, otherwise the bootstrap is blocked in production.
     -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-BjyiEMuHdOmAbS4mllDxuO/KmwHfGyCkVl5ax7Bs/+o='; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:; connect-src 'self' https://*.tauri.app https://*.huggingface.co; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-BjyiEMuHdOmAbS4mllDxuO/KmwHfGyCkVl5ax7Bs/+o=' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob:; connect-src 'self' https://*.tauri.app https://*.huggingface.co; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';">
     <title>FinPlan Pro - FP&A Platform</title>
     <script>
       (function() {

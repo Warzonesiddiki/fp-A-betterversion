@@ -285,9 +285,24 @@ export const masterStorage: MasterStorage = {
     if (raw === null || raw === undefined) return null;
     const serialized = typeof raw === 'string' ? raw : JSON.stringify(raw);
     try {
-      return (await decryptStorageValue(serialized, name)) as unknown as NonNullable<
-        Awaited<ReturnType<MasterStorage['getItem']>>
-      >;
+      const plaintext = await decryptStorageValue(serialized, name);
+      try {
+        // Zustand persist v5 requires the DESERIALIZED envelope object — its
+        // hydrate() reads `storageValue.state` / `.version` directly and never
+        // JSON.parses a string return (P0-2026-08-12, found by the F-02 browser
+        // baseline): returning the plaintext string here made EVERY persisted
+        // store silently skip hydration on boot — data appeared to persist
+        // (writes succeeded) but was never restored after a restart, in both
+        // the browser and Tauri backends. Parse here so zustand, backup/restore,
+        // and the migration/benchmark consumers all receive the real object.
+        return JSON.parse(plaintext) as unknown as NonNullable<
+          Awaited<ReturnType<MasterStorage['getItem']>>
+        >;
+      } catch {
+        // Non-JSON values (plain string payloads such as the first-run marker
+        // or pre-envelope legacy rows) degrade to the raw string unchanged.
+        return plaintext as unknown as NonNullable<Awaited<ReturnType<MasterStorage['getItem']>>>;
+      }
     } catch (cause) {
       // F-0012 + N-0002: fail closed AND fail loudly. Corrupted or
       // foreign-key ciphertext must never become application state, and must

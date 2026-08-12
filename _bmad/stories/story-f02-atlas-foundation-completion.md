@@ -1,6 +1,6 @@
 # Story F-02: Complete FinPlan Atlas Foundation Contract
 
-## Status: IN PROGRESS
+## Status: DONE / QA APPROVED (2026-08-12)
 ## Size: M | Risk: MEDIUM
 
 ## Why This Story Exists
@@ -40,9 +40,18 @@ Use Atlas contracts in `docs/design/FINPLAN_ATLAS.md`. Existing `DashboardPage` 
 - `jest-axe` passes on the populated Dashboard state.
 - QA report updated: `_bmad/qa/story-f02-atlas-foundation-review.md`. Verdict remains REJECTED — REQUIRES COMPLETION (pixel baseline).
 
+## Progress log (2026-08-12, pixel baseline executed — closure)
+
+- **Browser pixel baseline COMPLETE** — the runbook (`docs/design/VISUAL_REGRESSION_RUNBOOK.md`) was executed in a real Chromium browser: `tests/e2e/atlas-visual.spec.ts` **5/5 passed** with 11 deterministic committed PNG baselines (all five runbook scenarios, dark + light where applicable, wide + compact viewports). Re-run is byte-stable (md5-identical).
+- New dev-only harness: `src/pages/visual/AtlasVisualBaselinePage.tsx` at `/visual/atlas` (4 unit tests) — deterministic component surface, NOT linked from navigation.
+- **P0 find by the baseline:** the populated dashboard initially stayed EMPTY after restore+reload because `masterStorage.getItem` returned a plaintext string that zustand persist v5 never parses — every persisted store silently skipped hydration on boot (browser AND Tauri). Fixed at the single chokepoint (`masterStorage` returns the deserialized envelope; raw-string fallback) with regression tests (`masterStorage.hydration.test.ts`); consumers updated (`useFirstRun`, `usePersistence`, backup/restore + persistence test mocks). Ledger #32.
+- Populated baselines re-established on the FIXED render; assertions pin the populated state (Executive Dashboard heading, Draft trust status in main, Total Revenue KPI) before every screenshot.
+- CSP: `'wasm-unsafe-eval'` added to `index.html` script-src (documented in `docs/architecture/security.md`) — required by the browser SQL.js storage fallback used in the test baseline; never allows JS eval.
+- QA review flipped to **APPROVED**: `_bmad/qa/story-f02-atlas-foundation-review.md` (completion record). Ledger #33; evidence E-018.
+
 ## Definition of Done
-- [ ] All acceptance criteria verified.
-- [ ] Tests cover new branches/components.
-- [ ] Typecheck and changed-file lint pass.
-- [ ] Capability Truth Matrix / project context updated.
-- [ ] QA review records explicit verdict.
+- [x] All acceptance criteria verified.
+- [x] Tests cover new branches/components.
+- [x] Typecheck and changed-file lint pass.
+- [x] Capability Truth Matrix / project context updated.
+- [x] QA review records explicit verdict (APPROVED).

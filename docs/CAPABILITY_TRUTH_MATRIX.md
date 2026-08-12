@@ -25,12 +25,12 @@ For every row, create a tracked evidence record in the delivery system with: own
 
 | Inventory | Count |
 |---|---:|
-| Routed screens found in `src/App.tsx` | 199 |
-| Page modules | 216 |
-| Engine modules | 213 |
-| State-store modules | 46 |
-| UI component modules | 333 |
-| Service modules | 61 |
+| Routed screens found in `src/App.tsx` | 200 |
+| Page modules | 217 |
+| Engine modules | 214 |
+| State-store modules | 47 |
+| UI component modules | 335 |
+| Service modules | 64 |
 
 ## Route-by-route inventory
 
@@ -45,6 +45,7 @@ For every row, create a tracked evidence record in the delivery system with: own
 | `/drill-down` | Supporting | MIGRATE — supporting journey pattern | Platform product owner | DrillDownWindowPage | `src/pages/DrillDownWindowPage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |
 | `/` | Workspace | MIGRATE — Decision Workspace | CFO / FP&A product owner | DashboardPage | `src/pages/DashboardPage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |
 | `/dashboard` | Workspace | MIGRATE — Decision Workspace | CFO / FP&A product owner | DashboardPage | `src/pages/DashboardPage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |
+| `/visual/atlas` | Unclassified | REVIEW — disposition required | Unassigned | AtlasVisualBaselinePage | `src/pages/visual/AtlasVisualBaselinePage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |
 | `/budgets` | Modeling | MIGRATE — canonical modeling pattern | FP&A product owner | BudgetListPage | `src/pages/budgets/BudgetListPage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |
 | `/budgets/create` | Modeling | MIGRATE — canonical modeling pattern | FP&A product owner | BudgetCreatePage | `src/pages/budgets/BudgetCreatePage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |
 | `/budgets/bva` | Modeling | MIGRATE — canonical modeling pattern | FP&A product owner | BudgetVAReport | `src/pages/budgets/BudgetVAReport.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |
@@ -123,7 +124,7 @@ For every row, create a tracked evidence record in the delivery system with: own
 | `/collaboration/shared` | Supporting | MIGRATE — supporting journey pattern | Platform product owner | SharedReports | `src/pages/collaboration/SharedReports.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |
 | `/collaboration/team` | Supporting | MIGRATE — supporting journey pattern | Platform product owner | TeamWorkspace | `src/pages/collaboration/TeamWorkspace.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |
 | `/settings/backup` | Admin | MIGRATE — admin/evidence pattern | Platform product owner | BackupRestorePage | `src/pages/settings/BackupRestorePage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |
-| `/settings/connectors` | Admin | MIGRATE — admin/evidence pattern | Platform product owner | ConnectorSettingsPage | `src/pages/settings/ConnectorSettingsPage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |
+| `/settings/connectors` | Admin | MIGRATE — admin/evidence pattern | Platform product owner | Navigate | INLINE / WRAPPED | BUILT — INLINE / WRAPPED | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |
 | `/settings/integrations` | Admin | MIGRATE — admin/evidence pattern | Platform product owner | IntegrationSettingsPage | `src/pages/settings/IntegrationSettingsPage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |
 | `/settings/security` | Admin | MIGRATE — admin/evidence pattern | Platform product owner | SecuritySettingsPage | `src/pages/settings/SecuritySettingsPage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |
 | `/templates/preview` | Modeling | MIGRATE — canonical modeling pattern | FP&A product owner | TemplatePreviewPage | `src/pages/templates/TemplatePreviewPage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |
@@ -455,6 +456,7 @@ For every row, create a tracked evidence record in the delivery system with: own
 | Investment Page | Close | MIGRATE — close / data-control pattern | Controller product owner | `src/pages/treasury/InvestmentPage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Loan Amortization Page | Close | MIGRATE — close / data-control pattern | Controller product owner | `src/pages/treasury/LoanAmortizationPage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Variance Dashboard Page | Modeling | MIGRATE — canonical modeling pattern | FP&A product owner | `src/pages/variance/VarianceDashboardPage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
+| Atlas Visual Baseline Page | Workspace | MIGRATE — workspace/support pattern | Finance product owner | `src/pages/visual/AtlasVisualBaselinePage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Comp Modeling Page | Modeling | MIGRATE — canonical modeling pattern | FP&A product owner | `src/pages/workforce/CompModelingPage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Headcount Plan Page | Modeling | MIGRATE — canonical modeling pattern | FP&A product owner | `src/pages/workforce/HeadcountPlanPage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Payroll Forecast Page | Modeling | MIGRATE — canonical modeling pattern | FP&A product owner | `src/pages/workforce/PayrollForecastPage.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
@@ -507,6 +509,7 @@ For every row, create a tracked evidence record in the delivery system with: own
 | Compliance Engine | Financial calculation | RETAIN — characterize and govern | Finance engineering owner | `src/engines/ComplianceEngine.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Conditional Formatting Engine | Financial calculation | RETAIN — characterize and govern | Finance engineering owner | `src/engines/ConditionalFormattingEngine.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Connector Engine | Financial calculation | RETAIN — characterize and govern | Finance engineering owner | `src/engines/ConnectorEngine.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
+| Connector Import Engine | Financial calculation | RETAIN — characterize and govern | Finance engineering owner | `src/engines/ConnectorImportEngine.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Consolidation Adjustments Engine | Close calculation | RETAIN — characterize and govern | Controller domain owner | `src/engines/ConsolidationAdjustmentsEngine.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Consolidation Engine | Close calculation | RETAIN — characterize and govern | Controller domain owner | `src/engines/ConsolidationEngine.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Construction Engine | Financial calculation | RETAIN — characterize and govern | Finance engineering owner | `src/engines/ConstructionEngine.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
@@ -709,6 +712,7 @@ For every row, create a tracked evidence record in the delivery system with: own
 | Government Store | Client state | REVIEW — authority boundary required | Frontend platform owner | `src/store/governmentStore.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Healthcare Store | Client state | REVIEW — authority boundary required | Frontend platform owner | `src/store/healthcareStore.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Insurance Store | Client state | REVIEW — authority boundary required | Frontend platform owner | `src/store/insuranceStore.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
+| Integration Store | Client state | REVIEW — authority boundary required | Frontend platform owner | `src/store/integrationStore.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Lease Store | Client state | REVIEW — authority boundary required | Frontend platform owner | `src/store/leaseStore.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Logistics Store | Client state | REVIEW — authority boundary required | Frontend platform owner | `src/store/logisticsStore.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Cube Migration | Client state | REVIEW — authority boundary required | Frontend platform owner | `src/store/migration/cubeMigration.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
@@ -837,6 +841,8 @@ For every row, create a tracked evidence record in the delivery system with: own
 | Merged Help Resolver | Domain experience | REVIEW — disposition required | Finance product owner | `src/components/help/MergedHelpResolver.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Underwriting Dashboard | Domain experience | REVIEW — disposition required | Finance product owner | `src/components/insurance/UnderwritingDashboard.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Index | Domain experience | REVIEW — disposition required | Finance product owner | `src/components/insurance/index.ts` | BUILT — TEST NOT FOUND | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
+| Connect Integration Modal | Domain experience | REVIEW — disposition required | Finance product owner | `src/components/integrations/ConnectIntegrationModal.tsx` | BUILT — TEST NOT FOUND | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
+| Integration Card | Domain experience | REVIEW — disposition required | Finance product owner | `src/components/integrations/IntegrationCard.tsx` | BUILT — TEST NOT FOUND | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | About Dialog | Shared experience | RETAIN — Atlas certification required | Design system owner | `src/components/layout/AboutDialog.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | App Layout | Shared experience | RETAIN — Atlas certification required | Design system owner | `src/components/layout/AppLayout.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Financial Context Bar | Shared experience | RETAIN — Atlas certification required | Design system owner | `src/components/layout/FinancialContextBar.tsx` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
@@ -1096,10 +1102,13 @@ For every row, create a tracked evidence record in the delivery system with: own
 | Dynamics Connector | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/api-integration/DynamicsConnector.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Ghost Sha Validator | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/api-integration/GhostShaValidator.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Net Suite Connector | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/api-integration/NetSuiteConnector.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
+| Plaid Connector | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/api-integration/PlaidConnector.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Quick Books Connector | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/api-integration/QuickBooksConnector.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Rest Api Client | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/api-integration/RestApiClient.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Sage Connector | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/api-integration/SageConnector.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Salesforce Connector | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/api-integration/SalesforceConnector.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
+| Slack Connector | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/api-integration/SlackConnector.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
+| Stripe Connector | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/api-integration/StripeConnector.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Xero Connector | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/api-integration/XeroConnector.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Index | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/api-integration/index.ts` | BUILT — TEST NOT FOUND | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |
 | Types | Application service | REVIEW — authority and audit evidence required | Platform engineering owner | `src/services/api-integration/types.ts` | BUILT — TEST EVIDENCE | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |

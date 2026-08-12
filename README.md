@@ -20,7 +20,7 @@
 
 |                                                                                               <!-- -->                                                                                                |                                                                                           <!-- -->                                                                                            |                                                                                            <!-- -->                                                                                            |                                                                                                  <!-- -->                                                                                                   |
 | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">181</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines Shipped</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">78</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Industry Verticals</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">13,290</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Automated Tests</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">181</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines (181 modules)</div></div> |
+| <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">182</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines Shipped</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">78</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Industry Verticals</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">13,438</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Automated Tests</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">182</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines (182 modules)</div></div> |
 
 <br/>
 
@@ -47,7 +47,7 @@ FinPlan Pro attacks each failure mode directly.
 
 | Industry Pain Point        | Today's Reality                                                                            | FinPlan Pro Answer                                                                                                                                       |
 | -------------------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Spreadsheet error risk** | Manual formulas drift; floating-point rounding silently corrupts totals.                   | 183 engines on a canonical decimal-exact money primitive (`decimal.js` + ROUND_HALF_UP); an automated ratchet fails CI if raw float money math returns.  |
+| **Spreadsheet error risk** | Manual formulas drift; floating-point rounding silently corrupts totals.                   | 182 engines on a canonical decimal-exact money primitive (`decimal.js` + ROUND_HALF_UP); an automated ratchet fails CI if raw float money math returns.  |
 | **Slow monthly close**     | Close cycles stretch days-to-weeks across emails and workbook versions.                    | Soft/hard close state machine with adjusting-entry support, RBAC-gated posting, period-lock lifecycle proven by 24 HTTP-level integration tests.         |
 | **Multi-entity chaos**     | IC eliminations, FX, minority interest done by hand.                                       | ASC 810/830 consolidation engine + dedicated Web Worker: eliminations, NCI, FX translation, category totals, balance check — verified exact to the cent. |
 | **Scenario paralysis**     | "What if revenue drops 15%?" takes days of re-modeling.                                    | Scenario, Monte-Carlo, driver-based and rolling-forecast engines answer in seconds; AI copilot surfaces alerts and NLQ answers.                          |
@@ -69,7 +69,7 @@ npm install
 # 2. Run the dev server (web UI on http://localhost:5173)
 npm run dev
 
-# 3. Run the full quality gate (TypeScript · ESLint · Prettier · 13,290 tests)
+# 3. Run the full quality gate (TypeScript · ESLint · Prettier · 13,438 tests)
 npm run check
 ```
 
@@ -79,7 +79,7 @@ npm run check
 | --------------------------- | ---------------------------------------------- |
 | `npm run dev`               | Start the Vite dev server                      |
 | `npm run build`             | Production build (vite)                        |
-| `npm test`                  | Full Vitest suite (1,174 files / 13,290 tests) |
+| `npm test`                  | Full Vitest suite (1,197 files / 13,438 tests) |
 | `npm run tsc`               | TypeScript strict check (`--noEmit`)           |
 | `npm run lint`              | ESLint (`--max-warnings 0`)                    |
 | `npm run format`            | Prettier write                                 |
@@ -151,8 +151,8 @@ QuickBooks · NetSuite · Xero · Sage Intacct · Microsoft Dynamics 365 · Sale
 
 ```
 src/
-├── engines/        # Financial Engines (181 modules) — lazy-reachable via manifest
-├── store/          # Zustand Stores (42 stores)
+├── engines/        # Financial Engines (182 modules) — lazy-reachable via manifest
+├── store/          # Zustand Stores (44 stores)
 ├── pages/          # routed page modules
 ├── components/     # UI, charts, sectors, AI copilot, spreadsheet
 ├── workers/        # Web Workers (4 active) — consolidation, Monte Carlo, batch calc, storage
@@ -163,7 +163,7 @@ scripts/            # CI ratchets, engine manifest, audit, SHA-pinning tooling
 ```
 
 > **Measured repository composition** (enforced by `npm run docs:verify` and `scripts/check-readme-claims.mjs`):
-> **Financial Engines (181 modules)**, **Zustand Stores (42 stores)**, **Web Workers (4 active)**.
+> **Financial Engines (182 modules)**, **Zustand Stores (44 stores)**, **Web Workers (4 active)**.
 > Coverage thresholds in `vite.config.ts` are 50% (statements/branches/functions/lines) — this is a
 > floor, not a claim of production coverage; no full-suite coverage run completes inside CI.
 > **Measured adoption: 85 of 258 engine/store modules** route through the canonical money primitive
@@ -213,7 +213,7 @@ Every one of these is pinned by a `*.money.test.ts` that fails against the origi
 | **TypeScript** (`tsc --noEmit`) | ✅                                     | Strict mode, zero errors                      |
 | **ESLint** (`--max-warnings 0`) | ✅                                     | Zero warnings tolerated                       |
 | **Prettier**                    | ✅                                     | Enforced in CI                                |
-| **Vitest** — frontend           | ✅ **1,174 files / 13,290 tests**      | Full suite green                              |
+| **Vitest** — frontend           | ✅ **1,197 files / 13,438 tests**      | Full suite green                              |
 | **Vitest** — server             | ✅ **107 tests / 9 files**             | Supertest + mock DB                           |
 | **Money adoption ratchet**      | ✅ **98/380 + 2/23** · 0 raw `toFixed` | Never regresses                               |
 | **Engine reachability**         | ✅ **180/180 reachable, 0 orphans**    | Manifest + direct + lazy                      |
