@@ -257,80 +257,11 @@ vi.mock('recharts', () => ({
   Bar: () => null,
 }));
 
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
-  // Explicitly define all icons used across the 10 page components.
-  // Icons referenced at module scope (e.g. ReportsListPage) MUST be defined.
-  return {
-    LayoutDashboard: makeIcon(),
-    TrendingUp: makeIcon(),
-    BarChart3: makeIcon(),
-    Upload: makeIcon(),
-    Target: makeIcon(),
-    HelpCircle: makeIcon(),
-    Plus: makeIcon(),
-    Search: makeIcon(),
-    Copy: makeIcon(),
-    Trash2: makeIcon(),
-    Eye: makeIcon(),
-    Send: makeIcon(),
-    CheckCircle: makeIcon(),
-    XCircle: makeIcon(),
-    ArrowLeft: makeIcon(),
-    Undo2: makeIcon(),
-    Redo2: makeIcon(),
-    Lock: makeIcon(),
-    History: makeIcon(),
-    FlaskConical: makeIcon(),
-    FileText: makeIcon(),
-    DollarSign: makeIcon(),
-    Layers: makeIcon(),
-    Download: makeIcon(),
-    Building2: makeIcon(),
-    UserCog: makeIcon(),
-    Database: makeIcon(),
-    Settings2: makeIcon(),
-    ShieldCheck: makeIcon(),
-    LogIn: makeIcon(),
-    EyeOff: makeIcon(),
-    ArrowLeftRight: makeIcon(),
-    CheckCircle2: makeIcon(),
-    AlertTriangle: makeIcon(),
-    Mail: makeIcon(),
-    AlertCircle: makeIcon(),
-    Loader2: makeIcon(),
-    ChevronDown: makeIcon(),
-    ChevronUp: makeIcon(),
-    Calculator: makeIcon(),
-    Shield: makeIcon(),
-    Keyboard: makeIcon(),
-    BookOpen: makeIcon(),
-    Table: makeIcon(),
-    TableIcon: makeIcon(),
-    X: makeIcon(),
-    Menu: makeIcon(),
-    PanelLeft: makeIcon(),
-    Moon: makeIcon(),
-    Sun: makeIcon(),
-    Monitor: makeIcon(),
-    Globe: makeIcon(),
-    Building: makeIcon(),
-    Calendar: makeIcon(),
-    Hash: makeIcon(),
-    Activity: makeIcon(),
-    Sparkles: makeIcon(),
-    Scale: makeIcon(),
-    ShieldAlert: makeIcon(),
-    TrendingDown: makeIcon(),
-    Info: makeIcon(),
-  };
-});
+// lucide-react is mocked globally in src/test/setup.ts against the complete
+// generated export list (src/test/allLucideIcons.cjs). A local hand-maintained
+// icon list used to live here and shadowed that mock, so every newly-imported
+// icon (most recently `Plug`, added to SettingsPage) broke this file with
+// "No X export is defined on the lucide-react mock". Rely on the global mock.
 
 vi.mock('@radix-ui/react-tabs', () => {
   const Root = ({

@@ -1642,4 +1642,19 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
       },
     ],
   },
+  '/visual/atlas': {
+    title: 'Atlas Visual Baseline (Developer Harness)',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A developer-only harness that renders every Atlas design-system primitive on one deterministic page so Playwright can capture byte-stable screenshots. It is not part of the FP&A workflow and is intentionally not linked from navigation.',
+      },
+      {
+        title: 'What should I do here?',
+        content:
+          'Nothing, unless you are reviewing a visual-regression diff. Run the Atlas visual spec to compare this page against its committed baselines; any pixel change is either an intended design-token update (accept the new baseline) or an unintended regression (fix the component).',
+      },
+    ],
+  },
 };
