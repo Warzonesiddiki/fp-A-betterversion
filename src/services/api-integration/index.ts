@@ -59,6 +59,11 @@ export {
   type DataverseODataEnvelope,
 } from './DynamicsConnector';
 
+// Integrations hub (2026-08-12) — payments / banking / communication
+export { StripeConnector } from './StripeConnector';
+export { PlaidConnector } from './PlaidConnector';
+export { SlackConnector } from './SlackConnector';
+
 // Connector framework
 export { BaseConnector } from './BaseConnector';
 export { ConnectorRegistry } from './ConnectorRegistry';

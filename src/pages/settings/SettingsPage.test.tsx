@@ -118,6 +118,7 @@ vi.mock('lucide-react', () => {
     Upload: makeIcon(),
     Trash2: makeIcon(),
     ShieldCheck: makeIcon(),
+    Plug: makeIcon(),
   };
 });
 

@@ -25,8 +25,9 @@
 <br/>
 
 **One FP&A platform.** Budgeting, forecasting, consolidation, close, reporting, and an AI copilot —
-running natively on desktop (offline/local-first) **and** in the browser. Every currency figure is computed with
-**audit-grade decimal exactness** — not a single `0.1 + 0.2 = 0.30000000000000004` bug ships to production.
+running natively on desktop (offline/local-first). It is a desktop app, not a web app: plain browsers are
+blocked by the Tauri-only runtime gate. Every currency figure is computed with **audit-grade decimal exactness**
+— not a single `0.1 + 0.2 = 0.30000000000000004` bug ships to production.
 
 [🚀 Getting Started](#-getting-started) ·
 [🧩 Capabilities](#-capability-map) ·
@@ -140,8 +141,8 @@ QuickBooks · NetSuite · Xero · Sage Intacct · Microsoft Dynamics 365 · Sale
 
 | Mode        | Stack                              | Notes                                                                 |
 | ----------- | ---------------------------------- | --------------------------------------------------------------------- |
-| **Web**     | React 19 + Vite + Tailwind 4       | The same engine library runs in the browser.                          |
 | **Desktop** | Tauri 2 + Rust backend             | Fully offline, local-first, data encrypted at rest.                   |
+| **Web build** | React 19 + Vite + Tailwind 4      | Frontend bundle for the Tauri shell; plain-browser rendering is intentionally blocked (desktop-only). |
 | **Server**  | Node + Express + SQLite (mockable) | Multi-user APIs, RBAC, period close, JWT auth; 107 integration tests. |
 
 ---

@@ -45,3 +45,13 @@
 
 - Browser pixel/visual verification of the beta channel: needs a browser-capable environment (same blocker as F-02/T-10).
 - CI cannot run (GitHub billing block E-005); local verification is the evidence basis.
+
+---
+
+## Addendum — 2026-08-12 (owner decision: desktop-only; beta channel removed)
+
+> **Owner direction:** "we are building an app not a web app or website" → **"Beta channel: Desktop-only — remove it"** (2026-08-12). The F-05 browser beta channel is **REMOVED** from the codebase: `VITE_BETA_WEB`, the `data-beta-web` marker, `betaMode.ts` + its 2 test files and the beta smoke test are deleted; `src/App.tsx` is strictly Tauri-only again (plain browser → alert + no render). Ledger #28; evidence E-017.
+>
+> **What this does NOT revert:** the F-05 hardening reviewed above (lazy/guarded `@tauri-apps` imports, `tauriSqlStorage` non-Tauri no-op, `CubeEnginePersistence` in-memory fallback) is **retained**. It is load-bearing for the jsdom test environment (tests render these modules without Tauri internals) and defensive in the Tauri runtime; reverting it would be churn with regression risk and no user-visible benefit. The desktop-only gate is re-tested in `src/App.runtime.test.tsx` (blocked browser + rendering Tauri paths).
+>
+> **Consequence:** the Tier-2 BETA-USAGE evidence path via a hosted browser beta is closed. The product-led evidence strategy needs a desktop-channel alternative (owner decision, tracked in `_bmad/project-context.md` next-actions). A-12's approach note now records that the browser/PWA channel no longer exists (still UNVALIDATED). The story-level DoD item (browser-capable visual verification of the beta channel) is moot — the channel is gone.
