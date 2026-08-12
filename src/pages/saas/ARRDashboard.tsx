@@ -110,7 +110,7 @@ export default function ARRDashboard() {
           </button>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigate('/saas/cohort-analysis')}>
+          <Button variant="outline" size="sm" onClick={() => navigate('/saas/cohort')}>
             Cohort Analysis
           </Button>
           <Button size="sm" onClick={() => navigate('/forecasts/create')}>

@@ -130,7 +130,7 @@ export default function MigrationPage() {
       setHistory(migrationEngine.getMigrationSnapshots());
       setShowWizard(false);
       setActiveSource(null);
-      navigate('/data/import', { state: { migrationComplete: true, snapshotId } });
+      navigate('/data', { state: { migrationComplete: true, snapshotId } });
     },
     [navigate]
   );

@@ -954,6 +954,264 @@ h3,
 }
 
 /* =============================================
+   APPLICATION SIDEBAR (UI-03)
+   Grouped, collapsible navigation over the route manifest in
+   src/types/navigation.ts. Zoho Books reading model: a quiet flat rail, one
+   section open at a time, and a single high-contrast pill marking where you
+   are. Sizing is generous (40px rows) because this rail is the primary way
+   through 190 screens.
+   ============================================= */
+.fp-sidebar {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 264px;
+  height: 100%;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-subtle);
+  transition: width 200ms ease;
+}
+.fp-sidebar[data-collapsed='true'] {
+  width: 64px;
+}
+
+.fp-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  height: 56px;
+  padding-inline: var(--space-lg);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.fp-sidebar[data-collapsed='true'] .fp-sidebar__brand {
+  padding-inline: 0;
+  justify-content: center;
+}
+.fp-sidebar__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-primary);
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.fp-sidebar__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 650;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.fp-sidebar__close {
+  padding: var(--space-xs);
+  border-radius: var(--radius-xs);
+  color: var(--text-muted);
+}
+.fp-sidebar__close:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.fp-sidebar__search {
+  padding: var(--space-md) var(--space-md) var(--space-sm);
+}
+.fp-sidebar__search-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: 7px var(--space-md);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  text-align: start;
+  transition:
+    border-color 120ms ease,
+    color 120ms ease;
+}
+.fp-sidebar[data-collapsed='true'] .fp-sidebar__search-button {
+  justify-content: center;
+  padding-inline: 0;
+}
+.fp-sidebar__search-button:hover {
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+}
+.fp-sidebar__search-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.fp-sidebar__kbd {
+  flex-shrink: 0;
+  padding: 1px 5px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.fp-sidebar__nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-xs) var(--space-sm) var(--space-md);
+}
+.fp-sidebar__sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fp-nav-section__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  padding: 9px var(--space-md);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 550;
+  text-align: start;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+.fp-sidebar[data-collapsed='true'] .fp-nav-section__trigger {
+  justify-content: center;
+  padding-inline: 0;
+}
+.fp-nav-section__trigger:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.fp-nav-section__icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+.fp-nav-section__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.fp-sidebar[data-collapsed='true'] .fp-nav-section__label,
+.fp-sidebar[data-collapsed='true'] .fp-nav-section__chevron {
+  display: none;
+}
+.fp-nav-section__chevron {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  transition: transform 160ms ease;
+}
+.fp-nav-section__chevron[data-expanded='true'] {
+  transform: rotate(180deg);
+}
+
+.fp-nav-section__panel {
+  padding: 2px 0 var(--space-sm);
+}
+.fp-nav-group + .fp-nav-group {
+  margin-top: var(--space-sm);
+}
+.fp-nav-group__label {
+  margin: 0;
+  padding: var(--space-xs) var(--space-md) 3px calc(var(--space-md) + 28px);
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.fp-nav-group__items {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fp-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 7px var(--space-md);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 450;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+.fp-nav-group__items .fp-nav-item {
+  padding-inline-start: calc(var(--space-md) + 28px);
+}
+.fp-nav-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.fp-nav-item[data-active='true'] {
+  background: var(--accent-primary);
+  color: #ffffff;
+  font-weight: 550;
+}
+.fp-nav-item[data-active='true']:hover {
+  background: var(--accent-hover);
+  color: #ffffff;
+}
+.fp-nav-item__label {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.fp-sidebar[data-collapsed='true'] .fp-nav-item--icon {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.fp-sidebar__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: var(--space-sm);
+  border-top: 1px solid var(--border-subtle);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fp-sidebar,
+  .fp-nav-section__chevron {
+    transition: none;
+  }
+}
+
+/* =============================================
    PRINT STYLES
    ============================================= */
 @media print {

@@ -157,7 +157,7 @@ export const NOTIFICATIONS: Notification[] = [
     title: 'Data Import Complete',
     message: 'October actuals import completed with 2 minor warnings.',
     isRead: true,
-    actionUrl: '/data/import',
+    actionUrl: '/data',
     createdAt: '2024-12-01T12:00:00Z',
   },
   {
@@ -166,7 +166,7 @@ export const NOTIFICATIONS: Notification[] = [
     title: 'Mention in Commentary',
     message: 'David Kim mentioned you in the variance commentary for Cloud Infrastructure.',
     isRead: false,
-    actionUrl: '/variance/acct-5100',
+    actionUrl: '/variance',
     createdAt: '2024-12-02T10:15:00Z',
   },
   {
@@ -184,7 +184,7 @@ export const NOTIFICATIONS: Notification[] = [
     title: 'ERP Sync Failure',
     message: 'SAP connection timed out during scheduled sync. Retry in progress.',
     isRead: false,
-    actionUrl: '/data/import',
+    actionUrl: '/data',
     createdAt: '2024-12-02T11:30:00Z',
   },
   {

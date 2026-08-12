@@ -297,7 +297,7 @@ export default function ChartOfAccountsPage() {
             <Plus className="h-4 w-4 mr-2" />
             Add First Account
           </Button>
-          <Button variant="secondary" onClick={() => navigate('/data/import')}>
+          <Button variant="secondary" onClick={() => navigate('/data')}>
             Import from CSV
           </Button>
         </div>

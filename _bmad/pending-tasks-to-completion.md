@@ -33,12 +33,12 @@ These gates are **green right now**. This is the floor the work must not break.
 | Lint | `eslint src --max-warnings 0` | clean |
 | Engine manifest | `npm run engines:verify` | 182 engines, current |
 | Docs truth | `npm run docs:verify` | all measured claims match |
-| Repo hygiene | `npm run repo:hygiene` | 2943 tracked files, 0 tracked-ignored |
+| Repo hygiene | `npm run repo:hygiene` | 2948 tracked files, 0 tracked-ignored |
 | Architecture | `npm run architecture:guardrails` | all pass |
 | Money ratchet | `npm run money:adoption` | holds (209 modules, 0 `toFixed`) |
 
 **Established (P-00 ✅).** The full suite now runs in this environment via
-`npm run test:sharded`: **1199 files, 13,447 tests** (1 skipped), ~13 min across
+`npm run test:sharded`: **1204 files, 13,485 tests** (1 skipped), ~13 min across
 8 shards. The stock `npm test` still cannot run here (it requests an 8 GB heap
 on a 3 GB / 2-CPU box); the sharded runner is the supported path. "All tests
 pass" is now a verified claim in this environment, not an inherited one.
@@ -188,9 +188,9 @@ theme-invariant by design (single source of truth). Fixing it means either
 relaxing that contract or re-picking the lifecycle palette — folded into
 **UI-07**, where the status palette is revisited as a whole.
 
-### UI-03 — Navigation and IA `[highest user-visible value]`
+### UI-03 — Navigation and IA `[highest user-visible value]` ✅ DONE
 
-**165 of 200 routes are unreachable from the navigation UI.**
+**Was: 160 of 190 in-shell routes unreachable from the navigation UI.**
 (`comm -23` of route paths in `App.tsx` against paths in `types/navigation.ts`.)
 `PILLARS` covers ~25 routes and `LEGACY_NAV_ITEMS` 16 sector entries. The
 command palette does not close the gap — `AppLayout` hardcodes **15** command
@@ -213,6 +213,30 @@ use them". Work:
    does nothing. Point it at the command palette.
 5. Verified by: a test asserting every non-parameterised route is reachable from
    the nav manifest, and every nav target resolves to a real route.
+
+**Outcome.** All five items shipped.
+
+- `src/types/navigation.ts` is now the single generated manifest: **190 items /
+  10 sections / grouped subsections**, labels defaulting to `PAGE_HELP` titles.
+  `PILLARS` and `LEGACY_NAV_ITEMS` are gone.
+- `src/components/layout/Sidebar.tsx` is a Zoho-style single-open accordion rail
+  (`APPLICATION SIDEBAR (UI-03)` block in `src/index.css`).
+- `AppLayout` derives `commandItems` by flattening the same manifest, so the
+  palette went from 15 hardcoded entries to every non-hidden screen and can no
+  longer drift from the rail.
+- Quick Search (`Sidebar.tsx`) now opens the command palette instead of no-op.
+- Contracts: `src/types/navigation.contract.test.ts` (bidirectional
+  reachability, 13), `src/hooks/useAppNavigation.test.tsx` (RBAC filtering, 6),
+  `src/components/layout/Sidebar.test.tsx` (13), `src/App.routeShell.test.tsx`
+  (4). All mutation-tested.
+
+**Dead links found and fixed while wiring the manifest.** The old nav pointed at
+two routes that do not exist (`/data/trial-balance`, `/data/import`); the same
+non-existent paths had leaked into `GlobalSearchEngine`, two mock-data feeds,
+two page buttons and 11 E2E `page.goto` calls, plus `/saas/cohort-analysis` and
+`/audit/gdpr-consent`. All corrected, and
+**`src/App.deadLinks.contract.test.ts`** now fails the build if any
+`navigate()`/`href`/`to`/`actionUrl` literal resolves to a non-route.
 
 ### UI-04 — Density, typography, and the data grid
 
@@ -299,8 +323,8 @@ critical/serious; keyboard paths through grids and modals; 1024×600 minimum.
 1. ~~**P-00**~~ ✅ — suite runs here (`npm run test:sharded`).
 2. ~~**UI-01 → UI-02**~~ ✅ — token layer collapsed, then light-first. (Doing
    the restyle first would have meant doing it twice.)
-3. **UI-03 ← NEXT** — navigation. Largest jump in usable surface (35 → 200 screens).
-4. **UI-06** — money formatting. Correctness, and cheap.
+3. ~~**UI-03**~~ ✅ — navigation. Usable surface went 30 → 190 screens.
+4. **UI-06 ← NEXT** — money formatting. Correctness, and cheap.
 5. **UI-04 / UI-05** — density and per-page consistency, incrementally.
 6. **D-01** — sector depth truth table; drives what "all industries" can claim.
 7. **P-01…P-04**, then **R-01…R-04**.

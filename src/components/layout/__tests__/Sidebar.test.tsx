@@ -26,6 +26,7 @@ vi.mock(import('lucide-react'), async (importOriginal) => {
     HelpCircle: makeIcon('HelpCircle'),
     ChevronLeft: makeIcon('ChevronLeft'),
     ChevronRight: makeIcon('ChevronRight'),
+    ChevronDown: makeIcon('ChevronDown'),
     Search: makeIcon('Search'),
     X: makeIcon('X'),
   };
@@ -36,26 +37,29 @@ vi.mock('@/store/uiStore', () => ({
     toggleSidebar: vi.fn(),
     mobileSidebarOpen: false,
     closeMobileSidebar: vi.fn(),
+    toggleCommandPalette: vi.fn(),
   }),
 }));
 vi.mock('@/context/ThemeContext', () => ({
   useTheme: () => ({ theme: 'dark', toggleTheme: vi.fn() }),
 }));
-vi.mock('@/hooks/usePillarNavigation', () => ({
-  usePillarNavigation: () => ({
-    pillars: [
+vi.mock('@/hooks/useAppNavigation', () => ({
+  useAppNavigation: () => ({
+    sections: [
       {
-        id: 'workspace',
-        label: 'Workspace',
-        items: [{ path: '/dashboard', label: 'Dashboard', icon: () => null }],
+        id: 'home',
+        label: 'Home',
+        icon: () => null,
+        groups: [{ label: null, items: [{ path: '/dashboard', label: 'Dashboard' }] }],
       },
       {
         id: 'admin',
         label: 'Admin',
-        items: [{ path: '/settings', label: 'Settings', icon: () => null }],
+        icon: () => null,
+        groups: [{ label: null, items: [{ path: '/settings', label: 'Settings' }] }],
       },
     ],
-    legacyItems: [],
+    activeSectionId: 'home',
     role: 'Admin',
   }),
 }));
@@ -69,9 +73,9 @@ describe('Sidebar', () => {
     expect(screen.getByText('Dashboard')).toBeTruthy();
   });
 
-  it('renders pillar section headers', () => {
+  it('renders section headers', () => {
     render(<Sidebar />);
-    expect(screen.getByText('Workspace')).toBeTruthy();
+    expect(screen.getByText('Home')).toBeTruthy();
     expect(screen.getByText('Admin')).toBeTruthy();
   });
 });

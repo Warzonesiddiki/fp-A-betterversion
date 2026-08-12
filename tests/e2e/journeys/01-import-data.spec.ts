@@ -38,13 +38,13 @@ test.describe('Journey 01: Import Data (First-User-Value)', () => {
    */
 
   test('step 1: navigate to Import page', async ({ page }) => {
-    await page.goto('/data/import');
+    await page.goto('/data');
     await page.waitForLoadState('networkidle');
     await expect(page.locator('h1').first()).toContainText(/import/i);
   });
 
   test('step 2: choose source format (CSV or JSON — xlsx removed per G7)', async ({ page }) => {
-    await page.goto('/data/import');
+    await page.goto('/data');
     await page.waitForLoadState('networkidle');
     // Source selector must offer CSV + JSON; xlsx MUST NOT be present (G7)
     const sourceSelector: Locator = page.locator('[data-testid="import-source"]');
@@ -55,7 +55,7 @@ test.describe('Journey 01: Import Data (First-User-Value)', () => {
   });
 
   test('step 3: upload CSV file', async ({ page }) => {
-    await page.goto('/data/import');
+    await page.goto('/data');
     await page.waitForLoadState('networkidle');
     // Use a fixture file shipped with the test suite
     const csvFixture = path.join(__dirname, '..', 'fixtures', 'sample-accounts.csv');
@@ -68,7 +68,7 @@ test.describe('Journey 01: Import Data (First-User-Value)', () => {
   });
 
   test('step 4: map columns to account fields', async ({ page }) => {
-    await page.goto('/data/import');
+    await page.goto('/data');
     await page.waitForLoadState('networkidle');
     const csvFixture = path.join(__dirname, '..', 'fixtures', 'sample-accounts.csv');
     await page.locator('input[type="file"]').setInputFiles(csvFixture);
@@ -82,7 +82,7 @@ test.describe('Journey 01: Import Data (First-User-Value)', () => {
   });
 
   test('step 5: preview rows before commit', async ({ page }) => {
-    await page.goto('/data/import');
+    await page.goto('/data');
     await page.waitForLoadState('networkidle');
     const csvFixture = path.join(__dirname, '..', 'fixtures', 'sample-accounts.csv');
     await page.locator('input[type="file"]').setInputFiles(csvFixture);
@@ -101,7 +101,7 @@ test.describe('Journey 01: Import Data (First-User-Value)', () => {
   });
 
   test('step 6: confirm import', async ({ page }) => {
-    await page.goto('/data/import');
+    await page.goto('/data');
     await page.waitForLoadState('networkidle');
     const csvFixture = path.join(__dirname, '..', 'fixtures', 'sample-accounts.csv');
     await page.locator('input[type="file"]').setInputFiles(csvFixture);
@@ -125,7 +125,7 @@ test.describe('Journey 01: Import Data (First-User-Value)', () => {
 
   test('step 7: verify data in Chart of Accounts', async ({ page }) => {
     // First complete the import (in real test, this would be a setup; for isolation we re-import)
-    await page.goto('/data/import');
+    await page.goto('/data');
     await page.waitForLoadState('networkidle');
     const csvFixture = path.join(__dirname, '..', 'fixtures', 'sample-accounts.csv');
     await page.locator('input[type="file"]').setInputFiles(csvFixture);
