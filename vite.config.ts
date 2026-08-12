@@ -181,6 +181,11 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
+    // Dev-only host allow-list. The production desktop shell (Tauri) never uses
+    // this server; it exists so sandboxed/remote development previews (which
+    // proxy the dev server under a generated hostname) are not rejected by
+    // Vite's host check. Loopback plus explicit preview domains only — never `true`.
+    allowedHosts: ['localhost', '127.0.0.1', '.e2b.app', '.localhost'],
     headers: {
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',

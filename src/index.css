@@ -1,5 +1,25 @@
 @import 'tailwindcss';
 
+/* ---------------------------------------------------------------------------
+ * Theme variant wiring (UI-01)
+ *
+ * Tailwind v4 resolves `dark:` against `@media (prefers-color-scheme: dark)` by
+ * default. FinPlan does NOT use the OS preference as its source of truth: the
+ * inline bootstrap in index.html and ThemeProvider both toggle an explicit
+ * `.dark` / `.light` class on <html>, and users can pick 'dark' | 'light' |
+ * 'system' from the UI.
+ *
+ * Without this override the two systems are disconnected — every `dark:`
+ * utility in the codebase follows the operating system while every CSS custom
+ * property follows the app's own toggle. Switching theme in-app then produces a
+ * half-themed screen (token-driven surfaces flip, Tailwind-driven ones do not).
+ *
+ * Redefining the variant as a class lookup makes `dark:` obey the same signal
+ * as the tokens below. 'system' still works: ThemeProvider resolves the OS
+ * preference and writes the corresponding class.
+ * ------------------------------------------------------------------------- */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Motion Design — shimmer animation for Skeleton components */
 @keyframes shimmer {
   0% {

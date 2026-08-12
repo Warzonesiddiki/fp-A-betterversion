@@ -600,6 +600,58 @@ export default function App() {
                 <Route path="/help" element={<HelpPage />} />
                 <Route path="/docs/api" element={<ApiReferencePage />} />
               </Route>
+
+              {/* Phase 4 G11 — Sector dashboards + aliases.
+                  These render inside AppLayout so industry screens keep the
+                  sidebar, navbar and financial context bar like every other
+                  page; previously they sat outside the layout (and after the
+                  catch-all), so they matched but rendered with no app chrome
+                  and no way to navigate onward. */}
+              <Route element={<RouteGroupWrapper domain="industry" />}>
+                {/* Phase 4 G11 — Sector dashboards (18) + aliases */}
+                <Route path="/sector/agriculture" element={<AgricultureDashboardPage />} />
+                <Route path="/sector/banking" element={<SectorBankingDashboardPage />} />
+                <Route path="/sector/construction" element={<SectorConstructionDashboardPage />} />
+                <Route path="/sector/education" element={<SectorEducationDashboardPage />} />
+                <Route path="/sector/emissions" element={<EmissionsDashboardPage />} />
+                <Route path="/sector/energy" element={<SectorEnergyDashboardPage />} />
+                <Route path="/sector/equipment" element={<EquipmentDashboardPage />} />
+                <Route path="/sector/government" element={<SectorGovernmentDashboardPage />} />
+                <Route path="/sector/healthcare" element={<SectorHealthcareDashboardPage />} />
+                <Route path="/sector/hospitality" element={<HospitalityDashboardPage />} />
+                <Route path="/sector/insurance" element={<SectorInsuranceDashboardPage />} />
+                <Route path="/sector/logistics" element={<SectorLogisticsDashboardPage />} />
+                <Route
+                  path="/sector/manufacturing"
+                  element={<SectorManufacturingDashboardPage />}
+                />
+                <Route path="/sector/real-estate" element={<SectorRealEstateDashboardPage />} />
+                <Route path="/sector/retail" element={<SectorRetailDashboardPage />} />
+                <Route path="/sector/sector" element={<SectorDashboardPage />} />
+                <Route path="/sector/technology" element={<TechnologyDashboardPage />} />
+                <Route
+                  path="/sector/telecommunications"
+                  element={<TelecommunicationsDashboardPage />}
+                />
+                <Route path="/sectors/education" element={<SectorsEducationDashboardPage />} />
+                <Route path="/sectors/government" element={<SectorsGovernmentDashboardPage />} />
+                <Route path="/sectors/logistics" element={<SectorsLogisticsDashboardPage />} />
+                <Route path="/sectors/telecom" element={<SectorsTelecomDashboardPage />} />
+                <Route path="/education" element={<EducationPage />} />
+                <Route path="/education/enrollment" element={<EnrollmentRetentionPage />} />
+                <Route path="/education/research-grants" element={<ResearchGrantsPage />} />
+                <Route path="/government" element={<GovernmentPage />} />
+                <Route path="/government/grants" element={<GrantDisbursementPage />} />
+                <Route path="/government/procurement" element={<ProcurementCyclePage />} />
+                <Route path="/logistics" element={<LogisticsPage />} />
+                <Route path="/logistics/fleet-cost" element={<FleetCostDashboardPage />} />
+                <Route path="/logistics/warehouse-cost" element={<WarehouseCostDashboardPage />} />
+                <Route path="/telecom" element={<TelecomPage />} />
+                <Route path="/forecasts/compare" element={<ScenarioComparisonPage />} />
+                <Route path="/forecasts/auto-update" element={<RollingForecastPage />} />
+                <Route path="/scenarios/merge" element={<ScenarioComparisonPage />} />
+                <Route path="/scenarios/lock" element={<ScenarioComparisonPage />} />
+              </Route>
             </Route>
 
             <Route
@@ -610,46 +662,6 @@ export default function App() {
                 </ErrorBoundary>
               }
             />
-            {/* Phase 4 G11 — Sector dashboards (18) + aliases */}
-            <Route path="/sector/agriculture" element={<AgricultureDashboardPage />} />
-            <Route path="/sector/banking" element={<SectorBankingDashboardPage />} />
-            <Route path="/sector/construction" element={<SectorConstructionDashboardPage />} />
-            <Route path="/sector/education" element={<SectorEducationDashboardPage />} />
-            <Route path="/sector/emissions" element={<EmissionsDashboardPage />} />
-            <Route path="/sector/energy" element={<SectorEnergyDashboardPage />} />
-            <Route path="/sector/equipment" element={<EquipmentDashboardPage />} />
-            <Route path="/sector/government" element={<SectorGovernmentDashboardPage />} />
-            <Route path="/sector/healthcare" element={<SectorHealthcareDashboardPage />} />
-            <Route path="/sector/hospitality" element={<HospitalityDashboardPage />} />
-            <Route path="/sector/insurance" element={<SectorInsuranceDashboardPage />} />
-            <Route path="/sector/logistics" element={<SectorLogisticsDashboardPage />} />
-            <Route path="/sector/manufacturing" element={<SectorManufacturingDashboardPage />} />
-            <Route path="/sector/real-estate" element={<SectorRealEstateDashboardPage />} />
-            <Route path="/sector/retail" element={<SectorRetailDashboardPage />} />
-            <Route path="/sector/sector" element={<SectorDashboardPage />} />
-            <Route path="/sector/technology" element={<TechnologyDashboardPage />} />
-            <Route
-              path="/sector/telecommunications"
-              element={<TelecommunicationsDashboardPage />}
-            />
-            <Route path="/sectors/education" element={<SectorsEducationDashboardPage />} />
-            <Route path="/sectors/government" element={<SectorsGovernmentDashboardPage />} />
-            <Route path="/sectors/logistics" element={<SectorsLogisticsDashboardPage />} />
-            <Route path="/sectors/telecom" element={<SectorsTelecomDashboardPage />} />
-            <Route path="/education" element={<EducationPage />} />
-            <Route path="/education/enrollment" element={<EnrollmentRetentionPage />} />
-            <Route path="/education/research-grants" element={<ResearchGrantsPage />} />
-            <Route path="/government" element={<GovernmentPage />} />
-            <Route path="/government/grants" element={<GrantDisbursementPage />} />
-            <Route path="/government/procurement" element={<ProcurementCyclePage />} />
-            <Route path="/logistics" element={<LogisticsPage />} />
-            <Route path="/logistics/fleet-cost" element={<FleetCostDashboardPage />} />
-            <Route path="/logistics/warehouse-cost" element={<WarehouseCostDashboardPage />} />
-            <Route path="/telecom" element={<TelecomPage />} />
-            <Route path="/forecasts/compare" element={<ScenarioComparisonPage />} />
-            <Route path="/forecasts/auto-update" element={<RollingForecastPage />} />
-            <Route path="/scenarios/merge" element={<ScenarioComparisonPage />} />
-            <Route path="/scenarios/lock" element={<ScenarioComparisonPage />} />
           </Routes>
         </Suspense>
       </ThemeProvider>
