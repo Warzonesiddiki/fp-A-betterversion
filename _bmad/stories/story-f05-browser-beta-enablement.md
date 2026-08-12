@@ -2,7 +2,7 @@
 
 > **File history:** created 2026-08-11 following the solo-dev evidence re-baseline (owner direction).
 
-## Status: IN PROGRESS — remaining work (Tauri-import hardening + beta smoke test + full beta-mode suite) COMPLETE 2026-08-11; QA review recorded (`_bmad/qa/story-f05-browser-beta-enablement-review.md`). The story becomes DONE when QA verdict lands (pending browser-capable visual verification of the beta channel, which stays optional for the gate).
+## Status: SUPERSEDED 2026-08-12 (owner decision — desktop-only product): the browser beta channel was removed from the codebase (ledger #28, evidence E-017; see the QA-review addendum). Historical status (2026-08-11): IN PROGRESS — remaining work (Tauri-import hardening + beta smoke test + full beta-mode suite) COMPLETE; QA review recorded (`_bmad/qa/story-f05-browser-beta-enablement-review.md`). The story was DONE as of PR #55; browser-capable visual verification of the beta channel is now moot (channel removed).
 ## Size: M | Risk: MEDIUM
 
 ## Why This Story Exists

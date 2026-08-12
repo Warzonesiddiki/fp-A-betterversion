@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as Tabs from '@radix-ui/react-tabs';
+import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useSettingsStore } from '@/store/settingsStore';
@@ -14,6 +15,7 @@ import {
   Upload,
   Trash2,
   ShieldCheck,
+  Plug,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -348,6 +350,25 @@ export default function SettingsPage() {
                     Upload Backup File
                   </Button>
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6 space-y-4">
+                <div className="flex items-center space-x-2 text-white mb-2">
+                  <Plug className="w-5 h-5 text-violet-400" />
+                  <h3 className="font-bold">Integrations</h3>
+                </div>
+                <p className="text-sm text-slate-400">
+                  Connect external systems — QuickBooks, Xero, NetSuite, Sage, Dynamics 365,
+                  Salesforce, Stripe, Plaid, and Slack — to bring financial data into FinPlan Pro.
+                </p>
+                <Link to="/settings/integrations" className="block">
+                  <Button className="w-full">
+                    <Plug className="w-4 h-4 mr-2" />
+                    Manage Integrations
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 

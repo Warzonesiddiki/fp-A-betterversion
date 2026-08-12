@@ -31,6 +31,14 @@ vi.mock('lucide-react', () => {
     Plus: makeIcon(),
     Trash2: makeIcon(),
     Save: makeIcon(),
+    ShieldCheck: makeIcon(),
+    Calculator: makeIcon(),
+    BookOpen: makeIcon(),
+    Landmark: makeIcon(),
+    Users: makeIcon(),
+    CreditCard: makeIcon(),
+    MessageSquare: makeIcon(),
+    Building2: makeIcon(),
   };
 });
 

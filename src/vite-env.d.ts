@@ -7,7 +7,6 @@ interface ImportMetaEnv {
   readonly VITE_NIM_BASE_URL: string;
   readonly VITE_CONTROL_PLANE_URL: string;
   readonly VITE_ENABLE_CONTROL_PLANE: string;
-  readonly VITE_BETA_WEB: string;
 }
 
 interface ImportMeta {

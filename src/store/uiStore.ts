@@ -5,7 +5,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { UIState } from '@/types';
 import { masterStorage } from '../utils/masterStorage';
 
-import { isTauriRuntime } from '@/utils/betaMode';
+import { isTauriRuntime } from '@/utils/tauriRuntime';
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
 import { createLogger } from '@/utils/logger';
 
@@ -45,10 +45,10 @@ export const useUIStore = create<UIState>()(
             toast.duration || 5000
           );
 
-          // Native notification for high-priority alerts. F-05 browser-beta
-          // hardening: @tauri-apps/plugin-notification is imported lazily and
-          // only when running inside Tauri, so a browser (beta mode or
-          // blocked) never evaluates the plugin module.
+          // Native notification for high-priority alerts. Desktop hardening:
+          // @tauri-apps/plugin-notification is imported lazily and only when
+          // running inside Tauri, so a non-Tauri runtime (including the jsdom
+          // test environment) never evaluates the plugin module.
           if (
             toast.type === 'error' ||
             (toast.title &&

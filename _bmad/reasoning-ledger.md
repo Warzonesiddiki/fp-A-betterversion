@@ -516,4 +516,119 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 
 ---
 
+## Ledger Entry #26 — 2026-08-12 — Owner/System (restored from HANDOVER_PROMPT_SESSION11; the post-merge docs commit 7e490cd carrying this entry was deleted with the arena branch — content reconstructed from the handover's documented risk decision, §11)
+
+### Decision/Topic: Merge PR #55 (feat(f-05): browser beta hardening + verification gap closure) into main at the owner's explicit instruction despite failing CI
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | Required checks were red at merge time, but every job fails before starting due to the repo-wide GitHub Actions billing block (E-005: "recent account payments have failed or your spending limit needs to be increased") — an account-level infrastructure condition predating PR #53. No job ever executed, so red CI carries no code-failure signal; treating it as a code gate would block all owner-requested delivery indefinitely. |
+| Evidence | Same billing annotation on every job of every workflow (see `_bmad/qa/ci-actions-billing-block-2026-08-10.md`); identical precedent for the PR #53 and PR #54 merges at owner instruction; local verification of the merged content green: root 1,189 files / 13,377 tests 0 failures (default and beta-mode identical), server 130/130 default + 207/207 native, tsc 0 (root + server), eslint full src 0, compliance 22/22 (with worktree workflows applied), guardrails PASS, audit 0 (prod + full), release:dry-run 7/7, sbom 40. |
+| Options Considered | (a) Block the merge until CI turns green — rejected: the billing block is owner-side (Billing & plans) and no code change can clear it; the branch was feature-complete and locally verified. (b) Merge at the owner's explicit instruction with the risk decision documented — ADOPTED (PR #55 comment + this ledger entry). |
+| Risk Probe | Risk: a latent regression lands untested by CI — mitigated by the local verification battery above (13,377 tests) and the T-15 triage plan: after billing clears, re-run workflows on main and classify failures as environment/bootstrap (native modules in server tests) vs regressions. |
+| Consequence Projection | F-05 lands on main; future required-check bypasses must NOT happen without explicit owner instruction plus a documented risk decision. |
+| Confidence Score | 92% |
+| Autonomy Level | A3 (merge required owner instruction; executed on it) |
+
+### Adopted Path: PR #55 merged 2026-08-12 (merge commit `8d17058`); risk decision documented on the PR #55 comment and here.
+
+### Rejected Alternatives: blocking the merge until CI is green (owner-side infrastructure block, no code remedy).
+
+### Open Items: re-run workflows on main after the billing block clears (T-14/T-15 triage); land the 9 hardened workflow files with a workflows-enabled token (T-13).
+
+---
+
+## Ledger Entry #27 — 2026-08-12 — System (post-handover session start: sandbox recycle recovery + worktree reconciliation)
+
+### Decision/Topic: Recover the recycled sandbox worktree and restore the documented uncommitted workflow-hardening state
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | The sandbox recycle wipes node_modules and left the git worktree incomplete: the restore-time checkout was interrupted (stale 0-byte `index.lock`, empty index, ~2,700 HEAD files missing from disk; only ~51 top-level paths restored). Local refs were already correct (HEAD == origin/main == `8d17058`, the PR #55 merge), and the arena branch had been deleted from the remote after merge (no refs remain; `7e490cd` existed only on that branch). The handover's `git add -A` reconciliation would have staged 2,907 deletions — it was blocked by the stale lock, which is why the empty-index state was detectable before any damage. |
+| Evidence | `git ls-files` = 0 entries; `git diff HEAD` = 2,907 phantom deletions; `.github/workflows/*` present on disk byte-identical to HEAD (the uncommitted hardening was NOT in the snapshot; only the committed `ci-patches/` survive); object DB intact (`git show HEAD:package.json` reads fine); other Freebuff worktrees hold only partial/older states (main worktree = SHA-pinned but pre-shard intermediate). |
+| Options Considered | (a) Handover's `git add -A` + unstage workflows — rejected: would stage 2,907 deletions given the missing files (index-destructive). (b) `git checkout HEAD -- .` / `git restore .` — rejected: charter + handover forbid; would overwrite existing files. (c) Remove stale lock → `git read-tree HEAD` (index-only) → `git checkout-index -a` WITHOUT `-f` (writes only missing files, skips existing) — ADOPTED: strictly additive, preserves all on-disk content. |
+| Risk Probe | Risk: existing files differ from HEAD (uncommitted work) — mitigated: checkout-index skips existing files; post-recovery status showed exactly one diff (`scripts/compliance-evidence.mjs`, a 0-byte truncated file from the interrupted restore — restored from HEAD) and zero remaining missing files. Risk: workflow hardening lost with the snapshot — mitigated: reconstructed from committed patches; `ci-patches/0002-loop3-sha-pin-shard-a11y-block.patch` is the exact scope the 2026-08-10 change log and the committed `compliance-evidence.json` describe (SHA-pin all actions, test sharding, blocking a11y gate); applying it reproduces the documented 22/22 + guardrails-PASS state, and the regenerated `compliance-evidence.json` is byte-identical to the committed oracle. Patches 0001/0003/0004/N-0004 do not stack on 0002 (overlapping ci.yml hunks) and are not required by any local gate — left in `ci-patches/` for future use. |
+| Consequence Projection | Worktree == main + the 9 uncommitted hardened workflow files (the handover's documented state); the owner can commit them unchanged once `workflows` permission is granted (T-13). |
+| Confidence Score | 90% |
+| Autonomy Level | A5 (charter-sanctioned reconciliation: "verified fast-forward + index refresh; never reset/restore/clean") |
+
+### Adopted Path: removed stale `index.lock`; `git read-tree HEAD`; `git checkout-index -a` (existing files preserved); restored the 0-byte `scripts/compliance-evidence.mjs` from HEAD; applied `ci-patches/0002-loop3-sha-pin-shard-a11y-block.patch` (worktree-only, unstaged); verified compliance-evidence 22/22, architecture guardrails PASS, no duplicate `if:` in the ci.yml summary job, F-05 beta tests 9/9 in both env variants.
+
+### Rejected Alternatives: `git add -A` (would stage deletions); `git checkout`/`git restore .` (forbidden, destructive); stacking all five ci-patches (hunks overlap; 0002 alone reproduces the documented oracle state).
+
+### Open Items: none new; owner-side blockers unchanged (billing E-005, workflows permission T-13, browser env T-10, hosting decision T-06).
+
+---
+
+## Ledger Entry #28 — 2026-08-12 — Owner/System (desktop-only product decision: browser beta channel removed)
+
+### Decision/Topic: Remove the F-05 browser beta channel — the product is a desktop app, not a web app
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | Owner direction (2026-08-12): "we are building an app not a web app or website" → "Beta channel: Desktop-only — remove it". The F-05 `VITE_BETA_WEB` channel existed solely to enable a Tier-2 BETA-USAGE evidence loop (validation-plan v2.2); it was never a supported capability (A-12 UNVALIDATED). Removing it restores the pre-F-05 Tauri-only contract: a plain browser must alert and render nothing. The removal must be honest and complete (no dead knob left documented, no orphaned module) without touching unrelated hardening the test suite depends on. |
+| Evidence | Beta surface mapped: `src/utils/betaMode.ts` (isTauriRuntime/isBrowserBetaAllowed/isRenderAllowed), `betaMode.test.ts` (5 tests), `betaMode.app.test.tsx` (4 smoke tests), `src/App.tsx` (data-beta-web effect + gate), `src/store/uiStore.ts` (isTauriRuntime import), `src/vite-env.d.ts` (VITE_BETA_WEB), `.env.example` (flag doc), README browser claims. No CI/test-config/scripts references to VITE_BETA_WEB exist (rg across `.github/`, `scripts/`, `src/test/`, vitest configs: 0 hits). `isTauriRuntime` consumers outside App: uiStore only (lazy notification-import guard). The F-05 lazy/guarded `@tauri-apps` imports and non-Tauri fallbacks (tauriSqlStorage no-op, CubeEnginePersistence in-memory, …) are exercised by the jsdom suite and retained. |
+| Options Considered | (a) Keep the beta channel dormant (flag exists, never set) — rejected: contradicts the owner's desktop-only direction; leaves a documented knob with no consumer. (b) Remove only the flag + marker, keep the betaMode module — rejected: a file named `betaMode.ts` with no beta mode is dishonest naming. (c) Full removal + rename to `tauriRuntime.ts` + desktop-only App gate — ADOPTED: honest, complete, minimal; guarded-import hardening retained with rationale recorded. |
+| Risk Probe | Risk: jsdom test suite breaks if the gate hardens to Tauri-only — mitigated: jsdom has no `__TAURI_INTERNALS__`, so App renders the alert+null path exactly as before (the pre-F-05 suite already ran this way); new `App.runtime.test.tsx` pins both paths (blocked browser / rendering Tauri). Risk: README "runs in the browser" claims become false — mitigated: hero line + Deployment table Web row corrected to desktop-only wording. Risk: `.env.example` still documents VITE_BETA_WEB — environmental: the workspace env-file guard blocks edits to `.env*` paths; the knob is dead (no code reads it); flagged as the sole residual doc-drift item. |
+| Consequence Projection | The app is desktop-only again; the Tier-2 hosted-browser evidence path is closed — the product-led evidence strategy needs a desktop-channel alternative (owner decision, recorded in `_bmad/project-context.md` next-actions). A-12 stays UNVALIDATED with no active evidence path. Verification battery: root tsc 0, targeted suites green (tauriRuntime 2, App.runtime 2, tauriSqlStorage, uiStore, useTauriGlobalShortcuts, CubeEnginePersistence), changed-file eslint 0. |
+| Confidence Score | 90% |
+| Autonomy Level | A4 (owner-directed product decision; executed the removal) |
+
+### Adopted Path: deleted `src/utils/betaMode.ts`, `betaMode.test.ts`, `betaMode.app.test.tsx`; created `src/utils/tauriRuntime.ts` (+tests) and `src/App.runtime.test.tsx`; `src/App.tsx` gate is strictly `isTauriRuntime()` (alert + null in a browser), beta effect/marker/imports removed; `uiStore.ts` import + comment updated; `VITE_BETA_WEB` removed from `vite-env.d.ts`; README hero + Deployment table corrected to desktop-only; F-05 guarded-import hardening retained.
+
+### Rejected Alternatives: keeping a dormant flag; partial removal leaving the misnamed module; reverting the F-05 lazy/guarded Tauri-import hardening (jsdom-load-bearing, no user-visible benefit to revert).
+
+### Open Items: `.env.example` still documents the dead VITE_BETA_WEB key (env-file guard blocks edits — needs a token/tool with file access or owner apply); owner to choose the desktop-channel Tier-2 evidence strategy; owner-side blockers unchanged (billing E-005, workflows permission T-13, browser env T-10).
+
+---
+
+## Ledger Entry #30 — 2026-08-12 — System (Connector pull → Ledger import: controlled-loop "import actuals" wired to the Integrations hub)
+
+### Decision/Topic: Give every connected integration a real "Import to Ledger" action — pull via the connector, map through a pure decimal-safe engine, write through the canonical `glStore.importGLData` (IMPORT_CREATE-gated) path
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | The Integrations hub (ledger #29) gave connectors real connect/test/sync, but sync only surfaced external data — it never fed the ledger. The controlled operating loop's "import actuals" step requires connector data to land in the GL journal. The canonical import path is `glStore.importGLData` (validates entries, applies rules, returns a typed `ImportResult` union). `enforce` (rba) propagates return values, so failures surface honestly to callers. |
+| Evidence | `glStore.importGLData` signature + `ImportResult` union read-verified (src/store/glStore.ts, src/types/index.ts); `enforce` wrapper confirmed to return the inner function's value (src/utils/rba). Existing connectors expose `pull` returning ExternalTransaction-like records (RestApiClient-verified shapes; Stripe balance/charges, Plaid transactions with Link token, Slack webhook outbound-only — import not applicable for outbound-only, UI hides action accordingly). |
+| Options Considered | (a) Per-connector bespoke write paths — rejected: duplicated validation/rules logic. (b) Write directly to glStore entries bypassing importGLData — rejected: bypasses IMPORT_CREATE gate and validation. (c) Pure `ConnectorImportEngine` mapping external transactions → GL journal rows (accounts receivable/sales revenue, accounts payable, fees/expense categories, cash/bank), then one importGLData call per provider — ADOPTED. Outbound-only connectors (Slack) and incomplete auth (Plaid without Link token) hide the action and surface honest per-provider errors. |
+| Risk Probe | Risk: money conversion — mitigated: engine converts cents→dollars with exact decimal arithmetic (`fromCents`), tests assert exact values. Risk: store mock selector shape — caught by page test (busy flag truthy), fixed. Risk: lucide icon mock missing new icon in legacy `__tests__` duplicate — added `Plug` to both page-test mocks. Risk: immer-draft indexed access — guarded refs in the store action. |
+| Consequence Projection | Connected integrations now feed the ledger through one gated, validated, honest path; sync counts and import results are surfaced in the UI. Verification battery: root tsc 0; ConnectorImportEngine + integrationStore + IntegrationSettingsPage suites green (140+ tests); changed-file eslint 0 (prettier-fixed); `git diff --check` clean; money-adoption ratchet holds. |
+| Confidence Score | 86% |
+| Autonomy Level | A4 (continuation of owner-directed feature; executed with evidence-first honesty) |
+
+### Adopted Path: `src/engines/ConnectorImportEngine.ts` (+ test) pure mapping ExternalTransaction → GL journal rows; `importToLedger(provider)` action on `integrationStore` (pull → engine → `glStore.importGLData`, import count persisted in connection.lastImportCount) + tests; `IntegrationCard` "Import to Ledger" action; page wiring + tests.
+
+### Rejected Alternatives: bespoke per-connector write paths; bypassing importGLData's gate/validation; claiming import for outbound-only connectors (Slack).
+
+### Open Items: full OAuth2 browser redirect flow still future (F-04/P-track); Plaid Link access-token flow still needs owner-side Plaid account; owner-side blockers unchanged (billing E-005, workflows T-13, browser env T-10).
+
+---
+
+## Ledger Entry #29 — 2026-08-12 — Owner/System (Integrations hub: all helpful integrations surfaced + Stripe/Plaid/Slack added)
+
+### Decision/Topic: Build a real Integrations hub — every integration with an implementation is connectable; no fake/placeholder connectors
+
+### DRP Summary:
+| Stage | Analysis |
+|-------|----------|
+| First Principles | Owner request: "add all Integrations integration which can be helpfull". Audit of the existing state found the app already had a complete, tested connector framework (`src/services/api-integration/`: RestApiClient + QuickBooks, Xero, NetSuite, Sage Intacct, Dynamics 365, Salesforce) with **zero UI**, plus two half-baked settings pages: `IntegrationSettingsPage` (cosmetic theater — hardcoded list incl. SAP/Power BI/Tableau/Slack/SharePoint/Google Sheets where Connect/Sync just flipped local state, no code behind them) and `ConnectorSettingsPage` (local `ConnectorEngine`, static Maps, not persisted). "Adding integrations" therefore means: surface the real connectors behind a persistent, tested hub and add the highest-value gaps (banking, payments, notifications) to the same standard — while NEVER presenting a connector that doesn't exist (honest-labeling discipline). |
+| Evidence | Framework: 6 connectors + `ConnectorRegistry` + `BaseConnector` (connect/sync/checkHealth/disconnect), each with tests; imported only by `src/sdk/FpaClient.ts`, zero UI consumers (rg). `IntegrationSettingsPage.tsx` had `AVAILABLE_INTEGRATIONS` with fake entries and `handleConnect` doing `setIntegrations` state flips (read-verified). `PERSISTED_STORE_KEYS` registry (src/utils/persistedStores.ts) is cross-checked by `backupRestore.test.ts` — any new persisted store must be registered. Auth shapes read per connector (NetSuite oauth1 TBA, Sage oauth2_sage+sender, Dynamics oauth2_dataverse, QB/Xero/Salesforce oauth2; Salesforce health uses `{instanceUrl}/services/oauth2/userinfo`). |
+| Options Considered | (a) Add fake "Connect" buttons for SAP/Power BI/Tableau/SharePoint/Google Sheets to match the old page — rejected: theater; violates the never-fabricate rule and the owner's own honesty bar. (b) Only rewrite the existing page cosmetically — rejected: no real connectivity. (c) Full hub: typed catalog (`src/config/integrations.ts`) mapping UI fields → ConnectorConfig → real connector class; persisted `integrationStore` (masterStorage, registered in PERSISTED_STORE_KEYS); page + card + connect-modal components; 3 new connectors (Stripe bearer-key, Plaid client_id+secret fetch pattern, Slack webhook) with tests — ADOPTED. OAuth2 connectors accept an optional pasted access token so "Test connection" works in-app (no callback server); a browser OAuth redirect flow stays a future server-authorized capability (F-04/P-track) — documented in the UI, not claimed. |
+| Risk Probe | Risk: new persisted store breaks the backup registry test — mitigated: `integration-store` registered in `PERSISTED_STORE_KEYS` (alphabetical, between insurance and lease). Risk: connector auth guards reject catalog-built configs — mitigated: catalog test constructs every connector with dummy values (all 9 pass, guard shapes verified per connector). Risk: money discipline — mitigated: Stripe minor-unit conversion uses `fromCents` (exact decimal, ratchet-safe); Plaid/Slack pass amounts through unmodified. Risk: jsdom smoke tests render the new page — empty store renders cleanly (no network on render; network only inside connect/test/sync actions). |
+| Consequence Projection | The app now has a real Integrations hub at /settings/integrations (linked from Settings → Data & Security): 9 integrations (6 pre-existing + Stripe + Plaid + Slack), persisted connections, real health checks/sync with honest status, local-credential security note. Fake SAP/Power BI/Tableau/SharePoint/Google Sheets entries removed — they were never implemented; adding them later means writing the connector first. Verification battery: root tsc 0, targeted suites (3 new connector tests, catalog, store, page, SettingsPage), changed-file eslint 0, `git diff --check` clean. |
+| Confidence Score | 88% |
+| Autonomy Level | A4 (owner-directed feature request; executed with evidence-first honesty) |
+
+### Adopted Path: created `src/config/integrations.ts` (9-definition catalog, no placeholders) + test; `src/store/integrationStore.ts` (persisted, real connector lifecycle) + test; `src/services/api-integration/{Stripe,Plaid,Slack}Connector.ts` + tests + barrel exports; `src/components/integrations/{IntegrationCard,ConnectIntegrationModal}.tsx`; rewrote `IntegrationSettingsPage.tsx` + test (fake entries removed); SettingsPage Integrations nav card; `integration-store` registered in `PERSISTED_STORE_KEYS`.
+
+### Rejected Alternatives: placeholder/fake connectors for unimplemented systems (SAP, Power BI, Tableau, SharePoint, Google Sheets); cosmetic-only page rewrite; storing credentials outside masterStorage.
+
+### Open Items: full OAuth2 browser redirect flow is future work (F-04/P-track, server-authorized views); Plaid transaction pull requires a completed Link access token (documented in the UI); owner-side blockers unchanged (billing E-005, workflows permission T-13, browser env T-10).
+
+---
+
 <!-- Future entries append below this line. -->

@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import AppLayout from './components/layout/AppLayout';
 import LoadingScreen from './components/ui/LoadingScreen';
@@ -10,7 +10,7 @@ import {
 } from './components/errors/RouteGroupErrorBoundary';
 import { useFirstRun } from './hooks/useFirstRun';
 import { StorageFailureBanner } from './components/system/StorageFailureBanner';
-import { isBrowserBetaAllowed, isRenderAllowed, isTauriRuntime } from './utils/betaMode';
+import { isTauriRuntime } from './utils/tauriRuntime';
 
 // Core (not route-dependent)
 const OnboardingWizard = lazy(() =>
@@ -316,29 +316,12 @@ const _DOMAIN_MAP = {
 export default function App() {
   const { isFirstRun, completeSetup } = useFirstRun();
 
-  // F-05: beta browser enablement (solo-dev validation loop). Tauri remains
-  // the default runtime; a plain browser renders ONLY when VITE_BETA_WEB is
-  // explicitly enabled. This is not a claim that browser/PWA is supported
-  // (A-12 stays UNVALIDATED).
-  //
-  // The honest `data-beta-web` marker is set ONLY when the app actually
-  // renders in beta mode — never on the blocked path, never in Tauri. The
-  // runtime check is evaluated per render (isTauriRuntime), not captured at
-  // module load, so the gate stays correct across runtime changes.
-  useEffect(() => {
-    if (
-      typeof document !== 'undefined' &&
-      !isTauriRuntime() &&
-      isBrowserBetaAllowed(import.meta.env)
-    ) {
-      document.documentElement.dataset.betaWeb = 'true';
-      console.info(
-        '[beta-web] FinPlan running in browser beta mode (VITE_BETA_WEB). Not a supported runtime claim.'
-      );
-    }
-  }, []);
-
-  if (!isRenderAllowed(import.meta.env)) {
+  // Desktop-only runtime gate (owner decision 2026-08-12: the F-05 browser
+  // beta channel — VITE_BETA_WEB + data-beta-web marker — was removed; the
+  // product is a desktop app, not a web app). A plain browser is blocked
+  // unconditionally. The check is evaluated per render (isTauriRuntime), not
+  // captured at module load, so the gate stays correct across runtime changes.
+  if (!isTauriRuntime()) {
     alert(
       'This application is designed to run exclusively as a desktop app via Tauri. It is not supported in a standard web browser.'
     );

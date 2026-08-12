@@ -1,6 +1,8 @@
 # Beta Launch Kit — FinPlan Pro (public-beta validation loop)
 
 > **Created:** 2026-08-11 · **Status:** READY (drafts/plans only — deploy decision is the owner's, T-06) · **Method:** BMAD v5.0 ULTRA-YOLO (solo-dev evidence strategy, validation-plan v2.2 Tier 2 BETA-USAGE)
+>
+> **⚠️ SUPERSEDED 2026-08-12 (owner decision — desktop-only product):** the browser beta channel (`VITE_BETA_WEB`) was removed from the codebase ("we are building an app not a web app or website" → "Beta channel: Desktop-only — remove it"). This kit is retained as a historical record of the planned hosted-web beta loop; do **NOT** execute it as written. Desktop-channel alternatives for Tier-2 BETA-USAGE evidence (waitlist, community posts, direct Tauri installs) are an owner decision. Ledger #28; evidence E-017.
 > **Companion artifacts:** `_bmad/research/validation-plan.md` (§Solo-dev evidence strategy), `_bmad/research/owner-direction-record-2026-08-11-solo-dev.md`, `_bmad/stories/story-f05-browser-beta-enablement.md`.
 > **Evidence rule:** nothing in this kit is participant evidence. Community posts are DRAFTS. Any signals they produce are logged as **BETA-USAGE (Tier 2)** — they never validate assumptions (Tier 1 only).
 
