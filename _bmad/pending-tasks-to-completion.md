@@ -342,6 +342,28 @@ critical/serious; keyboard paths through grids and modals; 1024×600 minimum.
 --shards=8 --only=N`.
 - **P-01** — Bundle budget: main ≤150 KB gzip, total ≤2 MB (`npm run
 bundle-check`), with 200 lazy routes and heavy vendor chunks already split.
+
+  **The gate was only measuring three of its six vendors.** It looked up each
+  budgeted chunk and did all its work inside `if (match)`, so any vendor that
+  produced no chunk was skipped without a word while the run still reported
+  PASS. `vite.config.ts` had no ag-grid rule, so ag-grid sat in an anonymous
+  `chunk-*.js` at **298.3KB gzip — the largest artefact in the build, 1.7KB
+  under the very limit meant to govern it**, unmeasured. Now named
+  (`grid-community-vendor` 284.85KB = 95% of budget, correctly warning;
+  `grid-react-vendor` 14.29KB), and a missing chunk is an error, not a skip —
+  mutation-verified. `ai-vendor` is exempt by name because
+  `@huggingface/transformers` is an intentionally uninstalled optional peer;
+  it prints a SKIP line and re-arms automatically if installed.
+
+  **Open — `pdf-vendor` is eagerly preloaded (179.74KB gzip on first paint).**
+  Not jsPDF's doing: rolldown's injected preload helper landed in that chunk,
+  and 11 of its 13 importers (entry chunk included) want only that ~1KB helper,
+  defeating the lazy `loadJsPDF()` design in `utils/pdfRuntime.ts`. Naming the
+  helper's id in `manualChunks` does not work — rolldown re-merges the small
+  chunk, and rolldown-vite 8 rejects `output.minChunkSize`. Needs a real
+  always-eager owner module or an upstream knob. **This is the single biggest
+  first-paint win available**, and total JS is at 92.2% of limit.
+
 - **P-02** — 100k-row grid at ≥30 fps; 10k-row GL import <30 s; 500-row PDF <3 s.
   Measure before optimising.
 - **P-03** — Workers (consolidation, Monte Carlo, formula, export) genuinely

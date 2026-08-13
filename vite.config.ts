@@ -227,8 +227,33 @@ export default defineConfig({
             : 'assets/[name]-[hash].js';
         },
         manualChunks(id: string) {
+          // KNOWN ISSUE — pdf-vendor is in the critical path, and not because
+          // of jsPDF. Rolldown injects its dynamic-import preload helper
+          // (`\0vite/preload-helper.js`) into some chunk, and it landed in
+          // pdf-vendor; 11 of that chunk's 13 importers — including the entry
+          // and masterStorage — want only that ~1KB helper, yet pull a 616KB
+          // modulepreload on first paint. `loadJsPDF()` in utils/pdfRuntime.ts
+          // is careful to keep jsPDF lazy, and this quietly undoes that.
+          //
+          // Returning a name for that id from manualChunks does NOT work here:
+          // rolldown re-merges the resulting sub-threshold chunk, and
+          // `output.minChunkSize` is rejected as an invalid key by
+          // rolldown-vite 8. Verified empirically, so no no-op rule is left
+          // behind pretending to fix it. Fixing this needs either a small
+          // always-eager module that owns the helper or an upstream knob;
+          // tracked rather than bodged.
           if (id.includes('@huggingface/transformers')) return 'ai-vendor';
           if (id.includes('lucide-react')) return 'icon-vendor';
+          // ag-grid must be named so the G19 budget in scripts/bundle-check.js
+          // can see it. That gate skips any vendor whose chunk is missing, so
+          // while ag-grid landed in an anonymous `chunk-*.js` it was the single
+          // largest artefact in the build (298KB gzip, within 2KB of the 300KB
+          // per-vendor limit) and no budget applied to it at all.
+          // ag-grid-react re-exports ag-grid-community, so keep the react
+          // wrapper's own rule below the community one to match the gate's
+          // separate grid-community-vendor / grid-react-vendor entries.
+          if (id.includes('ag-grid-react')) return 'grid-react-vendor';
+          if (id.includes('ag-grid-community')) return 'grid-community-vendor';
           if (id.includes('recharts')) return 'chart-vendor';
           if (id.includes('exceljs') && id.includes('/dist/exceljs/')) return 'excel-vendor';
           if (id.includes('exceljs')) return 'excel-core-vendor';

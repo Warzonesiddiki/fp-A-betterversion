@@ -854,3 +854,42 @@ supply those to JS. The `[data-density]` blocks mirror the numbers for CSS and
 exactly `['density']` and that the serialised object holds no hex or `rgb()`
 literal, so a palette cannot quietly regrow. Mutation-verified by re-adding a
 `radius` group.
+
+## G3/G19 — a bundle budget that was measuring three of six chunks
+
+**Finding (same shape as the contrast guard).** `scripts/bundle-check.js`
+resolves each budgeted vendor with
+`chunkStats.find((c) => c.file.startsWith(vendor + '-'))` and then did all its
+work inside `if (match)`. A vendor that produced no chunk was skipped in
+silence and still counted toward "G19 PASS". Of the six declared vendors, only
+three existed; the gate printed three PASS lines and no indication that half
+its budgets had never run.
+
+**What that concealed.** `vite.config.ts` had no ag-grid rule, so ag-grid fell
+into an anonymous `chunk-*.js` — at 298.3KB gzip the **largest artefact in the
+build**, 1.7KB under the 300KB per-vendor limit that was supposed to govern it
+and entirely unmeasured. `grid-community-vendor` and `grid-react-vendor` were
+listed in the gate but never emitted by the build.
+
+**Fixes.** Named the chunks (`grid-community-vendor` 284.85KB, now correctly
+reported at 95% of budget; `grid-react-vendor` 14.29KB), and made a missing
+chunk `::error::` + exit 1 instead of a silent skip. Mutation-verified with a
+bogus vendor name.
+
+**Refinement — absence is not always drift.** The strict check immediately
+flagged `ai-vendor`, which is `@huggingface/transformers`: a deliberately
+uninstalled optional peer that can never be emitted. Requiring it would fail
+the gate forever; dropping it would lose the budget the day it is installed.
+It is now conditional on `import.meta.resolve` succeeding, and prints an
+explicit SKIP line rather than vanishing.
+
+**Found but NOT fixed — pdf-vendor in the critical path.** `pdf-vendor`
+(616KB raw / 179.74KB gzip) is a `modulepreload` on first paint even though
+`utils/pdfRuntime.ts` deliberately loads jsPDF via dynamic import. Cause is not
+jsPDF: rolldown's injected preload helper (`\0vite/preload-helper.js`) landed
+in that chunk, and 11 of its 13 importers — including the entry chunk and
+`masterStorage` — import only that ~1KB helper. Returning a chunk name for the
+helper's id does not work: rolldown re-merges the sub-threshold chunk and
+rolldown-vite 8 rejects `output.minChunkSize` as an invalid key. Both were
+tried and reverted rather than left as a no-op rule that looks like a fix; the
+constraint is recorded in `vite.config.ts` at the point of use.
