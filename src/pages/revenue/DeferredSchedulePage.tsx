@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -250,17 +251,15 @@ export default function DeferredSchedulePage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Deferred Revenue Schedule</h1>
-          <p className="text-sm text-[var(--text-muted)]">
-            {mockContracts.length} contracts tracked
-          </p>
-        </div>
-        <Button variant="outline" size="sm" onClick={handleExport}>
-          <Download className="h-4 w-4 mr-1" /> Export
-        </Button>
-      </div>
+      <PageHeader
+        title="Deferred Revenue Schedule"
+        purpose={<>{mockContracts.length}contracts tracked</>}
+        actions={
+          <Button variant="outline" size="sm" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-1" /> Export
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue

@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { PageHeader } from '@/components/ui/PageHeader';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useBudgetStore } from '@/store/budgetStore';
 import { useGLStore } from '@/store/glStore';
@@ -412,14 +413,16 @@ export default function BudgetDetailPage() {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-bold">{budget.name}</h1>
-              <button
-                onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
-                aria-label="Help"
-              ></button>
-            </div>
+            <PageHeader
+              title={budget.name}
+              actions={
+                <button
+                  onClick={() => setHelpOpen(true)}
+                  className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                  aria-label="Help"
+                ></button>
+              }
+            />
             <p className="text-sm text-[var(--text-muted)] mt-0.5">
               FY{budget.fiscalYear} · {budgetLineItems.length} line items ·{' '}
               {fmt.currency0(grandTotal)}

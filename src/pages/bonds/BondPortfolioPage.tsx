@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { Landmark, BarChart3, Download, Shield, AlertTriangle } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -246,14 +247,10 @@ export default function BondPortfolioPage() {
     >
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Bond Portfolio
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Fixed-income holdings with pricing, duration, and convexity analytics.
-          </p>
-        </div>
+        <PageHeader
+          title="Bond Portfolio"
+          purpose="Fixed-income holdings with pricing, duration, and convexity analytics."
+        />
         <div className="flex items-center gap-3">
           <Button variant="outline" size="sm" aria-label="Export bond portfolio report">
             <Download className="h-4 w-4 mr-2" aria-hidden="true" />

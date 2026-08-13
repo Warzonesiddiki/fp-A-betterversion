@@ -6,7 +6,9 @@ exports[`DashboardPage populated-state contract (interim structural baseline) > 
     class="fp-page space-y-6"
   >
     <header
+      aria-label="Executive Dashboard"
       class="fp-page-header dashboard-header"
+      role="group"
     >
       <div>
         <div

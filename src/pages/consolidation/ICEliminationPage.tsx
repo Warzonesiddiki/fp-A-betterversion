@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -92,19 +93,15 @@ export default function ICEliminationPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-[var(--text-primary)]">
-            Intercompany Elimination
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Reconcile and eliminate intercompany balances across the group.
-          </p>
-        </div>
-        <Button onClick={autoMatch} className="bg-blue-600 hover:bg-blue-700">
-          <Wand2 className="h-4 w-4 mr-2" /> Auto-Match
-        </Button>
-      </div>
+      <PageHeader
+        title="Intercompany Elimination"
+        purpose="Reconcile and eliminate intercompany balances across the group."
+        actions={
+          <Button onClick={autoMatch} className="bg-blue-600 hover:bg-blue-700">
+            <Wand2 className="h-4 w-4 mr-2" /> Auto-Match
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-[var(--bg-surface)] border-[var(--border-subtle)]">

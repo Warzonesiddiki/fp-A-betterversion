@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import * as Tabs from '@radix-ui/react-tabs';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/Card';
@@ -79,12 +80,10 @@ export default function SettingsPage() {
           {settingsError}
         </div>
       )}
-      <div className="mb-2">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Settings</h1>
-        <p className="text-[var(--text-muted)] text-sm">
-          Manage organization profiles, system preferences, and local data.
-        </p>
-      </div>
+      <PageHeader
+        title="Settings"
+        purpose="Manage organization profiles, system preferences, and local data."
+      />
 
       <Tabs.Root value={activeTab} onValueChange={setActiveTab} className="flex flex-col">
         <Tabs.List className="flex border-b border-slate-800 mb-6 overflow-x-auto no-scrollbar">

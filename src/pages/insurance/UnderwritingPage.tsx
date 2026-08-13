@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useState } from 'react';
 import { Download, Filter, Percent, Target } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -109,14 +110,10 @@ export default function UnderwritingPage() {
   return (
     <div className="p-6 space-y-6 animate-in zoom-in-95 duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Underwriting Analytics
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Rate adequacy monitoring, loss pick analysis, and regulatory filing performance.
-          </p>
-        </div>
+        <PageHeader
+          title="Underwriting Analytics"
+          purpose="Rate adequacy monitoring, loss pick analysis, and regulatory filing performance."
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="outline" size="sm" className="h-10">

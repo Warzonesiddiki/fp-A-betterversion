@@ -5,6 +5,7 @@
  * warehouse cost % revenue, operating margin, and warehousing cost model.
  */
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -113,12 +114,10 @@ export default function WarehouseCostDashboardPage() {
       aria-label="Warehouse Cost Dashboard"
     >
       <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Warehouse Cost Dashboard</h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Warehousing cost % revenue analytics
-          </p>
-        </div>
+        <PageHeader
+          title="Warehouse Cost Dashboard"
+          purpose="Warehousing cost % revenue analytics"
+        />
         <Button variant="outline" onClick={() => navigate('/logistics')}>
           Back to Logistics
         </Button>

@@ -24,7 +24,18 @@ export function PageHeader({
   ...props
 }: PageHeaderProps): ReactElement {
   return (
-    <header className={cn('fp-page-header', className)} {...props}>
+    <header
+      // A <header> element maps to the `banner` landmark, and a banner must be
+      // top-level. This header always lives inside page content (AppLayout
+      // already owns the real <main>), so leaving the implicit role in place
+      // reports a nested-landmark violation on every page that uses it. An
+      // explicit `group` role keeps the element semantic without claiming a
+      // landmark it is not.
+      role="group"
+      aria-label={title}
+      className={cn('fp-page-header', className)}
+      {...props}
+    >
       <div>
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="fp-page-header__title">{title}</h1>

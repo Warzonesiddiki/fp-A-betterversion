@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -85,25 +86,27 @@ export default function FXRatesPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">FX Rates</h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            {rates.length} rate{rates.length !== 1 ? 's' : ''} configured
-          </p>
-        </div>
-        <Button
-          size="sm"
-          onClick={() => {
-            setForm(EMPTY_FORM);
-            setErrors({});
-            setShowForm(true);
-          }}
-        >
-          <Plus className="h-3.5 w-3.5 mr-1.5" />
-          Add Rate
-        </Button>
-      </div>
+      <PageHeader
+        title="FX Rates"
+        purpose={
+          <>
+            {rates.length}rate{rates.length !== 1 ? 's' : ''}configured
+          </>
+        }
+        actions={
+          <Button
+            size="sm"
+            onClick={() => {
+              setForm(EMPTY_FORM);
+              setErrors({});
+              setShowForm(true);
+            }}
+          >
+            <Plus className="h-3.5 w-3.5 mr-1.5" />
+            Add Rate
+          </Button>
+        }
+      />
 
       <Card>
         <CardContent className="p-0">

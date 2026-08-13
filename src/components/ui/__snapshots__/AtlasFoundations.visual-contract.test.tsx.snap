@@ -3,7 +3,9 @@
 exports[`Atlas foundation visual structure contract > omits purpose and actions containers when not provided (minimal PageHeader) 1`] = `
 <div>
   <header
+    aria-label="Period Close"
     class="fp-page-header"
+    role="group"
   >
     <div>
       <div
@@ -196,7 +198,9 @@ exports[`Atlas foundation visual structure contract > preserves the canonical fi
     class="fp-page"
   >
     <header
+      aria-label="Executive Dashboard"
       class="fp-page-header"
+      role="group"
     >
       <div>
         <div
@@ -537,7 +541,9 @@ exports[`Atlas foundation visual structure contract > preserves the financial co
       </div>
     </section>
     <header
+      aria-label="Executive Dashboard"
       class="fp-page-header"
+      role="group"
     >
       <div>
         <div

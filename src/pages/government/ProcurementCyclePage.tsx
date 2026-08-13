@@ -6,6 +6,7 @@
  * negotiated savings.
  */
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -141,12 +142,10 @@ export default function ProcurementCyclePage() {
   return (
     <main className="p-6 space-y-6 animate-fade-in" role="main" aria-label="Procurement Cycle">
       <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Procurement Cycle</h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Procurement efficiency & compliance analytics
-          </p>
-        </div>
+        <PageHeader
+          title="Procurement Cycle"
+          purpose={'Procurement efficiency & compliance analytics'}
+        />
         <Button variant="outline" onClick={() => navigate('/government')}>
           Back to Government
         </Button>

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ResponsiveContainer, Sankey, Tooltip } from 'recharts';
 
@@ -99,12 +100,10 @@ export default function DataFlowMapPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Data Flow Map</h1>
-        <p className="text-muted-foreground">
-          Visual map of how data flows through FinPlan Pro — from source to dashboard
-        </p>
-      </div>
+      <PageHeader
+        title="Data Flow Map"
+        purpose="Visual map of how data flows through FinPlan Pro — from source to dashboard"
+      />
 
       <div className="grid grid-cols-4 gap-4">
         <Card>

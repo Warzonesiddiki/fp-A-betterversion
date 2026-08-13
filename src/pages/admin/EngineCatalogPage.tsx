@@ -18,6 +18,7 @@
  * shows what actually exists, including anything that fails to load.
  */
 import { useCallback, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { engineRegistry } from '@/engines/EngineRegistry';
 import { ENGINE_IDS, ENGINE_COUNT } from '@/engines/engineManifest.generated';
 import { Button } from '@/components/ui/Button';
@@ -90,13 +91,10 @@ export default function EngineCatalogPage() {
 
   return (
     <div className="p-6 space-y-6" aria-label="Engine Catalog">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Engine Catalog</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          Every calculation engine in the build, loadable on demand. Use this to verify an engine is
-          genuinely wired rather than merely present in the source tree.
-        </p>
-      </div>
+      <PageHeader
+        title="Engine Catalog"
+        purpose="Every calculation engine in the build, loadable on demand. Use this to verify an engine is genuinely wired rather than merely present in the source tree."
+      />
 
       <div className="flex flex-wrap items-center gap-3">
         <Input

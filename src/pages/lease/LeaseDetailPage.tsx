@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -287,10 +288,7 @@ export default function LeaseDetailPage() {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold">Lease Detail</h1>
-            <p className="text-sm text-[var(--text-muted)]">No leases in the portfolio yet</p>
-          </div>
+          <PageHeader title="Lease Detail" purpose="No leases in the portfolio yet" />
         </div>
 
         {formMode === 'closed' ? (

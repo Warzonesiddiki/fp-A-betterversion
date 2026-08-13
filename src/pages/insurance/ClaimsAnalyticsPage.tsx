@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useState } from 'react';
 import { BarChart3, Download, Filter, PieChart as PieChartIcon } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -143,14 +144,10 @@ export default function ClaimsAnalyticsPage() {
   return (
     <div className="p-6 space-y-6 animate-in fade-in duration-700">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Claims Analytics
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Claim frequency and severity tracking, loss development, and settlement cycle analysis.
-          </p>
-        </div>
+        <PageHeader
+          title="Claims Analytics"
+          purpose="Claim frequency and severity tracking, loss development, and settlement cycle analysis."
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="outline" size="sm" className="h-10">

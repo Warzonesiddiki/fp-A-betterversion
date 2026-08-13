@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useSettingsStore } from '@/store/settingsStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -123,15 +124,15 @@ export default function UserManagementPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">User Management</h1>
-          <p className="text-sm text-[var(--text-muted)]">{users.length} users registered</p>
-        </div>
-        <Button onClick={() => setShowAddForm(true)}>
-          <UserPlus className="h-4 w-4 mr-1" /> Add User
-        </Button>
-      </div>
+      <PageHeader
+        title="User Management"
+        purpose={<>{users.length}users registered</>}
+        actions={
+          <Button onClick={() => setShowAddForm(true)}>
+            <UserPlus className="h-4 w-4 mr-1" /> Add User
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>

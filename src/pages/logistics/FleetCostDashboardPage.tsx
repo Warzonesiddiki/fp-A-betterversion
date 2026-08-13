@@ -7,6 +7,7 @@
  * defaults (never Math.random). All display goes through format helpers.
  */
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -151,12 +152,10 @@ export default function FleetCostDashboardPage() {
   return (
     <main className="p-6 space-y-6 animate-fade-in" role="main" aria-label="Fleet Cost Dashboard">
       <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Fleet Cost Dashboard</h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Cost per mile & fleet utilization analytics
-          </p>
-        </div>
+        <PageHeader
+          title="Fleet Cost Dashboard"
+          purpose={'Cost per mile & fleet utilization analytics'}
+        />
         <Button variant="outline" onClick={() => navigate('/logistics')}>
           Back to Logistics
         </Button>

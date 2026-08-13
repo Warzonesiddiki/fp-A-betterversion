@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/preserve-manual-memoization -- react-compiler lint bails on this file's memo bodies (roundTo/sumMoney helper chains + Date math); manual memoization is correct; this codebase does not run the React Compiler. */
 import { useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -135,15 +136,15 @@ export default function LeaseDashboard() {
   if (leaseInputs.length === 0) {
     return (
       <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Lease Portfolio Dashboard</h1>
-            <p className="text-sm text-[var(--text-muted)]">Lease portfolio</p>
-          </div>
-          <Button size="sm" onClick={() => navigate('/lease/detail')}>
-            Add Lease <ArrowRight className="h-4 w-4 ml-1" />
-          </Button>
-        </div>
+        <PageHeader
+          title="Lease Portfolio Dashboard"
+          purpose="Lease portfolio"
+          actions={
+            <Button size="sm" onClick={() => navigate('/lease/detail')}>
+              Add Lease <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
+          }
+        />
         <div className="rounded-xl border border-dashed border-slate-600 p-10 text-center">
           <FileText className="h-10 w-10 mx-auto mb-3 text-slate-500" />
           <p className="text-lg font-medium text-[var(--text-secondary)]">No Lease Data</p>

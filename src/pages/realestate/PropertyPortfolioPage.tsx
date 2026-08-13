@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
 import { Building2, BarChart3, Filter, Hammer, Search } from 'lucide-react';
@@ -119,14 +120,10 @@ export default function PropertyPortfolioPage() {
     <div className="p-6 space-y-6 animate-in slide-in-from-bottom-4 duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Property Portfolio
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Detailed asset management: Valuation history, acquisition basis, and renovation ROI.
-          </p>
-        </div>
+        <PageHeader
+          title="Property Portfolio"
+          purpose="Detailed asset management: Valuation history, acquisition basis, and renovation ROI."
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="default" size="sm" className="h-10">

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -227,13 +228,12 @@ export default function BoardPackPage() {
   return (
     <div className="p-6 space-y-8 animate-fade-in">
       {/* 1. Cover Section */}
-      <div className="text-center py-10 border-b border-slate-800">
-        <h1 className="text-4xl font-black tracking-tight mb-2">BOARD PACK</h1>
-        <p className="text-[var(--text-muted)] font-medium uppercase tracking-widest text-sm">
-          {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} · FINANCIAL
+      <PageHeader
+  title="BOARD PACK"
+  purpose={<>{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}· FINANCIAL
           REVIEW
-        </p>
-      </div>
+        </>}
+/>
 
       <div className="flex items-center justify-between">
         <div>

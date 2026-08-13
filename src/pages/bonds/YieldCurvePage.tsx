@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { TrendingUp, BarChart3, Calculator, Download, GitBranch } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -160,14 +161,10 @@ export default function YieldCurvePage() {
     >
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Yield Curve Analysis
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Spot rates, forward rates, and curve interpolation from your fixed-income data.
-          </p>
-        </div>
+        <PageHeader
+          title="Yield Curve Analysis"
+          purpose="Spot rates, forward rates, and curve interpolation from your fixed-income data."
+        />
         <div className="flex items-center gap-3">
           <Button variant="outline" size="sm" aria-label="Export yield curve data">
             <Download className="h-4 w-4 mr-2" aria-hidden="true" />

@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
 import { DollarSign, TrendingUp, BarChart3, Calculator, Download } from 'lucide-react';
@@ -150,15 +151,10 @@ export default function ValuationPage() {
     >
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Property Valuation
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Fair value assessment, appraisal tracking, and appreciation analysis across your
-            portfolio.
-          </p>
-        </div>
+        <PageHeader
+          title="Property Valuation"
+          purpose="Fair value assessment, appraisal tracking, and appreciation analysis across your portfolio."
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="outline" size="sm" aria-label="Valuation report">

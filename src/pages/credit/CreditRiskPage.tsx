@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { ShieldAlert, BarChart3, Download, Activity, Shield } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -275,14 +276,10 @@ export default function CreditRiskPage() {
     >
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Credit Risk Assessment
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Counterparty credit scoring, probability of default, LGD, and expected loss analytics.
-          </p>
-        </div>
+        <PageHeader
+          title="Credit Risk Assessment"
+          purpose="Counterparty credit scoring, probability of default, LGD, and expected loss analytics."
+        />
         <div className="flex items-center gap-3">
           <Button variant="outline" size="sm" aria-label="Export credit risk report">
             <Download className="h-4 w-4 mr-2" aria-hidden="true" />

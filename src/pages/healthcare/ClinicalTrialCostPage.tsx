@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useState } from 'react';
 import { Beaker, FileText, Timer, Plus, ArrowRight } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -114,15 +115,12 @@ export default function ClinicalTrialCostPage() {
     <div className="p-6 space-y-6 animate-in zoom-in-95 duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Clinical Trial Costs
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Research & Development financial tracking: Trial budgets, site spend, and enrollment
-            ROI.
-          </p>
-        </div>
+        <PageHeader
+          title="Clinical Trial Costs"
+          purpose={
+            'Research & Development financial tracking: Trial budgets, site spend, and enrollment ROI.'
+          }
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="default" size="sm" className="h-10">

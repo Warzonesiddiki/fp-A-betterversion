@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useReportStore } from '@/store/reportStore';
 import { ReportTemplateLibrary } from '@/components/reports/ReportTemplateLibrary';
@@ -167,19 +168,13 @@ export default function ReportTemplateLibraryPage() {
     >
       {/* Stats header */}
       <div className="border-b border-gray-200 bg-white px-6 py-4 dark:border-gray-700 dark:bg-gray-900">
-        <div className="mb-3 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              Report Templates
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Browse, filter, and create financial reports from pre-built templates.
-            </p>
-          </div>
-          <Button onClick={() => handleSelectTemplate('custom')}>
+        <PageHeader
+  title="Report Templates"
+  purpose="Browse, filter, and create financial reports from pre-built templates."
+  actions={<Button onClick={() => handleSelectTemplate('custom')}>
             + New Custom Report
-          </Button>
-        </div>
+          </Button>}
+/>
 
         <div className="grid grid-cols-4 gap-3">
           <Card className="bg-blue-50 dark:bg-blue-950">

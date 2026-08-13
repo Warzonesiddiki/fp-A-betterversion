@@ -10,6 +10,7 @@
  * kill-switch locally; on a hosted SaaS the same flag gates a % canary rollout.
  */
 import { useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { LoanAmortizationEngine } from '@/engines/LoanAmortizationEngine';
 import { FEATURE_FLAGS, isFeatureActive, type FeatureFlagKey } from '@/utils/feature-flags';
 import { Button } from '@/components/ui/Button';
@@ -120,12 +121,10 @@ export default function LoanAmortizationPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Loan Amortization</h1>
-        <p className="text-sm text-[var(--text-muted)] mt-1">
-          Exact-decimal amortization schedule — the loan pays off to $0.00.
-        </p>
-      </div>
+      <PageHeader
+        title="Loan Amortization"
+        purpose="Exact-decimal amortization schedule — the loan pays off to $0.00."
+      />
 
       <Card>
         <CardHeader>

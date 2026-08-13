@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useWorkforceStore } from '@/store/workforceStore';
@@ -195,17 +196,19 @@ export default function PayrollForecastPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Payroll Forecast</h1>
-          <p className="text-sm text-[var(--text-muted)]">
-            {totalHeadcount} employees across {departments.length} departments
-          </p>
-        </div>
-        <Button variant="outline" size="sm" onClick={handleExport}>
-          <Download className="h-4 w-4 mr-1" /> Export
-        </Button>
-      </div>
+      <PageHeader
+        title="Payroll Forecast"
+        purpose={
+          <>
+            {totalHeadcount}employees across {departments.length}departments
+          </>
+        }
+        actions={
+          <Button variant="outline" size="sm" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-1" /> Export
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <KPIValue

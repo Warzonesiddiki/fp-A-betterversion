@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
@@ -202,19 +203,15 @@ export default function ConsolidationDashboard() {
 
   return (
     <div className="p-6 space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-[var(--text-primary)]">
-            Legal Entity Consolidation
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Manage entity structure and view consolidated financial results.
-          </p>
-        </div>
-        <Button onClick={handleAdd}>
-          <Plus className="h-4 w-4 mr-2" /> Add Entity
-        </Button>
-      </div>
+      <PageHeader
+        title="Legal Entity Consolidation"
+        purpose="Manage entity structure and view consolidated financial results."
+        actions={
+          <Button onClick={handleAdd}>
+            <Plus className="h-4 w-4 mr-2" /> Add Entity
+          </Button>
+        }
+      />
 
       <Card className="border-[var(--border-subtle)] bg-[var(--bg-surface)]">
         <CardHeader>

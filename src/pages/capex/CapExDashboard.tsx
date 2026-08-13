@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useCapExStore } from '@/store/capexStore';
@@ -216,22 +217,24 @@ export default function CapExDashboard() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Capital Expenditures</h1>
-          <p className="text-sm text-[var(--text-muted)]">
-            {projects.length} projects | {entries.length.toLocaleString()} GL entries
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-1" /> Export
-          </Button>
-          <Button size="sm">
-            <Plus className="h-4 w-4 mr-1" /> New Project
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Capital Expenditures"
+        purpose={
+          <>
+            {projects.length}projects | {entries.length.toLocaleString()}GL entries
+          </>
+        }
+        actions={
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleExport}>
+              <Download className="h-4 w-4 mr-1" /> Export
+            </Button>
+            <Button size="sm">
+              <Plus className="h-4 w-4 mr-1" /> New Project
+            </Button>
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <KPIValue

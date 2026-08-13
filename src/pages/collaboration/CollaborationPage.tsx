@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useCollaborationStore } from '@/store/collaborationStore';
 import { useAuthStore } from '@/store/authStore';
@@ -262,17 +263,17 @@ export default function CollaborationPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Collaboration Hub</h1>
-          <p className="text-muted-foreground">Comments, tasks, and activity across your team</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => navigate('/collaboration/approvals')}>
-            Approval Queue
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Collaboration Hub"
+        purpose="Comments, tasks, and activity across your team"
+        actions={
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => navigate('/collaboration/approvals')}>
+              Approval Queue
+            </Button>
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>

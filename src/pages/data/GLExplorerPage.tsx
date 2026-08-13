@@ -1,4 +1,5 @@
 import { useMemo, useState, useTransition } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { BarChart3, Database, Download, Search } from 'lucide-react';
 
@@ -156,19 +157,21 @@ export default function GLExplorerPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">GL Explorer</h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Explore {entries.length.toLocaleString()} journal lines across {accounts.length} chart
-            accounts and {accountSummaries.length} active GL accounts.
-          </p>
-        </div>
-        <Button size="sm" variant="ghost" onClick={exportVisibleRows}>
-          <Download className="h-3.5 w-3.5 mr-1.5" />
-          Export visible rows
-        </Button>
-      </div>
+      <PageHeader
+        title="GL Explorer"
+        purpose={
+          <>
+            Explore {entries.length.toLocaleString()}journal lines across {accounts.length}chart
+            accounts and {accountSummaries.length}active GL accounts.
+          </>
+        }
+        actions={
+          <Button size="sm" variant="ghost" onClick={exportVisibleRows}>
+            <Download className="h-3.5 w-3.5 mr-1.5" />
+            Export visible rows
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card>

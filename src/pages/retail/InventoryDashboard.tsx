@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -123,33 +124,31 @@ export default function InventoryDashboard() {
 
   return (
     <div className="p-6 space-y-6" role="main" aria-label="Inventory Dashboard page">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Inventory Dashboard</h1>
-          <p className="text-sm text-[var(--text-muted)]">
-            Stock valuation, turnover, and GMROI analysis
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExport}
-            aria-label="Export inventory data"
-          >
-            <Download className="h-4 w-4 mr-2" aria-hidden="true" />
-            Export
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => navigate('/retail/inventory-planning')}
-            aria-label="Go to planning"
-          >
-            <Truck className="h-4 w-4 mr-2" aria-hidden="true" />
-            Planning
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Inventory Dashboard"
+        purpose="Stock valuation, turnover, and GMROI analysis"
+        actions={
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExport}
+              aria-label="Export inventory data"
+            >
+              <Download className="h-4 w-4 mr-2" aria-hidden="true" />
+              Export
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => navigate('/retail/inventory-planning')}
+              aria-label="Go to planning"
+            >
+              <Truck className="h-4 w-4 mr-2" aria-hidden="true" />
+              Planning
+            </Button>
+          </div>
+        }
+      />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue

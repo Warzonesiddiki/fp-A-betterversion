@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -304,14 +305,16 @@ export default function DataImportPage() {
     <main className="p-6 space-y-6" role="main" aria-label="Data import and reconciliation page">
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold">Data Import & Reconciliation</h1>
-            <button
-              onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
-              aria-label="Help"
-            />
-          </div>
+          <PageHeader
+            title={'Data Import & Reconciliation'}
+            actions={
+              <button
+                onClick={() => setHelpOpen(true)}
+                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+                aria-label="Help"
+              />
+            }
+          />
           <p className="text-sm text-[var(--text-muted)] mt-1">
             Migrate data from Excel, Planful, Adaptive, or Anaplan. Verify against source files.
           </p>

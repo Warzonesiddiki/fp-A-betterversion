@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -274,16 +275,16 @@ export default function DebtSchedulePage() {
   if (instruments.length === 0) {
     return (
       <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Debt Schedule</h1>
-            <p className="text-sm text-[var(--text-muted)] mt-1">Debt portfolio</p>
-          </div>
-          <Button size="sm" onClick={openAddForm}>
-            <Plus className="h-3.5 w-3.5 mr-1.5" />
-            Add Debt
-          </Button>
-        </div>
+        <PageHeader
+          title="Debt Schedule"
+          purpose="Debt portfolio"
+          actions={
+            <Button size="sm" onClick={openAddForm}>
+              <Plus className="h-3.5 w-3.5 mr-1.5" />
+              Add Debt
+            </Button>
+          }
+        />
 
         {formCard}
 

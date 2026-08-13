@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -83,19 +84,17 @@ export default function TemplateGalleryPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Template Gallery</h1>
-          <p className="text-muted-foreground">
-            Pre-built templates for budgets, forecasts, and reports across 16 industries
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Upload className="h-4 w-4 mr-1" /> Import
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Template Gallery"
+        purpose="Pre-built templates for budgets, forecasts, and reports across 16 industries"
+        actions={
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">
+              <Upload className="h-4 w-4 mr-1" /> Import
+            </Button>
+          </div>
+        }
+      />
 
       {/* KPI Summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

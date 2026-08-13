@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { RetailEngine, type StoreStats } from '@/engines/RetailEngine';
@@ -140,31 +141,33 @@ export default function RetailDashboard() {
 
   return (
     <main className="p-6 space-y-6" aria-label="Retail Dashboard">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Retail Dashboard</h1>
-          <p className="text-sm text-[var(--text-muted)]">
-            {storeStats.length} stores | Total Revenue: {fmt.currency0(totalRevenue)}
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExport}
-            aria-label="Export retail report"
-          >
-            <Download className="h-4 w-4 mr-1" /> Export
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => navigate('/retail/stores')}
-            aria-label="View store details"
-          >
-            Stores <ArrowRight className="h-4 w-4 ml-1" />
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Retail Dashboard"
+        purpose={
+          <>
+            {storeStats.length}stores | Total Revenue: {fmt.currency0(totalRevenue)}
+          </>
+        }
+        actions={
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExport}
+              aria-label="Export retail report"
+            >
+              <Download className="h-4 w-4 mr-1" /> Export
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => navigate('/retail/stores')}
+              aria-label="View store details"
+            >
+              Stores <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        }
+      />
 
       {/* KPI Section */}
       <section

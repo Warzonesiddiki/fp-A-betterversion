@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useReportStore } from '@/store/reportStore';
@@ -224,14 +225,11 @@ export default function FinancialStatementTemplatesPage() {
 
   return (
     <div className="p-6 space-y-6" role="main" aria-label="Financial Statement Templates page">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Financial Statement Templates</h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            {entries.length.toLocaleString()} GL entries · {accounts.length} accounts
-          </p>
-        </div>
-        <div className="flex gap-2">
+      <PageHeader
+  title="Financial Statement Templates"
+  purpose={<>{entries.length.toLocaleString()}GL entries · {accounts.length}accounts
+          </>}
+  actions={<div className="flex gap-2">
           <div className="relative">
             <Button
               variant="secondary"
@@ -271,8 +269,8 @@ export default function FinancialStatementTemplatesPage() {
             <Download className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
             Export PDF
           </Button>
-        </div>
-      </div>
+        </div>}
+/>
 
       <Card>
         <CardContent className="p-6">

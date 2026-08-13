@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Plug, CheckCircle, Settings, ShieldCheck } from 'lucide-react';
@@ -75,13 +76,10 @@ export default function IntegrationSettingsPage() {
       role="main"
       aria-label="Integration settings page"
     >
-      <div className="mb-2">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Integrations</h1>
-        <p className="text-[var(--text-muted)] text-sm">
-          Connect external accounting, ERP, CRM, payments, banking, and communication systems.
-          Credentials stay on this device in local encrypted storage.
-        </p>
-      </div>
+      <PageHeader
+        title="Integrations"
+        purpose="Connect external accounting, ERP, CRM, payments, banking, and communication systems. Credentials stay on this device in local encrypted storage."
+      />
 
       {/* Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

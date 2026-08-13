@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -104,14 +105,11 @@ export default function ReportsListPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Reports</h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            {entries.length.toLocaleString()} GL entries available
-          </p>
-        </div>
-        <div className="flex gap-2">
+      <PageHeader
+  title="Reports"
+  purpose={<>{entries.length.toLocaleString()}GL entries available
+          </>}
+  actions={<div className="flex gap-2">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
             <input
@@ -123,8 +121,8 @@ export default function ReportsListPage() {
               aria-label="Search reports"
             />
           </div>
-        </div>
-      </div>
+        </div>}
+/>
 
       <AICopilotPanel pathname={pathname} defaultCollapsed />
 

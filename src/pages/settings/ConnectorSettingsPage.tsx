@@ -6,6 +6,7 @@
  * pending final removal once the hub is committed and shipped.
  */
 import { useEffect, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -70,15 +71,15 @@ export default function ConnectorSettingsPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">ERP Connectors</h1>
-          <p className="text-muted-foreground">Connect to external accounting and ERP systems</p>
-        </div>
-        <Button onClick={() => setShowAdd(!showAdd)}>
-          <Plus className="h-4 w-4 mr-1" /> Add Connector
-        </Button>
-      </div>
+      <PageHeader
+        title="ERP Connectors"
+        purpose="Connect to external accounting and ERP systems"
+        actions={
+          <Button onClick={() => setShowAdd(!showAdd)}>
+            <Plus className="h-4 w-4 mr-1" /> Add Connector
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>

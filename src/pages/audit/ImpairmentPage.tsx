@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { AlertTriangle, TrendingDown, Download, CheckCircle } from 'lucide-react';
@@ -109,17 +110,17 @@ export default function ImpairmentPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Impairment Testing</h1>
-          <p className="text-muted-foreground">IAS 36 / ASC 360 asset impairment analysis</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-1" /> Export
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Impairment Testing"
+        purpose="IAS 36 / ASC 360 asset impairment analysis"
+        actions={
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-1" /> Export
+            </Button>
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>

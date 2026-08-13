@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -106,13 +107,15 @@ export default function SecuritySettingsPage() {
       role="main"
       aria-label="Security settings page"
     >
-      <div className="mb-2">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Security Settings</h1>
-        <p className="text-[var(--text-muted)] text-sm">
-          Manage passwords, authentication, and security preferences for{' '}
-          {organization.name || 'your organization'}.
-        </p>
-      </div>
+      <PageHeader
+        title="Security Settings"
+        purpose={
+          <>
+            Manage passwords, authentication, and security preferences for{' '}
+            {organization.name || 'your organization'}.
+          </>
+        }
+      />
 
       {/* Security overview */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

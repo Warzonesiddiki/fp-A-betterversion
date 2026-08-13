@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
 
@@ -127,15 +128,10 @@ export default function HealthcareDashboardPage() {
     <div className="p-6 space-y-6 animate-in fade-in duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Healthcare Dashboard
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Enterprise hospital management: Patient volume, revenue cycles, and departmental
-            efficiency.
-          </p>
-        </div>
+        <PageHeader
+          title="Healthcare Dashboard"
+          purpose="Enterprise hospital management: Patient volume, revenue cycles, and departmental efficiency."
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="outline" size="sm">

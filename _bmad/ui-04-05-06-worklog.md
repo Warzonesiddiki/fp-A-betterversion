@@ -140,3 +140,60 @@ architecture guardrails 21/21 · production build succeeds.
 Remaining `currency: 'USD'` occurrences in `src/` are test fixtures, seeded
 mock-data records, and the documented exempt formatter modules — all _data_, not
 display.
+
+## C — UI-05 headers: outcome
+
+**Status: partially shipped (114 of 181 pages).** Pages on the canonical
+`PageHeader` went from **2 to 116**.
+
+### What changed
+
+A codemod converted the mechanical cases: a raw `<h1>`, an optional sibling
+`<p>` description, and an optional actions cluster, collapsing to
+`<PageHeader title purpose actions />`. The heading scale landed earlier in
+UI-04, so `PageHeader` was already the visually correct choice; this makes it
+the structurally correct one too.
+
+### What was deliberately left alone
+
+The codemod refuses anything it cannot prove is safe, and 67 pages tripped a
+guard. These are not oversights, they are cases where an automated rewrite would
+lose information:
+
+| Reason                                                   | Pages |
+| -------------------------------------------------------- | ----: |
+| `<h1>` carries extra attributes (ids, aria, handlers)    |    23 |
+| `<h1>` contains elements, not just text (icons, badges)  |    18 |
+| `<h1>` sits directly in `<main>` / `CardContent`         |     8 |
+| wrapper has a shape the codemod does not model           |    14 |
+| `<h1>` is not the first child of its wrapper             |     3 |
+| wrapper carries non-layout classes that would be dropped |     1 |
+
+The last row is worth keeping in mind: an early version of the codemod silently
+dropped a wrapper's `text-sm text-slate-400` when it hoisted the children into
+`actions`. The guard now requires the collapsed wrapper's classes to be purely
+layout (`flex`, `gap-*`, `items-*`, `justify-*`, margins) before it will discard
+them. These remaining pages need a human decision about where the icon, badge,
+or extra styling belongs in the `PageHeader` API and should be converted as each
+page is next touched.
+
+### A real accessibility defect this surfaced
+
+`PageHeader` rendered a bare `<header>`, which maps to the **`banner`**
+landmark. A banner must be top-level, but this header always renders inside page
+content — `AppLayout` already owns the real `<main>`, and 55 pages additionally
+set `role="main"` on their own wrapper. Every page using `PageHeader` was
+therefore emitting a nested-landmark violation; with only 2 adopters it had gone
+unnoticed, and rolling out to 116 turned it into a visible test failure
+(`landmark-banner-is-top-level`).
+
+Fixed at the source by giving the element an explicit `role="group"` plus an
+`aria-label` from the title, which keeps it semantic without claiming a landmark
+it is not. Three stored DOM baselines were updated; the diffs contain only the
+two new attributes.
+
+### Verification
+
+`tsc --noEmit` clean · `eslint src --max-warnings 0` clean · **13,564 tests
+passing across all 8 shards, 0 failing** · guardrails 21/21 · dev server
+compiles and serves the migrated pages.

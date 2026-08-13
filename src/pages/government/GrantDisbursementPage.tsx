@@ -5,6 +5,7 @@
  * rate, cost per citizen, revenue collection gap and unutilized budget.
  */
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -136,12 +137,10 @@ export default function GrantDisbursementPage() {
   return (
     <main className="p-6 space-y-6 animate-fade-in" role="main" aria-label="Grants & Disbursement">
       <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Grants & Disbursement</h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Grant allocation, disbursement & collection analytics
-          </p>
-        </div>
+        <PageHeader
+          title={'Grants & Disbursement'}
+          purpose={'Grant allocation, disbursement & collection analytics'}
+        />
         <Button variant="outline" onClick={() => navigate('/government')}>
           Back to Government
         </Button>

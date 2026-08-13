@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
 import { Store, DollarSign, Users, Download, Award } from 'lucide-react';
@@ -115,15 +116,12 @@ export default function StorePerformancePage() {
   return (
     <div className="p-6 space-y-6 animate-in zoom-in-95 duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Store Performance
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Per-location P&L analysis, labor efficiency benchmarking, and sales productivity
-            rankings.
-          </p>
-        </div>
+        <PageHeader
+          title="Store Performance"
+          purpose={
+            'Per-location P&L analysis, labor efficiency benchmarking, and sales productivity rankings.'
+          }
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="outline" size="sm" className="h-10">

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -57,32 +58,32 @@ export default function MultiBookPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Multi-Book Accounting</h1>
-          <p className="text-muted-foreground">GAAP, IFRS, Tax, and Statutory books</p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              MultiBookEngine.createBook(
-                `Book ${MultiBookEngine.listBooks().length + 1}`,
-                'us-gaap',
-                'USD',
-                'entity-001'
-              );
-              setRefreshTick((t) => t + 1);
-            }}
-          >
-            <Plus className="h-4 w-4 mr-1" /> New Book
-          </Button>
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-1" /> Export
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Multi-Book Accounting"
+        purpose="GAAP, IFRS, Tax, and Statutory books"
+        actions={
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                MultiBookEngine.createBook(
+                  `Book ${MultiBookEngine.listBooks().length + 1}`,
+                  'us-gaap',
+                  'USD',
+                  'entity-001'
+                );
+                setRefreshTick((t) => t + 1);
+              }}
+            >
+              <Plus className="h-4 w-4 mr-1" /> New Book
+            </Button>
+            <Button variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-1" /> Export
+            </Button>
+          </div>
+        }
+      />
 
       {books.length === 0 && (
         <Card>

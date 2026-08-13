@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -151,18 +152,20 @@ export default function HedgeManagementPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Hedge Management</h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            {hedges.length} position{hedges.length !== 1 ? 's' : ''} tracked
-          </p>
-        </div>
-        <Button size="sm" onClick={openAdd}>
-          <Plus className="h-3.5 w-3.5 mr-1.5" />
-          Add Position
-        </Button>
-      </div>
+      <PageHeader
+        title="Hedge Management"
+        purpose={
+          <>
+            {hedges.length}position{hedges.length !== 1 ? 's' : ''}tracked
+          </>
+        }
+        actions={
+          <Button size="sm" onClick={openAdd}>
+            <Plus className="h-3.5 w-3.5 mr-1.5" />
+            Add Position
+          </Button>
+        }
+      />
 
       <Card>
         <CardContent className="p-0">

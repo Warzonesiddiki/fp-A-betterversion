@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useGLStore } from '@/store/glStore';
 import { PivotTableEngine, type PivotConfig, type PivotField } from '@/engines/PivotTableEngine';
 import { PivotBuilder, PivotTable } from '@/components/ui/PivotTable';
@@ -47,10 +48,7 @@ export default function PivotExplorerPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Pivot Explorer</h1>
-        <p className="text-[var(--text-secondary)] mt-1">Slice and dice your financial data</p>
-      </div>
+      <PageHeader title="Pivot Explorer" purpose="Slice and dice your financial data" />
 
       <Card>
         <CardHeader>

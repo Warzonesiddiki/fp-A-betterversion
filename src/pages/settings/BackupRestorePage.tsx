@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useSettingsStore } from '@/store/settingsStore';
@@ -140,12 +141,15 @@ export default function BackupRestorePage() {
       role="main"
       aria-label="Backup and restore page"
     >
-      <div className="mb-2">
-        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Backup & Restore</h1>
-        <p className="text-[var(--text-muted)] text-sm">
-          Export, import, and manage your local data for {organization.name || 'your organization'}.
-        </p>
-      </div>
+      <PageHeader
+        title={'Backup & Restore'}
+        purpose={
+          <>
+            Export, import, and manage your local data for{' '}
+            {organization.name || 'your organization'}.
+          </>
+        }
+      />
 
       {/* Status cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

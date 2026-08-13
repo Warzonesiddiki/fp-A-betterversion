@@ -5,6 +5,7 @@
  * rate and endowment growth, plus exact income summation.
  */
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -125,12 +126,10 @@ export default function ResearchGrantsPage() {
   return (
     <main className="p-6 space-y-6 animate-fade-in" role="main" aria-label="Research Grants">
       <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Research Grants</h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Grant win rate, endowment growth & sponsored revenue
-          </p>
-        </div>
+        <PageHeader
+          title="Research Grants"
+          purpose={'Grant win rate, endowment growth & sponsored revenue'}
+        />
         <Button variant="outline" onClick={() => navigate('/education')}>
           Back to Education
         </Button>

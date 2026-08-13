@@ -17,6 +17,7 @@
 // =============================================================================
 
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Link } from 'react-router-dom';
 import {
   CalendarCheck,
@@ -204,12 +205,7 @@ export default function PeriodClosePage() {
   }, [selected, entry]);
 
   if (!selected || !entry) {
-    return (
-      <div className="p-6 space-y-4">
-        <h1 className="text-2xl font-bold">Period Close</h1>
-        <p className="text-muted-foreground">No fiscal periods available.</p>
-      </div>
-    );
+    return <PageHeader title="Period Close" purpose="No fiscal periods available." />;
   }
 
   const runTransition = async (transition: CloseTransition) => {

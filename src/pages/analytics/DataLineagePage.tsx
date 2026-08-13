@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import {
   Database,
@@ -198,10 +199,7 @@ export default function DataLineagePage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Data Lineage</h1>
-        <p className="text-muted-foreground">Track how data flows from source to screen</p>
-      </div>
+      <PageHeader title="Data Lineage" purpose="Track how data flows from source to screen" />
 
       <div className="flex flex-wrap gap-2 mb-4">
         {types.map((t) => (

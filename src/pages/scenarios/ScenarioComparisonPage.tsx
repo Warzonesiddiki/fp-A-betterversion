@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { useNavigate } from 'react-router-dom';
 import { useScenarioStore, scenarioSelectors } from '@/store/scenarioStore';
@@ -108,15 +109,11 @@ export function ScenarioComparisonPage() {
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Scenario Comparison</h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Select scenarios to compare side-by-side.
-          </p>
-        </div>
-        <Button onClick={() => navigate('/scenarios/create')}>Create Scenario</Button>
-      </div>
+      <PageHeader
+        title="Scenario Comparison"
+        purpose="Select scenarios to compare side-by-side."
+        actions={<Button onClick={() => navigate('/scenarios/create')}>Create Scenario</Button>}
+      />
 
       {/* Scenario Selector */}
       <Card>

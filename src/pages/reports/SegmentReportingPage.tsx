@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -59,12 +60,10 @@ export default function SegmentReportingPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Segment Reporting</h1>
-          <p className="text-muted-foreground">ASC 280 compliant segment analysis</p>
-        </div>
-        <div className="flex gap-2">
+      <PageHeader
+  title="Segment Reporting"
+  purpose="ASC 280 compliant segment analysis"
+  actions={<div className="flex gap-2">
           {(['geographic', 'product', 'customer'] as const).map((t) => (
             <Button
               key={t}
@@ -90,8 +89,8 @@ export default function SegmentReportingPage() {
           >
             <Download className="h-4 w-4 mr-1" /> Export
           </Button>
-        </div>
-      </div>
+        </div>}
+/>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>

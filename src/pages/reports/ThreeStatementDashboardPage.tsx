@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { currencyFormatter } from '@/utils/financialFormatting';
 import { useNavigate } from 'react-router-dom';
@@ -264,12 +265,10 @@ export default function ThreeStatementDashboardPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Three-Statement Model</h1>
-          <p className="text-muted-foreground">Integrated P&L, Balance Sheet, and Cash Flow</p>
-        </div>
-        <div className="flex gap-2">
+      <PageHeader
+  title="Three-Statement Model"
+  purpose={"Integrated P&L, Balance Sheet, and Cash Flow"}
+  actions={<div className="flex gap-2">
           <input
             type="month"
             value={period}
@@ -279,8 +278,8 @@ export default function ThreeStatementDashboardPage() {
           <Button variant="outline" onClick={handleExport}>
             <Download className="h-4 w-4 mr-1" /> Export
           </Button>
-        </div>
-      </div>
+        </div>}
+/>
 
       {/* KPI Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useReportStore } from '@/store/reportStore';
@@ -32,16 +33,12 @@ export default function ReportBookBuilderPage() {
 
   return (
     <div className="p-6 space-y-6" role="main" aria-label="Report Book Builder page">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Report Book Builder</h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            {entries.length.toLocaleString()} GL entries available
+      <PageHeader
+  title="Report Book Builder"
+  purpose={<>{entries.length.toLocaleString()}GL entries available
             {reports.length > 0 &&
-              ` \u00B7 ${reports.length} saved report${reports.length !== 1 ? 's' : ''}`}
-          </p>
-        </div>
-      </div>
+              ` \u00B7 ${reports.length} saved report${reports.length !== 1 ? 's' : ''}`}</>}
+/>
 
       <ReportBookBuilder />
     </div>
