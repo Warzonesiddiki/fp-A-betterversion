@@ -225,7 +225,19 @@ describe('UI-01 — the migrated primitives use no raw palette utilities', () =>
  * floor because a row can be hovered while its text is showing.
  */
 describe('UI-07 — text tokens clear AA on every surface they render on', () => {
-  const TEXT_TOKENS = ['text-accent', 'text-positive', 'text-info'] as const;
+  // The full text ramp, not just the accent hues: --text-muted shipped at
+  // 4.17:1 on --bg-elevated and 3.60:1 on --bg-hover while passing on the
+  // page background, which is exactly the case measuring only one surface
+  // misses. It is also the most-used text token in the app.
+  const TEXT_TOKENS = [
+    'text-accent',
+    'text-positive',
+    'text-info',
+    'text-primary',
+    'text-secondary',
+    'text-muted',
+    'text-tertiary',
+  ] as const;
   // Ordered lightest-backdrop-last; each is a real page/panel/row background.
   const SURFACES = ['bg-root', 'bg-surface', 'bg-elevated', 'bg-hover'] as const;
 
@@ -242,6 +254,40 @@ describe('UI-07 — text tokens clear AA on every surface they render on', () =>
           ).toBeGreaterThanOrEqual(AA_TEXT);
         });
       }
+    }
+  }
+});
+
+describe('UI-07 — the text ramp stays visually ordered', () => {
+  /**
+   * Raising a token to pass contrast is easy; the trap is raising it until it
+   * is indistinguishable from the step above, which fixes a measurement and
+   * breaks the design. --text-muted was lightened to clear AA on --bg-hover
+   * and deliberately not lightened further, leaving 1.38:1 against
+   * --text-secondary. These bounds fail in both directions.
+   */
+  const STEPS = [
+    ['text-muted', 'text-secondary'],
+    ['text-secondary', 'text-primary'],
+  ] as const;
+
+  for (const { name, scope } of THEMES) {
+    for (const [dimmer, brighter] of STEPS) {
+      it(`${name}: --${dimmer} stays distinguishable from --${brighter}`, () => {
+        const page = flatten(token('bg-surface', scope), [1, 1, 1]);
+        const a = flatten(token(dimmer, scope), page);
+        const b = flatten(token(brighter, scope), page);
+        // Ordered: the "dimmer" step must actually be dimmer against the page.
+        expect(
+          contrast(a, page),
+          `--${dimmer} should sit below --${brighter} in ${name}`
+        ).toBeLessThan(contrast(b, page));
+        // Separated: a visible step, not two shades of the same grey.
+        expect(
+          contrast(a, b),
+          `--${dimmer} (${token(dimmer, scope)}) vs --${brighter} (${token(brighter, scope)}) in ${name}`
+        ).toBeGreaterThanOrEqual(1.2);
+      });
     }
   }
 });

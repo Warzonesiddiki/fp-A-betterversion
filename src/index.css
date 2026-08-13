@@ -70,7 +70,13 @@
   --border-strong: #4a68a4;
 
   /* Typography — high contrast, readable */
-  --text-muted: #6484b4;
+  /* UI-07 — #6484b4 was AA only on the two darkest surfaces (4.17:1 on
+     --bg-elevated, 3.60:1 on --bg-hover), and muted text lands on cards and
+     hovered rows constantly. Lightened just far enough to clear 4.5:1 on
+     --bg-hover, the worst case, and no further: the remaining gap to
+     --text-secondary (1.38:1) is what keeps the muted/secondary/primary
+     hierarchy readable as three distinct steps. */
+  --text-muted: #7897c3;
   --text-secondary: #94b2db;
   --text-primary: #f1f5f9;
   --text-accent: #38bdf8;

@@ -424,11 +424,25 @@ reintroduced as text. Both were mutation-verified (M8: restoring `#15803d`
 fails 4 assertions; M9: restoring one `text-[var(--accent-primary)]` fails the
 grep with the file and line).
 
+**`--text-muted` — DONE (follow-up).** The deferred item above is fixed:
+`#6484b4` → `#7897c3`, taking it from 4.17:1 on `--bg-elevated` and 3.60:1 on
+`--bg-hover` to 5.32:1 and 4.59:1. `--text-tertiary` aliases it and was fixed
+with it. Light theme was already AA and is untouched.
+
+The interesting constraint was _not_ lightening it further. Muted text only
+had to move far enough to clear AA on the worst surface; going brighter (to
+`#94b2db`, say) also passes contrast while collapsing the gap to
+`--text-secondary` from 1.38:1 to 1.00:1, turning three type steps into two.
+So the ramp ordering and separation are now pinned by their own describe, and
+`buttonContrast.contract.test.ts` measures the whole text ramp — not just the
+accent hues — against all four surfaces (63 → 99 tests). Mutation-verified
+both ways: M10 restoring `#6484b4` fails 4 contrast assertions, M11 the
+over-correction to `#94b2db` fails the hierarchy assertion.
+
 Still open in this section: loading/empty/error consistency, axe, keyboard
-paths, 1024×600. Two contrast items are known and deliberately out of this
-slice: `--text-muted` is 4.17:1 on `--bg-elevated` (1067 uses — needs its own
-change), and `--border-subtle` is used as text in `NLQChat.tsx:262,264` for
-decorative dot separators.
+paths, 1024×600. One contrast item is known and deliberately excluded:
+`--border-subtle` is used as text in `NLQChat.tsx:262,264`, but only for
+decorative dot separators between metadata, which is not content.
 
 ---
 
