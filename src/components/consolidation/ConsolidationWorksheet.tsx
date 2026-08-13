@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
+import { reportingCurrency } from '@/store/financialContextStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/utils/cn';
 import { roundTo, sumMoney } from '@/utils/money';
-import { formatPercent } from '@/utils/financialFormatting';
+import { currencyFormatter, formatPercent } from '@/utils/financialFormatting';
 import { ConsolidationEngine } from '@/engines/ConsolidationEngine';
 import type {
   EntityData,
@@ -615,10 +616,5 @@ function TR({ l, v, neg }: { l: string; v: number; neg?: boolean }) {
 }
 
 function fmt(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
+  return currencyFormatter(reportingCurrency(), { decimals: 0 })(n);
 }

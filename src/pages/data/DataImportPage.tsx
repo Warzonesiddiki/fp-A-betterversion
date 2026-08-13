@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useDataStore } from '@/store/dataStore';
@@ -108,6 +109,7 @@ export function computeReconciliation(
 }
 
 export default function DataImportPage() {
+  const fmtCurrency = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -625,21 +627,13 @@ export default function DataImportPage() {
               <div>
                 <div className="text-xs text-[var(--text-muted)]">Total Debits</div>
                 <div className="text-lg font-bold text-blue-400">
-                  {new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 0,
-                  }).format(currentSummary.totalDebit)}
+                  {fmtCurrency.custom({ minDecimals: 0 })(currentSummary.totalDebit)}
                 </div>
               </div>
               <div>
                 <div className="text-xs text-[var(--text-muted)]">Total Credits</div>
                 <div className="text-lg font-bold text-green-400">
-                  {new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 0,
-                  }).format(currentSummary.totalCredit)}
+                  {fmtCurrency.custom({ minDecimals: 0 })(currentSummary.totalCredit)}
                 </div>
               </div>
             </div>
@@ -821,18 +815,10 @@ export default function DataImportPage() {
                         >
                           <td className="py-3 pr-4 font-mono text-xs">{d.key}</td>
                           <td className="py-3 pr-4 text-right tabular-nums">
-                            {new Intl.NumberFormat('en-US', {
-                              style: 'currency',
-                              currency: 'USD',
-                              minimumFractionDigits: 0,
-                            }).format(d.expected)}
+                            {fmtCurrency.custom({ minDecimals: 0 })(d.expected)}
                           </td>
                           <td className="py-3 pr-4 text-right tabular-nums">
-                            {new Intl.NumberFormat('en-US', {
-                              style: 'currency',
-                              currency: 'USD',
-                              minimumFractionDigits: 0,
-                            }).format(d.actual)}
+                            {fmtCurrency.custom({ minDecimals: 0 })(d.actual)}
                           </td>
                           <td
                             className={`py-3 pr-4 text-right tabular-nums font-medium ${
@@ -843,12 +829,9 @@ export default function DataImportPage() {
                                   : 'text-red-400'
                             }`}
                           >
-                            {new Intl.NumberFormat('en-US', {
-                              style: 'currency',
-                              currency: 'USD',
-                              minimumFractionDigits: 0,
-                              signDisplay: 'exceptZero',
-                            }).format(d.diff)}
+                            {fmtCurrency.custom({ minDecimals: 0, signDisplay: 'exceptZero' })(
+                              d.diff
+                            )}
                           </td>
                           <td className="py-3">
                             {status === 'match' && (

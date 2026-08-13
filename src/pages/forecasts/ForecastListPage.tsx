@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import { reportingCurrency } from '@/store/financialContextStore';
+import { currencyFormatter } from '@/utils/financialFormatting';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useForecastStore } from '@/store/forecastStore';
@@ -13,12 +15,7 @@ import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
 import { formatRelativeTimeLegacy as formatRelativeTime } from '@/engines/temporal';
 
 function _formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
+  return currencyFormatter(reportingCurrency(), { decimals: 0 })(n);
 }
 
 export default function ForecastListPage() {

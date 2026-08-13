@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import {
   BarChart,
   Bar,
@@ -38,6 +39,7 @@ export const WaterfallChart: React.FC<WaterfallChartProps> = ({
   error,
   onClick,
 }) => {
+  const fmtCurrency = useCurrencyFormatter();
   if (loading) {
     return (
       <div
@@ -107,12 +109,7 @@ export const WaterfallChart: React.FC<WaterfallChartProps> = ({
   };
 
   const formatValue = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      notation: 'compact',
-      maximumFractionDigits: 1,
-    }).format(value);
+    return fmtCurrency.custom({ maxDecimals: 1, compact: true })(value);
   };
 
   return (

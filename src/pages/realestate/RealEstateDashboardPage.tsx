@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
 
 import {
@@ -44,56 +45,50 @@ const occupancyData = [
   { month: 'Jun', residential: 98, commercial: 93, industrial: 99 },
 ];
 
-const columns: Column[] = [
-  { key: 'name', header: 'Property Name', sortable: true },
-  { key: 'status', header: 'Asset Class' },
-  {
-    key: 'currentVal',
-    header: 'Fair Value',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v as number),
-  },
-  {
-    key: 'noi',
-    header: 'NOI (Est)',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format((v as number) || 0),
-  },
-  {
-    key: 'occupancy',
-    header: 'Occupancy',
-    align: 'right',
-    render: (v) => (
-      <span
-        className={
-          parseFloat((v as string) || '95') > 95
-            ? 'text-green-600 font-bold'
-            : 'text-blue-600 font-bold'
-        }
-      >
-        {(v as string) || '94.8%'}
-      </span>
-    ),
-  },
-  {
-    key: 'yield',
-    header: 'Cap Rate',
-    align: 'right',
-    render: (v) => `${v}%`,
-  },
-];
-
 export default function RealEstateDashboardPage() {
+  const fmtCurrency = useCurrencyFormatter();
+
+  const columns = useMemo<Column[]>(
+    () => [
+      { key: 'name', header: 'Property Name', sortable: true },
+      { key: 'status', header: 'Asset Class' },
+      {
+        key: 'currentVal',
+        header: 'Fair Value',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
+      },
+      {
+        key: 'noi',
+        header: 'NOI (Est)',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 0 })((v as number) || 0),
+      },
+      {
+        key: 'occupancy',
+        header: 'Occupancy',
+        align: 'right',
+        render: (v) => (
+          <span
+            className={
+              parseFloat((v as string) || '95') > 95
+                ? 'text-green-600 font-bold'
+                : 'text-blue-600 font-bold'
+            }
+          >
+            {(v as string) || '94.8%'}
+          </span>
+        ),
+      },
+      {
+        key: 'yield',
+        header: 'Cap Rate',
+        align: 'right',
+        render: (v) => `${v}%`,
+      },
+    ],
+    [fmtCurrency]
+  );
   const { entries } = useGLStore();
   const [periodId, setPeriodId] = useState('P01');
 
@@ -161,12 +156,7 @@ export default function RealEstateDashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
           label="Portfolio Fair Value"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 1,
-            notation: 'compact',
-          }).format(stats.fairValue)}
+          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(stats.fairValue)}
           change={8.4}
           changeLabel="valuation update Q1"
           trend="up"
@@ -174,12 +164,7 @@ export default function RealEstateDashboardPage() {
         />
         <KPIValue
           label="Net Operating Income"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 1,
-            notation: 'compact',
-          }).format(stats.noi)}
+          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(stats.noi)}
           change={12.1}
           changeLabel="OpEx reduction 5%"
           trend="up"

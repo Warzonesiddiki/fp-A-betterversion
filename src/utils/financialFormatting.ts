@@ -53,6 +53,70 @@ export function formatCurrency(
 }
 
 /**
+ * Options for {@link currencyFormatter}. This is deliberately a thin subset of
+ * `Intl.NumberFormatOptions`: the UI-06 follow-up replaced ~81 hand-rolled
+ * `new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', … })`
+ * call sites, and those sites used exactly these knobs.
+ */
+export interface CurrencyFormatOptions {
+  /**
+   * Fixed number of fraction digits (sets both min and max).
+   * Omit to keep the currency's own default — important for zero-decimal
+   * currencies such as JPY, where forcing 2 digits renders `¥1,234.50`
+   * instead of the correct `¥1,235`.
+   */
+  decimals?: number;
+  /** Lower bound on fraction digits, when min and max differ. */
+  minDecimals?: number;
+  /** Upper bound on fraction digits, when min and max differ. */
+  maxDecimals?: number;
+  /** Abbreviate to `$1.2M` / `$1.2K`. */
+  compact?: boolean;
+  /** Force a leading `+` on positives (`'always'`) or on non-zero (`'exceptZero'`). */
+  signDisplay?: 'auto' | 'always' | 'exceptZero' | 'never';
+  locale?: string;
+}
+
+/**
+ * A currency formatter bound to a currency code, preserving native `Intl`
+ * semantics.
+ *
+ * This is the module-scope counterpart to `useCurrencyFormatter()`. Prefer the
+ * hook inside React components so the output re-renders when the reporting
+ * currency changes; use this factory in engines, column definitions and other
+ * non-React code.
+ *
+ * Unlike {@link formatCurrency}, this does NOT substitute `'—'` for null/zero
+ * and does NOT wrap negatives in parentheses — it is a faithful `Intl` wrapper.
+ * That distinction is deliberate: it lets the ~81 migrated call sites change
+ * currency without also changing how they render zeroes and negatives, which
+ * would silently alter hundreds of on-screen figures and stored snapshots.
+ *
+ * DISPLAY ONLY — formatting in a currency never converts the amount.
+ */
+export function currencyFormatter(
+  currency: string,
+  options: CurrencyFormatOptions = {}
+): (value: number | null | undefined) => string {
+  const { decimals, minDecimals, maxDecimals, compact, signDisplay, locale = 'en-US' } = options;
+
+  const intlOptions: Intl.NumberFormatOptions = { style: 'currency', currency };
+  if (decimals != null) {
+    intlOptions.minimumFractionDigits = decimals;
+    intlOptions.maximumFractionDigits = decimals;
+  }
+  if (minDecimals != null) intlOptions.minimumFractionDigits = minDecimals;
+  if (maxDecimals != null) intlOptions.maximumFractionDigits = maxDecimals;
+  if (compact) intlOptions.notation = 'compact';
+  if (signDisplay) intlOptions.signDisplay = signDisplay;
+
+  // Built once per formatter: Intl.NumberFormat construction is the expensive
+  // part, and these formatters live in render paths and grid cell renderers.
+  const formatter = new Intl.NumberFormat(locale, intlOptions);
+  return (value: number | null | undefined) => (value == null ? '—' : formatter.format(value));
+}
+
+/**
  * Currency symbol for a code ('USD' → '$', 'EUR' → '€'). Falls back to the
  * code itself when the runtime has no symbol, so output is never empty.
  */

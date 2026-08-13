@@ -24,3 +24,17 @@ export const useFinancialContextStore = create<FinancialContextStore>((set) => (
     }),
   resetContext: () => set({ context: DEFAULT_FINANCIAL_CONTEXT }),
 }));
+
+/**
+ * The active reporting currency, read non-reactively.
+ *
+ * For code that runs outside React — engines, report builders, column
+ * definitions evaluated at module scope. Inside a component use
+ * `useCurrencyFormatter()` / `useReportingCurrency()` instead, so the UI
+ * actually re-renders when the user switches currency in the context bar.
+ *
+ * Display only: this reports which currency to render in and never converts.
+ */
+export function reportingCurrency(): string {
+  return useFinancialContextStore.getState().context.currency.code;
+}

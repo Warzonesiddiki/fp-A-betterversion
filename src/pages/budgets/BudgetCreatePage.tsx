@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 import { useNavigate } from 'react-router-dom';
 import { useBudgetStore } from '@/store/budgetStore';
@@ -22,6 +23,7 @@ export function sumMonthlyAmounts(monthly: ReadonlyArray<number | undefined>): n
 }
 
 export default function BudgetCreatePage() {
+  const fmtCurrency = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -384,11 +386,7 @@ export default function BudgetCreatePage() {
                     </div>
                     <div className="text-right text-xs text-slate-400 mt-1">
                       Total:{' '}
-                      {new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                        minimumFractionDigits: 0,
-                      }).format(
+                      {fmtCurrency.custom({ minDecimals: 0 })(
                         sumMonthlyAmounts(
                           Array.from({ length: 12 }, (_, m) => amounts[id + '-' + m])
                         )
@@ -401,11 +399,7 @@ export default function BudgetCreatePage() {
             <div className="text-sm text-[var(--text-muted)]">
               Total Budget:{' '}
               <span className="font-bold text-[var(--text-primary)]">
-                {new Intl.NumberFormat('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                  minimumFractionDigits: 0,
-                }).format(totalAmount)}
+                {fmtCurrency.custom({ minDecimals: 0 })(totalAmount)}
               </span>
             </div>
             <div className="flex justify-between">
@@ -446,11 +440,7 @@ export default function BudgetCreatePage() {
               <div className="flex justify-between">
                 <span className="text-[var(--text-muted)]">Total Amount</span>
                 <span className="font-bold text-lg">
-                  {new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 0,
-                  }).format(totalAmount)}
+                  {fmtCurrency.custom({ minDecimals: 0 })(totalAmount)}
                 </span>
               </div>
             </div>

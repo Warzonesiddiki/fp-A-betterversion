@@ -19,6 +19,8 @@
  */
 
 import { roundTo, subtractMoney, sumMoney } from '@/utils/money';
+import { reportingCurrency } from '@/store/financialContextStore';
+import { currencyFormatter } from '@/utils/financialFormatting';
 
 export interface ReportSection {
   id: string;
@@ -368,13 +370,7 @@ export function renderSectionToHTML(section: ReportSection, periods: string[]): 
   for (const period of periods) {
     const value = section.values[period];
     const formatted =
-      value != null
-        ? new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 0,
-          }).format(value)
-        : '—';
+      value != null ? currencyFormatter(reportingCurrency(), { maxDecimals: 0 })(value) : '—';
     html += `<td class="text-right ${fontWeight} ${underlineClass}" style="font-size:${fontSize}">${formatted}</td>`;
   }
 

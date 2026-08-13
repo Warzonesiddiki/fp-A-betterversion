@@ -1,4 +1,5 @@
 import type { FiscalPeriod } from '@/types';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 
 const columns = [
@@ -38,6 +39,7 @@ import { HealthcareEngine } from '@/engines/HealthcareEngine';
 import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 export default function PatientRevenuePage() {
+  const fmtCurrency = useCurrencyFormatter();
   const { entries } = useGLStore();
   const [periodId, setPeriodId] = useState('P01');
   // WIRED (C-3): real fiscal periods from FiscalCalendar + org settings.
@@ -111,9 +113,7 @@ export default function PatientRevenuePage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
           label="Gross Charges"
-          value={new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
-            stats.grossCharges
-          )}
+          value={fmtCurrency.custom()(stats.grossCharges)}
           change={8.4}
           changeLabel="volume increase in Q1"
           trend="up"

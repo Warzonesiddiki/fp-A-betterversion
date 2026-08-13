@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
 import { Package, BarChart3, Download, Truck } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -79,6 +80,7 @@ const columns: Column[] = [
 ];
 
 export default function InventoryPlanningPage() {
+  const fmtCurrency = useCurrencyFormatter();
   const { entries } = useGLStore();
   const [periodId, setPeriodId] = useState('P01');
 
@@ -140,12 +142,7 @@ export default function InventoryPlanningPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
           label="Total Inventory Value"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 1,
-            notation: 'compact',
-          }).format(stats.totalValue)}
+          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(stats.totalValue)}
           change={4.2}
           changeLabel="at cost basis"
           trend="up"

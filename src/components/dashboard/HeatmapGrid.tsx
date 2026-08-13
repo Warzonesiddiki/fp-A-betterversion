@@ -1,6 +1,7 @@
 import { useMemo, useState, memo } from 'react';
+import { reportingCurrency } from '@/store/financialContextStore';
 import { cn } from '@/utils/cn';
-import { formatCompact, formatPercent } from '@/utils/financialFormatting';
+import { currencyFormatter, formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 export interface HeatmapCell {
   rowId: string;
@@ -69,12 +70,7 @@ function interpolateColor(
 function formatNum(value: number, format: string): string {
   switch (format) {
     case 'currency':
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }).format(value);
+      return currencyFormatter(reportingCurrency(), { decimals: 0 })(value);
     case 'percent':
       return `${formatPercent(value, 1)}`;
     case 'compact':

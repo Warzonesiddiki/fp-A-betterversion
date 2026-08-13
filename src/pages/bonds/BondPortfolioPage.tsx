@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { Landmark, BarChart3, Download, Shield, AlertTriangle } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -54,63 +55,57 @@ function deriveBondsFromGL(entries: GLEntry[]) {
   }>;
 }
 
-const bondColumns: Column[] = [
-  { key: 'name', header: 'Instrument', sortable: true },
-  {
-    key: 'faceValue',
-    header: 'Face Value',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v as number),
-  },
-  {
-    key: 'couponRate',
-    header: 'Coupon',
-    align: 'right',
-    render: (v) => `${formatPercent(v as number, 2)}`,
-  },
-  {
-    key: 'ytm',
-    header: 'YTM',
-    align: 'right',
-    render: (v) => `${formatPercent(v as number, 2)}`,
-  },
-  {
-    key: 'price',
-    header: 'Clean Price',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 2,
-      }).format(v as number),
-  },
-  {
-    key: 'modifiedDuration',
-    header: 'Mod. Duration',
-    align: 'right',
-    render: (v) => `${formatNumber(v as number, 2)} yrs`,
-  },
-  {
-    key: 'convexity',
-    header: 'Convexity',
-    align: 'right',
-    render: (v) => formatNumber(v as number, 2),
-  },
-  {
-    key: 'periods',
-    header: 'Maturity',
-    align: 'right',
-    render: (v) => `${v} yr${(v as number) !== 1 ? 's' : ''}`,
-  },
-];
-
 export default function BondPortfolioPage() {
+  const fmtCurrency = useCurrencyFormatter();
+
+  const bondColumns = useMemo<Column[]>(
+    () => [
+      { key: 'name', header: 'Instrument', sortable: true },
+      {
+        key: 'faceValue',
+        header: 'Face Value',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
+      },
+      {
+        key: 'couponRate',
+        header: 'Coupon',
+        align: 'right',
+        render: (v) => `${formatPercent(v as number, 2)}`,
+      },
+      {
+        key: 'ytm',
+        header: 'YTM',
+        align: 'right',
+        render: (v) => `${formatPercent(v as number, 2)}`,
+      },
+      {
+        key: 'price',
+        header: 'Clean Price',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 2 })(v as number),
+      },
+      {
+        key: 'modifiedDuration',
+        header: 'Mod. Duration',
+        align: 'right',
+        render: (v) => `${formatNumber(v as number, 2)} yrs`,
+      },
+      {
+        key: 'convexity',
+        header: 'Convexity',
+        align: 'right',
+        render: (v) => formatNumber(v as number, 2),
+      },
+      {
+        key: 'periods',
+        header: 'Maturity',
+        align: 'right',
+        render: (v) => `${v} yr${(v as number) !== 1 ? 's' : ''}`,
+      },
+    ],
+    [fmtCurrency]
+  );
   const { entries } = useGLStore();
 
   const bonds = useMemo(() => deriveBondsFromGL(entries), [entries]);
@@ -274,22 +269,16 @@ export default function BondPortfolioPage() {
       >
         <KPIValue
           label="Total Face Value"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 1,
-            notation: 'compact',
-          }).format(portfolioMetrics.totalFaceValue)}
+          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(
+            portfolioMetrics.totalFaceValue
+          )}
           trend="neutral"
         />
         <KPIValue
           label="Market Value"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 1,
-            notation: 'compact',
-          }).format(portfolioMetrics.totalMarketValue)}
+          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(
+            portfolioMetrics.totalMarketValue
+          )}
           change={2.3}
           changeLabel="price appreciation"
           trend="up"
@@ -391,11 +380,7 @@ export default function BondPortfolioPage() {
                 Total Accrued Interest
               </div>
               <div className="text-xl font-bold text-blue-600">
-                {new Intl.NumberFormat('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                  maximumFractionDigits: 0,
-                }).format(portfolioMetrics.totalAccrued)}
+                {fmtCurrency.custom({ maxDecimals: 0 })(portfolioMetrics.totalAccrued)}
               </div>
             </div>
             <div className="space-y-1">

@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
 import { Store, DollarSign, Users, Download, Award } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -26,66 +27,60 @@ import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
-const columns: Column[] = [
-  {
-    key: 'rank',
-    header: 'Rank',
-    align: 'center',
-    render: (v) => (
-      <span
-        className={`inline-flex items-center justify-center h-6 w-6 rounded-full text-[10px] font-bold ${
-          v === 1
-            ? 'bg-yellow-100 text-yellow-700'
-            : v === 2
-              ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
-              : v === 3
-                ? 'bg-amber-100 text-amber-700'
-                : 'bg-transparent text-slate-500'
-        }`}
-      >
-        {v as number}
-      </span>
-    ),
-  },
-  { key: 'name', header: 'Store Name', sortable: true },
-  { key: 'region', header: 'Region', render: () => 'North' },
-  {
-    key: 'revenue',
-    header: 'Revenue Period',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v as number),
-  },
-  {
-    key: 'netProfit',
-    header: 'Net Profit',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v as number),
-  },
-  {
-    key: 'margin',
-    header: 'Net Margin',
-    align: 'right',
-    render: (v) => `${formatPercent(v as number, 1)}`,
-  },
-  {
-    key: 'laborPercent',
-    header: 'Labor %',
-    align: 'right',
-    render: (v) => `${formatPercent(v as number, 1)}`,
-  },
-];
-
 export default function StorePerformancePage() {
+  const fmtCurrency = useCurrencyFormatter();
+
+  const columns = useMemo<Column[]>(
+    () => [
+      {
+        key: 'rank',
+        header: 'Rank',
+        align: 'center',
+        render: (v) => (
+          <span
+            className={`inline-flex items-center justify-center h-6 w-6 rounded-full text-[10px] font-bold ${
+              v === 1
+                ? 'bg-yellow-100 text-yellow-700'
+                : v === 2
+                  ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                  : v === 3
+                    ? 'bg-amber-100 text-amber-700'
+                    : 'bg-transparent text-slate-500'
+            }`}
+          >
+            {v as number}
+          </span>
+        ),
+      },
+      { key: 'name', header: 'Store Name', sortable: true },
+      { key: 'region', header: 'Region', render: () => 'North' },
+      {
+        key: 'revenue',
+        header: 'Revenue Period',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
+      },
+      {
+        key: 'netProfit',
+        header: 'Net Profit',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
+      },
+      {
+        key: 'margin',
+        header: 'Net Margin',
+        align: 'right',
+        render: (v) => `${formatPercent(v as number, 1)}`,
+      },
+      {
+        key: 'laborPercent',
+        header: 'Labor %',
+        align: 'right',
+        render: (v) => `${formatPercent(v as number, 1)}`,
+      },
+    ],
+    [fmtCurrency]
+  );
   const { entries } = useGLStore();
   const [periodId, setPeriodId] = useState('P01');
 
@@ -141,12 +136,7 @@ export default function StorePerformancePage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
           label="Avg Revenue Per Store"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 1,
-            notation: 'compact',
-          }).format(stats.avgRevenuePerStore)}
+          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(stats.avgRevenuePerStore)}
           change={6.8}
           changeLabel="blended performance"
           trend="up"

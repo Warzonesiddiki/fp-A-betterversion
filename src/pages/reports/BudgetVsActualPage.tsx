@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { reportingCurrency } from '@/store/financialContextStore';
 import { Link, useLocation } from 'react-router-dom';
 import {
   AlertCircle,
@@ -23,7 +24,7 @@ import { PAGE_HELP } from '../_docs';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { sumMoney, subtractMoney, roundTo, divideMoney } from '@/utils/money';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-import { formatPercent } from '@/utils/financialFormatting';;
+import { currencyFormatter, formatPercent } from '@/utils/financialFormatting';;
 
 const MATERIAL_THRESHOLD = 10;
 const PERIOD_OPTIONS = ['Monthly', 'Quarterly', 'Annual'] as const;
@@ -32,12 +33,7 @@ const ACCOUNT_TYPE_OPTIONS = ['All', 'Revenue', 'Expense'] as const;
 type PeriodMode = (typeof PERIOD_OPTIONS)[number];
 type AccountTypeFilter = (typeof ACCOUNT_TYPE_OPTIONS)[number];
 function formatCurrencyFull(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(n);
+  return currencyFormatter(reportingCurrency(), { decimals: 2 })(n);
 }
 
 function getQuarterFromPeriod(period: string): number {

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useTour } from '@/hooks/useTour';
@@ -61,6 +62,7 @@ export function computeLoanSegments(
 }
 
 export default function LoanLossPage() {
+  const fmtCurrency = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
   const { runTour } = useTour();
@@ -219,11 +221,7 @@ export default function LoanLossPage() {
                     border: '1px solid #1e293b',
                     borderRadius: '8px',
                   }}
-                  formatter={(value) =>
-                    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
-                      Number(value)
-                    )
-                  }
+                  formatter={(value) => fmtCurrency.custom()(Number(value))}
                 />
                 <Legend />
                 <Bar

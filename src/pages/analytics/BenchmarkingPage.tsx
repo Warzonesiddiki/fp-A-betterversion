@@ -1,19 +1,16 @@
 import { useMemo } from 'react';
+import { reportingCurrency } from '@/store/financialContextStore';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { BarChart3 } from 'lucide-react';
-import { formatPercent } from '@/utils/financialFormatting';
+import { currencyFormatter, formatPercent } from '@/utils/financialFormatting';
 import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
 
 function _formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-  }).format(n);
+  return currencyFormatter(reportingCurrency(), { minDecimals: 0 })(n);
 }
 
 const RATIOS = [

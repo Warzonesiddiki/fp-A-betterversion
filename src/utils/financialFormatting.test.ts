@@ -7,6 +7,7 @@ import {
   formatVariance,
   parseFinancialInput,
   useFinancialFormatter,
+  currencyFormatter,
 } from './financialFormatting';
 
 describe('formatCurrency', () => {
@@ -269,5 +270,101 @@ describe('useFinancialFormatter', () => {
   it('parse should work', () => {
     const fmt = useFinancialFormatter();
     expect(fmt.parse('100')).toBe(100);
+  });
+});
+
+/**
+ * currencyFormatter replaced ~81 hand-rolled `new Intl.NumberFormat(...)` call
+ * sites during the UI-06 follow-up. The migration is only safe if the factory
+ * is byte-for-byte identical to the native call it replaced — otherwise
+ * changing the currency would silently also change how figures render.
+ *
+ * These cases are the exact option shapes measured in the codebase, asserted
+ * against native Intl across currencies with 2-decimal and 0-decimal minor
+ * units (JPY is the one that catches a naive "always force 2 digits").
+ */
+describe('currencyFormatter parity with native Intl', () => {
+  const VALUES = [1234.56, 1234, 0, -1234.56, -0.4, 1234567, 999.999];
+  const CURRENCIES = ['USD', 'EUR', 'GBP', 'INR', 'JPY'];
+
+  const CASES: Array<{
+    name: string;
+    intl: Intl.NumberFormatOptions;
+    ours: Parameters<typeof currencyFormatter>[1];
+  }> = [
+    {
+      name: 'maximumFractionDigits:0',
+      intl: { maximumFractionDigits: 0 },
+      ours: { maxDecimals: 0 },
+    },
+    {
+      name: 'min:0 max:0',
+      intl: { minimumFractionDigits: 0, maximumFractionDigits: 0 },
+      ours: { decimals: 0 },
+    },
+    {
+      name: 'minimumFractionDigits:0',
+      intl: { minimumFractionDigits: 0 },
+      ours: { minDecimals: 0 },
+    },
+    { name: 'currency defaults', intl: {}, ours: {} },
+    {
+      name: 'min:2 max:2',
+      intl: { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+      ours: { decimals: 2 },
+    },
+    {
+      name: 'maximumFractionDigits:2',
+      intl: { maximumFractionDigits: 2 },
+      ours: { maxDecimals: 2 },
+    },
+    {
+      name: 'compact max:1',
+      intl: { notation: 'compact', maximumFractionDigits: 1 },
+      ours: { compact: true, maxDecimals: 1 },
+    },
+    {
+      name: 'signDisplay:always max:0',
+      intl: { signDisplay: 'always', maximumFractionDigits: 0 },
+      ours: { signDisplay: 'always', maxDecimals: 0 },
+    },
+    {
+      name: 'signDisplay:exceptZero min:0',
+      intl: { minimumFractionDigits: 0, signDisplay: 'exceptZero' },
+      ours: { minDecimals: 0, signDisplay: 'exceptZero' },
+    },
+    {
+      name: 'signDisplay:always compact max:1',
+      intl: { signDisplay: 'always', maximumFractionDigits: 1, notation: 'compact' },
+      ours: { signDisplay: 'always', maxDecimals: 1, compact: true },
+    },
+  ];
+
+  for (const { name, intl, ours } of CASES) {
+    for (const currency of CURRENCIES) {
+      it(`matches native Intl for ${name} in ${currency}`, () => {
+        const native = new Intl.NumberFormat('en-US', { style: 'currency', currency, ...intl });
+        const format = currencyFormatter(currency, ours);
+        for (const value of VALUES) {
+          expect(format(value)).toBe(native.format(value));
+        }
+      });
+    }
+  }
+
+  it('renders null and undefined as an em dash rather than NaN', () => {
+    const format = currencyFormatter('USD', { decimals: 0 });
+    expect(format(null)).toBe('—');
+    expect(format(undefined)).toBe('—');
+  });
+
+  it('preserves zero-decimal currency defaults when decimals are unspecified', () => {
+    expect(currencyFormatter('JPY')(1234.56)).toBe('¥1,235');
+    expect(currencyFormatter('USD')(1234.56)).toBe('$1,234.56');
+  });
+
+  it('formats the currency without converting the amount', () => {
+    expect(currencyFormatter('USD', { decimals: 0 })(1000)).toBe('$1,000');
+    expect(currencyFormatter('GBP', { decimals: 0 })(1000)).toBe('£1,000');
   });
 });

@@ -4,6 +4,8 @@
  */
 
 import { formatMoney } from '../utils/money';
+import { reportingCurrency } from '@/store/financialContextStore';
+import { currencyFormatter } from '@/utils/financialFormatting';
 
 interface LineItem {
   name: string;
@@ -44,12 +46,7 @@ export class AutoCommentaryEngine {
     const absVariance = Math.abs(variance);
     const absPct = Math.abs(variancePct);
 
-    const fmt = (v: number) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v);
+    const fmt = (v: number) => currencyFormatter(reportingCurrency(), { maxDecimals: 0 })(v);
 
     // Skip commentary for immaterial variances
     const threshold = context?.threshold ?? this.SIGNIFICANCE_THRESHOLD;
@@ -90,12 +87,7 @@ export class AutoCommentaryEngine {
     const totalVariance = totalActual - totalBudget;
     const totalVariancePct = totalBudget !== 0 ? (totalVariance / Math.abs(totalBudget)) * 100 : 0;
 
-    const fmt = (v: number) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v);
+    const fmt = (v: number) => currencyFormatter(reportingCurrency(), { maxDecimals: 0 })(v);
 
     const direction = totalVariance >= 0 ? 'above' : 'below';
 
@@ -144,11 +136,7 @@ export class AutoCommentaryEngine {
       const placeholder = `[${key}]`;
       const formatted =
         typeof value === 'number'
-          ? new Intl.NumberFormat('en-US', {
-              style: 'currency',
-              currency: 'USD',
-              maximumFractionDigits: 0,
-            }).format(value)
+          ? currencyFormatter(reportingCurrency(), { maxDecimals: 0 })(value)
           : String(value ?? '');
       result = result.replace(
         new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
@@ -234,12 +222,7 @@ export class AutoCommentaryEngine {
     const ytdVariance = ytdActual - ytdBudget;
     const ytdPct = ytdBudget !== 0 ? (ytdVariance / Math.abs(ytdBudget)) * 100 : 0;
 
-    const fmt = (v: number) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v);
+    const fmt = (v: number) => currencyFormatter(reportingCurrency(), { maxDecimals: 0 })(v);
 
     const projectedFullYear = ytdActual + (fullYearBudget - ytdBudget); // simple projection
     const projectedVariance = projectedFullYear - fullYearBudget;

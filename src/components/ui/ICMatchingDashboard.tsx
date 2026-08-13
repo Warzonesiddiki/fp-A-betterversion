@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { reportingCurrency } from '@/store/financialContextStore';
 import { Card, CardHeader, CardTitle, CardContent } from './Card';
 import { Button } from './Button';
 import { Badge } from './Badge';
@@ -6,7 +7,7 @@ import { Select } from './Select';
 import { Input } from './Input';
 
 import { cn } from '@/utils/cn';
-import { formatPercent } from '@/utils/financialFormatting';
+import { currencyFormatter, formatPercent } from '@/utils/financialFormatting';
 import {
   ICMatchingEngine,
   type ICTransaction,
@@ -496,10 +497,5 @@ function UnmatchedPanel({
 // =============================================================================
 
 function formatAmount(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+  return currencyFormatter(reportingCurrency(), { decimals: 0 })(amount);
 }

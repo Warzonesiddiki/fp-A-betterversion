@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
 import { TrendingUp, Download, Wallet, Globe, ShieldCheck } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -97,6 +98,7 @@ const columns: Column[] = [
 ];
 
 export default function REITDashboardPage() {
+  const fmtCurrency = useCurrencyFormatter();
   const { entries } = useGLStore();
   const [periodId, setPeriodId] = useState('P01');
 
@@ -160,11 +162,7 @@ export default function REITDashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
           label="Funds From Ops (FFO)"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 0,
-          }).format(stats.ffo)}
+          value={fmtCurrency.custom({ maxDecimals: 0 })(stats.ffo)}
           change={8.2}
           changeLabel="YTD core FFO"
           trend="up"
@@ -180,9 +178,7 @@ export default function REITDashboardPage() {
         />
         <KPIValue
           label="NAV Per Share"
-          value={new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
-            stats.navPerShare
-          )}
+          value={fmtCurrency.custom()(stats.navPerShare)}
           change={3.1}
           changeLabel="valuation premium 8%"
           trend="up"

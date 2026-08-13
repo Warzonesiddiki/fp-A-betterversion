@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { Card } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { cn } from '@/utils/cn';
@@ -93,6 +94,7 @@ export const KPICard = memo(function KPICard({
   priorYearValue,
   budgetValue,
 }: KPICardProps) {
+  const fmtCurrency = useCurrencyFormatter();
   if (loading) {
     return (
       <Card className="p-4">
@@ -105,12 +107,7 @@ export const KPICard = memo(function KPICard({
 
   const formatted =
     format === 'currency'
-      ? new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        }).format(value)
+      ? fmtCurrency.custom({ decimals: 0 })(value)
       : format === 'percent'
         ? formatPercent(value, 1)
         : value.toLocaleString();
@@ -174,12 +171,7 @@ export const KPICard = memo(function KPICard({
               ? '-'
               : ''}
           {format === 'currency'
-            ? new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              }).format(Math.abs(varianceBadge.amount))
+            ? fmtCurrency.custom({ decimals: 0 })(Math.abs(varianceBadge.amount))
             : Math.abs(varianceBadge.amount).toLocaleString()}{' '}
           {varianceBadge.label ?? 'vs budget'}
         </div>
@@ -192,11 +184,7 @@ export const KPICard = memo(function KPICard({
               PY:{' '}
               <span className="font-medium">
                 {format === 'currency'
-                  ? new Intl.NumberFormat('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                      minimumFractionDigits: 0,
-                    }).format(priorYearValue)
+                  ? fmtCurrency.custom({ minDecimals: 0 })(priorYearValue)
                   : priorYearValue.toLocaleString()}
               </span>
             </span>
@@ -206,11 +194,7 @@ export const KPICard = memo(function KPICard({
               Budget:{' '}
               <span className="font-medium">
                 {format === 'currency'
-                  ? new Intl.NumberFormat('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                      minimumFractionDigits: 0,
-                    }).format(budgetValue)
+                  ? fmtCurrency.custom({ minDecimals: 0 })(budgetValue)
                   : budgetValue.toLocaleString()}
               </span>
             </span>

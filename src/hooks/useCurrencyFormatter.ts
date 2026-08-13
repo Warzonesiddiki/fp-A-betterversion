@@ -17,14 +17,16 @@
  * job. Callers must pass amounts already expressed in the reporting currency.
  */
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import { useFinancialContextStore } from '@/store/financialContextStore';
 import {
+  currencyFormatter,
   formatCompact,
   formatCurrency,
   formatNumber,
   formatPercent,
+  type CurrencyFormatOptions,
 } from '@/utils/financialFormatting';
 
 /** Reporting currency from global financial context (ISO 4217). */
@@ -45,6 +47,19 @@ export interface CurrencyFormatter {
   number: (value: number | null | undefined, decimals?: number) => string;
   /** The ISO 4217 code these formatters render in. */
   currencyCode: string;
+  /**
+   * A formatter for shapes the named members above do not cover — sign display,
+   * asymmetric min/max digits, or compact with a specific precision.
+   *
+   * Unlike `currency`/`currency0`, this is a faithful `Intl` wrapper: it does
+   * not render zero as `'—'` and does not put negatives in parentheses. Use it
+   * when replacing a hand-rolled `new Intl.NumberFormat(...)` so the migration
+   * changes the currency and nothing else.
+   *
+   * Stable across renders for a given set of options, so it is safe to call
+   * during render or inside a grid cell renderer.
+   */
+  custom: (options?: CurrencyFormatOptions) => (value: number | null | undefined) => string;
 }
 
 /**
@@ -79,6 +94,37 @@ export function useCurrencyFormatter(): CurrencyFormatter {
     [currencyCode]
   );
 
+  // `Intl.NumberFormat` construction is the expensive part of formatting, and
+  // `custom()` is called from render paths and grid cell renderers, so
+  // formatters are memoised per option shape.
+  //
+  // The cache lives in a ref rather than a `useMemo` value: it is mutated on
+  // access, and mutating a memoised object during render is unsafe under
+  // concurrent rendering (react-hooks/immutability flags it). The ref stores
+  // the currency it was built for and is discarded when that changes, so a
+  // stale currency can never be served from cache.
+  const cacheRef = useRef<{
+    currency: string;
+    formatters: Map<string, (value: number | null | undefined) => string>;
+  }>({ currency: currencyCode, formatters: new Map() });
+
+  const custom = useCallback(
+    (options: CurrencyFormatOptions = {}) => {
+      if (cacheRef.current.currency !== currencyCode) {
+        cacheRef.current = { currency: currencyCode, formatters: new Map() };
+      }
+      const key = `${options.decimals ?? ''}|${options.minDecimals ?? ''}|${
+        options.maxDecimals ?? ''
+      }|${options.compact ? 'c' : ''}|${options.signDisplay ?? ''}|${options.locale ?? ''}`;
+      const cached = cacheRef.current.formatters.get(key);
+      if (cached) return cached;
+      const formatter = currencyFormatter(currencyCode, options);
+      cacheRef.current.formatters.set(key, formatter);
+      return formatter;
+    },
+    [currencyCode]
+  );
+
   return useMemo(
     () => ({
       currency,
@@ -87,7 +133,8 @@ export function useCurrencyFormatter(): CurrencyFormatter {
       percent: (value: number | null | undefined, decimals = 1) => formatPercent(value, decimals),
       number: (value: number | null | undefined, decimals = 0) => formatNumber(value, decimals),
       currencyCode,
+      custom,
     }),
-    [currency, currency0, compact, currencyCode]
+    [currency, currency0, compact, currencyCode, custom]
   );
 }

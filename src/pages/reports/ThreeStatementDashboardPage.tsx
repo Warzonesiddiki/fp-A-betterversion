@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import { reportingCurrency } from '@/store/financialContextStore';
+import { currencyFormatter } from '@/utils/financialFormatting';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -25,12 +27,7 @@ import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney } from '@/utils/money';
 
 function fmt(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
+  return currencyFormatter(reportingCurrency(), { decimals: 0 })(n);
 }
 
 export default function ThreeStatementDashboardPage() {

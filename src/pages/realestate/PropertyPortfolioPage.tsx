@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
 import { Building2, BarChart3, Filter, Hammer, Search } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -25,67 +26,61 @@ import { formatPercent } from '@/utils/financialFormatting';
 // Mock Data for UI structure
 const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
-const columns: Column[] = [
-  { key: 'name', header: 'Property', sortable: true },
-  { key: 'location', header: 'Location' },
-  {
-    key: 'status',
-    header: 'Strategy',
-    render: (v) => (
-      <span
-        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-          String(v) === 'Core'
-            ? 'bg-blue-100 text-blue-700'
-            : String(v) === 'Value-Add'
-              ? 'bg-emerald-100 text-emerald-700'
-              : 'bg-purple-100 text-purple-700'
-        }`}
-      >
-        {String(v)}
-      </span>
-    ),
-  },
-  {
-    key: 'purchasePrice',
-    header: 'Cost Basis',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v as number),
-  },
-  {
-    key: 'currentVal',
-    header: 'Current Value',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v as number),
-  },
-  {
-    key: 'yield',
-    header: 'Yield',
-    align: 'right',
-    render: (v) => `${String(v)}%`,
-  },
-  {
-    key: 'renovation',
-    header: 'Renovation Status',
-    render: (v) => (
-      <div className="flex items-center gap-2">
-        {String(v) !== 'None' && <Hammer className="h-3 w-3 text-[var(--text-muted)]" />}
-        <span className="text-xs">{String(v)}</span>
-      </div>
-    ),
-  },
-];
-
 export default function PropertyPortfolioPage() {
+  const fmtCurrency = useCurrencyFormatter();
+
+  const columns = useMemo<Column[]>(
+    () => [
+      { key: 'name', header: 'Property', sortable: true },
+      { key: 'location', header: 'Location' },
+      {
+        key: 'status',
+        header: 'Strategy',
+        render: (v) => (
+          <span
+            className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+              String(v) === 'Core'
+                ? 'bg-blue-100 text-blue-700'
+                : String(v) === 'Value-Add'
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : 'bg-purple-100 text-purple-700'
+            }`}
+          >
+            {String(v)}
+          </span>
+        ),
+      },
+      {
+        key: 'purchasePrice',
+        header: 'Cost Basis',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
+      },
+      {
+        key: 'currentVal',
+        header: 'Current Value',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
+      },
+      {
+        key: 'yield',
+        header: 'Yield',
+        align: 'right',
+        render: (v) => `${String(v)}%`,
+      },
+      {
+        key: 'renovation',
+        header: 'Renovation Status',
+        render: (v) => (
+          <div className="flex items-center gap-2">
+            {String(v) !== 'None' && <Hammer className="h-3 w-3 text-[var(--text-muted)]" />}
+            <span className="text-xs">{String(v)}</span>
+          </div>
+        ),
+      },
+    ],
+    [fmtCurrency]
+  );
   const { entries } = useGLStore();
   const [periodId, setPeriodId] = useState('P01');
 
@@ -152,11 +147,7 @@ export default function PropertyPortfolioPage() {
         />
         <KPIValue
           label="Portfolio Unrealized Gain"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            signDisplay: 'always',
-          }).format(stats.unrealizedGain)}
+          value={fmtCurrency.custom({ signDisplay: 'always' })(stats.unrealizedGain)}
           change={15.4}
           changeLabel="since inception"
           trend="up"

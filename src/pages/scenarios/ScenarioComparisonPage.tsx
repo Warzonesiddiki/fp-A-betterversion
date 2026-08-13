@@ -1,10 +1,11 @@
 import { useState, useMemo, useCallback } from 'react';
+import { reportingCurrency } from '@/store/financialContextStore';
 import { useNavigate } from 'react-router-dom';
 import { useScenarioStore, scenarioSelectors } from '@/store/scenarioStore';
 import type { ScenarioMetrics } from '@/types';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { formatPercent } from '@/utils/financialFormatting';
+import { currencyFormatter, formatPercent } from '@/utils/financialFormatting';
 
 interface MetricRow {
   key: keyof ScenarioMetrics;
@@ -27,12 +28,7 @@ const METRICS: MetricRow[] = [
 
 function formatValue(value: number, format: MetricRow['format']): string {
   if (format === 'currency') {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      notation: 'compact',
-      maximumFractionDigits: 1,
-    }).format(value);
+    return currencyFormatter(reportingCurrency(), { maxDecimals: 1, compact: true })(value);
   }
   if (format === 'percent') {
     return `${formatPercent(value, 1)}`;

@@ -102,4 +102,90 @@ describe('useCurrencyFormatter', () => {
     rerender(<Identity />);
     expect(seen[0]).toBe(seen[1]);
   });
+
+  /**
+   * `custom()` covers the option shapes the named members do not: sign display,
+   * asymmetric digits and compact-with-precision. It exists so the ~81
+   * hand-rolled `new Intl.NumberFormat(...)` sites could be migrated without
+   * also changing how they render zeroes and negatives.
+   */
+  describe('custom()', () => {
+    it('follows the reporting currency like the named formatters do', () => {
+      function CustomProbe(): JSX.Element {
+        const fmt = useCurrencyFormatter();
+        return <span data-testid="v">{fmt.custom({ decimals: 0 })(1234.56)}</span>;
+      }
+      render(<CustomProbe />);
+      expect(screen.getByTestId('v')).toHaveTextContent('$1,235');
+
+      setCurrency('GBP');
+      expect(screen.getByTestId('v')).toHaveTextContent('£1,235');
+      expect(screen.getByTestId('v').textContent).not.toContain('$');
+    });
+
+    it('preserves native Intl semantics for zero and negatives', () => {
+      function Semantics(): JSX.Element {
+        const format = useCurrencyFormatter().custom({ decimals: 0 });
+        return (
+          <div>
+            <span data-testid="zero">{format(0)}</span>
+            <span data-testid="neg">{format(-1234)}</span>
+          </div>
+        );
+      }
+      render(<Semantics />);
+      // Deliberately NOT the em dash / parentheses treatment of currency0:
+      // migrating a call site must not change its rendering, only its currency.
+      expect(screen.getByTestId('zero')).toHaveTextContent('$0');
+      expect(screen.getByTestId('neg')).toHaveTextContent('-$1,234');
+    });
+
+    it('honours signDisplay and compact notation', () => {
+      function Shapes(): JSX.Element {
+        const fmt = useCurrencyFormatter();
+        return (
+          <div>
+            <span data-testid="sign">
+              {fmt.custom({ signDisplay: 'always', maxDecimals: 0 })(1234)}
+            </span>
+            <span data-testid="compact">
+              {fmt.custom({ compact: true, maxDecimals: 1 })(2_500_000)}
+            </span>
+          </div>
+        );
+      }
+      render(<Shapes />);
+      expect(screen.getByTestId('sign')).toHaveTextContent('+$1,234');
+      expect(screen.getByTestId('compact')).toHaveTextContent('$2.5M');
+    });
+
+    it('returns a cached formatter for an identical option shape', () => {
+      const seen: Array<(v: number | null | undefined) => string> = [];
+      function Cached(): JSX.Element {
+        const fmt = useCurrencyFormatter();
+        seen.push(fmt.custom({ decimals: 0 }));
+        seen.push(fmt.custom({ decimals: 0 }));
+        seen.push(fmt.custom({ decimals: 2 }));
+        return <span />;
+      }
+      render(<Cached />);
+      expect(seen[0]).toBe(seen[1]);
+      expect(seen[0]).not.toBe(seen[2]);
+    });
+
+    it('does not serve a stale formatter after the currency changes', () => {
+      const seen: Array<(v: number | null | undefined) => string> = [];
+      function Stale(): JSX.Element {
+        const format = useCurrencyFormatter().custom({ decimals: 0 });
+        seen.push(format);
+        return <span data-testid="v">{format(1000)}</span>;
+      }
+      render(<Stale />);
+      expect(screen.getByTestId('v')).toHaveTextContent('$1,000');
+
+      setCurrency('EUR');
+      expect(screen.getByTestId('v')).toHaveTextContent('€1,000');
+      expect(seen[seen.length - 1]).not.toBe(seen[0]);
+    });
+  });
 });

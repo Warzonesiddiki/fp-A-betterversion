@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -21,6 +22,7 @@ import {
 } from 'recharts';
 
 export default function COGSVariancePage() {
+  const fmtCurrency = useCurrencyFormatter();
   const { pathname } = useLocation();
   const [helpOpen, setHelpOpen] = useState(false);
 
@@ -150,10 +152,7 @@ export default function COGSVariancePage() {
                           <div
                             className={`text-sm font-bold ${data.value >= 0 ? 'text-green-400' : 'text-red-400'}`}
                           >
-                            {new Intl.NumberFormat('en-US', {
-                              style: 'currency',
-                              currency: 'USD',
-                            }).format(data.value)}
+                            {fmtCurrency.custom()(data.value)}
                           </div>
                         </div>
                       );

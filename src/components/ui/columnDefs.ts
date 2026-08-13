@@ -1,4 +1,6 @@
 import type { ColDef } from 'ag-grid-community';
+import { reportingCurrency } from '@/store/financialContextStore';
+import { currencyFormatter } from '@/utils/financialFormatting';
 import type { DataGridColumn } from './DataGrid.types';
 
 export function buildColumnDefs(columns: DataGridColumn[]): ColDef[] {
@@ -23,12 +25,7 @@ export function buildColumnDefs(columns: DataGridColumn[]): ColDef[] {
         if (col.type === 'currency') {
           colDef.valueFormatter = (params) => {
             if (params.value === null || params.value === undefined) return '';
-            return new Intl.NumberFormat('en-US', {
-              style: 'currency',
-              currency: 'USD',
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-            }).format(params.value);
+            return currencyFormatter(reportingCurrency(), { decimals: 0 })(params.value);
           };
         } else if (col.type === 'percent') {
           colDef.valueFormatter = (params) => {

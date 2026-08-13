@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { ShieldAlert, BarChart3, Download, Activity, Shield } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -122,69 +123,64 @@ const RATING_COLORS: Record<string, string> = {
   D: '#dc2626',
 };
 
-const creditColumns: Column[] = [
-  { key: 'name', header: 'Entity', sortable: true },
-  {
-    key: 'rating',
-    header: 'Rating',
-    render: (v) => (
-      <span
-        className="px-2 py-0.5 rounded text-[10px] font-bold text-white"
-        style={{ backgroundColor: RATING_COLORS[v as string] || '#94a3b8' }}
-      >
-        {v as string}
-      </span>
-    ),
-  },
-  {
-    key: 'score',
-    header: 'Credit Score',
-    align: 'right',
-    render: (v) => <span className="font-bold">{v as number}</span>,
-  },
-  {
-    key: 'pd',
-    header: 'PD',
-    align: 'right',
-    render: (v) => `${formatPercent(v as number, 2)}`,
-  },
-  {
-    key: 'lgd',
-    header: 'LGD',
-    align: 'right',
-    render: (v) => `${formatPercent(v as number, 1)}`,
-  },
-  {
-    key: 'ead',
-    header: 'EAD',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v as number),
-  },
-  {
-    key: 'expectedLoss',
-    header: 'Expected Loss',
-    align: 'right',
-    render: (v) => {
-      const num = v as number;
-      return (
-        <span className={num > 10000 ? 'text-red-600 font-semibold' : 'text-slate-700'}>
-          {new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 0,
-          }).format(num)}
-        </span>
-      );
-    },
-  },
-];
-
 export default function CreditRiskPage() {
+  const fmtCurrency = useCurrencyFormatter();
+
+  const creditColumns = useMemo<Column[]>(
+    () => [
+      { key: 'name', header: 'Entity', sortable: true },
+      {
+        key: 'rating',
+        header: 'Rating',
+        render: (v) => (
+          <span
+            className="px-2 py-0.5 rounded text-[10px] font-bold text-white"
+            style={{ backgroundColor: RATING_COLORS[v as string] || '#94a3b8' }}
+          >
+            {v as string}
+          </span>
+        ),
+      },
+      {
+        key: 'score',
+        header: 'Credit Score',
+        align: 'right',
+        render: (v) => <span className="font-bold">{v as number}</span>,
+      },
+      {
+        key: 'pd',
+        header: 'PD',
+        align: 'right',
+        render: (v) => `${formatPercent(v as number, 2)}`,
+      },
+      {
+        key: 'lgd',
+        header: 'LGD',
+        align: 'right',
+        render: (v) => `${formatPercent(v as number, 1)}`,
+      },
+      {
+        key: 'ead',
+        header: 'EAD',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
+      },
+      {
+        key: 'expectedLoss',
+        header: 'Expected Loss',
+        align: 'right',
+        render: (v) => {
+          const num = v as number;
+          return (
+            <span className={num > 10000 ? 'text-red-600 font-semibold' : 'text-slate-700'}>
+              {fmtCurrency.custom({ maxDecimals: 0 })(num)}
+            </span>
+          );
+        },
+      },
+    ],
+    [fmtCurrency]
+  );
   const { entries } = useGLStore();
 
   const creditData = useMemo(() => {
@@ -299,22 +295,16 @@ export default function CreditRiskPage() {
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4" aria-label="Credit Risk KPIs">
         <KPIValue
           label="Total Exposure (EAD)"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 1,
-            notation: 'compact',
-          }).format(portfolioMetrics.totalExposure)}
+          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(
+            portfolioMetrics.totalExposure
+          )}
           trend="neutral"
         />
         <KPIValue
           label="Total Expected Loss"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 1,
-            notation: 'compact',
-          }).format(portfolioMetrics.totalExpectedLoss)}
+          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(
+            portfolioMetrics.totalExpectedLoss
+          )}
           changeLabel={`PD: ${formatPercent(portfolioMetrics.weightedPD, 2)}`}
           trend="down"
         />
