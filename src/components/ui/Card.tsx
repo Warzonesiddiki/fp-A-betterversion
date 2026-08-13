@@ -27,7 +27,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     <div
       ref={ref}
       className={cn(
-        'rounded-xl border bg-card text-card-foreground shadow-sm dark:border-gray-700 dark:bg-gray-800',
+        'rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-panel)] text-[var(--text-primary)] shadow-sm',
         density === 'compact' && 'rounded-lg',
         className
       )}

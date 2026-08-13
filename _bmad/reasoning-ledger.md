@@ -925,3 +925,59 @@ The guard added alongside is therefore per-chunk and by name rather than
 aggregate: named lazy vendors must not appear in `index.html`'s modulepreloads.
 Mutation-verified — reverting the one-line fix leaves the aggregate budget
 PASSing and fails only the named check.
+
+## UI-01 — one token cannot be both a text colour and a fill
+
+**The task** was mechanical on its face: replace `bg-blue-600` with a semantic
+token in the shadcn primitives so the Tailwind layer and the CSS layer stop
+disagreeing. `Button` and `Card` alone have 281 and 273 importers, so whatever
+they say propagates almost everywhere.
+
+**The trap.** The obvious substitution — `bg-blue-600` becomes
+`bg-[var(--accent-primary)]` — is a contrast _regression_, and nothing in the
+build would have said so. Checked before applying it:
+
+|                                   | white text on it | verdict   |
+| --------------------------------- | ---------------- | --------- |
+| `bg-blue-600` `#2563eb` (today)   | 5.17:1           | passes AA |
+| `--accent-primary` dark `#0284c7` | **4.10:1**       | fails AA  |
+| `--negative` dark `#f43f5e`       | **3.67:1**       | fails AA  |
+
+The reason is structural, not a bad hex value. A token used as _text_ must
+contrast with the page behind it; the same token used as a _fill under white
+text_ must contrast with white. On a dark page those requirements point in
+opposite directions — the text token wants to be light, the fill token wants to
+be dark. `--accent-primary` was tuned for the first job and then used for the
+second by `.btn-primary`, which sets `color: white`. **That defect is already
+shipping**; the migration would merely have spread it.
+
+**Resolution.** Separate tokens for the separate jobs: `--action-fill`,
+`--action-fill-hover`, `--danger-fill`, `--danger-fill-hover`, defined per
+theme against two constraints at once — white text ≥4.5:1 (AA) and the fill
+itself ≥3:1 against the page (WCAG 1.4.11, so the control's edge is visible).
+Hover travels _darker_ in light theme and _lighter_ in dark, so "more emphasis"
+reads correctly against each background. The badge tints needed the same split:
+`--negative` on `--negative-subtle` is 3.95:1 and `--positive` on
+`--positive-subtle` 4.42:1 in light theme, so each tint got a paired
+`--text-on-*-subtle`.
+
+**A second trap, previously recorded and hit again.** The dark `-subtle` tokens
+are `rgba(…, 0.15)`. Measuring text against that raw value is meaningless — it
+has to be flattened over `--bg-surface` first. The contract test composites
+alpha before computing any ratio; a mutation that only passes when compositing
+is skipped scores 1.69:1 once it is applied.
+
+**What the guard asserts, and why not a snapshot.** The existing primitive
+tests asserted `className).toContain('bg-blue-600')`. That pins the _spelling_
+of a utility: it breaks on every rename and never once says whether the button
+is readable. `buttonContrast.contract.test.ts` instead reads `src/index.css`,
+resolves `var()` alias chains, composites alpha, and asserts WCAG ratios for
+both themes — so it fails when the _rendered result_ regresses, which is the
+property anyone actually cares about. Mutation-verified 4/4, and each mutation
+fails in exactly one theme, confirming the per-theme resolution is real.
+
+**Scope discipline.** The lint rule and the contract test are scoped to the
+four migrated files rather than all of `src/components/ui`. 95 of those 251
+files still carry raw palette utilities; a blanket rule could only have landed
+accompanied by ~91 disable comments, which is a rule that enforces nothing.
+Both lists are ratchets — add a file as it is converted.

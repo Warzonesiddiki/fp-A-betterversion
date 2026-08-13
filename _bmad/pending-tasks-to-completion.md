@@ -145,10 +145,62 @@ Remaining steps to drive one palette instead of three:
 2. Restate the Tailwind primitives in terms of semantic tokens
    (`--action-primary`, `--surface-panel`, `--text-body`) instead of raw
    `blue-600`/`gray-800`.
+
+   **Done for the four core primitives — `Button`, `Card`, `Input`, `Badge`
+   (281, 273, 46 and 47 importers).** All raw palette utilities and all
+   `dark:` variants are gone from them; every colour now comes from a token
+   that already flips under `.light`, so one declaration is correct in both
+   themes.
+
+   **This surfaced a shipping accessibility defect that the migration would
+   otherwise have inherited.** A colour used as _text_ must contrast with the
+   page; the same colour used as a _fill behind white text_ must contrast with
+   white. Those requirements pull in opposite directions, and the existing
+   tokens only satisfied the first. In dark theme, white on `--accent-primary`
+   (#0284c7) is **4.10:1** and white on `--negative` (#f43f5e) is **3.67:1** —
+   both below AA, both live today via `.btn-primary` / `.btn-danger`. Naively
+   swapping `bg-blue-600` (5.17:1) for `--accent-primary` would have _regressed_
+   contrast. Four new fill tokens (`--action-fill`, `--action-fill-hover`,
+   `--danger-fill`, `--danger-fill-hover`) are defined per theme so white text
+   clears AA (≥4.5:1) _and_ the fill stays ≥3:1 against the page (WCAG 1.4.11).
+   The badge tints needed the same treatment: `--negative` on `--negative-subtle`
+   was 3.95:1 and `--positive` on `--positive-subtle` 4.42:1 in light, so
+   `--text-on-{accent,danger,positive}-subtle` pair with each tint. Note the
+   dark `-subtle` tokens are translucent, so they must be composited over
+   `--bg-surface` before measuring — measuring the raw `rgba()` is meaningless.
+
+   `.btn-primary`/`.btn-danger` were repointed at the fill tokens too. They
+   currently have **zero consumers** (the whole `.btn-*` layer is unused), so
+   this is a latent-defect fix, not a visible change.
+
+   Guards: `src/theme/buttonContrast.contract.test.ts` (30 tests) parses the
+   real `index.css`, resolves `var()` aliases, composites alpha, and asserts
+   contrast per theme — mutation-verified 4/4 (reverting `--action-fill` to
+   `--accent-primary` fails dark only; the raw-`--negative` badge fails light
+   only; a raw utility and a `dark:` variant in a primitive are both caught).
+   An eslint `no-restricted-syntax` rule scoped to the four migrated files
+   bans numbered palette utilities and `dark:`; also mutation-verified. The
+   scope is deliberately per-file, not all of `src/components/ui` — 95 of
+   those 251 files still carry raw utilities, so a blanket rule could only
+   land by being disabled everywhere. Widen both lists as each file migrates.
+
 3. Keep the `.fp-*` classes — they are already token-driven and covered by
    `AtlasFoundations.visual-contract.test.tsx` snapshots.
 4. Verified by: extend the visual-contract test with a Button/Card/Input case,
    plus a lint rule banning raw palette utilities in `src/components/ui`.
+
+   **Done for the migrated four**, via `buttonContrast.contract.test.ts` and
+   the scoped eslint rule described in step 2. The contract test goes beyond
+   what was asked: rather than snapshotting class strings (which pin the
+   _spelling_ of a class and break on every rename while saying nothing about
+   whether the result is readable), it resolves the tokens and checks actual
+   WCAG ratios in both themes. `DashboardPage.populated.contract.test.tsx`'s
+   DOM baseline was re-recorded — diff is `class=` attributes only, zero
+   structural change — and the `Button`/`Badge` unit tests were repointed from
+   `bg-blue-600`/`bg-red-100` to the token spellings.
+
+   **Remaining for this step:** the other 91 files in `src/components/ui` that
+   still use raw palette utilities.
 
 Measured surface: 305 of 490 non-test `.tsx` files use raw `slate-`/`gray-`
 utilities; 146 use `dark:`; 247 use `var(--…)`.

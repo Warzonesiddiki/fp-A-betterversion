@@ -11,13 +11,13 @@ describe('Badge', () => {
   it('applies default variant class', () => {
     render(<Badge>Default</Badge>);
     const badge = screen.getByText('Default');
-    expect(badge.className).toContain('bg-blue-100');
+    expect(badge.className).toContain('bg-[var(--accent-subtle)]');
   });
 
   it('applies secondary variant class', () => {
     render(<Badge variant="secondary">Secondary</Badge>);
     const badge = screen.getByText('Secondary');
-    expect(badge.className).toContain('bg-gray-100');
+    expect(badge.className).toContain('bg-[var(--bg-elevated)]');
   });
 
   it('applies outline variant class', () => {
@@ -29,7 +29,7 @@ describe('Badge', () => {
   it('applies destructive variant class', () => {
     render(<Badge variant="destructive">Destructive</Badge>);
     const badge = screen.getByText('Destructive');
-    expect(badge.className).toContain('bg-red-100');
+    expect(badge.className).toContain('bg-[var(--negative-subtle)]');
   });
 
   it('accepts className prop', () => {
