@@ -25,7 +25,9 @@ import type { Budget, BudgetLineItem, GLEntry } from '../../types';
  *
  * Bar (per the UI-07 target): 0 critical, 0 serious. Moderate findings are
  * reported but tolerated, matching `expectNoCriticalOrSerious` in the sibling
- * suite; `heading-order` on ChartOfAccountsPage is a known moderate finding.
+ * suite. ChartOfAccountsPage's `heading-order` moderate is now fixed (its card
+ * title was an `h3` directly under the PageHeader `h1`) and pinned below, so
+ * these four routes currently scan completely clean.
  *
  * DashboardPage's populated state is already covered by
  * `src/pages/DashboardPage.populated.contract.test.tsx`, so it is not repeated here.
@@ -193,6 +195,33 @@ describe('WCAG 2.1 AA — populated-state axe-core regression suite', () => {
 
     expectRenderedRealContent(container, 30);
     expectNoCriticalOrSerious(await axe(container));
+  });
+
+  /**
+   * ChartOfAccountsPage shipped an `h1` -> `h3` skip: `PageHeader` renders the
+   * `h1` and `CardTitle` hardcoded an `h3`, so the "Account Details" card
+   * jumped a level. Screen-reader users navigating by heading lose the
+   * structural cue that the card is a direct child of the page.
+   *
+   * This asserts the document outline directly rather than the absence of an
+   * axe id, because the levels are the thing that has to stay correct - an axe
+   * rule can be renamed or retired while the outline silently rots.
+   */
+  it('ChartOfAccountsPage heading levels never skip a level', () => {
+    const { container } = render(withRouter(<ChartOfAccountsPage />));
+
+    const levels = [...container.querySelectorAll('h1,h2,h3,h4,h5,h6')].map((h) =>
+      Number(h.tagName[1])
+    );
+
+    expect(levels.length, 'expected the populated page to render headings').toBeGreaterThan(1);
+    expect(levels[0], 'the page must open at h1').toBe(1);
+    for (let i = 1; i < levels.length; i += 1) {
+      expect(
+        levels[i]! - levels[i - 1]!,
+        `heading jumped from h${levels[i - 1]} to h${levels[i]}`
+      ).toBeLessThanOrEqual(1);
+    }
   });
 
   it('renders real tabular content, not an empty-state shell', () => {

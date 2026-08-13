@@ -259,9 +259,13 @@ export function NLQChat({ className, maxHeight = '400px' }: NLQChatProps) {
                       style={{ color: 'var(--text-muted)' }}
                     >
                       <span>{msg.result.query.intent}</span>
-                      <span className="text-[var(--border-subtle)]">.</span>
+                      <span aria-hidden="true" className="text-[var(--border-subtle)]">
+                        .
+                      </span>
                       <span>{Math.round(msg.result.query.confidence * 100)}%</span>
-                      <span className="text-[var(--border-subtle)]">.</span>
+                      <span aria-hidden="true" className="text-[var(--border-subtle)]">
+                        .
+                      </span>
                       <span>{msg.result.data.length} pts</span>
                     </div>
                   )}

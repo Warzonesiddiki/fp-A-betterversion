@@ -1088,3 +1088,37 @@ ratchet _discovers_ every `bg-[var(--x)]/NN text-[var(--y)]` pairing in the repo
 and composites it. Enumerating known pairings is how this one was missed, so the
 new check finds its own inputs and asserts it found some — a regex that matches
 nothing must not read as success.
+
+## UI-07 — the last moderate: a heading skip owned by a primitive
+
+`ChartOfAccountsPage` shipped an `h1` -> `h3` jump. `PageHeader` renders the
+page `h1`; `CardTitle` hardcoded `<h3>`; the "Account Details" card sits directly
+under the header, so the outline skipped `h2`. Screen-reader users navigating by
+heading lose the cue that the card is a direct child of the page.
+
+**The page was the symptom, not the cause.** Before patching it, the obvious
+question was whether this was one page or a pattern: **53 pages** use `PageHeader`
+and `CardTitle` together with no intervening `h2`, and `CardTitle` has 168 call
+sites. Hardcoding `h2` in the primitive would have fixed those 53 and broken every
+correctly-nested card. The level is genuinely context-dependent — a primitive
+cannot know where it sits in the document — so it became an `as` prop defaulting
+to `h3`, leaving all 168 existing usages byte-identical, and only the offending
+page opts into `h2`.
+
+**The ratchet asserts the outline, not the axe id.** Checking for the absence of
+`heading-order` would pass if the rule were renamed or retired while the document
+structure silently rotted. The test walks the rendered headings and fails on any
+jump greater than one level, reporting the exact pair (`h1` -> `h3`).
+Mutation-verified: reverting the `as="h2"` fails with that message.
+
+**Two smaller things fell out.** The suite header still advertised the
+`heading-order` finding as known-and-tolerated — the same stale-comment trap that
+made the axe work look done last time, fixed in the same slice. And eslint caught
+that the `jsx-a11y/heading-has-content` suppression on `CardTitle` had gone dead:
+with a dynamic tag the rule can no longer analyse the element, so the directive was
+removed rather than left as decoration. A warning about an unused suppression is
+worth reading — it means the code moved out from under the rule.
+
+Also closed: the two decorative `.` separators in `NLQChat` are now
+`aria-hidden`, so they are not announced as content between the intent, confidence
+and point-count values.

@@ -163,7 +163,9 @@ export function ChartOfAccountsPage() {
       </section>
       <Card aria-label="Account Details" aria-live="polite">
         <CardHeader>
-          <CardTitle id="account-details-title">Account Details</CardTitle>
+          <CardTitle as="h2" id="account-details-title">
+            Account Details
+          </CardTitle>
         </CardHeader>
         <CardContent aria-labelledby="account-details-title">
           {tableData.length > 0 ? (
