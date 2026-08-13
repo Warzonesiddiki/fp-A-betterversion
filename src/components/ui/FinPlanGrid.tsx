@@ -650,7 +650,7 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
         <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg-overlay)] backdrop-blur-[1px] z-50">
           <div className="flex flex-col items-center">
             <div className="w-8 h-8 border-4 border-[var(--border-subtle)] border-t-[var(--accent-primary)] rounded-full animate-spin" />
-            <span className="mt-2 text-xs font-semibold text-[var(--accent-primary)]">
+            <span className="mt-2 text-xs font-semibold text-[var(--text-accent)]">
               Loading Grid...
             </span>
           </div>

@@ -69,7 +69,7 @@ export function DrillBreadcrumb({
               <span
                 className={cn(
                   'rounded px-1.5 py-0.5 font-medium',
-                  'bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]'
+                  'bg-[var(--accent-primary)]/10 text-[var(--text-accent)]'
                 )}
                 aria-current="page"
                 title={levelIcons[level.type]}

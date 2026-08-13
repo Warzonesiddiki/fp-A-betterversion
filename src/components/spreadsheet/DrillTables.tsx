@@ -23,7 +23,7 @@ export function computeJournalTotals(data: readonly Pick<JournalEntry, 'debit' |
 
 function varianceColor(value: number): string {
   if (Math.abs(value) < 0.01) return 'text-[var(--text-tertiary)]';
-  return value > 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-error)]';
+  return value > 0 ? 'text-[var(--text-positive)]' : 'text-[var(--color-error)]';
 }
 
 // --- Summary Table ---
@@ -88,7 +88,7 @@ export function SummaryTable({
               aria-label={`${row.category}: actual ${fmt.currency0(row.actual)}, budget ${fmt.currency0(row.budget)}`}
             >
               <td className="flex items-center gap-2 px-4 py-3 font-medium text-[var(--text-primary)]">
-                <Layers className="h-4 w-4 text-[var(--accent-primary)]" />
+                <Layers className="h-4 w-4 text-[var(--text-accent)]" />
                 {row.category}
               </td>
               <td className="px-4 py-3 text-right tabular-nums text-[var(--text-primary)]">

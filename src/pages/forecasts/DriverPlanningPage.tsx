@@ -315,7 +315,7 @@ export default function DriverPlanningPage() {
                   <div className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
                     {template.description}
                   </div>
-                  <div className="text-xs mt-2" style={{ color: 'var(--accent)' }}>
+                  <div className="text-xs mt-2" style={{ color: 'var(--text-accent)' }}>
                     {template.drivers.length} drivers
                   </div>
                 </button>
@@ -585,7 +585,7 @@ export default function DriverPlanningPage() {
                                 </span>
                                 <span
                                   className="text-xs font-medium"
-                                  style={{ color: 'var(--accent)' }}
+                                  style={{ color: 'var(--text-accent)' }}
                                 >
                                   {formatDriverValue(pendingValue, driver.unit)}
                                 </span>
@@ -831,7 +831,7 @@ export default function DriverPlanningPage() {
                 </div>
                 <div className="flex justify-between">
                   <span style={{ color: 'var(--text-secondary)' }}>New Value</span>
-                  <span style={{ color: 'var(--accent)' }}>{lastCascadeResult.newValue}</span>
+                  <span style={{ color: 'var(--text-accent)' }}>{lastCascadeResult.newValue}</span>
                 </div>
                 <div className="flex justify-between">
                   <span style={{ color: 'var(--text-secondary)' }}>Affected Cells</span>

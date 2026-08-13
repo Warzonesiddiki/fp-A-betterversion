@@ -153,7 +153,7 @@ export const TornadoChart: React.FC<TornadoChartProps> = ({
                           </span>
                         </div>
                         <div className="flex items-center justify-between gap-8">
-                          <span className="text-[10px] font-bold text-[var(--info)]">
+                          <span className="text-[10px] font-bold text-[var(--text-info)]">
                             Base Case
                           </span>
                           <span className="text-xs font-black tabular-nums text-[var(--text-primary)]">
@@ -161,7 +161,7 @@ export const TornadoChart: React.FC<TornadoChartProps> = ({
                           </span>
                         </div>
                         <div className="flex items-center justify-between gap-8">
-                          <span className="text-[10px] font-bold text-[var(--positive)]">
+                          <span className="text-[10px] font-bold text-[var(--text-positive)]">
                             High Case
                           </span>
                           <span className="text-xs font-black tabular-nums text-[var(--text-primary)]">

@@ -54,7 +54,7 @@ export function FormulaDisplay({
       </div>
       <code
         className="mt-1.5 block font-mono text-xs font-medium"
-        style={{ color: 'var(--accent-primary)' }}
+        style={{ color: 'var(--text-accent)' }}
       >
         {formula}
       </code>

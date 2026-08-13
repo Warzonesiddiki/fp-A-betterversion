@@ -1,6 +1,18 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readFileSync, readdirSync } from 'node:fs';
+import { resolve, join } from 'node:path';
+
+/** All non-test .tsx sources under a directory, for repo-wide token audits. */
+function globSources(dir: string): string[] {
+  const out: string[] = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name === 'node_modules' || entry.name.startsWith('.')) continue;
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...globSources(full));
+    else if (entry.name.endsWith('.tsx') && !/\.(test|spec)\.tsx$/.test(entry.name)) out.push(full);
+  }
+  return out;
+}
 
 /**
  * UI-01 step 2/4 — the core primitives must be expressed in semantic tokens,
@@ -193,6 +205,68 @@ describe('UI-01 — the migrated primitives use no raw palette utilities', () =>
         .map((line, i) => ({ line, n: i + 1 }))
         .filter(({ line }) => /\bdark:/.test(line) && !isComment(line));
       expect(offenders.map((o) => `${component}.tsx:${o.n} ${o.line.trim()}`)).toEqual([]);
+    });
+  }
+});
+
+/**
+ * UI-07 — a token used as *text* must clear AA against the surfaces it is
+ * actually painted on.
+ *
+ * This is the mirror image of the fill/text split pinned above. `--accent-primary`,
+ * `--positive` and `--info` are tuned as fills and as light-theme text; on the
+ * dark surfaces they measured 4.42:1, 3.61:1 and 4.05:1 as normal-size text —
+ * all below AA, all shipping in real components (18 `text-[var(--accent-primary)]`
+ * sites alone). The `--text-*` companions exist so a glyph can name the text role
+ * and stay legible in both themes.
+ *
+ * Dark theme stacks surfaces, so a token is measured against the *worst* one it
+ * can legitimately land on rather than only `--bg-surface`; `--bg-hover` is the
+ * floor because a row can be hovered while its text is showing.
+ */
+describe('UI-07 — text tokens clear AA on every surface they render on', () => {
+  const TEXT_TOKENS = ['text-accent', 'text-positive', 'text-info'] as const;
+  // Ordered lightest-backdrop-last; each is a real page/panel/row background.
+  const SURFACES = ['bg-root', 'bg-surface', 'bg-elevated', 'bg-hover'] as const;
+
+  for (const { name, scope } of THEMES) {
+    for (const textToken of TEXT_TOKENS) {
+      for (const surfaceToken of SURFACES) {
+        it(`${name}: --${textToken} on --${surfaceToken} meets AA`, () => {
+          const page = flatten(token('bg-surface', scope), [1, 1, 1]);
+          const surface = flatten(token(surfaceToken, scope), page);
+          const text = flatten(token(textToken, scope), surface);
+          expect(
+            contrast(text, surface),
+            `--${textToken} (${token(textToken, scope)}) on --${surfaceToken} (${token(surfaceToken, scope)}) in ${name}`
+          ).toBeGreaterThanOrEqual(AA_TEXT);
+        });
+      }
+    }
+  }
+});
+
+describe('UI-07 — fill-tuned hues are not used as text in components', () => {
+  // The three hues that fail AA as dark-theme text. Each has a --text-* twin.
+  const FILL_ONLY = ['accent-primary', 'accent-secondary', 'positive', 'info', 'color-success'];
+
+  const SOURCES = globSources(resolve(__dirname, '../'));
+
+  for (const hue of FILL_ONLY) {
+    it(`no component paints text with --${hue}`, () => {
+      // Matches the Tailwind arbitrary-value form and the inline style form.
+      const utility = new RegExp(`text-\\[var\\(--${hue}\\)\\]`);
+      const inline = new RegExp(`color:\\s*'var\\(--${hue}\\)'`);
+      const offenders: string[] = [];
+      for (const file of SOURCES) {
+        const src = readFileSync(file, 'utf8');
+        src.split('\n').forEach((line, i) => {
+          if (utility.test(line) || inline.test(line)) {
+            offenders.push(`${file.replace(/.*\/src\//, 'src/')}:${i + 1} ${line.trim()}`);
+          }
+        });
+      }
+      expect(offenders, `use --text-accent / --text-positive / --text-info instead`).toEqual([]);
     });
   }
 });

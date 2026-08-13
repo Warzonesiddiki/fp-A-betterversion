@@ -63,9 +63,9 @@ export function CellComments({
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3">
         <div className="flex items-center gap-2">
-          <MessageSquare className="h-4 w-4 text-[var(--accent-primary)]" />
+          <MessageSquare className="h-4 w-4 text-[var(--text-accent)]" />
           <span className="text-sm font-semibold text-[var(--text-primary)]">Comments</span>
-          <span className="rounded-full bg-[var(--accent-primary)]/10 px-2 py-0.5 text-xs font-medium text-[var(--accent-primary)]">
+          <span className="rounded-full bg-[var(--accent-primary)]/10 px-2 py-0.5 text-xs font-medium text-[var(--text-accent)]">
             {comments.length}
           </span>
         </div>

@@ -261,7 +261,7 @@ export function CellEditor({
               }}
               onMouseEnter={() => setSuggestionIndex(idx)}
             >
-              <span className="text-xs font-bold font-mono text-[var(--accent-primary)]">
+              <span className="text-xs font-bold font-mono text-[var(--text-accent)]">
                 {item.text}
               </span>
               <span className="text-[10px] text-[var(--text-muted)] truncate flex-1">

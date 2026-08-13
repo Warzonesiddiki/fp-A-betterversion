@@ -410,7 +410,7 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
           <div className="space-y-1">
             {availableVars.map((v) => (
               <div key={v.key} className="text-xs text-[var(--text-muted)]">
-                <code className="text-[var(--accent-primary)]">{`{${v.key}}`}</code> — {v.description}
+                <code className="text-[var(--text-accent)]">{`{${v.key}}`}</code> — {v.description}
               </div>
             ))}
           </div>

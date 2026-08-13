@@ -75,6 +75,16 @@
   --text-primary: #f1f5f9;
   --text-accent: #38bdf8;
 
+  /* UI-07 — text-tuned companions for the status hues.
+     --positive/--info/--accent-primary are tuned as *fills* and as light-theme
+     text; on the dark surfaces they fall below AA for normal-size text
+     (#15803d 3.61:1, #6366f1 4.05:1, #0284c7 4.42:1 on --bg-surface). These
+     lightened variants clear 4.5:1 on every dark surface up to --bg-hover, so
+     status *text and icons* have a token that is legible in both themes.
+     Use --positive/--info for fills and borders; use these for glyphs. */
+  --text-positive: #4ade80;
+  --text-info: #818cf8;
+
   /* Accent — Sleek Sky Blue */
   --accent-primary: #0284c7;
   --accent-hover: #0369a1;
@@ -210,6 +220,13 @@
   --text-secondary: #475569;
   --text-primary: #0f172a;
   --text-accent: #0369a1;
+
+  /* UI-07 — in light theme the fill hues are already AA as text on #ffffff
+     (#15803d 5.02:1, #4f46e5 6.29:1), so these resolve to the same values the
+     status fills use. The token still exists here so a component can name the
+     text role once and stay correct when the theme flips. */
+  --text-positive: #15803d;
+  --text-info: #4f46e5;
 
   /* Light-theme filled-surface actions. Same contract as :root — white text
      >=4.5:1, fill vs #ffffff page >=3:1. Hover goes *darker* here (the dark
@@ -423,7 +440,7 @@ body {
 }
 .fp-workspace-empty-state__icon {
   margin-bottom: var(--space-lg);
-  color: var(--action-primary);
+  color: var(--text-accent);
 }
 .fp-workspace-empty-state__steps {
   display: grid;
@@ -445,7 +462,7 @@ body {
   place-items: center;
   border: 1px solid var(--action-primary);
   border-radius: 999px;
-  color: var(--action-primary);
+  color: var(--text-accent);
   font-size: 0.75rem;
   font-weight: 700;
 }

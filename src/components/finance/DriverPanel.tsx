@@ -149,7 +149,7 @@ export function DriverPanel({ readCell, writeCell, onClose }: DriverPanelProps) 
                         <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                           {formatValue(driver.currentValue, driver.unit)}
                           {hasChanges && (
-                            <span className="ml-2" style={{ color: 'var(--accent)' }}>
+                            <span className="ml-2" style={{ color: 'var(--text-accent)' }}>
                               → {formatValue(pendingValue, driver.unit)}
                             </span>
                           )}

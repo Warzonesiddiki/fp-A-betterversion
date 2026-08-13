@@ -90,7 +90,7 @@ function Btn({ active, disabled, onClick, title, label, children }: BtnProps) {
         'inline-flex items-center justify-center w-7 h-7 rounded transition-colors',
         'focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)] focus-visible:ring-offset-1',
         active
-          ? 'bg-[var(--accent-primary)]/15 text-[var(--accent-primary)]'
+          ? 'bg-[var(--accent-primary)]/15 text-[var(--text-accent)]'
           : 'text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]',
         disabled && 'opacity-40 cursor-not-allowed'
       )}

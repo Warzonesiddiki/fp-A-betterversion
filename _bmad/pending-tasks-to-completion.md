@@ -331,8 +331,13 @@ two page buttons and 11 E2E `page.goto` calls, plus `/saas/cohort-analysis` and
 Body is 13px with a 4/8/12/16/24/32 spacing scale — already close to the right
 register for finance. Needs: a real type scale (no global H1–H6), line-height
 tokens, tabular figures everywhere money appears, and one grid density contract
-shared by AG Grid and `.data-grid` (`designTokens.density` defines
-compact/standard/comfortable but nothing consumes it).
+shared by AG Grid and `.data-grid`.
+
+Correction to an earlier note here: `designTokens.density` **is** consumed —
+`useDensity.ts` reads it and is wired into `AppLayout.tsx:43`,
+`DataGrid.tsx:68`, `FinPlanGrid.tsx:66`, `SpreadsheetGrid.tsx:80` and
+`SettingsPage.tsx:26`. The gap is that AG Grid and `.data-grid` apply it
+through separate paths, not that it is unused.
 
 ### UI-05 — Page-level consistency pass
 
@@ -388,6 +393,42 @@ and `Intl` calls inline at their use site.
 
 Consistent loading/empty/error states per route group; WCAG 2.2 AA with axe at 0
 critical/serious; keyboard paths through grids and modals; 1024×600 minimum.
+
+**Colour-contrast slice — DONE.** The AA failure carried over from UI-01 is
+fixed, along with two more found by auditing every token used as text.
+
+The rule is the text/fill split from UI-01, applied in the other direction: a
+hue tuned as a _fill_ is too dark to be _text_ on a dark surface. Measured on
+`--bg-surface`, dark theme:
+
+| Token                           | As text (dark) | Role now           |
+| ------------------------------- | -------------- | ------------------ |
+| `--accent-primary`              | 4.42 ✗         | fill / border only |
+| `--info`, `--accent-secondary`  | 4.05 ✗         | fill / border only |
+| `--positive`, `--color-success` | 3.61 ✗         | fill / border only |
+
+Two text-tuned companions were added (`--text-positive: #4ade80`,
+`--text-info: #818cf8`) to join the existing `--text-accent`. All three clear
+4.5:1 on _every_ dark surface including `--bg-hover`, the worst case, and are
+unchanged-by-design in light theme where the fill hues already pass.
+
+Migrated: 18 `text-[var(--accent-primary)]` sites, 9 status-hue text sites, 16
+inline `style={{ color }}` sites, and 2 `color:` rules in `index.css`. The 13
+`border-`/`ring-` uses were deliberately left alone — WCAG 1.4.11 asks 3:1 of
+non-text, which they meet.
+
+Guarded by two new describes in `buttonContrast.contract.test.ts` (34 → 63
+tests): one measures each `--text-*` token against all four surfaces in both
+themes, the other greps every non-test `.tsx` so a fill hue cannot be
+reintroduced as text. Both were mutation-verified (M8: restoring `#15803d`
+fails 4 assertions; M9: restoring one `text-[var(--accent-primary)]` fails the
+grep with the file and line).
+
+Still open in this section: loading/empty/error consistency, axe, keyboard
+paths, 1024×600. Two contrast items are known and deliberately out of this
+slice: `--text-muted` is 4.17:1 on `--bg-elevated` (1067 uses — needs its own
+change), and `--border-subtle` is used as text in `NLQChat.tsx:262,264` for
+decorative dot separators.
 
 ---
 

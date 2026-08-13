@@ -251,7 +251,7 @@ export function CopilotSidebar({ gl, budget, className }: CopilotSidebarProps) {
               className={cn(
                 'relative flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium transition-colors',
                 activeTab === tab.id
-                  ? 'text-[var(--accent-primary)]'
+                  ? 'text-[var(--text-accent)]'
                   : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
               )}
               role="tab"

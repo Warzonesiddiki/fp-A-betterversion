@@ -318,7 +318,7 @@ export function NLQChat({ className, maxHeight = '400px' }: NLQChatProps) {
               type="submit"
               disabled={!input.trim() || isProcessing}
               className="flex-shrink-0 rounded-md p-1 transition-colors hover:bg-[var(--bg-surface)] disabled:opacity-30"
-              style={{ color: 'var(--accent-primary)' }}
+              style={{ color: 'var(--text-accent)' }}
               aria-label="Send"
             >
               <Send className="h-3 w-3" />

@@ -186,7 +186,7 @@ export function EducationDashboardPage() {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <GraduationCap className="h-5 w-5 text-[var(--accent-primary)]" />
+              <GraduationCap className="h-5 w-5 text-[var(--text-accent)]" />
               <CardTitle>Enrollment Trends</CardTitle>
             </div>
           </CardHeader>
@@ -245,7 +245,7 @@ export function EducationDashboardPage() {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-[var(--accent-secondary)]" />
+              <TrendingUp className="h-5 w-5 text-[var(--text-info)]" />
               <CardTitle>Budget vs Actual</CardTitle>
             </div>
           </CardHeader>
