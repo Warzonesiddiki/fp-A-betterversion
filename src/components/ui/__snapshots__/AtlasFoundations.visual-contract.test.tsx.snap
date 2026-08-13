@@ -1,5 +1,80 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`Atlas foundation visual structure contract > UI-01 — migrated primitives render semantic tokens, not raw palette > preserves the migrated primitive class contract in a structural snapshot 1`] = `
+<div>
+  <div
+    class="fp-primitive-set"
+  >
+    <button
+      class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[var(--action-fill)] text-[var(--text-on-accent)] hover:bg-[var(--action-fill-hover)] h-10 py-2 px-4"
+    >
+      default
+    </button>
+    <button
+      class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[var(--danger-fill)] text-[var(--text-on-accent)] hover:bg-[var(--danger-fill-hover)] h-10 py-2 px-4"
+    >
+      destructive
+    </button>
+    <button
+      class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none border border-[var(--border-default)] bg-[var(--surface-panel)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] h-10 py-2 px-4"
+    >
+      outline
+    </button>
+    <button
+      class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border-default)] hover:bg-[var(--bg-hover)] h-10 py-2 px-4"
+    >
+      secondary
+    </button>
+    <button
+      class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] h-10 py-2 px-4"
+    >
+      ghost
+    </button>
+    <button
+      class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none underline-offset-4 hover:underline text-[var(--text-accent)] h-10 py-2 px-4"
+    >
+      link
+    </button>
+    <span
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-[var(--accent-subtle)] text-[var(--text-on-accent-subtle)]"
+    >
+      default
+    </span>
+    <span
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-[var(--bg-elevated)] text-[var(--text-primary)]"
+    >
+      secondary
+    </span>
+    <span
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-[var(--negative-subtle)] text-[var(--text-on-danger-subtle)]"
+    >
+      destructive
+    </span>
+    <span
+      class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border border-[var(--border-default)] bg-transparent text-[var(--text-secondary)]"
+    >
+      outline
+    </span>
+    <div
+      class="rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-panel)] text-[var(--text-primary)] shadow-sm"
+    >
+      card body
+    </div>
+    <div
+      aria-label="Input"
+      class="space-y-1"
+      role="region"
+    >
+      <input
+        class="flex h-10 w-full rounded-md border border-[var(--border-default)] bg-[var(--surface-panel)] text-[var(--text-primary)] px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[var(--text-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        id="_r_0_"
+        placeholder="amount"
+      />
+    </div>
+  </div>
+</div>
+`;
+
 exports[`Atlas foundation visual structure contract > omits purpose and actions containers when not provided (minimal PageHeader) 1`] = `
 <div>
   <header

@@ -111,8 +111,8 @@ export default tseslint.config(
     // banned for the same reason: every semantic token already flips under
     // `.light`, so a `dark:` variant is a second source of truth.
     //
-    // Deliberately scoped to the four converted primitives rather than all of
-    // `src/components/ui` — 95 of those files still carry raw utilities, and a
+    // Deliberately scoped to the converted primitives rather than all of
+    // `src/components/ui` — 92 of those files still carry raw utilities, and a
     // blanket rule would have to be disabled everywhere to land. Add a file
     // here as it is migrated; the companion contract test
     // (`src/theme/buttonContrast.contract.test.ts`) tracks the same list and
@@ -122,6 +122,8 @@ export default tseslint.config(
       'src/components/ui/Card.tsx',
       'src/components/ui/Input.tsx',
       'src/components/ui/Badge.tsx',
+      'src/components/ui/Select.tsx',
+      'src/components/ui/Alert.tsx',
     ],
     rules: {
       'no-restricted-syntax': [

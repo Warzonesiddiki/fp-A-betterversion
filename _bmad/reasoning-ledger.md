@@ -981,3 +981,19 @@ four migrated files rather than all of `src/components/ui`. 95 of those 251
 files still carry raw palette utilities; a blanket rule could only have landed
 accompanied by ~91 disable comments, which is a rule that enforces nothing.
 Both lists are ratchets — add a file as it is converted.
+
+**Follow-up — extending the guard to the rendered DOM.** The file-level guards
+read source: the lint rule bans raw utilities in the primitive files, the
+contract test checks token values in `index.css`. Neither observes what the
+browser gets, and both stay green while the element is wrong — `cn()` /
+tailwind-merge can drop a class, a variant map can be keyed wrongly, and a
+`var(--typo)` resolves to nothing and renders unstyled. So
+`AtlasFoundations.visual-contract.test.tsx` now renders every Button and Badge
+variant and asserts on the merged class list, including that every referenced
+token is actually _declared_ in `index.css`. That last check is the one no
+class-string assertion can make: `toContain('bg-[var(--action-fil)]')` passes
+happily against a typo. Mutation-verified 3/3.
+
+`Select` and `Alert` were then migrated on the same pattern (33 and 14
+importers), bringing the ratcheted list to six files and the raw-utility
+backlog in `src/components/ui` from 95 files to 92.

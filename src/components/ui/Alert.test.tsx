@@ -46,13 +46,13 @@ describe('Alert', () => {
   it('applies default variant styles', () => {
     render(<Alert {...defaultProps} />);
     const confirmBtn = screen.getByText('Confirm');
-    expect(confirmBtn.className).toContain('bg-blue-600');
+    expect(confirmBtn.className).toContain('bg-[var(--action-fill)]');
   });
 
   it('applies destructive variant styles', () => {
     render(<Alert {...defaultProps} variant="destructive" />);
     const confirmBtn = screen.getByText('Confirm');
-    expect(confirmBtn.className).toContain('bg-red-600');
+    expect(confirmBtn.className).toContain('bg-[var(--danger-fill)]');
   });
 
   it('does not render content when open is false', () => {

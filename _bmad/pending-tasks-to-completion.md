@@ -146,8 +146,9 @@ Remaining steps to drive one palette instead of three:
    (`--action-primary`, `--surface-panel`, `--text-body`) instead of raw
    `blue-600`/`gray-800`.
 
-   **Done for the four core primitives — `Button`, `Card`, `Input`, `Badge`
-   (281, 273, 46 and 47 importers).** All raw palette utilities and all
+   **Done for the six core primitives — `Button`, `Card`, `Input`, `Badge`,
+   `Select`, `Alert` (281, 273, 46, 47, 33 and 14 importers).** All raw palette
+   utilities and all
    `dark:` variants are gone from them; every colour now comes from a token
    that already flips under `.light`, so one declaration is correct in both
    themes.
@@ -178,18 +179,26 @@ Remaining steps to drive one palette instead of three:
    contrast per theme — mutation-verified 4/4 (reverting `--action-fill` to
    `--accent-primary` fails dark only; the raw-`--negative` badge fails light
    only; a raw utility and a `dark:` variant in a primitive are both caught).
-   An eslint `no-restricted-syntax` rule scoped to the four migrated files
-   bans numbered palette utilities and `dark:`; also mutation-verified. The
-   scope is deliberately per-file, not all of `src/components/ui` — 95 of
-   those 251 files still carry raw utilities, so a blanket rule could only
-   land by being disabled everywhere. Widen both lists as each file migrates.
+   An eslint `no-restricted-syntax` rule scoped to the migrated files bans
+   numbered palette utilities and `dark:`; also mutation-verified, including
+   against the two later additions. The scope is deliberately per-file, not all
+   of `src/components/ui` — 92 of those files still carry raw utilities, so a
+   blanket rule could only land by being disabled everywhere. Widen both lists
+   as each file migrates.
+
+   `Select` and `Alert` followed the same pattern. `Alert`'s confirm buttons
+   were the exact white-on-fill case already solved (`bg-blue-600`/`bg-red-600`
+   → the fill tokens); `Select`'s selected-option row was the tint case
+   (`bg-blue-50 text-blue-700` → `--accent-subtle` with its paired
+   `--text-on-accent-subtle`), and its `focus:bg-gray-100 dark:focus:bg-gray-800`
+   pair collapsed to a single `--bg-hover`.
 
 3. Keep the `.fp-*` classes — they are already token-driven and covered by
    `AtlasFoundations.visual-contract.test.tsx` snapshots.
 4. Verified by: extend the visual-contract test with a Button/Card/Input case,
    plus a lint rule banning raw palette utilities in `src/components/ui`.
 
-   **Done for the migrated four**, via `buttonContrast.contract.test.ts` and
+   **Done — both halves.** Via `buttonContrast.contract.test.ts` and
    the scoped eslint rule described in step 2. The contract test goes beyond
    what was asked: rather than snapshotting class strings (which pin the
    _spelling_ of a class and break on every rename while saying nothing about
@@ -199,7 +208,20 @@ Remaining steps to drive one palette instead of three:
    structural change — and the `Button`/`Badge` unit tests were repointed from
    `bg-blue-600`/`bg-red-100` to the token spellings.
 
-   **Remaining for this step:** the other 91 files in `src/components/ui` that
+   `AtlasFoundations.visual-contract.test.tsx` gained a
+   `UI-01 — migrated primitives` block (5 cases) covering what the file-level
+   guards structurally cannot: the classes that actually reach the DOM after
+   `cn()`/tailwind-merge resolution. It asserts no rendered variant emits a raw
+   palette utility, that fills stay distinct from the text-tuned
+   `--accent-primary`, that every filled variant keeps its paired
+   `--text-on-accent` foreground, and — the case no class-string test can catch
+   — that every `var(--x)` referenced by a rendered primitive is actually
+   **declared** in `index.css`. A typo'd token resolves to nothing and renders
+   unstyled while a `toContain()` assertion still passes. Mutation-verified 3/3
+   (undeclared token; fill reverted to `--accent-primary`; fill stripped of its
+   foreground).
+
+   **Remaining for this step:** the other 92 files in `src/components/ui` that
    still use raw palette utilities.
 
 Measured surface: 305 of 490 non-test `.tsx` files use raw `slate-`/`gray-`

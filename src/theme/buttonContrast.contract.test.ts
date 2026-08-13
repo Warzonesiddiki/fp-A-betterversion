@@ -163,7 +163,7 @@ describe('UI-01 — tinted badge fills pair with a legible text token', () => {
 describe('UI-01 — the migrated primitives use no raw palette utilities', () => {
   // Scoped to the primitives actually converted in this step. Widening this
   // list is the intended way to ratchet the rest of src/components/ui over.
-  const MIGRATED = ['Button', 'Card', 'Input', 'Badge'];
+  const MIGRATED = ['Button', 'Card', 'Input', 'Badge', 'Select', 'Alert'];
 
   const RAW_PALETTE =
     /\b(?:bg|text|border|ring|from|via|to|placeholder|divide|outline|shadow|accent|caret|fill|stroke)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950)\b/;
