@@ -355,14 +355,29 @@ bundle-check`), with 200 lazy routes and heavy vendor chunks already split.
   `@huggingface/transformers` is an intentionally uninstalled optional peer;
   it prints a SKIP line and re-arms automatically if installed.
 
-  **Open — `pdf-vendor` is eagerly preloaded (179.74KB gzip on first paint).**
-  Not jsPDF's doing: rolldown's injected preload helper landed in that chunk,
-  and 11 of its 13 importers (entry chunk included) want only that ~1KB helper,
-  defeating the lazy `loadJsPDF()` design in `utils/pdfRuntime.ts`. Naming the
-  helper's id in `manualChunks` does not work — rolldown re-merges the small
-  chunk, and rolldown-vite 8 rejects `output.minChunkSize`. Needs a real
-  always-eager owner module or an upstream knob. **This is the single biggest
-  first-paint win available**, and total JS is at 92.2% of limit.
+  **Done — `pdf-vendor` no longer eagerly preloaded. Critical path 483.42 →
+  304.23KB gzip (−179.19KB, −37%); 17 → 16 preloaded chunks.** Not jsPDF's
+  doing: rolldown's injected preload helper had landed in that chunk, and 11 of
+  its 13 importers (entry chunk included) wanted only that ~1KB helper,
+  defeating the lazy `loadJsPDF()` design in `utils/pdfRuntime.ts`. Fix is one
+  line in `manualChunks` — the helper joins `icon-vendor`, a group that is
+  _already_ in the preload set, so it adds no new critical-path bytes:
+  `if (id.includes('lucide-react') || id.includes('vite/preload-helper'))`.
+  Two dead ends, both re-tested, do not retry: a lone `return 'preload-helper'`
+  is re-merged by rolldown (sub-threshold), and naming the _auto-generated_
+  `react` chunk is a no-op since no such rule is declared. `output.minChunkSize`
+  is rejected by rolldown-vite 8. Total bytes are unchanged (2071.86KB) — this
+  is purely a _when-loaded_ win. `pdf-vendor`'s importers fell 13 → 4, and the
+  survivors take real jsPDF bindings rather than the helper.
+  Regression guard added: `bundle-check.js` now fails if any of
+  `pdf-vendor`/`excel-core-vendor`/`grid-community-vendor`/`ai-vendor` appears
+  in `index.html`'s modulepreloads. The pre-existing 750KB aggregate critical
+  path budget could never have caught this — 483.42KB passed it comfortably —
+  so the guard is per-chunk and by name; mutation-verified by reverting the
+  one-line fix (aggregate still PASS, named guard FAIL).
+
+  Still open here: total JS is at 92.2% of limit (2071.86 / 2248KB) and
+  `grid-community-vendor` at 95.0% — both warn, neither fails.
 
 - **P-02** — 100k-row grid at ≥30 fps; 10k-row GL import <30 s; 500-row PDF <3 s.
   Measure before optimising.

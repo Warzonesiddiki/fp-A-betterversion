@@ -227,23 +227,27 @@ export default defineConfig({
             : 'assets/[name]-[hash].js';
         },
         manualChunks(id: string) {
-          // KNOWN ISSUE — pdf-vendor is in the critical path, and not because
-          // of jsPDF. Rolldown injects its dynamic-import preload helper
-          // (`\0vite/preload-helper.js`) into some chunk, and it landed in
-          // pdf-vendor; 11 of that chunk's 13 importers — including the entry
-          // and masterStorage — want only that ~1KB helper, yet pull a 616KB
-          // modulepreload on first paint. `loadJsPDF()` in utils/pdfRuntime.ts
-          // is careful to keep jsPDF lazy, and this quietly undoes that.
-          //
-          // Returning a name for that id from manualChunks does NOT work here:
-          // rolldown re-merges the resulting sub-threshold chunk, and
-          // `output.minChunkSize` is rejected as an invalid key by
-          // rolldown-vite 8. Verified empirically, so no no-op rule is left
-          // behind pretending to fix it. Fixing this needs either a small
-          // always-eager module that owns the helper or an upstream knob;
-          // tracked rather than bodged.
           if (id.includes('@huggingface/transformers')) return 'ai-vendor';
-          if (id.includes('lucide-react')) return 'icon-vendor';
+          // Rolldown injects its dynamic-import preload helper
+          // (`\0vite/preload-helper.js`) and lets it settle into whichever
+          // chunk it likes. It had settled in pdf-vendor — so the entry chunk,
+          // masterStorage and 9 other importers, all of which want only this
+          // ~1KB helper, dragged a 616KB jsPDF modulepreload onto first paint.
+          // `loadJsPDF()` in utils/pdfRuntime.ts goes out of its way to keep
+          // jsPDF lazy, and this silently undid that. Critical path was
+          // 483.42KB gzip; pinning the helper here makes it 304.23KB (-37%).
+          //
+          // It has to ride along with an existing, already-eager group rather
+          // than get a chunk of its own: a lone `return 'preload-helper'` is
+          // re-merged by rolldown (too small to keep), and rolldown-vite 8
+          // rejects `output.minChunkSize` as an invalid key — both verified.
+          // Naming an auto-generated chunk such as 'react' fails the same way.
+          // icon-vendor is the right host precisely because it is already in
+          // the preload set, so the helper adds no new critical-path bytes.
+          // Keep this rule next to the group it joins; splitting them will
+          // quietly put jsPDF back on first paint.
+          if (id.includes('lucide-react') || id.includes('vite/preload-helper'))
+            return 'icon-vendor';
           // ag-grid must be named so the G19 budget in scripts/bundle-check.js
           // can see it. That gate skips any vendor whose chunk is missing, so
           // while ag-grid landed in an anonymous `chunk-*.js` it was the single

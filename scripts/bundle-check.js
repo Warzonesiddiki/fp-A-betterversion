@@ -189,6 +189,36 @@ async function main() {
     console.log('\n:white_check_mark: **PASS:** Critical path within limit');
   }
 
+  // Heavy vendors that exist purely to be loaded on demand must not appear in
+  // the entry's modulepreload set. The aggregate budget above is far too loose
+  // to notice: jsPDF sat in the critical path at 483.42KB total, well under the
+  // 750KB limit, so nothing complained for as long as it took to find by hand.
+  // The cause was not an import of jsPDF at all — rolldown's injected preload
+  // helper had settled into pdf-vendor, and every chunk that lazy-loads
+  // anything imports that helper (see manualChunks in vite.config.ts).
+  // This is a named, per-chunk assertion so the regression is caught by name.
+  const MUST_BE_LAZY = ['pdf-vendor', 'excel-core-vendor', 'grid-community-vendor', 'ai-vendor'];
+  const eagerlyPreloaded = MUST_BE_LAZY.filter((v) =>
+    criticalChunks.some((r) => path.basename(r).startsWith(v + '-'))
+  );
+
+  if (eagerlyPreloaded.length > 0) {
+    for (const vendor of eagerlyPreloaded) {
+      console.error(
+        `\n::error::Lazy vendor ${vendor} is modulepreloaded from index.html — ` +
+          `it must load on demand. Usually this means a shared runtime helper ` +
+          `(e.g. rolldown's preload helper) landed in that chunk and dragged it ` +
+          `into the entry graph; check manualChunks in vite.config.ts.`
+      );
+    }
+    console.log('\n:x: **FAIL:** lazy vendor in critical path');
+    fail = 1;
+  } else {
+    console.log(
+      `:white_check_mark: **PASS:** no lazy vendor in critical path (${MUST_BE_LAZY.join(', ')})`
+    );
+  }
+
   const allJsFiles = (await fs.promises.readdir(distAssetsDir))
     .filter((f) => f.endsWith('.js'))
     .map((f) => path.join(distAssetsDir, f));

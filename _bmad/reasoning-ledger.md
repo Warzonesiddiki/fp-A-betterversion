@@ -883,13 +883,45 @@ the gate forever; dropping it would lose the budget the day it is installed.
 It is now conditional on `import.meta.resolve` succeeding, and prints an
 explicit SKIP line rather than vanishing.
 
-**Found but NOT fixed — pdf-vendor in the critical path.** `pdf-vendor`
+**Found and fixed — pdf-vendor in the critical path.** `pdf-vendor`
 (616KB raw / 179.74KB gzip) is a `modulepreload` on first paint even though
 `utils/pdfRuntime.ts` deliberately loads jsPDF via dynamic import. Cause is not
 jsPDF: rolldown's injected preload helper (`\0vite/preload-helper.js`) landed
 in that chunk, and 11 of its 13 importers — including the entry chunk and
 `masterStorage` — import only that ~1KB helper. Returning a chunk name for the
-helper's id does not work: rolldown re-merges the sub-threshold chunk and
-rolldown-vite 8 rejects `output.minChunkSize` as an invalid key. Both were
-tried and reverted rather than left as a no-op rule that looks like a fix; the
-constraint is recorded in `vite.config.ts` at the point of use.
+helper's id does not work on its own: rolldown re-merges the sub-threshold
+chunk, and rolldown-vite 8 rejects `output.minChunkSize` as an invalid key.
+
+**What actually resolved it.** The helper does not need a chunk of its own — it
+needs to stop living in a chunk that should be lazy. Assigning it to
+`icon-vendor`, a group the config already declares and that is _already_ in the
+preload set, moves it off `pdf-vendor` while adding no new critical-path bytes:
+
+```ts
+if (id.includes('lucide-react') || id.includes('vite/preload-helper')) return 'icon-vendor';
+```
+
+**Critical path 483.42 → 304.23KB gzip (−179.19KB, −37%), 17 → 16 chunks;
+`pdf-vendor` absent from `dist/index.html`.** Total JS is unchanged
+(2072.21 → 2071.86KB) — the bytes did not shrink, they stopped being fetched
+before first paint, which is what `pdfRuntime.ts` intended all along.
+`pdf-vendor`'s importers fell 13 → 4, and each survivor imports a real jsPDF
+binding (`t`, `i`) rather than the helper binding (`a`).
+
+**The generalisable bit:** a runtime helper is a _tenant_, and it drags its
+whole host chunk into the graph of everything that imports it. The fix is
+tenancy, not splitting — put shared helpers in a chunk you are happy to load
+eagerly. Corollary, verified: naming an _auto-generated_ chunk (`'react'`)
+achieves nothing, because `manualChunks` can only target groups the config
+itself declares.
+
+**Why this took two attempts to see.** The gate reported the critical path but
+budgeted it at 750KB aggregate, so 483.42KB passed silently; and the obvious
+suspect — a static `import jsPDF` in `AdvancedPDFEngine.ts` — was a red herring
+that survived scrutiny because it is plausible. It fell apart only when the
+minified _bindings_ were decoded: 11 importers were taking `a`, a ~1KB helper,
+not jsPDF. Read what an importer actually pulls before blaming the library.
+The guard added alongside is therefore per-chunk and by name rather than
+aggregate: named lazy vendors must not appear in `index.html`'s modulepreloads.
+Mutation-verified — reverting the one-line fix leaves the aggregate budget
+PASSing and fails only the named check.
