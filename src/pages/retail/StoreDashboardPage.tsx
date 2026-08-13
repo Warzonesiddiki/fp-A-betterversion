@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -28,16 +29,7 @@ import {
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface StoreRow {
   store: string;
   revenue: number;
@@ -47,6 +39,7 @@ interface StoreRow {
 }
 
 export default function StoreDashboardPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -93,9 +86,9 @@ export default function StoreDashboardPage() {
         headers: ['Store', 'Revenue', 'Transactions', 'Avg Basket', 'YoY Growth'],
         rows: data.storeData.map((s) => [
           s.store,
-          formatCurrency(s.revenue),
+          fmt.currency0(s.revenue),
           s.transactions.toString(),
-          formatCurrency(s.avgBasket),
+          fmt.currency0(s.avgBasket),
           formatPercent(s.yoyGrowth, 1),
         ]),
       },
@@ -110,9 +103,9 @@ export default function StoreDashboardPage() {
         headers: ['Store', 'Revenue', 'Transactions', 'Avg Basket', 'YoY Growth'],
         rows: data.storeData.map((s) => [
           s.store,
-          formatCurrency(s.revenue),
+          fmt.currency0(s.revenue),
           s.transactions.toString(),
-          formatCurrency(s.avgBasket),
+          fmt.currency0(s.avgBasket),
           formatPercent(s.yoyGrowth, 1),
         ]),
       },
@@ -126,7 +119,7 @@ export default function StoreDashboardPage() {
       key: 'revenue',
       header: 'Revenue',
       align: 'right',
-      render: (_value, row) => formatCurrency((row as unknown as StoreRow).revenue),
+      render: (_value, row) => fmt.currency0((row as unknown as StoreRow).revenue),
       sortable: true,
     },
     {
@@ -140,7 +133,7 @@ export default function StoreDashboardPage() {
       key: 'avgBasket',
       header: 'Avg Basket',
       align: 'right',
-      render: (_value, row) => formatCurrency((row as unknown as StoreRow).avgBasket),
+      render: (_value, row) => fmt.currency0((row as unknown as StoreRow).avgBasket),
       sortable: true,
     },
     {
@@ -163,39 +156,41 @@ export default function StoreDashboardPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <Store className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Store className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Retail Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view store performance.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view store performance.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Store Dashboard</h1>
-        <div className="flex gap-2">
-          <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
-            <FileText className="h-3.5 w-3.5 mr-1.5" />
-            PDF
-          </Button>
-          <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
-            <TableIcon className="h-3.5 w-3.5 mr-1.5" />
-            Excel
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Store Dashboard"
+        actions={
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
+              <FileText className="h-3.5 w-3.5 mr-1.5" />
+              PDF
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
+              <TableIcon className="h-3.5 w-3.5 mr-1.5" />
+              Excel
+            </Button>
+          </div>
+        }
+      />
       {data && (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <KPIValue
               label="Total Revenue"
-              value={formatCurrency(data.totalRevenue)}
+              value={fmt.currency0(data.totalRevenue)}
               icon={<DollarSign className="h-4 w-4" />}
             />
             <KPIValue
               label="Total COGS"
-              value={formatCurrency(data.totalCOGS)}
+              value={fmt.currency0(data.totalCOGS)}
               icon={<ShoppingCart className="h-4 w-4" />}
             />
             <KPIValue
@@ -224,7 +219,7 @@ export default function StoreDashboardPage() {
                     tickFormatter={(v) => `$${formatCompact(v)}`}
                   />
                   <Tooltip
-                    formatter={(v) => formatCurrency(Number(v))}
+                    formatter={(v) => fmt.currency0(Number(v))}
                     contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                   />
                   <Legend />

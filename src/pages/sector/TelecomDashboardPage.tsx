@@ -60,9 +60,9 @@ export function TelecomDashboardPage() {
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center" role="main" aria-label="Telecom Dashboard - No Data">
-        <Wifi className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Wifi className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">Telecom — No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view telecom KPIs.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view telecom KPIs.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
     );
@@ -71,7 +71,9 @@ export function TelecomDashboardPage() {
   return (
     <main className="p-6 space-y-6" role="main">
       <h1 className="text-2xl font-bold">Telecom Dashboard</h1>
-      <p className="text-sm text-slate-400">ARPU, churn, subscriber growth, and network metrics</p>
+      <p className="text-sm text-[var(--text-muted)]">
+        ARPU, churn, subscriber growth, and network metrics
+      </p>
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {kpis.map((kpi) => (
@@ -99,19 +101,21 @@ export function TelecomDashboardPage() {
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">ARPU</span>
+                <span className="text-sm text-[var(--text-muted)]">ARPU</span>
                 <span className="font-mono">$42.80</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Churn Rate</span>
+                <span className="text-sm text-[var(--text-muted)]">Churn Rate</span>
                 <span className="font-mono text-red-600">1.8%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Subscriber Growth</span>
+                <span className="text-sm text-[var(--text-muted)]">Subscriber Growth</span>
                 <span className="font-mono text-green-600">+3.2%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Subscriber Acquisition Cost</span>
+                <span className="text-sm text-[var(--text-muted)]">
+                  Subscriber Acquisition Cost
+                </span>
                 <span className="font-mono">{formatCurrency(185)}</span>
               </div>
             </div>
@@ -124,11 +128,11 @@ export function TelecomDashboardPage() {
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Network Utilization</span>
+                <span className="text-sm text-[var(--text-muted)]">Network Utilization</span>
                 <span className="font-mono">78.4%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">CAPEX / Revenue</span>
+                <span className="text-sm text-[var(--text-muted)]">CAPEX / Revenue</span>
                 <span className="font-mono">
                   {stats.revenue > 0
                     ? `${formatPercent((stats.capex / stats.revenue) * 100, 1)}`
@@ -136,11 +140,11 @@ export function TelecomDashboardPage() {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Avg Data Usage (GB)</span>
+                <span className="text-sm text-[var(--text-muted)]">Avg Data Usage (GB)</span>
                 <span className="font-mono">16.8</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">EBITDA Per User</span>
+                <span className="text-sm text-[var(--text-muted)]">EBITDA Per User</span>
                 <span className="font-mono text-green-600">$11.40</span>
               </div>
             </div>

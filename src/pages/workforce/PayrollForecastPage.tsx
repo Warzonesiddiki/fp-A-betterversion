@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useWorkforceStore } from '@/store/workforceStore';
@@ -25,16 +26,7 @@ import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney, divideMoney } from '@/utils/money';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface DepartmentPayroll {
   department: string;
   headcount: number;
@@ -76,6 +68,7 @@ const headcountTrend = [
 ];
 
 export default function PayrollForecastPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const workforceState = useWorkforceStore();
   const storeDepartments = workforceState.departments ?? [];
@@ -126,25 +119,25 @@ export default function PayrollForecastPage() {
     {
       key: 'baseSalary',
       header: 'Base Salary',
-      render: (_, r) => formatCurrency(r.baseSalary),
+      render: (_, r) => fmt.currency0(r.baseSalary),
       sortable: true,
     },
     {
       key: 'benefits',
       header: 'Benefits',
-      render: (_, r) => formatCurrency(r.benefits),
+      render: (_, r) => fmt.currency0(r.benefits),
       sortable: true,
     },
     {
       key: 'totalCost',
       header: 'Total Cost',
-      render: (_, r) => formatCurrency(r.totalCost),
+      render: (_, r) => fmt.currency0(r.totalCost),
       sortable: true,
     },
     {
       key: 'costPerHead',
       header: 'Cost/Head',
-      render: (_, r) => formatCurrency(r.costPerHead),
+      render: (_, r) => fmt.currency0(r.costPerHead),
       sortable: true,
     },
     {
@@ -191,9 +184,11 @@ export default function PayrollForecastPage() {
   if (!hasData) {
     return (
       <div className="p-12 text-center">
-        <Users className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Users className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Payroll Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data with payroll accounts to forecast.</p>
+        <p className="text-[var(--text-muted)] mb-6">
+          Import GL data with payroll accounts to forecast.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -201,22 +196,24 @@ export default function PayrollForecastPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Payroll Forecast</h1>
-          <p className="text-sm text-slate-400">
-            {totalHeadcount} employees across {departments.length} departments
-          </p>
-        </div>
-        <Button variant="outline" size="sm" onClick={handleExport}>
-          <Download className="h-4 w-4 mr-1" /> Export
-        </Button>
-      </div>
+      <PageHeader
+        title="Payroll Forecast"
+        purpose={
+          <>
+            {totalHeadcount}employees across {departments.length}departments
+          </>
+        }
+        actions={
+          <Button variant="outline" size="sm" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-1" /> Export
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <KPIValue
           label="Annual Payroll"
-          value={formatCurrency(totalPayroll)}
+          value={fmt.currency0(totalPayroll)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
@@ -226,12 +223,12 @@ export default function PayrollForecastPage() {
         />
         <KPIValue
           label="Avg Cost/Head"
-          value={formatCurrency(avgCostPerHead)}
+          value={fmt.currency0(avgCostPerHead)}
           icon={<TrendingUp className="h-4 w-4" />}
         />
         <KPIValue
           label="Benefits Cost"
-          value={formatCurrency(totalBenefits)}
+          value={fmt.currency0(totalBenefits)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
@@ -257,7 +254,7 @@ export default function PayrollForecastPage() {
                   tickFormatter={(v) => `$${formatCompact(v)}`}
                 />
                 <Tooltip
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Legend />
@@ -327,7 +324,7 @@ export default function PayrollForecastPage() {
                 tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
               />
               <Tooltip
-                formatter={(v) => formatCurrency(Number(v))}
+                formatter={(v) => fmt.currency0(Number(v))}
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
               />
               <Area

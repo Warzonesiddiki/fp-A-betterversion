@@ -5,6 +5,7 @@
  * rate and endowment growth, plus exact income summation.
  */
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -109,9 +110,14 @@ export default function ResearchGrantsPage() {
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center" role="main" aria-label="Research Grants - No Data">
-        <FlaskConical className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <FlaskConical
+          className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4"
+          aria-hidden="true"
+        />
         <h2 className="text-xl font-semibold mb-2">No Research Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view research grant metrics.</p>
+        <p className="text-[var(--text-muted)] mb-6">
+          Import GL data to view research grant metrics.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
     );
@@ -120,12 +126,10 @@ export default function ResearchGrantsPage() {
   return (
     <main className="p-6 space-y-6 animate-fade-in" role="main" aria-label="Research Grants">
       <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Research Grants</h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Grant win rate, endowment growth & sponsored revenue
-          </p>
-        </div>
+        <PageHeader
+          title="Research Grants"
+          purpose={'Grant win rate, endowment growth & sponsored revenue'}
+        />
         <Button variant="outline" onClick={() => navigate('/education')}>
           Back to Education
         </Button>
@@ -161,15 +165,15 @@ export default function ResearchGrantsPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Grants Applied</span>
+              <span className="text-sm text-[var(--text-muted)]">Grants Applied</span>
               <span className="font-mono">{formatNumber(input.researchGrantsApplied)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Grants Won</span>
+              <span className="text-sm text-[var(--text-muted)]">Grants Won</span>
               <span className="font-mono">{formatNumber(input.researchGrantsWon)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Endowment Value</span>
+              <span className="text-sm text-[var(--text-muted)]">Endowment Value</span>
               <span className="font-mono">{formatMoney(input.endowmentEnd)}</span>
             </div>
           </CardContent>
@@ -180,15 +184,15 @@ export default function ResearchGrantsPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Projected Endowment</span>
+              <span className="text-sm text-[var(--text-muted)]">Projected Endowment</span>
               <span className="font-mono">{formatMoney(projectedEndowment)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Tuition Revenue</span>
+              <span className="text-sm text-[var(--text-muted)]">Tuition Revenue</span>
               <span className="font-mono">{formatMoney(input.tuitionRevenue)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Endowment Growth Rate</span>
+              <span className="text-sm text-[var(--text-muted)]">Endowment Growth Rate</span>
               <span className="font-mono">{formatPercent(metrics.endowmentGrowthRatePct, 1)}</span>
             </div>
           </CardContent>

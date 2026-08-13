@@ -1,10 +1,12 @@
 import { useState, useMemo, useCallback } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { reportingCurrency } from '@/store/financialContextStore';
 import { useNavigate } from 'react-router-dom';
 import { useScenarioStore, scenarioSelectors } from '@/store/scenarioStore';
 import type { ScenarioMetrics } from '@/types';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { formatPercent } from '@/utils/financialFormatting';
+import { currencyFormatter, formatPercent } from '@/utils/financialFormatting';
 
 interface MetricRow {
   key: keyof ScenarioMetrics;
@@ -27,12 +29,7 @@ const METRICS: MetricRow[] = [
 
 function formatValue(value: number, format: MetricRow['format']): string {
   if (format === 'currency') {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      notation: 'compact',
-      maximumFractionDigits: 1,
-    }).format(value);
+    return currencyFormatter(reportingCurrency(), { maxDecimals: 1, compact: true })(value);
   }
   if (format === 'percent') {
     return `${formatPercent(value, 1)}`;
@@ -112,15 +109,11 @@ export function ScenarioComparisonPage() {
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Scenario Comparison</h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Select scenarios to compare side-by-side.
-          </p>
-        </div>
-        <Button onClick={() => navigate('/scenarios/create')}>Create Scenario</Button>
-      </div>
+      <PageHeader
+        title="Scenario Comparison"
+        purpose="Select scenarios to compare side-by-side."
+        actions={<Button onClick={() => navigate('/scenarios/create')}>Create Scenario</Button>}
+      />
 
       {/* Scenario Selector */}
       <Card>

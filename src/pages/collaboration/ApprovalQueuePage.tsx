@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useCollaborationStore } from '@/store/collaborationStore';
 import { useBudgetStore } from '@/store/budgetStore';
@@ -17,16 +18,7 @@ import {
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface ApprovalRow {
   id: string;
   name: string;
@@ -38,6 +30,7 @@ interface ApprovalRow {
 }
 
 export default function ApprovalQueuePage() {
+  const fmt = useCurrencyFormatter();
   const _navigate = useNavigate();
   const { approvals, addComment } = useCollaborationStore();
   const { budgets } = useBudgetStore();
@@ -104,7 +97,7 @@ export default function ApprovalQueuePage() {
           r.name,
           r.type,
           r.requester,
-          formatCurrency(r.amount),
+          fmt.currency0(r.amount),
           r.submitted,
           r.status,
         ]),
@@ -121,7 +114,7 @@ export default function ApprovalQueuePage() {
           r.name,
           r.type,
           r.requester,
-          formatCurrency(r.amount),
+          fmt.currency0(r.amount),
           r.submitted,
           r.status,
         ]),
@@ -138,7 +131,7 @@ export default function ApprovalQueuePage() {
       key: 'amount',
       header: 'Amount',
       align: 'right',
-      render: (_, r) => formatCurrency(r.amount),
+      render: (_, r) => fmt.currency0(r.amount),
       sortable: true,
     },
     { key: 'submitted', header: 'Submitted', align: 'right', sortable: true },
@@ -175,19 +168,21 @@ export default function ApprovalQueuePage() {
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Approval Queue</h1>
-        <div className="flex gap-2">
-          <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
-            <FileText className="h-3.5 w-3.5 mr-1.5" />
-            PDF
-          </Button>
-          <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
-            <TableIcon className="h-3.5 w-3.5 mr-1.5" />
-            Excel
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Approval Queue"
+        actions={
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
+              <FileText className="h-3.5 w-3.5 mr-1.5" />
+              PDF
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
+              <TableIcon className="h-3.5 w-3.5 mr-1.5" />
+              Excel
+            </Button>
+          </div>
+        }
+      />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue
           label="Total Items"

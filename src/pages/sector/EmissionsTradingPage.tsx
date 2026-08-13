@@ -39,9 +39,11 @@ export default function EmissionsTradingPage() {
         role="main"
         aria-label="Emissions Trading Dashboard - No Data"
       >
-        <Leaf className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Leaf className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">Emissions Trading — No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view carbon credit metrics.</p>
+        <p className="text-[var(--text-muted)] mb-6">
+          Import GL data to view carbon credit metrics.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
     );
@@ -50,7 +52,7 @@ export default function EmissionsTradingPage() {
   return (
     <main className="p-6 space-y-6" role="main">
       <h1 className="text-2xl font-bold">Emissions Trading</h1>
-      <p className="text-sm text-slate-400">Carbon credits and offset tracking</p>
+      <p className="text-sm text-[var(--text-muted)]">Carbon credits and offset tracking</p>
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue label="Credit Value" value={formatCurrency(stats.creditValue)} />
@@ -70,19 +72,19 @@ export default function EmissionsTradingPage() {
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Total Credits Held</span>
+                <span className="text-sm text-[var(--text-muted)]">Total Credits Held</span>
                 <span className="font-mono">12,500 tCO2e</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Credits Retired</span>
+                <span className="text-sm text-[var(--text-muted)]">Credits Retired</span>
                 <span className="font-mono">8,200 tCO2e</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Credits Available</span>
+                <span className="text-sm text-[var(--text-muted)]">Credits Available</span>
                 <span className="font-mono text-green-600">4,300 tCO2e</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Avg Price per Credit</span>
+                <span className="text-sm text-[var(--text-muted)]">Avg Price per Credit</span>
                 <span className="font-mono">$28.50</span>
               </div>
             </div>
@@ -95,19 +97,19 @@ export default function EmissionsTradingPage() {
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Regulatory Obligation</span>
+                <span className="text-sm text-[var(--text-muted)]">Regulatory Obligation</span>
                 <span className="font-mono">15,000 tCO2e</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Compliance Rate</span>
+                <span className="text-sm text-[var(--text-muted)]">Compliance Rate</span>
                 <span className="font-mono text-green-600">83.3%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Shortfall</span>
+                <span className="text-sm text-[var(--text-muted)]">Shortfall</span>
                 <span className="font-mono text-red-600">2,500 tCO2e</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Estimated Penalty</span>
+                <span className="text-sm text-[var(--text-muted)]">Estimated Penalty</span>
                 <span className="font-mono text-red-600">$75,000</span>
               </div>
             </div>

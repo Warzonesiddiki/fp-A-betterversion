@@ -17,8 +17,10 @@ import { useEffect, useMemo } from 'react';
 import { useCollaborationSetup } from '@/hooks/useCollaborationInit';
 import { useFinancialContextStore } from '@/store/financialContextStore';
 import { financialContextFromParams, serializeFinancialContext } from '@/types/financialContext';
-import { filterNavItemsByRole } from '@/hooks/usePillarNavigation';
+import { filterNavItemsByRole } from '@/hooks/useAppNavigation';
+import { NAV_SECTIONS } from '@/types/navigation';
 import { useAuthStore } from '@/store/authStore';
+import { useApplyDensity } from '@/hooks/useDensity';
 
 // Draft entity options until the server master-data contract is connected
 // (F-04 / P-01). The context bar never authorizes data access client-side.
@@ -36,6 +38,10 @@ export default function AppLayout() {
     helpPanelOpen,
     toggleHelpPanel,
   } = useUIStore();
+  // UI-04: mirror the density preference onto <html data-density> so both
+  // AG Grid and .fp-table resolve their row metrics from one source.
+  useApplyDensity();
+
   const { mainContentRef } = useFocusManagement();
   const { i18n } = useTranslation();
   const dir = getLocaleDirection((i18n.language?.split('-')[0] ?? 'en') as SupportedLocale);
@@ -67,113 +73,25 @@ export default function AppLayout() {
 
   // Initialize real-time collaboration
   useCollaborationSetup();
+  // Every destination in the sidebar is also a command, from the same
+  // manifest — the palette can never drift out of sync with the rail, and all
+  // 190 screens are keyboard-reachable rather than the 15 once hardcoded here.
   const commandItems: CommandItem[] = useMemo(
-    () => [
-      {
-        id: 'dashboard',
-        label: 'Go to Dashboard',
-        category: 'Navigation',
-        shortcut: 'Ctrl+1',
-        onSelect: () => navigate('/'),
-      },
-      {
-        id: 'budgets',
-        permission: 'budget:read',
-        label: 'Go to Budgets',
-        category: 'Navigation',
-        shortcut: 'Ctrl+2',
-        onSelect: () => navigate('/budgets'),
-      },
-      {
-        id: 'forecasts',
-        permission: 'forecast:read',
-        label: 'Go to Forecasts',
-        category: 'Navigation',
-        shortcut: 'Ctrl+3',
-        onSelect: () => navigate('/forecasts'),
-      },
-      {
-        id: 'scenarios',
-        permission: 'scenario:read',
-        label: 'Go to Scenarios',
-        category: 'Navigation',
-        shortcut: 'Ctrl+4',
-        onSelect: () => navigate('/scenarios'),
-      },
-      {
-        id: 'reports',
-        permission: 'report:read',
-        label: 'Go to Reports',
-        category: 'Navigation',
-        shortcut: 'Ctrl+5',
-        onSelect: () => navigate('/reports'),
-      },
-      {
-        id: 'consolidation',
-        label: 'Go to Consolidation',
-        category: 'Navigation',
-        shortcut: 'Ctrl+6',
-        onSelect: () => navigate('/consolidation'),
-      },
-      {
-        id: 'settings',
-        label: 'Go to Settings',
-        category: 'Navigation',
-        onSelect: () => navigate('/settings'),
-      },
-      {
-        id: 'collaboration',
-        label: 'Go to Collaboration',
-        category: 'Navigation',
-        onSelect: () => navigate('/collaboration'),
-      },
-      {
-        id: 'gl-explorer',
-        permission: 'gl:read',
-        label: 'Go to GL Explorer',
-        category: 'Data',
-        onSelect: () => navigate('/data/gl-explorer'),
-      },
-      {
-        id: 'trial-balance',
-        permission: 'gl:read',
-        label: 'Go to Trial Balance',
-        category: 'Data',
-        onSelect: () => navigate('/data/trial-balance'),
-      },
-      {
-        id: 'chart-of-accounts',
-        permission: 'gl:read',
-        label: 'Go to Chart of Accounts',
-        category: 'Data',
-        onSelect: () => navigate('/data/chart-of-accounts'),
-      },
-      {
-        id: 'import',
-        permission: 'import:read',
-        label: 'Go to Data Import',
-        category: 'Data',
-        onSelect: () => navigate('/data/import'),
-      },
-      {
-        id: 'approval-queue',
-        label: 'Go to Approval Queue',
-        category: 'Workflow',
-        onSelect: () => navigate('/collaboration/approvals'),
-      },
-      {
-        id: 'fx-rates',
-        label: 'Go to FX Rates',
-        category: 'Currency',
-        onSelect: () => navigate('/currency/fx-rates'),
-      },
-      {
-        id: 'audit-trail',
-        label: 'Go to Audit Trail',
-        category: 'Compliance',
-        onSelect: () => navigate('/audit/trail'),
-      },
-    ],
+    () =>
+      NAV_SECTIONS.flatMap((section) =>
+        section.groups.flatMap((group) =>
+          group.items
+            .filter((item) => !item.hidden)
+            .map((item) => ({
+              id: item.path,
+              label: item.label,
+              description: item.path,
+              category: section.label,
+              permission: item.permission,
+              onSelect: () => navigate(item.path),
+            }))
+        )
+      ),
     [navigate]
   );
   // F-03 AC5: command palette is permission-filtered by role.

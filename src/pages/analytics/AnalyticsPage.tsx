@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -6,17 +7,9 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 
 import { BarChart3 } from 'lucide-react';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 export default function AnalyticsPage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -55,9 +48,9 @@ export default function AnalyticsPage() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <BarChart3 className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <BarChart3 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import data to see analytics.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import data to see analytics.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -65,36 +58,38 @@ export default function AnalyticsPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Analytics</h1>
-        <button
-          onClick={() => setHelpOpen(true)}
-          className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
-          aria-label="Help"
-        ></button>
-      </div>
+      <PageHeader
+        title="Analytics"
+        actions={
+          <button
+            onClick={() => setHelpOpen(true)}
+            className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+            aria-label="Help"
+          ></button>
+        }
+      />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Total Entries</div>
+            <div className="text-xs text-[var(--text-muted)]">Total Entries</div>
             <div className="text-xl font-bold">{stats?.totalEntries.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Accounts</div>
+            <div className="text-xs text-[var(--text-muted)]">Accounts</div>
             <div className="text-xl font-bold">{stats?.totalAccounts}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Avg/Month</div>
+            <div className="text-xs text-[var(--text-muted)]">Avg/Month</div>
             <div className="text-xl font-bold">{stats?.avgPerMonth.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Busiest Month</div>
+            <div className="text-xs text-[var(--text-muted)]">Busiest Month</div>
             <div className="text-xl font-bold text-sm">
               {stats?.busiestMonth} ({stats?.busiestCount})
             </div>
@@ -111,7 +106,7 @@ export default function AnalyticsPage() {
                 const barWidth = (Math.abs(data.total) / maxTotal) * 100;
                 return (
                   <div key={type} className="flex items-center gap-3 text-sm">
-                    <span className="w-20 text-xs text-slate-400">{type}</span>
+                    <span className="w-20 text-xs text-[var(--text-muted)]">{type}</span>
                     <div className="flex-1 bg-slate-800 rounded-full h-5">
                       <div
                         className="bg-blue-500/60 h-full rounded-full"
@@ -119,7 +114,7 @@ export default function AnalyticsPage() {
                       />
                     </div>
                     <span className="w-24 text-right tabular-nums text-xs">
-                      {formatCurrency(data.total)}
+                      {fmt.currency0(data.total)}
                     </span>
                     <span className="w-12 text-right text-xs text-slate-500">({data.count})</span>
                   </div>

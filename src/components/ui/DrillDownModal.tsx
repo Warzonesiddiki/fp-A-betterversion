@@ -3,6 +3,7 @@ import { useGLStore } from '@/store/glStore';
 import { Modal } from './Modal';
 import { DataTable } from './DataTable';
 import { format } from 'date-fns';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 interface DrillDownModalProps {
   isOpen: boolean;
@@ -12,11 +13,6 @@ interface DrillDownModalProps {
   startDate?: string;
   endDate?: string;
 }
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
-}
-
 export function DrillDownModal({
   isOpen,
   onClose,
@@ -25,6 +21,7 @@ export function DrillDownModal({
   startDate,
   endDate,
 }: DrillDownModalProps) {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
 
   const filteredEntries = useMemo(() => {
@@ -52,12 +49,12 @@ export function DrillDownModal({
     {
       header: 'Debit',
       key: 'debit',
-      render: (v: unknown) => formatCurrency(v as number),
+      render: (v: unknown) => fmt.currency(v as number),
     },
     {
       header: 'Credit',
       key: 'credit',
-      render: (v: unknown) => formatCurrency(v as number),
+      render: (v: unknown) => fmt.currency(v as number),
     },
   ];
 

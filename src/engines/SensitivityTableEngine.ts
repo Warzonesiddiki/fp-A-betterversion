@@ -4,6 +4,8 @@
  */
 
 import { roundTo } from '../utils/money';
+import { reportingCurrency } from '@/store/financialContextStore';
+import { currencyFormatter } from '@/utils/financialFormatting';
 
 export interface SensitivityConfig {
   rowVariable: string;
@@ -125,11 +127,7 @@ export class SensitivityTableEngine {
   ): FormattedTable {
     const formatFn = (v: number): string => {
       if (format === 'currency') {
-        return new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-          maximumFractionDigits: 0,
-        }).format(v);
+        return currencyFormatter(reportingCurrency(), { maxDecimals: 0 })(v);
       }
       if (format === 'percent') {
         return `${roundTo(v * 100, 1)}%`;

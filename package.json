@@ -12,6 +12,7 @@
     "lint": "node node_modules/eslint/bin/eslint.js src --fix",
     "format": "node node_modules/prettier/bin/prettier.js --write \"src/**/*.{ts,tsx,css,md}\"",
     "test": "node --max-old-space-size=8192 node_modules/vitest/vitest.mjs run",
+    "test:sharded": "node scripts/test-sharded.mjs",
     "test:watch": "node --max-old-space-size=8192 node_modules/vitest/vitest.mjs",
     "test:e2e": "node node_modules/@playwright/test/cli.js test",
     "test:bench": "node --max-old-space-size=8192 node_modules/vitest/vitest.mjs run --config vitest.bench.config.ts",

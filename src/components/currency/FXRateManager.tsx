@@ -121,7 +121,7 @@ export function FXRateManager() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold">FX Rate Manager</h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {pairs.length} pair{pairs.length !== 1 ? 's' : ''} &middot; {rates.length} rate
             {rates.length !== 1 ? 's' : ''}
           </p>
@@ -143,7 +143,7 @@ export function FXRateManager() {
           <CardContent className="p-0">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                   <th className="px-4 py-3" scope="col">
                     Pair
                   </th>
@@ -220,7 +220,7 @@ export function FXRateManager() {
         <Card>
           <CardContent className="p-4">
             <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-              <History className="h-4 w-4 text-slate-400" /> Rate History
+              <History className="h-4 w-4 text-[var(--text-muted)]" /> Rate History
             </h3>
             {selectedPair ? (
               <div className="space-y-2 max-h-[400px] overflow-y-auto">
@@ -259,10 +259,10 @@ export function FXRateManager() {
 
       <Modal isOpen={showForm} onClose={() => setShowForm(false)}>
         <div className="p-6 space-y-4">
-          <h2 className="text-lg font-bold text-white">Add FX Rate</h2>
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">Add FX Rate</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="from" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="from" className="block text-xs text-[var(--text-muted)] mb-1">
                 From
               </label>
               <select
@@ -279,7 +279,7 @@ export function FXRateManager() {
               </select>
             </div>
             <div>
-              <label htmlFor="to" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="to" className="block text-xs text-[var(--text-muted)] mb-1">
                 To
               </label>
               <select
@@ -299,7 +299,7 @@ export function FXRateManager() {
               )}
             </div>
             <div>
-              <label htmlFor="rate" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="rate" className="block text-xs text-[var(--text-muted)] mb-1">
                 Rate
               </label>
               <input
@@ -315,7 +315,7 @@ export function FXRateManager() {
               {errors.rate && <p className="text-xs text-red-400 mt-1">{errors.rate}</p>}
             </div>
             <div>
-              <label htmlFor="date" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="date" className="block text-xs text-[var(--text-muted)] mb-1">
                 Date
               </label>
               <input
@@ -328,7 +328,7 @@ export function FXRateManager() {
               {errors.date && <p className="text-xs text-red-400 mt-1">{errors.date}</p>}
             </div>
             <div className="col-span-2">
-              <label htmlFor="source" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="source" className="block text-xs text-[var(--text-muted)] mb-1">
                 Source
               </label>
               <select

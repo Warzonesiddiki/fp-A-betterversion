@@ -104,14 +104,17 @@ describe('DrillDownWindowPage', () => {
     expect(cells[0]!.textContent).toBe(format(new Date('2023-01-15'), 'MMM d, yyyy'));
     expect(cells[1]!.textContent).toBe('4000');
     expect(cells[2]!.textContent).toBe('Jan revenue');
-    // $100,000.00 (Intl formatting, no toFixed in source)
+    // $100,000.00 (Intl formatting, no toFixed in source).
+    // Zero renders as the em-dash placeholder: UI-06 routes all money display
+    // through the shared reporting-currency formatter, whose canonical
+    // zeroDisplay is '—' so empty debit/credit cells stay visually quiet.
     expect(cells[3]!.textContent).toBe('$100,000.00');
-    expect(cells[4]!.textContent).toBe('$0.00');
+    expect(cells[4]!.textContent).toBe('—');
 
     const creditRow = screen.getByText('Jan cogs').closest('tr');
     expect(creditRow).not.toBeNull();
     const creditCells = within(creditRow!).getAllByRole('cell');
-    expect(creditCells[3]!.textContent).toBe('$0.00');
+    expect(creditCells[3]!.textContent).toBe('—');
     expect(creditCells[4]!.textContent).toBe('$40,000.00');
   });
 

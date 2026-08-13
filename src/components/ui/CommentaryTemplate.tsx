@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { formatPercent } from '@/utils/financialFormatting';
 export interface CommentaryTemplateDef {
   id: string;
@@ -79,6 +80,7 @@ export function CommentaryTemplate({
   varianceData,
   className = '',
 }: CommentaryTemplateProps) {
+  const fmtCurrency = useCurrencyFormatter();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [customText, setCustomText] = useState('');
 
@@ -86,10 +88,7 @@ export function CommentaryTemplate({
     (template: CommentaryTemplateDef): string => {
       if (!varianceData) return template.template;
 
-      const fmt = (n: number | undefined) =>
-        n !== undefined
-          ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n)
-          : '[N/A]';
+      const fmt = (n: number | undefined) => (n !== undefined ? fmtCurrency.custom()(n) : '[N/A]');
 
       const fmtPct = (n: number | undefined) =>
         n !== undefined ? formatPercent(n * 100, 1) : '[N/A]';
@@ -102,7 +101,7 @@ export function CommentaryTemplate({
         .replace(/\{\{account\}\}/g, varianceData.account ?? '[Account]')
         .replace(/\{\{period\}\}/g, varianceData.period ?? '[Period]');
     },
-    [varianceData]
+    [varianceData, fmtCurrency]
   );
 
   const handleSelect = useCallback(() => {

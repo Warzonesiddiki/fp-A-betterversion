@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -11,16 +12,7 @@ import { toCSV } from '@/utils/csv';
 import { filterGLEntriesByPermission } from '@/utils/dataPermissionFilter';
 import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
 import { BookOpen, ChevronLeft, ChevronRight, Download, Search, BarChart3 } from 'lucide-react';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /** Money-primitive journal totals (GAP-1 F-0006). */
 export interface GLJournalTotals {
   debits: number;
@@ -38,6 +30,7 @@ export function computeJournalTotals(
 }
 
 export default function GLJournalsPage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -141,7 +134,7 @@ export default function GLJournalsPage() {
           <BookOpen className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Journal Entries</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your General Ledger data to view journal entries.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -153,15 +146,17 @@ export default function GLJournalsPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold">General Journal</h1>
-            <button
-              onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
-              aria-label="Help"
-            ></button>
-          </div>
-          <p className="text-sm text-slate-400 mt-1">
+          <PageHeader
+            title="General Journal"
+            actions={
+              <button
+                onClick={() => setHelpOpen(true)}
+                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                aria-label="Help"
+              ></button>
+            }
+          />
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {entries.length.toLocaleString()} total entries
             {filtered.length !== entries.length &&
               ` · ${filtered.length.toLocaleString()} filtered`}
@@ -177,7 +172,10 @@ export default function GLJournalsPage() {
         <CardContent className="p-4">
           <div className="flex gap-3 items-end flex-wrap">
             <div>
-              <label htmlFor="from" className="block text-xs font-medium text-slate-400 mb-1">
+              <label
+                htmlFor="from"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
+              >
                 From
               </label>
               <input
@@ -192,7 +190,10 @@ export default function GLJournalsPage() {
               />
             </div>
             <div>
-              <label htmlFor="to" className="block text-xs font-medium text-slate-400 mb-1">
+              <label
+                htmlFor="to"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
+              >
                 To
               </label>
               <input
@@ -207,7 +208,10 @@ export default function GLJournalsPage() {
               />
             </div>
             <div>
-              <label htmlFor="account" className="block text-xs font-medium text-slate-400 mb-1">
+              <label
+                htmlFor="account"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
+              >
                 Account
               </label>
               <Select
@@ -222,7 +226,10 @@ export default function GLJournalsPage() {
               />
             </div>
             <div>
-              <label htmlFor="search" className="block text-xs font-medium text-slate-400 mb-1">
+              <label
+                htmlFor="search"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
+              >
                 Search
               </label>
               <div className="relative">
@@ -251,7 +258,7 @@ export default function GLJournalsPage() {
             <table className="w-full text-sm" aria-label="GL journal entries">
               <caption className="sr-only">Detailed GL gl journal entries</caption>
               <thead>
-                <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                   <th scope="col" className="px-4 py-3 w-24">
                     Date
                   </th>
@@ -296,10 +303,10 @@ export default function GLJournalsPage() {
                         {e.description || '-'}
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums text-blue-400">
-                        {e.debit > 0 ? formatCurrency(e.debit) : ''}
+                        {e.debit > 0 ? fmt.currency0(e.debit) : ''}
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums text-green-400">
-                        {e.credit > 0 ? formatCurrency(e.credit) : ''}
+                        {e.credit > 0 ? fmt.currency0(e.credit) : ''}
                       </td>
                       <td className="px-4 py-3 text-xs text-slate-500">{e.reference || '-'}</td>
                       <td className="px-2 py-3">
@@ -323,15 +330,15 @@ export default function GLJournalsPage() {
               </tbody>
               {pageItems.length > 0 && (
                 <tfoot className="border-t-2 border-slate-600">
-                  <tr className="font-bold text-sm text-slate-200">
+                  <tr className="font-bold text-sm text-[var(--text-primary)]">
                     <td className="px-4 py-3" colSpan={3}>
                       Total ({filtered.length.toLocaleString()} entries)
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums text-blue-400">
-                      {formatCurrency(totals.debits)}
+                      {fmt.currency0(totals.debits)}
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums text-green-400">
-                      {formatCurrency(totals.credits)}
+                      {fmt.currency0(totals.credits)}
                     </td>
                     <td className="px-4 py-3" colSpan={2}></td>
                   </tr>
@@ -344,7 +351,7 @@ export default function GLJournalsPage() {
 
       {filtered.length > PAGE_SIZE && (
         <div className="flex items-center justify-between text-sm">
-          <span className="text-slate-400">
+          <span className="text-[var(--text-muted)]">
             Showing {page * PAGE_SIZE + 1}–
             {Math.min((page + 1) * PAGE_SIZE, filtered.length).toLocaleString()} of{' '}
             {filtered.length.toLocaleString()}

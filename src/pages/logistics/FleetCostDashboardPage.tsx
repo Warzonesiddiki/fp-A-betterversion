@@ -7,6 +7,7 @@
  * defaults (never Math.random). All display goes through format helpers.
  */
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -140,9 +141,9 @@ export default function FleetCostDashboardPage() {
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center" role="main" aria-label="Fleet Cost - No Data">
-        <Truck className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <Truck className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
         <h2 className="text-xl font-semibold mb-2">No Fleet Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view fleet cost metrics.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view fleet cost metrics.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
     );
@@ -151,10 +152,10 @@ export default function FleetCostDashboardPage() {
   return (
     <main className="p-6 space-y-6 animate-fade-in" role="main" aria-label="Fleet Cost Dashboard">
       <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Fleet Cost Dashboard</h1>
-          <p className="text-sm text-slate-400 mt-1">Cost per mile & fleet utilization analytics</p>
-        </div>
+        <PageHeader
+          title="Fleet Cost Dashboard"
+          purpose={'Cost per mile & fleet utilization analytics'}
+        />
         <Button variant="outline" onClick={() => navigate('/logistics')}>
           Back to Logistics
         </Button>
@@ -190,19 +191,19 @@ export default function FleetCostDashboardPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Gross Profit</span>
+              <span className="text-sm text-[var(--text-muted)]">Gross Profit</span>
               <span className="font-mono">{formatMoney(metrics.grossProfit)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">EBITDA</span>
+              <span className="text-sm text-[var(--text-muted)]">EBITDA</span>
               <span className="font-mono">{formatMoney(metrics.ebitda)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">On-Time Delivery</span>
+              <span className="text-sm text-[var(--text-muted)]">On-Time Delivery</span>
               <span className="font-mono">{formatPercent(metrics.onTimeDeliveryPct, 1)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Operating Margin</span>
+              <span className="text-sm text-[var(--text-muted)]">Operating Margin</span>
               <span className="font-mono">{formatPercent(metrics.operatingMarginPct, 1)}</span>
             </div>
           </CardContent>
@@ -213,19 +214,19 @@ export default function FleetCostDashboardPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Total Miles</span>
+              <span className="text-sm text-[var(--text-muted)]">Total Miles</span>
               <span className="font-mono">{formatNumber(input.totalMiles)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Loaded Miles</span>
+              <span className="text-sm text-[var(--text-muted)]">Loaded Miles</span>
               <span className="font-mono">{formatNumber(input.loadedMiles)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">On-Time Deliveries</span>
+              <span className="text-sm text-[var(--text-muted)]">On-Time Deliveries</span>
               <span className="font-mono">{formatNumber(input.onTimeDeliveries)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Total Deliveries</span>
+              <span className="text-sm text-[var(--text-muted)]">Total Deliveries</span>
               <span className="font-mono">{formatNumber(input.totalDeliveries)}</span>
             </div>
           </CardContent>

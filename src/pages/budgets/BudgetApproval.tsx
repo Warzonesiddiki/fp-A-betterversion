@@ -121,9 +121,12 @@ export function BudgetApproval() {
         >
           Skip to import action
         </a>
-        <CheckCircle className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <CheckCircle
+          className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4"
+          aria-hidden="true"
+        />
         <h2 className="text-xl font-semibold mb-2">No Budget Approval Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view budget approvals.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view budget approvals.</p>
         <Button
           id="import-btn"
           onClick={() => navigate('/data/gl-upload')}
@@ -152,7 +155,7 @@ export function BudgetApproval() {
         <h1 id="approval-heading" className="text-2xl font-bold">
           Budget Approval
         </h1>
-        <span className="text-sm text-slate-400">
+        <span className="text-sm text-[var(--text-muted)]">
           {formatNumber(entries.length)} entries imported
         </span>
       </header>
@@ -197,7 +200,7 @@ export function BudgetApproval() {
               ariaLabel="Budget approval items"
             />
           ) : (
-            <p className="text-slate-400">No approval data available.</p>
+            <p className="text-[var(--text-muted)]">No approval data available.</p>
           )}
         </CardContent>
       </Card>

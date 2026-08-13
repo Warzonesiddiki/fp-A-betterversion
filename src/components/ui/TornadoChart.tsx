@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import {
   BarChart,
   Bar,
@@ -38,6 +39,7 @@ export const TornadoChart: React.FC<TornadoChartProps> = ({
   error,
   onClick,
 }) => {
+  const fmtCurrency = useCurrencyFormatter();
   const sortedData = useMemo(() => {
     if (!data || data.length === 0) return [];
     return [...data]
@@ -90,12 +92,7 @@ export const TornadoChart: React.FC<TornadoChartProps> = ({
   const baseValue = data.length > 0 ? data[0]!.baseValue : 0;
 
   const formatValue = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      notation: 'compact',
-      maximumFractionDigits: 1,
-    }).format(value);
+    return fmtCurrency.custom({ maxDecimals: 1, compact: true })(value);
   };
 
   return (

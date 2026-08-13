@@ -5,6 +5,7 @@
  * warehouse cost % revenue, operating margin, and warehousing cost model.
  */
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -96,9 +97,11 @@ export default function WarehouseCostDashboardPage() {
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center" role="main" aria-label="Warehouse Cost - No Data">
-        <Warehouse className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <Warehouse className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
         <h2 className="text-xl font-semibold mb-2">No Warehouse Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view warehouse cost metrics.</p>
+        <p className="text-[var(--text-muted)] mb-6">
+          Import GL data to view warehouse cost metrics.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
     );
@@ -111,10 +114,10 @@ export default function WarehouseCostDashboardPage() {
       aria-label="Warehouse Cost Dashboard"
     >
       <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Warehouse Cost Dashboard</h1>
-          <p className="text-sm text-slate-400 mt-1">Warehousing cost % revenue analytics</p>
-        </div>
+        <PageHeader
+          title="Warehouse Cost Dashboard"
+          purpose="Warehousing cost % revenue analytics"
+        />
         <Button variant="outline" onClick={() => navigate('/logistics')}>
           Back to Logistics
         </Button>
@@ -149,15 +152,15 @@ export default function WarehouseCostDashboardPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-slate-400">Total Expenses</span>
+            <span className="text-sm text-[var(--text-muted)]">Total Expenses</span>
             <span className="font-mono">{formatMoney(metrics.totalExpenses)}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-slate-400">Gross Profit</span>
+            <span className="text-sm text-[var(--text-muted)]">Gross Profit</span>
             <span className="font-mono">{formatMoney(metrics.grossProfit)}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-slate-400">EBITDA</span>
+            <span className="text-sm text-[var(--text-muted)]">EBITDA</span>
             <span className="font-mono">{formatMoney(metrics.ebitda)}</span>
           </div>
         </CardContent>

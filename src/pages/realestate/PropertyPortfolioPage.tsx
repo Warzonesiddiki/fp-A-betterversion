@@ -1,4 +1,6 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
 import { Building2, BarChart3, Filter, Hammer, Search } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -25,67 +27,61 @@ import { formatPercent } from '@/utils/financialFormatting';
 // Mock Data for UI structure
 const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
-const columns: Column[] = [
-  { key: 'name', header: 'Property', sortable: true },
-  { key: 'location', header: 'Location' },
-  {
-    key: 'status',
-    header: 'Strategy',
-    render: (v) => (
-      <span
-        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-          String(v) === 'Core'
-            ? 'bg-blue-100 text-blue-700'
-            : String(v) === 'Value-Add'
-              ? 'bg-emerald-100 text-emerald-700'
-              : 'bg-purple-100 text-purple-700'
-        }`}
-      >
-        {String(v)}
-      </span>
-    ),
-  },
-  {
-    key: 'purchasePrice',
-    header: 'Cost Basis',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v as number),
-  },
-  {
-    key: 'currentVal',
-    header: 'Current Value',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v as number),
-  },
-  {
-    key: 'yield',
-    header: 'Yield',
-    align: 'right',
-    render: (v) => `${String(v)}%`,
-  },
-  {
-    key: 'renovation',
-    header: 'Renovation Status',
-    render: (v) => (
-      <div className="flex items-center gap-2">
-        {String(v) !== 'None' && <Hammer className="h-3 w-3 text-slate-400" />}
-        <span className="text-xs">{String(v)}</span>
-      </div>
-    ),
-  },
-];
-
 export default function PropertyPortfolioPage() {
+  const fmtCurrency = useCurrencyFormatter();
+
+  const columns = useMemo<Column[]>(
+    () => [
+      { key: 'name', header: 'Property', sortable: true },
+      { key: 'location', header: 'Location' },
+      {
+        key: 'status',
+        header: 'Strategy',
+        render: (v) => (
+          <span
+            className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+              String(v) === 'Core'
+                ? 'bg-blue-100 text-blue-700'
+                : String(v) === 'Value-Add'
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : 'bg-purple-100 text-purple-700'
+            }`}
+          >
+            {String(v)}
+          </span>
+        ),
+      },
+      {
+        key: 'purchasePrice',
+        header: 'Cost Basis',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
+      },
+      {
+        key: 'currentVal',
+        header: 'Current Value',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
+      },
+      {
+        key: 'yield',
+        header: 'Yield',
+        align: 'right',
+        render: (v) => `${String(v)}%`,
+      },
+      {
+        key: 'renovation',
+        header: 'Renovation Status',
+        render: (v) => (
+          <div className="flex items-center gap-2">
+            {String(v) !== 'None' && <Hammer className="h-3 w-3 text-[var(--text-muted)]" />}
+            <span className="text-xs">{String(v)}</span>
+          </div>
+        ),
+      },
+    ],
+    [fmtCurrency]
+  );
   const { entries } = useGLStore();
   const [periodId, setPeriodId] = useState('P01');
 
@@ -112,7 +108,7 @@ export default function PropertyPortfolioPage() {
           <Building2 className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Portfolio Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your General Ledger and fixed asset schedule to analyze your property portfolio.
         </p>
         <Button>Import Data</Button>
@@ -124,14 +120,10 @@ export default function PropertyPortfolioPage() {
     <div className="p-6 space-y-6 animate-in slide-in-from-bottom-4 duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Property Portfolio
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Detailed asset management: Valuation history, acquisition basis, and renovation ROI.
-          </p>
-        </div>
+        <PageHeader
+          title="Property Portfolio"
+          purpose="Detailed asset management: Valuation history, acquisition basis, and renovation ROI."
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="default" size="sm" className="h-10">
@@ -152,11 +144,7 @@ export default function PropertyPortfolioPage() {
         />
         <KPIValue
           label="Portfolio Unrealized Gain"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            signDisplay: 'always',
-          }).format(stats.unrealizedGain)}
+          value={fmtCurrency.custom({ signDisplay: 'always' })(stats.unrealizedGain)}
           change={15.4}
           changeLabel="since inception"
           trend="up"
@@ -279,7 +267,7 @@ export default function PropertyPortfolioPage() {
           </div>
           <div className="flex items-center gap-2">
             <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--text-muted)]" />
               <Input className="pl-7 h-9 w-64" placeholder="Search by name or city..." />
             </div>
             <Button variant="outline" size="sm">

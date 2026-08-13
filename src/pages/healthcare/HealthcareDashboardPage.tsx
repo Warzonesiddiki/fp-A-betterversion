@@ -1,4 +1,6 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
 
 import { Activity, Stethoscope, Building2, Download, Share2, MoreHorizontal } from 'lucide-react';
@@ -36,34 +38,35 @@ const patientVolumeData = [
   { month: 'Jun', emergency: 1100, inpatient: 520, outpatient: 2800 },
 ];
 
-const columns: Column[] = [
-  { key: 'dept', header: 'Department', sortable: true },
-  {
-    key: 'revenue',
-    header: 'Net Revenue',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v as number),
-  },
-  { key: 'patients', header: 'Patient Count', align: 'right' },
-  {
-    key: 'margin',
-    header: 'Operating Margin',
-    align: 'right',
-    render: (v) => (
-      <span className={(v as number) > 20 ? 'text-green-600 font-bold' : 'text-blue-600 font-bold'}>
-        {formatPercent(v as number, 1)}
-      </span>
-    ),
-  },
-  { key: 'efficiency', header: 'Efficiency Score', align: 'right', render: (v) => `${v}%` },
-];
-
 export default function HealthcareDashboardPage() {
+  const fmtCurrency = useCurrencyFormatter();
+
+  const columns = useMemo<Column[]>(
+    () => [
+      { key: 'dept', header: 'Department', sortable: true },
+      {
+        key: 'revenue',
+        header: 'Net Revenue',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
+      },
+      { key: 'patients', header: 'Patient Count', align: 'right' },
+      {
+        key: 'margin',
+        header: 'Operating Margin',
+        align: 'right',
+        render: (v) => (
+          <span
+            className={(v as number) > 20 ? 'text-green-600 font-bold' : 'text-blue-600 font-bold'}
+          >
+            {formatPercent(v as number, 1)}
+          </span>
+        ),
+      },
+      { key: 'efficiency', header: 'Efficiency Score', align: 'right', render: (v) => `${v}%` },
+    ],
+    [fmtCurrency]
+  );
   const { entries } = useGLStore();
   const [periodId, setPeriodId] = useState('P01');
 
@@ -112,7 +115,7 @@ export default function HealthcareDashboardPage() {
           <Activity className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Healthcare Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your Patient Revenue GL data (40xx accounts) to view hospital performance
           analytics.
         </p>
@@ -125,15 +128,10 @@ export default function HealthcareDashboardPage() {
     <div className="p-6 space-y-6 animate-in fade-in duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Healthcare Dashboard
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Enterprise hospital management: Patient volume, revenue cycles, and departmental
-            efficiency.
-          </p>
-        </div>
+        <PageHeader
+          title="Healthcare Dashboard"
+          purpose="Enterprise hospital management: Patient volume, revenue cycles, and departmental efficiency."
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="outline" size="sm">
@@ -166,12 +164,7 @@ export default function HealthcareDashboardPage() {
         />
         <KPIValue
           label="Net Patient Revenue"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 1,
-            notation: 'compact',
-          }).format(stats.netRevenue)}
+          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(stats.netRevenue)}
           change={12.1}
           changeLabel="reimbursements up"
           trend="up"

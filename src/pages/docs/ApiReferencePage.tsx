@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Search } from 'lucide-react';
@@ -75,18 +76,15 @@ export default function ApiReferencePage() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-[var(--text-primary)] tracking-tight">
-          API Reference & SDK
-        </h1>
-        <p className="text-[var(--text-secondary)] mt-2 text-lg">
-          Developer documentation for FinPlan Pro&apos;s internal engines, stores, and plugin
-          architecture.
-        </p>
-      </div>
+      <PageHeader
+        title={'API Reference & SDK'}
+        purpose={
+          'Developer documentation for FinPlan Pro&apos;s internal engines, stores, and plugin architecture.'
+        }
+      />
 
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[var(--text-muted)]" />
         <input
           type="text"
           placeholder="Search endpoints, engines, or stores..."

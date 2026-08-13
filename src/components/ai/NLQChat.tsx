@@ -6,6 +6,7 @@ import { useGLStore } from '@/store/glStore';
 import { NLQEngine } from '@/engines/NLQEngine';
 import type { NLQResult } from '@/engines/NLQEngine';
 import { Card, CardContent } from '@/components/ui/Card';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -46,16 +47,10 @@ function getSuggestions(pathname: string): string[] {
 
 let msgCounter = 0;
 const nextId = () => `nlq-${Date.now()}-${++msgCounter}`;
-const formatCurrency = (v: number): string =>
-  new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(v);
-
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export function NLQChat({ className, maxHeight = '400px' }: NLQChatProps) {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const { pathname } = useLocation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -241,7 +236,7 @@ export function NLQChat({ className, maxHeight = '400px' }: NLQChatProps) {
                                     className="w-16 text-right font-mono"
                                     style={{ color: 'var(--text-secondary)' }}
                                   >
-                                    {formatCurrency(dp.value)}
+                                    {fmt.currency0(dp.value)}
                                   </span>
                                 </div>
                               ))}

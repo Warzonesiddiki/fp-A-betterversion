@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/Button';
@@ -23,16 +24,7 @@ import {
   Cell,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
 // demo defaults — replaced by real data when FX exposures come from treasury/FX imports
@@ -132,6 +124,7 @@ export function computeFXExposureTotals(exposures: readonly FXExposure[]): FXExp
 }
 
 export default function FXExposurePage() {
+  const fmt = useCurrencyFormatter();
   const _navigate = useNavigate();
 
   useEffect(() => {
@@ -141,7 +134,6 @@ export default function FXExposurePage() {
   const { totalExposure, totalHedged, totalUnrealizedGL, overallHedgeRatio } =
     computeFXExposureTotals(mockExposures);
 
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const columns: Column[] = useMemo(
     () => [
       { key: 'currency', header: 'Currency', sortable: true },
@@ -150,7 +142,7 @@ export default function FXExposurePage() {
         key: 'exposure',
         header: 'Gross Exposure',
         align: 'right',
-        render: (v) => formatCurrency(v as number),
+        render: (v) => fmt.currency0(v as number),
       },
       {
         key: 'rate',
@@ -162,7 +154,7 @@ export default function FXExposurePage() {
         key: 'hedged',
         header: 'Hedged Amount',
         align: 'right',
-        render: (v) => formatCurrency(v as number),
+        render: (v) => fmt.currency0(v as number),
       },
       {
         key: 'hedgeRatio',
@@ -189,13 +181,13 @@ export default function FXExposurePage() {
           const val = v as number;
           return (
             <span className={val >= 0 ? 'text-green-400' : 'text-red-400'}>
-              {formatCurrency(val)}
+              {fmt.currency0(val)}
             </span>
           );
         },
       },
     ],
-    []
+    [fmt]
   );
 
   const handleExportPDF = () => {
@@ -204,10 +196,10 @@ export default function FXExposurePage() {
         headers: ['Currency', 'Gross Exposure', 'Hedged', 'Hedge Ratio', 'Unrealized G/L'],
         rows: mockExposures.map((e) => [
           e.currency,
-          formatCurrency(e.exposure),
-          formatCurrency(e.hedged),
+          fmt.currency0(e.exposure),
+          fmt.currency0(e.hedged),
           `${e.hedgeRatio}%`,
-          formatCurrency(e.unrealizedGL),
+          fmt.currency0(e.unrealizedGL),
         ]),
       },
       { title: 'FX Exposure Report' }
@@ -240,28 +232,26 @@ export default function FXExposurePage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">FX Exposure</h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Foreign currency risk monitoring and hedging status
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button size="sm" variant="ghost" onClick={handleExportPDF}>
-            <FileText className="h-3.5 w-3.5 mr-1.5" />
-            PDF
-          </Button>
-          <Button size="sm" variant="ghost" onClick={handleExportExcel}>
-            <TableIcon className="h-3.5 w-3.5 mr-1.5" />
-            Excel
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="FX Exposure"
+        purpose="Foreign currency risk monitoring and hedging status"
+        actions={
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={handleExportPDF}>
+              <FileText className="h-3.5 w-3.5 mr-1.5" />
+              PDF
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleExportExcel}>
+              <TableIcon className="h-3.5 w-3.5 mr-1.5" />
+              Excel
+            </Button>
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-4 gap-4">
-        <KPIValue label="Total Exposure" value={formatCurrency(totalExposure)} />
-        <KPIValue label="Total Hedged" value={formatCurrency(totalHedged)} />
+        <KPIValue label="Total Exposure" value={fmt.currency0(totalExposure)} />
+        <KPIValue label="Total Hedged" value={fmt.currency0(totalHedged)} />
         <KPIValue
           label="Hedge Ratio"
           value={formatPercent(overallHedgeRatio, 0)}
@@ -270,7 +260,7 @@ export default function FXExposurePage() {
         />
         <KPIValue
           label="Unrealized G/L"
-          value={formatCurrency(totalUnrealizedGL)}
+          value={fmt.currency0(totalUnrealizedGL)}
           trend={totalUnrealizedGL >= 0 ? 'up' : 'down'}
         />
       </div>
@@ -319,7 +309,7 @@ export default function FXExposurePage() {
                 </Pie>
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                 />
                 <Legend />
               </PieChart>

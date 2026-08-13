@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { RetailEngine, type StoreStats } from '@/engines/RetailEngine';
@@ -30,16 +31,7 @@ import type { GLEntry } from '@/types';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /** Bridge glStore entries to the GLEntry shape the engines expect. */
 function toSectorEntries(entries: readonly GLEntry[]): GLEntry[] {
   return entries.map((e) => ({
@@ -50,6 +42,7 @@ function toSectorEntries(entries: readonly GLEntry[]): GLEntry[] {
 }
 
 export default function RetailDashboard() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -98,16 +91,16 @@ export default function RetailDashboard() {
       key: 'revenue',
       header: 'Revenue',
       align: 'right',
-      render: (_, r) => formatCurrency(r.revenue),
+      render: (_, r) => fmt.currency0(r.revenue),
       sortable: true,
     },
-    { key: 'cogs', header: 'COGS', align: 'right', render: (_, r) => formatCurrency(r.cogs) },
-    { key: 'labor', header: 'Labor', align: 'right', render: (_, r) => formatCurrency(r.labor) },
+    { key: 'cogs', header: 'COGS', align: 'right', render: (_, r) => fmt.currency0(r.cogs) },
+    { key: 'labor', header: 'Labor', align: 'right', render: (_, r) => fmt.currency0(r.labor) },
     {
       key: 'grossProfit',
       header: 'Gross Profit',
       align: 'right',
-      render: (_, r) => formatCurrency(r.grossProfit),
+      render: (_, r) => fmt.currency0(r.grossProfit),
     },
     {
       key: 'netProfit',
@@ -115,7 +108,7 @@ export default function RetailDashboard() {
       align: 'right',
       render: (_, r) => (
         <span className={r.netProfit >= 0 ? 'text-green-400' : 'text-red-400'}>
-          {formatCurrency(r.netProfit)}
+          {fmt.currency0(r.netProfit)}
         </span>
       ),
       sortable: true,
@@ -136,9 +129,9 @@ export default function RetailDashboard() {
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center" aria-label="Retail Dashboard - No Data">
-        <Store className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <Store className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
         <h2 className="text-xl font-semibold mb-2">No Retail Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import GL data with retail store accounts to view dashboard.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -148,31 +141,33 @@ export default function RetailDashboard() {
 
   return (
     <main className="p-6 space-y-6" aria-label="Retail Dashboard">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Retail Dashboard</h1>
-          <p className="text-sm text-slate-400">
-            {storeStats.length} stores | Total Revenue: {formatCurrency(totalRevenue)}
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExport}
-            aria-label="Export retail report"
-          >
-            <Download className="h-4 w-4 mr-1" /> Export
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => navigate('/retail/stores')}
-            aria-label="View store details"
-          >
-            Stores <ArrowRight className="h-4 w-4 ml-1" />
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Retail Dashboard"
+        purpose={
+          <>
+            {storeStats.length}stores | Total Revenue: {fmt.currency0(totalRevenue)}
+          </>
+        }
+        actions={
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExport}
+              aria-label="Export retail report"
+            >
+              <Download className="h-4 w-4 mr-1" /> Export
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => navigate('/retail/stores')}
+              aria-label="View store details"
+            >
+              Stores <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        }
+      />
 
       {/* KPI Section */}
       <section
@@ -181,7 +176,7 @@ export default function RetailDashboard() {
       >
         <KPIValue
           label="Avg Revenue/Store"
-          value={formatCurrency(dashboardStats.avgRevenuePerStore)}
+          value={fmt.currency0(dashboardStats.avgRevenuePerStore)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
@@ -223,7 +218,7 @@ export default function RetailDashboard() {
                     tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                   />
                   <Tooltip
-                    formatter={(v) => formatCurrency(Number(v))}
+                    formatter={(v) => fmt.currency0(Number(v))}
                     contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                   />
                   <Legend />

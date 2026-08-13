@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { formatCompact } from '@/utils/financialFormatting';
 import {
@@ -53,10 +54,10 @@ export function ChartShowcasePage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Chart Showcase</h1>
-        <p className="text-muted-foreground">All 7 chart components with sample data and export</p>
-      </div>
+      <PageHeader
+        title="Chart Showcase"
+        purpose="All 7 chart components with sample data and export"
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div ref={waterfallRef}>

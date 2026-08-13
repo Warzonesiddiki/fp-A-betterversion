@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { formatPercent } from '@/utils/financialFormatting';
 import { AgGridReact } from 'ag-grid-react';
 import {
@@ -9,6 +10,7 @@ import {
   type CellClickedEvent,
 } from 'ag-grid-community';
 import { cn } from '@/utils/cn';
+import { useDensity, denserMetrics } from '@/hooks/useDensity';
 import { FormulaBar } from './FormulaBar';
 import { SheetTabs } from './SheetTabs';
 import { ContextMenu, type ContextMenuAction } from './ContextMenu';
@@ -71,7 +73,11 @@ export function SpreadsheetGrid({
   loading = false,
   className,
 }: SpreadsheetGridProps) {
+  const fmtCurrency = useCurrencyFormatter();
   const gridRef = useRef<AgGridReact>(null);
+  // UI-04: the spreadsheet runs one step denser than app chrome, but still
+  // tracks the user's preference instead of hardcoding 28/32.
+  const metrics = denserMetrics(useDensity());
   const [activeCell, setActiveCell] = useState<{ row: number; col: string } | null>(null);
   const [formulaValue, setFormulaValue] = useState('');
   const [_isEditing, setIsEditing] = useState(false);
@@ -104,11 +110,7 @@ export function SpreadsheetGrid({
         colDef.cellClass = 'text-right tabular-nums font-mono';
         colDef.valueFormatter = (params) => {
           if (params.value == null) return '';
-          return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-          }).format(params.value as number);
+          return fmtCurrency.custom({ minDecimals: 2 })(params.value as number);
         };
       } else if (col.type === 'percent') {
         colDef.cellClass = 'text-right tabular-nums font-mono';
@@ -132,7 +134,7 @@ export function SpreadsheetGrid({
 
       return colDef;
     });
-  }, [currentSheet, freezeCols]);
+  }, [currentSheet, freezeCols, fmtCurrency]);
 
   const defaultColDef = useMemo<ColDef>(
     () => ({
@@ -411,8 +413,8 @@ export function SpreadsheetGrid({
           onCellEditingStarted={() => setIsEditing(true)}
           onCellEditingStopped={() => setIsEditing(false)}
           gridOptions={{
-            rowHeight: 28,
-            headerHeight: 32,
+            rowHeight: metrics.rowHeight,
+            headerHeight: metrics.headerHeight,
             animateRows: true,
             rowSelection: { mode: 'multiRow' },
             suppressCellFocus: false,

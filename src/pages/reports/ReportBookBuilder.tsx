@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useReportStore } from '@/store/reportStore';
@@ -22,7 +23,7 @@ export default function ReportBookBuilderPage() {
           <FileText className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No GL Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import General Ledger entries to build report books from your financial data.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -32,16 +33,12 @@ export default function ReportBookBuilderPage() {
 
   return (
     <div className="p-6 space-y-6" role="main" aria-label="Report Book Builder page">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Report Book Builder</h1>
-          <p className="text-sm text-slate-400 mt-1">
-            {entries.length.toLocaleString()} GL entries available
+      <PageHeader
+  title="Report Book Builder"
+  purpose={<>{entries.length.toLocaleString()}GL entries available
             {reports.length > 0 &&
-              ` \u00B7 ${reports.length} saved report${reports.length !== 1 ? 's' : ''}`}
-          </p>
-        </div>
-      </div>
+              ` \u00B7 ${reports.length} saved report${reports.length !== 1 ? 's' : ''}`}</>}
+/>
 
       <ReportBookBuilder />
     </div>

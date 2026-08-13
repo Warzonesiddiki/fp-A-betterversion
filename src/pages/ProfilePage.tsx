@@ -63,7 +63,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <h2 className="text-xl font-semibold">{form.name}</h2>
-              <p className="text-sm text-slate-400">{form.email}</p>
+              <p className="text-sm text-[var(--text-muted)]">{form.email}</p>
               <Badge variant="default" className="mt-1">
                 {form.role}
               </Badge>
@@ -71,7 +71,7 @@ export default function ProfilePage() {
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label htmlFor="name" className="text-sm text-slate-400 block mb-1">
+              <label htmlFor="name" className="text-sm text-[var(--text-muted)] block mb-1">
                 Name
               </label>
               <input
@@ -82,7 +82,7 @@ export default function ProfilePage() {
               />
             </div>
             <div>
-              <label htmlFor="department" className="text-sm text-slate-400 block mb-1">
+              <label htmlFor="department" className="text-sm text-[var(--text-muted)] block mb-1">
                 Department
               </label>
               <input
@@ -108,7 +108,7 @@ export default function ProfilePage() {
             <div>
               <label
                 htmlFor="globe-classname-h-3-w-3-timezone"
-                className="text-sm text-slate-400 flex items-center gap-1 mb-1"
+                className="text-sm text-[var(--text-muted)] flex items-center gap-1 mb-1"
               >
                 <Globe className="h-3 w-3" />
                 Timezone
@@ -131,7 +131,7 @@ export default function ProfilePage() {
             <div>
               <label
                 htmlFor="clock-classname-h-3-w-3-date-format"
-                className="text-sm text-slate-400 flex items-center gap-1 mb-1"
+                className="text-sm text-[var(--text-muted)] flex items-center gap-1 mb-1"
               >
                 <Clock className="h-3 w-3" />
                 Date Format
@@ -150,7 +150,7 @@ export default function ProfilePage() {
             <div>
               <label
                 htmlFor="dollarsign-classname-h-3-w-3-base-currency"
-                className="text-sm text-slate-400 flex items-center gap-1 mb-1"
+                className="text-sm text-[var(--text-muted)] flex items-center gap-1 mb-1"
               >
                 <DollarSign className="h-3 w-3" />
                 Base Currency
@@ -171,7 +171,7 @@ export default function ProfilePage() {
             <div>
               <label
                 htmlFor="palette-classname-h-3-w-3-theme"
-                className="text-sm text-slate-400 flex items-center gap-1 mb-1"
+                className="text-sm text-[var(--text-muted)] flex items-center gap-1 mb-1"
               >
                 <Palette className="h-3 w-3" />
                 Theme
@@ -209,10 +209,13 @@ export default function ProfilePage() {
             </caption>
             <thead>
               <tr>
-                <th scope="col" className="text-left font-medium text-slate-300 py-1">
+                <th scope="col" className="text-left font-medium text-[var(--text-secondary)] py-1">
                   Action
                 </th>
-                <th scope="col" className="text-right font-medium text-slate-300 py-1 w-[120px]">
+                <th
+                  scope="col"
+                  className="text-right font-medium text-[var(--text-secondary)] py-1 w-[120px]"
+                >
                   Time
                 </th>
               </tr>
@@ -229,7 +232,7 @@ export default function ProfilePage() {
                       <span>{item.action}</span>
                     </div>
                   </th>
-                  <td className="py-2 text-xs text-slate-400 text-right">{item.time}</td>
+                  <td className="py-2 text-xs text-[var(--text-muted)] text-right">{item.time}</td>
                 </tr>
               ))}
             </tbody>

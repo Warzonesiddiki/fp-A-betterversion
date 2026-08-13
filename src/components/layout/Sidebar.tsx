@@ -1,192 +1,178 @@
-import { memo } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { HelpCircle, ChevronLeft, ChevronRight, Search, X, BookOpen } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, HelpCircle, Search, X } from 'lucide-react';
 import { useUIStore } from '@/store/uiStore';
 import { useTheme } from '@/context/ThemeContext';
-import { usePillarNavigation } from '@/hooks/usePillarNavigation';
-import { isItemActive, type PillarNavItem } from '@/types/navigation';
+import { useAppNavigation } from '@/hooks/useAppNavigation';
+import { isItemActive, type NavItem, type NavSection } from '@/types/navigation';
 
-function NavItemLink({
-  item,
-  collapsed,
-  onNavigate,
-}: {
-  item: PillarNavItem;
-  collapsed: boolean;
-  onNavigate: () => void;
-}) {
+function NavItemLink({ item, onNavigate }: { item: NavItem; onNavigate: () => void }) {
   const location = useLocation();
   const active = isItemActive(location.pathname, item.path);
-  const Icon = item.icon;
   return (
     <NavLink
       to={item.path}
       onClick={onNavigate}
       aria-current={active ? 'page' : undefined}
-      className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 ${
-        active ? 'text-white' : ''
-      }`}
-      style={active ? { background: 'var(--accent-primary)' } : { color: 'var(--text-secondary)' }}
+      className="fp-nav-item"
+      data-active={active ? 'true' : undefined}
+      title={item.label}
     >
-      <Icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-      {!collapsed && <span>{item.label}</span>}
+      <span className="fp-nav-item__label">{item.label}</span>
     </NavLink>
+  );
+}
+
+function SidebarSection({
+  section,
+  expanded,
+  onToggle,
+  onNavigate,
+}: {
+  section: NavSection;
+  expanded: boolean;
+  onToggle: (id: string) => void;
+  onNavigate: () => void;
+}) {
+  const Icon = section.icon;
+  const panelId = `fp-nav-section-${section.id}`;
+  return (
+    <li className="fp-nav-section">
+      <button
+        type="button"
+        className="fp-nav-section__trigger"
+        aria-expanded={expanded}
+        aria-controls={panelId}
+        onClick={() => onToggle(section.id)}
+      >
+        <Icon className="fp-nav-section__icon" aria-hidden="true" />
+        <span className="fp-nav-section__label">{section.label}</span>
+        <ChevronDown
+          className="fp-nav-section__chevron"
+          data-expanded={expanded ? 'true' : undefined}
+          aria-hidden="true"
+        />
+      </button>
+      {expanded && (
+        <div id={panelId} className="fp-nav-section__panel">
+          {section.groups.map((group, index) => (
+            <div key={group.label ?? `group-${index}`} className="fp-nav-group">
+              {group.label && <p className="fp-nav-group__label">{group.label}</p>}
+              <ul className="fp-nav-group__items">
+                {group.items.map((item) => (
+                  <li key={item.path}>
+                    <NavItemLink item={item} onNavigate={onNavigate} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+    </li>
   );
 }
 
 export const Sidebar = memo(function Sidebar() {
   const { t } = useTranslation();
-  const { sidebarCollapsed, toggleSidebar, closeMobileSidebar } = useUIStore();
+  const { sidebarCollapsed, toggleSidebar, closeMobileSidebar, toggleCommandPalette } =
+    useUIStore();
   const { theme, toggleTheme } = useTheme();
-  const { pillars, legacyItems } = usePillarNavigation();
+  const { sections, activeSectionId } = useAppNavigation();
 
-  const handleNavClick = () => {
-    // Close mobile sidebar when navigating
-    if (window.innerWidth < 768) {
-      closeMobileSidebar();
-    }
-  };
+  // Only the section owning the current route starts open — 190 destinations
+  // expanded at once is a wall, not a navigation rail.
+  const [expandedId, setExpandedId] = useState<string | undefined>(activeSectionId);
+
+  // Follow the route when navigation happens from outside the rail (command
+  // palette, deep link, breadcrumb) so the open section always matches.
+  useEffect(() => {
+    if (activeSectionId) setExpandedId(activeSectionId);
+  }, [activeSectionId]);
+
+  const handleToggleSection = useCallback(
+    (id: string) => {
+      // In the icon-only rail there is nowhere to render the section's items,
+      // so picking one expands the rail and opens it rather than doing nothing.
+      if (sidebarCollapsed) {
+        toggleSidebar();
+        setExpandedId(id);
+        return;
+      }
+      setExpandedId((current) => (current === id ? undefined : id));
+    },
+    [sidebarCollapsed, toggleSidebar]
+  );
+
+  const handleNavClick = useCallback(() => {
+    if (window.innerWidth < 768) closeMobileSidebar();
+  }, [closeMobileSidebar]);
 
   return (
     <aside
-      className={`flex flex-col border-r transition-all duration-300 flex-shrink-0 h-full`}
-      style={{
-        width: sidebarCollapsed ? 64 : 240,
-        background: 'var(--bg-surface)',
-        borderColor: 'var(--border-subtle)',
-      }}
+      className="fp-sidebar"
+      data-collapsed={sidebarCollapsed ? 'true' : undefined}
+      aria-label={t('accessibility.skipToNav')}
     >
-      <div
-        className="flex items-center gap-3 px-4 h-14 border-b"
-        style={{ borderColor: 'var(--border-subtle)' }}
-      >
-        {!sidebarCollapsed && (
-          <div className="flex items-center gap-2 flex-1">
-            <div
-              className="w-6 h-6 rounded-md flex items-center justify-center"
-              style={{ background: 'var(--accent-primary)' }}
-            >
-              <span className="text-white text-xs font-bold">FP</span>
-            </div>
-            <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
-              {t('app.name')}
-            </span>
-          </div>
-        )}
-        {sidebarCollapsed && (
-          <div
-            className="w-8 h-8 rounded-md flex items-center justify-center mx-auto"
-            style={{ background: 'var(--accent-primary)' }}
-          >
-            <span className="text-white text-xs font-bold">FP</span>
-          </div>
-        )}
-        {/* Close button on mobile */}
+      <div className="fp-sidebar__brand">
+        <div className="fp-sidebar__mark" aria-hidden="true">
+          FP
+        </div>
+        {!sidebarCollapsed && <span className="fp-sidebar__name">{t('app.name')}</span>}
         <button
-          className="md:hidden p-1 rounded-md focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-          style={{ color: 'var(--text-muted)' }}
+          type="button"
+          className="fp-sidebar__close md:hidden"
           onClick={closeMobileSidebar}
           aria-label={t('accessibility.menuClose')}
         >
-          <X className="w-4 h-4" />
+          <X className="w-4 h-4" aria-hidden="true" />
         </button>
       </div>
 
-      <div className="px-3 py-3">
+      <div className="fp-sidebar__search">
         <button
-          className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-xs transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-          style={{
-            background: 'var(--bg-elevated)',
-            color: 'var(--text-muted)',
-            border: '1px solid var(--border-subtle)',
-          }}
-          onClick={() => {}}
+          type="button"
+          className="fp-sidebar__search-button"
+          onClick={toggleCommandPalette}
           aria-label={t('sidebar.quickSearch')}
         >
-          <Search className="w-3.5 h-3.5" aria-hidden="true" />
-          {!sidebarCollapsed && <span>{t('sidebar.quickSearch')}</span>}
+          <Search className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+          {!sidebarCollapsed && (
+            <>
+              <span className="fp-sidebar__search-label">{t('sidebar.quickSearch')}</span>
+              <kbd className="fp-sidebar__kbd">Ctrl K</kbd>
+            </>
+          )}
         </button>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-2 space-y-4" aria-label="Primary">
-        {pillars.map((pillar) =>
-          pillar.items.length === 0 ? null : (
-            <div key={pillar.id}>
-              {!sidebarCollapsed && (
-                <p
-                  className="px-3 py-1 text-[10px] font-semibold uppercase tracking-widest"
-                  style={{ color: 'var(--text-muted)' }}
-                >
-                  {pillar.label}
-                </p>
-              )}
-              <div className="space-y-0.5">
-                {pillar.items.map((item) => (
-                  <NavItemLink
-                    key={item.path}
-                    item={item}
-                    collapsed={sidebarCollapsed}
-                    onNavigate={handleNavClick}
-                  />
-                ))}
-              </div>
-            </div>
-          )
-        )}
-
-        {/* Legacy / experimental module group — explicitly labeled, never a
-            supported-breadth claim (PRD E1.1 AC4). */}
-        {legacyItems.length > 0 && (
-          <div>
-            {!sidebarCollapsed && (
-              <p
-                className="px-3 py-1 text-[10px] font-semibold uppercase tracking-widest"
-                style={{ color: 'var(--text-muted)' }}
-              >
-                Legacy modules
-              </p>
-            )}
-            <div className="space-y-0.5">
-              {legacyItems.map((item) => (
-                <NavItemLink
-                  key={item.path}
-                  item={item}
-                  collapsed={sidebarCollapsed}
-                  onNavigate={handleNavClick}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+      <nav className="fp-sidebar__nav" aria-label="Primary">
+        <ul className="fp-sidebar__sections">
+          {sections.map((section) => (
+            <SidebarSection
+              key={section.id}
+              section={section}
+              expanded={!sidebarCollapsed && expandedId === section.id}
+              onToggle={handleToggleSection}
+              onNavigate={handleNavClick}
+            />
+          ))}
+        </ul>
       </nav>
 
-      <div
-        className="px-2 py-3 border-t space-y-0.5"
-        style={{ borderColor: 'var(--border-subtle)' }}
-      >
-        <NavItemLink
-          item={{ path: '/plugins', label: 'Plugins', icon: BookOpen }}
-          collapsed={sidebarCollapsed}
-          onNavigate={handleNavClick}
-        />
-        <NavItemLink
-          item={{ path: '/docs/api', label: 'API Reference', icon: BookOpen }}
-          collapsed={sidebarCollapsed}
-          onNavigate={handleNavClick}
-        />
-        <NavItemLink
-          item={{ path: '/help', label: t('nav.help'), icon: HelpCircle }}
-          collapsed={sidebarCollapsed}
-          onNavigate={handleNavClick}
-        />
+      <div className="fp-sidebar__footer">
+        <NavLink to="/help" onClick={handleNavClick} className="fp-nav-item fp-nav-item--icon">
+          <HelpCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+          {!sidebarCollapsed && <span>{t('nav.help')}</span>}
+        </NavLink>
         <button
-          className="flex items-center gap-2.5 w-full px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-          style={{ color: 'var(--text-secondary)' }}
+          type="button"
+          className="fp-nav-item fp-nav-item--icon"
           onClick={toggleTheme}
           aria-label={theme === 'dark' ? t('sidebar.lightMode') : t('sidebar.darkMode')}
         >
-          <span className="text-base" aria-hidden="true">
+          <span className="text-base leading-none" aria-hidden="true">
             {theme === 'dark' ? '☀️' : '🌙'}
           </span>
           {!sidebarCollapsed && (
@@ -194,15 +180,15 @@ export const Sidebar = memo(function Sidebar() {
           )}
         </button>
         <button
-          className="hidden md:flex items-center gap-2.5 w-full px-3 py-2 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-          style={{ color: 'var(--text-secondary)' }}
+          type="button"
+          className="fp-nav-item fp-nav-item--icon hidden md:flex"
           onClick={toggleSidebar}
           aria-label={sidebarCollapsed ? t('accessibility.expand') : t('sidebar.collapse')}
         >
           {sidebarCollapsed ? (
-            <ChevronRight className="w-4 h-4" aria-hidden="true" />
+            <ChevronRight className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
           ) : (
-            <ChevronLeft className="w-4 h-4" aria-hidden="true" />
+            <ChevronLeft className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
           )}
           {!sidebarCollapsed && <span>{t('sidebar.collapse')}</span>}
         </button>

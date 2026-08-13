@@ -5,6 +5,7 @@
  * revenue per student and faculty-to-student ratio.
  */
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -95,9 +96,12 @@ export default function EnrollmentRetentionPage() {
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center" role="main" aria-label="Enrollment - No Data">
-        <GraduationCap className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <GraduationCap
+          className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4"
+          aria-hidden="true"
+        />
         <h2 className="text-xl font-semibold mb-2">No Enrollment Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import GL data to view enrollment & retention metrics.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -108,12 +112,10 @@ export default function EnrollmentRetentionPage() {
   return (
     <main className="p-6 space-y-6 animate-fade-in" role="main" aria-label="Enrollment & Retention">
       <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Enrollment & Retention</h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Enrollment, retention & revenue-per-student analytics
-          </p>
-        </div>
+        <PageHeader
+          title={'Enrollment & Retention'}
+          purpose={'Enrollment, retention & revenue-per-student analytics'}
+        />
         <Button variant="outline" onClick={() => navigate('/education')}>
           Back to Education
         </Button>
@@ -148,15 +150,15 @@ export default function EnrollmentRetentionPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-slate-400">Total Students</span>
+            <span className="text-sm text-[var(--text-muted)]">Total Students</span>
             <span className="font-mono">{formatNumber(input.totalStudents)}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-slate-400">Tuition Revenue</span>
+            <span className="text-sm text-[var(--text-muted)]">Tuition Revenue</span>
             <span className="font-mono">{formatMoney(input.tuitionRevenue)}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-slate-400">Faculty Count</span>
+            <span className="text-sm text-[var(--text-muted)]">Faculty Count</span>
             <span className="font-mono">{formatNumber(input.facultyCount)}</span>
           </div>
         </CardContent>

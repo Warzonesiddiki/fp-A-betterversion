@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useTour } from '@/hooks/useTour';
@@ -61,6 +62,7 @@ export function computeLoanSegments(
 }
 
 export default function LoanLossPage() {
+  const fmtCurrency = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
   const { runTour } = useTour();
@@ -128,7 +130,7 @@ export default function LoanLossPage() {
           <Percent className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Loan Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your loan portfolio and GL data to calculate credit loss reserves.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -152,7 +154,7 @@ export default function LoanLossPage() {
               Start Guide
             </Button>
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             CECL Methodology & Credit Quality Monitoring
           </p>
         </div>
@@ -219,11 +221,7 @@ export default function LoanLossPage() {
                     border: '1px solid #1e293b',
                     borderRadius: '8px',
                   }}
-                  formatter={(value) =>
-                    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
-                      Number(value)
-                    )
-                  }
+                  formatter={(value) => fmtCurrency.custom()(Number(value))}
                 />
                 <Legend />
                 <Bar

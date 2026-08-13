@@ -13,6 +13,7 @@ import {
   type ToleranceSettings,
 } from '@/engines/ICMatchingEngine';
 import type { GLEntry } from '@/types';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 // =============================================================================
 // IC MATCHING PANEL
@@ -37,6 +38,7 @@ export function ICMatchingPanel({
   onEliminationsGenerated,
   className,
 }: ICMatchingPanelProps) {
+  const fmt = useCurrencyFormatter();
   const [engine] = useState(() => new ICMatchingEngine());
   const [tolerance, setTolerance] = useState<ToleranceSettings>(engine.getTolerance());
   const [matches, setMatches] = useState<MatchPair[]>([]);
@@ -229,13 +231,13 @@ export function ICMatchingPanel({
                     <td className="p-2">{match.target.entityName}</td>
                     <td className="p-2 font-mono text-xs">{match.source.accountCode}</td>
                     <td className="p-2 text-right font-mono">
-                      {formatCurrency(match.source.amount)}
+                      {fmt.currency0(match.source.amount)}
                     </td>
                     <td className="p-2 text-right font-mono">
-                      {formatCurrency(match.target.amount)}
+                      {fmt.currency0(match.target.amount)}
                     </td>
                     <td className="p-2 text-right font-mono">
-                      {formatCurrency(match.amountDifference)}
+                      {fmt.currency0(match.amountDifference)}
                     </td>
                     <td className="p-2 text-right">{formatPercent(match.confidence * 100, 0)}</td>
                     <td className="p-2 text-xs capitalize">{match.method.replace('_', ' ')}</td>
@@ -359,6 +361,7 @@ function UnmatchedPanel({
   onSelect: (t: ICTransaction | null) => void;
   entityNames: Record<string, string>;
 }) {
+  const fmt = useCurrencyFormatter();
   return (
     <Card>
       <CardHeader>
@@ -397,7 +400,7 @@ function UnmatchedPanel({
                 >
                   <td className="p-2">{entityNames[t.entityId] ?? t.entityId}</td>
                   <td className="p-2 font-mono text-xs">{t.accountCode}</td>
-                  <td className="p-2 text-right font-mono">{formatCurrency(t.amount)}</td>
+                  <td className="p-2 text-right font-mono">{fmt.currency0(t.amount)}</td>
                   <td className="p-2 text-xs">{t.date}</td>
                 </tr>
               ))}
@@ -414,17 +417,4 @@ function UnmatchedPanel({
       </CardContent>
     </Card>
   );
-}
-
-// =============================================================================
-// HELPERS
-// =============================================================================
-
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
 }

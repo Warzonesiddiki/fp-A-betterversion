@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useState } from 'react';
 import { Sun, Wind, Droplets, Leaf, Battery, Download, LayoutGrid, FileText } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -131,14 +132,10 @@ export default function RenewableEnergyPage() {
     <div className="p-6 space-y-6 animate-in slide-in-from-bottom-2 duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Renewable Energy
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Performance analytics for zero-emission assets and portfolio diversification.
-          </p>
-        </div>
+        <PageHeader
+          title="Renewable Energy"
+          purpose="Performance analytics for zero-emission assets and portfolio diversification."
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="outline" size="sm" className="h-10">

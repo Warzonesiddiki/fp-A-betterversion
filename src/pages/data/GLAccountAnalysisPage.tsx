@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -9,17 +10,9 @@ import { Card, CardContent } from '@/components/ui/Card';
 
 import { BarChart3, Search } from 'lucide-react';
 import { computeRunningBalance, getAccountSummary } from '@/utils/glAnalysis';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 export default function GLAccountAnalysisPage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -93,7 +86,7 @@ export default function GLAccountAnalysisPage() {
           <BarChart3 className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No GL Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import General Ledger data first to analyze individual accounts.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -105,15 +98,17 @@ export default function GLAccountAnalysisPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold">Account Analysis</h1>
-            <button
-              onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
-              aria-label="Help"
-            ></button>
-          </div>
-          <p className="text-sm text-slate-400 mt-1">
+          <PageHeader
+            title="Account Analysis"
+            actions={
+              <button
+                onClick={() => setHelpOpen(true)}
+                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                aria-label="Help"
+              ></button>
+            }
+          />
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {entries.length.toLocaleString()} total entries across {accounts.length} accounts
           </p>
         </div>
@@ -123,7 +118,7 @@ export default function GLAccountAnalysisPage() {
         <CardContent className="p-4">
           <label
             htmlFor="select-account"
-            className="block text-xs font-medium text-slate-400 mb-1.5"
+            className="block text-xs font-medium text-[var(--text-muted)] mb-1.5"
           >
             Select Account
           </label>
@@ -169,7 +164,7 @@ export default function GLAccountAnalysisPage() {
       {!isLoading && selectedAccountId && !accountStats && (
         <div className="p-12 text-center max-w-md mx-auto">
           <h2 className="text-lg font-semibold mb-2">No Transactions Found</h2>
-          <p className="text-slate-400">
+          <p className="text-[var(--text-muted)]">
             The selected account has no transactions in the current data set.
           </p>
         </div>
@@ -180,33 +175,33 @@ export default function GLAccountAnalysisPage() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <Card>
               <CardContent className="p-4 text-center">
-                <div className="text-xs text-slate-400 mb-1">Total Debits</div>
+                <div className="text-xs text-[var(--text-muted)] mb-1">Total Debits</div>
                 <div className="text-lg font-bold tabular-nums text-blue-400">
-                  {formatCurrency(accountStats.totalDebit)}
+                  {fmt.currency0(accountStats.totalDebit)}
                 </div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <div className="text-xs text-slate-400 mb-1">Total Credits</div>
+                <div className="text-xs text-[var(--text-muted)] mb-1">Total Credits</div>
                 <div className="text-lg font-bold tabular-nums text-green-400">
-                  {formatCurrency(accountStats.totalCredit)}
+                  {fmt.currency0(accountStats.totalCredit)}
                 </div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <div className="text-xs text-slate-400 mb-1">Net Change</div>
+                <div className="text-xs text-[var(--text-muted)] mb-1">Net Change</div>
                 <div
                   className={`text-lg font-bold tabular-nums ${accountStats.netChange >= 0 ? 'text-green-400' : 'text-red-400'}`}
                 >
-                  {formatCurrency(accountStats.netChange)}
+                  {fmt.currency0(accountStats.netChange)}
                 </div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <div className="text-xs text-slate-400 mb-1">Transactions</div>
+                <div className="text-xs text-[var(--text-muted)] mb-1">Transactions</div>
                 <div className="text-lg font-bold tabular-nums">
                   {accountStats.transactionCount.toLocaleString()}
                 </div>
@@ -214,9 +209,9 @@ export default function GLAccountAnalysisPage() {
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <div className="text-xs text-slate-400 mb-1">Avg Monthly</div>
+                <div className="text-xs text-[var(--text-muted)] mb-1">Avg Monthly</div>
                 <div className="text-lg font-bold tabular-nums">
-                  {formatCurrency(accountStats.avgPerMonth)}
+                  {fmt.currency0(accountStats.avgPerMonth)}
                 </div>
               </CardContent>
             </Card>
@@ -234,7 +229,9 @@ export default function GLAccountAnalysisPage() {
                     const isPositive = m.net >= 0;
                     return (
                       <div key={m.month} className="flex items-center gap-3 text-sm">
-                        <span className="w-16 text-xs text-slate-400 shrink-0">{m.month}</span>
+                        <span className="w-16 text-xs text-[var(--text-muted)] shrink-0">
+                          {m.month}
+                        </span>
                         <div className="flex-1 flex items-center gap-2">
                           <div className="flex-1 bg-slate-800 rounded-full h-5 overflow-hidden flex">
                             {!isPositive && (
@@ -256,7 +253,7 @@ export default function GLAccountAnalysisPage() {
                           <span
                             className={`w-24 text-right tabular-nums font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}
                           >
-                            {formatCurrency(m.net)}
+                            {fmt.currency0(m.net)}
                           </span>
                         </div>
                       </div>
@@ -292,7 +289,7 @@ export default function GLAccountAnalysisPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm" aria-label="Running balance">
                     <thead>
-                      <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                      <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                         <th className="px-4 py-3">Month</th>
                         <th className="px-4 py-3 text-right">Net</th>
                         <th className="px-4 py-3 text-right">Running Balance</th>
@@ -305,10 +302,10 @@ export default function GLAccountAnalysisPage() {
                           <td
                             className={`px-4 py-2 text-right tabular-nums font-medium ${r.net >= 0 ? 'text-green-400' : 'text-red-400'}`}
                           >
-                            {formatCurrency(r.net)}
+                            {fmt.currency0(r.net)}
                           </td>
                           <td className="px-4 py-2 text-right tabular-nums font-semibold">
-                            {formatCurrency(r.runningBalance)}
+                            {fmt.currency0(r.runningBalance)}
                           </td>
                         </tr>
                       ))}
@@ -327,7 +324,7 @@ export default function GLAccountAnalysisPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm" aria-label="GL account analysis">
                   <thead>
-                    <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                    <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                       <th scope="col" className="px-4 py-3">
                         Month
                       </th>
@@ -350,15 +347,15 @@ export default function GLAccountAnalysisPage() {
                       <tr key={m.month} className="hover:bg-slate-900/50">
                         <td className="px-4 py-3 text-xs text-slate-400">{m.month}</td>
                         <td className="px-4 py-3 text-right tabular-nums text-blue-400">
-                          {formatCurrency(m.debit)}
+                          {fmt.currency0(m.debit)}
                         </td>
                         <td className="px-4 py-3 text-right tabular-nums text-green-400">
-                          {formatCurrency(m.credit)}
+                          {fmt.currency0(m.credit)}
                         </td>
                         <td
                           className={`px-4 py-3 text-right tabular-nums font-medium ${m.net >= 0 ? 'text-green-400' : 'text-red-400'}`}
                         >
-                          {formatCurrency(m.net)}
+                          {fmt.currency0(m.net)}
                         </td>
                         <td className="px-4 py-3 text-right tabular-nums text-slate-300">
                           {m.transactionCount.toLocaleString()}

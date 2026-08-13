@@ -182,7 +182,7 @@ function AuditDiffBase({
   const newWords = newStr.split(/\s+/).filter(Boolean).slice(0, maxWords);
 
   if (prevWords.length === 0 && newWords.length === 0) {
-    return <span className="text-gray-400 italic text-sm">(empty)</span>;
+    return <span className="text-[var(--text-muted)] italic text-sm">(empty)</span>;
   }
   if (prevWords.length === 0) {
     return (

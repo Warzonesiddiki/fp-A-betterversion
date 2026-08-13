@@ -179,7 +179,7 @@ export function LeaseAccountingPage() {
           <FileSignature className="h-10 w-10 text-red-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">Failed to load data</h2>
-        <p className="text-slate-400 mb-6">{importError}</p>
+        <p className="text-[var(--text-muted)] mb-6">{importError}</p>
         <Button onClick={() => window.location.reload()}>Retry</Button>
       </div>
     );
@@ -188,9 +188,9 @@ export function LeaseAccountingPage() {
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center" role="main" aria-label="Lease Accounting - No Data">
-        <FileSignature className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <FileSignature className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Lease Accounting Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view lease accounting.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view lease accounting.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
     );
@@ -214,7 +214,7 @@ export function LeaseAccountingPage() {
               <HelpCircle className="h-5 w-5" />
             </button>
           </div>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {entries.length.toLocaleString()} GL entries &middot; {stats.leaseEntryCount}{' '}
             lease-related
           </p>

@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { cn } from '@/utils/cn';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -23,14 +24,6 @@ export interface AllocationJournalTableProps {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-  }).format(value);
-}
-
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -39,6 +32,7 @@ export const AllocationJournalTable = memo(function AllocationJournalTable({
   entries,
   className,
 }: AllocationJournalTableProps) {
+  const fmt = useCurrencyFormatter();
   return (
     <div
       role="region"
@@ -93,10 +87,10 @@ export const AllocationJournalTable = memo(function AllocationJournalTable({
                 </div>
               </td>
               <td className="px-3 py-1.5 text-xs text-right text-green-400 font-medium">
-                {formatCurrency(je.amount)}
+                {fmt.currency(je.amount)}
               </td>
               <td className="px-3 py-1.5 text-xs text-right text-red-400 font-medium">
-                {formatCurrency(je.amount)}
+                {fmt.currency(je.amount)}
               </td>
               <td className="px-3 py-1.5 text-[10px] text-[var(--text-secondary)] max-w-[200px] truncate">
                 {je.memo}

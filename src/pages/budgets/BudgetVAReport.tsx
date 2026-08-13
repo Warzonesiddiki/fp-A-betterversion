@@ -31,17 +31,14 @@ import {
 } from 'lucide-react';
 import { sumMoney, subtractMoney, roundTo, toDecimal } from '@/utils/money';
 import { formatPercent as formatPercentDisplay } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /** Local formatPercent delegates to financialFormatting (GAP-1 F-0006). */
 function formatPercent(n: number): string {
   return formatPercentDisplay(n);
 }
 
 export default function BudgetVAReport() {
+  const fmt = useCurrencyFormatter();
   const { budgets, lineItems } = useBudgetStore();
   const { entries } = useGLStore();
   const [selectedBudgetId, setSelectedBudgetId] = useState<string>('');
@@ -171,12 +168,12 @@ export default function BudgetVAReport() {
     {
       key: 'budget',
       header: 'Budget',
-      render: (value: unknown) => formatCurrency(Number(value ?? 0)),
+      render: (value: unknown) => fmt.currency(Number(value ?? 0)),
     },
     {
       key: 'actual',
       header: 'Actual',
-      render: (value: unknown) => formatCurrency(Number(value ?? 0)),
+      render: (value: unknown) => fmt.currency(Number(value ?? 0)),
     },
     {
       key: 'variance',
@@ -184,7 +181,7 @@ export default function BudgetVAReport() {
       render: (value: unknown) => {
         const val = Number(value ?? 0);
         return (
-          <span className={val > 0 ? 'text-red-400' : 'text-green-400'}>{formatCurrency(val)}</span>
+          <span className={val > 0 ? 'text-red-400' : 'text-green-400'}>{fmt.currency(val)}</span>
         );
       },
     },
@@ -217,7 +214,9 @@ export default function BudgetVAReport() {
             <FileBarChart className="h-6 w-6 text-blue-400" />
             Budget vs. Actuals
           </h1>
-          <p className="text-slate-400 text-sm mt-1">Analyze performance against approved plans.</p>
+          <p className="text-[var(--text-muted)] text-sm mt-1">
+            Analyze performance against approved plans.
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <Select
@@ -263,7 +262,7 @@ export default function BudgetVAReport() {
                   <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">
                     Total Budget
                   </p>
-                  <p className="text-xl font-bold text-white">{formatCurrency(totals.budget)}</p>
+                  <p className="text-xl font-bold text-white">{fmt.currency(totals.budget)}</p>
                 </div>
               </CardContent>
             </Card>
@@ -276,7 +275,7 @@ export default function BudgetVAReport() {
                   <p className="text-xs text-slate-400 uppercase font-bold tracking-wider">
                     Total Actual
                   </p>
-                  <p className="text-xl font-bold text-white">{formatCurrency(totals.actual)}</p>
+                  <p className="text-xl font-bold text-white">{fmt.currency(totals.actual)}</p>
                 </div>
               </CardContent>
             </Card>
@@ -298,7 +297,7 @@ export default function BudgetVAReport() {
                   <p
                     className={`text-xl font-bold ${totals.variance > 0 ? 'text-red-400' : 'text-green-400'}`}
                   >
-                    {formatCurrency(totals.variance)}
+                    {fmt.currency(totals.variance)}
                   </p>
                 </div>
               </CardContent>

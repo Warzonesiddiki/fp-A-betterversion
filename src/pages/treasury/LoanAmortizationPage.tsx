@@ -10,11 +10,13 @@
  * kill-switch locally; on a hosted SaaS the same flag gates a % canary rollout.
  */
 import { useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { LoanAmortizationEngine } from '@/engines/LoanAmortizationEngine';
 import { FEATURE_FLAGS, isFeatureActive, type FeatureFlagKey } from '@/utils/feature-flags';
 import { Button } from '@/components/ui/Button';
 import { sumMoney, roundTo } from '@/utils/money';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 const FLAG: FeatureFlagKey = 'treasury.loan-amortization';
 
@@ -32,16 +34,6 @@ function getSessionId(): string {
     return 'fallback';
   }
 }
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(n);
-}
-
 interface FormState {
   principal: string;
   annualRatePct: string;
@@ -73,6 +65,7 @@ export function computeLoanScheduleTotals(
 }
 
 export default function LoanAmortizationPage() {
+  const fmt = useCurrencyFormatter();
   const [form, setForm] = useState<FormState>(DEFAULTS);
   const [schedule, setSchedule] = useState<ReturnType<
     typeof LoanAmortizationEngine.schedule
@@ -89,7 +82,7 @@ export default function LoanAmortizationPage() {
             <CardTitle>Loan Amortization</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-[var(--text-muted)]">
               This tool is behind a feature flag ({FLAG}, rollout{' '}
               {FEATURE_FLAGS[FLAG].rolloutPercentage}%) and is not enabled for your session.
             </p>
@@ -128,12 +121,10 @@ export default function LoanAmortizationPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Loan Amortization</h1>
-        <p className="text-sm text-slate-400 mt-1">
-          Exact-decimal amortization schedule — the loan pays off to $0.00.
-        </p>
-      </div>
+      <PageHeader
+        title="Loan Amortization"
+        purpose="Exact-decimal amortization schedule — the loan pays off to $0.00."
+      />
 
       <Card>
         <CardHeader>
@@ -196,7 +187,7 @@ export default function LoanAmortizationPage() {
                 <CardTitle>Monthly payment</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xl font-semibold">{formatCurrency(schedule.monthlyPayment)}</p>
+                <p className="text-xl font-semibold">{fmt.currency(schedule.monthlyPayment)}</p>
               </CardContent>
             </Card>
             <Card>
@@ -205,7 +196,7 @@ export default function LoanAmortizationPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-xl font-semibold" data-testid="total-interest">
-                  {formatCurrency(totalInterest)}
+                  {fmt.currency(totalInterest)}
                 </p>
               </CardContent>
             </Card>
@@ -214,7 +205,7 @@ export default function LoanAmortizationPage() {
                 <CardTitle>Principal repaid</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-xl font-semibold">{formatCurrency(totalPrincipal)}</p>
+                <p className="text-xl font-semibold">{fmt.currency(totalPrincipal)}</p>
               </CardContent>
             </Card>
           </div>
@@ -230,7 +221,7 @@ export default function LoanAmortizationPage() {
                 data-testid="amortization-table"
               >
                 <thead>
-                  <tr className="text-left text-slate-400 border-b border-slate-700">
+                  <tr className="text-left text-[var(--text-muted)] border-b border-slate-700">
                     <th className="py-2 pr-4">Month</th>
                     <th className="py-2 pr-4">Payment</th>
                     <th className="py-2 pr-4">Principal</th>
@@ -242,10 +233,10 @@ export default function LoanAmortizationPage() {
                   {schedule.schedule.map((row) => (
                     <tr key={row.month} className="border-b border-slate-800">
                       <td className="py-1.5 pr-4">{row.month}</td>
-                      <td className="py-1.5 pr-4">{formatCurrency(row.payment)}</td>
-                      <td className="py-1.5 pr-4">{formatCurrency(row.principal)}</td>
-                      <td className="py-1.5 pr-4">{formatCurrency(row.interest)}</td>
-                      <td className="py-1.5 pr-4">{formatCurrency(row.balance)}</td>
+                      <td className="py-1.5 pr-4">{fmt.currency(row.payment)}</td>
+                      <td className="py-1.5 pr-4">{fmt.currency(row.principal)}</td>
+                      <td className="py-1.5 pr-4">{fmt.currency(row.interest)}</td>
+                      <td className="py-1.5 pr-4">{fmt.currency(row.balance)}</td>
                     </tr>
                   ))}
                 </tbody>

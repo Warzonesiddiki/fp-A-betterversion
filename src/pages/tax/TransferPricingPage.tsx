@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/Button';
@@ -11,16 +12,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Toolti
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 // demo defaults — replaced by real data when transfer-pricing transactions come from tax imports
 const mockTransactions = [
   {
@@ -99,6 +91,7 @@ const methodDistribution = [
 ];
 
 export default function TransferPricingPage() {
+  const fmt = useCurrencyFormatter();
   const _navigate = useNavigate();
   const [methodFilter, setMethodFilter] = useState<string>('all');
 
@@ -125,7 +118,7 @@ export default function TransferPricingPage() {
         key: 'amount',
         header: 'Amount',
         align: 'right',
-        render: (v) => formatCurrency(v as number),
+        render: (v) => fmt.currency0(v as number),
       },
       { key: 'method', header: 'Method', width: '80px' },
       {
@@ -163,7 +156,7 @@ export default function TransferPricingPage() {
         },
       },
     ],
-    []
+    [fmt]
   );
 
   const handleExportPDF = () => {
@@ -175,7 +168,7 @@ export default function TransferPricingPage() {
           t.from,
           t.to,
           t.service,
-          formatCurrency(t.amount),
+          fmt.currency0(t.amount),
           t.method,
           t.status,
         ]),
@@ -205,27 +198,25 @@ export default function TransferPricingPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Transfer Pricing</h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Intercompany transaction analysis and compliance
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button size="sm" variant="ghost" onClick={handleExportPDF}>
-            <FileText className="h-3.5 w-3.5 mr-1.5" />
-            PDF
-          </Button>
-          <Button size="sm" variant="ghost" onClick={handleExportExcel}>
-            <TableIcon className="h-3.5 w-3.5 mr-1.5" />
-            Excel
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Transfer Pricing"
+        purpose="Intercompany transaction analysis and compliance"
+        actions={
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={handleExportPDF}>
+              <FileText className="h-3.5 w-3.5 mr-1.5" />
+              PDF
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleExportExcel}>
+              <TableIcon className="h-3.5 w-3.5 mr-1.5" />
+              Excel
+            </Button>
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-4 gap-4">
-        <KPIValue label="Total Intercompany" value={formatCurrency(totalIntercompany)} />
+        <KPIValue label="Total Intercompany" value={fmt.currency0(totalIntercompany)} />
         <KPIValue label="Transactions" value={String(mockTransactions.length)} />
         <KPIValue
           label="Compliance Rate"
@@ -260,7 +251,7 @@ export default function TransferPricingPage() {
               <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${formatCompact(v)}`} />
               <Tooltip
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                formatter={(v) => formatCurrency(Number(v))}
+                formatter={(v) => fmt.currency0(Number(v))}
               />
               <Bar dataKey="amount" fill="#3b82f6" name="Total Amount" />
             </BarChart>

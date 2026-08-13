@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -32,16 +33,7 @@ import {
 import { GaugeChart } from '@/components/charts/GaugeChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface ContractRow {
   contract: string;
   total: number;
@@ -70,6 +62,7 @@ export function computeRevRecRecognized(revenue: number, deferred: number): numb
 }
 
 export default function RevRecDashboard() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -167,9 +160,9 @@ export default function RevRecDashboard() {
         headers: ['Contract', 'Total', 'Recognized', 'Remaining', 'Next Recognition', 'Method'],
         rows: data.contracts.map((c) => [
           c.contract,
-          formatCurrency(c.total),
-          formatCurrency(c.recognized),
-          formatCurrency(c.remaining),
+          fmt.currency0(c.total),
+          fmt.currency0(c.recognized),
+          fmt.currency0(c.remaining),
           c.nextRecognition,
           c.method,
         ]),
@@ -185,9 +178,9 @@ export default function RevRecDashboard() {
         headers: ['Contract', 'Total', 'Recognized', 'Remaining', 'Next Recognition', 'Method'],
         rows: data.contracts.map((c) => [
           c.contract,
-          formatCurrency(c.total),
-          formatCurrency(c.recognized),
-          formatCurrency(c.remaining),
+          fmt.currency0(c.total),
+          fmt.currency0(c.recognized),
+          fmt.currency0(c.remaining),
           c.nextRecognition,
           c.method,
         ]),
@@ -202,14 +195,14 @@ export default function RevRecDashboard() {
       key: 'total',
       header: 'Total',
       align: 'right',
-      render: (_, r) => formatCurrency(r.total),
+      render: (_, r) => fmt.currency0(r.total),
       sortable: true,
     },
     {
       key: 'recognized',
       header: 'Recognized',
       align: 'right',
-      render: (_, r) => formatCurrency(r.recognized),
+      render: (_, r) => fmt.currency0(r.recognized),
       sortable: true,
     },
     {
@@ -218,7 +211,7 @@ export default function RevRecDashboard() {
       align: 'right',
       render: (_, r) => (
         <span className={r.remaining > 0 ? 'text-yellow-400' : 'text-green-400'}>
-          {formatCurrency(r.remaining)}
+          {fmt.currency0(r.remaining)}
         </span>
       ),
       sortable: true,
@@ -240,42 +233,44 @@ export default function RevRecDashboard() {
   if (!data)
     return (
       <div className="p-12 text-center">
-        <BarChart3 className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <BarChart3 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Revenue Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data with revenue accounts.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data with revenue accounts.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Revenue Recognition</h1>
-        <div className="flex gap-2">
-          <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
-            <FileText className="h-3.5 w-3.5 mr-1.5" />
-            PDF
-          </Button>
-          <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
-            <TableIcon className="h-3.5 w-3.5 mr-1.5" />
-            Excel
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Revenue Recognition"
+        actions={
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
+              <FileText className="h-3.5 w-3.5 mr-1.5" />
+              PDF
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
+              <TableIcon className="h-3.5 w-3.5 mr-1.5" />
+              Excel
+            </Button>
+          </div>
+        }
+      />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue
           label="Total Revenue"
-          value={formatCurrency(data.revenue)}
+          value={fmt.currency0(data.revenue)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Recognized YTD"
-          value={formatCurrency(data.recognized)}
+          value={fmt.currency0(data.recognized)}
           icon={<CheckCircle className="h-4 w-4" />}
         />
         <KPIValue
           label="Deferred"
-          value={formatCurrency(data.deferred)}
+          value={fmt.currency0(data.deferred)}
           icon={<Clock className="h-4 w-4" />}
         />
         <KPIValue
@@ -315,7 +310,7 @@ export default function RevRecDashboard() {
                   tickFormatter={(v) => `$${formatCompact(v)}`}
                 />
                 <Tooltip
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Legend />
@@ -361,7 +356,7 @@ export default function RevRecDashboard() {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
               </PieChart>

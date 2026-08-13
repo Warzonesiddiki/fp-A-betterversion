@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { reportingCurrency } from '@/store/financialContextStore';
+import { currencyFormatter } from '@/utils/financialFormatting';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useForecastStore } from '@/store/forecastStore';
@@ -13,12 +16,7 @@ import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
 import { formatRelativeTimeLegacy as formatRelativeTime } from '@/engines/temporal';
 
 function _formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
+  return currencyFormatter(reportingCurrency(), { decimals: 0 })(n);
 }
 
 export default function ForecastListPage() {
@@ -57,7 +55,7 @@ export default function ForecastListPage() {
           <TrendingUp className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Forecasts Yet</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Create a forecast to predict future financial performance based on your data.
         </p>
         <Button onClick={() => navigate('/forecasts/create')}>
@@ -72,15 +70,17 @@ export default function ForecastListPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold">Forecasts</h1>
-            <button
-              onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
-              aria-label="Help"
-            ></button>
-          </div>
-          <p className="text-sm text-slate-400 mt-1">{forecasts.length} forecasts</p>
+          <PageHeader
+            title="Forecasts"
+            actions={
+              <button
+                onClick={() => setHelpOpen(true)}
+                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                aria-label="Help"
+              ></button>
+            }
+          />
+          <p className="text-sm text-[var(--text-muted)] mt-1">{forecasts.length} forecasts</p>
         </div>
         <Button onClick={() => navigate('/forecasts/create')}>
           <Plus className="h-4 w-4 mr-2" />
@@ -111,7 +111,7 @@ export default function ForecastListPage() {
                 Forecast scenarios showing name, type, horizon, base scenario, and status
               </caption>
               <thead>
-                <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                   <th scope="col" className="px-4 py-3">
                     Name
                   </th>

@@ -3,6 +3,7 @@ import { Check, X, Pencil, ArrowRight, TrendingUp } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { formatPercent } from '@/utils/financialFormatting';
 import type { AllocationResult, AllocationEntry } from '@/engines/AllocationEngine';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -17,19 +18,6 @@ export interface AllocationPreviewProps {
   onModify?: () => void;
   className?: string;
 }
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-  }).format(value);
-}
-
 // formatPercent imported from @/utils/financialFormatting
 
 // ---------------------------------------------------------------------------
@@ -41,6 +29,7 @@ const AllocationRow: React.FC<{
   sourceAmount: number;
   index: number;
 }> = ({ entry, sourceAmount, index }) => {
+  const fmt = useCurrencyFormatter();
   const effectivePct = sourceAmount > 0 ? (entry.amount / sourceAmount) * 100 : 0;
 
   return (
@@ -55,7 +44,7 @@ const AllocationRow: React.FC<{
         {formatPercent(entry.percentage)}
       </td>
       <td className="px-3 py-2 text-xs text-right text-[var(--text-primary)] font-medium">
-        {formatCurrency(entry.amount)}
+        {fmt.currency(entry.amount)}
       </td>
       <td className="px-3 py-2 text-xs text-right text-[var(--text-secondary)]">
         {formatPercent(effectivePct)}
@@ -88,6 +77,7 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
   onModify,
   className,
 }) => {
+  const fmt = useCurrencyFormatter();
   const [accepted, setAccepted] = useState(false);
 
   const handleAccept = useCallback(() => {
@@ -122,7 +112,7 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
         <div className="flex flex-col gap-1 rounded-md border border-[var(--border-subtle)] p-3">
           <span className="text-[10px] text-slate-500 uppercase tracking-wide">Source</span>
           <span className="text-sm font-semibold text-[var(--text-primary)]">
-            {formatCurrency(sourceAmount)}
+            {fmt.currency(sourceAmount)}
           </span>
           <span className="text-[10px] text-slate-500">{sourceLabel}</span>
         </div>
@@ -134,7 +124,7 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
         <div className="flex flex-col gap-1 rounded-md border border-[var(--border-subtle)] p-3">
           <span className="text-[10px] text-slate-500 uppercase tracking-wide">Allocated</span>
           <span className="text-sm font-semibold text-blue-400">
-            {formatCurrency(result.totalAllocated)}
+            {fmt.currency(result.totalAllocated)}
           </span>
           <span className="text-[10px] text-slate-500">
             {result.allocations.length} target{result.allocations.length !== 1 ? 's' : ''}
@@ -152,7 +142,7 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
               : 'bg-red-500/10 border border-red-500/30 text-red-400'
           )}
         >
-          {remaining > 0 ? 'Remaining' : 'Over-allocated'}: {formatCurrency(Math.abs(remaining))}
+          {remaining > 0 ? 'Remaining' : 'Over-allocated'}: {fmt.currency(Math.abs(remaining))}
         </div>
       )}
 
@@ -213,7 +203,7 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
                   {formatPercent(result.allocations.reduce((s, e) => s + e.percentage, 0))}
                 </td>
                 <td className="px-3 py-2 text-xs text-right font-semibold text-blue-400">
-                  {formatCurrency(result.totalAllocated)}
+                  {fmt.currency(result.totalAllocated)}
                 </td>
                 <td className="px-3 py-2 text-xs text-right font-semibold text-[var(--text-primary)]">
                   {sourceAmount > 0
@@ -237,13 +227,13 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
             {result.allocations.map((entry) => (
               <div key={entry.target} className="flex justify-between py-0.5">
                 <span className="text-[var(--text-secondary)]">DR {entry.target}</span>
-                <span className="text-[var(--text-primary)]">{formatCurrency(entry.amount)}</span>
+                <span className="text-[var(--text-primary)]">{fmt.currency(entry.amount)}</span>
               </div>
             ))}
             <div className="border-t border-[var(--border-subtle)] mt-1 pt-1 flex justify-between">
               <span className="text-[var(--text-secondary)]">CR {sourceLabel}</span>
               <span className="text-[var(--text-primary)]">
-                {formatCurrency(result.totalAllocated)}
+                {fmt.currency(result.totalAllocated)}
               </span>
             </div>
           </div>

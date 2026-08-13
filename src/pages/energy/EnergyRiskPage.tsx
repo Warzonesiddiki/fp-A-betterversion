@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useState } from 'react';
 import { ShieldAlert, Activity, Download, Flame, ArrowRightLeft } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -130,14 +131,10 @@ export default function EnergyRiskPage() {
     <div className="p-6 space-y-6 animate-in zoom-in-95 duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Energy Risk Management
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Exposure monitoring, hedging strategies, and market volatility stress testing.
-          </p>
-        </div>
+        <PageHeader
+          title="Energy Risk Management"
+          purpose="Exposure monitoring, hedging strategies, and market volatility stress testing."
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="default" size="sm" className="h-10 bg-red-600 hover:bg-red-700">

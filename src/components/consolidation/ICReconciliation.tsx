@@ -11,6 +11,7 @@ import type {
   ReconciliationLine,
   ToleranceSettings,
 } from '@/engines/ICMatchingEngine';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 // =============================================================================
 // GAP-1 (F-0006) — exact-decimal IC reconciliation totals
@@ -85,6 +86,7 @@ export function ICReconciliation({
   onAdjustTolerance,
   className,
 }: ICReconciliationProps) {
+  const fmt = useCurrencyFormatter();
   const [tolerance, setTolerance] = useState<ToleranceSettings>(
     externalTolerance ?? { amountTolerance: 100, percentageTolerance: 5, dateToleranceDays: 5 }
   );
@@ -179,7 +181,7 @@ export function ICReconciliation({
         />
         <MetricCard
           label="Total Differences"
-          value={formatCurrency(totalDifference)}
+          value={fmt.currency0(totalDifference)}
           variant={totalDifference > 0 ? 'warning' : 'success'}
         />
         <MetricCard label="Match Rate" value={formatPercent(matchRate, 1)} variant="info" />
@@ -305,11 +307,9 @@ export function ICReconciliation({
                         <td colSpan={3} className="p-2">
                           Totals ({displayLines.length} pairs)
                         </td>
-                        <td className="p-2 text-right">{formatCurrency(footers.totalBalanceA)}</td>
-                        <td className="p-2 text-right">{formatCurrency(footers.totalBalanceB)}</td>
-                        <td className="p-2 text-right">
-                          {formatCurrency(footers.totalDifference)}
-                        </td>
+                        <td className="p-2 text-right">{fmt.currency0(footers.totalBalanceA)}</td>
+                        <td className="p-2 text-right">{fmt.currency0(footers.totalBalanceB)}</td>
+                        <td className="p-2 text-right">{fmt.currency0(footers.totalDifference)}</td>
                         <td className="p-2 text-right">
                           {formatPercent(footers.avgPercentageDifference, 1)}
                         </td>
@@ -354,7 +354,7 @@ export function ICReconciliation({
                         role="alert"
                         className="font-mono font-semibold text-red-600 dark:text-red-400"
                       >
-                        {formatCurrency(line.difference)} difference
+                        {fmt.currency0(line.difference)} difference
                       </div>
                       <div className="text-xs text-muted-foreground">
                         {formatPercent(line.percentageDifference, 2)} off
@@ -385,6 +385,7 @@ function ReconciliationRow({
   expanded: boolean;
   onToggle: () => void;
 }) {
+  const fmt = useCurrencyFormatter();
   const exceeds =
     line.difference > tolerance.amountTolerance ||
     line.percentageDifference > tolerance.percentageTolerance;
@@ -405,11 +406,9 @@ function ReconciliationRow({
           <span className="font-mono text-xs">{line.accountCode}</span>
           <span className="ml-1 text-xs text-muted-foreground">{line.accountName}</span>
         </td>
-        <td className="p-2 text-right font-mono">{formatCurrency(line.balanceA)}</td>
-        <td className="p-2 text-right font-mono">{formatCurrency(line.balanceB)}</td>
-        <td className="p-2 text-right font-mono font-semibold">
-          {formatCurrency(line.difference)}
-        </td>
+        <td className="p-2 text-right font-mono">{fmt.currency0(line.balanceA)}</td>
+        <td className="p-2 text-right font-mono">{fmt.currency0(line.balanceB)}</td>
+        <td className="p-2 text-right font-mono font-semibold">{fmt.currency0(line.difference)}</td>
         <td className="p-2 text-right font-mono text-xs">
           {formatPercent(line.percentageDifference, 2)}
         </td>
@@ -425,19 +424,19 @@ function ReconciliationRow({
             <div className="grid grid-cols-3 gap-4 text-sm">
               <div>
                 <span className="text-muted-foreground">Balance A:</span>{' '}
-                {formatCurrency(line.balanceA)}
+                {fmt.currency0(line.balanceA)}
               </div>
               <div>
                 <span className="text-muted-foreground">Balance B:</span>{' '}
-                {formatCurrency(line.balanceB)}
+                {fmt.currency0(line.balanceB)}
               </div>
               <div>
                 <span className="text-muted-foreground">Net (A+B):</span>{' '}
-                {formatCurrency(computeICPairNet(line))}
+                {fmt.currency0(computeICPairNet(line))}
               </div>
               <div>
                 <span className="text-muted-foreground">Abs Diff:</span>{' '}
-                {formatCurrency(line.difference)}
+                {fmt.currency0(line.difference)}
               </div>
               <div>
                 <span className="text-muted-foreground">Diff %:</span>{' '}
@@ -505,17 +504,4 @@ function MetricCard({
       </CardContent>
     </Card>
   );
-}
-
-// =============================================================================
-// HELPERS
-// =============================================================================
-
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
 }

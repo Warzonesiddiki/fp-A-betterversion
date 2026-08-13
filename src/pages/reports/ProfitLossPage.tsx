@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -10,16 +11,7 @@ import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
 import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /** Money-primitive P&L statement totals (GAP-1 F-0006). The three account-class
  *  sums (Revenue/COGS/Expenses) accumulate via decimal to keep a balanced
  *  ledger on the cent; grossProfit/netIncome are subtractions; grossMargin
@@ -87,6 +79,7 @@ export function computeProfitLoss(
 }
 
 export default function ProfitLossPage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -110,11 +103,11 @@ export default function ProfitLossPage() {
     const data = {
       headers: ['Account', 'Amount'],
       rows: [
-        ['Total Revenue', formatCurrency(report.totalRevenue)],
-        ['Cost of Goods Sold', formatCurrency(report.totalCOGS)],
-        ['Gross Profit', formatCurrency(report.grossProfit)],
-        ['Operating Expenses', formatCurrency(report.totalExpenses)],
-        ['Net Income', formatCurrency(report.netIncome)],
+        ['Total Revenue', fmt.currency0(report.totalRevenue)],
+        ['Cost of Goods Sold', fmt.currency0(report.totalCOGS)],
+        ['Gross Profit', fmt.currency0(report.grossProfit)],
+        ['Operating Expenses', fmt.currency0(report.totalExpenses)],
+        ['Net Income', fmt.currency0(report.netIncome)],
       ],
     };
     void ExportEngine.exportToPDF(data, {
@@ -145,7 +138,7 @@ export default function ProfitLossPage() {
           <BarChart3 className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to generate a Profit & Loss statement.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to generate a Profit & Loss statement.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -163,15 +156,15 @@ export default function ProfitLossPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold">Profit & Loss Statement</h1>
-            <button
+          <PageHeader
+  title={"Profit & Loss Statement"}
+  actions={<button
               onClick={() => setHelpOpen(true)}
               className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
               aria-label="Help"
-            ></button>
-          </div>
-          <p className="text-sm text-slate-400 mt-1">
+            ></button>}
+/>
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Period ending {period} · {report.entryCount.toLocaleString()} entries
           </p>
         </div>
@@ -199,7 +192,7 @@ export default function ProfitLossPage() {
           <table className="w-full text-sm" role="grid" aria-label="Profit and Loss Report data">
             <thead>
               <tr
-                className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
+                className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800"
                 role="row"
               >
                 <th className="px-6 py-3 w-1/2" role="columnheader" scope="col">
@@ -219,7 +212,7 @@ export default function ProfitLossPage() {
                   className="px-6 py-3 text-right tabular-nums font-medium text-green-400"
                   role="gridcell"
                 >
-                  {formatCurrency(report.totalRevenue)}
+                  {fmt.currency0(report.totalRevenue)}
                 </td>
               </tr>
               <tr className="hover:bg-slate-900/50" role="row">
@@ -227,7 +220,7 @@ export default function ProfitLossPage() {
                   Cost of Goods Sold
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums text-red-400" role="gridcell">
-                  {formatCurrency(report.totalCOGS)}
+                  {fmt.currency0(report.totalCOGS)}
                 </td>
               </tr>
               <tr className="bg-slate-900/50 font-medium" role="row">
@@ -235,7 +228,7 @@ export default function ProfitLossPage() {
                   Gross Profit
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums font-semibold" role="gridcell">
-                  {formatCurrency(report.grossProfit)}
+                  {fmt.currency0(report.grossProfit)}
                 </td>
               </tr>
               <tr className="border-t-2 border-slate-700 hover:bg-slate-900/50" role="row">
@@ -251,7 +244,7 @@ export default function ProfitLossPage() {
                   Operating Expenses
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums text-red-400" role="gridcell">
-                  {formatCurrency(report.totalExpenses)}
+                  {fmt.currency0(report.totalExpenses)}
                 </td>
               </tr>
               <tr className="bg-slate-800/50 font-semibold text-base" role="row">
@@ -265,7 +258,7 @@ export default function ProfitLossPage() {
                   }
                   role="gridcell"
                 >
-                  {formatCurrency(report.netIncome)}
+                  {fmt.currency0(report.netIncome)}
                 </td>
               </tr>
               <tr className="hover:bg-slate-900/50" role="row">

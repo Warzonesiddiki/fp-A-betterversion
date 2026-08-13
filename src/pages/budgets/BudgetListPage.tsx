@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useBudgetStore } from '@/store/budgetStore';
@@ -8,21 +9,13 @@ import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Plus, Search, Copy, Trash2, Eye, Send, CheckCircle, XCircle } from 'lucide-react';
 import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
 // CHRONOS 2026-06-15: replaced local formatRelativeTime (BUG-CHR-D-1) with
 // canonical import. Uses 30-day cap (matches old behavior), "Just now" cap.
 import { formatRelativeTimeBudget as formatRelativeTime } from '@/engines/temporal';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 export default function BudgetListPage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -66,7 +59,7 @@ export default function BudgetListPage() {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
         <h2 className="text-xl font-semibold mb-2">No Budgets Yet</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Create your first budget to start planning and tracking financial performance.
         </p>
         <Button onClick={() => navigate('/budgets/create')} aria-label="Create new budget">
@@ -81,15 +74,17 @@ export default function BudgetListPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold">Budgets</h1>
-            <button
-              onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
-              aria-label="Help"
-            ></button>
-          </div>
-          <p className="text-sm text-slate-400 mt-1">{budgets.length} budgets</p>
+          <PageHeader
+            title="Budgets"
+            actions={
+              <button
+                onClick={() => setHelpOpen(true)}
+                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                aria-label="Help"
+              ></button>
+            }
+          />
+          <p className="text-sm text-[var(--text-muted)] mt-1">{budgets.length} budgets</p>
         </div>
         <Button onClick={() => navigate('/budgets/create')} aria-label="Create new budget">
           <Plus className="h-4 w-4 mr-2" />
@@ -142,7 +137,7 @@ export default function BudgetListPage() {
             <table className="w-full text-sm" role="grid" aria-label="Budgets list">
               <thead>
                 <tr
-                  className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
+                  className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800"
                   role="row"
                 >
                   <th className="px-4 py-3" role="columnheader" scope="col">
@@ -199,7 +194,7 @@ export default function BudgetListPage() {
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums font-medium" role="gridcell">
-                        {formatCurrency(b.totalAmount || 0)}
+                        {fmt.currency0(b.totalAmount || 0)}
                       </td>
                       <td className="px-4 py-3 text-xs text-slate-400" role="gridcell">
                         {(b.departments || []).join(', ') || '-'}

@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useCapExStore } from '@/store/capexStore';
@@ -24,16 +25,7 @@ import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { addMoney, sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface CapExProject {
   id: string;
   name: string;
@@ -108,6 +100,7 @@ export function sumGLCapexMovement(
 }
 
 export default function CapExDashboard() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const storeProjects = useCapExStore((s) => s.projects);
   const navigate = useNavigate();
@@ -154,15 +147,15 @@ export default function CapExDashboard() {
     { key: 'id', header: 'ID', sortable: true },
     { key: 'name', header: 'Project', sortable: true },
     { key: 'category', header: 'Category', sortable: true },
-    { key: 'budget', header: 'Budget', render: (_, r) => formatCurrency(r.budget), sortable: true },
-    { key: 'actual', header: 'Actual', render: (_, r) => formatCurrency(r.actual), sortable: true },
+    { key: 'budget', header: 'Budget', render: (_, r) => fmt.currency0(r.budget), sortable: true },
+    { key: 'actual', header: 'Actual', render: (_, r) => fmt.currency0(r.actual), sortable: true },
     {
       key: 'variance',
       header: 'Variance',
       render: (_, r) => {
         const v = r.budget - r.actual;
         return (
-          <span className={v >= 0 ? 'text-green-400' : 'text-red-400'}>{formatCurrency(v)}</span>
+          <span className={v >= 0 ? 'text-green-400' : 'text-red-400'}>{fmt.currency0(v)}</span>
         );
       },
       sortable: true,
@@ -212,9 +205,11 @@ export default function CapExDashboard() {
   if (!hasData) {
     return (
       <div className="p-12 text-center">
-        <Building2 className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Building2 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No CapEx Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to track capital expenditures.</p>
+        <p className="text-[var(--text-muted)] mb-6">
+          Import GL data to track capital expenditures.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -222,32 +217,34 @@ export default function CapExDashboard() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Capital Expenditures</h1>
-          <p className="text-sm text-slate-400">
-            {projects.length} projects | {entries.length.toLocaleString()} GL entries
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-1" /> Export
-          </Button>
-          <Button size="sm">
-            <Plus className="h-4 w-4 mr-1" /> New Project
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Capital Expenditures"
+        purpose={
+          <>
+            {projects.length}projects | {entries.length.toLocaleString()}GL entries
+          </>
+        }
+        actions={
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleExport}>
+              <Download className="h-4 w-4 mr-1" /> Export
+            </Button>
+            <Button size="sm">
+              <Plus className="h-4 w-4 mr-1" /> New Project
+            </Button>
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <KPIValue
           label="Total Budget"
-          value={formatCurrency(totalBudget)}
+          value={fmt.currency0(totalBudget)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="YTD Spend"
-          value={formatCurrency(ytdSpend)}
+          value={fmt.currency0(ytdSpend)}
           icon={<TrendingUp className="h-4 w-4" />}
         />
         <KPIValue
@@ -257,7 +254,7 @@ export default function CapExDashboard() {
         />
         <KPIValue
           label="Variance"
-          value={formatCurrency(totalVariance)}
+          value={fmt.currency0(totalVariance)}
           icon={<DollarSign className="h-4 w-4" />}
           status={totalVariance >= 0 ? 'good' : 'warning'}
         />
@@ -284,7 +281,7 @@ export default function CapExDashboard() {
                   tickFormatter={(v) => `$${Math.round(v / 100000) / 10}M`}
                 />
                 <Tooltip
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Legend />
@@ -350,7 +347,7 @@ export default function CapExDashboard() {
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-slate-400">
-                      <span>{formatCurrency(project.budget)}</span>
+                      <span>{fmt.currency0(project.budget)}</span>
                       <span>|</span>
                       <span>{project.category}</span>
                     </div>

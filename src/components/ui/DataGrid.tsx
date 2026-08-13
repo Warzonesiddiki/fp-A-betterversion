@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { AgGridReact } from 'ag-grid-react';
 import {
   AllCommunityModule,
@@ -14,6 +15,7 @@ import { useSelectionStats } from '@/hooks/useSelectionStats';
 import { useFindReplace } from '@/hooks/useFindReplace';
 import { useColumnVisibility } from '@/hooks/useColumnVisibility';
 import { useDataGridExport } from '@/hooks/useDataGridExport';
+import { useDensity, densityMetrics } from '@/hooks/useDensity';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -60,7 +62,11 @@ export const DataGrid: React.FC<DataGridProps> = ({
   enableColumnHiding = false,
   enableRowGrouping = false,
 }) => {
+  const fmtCurrency = useCurrencyFormatter();
   const gridRef = useRef<AgGridReact>(null);
+  // UI-04: row metrics come from the shared density contract, not literals.
+  const density = useDensity();
+  const metrics = densityMetrics(density);
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -126,12 +132,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
           if (col.type === 'currency') {
             colDef.valueFormatter = (params) => {
               if (params.value === null || params.value === undefined) return '';
-              return new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              }).format(params.value);
+              return fmtCurrency.custom({ decimals: 0 })(params.value);
             };
           } else if (col.type === 'percent') {
             colDef.valueFormatter = (params) => {
@@ -158,7 +159,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
 
       return colDef;
     });
-  }, [columns]);
+  }, [columns, fmtCurrency]);
 
   const {
     hiddenColumns,
@@ -279,8 +280,8 @@ export const DataGrid: React.FC<DataGridProps> = ({
 
   const mergedGridOptions = useMemo<GridOptions>(
     () => ({
-      rowHeight: 32,
-      headerHeight: 40,
+      rowHeight: metrics.rowHeight,
+      headerHeight: metrics.headerHeight,
       animateRows: true,
       rowSelection: { mode: 'multiRow' },
       suppressCellFocus: false,
@@ -318,7 +319,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
       onCellEditingStopped: () => setIsEditing(false),
       ...gridOptions,
     }),
-    [gridOptions, columns]
+    [gridOptions, columns, metrics]
   );
 
   return (

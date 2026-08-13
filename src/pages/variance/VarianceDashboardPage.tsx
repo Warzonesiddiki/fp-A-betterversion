@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -33,16 +34,7 @@ import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney, subtractMoney } from '@/utils/money';
 import type { GLEntry } from '@/types';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface VarianceRow {
   account: string;
   budget: number;
@@ -100,6 +92,7 @@ export function computeCategoryBudget(
 }
 
 export default function VarianceDashboardPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   // Defensive default: some legacy test doubles for useBudgetStore mock only
   // a subset of the real store shape. Rather than crash with "Cannot read
@@ -210,9 +203,9 @@ export default function VarianceDashboardPage() {
         headers: ['Account', 'Budget', 'Actual', 'Variance', 'Variance %', 'Driver'],
         rows: data.rows.map((r) => [
           r.account,
-          formatCurrency(r.budget),
-          formatCurrency(r.actual),
-          formatCurrency(r.variance),
+          fmt.currency0(r.budget),
+          fmt.currency0(r.actual),
+          fmt.currency0(r.variance),
           formatPercent(r.variancePct, 1),
           r.driver,
         ]),
@@ -228,9 +221,9 @@ export default function VarianceDashboardPage() {
         headers: ['Account', 'Budget', 'Actual', 'Variance', 'Variance %', 'Driver'],
         rows: data.rows.map((r) => [
           r.account,
-          formatCurrency(r.budget),
-          formatCurrency(r.actual),
-          formatCurrency(r.variance),
+          fmt.currency0(r.budget),
+          fmt.currency0(r.actual),
+          fmt.currency0(r.variance),
           formatPercent(r.variancePct, 1),
           r.driver,
         ]),
@@ -245,14 +238,14 @@ export default function VarianceDashboardPage() {
       key: 'budget',
       header: 'Budget',
       align: 'right',
-      render: (_value, row) => formatCurrency(row.budget),
+      render: (_value, row) => fmt.currency0(row.budget),
       sortable: true,
     },
     {
       key: 'actual',
       header: 'Actual',
       align: 'right',
-      render: (_value, row) => formatCurrency(row.actual),
+      render: (_value, row) => fmt.currency0(row.actual),
       sortable: true,
     },
     {
@@ -262,7 +255,7 @@ export default function VarianceDashboardPage() {
       render: (_value, row) => {
         const v = Number(row.variance ?? 0);
         return (
-          <span className={v >= 0 ? 'text-green-400' : 'text-red-400'}>{formatCurrency(v)}</span>
+          <span className={v >= 0 ? 'text-green-400' : 'text-red-400'}>{fmt.currency0(v)}</span>
         );
       },
       sortable: true,
@@ -287,9 +280,11 @@ export default function VarianceDashboardPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <BarChart3 className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <BarChart3 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import data and create budgets to see variances.</p>
+        <p className="text-[var(--text-muted)] mb-6">
+          Import data and create budgets to see variances.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -298,40 +293,44 @@ export default function VarianceDashboardPage() {
     return (
       <div className="p-12 text-center">
         <h2 className="text-lg font-semibold mb-2">No Budget Data</h2>
-        <p className="text-slate-400 mb-4">Create approved budgets to compare against actuals.</p>
+        <p className="text-[var(--text-muted)] mb-4">
+          Create approved budgets to compare against actuals.
+        </p>
         <Button onClick={() => navigate('/budgets/create')}>Create Budget</Button>
       </div>
     );
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Variance Dashboard</h1>
-        <div className="flex gap-2">
-          <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
-            <FileText className="h-3.5 w-3.5 mr-1.5" />
-            PDF
-          </Button>
-          <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
-            <TableIcon className="h-3.5 w-3.5 mr-1.5" />
-            Excel
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Variance Dashboard"
+        actions={
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
+              <FileText className="h-3.5 w-3.5 mr-1.5" />
+              PDF
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
+              <TableIcon className="h-3.5 w-3.5 mr-1.5" />
+              Excel
+            </Button>
+          </div>
+        }
+      />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue
           label="Actual Revenue"
-          value={formatCurrency(data.actualRevenue)}
+          value={fmt.currency0(data.actualRevenue)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Budget Revenue"
-          value={formatCurrency(data.budgetRevenue)}
+          value={fmt.currency0(data.budgetRevenue)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Revenue Variance"
-          value={formatCurrency(data.revenueVar)}
+          value={fmt.currency0(data.revenueVar)}
           icon={
             data.revenueVar >= 0 ? (
               <TrendingUp className="h-4 w-4" />
@@ -363,7 +362,7 @@ export default function VarianceDashboardPage() {
               <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
               <YAxis stroke="#94a3b8" fontSize={12} tickFormatter={(v) => `$${formatCompact(v)}`} />
               <Tooltip
-                formatter={(v) => formatCurrency(Number(v))}
+                formatter={(v) => fmt.currency0(Number(v))}
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
               />
               <Legend />

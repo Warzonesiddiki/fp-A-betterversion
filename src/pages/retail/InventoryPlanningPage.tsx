@@ -1,4 +1,6 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
 import { Package, BarChart3, Download, Truck } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -79,6 +81,7 @@ const columns: Column[] = [
 ];
 
 export default function InventoryPlanningPage() {
+  const fmtCurrency = useCurrencyFormatter();
   const { entries } = useGLStore();
   const [periodId, setPeriodId] = useState('P01');
 
@@ -107,7 +110,7 @@ export default function InventoryPlanningPage() {
           <Package className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Inventory Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your Inventory General Ledger (121x accounts) to view stock optimization and
           turnover analysis.
         </p>
@@ -119,15 +122,10 @@ export default function InventoryPlanningPage() {
   return (
     <div className="p-6 space-y-6 animate-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Inventory Planning
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Stock optimization, turnover analysis, and days-on-hand monitoring across all
-            categories.
-          </p>
-        </div>
+        <PageHeader
+          title="Inventory Planning"
+          purpose="Stock optimization, turnover analysis, and days-on-hand monitoring across all categories."
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="outline" size="sm" className="h-10">
@@ -140,12 +138,7 @@ export default function InventoryPlanningPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
           label="Total Inventory Value"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 1,
-            notation: 'compact',
-          }).format(stats.totalValue)}
+          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(stats.totalValue)}
           change={4.2}
           changeLabel="at cost basis"
           trend="up"

@@ -33,7 +33,7 @@ export function ReciprocalConfigPanel({
 
   return (
     <div className="flex flex-col gap-3">
-      <span className="text-xs font-medium text-slate-400">
+      <span className="text-xs font-medium text-[var(--text-muted)]">
         Inter-Department Service Percentages
       </span>
       {departments.map((dept) => {

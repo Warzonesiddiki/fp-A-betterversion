@@ -204,7 +204,7 @@ export const HedgeManager = memo(function HedgeManager() {
           <h2 className="text-xl font-bold flex items-center gap-2">
             <Shield className="h-5 w-5 text-blue-400" /> Hedge Management
           </h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {metrics.activeCount} active &middot; ASC 815 compliance
           </p>
         </div>
@@ -224,13 +224,13 @@ export const HedgeManager = memo(function HedgeManager() {
       <div className="grid grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Active</div>
+            <div className="text-xs text-[var(--text-muted)]">Active</div>
             <div className="text-2xl font-bold">{metrics.activeCount}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Notional</div>
+            <div className="text-xs text-[var(--text-muted)]">Notional</div>
             <div className="text-2xl font-bold tabular-nums">
               {formatMoney(metrics.totalNotional)}
             </div>
@@ -238,7 +238,7 @@ export const HedgeManager = memo(function HedgeManager() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Fair Value</div>
+            <div className="text-xs text-[var(--text-muted)]">Fair Value</div>
             <div
               className="text-2xl font-bold tabular-nums flex items-center justify-center gap-1"
               style={{ color: metrics.totalFairValue >= 0 ? '#16A34A' : '#DC2626' }}
@@ -254,7 +254,7 @@ export const HedgeManager = memo(function HedgeManager() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Types</div>
+            <div className="text-xs text-[var(--text-muted)]">Types</div>
             <div className="flex flex-wrap justify-center gap-1 mt-1">
               {metrics.byType.map((m) => (
                 <Badge key={m.type} variant="outline" className="text-xs">
@@ -287,7 +287,7 @@ export const HedgeManager = memo(function HedgeManager() {
         <CardContent className="p-0">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+              <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                 <th className="px-4 py-3" scope="col">
                   Instrument
                 </th>
@@ -377,12 +377,12 @@ export const HedgeManager = memo(function HedgeManager() {
       {/* Add/Edit Modal */}
       <Modal isOpen={showForm} onClose={() => setShowForm(false)}>
         <div className="p-6 space-y-4">
-          <h2 className="text-lg font-bold text-white">
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">
             {editingId ? 'Edit' : 'Add'} Hedge Position
           </h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label htmlFor="instrument" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="instrument" className="block text-xs text-[var(--text-muted)] mb-1">
                 Instrument
               </label>
               <select
@@ -403,7 +403,7 @@ export const HedgeManager = memo(function HedgeManager() {
               )}
             </div>
             <div>
-              <label htmlFor="hedge-type" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="hedge-type" className="block text-xs text-[var(--text-muted)] mb-1">
                 Hedge Type
               </label>
               <select
@@ -420,7 +420,7 @@ export const HedgeManager = memo(function HedgeManager() {
               </select>
             </div>
             <div>
-              <label htmlFor="status" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="status" className="block text-xs text-[var(--text-muted)] mb-1">
                 Status
               </label>
               <select
@@ -435,7 +435,10 @@ export const HedgeManager = memo(function HedgeManager() {
               </select>
             </div>
             <div>
-              <label htmlFor="entity-currency" className="block text-xs text-slate-400 mb-1">
+              <label
+                htmlFor="entity-currency"
+                className="block text-xs text-[var(--text-muted)] mb-1"
+              >
                 Entity Currency
               </label>
               <select
@@ -452,7 +455,10 @@ export const HedgeManager = memo(function HedgeManager() {
               </select>
             </div>
             <div>
-              <label htmlFor="hedged-currency" className="block text-xs text-slate-400 mb-1">
+              <label
+                htmlFor="hedged-currency"
+                className="block text-xs text-[var(--text-muted)] mb-1"
+              >
                 Hedged Currency
               </label>
               <select
@@ -469,7 +475,7 @@ export const HedgeManager = memo(function HedgeManager() {
               </select>
             </div>
             <div>
-              <label htmlFor="notional" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="notional" className="block text-xs text-[var(--text-muted)] mb-1">
                 Notional
               </label>
               <input
@@ -485,7 +491,10 @@ export const HedgeManager = memo(function HedgeManager() {
               )}
             </div>
             <div>
-              <label htmlFor="contracted-rate" className="block text-xs text-slate-400 mb-1">
+              <label
+                htmlFor="contracted-rate"
+                className="block text-xs text-[var(--text-muted)] mb-1"
+              >
                 Contracted Rate
               </label>
               <input
@@ -502,7 +511,7 @@ export const HedgeManager = memo(function HedgeManager() {
               )}
             </div>
             <div>
-              <label htmlFor="current-rate" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="current-rate" className="block text-xs text-[var(--text-muted)] mb-1">
                 Current Rate
               </label>
               <input
@@ -519,7 +528,7 @@ export const HedgeManager = memo(function HedgeManager() {
               )}
             </div>
             <div>
-              <label htmlFor="maturity" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="maturity" className="block text-xs text-[var(--text-muted)] mb-1">
                 Maturity
               </label>
               <input
@@ -545,8 +554,8 @@ export const HedgeManager = memo(function HedgeManager() {
 
       <Modal isOpen={deleteId !== null} onClose={() => setDeleteId(null)}>
         <div className="p-6 space-y-4">
-          <h2 className="text-lg font-bold text-white">Delete Position</h2>
-          <p className="text-slate-400">This action cannot be undone.</p>
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">Delete Position</h2>
+          <p className="text-[var(--text-muted)]">This action cannot be undone.</p>
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setDeleteId(null)}>
               Cancel

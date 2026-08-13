@@ -42,7 +42,9 @@ export function StepDownConfigPanel({
 
   return (
     <div className="flex flex-col gap-3">
-      <span className="text-xs font-medium text-slate-400">Service Department Percentages</span>
+      <span className="text-xs font-medium text-[var(--text-muted)]">
+        Service Department Percentages
+      </span>
       {serviceDepts.map((svc) => {
         const total = allReceivers
           .filter((r) => r.id !== svc.id)

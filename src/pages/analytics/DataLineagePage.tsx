@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import {
   Database,
@@ -198,10 +199,7 @@ export default function DataLineagePage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Data Lineage</h1>
-        <p className="text-muted-foreground">Track how data flows from source to screen</p>
-      </div>
+      <PageHeader title="Data Lineage" purpose="Track how data flows from source to screen" />
 
       <div className="flex flex-wrap gap-2 mb-4">
         {types.map((t) => (
@@ -218,7 +216,7 @@ export default function DataLineagePage() {
         <div className="flex items-start gap-8 min-w-max">
           {types.map((type, typeIdx) => (
             <div key={type.key} className="flex flex-col items-center gap-3">
-              <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <div className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2">
                 {type.label}
               </div>
               {nodesByType[type.key]?.map((node) => (
@@ -235,10 +233,14 @@ export default function DataLineagePage() {
                       hover:scale-105 hover:ring-2 hover:ring-white/20
                     `}
                   >
-                    <div className="text-white/80">{node.icon}</div>
+                    <div className="text-[var(--text-secondary)]">{node.icon}</div>
                     <div>
-                      <div className="text-sm font-semibold text-white">{node.label}</div>
-                      <div className="text-[10px] text-white/50">{typeLabels[node.type]}</div>
+                      <div className="text-sm font-semibold text-[var(--text-primary)]">
+                        {node.label}
+                      </div>
+                      <div className="text-[10px] text-[var(--text-muted)]">
+                        {typeLabels[node.type]}
+                      </div>
                     </div>
                     <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-white dark:bg-gray-900 dark:bg-gray-900/20 animate-pulse" />
                   </button>
@@ -266,10 +268,13 @@ export default function DataLineagePage() {
           <CardContent>
             <div className="space-y-3">
               <div>
-                <div className="text-xs font-semibold text-slate-400 mb-1">Details</div>
+                <div className="text-xs font-semibold text-[var(--text-muted)] mb-1">Details</div>
                 <ul className="space-y-1">
                   {selectedNode.details.map((detail, i) => (
-                    <li key={i} className="text-sm text-slate-300 flex items-center gap-2">
+                    <li
+                      key={i}
+                      className="text-sm text-[var(--text-secondary)] flex items-center gap-2"
+                    >
                       <ChevronRight className="w-3 h-3 text-slate-500" />
                       {detail}
                     </li>
@@ -278,7 +283,9 @@ export default function DataLineagePage() {
               </div>
               {selectedNode.connections.length > 0 && (
                 <div>
-                  <div className="text-xs font-semibold text-slate-400 mb-1">Flows To</div>
+                  <div className="text-xs font-semibold text-[var(--text-muted)] mb-1">
+                    Flows To
+                  </div>
                   <div className="flex flex-wrap gap-2">
                     {getConnectedNodes(selectedNode.id).map((conn) => (
                       <button

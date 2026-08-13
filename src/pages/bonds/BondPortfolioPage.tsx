@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { Landmark, BarChart3, Download, Shield, AlertTriangle } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -54,63 +56,57 @@ function deriveBondsFromGL(entries: GLEntry[]) {
   }>;
 }
 
-const bondColumns: Column[] = [
-  { key: 'name', header: 'Instrument', sortable: true },
-  {
-    key: 'faceValue',
-    header: 'Face Value',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v as number),
-  },
-  {
-    key: 'couponRate',
-    header: 'Coupon',
-    align: 'right',
-    render: (v) => `${formatPercent(v as number, 2)}`,
-  },
-  {
-    key: 'ytm',
-    header: 'YTM',
-    align: 'right',
-    render: (v) => `${formatPercent(v as number, 2)}`,
-  },
-  {
-    key: 'price',
-    header: 'Clean Price',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 2,
-      }).format(v as number),
-  },
-  {
-    key: 'modifiedDuration',
-    header: 'Mod. Duration',
-    align: 'right',
-    render: (v) => `${formatNumber(v as number, 2)} yrs`,
-  },
-  {
-    key: 'convexity',
-    header: 'Convexity',
-    align: 'right',
-    render: (v) => formatNumber(v as number, 2),
-  },
-  {
-    key: 'periods',
-    header: 'Maturity',
-    align: 'right',
-    render: (v) => `${v} yr${(v as number) !== 1 ? 's' : ''}`,
-  },
-];
-
 export default function BondPortfolioPage() {
+  const fmtCurrency = useCurrencyFormatter();
+
+  const bondColumns = useMemo<Column[]>(
+    () => [
+      { key: 'name', header: 'Instrument', sortable: true },
+      {
+        key: 'faceValue',
+        header: 'Face Value',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
+      },
+      {
+        key: 'couponRate',
+        header: 'Coupon',
+        align: 'right',
+        render: (v) => `${formatPercent(v as number, 2)}`,
+      },
+      {
+        key: 'ytm',
+        header: 'YTM',
+        align: 'right',
+        render: (v) => `${formatPercent(v as number, 2)}`,
+      },
+      {
+        key: 'price',
+        header: 'Clean Price',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 2 })(v as number),
+      },
+      {
+        key: 'modifiedDuration',
+        header: 'Mod. Duration',
+        align: 'right',
+        render: (v) => `${formatNumber(v as number, 2)} yrs`,
+      },
+      {
+        key: 'convexity',
+        header: 'Convexity',
+        align: 'right',
+        render: (v) => formatNumber(v as number, 2),
+      },
+      {
+        key: 'periods',
+        header: 'Maturity',
+        align: 'right',
+        render: (v) => `${v} yr${(v as number) !== 1 ? 's' : ''}`,
+      },
+    ],
+    [fmtCurrency]
+  );
   const { entries } = useGLStore();
 
   const bonds = useMemo(() => deriveBondsFromGL(entries), [entries]);
@@ -234,7 +230,7 @@ export default function BondPortfolioPage() {
           <Landmark className="h-10 w-10 text-slate-400" aria-hidden="true" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Bond Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your General Ledger to view your fixed-income portfolio, pricing, and duration
           metrics.
         </p>
@@ -251,14 +247,10 @@ export default function BondPortfolioPage() {
     >
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Bond Portfolio
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Fixed-income holdings with pricing, duration, and convexity analytics.
-          </p>
-        </div>
+        <PageHeader
+          title="Bond Portfolio"
+          purpose="Fixed-income holdings with pricing, duration, and convexity analytics."
+        />
         <div className="flex items-center gap-3">
           <Button variant="outline" size="sm" aria-label="Export bond portfolio report">
             <Download className="h-4 w-4 mr-2" aria-hidden="true" />
@@ -274,22 +266,16 @@ export default function BondPortfolioPage() {
       >
         <KPIValue
           label="Total Face Value"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 1,
-            notation: 'compact',
-          }).format(portfolioMetrics.totalFaceValue)}
+          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(
+            portfolioMetrics.totalFaceValue
+          )}
           trend="neutral"
         />
         <KPIValue
           label="Market Value"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 1,
-            notation: 'compact',
-          }).format(portfolioMetrics.totalMarketValue)}
+          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(
+            portfolioMetrics.totalMarketValue
+          )}
           change={2.3}
           changeLabel="price appreciation"
           trend="up"
@@ -376,7 +362,7 @@ export default function BondPortfolioPage() {
               <div className="text-xl font-bold">
                 {formatNumber(portfolioMetrics.weightedConvexity, 2)}
               </div>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[10px] text-[var(--text-muted)]">
                 Higher convexity = better protection against large rate moves
               </p>
             </div>
@@ -391,11 +377,7 @@ export default function BondPortfolioPage() {
                 Total Accrued Interest
               </div>
               <div className="text-xl font-bold text-blue-600">
-                {new Intl.NumberFormat('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                  maximumFractionDigits: 0,
-                }).format(portfolioMetrics.totalAccrued)}
+                {fmtCurrency.custom({ maxDecimals: 0 })(portfolioMetrics.totalAccrued)}
               </div>
             </div>
             <div className="space-y-1">

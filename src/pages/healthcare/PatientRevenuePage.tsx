@@ -1,4 +1,6 @@
 import type { FiscalPeriod } from '@/types';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 
 const columns = [
@@ -38,6 +40,7 @@ import { HealthcareEngine } from '@/engines/HealthcareEngine';
 import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 export default function PatientRevenuePage() {
+  const fmtCurrency = useCurrencyFormatter();
   const { entries } = useGLStore();
   const [periodId, setPeriodId] = useState('P01');
   // WIRED (C-3): real fiscal periods from FiscalCalendar + org settings.
@@ -77,7 +80,7 @@ export default function PatientRevenuePage() {
           <DollarSign className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Healthcare Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your General Ledger data with healthcare specific accounts to view revenue cycle
           analysis.
         </p>
@@ -90,14 +93,10 @@ export default function PatientRevenuePage() {
     <div className="p-6 space-y-6 animate-in slide-in-from-right-4 duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Patient Revenue Analysis
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Revenue cycle management, payer mix optimization, and denial mitigation.
-          </p>
-        </div>
+        <PageHeader
+          title="Patient Revenue Analysis"
+          purpose="Revenue cycle management, payer mix optimization, and denial mitigation."
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={fiscalPeriods} />
           <Button variant="outline" size="sm">
@@ -111,9 +110,7 @@ export default function PatientRevenuePage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
           label="Gross Charges"
-          value={new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
-            stats.grossCharges
-          )}
+          value={fmtCurrency.custom()(stats.grossCharges)}
           change={8.4}
           changeLabel="volume increase in Q1"
           trend="up"

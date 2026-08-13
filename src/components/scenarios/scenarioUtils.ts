@@ -1,5 +1,6 @@
 import type { Scenario, ScenarioMetrics } from '@/types';
-import { formatPercent } from '@/utils/financialFormatting';
+import { currencyFormatter, formatPercent } from '@/utils/financialFormatting';
+import { reportingCurrency } from '@/store/financialContextStore';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -119,12 +120,7 @@ export const TYPE_BADGE: Record<string, string> = {
 
 export function fmtValue(value: number, format: MetricDef['format']): string {
   if (format === 'currency') {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      notation: 'compact',
-      maximumFractionDigits: 1,
-    }).format(value);
+    return currencyFormatter(reportingCurrency(), { maxDecimals: 1, compact: true })(value);
   }
   if (format === 'percent') {
     return formatPercent(value, 1);

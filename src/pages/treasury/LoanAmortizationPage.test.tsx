@@ -3,7 +3,7 @@ import { render, screen, userEvent } from '@/test/testUtils';
 import LoanAmortizationPage from './LoanAmortizationPage';
 
 describe('LoanAmortizationPage (BATCH-006 — reachability of LoanAmortizationEngine)', () => {
-  it('computes a real amortization schedule that pays off to $0.00', async () => {
+  it('computes a real amortization schedule that pays off to a zero balance', async () => {
     const user = userEvent.setup();
     render(<LoanAmortizationPage />);
 
@@ -21,9 +21,12 @@ describe('LoanAmortizationPage (BATCH-006 — reachability of LoanAmortizationEn
     const rows = table.querySelectorAll('tbody tr');
     expect(rows.length).toBe(360);
 
-    // Exact-decimal invariant: the loan pays off to $0.00 in the final period.
+    // Exact-decimal invariant: the loan pays off to a zero closing balance in
+    // the final period. UI-06 renders money through the shared reporting-currency
+    // formatter, whose canonical zeroDisplay is the em dash, so a fully amortised
+    // balance shows as '—' rather than '$0.00'.
     const lastRow = rows[rows.length - 1];
-    expect(lastRow?.textContent).toContain('$0.00');
+    expect(lastRow?.textContent).toContain('—');
 
     // Total interest is a real, positive figure.
     const totalInterest = screen.getByTestId('total-interest').textContent ?? '';

@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -10,15 +11,7 @@ import { sumMoney, roundTo } from '@/utils/money';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 function formatPct(n: number): string {
   return `${formatPercent(n, 1)}`;
 }
@@ -44,6 +37,7 @@ function buildCohortSizes() {
 }
 
 export default function CohortAnalysisPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
   useEffect(() => {
@@ -94,7 +88,7 @@ export default function CohortAnalysisPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <BarChart4 className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <BarChart4 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No SaaS Data</h2>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
@@ -102,16 +96,16 @@ export default function CohortAnalysisPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Cohort Analysis</h1>
-          <p className="text-sm text-slate-400">Customer retention by monthly cohort</p>
-        </div>
-        <Button variant="outline" onClick={handleExport}>
-          <Download className="h-4 w-4 mr-2" />
-          Export
-        </Button>
-      </div>
+      <PageHeader
+        title="Cohort Analysis"
+        purpose="Customer retention by monthly cohort"
+        actions={
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+        }
+      />
 
       <div className="grid gap-4 md:grid-cols-4">
         <KPIValue
@@ -133,7 +127,7 @@ export default function CohortAnalysisPage() {
         />
         <KPIValue
           label="Avg Revenue / Cohort"
-          value={formatCurrency(metrics.avgRevPerCohort)}
+          value={fmt.currency0(metrics.avgRevPerCohort)}
           icon={<DollarSign className="h-4 w-4" />}
         />
       </div>
@@ -171,13 +165,16 @@ export default function CohortAnalysisPage() {
               <caption className="sr-only">Detailed breakdown of saas cohort analysis</caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Cohort
                   </th>
                   {Array.from({ length: 6 }, (_, i) => (
                     <th
                       key={i}
-                      className="text-center py-2 px-3 text-slate-400 font-medium"
+                      className="text-center py-2 px-3 text-[var(--text-muted)] font-medium"
                       scope="col"
                     >
                       M{i}

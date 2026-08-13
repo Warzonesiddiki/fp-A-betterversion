@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -34,16 +35,7 @@ import { useLeaseStore, type LeaseInput } from '@/store/leaseStore';
 import { LeaseForm } from '@/components/lease/LeaseForm';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 const AS_OF = new Date('2026-01-01T00:00:00Z');
 
 interface LeaseRecord {
@@ -156,6 +148,7 @@ function rouDepreciation(contract: LeaseContract, rouAsset: number): DepRow[] {
 }
 
 export default function LeaseDetailPage() {
+  const fmt = useCurrencyFormatter();
   const navigate = useNavigate();
   const { id: routeId } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
@@ -237,10 +230,10 @@ export default function LeaseDetailPage() {
 
   const amortColumns: Column<AmortRow>[] = [
     { key: 'month', header: 'Month', sortable: true },
-    { key: 'payment', header: 'Payment', render: (_, r) => formatCurrency(r.payment) },
-    { key: 'principal', header: 'Principal', render: (_, r) => formatCurrency(r.principal) },
-    { key: 'interest', header: 'Interest', render: (_, r) => formatCurrency(r.interest) },
-    { key: 'balance', header: 'Balance', render: (_, r) => formatCurrency(r.balance) },
+    { key: 'payment', header: 'Payment', render: (_, r) => fmt.currency0(r.payment) },
+    { key: 'principal', header: 'Principal', render: (_, r) => fmt.currency0(r.principal) },
+    { key: 'interest', header: 'Interest', render: (_, r) => fmt.currency0(r.interest) },
+    { key: 'balance', header: 'Balance', render: (_, r) => fmt.currency0(r.balance) },
   ];
 
   const handleExportPDF = () => {
@@ -295,17 +288,14 @@ export default function LeaseDetailPage() {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold">Lease Detail</h1>
-            <p className="text-sm text-slate-400">No leases in the portfolio yet</p>
-          </div>
+          <PageHeader title="Lease Detail" purpose="No leases in the portfolio yet" />
         </div>
 
         {formMode === 'closed' ? (
           <Card>
             <CardContent>
               <div className="py-10 text-center space-y-3">
-                <p className="text-slate-400">
+                <p className="text-[var(--text-muted)]">
                   No Lease Data — add a lease to compute its ASC 842 / IFRS 16 schedules.
                 </p>
                 <Button size="sm" onClick={() => setFormMode('add')}>
@@ -335,7 +325,7 @@ export default function LeaseDetailPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold">Lease Detail</h1>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-[var(--text-muted)]">
               {selectedLease.property} — schedules computed by LeaseEngine (not mock data)
             </p>
           </div>
@@ -369,12 +359,12 @@ export default function LeaseDetailPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue
           label="Total Liability"
-          value={formatCurrency(totalLiability)}
+          value={fmt.currency0(totalLiability)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="ROU Asset"
-          value={formatCurrency(totalRouAsset)}
+          value={fmt.currency0(totalRouAsset)}
           icon={<FileText className="h-4 w-4" />}
         />
         <KPIValue
@@ -405,7 +395,7 @@ export default function LeaseDetailPage() {
                   tickFormatter={(v) => `$${formatCompact(v)}`}
                 />
                 <Tooltip
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Legend />
@@ -443,7 +433,7 @@ export default function LeaseDetailPage() {
                   tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
                 />
                 <Tooltip
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
                 />
                 <Legend />
@@ -486,13 +476,13 @@ export default function LeaseDetailPage() {
             <div className="p-4 bg-slate-800 rounded-lg">
               <div className="text-sm text-slate-400 mb-1">ROU Asset</div>
               <div className="text-lg font-semibold" data-testid={`rou-${selectedLease.id}`}>
-                {formatCurrency(selectedLease.rouAsset)}
+                {fmt.currency0(selectedLease.rouAsset)}
               </div>
               <div className="text-xs text-green-400 mt-1">Recognized on balance sheet</div>
             </div>
             <div className="p-4 bg-slate-800 rounded-lg">
               <div className="text-sm text-slate-400 mb-1">Lease Liability</div>
-              <div className="text-lg font-semibold">{formatCurrency(selectedLease.liability)}</div>
+              <div className="text-lg font-semibold">{fmt.currency0(selectedLease.liability)}</div>
               <div className="text-xs text-yellow-400 mt-1">Present value of payments</div>
             </div>
           </div>
@@ -528,7 +518,7 @@ export default function LeaseDetailPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold">{formatCurrency(lease.monthlyPayment)}/mo</div>
+                    <div className="font-semibold">{fmt.currency0(lease.monthlyPayment)}/mo</div>
                     <span
                       className={`text-xs px-2 py-0.5 rounded-full ${lease.status === 'Active' ? 'bg-green-900/50 text-green-400' : 'bg-slate-700 text-slate-400'}`}
                     >

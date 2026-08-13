@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useDataStore } from '@/store/dataStore';
@@ -108,6 +110,7 @@ export function computeReconciliation(
 }
 
 export default function DataImportPage() {
+  const fmtCurrency = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -286,7 +289,7 @@ export default function DataImportPage() {
           <Upload className="h-10 w-10 text-slate-400" aria-hidden="true" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data Imported</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Use the GL Upload page to import your financial data first, then come here to reconcile
           against external reports.
         </p>
@@ -302,15 +305,17 @@ export default function DataImportPage() {
     <main className="p-6 space-y-6" role="main" aria-label="Data import and reconciliation page">
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold">Data Import & Reconciliation</h1>
-            <button
-              onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
-              aria-label="Help"
-            />
-          </div>
-          <p className="text-sm text-slate-400 mt-1">
+          <PageHeader
+            title={'Data Import & Reconciliation'}
+            actions={
+              <button
+                onClick={() => setHelpOpen(true)}
+                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+                aria-label="Help"
+              />
+            }
+          />
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Migrate data from Excel, Planful, Adaptive, or Anaplan. Verify against source files.
           </p>
         </div>
@@ -349,7 +354,7 @@ export default function DataImportPage() {
 
           {wizardStep === 'upload' && (
             <div>
-              <p className="text-sm text-slate-400 mb-4">
+              <p className="text-sm text-[var(--text-muted)] mb-4">
                 Upload a file to migrate from Excel, Planful, Adaptive Insights, or Anaplan.
                 Auto-detects source format and maps columns automatically.
               </p>
@@ -372,7 +377,7 @@ export default function DataImportPage() {
           {wizardStep === 'analyze' && (
             <div className="text-center py-8">
               <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-4" />
-              <p className="text-slate-400">Analyzing file structure...</p>
+              <p className="text-[var(--text-muted)]">Analyzing file structure...</p>
             </div>
           )}
 
@@ -454,7 +459,7 @@ export default function DataImportPage() {
                   <table className="w-full text-sm" aria-label="Data import preview">
                     <caption className="sr-only">Detailed GL data import preview</caption>
                     <thead>
-                      <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                      <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                         <th scope="col" className="pb-2 pr-4">
                           Source Column
                         </th>
@@ -561,7 +566,7 @@ export default function DataImportPage() {
             <div className="space-y-4">
               <div className="text-center py-4">
                 <div className="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-4" />
-                <p className="text-slate-400">
+                <p className="text-[var(--text-muted)]">
                   Importing data from {sourceLabel(detectedSource)}...
                 </p>
                 <div className="w-full bg-slate-700 rounded-full h-2 mt-4">
@@ -613,33 +618,25 @@ export default function DataImportPage() {
             <h3 className="font-semibold mb-2">Current Data Summary</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <div className="text-xs text-slate-400">Total Entries</div>
+                <div className="text-xs text-[var(--text-muted)]">Total Entries</div>
                 <div className="text-lg font-bold">
                   {currentSummary.totalEntries.toLocaleString()}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-slate-400">Total Accounts</div>
+                <div className="text-xs text-[var(--text-muted)]">Total Accounts</div>
                 <div className="text-lg font-bold">{currentSummary.totalAccounts}</div>
               </div>
               <div>
-                <div className="text-xs text-slate-400">Total Debits</div>
+                <div className="text-xs text-[var(--text-muted)]">Total Debits</div>
                 <div className="text-lg font-bold text-blue-400">
-                  {new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 0,
-                  }).format(currentSummary.totalDebit)}
+                  {fmtCurrency.custom({ minDecimals: 0 })(currentSummary.totalDebit)}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-slate-400">Total Credits</div>
+                <div className="text-xs text-[var(--text-muted)]">Total Credits</div>
                 <div className="text-lg font-bold text-green-400">
-                  {new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 0,
-                  }).format(currentSummary.totalCredit)}
+                  {fmtCurrency.custom({ minDecimals: 0 })(currentSummary.totalCredit)}
                 </div>
               </div>
             </div>
@@ -659,7 +656,7 @@ export default function DataImportPage() {
             <ArrowLeftRight className="h-5 w-5 text-blue-400" aria-hidden="true" />
             <h3 className="font-semibold">Data Reconciliation</h3>
           </div>
-          <p className="text-sm text-slate-400 mb-4">
+          <p className="text-sm text-[var(--text-muted)] mb-4">
             Upload a CSV file from your source system to compare against imported data. The
             reconciliation will check account-level balances.
           </p>
@@ -778,7 +775,7 @@ export default function DataImportPage() {
               <table className="w-full text-sm" role="grid" aria-label="Reconciliation details">
                 <thead>
                   <tr
-                    className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
+                    className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800"
                     role="row"
                   >
                     <th scope="col" className="pb-3 pr-4" role="columnheader">
@@ -821,18 +818,10 @@ export default function DataImportPage() {
                         >
                           <td className="py-3 pr-4 font-mono text-xs">{d.key}</td>
                           <td className="py-3 pr-4 text-right tabular-nums">
-                            {new Intl.NumberFormat('en-US', {
-                              style: 'currency',
-                              currency: 'USD',
-                              minimumFractionDigits: 0,
-                            }).format(d.expected)}
+                            {fmtCurrency.custom({ minDecimals: 0 })(d.expected)}
                           </td>
                           <td className="py-3 pr-4 text-right tabular-nums">
-                            {new Intl.NumberFormat('en-US', {
-                              style: 'currency',
-                              currency: 'USD',
-                              minimumFractionDigits: 0,
-                            }).format(d.actual)}
+                            {fmtCurrency.custom({ minDecimals: 0 })(d.actual)}
                           </td>
                           <td
                             className={`py-3 pr-4 text-right tabular-nums font-medium ${
@@ -843,12 +832,9 @@ export default function DataImportPage() {
                                   : 'text-red-400'
                             }`}
                           >
-                            {new Intl.NumberFormat('en-US', {
-                              style: 'currency',
-                              currency: 'USD',
-                              minimumFractionDigits: 0,
-                              signDisplay: 'exceptZero',
-                            }).format(d.diff)}
+                            {fmtCurrency.custom({ minDecimals: 0, signDisplay: 'exceptZero' })(
+                              d.diff
+                            )}
                           </td>
                           <td className="py-3">
                             {status === 'match' && (
@@ -894,7 +880,7 @@ export default function DataImportPage() {
               <table className="w-full text-sm" role="grid" aria-label="Import job history">
                 <thead>
                   <tr
-                    className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
+                    className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800"
                     role="row"
                   >
                     <th scope="col" className="pb-3 pr-4" role="columnheader">

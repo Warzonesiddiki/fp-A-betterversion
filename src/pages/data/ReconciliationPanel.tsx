@@ -34,7 +34,7 @@ export function ReconciliationPanel({
         <ArrowLeftRight className="h-5 w-5 text-blue-400" aria-hidden="true" />
         <h3 className="font-semibold">Data Reconciliation</h3>
       </div>
-      <p className="text-sm text-slate-400 mb-4">
+      <p className="text-sm text-[var(--text-muted)] mb-4">
         Upload a CSV file from your source system to compare against imported data. The
         reconciliation will check account-level balances.
       </p>

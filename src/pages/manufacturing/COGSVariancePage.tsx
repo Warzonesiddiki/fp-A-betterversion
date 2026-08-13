@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -21,6 +22,7 @@ import {
 } from 'recharts';
 
 export default function COGSVariancePage() {
+  const fmtCurrency = useCurrencyFormatter();
   const { pathname } = useLocation();
   const [helpOpen, setHelpOpen] = useState(false);
 
@@ -47,7 +49,7 @@ export default function COGSVariancePage() {
           <Activity className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Manufacturing Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import GL data with accounts starting with 5xx (Cost of Goods Sold).
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -64,7 +66,9 @@ export default function COGSVariancePage() {
               <Factory className="h-6 w-6 text-orange-400" />
               COGS Variance Analysis
             </h1>
-            <p className="text-sm text-slate-400 mt-1">Standard Costing & Production Efficiency</p>
+            <p className="text-sm text-[var(--text-muted)] mt-1">
+              Standard Costing & Production Efficiency
+            </p>
           </div>
           <button
             onClick={() => setHelpOpen(true)}
@@ -148,10 +152,7 @@ export default function COGSVariancePage() {
                           <div
                             className={`text-sm font-bold ${data.value >= 0 ? 'text-green-400' : 'text-red-400'}`}
                           >
-                            {new Intl.NumberFormat('en-US', {
-                              style: 'currency',
-                              currency: 'USD',
-                            }).format(data.value)}
+                            {fmtCurrency.custom()(data.value)}
                           </div>
                         </div>
                       );
@@ -202,11 +203,11 @@ export default function COGSVariancePage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between text-xs">
-                <span className="text-slate-400">Revaluation Reserve</span>
+                <span className="text-[var(--text-muted)]">Revaluation Reserve</span>
                 <span className="font-bold">$124,500</span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className="text-slate-400">Obsolescence Risk</span>
+                <span className="text-[var(--text-muted)]">Obsolescence Risk</span>
                 <span className="font-bold text-red-400">$42,000</span>
               </div>
               <div className="pt-2">

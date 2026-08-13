@@ -200,7 +200,7 @@ export function MultiCurrencyReporting() {
           <h2 className="text-xl font-bold flex items-center gap-2">
             <Globe className="h-5 w-5 text-green-400" /> Multi-Currency Reporting
           </h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {ENTITIES.length} entities &middot; Consolidated in {parentCurrency}
           </p>
         </div>
@@ -218,7 +218,10 @@ export function MultiCurrencyReporting() {
 
       <div className="flex items-center justify-between">
         <div>
-          <label htmlFor="reporting-currency" className="block text-xs text-slate-400 mb-1">
+          <label
+            htmlFor="reporting-currency"
+            className="block text-xs text-[var(--text-muted)] mb-1"
+          >
             Reporting Currency
           </label>
           <select
@@ -239,7 +242,7 @@ export function MultiCurrencyReporting() {
       <div className="grid grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Total Revenue</div>
+            <div className="text-xs text-[var(--text-muted)]">Total Revenue</div>
             <div className="text-lg font-bold tabular-nums">
               {formatMoney(consolidated.revenue, parentCurrency)}
             </div>
@@ -247,7 +250,7 @@ export function MultiCurrencyReporting() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Total Expenses</div>
+            <div className="text-xs text-[var(--text-muted)]">Total Expenses</div>
             <div className="text-lg font-bold tabular-nums">
               {formatMoney(consolidated.expenses, parentCurrency)}
             </div>
@@ -255,7 +258,7 @@ export function MultiCurrencyReporting() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Net Income</div>
+            <div className="text-xs text-[var(--text-muted)]">Net Income</div>
             <div
               className="text-lg font-bold tabular-nums"
               style={{ color: consolidated.netIncome >= 0 ? '#16A34A' : '#DC2626' }}
@@ -266,7 +269,7 @@ export function MultiCurrencyReporting() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Total Assets</div>
+            <div className="text-xs text-[var(--text-muted)]">Total Assets</div>
             <div className="text-lg font-bold tabular-nums">
               {formatMoney(consolidated.assets, parentCurrency)}
             </div>
@@ -278,7 +281,7 @@ export function MultiCurrencyReporting() {
         <CardContent className="p-0">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+              <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                 <th className="px-4 py-3" scope="col">
                   Entity
                 </th>

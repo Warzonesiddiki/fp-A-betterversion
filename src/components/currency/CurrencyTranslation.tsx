@@ -198,7 +198,9 @@ export function CurrencyTranslation() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold">ASC 830 Currency Translation</h2>
-          <p className="text-sm text-slate-400 mt-1">Temporal method with CTA adjustments</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">
+            Temporal method with CTA adjustments
+          </p>
         </div>
         <Badge
           variant={
@@ -319,7 +321,7 @@ export function CurrencyTranslation() {
       <div className="grid grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Local Total</div>
+            <div className="text-xs text-[var(--text-muted)]">Local Total</div>
             <div className="text-lg font-bold tabular-nums">
               {formatMoney(totals.local, entityCurrency)}
             </div>
@@ -327,7 +329,7 @@ export function CurrencyTranslation() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Translated</div>
+            <div className="text-xs text-[var(--text-muted)]">Translated</div>
             <div className="text-lg font-bold tabular-nums">
               {formatMoney(totals.translated, parentCurrency)}
             </div>
@@ -335,7 +337,7 @@ export function CurrencyTranslation() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">CTA Adjustment</div>
+            <div className="text-xs text-[var(--text-muted)]">CTA Adjustment</div>
             <div
               className="text-lg font-bold tabular-nums flex items-center justify-center gap-1"
               style={{ color: totals.cta >= 0 ? '#16A34A' : '#DC2626' }}
@@ -351,7 +353,7 @@ export function CurrencyTranslation() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Method</div>
+            <div className="text-xs text-[var(--text-muted)]">Method</div>
             <div className="text-lg font-bold">Temporal</div>
           </CardContent>
         </Card>

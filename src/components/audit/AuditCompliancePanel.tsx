@@ -11,12 +11,7 @@ import {
 } from '@/store/auditTrailStore';
 import { Button } from '@/components/ui/Button';
 import { formatPercent } from '@/utils/financialFormatting';
-import {
-  auditPanelTokens,
-  auditComplianceStatsTokens,
-  auditComplianceLinkTokens,
-  auditProgressTokens,
-} from './auditTokens';
+import { auditPanelTokens, auditComplianceStatsTokens, auditProgressTokens } from './auditTokens';
 
 // ---------------------------------------------------------------------------
 // Component
@@ -90,7 +85,7 @@ export function AuditCompliancePanel(): JSX.Element {
     >
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Compliance</h2>
-        <FileText className="h-5 w-5 text-gray-400" />
+        <FileText className="h-5 w-5 text-[var(--text-muted)]" />
       </div>
 
       {/* Stats cards */}
@@ -176,7 +171,7 @@ export function AuditCompliancePanel(): JSX.Element {
         </h3>
         <ul className="space-y-1 text-xs">
           {stats.topUsers.length === 0 ? (
-            <li className="text-gray-400 italic">No entries yet</li>
+            <li className="text-[var(--text-muted)] italic">No entries yet</li>
           ) : (
             stats.topUsers.map((u) => (
               <li
@@ -206,11 +201,7 @@ export function AuditCompliancePanel(): JSX.Element {
         </Button>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
           SOX Article 802 (7-year retention), GDPR Article 30 (ROPA), Article 17 (erasure), Article
-          15 (access). Coupled with{' '}
-          <a href="/audit/gdpr-consent" className={auditComplianceLinkTokens.link}>
-            GDPR consent registry
-          </a>
-          .
+          15 (access).
         </p>
       </div>
 

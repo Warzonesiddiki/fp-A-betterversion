@@ -8,6 +8,8 @@
  */
 
 import type { GLEntry, GLAccount } from '@/types';
+import { reportingCurrency } from '@/store/financialContextStore';
+import { currencyFormatter } from '@/utils/financialFormatting';
 import { divideMoney, roundTo, sumMoney, toDecimal } from '../utils/money';
 
 /**
@@ -638,17 +640,13 @@ export class NLQEngine {
     const metric = query.entities.metrics[0] || 'value';
     const top = data[0];
 
-    const formatted = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(total);
+    const formatted = currencyFormatter(reportingCurrency(), { maxDecimals: 0 })(total);
 
     switch (query.intent) {
       case 'kpi':
         return `Total ${metric}: ${formatted}`;
       case 'comparison':
-        return `${metric}: ${data.length} items. Top: ${top!.label} (${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(top!.value)})`;
+        return `${metric}: ${data.length} items. Top: ${top!.label} (${currencyFormatter(reportingCurrency(), { maxDecimals: 0 })(top!.value)})`;
       case 'trend':
         return `${metric} trend over ${data.length} periods. Total: ${formatted}`;
       case 'chart':

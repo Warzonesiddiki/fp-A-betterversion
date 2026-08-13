@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { Target } from 'lucide-react';
 import { formatPercent } from '@/utils/financialFormatting';
 import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 interface BreakevenResults {
   breakevenRevenue: number;
@@ -26,16 +27,8 @@ interface MonteCarloResults {
   p90: number;
   positivePct: number;
 }
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-  }).format(n);
-}
-
 export default function GoalSeekPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
   const [mode, setMode] = useState<'goalseek' | 'montecarlo' | 'breakeven'>('breakeven');
@@ -127,9 +120,9 @@ export default function GoalSeekPage() {
   if (!actuals && mode !== 'breakeven') {
     return (
       <div className="p-12 text-center">
-        <Target className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Target className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data for Monte Carlo simulations.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data for Monte Carlo simulations.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -163,7 +156,7 @@ export default function GoalSeekPage() {
           <CardContent className="p-4 space-y-4">
             <h3 className="font-semibold">Break-Even Analysis</h3>
             <div>
-              <label htmlFor="fixed-costs" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="fixed-costs" className="block text-xs text-[var(--text-muted)] mb-1">
                 Fixed Costs
               </label>
               <Input
@@ -176,7 +169,7 @@ export default function GoalSeekPage() {
             <div>
               <label
                 htmlFor="variable-cost-of-revenue"
-                className="block text-xs text-slate-400 mb-1"
+                className="block text-xs text-[var(--text-muted)] mb-1"
               >
                 Variable Cost (% of Revenue)
               </label>
@@ -190,7 +183,7 @@ export default function GoalSeekPage() {
             <div>
               <label
                 htmlFor="target-profit-for-goal-seek"
-                className="block text-xs text-slate-400 mb-1"
+                className="block text-xs text-[var(--text-muted)] mb-1"
               >
                 Target Profit (for goal seek)
               </label>
@@ -205,21 +198,21 @@ export default function GoalSeekPage() {
             {breakevenResults && (
               <div className="space-y-2 text-sm pt-4 border-t border-slate-800">
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Contribution Margin</span>
+                  <span className="text-[var(--text-muted)]">Contribution Margin</span>
                   <span className="font-semibold">
                     {formatPercent(breakevenResults.contributionMargin, 1)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Break-Even Revenue</span>
+                  <span className="text-[var(--text-muted)]">Break-Even Revenue</span>
                   <span className="font-semibold text-green-400">
-                    {formatCurrency(breakevenResults.breakevenRevenue)}
+                    {fmt.currency0(breakevenResults.breakevenRevenue)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Revenue for Target Profit</span>
+                  <span className="text-[var(--text-muted)]">Revenue for Target Profit</span>
                   <span className="font-semibold text-blue-400">
-                    {formatCurrency(breakevenResults.revenueForTarget)}
+                    {fmt.currency0(breakevenResults.revenueForTarget)}
                   </span>
                 </div>
               </div>
@@ -232,11 +225,11 @@ export default function GoalSeekPage() {
         <Card>
           <CardContent className="p-4 space-y-4">
             <h3 className="font-semibold">Monte Carlo Simulation</h3>
-            <p className="text-sm text-slate-400">
-              Base revenue: {actuals ? formatCurrency(actuals.revenue) : '$1,000,000'}
+            <p className="text-sm text-[var(--text-muted)]">
+              Base revenue: {actuals ? fmt.currency0(actuals.revenue) : '$1,000,000'}
             </p>
             <div>
-              <label htmlFor="iterations" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="iterations" className="block text-xs text-[var(--text-muted)] mb-1">
                 Iterations
               </label>
               <Input
@@ -253,28 +246,27 @@ export default function GoalSeekPage() {
             {monteCarloResults && !loading && (
               <div className="space-y-2 text-sm pt-4 border-t border-slate-800">
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Iterations</span>
+                  <span className="text-[var(--text-muted)]">Iterations</span>
                   <span>{monteCarloResults.count.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Avg Profit</span>
+                  <span className="text-[var(--text-muted)]">Avg Profit</span>
                   <span className="font-semibold">
-                    {formatCurrency(monteCarloResults.avgProfit)}
+                    {fmt.currency0(monteCarloResults.avgProfit)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Median</span>
-                  <span className="font-semibold">{formatCurrency(monteCarloResults.median)}</span>
+                  <span className="text-[var(--text-muted)]">Median</span>
+                  <span className="font-semibold">{fmt.currency0(monteCarloResults.median)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">P10 / P90</span>
+                  <span className="text-[var(--text-muted)]">P10 / P90</span>
                   <span>
-                    {formatCurrency(monteCarloResults.p10)} /{' '}
-                    {formatCurrency(monteCarloResults.p90)}
+                    {fmt.currency0(monteCarloResults.p10)} / {fmt.currency0(monteCarloResults.p90)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Positive Outcomes</span>
+                  <span className="text-[var(--text-muted)]">Positive Outcomes</span>
                   <span
                     className={
                       'font-semibold ' +

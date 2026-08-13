@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -36,16 +37,7 @@ import {
 } from 'recharts';
 import { SparklineChart } from '@/components/charts/SparklineChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface CategoryRow {
   category: string;
   inflows: number;
@@ -103,6 +95,7 @@ export function burnRateMonthly(outflows: number): number {
 }
 
 export default function CashForecastPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -141,9 +134,9 @@ export default function CashForecastPage() {
         headers: ['Category', 'Inflows', 'Outflows', 'Net'],
         rows: data.categories.map((c) => [
           c.category,
-          formatCurrency(c.inflows),
-          formatCurrency(c.outflows),
-          formatCurrency(c.net),
+          fmt.currency0(c.inflows),
+          fmt.currency0(c.outflows),
+          fmt.currency0(c.net),
         ]),
       },
       { title: 'Cash Forecast Report', companyName: 'FinPlan Pro' }
@@ -157,9 +150,9 @@ export default function CashForecastPage() {
         headers: ['Category', 'Inflows', 'Outflows', 'Net'],
         rows: data.categories.map((c) => [
           c.category,
-          formatCurrency(c.inflows),
-          formatCurrency(c.outflows),
-          formatCurrency(c.net),
+          fmt.currency0(c.inflows),
+          fmt.currency0(c.outflows),
+          fmt.currency0(c.net),
         ]),
       },
       { title: 'Cash_Forecast_Report' }
@@ -172,14 +165,14 @@ export default function CashForecastPage() {
       key: 'inflows',
       header: 'Inflows',
       align: 'right',
-      render: (_, r) => <span className="text-green-400">{formatCurrency(r.inflows)}</span>,
+      render: (_, r) => <span className="text-green-400">{fmt.currency0(r.inflows)}</span>,
       sortable: true,
     },
     {
       key: 'outflows',
       header: 'Outflows',
       align: 'right',
-      render: (_, r) => <span className="text-red-400">{formatCurrency(r.outflows)}</span>,
+      render: (_, r) => <span className="text-red-400">{fmt.currency0(r.outflows)}</span>,
       sortable: true,
     },
     {
@@ -188,7 +181,7 @@ export default function CashForecastPage() {
       align: 'right',
       render: (_, r) => (
         <span className={r.net >= 0 ? 'text-green-400' : 'text-red-400'}>
-          {formatCurrency(r.net)}
+          {fmt.currency0(r.net)}
         </span>
       ),
       sortable: true,
@@ -198,47 +191,49 @@ export default function CashForecastPage() {
   if (!data)
     return (
       <div className="p-12 text-center">
-        <DollarSign className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <DollarSign className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to forecast cash flow.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to forecast cash flow.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">13-Week Cash Forecast</h1>
-        <div className="flex gap-2">
-          <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
-            <FileText className="h-3.5 w-3.5 mr-1.5" />
-            PDF
-          </Button>
-          <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
-            <TableIcon className="h-3.5 w-3.5 mr-1.5" />
-            Excel
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="13-Week Cash Forecast"
+        actions={
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
+              <FileText className="h-3.5 w-3.5 mr-1.5" />
+              PDF
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
+              <TableIcon className="h-3.5 w-3.5 mr-1.5" />
+              Excel
+            </Button>
+          </div>
+        }
+      />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue
           label="Operating Cash"
-          value={formatCurrency(data.net)}
+          value={fmt.currency0(data.net)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Total Inflows"
-          value={formatCurrency(data.inflows)}
+          value={fmt.currency0(data.inflows)}
           icon={<TrendingUp className="h-4 w-4" />}
         />
         <KPIValue
           label="Total Outflows"
-          value={formatCurrency(data.outflows)}
+          value={fmt.currency0(data.outflows)}
           icon={<TrendingDown className="h-4 w-4" />}
         />
         <KPIValue
           label="Ending Cash"
-          value={formatCurrency(data.endingCash)}
+          value={fmt.currency0(data.endingCash)}
           icon={<Flame className="h-4 w-4" />}
         />
         <div className="col-span-2 md:col-span-4">
@@ -254,7 +249,7 @@ export default function CashForecastPage() {
                 width={300}
                 ariaLabel="Cash balance sparkline trend"
               />
-              <span className="text-sm text-slate-400">13-week trend</span>
+              <span className="text-sm text-[var(--text-muted)]">13-week trend</span>
             </CardContent>
           </Card>
         </div>
@@ -274,7 +269,7 @@ export default function CashForecastPage() {
                 tickFormatter={(v) => `$${Math.round(v / 1000)}k`}
               />
               <Tooltip
-                formatter={(v) => formatCurrency(Number(v))}
+                formatter={(v) => fmt.currency0(Number(v))}
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
               />
               <Legend />

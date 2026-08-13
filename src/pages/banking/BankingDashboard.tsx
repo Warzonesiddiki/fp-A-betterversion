@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { BankingEngine } from '@/engines/BankingEngine';
@@ -28,16 +29,7 @@ import {
 import type { GLEntry } from '@/types';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent as formatPercentDisplay } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /** Local formatPercent delegates to financialFormatting (GAP-1 F-0006). */
 function formatPercent(n: number): string {
   return formatPercentDisplay(n);
@@ -53,6 +45,7 @@ function toSectorEntries(entries: readonly GLEntry[]): GLEntry[] {
 }
 
 export default function BankingDashboard() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -79,14 +72,14 @@ export default function BankingDashboard() {
       {
         headers: ['Metric', 'Value'],
         rows: [
-          ['Gross Loans', formatCurrency(loanStats.grossLoans)],
-          ['Loan Loss Reserve', formatCurrency(loanStats.reserveBalance)],
+          ['Gross Loans', fmt.currency0(loanStats.grossLoans)],
+          ['Loan Loss Reserve', fmt.currency0(loanStats.reserveBalance)],
           ['NPL Ratio', formatPercent(loanStats.nplRatio)],
           ['Coverage Ratio', formatPercent(loanStats.coverageRatio)],
-          ['Provision Expense', formatCurrency(loanStats.provisionExpense)],
-          ['Tier 1 Capital', formatCurrency(capitalStats.tier1Capital)],
-          ['Total Capital', formatCurrency(capitalStats.totalCapital)],
-          ['RWA', formatCurrency(capitalStats.rwa)],
+          ['Provision Expense', fmt.currency0(loanStats.provisionExpense)],
+          ['Tier 1 Capital', fmt.currency0(capitalStats.tier1Capital)],
+          ['Total Capital', fmt.currency0(capitalStats.totalCapital)],
+          ['RWA', fmt.currency0(capitalStats.rwa)],
           ['Tier 1 Ratio', formatPercent(capitalStats.tier1Ratio)],
           ['Total Capital Ratio', formatPercent(capitalStats.totalRatio)],
           ['Leverage Ratio', formatPercent(capitalStats.leverageRatio)],
@@ -99,9 +92,9 @@ export default function BankingDashboard() {
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center" aria-label="Banking Dashboard - No Data">
-        <Landmark className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <Landmark className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
         <h2 className="text-xl font-semibold mb-2">No Banking Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import GL data with banking account codes to view dashboard.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -111,31 +104,29 @@ export default function BankingDashboard() {
 
   return (
     <main className="p-6 space-y-6" aria-label="Banking Dashboard">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Banking Dashboard</h1>
-          <p className="text-sm text-slate-400">
-            Loan loss, capital adequacy, and net interest margin analytics
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExport}
-            aria-label="Export banking report"
-          >
-            <Download className="h-4 w-4 mr-1" /> Export
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => navigate('/banking/loan-loss')}
-            aria-label="View loan loss details"
-          >
-            Loan Loss <ArrowRight className="h-4 w-4 ml-1" />
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Banking Dashboard"
+        purpose="Loan loss, capital adequacy, and net interest margin analytics"
+        actions={
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExport}
+              aria-label="Export banking report"
+            >
+              <Download className="h-4 w-4 mr-1" /> Export
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => navigate('/banking/loan-loss')}
+              aria-label="View loan loss details"
+            >
+              Loan Loss <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        }
+      />
 
       {/* KPI Section */}
       <section
@@ -144,7 +135,7 @@ export default function BankingDashboard() {
       >
         <KPIValue
           label="Gross Loans"
-          value={formatCurrency(loanStats.grossLoans)}
+          value={fmt.currency0(loanStats.grossLoans)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
@@ -174,11 +165,11 @@ export default function BankingDashboard() {
             <div className="space-y-3">
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">Reserve Balance</span>
-                <span className="font-semibold">{formatCurrency(loanStats.reserveBalance)}</span>
+                <span className="font-semibold">{fmt.currency0(loanStats.reserveBalance)}</span>
               </div>
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">NPL Balance</span>
-                <span className="font-semibold">{formatCurrency(loanStats.nplBalance)}</span>
+                <span className="font-semibold">{fmt.currency0(loanStats.nplBalance)}</span>
               </div>
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">Coverage Ratio</span>
@@ -186,7 +177,7 @@ export default function BankingDashboard() {
               </div>
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">Provision Expense</span>
-                <span className="font-semibold">{formatCurrency(loanStats.provisionExpense)}</span>
+                <span className="font-semibold">{fmt.currency0(loanStats.provisionExpense)}</span>
               </div>
             </div>
           </CardContent>
@@ -201,15 +192,15 @@ export default function BankingDashboard() {
             <div className="space-y-3">
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">Tier 1 Capital</span>
-                <span className="font-semibold">{formatCurrency(capitalStats.tier1Capital)}</span>
+                <span className="font-semibold">{fmt.currency0(capitalStats.tier1Capital)}</span>
               </div>
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">Tier 2 Capital</span>
-                <span className="font-semibold">{formatCurrency(capitalStats.tier2Capital)}</span>
+                <span className="font-semibold">{fmt.currency0(capitalStats.tier2Capital)}</span>
               </div>
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">Risk-Weighted Assets</span>
-                <span className="font-semibold">{formatCurrency(capitalStats.rwa)}</span>
+                <span className="font-semibold">{fmt.currency0(capitalStats.rwa)}</span>
               </div>
               <div className="flex justify-between items-center p-3 bg-slate-800 rounded-lg">
                 <span className="text-sm text-slate-300">Total Capital Ratio</span>
@@ -233,17 +224,17 @@ export default function BankingDashboard() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div className="p-3 bg-slate-800 rounded-lg text-center">
               <div className="text-xs text-slate-400 mb-1">Interest Income</div>
-              <div className="font-semibold">{formatCurrency(nimStats.interestIncome ?? 0)}</div>
+              <div className="font-semibold">{fmt.currency0(nimStats.interestIncome ?? 0)}</div>
             </div>
             <div className="p-3 bg-slate-800 rounded-lg text-center">
               <div className="text-xs text-slate-400 mb-1">Interest Expense</div>
               <div className="font-semibold">
-                {formatCurrency(nimStats.interestExpense ?? nimStats.interestExpense ?? 0)}
+                {fmt.currency0(nimStats.interestExpense ?? nimStats.interestExpense ?? 0)}
               </div>
             </div>
             <div className="p-3 bg-slate-800 rounded-lg text-center">
               <div className="text-xs text-slate-400 mb-1">Net Interest Income</div>
-              <div className="font-semibold">{formatCurrency(nimStats.netInterestMargin ?? 0)}</div>
+              <div className="font-semibold">{fmt.currency0(nimStats.netInterestMargin ?? 0)}</div>
             </div>
             <div className="p-3 bg-slate-800 rounded-lg text-center">
               <div className="text-xs text-slate-400 mb-1">NIM</div>

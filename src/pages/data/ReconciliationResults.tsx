@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/Button';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { Badge } from '@/components/ui/Badge';
 import { CheckCircle2, AlertTriangle, XCircle, Download } from 'lucide-react';
 
@@ -13,20 +14,10 @@ interface ReconciliationResultsProps {
   result: RecResult;
 }
 
-const currencyFmt = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 0,
-});
-
-const currencySignFmt = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 0,
-  signDisplay: 'exceptZero',
-});
-
 export function ReconciliationResults({ result }: ReconciliationResultsProps) {
+  const fmtCurrency = useCurrencyFormatter();
+  const currencyFmt = fmtCurrency.custom({ minDecimals: 0 });
+  const currencySignFmt = fmtCurrency.custom({ minDecimals: 0, signDisplay: 'exceptZero' });
   return (
     <div className="p-4">
       <h3 className="font-semibold mb-3">Reconciliation Results</h3>
@@ -66,7 +57,7 @@ export function ReconciliationResults({ result }: ReconciliationResultsProps) {
         <table className="w-full text-sm" role="grid" aria-label="Reconciliation details">
           <thead>
             <tr
-              className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
+              className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800"
               role="row"
             >
               <th className="pb-3 pr-4" role="columnheader" scope="col">
@@ -104,12 +95,8 @@ export function ReconciliationResults({ result }: ReconciliationResultsProps) {
                     }`}
                   >
                     <td className="py-3 pr-4 font-mono text-xs">{d.key}</td>
-                    <td className="py-3 pr-4 text-right tabular-nums">
-                      {currencyFmt.format(d.expected)}
-                    </td>
-                    <td className="py-3 pr-4 text-right tabular-nums">
-                      {currencyFmt.format(d.actual)}
-                    </td>
+                    <td className="py-3 pr-4 text-right tabular-nums">{currencyFmt(d.expected)}</td>
+                    <td className="py-3 pr-4 text-right tabular-nums">{currencyFmt(d.actual)}</td>
                     <td
                       className={`py-3 pr-4 text-right tabular-nums font-medium ${
                         Math.abs(d.diff) < 0.01
@@ -119,7 +106,7 @@ export function ReconciliationResults({ result }: ReconciliationResultsProps) {
                             : 'text-red-400'
                       }`}
                     >
-                      {currencySignFmt.format(d.diff)}
+                      {currencySignFmt(d.diff)}
                     </td>
                     <td className="py-3">
                       {status === 'match' && (

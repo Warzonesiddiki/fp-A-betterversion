@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
+import { reportingCurrency } from '@/store/financialContextStore';
 import { Card, CardHeader, CardTitle, CardContent } from './Card';
 import { Button } from './Button';
 import { Badge } from './Badge';
 import { cn } from '@/utils/cn';
 import { roundTo, sumMoney } from '@/utils/money';
-import { formatPercent } from '@/utils/financialFormatting';
+import { currencyFormatter, formatPercent } from '@/utils/financialFormatting';
 import {
   type ReconciliationReport,
   type ReconciliationLine,
@@ -392,10 +393,5 @@ function MetricCard({
 // =============================================================================
 
 function formatAmount(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
+  return currencyFormatter(reportingCurrency(), { decimals: 0 })(amount);
 }

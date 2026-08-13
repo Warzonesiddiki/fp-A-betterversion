@@ -20,16 +20,7 @@ import {
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatCompact, formatNumber } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 export type ForecastMethod = 'linear' | 'cagr' | 'last-3' | 'flat';
 export type SeasonalityPreset = 'standard' | 'q4_spike' | 'summer_peak' | 'flat';
 
@@ -151,6 +142,7 @@ const accuracyMetrics = [
 ];
 
 export default function ForecastBuilderPage() {
+  const fmt = useCurrencyFormatter();
   const _navigate = useNavigate();
   const [method, setMethod] = useState<ForecastMethod>('linear');
   const [seasonality, setSeasonality] = useState<SeasonalityPreset>('standard');
@@ -198,10 +190,10 @@ export default function ForecastBuilderPage() {
           headers: ['Month', 'Actual', 'Forecast', 'Low', 'High'],
           rows: historicalData.map((d) => [
             d.month,
-            d.actual ? formatCurrency(d.actual) : '—',
-            formatCurrency(d.forecast),
-            d.low ? formatCurrency(d.low) : '—',
-            d.high ? formatCurrency(d.high) : '—',
+            d.actual ? fmt.currency0(d.actual) : '—',
+            fmt.currency0(d.forecast),
+            d.low ? fmt.currency0(d.low) : '—',
+            d.high ? fmt.currency0(d.high) : '—',
           ]),
         },
         { title: 'Forecast Report', subtitle: `Method: ${method} · Seasonality: ${seasonality}` }
@@ -245,7 +237,7 @@ export default function ForecastBuilderPage() {
           <h1 id="forecast-builder-heading" className="text-2xl font-bold">
             Forecast Builder
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Driver-based forecasting with confidence intervals
           </p>
         </div>
@@ -279,7 +271,7 @@ export default function ForecastBuilderPage() {
         aria-label="Forecast key performance indicators"
         data-testid="forecast-kpis"
       >
-        <KPIValue label="Forecast Total" value={formatCurrency(totalForecast)} />
+        <KPIValue label="Forecast Total" value={fmt.currency0(totalForecast)} />
         <KPIValue label="Confidence" value={`${avgConfidence}%`} trend="up" />
         <KPIValue
           label="Method"
@@ -306,7 +298,7 @@ export default function ForecastBuilderPage() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 block">
+              <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2 block">
                 Auto-Fill Method
               </div>
               <div className="flex flex-wrap gap-2">
@@ -334,7 +326,7 @@ export default function ForecastBuilderPage() {
               </div>
             </div>
             <div>
-              <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 block">
+              <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2 block">
                 Seasonality Preset
               </div>
               <div className="flex flex-wrap gap-2">
@@ -368,7 +360,7 @@ export default function ForecastBuilderPage() {
                 {
                   driver: 'Revenue Growth',
                   formula: 'base × (1 + growth)',
-                  impact: `→ ${formatCurrency(forecastSeries[0] || 0)}`,
+                  impact: `→ ${fmt.currency0(forecastSeries[0] || 0)}`,
                 },
                 {
                   driver: 'Seasonality Weight',
@@ -378,7 +370,7 @@ export default function ForecastBuilderPage() {
                 {
                   driver: 'Confidence Band',
                   formula: '±6% widening 1.5%/period',
-                  impact: `${formatCurrency(lowBand[0] || 0)} – ${formatCurrency(highBand[0] || 0)}`,
+                  impact: `${fmt.currency0(lowBand[0] || 0)} – ${fmt.currency0(highBand[0] || 0)}`,
                 },
                 {
                   driver: 'Driver: Headcount',
@@ -414,7 +406,7 @@ export default function ForecastBuilderPage() {
                 <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${formatCompact(v)}`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                 />
                 <Legend />
                 <Area dataKey="high" fill="#3b82f6" fillOpacity={0.1} stroke="none" name="High" />

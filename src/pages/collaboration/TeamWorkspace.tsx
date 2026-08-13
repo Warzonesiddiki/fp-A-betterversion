@@ -263,9 +263,9 @@ export function TeamWorkspace() {
         >
           Skip to import action
         </a>
-        <Users className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <Users className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
         <h2 className="text-xl font-semibold mb-2">No Team Workspace Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view team workspace.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view team workspace.</p>
         <Button
           id="import-btn"
           onClick={() => navigate('/data/gl-upload')}
@@ -394,7 +394,7 @@ export function TeamWorkspace() {
                   ariaLabel="Team workspace accounts"
                 />
               ) : (
-                <p className="text-slate-400">No account data available.</p>
+                <p className="text-[var(--text-muted)]">No account data available.</p>
               )}
             </CardContent>
           </Card>
@@ -419,7 +419,7 @@ export function TeamWorkspace() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className="relative">
                   <Search
-                    className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]"
                     aria-hidden="true"
                   />
                   <Input
@@ -453,7 +453,9 @@ export function TeamWorkspace() {
                   ariaLabel="Team members"
                 />
               ) : (
-                <p className="text-slate-400">No team members match the current filters.</p>
+                <p className="text-[var(--text-muted)]">
+                  No team members match the current filters.
+                </p>
               )}
             </CardContent>
           </Card>

@@ -604,7 +604,7 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
   if (!config || !model) {
     return (
       <main className="p-12 text-center" role="main" aria-label="Sector driver model unavailable">
-        <span className="mx-auto mb-4 block text-3xl text-slate-400" aria-hidden="true">
+        <span className="mx-auto mb-4 block text-3xl text-[var(--text-muted)]" aria-hidden="true">
           ◇
         </span>
         <h2 className="mb-2 text-xl font-semibold">Sector configuration unavailable</h2>
@@ -615,13 +615,13 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center" role="main" aria-label={`${config.name} - No Data`}>
-        <span className="mx-auto mb-4 block text-3xl text-slate-400" aria-hidden="true">
+        <span className="mx-auto mb-4 block text-3xl text-[var(--text-muted)]" aria-hidden="true">
           ▣
         </span>
         <h2 className="mb-2 text-xl font-semibold">
           {legacyCopy.title.replace(' Dashboard', '')} — No Data
         </h2>
-        <p className="mb-6 text-slate-400">
+        <p className="mb-6 text-[var(--text-muted)]">
           Import GL data to calculate live sector KPIs and driver scenarios.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -666,7 +666,7 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
             Phase 3 Sector Depth
           </p>
           <h1 className="text-2xl font-bold">{config.name} Driver Modeling Dashboard</h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-[var(--text-muted)]">
             {config.description} — KPIs are recomputed from imported GL entries plus live driver
             controls.
           </p>
@@ -692,7 +692,7 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
                 <span className="text-2xl font-black tabular-nums">
                   {formatPercent(drivers[control.key], 1)}
                 </span>
-                <span className="text-xs text-slate-400">live</span>
+                <span className="text-xs text-[var(--text-muted)]">live</span>
               </div>
               <input
                 aria-label={control.label}
@@ -761,7 +761,7 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
                 <span className="font-mono text-sm">{formatMetricValue(signal)}</span>
               </div>
             ))}
-            <div className="pt-2 text-xs text-slate-400">
+            <div className="pt-2 text-xs text-[var(--text-muted)]">
               Source: {formatNumber(entries.length)} GL rows. Sector UI modules:{' '}
               {config.enabledModules.join(', ')}.
             </div>
@@ -778,7 +778,7 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
                   key={item}
                   className="rounded-lg border border-slate-200/70 px-3 py-2 dark:border-slate-700/70"
                 >
-                  <span className="mr-2 text-xs text-slate-400">{index + 1}</span>
+                  <span className="mr-2 text-xs text-[var(--text-muted)]">{index + 1}</span>
                   {item}
                 </div>
               ))}

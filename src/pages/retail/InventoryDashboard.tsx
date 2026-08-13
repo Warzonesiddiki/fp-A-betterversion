@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -34,19 +35,11 @@ import {
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatCompact } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 export default function InventoryDashboard() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -120,7 +113,7 @@ export default function InventoryDashboard() {
           <Package className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Inventory Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your GL data with inventory accounts (121x) and COGS (50xx) to view inventory
           metrics.
         </p>
@@ -131,36 +124,36 @@ export default function InventoryDashboard() {
 
   return (
     <div className="p-6 space-y-6" role="main" aria-label="Inventory Dashboard page">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Inventory Dashboard</h1>
-          <p className="text-sm text-slate-400">Stock valuation, turnover, and GMROI analysis</p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleExport}
-            aria-label="Export inventory data"
-          >
-            <Download className="h-4 w-4 mr-2" aria-hidden="true" />
-            Export
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => navigate('/retail/inventory-planning')}
-            aria-label="Go to planning"
-          >
-            <Truck className="h-4 w-4 mr-2" aria-hidden="true" />
-            Planning
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Inventory Dashboard"
+        purpose="Stock valuation, turnover, and GMROI analysis"
+        actions={
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExport}
+              aria-label="Export inventory data"
+            >
+              <Download className="h-4 w-4 mr-2" aria-hidden="true" />
+              Export
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => navigate('/retail/inventory-planning')}
+              aria-label="Go to planning"
+            >
+              <Truck className="h-4 w-4 mr-2" aria-hidden="true" />
+              Planning
+            </Button>
+          </div>
+        }
+      />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
           label="Total Inventory Value"
-          value={formatCurrency(stats.totalValue)}
+          value={fmt.currency0(stats.totalValue)}
           icon={<Package className="h-4 w-4" />}
           trend="up"
         />
@@ -212,9 +205,7 @@ export default function InventoryDashboard() {
                       borderRadius: 8,
                     }}
                     formatter={(v, name) =>
-                      name === 'Value'
-                        ? formatCurrency(Number(v))
-                        : `${formatNumber(Number(v), 1)}x`
+                      name === 'Value' ? fmt.currency0(Number(v)) : `${formatNumber(Number(v), 1)}x`
                     }
                   />
                   <Legend />
@@ -265,7 +256,7 @@ export default function InventoryDashboard() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -279,7 +270,7 @@ export default function InventoryDashboard() {
                     />
                     <span>{cat.name}</span>
                   </div>
-                  <span className="font-medium">{formatCurrency(cat.value)}</span>
+                  <span className="font-medium">{fmt.currency0(cat.value)}</span>
                 </div>
               ))}
             </div>

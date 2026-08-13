@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -19,16 +20,7 @@ import {
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatCompact } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 const LEVELS = [
   { level: 'Junior', min: 50000, max: 75000, headcount: 45, avgPerf: 3.2 },
   { level: 'Mid', min: 75000, max: 110000, headcount: 80, avgPerf: 3.5 },
@@ -39,6 +31,7 @@ const LEVELS = [
 ];
 
 export default function CompModelingPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
   const [meritPct, setMeritPct] = useState(3.5);
@@ -110,7 +103,7 @@ export default function CompModelingPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <BarChart3 className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <BarChart3 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Compensation Data</h2>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
@@ -118,16 +111,16 @@ export default function CompModelingPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Compensation Modeling</h1>
-          <p className="text-sm text-slate-400">Model merit increases and budget impact</p>
-        </div>
-        <Button variant="outline" onClick={handleExport}>
-          <Download className="h-4 w-4 mr-2" />
-          Export
-        </Button>
-      </div>
+      <PageHeader
+        title="Compensation Modeling"
+        purpose="Model merit increases and budget impact"
+        actions={
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+        }
+      />
 
       <div className="grid gap-4 md:grid-cols-4">
         <KPIValue
@@ -137,12 +130,12 @@ export default function CompModelingPage() {
         />
         <KPIValue
           label="Current Total Comp"
-          value={formatCurrency(totals.currentTotal)}
+          value={fmt.currency0(totals.currentTotal)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Budget Impact"
-          value={formatCurrency(totals.budgetImpact)}
+          value={fmt.currency0(totals.budgetImpact)}
           icon={<TrendingUp className="h-4 w-4" />}
           trend="down"
         />
@@ -167,7 +160,7 @@ export default function CompModelingPage() {
             onChange={(e) => setMeritPct(parseFloat(e.target.value))}
             className="w-full accent-blue-500"
           />
-          <div className="flex justify-between text-xs text-slate-400 mt-1">
+          <div className="flex justify-between text-xs text-[var(--text-muted)] mt-1">
             <span>0%</span>
             <span>5%</span>
             <span>10%</span>
@@ -187,22 +180,40 @@ export default function CompModelingPage() {
               </caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Level
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     HC
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Band
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Current Cost
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     New Cost
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Increase
                   </th>
                 </tr>
@@ -213,14 +224,14 @@ export default function CompModelingPage() {
                     <td className="py-2 px-3 font-medium">{l.level}</td>
                     <td className="text-right py-2 px-3">{l.headcount}</td>
                     <td className="text-right py-2 px-3">
-                      {formatCurrency(l.min)} – {formatCurrency(l.max)}
+                      {fmt.currency0(l.min)} – {fmt.currency0(l.max)}
                     </td>
-                    <td className="text-right py-2 px-3">{formatCurrency(l.totalCost)}</td>
+                    <td className="text-right py-2 px-3">{fmt.currency0(l.totalCost)}</td>
                     <td className="text-right py-2 px-3 text-blue-400">
-                      {formatCurrency(l.newCost)}
+                      {fmt.currency0(l.newCost)}
                     </td>
                     <td className="text-right py-2 px-3 text-green-400">
-                      +{formatCurrency(l.increase)}
+                      +{fmt.currency0(l.increase)}
                     </td>
                   </tr>
                 ))}
@@ -228,12 +239,12 @@ export default function CompModelingPage() {
                   <td className="py-2 px-3">Total</td>
                   <td className="text-right py-2 px-3">{totals.totalHeadcount}</td>
                   <td className="text-right py-2 px-3">—</td>
-                  <td className="text-right py-2 px-3">{formatCurrency(totals.currentTotal)}</td>
+                  <td className="text-right py-2 px-3">{fmt.currency0(totals.currentTotal)}</td>
                   <td className="text-right py-2 px-3 text-blue-400">
-                    {formatCurrency(totals.newTotal)}
+                    {fmt.currency0(totals.newTotal)}
                   </td>
                   <td className="text-right py-2 px-3 text-green-400">
-                    +{formatCurrency(totals.budgetImpact)}
+                    +{fmt.currency0(totals.budgetImpact)}
                   </td>
                 </tr>
               </tbody>
@@ -258,7 +269,7 @@ export default function CompModelingPage() {
                   border: '1px solid #334155',
                   borderRadius: 8,
                 }}
-                formatter={(v) => formatCurrency(Number(v))}
+                formatter={(v) => fmt.currency0(Number(v))}
               />
               <Legend />
               <Line dataKey="current" name="Current Path" stroke="#64748b" strokeDasharray="5 5" />

@@ -149,7 +149,7 @@ export default function HelpPage() {
               </div>
               <div>
                 <h3 className="font-semibold text-sm">{t.title}</h3>
-                <p className="text-xs text-slate-400 mt-0.5">{t.desc}</p>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">{t.desc}</p>
               </div>
             </CardContent>
           </Card>
@@ -167,11 +167,11 @@ export default function HelpPage() {
               <tr>
                 <th
                   scope="col"
-                  className="text-left font-medium text-slate-300 py-1 pr-2 w-[120px]"
+                  className="text-left font-medium text-[var(--text-secondary)] py-1 pr-2 w-[120px]"
                 >
                   Shortcut
                 </th>
-                <th scope="col" className="text-left font-medium text-slate-300 py-1">
+                <th scope="col" className="text-left font-medium text-[var(--text-secondary)] py-1">
                   Action
                 </th>
               </tr>
@@ -184,7 +184,7 @@ export default function HelpPage() {
                       {s.key}
                     </kbd>
                   </th>
-                  <td className="py-0.5 text-slate-400 align-top">{s.desc}</td>
+                  <td className="py-0.5 text-[var(--text-muted)] align-top">{s.desc}</td>
                 </tr>
               ))}
             </tbody>
@@ -263,7 +263,7 @@ export default function HelpPage() {
                   )}
                 </button>
                 {expandedFaq === i && (
-                  <div className="px-3 pb-3 text-sm text-slate-400 border-t border-slate-700 pt-2">
+                  <div className="px-3 pb-3 text-sm text-[var(--text-muted)] border-t border-slate-700 pt-2">
                     {faq.a}
                   </div>
                 )}

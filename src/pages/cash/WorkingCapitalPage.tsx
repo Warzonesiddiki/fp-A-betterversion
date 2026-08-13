@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -28,16 +29,7 @@ import {
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface ComponentRow {
   component: string;
   amount: number;
@@ -157,6 +149,7 @@ export function computeWorkingCapital(entries: readonly WCEntry[]): WCSummary {
 }
 
 export default function WorkingCapitalPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -187,7 +180,7 @@ export default function WorkingCapitalPage() {
         headers: ['Component', 'Amount', 'Type', 'Days'],
         rows: data.components.map((c) => [
           c.component,
-          formatCurrency(c.amount),
+          fmt.currency0(c.amount),
           c.ratio,
           c.days.toString(),
         ]),
@@ -203,7 +196,7 @@ export default function WorkingCapitalPage() {
         headers: ['Component', 'Amount', 'Type', 'Days'],
         rows: data.components.map((c) => [
           c.component,
-          formatCurrency(c.amount),
+          fmt.currency0(c.amount),
           c.ratio,
           c.days.toString(),
         ]),
@@ -218,7 +211,7 @@ export default function WorkingCapitalPage() {
       key: 'amount',
       header: 'Amount',
       align: 'right',
-      render: (_, r) => formatCurrency(r.amount),
+      render: (_, r) => fmt.currency0(r.amount),
       sortable: true,
     },
     { key: 'ratio', header: 'Type', sortable: true },
@@ -234,32 +227,34 @@ export default function WorkingCapitalPage() {
   if (!data)
     return (
       <div className="p-12 text-center">
-        <Scale className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Scale className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to analyze working capital.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to analyze working capital.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Working Capital</h1>
-        <div className="flex gap-2">
-          <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
-            <FileText className="h-3.5 w-3.5 mr-1.5" />
-            PDF
-          </Button>
-          <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
-            <TableIcon className="h-3.5 w-3.5 mr-1.5" />
-            Excel
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Working Capital"
+        actions={
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
+              <FileText className="h-3.5 w-3.5 mr-1.5" />
+              PDF
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
+              <TableIcon className="h-3.5 w-3.5 mr-1.5" />
+              Excel
+            </Button>
+          </div>
+        }
+      />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue
           label="Working Capital"
-          value={formatCurrency(data.wc)}
+          value={fmt.currency0(data.wc)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
@@ -281,25 +276,25 @@ export default function WorkingCapitalPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-3 text-center">
-            <div className="text-xs text-slate-400">DSO</div>
+            <div className="text-xs text-[var(--text-muted)]">DSO</div>
             <div className="text-lg font-bold">{data.dso} days</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-3 text-center">
-            <div className="text-xs text-slate-400">DIO</div>
+            <div className="text-xs text-[var(--text-muted)]">DIO</div>
             <div className="text-lg font-bold">{data.dio} days</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-3 text-center">
-            <div className="text-xs text-slate-400">DPO</div>
+            <div className="text-xs text-[var(--text-muted)]">DPO</div>
             <div className="text-lg font-bold">{data.dpo} days</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-3 text-center">
-            <div className="text-xs text-slate-400">CCC</div>
+            <div className="text-xs text-[var(--text-muted)]">CCC</div>
             <div
               className={`text-lg font-bold ${data.ccc <= 30 ? 'text-green-400' : data.ccc <= 60 ? 'text-yellow-400' : 'text-red-400'}`}
             >
@@ -323,7 +318,7 @@ export default function WorkingCapitalPage() {
                 tickFormatter={(v) => `$${Math.round(v / 1000)}k`}
               />
               <Tooltip
-                formatter={(v) => formatCurrency(Number(v))}
+                formatter={(v) => fmt.currency0(Number(v))}
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
               />
               <Legend />

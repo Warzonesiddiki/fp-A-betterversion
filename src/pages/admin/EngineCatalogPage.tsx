@@ -18,6 +18,7 @@
  * shows what actually exists, including anything that fails to load.
  */
 import { useCallback, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { engineRegistry } from '@/engines/EngineRegistry';
 import { ENGINE_IDS, ENGINE_COUNT } from '@/engines/engineManifest.generated';
 import { Button } from '@/components/ui/Button';
@@ -90,13 +91,10 @@ export default function EngineCatalogPage() {
 
   return (
     <div className="p-6 space-y-6" aria-label="Engine Catalog">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Engine Catalog</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          Every calculation engine in the build, loadable on demand. Use this to verify an engine is
-          genuinely wired rather than merely present in the source tree.
-        </p>
-      </div>
+      <PageHeader
+        title="Engine Catalog"
+        purpose="Every calculation engine in the build, loadable on demand. Use this to verify an engine is genuinely wired rather than merely present in the source tree."
+      />
 
       <div className="flex flex-wrap items-center gap-3">
         <Input
@@ -160,7 +158,9 @@ export default function EngineCatalogPage() {
                     </span>
                   )}
                   {row.state === 'loading' && <span className="text-slate-500">Loading…</span>}
-                  {row.state === 'idle' && <span className="text-slate-400">Not loaded</span>}
+                  {row.state === 'idle' && (
+                    <span className="text-[var(--text-muted)]">Not loaded</span>
+                  )}
                 </td>
                 <td className="py-2 pr-4 text-xs text-slate-600 dark:text-slate-300">
                   {row.state === 'loaded'

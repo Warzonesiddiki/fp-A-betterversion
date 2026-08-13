@@ -1,4 +1,6 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
 import { DollarSign, TrendingUp, BarChart3, Calculator, Download } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -23,71 +25,62 @@ import { formatPercent } from '@/utils/financialFormatting';
 
 const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
-const valuationColumns: Column[] = [
-  { key: 'name', header: 'Property', sortable: true },
-  {
-    key: 'purchasePrice',
-    header: 'Cost Basis',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v as number),
-  },
-  {
-    key: 'currentVal',
-    header: 'Appraised Value',
-    align: 'right',
-    render: (v) =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 0,
-      }).format(v as number),
-  },
-  {
-    key: 'gain',
-    header: 'Unrealized Gain',
-    align: 'right',
-    render: (v) => {
-      const num = v as number;
-      return (
-        <span className={num >= 0 ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}>
-          {new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            signDisplay: 'always',
-            maximumFractionDigits: 0,
-          }).format(num)}
-        </span>
-      );
-    },
-  },
-  {
-    key: 'gainPct',
-    header: 'Appreciation %',
-    align: 'right',
-    render: (v) => {
-      const num = v as number;
-      return (
-        <span className={num >= 0 ? 'text-green-600' : 'text-red-600'}>
-          {num >= 0 ? '+' : ''}
-          {formatPercent(num, 1)}
-        </span>
-      );
-    },
-  },
-  {
-    key: 'capRate',
-    header: 'Implied Cap Rate',
-    align: 'right',
-    render: (v) => `${formatPercent(v as number, 2)}`,
-  },
-];
-
 export default function ValuationPage() {
+  const fmtCurrency = useCurrencyFormatter();
+
+  const valuationColumns = useMemo<Column[]>(
+    () => [
+      { key: 'name', header: 'Property', sortable: true },
+      {
+        key: 'purchasePrice',
+        header: 'Cost Basis',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
+      },
+      {
+        key: 'currentVal',
+        header: 'Appraised Value',
+        align: 'right',
+        render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
+      },
+      {
+        key: 'gain',
+        header: 'Unrealized Gain',
+        align: 'right',
+        render: (v) => {
+          const num = v as number;
+          return (
+            <span
+              className={num >= 0 ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}
+            >
+              {fmtCurrency.custom({ maxDecimals: 0, signDisplay: 'always' })(num)}
+            </span>
+          );
+        },
+      },
+      {
+        key: 'gainPct',
+        header: 'Appreciation %',
+        align: 'right',
+        render: (v) => {
+          const num = v as number;
+          return (
+            <span className={num >= 0 ? 'text-green-600' : 'text-red-600'}>
+              {num >= 0 ? '+' : ''}
+              {formatPercent(num, 1)}
+            </span>
+          );
+        },
+      },
+      {
+        key: 'capRate',
+        header: 'Implied Cap Rate',
+        align: 'right',
+        render: (v) => `${formatPercent(v as number, 2)}`,
+      },
+    ],
+    [fmtCurrency]
+  );
   const { entries } = useGLStore();
   const [periodId, setPeriodId] = useState('P01');
 
@@ -141,7 +134,7 @@ export default function ValuationPage() {
           <Calculator className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Valuation Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your General Ledger and fixed asset schedule to view property valuations and
           appreciation analysis.
         </p>
@@ -158,15 +151,10 @@ export default function ValuationPage() {
     >
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Property Valuation
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Fair value assessment, appraisal tracking, and appreciation analysis across your
-            portfolio.
-          </p>
-        </div>
+        <PageHeader
+          title="Property Valuation"
+          purpose="Fair value assessment, appraisal tracking, and appreciation analysis across your portfolio."
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="outline" size="sm" aria-label="Valuation report">
@@ -180,25 +168,18 @@ export default function ValuationPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
           label="Total Appraised Value"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 1,
-            notation: 'compact',
-          }).format(summaryMetrics.totalMarketValue)}
+          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(
+            summaryMetrics.totalMarketValue
+          )}
           change={8.4}
           changeLabel="vs prior period"
           trend="up"
         />
         <KPIValue
           label="Total Unrealized Gain"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            signDisplay: 'always',
-            maximumFractionDigits: 1,
-            notation: 'compact',
-          }).format(summaryMetrics.totalGain)}
+          value={fmtCurrency.custom({ maxDecimals: 1, compact: true, signDisplay: 'always' })(
+            summaryMetrics.totalGain
+          )}
           change={15.2}
           changeLabel="since acquisition"
           trend="up"
@@ -274,11 +255,7 @@ export default function ValuationPage() {
                 Total Cost Basis
               </div>
               <div className="text-xl font-bold">
-                {new Intl.NumberFormat('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                  maximumFractionDigits: 0,
-                }).format(summaryMetrics.totalCostBasis)}
+                {fmtCurrency.custom({ maxDecimals: 0 })(summaryMetrics.totalCostBasis)}
               </div>
             </div>
             <div className="space-y-1">
@@ -286,11 +263,7 @@ export default function ValuationPage() {
                 Total Market Value
               </div>
               <div className="text-xl font-bold text-blue-600">
-                {new Intl.NumberFormat('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                  maximumFractionDigits: 0,
-                }).format(summaryMetrics.totalMarketValue)}
+                {fmtCurrency.custom({ maxDecimals: 0 })(summaryMetrics.totalMarketValue)}
               </div>
             </div>
             <div className="space-y-1">
@@ -300,12 +273,9 @@ export default function ValuationPage() {
               <div
                 className={`text-xl font-bold ${summaryMetrics.totalGain >= 0 ? 'text-green-600' : 'text-red-600'}`}
               >
-                {new Intl.NumberFormat('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                  signDisplay: 'always',
-                  maximumFractionDigits: 0,
-                }).format(summaryMetrics.totalGain)}
+                {fmtCurrency.custom({ maxDecimals: 0, signDisplay: 'always' })(
+                  summaryMetrics.totalGain
+                )}
               </div>
             </div>
             <div className="space-y-1">
@@ -319,11 +289,7 @@ export default function ValuationPage() {
                 NOI
               </div>
               <div className="text-lg font-bold text-blue-800">
-                {new Intl.NumberFormat('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                  maximumFractionDigits: 0,
-                }).format(dashStats.noi)}
+                {fmtCurrency.custom({ maxDecimals: 0 })(dashStats.noi)}
               </div>
               <p className="text-[10px] text-blue-600 mt-1">
                 Net Operating Income drives implied cap rate and valuation multiples.

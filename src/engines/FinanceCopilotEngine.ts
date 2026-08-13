@@ -14,6 +14,8 @@
  */
 
 import type { GLState, BudgetState } from '@/types';
+import { useFinancialContextStore } from '@/store/financialContextStore';
+import { currencySymbol } from '@/utils/financialFormatting';
 import {
   addMoney,
   subtractMoney,
@@ -41,11 +43,20 @@ const EXPENSE_CODES = /^6\d{3}/;
 // Cash account codes typically start with 10xx
 const CASH_CODES = /^10\d{2}/;
 
+/**
+ * Abbreviated money for copilot narration.
+ *
+ * This engine runs outside React, so it cannot use `useCurrencyFormatter()`.
+ * It reads the reporting currency non-reactively via `getState()` — engine
+ * output is generated on demand, so there is nothing to re-render. Display
+ * only: the symbol changes, the amount is never converted.
+ */
 function formatCurrency(amount: number): string {
+  const symbol = currencySymbol(useFinancialContextStore.getState().context.currency.code);
   const abs = Math.abs(amount);
-  if (abs >= 1_000_000) return `$${formatMoney(amount / 1_000_000, { places: 1 })}M`;
-  if (abs >= 1_000) return `$${formatMoney(amount / 1_000, { places: 0 })}K`;
-  return `$${formatMoney(amount, { places: 0 })}`;
+  if (abs >= 1_000_000) return `${symbol}${formatMoney(amount / 1_000_000, { places: 1 })}M`;
+  if (abs >= 1_000) return `${symbol}${formatMoney(amount / 1_000, { places: 0 })}K`;
+  return `${symbol}${formatMoney(amount, { places: 0 })}`;
 }
 
 function formatPct(value: number): string {

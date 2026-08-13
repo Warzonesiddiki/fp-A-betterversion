@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useEntityStore } from '@/store/entityStore';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -108,17 +109,15 @@ export default function OwnershipTreePage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-[var(--text-primary)]">Ownership Structure</h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Hierarchical visualization of your legal entity tree.
-          </p>
-        </div>
-        <Link to="/consolidation">
-          <Button variant="outline">Manage Entities</Button>
-        </Link>
-      </div>
+      <PageHeader
+        title="Ownership Structure"
+        purpose="Hierarchical visualization of your legal entity tree."
+        actions={
+          <Link to="/consolidation">
+            <Button variant="outline">Manage Entities</Button>
+          </Link>
+        }
+      />
 
       <Card className="border-[var(--border-subtle)] bg-[var(--bg-surface)]">
         <CardHeader className="border-b border-[var(--border-subtle)]">

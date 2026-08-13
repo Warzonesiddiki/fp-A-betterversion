@@ -251,7 +251,7 @@ export function ReportTemplateLibrary({
                       <FileText className="h-5 w-5" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-white text-sm truncate">{report.name}</h3>
+                      <h3 className="font-medium text-[var(--text-primary)] text-sm truncate">{report.name}</h3>
                       <p className="text-xs text-[var(--text-muted)]">
                         {report.template !== 'custom' && `${report.template.replace(/_/g, ' ')} · `}
                         Updated {new Date(report.updatedAt).toLocaleDateString()}

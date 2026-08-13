@@ -28,16 +28,7 @@ import {
   Cell,
 } from 'recharts';
 import { formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 // Default assumptions for demo
 const DEFAULT_ASSUMPTIONS = [
   {
@@ -89,6 +80,7 @@ const DEFAULT_ASSUMPTIONS = [
 ];
 
 export default function WhatIfPage() {
+  const fmt = useCurrencyFormatter();
   const [engine] = useState(() => new WhatIfSandboxEngine());
   const [sandboxes, setSandboxes] = useState<Sandbox[]>([]);
   const [activeSandboxId, setActiveSandboxId] = useState<string | null>(null);
@@ -230,7 +222,7 @@ export default function WhatIfPage() {
           <CardContent className="p-4">
             <KPIValue
               label="Total Impact"
-              value={formatCurrency(totalImpact)}
+              value={fmt.currency0(totalImpact)}
               icon={
                 totalImpact >= 0 ? (
                   <TrendingUp className="h-4 w-4" />
@@ -361,7 +353,7 @@ export default function WhatIfPage() {
                     <label className="text-sm font-medium">{a.label}</label>
                     <span className="text-sm text-muted-foreground">
                       {a.unit === '$'
-                        ? formatCurrency(assumptions[a.key]!)
+                        ? fmt.currency0(assumptions[a.key]!)
                         : `${assumptions[a.key]!}${a.unit}`}
                     </span>
                   </div>
@@ -375,8 +367,8 @@ export default function WhatIfPage() {
                     className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>{a.unit === '$' ? formatCurrency(a.min) : `${a.min}${a.unit}`}</span>
-                    <span>{a.unit === '$' ? formatCurrency(a.max) : `${a.max}${a.unit}`}</span>
+                    <span>{a.unit === '$' ? fmt.currency0(a.min) : `${a.min}${a.unit}`}</span>
+                    <span>{a.unit === '$' ? fmt.currency0(a.max) : `${a.max}${a.unit}`}</span>
                   </div>
                 </div>
               ))
@@ -430,7 +422,7 @@ export default function WhatIfPage() {
                   <div className="text-center p-3 bg-muted rounded-lg">
                     <p className="text-xs text-muted-foreground">Avg Delta</p>
                     <p className="text-lg font-bold">
-                      {formatCurrency(comparison.summary.averageDelta)}
+                      {fmt.currency0(comparison.summary.averageDelta)}
                     </p>
                   </div>
                   <div className="text-center p-3 bg-muted rounded-lg">
@@ -446,9 +438,9 @@ export default function WhatIfPage() {
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={comparisonChartData} layout="vertical">
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis type="number" tickFormatter={(v) => formatCurrency(v)} />
+                        <XAxis type="number" tickFormatter={(v) => fmt.currency0(v)} />
                         <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 12 }} />
-                        <Tooltip formatter={(v) => formatCurrency(Number(v))} />
+                        <Tooltip formatter={(v) => fmt.currency0(Number(v))} />
                         <Bar dataKey="delta" radius={[0, 4, 4, 0]}>
                           {comparisonChartData.map((entry, i) => (
                             <Cell key={i} fill={entry.delta >= 0 ? '#16a34a' : '#dc2626'} />
@@ -465,10 +457,16 @@ export default function WhatIfPage() {
                   </caption>
                   <thead>
                     <tr className="border-b border-slate-700">
-                      <th scope="col" className="text-left font-medium text-slate-300 py-1">
+                      <th
+                        scope="col"
+                        className="text-left font-medium text-[var(--text-secondary)] py-1"
+                      >
                         Item
                       </th>
-                      <th scope="col" className="text-right font-medium text-slate-300 py-1">
+                      <th
+                        scope="col"
+                        className="text-right font-medium text-[var(--text-secondary)] py-1"
+                      >
                         Delta
                       </th>
                     </tr>
@@ -482,7 +480,7 @@ export default function WhatIfPage() {
                         <td
                           className={`py-1 text-right ${d.delta >= 0 ? 'text-green-600' : 'text-red-600'}`}
                         >
-                          {formatCurrency(d.delta)} ({formatPercent(d.percentChange)})
+                          {fmt.currency0(d.delta)} ({formatPercent(d.percentChange)})
                         </td>
                       </tr>
                     ))}

@@ -10,6 +10,7 @@ import {
 import { ChevronRight, ArrowLeft, Layers, Building2, FileText } from 'lucide-react';
 import Decimal from 'decimal.js';
 import { roundTo, subtractMoney } from '@/utils/money';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 /**
  * GAP-1 (F-0006) — exact-decimal variance-drill department totals.
@@ -64,16 +65,6 @@ export function computeDepartmentTotals(
     }))
     .sort((a, b) => Math.abs(b.total) - Math.abs(a.total));
 }
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
 function formatDate(d: string): string {
   if (!d) return '—';
   const date = new Date(d);
@@ -119,6 +110,7 @@ export function VarianceDrillModal({
   budget,
   actual,
 }: VarianceDrillModalProps) {
+  const fmt = useCurrencyFormatter();
   const entries = useGLStore((s) => s.entries);
   const [breadcrumbs, setBreadcrumbs] = useState<DrillBreadcrumb[]>([]);
   const [currentView, setCurrentView] = useState<DrillView>('category');
@@ -227,10 +219,10 @@ export function VarianceDrillModal({
           <h2 className="text-lg font-semibold">{accountLabel} Variance Drill-Through</h2>
         </div>
         <p className="text-sm text-[var(--text-muted)] mb-4">
-          Budget: {formatCurrency(budget)} &middot; Actual: {formatCurrency(actual)} &middot;
+          Budget: {fmt.currency0(budget)} &middot; Actual: {fmt.currency0(actual)} &middot;
           Variance:{' '}
           <span className={variance >= 0 ? 'text-green-400' : 'text-red-400'}>
-            {formatCurrency(variance)}
+            {fmt.currency0(variance)}
           </span>
         </p>
 
@@ -319,7 +311,7 @@ export function VarianceDrillModal({
                       </td>
                       <td className="px-4 py-2.5 text-right">
                         <span className={group.total >= 0 ? 'text-green-400' : 'text-red-400'}>
-                          {formatCurrency(group.total)}
+                          {fmt.currency0(group.total)}
                         </span>
                       </td>
                       <td className="px-4 py-2.5 text-right">
@@ -378,7 +370,7 @@ export function VarianceDrillModal({
                       <td className="px-4 py-2">{entry.description}</td>
                       <td className="px-4 py-2 text-right">
                         <span className={entry.amount >= 0 ? 'text-green-400' : 'text-red-400'}>
-                          {formatCurrency(entry.amount)}
+                          {fmt.currency0(entry.amount)}
                         </span>
                       </td>
                     </tr>
@@ -443,7 +435,7 @@ export function VarianceDrillModal({
                       <td className="px-4 py-2">{entry.description}</td>
                       <td className="px-4 py-2 text-right">
                         <span className={entry.amount >= 0 ? 'text-green-400' : 'text-red-400'}>
-                          {formatCurrency(entry.amount)}
+                          {fmt.currency0(entry.amount)}
                         </span>
                       </td>
                     </tr>

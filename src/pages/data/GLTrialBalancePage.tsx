@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -19,16 +20,7 @@ import {
   ArrowDown,
   ArrowUpDown,
 } from 'lucide-react';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /** Money-primitive trial-balance totals (GAP-1 F-0006). */
 export interface TrialBalanceTotals {
   totalDebits: number;
@@ -67,6 +59,7 @@ export function computeTrialBalanceTotals(
 }
 
 export default function GLTrialBalancePage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
@@ -164,7 +157,7 @@ export default function GLTrialBalancePage() {
           <Scale className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No GL Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import General Ledger entries first to generate the Trial Balance. The Trial Balance
           verifies that total debits equal total credits.
         </p>
@@ -177,7 +170,7 @@ export default function GLTrialBalancePage() {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
         <h2 className="text-xl font-semibold mb-2">Trial Balance Not Generated</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Click below to generate the Trial Balance from {entries.length.toLocaleString()} GL
           entries.
         </p>
@@ -204,21 +197,23 @@ export default function GLTrialBalancePage() {
         <div>
           {isBalanced
             ? 'Trial Balance is Balanced — Total Debits = Total Credits'
-            : `Trial Balance is Off by ${formatCurrency(Math.abs(diff))}`}
+            : `Trial Balance is Off by ${fmt.currency0(Math.abs(diff))}`}
         </div>
       </div>
 
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold">Trial Balance</h1>
-            <button
-              onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
-              aria-label="Help"
-            ></button>
-          </div>
-          <p className="text-sm text-slate-400 mt-1">
+          <PageHeader
+            title="Trial Balance"
+            actions={
+              <button
+                onClick={() => setHelpOpen(true)}
+                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                aria-label="Help"
+              ></button>
+            }
+          />
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {trialBalance.length} accounts · {entries.length.toLocaleString()} entries
           </p>
         </div>
@@ -265,7 +260,7 @@ export default function GLTrialBalancePage() {
             <table className="w-full text-sm" aria-label="GL trial balance">
               <caption className="sr-only">Detailed gl trial balance</caption>
               <thead>
-                <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                   {(
                     [
                       { key: 'accountCode', label: 'Code', className: 'w-20' },
@@ -290,7 +285,7 @@ export default function GLTrialBalancePage() {
                       <button
                         type="button"
                         onClick={() => handleSort(col.key)}
-                        className="inline-flex items-center gap-1 hover:text-white transition-colors"
+                        className="inline-flex items-center gap-1 hover:text-[var(--text-primary)] transition-colors"
                         aria-label={`Sort by ${col.label}`}
                       >
                         {col.label}
@@ -326,13 +321,13 @@ export default function GLTrialBalancePage() {
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums text-slate-300">
-                      {formatCurrency(row.beginningBalance)}
+                      {fmt.currency0(row.beginningBalance)}
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums text-blue-400">
-                      {formatCurrency(row.debit)}
+                      {fmt.currency0(row.debit)}
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums text-green-400">
-                      {formatCurrency(row.credit)}
+                      {fmt.currency0(row.credit)}
                     </td>
                     <td
                       className={`px-4 py-3 text-right tabular-nums font-medium ${
@@ -343,7 +338,7 @@ export default function GLTrialBalancePage() {
                             : 'text-slate-300'
                       }`}
                     >
-                      {formatCurrency(row.netChange)}
+                      {fmt.currency0(row.netChange)}
                     </td>
                     <td
                       className={`px-4 py-3 text-right tabular-nums font-semibold ${
@@ -354,7 +349,7 @@ export default function GLTrialBalancePage() {
                             : 'text-slate-300'
                       }`}
                     >
-                      {formatCurrency(row.endingBalance)}
+                      {fmt.currency0(row.endingBalance)}
                     </td>
                     <td className="px-2 py-3 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="flex gap-1">
@@ -392,24 +387,24 @@ export default function GLTrialBalancePage() {
                 ))}
               </tbody>
               <tfoot className="border-t-2 border-slate-600">
-                <tr className="font-bold text-sm text-slate-200">
+                <tr className="font-bold text-sm text-[var(--text-primary)]">
                   <td className="px-4 py-3" colSpan={3}>
                     Total
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
-                    {formatCurrency(totalBeginningBalance)}
+                    {fmt.currency0(totalBeginningBalance)}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums text-blue-400">
-                    {formatCurrency(totalDebits)}
+                    {fmt.currency0(totalDebits)}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums text-green-400">
-                    {formatCurrency(totalCredits)}
+                    {fmt.currency0(totalCredits)}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
-                    {formatCurrency(totalNetChange)}
+                    {fmt.currency0(totalNetChange)}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
-                    {formatCurrency(totalEndingBalance)}
+                    {fmt.currency0(totalEndingBalance)}
                   </td>
                 </tr>
               </tfoot>

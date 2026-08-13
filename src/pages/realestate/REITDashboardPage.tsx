@@ -1,4 +1,6 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
 import { TrendingUp, Download, Wallet, Globe, ShieldCheck } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -97,6 +99,7 @@ const columns: Column[] = [
 ];
 
 export default function REITDashboardPage() {
+  const fmtCurrency = useCurrencyFormatter();
   const { entries } = useGLStore();
   const [periodId, setPeriodId] = useState('P01');
 
@@ -125,7 +128,7 @@ export default function REITDashboardPage() {
           <Globe className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No REIT Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your Real Estate Investment Trust General Ledger to view FFO, AFFO, and NAV
           analytics.
         </p>
@@ -138,15 +141,10 @@ export default function REITDashboardPage() {
     <div className="p-6 space-y-6 animate-in zoom-in-95 duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            REIT Analytics
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Real Estate Investment Trust performance: FFO/AFFO tracking, dividend coverage, and
-            sector benchmarking.
-          </p>
-        </div>
+        <PageHeader
+          title="REIT Analytics"
+          purpose="Real Estate Investment Trust performance: FFO/AFFO tracking, dividend coverage, and sector benchmarking."
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="outline" size="sm">
@@ -160,11 +158,7 @@ export default function REITDashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
           label="Funds From Ops (FFO)"
-          value={new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            maximumFractionDigits: 0,
-          }).format(stats.ffo)}
+          value={fmtCurrency.custom({ maxDecimals: 0 })(stats.ffo)}
           change={8.2}
           changeLabel="YTD core FFO"
           trend="up"
@@ -180,9 +174,7 @@ export default function REITDashboardPage() {
         />
         <KPIValue
           label="NAV Per Share"
-          value={new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(
-            stats.navPerShare
-          )}
+          value={fmtCurrency.custom()(stats.navPerShare)}
           change={3.1}
           changeLabel="valuation premium 8%"
           trend="up"

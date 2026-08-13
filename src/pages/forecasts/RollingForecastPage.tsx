@@ -15,16 +15,7 @@ import {
   Target,
   HelpCircle,
 } from 'lucide-react';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 const HELP_SECTIONS = [
   {
     title: 'What is a Rolling Forecast?',
@@ -49,6 +40,7 @@ const HELP_SECTIONS = [
 ];
 
 export default function RollingForecastPage() {
+  const fmt = useCurrencyFormatter();
   const [helpOpen, setHelpOpen] = useState(false);
   const { entries, isLoading, importError } = useGLStore();
   const [period, setPeriod] = useState<'3m' | '6m' | '12m'>('12m');
@@ -171,7 +163,7 @@ export default function RollingForecastPage() {
           <TrendingUp className="h-10 w-10 text-red-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">Failed to load data</h2>
-        <p className="text-slate-400 mb-6">{importError}</p>
+        <p className="text-[var(--text-muted)] mb-6">{importError}</p>
         <Button onClick={() => window.location.reload()}>Retry</Button>
       </div>
     );
@@ -184,7 +176,9 @@ export default function RollingForecastPage() {
           <TrendingUp className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to generate a rolling forecast.</p>
+        <p className="text-[var(--text-muted)] mb-6">
+          Import GL data to generate a rolling forecast.
+        </p>
         <Button
           onClick={() => {
             window.location.href = '/data/gl-upload';
@@ -240,7 +234,7 @@ export default function RollingForecastPage() {
               Forecast Revenue
             </div>
             <div className="text-xl font-bold text-green-400">
-              {stats ? formatCurrency(stats.revenue) : '-'}
+              {stats ? fmt.currency0(stats.revenue) : '-'}
             </div>
           </CardContent>
         </Card>
@@ -251,7 +245,7 @@ export default function RollingForecastPage() {
               Forecast Expenses
             </div>
             <div className="text-xl font-bold text-red-400">
-              {stats ? formatCurrency(stats.expenses) : '-'}
+              {stats ? fmt.currency0(stats.expenses) : '-'}
             </div>
           </CardContent>
         </Card>
@@ -265,7 +259,7 @@ export default function RollingForecastPage() {
               className="text-xl font-bold"
               style={{ color: stats && stats.netIncome >= 0 ? '#22c55e' : '#ef4444' }}
             >
-              {stats ? formatCurrency(stats.netIncome) : '-'}
+              {stats ? fmt.currency0(stats.netIncome) : '-'}
             </div>
           </CardContent>
         </Card>
@@ -310,12 +304,12 @@ export default function RollingForecastPage() {
                             <div
                               className="h-full bg-blue-500 rounded-t transition-all"
                               style={{ width: `${Math.max(actualPct, 1)}%`, maxHeight: '100%' }}
-                              title={`Actual: ${formatCurrency(d.actual)}`}
+                              title={`Actual: ${fmt.currency0(d.actual)}`}
                             />
                             <div
                               className="h-full bg-blue-300/40 rounded-t border border-dashed border-blue-400"
                               style={{ width: `${Math.max(forecastPct, 1)}%`, maxHeight: '100%' }}
-                              title={`Forecast: ${formatCurrency(d.forecast || 0)}`}
+                              title={`Forecast: ${fmt.currency0(d.forecast || 0)}`}
                             />
                           </div>
                           <span className="w-20 text-xs text-right tabular-nums">
@@ -380,7 +374,7 @@ export default function RollingForecastPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm" role="grid" aria-label="Forecast summary">
                   <thead>
-                    <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                    <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                       <th className="px-4 py-2" role="columnheader" scope="col">
                         Period
                       </th>
@@ -404,10 +398,10 @@ export default function RollingForecastPage() {
                         <tr key={d.month} className="hover:bg-slate-900/50">
                           <td className="px-4 py-2 text-slate-300">{d.month}</td>
                           <td className="px-4 py-2 text-right tabular-nums">
-                            {d.actual !== 0 ? formatCurrency(d.actual) : '-'}
+                            {d.actual !== 0 ? fmt.currency0(d.actual) : '-'}
                           </td>
                           <td className="px-4 py-2 text-right tabular-nums">
-                            {d.forecast ? formatCurrency(d.forecast) : '-'}
+                            {d.forecast ? fmt.currency0(d.forecast) : '-'}
                           </td>
                           <td
                             className={`px-4 py-2 text-right tabular-nums ${

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -106,13 +107,15 @@ export default function SecuritySettingsPage() {
       role="main"
       aria-label="Security settings page"
     >
-      <div className="mb-2">
-        <h1 className="text-2xl font-bold text-white">Security Settings</h1>
-        <p className="text-slate-400 text-sm">
-          Manage passwords, authentication, and security preferences for{' '}
-          {organization.name || 'your organization'}.
-        </p>
-      </div>
+      <PageHeader
+        title="Security Settings"
+        purpose={
+          <>
+            Manage passwords, authentication, and security preferences for{' '}
+            {organization.name || 'your organization'}.
+          </>
+        }
+      />
 
       {/* Security overview */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -120,7 +123,7 @@ export default function SecuritySettingsPage() {
           <CardContent className="p-4 flex items-center gap-3">
             <Shield className="h-5 w-5 text-green-400 shrink-0" />
             <div>
-              <div className="text-sm text-slate-400">Security Status</div>
+              <div className="text-sm text-[var(--text-muted)]">Security Status</div>
               <div className="font-medium text-green-400">Protected</div>
             </div>
           </CardContent>
@@ -129,8 +132,10 @@ export default function SecuritySettingsPage() {
           <CardContent className="p-4 flex items-center gap-3">
             <Fingerprint className="h-5 w-5 text-blue-400 shrink-0" />
             <div>
-              <div className="text-sm text-slate-400">MFA Status</div>
-              <div className="font-medium text-white">{mfaEnabled ? 'Enabled' : 'Disabled'}</div>
+              <div className="text-sm text-[var(--text-muted)]">MFA Status</div>
+              <div className="font-medium text-[var(--text-primary)]">
+                {mfaEnabled ? 'Enabled' : 'Disabled'}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -138,8 +143,8 @@ export default function SecuritySettingsPage() {
           <CardContent className="p-4 flex items-center gap-3">
             <Clock className="h-5 w-5 text-amber-400 shrink-0" />
             <div>
-              <div className="text-sm text-slate-400">Session Timeout</div>
-              <div className="font-medium text-white">{sessionTimeout} minutes</div>
+              <div className="text-sm text-[var(--text-muted)]">Session Timeout</div>
+              <div className="font-medium text-[var(--text-primary)]">{sessionTimeout} minutes</div>
             </div>
           </CardContent>
         </Card>
@@ -156,7 +161,7 @@ export default function SecuritySettingsPage() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label htmlFor="current-password" className="text-sm text-slate-400">
+              <label htmlFor="current-password" className="text-sm text-[var(--text-muted)]">
                 Current Password
               </label>
               <div className="relative">
@@ -171,7 +176,7 @@ export default function SecuritySettingsPage() {
                 <button
                   type="button"
                   onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   aria-label={showCurrentPassword ? 'Hide password' : 'Show password'}
                 >
                   {showCurrentPassword ? (
@@ -184,7 +189,7 @@ export default function SecuritySettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="new-password" className="text-sm text-slate-400">
+              <label htmlFor="new-password" className="text-sm text-[var(--text-muted)]">
                 New Password
               </label>
               <div className="relative">
@@ -199,7 +204,7 @@ export default function SecuritySettingsPage() {
                 <button
                   type="button"
                   onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                   aria-label={showNewPassword ? 'Hide password' : 'Show password'}
                 >
                   {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -217,13 +222,15 @@ export default function SecuritySettingsPage() {
                       />
                     ))}
                   </div>
-                  <span className="text-xs text-slate-400">Strength: {strength.label}</span>
+                  <span className="text-xs text-[var(--text-muted)]">
+                    Strength: {strength.label}
+                  </span>
                 </div>
               )}
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="confirm-password" className="text-sm text-slate-400">
+              <label htmlFor="confirm-password" className="text-sm text-[var(--text-muted)]">
                 Confirm New Password
               </label>
               <Input
@@ -340,7 +347,7 @@ export default function SecuritySettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-slate-400" />
+            <Clock className="h-5 w-5 text-[var(--text-muted)]" />
             Recent Security Activity
           </CardTitle>
         </CardHeader>

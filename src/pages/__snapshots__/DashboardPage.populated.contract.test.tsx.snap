@@ -6,7 +6,9 @@ exports[`DashboardPage populated-state contract (interim structural baseline) > 
     class="fp-page space-y-6"
   >
     <header
+      aria-label="Executive Dashboard"
       class="fp-page-header dashboard-header"
+      role="group"
     >
       <div>
         <div
@@ -155,7 +157,7 @@ exports[`DashboardPage populated-state contract (interim structural baseline) > 
               class="flex justify-between"
             >
               <span
-                class="text-slate-400"
+                class="text-[var(--text-muted)]"
               >
                 Active Budgets
               </span>
@@ -169,21 +171,21 @@ exports[`DashboardPage populated-state contract (interim structural baseline) > 
               class="flex justify-between"
             >
               <span
-                class="text-slate-400"
+                class="text-[var(--text-muted)]"
               >
                 Total Budget
               </span>
               <span
                 class="font-semibold tabular-nums"
               >
-                $0
+                —
               </span>
             </div>
             <div
               class="flex justify-between"
             >
               <span
-                class="text-slate-400"
+                class="text-[var(--text-muted)]"
               >
                 Utilization
               </span>
@@ -238,7 +240,7 @@ exports[`DashboardPage populated-state contract (interim structural baseline) > 
               class="flex justify-between"
             >
               <span
-                class="text-slate-400"
+                class="text-[var(--text-muted)]"
               >
                 Gross Margin
               </span>
@@ -252,7 +254,7 @@ exports[`DashboardPage populated-state contract (interim structural baseline) > 
               class="flex justify-between"
             >
               <span
-                class="text-slate-400"
+                class="text-[var(--text-muted)]"
               >
                 Expense Ratio
               </span>
@@ -266,7 +268,7 @@ exports[`DashboardPage populated-state contract (interim structural baseline) > 
               class="flex justify-between"
             >
               <span
-                class="text-slate-400"
+                class="text-[var(--text-muted)]"
               >
                 Net Margin
               </span>

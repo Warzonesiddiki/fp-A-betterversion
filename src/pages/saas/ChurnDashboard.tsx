@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -20,15 +21,7 @@ import {
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 function formatPct(n: number): string {
   return `${formatPercent(n, 1)}`;
 }
@@ -70,6 +63,7 @@ const AT_RISK = [
 ];
 
 export default function ChurnDashboard() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
   useEffect(() => {
@@ -101,7 +95,7 @@ export default function ChurnDashboard() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <Users className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Users className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No SaaS Data</h2>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
@@ -109,16 +103,16 @@ export default function ChurnDashboard() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Churn Dashboard</h1>
-          <p className="text-sm text-slate-400">Customer retention and churn analysis</p>
-        </div>
-        <Button variant="outline" onClick={handleExport}>
-          <Download className="h-4 w-4 mr-2" />
-          Export
-        </Button>
-      </div>
+      <PageHeader
+        title="Churn Dashboard"
+        purpose="Customer retention and churn analysis"
+        actions={
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+        }
+      />
 
       <div className="grid gap-4 md:grid-cols-5">
         <KPIValue
@@ -146,7 +140,7 @@ export default function ChurnDashboard() {
         />
         <KPIValue
           label="At-Risk MRR"
-          value={formatCurrency(metrics.totalAtRiskMRR)}
+          value={fmt.currency0(metrics.totalAtRiskMRR)}
           icon={<AlertTriangle className="h-4 w-4" />}
           trend="down"
         />
@@ -226,19 +220,34 @@ export default function ChurnDashboard() {
               </caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Customer
                   </th>
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Segment
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     MRR
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Risk Score
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Last Login
                   </th>
                 </tr>
@@ -248,7 +257,7 @@ export default function ChurnDashboard() {
                   <tr key={c.name} className="border-b border-slate-800">
                     <td className="py-2 px-3 font-medium">{c.name}</td>
                     <td className="py-2 px-3">{c.segment}</td>
-                    <td className="text-right py-2 px-3">{formatCurrency(c.mrr)}</td>
+                    <td className="text-right py-2 px-3">{fmt.currency0(c.mrr)}</td>
                     <td className="text-right py-2 px-3">
                       <span
                         className={`px-2 py-0.5 rounded text-xs ${c.riskScore >= 80 ? 'bg-red-900/50 text-red-300' : c.riskScore >= 60 ? 'bg-yellow-900/50 text-yellow-300' : 'bg-green-900/50 text-green-300'}`}
@@ -256,7 +265,7 @@ export default function ChurnDashboard() {
                         {c.riskScore}
                       </span>
                     </td>
-                    <td className="text-right py-2 px-3 text-slate-400">{c.lastLogin}</td>
+                    <td className="text-right py-2 px-3 text-[var(--text-muted)]">{c.lastLogin}</td>
                   </tr>
                 ))}
               </tbody>

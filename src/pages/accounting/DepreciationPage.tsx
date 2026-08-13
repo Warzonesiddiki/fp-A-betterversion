@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -190,23 +191,20 @@ export default function DepreciationPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Depreciation & Amortization</h1>
-          <p className="text-muted-foreground">
-            Asset depreciation schedules — values computed live by DepreciationEngine (not mock
-            data)
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-1" /> Export
-          </Button>
-          <Button variant="outline" size="sm">
-            <Settings className="h-4 w-4 mr-1" /> Settings
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title={'Depreciation & Amortization'}
+        purpose="Asset depreciation schedules — values computed live by DepreciationEngine (not mock data)"
+        actions={
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-1" /> Export
+            </Button>
+            <Button variant="outline" size="sm">
+              <Settings className="h-4 w-4 mr-1" /> Settings
+            </Button>
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>

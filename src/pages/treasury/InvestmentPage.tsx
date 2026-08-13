@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -23,16 +24,7 @@ import {
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { sumMoney, roundTo } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 const INVESTMENTS = [
   {
     instrument: 'US Treasury 10Y',
@@ -135,6 +127,7 @@ export function computeInvestmentTotals(
 }
 
 export default function InvestmentPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
   useEffect(() => {
@@ -164,30 +157,30 @@ export default function InvestmentPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <TrendingUp className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <TrendingUp className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import treasury data.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import treasury data.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Investment Dashboard</h1>
-          <p className="text-sm text-slate-400">Track investment portfolio performance</p>
-        </div>
-        <Button variant="outline" onClick={handleExport}>
-          <Download className="h-4 w-4 mr-2" />
-          Export
-        </Button>
-      </div>
+      <PageHeader
+        title="Investment Dashboard"
+        purpose="Track investment portfolio performance"
+        actions={
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+        }
+      />
 
       <div className="grid gap-4 md:grid-cols-4">
         <KPIValue
           label="Total Portfolio"
-          value={formatCurrency(totalValue)}
+          value={fmt.currency0(totalValue)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
@@ -232,7 +225,7 @@ export default function InvestmentPage() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -287,7 +280,7 @@ export default function InvestmentPage() {
                   border: '1px solid #334155',
                   borderRadius: 8,
                 }}
-                formatter={(v) => formatCurrency(Number(v))}
+                formatter={(v) => fmt.currency0(Number(v))}
               />
               <Bar dataKey="value" name="Value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -307,22 +300,40 @@ export default function InvestmentPage() {
               </caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Instrument
                   </th>
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Issuer
                   </th>
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Maturity
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Yield
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Value
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Rating
                   </th>
                 </tr>
@@ -336,7 +347,7 @@ export default function InvestmentPage() {
                     <td className="text-right py-2 px-3 text-green-400">
                       {formatPercent(inv.yield)}
                     </td>
-                    <td className="text-right py-2 px-3">{formatCurrency(inv.value)}</td>
+                    <td className="text-right py-2 px-3">{fmt.currency0(inv.value)}</td>
                     <td className="text-right py-2 px-3">
                       <span className="px-2 py-0.5 rounded text-xs bg-blue-900/50 text-blue-300">
                         {inv.rating}
@@ -348,7 +359,7 @@ export default function InvestmentPage() {
                   <td className="py-2 px-3" colSpan={4}>
                     Total
                   </td>
-                  <td className="text-right py-2 px-3">{formatCurrency(totalValue)}</td>
+                  <td className="text-right py-2 px-3">{fmt.currency0(totalValue)}</td>
                   <td></td>
                 </tr>
               </tbody>

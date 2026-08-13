@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useState } from 'react';
 import { Wrench, Zap, Droplets, ShieldCheck, Download, Settings } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
@@ -111,15 +112,10 @@ export default function FacilityManagementPage() {
     <div className="p-6 space-y-6 animate-in slide-in-from-left-4 duration-500">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Facility Operations
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            OpEx tracking, maintenance efficiency, and sustainability benchmarks across the
-            portfolio.
-          </p>
-        </div>
+        <PageHeader
+          title="Facility Operations"
+          purpose="OpEx tracking, maintenance efficiency, and sustainability benchmarks across the portfolio."
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="outline" size="sm">
@@ -230,7 +226,7 @@ export default function FacilityManagementPage() {
                 <div className="text-[10px] font-bold text-slate-500 uppercase">Water / Sewage</div>
                 <div className="text-lg font-bold">$0.82 / sqft</div>
               </div>
-              <div className="ml-auto text-slate-400 text-xs font-bold">Stable</div>
+              <div className="ml-auto text-[var(--text-muted)] text-xs font-bold">Stable</div>
             </div>
 
             <div className="mt-8 p-4 bg-indigo-50 rounded-xl border border-indigo-100">

@@ -1,6 +1,7 @@
 import { useMemo, memo } from 'react';
+import { reportingCurrency } from '@/store/financialContextStore';
 import { cn } from '@/utils/cn';
-import { formatCompact } from '@/utils/financialFormatting';
+import { currencyFormatter, formatCompact } from '@/utils/financialFormatting';
 
 export interface SankeyNode {
   id: string;
@@ -42,12 +43,7 @@ const DEFAULT_COLORS = [
 function formatVal(value: number, format: string): string {
   switch (format) {
     case 'currency':
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }).format(value);
+      return currencyFormatter(reportingCurrency(), { decimals: 0 })(value);
     case 'compact':
       return formatCompact(value);
     default:

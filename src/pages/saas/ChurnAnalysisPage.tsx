@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -22,16 +23,7 @@ import {
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 function formatPct(n: number): string {
   return `${formatPercent(n, 1)}`;
 }
@@ -158,6 +150,7 @@ function buildAtRiskCustomers(
 }
 
 export default function ChurnAnalysisPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -209,7 +202,7 @@ export default function ChurnAnalysisPage() {
           <BarChart4 className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No SaaS Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import GL data with subscription revenue accounts (41xx) to analyze churn metrics.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import GL Data</Button>
@@ -219,18 +212,16 @@ export default function ChurnAnalysisPage() {
 
   return (
     <div className="p-6 space-y-6" role="main" aria-label="Churn Analysis page">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Churn Analysis</h1>
-          <p className="text-sm text-slate-400">
-            Customer retention and revenue churn derived from GL data
-          </p>
-        </div>
-        <Button variant="outline" onClick={handleExport} aria-label="Export churn data">
-          <Download className="h-4 w-4 mr-2" aria-hidden="true" />
-          Export
-        </Button>
-      </div>
+      <PageHeader
+        title="Churn Analysis"
+        purpose="Customer retention and revenue churn derived from GL data"
+        actions={
+          <Button variant="outline" onClick={handleExport} aria-label="Export churn data">
+            <Download className="h-4 w-4 mr-2" aria-hidden="true" />
+            Export
+          </Button>
+        }
+      />
 
       <div className="grid gap-4 md:grid-cols-5">
         <KPIValue
@@ -258,7 +249,7 @@ export default function ChurnAnalysisPage() {
         />
         <KPIValue
           label="At-Risk MRR"
-          value={formatCurrency(metrics.totalAtRiskMRR)}
+          value={fmt.currency0(metrics.totalAtRiskMRR)}
           icon={<AlertTriangle className="h-4 w-4" />}
           trend="down"
         />
@@ -332,7 +323,7 @@ export default function ChurnAnalysisPage() {
         </CardHeader>
         <CardContent>
           {atRiskCustomers.length === 0 ? (
-            <p className="text-slate-400 text-center py-8">
+            <p className="text-[var(--text-muted)] text-center py-8">
               No customer data available. Import GL data with entity breakdowns.
             </p>
           ) : (
@@ -341,19 +332,34 @@ export default function ChurnAnalysisPage() {
                 <caption className="sr-only">Detailed saas churn analysis</caption>
                 <thead>
                   <tr className="border-b border-slate-700">
-                    <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                    <th
+                      scope="col"
+                      className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                    >
                       Customer
                     </th>
-                    <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                    <th
+                      scope="col"
+                      className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                    >
                       Segment
                     </th>
-                    <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    <th
+                      scope="col"
+                      className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                    >
                       MRR
                     </th>
-                    <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    <th
+                      scope="col"
+                      className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                    >
                       Risk Score
                     </th>
-                    <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    <th
+                      scope="col"
+                      className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                    >
                       Last Login
                     </th>
                   </tr>
@@ -363,7 +369,7 @@ export default function ChurnAnalysisPage() {
                     <tr key={c.name} className="border-b border-slate-800">
                       <td className="py-2 px-3 font-medium">{c.name}</td>
                       <td className="py-2 px-3">{c.segment}</td>
-                      <td className="text-right py-2 px-3">{formatCurrency(c.mrr)}</td>
+                      <td className="text-right py-2 px-3">{fmt.currency0(c.mrr)}</td>
                       <td className="text-right py-2 px-3">
                         <span
                           className={`px-2 py-0.5 rounded text-xs ${
@@ -377,7 +383,9 @@ export default function ChurnAnalysisPage() {
                           {c.riskScore}
                         </span>
                       </td>
-                      <td className="text-right py-2 px-3 text-slate-400">{c.lastLogin}</td>
+                      <td className="text-right py-2 px-3 text-[var(--text-muted)]">
+                        {c.lastLogin}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { PluginCard } from '@/components/plugins/PluginCard';
@@ -124,14 +125,10 @@ export default function PluginMarketplacePage() {
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
       {/* Page header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--text-primary)] dark:text-white">
-            Plugin Marketplace
-          </h1>
-          <p className="mt-1 text-sm text-[var(--text-muted)] dark:text-gray-400">
-            Extend FinPlan Pro with engines, charts, connectors, and more.
-          </p>
-        </div>
+        <PageHeader
+          title="Plugin Marketplace"
+          purpose="Extend FinPlan Pro with engines, charts, connectors, and more."
+        />
         <div className="flex items-center gap-3 text-sm text-[var(--text-secondary)] dark:text-gray-300">
           <span>{stats.total} plugins</span>
           <span className="text-gray-300 dark:text-gray-600">|</span>

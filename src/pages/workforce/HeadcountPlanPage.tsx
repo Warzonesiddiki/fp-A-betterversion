@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -30,16 +31,7 @@ import {
 } from 'recharts';
 import { TreemapChart } from '@/components/charts/TreemapChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface DeptRow {
   department: string;
   current: number;
@@ -49,6 +41,7 @@ interface DeptRow {
 }
 
 export default function HeadcountPlanPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
@@ -106,7 +99,7 @@ export default function HeadcountPlanPage() {
           d.current.toString(),
           d.planned.toString(),
           d.variance.toString(),
-          formatCurrency(d.cost),
+          fmt.currency0(d.cost),
         ]),
       },
       { title: 'Headcount Plan Report', companyName: 'FinPlan Pro' }
@@ -123,7 +116,7 @@ export default function HeadcountPlanPage() {
           d.current.toString(),
           d.planned.toString(),
           d.variance.toString(),
-          formatCurrency(d.cost),
+          fmt.currency0(d.cost),
         ]),
       },
       { title: 'Headcount_Plan_Report' }
@@ -150,7 +143,7 @@ export default function HeadcountPlanPage() {
       key: 'cost',
       header: 'Annual Cost',
       align: 'right',
-      render: (_, r) => formatCurrency(r.cost),
+      render: (_, r) => fmt.currency0(r.cost),
       sortable: true,
     },
   ];
@@ -158,28 +151,30 @@ export default function HeadcountPlanPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <Headphones className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Headphones className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import payroll data to plan headcount.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import payroll data to plan headcount.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Headcount Plan</h1>
-        <div className="flex gap-2">
-          <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
-            <FileText className="h-3.5 w-3.5 mr-1.5" />
-            PDF
-          </Button>
-          <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
-            <TableIcon className="h-3.5 w-3.5 mr-1.5" />
-            Excel
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Headcount Plan"
+        actions={
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
+              <FileText className="h-3.5 w-3.5 mr-1.5" />
+              PDF
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
+              <TableIcon className="h-3.5 w-3.5 mr-1.5" />
+              Excel
+            </Button>
+          </div>
+        }
+      />
       {data && (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -190,10 +185,10 @@ export default function HeadcountPlanPage() {
             />
             <KPIValue
               label="Total Cost"
-              value={formatCurrency(data.totalCost)}
+              value={fmt.currency0(data.totalCost)}
               icon={<DollarSign className="h-4 w-4" />}
             />
-            <KPIValue label="Avg Cost/Head" value={formatCurrency(data.avgCost)} />
+            <KPIValue label="Avg Cost/Head" value={fmt.currency0(data.avgCost)} />
             <KPIValue
               label="Attrition Rate"
               value={`${data!.trend[data.trend.length - 1]!.attrition}%`}

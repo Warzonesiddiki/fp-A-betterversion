@@ -16,8 +16,8 @@ export function ProductionDashboard({ metrics }: ProductionDashboardProps) {
       <div className="md:col-span-3 grid grid-cols-3 gap-4">
         {['Availability', 'Performance', 'Quality'].map((k) => (
           <Card key={k} className="p-4 flex flex-col justify-center text-center">
-            <span className="text-xs text-slate-400 mb-1">{k}</span>
-            <span className="text-xl font-bold text-white">
+            <span className="text-xs text-[var(--text-muted)] mb-1">{k}</span>
+            <span className="text-xl font-bold text-[var(--text-primary)]">
               {(metrics as unknown as Record<string, number>)[k.toLowerCase()]}%
             </span>
           </Card>

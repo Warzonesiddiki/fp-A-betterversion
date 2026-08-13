@@ -191,11 +191,15 @@ export function CarbonFootprintTracker({ className }: CarbonFootprintTrackerProp
 
           {result && result.breakdown.length > 0 && (
             <div className="mt-6 pt-4 border-t border-slate-700">
-              <h4 className="text-sm font-medium text-slate-300 mb-3">Breakdown by Category</h4>
+              <h4 className="text-sm font-medium text-[var(--text-secondary)] mb-3">
+                Breakdown by Category
+              </h4>
               <div className="space-y-2">
                 {result.breakdown.map((item) => (
                   <div key={item.category} className="flex items-center gap-3">
-                    <span className="text-xs text-slate-400 w-20 capitalize">{item.category}</span>
+                    <span className="text-xs text-[var(--text-muted)] w-20 capitalize">
+                      {item.category}
+                    </span>
                     <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-blue-500"
@@ -206,7 +210,7 @@ export function CarbonFootprintTracker({ className }: CarbonFootprintTrackerProp
                         }}
                       />
                     </div>
-                    <span className="text-xs text-slate-400 w-24 text-right">
+                    <span className="text-xs text-[var(--text-muted)] w-24 text-right">
                       {formatTons(item.tons)}
                     </span>
                   </div>

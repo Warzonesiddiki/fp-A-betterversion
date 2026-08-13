@@ -471,7 +471,7 @@ export function AIIntelligencePage() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div className="relative">
                   <Search
-                    className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]"
                     aria-hidden="true"
                   />
                   <Input

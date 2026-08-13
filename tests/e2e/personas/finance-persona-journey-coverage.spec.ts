@@ -86,12 +86,12 @@ test.describe('PICK B v0.2: CFO-Enterprise × Journey 01/02/03 (5 steps)', () =>
   });
 
   test('CFO-Ent-J01-s1: navigate to Import page', async ({ page }) => {
-    await page.goto('/data/import');
+    await page.goto('/data');
     await expect(page.locator('h1').first()).toContainText(/import/i);
   });
 
   test('CFO-Ent-J01-s2: choose source format (CSV/JSON, no xlsx per G7)', async ({ page }) => {
-    await page.goto('/data/import');
+    await page.goto('/data');
     const sourceSelector: Locator = page.locator('[data-testid="import-source"]');
     await expect(sourceSelector).toBeVisible();
     await expect(sourceSelector).toContainText(/csv/i);
@@ -139,7 +139,7 @@ test.describe('PICK B v0.2: CFO-Midmarket × Journey 01/02 (5 steps)', () => {
   });
 
   test('CFO-Mid-J01-s1: import monthly data CSV', async ({ page }) => {
-    await page.goto('/data/import');
+    await page.goto('/data');
     await page.locator('input[type="file"]').setInputFiles(csvFixture);
     await expect(page.locator('[data-testid="uploaded-filename"]')).toContainText(
       /sample-accounts\.csv/i
@@ -189,7 +189,7 @@ test.describe('PICK B v0.2: Controller-Small-Biz × Journey 01/05 (5 steps)', ()
   });
 
   test('Ctrl-SB-J01-s1: import trial balance', async ({ page }) => {
-    await page.goto('/data/import');
+    await page.goto('/data');
     await page.locator('input[type="file"]').setInputFiles(csvFixture);
     await page.locator('[data-testid="import-type"]').selectOption('trial_balance');
     await page.locator('button:has-text("Import")').click();

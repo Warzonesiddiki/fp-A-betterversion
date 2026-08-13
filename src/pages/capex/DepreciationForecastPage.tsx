@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
@@ -22,16 +23,7 @@ import { reportExportFailure } from '@/utils/exportErrorHandler';
 import Decimal from 'decimal.js';
 import { divideMoney, roundTo, subtractMoney, sumMoney } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /**
  * GAP-1 (F-0006) — exact-decimal depreciation forecast totals.
  *
@@ -164,6 +156,7 @@ const NBV_TREND = [
 ];
 
 export default function DepreciationForecastPage() {
+  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
   const [method, setMethod] = useState<string>('all');
@@ -211,7 +204,7 @@ export default function DepreciationForecastPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <TrendingDown className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <TrendingDown className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
@@ -219,31 +212,31 @@ export default function DepreciationForecastPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Depreciation Forecast</h1>
-          <p className="text-sm text-slate-400">Asset depreciation schedules and forecasts</p>
-        </div>
-        <Button variant="outline" onClick={handleExport}>
-          <Download className="h-4 w-4 mr-2" />
-          Export
-        </Button>
-      </div>
+      <PageHeader
+        title="Depreciation Forecast"
+        purpose="Asset depreciation schedules and forecasts"
+        actions={
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+        }
+      />
 
       <div className="grid gap-4 md:grid-cols-4">
         <KPIValue
           label="Total Asset Cost"
-          value={formatCurrency(totals.totalCost)}
+          value={fmt.currency0(totals.totalCost)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Net Book Value"
-          value={formatCurrency(totals.totalNBV)}
+          value={fmt.currency0(totals.totalNBV)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
           label="Annual Depreciation"
-          value={formatCurrency(totals.totalAnnualDep)}
+          value={fmt.currency0(totals.totalAnnualDep)}
           icon={<TrendingDown className="h-4 w-4" />}
         />
         <KPIValue
@@ -254,7 +247,7 @@ export default function DepreciationForecastPage() {
       </div>
 
       <div className="flex items-center gap-3">
-        <span className="text-sm text-slate-400">Method:</span>
+        <span className="text-sm text-[var(--text-muted)]">Method:</span>
         {['all', 'straight-line', 'declining-balance', 'units-of-production'].map((m) => (
           <Button
             key={m}
@@ -286,25 +279,46 @@ export default function DepreciationForecastPage() {
               </caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Asset
                   </th>
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Category
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Cost
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Life (Yr)
                   </th>
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Method
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     NBV
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Annual Dep
                   </th>
                 </tr>
@@ -318,12 +332,12 @@ export default function DepreciationForecastPage() {
                         {a.category}
                       </span>
                     </td>
-                    <td className="text-right py-2 px-3">{formatCurrency(a.cost)}</td>
+                    <td className="text-right py-2 px-3">{fmt.currency0(a.cost)}</td>
                     <td className="text-right py-2 px-3">{a.usefulLife}</td>
-                    <td className="py-2 px-3 text-xs text-slate-400">{a.method}</td>
-                    <td className="text-right py-2 px-3">{formatCurrency(a.nbv)}</td>
+                    <td className="py-2 px-3 text-xs text-[var(--text-muted)]">{a.method}</td>
+                    <td className="text-right py-2 px-3">{fmt.currency0(a.nbv)}</td>
                     <td className="text-right py-2 px-3 text-yellow-400">
-                      {formatCurrency(a.annualDep)}
+                      {fmt.currency0(a.annualDep)}
                     </td>
                   </tr>
                 ))}
@@ -331,12 +345,12 @@ export default function DepreciationForecastPage() {
                   <td className="py-2 px-3" colSpan={2}>
                     Total
                   </td>
-                  <td className="text-right py-2 px-3">{formatCurrency(totals.totalCost)}</td>
+                  <td className="text-right py-2 px-3">{fmt.currency0(totals.totalCost)}</td>
                   <td></td>
                   <td></td>
-                  <td className="text-right py-2 px-3">{formatCurrency(totals.totalNBV)}</td>
+                  <td className="text-right py-2 px-3">{fmt.currency0(totals.totalNBV)}</td>
                   <td className="text-right py-2 px-3 text-yellow-400">
-                    {formatCurrency(totals.totalAnnualDep)}
+                    {fmt.currency0(totals.totalAnnualDep)}
                   </td>
                 </tr>
               </tbody>
@@ -362,7 +376,7 @@ export default function DepreciationForecastPage() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                 />
                 <Legend />
                 <Bar dataKey="expense" name="Depreciation" fill="#f59e0b" radius={[4, 4, 0, 0]} />
@@ -388,7 +402,7 @@ export default function DepreciationForecastPage() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                 />
                 <Line
                   type="monotone"

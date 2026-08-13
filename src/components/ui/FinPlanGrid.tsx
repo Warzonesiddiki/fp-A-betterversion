@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { AgGridReact } from 'ag-grid-react';
 import {
   AllCommunityModule,
@@ -10,6 +11,7 @@ import {
 } from 'ag-grid-community';
 import { ExcelKeyboardEngine } from '@/engines/ExcelKeyboardEngine';
 import { cn } from '@/utils/cn';
+import { useDensity, densityMetrics } from '@/hooks/useDensity';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -58,7 +60,11 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
   onSelectionChanged,
   className,
 }) => {
+  const fmtCurrency = useCurrencyFormatter();
   const gridRef = useRef<AgGridReact>(null);
+  // UI-04: row metrics come from the shared density contract, not literals.
+  const density = useDensity();
+  const metrics = densityMetrics(density);
   const gridContainerRef = useRef<HTMLDivElement>(null);
   const findInputRef = useRef<HTMLInputElement>(null);
 
@@ -134,12 +140,7 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
           if (col.type === 'currency') {
             colDef.valueFormatter = (params) => {
               if (params.value === null || params.value === undefined) return '';
-              return new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              }).format(params.value);
+              return fmtCurrency.custom({ decimals: 0 })(params.value);
             };
           } else if (col.type === 'percent') {
             colDef.valueFormatter = (params) => {
@@ -190,7 +191,7 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
 
       return colDef;
     });
-  }, [columns, preset]);
+  }, [columns, preset, fmtCurrency]);
 
   const updateSelectionStats = useCallback(() => {
     if (!gridRef.current || !showSelectionStats) {
@@ -421,8 +422,8 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
 
   const mergedGridOptions = useMemo<GridOptions>(
     () => ({
-      rowHeight: 32,
-      headerHeight: 40,
+      rowHeight: metrics.rowHeight,
+      headerHeight: metrics.headerHeight,
       animateRows: true,
       rowSelection: { mode: 'multiRow' },
       suppressCellFocus: false,
@@ -444,7 +445,7 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
       onCellEditingStopped: () => setIsEditing(false),
       ...gridOptions,
     }),
-    [gridOptions, columns, getRowStyle, updateHandlePosition]
+    [gridOptions, columns, getRowStyle, updateHandlePosition, metrics]
   );
 
   // Drag-fill mouse handlers
@@ -469,8 +470,9 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
         const relY = ev.clientY - gridRect.top;
 
         // Estimate row/col from pixel position
-        const rowHeight = 32;
-        const headerHeight = 40;
+        // UI-04: must track the active density, or drag-fill hit-tests the
+        // wrong row as soon as the user leaves the default row height.
+        const { rowHeight, headerHeight } = metrics;
         const gridRows = Math.floor((relY - headerHeight) / rowHeight);
         const avgColWidth = (gridRect.width - 50) / Math.max(columns.length, 1);
         const gridCol = Math.floor(relX / avgColWidth);
@@ -502,7 +504,7 @@ export const FinPlanGrid: React.FC<FinPlanGridProps> = ({
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
     },
-    [selectedCell, columns.length, rows.length, dragHighlight, fillRange]
+    [selectedCell, columns.length, rows.length, dragHighlight, fillRange, metrics]
   );
 
   return (

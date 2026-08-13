@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useTranslation } from 'react-i18next';
 import { Loader2, MessageSquare, X, Minimize2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -35,6 +36,7 @@ export function ChatPanel({
   onToggleMinimize,
   onClose,
 }: ChatPanelProps) {
+  const fmtCurrency = useCurrencyFormatter();
   const { t } = useTranslation();
   const [messages, setMessages] = useState<ChatMessageData[]>([WELCOME_MSG]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -184,11 +186,7 @@ export function ChatPanel({
                       <tr key={i} className="border-b last:border-0">
                         <td className="px-3 py-1.5">{dp.label}</td>
                         <td className="px-3 py-1.5 text-right font-mono">
-                          {new Intl.NumberFormat('en-US', {
-                            style: 'currency',
-                            currency: 'USD',
-                            maximumFractionDigits: 0,
-                          }).format(dp.value)}
+                          {fmtCurrency.custom({ maxDecimals: 0 })(dp.value)}
                         </td>
                       </tr>
                     ))}

@@ -17,9 +17,22 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
+/**
+ * localStorage key mirroring the theme preference for the inline bootstrap in
+ * index.html.
+ *
+ * The authoritative value lives in the persisted UI store, but that store is
+ * an encrypted SQLite blob (`finplan-sqljs-db`) which the synchronous
+ * bootstrap cannot read. Without this mirror the bootstrap always read `null`,
+ * so every reload painted the default theme regardless of what the user had
+ * chosen — the classic flash-of-wrong-theme. Keep the key in sync with
+ * index.html.
+ */
+const THEME_BOOTSTRAP_KEY = 'finplan-theme';
+
 /** Read system color scheme preference. */
 function getSystemPreference(): ResolvedTheme {
-  if (typeof window === 'undefined') return 'dark';
+  if (typeof window === 'undefined') return 'light';
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
@@ -41,6 +54,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     applyTheme(resolvedTheme);
   }, [resolvedTheme]);
+
+  // Mirror the *preference* (not the resolved value) so the bootstrap can
+  // replay it before first paint. 'system' is stored verbatim so the bootstrap
+  // re-resolves it against the OS at load time.
+  useEffect(() => {
+    try {
+      localStorage.setItem(THEME_BOOTSTRAP_KEY, theme);
+    } catch {
+      // Private mode / quota — the app still works, only the pre-paint
+      // theme hint is lost.
+    }
+  }, [theme]);
 
   // Listen for OS-level color scheme changes.
   useEffect(() => {

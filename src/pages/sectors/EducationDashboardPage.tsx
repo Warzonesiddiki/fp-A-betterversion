@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { GraduationCap, TrendingUp } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -93,14 +94,10 @@ export function EducationDashboardPage() {
       role="main"
       aria-label="Education Sector Dashboard"
     >
-      <div>
-        <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-          Education Dashboard
-        </h1>
-        <p className="text-[var(--text-secondary)] mt-1">
-          University FP&A — enrollment, revenue, and cost analytics
-        </p>
-      </div>
+      <PageHeader
+        title="Education Dashboard"
+        purpose={'University FP&A — enrollment, revenue, and cost analytics'}
+      />
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.slice(0, 4).map((k) => (

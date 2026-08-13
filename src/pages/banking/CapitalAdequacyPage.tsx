@@ -115,7 +115,7 @@ export default function CapitalAdequacyPage() {
           <Landmark className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Regulatory Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import General Ledger and Risk data to monitor capital adequacy.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -132,7 +132,9 @@ export default function CapitalAdequacyPage() {
               <Landmark className="h-6 w-6 text-blue-400" />
               Capital Adequacy
             </h1>
-            <p className="text-sm text-slate-400 mt-1">Basel III Regulatory Capital Monitoring</p>
+            <p className="text-sm text-[var(--text-muted)] mt-1">
+              Basel III Regulatory Capital Monitoring
+            </p>
           </div>
           <button
             onClick={() => setHelpOpen(true)}
@@ -257,15 +259,15 @@ export default function CapitalAdequacyPage() {
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-xs">
-                <span className="text-slate-400">CET1 Min Requirement</span>
+                <span className="text-[var(--text-muted)]">CET1 Min Requirement</span>
                 <span className="font-semibold">4.50%</span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className="text-slate-400">Capital Conservation Buffer</span>
+                <span className="text-[var(--text-muted)]">Capital Conservation Buffer</span>
                 <span className="font-semibold text-green-400">2.50%</span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className="text-slate-400">Countercyclical Buffer</span>
+                <span className="text-[var(--text-muted)]">Countercyclical Buffer</span>
                 <span className="font-semibold">0.00%</span>
               </div>
             </div>

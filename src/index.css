@@ -1,5 +1,25 @@
 @import 'tailwindcss';
 
+/* ---------------------------------------------------------------------------
+ * Theme variant wiring (UI-01)
+ *
+ * Tailwind v4 resolves `dark:` against `@media (prefers-color-scheme: dark)` by
+ * default. FinPlan does NOT use the OS preference as its source of truth: the
+ * inline bootstrap in index.html and ThemeProvider both toggle an explicit
+ * `.dark` / `.light` class on <html>, and users can pick 'dark' | 'light' |
+ * 'system' from the UI.
+ *
+ * Without this override the two systems are disconnected — every `dark:`
+ * utility in the codebase follows the operating system while every CSS custom
+ * property follows the app's own toggle. Switching theme in-app then produces a
+ * half-themed screen (token-driven surfaces flip, Tailwind-driven ones do not).
+ *
+ * Redefining the variant as a class lookup makes `dark:` obey the same signal
+ * as the tokens below. 'system' still works: ThemeProvider resolves the OS
+ * preference and writes the corresponding class.
+ * ------------------------------------------------------------------------- */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Motion Design — shimmer animation for Skeleton components */
 @keyframes shimmer {
   0% {
@@ -95,6 +115,44 @@
   --action-primary-hover: var(--accent-hover);
   --state-focus: var(--focus-ring);
 
+  /* -------------------------------------------------------------------------
+   * Compatibility aliases (UI-01)
+   *
+   * 287 `var(--…)` references across 50 modules pointed at names that were
+   * never declared anywhere — `var(--border)`, `var(--text-tertiary)`,
+   * `var(--bg-primary)` and friends. An undeclared custom property with no
+   * fallback makes the whole declaration invalid at computed-value time, so
+   * those elements silently fell back to transparent backgrounds, inherited
+   * text colour and missing borders. That is why several panels render as
+   * unreadable dark-on-dark blocks. `--bg-muted` (78 uses) was worse: it
+   * resolved ONLY under [data-high-contrast='true'], so it worked in the
+   * accessibility mode and nowhere else.
+   *
+   * These are deliberately aliases onto the canonical scale rather than new
+   * colours: the intent is one palette, not a second one. Each mapping was
+   * derived from how the name is actually used in the call sites.
+   * ---------------------------------------------------------------------- */
+  --border: var(--border-default);
+  --border-color: var(--border-default);
+  --bg-primary: var(--bg-elevated); /* form control fill (inputs/selects) */
+  --bg-secondary: var(--bg-elevated); /* inset row / secondary panel fill */
+  --bg-tertiary: var(--bg-hover);
+  --bg-muted: var(--bg-elevated); /* zebra + hover rows in data tables */
+  --bg-subtle: var(--bg-hover);
+  --bg-surface-hover: var(--bg-hover);
+  --bg-surface-active: var(--bg-active);
+  --surface-primary: var(--bg-surface);
+  --surface-secondary: var(--bg-elevated);
+  --surface-tertiary: var(--bg-hover);
+  --surface-hover: var(--bg-hover);
+  --text-tertiary: var(--text-muted);
+  --text-on-accent: #ffffff;
+  --accent: var(--accent-primary);
+  --accent-secondary: var(--info);
+  --accent-primary-light: var(--accent-subtle);
+  --color-success: var(--positive);
+  --color-error: var(--negative);
+
   /* Spacing Scale */
   --space-xs: 4px;
   --space-sm: 8px;
@@ -115,25 +173,99 @@
 }
 
 .light {
-  --bg-root: #f1f5f9;
+  --bg-root: #f8fafc;
   --bg-surface: #ffffff;
   --bg-elevated: #f8fafc;
   --bg-overlay: #ffffff;
-  --bg-hover: #f1f5f9;
+  --bg-hover: #f5f8fa;
   --bg-active: #dbeafe;
   --border-subtle: #e2e8f0;
   --border-default: #cbd5e1;
   --border-strong: #94a3b8;
-  --text-muted: #94a3b8;
-  --text-secondary: #64748b;
+  --text-secondary: #475569;
   --text-primary: #0f172a;
-  --text-accent: #0284c7;
+  --text-accent: #0369a1;
   --accent-subtle: #e0f2fe;
   --focus-ring: #2563eb;
   --positive-subtle: #d1fae5;
   --negative-subtle: #fee2e2;
   --warning-subtle: #fef3c7;
   --info-subtle: #e0e7ff;
+
+  /* ---------------------------------------------------------------------
+   * UI-02 — light-mode corrections.
+   *
+   * These tokens were previously defined ONLY in :root (dark) and inherited
+   * unchanged into light mode, where they were measured against the light
+   * canvas and failed WCAG 2.1 AA:
+   *   --text-muted   #94a3b8  2.56:1  (failed every threshold)
+   *   --warning      #f59e0b  2.15:1  (failed every threshold)
+   *   --negative     #f43f5e  3.67:1  (failed as body text)
+   *   --accent-primary #0284c7 4.10:1 (failed as body text)
+   *   --info         #6366f1  4.47:1  (failed as body text)
+   * Every replacement below clears 4.5:1 against BOTH #ffffff (cards) and
+   * #f8fafc (canvas). --negative also moves onto the #DC2626 that AGENTS.md
+   * mandates for unfavorable variance.
+   * ------------------------------------------------------------------- */
+  --text-muted: #5f6f83;
+  --accent-primary: #0369a1;
+  --accent-hover: #075985;
+  --negative: #dc2626;
+  --warning: #b45309;
+  --info: #4f46e5;
+
+  /* Glass and shadows were built for a dark canvas: the dark translucent
+   * fill turned panels muddy and the heavy black shadows read as smudges on
+   * white. Light mode uses a white glass fill and soft, low-alpha shadows. */
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(15, 23, 42, 0.08);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 2px 8px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.1);
+  --shadow-premium: 0 4px 16px rgba(15, 23, 42, 0.08);
+}
+
+/* ---------------------------------------------------------------------------
+ * Tailwind theme bridge (UI-01)
+ *
+ * The codebase mixes two vocabularies: Atlas CSS custom properties
+ * (`bg-[var(--bg-surface)]`) and shadcn/ui semantic utilities (`bg-card`,
+ * `text-muted-foreground`, `ring-ring`). The shadcn names only exist if the
+ * matching `--color-*` theme keys are registered with Tailwind — and they
+ * never were, because this project has no `tailwind.config.*` and no `@theme`
+ * block. Every one of those utilities compiled to nothing: 248 usages across
+ * 42 files, `text-muted-foreground` alone accounting for 160. Verified by
+ * compiling src/index.css with Tailwind's own compiler and grepping the
+ * output for each class.
+ *
+ * `@theme inline` registers them WITHOUT freezing their value: the emitted
+ * utility is `color: var(--text-muted)`, so it keeps tracking the light/dark
+ * toggle instead of baking in whichever theme was active at build time. Using
+ * a plain `@theme` block here would hard-code the dark values and break the
+ * light theme.
+ *
+ * Mappings point at the existing Atlas scale so this adds no new colours.
+ * ------------------------------------------------------------------------- */
+@theme inline {
+  --color-background: var(--bg-root);
+  --color-foreground: var(--text-primary);
+  --color-card: var(--bg-surface);
+  --color-card-foreground: var(--text-primary);
+  --color-popover: var(--bg-elevated);
+  --color-popover-foreground: var(--text-primary);
+  --color-primary: var(--accent-primary);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--bg-elevated);
+  --color-secondary-foreground: var(--text-primary);
+  --color-muted: var(--bg-elevated);
+  --color-muted-foreground: var(--text-muted);
+  --color-accent: var(--bg-hover);
+  --color-accent-foreground: var(--text-primary);
+  --color-destructive: var(--negative);
+  --color-destructive-foreground: #ffffff;
+  --color-border: var(--border-default);
+  --color-input: var(--border-default);
+  --color-ring: var(--focus-ring);
 }
 
 * {
@@ -819,6 +951,438 @@ h3,
   font-weight: 500;
   color: var(--text-secondary);
   line-height: 1.4;
+}
+
+/* =============================================
+   APPLICATION SIDEBAR (UI-03)
+   Grouped, collapsible navigation over the route manifest in
+   src/types/navigation.ts. Zoho Books reading model: a quiet flat rail, one
+   section open at a time, and a single high-contrast pill marking where you
+   are. Sizing is generous (40px rows) because this rail is the primary way
+   through 190 screens.
+   ============================================= */
+.fp-sidebar {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 264px;
+  height: 100%;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-subtle);
+  transition: width 200ms ease;
+}
+.fp-sidebar[data-collapsed='true'] {
+  width: 64px;
+}
+
+.fp-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  height: 56px;
+  padding-inline: var(--space-lg);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.fp-sidebar[data-collapsed='true'] .fp-sidebar__brand {
+  padding-inline: 0;
+  justify-content: center;
+}
+.fp-sidebar__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-primary);
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.fp-sidebar__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 650;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.fp-sidebar__close {
+  padding: var(--space-xs);
+  border-radius: var(--radius-xs);
+  color: var(--text-muted);
+}
+.fp-sidebar__close:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.fp-sidebar__search {
+  padding: var(--space-md) var(--space-md) var(--space-sm);
+}
+.fp-sidebar__search-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: 7px var(--space-md);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  text-align: start;
+  transition:
+    border-color 120ms ease,
+    color 120ms ease;
+}
+.fp-sidebar[data-collapsed='true'] .fp-sidebar__search-button {
+  justify-content: center;
+  padding-inline: 0;
+}
+.fp-sidebar__search-button:hover {
+  border-color: var(--border-strong);
+  color: var(--text-secondary);
+}
+.fp-sidebar__search-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.fp-sidebar__kbd {
+  flex-shrink: 0;
+  padding: 1px 5px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.fp-sidebar__nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-xs) var(--space-sm) var(--space-md);
+}
+.fp-sidebar__sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fp-nav-section__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  padding: 9px var(--space-md);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 550;
+  text-align: start;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+.fp-sidebar[data-collapsed='true'] .fp-nav-section__trigger {
+  justify-content: center;
+  padding-inline: 0;
+}
+.fp-nav-section__trigger:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.fp-nav-section__icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+.fp-nav-section__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.fp-sidebar[data-collapsed='true'] .fp-nav-section__label,
+.fp-sidebar[data-collapsed='true'] .fp-nav-section__chevron {
+  display: none;
+}
+.fp-nav-section__chevron {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  transition: transform 160ms ease;
+}
+.fp-nav-section__chevron[data-expanded='true'] {
+  transform: rotate(180deg);
+}
+
+.fp-nav-section__panel {
+  padding: 2px 0 var(--space-sm);
+}
+.fp-nav-group + .fp-nav-group {
+  margin-top: var(--space-sm);
+}
+.fp-nav-group__label {
+  margin: 0;
+  padding: var(--space-xs) var(--space-md) 3px calc(var(--space-md) + 28px);
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.fp-nav-group__items {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fp-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 7px var(--space-md);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 450;
+  transition:
+    background 120ms ease,
+    color 120ms ease;
+}
+.fp-nav-group__items .fp-nav-item {
+  padding-inline-start: calc(var(--space-md) + 28px);
+}
+.fp-nav-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.fp-nav-item[data-active='true'] {
+  background: var(--accent-primary);
+  color: #ffffff;
+  font-weight: 550;
+}
+.fp-nav-item[data-active='true']:hover {
+  background: var(--accent-hover);
+  color: #ffffff;
+}
+.fp-nav-item__label {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.fp-sidebar[data-collapsed='true'] .fp-nav-item--icon {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.fp-sidebar__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: var(--space-sm);
+  border-top: 1px solid var(--border-subtle);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fp-sidebar,
+  .fp-nav-section__chevron {
+    transition: none;
+  }
+}
+
+/* =============================================
+   TYPE SCALE & DENSITY (UI-04)
+   =============================================
+   Two problems this block solves.
+
+   1. There was no type scale. 181 pages hand-rolled their heading in 21
+      different Tailwind combinations (`text-2xl font-bold`, `text-3xl
+      font-black tracking-tight`, `text-xl font-bold mb-2`, …). Nothing was
+      wrong individually; collectively there was no system.
+
+   2. `designTokens.density` defined compact/standard/comfortable and NOTHING
+      consumed it — `useDensity()` had zero importers. Grid row heights were
+      hardcoded per component (32/40 here, 28/32 there).
+
+   The scale is finance-first: dense enough to fit a statement on screen,
+   never so dense it stops being readable. Sizes are px because this is a
+   data application on desktop, and rem-scaling here fights the grid.
+   ============================================= */
+:root {
+  /* Type scale — 12/13/15/18/22/28, ~1.22 ratio at the top, tight at the
+     bottom where finance UIs actually live. */
+  --font-size-2xs: 11px;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 15px;
+  --font-size-lg: 18px;
+  --font-size-xl: 22px;
+  --font-size-2xl: 28px;
+
+  /* Line heights. Tight for numerics (keeps rows short), relaxed for prose. */
+  --leading-tight: 1.25;
+  --leading-snug: 1.4;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+
+  /* Font weights — a bounded set. `font-black` (900) is deliberately absent:
+     it was used on 28 headings and reads as shouting in a finance tool. */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Density contract. `--density-*` are re-pointed by [data-density] below,
+     so both AG Grid and plain <table> read ONE source of truth. */
+  --density-row-height: 36px;
+  --density-header-height: 40px;
+  --density-cell-padding-y: 4px;
+  --density-cell-padding-x: 8px;
+  --density-font-size: 13px;
+}
+
+/* Density modes. Applied to <html data-density> by useApplyDensity().
+   These values are asserted equal to designTokens.density by
+   useDensity.test.ts, so the TS constant and the CSS cannot drift. */
+[data-density='compact'] {
+  --density-row-height: 28px;
+  --density-header-height: 32px;
+  --density-cell-padding-y: 2px;
+  --density-cell-padding-x: 6px;
+  --density-font-size: 12px;
+}
+[data-density='standard'] {
+  --density-row-height: 36px;
+  --density-header-height: 40px;
+  --density-cell-padding-y: 4px;
+  --density-cell-padding-x: 8px;
+  --density-font-size: 13px;
+}
+[data-density='comfortable'] {
+  --density-row-height: 48px;
+  --density-header-height: 48px;
+  --density-cell-padding-y: 8px;
+  --density-cell-padding-x: 12px;
+  --density-font-size: 14px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Tabular figures.
+ *
+ * Proportional digits make columns of numbers ragged: '1' is narrower than
+ * '8', so decimal points wander and totals do not line up under their column.
+ * Every surface that shows money or a numeric measure opts into tabular
+ * figures. This is the single highest-value typographic fix in a finance UI.
+ * ------------------------------------------------------------------------- */
+.fp-numeric,
+.fp-table td,
+.fp-table th,
+.data-grid .ag-cell,
+.data-grid .ag-header-cell,
+[class*='tabular'] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* ---------------------------------------------------------------------------
+ * .fp-table — the canonical HTML data table.
+ *
+ * 91 modules render a raw <table> with per-file padding (py-3/px-4 here,
+ * py-2/px-3 there, p-2 elsewhere). `.fp-table` gives them one density-aware
+ * contract while leaving the markup as plain semantic HTML.
+ * ------------------------------------------------------------------------- */
+.fp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--density-font-size);
+}
+.fp-table thead th {
+  height: var(--density-header-height);
+  padding: var(--density-cell-padding-y) var(--density-cell-padding-x);
+  color: var(--text-muted);
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-surface);
+}
+.fp-table tbody td {
+  height: var(--density-row-height);
+  padding: var(--density-cell-padding-y) var(--density-cell-padding-x);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.fp-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+/* Numeric columns right-align; that is what makes magnitudes comparable. */
+.fp-table td.fp-numeric,
+.fp-table th.fp-numeric {
+  text-align: right;
+}
+.fp-table tfoot td {
+  height: var(--density-row-height);
+  padding: var(--density-cell-padding-y) var(--density-cell-padding-x);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  border-top: 1px solid var(--border-default);
+}
+
+/* Grid density — AG Grid reads the same variables as .fp-table. */
+.data-grid .ag-header-cell {
+  height: var(--density-header-height);
+}
+.data-grid .ag-cell {
+  padding: var(--density-cell-padding-y) var(--density-cell-padding-x);
+}
+
+/* ---------------------------------------------------------------------------
+ * Page heading scale.
+ *
+ * `.fp-page-header__title` previously inherited whatever the browser gave an
+ * <h1>. These make PageHeader the visually correct choice, not just the
+ * structurally correct one.
+ * ------------------------------------------------------------------------- */
+.fp-page-header__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+}
+.fp-page-header__purpose {
+  font-size: var(--font-size-sm);
+  line-height: var(--leading-normal);
+}
+.fp-section-title {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-snug);
+  color: var(--text-heading);
 }
 
 /* =============================================

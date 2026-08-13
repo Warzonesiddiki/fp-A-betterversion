@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -31,16 +32,7 @@ import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
 import { useDebtStore, type DebtInstrumentInput } from '@/store/debtStore';
 import { DebtForm } from '@/components/debt/DebtForm';
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 function addMonths(iso: string, months: number): string {
   const d = new Date(iso);
   d.setMonth(d.getMonth() + months);
@@ -53,6 +45,7 @@ function addMonths(iso: string, months: number): string {
 const EBITDA = 18000000;
 
 export default function DebtSchedulePage() {
+  const fmt = useCurrencyFormatter();
   const instruments = useDebtStore((s) => s.instruments);
   const addInstrument = useDebtStore((s) => s.addInstrument);
   const updateInstrument = useDebtStore((s) => s.updateInstrument);
@@ -128,7 +121,7 @@ export default function DebtSchedulePage() {
         key: 'principal',
         header: 'Principal',
         align: 'right',
-        render: (v) => formatCurrency(v as number),
+        render: (v) => fmt.currency0(v as number),
       },
       {
         key: 'rate',
@@ -141,13 +134,13 @@ export default function DebtSchedulePage() {
         key: 'monthlyPayment',
         header: 'Monthly Pmt',
         align: 'right',
-        render: (v) => formatCurrency(v as number),
+        render: (v) => fmt.currency0(v as number),
       },
       {
         key: 'remaining',
         header: 'Bal @ Maturity',
         align: 'right',
-        render: (v) => formatCurrency(v as number),
+        render: (v) => fmt.currency0(v as number),
       },
       {
         key: 'status',
@@ -171,7 +164,7 @@ export default function DebtSchedulePage() {
         },
       },
     ],
-    []
+    [fmt]
   );
 
   const editingInstrument = useMemo(
@@ -221,10 +214,10 @@ export default function DebtSchedulePage() {
         rows: tableData.map((d) => [
           d.lender,
           d.type,
-          formatCurrency(d.principal),
+          fmt.currency0(d.principal),
           formatPercent(d.rate),
           d.maturity,
-          formatCurrency(d.remaining),
+          fmt.currency0(d.remaining),
         ]),
       },
       { title: 'Debt Schedule' }
@@ -282,23 +275,23 @@ export default function DebtSchedulePage() {
   if (instruments.length === 0) {
     return (
       <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Debt Schedule</h1>
-            <p className="text-sm text-slate-400 mt-1">Debt portfolio</p>
-          </div>
-          <Button size="sm" onClick={openAddForm}>
-            <Plus className="h-3.5 w-3.5 mr-1.5" />
-            Add Debt
-          </Button>
-        </div>
+        <PageHeader
+          title="Debt Schedule"
+          purpose="Debt portfolio"
+          actions={
+            <Button size="sm" onClick={openAddForm}>
+              <Plus className="h-3.5 w-3.5 mr-1.5" />
+              Add Debt
+            </Button>
+          }
+        />
 
         {formCard}
 
         <div className="rounded-xl border border-dashed border-slate-600 p-10 text-center">
           <TableIcon className="h-10 w-10 mx-auto mb-3 text-slate-500" />
-          <p className="text-lg font-medium text-slate-300">No Data</p>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-lg font-medium text-[var(--text-secondary)]">No Data</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Add debt instruments to see amortization, balance and DSCR analytics.
           </p>
         </div>
@@ -311,7 +304,7 @@ export default function DebtSchedulePage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Debt Schedule</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Loan portfolio and amortization — computed live by DebtScheduleEngine (not mock data)
           </p>
         </div>
@@ -334,9 +327,9 @@ export default function DebtSchedulePage() {
       {formCard}
 
       <div className="grid grid-cols-4 gap-4">
-        <KPIValue label="Total Debt" value={formatCurrency(totalDebt)} />
+        <KPIValue label="Total Debt" value={fmt.currency0(totalDebt)} />
         <KPIValue label="Weighted Avg Rate" value={formatPercent(weightedRate)} />
-        <KPIValue label="Annual Debt Service" value={formatCurrency(annualDebtService)} />
+        <KPIValue label="Annual Debt Service" value={fmt.currency0(annualDebtService)} />
         <KPIValue
           label="DSCR"
           value={formatPercent(dscr)}
@@ -358,7 +351,7 @@ export default function DebtSchedulePage() {
                 <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${Math.round(v / 1000000)}M`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                 />
                 <Legend />
                 <Bar dataKey="principal" fill="#3b82f6" name="Principal" stackId="a" />
@@ -379,7 +372,7 @@ export default function DebtSchedulePage() {
                 <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${Math.round(v / 1000000)}M`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                  formatter={(v) => formatCurrency(Number(v))}
+                  formatter={(v) => fmt.currency0(Number(v))}
                 />
                 <Line
                   dataKey="balance"
@@ -423,7 +416,7 @@ export default function DebtSchedulePage() {
                 <div>
                   <div className="font-medium">{i.name}</div>
                   <div className="text-xs text-slate-400">
-                    {i.lender} | {i.displayType} | {formatCurrency(i.principal)} @{' '}
+                    {i.lender} | {i.displayType} | {fmt.currency0(i.principal)} @{' '}
                     {formatPercent(i.rate * 100)}
                   </div>
                 </div>

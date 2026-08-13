@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import { reportingCurrency } from '@/store/financialContextStore';
+import { currencyFormatter } from '@/utils/financialFormatting';
 import { AlertTriangle, TrendingUp, TrendingDown, Info, ShieldAlert } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { AnomalyDetectionEngine } from '@/engines/AnomalyDetectionEngine';
@@ -55,11 +57,7 @@ const SEVERITY_CONFIG: Record<
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 function formatValue(v: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(v);
+  return currencyFormatter(reportingCurrency(), { maxDecimals: 0 })(v);
 }
 
 // ─── Subcomponents ──────────────────────────────────────────────────────────

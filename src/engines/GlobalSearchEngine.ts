@@ -96,7 +96,7 @@ export class GlobalSearchEngine {
       { path: '/reports/pnl', title: 'P&L Statement', tags: ['page', 'report'] },
       { path: '/reports/balance-sheet', title: 'Balance Sheet', tags: ['page', 'report'] },
       { path: '/reports/cash-flow', title: 'Cash Flow', tags: ['page', 'report'] },
-      { path: '/data/import', title: 'Data Import', tags: ['page', 'import'] },
+      { path: '/data', title: 'Data Import', tags: ['page', 'import'] },
       { path: '/settings', title: 'Settings', tags: ['page', 'settings'] },
     ];
     for (const p of pages) {

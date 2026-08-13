@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { reportingCurrency } from '@/store/financialContextStore';
 import { Link, useLocation } from 'react-router-dom';
 import {
   AlertCircle,
@@ -22,7 +23,8 @@ import { BudgetVsActualTable, type VarianceDataRow } from './components/BudgetVs
 import { PAGE_HELP } from '../_docs';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { sumMoney, subtractMoney, roundTo, divideMoney } from '@/utils/money';
-import { formatPercent } from '@/utils/financialFormatting';;
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { currencyFormatter, formatPercent } from '@/utils/financialFormatting';;
 
 const MATERIAL_THRESHOLD = 10;
 const PERIOD_OPTIONS = ['Monthly', 'Quarterly', 'Annual'] as const;
@@ -30,23 +32,8 @@ const ACCOUNT_TYPE_OPTIONS = ['All', 'Revenue', 'Expense'] as const;
 
 type PeriodMode = (typeof PERIOD_OPTIONS)[number];
 type AccountTypeFilter = (typeof ACCOUNT_TYPE_OPTIONS)[number];
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
 function formatCurrencyFull(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(n);
+  return currencyFormatter(reportingCurrency(), { decimals: 2 })(n);
 }
 
 function getQuarterFromPeriod(period: string): number {
@@ -99,6 +86,7 @@ interface VarianceRow {
 }
 
 export default function BudgetVsActualPage() {
+  const fmt = useCurrencyFormatter();
   const { pathname } = useLocation();
   const [helpOpen, setHelpOpen] = useState(false);
 
@@ -282,8 +270,8 @@ export default function BudgetVsActualPage() {
 
     const tableRows: VarianceDataRow[] = filteredRows.map((r) => ({
       account: r.accountName,
-      budget: formatCurrency(r.budget),
-      actual: formatCurrency(r.actual),
+      budget: fmt.currency0(r.budget),
+      actual: fmt.currency0(r.actual),
       variance: formatCurrencyFull(r.variance),
       percentVar: !isFinite(r.variancePct) ? '\u221E' : `${formatPercent(r.variancePct, 1)}`,
       isFavorable: r.isFavorable,
@@ -292,8 +280,8 @@ export default function BudgetVsActualPage() {
     }));
 
     return {
-      totalBudget: formatCurrency(totalBudget),
-      totalActual: formatCurrency(totalActual),
+      totalBudget: fmt.currency0(totalBudget),
+      totalActual: fmt.currency0(totalActual),
       netVariance: formatCurrencyFull(Math.abs(totalVar)),
       utilization: totalUtilization,
       isVarianceFavorable: isTotalFavorable,
@@ -315,6 +303,7 @@ export default function BudgetVsActualPage() {
     accountTypeFilter,
     departmentFilter,
     minVarianceThreshold,
+    fmt,
   ]);
 
   const handleExportPDF = () => {
@@ -392,7 +381,7 @@ export default function BudgetVsActualPage() {
       <div className="p-12 text-center">
         <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-400" />
         <h2 className="text-xl font-bold mb-2">Failed to load data</h2>
-        <p className="text-slate-400 mb-6">{importError}</p>
+        <p className="text-[var(--text-muted)] mb-6">{importError}</p>
         <button
           onClick={() => window.location.reload()}
           className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -408,7 +397,7 @@ export default function BudgetVsActualPage() {
       <div className="p-12 text-center">
         <Database className="w-12 h-12 mx-auto mb-4 text-slate-500" />
         <h2 className="text-xl font-bold mb-2">No data yet</h2>
-        <p className="text-slate-400 mb-6">Import your General Ledger data to see reports.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import your General Ledger data to see reports.</p>
         <Link
           to="/data"
           className="inline-block px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -424,7 +413,7 @@ export default function BudgetVsActualPage() {
       <div className="p-12 text-center">
         <Database className="w-12 h-12 mx-auto mb-4 text-slate-500" />
         <h2 className="text-xl font-bold mb-2">No budgets found</h2>
-        <p className="text-slate-400 mb-6">Create an approved budget to compare against actuals.</p>
+        <p className="text-[var(--text-muted)] mb-6">Create an approved budget to compare against actuals.</p>
         <Link
           to="/budgets/create"
           className="inline-block px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -699,7 +688,7 @@ export default function BudgetVsActualPage() {
                   <table className="w-full text-sm" aria-label="Budget vs actual">
               <caption className="sr-only">Detailed budget vs actual</caption>
                     <thead>
-                      <tr className="text-left text-slate-400 text-xs uppercase border-b border-[var(--border-subtle)]">
+                      <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-[var(--border-subtle)]">
                         <th scope="col" className="px-4 py-2">Account</th>
                         <th scope="col" className="px-4 py-2 text-right">Price Var</th>
                         <th scope="col" className="px-4 py-2 text-right">Volume Var</th>

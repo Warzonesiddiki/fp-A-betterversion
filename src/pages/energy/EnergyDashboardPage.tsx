@@ -1,4 +1,5 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { useState } from 'react';
 
 import { BarChart3, Download, RefreshCw } from 'lucide-react';
@@ -122,14 +123,10 @@ export default function EnergyDashboardPage() {
     <div className="p-6 space-y-6 animate-in fade-in duration-500">
       {/* 1. Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">
-            Energy Dashboard
-          </h1>
-          <p className="text-[var(--text-secondary)] mt-1">
-            Monitor production efficiency, revenue streams, and asset performance across all grids.
-          </p>
-        </div>
+        <PageHeader
+          title="Energy Dashboard"
+          purpose="Monitor production efficiency, revenue streams, and asset performance across all grids."
+        />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
           <Button variant="outline" size="sm" onClick={handleExport} className="h-10">

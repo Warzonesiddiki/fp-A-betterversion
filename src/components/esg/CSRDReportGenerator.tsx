@@ -178,19 +178,21 @@ export function CSRDReportGenerator({ className }: CSRDReportGeneratorProps) {
     <div className={className}>
       <div className="grid gap-4 md:grid-cols-4 mb-6">
         <Card className="p-4">
-          <div className="text-sm text-slate-400 mb-1">Compliance Score</div>
-          <div className="text-3xl font-bold text-white">{complianceStats.score}%</div>
+          <div className="text-sm text-[var(--text-muted)] mb-1">Compliance Score</div>
+          <div className="text-3xl font-bold text-[var(--text-primary)]">
+            {complianceStats.score}%
+          </div>
         </Card>
         <Card className="p-4">
-          <div className="text-sm text-slate-400 mb-1">Compliant</div>
+          <div className="text-sm text-[var(--text-muted)] mb-1">Compliant</div>
           <div className="text-3xl font-bold text-green-400">{complianceStats.compliant}</div>
         </Card>
         <Card className="p-4">
-          <div className="text-sm text-slate-400 mb-1">Partial</div>
+          <div className="text-sm text-[var(--text-muted)] mb-1">Partial</div>
           <div className="text-3xl font-bold text-yellow-400">{complianceStats.partial}</div>
         </Card>
         <Card className="p-4">
-          <div className="text-sm text-slate-400 mb-1">Non-Compliant</div>
+          <div className="text-sm text-[var(--text-muted)] mb-1">Non-Compliant</div>
           <div className="text-3xl font-bold text-red-400" role="alert">
             {complianceStats.nonCompliant}
           </div>

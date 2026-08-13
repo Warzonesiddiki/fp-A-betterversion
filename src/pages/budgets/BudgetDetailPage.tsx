@@ -1,4 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { PageHeader } from '@/components/ui/PageHeader';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useBudgetStore } from '@/store/budgetStore';
 import { useGLStore } from '@/store/glStore';
@@ -25,6 +26,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { roundTo, sumMoney } from '@/utils/money';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 /**
  * GAP-1 (F-0006) — exact-decimal budget-detail totals.
@@ -45,16 +47,6 @@ export function computeMonthColumnTotal(
 ): number {
   return roundTo(sumMoney(groups.map((g) => g.items[monthIdx]?.amount ?? 0)));
 }
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(n);
-}
-
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 interface Snapshot {
@@ -80,6 +72,7 @@ interface AuditEntry {
 }
 
 export default function BudgetDetailPage() {
+  const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
   const { user } = useAuthStore();
 
@@ -387,8 +380,8 @@ export default function BudgetDetailPage() {
   if (user?.role === 'Viewer') {
     return (
       <div className="p-12 text-center">
-        <h2 className="text-xl font-bold text-white mb-2">Access Restricted</h2>
-        <p className="text-slate-400 mb-6">Viewers cannot access the budget editor.</p>
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">Access Restricted</h2>
+        <p className="text-[var(--text-muted)] mb-6">Viewers cannot access the budget editor.</p>
         <Link to="/dashboard" className="text-blue-400 hover:underline font-medium">
           Back to Dashboard
         </Link>
@@ -400,7 +393,7 @@ export default function BudgetDetailPage() {
     return (
       <div className="p-12 text-center">
         <h2 className="text-xl font-semibold mb-2">Budget Not Found</h2>
-        <p className="text-slate-400 mb-4">
+        <p className="text-[var(--text-muted)] mb-4">
           The budget you&apos;re looking for doesn&apos;t exist.
         </p>
         <Button onClick={() => navigate('/budgets')}>Back to Budgets</Button>
@@ -420,17 +413,19 @@ export default function BudgetDetailPage() {
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-bold">{budget.name}</h1>
-              <button
-                onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
-                aria-label="Help"
-              ></button>
-            </div>
-            <p className="text-sm text-slate-400 mt-0.5">
+            <PageHeader
+              title={budget.name}
+              actions={
+                <button
+                  onClick={() => setHelpOpen(true)}
+                  className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                  aria-label="Help"
+                ></button>
+              }
+            />
+            <p className="text-sm text-[var(--text-muted)] mt-0.5">
               FY{budget.fiscalYear} · {budgetLineItems.length} line items ·{' '}
-              {formatCurrency(grandTotal)}
+              {fmt.currency0(grandTotal)}
             </p>
           </div>
         </div>
@@ -606,7 +601,7 @@ export default function BudgetDetailPage() {
             <Card>
               <CardContent className="p-0">
                 <div className="p-3 flex items-center justify-between border-b border-slate-800">
-                  <span className="text-sm font-semibold text-slate-300">
+                  <span className="text-sm font-semibold text-[var(--text-secondary)]">
                     Professional Grid Editor
                   </span>
                   <span className="text-xs text-slate-500">
@@ -631,7 +626,7 @@ export default function BudgetDetailPage() {
                     Detailed breakdown of budget detail line items
                   </caption>
                   <thead>
-                    <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                    <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                       <th scope="col" className="px-4 py-3 w-24 sticky left-0 bg-slate-900 z-10">
                         Account
                       </th>
@@ -714,7 +709,7 @@ export default function BudgetDetailPage() {
                             );
                           })}
                           <td className="px-4 py-2 text-right font-medium tabular-nums">
-                            {formatCurrency(group.total)}
+                            {fmt.currency0(group.total)}
                           </td>
                         </tr>
                       ))
@@ -727,12 +722,12 @@ export default function BudgetDetailPage() {
                         const monthTotal = computeMonthColumnTotal(groupedByAccount, idx);
                         return (
                           <td key={m} className="px-2 py-3 text-right tabular-nums">
-                            {formatCurrency(monthTotal)}
+                            {fmt.currency0(monthTotal)}
                           </td>
                         );
                       })}
                       <td className="px-4 py-3 text-right tabular-nums">
-                        {formatCurrency(grandTotal)}
+                        {fmt.currency0(grandTotal)}
                       </td>
                     </tr>
                   </tfoot>
@@ -745,7 +740,7 @@ export default function BudgetDetailPage() {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 text-sm font-semibold mb-2">
-                  <History className="h-4 w-4 text-slate-400" />
+                  <History className="h-4 w-4 text-[var(--text-muted)]" />
                   Version History
                 </div>
                 <p className="text-xs text-slate-500">
@@ -766,7 +761,7 @@ export default function BudgetDetailPage() {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 text-sm font-semibold mb-2">
-                  <Lock className="h-4 w-4 text-slate-400" />
+                  <Lock className="h-4 w-4 text-[var(--text-muted)]" />
                   Cell Locking
                 </div>
                 <p className="text-xs text-slate-500">
