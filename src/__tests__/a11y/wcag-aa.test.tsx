@@ -1,15 +1,17 @@
 /**
  * Automated accessibility (a11y) regression tests for FinPlan Pro.
  *
- * This file is intentionally created by the Hera audit so the build can wire
- * `axe-core` into the test suite. Until it is added to package.json devDeps
- * (`npm i -D vitest-axe`), the import below will be a TypeScript error and
- * the test runner will skip the suite — Apollo should:
- *   1. add `vitest-axe` to devDependencies
- *   2. run `npm i`
- *   3. enable this file (it is already under `src/**` so vitest auto-picks it)
+ * WCAG coverage: 2.1 Level AA (axe-core's default rule set). `vitest-axe` is
+ * installed and this suite is live — an earlier version of this header said it
+ * was inert pending that install, which has since happened.
  *
- * WCAG coverage: 2.1 Level AA (axe-core's default rule set).
+ * Scope note: these cases render each page against the *default* stores, so the
+ * data-backed routes are audited in their EMPTY state (a report page here is
+ * ~6 DOM elements: an icon, a heading, a sentence and an "Import Data" button).
+ * That is deliberate — empty states ship too — but it is thin coverage on its
+ * own. The populated state of those pages is audited separately in
+ * `wcag-aa-populated.test.tsx`, which mocks the GL and budget stores; keep new
+ * data-dependent pages covered in both.
  *
  * @see https://github.com/chaabi-dev/vitest-axe
  */

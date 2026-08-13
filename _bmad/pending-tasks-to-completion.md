@@ -439,7 +439,33 @@ accent hues — against all four surfaces (63 → 99 tests). Mutation-verified
 both ways: M10 restoring `#6484b4` fails 4 contrast assertions, M11 the
 over-correction to `#94b2db` fails the hierarchy assertion.
 
-Still open in this section: loading/empty/error consistency, axe, keyboard
+**Axe slice — DONE.** This item was already half-built and the plan had not
+recorded it: `jest-axe`/`vitest-axe` were installed and
+`src/__tests__/a11y/wcag-aa.test.tsx` (22 tests) was green, covering the auth
+pages, the main application pages, the report pages and eight UI primitives.
+
+The green suite was not worth much on its own, so it was instrumented to report
+how much DOM each scan actually saw. The report routes were being audited at
+**5-6 elements and ~70 characters of text** — axe was only ever looking at the
+"No data yet" empty state. Those pages passed because there was nothing there:
+no table, no column headers, no data cells, no controls beyond one button.
+
+The risk lives in the populated state, so `wcag-aa-populated.test.tsx` mocks the
+GL and budget stores and re-scans `ProfitLossPage`, `CashFlowPage`,
+`ChartOfAccountsPage` and `BudgetVsActualPage` with real content (45-104
+elements, 4-19 table rows). All four are clean at 0 critical/serious, so this
+closed a coverage gap rather than a defect; the one finding is `heading-order`
+on `ChartOfAccountsPage`, moderate, tolerated by the same bar as the sibling
+suite. `DashboardPage`'s populated state was already covered by
+`DashboardPage.populated.contract.test.tsx` and is not duplicated.
+
+Each test also asserts it rendered ≥30 elements, so the hollow-scan failure mode
+cannot come back silently. Mutation-verified both ways: M12 (an unlabelled
+`<button>` in the populated CashFlow render) fails exactly one test on
+`button-name`; M13 (emptying the store mocks) fails all five on the element-count
+guard rather than passing on an empty container.
+
+Still open in this section: loading/empty/error consistency, keyboard
 paths, 1024×600. One contrast item is known and deliberately excluded:
 `--border-subtle` is used as text in `NLQChat.tsx:262,264`, but only for
 decorative dot separators between metadata, which is not content.
