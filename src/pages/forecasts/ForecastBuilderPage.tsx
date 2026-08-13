@@ -21,6 +21,7 @@ import {
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatCompact, formatNumber } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { PageHeader } from '@/components/ui/PageHeader';
 export type ForecastMethod = 'linear' | 'cagr' | 'last-3' | 'flat';
 export type SeasonalityPreset = 'standard' | 'q4_spike' | 'summer_peak' | 'flat';
 
@@ -232,38 +233,35 @@ export default function ForecastBuilderPage() {
           {exportError}
         </div>
       )}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 id="forecast-builder-heading" className="text-2xl font-bold">
-            Forecast Builder
-          </h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Driver-based forecasting with confidence intervals
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={handleExportPDF}
-            aria-label="Export forecast as PDF"
-            data-testid="export-pdf"
-          >
-            <FileText className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-            PDF
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={handleExportExcel}
-            aria-label="Export forecast as Excel"
-            data-testid="export-excel"
-          >
-            <TableIcon className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-            Excel
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Forecast Builder"
+        titleId="forecast-builder-heading"
+        purpose="Driver-based forecasting with confidence intervals"
+        actions={
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleExportPDF}
+              aria-label="Export forecast as PDF"
+              data-testid="export-pdf"
+            >
+              <FileText className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              PDF
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleExportExcel}
+              aria-label="Export forecast as Excel"
+              data-testid="export-excel"
+            >
+              <TableIcon className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              Excel
+            </Button>
+          </div>
+        }
+      />
 
       <div
         className="grid grid-cols-4 gap-4"

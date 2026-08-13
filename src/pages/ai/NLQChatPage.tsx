@@ -23,6 +23,7 @@ import {
   FileSpreadsheet,
 } from 'lucide-react';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -262,46 +263,42 @@ export function NLQChatPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-2rem)] p-6 gap-4">
       {/* Header */}
-      <div className="flex items-center justify-between shrink-0">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <MessageSquare className="h-6 w-6 text-blue-400" />
-            NLQ Chat
-          </h1>
-          <p className="text-[var(--text-muted)] text-sm mt-1">
-            Ask questions about your financial data in plain English.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {queryHistory.length > 0 && (
-            <div className="relative">
-              <Button variant="outline" size="sm" onClick={() => setShowHistory(!showHistory)}>
-                <History className="h-4 w-4 mr-1.5" />
-                History
+      <PageHeader
+        icon={<MessageSquare className="h-6 w-6 text-blue-400" />}
+        title="NLQ Chat"
+        purpose="Ask questions about your financial data in plain English."
+        actions={
+          <div className="flex items-center gap-2 shrink-0">
+            {queryHistory.length > 0 && (
+              <div className="relative">
+                <Button variant="outline" size="sm" onClick={() => setShowHistory(!showHistory)}>
+                  <History className="h-4 w-4 mr-1.5" />
+                  History
+                </Button>
+                {showHistory && (
+                  <div className="absolute right-0 top-full mt-1 z-50 w-72 max-h-64 overflow-y-auto rounded-lg border border-slate-700/50 bg-slate-800 shadow-xl">
+                    {queryHistory.map((q, i) => (
+                      <button
+                        key={i}
+                        onClick={() => handleHistorySelect(q)}
+                        className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-slate-700/50 border-b border-slate-700/30 last:border-0 truncate"
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            {messages.length > 0 && (
+              <Button variant="outline" size="sm" onClick={handleClear}>
+                <Trash2 className="h-4 w-4 mr-1.5" />
+                Clear
               </Button>
-              {showHistory && (
-                <div className="absolute right-0 top-full mt-1 z-50 w-72 max-h-64 overflow-y-auto rounded-lg border border-slate-700/50 bg-slate-800 shadow-xl">
-                  {queryHistory.map((q, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleHistorySelect(q)}
-                      className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-slate-700/50 border-b border-slate-700/30 last:border-0 truncate"
-                    >
-                      {q}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-          {messages.length > 0 && (
-            <Button variant="outline" size="sm" onClick={handleClear}>
-              <Trash2 className="h-4 w-4 mr-1.5" />
-              Clear
-            </Button>
-          )}
-        </div>
-      </div>
+            )}
+          </div>
+        }
+      />
 
       {/* Chat Area */}
       <div className="flex-1 min-h-0 flex flex-col">

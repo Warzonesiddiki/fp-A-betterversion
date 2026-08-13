@@ -4,6 +4,7 @@ import { useGLStore } from '@/store/glStore';
 import { DataTable } from '@/components/ui/DataTable';
 import { format } from 'date-fns';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { PageHeader } from '@/components/ui/PageHeader';
 export default function DrillDownWindowPage() {
   const fmt = useCurrencyFormatter();
   const [searchParams] = useSearchParams();
@@ -55,13 +56,15 @@ export default function DrillDownWindowPage() {
   return (
     <div className="p-6 bg-slate-950 text-white min-h-screen">
       <div className="space-y-4">
-        <div className="flex justify-between items-center text-sm text-slate-400">
-          <h1 className="text-xl font-bold text-white">{title}</h1>
-          <div className="flex items-center gap-4">
-            <span>{filteredEntries.length} transactions found</span>
-            {accountPrefix && <span>Filtering by Account: {accountPrefix}*</span>}
-          </div>
-        </div>
+        <PageHeader
+          title={title}
+          status={
+            <span className="flex items-center gap-4 text-sm text-slate-400">
+              <span>{filteredEntries.length} transactions found</span>
+              {accountPrefix && <span>Filtering by Account: {accountPrefix}*</span>}
+            </span>
+          }
+        />
         <div className="border border-slate-800 rounded-lg overflow-hidden bg-slate-900">
           <DataTable
             data={filteredEntries}

@@ -11,6 +11,7 @@ import { saveAs } from 'file-saver';
 import { parseCSV } from '@/utils/csv';
 import { subtractMoney, roundTo, toDecimal, formatMoney } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface RecResult {
   matching: number;
@@ -207,28 +208,28 @@ export default function ReconciliationPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3">
-            <ArrowLeftRight className="h-8 w-8 text-blue-400" />
-            Data Reconciliation
-          </h1>
-          <p className="text-[var(--text-muted)] mt-1">
+      <PageHeader
+        icon={<ArrowLeftRight className="h-8 w-8 text-blue-400" />}
+        title="Data Reconciliation"
+        purpose={
+          <>
             Compare imported GL data against external source files with{' '}
             {formatPercent(tolerance * 100)} tolerance matching.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="ghost" onClick={resetAll}>
-            <RefreshCw className="h-4 w-4 mr-2" /> Reset
-          </Button>
-          {result && (
-            <Button onClick={exportDifferences} variant="secondary">
-              <Download className="h-4 w-4 mr-2" /> Export Differences
+          </>
+        }
+        actions={
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={resetAll}>
+              <RefreshCw className="h-4 w-4 mr-2" /> Reset
             </Button>
-          )}
-        </div>
-      </div>
+            {result && (
+              <Button onClick={exportDifferences} variant="secondary">
+                <Download className="h-4 w-4 mr-2" /> Export Differences
+              </Button>
+            )}
+          </div>
+        }
+      />
 
       {/* Status / Instructions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">

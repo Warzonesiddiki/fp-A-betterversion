@@ -8,6 +8,7 @@ import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Wrench } from 'lucide-react';
 import { sumMoney, roundTo } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function EquipmentManagementPage() {
   const { entries } = useGLStore();
@@ -56,10 +57,10 @@ export default function EquipmentManagementPage() {
 
   return (
     <main className="p-6 space-y-6" role="main">
-      <h1 className="text-2xl font-bold">Equipment Management</h1>
-      <p className="text-sm text-[var(--text-muted)]">
-        Asset values, depreciation, and maintenance costs
-      </p>
+      <PageHeader
+        title="Equipment Management"
+        purpose="Asset values, depreciation, and maintenance costs"
+      />
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue label="Equipment Value" value={formatCurrency(stats.totalValue)} />

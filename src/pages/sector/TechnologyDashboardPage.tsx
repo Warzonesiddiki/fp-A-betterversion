@@ -9,6 +9,7 @@ import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Cpu } from 'lucide-react';
 import { sumMoney, roundTo } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function TechnologyDashboardPage() {
   const { entries } = useGLStore();
@@ -46,8 +47,10 @@ export default function TechnologyDashboardPage() {
 
   return (
     <main className="p-6 space-y-6" role="main">
-      <h1 className="text-2xl font-bold">Technology / SaaS Dashboard</h1>
-      <p className="text-sm text-[var(--text-muted)]">ARR, NRR, churn, LTV/CAC, and Rule of 40</p>
+      <PageHeader
+        title="Technology / SaaS Dashboard"
+        purpose="ARR, NRR, churn, LTV/CAC, and Rule of 40"
+      />
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {kpis.map((kpi) => (

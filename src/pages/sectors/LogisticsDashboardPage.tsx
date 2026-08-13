@@ -18,6 +18,7 @@ import {
   Cell,
 } from 'recharts';
 import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const COLORS = [
   'var(--accent-primary)',
@@ -132,14 +133,10 @@ export function LogisticsDashboardPage() {
 
   return (
     <main className="p-6 space-y-6" role="main" aria-label="Logistics Sector Dashboard">
-      <div>
-        <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-          Logistics Dashboard
-        </h1>
-        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-          Freight operations, fleet performance, and supply chain analytics
-        </p>
-      </div>
+      <PageHeader
+        title="Logistics Dashboard"
+        purpose="Freight operations, fleet performance, and supply chain analytics"
+      />
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((kpi) => (

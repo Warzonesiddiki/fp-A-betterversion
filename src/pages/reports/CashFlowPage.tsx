@@ -11,6 +11,7 @@ import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const HELP_SECTIONS = [
   {
@@ -245,16 +246,16 @@ export default function CashFlowPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">Cash Flow Statement</h1>
-            <button
-              onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
-              aria-label="Help"
-            >
-              <HelpCircle className="h-5 w-5" />
-            </button>
-          </div>
+          <PageHeader
+            title="Cash Flow Statement"
+            actions={<button
+                       onClick={() => setHelpOpen(true)}
+                       className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                       aria-label="Help"
+                     >
+                       <HelpCircle className="h-5 w-5" />
+                     </button>}
+          />
           <p className="text-sm text-[var(--text-muted)] mt-1">
             Period ending {period} &middot; {report.entryCount.toLocaleString()} entries
           </p>

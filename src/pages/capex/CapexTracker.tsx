@@ -11,6 +11,7 @@ import { formatCurrency, formatCompactNumber } from '@/utils/formatters';
 import { roundTo, subtractMoney, sumMoney } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 import { Truck, DollarSign, Layers, TrendingUp, HelpCircle, Plus } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 /**
  * GAP-1 (F-0006) — exact-decimal CapEx page totals.
@@ -201,16 +202,18 @@ export function CapexTracker() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">CapEx Tracker</h1>
-            <button
-              onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
-              aria-label="Help"
-            >
-              <HelpCircle className="h-5 w-5" />
-            </button>
-          </div>
+          <PageHeader
+            title="CapEx Tracker"
+            actions={
+              <button
+                onClick={() => setHelpOpen(true)}
+                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                aria-label="Help"
+              >
+                <HelpCircle className="h-5 w-5" />
+              </button>
+            }
+          />
           <p className="text-sm text-[var(--text-muted)] mt-1">
             {projects.length} projects &middot; {assets.length} assets &middot;{' '}
             {entries.length.toLocaleString()} GL entries

@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { BarChart3 } from 'lucide-react';
 import { currencyFormatter, formatPercent } from '@/utils/financialFormatting';
 import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 function _formatCurrency(n: number): string {
   return currencyFormatter(reportingCurrency(), { minDecimals: 0 })(n);
@@ -182,26 +183,26 @@ export default function BenchmarkingPage() {
     );
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Benchmarking</h1>
-      <p className="text-sm text-[var(--text-muted)]">
-        8 key financial ratios computed from your GL data
-      </p>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {RATIOS.map((r) => {
-          const val = ratios[r.id as keyof typeof ratios];
-          const formatted = r.type === 'percent' ? formatPercent(val, 1) : val.toFixed(2);
-          return (
-            <Card key={r.id}>
-              <CardContent className="p-4">
-                <div className="text-xs text-[var(--text-muted)] mb-1">{r.label}</div>
-                <div className="text-2xl font-bold tabular-nums">{formatted}</div>
-                <div className="text-[10px] text-slate-500 mt-1">{r.formula}</div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
+    <PageHeader
+      title="Benchmarking"
+      purpose="8 key financial ratios computed from your GL data"
+      actions={
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {RATIOS.map((r) => {
+            const val = ratios[r.id as keyof typeof ratios];
+            const formatted = r.type === 'percent' ? formatPercent(val, 1) : val.toFixed(2);
+            return (
+              <Card key={r.id}>
+                <CardContent className="p-4">
+                  <div className="text-xs text-[var(--text-muted)] mb-1">{r.label}</div>
+                  <div className="text-2xl font-bold tabular-nums">{formatted}</div>
+                  <div className="text-[10px] text-slate-500 mt-1">{r.formula}</div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      }
+    />
   );
 }

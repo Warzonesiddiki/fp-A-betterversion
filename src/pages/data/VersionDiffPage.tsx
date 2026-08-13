@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useGLStore } from '@/store/glStore';
 import { useBudgetStore } from '@/store/budgetStore';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 /**
  * Build a VersionControlEngine from GL and Budget store data.
@@ -181,25 +182,21 @@ export default function VersionDiffPage() {
   return (
     <main className="p-6 space-y-6" role="main" aria-label="Version Diff">
       {/* Header */}
-      <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <ArrowLeftRight className="h-6 w-6 text-blue-400" aria-hidden="true" />
-            Version Diff
-          </h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Compare two plan versions side-by-side with cell-level change tracking
-          </p>
-        </div>
-        <Button
-          variant="secondary"
-          disabled={!selectedSourceId || !selectedTargetId}
-          aria-label="Diff auto-computed"
-        >
-          <RefreshCw className="h-4 w-4 mr-2" aria-hidden="true" />
-          Diff Auto-Computed
-        </Button>
-      </header>
+      <PageHeader
+        icon={<ArrowLeftRight className="h-6 w-6 text-blue-400" aria-hidden="true" />}
+        title="Version Diff"
+        purpose="Compare two plan versions side-by-side with cell-level change tracking"
+        actions={
+          <Button
+            variant="secondary"
+            disabled={!selectedSourceId || !selectedTargetId}
+            aria-label="Diff auto-computed"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" aria-hidden="true" />
+            Diff Auto-Computed
+          </Button>
+        }
+      />
 
       {/* Branch Selection */}
       <Card>

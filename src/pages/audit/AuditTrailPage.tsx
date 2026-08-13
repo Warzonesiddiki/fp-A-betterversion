@@ -18,6 +18,7 @@ import { ScrollText, Download, RefreshCw, ChevronUp, ChevronDown, Search } from 
 import { formatRelativeTimeBudget as formatRelativeTime } from '@/engines/temporal';
 import { auditOpBadges, auditFiltersTokens } from '@/components/audit/auditTokens';
 import { useAuditTrailStore, GDPR_AUDIT_VIEW_ROLES, redactPII } from '@/store/auditTrailStore';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const auditEngine = new CellAuditTrailEngine();
 
@@ -243,34 +244,39 @@ function AuditTrailContent() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 id="audit-trail-heading" className="text-2xl font-bold">
-            Audit Trail
-          </h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
+      <PageHeader
+        title="Audit Trail"
+        titleId="audit-trail-heading"
+        purpose={
+          <>
             {filtered.length} of {entries.length} entries shown
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant={showDiff ? 'default' : 'ghost'}
-            onClick={() => setShowDiff((v) => !v)}
-            aria-pressed={showDiff}
-          >
-            {showDiff ? '✓ Diff View' : 'Diff View'}
-          </Button>
-          <Button size="sm" variant="ghost" onClick={() => setEntries(auditEngine.getAllEntries())}>
-            <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
-            Refresh
-          </Button>
-          <Button size="sm" variant="ghost" onClick={handleExport}>
-            <Download className="h-3.5 w-3.5 mr-1.5" />
-            Export
-          </Button>
-        </div>
-      </div>
+          </>
+        }
+        actions={
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant={showDiff ? 'default' : 'ghost'}
+              onClick={() => setShowDiff((v) => !v)}
+              aria-pressed={showDiff}
+            >
+              {showDiff ? '✓ Diff View' : 'Diff View'}
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setEntries(auditEngine.getAllEntries())}
+            >
+              <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+              Refresh
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleExport}>
+              <Download className="h-3.5 w-3.5 mr-1.5" />
+              Export
+            </Button>
+          </div>
+        }
+      />
 
       {/* 4-stat header KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

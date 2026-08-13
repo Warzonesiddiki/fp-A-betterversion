@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Repeat, ArrowRight, TrendingUp, TrendingDown } from 'lucide-react';
 import { formatNumber } from '@/utils/financialFormatting';
 import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const RATES: Record<string, Record<string, number>> = {
   USD: {
@@ -131,7 +132,7 @@ export default function TranslationResultPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Translation Results</h1>
+      <PageHeader title="Translation Results" />
 
       {/* Currency Selector */}
       <Card>

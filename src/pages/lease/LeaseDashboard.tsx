@@ -175,22 +175,24 @@ export default function LeaseDashboard() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Lease Portfolio Dashboard</h1>
-          <p className="text-sm text-[var(--text-muted)]">
+      <PageHeader
+        title="Lease Portfolio Dashboard"
+        purpose={
+          <>
             {activeLeases.length} active leases — liability computed by LeaseEngine (not mock data)
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-1" /> Export
-          </Button>
-          <Button size="sm" onClick={() => navigate('/lease/detail')}>
-            View Details <ArrowRight className="h-4 w-4 ml-1" />
-          </Button>
-        </div>
-      </div>
+          </>
+        }
+        actions={
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleExport}>
+              <Download className="h-4 w-4 mr-1" /> Export
+            </Button>
+            <Button size="sm" onClick={() => navigate('/lease/detail')}>
+              View Details <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue

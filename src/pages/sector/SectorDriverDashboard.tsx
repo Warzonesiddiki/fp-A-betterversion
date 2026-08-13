@@ -19,6 +19,7 @@ import {
 } from '@/utils/money';
 import { formatNumber } from '@/utils/formatters';
 import { formatPercent } from '@/utils/financialFormatting';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export type SectorDriverId =
   | 'technology'
@@ -665,11 +666,15 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-blue-500">
             Phase 3 Sector Depth
           </p>
-          <h1 className="text-2xl font-bold">{config.name} Driver Modeling Dashboard</h1>
-          <p className="text-sm text-[var(--text-muted)]">
-            {config.description} — KPIs are recomputed from imported GL entries plus live driver
-            controls.
-          </p>
+          <PageHeader
+            title={`${config.name} Driver Modeling Dashboard`}
+            purpose={
+              <>
+                {config.description} — KPIs are recomputed from imported GL entries plus live driver
+                controls.
+              </>
+            }
+          />
         </div>
         <Button variant="secondary" onClick={() => setDrivers(DEFAULT_DRIVERS)}>
           Reset drivers

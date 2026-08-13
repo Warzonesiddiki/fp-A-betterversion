@@ -25,6 +25,7 @@ import {
   BarChart3,
   CalendarCheck,
 } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -443,45 +444,41 @@ export default function SOXCompliancePage() {
   return (
     <main className="p-6 space-y-6" role="main" aria-label="SOX Compliance Dashboard">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Shield className="h-6 w-6 text-blue-400" aria-hidden="true" />
-            SOX Compliance
-          </h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Sarbanes-Oxley Act compliance monitoring and reporting
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Link
-            to="/periods/close"
-            className="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-1"
-            aria-label={`Close period — ${currentPeriod?.name ?? ''} ${currentPeriod?.year ?? ''} is ${currentStateLabel}`}
-          >
-            <CalendarCheck className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-            Close period: {currentStateLabel}
-          </Link>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={generateReport}
-            aria-label="Refresh compliance report"
-          >
-            <RefreshCw className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-            Refresh
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={handleExport}
-            aria-label="Export compliance report as CSV"
-          >
-            <Download className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-            Export CSV
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        icon={<Shield className="h-6 w-6 text-blue-400" aria-hidden="true" />}
+        title="SOX Compliance"
+        purpose="Sarbanes-Oxley Act compliance monitoring and reporting"
+        actions={
+          <div className="flex gap-2">
+            <Link
+              to="/periods/close"
+              className="inline-flex items-center px-3 py-1.5 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-1"
+              aria-label={`Close period — ${currentPeriod?.name ?? ''} ${currentPeriod?.year ?? ''} is ${currentStateLabel}`}
+            >
+              <CalendarCheck className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              Close period: {currentStateLabel}
+            </Link>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={generateReport}
+              aria-label="Refresh compliance report"
+            >
+              <RefreshCw className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              Refresh
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleExport}
+              aria-label="Export compliance report as CSV"
+            >
+              <Download className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              Export CSV
+            </Button>
+          </div>
+        }
+      />
 
       {/* Status Banner */}
       <section aria-label="Compliance Status Summary">

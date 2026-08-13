@@ -9,6 +9,7 @@ import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/forma
 import { Factory, DollarSign, Layers, TrendingUp } from 'lucide-react';
 import type { GLEntry } from '@/types';
 import { roundTo, sumMoney } from '@/utils/money';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 function computeManufacturingStats(entries: readonly GLEntry[]) {
   const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
@@ -124,14 +125,15 @@ export function ManufacturingPage() {
       >
         Skip to key metrics
       </a>
-      <header className="flex items-center justify-between">
-        <h1 id="manufacturing-heading" className="text-2xl font-bold">
-          Manufacturing
-        </h1>
-        <span className="text-sm text-[var(--text-muted)]">
-          {formatNumber(entries.length)} entries imported
-        </span>
-      </header>
+      <PageHeader
+        title="Manufacturing"
+        titleId="manufacturing-heading"
+        status={
+          <span className="text-sm text-[var(--text-muted)]">
+            {formatNumber(entries.length)} entries imported
+          </span>
+        }
+      />
       <section
         id="kpi-section"
         className="grid grid-cols-2 md:grid-cols-4 gap-4"

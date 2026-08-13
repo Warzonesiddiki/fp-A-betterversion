@@ -11,6 +11,7 @@ import { HelpPanel } from '@/components/ui/HelpPanel';
 import { PAGE_HELP } from '../_docs';
 import { BarChart4, TrendingUp, Users, RefreshCcw } from 'lucide-react';
 import { sumMoney, roundTo } from '@/utils/money';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function ARRDashboard() {
   const { pathname } = useLocation();
@@ -84,31 +85,27 @@ export default function ARRDashboard() {
   return (
     <div className="p-6 space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <TrendingUp className="h-6 w-6 text-emerald-400" />
-              ARR Dashboard
-            </h1>
-            <p className="text-sm text-[var(--text-muted)] mt-1">
-              SaaS Recurring Revenue & Growth Efficiency
-            </p>
-          </div>
-          <button
-            onClick={() => setHelpOpen(true)}
-            className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors ml-4"
-            aria-label="Help"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </button>
-        </div>
+        <PageHeader
+          icon={<TrendingUp className="h-6 w-6 text-emerald-400" />}
+          title="ARR Dashboard"
+          purpose="SaaS Recurring Revenue & Growth Efficiency"
+          actions={
+            <button
+              onClick={() => setHelpOpen(true)}
+              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors ml-4"
+              aria-label="Help"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </button>
+          }
+        />
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => navigate('/saas/cohort')}>
             Cohort Analysis

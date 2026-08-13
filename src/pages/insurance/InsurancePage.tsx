@@ -10,6 +10,7 @@ import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/forma
 import { Shield, DollarSign, Layers, TrendingUp } from 'lucide-react';
 import type { GLEntry } from '@/types';
 import { roundTo, sumMoney } from '@/utils/money';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 function computeInsuranceStats(entries: readonly GLEntry[]) {
   const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
@@ -122,14 +123,15 @@ export function InsurancePage() {
       >
         Skip to key metrics
       </a>
-      <header className="flex items-center justify-between">
-        <h1 id="insurance-heading" className="text-2xl font-bold">
-          Insurance
-        </h1>
-        <span className="text-sm text-[var(--text-muted)]">
-          {formatNumber(entries.length)} entries imported
-        </span>
-      </header>
+      <PageHeader
+        title="Insurance"
+        titleId="insurance-heading"
+        status={
+          <span className="text-sm text-[var(--text-muted)]">
+            {formatNumber(entries.length)} entries imported
+          </span>
+        }
+      />
       <section
         id="kpi-section"
         className="grid grid-cols-2 md:grid-cols-4 gap-4"

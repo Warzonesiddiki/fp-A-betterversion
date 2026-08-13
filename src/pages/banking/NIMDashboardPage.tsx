@@ -12,6 +12,7 @@ import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { divideMoney, multiplyMoney, roundTo, sumMoney } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 /**
  * GAP-1 (F-0006) — exact-decimal NIM component income/asset aggregates.
@@ -108,23 +109,19 @@ export default function NIMDashboardPage() {
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Activity className="h-6 w-6 text-green-400" />
-            NIM Dashboard
-          </h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Net Interest Margin & Spread Analysis
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-2" /> Export
-          </Button>
-          <Button size="sm">Scenario Modeling</Button>
-        </div>
-      </div>
+      <PageHeader
+        icon={<Activity className="h-6 w-6 text-green-400" />}
+        title="NIM Dashboard"
+        purpose="Net Interest Margin & Spread Analysis"
+        actions={
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleExport}>
+              <Download className="h-4 w-4 mr-2" /> Export
+            </Button>
+            <Button size="sm">Scenario Modeling</Button>
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard

@@ -32,6 +32,7 @@ import { VarianceChart } from '@/components/charts/VarianceChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { PageHeader } from '@/components/ui/PageHeader';
 const baseMetrics = {
   revenue: 48000000,
   cogs: 28800000,
@@ -416,47 +417,44 @@ export default function ScenarioBuilderPage() {
           {saveError}
         </div>
       )}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 id="scenario-builder-heading" className="text-2xl font-bold">
-            Scenario Builder
-          </h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Model assumptions and compare outcomes
-          </p>
-        </div>
-        <div className="flex gap-2" role="group" aria-label="Scenario actions">
-          <Button
-            size="sm"
-            onClick={handleSave}
-            aria-label="Save scenario"
-            data-testid="save-scenario"
-          >
-            <Save className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-            Save Scenario
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={handleExportPDF}
-            aria-label="Export scenario as PDF"
-            data-testid="export-scenario-pdf"
-          >
-            <FileText className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-            PDF
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={handleExportExcel}
-            aria-label="Export scenario as Excel"
-            data-testid="export-scenario-excel"
-          >
-            <TableIcon className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-            Excel
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Scenario Builder"
+        titleId="scenario-builder-heading"
+        purpose="Model assumptions and compare outcomes"
+        actions={
+          <div className="flex gap-2" role="group" aria-label="Scenario actions">
+            <Button
+              size="sm"
+              onClick={handleSave}
+              aria-label="Save scenario"
+              data-testid="save-scenario"
+            >
+              <Save className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              Save Scenario
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleExportPDF}
+              aria-label="Export scenario as PDF"
+              data-testid="export-scenario-pdf"
+            >
+              <FileText className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              PDF
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleExportExcel}
+              aria-label="Export scenario as Excel"
+              data-testid="export-scenario-excel"
+            >
+              <TableIcon className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              Excel
+            </Button>
+          </div>
+        }
+      />
 
       <div
         className="grid grid-cols-4 gap-4"

@@ -315,8 +315,19 @@ body {
   margin-bottom: var(--space-xl);
 }
 .fp-page-header__title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
   margin: 0;
   color: var(--text-heading);
+}
+/* Decorative leading glyph. It inherits the heading colour rather than
+ * carrying its own so a page cannot reintroduce an off-token accent here. */
+.fp-page-header__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--text-muted);
 }
 .fp-page-header__purpose {
   max-width: 72ch;
@@ -342,12 +353,20 @@ body {
   padding: var(--space-lg) var(--space-xl);
   border-bottom: 1px solid var(--border-subtle);
 }
-.fp-panel__body { padding: var(--space-xl); }
+.fp-panel__body {
+  padding: var(--space-xl);
+}
 
 @media (max-width: 767px) {
-  .fp-page { padding: var(--space-lg); }
-  .fp-page-header { flex-direction: column; }
-  .fp-page-header__actions { justify-content: flex-start; }
+  .fp-page {
+    padding: var(--space-lg);
+  }
+  .fp-page-header {
+    flex-direction: column;
+  }
+  .fp-page-header__actions {
+    justify-content: flex-start;
+  }
 }
 
 /* Atlas setup state: a purposeful finance-workspace setup sequence, not a generic illustration. */
@@ -360,7 +379,10 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
 }
-.fp-workspace-empty-state__icon { margin-bottom: var(--space-lg); color: var(--action-primary); }
+.fp-workspace-empty-state__icon {
+  margin-bottom: var(--space-lg);
+  color: var(--action-primary);
+}
 .fp-workspace-empty-state__steps {
   display: grid;
   gap: var(--space-md);
@@ -368,7 +390,11 @@ body {
   margin: var(--space-xl) 0;
   list-style: none;
 }
-.fp-workspace-empty-state__step { display: flex; align-items: flex-start; gap: var(--space-md); }
+.fp-workspace-empty-state__step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
 .fp-workspace-empty-state__number {
   display: grid;
   flex: 0 0 auto;
@@ -381,8 +407,17 @@ body {
   font-size: 0.75rem;
   font-weight: 700;
 }
-.fp-workspace-empty-state__description { display: block; margin-top: 2px; color: var(--text-body); font-size: 0.875rem; }
-.fp-workspace-empty-state__actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+.fp-workspace-empty-state__description {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-body);
+  font-size: 0.875rem;
+}
+.fp-workspace-empty-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
 
 /* FinPlan Atlas — financial lifecycle state; never relies on colour alone. */
 .fp-financial-status {
@@ -408,16 +443,32 @@ body {
   color: var(--text-secondary);
   font-weight: 500;
 }
-.fp-financial-status--draft { color: var(--financial-draft); }
-.fp-financial-status--calculated { color: var(--financial-calculated); }
+.fp-financial-status--draft {
+  color: var(--financial-draft);
+}
+.fp-financial-status--calculated {
+  color: var(--financial-calculated);
+}
 .fp-financial-status--manual,
-.fp-financial-status--aiGenerated { color: var(--financial-manual); }
+.fp-financial-status--aiGenerated {
+  color: var(--financial-manual);
+}
 .fp-financial-status--pendingApproval,
-.fp-financial-status--stale { color: var(--financial-pending); }
-.fp-financial-status--locked { color: var(--financial-locked); }
-.fp-financial-status--certified { color: var(--financial-certified); }
-.fp-financial-status--offlineQueued { color: var(--financial-offline); }
-.fp-financial-status--failed { color: var(--financial-failed); }
+.fp-financial-status--stale {
+  color: var(--financial-pending);
+}
+.fp-financial-status--locked {
+  color: var(--financial-locked);
+}
+.fp-financial-status--certified {
+  color: var(--financial-certified);
+}
+.fp-financial-status--offlineQueued {
+  color: var(--financial-offline);
+}
+.fp-financial-status--failed {
+  color: var(--financial-failed);
+}
 
 /* Terminal-style data grid */
 .data-grid {

@@ -22,6 +22,7 @@ import {
   type MigrationSource,
   type MigrationSnapshot,
 } from '@/engines/MigrationEngine';
+import { PageHeader } from '@/components/ui/PageHeader';
 // MORPHEUS PICK 8 (2026-06-18): 40L → ~400L. Added 4-stat header, last migration
 // summary, source system picker grid (5 sources), recent migrations history list
 // (last 10), cube migration section, action buttons. Targets SOX 404 compliance
@@ -163,15 +164,15 @@ export default function MigrationPage() {
   if (showWizard) {
     return (
       <div className="p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Database className="h-6 w-6" />
-            Data Migration — {SOURCE_PICKER.find((s) => s.value === activeSource)?.label}
-          </h1>
-          <Button variant="ghost" onClick={handleCancel}>
-            <ArrowLeft className="h-4 w-4 mr-1" /> Cancel
-          </Button>
-        </div>
+        <PageHeader
+          icon={<Database className="h-6 w-6" />}
+          title={`Data Migration — ${SOURCE_PICKER.find((s) => s.value === activeSource)?.label ?? ''}`}
+          actions={
+            <Button variant="ghost" onClick={handleCancel}>
+              <ArrowLeft className="h-4 w-4 mr-1" /> Cancel
+            </Button>
+          }
+        />
         <MigrationWizard onComplete={handleComplete} onCancel={handleCancel} />
       </div>
     );
@@ -179,19 +180,16 @@ export default function MigrationPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Database className="h-6 w-6" /> Data Migration
-          </h1>
-          <p className="text-muted-foreground">
-            Migrate data from Excel, Planful, Adaptive, or Anaplan into FinPlan Pro
-          </p>
-        </div>
-        <Button variant="outline" onClick={() => navigate('/data')}>
-          <ArrowLeft className="h-4 w-4 mr-1" /> Back to Data
-        </Button>
-      </div>
+      <PageHeader
+        icon={<Database className="h-6 w-6" />}
+        title="Data Migration"
+        purpose="Migrate data from Excel, Planful, Adaptive, or Anaplan into FinPlan Pro"
+        actions={
+          <Button variant="outline" onClick={() => navigate('/data')}>
+            <ArrowLeft className="h-4 w-4 mr-1" /> Back to Data
+          </Button>
+        }
+      />
 
       {/* 4-stat header KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

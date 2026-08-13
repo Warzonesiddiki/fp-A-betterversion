@@ -16,6 +16,7 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { PageHeader } from '@/components/ui/PageHeader';
 const HELP_SECTIONS = [
   {
     title: 'What is a Rolling Forecast?',
@@ -194,16 +195,18 @@ export default function RollingForecastPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">Rolling Forecast</h1>
-            <button
-              onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
-              aria-label="Help"
-            >
-              <HelpCircle className="h-5 w-5" />
-            </button>
-          </div>
+          <PageHeader
+            title="Rolling Forecast"
+            actions={
+              <button
+                onClick={() => setHelpOpen(true)}
+                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                aria-label="Help"
+              >
+                <HelpCircle className="h-5 w-5" />
+              </button>
+            }
+          />
           <p className="text-muted-foreground">
             {periodMonths}-month forward-looking forecast
             {stats && ` \u00B7 ${stats.monthlyCount} months of actuals`}

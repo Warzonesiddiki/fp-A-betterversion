@@ -10,6 +10,7 @@ import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/forma
 import { FileSignature, DollarSign, Calendar, HelpCircle, Building } from 'lucide-react';
 import type { GLEntry } from '@/types';
 import { roundTo, sumMoney } from '@/utils/money';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const LEASE_PREFIXES = ['17', '23'];
 
@@ -204,16 +205,18 @@ export function LeaseAccountingPage() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">Lease Accounting</h1>
-            <button
-              onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
-              aria-label="Help"
-            >
-              <HelpCircle className="h-5 w-5" />
-            </button>
-          </div>
+          <PageHeader
+            title="Lease Accounting"
+            actions={
+              <button
+                onClick={() => setHelpOpen(true)}
+                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                aria-label="Help"
+              >
+                <HelpCircle className="h-5 w-5" />
+              </button>
+            }
+          />
           <p className="text-sm text-[var(--text-muted)] mt-1">
             {entries.length.toLocaleString()} GL entries &middot; {stats.leaseEntryCount}{' '}
             lease-related
