@@ -145,7 +145,7 @@ export const TornadoChart: React.FC<TornadoChartProps> = ({
                       </p>
                       <div className="space-y-1.5">
                         <div className="flex items-center justify-between gap-8">
-                          <span className="text-[10px] font-bold text-[var(--negative)]">
+                          <span className="text-[10px] font-bold text-[var(--text-negative)]">
                             Low Case
                           </span>
                           <span className="text-xs font-black tabular-nums text-[var(--text-primary)]">

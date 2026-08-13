@@ -99,8 +99,8 @@ export function VarianceCommentaryPanel({
             className={cn(
               'rounded-full px-2 py-0.5 text-xs font-medium',
               variance >= 0
-                ? 'bg-[var(--color-success)]/10 text-[var(--text-positive)]'
-                : 'bg-[var(--color-error)]/10 text-[var(--color-error)]'
+                ? 'bg-[var(--color-success)]/10 text-[var(--text-on-positive-subtle)]'
+                : 'bg-[var(--color-error)]/10 text-[var(--text-on-danger-subtle)]'
             )}
           >
             {variancePct >= 0 ? '+' : ''}

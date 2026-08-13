@@ -180,7 +180,7 @@ export const Navbar = memo(function Navbar() {
             {unreadCount > 0 && (
               <span
                 className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center text-white"
-                style={{ background: 'var(--negative)' }}
+                style={{ background: 'var(--danger-fill)' }}
               >
                 {unreadCount}
               </span>
@@ -287,7 +287,7 @@ export const Navbar = memo(function Navbar() {
               <div className="border-t" style={{ borderColor: 'var(--border-subtle)' }}>
                 <button
                   className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-                  style={{ color: 'var(--negative)' }}
+                  style={{ color: 'var(--text-negative)' }}
                   onClick={() => {
                     useAuthStore.getState().logout();
                     setShowUserMenu(false);

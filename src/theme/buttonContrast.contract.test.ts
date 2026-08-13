@@ -237,6 +237,7 @@ describe('UI-07 — text tokens clear AA on every surface they render on', () =>
     'text-secondary',
     'text-muted',
     'text-tertiary',
+    'text-negative',
   ] as const;
   // Ordered lightest-backdrop-last; each is a real page/panel/row background.
   const SURFACES = ['bg-root', 'bg-surface', 'bg-elevated', 'bg-hover'] as const;
@@ -294,7 +295,18 @@ describe('UI-07 — the text ramp stays visually ordered', () => {
 
 describe('UI-07 — fill-tuned hues are not used as text in components', () => {
   // The three hues that fail AA as dark-theme text. Each has a --text-* twin.
-  const FILL_ONLY = ['accent-primary', 'accent-secondary', 'positive', 'info', 'color-success'];
+  const FILL_ONLY = [
+    'accent-primary',
+    'accent-secondary',
+    'positive',
+    'info',
+    'color-success',
+    // --negative is dual-role: 4.34:1 / 3.75:1 as dark text on the two darkest
+    // surfaces, and 3.67:1 as a fill under white (the Navbar badge shipped that
+    // way). --text-negative is the text twin; --danger-fill is the fill.
+    'negative',
+    'color-error',
+  ];
 
   const SOURCES = globSources(resolve(__dirname, '../'));
 
@@ -314,5 +326,114 @@ describe('UI-07 — fill-tuned hues are not used as text in components', () => {
       }
       expect(offenders, `use --text-accent / --text-positive / --text-info instead`).toEqual([]);
     });
+  }
+});
+
+/**
+ * UI-08 — the inverse of the ratchet above.
+ *
+ * The existing rule bans fill-tuned hues from being painted as *text*. This one
+ * catches the mirror-image mistake, which is the one that actually shipped:
+ * `Navbar.tsx` filled the notification badge with `--negative` and set white
+ * text on it, i.e. 3.67:1. Brightening `--negative` to fix it as text would have
+ * pushed white-on-it to 2.69:1, which is why the two roles are separate tokens.
+ *
+ * Scoped to the text-tuned hues, since those are the ones whose luminance was
+ * chosen to sit against a dark page rather than under white.
+ */
+describe('UI-08 — text-tuned hues are not used as fills behind light text', () => {
+  // Every hue that does NOT clear 4.5:1 under white, so it must never become a
+  // fill behind light text. --negative is here because that is precisely what
+  // shipped in Navbar.tsx; the --text-* twins are here because they are even
+  // lighter and would fail harder.
+  const TEXT_ONLY = [
+    'negative',
+    'color-error',
+    'text-negative',
+    'text-positive',
+    'text-info',
+    'text-accent',
+  ];
+
+  const SOURCES = globSources(resolve(__dirname, '../'));
+
+  for (const hue of TEXT_ONLY) {
+    it(`no component fills with --${hue}`, () => {
+      // `bg-[var(--x)]/10` is a translucent tint, not a solid fill under light
+      // text — a different (and much weaker) contrast requirement. Only an
+      // opaque fill is banned here; the `(?!/)` is what keeps the two apart.
+      const utility = new RegExp(`bg-\\[var\\(--${hue}\\)\\](?!/)`);
+      const inline = new RegExp(`background(?:Color)?:\\s*'var\\(--${hue}\\)'`);
+      const offenders: string[] = [];
+      for (const file of SOURCES) {
+        const src = readFileSync(file, 'utf8');
+        src.split('\n').forEach((line, i) => {
+          if (utility.test(line) || inline.test(line)) {
+            offenders.push(`${file.replace(/.*\/src\//, 'src/')}:${i + 1} ${line.trim()}`);
+          }
+        });
+      }
+      expect(offenders, 'use --danger-fill / --action-fill for fills').toEqual([]);
+    });
+  }
+
+  // The token pair only helps if the fill twin is genuinely fill-safe.
+  for (const { name, scope } of THEMES) {
+    it(`${name}: --danger-fill carries white text where --negative does not`, () => {
+      const page = flatten(token('bg-surface', scope), [1, 1, 1]);
+      const white: [number, number, number] = [1, 1, 1];
+      const fill = flatten(token('danger-fill', scope), page);
+      expect(
+        contrast(fill, white),
+        `--danger-fill (${token('danger-fill', scope)}) under white in ${name}`
+      ).toBeGreaterThanOrEqual(AA_TEXT);
+    });
+  }
+});
+
+/**
+ * UI-08 — the tinted-fill blind spot.
+ *
+ * `bg-[var(--x)]/10 text-[var(--y)]` is exempt from the fill ratchet above: a
+ * 10% tint is not a solid fill, so white-on-fill never applies. But the pairing
+ * still renders text on a background, and that composite was measured by
+ * nothing. `VarianceCommentaryPanel.tsx` paired --text-negative with a
+ * --color-error/10 tint and shipped at 4.14:1 in light theme.
+ *
+ * Rather than enumerate known pairings (which is how the last one was missed),
+ * this discovers every tint pairing in the repo and measures it.
+ */
+describe('UI-08 — tinted fills stay legible under their paired text token', () => {
+  const PAIR = /bg-\[var\(--([a-z0-9-]+)\)\]\/(\d+)\s+text-\[var\(--([a-z0-9-]+)\)\]/g;
+
+  const found = globSources(resolve(__dirname, '../')).flatMap((file) => {
+    const source = readFileSync(file, 'utf8');
+    return [...source.matchAll(PAIR)].map((m) => ({
+      file: file.split('/src/')[1]!,
+      fill: m[1]!,
+      alpha: Number(m[2]!) / 100,
+      text: m[3]!,
+    }));
+  });
+
+  it('finds tint pairings to audit (guards against a regex that matches nothing)', () => {
+    expect(found.length).toBeGreaterThan(0);
+  });
+
+  for (const { name, scope } of THEMES) {
+    for (const { file, fill, alpha, text } of found) {
+      it(`${name}: --${text} on --${fill}/${alpha * 100} (${file})`, () => {
+        // Tailwind's `/NN` applies alpha to the token, then composites it over
+        // whatever is behind — here the page surface.
+        const page = flatten(token('bg-surface', scope), [1, 1, 1]);
+        const { rgb } = parseColor(token(fill, scope));
+        const tinted = rgb.map((c, i) => c * alpha + page[i]! * (1 - alpha)) as RGB;
+        const fg = flatten(token(text, scope), tinted);
+        expect(
+          contrast(fg, tinted),
+          `--${text} (${token(text, scope)}) on --${fill}/${alpha * 100} in ${name}`
+        ).toBeGreaterThanOrEqual(AA_TEXT);
+      });
+    }
   }
 });

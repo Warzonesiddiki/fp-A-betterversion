@@ -90,6 +90,13 @@
      Use --positive/--info for fills and borders; use these for glyphs. */
   --text-positive: #4ade80;
   --text-info: #818cf8;
+  /* --negative is the same story and was missed in the first pass: #f43f5e is
+     4.34:1 on --bg-elevated and 3.75:1 on --bg-hover, and it is simultaneously
+     used as a *fill* behind white text (the Navbar notification badge) where it
+     is 3.67:1. Those two roles pull in opposite directions — brightening the
+     token for text drops white-on-it to 2.69:1 — so they get separate tokens.
+     Use --danger-fill for fills, --text-negative for text and glyphs. */
+  --text-negative: #fb7185;
 
   /* Accent — Sleek Sky Blue */
   --accent-primary: #0284c7;
@@ -233,6 +240,9 @@
      text role once and stay correct when the theme flips. */
   --text-positive: #15803d;
   --text-info: #4f46e5;
+  /* Light theme's --negative (#dc2626) already clears AA as text (4.53:1 on the
+     worst light surface), so the text twin resolves to the same value here. */
+  --text-negative: #dc2626;
 
   /* Light-theme filled-surface actions. Same contract as :root — white text
      >=4.5:1, fill vs #ffffff page >=3:1. Hover goes *darker* here (the dark
@@ -709,7 +719,9 @@ body {
 }
 .badge-negative {
   background: var(--negative-subtle);
-  color: var(--negative);
+  /* Text on the composited subtle fill, not on the page — its own token,
+     matching Badge.tsx's destructive variant. 4.53:1 over the flattened fill. */
+  color: var(--text-on-danger-subtle);
 }
 .badge-warning {
   background: var(--warning-subtle);
@@ -918,7 +930,7 @@ body {
   color: var(--positive);
 }
 .fin-negative {
-  color: var(--negative);
+  color: var(--text-negative);
 }
 .fin-neutral {
   color: var(--text-secondary);

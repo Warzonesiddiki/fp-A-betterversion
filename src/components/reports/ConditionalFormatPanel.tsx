@@ -177,7 +177,7 @@ export function ConditionalFormatPanel({
                     e.stopPropagation();
                     handleRemoveFormat(format.id);
                   }}
-                  className="ml-auto text-[var(--text-muted)] hover:text-[var(--negative)]"
+                  className="ml-auto text-[var(--text-muted)] hover:text-[var(--text-negative)]"
                   aria-label="Remove format rule"
                 >
                   <Trash2 className="h-3.5 w-3.5" />

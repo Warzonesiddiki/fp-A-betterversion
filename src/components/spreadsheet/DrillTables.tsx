@@ -23,7 +23,7 @@ export function computeJournalTotals(data: readonly Pick<JournalEntry, 'debit' |
 
 function varianceColor(value: number): string {
   if (Math.abs(value) < 0.01) return 'text-[var(--text-tertiary)]';
-  return value > 0 ? 'text-[var(--text-positive)]' : 'text-[var(--color-error)]';
+  return value > 0 ? 'text-[var(--text-positive)]' : 'text-[var(--text-negative)]';
 }
 
 // --- Summary Table ---

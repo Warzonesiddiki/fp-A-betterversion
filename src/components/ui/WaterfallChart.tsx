@@ -159,7 +159,7 @@ export const WaterfallChart: React.FC<WaterfallChartProps> = ({
                             ? 'text-[var(--text-primary)]'
                             : data.raw >= 0
                               ? 'text-[var(--text-positive)]'
-                              : 'text-[var(--negative)]'
+                              : 'text-[var(--text-negative)]'
                         )}
                       >
                         {data.raw > 0 ? '+' : ''}

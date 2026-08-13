@@ -997,3 +997,94 @@ happily against a typo. Mutation-verified 3/3.
 `Select` and `Alert` were then migrated on the same pattern (33 and 14
 importers), bringing the ratcheted list to six files and the raw-utility
 backlog in `src/components/ui` from 95 files to 92.
+
+## UI-07/UI-08 — a contrast fix that had to preserve hierarchy, and an axe suite auditing empty pages
+
+**Finding: raising a token to clear AA can destroy the type ramp.** `--text-muted`
+failed AA on the two darkest surfaces (4.17 elevated, 3.60 hover). The obvious fix
+is to lighten it until it passes — but `--text-muted`, `--text-secondary` and
+`--text-primary` are a deliberate three-step hierarchy, and lightening the dimmest
+step far enough to clear 4.5:1 walks it into the step above. Contrast here is a
+_two-sided_ constraint: bright enough to read, dim enough to still read as
+secondary.
+
+**Decision: pick the darkest value that clears the worst surface, then pin the
+separation.** `#7897c3` (min 4.59 on hover) rather than a comfortable margin,
+because every extra point of luminance is spent from the hierarchy budget.
+`#8aa2c9`, `#89a3cc` and `#8fa8ce` all pass AA and were rejected — they collapse
+separation from `--text-secondary` to ≤1.19:1. The guard now asserts both
+directions: each token clears AA on all four surfaces, _and_ the dimmer token of
+each adjacent pair stays at least 1.2:1 apart from the brighter one. Without that
+second assertion the correct fix and the hierarchy-destroying one are
+indistinguishable to CI. Mutation-verified in both directions: reverting to
+`#6484b4` fails 4 contrast assertions, and over-correcting to `#94b2db` — which
+passes every contrast check — fails only the separation assertion. That second
+mutation is the one that justifies the guard existing.
+
+**`--text-tertiary` is an alias of `--text-muted`,** so this moved two named tokens
+with one edit; and `@media (prefers-contrast: more)` re-declares these tokens
+further down `index.css`. Check for that block before trusting a token's value —
+the file has more than one answer for the same name.
+
+**Finding: the axe suite was auditing empty pages.** UI-07 asked for axe at 0
+critical/serious. The infrastructure already existed, undocumented, and was green
+at 22 tests — the plan simply hadn't been updated. Before ticking it off, the
+suite was instrumented to report how much DOM each scan actually saw. The report
+routes were being audited at **5-6 elements and ~70 characters**: axe was only ever
+looking at the "No data yet" empty state. The pages passed because there was
+nothing there — no table, no column headers, no data cells, no controls beyond one
+button. The claim was true and meaningless.
+
+**Decision: fix the coverage, and make the hollow scan unrepresentable.**
+`wcag-aa-populated.test.tsx` mocks the GL and budget stores so the four report
+routes render real content (45-104 elements, 4-19 rows). All four came back clean,
+so this closed a coverage gap rather than a defect — but the gap was the kind that
+regrows silently, so every case also asserts it rendered ≥30 elements. A page that
+falls back to its empty or loading state now fails loudly instead of passing on an
+empty container. Mutation-verified both ways: an unlabelled `<button>` in the
+populated render fails exactly one test on `button-name`; emptying the store mocks
+fails all five on the element-count guard, not on axe.
+
+**A stale comment is what made this look done.** The old suite's header still said
+it was inert pending a `vitest-axe` install that had already happened. Trust an
+executed run over a file header — and before building "missing" infrastructure,
+grep for it.
+
+## UI-08 — one hue cannot be both text and fill (`--negative`)
+
+`--negative` (`#f43f5e`) failed AA as text on the two darkest dark surfaces —
+4.34:1 on `--bg-elevated`, **3.75:1** on `--bg-hover`. The obvious fix is to
+brighten it. Measuring the other direction first is what stopped that: `Navbar.tsx`
+filled the notification badge with `var(--negative)` and set `text-white` on it,
+shipping at **3.67:1**. Brightening the token to clear AA as text (`#fb7185`,
+5.11:1) would have dragged white-on-fill down to **2.69:1** — trading a text
+defect for a worse fill defect, and the badge is the more visible of the two.
+
+**Decision: split the roles instead of retuning the token.** `--text-negative`
+(`#fb7185` dark, `#dc2626` light) carries text; `--danger-fill` (`#dc2626`, white
+at 4.83:1) carries fills. This is the second time a dual-role hue has been split,
+so it is now the standing rule rather than a one-off. Non-text uses — `Select.tsx`
+borders, the gauge and waterfall SVG strokes — stay on `--negative`: they only owe
+3:1, and a failing ratio is not automatically a defect.
+
+**The first grep missed the defect that mattered.** Searching for `bg-[var(--negative)]`
+and `background:` returned nothing, which read as "text-only token, safe to
+brighten." Only enumerating _every_ consumer and classifying each by role exposed
+the Navbar fill. Enumerate, then classify — never grep per-role. Alias tokens
+(`--color-error`) inherit the same defect and must be swept with the original.
+
+**The guard passed on the defect it was written for.** The new fill ratchet was
+green with the Navbar bug re-applied: it banned the `--text-*` twins as fills but
+not `--negative` itself, which was in neither `TEXT_TOKENS` nor `FILL_ONLY` — the
+exact gap that let this ship. Writing a test and watching it pass proves nothing;
+the mutation is the test of the test.
+
+**Widening it surfaced a second, unrelated defect.** `--color-error` was flagged in
+`VarianceCommentaryPanel.tsx`, but as `bg-[var(--color-error)]/10` — a 10% tint,
+not a solid fill, so white-on-fill never applied. A false positive for that rule,
+and a real defect for another: the tint paired with `--text-negative` measured
+**4.14:1** in light theme. The fill ratchet now exempts `/NN` tints, and a separate
+ratchet _discovers_ every `bg-[var(--x)]/NN text-[var(--y)]` pairing in the repo
+and composites it. Enumerating known pairings is how this one was missed, so the
+new check finds its own inputs and asserts it found some — a regex that matches
+nothing must not read as success.

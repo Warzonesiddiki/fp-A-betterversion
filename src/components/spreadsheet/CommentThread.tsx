@@ -93,7 +93,7 @@ export function CommentThread({
             <button
               type="button"
               onClick={() => onDelete(comment.id)}
-              className="rounded p-1 text-[var(--color-error)] hover:bg-[var(--surface-hover)]"
+              className="rounded p-1 text-[var(--text-negative)] hover:bg-[var(--surface-hover)]"
               title="Delete"
               aria-label="Delete comment"
             >
