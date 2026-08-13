@@ -121,7 +121,7 @@ export default function GLReportingPage() {
           <FileText className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No GL Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import General Ledger data to view reports and summaries.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -141,7 +141,7 @@ export default function GLReportingPage() {
               aria-label="Help"
             ></button>
           </div>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Summary and analysis of your General Ledger data
           </p>
         </div>
@@ -156,13 +156,13 @@ export default function GLReportingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Card>
               <CardContent className="p-4 text-center">
-                <div className="text-xs text-slate-400 mb-1">Total Entries</div>
+                <div className="text-xs text-[var(--text-muted)] mb-1">Total Entries</div>
                 <div className="text-xl font-bold">{summary.totalEntries.toLocaleString()}</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <div className="text-xs text-slate-400 mb-1">Accounts Used</div>
+                <div className="text-xs text-[var(--text-muted)] mb-1">Accounts Used</div>
                 <div className="text-xl font-bold">
                   {summary.accountsWithEntries.toLocaleString()}
                 </div>
@@ -170,18 +170,18 @@ export default function GLReportingPage() {
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <div className="text-xs text-slate-400 mb-1">Total Accounts</div>
+                <div className="text-xs text-[var(--text-muted)] mb-1">Total Accounts</div>
                 <div className="text-xl font-bold">{summary.totalAccounts.toLocaleString()}</div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <div className="text-xs text-slate-400 mb-1">Trial Balance</div>
+                <div className="text-xs text-[var(--text-muted)] mb-1">Trial Balance</div>
                 <div className="text-xl font-bold">
                   {summary.trialBalanceBalanced ? (
                     <span className="text-green-400">Balanced</span>
                   ) : (
-                    <span className="text-slate-400">—</span>
+                    <span className="text-[var(--text-muted)]">—</span>
                   )}
                 </div>
               </CardContent>
@@ -199,7 +199,7 @@ export default function GLReportingPage() {
                   <span>{summary.dateRange.end}</span>
                 </div>
               ) : (
-                <p className="text-sm text-slate-400">Date information not available</p>
+                <p className="text-sm text-[var(--text-muted)]">Date information not available</p>
               )}
             </CardContent>
           </Card>
@@ -211,7 +211,7 @@ export default function GLReportingPage() {
                 <table className="w-full text-sm" aria-label="GL reporting">
                   <caption className="sr-only">Detailed GL gl reporting</caption>
                   <thead>
-                    <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                    <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                       <th scope="col" className="pb-3 pr-4">
                         Account Type
                       </th>

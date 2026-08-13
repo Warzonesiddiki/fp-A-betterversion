@@ -214,7 +214,9 @@ export default function BudgetVAReport() {
             <FileBarChart className="h-6 w-6 text-blue-400" />
             Budget vs. Actuals
           </h1>
-          <p className="text-slate-400 text-sm mt-1">Analyze performance against approved plans.</p>
+          <p className="text-[var(--text-muted)] text-sm mt-1">
+            Analyze performance against approved plans.
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <Select

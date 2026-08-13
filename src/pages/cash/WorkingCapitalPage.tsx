@@ -226,9 +226,9 @@ export default function WorkingCapitalPage() {
   if (!data)
     return (
       <div className="p-12 text-center">
-        <Scale className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Scale className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to analyze working capital.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to analyze working capital.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -273,25 +273,25 @@ export default function WorkingCapitalPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-3 text-center">
-            <div className="text-xs text-slate-400">DSO</div>
+            <div className="text-xs text-[var(--text-muted)]">DSO</div>
             <div className="text-lg font-bold">{data.dso} days</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-3 text-center">
-            <div className="text-xs text-slate-400">DIO</div>
+            <div className="text-xs text-[var(--text-muted)]">DIO</div>
             <div className="text-lg font-bold">{data.dio} days</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-3 text-center">
-            <div className="text-xs text-slate-400">DPO</div>
+            <div className="text-xs text-[var(--text-muted)]">DPO</div>
             <div className="text-lg font-bold">{data.dpo} days</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-3 text-center">
-            <div className="text-xs text-slate-400">CCC</div>
+            <div className="text-xs text-[var(--text-muted)]">CCC</div>
             <div
               className={`text-lg font-bold ${data.ccc <= 30 ? 'text-green-400' : data.ccc <= 60 ? 'text-yellow-400' : 'text-red-400'}`}
             >

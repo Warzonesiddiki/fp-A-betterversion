@@ -277,7 +277,7 @@ export default function DebtSchedulePage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Debt Schedule</h1>
-            <p className="text-sm text-slate-400 mt-1">Debt portfolio</p>
+            <p className="text-sm text-[var(--text-muted)] mt-1">Debt portfolio</p>
           </div>
           <Button size="sm" onClick={openAddForm}>
             <Plus className="h-3.5 w-3.5 mr-1.5" />
@@ -289,8 +289,8 @@ export default function DebtSchedulePage() {
 
         <div className="rounded-xl border border-dashed border-slate-600 p-10 text-center">
           <TableIcon className="h-10 w-10 mx-auto mb-3 text-slate-500" />
-          <p className="text-lg font-medium text-slate-300">No Data</p>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-lg font-medium text-[var(--text-secondary)]">No Data</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Add debt instruments to see amortization, balance and DSCR analytics.
           </p>
         </div>
@@ -303,7 +303,7 @@ export default function DebtSchedulePage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Debt Schedule</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Loan portfolio and amortization — computed live by DebtScheduleEngine (not mock data)
           </p>
         </div>

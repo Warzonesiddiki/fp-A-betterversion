@@ -97,9 +97,9 @@ export function ConsolidationPage() {
         >
           Skip to import action
         </a>
-        <Layers className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <Layers className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
         <h2 className="text-xl font-semibold mb-2">No Consolidation Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view consolidation.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view consolidation.</p>
         <Button
           id="import-btn"
           onClick={() => navigate('/data/gl-upload')}
@@ -128,7 +128,7 @@ export function ConsolidationPage() {
         <h1 id="consolidation-heading" className="text-2xl font-bold">
           Consolidation
         </h1>
-        <span className="text-sm text-slate-400">
+        <span className="text-sm text-[var(--text-muted)]">
           {formatNumber(entries.length)} entries imported
         </span>
       </header>
@@ -173,7 +173,7 @@ export function ConsolidationPage() {
               ariaLabel="Consolidation accounts"
             />
           ) : (
-            <p className="text-slate-400">No account data available.</p>
+            <p className="text-[var(--text-muted)]">No account data available.</p>
           )}
         </CardContent>
       </Card>

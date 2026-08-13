@@ -214,7 +214,7 @@ export default function FinancialStatementTemplatesPage() {
           <FileText className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No GL Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import General Ledger entries to generate financial statement templates.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -227,7 +227,7 @@ export default function FinancialStatementTemplatesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Financial Statement Templates</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {entries.length.toLocaleString()} GL entries · {accounts.length} accounts
           </p>
         </div>

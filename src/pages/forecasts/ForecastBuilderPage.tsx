@@ -237,7 +237,7 @@ export default function ForecastBuilderPage() {
           <h1 id="forecast-builder-heading" className="text-2xl font-bold">
             Forecast Builder
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Driver-based forecasting with confidence intervals
           </p>
         </div>
@@ -298,7 +298,7 @@ export default function ForecastBuilderPage() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 block">
+              <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2 block">
                 Auto-Fill Method
               </div>
               <div className="flex flex-wrap gap-2">
@@ -326,7 +326,7 @@ export default function ForecastBuilderPage() {
               </div>
             </div>
             <div>
-              <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 block">
+              <div className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2 block">
                 Seasonality Preset
               </div>
               <div className="flex flex-wrap gap-2">

@@ -85,7 +85,7 @@ export default function GLAccountAnalysisPage() {
           <BarChart3 className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No GL Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import General Ledger data first to analyze individual accounts.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -105,7 +105,7 @@ export default function GLAccountAnalysisPage() {
               aria-label="Help"
             ></button>
           </div>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {entries.length.toLocaleString()} total entries across {accounts.length} accounts
           </p>
         </div>
@@ -115,7 +115,7 @@ export default function GLAccountAnalysisPage() {
         <CardContent className="p-4">
           <label
             htmlFor="select-account"
-            className="block text-xs font-medium text-slate-400 mb-1.5"
+            className="block text-xs font-medium text-[var(--text-muted)] mb-1.5"
           >
             Select Account
           </label>
@@ -161,7 +161,7 @@ export default function GLAccountAnalysisPage() {
       {!isLoading && selectedAccountId && !accountStats && (
         <div className="p-12 text-center max-w-md mx-auto">
           <h2 className="text-lg font-semibold mb-2">No Transactions Found</h2>
-          <p className="text-slate-400">
+          <p className="text-[var(--text-muted)]">
             The selected account has no transactions in the current data set.
           </p>
         </div>
@@ -172,7 +172,7 @@ export default function GLAccountAnalysisPage() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <Card>
               <CardContent className="p-4 text-center">
-                <div className="text-xs text-slate-400 mb-1">Total Debits</div>
+                <div className="text-xs text-[var(--text-muted)] mb-1">Total Debits</div>
                 <div className="text-lg font-bold tabular-nums text-blue-400">
                   {fmt.currency0(accountStats.totalDebit)}
                 </div>
@@ -180,7 +180,7 @@ export default function GLAccountAnalysisPage() {
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <div className="text-xs text-slate-400 mb-1">Total Credits</div>
+                <div className="text-xs text-[var(--text-muted)] mb-1">Total Credits</div>
                 <div className="text-lg font-bold tabular-nums text-green-400">
                   {fmt.currency0(accountStats.totalCredit)}
                 </div>
@@ -188,7 +188,7 @@ export default function GLAccountAnalysisPage() {
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <div className="text-xs text-slate-400 mb-1">Net Change</div>
+                <div className="text-xs text-[var(--text-muted)] mb-1">Net Change</div>
                 <div
                   className={`text-lg font-bold tabular-nums ${accountStats.netChange >= 0 ? 'text-green-400' : 'text-red-400'}`}
                 >
@@ -198,7 +198,7 @@ export default function GLAccountAnalysisPage() {
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <div className="text-xs text-slate-400 mb-1">Transactions</div>
+                <div className="text-xs text-[var(--text-muted)] mb-1">Transactions</div>
                 <div className="text-lg font-bold tabular-nums">
                   {accountStats.transactionCount.toLocaleString()}
                 </div>
@@ -206,7 +206,7 @@ export default function GLAccountAnalysisPage() {
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <div className="text-xs text-slate-400 mb-1">Avg Monthly</div>
+                <div className="text-xs text-[var(--text-muted)] mb-1">Avg Monthly</div>
                 <div className="text-lg font-bold tabular-nums">
                   {fmt.currency0(accountStats.avgPerMonth)}
                 </div>
@@ -226,7 +226,9 @@ export default function GLAccountAnalysisPage() {
                     const isPositive = m.net >= 0;
                     return (
                       <div key={m.month} className="flex items-center gap-3 text-sm">
-                        <span className="w-16 text-xs text-slate-400 shrink-0">{m.month}</span>
+                        <span className="w-16 text-xs text-[var(--text-muted)] shrink-0">
+                          {m.month}
+                        </span>
                         <div className="flex-1 flex items-center gap-2">
                           <div className="flex-1 bg-slate-800 rounded-full h-5 overflow-hidden flex">
                             {!isPositive && (
@@ -284,7 +286,7 @@ export default function GLAccountAnalysisPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm" aria-label="Running balance">
                     <thead>
-                      <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                      <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                         <th className="px-4 py-3">Month</th>
                         <th className="px-4 py-3 text-right">Net</th>
                         <th className="px-4 py-3 text-right">Running Balance</th>
@@ -319,7 +321,7 @@ export default function GLAccountAnalysisPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm" aria-label="GL account analysis">
                   <thead>
-                    <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                    <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                       <th scope="col" className="px-4 py-3">
                         Month
                       </th>

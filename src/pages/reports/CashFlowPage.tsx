@@ -227,7 +227,7 @@ export default function CashFlowPage() {
           <DollarSign className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to generate a Cash Flow statement.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to generate a Cash Flow statement.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -255,7 +255,7 @@ export default function CashFlowPage() {
               <HelpCircle className="h-5 w-5" />
             </button>
           </div>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Period ending {period} &middot; {report.entryCount.toLocaleString()} entries
           </p>
         </div>
@@ -309,7 +309,7 @@ export default function CashFlowPage() {
           <table className="w-full text-sm" role="grid" aria-label="Cash Flow Statement data">
             <thead>
               <tr
-                className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
+                className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800"
                 role="row"
               >
                 <th className="px-6 py-3 w-3/5" role="columnheader" scope="col">
@@ -402,7 +402,7 @@ export default function CashFlowPage() {
                 </td>
               </tr>
               <tr className="border-t border-slate-700 font-semibold" role="row">
-                <td className="px-6 py-3 pl-12 text-white" role="gridcell">
+                <td className="px-6 py-3 pl-12 text-[var(--text-primary)]" role="gridcell">
                   Net Cash from Operating Activities
                 </td>
                 <td
@@ -439,7 +439,7 @@ export default function CashFlowPage() {
                 </td>
               </tr>
               <tr className="border-t border-slate-700 font-semibold" role="row">
-                <td className="px-6 py-3 pl-12 text-white" role="gridcell">
+                <td className="px-6 py-3 pl-12 text-[var(--text-primary)]" role="gridcell">
                   Net Cash from Investing Activities
                 </td>
                 <td
@@ -490,7 +490,7 @@ export default function CashFlowPage() {
                 </td>
               </tr>
               <tr className="border-t border-slate-700 font-semibold" role="row">
-                <td className="px-6 py-3 pl-12 text-white" role="gridcell">
+                <td className="px-6 py-3 pl-12 text-[var(--text-primary)]" role="gridcell">
                   Net Cash from Financing Activities
                 </td>
                 <td

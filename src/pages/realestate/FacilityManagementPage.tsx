@@ -230,7 +230,7 @@ export default function FacilityManagementPage() {
                 <div className="text-[10px] font-bold text-slate-500 uppercase">Water / Sewage</div>
                 <div className="text-lg font-bold">$0.82 / sqft</div>
               </div>
-              <div className="ml-auto text-slate-400 text-xs font-bold">Stable</div>
+              <div className="ml-auto text-[var(--text-muted)] text-xs font-bold">Stable</div>
             </div>
 
             <div className="mt-8 p-4 bg-indigo-50 rounded-xl border border-indigo-100">

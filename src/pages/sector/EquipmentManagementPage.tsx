@@ -46,9 +46,9 @@ export default function EquipmentManagementPage() {
         role="main"
         aria-label="Equipment Management Dashboard - No Data"
       >
-        <Wrench className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Wrench className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">Equipment — No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view equipment metrics.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view equipment metrics.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
     );
@@ -57,7 +57,9 @@ export default function EquipmentManagementPage() {
   return (
     <main className="p-6 space-y-6" role="main">
       <h1 className="text-2xl font-bold">Equipment Management</h1>
-      <p className="text-sm text-slate-400">Asset values, depreciation, and maintenance costs</p>
+      <p className="text-sm text-[var(--text-muted)]">
+        Asset values, depreciation, and maintenance costs
+      </p>
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue label="Equipment Value" value={formatCurrency(stats.totalValue)} />
@@ -74,21 +76,21 @@ export default function EquipmentManagementPage() {
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">
+                <span className="text-sm text-[var(--text-muted)]">
                   OEE (Overall Equipment Effectiveness)
                 </span>
                 <span className="font-mono">82.4%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Utilization Rate</span>
+                <span className="text-sm text-[var(--text-muted)]">Utilization Rate</span>
                 <span className="font-mono">78.6%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Avg Asset Age</span>
+                <span className="text-sm text-[var(--text-muted)]">Avg Asset Age</span>
                 <span className="font-mono">4.2 years</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Replacement Value</span>
+                <span className="text-sm text-[var(--text-muted)]">Replacement Value</span>
                 <span className="font-mono">{formatCurrency(stats.totalValue * 1.3)}</span>
               </div>
             </div>
@@ -101,7 +103,7 @@ export default function EquipmentManagementPage() {
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Maintenance Cost Ratio</span>
+                <span className="text-sm text-[var(--text-muted)]">Maintenance Cost Ratio</span>
                 <span className="font-mono">
                   {stats.totalValue > 0
                     ? formatPercent((stats.maintenance / stats.totalValue) * 100, 1)
@@ -109,7 +111,7 @@ export default function EquipmentManagementPage() {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Depreciation Rate</span>
+                <span className="text-sm text-[var(--text-muted)]">Depreciation Rate</span>
                 <span className="font-mono">
                   {stats.totalValue > 0
                     ? formatPercent((stats.depreciation / stats.totalValue) * 100, 1)
@@ -117,13 +119,13 @@ export default function EquipmentManagementPage() {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Net Book Value</span>
+                <span className="text-sm text-[var(--text-muted)]">Net Book Value</span>
                 <span className="font-mono">
                   {formatCurrency(stats.totalValue - stats.depreciation)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Downtime Hours (MTD)</span>
+                <span className="text-sm text-[var(--text-muted)]">Downtime Hours (MTD)</span>
                 <span className="font-mono text-red-600">24.5 hrs</span>
               </div>
             </div>

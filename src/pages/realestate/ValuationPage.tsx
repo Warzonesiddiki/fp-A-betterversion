@@ -141,7 +141,7 @@ export default function ValuationPage() {
           <Calculator className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Valuation Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your General Ledger and fixed asset schedule to view property valuations and
           appreciation analysis.
         </p>

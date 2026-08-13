@@ -142,9 +142,9 @@ export default function HedgeManagementPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <Shield className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Shield className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-4">Import data to manage FX hedges.</p>
+        <p className="text-[var(--text-muted)] mb-4">Import data to manage FX hedges.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -154,7 +154,7 @@ export default function HedgeManagementPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Hedge Management</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {hedges.length} position{hedges.length !== 1 ? 's' : ''} tracked
           </p>
         </div>
@@ -171,7 +171,7 @@ export default function HedgeManagementPage() {
               Hedge positions showing instrument, notional, strike rate, and mark-to-market value
             </caption>
             <thead>
-              <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+              <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                 <th scope="col" className="px-4 py-3">
                   Instrument
                 </th>
@@ -247,12 +247,12 @@ export default function HedgeManagementPage() {
       {/* Add/Edit Modal */}
       <Modal isOpen={showForm} onClose={() => setShowForm(false)}>
         <div className="p-6 space-y-4">
-          <h2 className="text-lg font-bold text-white">
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">
             {editingId ? 'Edit Position' : 'Add Position'}
           </h2>
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label htmlFor="instrument" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="instrument" className="block text-xs text-[var(--text-muted)] mb-1">
                 Instrument
               </label>
               <select
@@ -273,7 +273,7 @@ export default function HedgeManagementPage() {
               )}
             </div>
             <div>
-              <label htmlFor="currency" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="currency" className="block text-xs text-[var(--text-muted)] mb-1">
                 Currency
               </label>
               <select
@@ -290,7 +290,10 @@ export default function HedgeManagementPage() {
               </select>
             </div>
             <div>
-              <label htmlFor="notional-amount" className="block text-xs text-slate-400 mb-1">
+              <label
+                htmlFor="notional-amount"
+                className="block text-xs text-[var(--text-muted)] mb-1"
+              >
                 Notional Amount
               </label>
               <input
@@ -306,7 +309,10 @@ export default function HedgeManagementPage() {
               )}
             </div>
             <div>
-              <label htmlFor="contracted-rate" className="block text-xs text-slate-400 mb-1">
+              <label
+                htmlFor="contracted-rate"
+                className="block text-xs text-[var(--text-muted)] mb-1"
+              >
                 Contracted Rate
               </label>
               <input
@@ -323,7 +329,10 @@ export default function HedgeManagementPage() {
               )}
             </div>
             <div>
-              <label htmlFor="maturity-date" className="block text-xs text-slate-400 mb-1">
+              <label
+                htmlFor="maturity-date"
+                className="block text-xs text-[var(--text-muted)] mb-1"
+              >
                 Maturity Date
               </label>
               <input
@@ -338,7 +347,7 @@ export default function HedgeManagementPage() {
               )}
             </div>
             <div>
-              <label htmlFor="status" className="block text-xs text-slate-400 mb-1">
+              <label htmlFor="status" className="block text-xs text-[var(--text-muted)] mb-1">
                 Status
               </label>
               <select
@@ -365,8 +374,8 @@ export default function HedgeManagementPage() {
       {/* Delete Confirmation */}
       <Modal isOpen={deleteId !== null} onClose={() => setDeleteId(null)}>
         <div className="p-6 space-y-4">
-          <h2 className="text-lg font-bold text-white">Delete Position</h2>
-          <p className="text-slate-400">Are you sure? This cannot be undone.</p>
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">Delete Position</h2>
+          <p className="text-[var(--text-muted)]">Are you sure? This cannot be undone.</p>
           <div className="flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setDeleteId(null)}>
               Cancel

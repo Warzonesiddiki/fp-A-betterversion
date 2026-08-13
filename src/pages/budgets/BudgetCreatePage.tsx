@@ -142,7 +142,7 @@ export default function BudgetCreatePage() {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
         <h2 className="text-xl font-semibold mb-2">No Accounts Defined</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Create your Chart of Accounts first before creating budgets.
         </p>
         <Button onClick={() => navigate('/data/chart-of-accounts')}>Set Up Accounts</Button>
@@ -162,7 +162,7 @@ export default function BudgetCreatePage() {
               aria-label="Help"
             ></button>
           </div>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Set up a new budget for planning and tracking
           </p>
         </div>
@@ -180,7 +180,7 @@ export default function BudgetCreatePage() {
             <div>
               <label
                 htmlFor="budget-name"
-                className="block text-xs font-medium text-slate-400 mb-1"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
               >
                 Budget Name
               </label>
@@ -196,7 +196,7 @@ export default function BudgetCreatePage() {
             <div>
               <label
                 htmlFor="fiscal-year"
-                className="block text-xs font-medium text-slate-400 mb-1"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
               >
                 Fiscal Year
               </label>
@@ -215,7 +215,7 @@ export default function BudgetCreatePage() {
             <div>
               <label
                 htmlFor="base-currency"
-                className="block text-xs font-medium text-slate-400 mb-1"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
               >
                 Base Currency
               </label>
@@ -227,7 +227,9 @@ export default function BudgetCreatePage() {
               />
             </div>
             <div>
-              <span className="block text-xs font-medium text-slate-400 mb-1">Budget Method</span>
+              <span className="block text-xs font-medium text-[var(--text-muted)] mb-1">
+                Budget Method
+              </span>
               <div className="flex gap-2" role="group" aria-label="Budget Method">
                 <button
                   type="button"
@@ -258,7 +260,7 @@ export default function BudgetCreatePage() {
             <div>
               <label
                 htmlFor="description-optional"
-                className="block text-xs font-medium text-slate-400 mb-1"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
               >
                 Description (optional)
               </label>
@@ -284,7 +286,9 @@ export default function BudgetCreatePage() {
         <Card>
           <CardContent className="p-6 space-y-4">
             <h3 className="font-semibold">Select Accounts</h3>
-            <p className="text-sm text-slate-400">Choose the accounts to include in this budget.</p>
+            <p className="text-sm text-[var(--text-muted)]">
+              Choose the accounts to include in this budget.
+            </p>
             {formErrors.accounts && (
               <Alert type="error" title="Validation Error" message={formErrors.accounts} />
             )}
@@ -342,7 +346,7 @@ export default function BudgetCreatePage() {
         <Card>
           <CardContent className="p-6 space-y-4">
             <h3 className="font-semibold">Set Amounts</h3>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-[var(--text-muted)]">
               Enter monthly amounts for each selected account.
             </p>
             <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -394,9 +398,9 @@ export default function BudgetCreatePage() {
                 );
               })}
             </div>
-            <div className="text-sm text-slate-400">
+            <div className="text-sm text-[var(--text-muted)]">
               Total Budget:{' '}
-              <span className="font-bold text-white">
+              <span className="font-bold text-[var(--text-primary)]">
                 {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: 'USD',
@@ -424,23 +428,23 @@ export default function BudgetCreatePage() {
             <h3 className="font-semibold">Review & Create</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-400">Name</span>
+                <span className="text-[var(--text-muted)]">Name</span>
                 <span className="font-medium">{form.name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Fiscal Year</span>
+                <span className="text-[var(--text-muted)]">Fiscal Year</span>
                 <span>{form.fiscalYear}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Currency</span>
+                <span className="text-[var(--text-muted)]">Currency</span>
                 <span>{form.baseCurrency}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Accounts</span>
+                <span className="text-[var(--text-muted)]">Accounts</span>
                 <span>{selectedAccountIds.length} selected</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Total Amount</span>
+                <span className="text-[var(--text-muted)]">Total Amount</span>
                 <span className="font-bold text-lg">
                   {new Intl.NumberFormat('en-US', {
                     style: 'currency',

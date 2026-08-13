@@ -379,8 +379,8 @@ export default function BudgetDetailPage() {
   if (user?.role === 'Viewer') {
     return (
       <div className="p-12 text-center">
-        <h2 className="text-xl font-bold text-white mb-2">Access Restricted</h2>
-        <p className="text-slate-400 mb-6">Viewers cannot access the budget editor.</p>
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">Access Restricted</h2>
+        <p className="text-[var(--text-muted)] mb-6">Viewers cannot access the budget editor.</p>
         <Link to="/dashboard" className="text-blue-400 hover:underline font-medium">
           Back to Dashboard
         </Link>
@@ -392,7 +392,7 @@ export default function BudgetDetailPage() {
     return (
       <div className="p-12 text-center">
         <h2 className="text-xl font-semibold mb-2">Budget Not Found</h2>
-        <p className="text-slate-400 mb-4">
+        <p className="text-[var(--text-muted)] mb-4">
           The budget you&apos;re looking for doesn&apos;t exist.
         </p>
         <Button onClick={() => navigate('/budgets')}>Back to Budgets</Button>
@@ -420,7 +420,7 @@ export default function BudgetDetailPage() {
                 aria-label="Help"
               ></button>
             </div>
-            <p className="text-sm text-slate-400 mt-0.5">
+            <p className="text-sm text-[var(--text-muted)] mt-0.5">
               FY{budget.fiscalYear} · {budgetLineItems.length} line items ·{' '}
               {fmt.currency0(grandTotal)}
             </p>
@@ -598,7 +598,7 @@ export default function BudgetDetailPage() {
             <Card>
               <CardContent className="p-0">
                 <div className="p-3 flex items-center justify-between border-b border-slate-800">
-                  <span className="text-sm font-semibold text-slate-300">
+                  <span className="text-sm font-semibold text-[var(--text-secondary)]">
                     Professional Grid Editor
                   </span>
                   <span className="text-xs text-slate-500">
@@ -623,7 +623,7 @@ export default function BudgetDetailPage() {
                     Detailed breakdown of budget detail line items
                   </caption>
                   <thead>
-                    <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                    <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                       <th scope="col" className="px-4 py-3 w-24 sticky left-0 bg-slate-900 z-10">
                         Account
                       </th>
@@ -737,7 +737,7 @@ export default function BudgetDetailPage() {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 text-sm font-semibold mb-2">
-                  <History className="h-4 w-4 text-slate-400" />
+                  <History className="h-4 w-4 text-[var(--text-muted)]" />
                   Version History
                 </div>
                 <p className="text-xs text-slate-500">
@@ -758,7 +758,7 @@ export default function BudgetDetailPage() {
             <Card>
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 text-sm font-semibold mb-2">
-                  <Lock className="h-4 w-4 text-slate-400" />
+                  <Lock className="h-4 w-4 text-[var(--text-muted)]" />
                   Cell Locking
                 </div>
                 <p className="text-xs text-slate-500">

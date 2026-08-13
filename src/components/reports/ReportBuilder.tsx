@@ -362,7 +362,7 @@ export function ReportBuilder({
                   'flex-1 px-3 py-2 text-xs font-medium text-center transition-colors',
                   activePanel === 'rows'
                     ? 'text-blue-400 border-b-2 border-blue-400'
-                    : 'text-[var(--text-secondary)] hover:text-white'
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 )}
                 onClick={() => setActivePanel('rows')}
               >
@@ -374,7 +374,7 @@ export function ReportBuilder({
                   'flex-1 px-3 py-2 text-xs font-medium text-center transition-colors',
                   activePanel === 'columns'
                     ? 'text-blue-400 border-b-2 border-blue-400'
-                    : 'text-[var(--text-secondary)] hover:text-white'
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 )}
                 onClick={() => setActivePanel('columns')}
               >
@@ -386,7 +386,7 @@ export function ReportBuilder({
                   'flex-1 px-3 py-2 text-xs font-medium text-center transition-colors',
                   activePanel === 'properties'
                     ? 'text-blue-400 border-b-2 border-blue-400'
-                    : 'text-[var(--text-secondary)] hover:text-white'
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 )}
                 onClick={() => setActivePanel('properties')}
               >

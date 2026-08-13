@@ -147,7 +147,7 @@ export default function GLExplorerPage() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center">
-        <Database className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Database className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No GL Data</h2>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
@@ -159,7 +159,7 @@ export default function GLExplorerPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">GL Explorer</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Explore {entries.length.toLocaleString()} journal lines across {accounts.length} chart
             accounts and {accountSummaries.length} active GL accounts.
           </p>
@@ -173,7 +173,9 @@ export default function GLExplorerPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card>
           <CardContent className="p-4">
-            <div className="text-xs text-slate-400 uppercase tracking-wide">Journal lines</div>
+            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+              Journal lines
+            </div>
             <div className="text-2xl font-bold tabular-nums mt-1">
               {entries.length.toLocaleString()}
             </div>
@@ -181,7 +183,9 @@ export default function GLExplorerPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-xs text-slate-400 uppercase tracking-wide">Active accounts</div>
+            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+              Active accounts
+            </div>
             <div className="text-2xl font-bold tabular-nums mt-1">
               {accountSummaries.length.toLocaleString()}
             </div>
@@ -189,7 +193,7 @@ export default function GLExplorerPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-xs text-slate-400 uppercase tracking-wide">Debits</div>
+            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">Debits</div>
             <div className="text-2xl font-bold tabular-nums mt-1 text-blue-400">
               {fmt.currency0(totals.debits)}
             </div>
@@ -197,7 +201,7 @@ export default function GLExplorerPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-xs text-slate-400 uppercase tracking-wide">Credits</div>
+            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">Credits</div>
             <div className="text-2xl font-bold tabular-nums mt-1 text-green-400">
               {fmt.currency0(totals.credits)}
             </div>

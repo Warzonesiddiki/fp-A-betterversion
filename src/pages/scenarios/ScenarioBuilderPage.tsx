@@ -421,7 +421,9 @@ export default function ScenarioBuilderPage() {
           <h1 id="scenario-builder-heading" className="text-2xl font-bold">
             Scenario Builder
           </h1>
-          <p className="text-sm text-slate-400 mt-1">Model assumptions and compare outcomes</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">
+            Model assumptions and compare outcomes
+          </p>
         </div>
         <div className="flex gap-2" role="group" aria-label="Scenario actions">
           <Button
@@ -508,13 +510,13 @@ export default function ScenarioBuilderPage() {
           <CardTitle>Monte Carlo Simulation</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-[var(--text-muted)]">
             Samples revenue growth, pricing, and COGS distributions ({mcIterations.toLocaleString()}{' '}
             iterations) in a Web Worker to estimate the profit distribution for the current
             assumptions.
           </p>
           <div className="flex items-center gap-3">
-            <label htmlFor="mc-iterations" className="text-xs text-slate-400">
+            <label htmlFor="mc-iterations" className="text-xs text-[var(--text-muted)]">
               Iterations
             </label>
             <input
@@ -630,10 +632,14 @@ export default function ScenarioBuilderPage() {
               return (
                 <div key={label}>
                   <div className="flex justify-between text-sm mb-1">
-                    <label htmlFor={valueId} className="text-slate-300">
+                    <label htmlFor={valueId} className="text-[var(--text-secondary)]">
                       {label}
                     </label>
-                    <span id={valueId} className="text-white font-mono" aria-live="polite">
+                    <span
+                      id={valueId}
+                      className="text-[var(--text-primary)] font-mono"
+                      aria-live="polite"
+                    >
                       {value}
                       {suffix}
                     </span>
@@ -654,10 +660,14 @@ export default function ScenarioBuilderPage() {
             })}
             <div className="pt-4 border-t border-slate-800">
               <div className="flex justify-between text-sm mb-1">
-                <label htmlFor="prob-slider" className="text-slate-300">
+                <label htmlFor="prob-slider" className="text-[var(--text-secondary)]">
                   Probability Weight
                 </label>
-                <span id="prob-slider-value" className="text-white font-mono" aria-live="polite">
+                <span
+                  id="prob-slider-value"
+                  className="text-[var(--text-primary)] font-mono"
+                  aria-live="polite"
+                >
                   {probability}%
                 </span>
               </div>

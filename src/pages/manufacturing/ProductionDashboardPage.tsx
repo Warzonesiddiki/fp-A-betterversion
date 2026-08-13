@@ -201,7 +201,7 @@ export default function ProductionDashboardPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <ChartArea className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <ChartArea className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Production Data</h2>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>

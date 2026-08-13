@@ -232,7 +232,7 @@ function AuditTrailContent() {
           <ScrollText className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Audit Entries</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Changes appear automatically as you edit budgets, forecasts, and other data. Import data
           and make changes to see them recorded here.
         </p>
@@ -248,7 +248,7 @@ function AuditTrailContent() {
           <h1 id="audit-trail-heading" className="text-2xl font-bold">
             Audit Trail
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {filtered.length} of {entries.length} entries shown
           </p>
         </div>
@@ -276,7 +276,9 @@ function AuditTrailContent() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card>
           <CardContent className="p-4">
-            <div className="text-xs text-slate-400 uppercase tracking-wide">Total Changes</div>
+            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+              Total Changes
+            </div>
             <div className="text-2xl font-bold tabular-nums mt-1">
               {stats.total.toLocaleString()}
             </div>
@@ -284,7 +286,7 @@ function AuditTrailContent() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-xs text-slate-400 uppercase tracking-wide">Last 24h</div>
+            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">Last 24h</div>
             <div className="text-2xl font-bold tabular-nums mt-1 text-amber-400">
               {stats.last24h.toLocaleString()}
             </div>
@@ -292,7 +294,9 @@ function AuditTrailContent() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-xs text-slate-400 uppercase tracking-wide">Unique Users</div>
+            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+              Unique Users
+            </div>
             <div className="text-2xl font-bold tabular-nums mt-1 text-sky-400">
               {stats.uniqueUsers}
             </div>
@@ -300,7 +304,9 @@ function AuditTrailContent() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-xs text-slate-400 uppercase tracking-wide">Unique Cells</div>
+            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+              Unique Cells
+            </div>
             <div className="text-2xl font-bold tabular-nums mt-1 text-purple-400">
               {stats.uniqueCells.toLocaleString()}
             </div>
@@ -651,7 +657,7 @@ export default function AuditTrailPage() {
           <ScrollText className="h-10 w-10 text-red-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2 text-red-300">Access Denied</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           GDPR audit trail access requires the <span className="font-mono text-sm">admin</span>,{' '}
           <span className="font-mono text-sm">compliance</span>, or{' '}
           <span className="font-mono text-sm">data-protection-officer</span> role.

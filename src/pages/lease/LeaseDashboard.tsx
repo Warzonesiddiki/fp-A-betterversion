@@ -138,7 +138,7 @@ export default function LeaseDashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Lease Portfolio Dashboard</h1>
-            <p className="text-sm text-slate-400">Lease portfolio</p>
+            <p className="text-sm text-[var(--text-muted)]">Lease portfolio</p>
           </div>
           <Button size="sm" onClick={() => navigate('/lease/detail')}>
             Add Lease <ArrowRight className="h-4 w-4 ml-1" />
@@ -146,8 +146,8 @@ export default function LeaseDashboard() {
         </div>
         <div className="rounded-xl border border-dashed border-slate-600 p-10 text-center">
           <FileText className="h-10 w-10 mx-auto mb-3 text-slate-500" />
-          <p className="text-lg font-medium text-slate-300">No Lease Data</p>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-lg font-medium text-[var(--text-secondary)]">No Lease Data</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Add your first lease to see liability, payment and expiry analytics.
           </p>
         </div>
@@ -177,7 +177,7 @@ export default function LeaseDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Lease Portfolio Dashboard</h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-[var(--text-muted)]">
             {activeLeases.length} active leases — liability computed by LeaseEngine (not mock data)
           </p>
         </div>

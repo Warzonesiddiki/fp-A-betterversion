@@ -96,7 +96,7 @@ export default function ReportsListPage() {
           <FileText className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data Available</h2>
-        <p className="text-slate-400 mb-6">Import GL data to generate financial reports.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to generate financial reports.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -107,13 +107,13 @@ export default function ReportsListPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Reports</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {entries.length.toLocaleString()} GL entries available
           </p>
         </div>
         <div className="flex gap-2">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder="Search reports..."
@@ -130,7 +130,7 @@ export default function ReportsListPage() {
 
       {[...categories.entries()].map(([category, items]) => (
         <div key={category}>
-          <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">
+          <h2 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-3">
             {category}
           </h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -146,7 +146,7 @@ export default function ReportsListPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold">{r.name}</h3>
-                    <p className="text-xs text-slate-400 mt-0.5">{r.desc}</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5">{r.desc}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -156,7 +156,7 @@ export default function ReportsListPage() {
       ))}
 
       {filtered.length === 0 && (
-        <div className="text-center py-12 text-slate-400">
+        <div className="text-center py-12 text-[var(--text-muted)]">
           <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
           <p>No reports match &quot;{search}&quot;</p>
         </div>

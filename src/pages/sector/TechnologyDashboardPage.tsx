@@ -36,9 +36,9 @@ export default function TechnologyDashboardPage() {
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center" role="main" aria-label="Technology Dashboard - No Data">
-        <Cpu className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Cpu className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">Technology — No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view SaaS metrics.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view SaaS metrics.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
     );
@@ -47,7 +47,7 @@ export default function TechnologyDashboardPage() {
   return (
     <main className="p-6 space-y-6" role="main">
       <h1 className="text-2xl font-bold">Technology / SaaS Dashboard</h1>
-      <p className="text-sm text-slate-400">ARR, NRR, churn, LTV/CAC, and Rule of 40</p>
+      <p className="text-sm text-[var(--text-muted)]">ARR, NRR, churn, LTV/CAC, and Rule of 40</p>
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {kpis.map((kpi) => (
@@ -75,19 +75,19 @@ export default function TechnologyDashboardPage() {
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">ARR</span>
+                <span className="text-sm text-[var(--text-muted)]">ARR</span>
                 <span className="font-mono">{formatCurrency(43500000)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Net Revenue Retention</span>
+                <span className="text-sm text-[var(--text-muted)]">Net Revenue Retention</span>
                 <span className="font-mono text-green-600">115%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Logo Churn Rate</span>
+                <span className="text-sm text-[var(--text-muted)]">Logo Churn Rate</span>
                 <span className="font-mono text-red-600">5.8%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Gross Margin</span>
+                <span className="text-sm text-[var(--text-muted)]">Gross Margin</span>
                 <span className="font-mono text-green-600">72%</span>
               </div>
             </div>
@@ -100,19 +100,19 @@ export default function TechnologyDashboardPage() {
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">LTV/CAC Ratio</span>
+                <span className="text-sm text-[var(--text-muted)]">LTV/CAC Ratio</span>
                 <span className="font-mono text-green-600">2.8x</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Magic Number</span>
+                <span className="text-sm text-[var(--text-muted)]">Magic Number</span>
                 <span className="font-mono">0.68</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Quick Ratio</span>
+                <span className="text-sm text-[var(--text-muted)]">Quick Ratio</span>
                 <span className="font-mono">3.5</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Rule of 40</span>
+                <span className="text-sm text-[var(--text-muted)]">Rule of 40</span>
                 <span className="font-mono text-green-600">38</span>
               </div>
             </div>

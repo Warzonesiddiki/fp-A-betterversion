@@ -133,7 +133,7 @@ export default function GLJournalsPage() {
           <BookOpen className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Journal Entries</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your General Ledger data to view journal entries.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -153,7 +153,7 @@ export default function GLJournalsPage() {
               aria-label="Help"
             ></button>
           </div>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {entries.length.toLocaleString()} total entries
             {filtered.length !== entries.length &&
               ` · ${filtered.length.toLocaleString()} filtered`}
@@ -169,7 +169,10 @@ export default function GLJournalsPage() {
         <CardContent className="p-4">
           <div className="flex gap-3 items-end flex-wrap">
             <div>
-              <label htmlFor="from" className="block text-xs font-medium text-slate-400 mb-1">
+              <label
+                htmlFor="from"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
+              >
                 From
               </label>
               <input
@@ -184,7 +187,10 @@ export default function GLJournalsPage() {
               />
             </div>
             <div>
-              <label htmlFor="to" className="block text-xs font-medium text-slate-400 mb-1">
+              <label
+                htmlFor="to"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
+              >
                 To
               </label>
               <input
@@ -199,7 +205,10 @@ export default function GLJournalsPage() {
               />
             </div>
             <div>
-              <label htmlFor="account" className="block text-xs font-medium text-slate-400 mb-1">
+              <label
+                htmlFor="account"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
+              >
                 Account
               </label>
               <Select
@@ -214,7 +223,10 @@ export default function GLJournalsPage() {
               />
             </div>
             <div>
-              <label htmlFor="search" className="block text-xs font-medium text-slate-400 mb-1">
+              <label
+                htmlFor="search"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
+              >
                 Search
               </label>
               <div className="relative">
@@ -243,7 +255,7 @@ export default function GLJournalsPage() {
             <table className="w-full text-sm" aria-label="GL journal entries">
               <caption className="sr-only">Detailed GL gl journal entries</caption>
               <thead>
-                <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                   <th scope="col" className="px-4 py-3 w-24">
                     Date
                   </th>
@@ -315,7 +327,7 @@ export default function GLJournalsPage() {
               </tbody>
               {pageItems.length > 0 && (
                 <tfoot className="border-t-2 border-slate-600">
-                  <tr className="font-bold text-sm text-slate-200">
+                  <tr className="font-bold text-sm text-[var(--text-primary)]">
                     <td className="px-4 py-3" colSpan={3}>
                       Total ({filtered.length.toLocaleString()} entries)
                     </td>
@@ -336,7 +348,7 @@ export default function GLJournalsPage() {
 
       {filtered.length > PAGE_SIZE && (
         <div className="flex items-center justify-between text-sm">
-          <span className="text-slate-400">
+          <span className="text-[var(--text-muted)]">
             Showing {page * PAGE_SIZE + 1}–
             {Math.min((page + 1) * PAGE_SIZE, filtered.length).toLocaleString()} of{' '}
             {filtered.length.toLocaleString()}

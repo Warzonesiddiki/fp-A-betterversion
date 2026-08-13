@@ -14,6 +14,7 @@ import { useSelectionStats } from '@/hooks/useSelectionStats';
 import { useFindReplace } from '@/hooks/useFindReplace';
 import { useColumnVisibility } from '@/hooks/useColumnVisibility';
 import { useDataGridExport } from '@/hooks/useDataGridExport';
+import { useDensity, densityMetrics } from '@/hooks/useDensity';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -61,6 +62,9 @@ export const DataGrid: React.FC<DataGridProps> = ({
   enableRowGrouping = false,
 }) => {
   const gridRef = useRef<AgGridReact>(null);
+  // UI-04: row metrics come from the shared density contract, not literals.
+  const density = useDensity();
+  const metrics = densityMetrics(density);
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -279,8 +283,8 @@ export const DataGrid: React.FC<DataGridProps> = ({
 
   const mergedGridOptions = useMemo<GridOptions>(
     () => ({
-      rowHeight: 32,
-      headerHeight: 40,
+      rowHeight: metrics.rowHeight,
+      headerHeight: metrics.headerHeight,
       animateRows: true,
       rowSelection: { mode: 'multiRow' },
       suppressCellFocus: false,
@@ -318,7 +322,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
       onCellEditingStopped: () => setIsEditing(false),
       ...gridOptions,
     }),
-    [gridOptions, columns]
+    [gridOptions, columns, metrics]
   );
 
   return (

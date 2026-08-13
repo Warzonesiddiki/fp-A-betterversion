@@ -344,7 +344,7 @@ export default function GLUploadPage() {
       <div className="p-12 text-center">
         <Skeleton variant="rectangular" width="60%" height="2rem" className="mx-auto mb-6" />
         <Skeleton variant="rectangular" width="80%" height="16rem" className="mx-auto mb-4" />
-        <p className="text-sm text-slate-400 mt-4">
+        <p className="text-sm text-[var(--text-muted)] mt-4">
           {importStatus === 'parsing' ? 'Reading file contents...' : 'Validating data structure...'}
         </p>
       </div>
@@ -365,7 +365,7 @@ export default function GLUploadPage() {
               style={{ width: `${importProgress}%` }}
             />
           </div>
-          <p className="text-sm text-slate-400 mt-2">{importProgress}% complete</p>
+          <p className="text-sm text-[var(--text-muted)] mt-2">{importProgress}% complete</p>
           <p className="text-xs text-slate-500 mt-1">
             Processing {rawData.length.toLocaleString()} rows...
           </p>
@@ -400,7 +400,7 @@ export default function GLUploadPage() {
           </div>
         </div>
         <h2 className="text-xl font-semibold mb-2">Import Your Financial Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Upload Excel or CSV files to load your General Ledger. Once imported, your data will
           appear in reports, dashboards, and budgets — all stored locally, nothing leaves your
           computer.
@@ -427,7 +427,7 @@ export default function GLUploadPage() {
               aria-label="Help"
             ></button>
           </div>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {currentFile
               ? `${currentFile.name} (${formatFileSize(currentFile.size)})`
               : 'Import financial data from CSV or Excel files'}
@@ -476,7 +476,9 @@ export default function GLUploadPage() {
                     </select>
                   </div>
                 )}
-                <span className="text-xs text-slate-400">{csvColumns.length} columns detected</span>
+                <span className="text-xs text-[var(--text-muted)]">
+                  {csvColumns.length} columns detected
+                </span>
               </div>
             </div>
             {csvColumns.length > 0 && (
@@ -515,7 +517,7 @@ export default function GLUploadPage() {
           <CardContent>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold">Preview & Validate</h3>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-[var(--text-muted)]">
                 {rawData.length.toLocaleString()} total rows
               </span>
             </div>
@@ -539,7 +541,7 @@ export default function GLUploadPage() {
               <h2 className="text-xl font-semibold mb-2">
                 {importedErrorCount > 0 ? 'Import Completed with Warnings' : 'Import Complete'}
               </h2>
-              <p className="text-slate-400 mb-6">
+              <p className="text-[var(--text-muted)] mb-6">
                 Successfully imported {importedRowCount.toLocaleString()} rows
                 {importedErrorCount > 0 && ` with ${importedErrorCount} warnings`}.
               </p>
@@ -567,13 +569,13 @@ export default function GLUploadPage() {
           <CardContent>
             <h3 className="font-semibold mb-3">Import History</h3>
             {importHistory.length === 0 ? (
-              <p className="text-slate-400 text-center py-4">No imports yet</p>
+              <p className="text-[var(--text-muted)] text-center py-4">No imports yet</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm" aria-label="GL upload preview">
                   <caption className="sr-only">Detailed gl upload preview</caption>
                   <thead>
-                    <tr className="text-left text-slate-400 text-xs uppercase">
+                    <tr className="text-left text-[var(--text-muted)] text-xs uppercase">
                       <th scope="col" className="pb-3 pr-4">
                         File Name
                       </th>

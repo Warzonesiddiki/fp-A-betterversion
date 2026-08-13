@@ -77,7 +77,7 @@ export default function PatientRevenuePage() {
           <DollarSign className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Healthcare Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your General Ledger data with healthcare specific accounts to view revenue cycle
           analysis.
         </p>

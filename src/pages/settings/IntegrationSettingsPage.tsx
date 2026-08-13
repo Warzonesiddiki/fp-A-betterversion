@@ -76,8 +76,8 @@ export default function IntegrationSettingsPage() {
       aria-label="Integration settings page"
     >
       <div className="mb-2">
-        <h1 className="text-2xl font-bold text-white">Integrations</h1>
-        <p className="text-slate-400 text-sm">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Integrations</h1>
+        <p className="text-[var(--text-muted)] text-sm">
           Connect external accounting, ERP, CRM, payments, banking, and communication systems.
           Credentials stay on this device in local encrypted storage.
         </p>
@@ -89,8 +89,8 @@ export default function IntegrationSettingsPage() {
           <CardContent className="p-4 flex items-center gap-3">
             <Plug className="h-5 w-5 text-blue-400 shrink-0" />
             <div>
-              <div className="text-sm text-slate-400">Available</div>
-              <div className="font-medium text-white">
+              <div className="text-sm text-[var(--text-muted)]">Available</div>
+              <div className="font-medium text-[var(--text-primary)]">
                 {INTEGRATION_CATALOG.length} integrations
               </div>
             </div>
@@ -100,7 +100,7 @@ export default function IntegrationSettingsPage() {
           <CardContent className="p-4 flex items-center gap-3">
             <CheckCircle className="h-5 w-5 text-green-400 shrink-0" />
             <div>
-              <div className="text-sm text-slate-400">Connected</div>
+              <div className="text-sm text-[var(--text-muted)]">Connected</div>
               <div className="font-medium text-green-400">{connectedCount} active</div>
             </div>
           </CardContent>
@@ -109,8 +109,8 @@ export default function IntegrationSettingsPage() {
           <CardContent className="p-4 flex items-center gap-3">
             <Settings className="h-5 w-5 text-amber-400 shrink-0" />
             <div>
-              <div className="text-sm text-slate-400">Categories</div>
-              <div className="font-medium text-white">{categoryCount} groups</div>
+              <div className="text-sm text-[var(--text-muted)]">Categories</div>
+              <div className="font-medium text-[var(--text-primary)]">{categoryCount} groups</div>
             </div>
           </CardContent>
         </Card>
@@ -144,7 +144,7 @@ export default function IntegrationSettingsPage() {
       <div className="space-y-4">
         {Object.entries(grouped).map(([category, items]) => (
           <div key={category}>
-            <h2 className="text-sm font-medium text-slate-400 mb-3">
+            <h2 className="text-sm font-medium text-[var(--text-muted)] mb-3">
               {CATEGORY_LABELS[category as IntegrationCategory] ?? category}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -166,7 +166,7 @@ export default function IntegrationSettingsPage() {
         ))}
         {filtered.length === 0 && (
           <Card>
-            <CardContent className="p-8 text-center text-slate-400 text-sm">
+            <CardContent className="p-8 text-center text-[var(--text-muted)] text-sm">
               No integrations match your search.
             </CardContent>
           </Card>
@@ -176,10 +176,12 @@ export default function IntegrationSettingsPage() {
       {/* Security note */}
       <Card className="border-slate-700">
         <CardContent className="p-4 flex items-start gap-3">
-          <ShieldCheck className="h-5 w-5 text-slate-400 shrink-0 mt-0.5" />
+          <ShieldCheck className="h-5 w-5 text-[var(--text-muted)] shrink-0 mt-0.5" />
           <div>
-            <div className="text-sm font-medium text-white mb-1">Local credentials</div>
-            <p className="text-xs text-slate-400">
+            <div className="text-sm font-medium text-[var(--text-primary)] mb-1">
+              Local credentials
+            </div>
+            <p className="text-xs text-[var(--text-muted)]">
               Integration credentials are stored only on this device in the app&apos;s local
               encrypted storage — they are never transmitted to FinPlan Pro servers. &quot;Test
               connection&quot; performs a real API health check against the provider; OAuth2

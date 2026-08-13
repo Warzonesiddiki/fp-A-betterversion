@@ -200,7 +200,7 @@ export default function TransferPricingPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Transfer Pricing</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Intercompany transaction analysis and compliance
           </p>
         </div>

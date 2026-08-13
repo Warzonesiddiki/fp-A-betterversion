@@ -96,15 +96,15 @@ export function ReportResultsPanel({
             <p className="text-xs text-[var(--text-muted)]">Reports</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-white">{entityNames.length}</p>
+            <p className="text-2xl font-bold text-[var(--text-primary)]">{entityNames.length}</p>
             <p className="text-xs text-[var(--text-muted)]">Entities</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-white">{reportNames.length}</p>
+            <p className="text-2xl font-bold text-[var(--text-primary)]">{reportNames.length}</p>
             <p className="text-xs text-[var(--text-muted)]">Templates</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-white">{sections.length}</p>
+            <p className="text-2xl font-bold text-[var(--text-primary)]">{sections.length}</p>
             <p className="text-xs text-[var(--text-muted)]">Sections</p>
           </div>
         </div>
@@ -133,7 +133,7 @@ export function ReportResultsPanel({
           onClick={() => setActiveTab('reports')}
           className={`pb-2 text-sm transition-colors ${
             activeTab === 'reports'
-              ? 'border-b-2 border-blue-500 text-white'
+              ? 'border-b-2 border-blue-500 text-[var(--text-primary)]'
               : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
           }`}
         >
@@ -144,7 +144,7 @@ export function ReportResultsPanel({
           onClick={() => setActiveTab('sections')}
           className={`pb-2 text-sm transition-colors ${
             activeTab === 'sections'
-              ? 'border-b-2 border-blue-500 text-white'
+              ? 'border-b-2 border-blue-500 text-[var(--text-primary)]'
               : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
           }`}
         >

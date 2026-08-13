@@ -190,9 +190,9 @@ export default function CashForecastPage() {
   if (!data)
     return (
       <div className="p-12 text-center">
-        <DollarSign className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <DollarSign className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to forecast cash flow.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to forecast cash flow.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -246,7 +246,7 @@ export default function CashForecastPage() {
                 width={300}
                 ariaLabel="Cash balance sparkline trend"
               />
-              <span className="text-sm text-slate-400">13-week trend</span>
+              <span className="text-sm text-[var(--text-muted)]">13-week trend</span>
             </CardContent>
           </Card>
         </div>

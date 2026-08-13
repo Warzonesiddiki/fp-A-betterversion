@@ -197,7 +197,9 @@ export default function MigrationPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card>
           <CardContent className="p-4">
-            <div className="text-xs text-slate-400 uppercase tracking-wide">Total Migrations</div>
+            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+              Total Migrations
+            </div>
             <div className="text-2xl font-bold tabular-nums mt-1">
               {stats.total.toLocaleString()}
             </div>
@@ -205,13 +207,17 @@ export default function MigrationPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-xs text-slate-400 uppercase tracking-wide">Last 7 Days</div>
+            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+              Last 7 Days
+            </div>
             <div className="text-2xl font-bold tabular-nums mt-1 text-sky-400">{stats.last7d}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-xs text-slate-400 uppercase tracking-wide">Records Imported</div>
+            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+              Records Imported
+            </div>
             <div className="text-2xl font-bold tabular-nums mt-1 text-purple-400">
               {stats.totalRecords.toLocaleString()}
             </div>
@@ -219,7 +225,9 @@ export default function MigrationPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-xs text-slate-400 uppercase tracking-wide">Success Rate</div>
+            <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+              Success Rate
+            </div>
             <div
               className={`text-2xl font-bold tabular-nums mt-1 ${
                 stats.successRate >= 95
@@ -290,7 +298,7 @@ export default function MigrationPage() {
         </CardHeader>
         {showCubePicker && (
           <CardContent>
-            <p className="text-xs text-slate-400 mb-3">
+            <p className="text-xs text-[var(--text-muted)] mb-3">
               Migrate OLAP cubes from enterprise EPM systems. Cube migration uses a separate engine
               and writes to a different snapshot namespace.
             </p>
@@ -374,7 +382,7 @@ export default function MigrationPage() {
             <div className="text-center py-8">
               <Clock className="h-10 w-10 text-slate-600 mx-auto mb-3" />
               <h3 className="text-sm font-semibold mb-1">No migrations yet</h3>
-              <p className="text-xs text-slate-400 mb-4">
+              <p className="text-xs text-[var(--text-muted)] mb-4">
                 Choose a source system above to start your first data migration.
               </p>
               <Button size="sm" onClick={() => handleStartMigration('excel')}>
@@ -398,7 +406,7 @@ export default function MigrationPage() {
                     )}
                     <div className="min-w-0">
                       <div className="text-sm font-medium">{m.source}</div>
-                      <div className="text-xs text-slate-400">
+                      <div className="text-xs text-[var(--text-muted)]">
                         {(m.data?.length ?? 0).toLocaleString()} records ·{' '}
                         {formatTimestamp(m.timestamp, nowTick)}
                       </div>

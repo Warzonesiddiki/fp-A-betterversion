@@ -112,7 +112,7 @@ export default function HealthcareDashboardPage() {
           <Activity className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Healthcare Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your Patient Revenue GL data (40xx accounts) to view hospital performance
           analytics.
         </p>

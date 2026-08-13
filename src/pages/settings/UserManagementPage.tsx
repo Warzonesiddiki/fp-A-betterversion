@@ -79,7 +79,7 @@ export default function UserManagementPage() {
           </div>
           <div>
             <div className="font-medium">{r.name ?? ''}</div>
-            <div className="text-xs text-slate-400">{r.email}</div>
+            <div className="text-xs text-[var(--text-muted)]">{r.email}</div>
           </div>
         </div>
       ),
@@ -126,7 +126,7 @@ export default function UserManagementPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">User Management</h1>
-          <p className="text-sm text-slate-400">{users.length} users registered</p>
+          <p className="text-sm text-[var(--text-muted)]">{users.length} users registered</p>
         </div>
         <Button onClick={() => setShowAddForm(true)}>
           <UserPlus className="h-4 w-4 mr-1" /> Add User
@@ -138,7 +138,7 @@ export default function UserManagementPage() {
           <CardContent className="p-4 text-center">
             <Users className="h-5 w-5 text-blue-400 mx-auto mb-1" />
             <div className="text-2xl font-bold">{users.length}</div>
-            <div className="text-xs text-slate-400">Total Users</div>
+            <div className="text-xs text-[var(--text-muted)]">Total Users</div>
           </CardContent>
         </Card>
         <Card>
@@ -147,7 +147,7 @@ export default function UserManagementPage() {
             <div className="text-2xl font-bold">
               {users.filter((u) => u.role === 'Admin').length}
             </div>
-            <div className="text-xs text-slate-400">Admins</div>
+            <div className="text-xs text-[var(--text-muted)]">Admins</div>
           </CardContent>
         </Card>
         <Card>
@@ -156,14 +156,14 @@ export default function UserManagementPage() {
             <div className="text-2xl font-bold">
               {users.filter((u) => u.role === 'Analyst').length}
             </div>
-            <div className="text-xs text-slate-400">Analysts</div>
+            <div className="text-xs text-[var(--text-muted)]">Analysts</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
             <Clock className="h-5 w-5 text-yellow-400 mx-auto mb-1" />
             <div className="text-2xl font-bold">{defaultRoles.length}</div>
-            <div className="text-xs text-slate-400">Roles</div>
+            <div className="text-xs text-[var(--text-muted)]">Roles</div>
           </CardContent>
         </Card>
       </div>
@@ -186,7 +186,7 @@ export default function UserManagementPage() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label htmlFor="name" className="text-sm text-slate-400 mb-1 block">
+                <label htmlFor="name" className="text-sm text-[var(--text-muted)] mb-1 block">
                   Name
                 </label>
                 <Input
@@ -197,7 +197,7 @@ export default function UserManagementPage() {
                 />
               </div>
               <div>
-                <label htmlFor="email" className="text-sm text-slate-400 mb-1 block">
+                <label htmlFor="email" className="text-sm text-[var(--text-muted)] mb-1 block">
                   Email
                 </label>
                 <Input
@@ -209,7 +209,7 @@ export default function UserManagementPage() {
                 />
               </div>
               <div>
-                <label htmlFor="role" className="text-sm text-slate-400 mb-1 block">
+                <label htmlFor="role" className="text-sm text-[var(--text-muted)] mb-1 block">
                   Role
                 </label>
                 <select
@@ -273,7 +273,7 @@ export default function UserManagementPage() {
                   <div className="w-2 h-2 rounded-full bg-blue-400 mt-2 shrink-0" />
                   <div>
                     <div className="text-sm">{log.action}</div>
-                    <div className="text-xs text-slate-400">
+                    <div className="text-xs text-[var(--text-muted)]">
                       {log.user} | {log.time}
                     </div>
                   </div>

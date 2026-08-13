@@ -85,7 +85,7 @@ export default function CarbonDashboardPage() {
       <div className="p-12 text-center">
         <Leaf className="h-10 w-10 text-green-400 mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import data to track ESG metrics.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import data to track ESG metrics.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -95,7 +95,7 @@ export default function CarbonDashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Carbon Dashboard</h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-[var(--text-muted)]">
             Track environmental metrics from your financial data
           </p>
         </div>
@@ -222,16 +222,28 @@ export default function CarbonDashboardPage() {
               </caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Source
                   </th>
-                  <th scope="col" className="text-center py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-center py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Scope
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     tCO₂e
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     % of Total
                   </th>
                 </tr>

@@ -89,9 +89,9 @@ export default function InsuranceDashboardPage() {
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center" role="main" aria-label="Insurance Dashboard - No Data">
-        <Shield className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Shield className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">Insurance — No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view insurance KPIs.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view insurance KPIs.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
     );
@@ -100,7 +100,7 @@ export default function InsuranceDashboardPage() {
   return (
     <main className="p-6 space-y-6" role="main">
       <h1 className="text-2xl font-bold">Insurance Dashboard</h1>
-      <p className="text-sm text-slate-400">Underwriting and claims metrics</p>
+      <p className="text-sm text-[var(--text-muted)]">Underwriting and claims metrics</p>
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {model?.metrics.slice(0, 8).map((metric) => (
@@ -130,7 +130,7 @@ export default function InsuranceDashboardPage() {
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Loss Ratio</span>
+                <span className="text-sm text-[var(--text-muted)]">Loss Ratio</span>
                 <span
                   className={`font-mono ${lossRatioMetric < 65 ? 'text-green-600' : 'text-red-600'}`}
                 >
@@ -138,11 +138,11 @@ export default function InsuranceDashboardPage() {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Expense Ratio</span>
+                <span className="text-sm text-[var(--text-muted)]">Expense Ratio</span>
                 <span className="font-mono">{formatPercent(expenseRatioMetric, 1)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Combined Ratio</span>
+                <span className="text-sm text-[var(--text-muted)]">Combined Ratio</span>
                 <span
                   className={`font-mono ${combinedRatioMetric < 100 ? 'text-green-600' : 'text-red-600'}`}
                 >
@@ -150,7 +150,7 @@ export default function InsuranceDashboardPage() {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Retention Rate</span>
+                <span className="text-sm text-[var(--text-muted)]">Retention Rate</span>
                 <span className="font-mono text-green-600">{formatPercent(retentionPct, 1)}</span>
               </div>
             </div>
@@ -163,19 +163,19 @@ export default function InsuranceDashboardPage() {
           <CardContent>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Total Claims</span>
+                <span className="text-sm text-[var(--text-muted)]">Total Claims</span>
                 <span className="font-mono">{formatCurrency(stats.claims)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Avg Claim Size</span>
+                <span className="text-sm text-[var(--text-muted)]">Avg Claim Size</span>
                 <span className="font-mono">{formatCurrency(stats.avgClaim)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Solvency II Ratio</span>
+                <span className="text-sm text-[var(--text-muted)]">Solvency II Ratio</span>
                 <span className="font-mono text-green-600">{formatPercent(solvencyPct, 1)}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-slate-400">Reserve / Solvency Signal</span>
+                <span className="text-sm text-[var(--text-muted)]">Reserve / Solvency Signal</span>
                 <span className="font-mono">{formatCurrency(model?.assetBase ?? 0)}</span>
               </div>
             </div>

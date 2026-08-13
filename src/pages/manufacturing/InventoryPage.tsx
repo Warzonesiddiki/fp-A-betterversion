@@ -258,9 +258,9 @@ export default function InventoryPage() {
   if (!hasData) {
     return (
       <div className="p-12 text-center">
-        <Package className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Package className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Inventory Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view inventory levels.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view inventory levels.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -271,7 +271,7 @@ export default function InventoryPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Inventory Management</h1>
-          <p className="text-sm text-slate-400">{mockInventory.length} items tracked</p>
+          <p className="text-sm text-[var(--text-muted)]">{mockInventory.length} items tracked</p>
         </div>
         <Button variant="outline" size="sm" onClick={handleExport}>
           <Download className="h-4 w-4 mr-1" /> Export
@@ -373,7 +373,9 @@ export default function InventoryPage() {
                   );
                 })}
               {mockInventory.filter((i) => i.quantity <= i.reorderPoint).length === 0 && (
-                <div className="text-center text-slate-400 py-4">All items above reorder point</div>
+                <div className="text-center text-[var(--text-muted)] py-4">
+                  All items above reorder point
+                </div>
               )}
             </div>
           </CardContent>

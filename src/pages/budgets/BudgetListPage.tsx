@@ -58,7 +58,7 @@ export default function BudgetListPage() {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
         <h2 className="text-xl font-semibold mb-2">No Budgets Yet</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Create your first budget to start planning and tracking financial performance.
         </p>
         <Button onClick={() => navigate('/budgets/create')} aria-label="Create new budget">
@@ -81,7 +81,7 @@ export default function BudgetListPage() {
               aria-label="Help"
             ></button>
           </div>
-          <p className="text-sm text-slate-400 mt-1">{budgets.length} budgets</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">{budgets.length} budgets</p>
         </div>
         <Button onClick={() => navigate('/budgets/create')} aria-label="Create new budget">
           <Plus className="h-4 w-4 mr-2" />
@@ -134,7 +134,7 @@ export default function BudgetListPage() {
             <table className="w-full text-sm" role="grid" aria-label="Budgets list">
               <thead>
                 <tr
-                  className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
+                  className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800"
                   role="row"
                 >
                   <th className="px-4 py-3" role="columnheader" scope="col">

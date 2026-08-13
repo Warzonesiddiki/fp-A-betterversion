@@ -234,7 +234,7 @@ export default function BondPortfolioPage() {
           <Landmark className="h-10 w-10 text-slate-400" aria-hidden="true" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Bond Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your General Ledger to view your fixed-income portfolio, pricing, and duration
           metrics.
         </p>
@@ -376,7 +376,7 @@ export default function BondPortfolioPage() {
               <div className="text-xl font-bold">
                 {formatNumber(portfolioMetrics.weightedConvexity, 2)}
               </div>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[10px] text-[var(--text-muted)]">
                 Higher convexity = better protection against large rate moves
               </p>
             </div>

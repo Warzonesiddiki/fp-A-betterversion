@@ -283,7 +283,7 @@ export default function ChartOfAccountsPage() {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
         <h2 className="text-xl font-semibold mb-2">No Accounts Defined</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           The Chart of Accounts is the foundation of financial reporting. Define your accounts
           manually, or import from a CSV file.
         </p>
@@ -328,7 +328,7 @@ export default function ChartOfAccountsPage() {
               aria-label="Help"
             ></button>
           </div>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {accounts.length} accounts defined
             {filterType !== 'all' && ` · ${filteredAccounts.length} filtered`}
           </p>
@@ -412,7 +412,7 @@ export default function ChartOfAccountsPage() {
                 Detailed breakdown of chart of accounts hierarchy
               </caption>
               <thead>
-                <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                   <th scope="col" className="px-4 py-3 w-24">
                     Code
                   </th>
@@ -535,7 +535,7 @@ export default function ChartOfAccountsPage() {
             <div>
               <label
                 htmlFor="account-code"
-                className="block text-xs font-medium text-slate-400 mb-1"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
               >
                 Account Code
               </label>
@@ -551,7 +551,7 @@ export default function ChartOfAccountsPage() {
             <div>
               <label
                 htmlFor="account-name"
-                className="block text-xs font-medium text-slate-400 mb-1"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
               >
                 Account Name
               </label>
@@ -567,7 +567,7 @@ export default function ChartOfAccountsPage() {
             <div>
               <label
                 htmlFor="account-type"
-                className="block text-xs font-medium text-slate-400 mb-1"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
               >
                 Account Type
               </label>
@@ -579,7 +579,10 @@ export default function ChartOfAccountsPage() {
               />
             </div>
             <div>
-              <label htmlFor="category" className="block text-xs font-medium text-slate-400 mb-1">
+              <label
+                htmlFor="category"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
+              >
                 Category
               </label>
               <Input
@@ -592,7 +595,7 @@ export default function ChartOfAccountsPage() {
             <div>
               <label
                 htmlFor="parent-account-optional"
-                className="block text-xs font-medium text-slate-400 mb-1"
+                className="block text-xs font-medium text-[var(--text-muted)] mb-1"
               >
                 Parent Account (optional)
               </label>
@@ -627,7 +630,7 @@ export default function ChartOfAccountsPage() {
       <Modal isOpen={deleteConfirmId !== null} onClose={() => setDeleteConfirmId(null)}>
         <div className="p-6">
           <h2 className="text-lg font-semibold mb-2">Delete Account</h2>
-          <p className="text-sm text-slate-400 mb-6">
+          <p className="text-sm text-[var(--text-muted)] mb-6">
             Are you sure you want to delete this account? This action cannot be undone.
           </p>
           <div className="flex justify-end gap-3">

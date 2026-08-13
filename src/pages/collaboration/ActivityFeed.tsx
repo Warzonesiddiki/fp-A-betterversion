@@ -99,9 +99,9 @@ export function ActivityFeed() {
         >
           Skip to import action
         </a>
-        <Activity className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <Activity className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
         <h2 className="text-xl font-semibold mb-2">No Activity Feed Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view activity feed.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view activity feed.</p>
         <Button
           id="import-btn"
           onClick={() => navigate('/data/gl-upload')}
@@ -130,7 +130,7 @@ export function ActivityFeed() {
         <h1 id="activity-heading" className="text-2xl font-bold">
           Activity Feed
         </h1>
-        <span className="text-sm text-slate-400">
+        <span className="text-sm text-[var(--text-muted)]">
           {formatNumber(entries.length)} entries imported
         </span>
       </header>
@@ -176,7 +176,7 @@ export function ActivityFeed() {
               ariaLabel="Activity feed"
             />
           ) : (
-            <p className="text-slate-400">No account data available.</p>
+            <p className="text-[var(--text-muted)]">No account data available.</p>
           )}
         </CardContent>
       </Card>

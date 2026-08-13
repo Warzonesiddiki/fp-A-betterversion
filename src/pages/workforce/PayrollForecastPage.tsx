@@ -183,9 +183,11 @@ export default function PayrollForecastPage() {
   if (!hasData) {
     return (
       <div className="p-12 text-center">
-        <Users className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Users className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Payroll Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data with payroll accounts to forecast.</p>
+        <p className="text-[var(--text-muted)] mb-6">
+          Import GL data with payroll accounts to forecast.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -196,7 +198,7 @@ export default function PayrollForecastPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Payroll Forecast</h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-[var(--text-muted)]">
             {totalHeadcount} employees across {departments.length} departments
           </p>
         </div>

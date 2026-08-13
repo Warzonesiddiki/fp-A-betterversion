@@ -210,7 +210,7 @@ export function FXPositionGrid() {
           <h2 className="text-xl font-bold flex items-center gap-2">
             <BarChart3 className="h-5 w-5 text-blue-400" /> FX Position Grid
           </h2>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {positions.length} positions across {exposure.length} currencies
           </p>
         </div>
@@ -241,7 +241,7 @@ export function FXPositionGrid() {
       <div className="grid grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Total Long</div>
+            <div className="text-xs text-[var(--text-muted)]">Total Long</div>
             <div className="text-lg font-bold tabular-nums text-green-400">
               {formatMoney(totals.totalLong)}
             </div>
@@ -249,7 +249,7 @@ export function FXPositionGrid() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Total Short</div>
+            <div className="text-xs text-[var(--text-muted)]">Total Short</div>
             <div className="text-lg font-bold tabular-nums text-red-400">
               {formatMoney(totals.totalShort)}
             </div>
@@ -257,7 +257,7 @@ export function FXPositionGrid() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Net Exposure</div>
+            <div className="text-xs text-[var(--text-muted)]">Net Exposure</div>
             <div
               className="text-lg font-bold tabular-nums"
               style={{ color: totals.totalNet >= 0 ? '#16A34A' : '#DC2626' }}
@@ -268,7 +268,7 @@ export function FXPositionGrid() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Concentration</div>
+            <div className="text-xs text-[var(--text-muted)]">Concentration</div>
             <div className="text-lg font-bold">
               {exposure.length > 0
                 ? formatPercent((Math.abs(exposure[0]!.net) / Math.abs(totals.totalNet)) * 100, 0)
@@ -282,7 +282,7 @@ export function FXPositionGrid() {
         <CardContent className="p-0">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+              <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                 <th className="px-4 py-3" scope="col">
                   Currency
                 </th>
@@ -355,10 +355,12 @@ export function FXPositionGrid() {
 
       <Modal isOpen={selectedCurrency !== null} onClose={() => setSelectedCurrency(null)}>
         <div className="p-6 space-y-4">
-          <h2 className="text-lg font-bold text-white">{selectedCurrency} Position Details</h2>
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">
+            {selectedCurrency} Position Details
+          </h2>
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-700">
+              <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-700">
                 <th className="px-2 py-2" scope="col">
                   Counterparty
                 </th>
@@ -394,7 +396,7 @@ export function FXPositionGrid() {
                     >
                       {formatMoney(netLocal, p.currency)}
                     </td>
-                    <td className="px-2 py-2 text-slate-400">{p.maturityDate}</td>
+                    <td className="px-2 py-2 text-[var(--text-muted)]">{p.maturityDate}</td>
                   </tr>
                 );
               })}
@@ -414,7 +416,7 @@ export function FXPositionGrid() {
             <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0" />
             <div>
               <p className="text-sm font-medium text-amber-400">Large Exposure Detected</p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-[var(--text-muted)]">
                 Some positions exceed $10M notional. Consider hedging to reduce FX risk.
               </p>
             </div>

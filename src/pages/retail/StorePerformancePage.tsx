@@ -108,7 +108,7 @@ export default function StorePerformancePage() {
           <Store className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Retail Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your Store-level General Ledger to view P&L analysis and labor efficiency
           benchmarking.
         </p>

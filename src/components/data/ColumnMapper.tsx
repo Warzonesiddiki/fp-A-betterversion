@@ -54,9 +54,9 @@ export const ColumnMapper: React.FC<ColumnMapperProps> = ({
   return (
     <div className="space-y-4" role="region" aria-label="ColumnMapper">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Column Mappings</h3>
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">Column Mappings</h3>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-[var(--text-muted)]">
             {mappedCount}/{mappings.length} columns mapped
           </span>
           {missingRequired.length > 0 && (

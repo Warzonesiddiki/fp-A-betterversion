@@ -457,10 +457,16 @@ export default function WhatIfPage() {
                   </caption>
                   <thead>
                     <tr className="border-b border-slate-700">
-                      <th scope="col" className="text-left font-medium text-slate-300 py-1">
+                      <th
+                        scope="col"
+                        className="text-left font-medium text-[var(--text-secondary)] py-1"
+                      >
                         Item
                       </th>
-                      <th scope="col" className="text-right font-medium text-slate-300 py-1">
+                      <th
+                        scope="col"
+                        className="text-right font-medium text-[var(--text-secondary)] py-1"
+                      >
                         Delta
                       </th>
                     </tr>

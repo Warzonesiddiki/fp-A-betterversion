@@ -123,9 +123,9 @@ export function BankStatements() {
         >
           Skip to import action
         </a>
-        <FileText className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <FileText className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
         <h2 className="text-xl font-semibold mb-2">No Bank Statement Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view bank statements.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view bank statements.</p>
         <Button
           id="import-btn"
           onClick={() => navigate('/data/gl-upload')}
@@ -154,7 +154,7 @@ export function BankStatements() {
         <h1 id="statements-heading" className="text-2xl font-bold">
           Bank Statements
         </h1>
-        <span className="text-sm text-slate-400">
+        <span className="text-sm text-[var(--text-muted)]">
           {formatNumber(entries.length)} entries imported
         </span>
       </header>
@@ -200,7 +200,7 @@ export function BankStatements() {
               ariaLabel="Bank statement transactions table"
             />
           ) : (
-            <p className="text-slate-400">No statement data available.</p>
+            <p className="text-[var(--text-muted)]">No statement data available.</p>
           )}
         </CardContent>
       </Card>

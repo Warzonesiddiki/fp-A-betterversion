@@ -398,7 +398,7 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
       {/* LEFT: Template catalog */}
       <div className="lg:col-span-3 space-y-4">
-        <h3 className="text-sm font-semibold text-white">Report Templates</h3>
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">Report Templates</h3>
         <div className="space-y-2">
           {PRESET_LIST.map((preset) => (
             <PresetCard key={preset.id} preset={preset} onAdd={handleAddPreset} />
@@ -427,7 +427,7 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
               onChange={(e) => {
                 setBook((prev) => ({ ...prev, name: e.target.value }));
               }}
-              className="text-lg font-bold text-white bg-transparent border-none outline-none"
+              className="text-lg font-bold text-[var(--text-primary)] bg-transparent border-none outline-none"
             />
             <p className="text-xs text-[var(--text-muted)]">
               {book.entries.length} report(s) &middot;{' '}
@@ -479,7 +479,7 @@ export const ReportBookBuilder = memo(function ReportBookBuilder() {
 
       {/* RIGHT: Preview */}
       <div className="lg:col-span-4 space-y-4">
-        <h3 className="text-sm font-semibold text-white">Preview</h3>
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">Preview</h3>
         {isComplete && results.length > 0 ? (
           <ReportResultsPanel reports={results} sections={sections} />
         ) : previewData ? (

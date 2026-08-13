@@ -255,7 +255,7 @@ export default function ThreeStatementDashboardPage() {
           <Scale className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to generate the three-statement model.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to generate the three-statement model.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );

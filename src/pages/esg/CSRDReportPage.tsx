@@ -91,7 +91,9 @@ export default function CSRDReportPage() {
           const val = v as number;
           return (
             <span
-              className={val > 0 ? 'text-green-400' : val < 0 ? 'text-red-400' : 'text-slate-400'}
+              className={
+                val > 0 ? 'text-green-400' : val < 0 ? 'text-red-400' : 'text-[var(--text-muted)]'
+              }
             >
               {val > 0 ? '+' : ''}
               {val}%
@@ -151,7 +153,7 @@ export default function CSRDReportPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">CSRD Sustainability Report</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Corporate Sustainability Reporting Directive
           </p>
         </div>

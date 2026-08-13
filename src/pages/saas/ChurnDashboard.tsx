@@ -94,7 +94,7 @@ export default function ChurnDashboard() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <Users className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Users className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No SaaS Data</h2>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
@@ -105,7 +105,7 @@ export default function ChurnDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Churn Dashboard</h1>
-          <p className="text-sm text-slate-400">Customer retention and churn analysis</p>
+          <p className="text-sm text-[var(--text-muted)]">Customer retention and churn analysis</p>
         </div>
         <Button variant="outline" onClick={handleExport}>
           <Download className="h-4 w-4 mr-2" />
@@ -219,19 +219,34 @@ export default function ChurnDashboard() {
               </caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Customer
                   </th>
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Segment
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     MRR
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Risk Score
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Last Login
                   </th>
                 </tr>
@@ -249,7 +264,7 @@ export default function ChurnDashboard() {
                         {c.riskScore}
                       </span>
                     </td>
-                    <td className="text-right py-2 px-3 text-slate-400">{c.lastLogin}</td>
+                    <td className="text-right py-2 px-3 text-[var(--text-muted)]">{c.lastLogin}</td>
                   </tr>
                 ))}
               </tbody>

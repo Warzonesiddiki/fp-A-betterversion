@@ -268,7 +268,7 @@ export function NLQChatPage() {
             <MessageSquare className="h-6 w-6 text-blue-400" />
             NLQ Chat
           </h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <p className="text-[var(--text-muted)] text-sm mt-1">
             Ask questions about your financial data in plain English.
           </p>
         </div>
@@ -311,7 +311,7 @@ export function NLQChatPage() {
             <div className="flex items-center gap-3 text-slate-500">
               <Sparkles className="h-8 w-8 text-blue-400/50" />
               <div className="text-center">
-                <p className="text-lg font-medium text-slate-300">
+                <p className="text-lg font-medium text-[var(--text-secondary)]">
                   Ask anything about your financials
                 </p>
                 <p className="text-sm text-slate-500">
@@ -442,7 +442,9 @@ export function NLQChatPage() {
                       <div className="flex items-center gap-2">
                         <span>
                           Parsed as{' '}
-                          <span className="text-slate-400">{msg.result.query.intent}</span>
+                          <span className="text-[var(--text-muted)]">
+                            {msg.result.query.intent}
+                          </span>
                         </span>
                         <span className="text-slate-600">·</span>
                         <span>{Math.round(msg.result.query.confidence * 100)}% confidence</span>

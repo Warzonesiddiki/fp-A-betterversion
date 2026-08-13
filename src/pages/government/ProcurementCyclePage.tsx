@@ -125,9 +125,14 @@ export default function ProcurementCyclePage() {
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center" role="main" aria-label="Procurement - No Data">
-        <FileCheck2 className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <FileCheck2
+          className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4"
+          aria-hidden="true"
+        />
         <h2 className="text-xl font-semibold mb-2">No Procurement Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view procurement cycle metrics.</p>
+        <p className="text-[var(--text-muted)] mb-6">
+          Import GL data to view procurement cycle metrics.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
     );
@@ -138,7 +143,7 @@ export default function ProcurementCyclePage() {
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Procurement Cycle</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Procurement efficiency & compliance analytics
           </p>
         </div>
@@ -176,15 +181,15 @@ export default function ProcurementCyclePage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-slate-400">Contract Value</span>
+            <span className="text-sm text-[var(--text-muted)]">Contract Value</span>
             <span className="font-mono">{formatMoney(input.contractValue)}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-slate-400">Savings Rate</span>
+            <span className="text-sm text-[var(--text-muted)]">Savings Rate</span>
             <span className="font-mono">{formatPercent(metrics.savingsRatePct, 1)}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-slate-400">Contracts Tracked</span>
+            <span className="text-sm text-[var(--text-muted)]">Contracts Tracked</span>
             <span className="font-mono">{formatNumber(input.contractCount)}</span>
           </div>
         </CardContent>

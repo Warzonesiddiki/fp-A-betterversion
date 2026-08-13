@@ -35,7 +35,7 @@ function CommentItem({ comment, replies, engine, currentUser, onReply }: Comment
     >
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className="font-medium text-slate-200 text-sm">{comment.author}</span>
+          <span className="font-medium text-[var(--text-primary)] text-sm">{comment.author}</span>
           <span className="text-xs text-slate-500">{timeAgo}</span>
           {comment.mentions.length > 0 && (
             <span className="text-xs text-blue-400">
@@ -67,7 +67,9 @@ function CommentItem({ comment, replies, engine, currentUser, onReply }: Comment
           </button>
         </div>
       </div>
-      <p className="text-sm text-slate-300 mt-1 whitespace-pre-wrap">{comment.text}</p>
+      <p className="text-sm text-[var(--text-secondary)] mt-1 whitespace-pre-wrap">
+        {comment.text}
+      </p>
       {replies.length > 0 && (
         <div className="mt-2 ml-2 space-y-2">
           {replies.map((reply) => (

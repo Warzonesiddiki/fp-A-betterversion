@@ -20,6 +20,7 @@ import { financialContextFromParams, serializeFinancialContext } from '@/types/f
 import { filterNavItemsByRole } from '@/hooks/useAppNavigation';
 import { NAV_SECTIONS } from '@/types/navigation';
 import { useAuthStore } from '@/store/authStore';
+import { useApplyDensity } from '@/hooks/useDensity';
 
 // Draft entity options until the server master-data contract is connected
 // (F-04 / P-01). The context bar never authorizes data access client-side.
@@ -37,6 +38,10 @@ export default function AppLayout() {
     helpPanelOpen,
     toggleHelpPanel,
   } = useUIStore();
+  // UI-04: mirror the density preference onto <html data-density> so both
+  // AG Grid and .fp-table resolve their row metrics from one source.
+  useApplyDensity();
+
   const { mainContentRef } = useFocusManagement();
   const { i18n } = useTranslation();
   const dir = getLocaleDirection((i18n.language?.split('-')[0] ?? 'en') as SupportedLocale);

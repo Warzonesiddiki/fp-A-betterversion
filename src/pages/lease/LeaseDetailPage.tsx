@@ -289,7 +289,7 @@ export default function LeaseDetailPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold">Lease Detail</h1>
-            <p className="text-sm text-slate-400">No leases in the portfolio yet</p>
+            <p className="text-sm text-[var(--text-muted)]">No leases in the portfolio yet</p>
           </div>
         </div>
 
@@ -297,7 +297,7 @@ export default function LeaseDetailPage() {
           <Card>
             <CardContent>
               <div className="py-10 text-center space-y-3">
-                <p className="text-slate-400">
+                <p className="text-[var(--text-muted)]">
                   No Lease Data — add a lease to compute its ASC 842 / IFRS 16 schedules.
                 </p>
                 <Button size="sm" onClick={() => setFormMode('add')}>
@@ -327,7 +327,7 @@ export default function LeaseDetailPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold">Lease Detail</h1>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-[var(--text-muted)]">
               {selectedLease.property} — schedules computed by LeaseEngine (not mock data)
             </p>
           </div>

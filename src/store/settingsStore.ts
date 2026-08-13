@@ -23,7 +23,9 @@ export const useSettingsStore = create<SettingsState>()(
         roles: [],
         preferences: {
           activeSector: 'technology',
-          density: 'comfortable',
+          // UI-04: 'standard' (36px rows) is the finance-tool default.
+          // Must stay in sync with DEFAULT_DENSITY in @/hooks/useDensity.
+          density: 'standard',
         },
         isLoading: false,
         error: null,

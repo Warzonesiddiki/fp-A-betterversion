@@ -112,7 +112,7 @@ export default function InventoryDashboard() {
           <Package className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Inventory Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your GL data with inventory accounts (121x) and COGS (50xx) to view inventory
           metrics.
         </p>
@@ -126,7 +126,9 @@ export default function InventoryDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Inventory Dashboard</h1>
-          <p className="text-sm text-slate-400">Stock valuation, turnover, and GMROI analysis</p>
+          <p className="text-sm text-[var(--text-muted)]">
+            Stock valuation, turnover, and GMROI analysis
+          </p>
         </div>
         <div className="flex gap-2">
           <Button

@@ -120,9 +120,11 @@ export default function TranslationResultPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <Repeat className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Repeat className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data to Translate</h2>
-        <p className="text-slate-400 mb-4">Import GL data to perform currency translation.</p>
+        <p className="text-[var(--text-muted)] mb-4">
+          Import GL data to perform currency translation.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -182,7 +184,7 @@ export default function TranslationResultPage() {
       <div className="grid grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Original ({sourceCurrency})</div>
+            <div className="text-xs text-[var(--text-muted)]">Original ({sourceCurrency})</div>
             <div className="text-lg font-bold">
               {formatCurrency(totals.original, sourceCurrency)}
             </div>
@@ -190,7 +192,7 @@ export default function TranslationResultPage() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Translated ({targetCurrency})</div>
+            <div className="text-xs text-[var(--text-muted)]">Translated ({targetCurrency})</div>
             <div className="text-lg font-bold">
               {formatCurrency(totals.translated, targetCurrency)}
             </div>
@@ -198,7 +200,7 @@ export default function TranslationResultPage() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Translation Gain/Loss</div>
+            <div className="text-xs text-[var(--text-muted)]">Translation Gain/Loss</div>
             <div
               className="text-lg font-bold flex items-center justify-center gap-1"
               style={{ color: totals.gainLoss >= 0 ? '#4ade80' : '#f87171' }}

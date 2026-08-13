@@ -127,7 +127,7 @@ export default function RealEstateDashboardPage() {
           <Building2 className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Real Estate Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your Real Estate General Ledger to view global portfolio analytics and occupancy
           trends.
         </p>

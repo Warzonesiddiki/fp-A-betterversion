@@ -117,7 +117,7 @@ export default function BalanceSheetPage() {
           <Scale className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to generate a Balance Sheet.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to generate a Balance Sheet.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -143,7 +143,7 @@ export default function BalanceSheetPage() {
               aria-label="Help"
             ></button>
           </div>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             As of {asOfDate} · {report.entryCount.toLocaleString()} entries
           </p>
         </div>
@@ -186,7 +186,7 @@ export default function BalanceSheetPage() {
           <table className="w-full text-sm" role="grid" aria-label="Balance Sheet Report data">
             <thead>
               <tr
-                className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
+                className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800"
                 role="row"
               >
                 <th className="px-6 py-3 w-1/2" role="columnheader" scope="col">

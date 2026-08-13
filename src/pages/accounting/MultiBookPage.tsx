@@ -87,7 +87,10 @@ export default function MultiBookPage() {
       {books.length === 0 && (
         <Card>
           <CardContent className="p-6 text-center">
-            <BookOpen className="h-8 w-8 text-slate-400 mx-auto mb-2" aria-hidden="true" />
+            <BookOpen
+              className="h-8 w-8 text-[var(--text-muted)] mx-auto mb-2"
+              aria-hidden="true"
+            />
             <p className="font-medium">No books yet</p>
             <p className="text-sm text-muted-foreground mt-1">
               Multi-book accounting is driven by the MultiBookEngine. Create your first book — entry

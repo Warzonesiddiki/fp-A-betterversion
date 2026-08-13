@@ -279,9 +279,11 @@ export default function VarianceDashboardPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <BarChart3 className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <BarChart3 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import data and create budgets to see variances.</p>
+        <p className="text-[var(--text-muted)] mb-6">
+          Import data and create budgets to see variances.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -290,7 +292,9 @@ export default function VarianceDashboardPage() {
     return (
       <div className="p-12 text-center">
         <h2 className="text-lg font-semibold mb-2">No Budget Data</h2>
-        <p className="text-slate-400 mb-4">Create approved budgets to compare against actuals.</p>
+        <p className="text-[var(--text-muted)] mb-4">
+          Create approved budgets to compare against actuals.
+        </p>
         <Button onClick={() => navigate('/budgets/create')}>Create Budget</Button>
       </div>
     );

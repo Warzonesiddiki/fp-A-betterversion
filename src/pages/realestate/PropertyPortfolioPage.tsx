@@ -78,7 +78,7 @@ const columns: Column[] = [
     header: 'Renovation Status',
     render: (v) => (
       <div className="flex items-center gap-2">
-        {String(v) !== 'None' && <Hammer className="h-3 w-3 text-slate-400" />}
+        {String(v) !== 'None' && <Hammer className="h-3 w-3 text-[var(--text-muted)]" />}
         <span className="text-xs">{String(v)}</span>
       </div>
     ),
@@ -112,7 +112,7 @@ export default function PropertyPortfolioPage() {
           <Building2 className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Portfolio Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your General Ledger and fixed asset schedule to analyze your property portfolio.
         </p>
         <Button>Import Data</Button>
@@ -279,7 +279,7 @@ export default function PropertyPortfolioPage() {
           </div>
           <div className="flex items-center gap-2">
             <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-400" />
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3 w-3 text-[var(--text-muted)]" />
               <Input className="pl-7 h-9 w-64" placeholder="Search by name or city..." />
             </div>
             <Button variant="outline" size="sm">

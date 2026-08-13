@@ -66,7 +66,7 @@ export function ReconciliationResults({ result }: ReconciliationResultsProps) {
         <table className="w-full text-sm" role="grid" aria-label="Reconciliation details">
           <thead>
             <tr
-              className="text-left text-slate-400 text-xs uppercase border-b border-slate-800"
+              className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800"
               role="row"
             >
               <th className="pb-3 pr-4" role="columnheader" scope="col">

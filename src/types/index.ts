@@ -661,9 +661,16 @@ export interface ScenarioState {
   readonly setLoading: (loading: boolean) => void;
 }
 
+/**
+ * Grid/table density. Matches `designTokens.density` and the `[data-density]`
+ * blocks in `index.css` — all three must stay in step, which
+ * `useDensity.test.ts` asserts.
+ */
+export type DensityMode = 'compact' | 'standard' | 'comfortable';
+
 export interface UserPreferences {
   readonly activeSector: string;
-  readonly density?: 'comfortable' | 'compact';
+  readonly density?: DensityMode;
   readonly currency?: string;
   readonly locale?: string;
 }

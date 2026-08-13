@@ -156,9 +156,9 @@ export default function InvestmentPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <TrendingUp className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <TrendingUp className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import treasury data.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import treasury data.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -168,7 +168,7 @@ export default function InvestmentPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Investment Dashboard</h1>
-          <p className="text-sm text-slate-400">Track investment portfolio performance</p>
+          <p className="text-sm text-[var(--text-muted)]">Track investment portfolio performance</p>
         </div>
         <Button variant="outline" onClick={handleExport}>
           <Download className="h-4 w-4 mr-2" />
@@ -299,22 +299,40 @@ export default function InvestmentPage() {
               </caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Instrument
                   </th>
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Issuer
                   </th>
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Maturity
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Yield
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Value
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Rating
                   </th>
                 </tr>

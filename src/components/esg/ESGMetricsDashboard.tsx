@@ -83,7 +83,7 @@ export function ESGMetricsDashboard({ className }: ESGMetricsDashboardProps) {
       <div className={className} role="region" aria-label="ESGMetricsDashboard">
         <Card>
           <CardContent className="p-12 text-center">
-            <Leaf className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+            <Leaf className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
               No ESG Metrics
             </h3>

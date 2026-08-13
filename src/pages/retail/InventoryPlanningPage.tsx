@@ -107,7 +107,7 @@ export default function InventoryPlanningPage() {
           <Package className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Inventory Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your Inventory General Ledger (121x accounts) to view stock optimization and
           turnover analysis.
         </p>

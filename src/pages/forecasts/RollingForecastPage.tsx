@@ -163,7 +163,7 @@ export default function RollingForecastPage() {
           <TrendingUp className="h-10 w-10 text-red-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">Failed to load data</h2>
-        <p className="text-slate-400 mb-6">{importError}</p>
+        <p className="text-[var(--text-muted)] mb-6">{importError}</p>
         <Button onClick={() => window.location.reload()}>Retry</Button>
       </div>
     );
@@ -176,7 +176,9 @@ export default function RollingForecastPage() {
           <TrendingUp className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to generate a rolling forecast.</p>
+        <p className="text-[var(--text-muted)] mb-6">
+          Import GL data to generate a rolling forecast.
+        </p>
         <Button
           onClick={() => {
             window.location.href = '/data/gl-upload';
@@ -372,7 +374,7 @@ export default function RollingForecastPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm" role="grid" aria-label="Forecast summary">
                   <thead>
-                    <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                    <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                       <th className="px-4 py-2" role="columnheader" scope="col">
                         Period
                       </th>

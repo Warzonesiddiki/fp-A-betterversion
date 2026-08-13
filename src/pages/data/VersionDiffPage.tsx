@@ -164,7 +164,7 @@ export default function VersionDiffPage() {
           <Database className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data to Compare</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import GL data or create budget entries to enable version comparison.
         </p>
         <Button
@@ -187,7 +187,7 @@ export default function VersionDiffPage() {
             <ArrowLeftRight className="h-6 w-6 text-blue-400" aria-hidden="true" />
             Version Diff
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Compare two plan versions side-by-side with cell-level change tracking
           </p>
         </div>
@@ -228,7 +228,7 @@ export default function VersionDiffPage() {
                 ))}
               </select>
               {sourceBranch && (
-                <div className="mt-2 flex items-center gap-2 text-xs text-slate-400">
+                <div className="mt-2 flex items-center gap-2 text-xs text-[var(--text-muted)]">
                   <Badge variant="secondary" className="text-[10px]">
                     {sourceCommits.length} commits
                   </Badge>
@@ -256,7 +256,7 @@ export default function VersionDiffPage() {
                 ))}
               </select>
               {targetBranch && (
-                <div className="mt-2 flex items-center gap-2 text-xs text-slate-400">
+                <div className="mt-2 flex items-center gap-2 text-xs text-[var(--text-muted)]">
                   <Badge variant="secondary" className="text-[10px]">
                     {targetCommits.length} commits
                   </Badge>
@@ -281,7 +281,7 @@ export default function VersionDiffPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
             <CardContent className="p-4">
-              <h4 className="text-sm font-semibold text-slate-300 mb-2 flex items-center gap-1.5">
+              <h4 className="text-sm font-semibold text-[var(--text-secondary)] mb-2 flex items-center gap-1.5">
                 <GitCommit className="h-3.5 w-3.5 text-slate-500" aria-hidden="true" />
                 {sourceBranch?.name} Commits
               </h4>
@@ -290,7 +290,10 @@ export default function VersionDiffPage() {
                   <p className="text-xs text-slate-500">No commits</p>
                 ) : (
                   sourceCommits.map((c) => (
-                    <div key={c.id} className="text-xs text-slate-400 flex items-start gap-2">
+                    <div
+                      key={c.id}
+                      className="text-xs text-[var(--text-muted)] flex items-start gap-2"
+                    >
                       <span className="text-slate-600 font-mono flex-shrink-0">
                         {c.id.slice(-8)}
                       </span>
@@ -303,7 +306,7 @@ export default function VersionDiffPage() {
           </Card>
           <Card>
             <CardContent className="p-4">
-              <h4 className="text-sm font-semibold text-slate-300 mb-2 flex items-center gap-1.5">
+              <h4 className="text-sm font-semibold text-[var(--text-secondary)] mb-2 flex items-center gap-1.5">
                 <GitCommit className="h-3.5 w-3.5 text-slate-500" aria-hidden="true" />
                 {targetBranch?.name} Commits
               </h4>
@@ -312,7 +315,10 @@ export default function VersionDiffPage() {
                   <p className="text-xs text-slate-500">No commits</p>
                 ) : (
                   targetCommits.map((c) => (
-                    <div key={c.id} className="text-xs text-slate-400 flex items-start gap-2">
+                    <div
+                      key={c.id}
+                      className="text-xs text-[var(--text-muted)] flex items-start gap-2"
+                    >
                       <span className="text-slate-600 font-mono flex-shrink-0">
                         {c.id.slice(-8)}
                       </span>
@@ -343,7 +349,9 @@ export default function VersionDiffPage() {
             <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
               <ArrowLeftRight className="h-10 w-10 text-slate-400" aria-hidden="true" />
             </div>
-            <h3 className="text-lg font-semibold text-slate-300 mb-2">Select Two Branches</h3>
+            <h3 className="text-lg font-semibold text-[var(--text-secondary)] mb-2">
+              Select Two Branches
+            </h3>
             <p className="text-sm text-slate-500 max-w-md mx-auto">
               Choose a source and target branch above to see a detailed cell-level diff between the
               two versions.

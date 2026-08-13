@@ -97,9 +97,9 @@ export function SaaSPage() {
         >
           Skip to import action
         </a>
-        <Cloud className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <Cloud className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
         <h2 className="text-xl font-semibold mb-2">No SaaS Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view SaaS metrics.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view SaaS metrics.</p>
         <Button
           id="import-btn"
           onClick={() => navigate('/data/gl-upload')}
@@ -124,7 +124,7 @@ export function SaaSPage() {
         <h1 id="saas-heading" className="text-2xl font-bold">
           SaaS
         </h1>
-        <span className="text-sm text-slate-400">
+        <span className="text-sm text-[var(--text-muted)]">
           {formatNumber(entries.length)} entries imported
         </span>
       </header>
@@ -169,7 +169,7 @@ export function SaaSPage() {
               ariaLabel="Account overview data table for SaaS sector"
             />
           ) : (
-            <p className="text-slate-400">No account data available.</p>
+            <p className="text-[var(--text-muted)]">No account data available.</p>
           )}
         </CardContent>
       </Card>

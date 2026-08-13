@@ -234,7 +234,7 @@ export default function FXExposurePage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">FX Exposure</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Foreign currency risk monitoring and hedging status
           </p>
         </div>

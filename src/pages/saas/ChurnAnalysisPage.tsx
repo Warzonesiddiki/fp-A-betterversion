@@ -201,7 +201,7 @@ export default function ChurnAnalysisPage() {
           <BarChart4 className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No SaaS Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import GL data with subscription revenue accounts (41xx) to analyze churn metrics.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import GL Data</Button>
@@ -214,7 +214,7 @@ export default function ChurnAnalysisPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Churn Analysis</h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-[var(--text-muted)]">
             Customer retention and revenue churn derived from GL data
           </p>
         </div>
@@ -324,7 +324,7 @@ export default function ChurnAnalysisPage() {
         </CardHeader>
         <CardContent>
           {atRiskCustomers.length === 0 ? (
-            <p className="text-slate-400 text-center py-8">
+            <p className="text-[var(--text-muted)] text-center py-8">
               No customer data available. Import GL data with entity breakdowns.
             </p>
           ) : (
@@ -333,19 +333,34 @@ export default function ChurnAnalysisPage() {
                 <caption className="sr-only">Detailed saas churn analysis</caption>
                 <thead>
                   <tr className="border-b border-slate-700">
-                    <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                    <th
+                      scope="col"
+                      className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                    >
                       Customer
                     </th>
-                    <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                    <th
+                      scope="col"
+                      className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                    >
                       Segment
                     </th>
-                    <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    <th
+                      scope="col"
+                      className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                    >
                       MRR
                     </th>
-                    <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    <th
+                      scope="col"
+                      className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                    >
                       Risk Score
                     </th>
-                    <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                    <th
+                      scope="col"
+                      className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                    >
                       Last Login
                     </th>
                   </tr>
@@ -369,7 +384,9 @@ export default function ChurnAnalysisPage() {
                           {c.riskScore}
                         </span>
                       </td>
-                      <td className="text-right py-2 px-3 text-slate-400">{c.lastLogin}</td>
+                      <td className="text-right py-2 px-3 text-[var(--text-muted)]">
+                        {c.lastLogin}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

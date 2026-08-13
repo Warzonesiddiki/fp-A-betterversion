@@ -35,10 +35,10 @@ export function TemplateMarketplace({ templates, onSelect }: TemplateMarketplace
           onClick={() => onSelect(t.id)}
         >
           <div className="flex justify-between items-start mb-4">
-            <h4 className="font-bold text-slate-200">{t.name}</h4>
+            <h4 className="font-bold text-[var(--text-primary)]">{t.name}</h4>
             <Badge variant="default">{t.category}</Badge>
           </div>
-          <p className="text-sm text-slate-400 mb-6 flex-1">{t.description}</p>
+          <p className="text-sm text-[var(--text-muted)] mb-6 flex-1">{t.description}</p>
           <button className="text-sm text-blue-400 font-semibold hover:text-blue-300 self-start focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1">
             Use Template
           </button>

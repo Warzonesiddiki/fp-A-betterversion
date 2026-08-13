@@ -97,9 +97,9 @@ export function ManufacturingPage() {
         >
           Skip to import action
         </a>
-        <Factory className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <Factory className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
         <h2 className="text-xl font-semibold mb-2">No Manufacturing Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view manufacturing.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view manufacturing.</p>
         <Button
           id="import-btn"
           onClick={() => navigate('/data/gl-upload')}
@@ -128,7 +128,7 @@ export function ManufacturingPage() {
         <h1 id="manufacturing-heading" className="text-2xl font-bold">
           Manufacturing
         </h1>
-        <span className="text-sm text-slate-400">
+        <span className="text-sm text-[var(--text-muted)]">
           {formatNumber(entries.length)} entries imported
         </span>
       </header>
@@ -173,7 +173,7 @@ export function ManufacturingPage() {
               ariaLabel="Account overview data table for manufacturing sector"
             />
           ) : (
-            <p className="text-slate-400">No account data available.</p>
+            <p className="text-[var(--text-muted)]">No account data available.</p>
           )}
         </CardContent>
       </Card>

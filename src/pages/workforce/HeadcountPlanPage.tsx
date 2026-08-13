@@ -150,9 +150,9 @@ export default function HeadcountPlanPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <Headphones className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <Headphones className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import payroll data to plan headcount.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import payroll data to plan headcount.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );

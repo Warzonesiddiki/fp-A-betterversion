@@ -199,7 +199,9 @@ export default function PromoAnalysisPage() {
             planned: 'text-yellow-400',
           };
           return (
-            <span className={(colors as Record<string, string>)[status] || 'text-slate-400'}>
+            <span
+              className={(colors as Record<string, string>)[status] || 'text-[var(--text-muted)]'}
+            >
               {status.charAt(0).toUpperCase() + status.slice(1)}
             </span>
           );
@@ -250,7 +252,9 @@ export default function PromoAnalysisPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Promotion Analysis</h1>
-          <p className="text-sm text-slate-400 mt-1">Promotional performance and ROI tracking</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">
+            Promotional performance and ROI tracking
+          </p>
         </div>
         <div className="flex gap-2">
           <Button size="sm" variant="ghost" onClick={handleExportPDF}>

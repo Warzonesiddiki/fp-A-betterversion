@@ -81,7 +81,7 @@ export default function LoanAmortizationPage() {
             <CardTitle>Loan Amortization</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-[var(--text-muted)]">
               This tool is behind a feature flag ({FLAG}, rollout{' '}
               {FEATURE_FLAGS[FLAG].rolloutPercentage}%) and is not enabled for your session.
             </p>
@@ -122,7 +122,7 @@ export default function LoanAmortizationPage() {
     <div className="p-6 space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Loan Amortization</h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <p className="text-sm text-[var(--text-muted)] mt-1">
           Exact-decimal amortization schedule — the loan pays off to $0.00.
         </p>
       </div>
@@ -222,7 +222,7 @@ export default function LoanAmortizationPage() {
                 data-testid="amortization-table"
               >
                 <thead>
-                  <tr className="text-left text-slate-400 border-b border-slate-700">
+                  <tr className="text-left text-[var(--text-muted)] border-b border-slate-700">
                     <th className="py-2 pr-4">Month</th>
                     <th className="py-2 pr-4">Payment</th>
                     <th className="py-2 pr-4">Principal</th>

@@ -171,9 +171,9 @@ export default function BenchmarkingPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <BarChart3 className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <BarChart3 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to calculate benchmarks.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to calculate benchmarks.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -187,7 +187,9 @@ export default function BenchmarkingPage() {
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">Benchmarking</h1>
-      <p className="text-sm text-slate-400">8 key financial ratios computed from your GL data</p>
+      <p className="text-sm text-[var(--text-muted)]">
+        8 key financial ratios computed from your GL data
+      </p>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {RATIOS.map((r) => {
           const val = ratios[r.id as keyof typeof ratios];
@@ -195,7 +197,7 @@ export default function BenchmarkingPage() {
           return (
             <Card key={r.id}>
               <CardContent className="p-4">
-                <div className="text-xs text-slate-400 mb-1">{r.label}</div>
+                <div className="text-xs text-[var(--text-muted)] mb-1">{r.label}</div>
                 <div className="text-2xl font-bold tabular-nums">{formatted}</div>
                 <div className="text-[10px] text-slate-500 mt-1">{r.formula}</div>
               </CardContent>

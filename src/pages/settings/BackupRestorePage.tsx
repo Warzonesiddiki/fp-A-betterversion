@@ -141,8 +141,8 @@ export default function BackupRestorePage() {
       aria-label="Backup and restore page"
     >
       <div className="mb-2">
-        <h1 className="text-2xl font-bold text-white">Backup & Restore</h1>
-        <p className="text-slate-400 text-sm">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Backup & Restore</h1>
+        <p className="text-[var(--text-muted)] text-sm">
           Export, import, and manage your local data for {organization.name || 'your organization'}.
         </p>
       </div>
@@ -157,8 +157,8 @@ export default function BackupRestorePage() {
               <Globe className="h-5 w-5 text-blue-400 shrink-0" />
             )}
             <div>
-              <div className="text-sm text-slate-400">Storage Mode</div>
-              <div className="font-medium text-white">
+              <div className="text-sm text-[var(--text-muted)]">Storage Mode</div>
+              <div className="font-medium text-[var(--text-primary)]">
                 {storageBackend === 'desktop-tauri-sqlite'
                   ? 'Desktop (Tauri SQLite)'
                   : storageBackend === 'browser-sqljs'
@@ -175,8 +175,8 @@ export default function BackupRestorePage() {
           <CardContent className="p-4 flex items-center gap-3">
             <Clock className="h-5 w-5 text-green-400 shrink-0" />
             <div>
-              <div className="text-sm text-slate-400">Last Backup</div>
-              <div className="font-medium text-white">
+              <div className="text-sm text-[var(--text-muted)]">Last Backup</div>
+              <div className="font-medium text-[var(--text-primary)]">
                 {lastBackupDate ? new Date(lastBackupDate).toLocaleString() : 'No recent backup'}
               </div>
             </div>
@@ -186,8 +186,8 @@ export default function BackupRestorePage() {
           <CardContent className="p-4 flex items-center gap-3">
             <ShieldCheck className="h-5 w-5 text-violet-400 shrink-0" />
             <div>
-              <div className="text-sm text-slate-400">Integrity</div>
-              <div className="font-medium text-white">
+              <div className="text-sm text-[var(--text-muted)]">Integrity</div>
+              <div className="font-medium text-[var(--text-primary)]">
                 {integrityResult
                   ? integrityResult.ok
                     ? 'Healthy'
@@ -248,7 +248,7 @@ export default function BackupRestorePage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-[var(--text-muted)]">
             Verify that local persistence stores are available and countable before export or
             restore operations.
           </p>
@@ -308,7 +308,7 @@ export default function BackupRestorePage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-[var(--text-muted)]">
             Generate a portable JSON file containing all your local records, settings, and imported
             data. The file includes a SHA-256 checksum for integrity verification.
           </p>
@@ -333,7 +333,7 @@ export default function BackupRestorePage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-[var(--text-muted)]">
             Import a previously exported JSON file. The backup will be verified against its checksum
             before restoring. <strong>This will merge with existing data.</strong>
           </p>

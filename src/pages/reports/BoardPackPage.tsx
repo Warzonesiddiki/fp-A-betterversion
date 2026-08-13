@@ -218,7 +218,7 @@ export default function BoardPackPage() {
           <FileText className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to generate the Board Pack.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to generate the Board Pack.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -229,7 +229,7 @@ export default function BoardPackPage() {
       {/* 1. Cover Section */}
       <div className="text-center py-10 border-b border-slate-800">
         <h1 className="text-4xl font-black tracking-tight mb-2">BOARD PACK</h1>
-        <p className="text-slate-400 font-medium uppercase tracking-widest text-sm">
+        <p className="text-[var(--text-muted)] font-medium uppercase tracking-widest text-sm">
           {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} · FINANCIAL
           REVIEW
         </p>
@@ -238,7 +238,7 @@ export default function BoardPackPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold">Executive Summary</h2>
-          <p className="text-sm text-slate-400 mt-1">High-level financial performance and health KPIs</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">High-level financial performance and health KPIs</p>
         </div>
         <div className="flex gap-2 items-center">
           <div className="flex items-center gap-2">
@@ -321,11 +321,11 @@ export default function BoardPackPage() {
         {/* 3. P&L Summary */}
         <Card>
           <CardContent className="p-4">
-            <h3 className="font-bold text-sm uppercase tracking-wider mb-4 text-slate-400">P&L Summary</h3>
+            <h3 className="font-bold text-sm uppercase tracking-wider mb-4 text-[var(--text-muted)]">P&L Summary</h3>
             <table className="w-full text-sm" role="grid" aria-label="Profit and Loss Summary">
               <tbody className="divide-y divide-slate-800">
                 <tr role="row">
-                  <td className="py-2 text-slate-300" role="gridcell">
+                  <td className="py-2 text-[var(--text-secondary)]" role="gridcell">
                     Total Revenue
                   </td>
                   <td className="py-2 text-right tabular-nums text-green-400" role="gridcell">
@@ -333,7 +333,7 @@ export default function BoardPackPage() {
                   </td>
                 </tr>
                 <tr role="row">
-                  <td className="py-2 text-slate-300" role="gridcell">
+                  <td className="py-2 text-[var(--text-secondary)]" role="gridcell">
                     Total Expenses
                   </td>
                   <td className="py-2 text-right tabular-nums text-red-400" role="gridcell">
@@ -341,7 +341,7 @@ export default function BoardPackPage() {
                   </td>
                 </tr>
                 <tr className="font-bold border-t-2 border-slate-700" role="row">
-                  <td className="py-3 text-white" role="gridcell">
+                  <td className="py-3 text-[var(--text-primary)]" role="gridcell">
                     NET INCOME
                   </td>
                   <td
@@ -362,13 +362,13 @@ export default function BoardPackPage() {
         {/* 4. BS Summary */}
         <Card>
           <CardContent className="p-4">
-            <h3 className="font-bold text-sm uppercase tracking-wider mb-4 text-slate-400">
+            <h3 className="font-bold text-sm uppercase tracking-wider mb-4 text-[var(--text-muted)]">
               Balance Sheet Summary
             </h3>
             <table className="w-full text-sm" role="grid" aria-label="Balance Sheet Summary">
               <tbody className="divide-y divide-slate-800">
                 <tr role="row">
-                  <td className="py-2 text-slate-300" role="gridcell">
+                  <td className="py-2 text-[var(--text-secondary)]" role="gridcell">
                     Total Assets
                   </td>
                   <td className="py-2 text-right tabular-nums text-blue-400" role="gridcell">
@@ -376,7 +376,7 @@ export default function BoardPackPage() {
                   </td>
                 </tr>
                 <tr role="row">
-                  <td className="py-2 text-slate-300" role="gridcell">
+                  <td className="py-2 text-[var(--text-secondary)]" role="gridcell">
                     Total Liabilities
                   </td>
                   <td className="py-2 text-right tabular-nums text-red-400" role="gridcell">
@@ -384,7 +384,7 @@ export default function BoardPackPage() {
                   </td>
                 </tr>
                 <tr role="row">
-                  <td className="py-2 text-slate-300" role="gridcell">
+                  <td className="py-2 text-[var(--text-secondary)]" role="gridcell">
                     Total Equity
                   </td>
                   <td className="py-2 text-right tabular-nums text-green-400" role="gridcell">
@@ -401,19 +401,19 @@ export default function BoardPackPage() {
         {/* 5. Budget Overview (CF proxy) */}
         <Card>
           <CardContent className="p-4">
-            <h3 className="font-bold text-sm uppercase tracking-wider mb-4 text-slate-400">
+            <h3 className="font-bold text-sm uppercase tracking-wider mb-4 text-[var(--text-muted)]">
               Budget vs Actual Overview
             </h3>
             {budgets.length === 0 ? (
-              <p className="text-sm text-slate-400">No budgets created yet.</p>
+              <p className="text-sm text-[var(--text-muted)]">No budgets created yet.</p>
             ) : (
               <div className="space-y-4">
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">Total Budget</span>
+                  <span className="text-[var(--text-muted)]">Total Budget</span>
                   <span className="font-bold tabular-nums">{fmt.currency0(report?.totalBudget || 0)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-slate-400">Actual Spending</span>
+                  <span className="text-[var(--text-muted)]">Actual Spending</span>
                   <span className="font-bold tabular-nums text-red-400">
                     {fmt.currency0(report?.expenses || 0)}
                   </span>
@@ -440,18 +440,18 @@ export default function BoardPackPage() {
         {/* 5b? Actually part of 5 / placeholder */}
         <Card>
           <CardContent className="p-4">
-            <h3 className="font-bold text-sm uppercase tracking-wider mb-4 text-slate-400">Report Info</h3>
+            <h3 className="font-bold text-sm uppercase tracking-wider mb-4 text-[var(--text-muted)]">Report Info</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-400">Budgets</span>
+                <span className="text-[var(--text-muted)]">Budgets</span>
                 <span className="font-mono">{report?.budgetCount ?? 0}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">GL Entries</span>
+                <span className="text-[var(--text-muted)]">GL Entries</span>
                 <span className="font-mono">{report?.entryCount ?? 0}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Sections</span>
+                <span className="text-[var(--text-muted)]">Sections</span>
                 <span className="font-mono">6</span>
               </div>
             </div>
@@ -463,7 +463,7 @@ export default function BoardPackPage() {
       <Card data-testid="variance-commentary-section">
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-sm uppercase tracking-wider text-slate-400">
+            <h3 className="font-bold text-sm uppercase tracking-wider text-[var(--text-muted)]">
               6. Variance & Executive Commentary
             </h3>
             <Button

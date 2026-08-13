@@ -72,7 +72,7 @@ export default function ARRDashboard() {
           <BarChart4 className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No SaaS Data Found</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           We couldn&apos;t find any subscription revenue in your GL. Import data with account codes
           starting with 41xx.
         </p>
@@ -90,7 +90,7 @@ export default function ARRDashboard() {
               <TrendingUp className="h-6 w-6 text-emerald-400" />
               ARR Dashboard
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-[var(--text-muted)] mt-1">
               SaaS Recurring Revenue & Growth Efficiency
             </p>
           </div>
@@ -171,15 +171,15 @@ export default function ARRDashboard() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-xs text-slate-400">Magic Number</span>
+                <span className="text-xs text-[var(--text-muted)]">Magic Number</span>
                 <span className="text-sm font-bold">0.85</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-xs text-slate-400">LTV : CAC</span>
+                <span className="text-xs text-[var(--text-muted)]">LTV : CAC</span>
                 <span className="text-sm font-bold text-emerald-400">3.2x</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-xs text-slate-400">Payback Period</span>
+                <span className="text-xs text-[var(--text-muted)]">Payback Period</span>
                 <span className="text-sm font-bold">14.2 Mo</span>
               </div>
               <div className="pt-2">

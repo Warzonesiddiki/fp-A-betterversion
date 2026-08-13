@@ -102,7 +102,7 @@ export default function CompModelingPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <BarChart3 className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <BarChart3 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Compensation Data</h2>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
@@ -113,7 +113,9 @@ export default function CompModelingPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Compensation Modeling</h1>
-          <p className="text-sm text-slate-400">Model merit increases and budget impact</p>
+          <p className="text-sm text-[var(--text-muted)]">
+            Model merit increases and budget impact
+          </p>
         </div>
         <Button variant="outline" onClick={handleExport}>
           <Download className="h-4 w-4 mr-2" />
@@ -159,7 +161,7 @@ export default function CompModelingPage() {
             onChange={(e) => setMeritPct(parseFloat(e.target.value))}
             className="w-full accent-blue-500"
           />
-          <div className="flex justify-between text-xs text-slate-400 mt-1">
+          <div className="flex justify-between text-xs text-[var(--text-muted)] mt-1">
             <span>0%</span>
             <span>5%</span>
             <span>10%</span>
@@ -179,22 +181,40 @@ export default function CompModelingPage() {
               </caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Level
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     HC
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Band
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Current Cost
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     New Cost
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Increase
                   </th>
                 </tr>

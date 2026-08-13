@@ -99,7 +99,7 @@ function ScoreGauge({ score }: { score: number }) {
           </span>
         </div>
       </div>
-      <span className="text-sm text-slate-400 mt-2">Compliance Score</span>
+      <span className="text-sm text-[var(--text-muted)] mt-2">Compliance Score</span>
     </div>
   );
 }
@@ -188,14 +188,14 @@ function CheckRow({ check }: { check: SOXCheckResult }) {
       </button>
       {expanded && (
         <div className="px-4 pb-3 space-y-2">
-          <p className="text-xs text-slate-400">{check.description}</p>
-          <p className="text-xs text-slate-300">{check.details}</p>
+          <p className="text-xs text-[var(--text-muted)]">{check.description}</p>
+          <p className="text-xs text-[var(--text-secondary)]">{check.details}</p>
           {check.evidence.length > 0 && (
             <div className="mt-2">
               <p className="text-xs text-slate-500 mb-1">Evidence:</p>
               <ul className="list-disc list-inside space-y-0.5">
                 {check.evidence.map((e, i) => (
-                  <li key={i} className="text-xs text-slate-400">
+                  <li key={i} className="text-xs text-[var(--text-muted)]">
                     {e}
                   </li>
                 ))}
@@ -435,7 +435,7 @@ export default function SOXCompliancePage() {
           <Shield className="h-10 w-10 text-slate-400" aria-hidden="true" />
         </div>
         <h2 className="text-xl font-semibold mb-2">Generating Report...</h2>
-        <p className="text-slate-400">Running SOX compliance checks.</p>
+        <p className="text-[var(--text-muted)]">Running SOX compliance checks.</p>
       </div>
     );
   }
@@ -449,7 +449,7 @@ export default function SOXCompliancePage() {
             <Shield className="h-6 w-6 text-blue-400" aria-hidden="true" />
             SOX Compliance
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Sarbanes-Oxley Act compliance monitoring and reporting
           </p>
         </div>
@@ -492,7 +492,7 @@ export default function SOXCompliancePage() {
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
                   <StatusBadge status={report.overallStatus} />
-                  <span className="text-sm text-slate-400">
+                  <span className="text-sm text-[var(--text-muted)]">
                     Generated {new Date(report.generatedAt).toLocaleString()}
                   </span>
                 </div>
@@ -510,7 +510,9 @@ export default function SOXCompliancePage() {
                     <p className="text-xs text-slate-500">Warnings</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-slate-400">{report.summary.total}</p>
+                    <p className="text-2xl font-bold text-[var(--text-muted)]">
+                      {report.summary.total}
+                    </p>
                     <p className="text-xs text-slate-500">Total Checks</p>
                   </div>
                 </div>
@@ -548,7 +550,10 @@ export default function SOXCompliancePage() {
               </h3>
               <ul className="space-y-2">
                 {report.recommendations.map((rec, i) => (
-                  <li key={i} className="text-sm text-slate-300 flex items-start gap-2">
+                  <li
+                    key={i}
+                    className="text-sm text-[var(--text-secondary)] flex items-start gap-2"
+                  >
                     <span className="text-amber-400 mt-0.5">*</span>
                     {rec}
                   </li>

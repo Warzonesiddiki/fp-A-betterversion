@@ -123,9 +123,11 @@ export default function GrantDisbursementPage() {
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center" role="main" aria-label="Grants - No Data">
-        <Landmark className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <Landmark className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
         <h2 className="text-xl font-semibold mb-2">No Grant Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data to view grant disbursement metrics.</p>
+        <p className="text-[var(--text-muted)] mb-6">
+          Import GL data to view grant disbursement metrics.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
     );
@@ -136,7 +138,7 @@ export default function GrantDisbursementPage() {
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Grants & Disbursement</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             Grant allocation, disbursement & collection analytics
           </p>
         </div>
@@ -175,15 +177,15 @@ export default function GrantDisbursementPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Grant Allocated</span>
+              <span className="text-sm text-[var(--text-muted)]">Grant Allocated</span>
               <span className="font-mono">{formatMoney(input.grantAllocated)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Grant Disbursed</span>
+              <span className="text-sm text-[var(--text-muted)]">Grant Disbursed</span>
               <span className="font-mono">{formatMoney(input.grantDisbursed)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Modeled Disbursement</span>
+              <span className="text-sm text-[var(--text-muted)]">Modeled Disbursement</span>
               <span className="font-mono">{formatMoney(modeledDisbursement)}</span>
             </div>
           </CardContent>
@@ -194,15 +196,15 @@ export default function GrantDisbursementPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Unutilized Budget</span>
+              <span className="text-sm text-[var(--text-muted)]">Unutilized Budget</span>
               <span className="font-mono">{formatMoney(metrics.unutilizedBudget)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Citizens Served</span>
+              <span className="text-sm text-[var(--text-muted)]">Citizens Served</span>
               <span className="font-mono">{formatNumber(input.citizensServed)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-400">Revenue Collected</span>
+              <span className="text-sm text-[var(--text-muted)]">Revenue Collected</span>
               <span className="font-mono">{formatMoney(input.revenueCollected)}</span>
             </div>
           </CardContent>

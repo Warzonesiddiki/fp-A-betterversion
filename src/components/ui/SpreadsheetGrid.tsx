@@ -9,6 +9,7 @@ import {
   type CellClickedEvent,
 } from 'ag-grid-community';
 import { cn } from '@/utils/cn';
+import { useDensity, denserMetrics } from '@/hooks/useDensity';
 import { FormulaBar } from './FormulaBar';
 import { SheetTabs } from './SheetTabs';
 import { ContextMenu, type ContextMenuAction } from './ContextMenu';
@@ -72,6 +73,9 @@ export function SpreadsheetGrid({
   className,
 }: SpreadsheetGridProps) {
   const gridRef = useRef<AgGridReact>(null);
+  // UI-04: the spreadsheet runs one step denser than app chrome, but still
+  // tracks the user's preference instead of hardcoding 28/32.
+  const metrics = denserMetrics(useDensity());
   const [activeCell, setActiveCell] = useState<{ row: number; col: string } | null>(null);
   const [formulaValue, setFormulaValue] = useState('');
   const [_isEditing, setIsEditing] = useState(false);
@@ -411,8 +415,8 @@ export function SpreadsheetGrid({
           onCellEditingStarted={() => setIsEditing(true)}
           onCellEditingStopped={() => setIsEditing(false)}
           gridOptions={{
-            rowHeight: 28,
-            headerHeight: 32,
+            rowHeight: metrics.rowHeight,
+            headerHeight: metrics.headerHeight,
             animateRows: true,
             rowSelection: { mode: 'multiRow' },
             suppressCellFocus: false,

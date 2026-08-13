@@ -5,7 +5,9 @@ export function ESGDashboard() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <Card className="p-6 flex flex-col items-center gap-4">
-        <span className="text-sm font-bold text-slate-400 uppercase">Carbon Footprint</span>
+        <span className="text-sm font-bold text-[var(--text-muted)] uppercase">
+          Carbon Footprint
+        </span>
         <GaugeChart value={65} min={0} max={100} label="Carbon Footprint" />
       </Card>
       <div className="md:col-span-2 grid grid-cols-2 gap-4">

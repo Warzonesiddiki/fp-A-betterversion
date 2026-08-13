@@ -87,7 +87,7 @@ export default function EnergyProductionDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Energy Production</h1>
-          <p className="text-sm text-slate-400">Track production and commodity metrics</p>
+          <p className="text-sm text-[var(--text-muted)]">Track production and commodity metrics</p>
         </div>
         <Button variant="outline" onClick={handleExport}>
           <Download className="h-4 w-4 mr-2" />

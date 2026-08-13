@@ -45,7 +45,7 @@ export function GaugeChart({
     );
   }
   if (isNaN(value) || isNaN(min) || isNaN(max))
-    return <div className="text-slate-400 text-xs p-4">Invalid data</div>;
+    return <div className="text-[var(--text-muted)] text-xs p-4">Invalid data</div>;
 
   const pct = Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100));
   const angle = (pct / 100) * 180;
@@ -60,7 +60,7 @@ export function GaugeChart({
   const thrRad = (thresholdAngle * Math.PI) / 180;
   const criRad = (criticalAngle * Math.PI) / 180;
 
-  if (max <= min) return <div className="text-slate-400 text-xs p-4">Invalid range</div>;
+  if (max <= min) return <div className="text-[var(--text-muted)] text-xs p-4">Invalid range</div>;
 
   const getColor = () => {
     if (critical !== undefined && pct >= critical) return 'var(--negative)';

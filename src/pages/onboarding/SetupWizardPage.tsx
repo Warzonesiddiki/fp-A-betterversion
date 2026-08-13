@@ -77,7 +77,7 @@ export default function SetupWizardPage() {
         <Card>
           <CardContent className="p-6 space-y-4">
             <h2 className="font-semibold text-lg">Welcome to FinPlan Pro</h2>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-[var(--text-muted)]">
               This wizard will configure your FP&A workspace. We&apos;ll set up your organization,
               preferences, and import your financial data.
             </p>
@@ -103,7 +103,10 @@ export default function SetupWizardPage() {
             </div>
             <div className="space-y-3">
               <div>
-                <label htmlFor="company-name" className="text-sm font-medium text-slate-300">
+                <label
+                  htmlFor="company-name"
+                  className="text-sm font-medium text-[var(--text-secondary)]"
+                >
                   Company Name
                 </label>
                 <input
@@ -116,7 +119,10 @@ export default function SetupWizardPage() {
                 />
               </div>
               <div>
-                <label htmlFor="industry" className="text-sm font-medium text-slate-300">
+                <label
+                  htmlFor="industry"
+                  className="text-sm font-medium text-[var(--text-secondary)]"
+                >
                   Industry
                 </label>
                 <select
@@ -136,7 +142,7 @@ export default function SetupWizardPage() {
                 <div>
                   <label
                     htmlFor="globe-classname-h-3-5-w-3-5-inline-mr-1-base-currency"
-                    className="text-sm font-medium text-slate-300"
+                    className="text-sm font-medium text-[var(--text-secondary)]"
                   >
                     <Globe className="h-3.5 w-3.5 inline mr-1" />
                     Base Currency
@@ -159,7 +165,7 @@ export default function SetupWizardPage() {
                 <div>
                   <label
                     htmlFor="calendar-classname-h-3-5-w-3-5-inline-mr-1-fiscal-year-start"
-                    className="text-sm font-medium text-slate-300"
+                    className="text-sm font-medium text-[var(--text-secondary)]"
                   >
                     <Calendar className="h-3.5 w-3.5 inline mr-1" />
                     Fiscal Year Start
@@ -259,7 +265,7 @@ export default function SetupWizardPage() {
         <Card>
           <CardContent className="p-6 space-y-4">
             <h2 className="font-semibold text-lg">Import Your Data</h2>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-[var(--text-muted)]">
               Start by importing your Chart of Accounts or GL data. You can skip this and do it
               later.
             </p>
@@ -294,7 +300,7 @@ export default function SetupWizardPage() {
           <CardContent className="p-6 text-center space-y-4">
             <Coins className="h-12 w-12 text-green-400 mx-auto" />
             <h2 className="font-semibold text-lg">All Set!</h2>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-[var(--text-muted)]">
               {org.companyName ? `${org.companyName} is` : 'You&apos;re'} ready to start using
               FinPlan Pro. Your {org.industry} workspace is configured with {org.currency} as base
               currency.

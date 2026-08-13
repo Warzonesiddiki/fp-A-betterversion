@@ -213,7 +213,7 @@ export default function ReconciliationPage() {
             <ArrowLeftRight className="h-8 w-8 text-blue-400" />
             Data Reconciliation
           </h1>
-          <p className="text-slate-400 mt-1">
+          <p className="text-[var(--text-muted)] mt-1">
             Compare imported GL data against external source files with{' '}
             {formatPercent(tolerance * 100)} tolerance matching.
           </p>
@@ -234,7 +234,7 @@ export default function ReconciliationPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4">
-            <div className="text-sm text-slate-400">GL Entries Loaded</div>
+            <div className="text-sm text-[var(--text-muted)]">GL Entries Loaded</div>
             <div className="text-2xl font-semibold tabular-nums">
               {entries.length.toLocaleString()}
             </div>
@@ -243,7 +243,7 @@ export default function ReconciliationPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-sm text-slate-400">Tolerance</div>
+            <div className="text-sm text-[var(--text-muted)]">Tolerance</div>
             <div className="flex items-center gap-2 mt-1">
               <Input
                 type="number"
@@ -268,7 +268,7 @@ export default function ReconciliationPage() {
         <Card>
           <CardContent className="p-4 flex flex-col justify-between">
             <div>
-              <div className="text-sm text-slate-400">Status</div>
+              <div className="text-sm text-[var(--text-muted)]">Status</div>
               <div className="font-medium">
                 {hasGLData ? 'Ready for reconciliation' : 'Import GL data first'}
               </div>

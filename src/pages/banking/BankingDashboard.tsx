@@ -91,9 +91,9 @@ export default function BankingDashboard() {
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center" aria-label="Banking Dashboard - No Data">
-        <Landmark className="h-10 w-10 text-slate-400 mx-auto mb-4" aria-hidden="true" />
+        <Landmark className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
         <h2 className="text-xl font-semibold mb-2">No Banking Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import GL data with banking account codes to view dashboard.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -106,7 +106,7 @@ export default function BankingDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Banking Dashboard</h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-[var(--text-muted)]">
             Loan loss, capital adequacy, and net interest margin analytics
           </p>
         </div>

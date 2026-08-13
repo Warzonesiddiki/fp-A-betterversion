@@ -98,7 +98,7 @@ export default function NIMDashboardPage() {
           <Activity className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Banking Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import interest-bearing asset and liability data to calculate Net Interest Margin.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -114,7 +114,9 @@ export default function NIMDashboardPage() {
             <Activity className="h-6 w-6 text-green-400" />
             NIM Dashboard
           </h1>
-          <p className="text-sm text-slate-400 mt-1">Net Interest Margin & Spread Analysis</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">
+            Net Interest Margin & Spread Analysis
+          </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleExport}>

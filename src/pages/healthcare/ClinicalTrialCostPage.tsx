@@ -269,7 +269,7 @@ export default function ClinicalTrialCostPage() {
                 </div>
                 <div className="text-right">
                   <div className="text-sm font-bold">29%</div>
-                  <div className="text-[10px] text-slate-400">Stable</div>
+                  <div className="text-[10px] text-[var(--text-muted)]">Stable</div>
                 </div>
               </div>
 

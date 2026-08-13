@@ -47,9 +47,9 @@ export default function AnalyticsPage() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <BarChart3 className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <BarChart3 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-slate-400 mb-6">Import data to see analytics.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import data to see analytics.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -68,25 +68,25 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Total Entries</div>
+            <div className="text-xs text-[var(--text-muted)]">Total Entries</div>
             <div className="text-xl font-bold">{stats?.totalEntries.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Accounts</div>
+            <div className="text-xs text-[var(--text-muted)]">Accounts</div>
             <div className="text-xl font-bold">{stats?.totalAccounts}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Avg/Month</div>
+            <div className="text-xs text-[var(--text-muted)]">Avg/Month</div>
             <div className="text-xl font-bold">{stats?.avgPerMonth.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs text-slate-400">Busiest Month</div>
+            <div className="text-xs text-[var(--text-muted)]">Busiest Month</div>
             <div className="text-xl font-bold text-sm">
               {stats?.busiestMonth} ({stats?.busiestCount})
             </div>
@@ -103,7 +103,7 @@ export default function AnalyticsPage() {
                 const barWidth = (Math.abs(data.total) / maxTotal) * 100;
                 return (
                   <div key={type} className="flex items-center gap-3 text-sm">
-                    <span className="w-20 text-xs text-slate-400">{type}</span>
+                    <span className="w-20 text-xs text-[var(--text-muted)]">{type}</span>
                     <div className="flex-1 bg-slate-800 rounded-full h-5">
                       <div
                         className="bg-blue-500/60 h-full rounded-full"

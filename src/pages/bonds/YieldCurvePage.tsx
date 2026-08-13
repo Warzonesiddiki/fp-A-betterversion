@@ -143,7 +143,7 @@ export default function YieldCurvePage() {
           <TrendingUp className="h-10 w-10 text-slate-400" aria-hidden="true" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Yield Curve Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import your General Ledger to generate a yield curve from your fixed-income holdings, or
           view the default curve.
         </p>

@@ -85,7 +85,7 @@ export function AuditCompliancePanel(): JSX.Element {
     >
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Compliance</h2>
-        <FileText className="h-5 w-5 text-gray-400" />
+        <FileText className="h-5 w-5 text-[var(--text-muted)]" />
       </div>
 
       {/* Stats cards */}
@@ -171,7 +171,7 @@ export function AuditCompliancePanel(): JSX.Element {
         </h3>
         <ul className="space-y-1 text-xs">
           {stats.topUsers.length === 0 ? (
-            <li className="text-gray-400 italic">No entries yet</li>
+            <li className="text-[var(--text-muted)] italic">No entries yet</li>
           ) : (
             stats.topUsers.map((u) => (
               <li

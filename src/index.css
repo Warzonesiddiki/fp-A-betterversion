@@ -1212,6 +1212,180 @@ h3,
 }
 
 /* =============================================
+   TYPE SCALE & DENSITY (UI-04)
+   =============================================
+   Two problems this block solves.
+
+   1. There was no type scale. 181 pages hand-rolled their heading in 21
+      different Tailwind combinations (`text-2xl font-bold`, `text-3xl
+      font-black tracking-tight`, `text-xl font-bold mb-2`, …). Nothing was
+      wrong individually; collectively there was no system.
+
+   2. `designTokens.density` defined compact/standard/comfortable and NOTHING
+      consumed it — `useDensity()` had zero importers. Grid row heights were
+      hardcoded per component (32/40 here, 28/32 there).
+
+   The scale is finance-first: dense enough to fit a statement on screen,
+   never so dense it stops being readable. Sizes are px because this is a
+   data application on desktop, and rem-scaling here fights the grid.
+   ============================================= */
+:root {
+  /* Type scale — 12/13/15/18/22/28, ~1.22 ratio at the top, tight at the
+     bottom where finance UIs actually live. */
+  --font-size-2xs: 11px;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 15px;
+  --font-size-lg: 18px;
+  --font-size-xl: 22px;
+  --font-size-2xl: 28px;
+
+  /* Line heights. Tight for numerics (keeps rows short), relaxed for prose. */
+  --leading-tight: 1.25;
+  --leading-snug: 1.4;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+
+  /* Font weights — a bounded set. `font-black` (900) is deliberately absent:
+     it was used on 28 headings and reads as shouting in a finance tool. */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Density contract. `--density-*` are re-pointed by [data-density] below,
+     so both AG Grid and plain <table> read ONE source of truth. */
+  --density-row-height: 36px;
+  --density-header-height: 40px;
+  --density-cell-padding-y: 4px;
+  --density-cell-padding-x: 8px;
+  --density-font-size: 13px;
+}
+
+/* Density modes. Applied to <html data-density> by useApplyDensity().
+   These values are asserted equal to designTokens.density by
+   useDensity.test.ts, so the TS constant and the CSS cannot drift. */
+[data-density='compact'] {
+  --density-row-height: 28px;
+  --density-header-height: 32px;
+  --density-cell-padding-y: 2px;
+  --density-cell-padding-x: 6px;
+  --density-font-size: 12px;
+}
+[data-density='standard'] {
+  --density-row-height: 36px;
+  --density-header-height: 40px;
+  --density-cell-padding-y: 4px;
+  --density-cell-padding-x: 8px;
+  --density-font-size: 13px;
+}
+[data-density='comfortable'] {
+  --density-row-height: 48px;
+  --density-header-height: 48px;
+  --density-cell-padding-y: 8px;
+  --density-cell-padding-x: 12px;
+  --density-font-size: 14px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Tabular figures.
+ *
+ * Proportional digits make columns of numbers ragged: '1' is narrower than
+ * '8', so decimal points wander and totals do not line up under their column.
+ * Every surface that shows money or a numeric measure opts into tabular
+ * figures. This is the single highest-value typographic fix in a finance UI.
+ * ------------------------------------------------------------------------- */
+.fp-numeric,
+.fp-table td,
+.fp-table th,
+.data-grid .ag-cell,
+.data-grid .ag-header-cell,
+[class*='tabular'] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* ---------------------------------------------------------------------------
+ * .fp-table — the canonical HTML data table.
+ *
+ * 91 modules render a raw <table> with per-file padding (py-3/px-4 here,
+ * py-2/px-3 there, p-2 elsewhere). `.fp-table` gives them one density-aware
+ * contract while leaving the markup as plain semantic HTML.
+ * ------------------------------------------------------------------------- */
+.fp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--density-font-size);
+}
+.fp-table thead th {
+  height: var(--density-header-height);
+  padding: var(--density-cell-padding-y) var(--density-cell-padding-x);
+  color: var(--text-muted);
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-surface);
+}
+.fp-table tbody td {
+  height: var(--density-row-height);
+  padding: var(--density-cell-padding-y) var(--density-cell-padding-x);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.fp-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+/* Numeric columns right-align; that is what makes magnitudes comparable. */
+.fp-table td.fp-numeric,
+.fp-table th.fp-numeric {
+  text-align: right;
+}
+.fp-table tfoot td {
+  height: var(--density-row-height);
+  padding: var(--density-cell-padding-y) var(--density-cell-padding-x);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  border-top: 1px solid var(--border-default);
+}
+
+/* Grid density — AG Grid reads the same variables as .fp-table. */
+.data-grid .ag-header-cell {
+  height: var(--density-header-height);
+}
+.data-grid .ag-cell {
+  padding: var(--density-cell-padding-y) var(--density-cell-padding-x);
+}
+
+/* ---------------------------------------------------------------------------
+ * Page heading scale.
+ *
+ * `.fp-page-header__title` previously inherited whatever the browser gave an
+ * <h1>. These make PageHeader the visually correct choice, not just the
+ * structurally correct one.
+ * ------------------------------------------------------------------------- */
+.fp-page-header__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+}
+.fp-page-header__purpose {
+  font-size: var(--font-size-sm);
+  line-height: var(--leading-normal);
+}
+.fp-section-title {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-snug);
+  color: var(--text-heading);
+}
+
+/* =============================================
    PRINT STYLES
    ============================================= */
 @media print {

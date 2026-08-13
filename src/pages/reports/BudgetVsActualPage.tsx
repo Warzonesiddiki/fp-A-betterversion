@@ -385,7 +385,7 @@ export default function BudgetVsActualPage() {
       <div className="p-12 text-center">
         <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-400" />
         <h2 className="text-xl font-bold mb-2">Failed to load data</h2>
-        <p className="text-slate-400 mb-6">{importError}</p>
+        <p className="text-[var(--text-muted)] mb-6">{importError}</p>
         <button
           onClick={() => window.location.reload()}
           className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -401,7 +401,7 @@ export default function BudgetVsActualPage() {
       <div className="p-12 text-center">
         <Database className="w-12 h-12 mx-auto mb-4 text-slate-500" />
         <h2 className="text-xl font-bold mb-2">No data yet</h2>
-        <p className="text-slate-400 mb-6">Import your General Ledger data to see reports.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import your General Ledger data to see reports.</p>
         <Link
           to="/data"
           className="inline-block px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -417,7 +417,7 @@ export default function BudgetVsActualPage() {
       <div className="p-12 text-center">
         <Database className="w-12 h-12 mx-auto mb-4 text-slate-500" />
         <h2 className="text-xl font-bold mb-2">No budgets found</h2>
-        <p className="text-slate-400 mb-6">Create an approved budget to compare against actuals.</p>
+        <p className="text-[var(--text-muted)] mb-6">Create an approved budget to compare against actuals.</p>
         <Link
           to="/budgets/create"
           className="inline-block px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -692,7 +692,7 @@ export default function BudgetVsActualPage() {
                   <table className="w-full text-sm" aria-label="Budget vs actual">
               <caption className="sr-only">Detailed budget vs actual</caption>
                     <thead>
-                      <tr className="text-left text-slate-400 text-xs uppercase border-b border-[var(--border-subtle)]">
+                      <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-[var(--border-subtle)]">
                         <th scope="col" className="px-4 py-2">Account</th>
                         <th scope="col" className="px-4 py-2 text-right">Price Var</th>
                         <th scope="col" className="px-4 py-2 text-right">Volume Var</th>

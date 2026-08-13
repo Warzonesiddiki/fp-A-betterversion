@@ -203,7 +203,7 @@ export default function DepreciationForecastPage() {
   if (entries.length === 0)
     return (
       <div className="p-12 text-center">
-        <TrendingDown className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <TrendingDown className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
@@ -214,7 +214,9 @@ export default function DepreciationForecastPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Depreciation Forecast</h1>
-          <p className="text-sm text-slate-400">Asset depreciation schedules and forecasts</p>
+          <p className="text-sm text-[var(--text-muted)]">
+            Asset depreciation schedules and forecasts
+          </p>
         </div>
         <Button variant="outline" onClick={handleExport}>
           <Download className="h-4 w-4 mr-2" />
@@ -246,7 +248,7 @@ export default function DepreciationForecastPage() {
       </div>
 
       <div className="flex items-center gap-3">
-        <span className="text-sm text-slate-400">Method:</span>
+        <span className="text-sm text-[var(--text-muted)]">Method:</span>
         {['all', 'straight-line', 'declining-balance', 'units-of-production'].map((m) => (
           <Button
             key={m}
@@ -278,25 +280,46 @@ export default function DepreciationForecastPage() {
               </caption>
               <thead>
                 <tr className="border-b border-slate-700">
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Asset
                   </th>
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Category
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Cost
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Life (Yr)
                   </th>
-                  <th scope="col" className="text-left py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Method
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     NBV
                   </th>
-                  <th scope="col" className="text-right py-2 px-3 text-slate-400 font-medium">
+                  <th
+                    scope="col"
+                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
+                  >
                     Annual Dep
                   </th>
                 </tr>
@@ -312,7 +335,7 @@ export default function DepreciationForecastPage() {
                     </td>
                     <td className="text-right py-2 px-3">{fmt.currency0(a.cost)}</td>
                     <td className="text-right py-2 px-3">{a.usefulLife}</td>
-                    <td className="py-2 px-3 text-xs text-slate-400">{a.method}</td>
+                    <td className="py-2 px-3 text-xs text-[var(--text-muted)]">{a.method}</td>
                     <td className="text-right py-2 px-3">{fmt.currency0(a.nbv)}</td>
                     <td className="text-right py-2 px-3 text-yellow-400">
                       {fmt.currency0(a.annualDep)}

@@ -96,7 +96,7 @@ export default function ReportSchedulerPage() {
           <Calendar className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No GL Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import General Ledger entries first, then create and schedule automated reports.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
@@ -132,7 +132,7 @@ export default function ReportSchedulerPage() {
               <HelpCircle className="h-5 w-5" />
             </button>
           </div>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {entries.length.toLocaleString()} GL entries available
             {scheduledReports.length > 0 &&
               ` \u00B7 ${scheduledReports.length} scheduled report${scheduledReports.length !== 1 ? 's' : ''}`}

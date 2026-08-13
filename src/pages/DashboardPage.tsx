@@ -376,17 +376,17 @@ export default function DashboardPage() {
           <CardContent className="p-4">
             <div className="text-sm space-y-3">
               <div className="flex justify-between">
-                <span className="text-slate-400">Active Budgets</span>
+                <span className="text-[var(--text-muted)]">Active Budgets</span>
                 <span className="font-semibold">{kpis.activeBudgets}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Total Budget</span>
+                <span className="text-[var(--text-muted)]">Total Budget</span>
                 <span className="font-semibold tabular-nums">
                   {fmt.currency0(kpis.totalBudgetAmount)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Utilization</span>
+                <span className="text-[var(--text-muted)]">Utilization</span>
                 <span
                   className={
                     'font-semibold ' +
@@ -438,13 +438,13 @@ export default function DashboardPage() {
           <CardContent className="p-4">
             <div className="text-sm space-y-3">
               <div className="flex justify-between">
-                <span className="text-slate-400">Gross Margin</span>
+                <span className="text-[var(--text-muted)]">Gross Margin</span>
                 <span className="font-semibold tabular-nums">
                   {formatPercent(kpis.grossMargin)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Expense Ratio</span>
+                <span className="text-[var(--text-muted)]">Expense Ratio</span>
                 <span className="font-semibold tabular-nums">
                   {kpis.totalRevenue > 0
                     ? formatPercent((kpis.totalExpenses / kpis.totalRevenue) * 100)
@@ -452,7 +452,7 @@ export default function DashboardPage() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Net Margin</span>
+                <span className="text-[var(--text-muted)]">Net Margin</span>
                 <span
                   className={
                     'font-semibold tabular-nums ' +

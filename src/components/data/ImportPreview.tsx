@@ -19,7 +19,7 @@ export const ImportPreview: React.FC<ImportPreviewProps> = ({
   return (
     <div className="space-y-3" role="region" aria-label="ImportPreview">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Data Preview</h3>
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">Data Preview</h3>
         {sheetNames.length > 1 && (
           <select
             className="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-white"
@@ -35,7 +35,7 @@ export const ImportPreview: React.FC<ImportPreviewProps> = ({
         )}
       </div>
 
-      <div className="text-xs text-slate-400">
+      <div className="text-xs text-[var(--text-muted)]">
         Showing {previewRows.length} of {sheet.rowCount.toLocaleString()} rows ·{' '}
         {sheet.headers.length} columns
       </div>

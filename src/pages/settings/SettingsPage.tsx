@@ -18,9 +18,11 @@ import {
   Plug,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { useDensity, densityMetrics, DENSITY_MODES, DENSITY_LABELS } from '@/hooks/useDensity';
 
 export default function SettingsPage() {
-  const { organization, updateOrganization } = useSettingsStore();
+  const { organization, updateOrganization, updatePreferences } = useSettingsStore();
+  const density = useDensity();
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState('org');
   const [settingsError, setSettingsError] = useState<string | null>(null);
@@ -35,8 +37,8 @@ export default function SettingsPage() {
         <div className="bg-red-500/10 p-4 rounded-full mb-4">
           <ShieldCheck className="w-12 h-12 text-red-600" />
         </div>
-        <h2 className="text-xl font-bold text-white mb-2">Access Restricted</h2>
-        <p className="text-slate-400 max-w-sm">
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2">Access Restricted</h2>
+        <p className="text-[var(--text-muted)] max-w-sm">
           You are currently logged in with a Viewer role. System settings and data management are
           restricted to Admin users.
         </p>
@@ -78,8 +80,8 @@ export default function SettingsPage() {
         </div>
       )}
       <div className="mb-2">
-        <h1 className="text-2xl font-bold text-white">Settings</h1>
-        <p className="text-slate-400 text-sm">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Settings</h1>
+        <p className="text-[var(--text-muted)] text-sm">
           Manage organization profiles, system preferences, and local data.
         </p>
       </div>
@@ -99,7 +101,7 @@ export default function SettingsPage() {
                 'px-4 py-3 text-sm font-medium flex items-center space-x-2 border-b-2 transition-all whitespace-nowrap',
                 activeTab === tab.id
                   ? 'border-blue-500 text-blue-400'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
+                  : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]'
               )}
             >
               <tab.icon className="w-4 h-4" />
@@ -113,11 +115,14 @@ export default function SettingsPage() {
             <CardContent className="p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <fieldset className="m-0 border-0 p-0">
-                  <legend className="text-base font-semibold text-white mb-4">
+                  <legend className="text-base font-semibold text-[var(--text-primary)] mb-4">
                     Organization Profile
                   </legend>
                   <div className="space-y-2">
-                    <label htmlFor="company-name" className="text-sm font-bold text-slate-300">
+                    <label
+                      htmlFor="company-name"
+                      className="text-sm font-bold text-[var(--text-secondary)]"
+                    >
                       Company Name
                     </label>
                     <input
@@ -132,7 +137,7 @@ export default function SettingsPage() {
                   <div className="space-y-2">
                     <label
                       htmlFor="settings-base-currency"
-                      className="text-sm font-bold text-slate-300"
+                      className="text-sm font-bold text-[var(--text-secondary)]"
                     >
                       Base Currency
                     </label>
@@ -155,7 +160,7 @@ export default function SettingsPage() {
                   <div className="space-y-2">
                     <label
                       htmlFor="settings-fiscal-year-start"
-                      className="text-sm font-bold text-slate-300"
+                      className="text-sm font-bold text-[var(--text-secondary)]"
                     >
                       Fiscal Year Start Month
                     </label>
@@ -182,7 +187,7 @@ export default function SettingsPage() {
                   <div className="space-y-2">
                     <label
                       htmlFor="settings-calendar-type"
-                      className="text-sm font-bold text-slate-300"
+                      className="text-sm font-bold text-[var(--text-secondary)]"
                     >
                       Calendar Type
                     </label>
@@ -217,9 +222,14 @@ export default function SettingsPage() {
             <CardContent className="p-6 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <fieldset className="m-0 border-0 p-0">
-                  <legend className="text-base font-semibold text-white mb-4">Preferences</legend>
+                  <legend className="text-base font-semibold text-[var(--text-primary)] mb-4">
+                    Preferences
+                  </legend>
                   <div className="space-y-2">
-                    <label htmlFor="decimal-places" className="text-sm font-bold text-slate-300">
+                    <label
+                      htmlFor="decimal-places"
+                      className="text-sm font-bold text-[var(--text-secondary)]"
+                    >
                       Decimal Places
                     </label>
                     <input
@@ -235,7 +245,10 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="date-format" className="text-sm font-bold text-slate-300">
+                    <label
+                      htmlFor="date-format"
+                      className="text-sm font-bold text-[var(--text-secondary)]"
+                    >
                       Date Format
                     </label>
                     <select
@@ -254,6 +267,54 @@ export default function SettingsPage() {
                     </p>
                   </div>
                 </fieldset>
+
+                {/* UI-04: display density. Drives <html data-density>, which every
+                    grid and .fp-table resolves its row metrics against. */}
+                <fieldset className="m-0 border-0 p-0">
+                  <legend className="text-base font-semibold text-[var(--text-primary)] mb-4">
+                    Display Density
+                  </legend>
+                  <div
+                    role="radiogroup"
+                    aria-label="Display density"
+                    aria-describedby="settings-density-help"
+                    className="space-y-2"
+                  >
+                    {DENSITY_MODES.map((mode) => {
+                      const active = density === mode;
+                      const metrics = densityMetrics(mode);
+                      return (
+                        <label
+                          key={mode}
+                          className={cn(
+                            'flex items-center gap-3 rounded border px-3 py-2 cursor-pointer transition-colors',
+                            active
+                              ? 'border-[var(--accent-primary)] bg-[var(--accent-primary)]/10'
+                              : 'border-[var(--border-subtle)] hover:bg-[var(--bg-hover)]'
+                          )}
+                        >
+                          <input
+                            type="radio"
+                            name="display-density"
+                            value={mode}
+                            checked={active}
+                            onChange={() => updatePreferences({ density: mode })}
+                            className="accent-[var(--accent-primary)]"
+                          />
+                          <span className="text-sm font-medium text-[var(--text-primary)]">
+                            {DENSITY_LABELS[mode]}
+                          </span>
+                          <span className="ml-auto text-xs text-[var(--text-muted)] fp-numeric">
+                            {metrics.rowHeight}px rows
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  <p id="settings-density-help" className="text-xs text-[var(--text-muted)] mt-2">
+                    Controls row height and padding across every grid, table, and report.
+                  </p>
+                </fieldset>
               </div>
             </CardContent>
           </Card>
@@ -263,7 +324,7 @@ export default function SettingsPage() {
           <Card>
             <CardContent className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="font-bold text-white">User Accounts</h3>
+                <h3 className="font-bold text-[var(--text-primary)]">User Accounts</h3>
                 <Button size="sm">Invite User</Button>
               </div>
               <div className="bg-slate-950/50 border border-slate-800 rounded overflow-hidden">
@@ -313,11 +374,11 @@ export default function SettingsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardContent className="p-6 space-y-4">
-                <div className="flex items-center space-x-2 text-white mb-2">
+                <div className="flex items-center space-x-2 text-[var(--text-primary)] mb-2">
                   <Download className="w-5 h-5 text-blue-400" />
                   <h3 className="font-bold">Export Backup</h3>
                 </div>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-[var(--text-muted)]">
                   Generate a portable JSON file containing all your local records, settings, and
                   imported data.
                 </p>
@@ -330,11 +391,11 @@ export default function SettingsPage() {
 
             <Card>
               <CardContent className="p-6 space-y-4">
-                <div className="flex items-center space-x-2 text-white mb-2">
+                <div className="flex items-center space-x-2 text-[var(--text-primary)] mb-2">
                   <Upload className="w-5 h-5 text-green-400" />
                   <h3 className="font-bold">Restore Backup</h3>
                 </div>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-[var(--text-muted)]">
                   Import a previously exported JSON file.{' '}
                   <strong>This will merge with existing data.</strong>
                 </p>
@@ -355,11 +416,11 @@ export default function SettingsPage() {
 
             <Card>
               <CardContent className="p-6 space-y-4">
-                <div className="flex items-center space-x-2 text-white mb-2">
+                <div className="flex items-center space-x-2 text-[var(--text-primary)] mb-2">
                   <Plug className="w-5 h-5 text-violet-400" />
                   <h3 className="font-bold">Integrations</h3>
                 </div>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-[var(--text-muted)]">
                   Connect external systems — QuickBooks, Xero, NetSuite, Sage, Dynamics 365,
                   Salesforce, Stripe, Plaid, and Slack — to bring financial data into FinPlan Pro.
                 </p>

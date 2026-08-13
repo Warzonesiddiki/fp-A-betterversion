@@ -232,9 +232,9 @@ export default function RevRecDashboard() {
   if (!data)
     return (
       <div className="p-12 text-center">
-        <BarChart3 className="h-10 w-10 text-slate-400 mx-auto mb-4" />
+        <BarChart3 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Revenue Data</h2>
-        <p className="text-slate-400 mb-6">Import GL data with revenue accounts.</p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data with revenue accounts.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );

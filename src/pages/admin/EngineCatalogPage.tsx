@@ -160,7 +160,9 @@ export default function EngineCatalogPage() {
                     </span>
                   )}
                   {row.state === 'loading' && <span className="text-slate-500">Loading…</span>}
-                  {row.state === 'idle' && <span className="text-slate-400">Not loaded</span>}
+                  {row.state === 'idle' && (
+                    <span className="text-[var(--text-muted)]">Not loaded</span>
+                  )}
                 </td>
                 <td className="py-2 pr-4 text-xs text-slate-600 dark:text-slate-300">
                   {row.state === 'loaded'

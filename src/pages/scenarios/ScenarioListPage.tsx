@@ -44,7 +44,7 @@ export default function ScenarioListPage() {
           <FlaskConical className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Scenarios Yet</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Create scenarios to model different financial outcomes and compare them side by side.
         </p>
         <Button onClick={() => navigate('/scenarios/create')}>
@@ -69,7 +69,7 @@ export default function ScenarioListPage() {
               aria-label="Help"
             ></button>
           </div>
-          <p className="text-sm text-slate-400 mt-1">{scenarios.length} scenarios</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">{scenarios.length} scenarios</p>
         </div>
         <Button onClick={() => navigate('/scenarios/create')}>
           <Plus className="h-4 w-4 mr-2" />
@@ -148,7 +148,9 @@ export default function ScenarioListPage() {
                     </button>
                   </div>
                 </div>
-                <p className="text-xs text-slate-400 mb-3 line-clamp-2">{s.description}</p>
+                <p className="text-xs text-[var(--text-muted)] mb-3 line-clamp-2">
+                  {s.description}
+                </p>
                 <div className="flex gap-2 text-xs text-slate-500">
                   <Badge variant="secondary" className="text-[10px]">
                     {s.type}

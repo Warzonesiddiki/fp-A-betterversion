@@ -57,7 +57,7 @@ export default function ForecastListPage() {
           <TrendingUp className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Forecasts Yet</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Create a forecast to predict future financial performance based on your data.
         </p>
         <Button onClick={() => navigate('/forecasts/create')}>
@@ -80,7 +80,7 @@ export default function ForecastListPage() {
               aria-label="Help"
             ></button>
           </div>
-          <p className="text-sm text-slate-400 mt-1">{forecasts.length} forecasts</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">{forecasts.length} forecasts</p>
         </div>
         <Button onClick={() => navigate('/forecasts/create')}>
           <Plus className="h-4 w-4 mr-2" />
@@ -111,7 +111,7 @@ export default function ForecastListPage() {
                 Forecast scenarios showing name, type, horizon, base scenario, and status
               </caption>
               <thead>
-                <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                   <th scope="col" className="px-4 py-3">
                     Name
                   </th>

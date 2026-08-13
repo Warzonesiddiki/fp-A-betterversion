@@ -114,7 +114,7 @@ export function AuditFilters(): JSX.Element {
           Cell ID (sector/scenario/period/lineItem)
         </label>
         <div className="relative">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-[var(--text-muted)]" />
           <input
             id="audit-filter-cell-id"
             type="text"
@@ -330,7 +330,7 @@ export function AuditFilters(): JSX.Element {
           Full-text Search
         </label>
         <div className="relative">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-[var(--text-muted)]" />
           <input
             id="audit-filter-full-text"
             type="text"

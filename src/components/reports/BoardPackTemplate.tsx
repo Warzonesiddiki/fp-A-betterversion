@@ -112,7 +112,7 @@ function TableSection({ section }: { section: TemplateSection }) {
               <tr>
                 <td
                   colSpan={headers.length}
-                  className="px-3 py-4 text-center text-gray-400 italic"
+                  className="px-3 py-4 text-center text-[var(--text-muted)] italic"
                 >
                   No data loaded — connect data source to populate
                 </td>

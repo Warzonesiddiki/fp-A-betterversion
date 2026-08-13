@@ -156,7 +156,7 @@ export default function GLTrialBalancePage() {
           <Scale className="h-10 w-10 text-slate-400" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No GL Data</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Import General Ledger entries first to generate the Trial Balance. The Trial Balance
           verifies that total debits equal total credits.
         </p>
@@ -169,7 +169,7 @@ export default function GLTrialBalancePage() {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
         <h2 className="text-xl font-semibold mb-2">Trial Balance Not Generated</h2>
-        <p className="text-slate-400 mb-6">
+        <p className="text-[var(--text-muted)] mb-6">
           Click below to generate the Trial Balance from {entries.length.toLocaleString()} GL
           entries.
         </p>
@@ -210,7 +210,7 @@ export default function GLTrialBalancePage() {
               aria-label="Help"
             ></button>
           </div>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-[var(--text-muted)] mt-1">
             {trialBalance.length} accounts · {entries.length.toLocaleString()} entries
           </p>
         </div>
@@ -257,7 +257,7 @@ export default function GLTrialBalancePage() {
             <table className="w-full text-sm" aria-label="GL trial balance">
               <caption className="sr-only">Detailed gl trial balance</caption>
               <thead>
-                <tr className="text-left text-slate-400 text-xs uppercase border-b border-slate-800">
+                <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
                   {(
                     [
                       { key: 'accountCode', label: 'Code', className: 'w-20' },
@@ -282,7 +282,7 @@ export default function GLTrialBalancePage() {
                       <button
                         type="button"
                         onClick={() => handleSort(col.key)}
-                        className="inline-flex items-center gap-1 hover:text-white transition-colors"
+                        className="inline-flex items-center gap-1 hover:text-[var(--text-primary)] transition-colors"
                         aria-label={`Sort by ${col.label}`}
                       >
                         {col.label}
@@ -384,7 +384,7 @@ export default function GLTrialBalancePage() {
                 ))}
               </tbody>
               <tfoot className="border-t-2 border-slate-600">
-                <tr className="font-bold text-sm text-slate-200">
+                <tr className="font-bold text-sm text-[var(--text-primary)]">
                   <td className="px-4 py-3" colSpan={3}>
                     Total
                   </td>
