@@ -11,18 +11,18 @@ All numbers below are **measured**, not estimated. Scanners: `lightscan2.mjs`
 
 ## Baseline before this work
 
-| Metric                                   | Value                                       |
-| ---------------------------------------- | ------------------------------------------- |
-| Suite                                    | 1206 files / 13,495 tests                   |
-| Default theme                            | `light` (`uiStore.ts:20`)                   |
-| Page modules                             | 203                                         |
-| Pages using `PageHeader`                 | **2**                                       |
-| Pages using raw `<h1>`                   | 181, in **21 different class combinations** |
-| `useDensity()` consumers                 | **0**                                       |
-| `designTokens.density` consumers         | **0**                                       |
-| Light-mode contrast bugs (AST-confirmed) | **64 sites / 29 files**                     |
-| Hardcoded `currency: 'USD'`              | 116 sites / 65 files                        |
-| Inline `Intl.NumberFormat`               | 129 sites                                   |
+| Metric                                   | Value                                          |
+| ---------------------------------------- | ---------------------------------------------- |
+| Suite                                    | 1206 files / 13,495 tests                      |
+| Default theme                            | `light` (`uiStore.ts:20`)                      |
+| Page modules                             | 203                                            |
+| Pages using `PageHeader`                 | **2**                                          |
+| Pages using raw `<h1>`                   | 181, in **21 different class combinations**    |
+| `useDensity()` consumers                 | **0**                                          |
+| `designTokens.density` consumers         | **0**                                          |
+| Light-mode contrast bugs (AST-confirmed) | **64 sites / 29 files** (see correction below) |
+| Hardcoded `currency: 'USD'`              | 116 sites / 65 files                           |
+| Inline `Intl.NumberFormat`               | 129 sites                                      |
 
 ## The severe finding
 
@@ -232,3 +232,56 @@ two new attributes.
 passing / 0 failing** (1207 files; baseline 13,564 plus the 3 new `PageHeader`
 tests) · `AtlasFoundations.visual-contract` and `AtlasVisualBaselinePage` both
 green.
+
+## A / B — status correction and the last contrast bug
+
+Re-measuring A and B from scratch, rather than trusting the plan's baseline
+table, showed both were already shipped. The table above was never updated
+after the work landed, which made the remaining scope look far larger than it
+was.
+
+**A — density: shipped.** The baseline recorded `useDensity()` and
+`designTokens.density` at **0 consumers**. Both are now fully wired:
+`useApplyDensity()` in `AppLayout` mirrors the preference onto
+`<html data-density>`; `[data-density]` in `index.css` re-points the
+`--density-*` contract; `DataGrid`, `FinPlanGrid` and `SpreadsheetGrid` read it
+via `useDensity()`/`densityMetrics()`; and `SettingsPage` exposes the
+three-mode radio control. AG Grid and `.fp-table` resolve row metrics from that
+one source, which was the actual requirement.
+
+**B — contrast: shipped, with one genuine bug still live.** The guardrail
+(`src/theme/lightContrast.contract.test.ts`, written during UI-04) was green,
+so the "64 sites" were long since fixed. But green was partly wrong.
+
+The guard treated **any** `bg-gradient` as a dark backdrop. That is not safe:
+
+```
+bg-gradient-to-br from-emerald-500/20 to-emerald-600/5
+```
+
+is all but transparent, so it leaves light text sitting on whatever is
+underneath — here a white `Card`. `ReportTemplateLibrary.tsx:222` rendered
+`<h3 className="font-medium text-white text-sm">{template.name}</h3>` on
+exactly that card: a white-on-white template title on the default theme, and
+the guard was actively vouching for it.
+
+Fixed both sides:
+
+- the heading now uses `text-[var(--text-heading)]`, matching its sibling
+  description which already used `--text-muted`;
+- `DARK_BG` no longer accepts bare `bg-gradient`, and an alpha-suffixed
+  `from-*-500/20` stop no longer counts as dark. Verified by reverting the
+  source fix and watching the guard fail on that exact line, then re-applying.
+
+Two mutation-guard assertions pin the distinction so the hole cannot reopen:
+a translucent gradient is not a backdrop, an opaque one is.
+
+### On the "64 sites" figure
+
+An independent scanner written for this pass reported 46 sites, then 17, then
+14, then 1 as each false-positive class was eliminated — `dark:`-prefixed
+pairings (correct by construction), dynamic `style={{ backgroundColor }}`
+fills, and saturated `bg-*-500` badges. The single survivor was the real bug
+above. Counts from a matcher that has not been tested against known-good
+patterns should be treated as upper bounds, not measurements; the committed
+guard carries a mutation test for precisely this reason.

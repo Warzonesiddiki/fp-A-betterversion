@@ -27,15 +27,15 @@ given, so any claim here can be re-checked in one line.
 
 These gates are **green right now**. This is the floor the work must not break.
 
-| Gate | Command | Result |
-| --- | --- | --- |
-| Types | `npx tsc --noEmit` | clean |
-| Lint | `eslint src --max-warnings 0` | clean |
-| Engine manifest | `npm run engines:verify` | 182 engines, current |
-| Docs truth | `npm run docs:verify` | all measured claims match |
-| Repo hygiene | `npm run repo:hygiene` | 2948 tracked files, 0 tracked-ignored |
-| Architecture | `npm run architecture:guardrails` | all pass |
-| Money ratchet | `npm run money:adoption` | holds (209 modules, 0 `toFixed`) |
+| Gate            | Command                           | Result                                |
+| --------------- | --------------------------------- | ------------------------------------- |
+| Types           | `npx tsc --noEmit`                | clean                                 |
+| Lint            | `eslint src --max-warnings 0`     | clean                                 |
+| Engine manifest | `npm run engines:verify`          | 182 engines, current                  |
+| Docs truth      | `npm run docs:verify`             | all measured claims match             |
+| Repo hygiene    | `npm run repo:hygiene`            | 2948 tracked files, 0 tracked-ignored |
+| Architecture    | `npm run architecture:guardrails` | all pass                              |
+| Money ratchet   | `npm run money:adoption`          | holds (209 modules, 0 `toFixed`)      |
 
 **Established (P-00 ✅).** The full suite now runs in this environment via
 `npm run test:sharded`: **1204 files, 13,485 tests** (1 skipped), ~13 min across
@@ -109,7 +109,7 @@ two silent defect classes that no build, lint or test could catch:
 - **287 `var(--…)` references across 50 files pointed at properties that were
   never declared** (`--border` ×44, `--text-tertiary` ×43, `--bg-primary` ×21,
   `--accent` ×17 …), silently invalidating the whole declaration.
-  `--bg-muted` (78 uses) was declared *only* under
+  `--bg-muted` (78 uses) was declared _only_ under
   `[data-high-contrast='true']`, so table zebra striping worked in the
   accessibility mode and nowhere else.
 
@@ -125,9 +125,23 @@ Remaining steps to drive one palette instead of three:
 1. ~~Register the shadcn `--color-*` keys and resolve the dangling vars.~~
    **Done.** Still open: `src/config/designTokens.ts` (344 lines) remains a
    third, **provably unconsumed** source of truth (only its own test imports
-   it) and it *conflicts* with the CSS (radius `xs` 4px vs 2px;
+   it) and it _conflicts_ with the CSS (radius `xs` 4px vs 2px;
    `--negative:#f43f5e` vs `financial.negative:#dc2626`). Either delete it or
    convert it into the generator for the `@theme` block — do not leave both.
+
+   **Done — deleted, all but one group.** Re-measured: of the 13 token groups,
+   the only runtime consumer was `density`, read by `useDensity.ts` for AG
+   Grid's numeric `rowHeight`/`headerHeight` (a CSS custom property cannot feed
+   a JS API, so this one genuinely belongs in TS). Every other group's sole
+   "consumers" were this module's own type aliases — `ChartColor`,
+   `SemanticTone`, `SectorKey`, `RadiusKey`, `ZIndexKey`, `FontSizeKey`,
+   `BreakpointKey`, all exported, all with **zero** external references.
+   `designTokens.ts` is now 49 lines instead of 344, `index.css` is the single
+   palette, and the rewritten shape test asserts `Object.keys(designTokens)`
+   equals `['density']` and that the serialised object contains no hex or
+   `rgb()` literal — mutation-verified by re-adding a `radius` group and
+   watching it fail. The third source of truth is gone rather than reconciled.
+
 2. Restate the Tailwind primitives in terms of semantic tokens
    (`--action-primary`, `--surface-panel`, `--text-body`) instead of raw
    `blue-600`/`gray-800`.
@@ -146,7 +160,7 @@ Zoho Books is a light product. FinPlan defaulted to Bloomberg-dark
 terminal); the default and the polished path are now light.
 
 Shipped: `uiStore` seed `dark`→`light`; the `index.html` bootstrap no longer
-falls back to dark (it only opts *in* to dark, and re-resolves `'system'`
+falls back to dark (it only opts _in_ to dark, and re-resolves `'system'`
 against the OS); `.light` gained overrides for every contrast-sensitive token.
 CSP hash updated to `sha256-7Fr6DsWabQ…` and verified against both `index.html`
 and `dist/index.html`.
@@ -154,8 +168,8 @@ and `dist/index.html`.
 **Two further defects surfaced while doing this, neither previously known:**
 
 - **Persistence was broken end to end.** The bootstrap read
-  `localStorage['finplan-theme']`, but *nothing in the codebase ever wrote that
-  key* — the real preference is persisted by `uiStore` into an **encrypted
+  `localStorage['finplan-theme']`, but _nothing in the codebase ever wrote that
+  key_ — the real preference is persisted by `uiStore` into an **encrypted
   SQLite blob** (`finplan-sqljs-db`), which a synchronous inline script cannot
   read. The read therefore always returned `null`, so every reload painted the
   default theme and a user's saved choice never survived. `ThemeContext` now
@@ -325,9 +339,9 @@ critical/serious; keyboard paths through grids and modals; 1024×600 minimum.
   requests an 8 GB heap on a 3 GB box. Solved with `scripts/test-sharded.mjs`
   (`npm run test:sharded`, `--shards/--workers/--heap/--only`): 1199 files /
   13,447 tests in ~13 min. Single shard: `node scripts/test-sharded.mjs
-  --shards=8 --only=N`.
+--shards=8 --only=N`.
 - **P-01** — Bundle budget: main ≤150 KB gzip, total ≤2 MB (`npm run
-  bundle-check`), with 200 lazy routes and heavy vendor chunks already split.
+bundle-check`), with 200 lazy routes and heavy vendor chunks already split.
 - **P-02** — 100k-row grid at ≥30 fps; 10k-row GL import <30 s; 500-row PDF <3 s.
   Measure before optimising.
 - **P-03** — Workers (consolidation, Monte Carlo, formula, export) genuinely
@@ -347,7 +361,7 @@ critical/serious; keyboard paths through grids and modals; 1024×600 minimum.
 - **R-03** — CI is red for billing reasons (E-005), owner-side. No gate can be
   called green from CI until that clears.
 - **R-04** — Keep the maturity ladder honest: routes are `BUILT — TEST
-  EVIDENCE`; CONNECTED/GOVERNED/ENTERPRISE-READY stay `UNVERIFIED` until
+EVIDENCE`; CONNECTED/GOVERNED/ENTERPRISE-READY stay `UNVERIFIED` until
   evidence exists. Breadth is not validation.
 
 ---

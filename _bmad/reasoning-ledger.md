@@ -803,3 +803,54 @@ fixes the a11y gap without touching the `h-full` layout.
 
 **Guard integrity.** The `LAYOUT_RE`/`TYPO_RE` guards and the product-tour anchor
 classes were left strict; conversion count was never the target.
+
+## UI-04/05 B — light-mode contrast: a guard that vouched for the bug
+
+**Finding.** `lightContrast.contract.test.ts` was green while a real
+white-on-white heading was live. `DARK_BG` matched bare `bg-gradient`, so
+`bg-gradient-to-br from-emerald-500/20 to-emerald-600/5` — effectively
+transparent — was scored as a dark backdrop. `ReportTemplateLibrary.tsx:222`
+sat on that gradient over a white Card.
+
+**Decision: fix the guard, not just the call site.** Repointing the heading at
+`--text-heading` alone would have left the detector still certifying every
+other translucent-gradient surface. `DARK_BG` now rejects alpha-suffixed
+gradient stops. Confirmed by reverting the source fix and observing the guard
+fail on the exact line, then re-applying.
+
+**Decision: verify a scanner against known-good patterns before believing its
+count.** A fresh scanner reported 46 → 17 → 14 → 1 as false-positive classes
+were removed (`dark:` pairings, dynamic `style={{backgroundColor}}`, saturated
+`bg-*-500` badges). The plan's "64 sites / 29 files" was an artefact of the same
+`dark:` blind spot. A count from an unvalidated matcher is an upper bound.
+
+**Status correction.** UI-04 density was recorded as 0 consumers; it is fully
+wired (AppLayout -> `<html data-density>` -> `--density-*` -> AG Grid and
+`.fp-table`, with the SettingsPage control shipped). The baseline table was
+stale, not the implementation.
+
+## UI-01/1 — the third source of truth: deleted, not reconciled
+
+**Finding.** `designTokens.ts` (344 lines, 13 token groups) was described as
+"provably unconsumed". Half true, and the stale half mattered: `density` _is_
+consumed by `useDensity.ts`. Every other group's only references were the
+file's own exported type aliases (`ChartColor`, `SemanticTone`, `SectorKey`,
+`RadiusKey`, `ZIndexKey`, `FontSizeKey`, `BreakpointKey`) — each with zero
+external users. An unused export still typechecks, so nothing flagged it.
+
+**Decision: delete rather than wire up.** The alternative — making it the
+generator for the `@theme` block — means maintaining a TS palette _and_ a CSS
+one and keeping them honest. The values had already drifted (radius `xs` 2px vs
+4px, `sm` 4px vs 6px, negative `#dc2626` vs `#f43f5e`), which is exactly the
+failure that argument predicts. `index.css` already drives the product and is
+pinned by `tokenBridge.contract.test.ts`.
+
+**Decision: keep `density` in TypeScript.** Not an inconsistency — AG Grid's
+API needs numeric `rowHeight`/`headerHeight`, and a CSS custom property cannot
+supply those to JS. The `[data-density]` blocks mirror the numbers for CSS and
+`useDensity.test.ts` asserts the two stay in step.
+
+**Guard.** The rewritten shape test asserts `Object.keys(designTokens)` is
+exactly `['density']` and that the serialised object holds no hex or `rgb()`
+literal, so a palette cannot quietly regrow. Mutation-verified by re-adding a
+`radius` group.

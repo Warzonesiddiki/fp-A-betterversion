@@ -219,7 +219,9 @@ export function ReportTemplateLibrary({
                     </span>
                   </div>
                   <div>
-                    <h3 className="font-medium text-white text-sm">{template.name}</h3>
+                    <h3 className="font-medium text-[var(--text-heading)] text-sm">
+                      {template.name}
+                    </h3>
                     <p className="text-xs text-[var(--text-muted)] mt-0.5 line-clamp-2">
                       {template.description}
                     </p>
