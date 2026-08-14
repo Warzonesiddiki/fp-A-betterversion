@@ -96,7 +96,7 @@ export default function ChurnDashboard() {
     return (
       <main className="p-12 text-center" role="main" aria-label="Churn Dashboard - No Data">
         <Users className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No SaaS Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No SaaS Data</h1>
         <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
           Import general ledger data with subscription revenue accounts to calculate churn,
           retention and expansion.

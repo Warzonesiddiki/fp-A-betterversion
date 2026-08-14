@@ -99,7 +99,7 @@ export function ChartOfAccountsPage() {
           Skip to import action
         </a>
         <BookOpen className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No Chart of Accounts Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Chart of Accounts Data</h1>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to view chart of accounts.</p>
         <Button
           id="import-btn"

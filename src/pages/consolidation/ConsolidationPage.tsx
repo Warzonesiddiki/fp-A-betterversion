@@ -99,7 +99,7 @@ export function ConsolidationPage() {
           Skip to import action
         </a>
         <Layers className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No Consolidation Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Consolidation Data</h1>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to view consolidation.</p>
         <Button
           id="import-btn"

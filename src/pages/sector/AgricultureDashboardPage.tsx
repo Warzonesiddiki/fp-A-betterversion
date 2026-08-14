@@ -38,7 +38,7 @@ export default function AgricultureDashboardPage() {
     return (
       <main className="p-12 text-center" role="main" aria-label="Agriculture Dashboard - No Data">
         <Wheat className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">Agriculture — No Data</h2>
+        <h1 className="text-xl font-semibold mb-2">Agriculture — No Data</h1>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to view agriculture KPIs.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>

@@ -149,7 +149,7 @@ export default function GLExplorerPage() {
     return (
       <main className="p-12 text-center" role="main" aria-label="GL Explorer - No Data">
         <Database className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No GL Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No GL Data</h1>
         <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
           Import a general ledger export to browse, filter and drill into individual journal
           entries.

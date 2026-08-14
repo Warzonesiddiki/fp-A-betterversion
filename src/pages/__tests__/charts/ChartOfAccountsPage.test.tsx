@@ -71,7 +71,7 @@ describe('ChartOfAccountsPage', () => {
   it('renders empty state with CTA when no data is imported', () => {
     render(<ChartOfAccountsPage />);
     expect(
-      screen.getByRole('heading', { level: 2, name: /no chart of accounts data/i })
+      screen.getByRole('heading', { level: 1, name: /no chart of accounts data/i })
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /import gl data/i })).toBeInTheDocument();
   });

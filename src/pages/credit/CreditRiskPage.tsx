@@ -258,7 +258,7 @@ export default function CreditRiskPage() {
         <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
           <ShieldAlert className="h-10 w-10 text-[var(--text-muted)]" aria-hidden="true" />
         </div>
-        <h2 className="text-xl font-semibold mb-2">No Credit Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Credit Data</h1>
         <p className="text-[var(--text-muted)] mb-6">
           Import your General Ledger to assess credit risk, probability of default, and expected
           losses across counterparties.

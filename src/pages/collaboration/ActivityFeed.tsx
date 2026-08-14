@@ -101,7 +101,7 @@ export function ActivityFeed() {
           Skip to import action
         </a>
         <Activity className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No Activity Feed Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Activity Feed Data</h1>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to view activity feed.</p>
         <Button
           id="import-btn"

@@ -608,7 +608,7 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
         <span className="mx-auto mb-4 block text-3xl text-[var(--text-muted)]" aria-hidden="true">
           ◇
         </span>
-        <h2 className="mb-2 text-xl font-semibold">Sector configuration unavailable</h2>
+        <h1 className="mb-2 text-xl font-semibold">Sector configuration unavailable</h1>
       </main>
     );
   }
@@ -619,9 +619,9 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
         <span className="mx-auto mb-4 block text-3xl text-[var(--text-muted)]" aria-hidden="true">
           ▣
         </span>
-        <h2 className="mb-2 text-xl font-semibold">
+        <h1 className="mb-2 text-xl font-semibold">
           {legacyCopy.title.replace(' Dashboard', '')} — No Data
-        </h2>
+        </h1>
         <p className="mb-6 text-[var(--text-muted)]">
           Import GL data to calculate live sector KPIs and driver scenarios.
         </p>

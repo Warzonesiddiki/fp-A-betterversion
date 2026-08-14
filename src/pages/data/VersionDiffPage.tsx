@@ -167,7 +167,7 @@ export default function VersionDiffPage() {
         >
           <Database className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
-        <h2 className="text-xl font-semibold mb-2">No Data to Compare</h2>
+        <h1 className="text-xl font-semibold mb-2">No Data to Compare</h1>
         <p className="text-[var(--text-muted)] mb-6">
           Import GL data or create budget entries to enable version comparison.
         </p>

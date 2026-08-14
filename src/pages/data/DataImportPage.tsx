@@ -288,7 +288,7 @@ export default function DataImportPage() {
         <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
           <Upload className="h-10 w-10 text-[var(--text-muted)]" aria-hidden="true" />
         </div>
-        <h2 className="text-xl font-semibold mb-2">No Data Imported</h2>
+        <h1 className="text-xl font-semibold mb-2">No Data Imported</h1>
         <p className="text-[var(--text-muted)] mb-6">
           Use the GL Upload page to import your financial data first, then come here to reconcile
           against external reports.

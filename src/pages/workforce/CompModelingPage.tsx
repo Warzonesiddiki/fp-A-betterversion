@@ -104,7 +104,7 @@ export default function CompModelingPage() {
     return (
       <main className="p-12 text-center" role="main" aria-label="Compensation Modeling - No Data">
         <BarChart3 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No Compensation Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Compensation Data</h1>
         <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
           Import payroll or general ledger data with compensation accounts to model salary, bonus
           and merit scenarios.

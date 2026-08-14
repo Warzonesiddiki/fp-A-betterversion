@@ -205,7 +205,7 @@ export function SharedReports() {
           Skip to import action
         </a>
         <FileText className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No Shared Reports Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Shared Reports Data</h1>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to view shared reports.</p>
         <Button
           id="import-btn"

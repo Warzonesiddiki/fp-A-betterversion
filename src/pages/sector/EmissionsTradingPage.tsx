@@ -41,7 +41,7 @@ export default function EmissionsTradingPage() {
         aria-label="Emissions Trading Dashboard - No Data"
       >
         <Leaf className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">Emissions Trading — No Data</h2>
+        <h1 className="text-xl font-semibold mb-2">Emissions Trading — No Data</h1>
         <p className="text-[var(--text-muted)] mb-6">
           Import GL data to view carbon credit metrics.
         </p>

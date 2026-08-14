@@ -101,7 +101,7 @@ export function EnergySectorPage() {
           Skip to import action
         </a>
         <Zap className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No Energy Sector Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Energy Sector Data</h1>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to view energy sector.</p>
         <Button
           id="import-btn"

@@ -38,7 +38,7 @@ export default function TechnologyDashboardPage() {
     return (
       <main className="p-12 text-center" role="main" aria-label="Technology Dashboard - No Data">
         <Cpu className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">Technology — No Data</h2>
+        <h1 className="text-xl font-semibold mb-2">Technology — No Data</h1>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to view SaaS metrics.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>

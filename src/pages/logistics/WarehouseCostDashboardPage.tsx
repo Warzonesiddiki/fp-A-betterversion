@@ -98,7 +98,7 @@ export default function WarehouseCostDashboardPage() {
     return (
       <main className="p-12 text-center" role="main" aria-label="Warehouse Cost - No Data">
         <Warehouse className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No Warehouse Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Warehouse Data</h1>
         <p className="text-[var(--text-muted)] mb-6">
           Import GL data to view warehouse cost metrics.
         </p>

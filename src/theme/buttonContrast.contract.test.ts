@@ -489,6 +489,45 @@ describe('UI-07 — empty-state surfaces use theme tokens, not hardcoded palette
   const BARE_SLATE_500 = /\btext-slate-500\b/;
   const HAS_DARK_TEXT_OVERRIDE = /\bdark:text-(?:\[|[a-z]+-\d{2,3}|white)/;
 
+  /**
+   * UI-07 -- an empty state is still a page, so it needs an <h1>.
+   *
+   * These pages early-return a bare <main> BEFORE reaching their PageHeader,
+   * and PageHeader is what owns the page <h1>. So on the no-data branch the
+   * document shipped with h1=0 and a single <h2> as its only heading --
+   * verified by rendering, not inference: BankingDashboard and
+   * ChartOfAccountsPage both measured h1=0 h2=1. A screen-reader user landing
+   * there gets no page title, and "skip to main heading" has no target.
+   *
+   * axe cannot catch this: `page-has-heading-one` is document-scoped and
+   * returns [] for a fragment render, so the a11y suite was silent on it.
+   *
+   * The heading inside such a <main> IS the page title in that state, so it
+   * must be <h1>. A <main> that renders a PageHeader is exempt: its <h1>
+   * comes from the header and the <h2>s below are real section headings.
+   */
+  it('every empty-state <main> that carries a heading starts at <h1>', () => {
+    const MAIN_BLOCK = /<main\b[^>]*>([\s\S]*?)<\/main>/g;
+    const offenders = PAGES.flatMap((file) => {
+      const src = readFileSync(file, 'utf8');
+      const hits: string[] = [];
+      for (const m of src.matchAll(MAIN_BLOCK)) {
+        const block = m[0];
+        if (!block.includes('<h2')) continue;
+        // PageHeader supplies the <h1> for this branch.
+        if (block.includes('<PageHeader')) continue;
+        if (block.includes('<h1')) continue;
+        hits.push(`${file.split('/src/')[1]}:${src.slice(0, m.index).split('\n').length}`);
+      }
+      return hits;
+    });
+
+    expect(
+      offenders,
+      'an empty state is the whole page in that state: its heading must be <h1>'
+    ).toEqual([]);
+  });
+
   it('no source uses bare text-slate-500 (3.07-4.11:1 on dark surfaces)', () => {
     const all = [...PAGES, ...globSources(resolve(__dirname, '../components'))];
     const offenders = all.flatMap((file) =>

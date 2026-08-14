@@ -203,7 +203,7 @@ export default function ProductionDashboardPage() {
     return (
       <main className="p-12 text-center" role="main" aria-label="Production Dashboard - No Data">
         <ChartArea className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No Production Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Production Data</h1>
         <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
           Import general ledger data with production and cost-of-goods accounts to see output, yield
           and variance.
