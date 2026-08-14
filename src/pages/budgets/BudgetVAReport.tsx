@@ -236,7 +236,7 @@ export default function BudgetVAReport() {
       {!selectedBudgetId ? (
         <Card className="bg-slate-900/50 border-dashed border-slate-800 py-12">
           <CardContent className="text-center space-y-4">
-            <div className="p-4 bg-slate-800 rounded-full inline-block">
+            <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block">
               <FileBarChart className="h-8 w-8 text-slate-500" />
             </div>
             <div className="max-w-xs mx-auto">

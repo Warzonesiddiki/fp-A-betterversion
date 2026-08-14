@@ -140,8 +140,8 @@ export default function YieldCurvePage() {
         role="main"
         aria-label="Yield Curve Analysis page"
       >
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <TrendingUp className="h-10 w-10 text-slate-400" aria-hidden="true" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <TrendingUp className="h-10 w-10 text-[var(--text-muted)]" aria-hidden="true" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Yield Curve Data</h2>
         <p className="text-[var(--text-muted)] mb-6">

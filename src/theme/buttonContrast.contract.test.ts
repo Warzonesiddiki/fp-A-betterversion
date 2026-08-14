@@ -437,3 +437,68 @@ describe('UI-08 — tinted fills stay legible under their paired text token', ()
     }
   }
 });
+
+/**
+ * UI-07 — empty states must theme.
+ *
+ * 42 pages rendered their empty-state icon inside a `p-4 bg-slate-800
+ * rounded-full` circle. A hardcoded slate is not a theme token: in dark mode it
+ * reads as the intended subtle disc (1.24:1 against the page), but in light mode
+ * the same class paints a near-black blob on white at 14.63:1. The empty state is
+ * the *first* thing a new user sees on a report route, so it was also the most
+ * visible surface still ignoring the theme.
+ *
+ * These pages sit outside `MIGRATED`, so the UI-01 palette lint does not cover
+ * them. This ratchet is narrower than that lint on purpose: it bans the specific
+ * hardcoded-surface idiom in empty states rather than all raw palette use, which
+ * is still widespread here and is a separate migration.
+ */
+describe('UI-07 — empty-state surfaces use theme tokens, not hardcoded palette', () => {
+  const PAGES = globSources(resolve(__dirname, '../pages'));
+
+  // A filled circle behind an empty-state glyph. `bg-<palette>-<shade>` here is
+  // always a themed-surface bug: the disc has to track the page background.
+  const HARDCODED_DISC = /\bp-\d+ bg-(?:slate|gray|zinc|neutral|stone)-\d{2,3} rounded-full\b/;
+
+  it('audits a meaningful number of page sources', () => {
+    expect(PAGES.length).toBeGreaterThan(50);
+  });
+
+  it('no page paints an empty-state disc with a hardcoded palette surface', () => {
+    const offenders = PAGES.flatMap((file) =>
+      readFileSync(file, 'utf8')
+        .split('\n')
+        .map((line, i) => ({ line: line.trim(), n: i + 1 }))
+        .filter(({ line }) => HARDCODED_DISC.test(line))
+        .map(({ line, n }) => `${file.split('/src/')[1]}:${n} ${line}`)
+    );
+
+    expect(offenders, 'use bg-[var(--bg-elevated)] so the disc tracks the theme').toEqual([]);
+  });
+
+  /**
+   * The disc idiom is only half the fix: the glyph inside it must clear WCAG
+   * 1.4.11 (3:1, non-text) against the new surface in BOTH themes. Three pages
+   * paired a `text-red-400` glyph with the disc, which sat at 2.64:1 on the
+   * light-theme surface once the disc started theming correctly.
+   */
+  for (const { name, scope } of THEMES) {
+    it(`${name}: --text-muted glyph clears 1.4.11 on --bg-elevated`, () => {
+      const surface = flatten(token('bg-elevated', scope), [1, 1, 1]);
+      const glyph = flatten(token('text-muted', scope), surface);
+      expect(
+        contrast(glyph, surface),
+        `--text-muted (${token('text-muted', scope)}) on --bg-elevated in ${name}`
+      ).toBeGreaterThanOrEqual(AA_NON_TEXT);
+    });
+
+    it(`${name}: --text-negative glyph clears 1.4.11 on --bg-elevated`, () => {
+      const surface = flatten(token('bg-elevated', scope), [1, 1, 1]);
+      const glyph = flatten(token('text-negative', scope), surface);
+      expect(
+        contrast(glyph, surface),
+        `--text-negative (${token('text-negative', scope)}) on --bg-elevated in ${name}`
+      ).toBeGreaterThanOrEqual(AA_NON_TEXT);
+    });
+  }
+});

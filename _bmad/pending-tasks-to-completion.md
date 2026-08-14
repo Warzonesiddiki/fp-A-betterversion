@@ -454,9 +454,14 @@ The risk lives in the populated state, so `wcag-aa-populated.test.tsx` mocks the
 GL and budget stores and re-scans `ProfitLossPage`, `CashFlowPage`,
 `ChartOfAccountsPage` and `BudgetVsActualPage` with real content (45-104
 elements, 4-19 table rows). All four are clean at 0 critical/serious, so this
-closed a coverage gap rather than a defect; the one finding is `heading-order`
-on `ChartOfAccountsPage`, moderate, tolerated by the same bar as the sibling
-suite. `DashboardPage`'s populated state was already covered by
+closed a coverage gap rather than a defect. The one finding, `heading-order` on
+`ChartOfAccountsPage`, has since been fixed rather than tolerated: `PageHeader`
+renders the `<h1>` and `CardTitle` hardcoded an `<h3>`, so the level jumped. The
+level is now a `CardTitle` prop (`as?: HeadingLevel`, default `'h3'`, so all 168
+existing usages are byte-identical) and that page opts into `as="h2"`.
+`wcag-aa-populated.test.tsx` ratchets the structure directly -- no heading may
+jump more than one level -- because axe cannot see document-scoped heading rules
+in a fragment render. `DashboardPage`'s populated state was already covered by
 `DashboardPage.populated.contract.test.tsx` and is not duplicated.
 
 Each test also asserts it rendered ≥30 elements, so the hollow-scan failure mode
@@ -465,10 +470,25 @@ cannot come back silently. Mutation-verified both ways: M12 (an unlabelled
 `button-name`; M13 (emptying the store mocks) fails all five on the element-count
 guard rather than passing on an empty container.
 
-Still open in this section: loading/empty/error consistency, keyboard
-paths, 1024×600. One contrast item is known and deliberately excluded:
-`--border-subtle` is used as text in `NLQChat.tsx:262,264`, but only for
-decorative dot separators between metadata, which is not content.
+The `--border-subtle`-as-text item at `NLQChat.tsx:262,264` is also closed: the
+dot separators are decorative, so rather than retune a border token for text
+they are now `aria-hidden="true"` and out of the accessibility tree entirely.
+
+Empty states are partly done. 42 pages drew the empty-state icon on a
+`p-4 bg-slate-800 rounded-full` disc, which is theme-blind: 1.24:1 against the
+dark page (the intended subtle recess) but 14.63:1 against the light page, i.e. a
+near-black blob. Those discs now use `--bg-elevated` (1.13:1 dark / 1.05:1 light)
+with `--text-muted` glyphs (5.32 / 4.91), and the three `text-red-400` glyphs that
+fell to 2.64:1 on the corrected light surface moved to `--text-negative`
+(5.92 / 4.62). A ratchet in `buttonContrast.contract.test.ts` bans the hardcoded
+disc idiom across `src/pages`, which the UI-01 palette lint does not reach.
+
+Still open in this section: loading/error-state consistency, the remaining raw
+palette inside empty-state blocks (16 blocks beyond the disc idiom, mostly
+`bg-blue-600` on Buttons), keyboard paths, and 1024×600. Note that 77 pages
+render their empty state with an `<h2>` and no `<h1>`; axe reports nothing
+because `page-has-heading-one` only fires on a full document, so this needs a
+direct DOM assertion if it is picked up.
 
 ---
 

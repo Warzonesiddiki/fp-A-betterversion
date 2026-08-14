@@ -161,8 +161,11 @@ export default function VersionDiffPage() {
         >
           Skip to import action
         </a>
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4" aria-hidden="true">
-          <Database className="h-10 w-10 text-slate-400" />
+        <div
+          className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4"
+          aria-hidden="true"
+        >
+          <Database className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data to Compare</h2>
         <p className="text-[var(--text-muted)] mb-6">
@@ -343,8 +346,8 @@ export default function VersionDiffPage() {
       {(!selectedSourceId || !selectedTargetId) && (
         <Card>
           <CardContent className="p-12 text-center">
-            <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-              <ArrowLeftRight className="h-10 w-10 text-slate-400" aria-hidden="true" />
+            <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+              <ArrowLeftRight className="h-10 w-10 text-[var(--text-muted)]" aria-hidden="true" />
             </div>
             <h3 className="text-lg font-semibold text-[var(--text-secondary)] mb-2">
               Select Two Branches

@@ -285,8 +285,8 @@ export default function DataImportPage() {
   if (entries.length === 0) {
     return (
       <main className="p-12 text-center max-w-md mx-auto" role="main" aria-label="Data import page">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <Upload className="h-10 w-10 text-slate-400" aria-hidden="true" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <Upload className="h-10 w-10 text-[var(--text-muted)]" aria-hidden="true" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data Imported</h2>
         <p className="text-[var(--text-muted)] mb-6">

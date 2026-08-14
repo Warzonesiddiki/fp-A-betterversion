@@ -160,8 +160,8 @@ export default function RollingForecastPage() {
   if (importError) {
     return (
       <div className="p-12 text-center">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <TrendingUp className="h-10 w-10 text-red-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <TrendingUp className="h-10 w-10 text-[var(--text-negative)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">Failed to load data</h2>
         <p className="text-[var(--text-muted)] mb-6">{importError}</p>
@@ -173,8 +173,8 @@ export default function RollingForecastPage() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <TrendingUp className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <TrendingUp className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
         <p className="text-[var(--text-muted)] mb-6">

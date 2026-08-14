@@ -229,8 +229,8 @@ function AuditTrailContent() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <ScrollText className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <ScrollText className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Audit Entries</h2>
         <p className="text-[var(--text-muted)] mb-6">
@@ -660,7 +660,7 @@ export default function AuditTrailPage() {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
         <div className="p-4 bg-red-900/30 rounded-full inline-block mb-4">
-          <ScrollText className="h-10 w-10 text-red-400" />
+          <ScrollText className="h-10 w-10 text-[var(--text-negative)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2 text-red-300">Access Denied</h2>
         <p className="text-[var(--text-muted)] mb-6">

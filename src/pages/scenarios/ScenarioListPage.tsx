@@ -41,8 +41,8 @@ export default function ScenarioListPage() {
   if (scenarios.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <FlaskConical className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <FlaskConical className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Scenarios Yet</h2>
         <p className="text-[var(--text-muted)] mb-6">

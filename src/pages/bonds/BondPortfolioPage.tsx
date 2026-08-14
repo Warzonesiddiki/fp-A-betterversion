@@ -226,8 +226,8 @@ export default function BondPortfolioPage() {
         role="main"
         aria-label="Bond Portfolio page"
       >
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <Landmark className="h-10 w-10 text-slate-400" aria-hidden="true" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <Landmark className="h-10 w-10 text-[var(--text-muted)]" aria-hidden="true" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Bond Data</h2>
         <p className="text-[var(--text-muted)] mb-6">
