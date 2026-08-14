@@ -162,7 +162,7 @@ export default function NIMDashboardPage() {
             subtitle="Monthly spread analysis"
             height={350}
           >
-            <div className="flex items-center justify-center h-full text-slate-500 italic">
+            <div className="flex items-center justify-center h-full text-[var(--text-muted)] italic">
               Margin vs. Cost Visualization (Line Chart)
             </div>
           </ChartWrapper>
@@ -188,7 +188,7 @@ export default function NIMDashboardPage() {
                 <span className="text-sm font-bold text-red-400">-$1.8M NII</span>
               </div>
             </div>
-            <p className="text-[10px] text-slate-500">
+            <p className="text-[10px] text-[var(--text-muted)]">
               Estimates based on current GAP analysis and asset-sensitive profile.
             </p>
           </CardContent>

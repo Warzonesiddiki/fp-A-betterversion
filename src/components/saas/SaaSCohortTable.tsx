@@ -9,7 +9,8 @@ export interface SaaSCohortTableProps {
 }
 
 export function SaaSCohortTable({ data }: SaaSCohortTableProps) {
-  if (!data.length) return <div className="p-8 text-center text-slate-500">No cohort data</div>;
+  if (!data.length)
+    return <div className="p-8 text-center text-[var(--text-muted)]">No cohort data</div>;
 
   return (
     <div className="overflow-x-auto rounded-lg border border-slate-800">
@@ -35,7 +36,7 @@ export function SaaSCohortTable({ data }: SaaSCohortTableProps) {
               <td className="p-2 border-r border-slate-800 font-medium text-slate-300">
                 {row.cohort}
               </td>
-              <td className="p-2 border-r border-slate-800 text-right text-slate-500">
+              <td className="p-2 border-r border-slate-800 text-right text-[var(--text-muted)]">
                 {row.size}
               </td>
               {row.retention.map((val, j) => {

@@ -17,7 +17,7 @@ export function TemplateMarketplace({ templates, onSelect }: TemplateMarketplace
   if (templates.length === 0) {
     return (
       <div
-        className="p-12 text-center text-slate-500 bg-slate-900 rounded-xl border border-dashed border-slate-700"
+        className="p-12 text-center text-[var(--text-muted)] bg-slate-900 rounded-xl border border-dashed border-slate-700"
         role="region"
         aria-label="TemplateMarketplace"
       >

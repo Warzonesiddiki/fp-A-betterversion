@@ -210,7 +210,7 @@ export function LeaseAccountingPage() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                 aria-label="Help"
               >
                 <HelpCircle className="h-5 w-5" />
@@ -227,7 +227,7 @@ export function LeaseAccountingPage() {
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4" aria-label="Lease KPIs">
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
               <FileSignature className="h-4 w-4" />
               Lease Entries
             </div>
@@ -236,7 +236,7 @@ export function LeaseAccountingPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
               <Building className="h-4 w-4" />
               ROU Assets (Net)
             </div>
@@ -245,7 +245,7 @@ export function LeaseAccountingPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
               <DollarSign className="h-4 w-4" />
               Lease Liabilities
             </div>
@@ -256,7 +256,7 @@ export function LeaseAccountingPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
               <Calendar className="h-4 w-4" />
               Active Lease Codes
             </div>
@@ -268,7 +268,9 @@ export function LeaseAccountingPage() {
       {stats.leaseEntryCount === 0 && entries.length > 0 && (
         <Card>
           <CardContent className="p-6 text-center">
-            <p className="text-sm text-slate-500 mb-2">No lease-specific entries detected.</p>
+            <p className="text-sm text-[var(--text-muted)] mb-2">
+              No lease-specific entries detected.
+            </p>
             <p className="text-xs text-slate-600">
               Lease entries are identified by account codes starting with{' '}
               {LEASE_PREFIXES.join(' or ')}
@@ -293,7 +295,7 @@ export function LeaseAccountingPage() {
                   <div className="text-2xl font-bold text-blue-400">
                     {formatCompactNumber(totalROU)}
                   </div>
-                  <div className="text-xs text-slate-500 mt-1">
+                  <div className="text-xs text-[var(--text-muted)] mt-1">
                     {stats.accountBreakdown.filter((r) => r.isROU).length} accounts
                   </div>
                 </div>
@@ -304,7 +306,7 @@ export function LeaseAccountingPage() {
                   <div className="text-2xl font-bold text-orange-400">
                     {formatCompactNumber(totalLiability)}
                   </div>
-                  <div className="text-xs text-slate-500 mt-1">
+                  <div className="text-xs text-[var(--text-muted)] mt-1">
                     {stats.accountBreakdown.filter((r) => r.isLiability).length} accounts
                   </div>
                 </div>
@@ -326,7 +328,7 @@ export function LeaseAccountingPage() {
                   ariaLabel="Lease accounting table"
                 />
               ) : (
-                <p className="text-sm text-slate-500 text-center py-4">
+                <p className="text-sm text-[var(--text-muted)] text-center py-4">
                   No lease account data available.
                 </p>
               )}

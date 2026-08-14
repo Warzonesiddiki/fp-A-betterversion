@@ -306,7 +306,7 @@ export function FXPositionGrid() {
             <tbody className="divide-y divide-slate-800">
               {exposure.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-slate-500">
+                  <td colSpan={6} className="text-center py-12 text-[var(--text-muted)]">
                     No positions.
                   </td>
                 </tr>

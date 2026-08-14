@@ -324,7 +324,9 @@ function AuditTrailContent() {
         <CardContent className="p-4 space-y-3">
           {/* Date range quick presets */}
           <div className="flex gap-2 flex-wrap items-center">
-            <span className="text-xs text-slate-500 uppercase tracking-wide">Quick range:</span>
+            <span className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+              Quick range:
+            </span>
             {(['24h', '7d', '30d', 'all'] as DatePreset[]).map((p) => (
               <button
                 key={p}
@@ -344,7 +346,7 @@ function AuditTrailContent() {
 
           <div className="flex gap-3 items-end flex-wrap">
             <div>
-              <label className="block text-xs text-slate-500 mb-1" htmlFor="audit-from">
+              <label className="block text-xs text-[var(--text-muted)] mb-1" htmlFor="audit-from">
                 From
               </label>
               <input
@@ -359,7 +361,7 @@ function AuditTrailContent() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1" htmlFor="audit-to">
+              <label className="block text-xs text-[var(--text-muted)] mb-1" htmlFor="audit-to">
                 To
               </label>
               <input
@@ -374,7 +376,7 @@ function AuditTrailContent() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1" htmlFor="audit-user">
+              <label className="block text-xs text-[var(--text-muted)] mb-1" htmlFor="audit-user">
                 User
               </label>
               <input
@@ -386,7 +388,7 @@ function AuditTrailContent() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1" htmlFor="audit-action">
+              <label className="block text-xs text-[var(--text-muted)] mb-1" htmlFor="audit-action">
                 Action
               </label>
               <input
@@ -398,7 +400,10 @@ function AuditTrailContent() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1" htmlFor="audit-operation">
+              <label
+                className="block text-xs text-[var(--text-muted)] mb-1"
+                htmlFor="audit-operation"
+              >
                 Operation
               </label>
               <select
@@ -419,7 +424,10 @@ function AuditTrailContent() {
             </div>
             {dataTypes.length > 0 && (
               <div>
-                <label className="block text-xs text-slate-500 mb-1" htmlFor="audit-datatype">
+                <label
+                  className="block text-xs text-[var(--text-muted)] mb-1"
+                  htmlFor="audit-datatype"
+                >
                   Data type
                 </label>
                 <select
@@ -444,7 +452,7 @@ function AuditTrailContent() {
 
           {/* Cross-cell/account search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
             <input
               type="search"
               className="w-full bg-slate-800 border border-slate-700 rounded pl-10 pr-3 py-2 text-sm"
@@ -514,7 +522,10 @@ function AuditTrailContent() {
               <tbody className="divide-y divide-slate-800">
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={showDiff ? 7 : 5} className="text-center py-8 text-slate-500">
+                    <td
+                      colSpan={showDiff ? 7 : 5}
+                      className="text-center py-8 text-[var(--text-muted)]"
+                    >
                       No entries match filters.
                     </td>
                   </tr>
@@ -575,7 +586,7 @@ function AuditTrailContent() {
                               </td>
                             </>
                           )}
-                          <td className="px-4 py-2 text-xs text-slate-500">
+                          <td className="px-4 py-2 text-xs text-[var(--text-muted)]">
                             {(e.reason || '-').slice(0, 60)}
                             {(e.reason || '').length > 60 ? '…' : ''}
                           </td>
@@ -585,7 +596,7 @@ function AuditTrailContent() {
                             <td colSpan={showDiff ? 7 : 5} className="px-6 py-3">
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                                 <div>
-                                  <div className="text-slate-500 uppercase tracking-wide mb-1">
+                                  <div className="text-[var(--text-muted)] uppercase tracking-wide mb-1">
                                     Cell ID
                                   </div>
                                   <div className="font-mono text-slate-300 break-all">
@@ -593,19 +604,19 @@ function AuditTrailContent() {
                                   </div>
                                 </div>
                                 <div>
-                                  <div className="text-slate-500 uppercase tracking-wide mb-1">
+                                  <div className="text-[var(--text-muted)] uppercase tracking-wide mb-1">
                                     Data type
                                   </div>
                                   <div className="text-slate-300">{e.dataType || '—'}</div>
                                 </div>
                                 <div>
-                                  <div className="text-slate-500 uppercase tracking-wide mb-1">
+                                  <div className="text-[var(--text-muted)] uppercase tracking-wide mb-1">
                                     Source
                                   </div>
                                   <div className="text-slate-300">{e.source || '—'}</div>
                                 </div>
                                 <div>
-                                  <div className="text-slate-500 uppercase tracking-wide mb-1">
+                                  <div className="text-[var(--text-muted)] uppercase tracking-wide mb-1">
                                     Approval
                                   </div>
                                   <div className="text-slate-300">
@@ -615,7 +626,7 @@ function AuditTrailContent() {
                                 </div>
                                 {e.metadata && Object.keys(e.metadata).length > 0 && (
                                   <div className="col-span-2 md:col-span-4">
-                                    <div className="text-slate-500 uppercase tracking-wide mb-1">
+                                    <div className="text-[var(--text-muted)] uppercase tracking-wide mb-1">
                                       Metadata
                                     </div>
                                     <pre className="text-[10px] font-mono text-slate-400 bg-slate-950/50 rounded p-2 overflow-x-auto">
@@ -635,7 +646,7 @@ function AuditTrailContent() {
             </table>
           </div>
           {entries.length > 500 && (
-            <div className="p-3 text-center text-xs text-slate-500 border-t border-slate-800">
+            <div className="p-3 text-center text-xs text-[var(--text-muted)] border-t border-slate-800">
               Showing 500 of {entries.length} entries. Export for full dataset.
             </div>
           )}

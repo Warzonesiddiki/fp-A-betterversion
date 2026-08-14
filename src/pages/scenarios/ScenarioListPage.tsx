@@ -67,7 +67,7 @@ export default function ScenarioListPage() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                 aria-label="Help"
               ></button>
             }
@@ -112,7 +112,7 @@ export default function ScenarioListPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filtered.length === 0 ? (
-          <div className="col-span-full text-center py-8 text-slate-500">
+          <div className="col-span-full text-center py-8 text-[var(--text-muted)]">
             No scenarios match the filter.
           </div>
         ) : (
@@ -154,7 +154,7 @@ export default function ScenarioListPage() {
                 <p className="text-xs text-[var(--text-muted)] mb-3 line-clamp-2">
                   {s.description}
                 </p>
-                <div className="flex gap-2 text-xs text-slate-500">
+                <div className="flex gap-2 text-xs text-[var(--text-muted)]">
                   <Badge variant="secondary" className="text-[10px]">
                     {s.type}
                   </Badge>

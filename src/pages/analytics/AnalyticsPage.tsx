@@ -63,7 +63,7 @@ export default function AnalyticsPage() {
         actions={
           <button
             onClick={() => setHelpOpen(true)}
-            className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+            className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
             aria-label="Help"
           ></button>
         }
@@ -116,7 +116,9 @@ export default function AnalyticsPage() {
                     <span className="w-24 text-right tabular-nums text-xs">
                       {fmt.currency0(data.total)}
                     </span>
-                    <span className="w-12 text-right text-xs text-slate-500">({data.count})</span>
+                    <span className="w-12 text-right text-xs text-[var(--text-muted)]">
+                      ({data.count})
+                    </span>
                   </div>
                 );
               })}

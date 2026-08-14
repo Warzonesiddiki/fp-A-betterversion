@@ -151,7 +151,7 @@ export default function ProductionDashboardPage() {
               ? 'text-green-400'
               : r.status === 'Maintenance'
                 ? 'text-yellow-400'
-                : 'text-slate-500'
+                : 'text-[var(--text-muted)]'
           }
         >
           {r.status === 'Running' ? (

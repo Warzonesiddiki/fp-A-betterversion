@@ -10,7 +10,7 @@ export function ProductionDashboard({ metrics }: ProductionDashboardProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <Card className="flex flex-col items-center gap-2 p-4">
-        <span className="text-xs font-bold text-slate-500 uppercase">OEE</span>
+        <span className="text-xs font-bold text-[var(--text-muted)] uppercase">OEE</span>
         <GaugeChart value={metrics.oee} min={0} max={100} label="OEE" />
       </Card>
       <div className="md:col-span-3 grid grid-cols-3 gap-4">

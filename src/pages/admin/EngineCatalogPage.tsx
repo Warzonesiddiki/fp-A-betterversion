@@ -157,7 +157,9 @@ export default function EngineCatalogPage() {
                       Failed
                     </span>
                   )}
-                  {row.state === 'loading' && <span className="text-slate-500">Loading…</span>}
+                  {row.state === 'loading' && (
+                    <span className="text-[var(--text-muted)]">Loading…</span>
+                  )}
                   {row.state === 'idle' && (
                     <span className="text-[var(--text-muted)]">Not loaded</span>
                   )}

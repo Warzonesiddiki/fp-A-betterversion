@@ -103,7 +103,7 @@ export default function GLAccountAnalysisPage() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                 aria-label="Help"
               ></button>
             }
@@ -148,7 +148,7 @@ export default function GLAccountAnalysisPage() {
       </Card>
 
       {!selectedAccountId && (
-        <div className="text-center py-12 text-slate-500">
+        <div className="text-center py-12 text-[var(--text-muted)]">
           <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
           <p>Select an account above to view detailed analysis.</p>
         </div>
@@ -221,7 +221,9 @@ export default function GLAccountAnalysisPage() {
             <CardContent className="p-4">
               <h3 className="font-semibold mb-4">Monthly Trend</h3>
               {accountStats.monthlyTotals.length === 0 ? (
-                <p className="text-slate-500 text-sm text-center py-4">No monthly data available</p>
+                <p className="text-[var(--text-muted)] text-sm text-center py-4">
+                  No monthly data available
+                </p>
               ) : (
                 <div className="space-y-2">
                   {accountStats.monthlyTotals.map((m) => {

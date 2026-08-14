@@ -68,7 +68,7 @@ export default function COGSVariancePage() {
           actions={
             <button
               onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors ml-4"
+              className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors ml-4"
               aria-label="Help"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

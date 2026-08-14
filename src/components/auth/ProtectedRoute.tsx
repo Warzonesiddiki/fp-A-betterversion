@@ -51,7 +51,7 @@ export function ProtectedRoute({
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold text-red-400">Access Denied</h1>
           <p className="text-slate-400">You don&apos;t have permission to access this page.</p>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-[var(--text-muted)]">
             Required role: {roles.join(' or ')}
             <br />
             Your role: {user?.role ?? 'None'}
@@ -74,7 +74,7 @@ export function ProtectedRoute({
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold text-red-400">Access Denied</h1>
           <p className="text-slate-400">You don&apos;t have the required permission.</p>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-[var(--text-muted)]">
             Required: <code className="text-blue-400">{permission}</code>
           </p>
           <button

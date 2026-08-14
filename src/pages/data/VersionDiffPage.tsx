@@ -211,7 +211,10 @@ export default function VersionDiffPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Source Branch */}
             <div>
-              <label htmlFor="diff-source" className="block text-xs text-slate-500 mb-1.5">
+              <label
+                htmlFor="diff-source"
+                className="block text-xs text-[var(--text-muted)] mb-1.5"
+              >
                 Source Branch (Base)
               </label>
               <select
@@ -239,7 +242,10 @@ export default function VersionDiffPage() {
 
             {/* Target Branch */}
             <div>
-              <label htmlFor="diff-target" className="block text-xs text-slate-500 mb-1.5">
+              <label
+                htmlFor="diff-target"
+                className="block text-xs text-[var(--text-muted)] mb-1.5"
+              >
                 Target Branch (Compare)
               </label>
               <select
@@ -282,12 +288,12 @@ export default function VersionDiffPage() {
           <Card>
             <CardContent className="p-4">
               <h4 className="text-sm font-semibold text-[var(--text-secondary)] mb-2 flex items-center gap-1.5">
-                <GitCommit className="h-3.5 w-3.5 text-slate-500" aria-hidden="true" />
+                <GitCommit className="h-3.5 w-3.5 text-[var(--text-muted)]" aria-hidden="true" />
                 {sourceBranch?.name} Commits
               </h4>
               <div className="space-y-1.5 max-h-40 overflow-y-auto">
                 {sourceCommits.length === 0 ? (
-                  <p className="text-xs text-slate-500">No commits</p>
+                  <p className="text-xs text-[var(--text-muted)]">No commits</p>
                 ) : (
                   sourceCommits.map((c) => (
                     <div
@@ -307,12 +313,12 @@ export default function VersionDiffPage() {
           <Card>
             <CardContent className="p-4">
               <h4 className="text-sm font-semibold text-[var(--text-secondary)] mb-2 flex items-center gap-1.5">
-                <GitCommit className="h-3.5 w-3.5 text-slate-500" aria-hidden="true" />
+                <GitCommit className="h-3.5 w-3.5 text-[var(--text-muted)]" aria-hidden="true" />
                 {targetBranch?.name} Commits
               </h4>
               <div className="space-y-1.5 max-h-40 overflow-y-auto">
                 {targetCommits.length === 0 ? (
-                  <p className="text-xs text-slate-500">No commits</p>
+                  <p className="text-xs text-[var(--text-muted)]">No commits</p>
                 ) : (
                   targetCommits.map((c) => (
                     <div
@@ -352,7 +358,7 @@ export default function VersionDiffPage() {
             <h3 className="text-lg font-semibold text-[var(--text-secondary)] mb-2">
               Select Two Branches
             </h3>
-            <p className="text-sm text-slate-500 max-w-md mx-auto">
+            <p className="text-sm text-[var(--text-muted)] max-w-md mx-auto">
               Choose a source and target branch above to see a detailed cell-level diff between the
               two versions.
             </p>

@@ -139,7 +139,7 @@ export default function GLReportingPage() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                 aria-label="Help"
               ></button>
             }
@@ -196,9 +196,9 @@ export default function GLReportingPage() {
               <h3 className="font-semibold mb-3">Date Range</h3>
               {summary.dateRange ? (
                 <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-4 w-4 text-slate-500" />
+                  <Calendar className="h-4 w-4 text-[var(--text-muted)]" />
                   <span>{summary.dateRange.start}</span>
-                  <span className="text-slate-500">to</span>
+                  <span className="text-[var(--text-muted)]">to</span>
                   <span>{summary.dateRange.end}</span>
                 </div>
               ) : (

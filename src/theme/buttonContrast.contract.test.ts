@@ -464,6 +464,44 @@ describe('UI-07 — empty-state surfaces use theme tokens, not hardcoded palette
     expect(PAGES.length).toBeGreaterThan(50);
   });
 
+  /**
+   * UI-08 -- `text-slate-500` (#64748b) as body text.
+   *
+   * `dark:` in this project is class-based (`@custom-variant dark
+   * (&:where(.dark, .dark *))` in index.css) and main.tsx adds `dark` to
+   * <html> on boot, so DARK IS THE DEFAULT THEME -- the unprefixed utility is
+   * what most users actually see. Measured against every dark surface,
+   * slate-500 fails AA for text on all of them:
+   *
+   *   --bg-root     #080c14  4.11:1
+   *   --bg-surface  #0e1626  3.80:1
+   *   --bg-elevated #152238  3.35:1
+   *   bg-slate-800  #1e293b  3.07:1
+   *
+   * 349 bare occurrences were shipped across 98 files. `--text-muted` is
+   * theme-aware (#7897c3 dark / #5f6f83 light) and clears AA in both
+   * (6.04:1 and 4.91:1 on the respective surfaces).
+   *
+   * A `text-slate-500 dark:text-<lighter>` PAIR is fine -- slate-500 is only
+   * used in light there, where it measures 4.76:1 -- so this guard fires only
+   * on the bare form, which is the one that lands on a dark background.
+   */
+  const BARE_SLATE_500 = /\btext-slate-500\b/;
+  const HAS_DARK_TEXT_OVERRIDE = /\bdark:text-(?:\[|[a-z]+-\d{2,3}|white)/;
+
+  it('no source uses bare text-slate-500 (3.07-4.11:1 on dark surfaces)', () => {
+    const all = [...PAGES, ...globSources(resolve(__dirname, '../components'))];
+    const offenders = all.flatMap((file) =>
+      readFileSync(file, 'utf8')
+        .split('\n')
+        .map((line, i) => ({ line: line.trim(), n: i + 1 }))
+        .filter(({ line }) => BARE_SLATE_500.test(line) && !HAS_DARK_TEXT_OVERRIDE.test(line))
+        .map(({ line, n }) => `${file.split('/src/')[1]}:${n} ${line.slice(0, 90)}`)
+    );
+
+    expect(offenders, 'use text-[var(--text-muted)]: AA in both themes').toEqual([]);
+  });
+
   it('no page paints an empty-state disc with a hardcoded palette surface', () => {
     const offenders = PAGES.flatMap((file) =>
       readFileSync(file, 'utf8')

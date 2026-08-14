@@ -46,7 +46,7 @@ export default function StorePerformancePage() {
                   ? 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                   : v === 3
                     ? 'bg-amber-100 text-amber-700'
-                    : 'bg-transparent text-slate-500'
+                    : 'bg-transparent text-[var(--text-muted)]'
             }`}
           >
             {v as number}

@@ -78,9 +78,9 @@ const HistoryRow: React.FC<{
         className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-[var(--bg-elevated)] transition-colors text-left"
       >
         {expanded ? (
-          <ChevronDown className="h-4 w-4 text-slate-500 shrink-0" />
+          <ChevronDown className="h-4 w-4 text-[var(--text-muted)] shrink-0" />
         ) : (
-          <ChevronRight className="h-4 w-4 text-slate-500 shrink-0" />
+          <ChevronRight className="h-4 w-4 text-[var(--text-muted)] shrink-0" />
         )}
 
         <div className="flex-1 min-w-0 flex items-center gap-3">
@@ -97,17 +97,19 @@ const HistoryRow: React.FC<{
             {entry.status}
           </span>
 
-          <span className="text-[10px] text-slate-500">{METHOD_LABELS[entry.method]}</span>
+          <span className="text-[10px] text-[var(--text-muted)]">
+            {METHOD_LABELS[entry.method]}
+          </span>
         </div>
 
         <div className="flex items-center gap-4 shrink-0">
           <span className="text-xs font-medium text-blue-400">
             {fmt.currency0(entry.result.totalAllocated)}
           </span>
-          <span className="text-[10px] text-slate-500">
+          <span className="text-[10px] text-[var(--text-muted)]">
             {entry.result.allocations.length} targets
           </span>
-          <span className="text-[10px] text-slate-500 flex items-center gap-1">
+          <span className="text-[10px] text-[var(--text-muted)] flex items-center gap-1">
             <Clock className="h-3 w-3" />
             {formatDate(entry.executedAt)}
           </span>
@@ -120,19 +122,19 @@ const HistoryRow: React.FC<{
           {/* Meta info */}
           <div className="grid grid-cols-4 gap-3 text-[10px]">
             <div>
-              <span className="text-slate-500 block">Source</span>
+              <span className="text-[var(--text-muted)] block">Source</span>
               <span className="text-[var(--text-primary)]">{entry.sourceAccount}</span>
             </div>
             <div>
-              <span className="text-slate-500 block">Method</span>
+              <span className="text-[var(--text-muted)] block">Method</span>
               <span className="text-[var(--text-primary)]">{METHOD_LABELS[entry.method]}</span>
             </div>
             <div>
-              <span className="text-slate-500 block">Executed By</span>
+              <span className="text-[var(--text-muted)] block">Executed By</span>
               <span className="text-[var(--text-primary)]">{entry.executedBy}</span>
             </div>
             <div>
-              <span className="text-slate-500 block">Rule ID</span>
+              <span className="text-[var(--text-muted)] block">Rule ID</span>
               <span className="text-[var(--text-primary)] font-mono">{entry.result.ruleId}</span>
             </div>
           </div>
@@ -143,19 +145,19 @@ const HistoryRow: React.FC<{
               <thead>
                 <tr className="bg-[var(--bg-surface)]">
                   <th
-                    className="px-2 py-1.5 text-left text-[10px] font-medium text-slate-500"
+                    className="px-2 py-1.5 text-left text-[10px] font-medium text-[var(--text-muted)]"
                     scope="col"
                   >
                     Target
                   </th>
                   <th
-                    className="px-2 py-1.5 text-right text-[10px] font-medium text-slate-500"
+                    className="px-2 py-1.5 text-right text-[10px] font-medium text-[var(--text-muted)]"
                     scope="col"
                   >
                     Amount
                   </th>
                   <th
-                    className="px-2 py-1.5 text-right text-[10px] font-medium text-slate-500"
+                    className="px-2 py-1.5 text-right text-[10px] font-medium text-[var(--text-muted)]"
                     scope="col"
                   >
                     %
@@ -179,7 +181,7 @@ const HistoryRow: React.FC<{
           </div>
 
           {/* Audit trail */}
-          <p className="text-[10px] text-slate-500 italic">{entry.result.auditComment}</p>
+          <p className="text-[10px] text-[var(--text-muted)] italic">{entry.result.auditComment}</p>
 
           {/* Actions */}
           <div className="flex items-center gap-2 pt-2 border-t border-[var(--border-subtle)]">
@@ -254,7 +256,7 @@ export const AllocationHistory: React.FC<AllocationHistoryProps> = ({
           <History className="h-5 w-5 text-blue-600" />
           <h3 className="text-sm font-semibold text-[var(--text-primary)]">Allocation History</h3>
         </div>
-        <div className="flex items-center gap-3 text-[10px] text-slate-500">
+        <div className="flex items-center gap-3 text-[10px] text-[var(--text-muted)]">
           <span>{totalCount} total</span>
           <span>{appliedCount} applied</span>
           <span className="text-blue-400 font-medium">{fmt.currency0(totalValue)}</span>
@@ -264,7 +266,7 @@ export const AllocationHistory: React.FC<AllocationHistoryProps> = ({
       {/* Filters */}
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-1.5">
-          <Filter className="h-3.5 w-3.5 text-slate-500" />
+          <Filter className="h-3.5 w-3.5 text-[var(--text-muted)]" />
           <select
             value={methodFilter}
             onChange={(e) => setMethodFilter(e.target.value as AllocationMethod | 'all')}
@@ -301,7 +303,7 @@ export const AllocationHistory: React.FC<AllocationHistoryProps> = ({
       {/* Entries */}
       <div className="flex flex-col gap-1.5 max-h-96 overflow-y-auto">
         {filtered.length === 0 ? (
-          <p className="text-xs text-slate-500 italic text-center py-4">
+          <p className="text-xs text-[var(--text-muted)] italic text-center py-4">
             {entries.length === 0
               ? 'No allocations executed yet.'
               : 'No allocations match the current filters.'}

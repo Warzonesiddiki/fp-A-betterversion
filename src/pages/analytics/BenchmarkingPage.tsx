@@ -196,7 +196,7 @@ export default function BenchmarkingPage() {
                 <CardContent className="p-4">
                   <div className="text-xs text-[var(--text-muted)] mb-1">{r.label}</div>
                   <div className="text-2xl font-bold tabular-nums">{formatted}</div>
-                  <div className="text-[10px] text-slate-500 mt-1">{r.formula}</div>
+                  <div className="text-[10px] text-[var(--text-muted)] mt-1">{r.formula}</div>
                 </CardContent>
               </Card>
             );

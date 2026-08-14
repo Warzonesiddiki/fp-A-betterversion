@@ -762,7 +762,7 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
                 key={signal.label}
                 className="flex items-center justify-between border-b border-slate-200/60 py-2 last:border-0 dark:border-slate-700/60"
               >
-                <span className="text-sm text-slate-500">{signal.label}</span>
+                <span className="text-sm text-[var(--text-muted)]">{signal.label}</span>
                 <span className="font-mono text-sm">{formatMetricValue(signal)}</span>
               </div>
             ))}

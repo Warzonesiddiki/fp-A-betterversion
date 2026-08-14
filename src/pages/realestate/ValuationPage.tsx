@@ -251,7 +251,7 @@ export default function ValuationPage() {
           </CardHeader>
           <CardContent className="space-y-5 pt-4">
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 Total Cost Basis
               </div>
               <div className="text-xl font-bold">
@@ -259,7 +259,7 @@ export default function ValuationPage() {
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 Total Market Value
               </div>
               <div className="text-xl font-bold text-blue-600">
@@ -267,7 +267,7 @@ export default function ValuationPage() {
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 Net Unrealized Gain
               </div>
               <div
@@ -279,7 +279,7 @@ export default function ValuationPage() {
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 Loan-to-Value Ratio
               </div>
               <div className="text-xl font-bold">{formatPercent(portfolioStats.ltv, 1)}</div>

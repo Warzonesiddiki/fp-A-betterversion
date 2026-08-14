@@ -20,7 +20,7 @@ export const BudgetVsActualHeader = memo(function BudgetVsActualHeader({
         title="Budget vs Actual"
         actions={<button
                    onClick={onHelpClick}
-                   className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                   className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                    aria-label="Help"
                  >
                    <HelpCircle className="h-5 w-5" />

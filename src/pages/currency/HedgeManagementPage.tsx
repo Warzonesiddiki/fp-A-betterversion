@@ -201,7 +201,7 @@ export default function HedgeManagementPage() {
             <tbody className="divide-y divide-slate-800">
               {hedges.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-12 text-slate-500">
+                  <td colSpan={7} className="text-center py-12 text-[var(--text-muted)]">
                     <AlertCircle className="h-8 w-8 mx-auto mb-2 text-slate-600" />
                     No hedging positions. Add a position to track FX exposure.
                   </td>

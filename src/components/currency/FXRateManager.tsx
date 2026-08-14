@@ -164,7 +164,7 @@ export function FXRateManager() {
               <tbody className="divide-y divide-slate-800">
                 {pairs.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-12 text-slate-500">
+                    <td colSpan={5} className="text-center py-12 text-[var(--text-muted)]">
                       No rates configured.
                     </td>
                   </tr>
@@ -249,7 +249,7 @@ export function FXRateManager() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-slate-500 text-center py-8">
+              <p className="text-sm text-[var(--text-muted)] text-center py-8">
                 Select a pair to view history
               </p>
             )}

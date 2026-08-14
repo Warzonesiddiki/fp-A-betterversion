@@ -414,7 +414,7 @@ export function SharedReports() {
             </CardHeader>
             <CardContent>
               {tasks.length === 0 ? (
-                <p className="text-slate-500 text-sm">No collaboration tasks yet.</p>
+                <p className="text-[var(--text-muted)] text-sm">No collaboration tasks yet.</p>
               ) : (
                 <ul className="space-y-2 text-sm">
                   {tasks.slice(0, 10).map((t, i) => (
@@ -451,7 +451,7 @@ export function SharedReports() {
             </CardHeader>
             <CardContent>
               {comments.length === 0 ? (
-                <p className="text-slate-500 text-sm">No comments yet.</p>
+                <p className="text-[var(--text-muted)] text-sm">No comments yet.</p>
               ) : (
                 <ul className="space-y-2 text-sm">
                   {comments.slice(0, 10).map((c, i) => (

@@ -275,7 +275,7 @@ export default function DataLineagePage() {
                       key={i}
                       className="text-sm text-[var(--text-secondary)] flex items-center gap-2"
                     >
-                      <ChevronRight className="w-3 h-3 text-slate-500" />
+                      <ChevronRight className="w-3 h-3 text-[var(--text-muted)]" />
                       {detail}
                     </li>
                   ))}

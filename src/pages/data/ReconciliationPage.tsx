@@ -239,7 +239,9 @@ export default function ReconciliationPage() {
             <div className="text-2xl font-semibold tabular-nums">
               {entries.length.toLocaleString()}
             </div>
-            <div className="text-xs text-slate-500 mt-1">Unique accounts: {glBalances.size}</div>
+            <div className="text-xs text-[var(--text-muted)] mt-1">
+              Unique accounts: {glBalances.size}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -259,9 +261,11 @@ export default function ReconciliationPage() {
                 }}
                 className="w-24"
               />
-              <span className="text-xs text-slate-500">({formatPercent(tolerance * 100)})</span>
+              <span className="text-xs text-[var(--text-muted)]">
+                ({formatPercent(tolerance * 100)})
+              </span>
             </div>
-            <p className="text-[10px] text-slate-500 mt-1">
+            <p className="text-[10px] text-[var(--text-muted)] mt-1">
               Absolute or relative difference allowed
             </p>
           </CardContent>
@@ -353,7 +357,7 @@ export default function ReconciliationPage() {
       )}
 
       {/* Help / Acceptance */}
-      <div className="text-xs text-slate-500 border-t border-slate-800 pt-4">
+      <div className="text-xs text-[var(--text-muted)] border-t border-slate-800 pt-4">
         <strong>Acceptance Criteria (1.1.5):</strong> Side-by-side comparison of GL vs external file
         • 1% (configurable) tolerance • Detailed difference table with match/mismatch/missing •
         Export of differences as CSV. All logic uses live <code>glStore.entries</code> and performs

@@ -345,7 +345,7 @@ export function AIIntelligencePage() {
                     </p>
                     {loading && (
                       <div className="space-y-2">
-                        <div className="flex justify-between text-xs text-slate-500">
+                        <div className="flex justify-between text-xs text-[var(--text-muted)]">
                           <span>Downloading Model...</span>
                           <span>{Math.round(progress)}%</span>
                         </div>

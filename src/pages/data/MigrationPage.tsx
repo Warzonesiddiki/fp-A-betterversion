@@ -263,7 +263,7 @@ export default function MigrationPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
                         <div className="font-semibold text-sm">{source.label}</div>
-                        <span className="text-[10px] uppercase tracking-wide text-slate-500">
+                        <span className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">
                           {source.badge}
                         </span>
                       </div>
@@ -332,17 +332,23 @@ export default function MigrationPage() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
               <div>
-                <div className="text-xs text-slate-500 uppercase tracking-wide">Source</div>
+                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+                  Source
+                </div>
                 <div className="font-semibold mt-0.5">{lastMigration.source}</div>
               </div>
               <div>
-                <div className="text-xs text-slate-500 uppercase tracking-wide">Records</div>
+                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+                  Records
+                </div>
                 <div className="font-semibold tabular-nums mt-0.5">
                   {(lastMigration.data?.length ?? 0).toLocaleString()}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-slate-500 uppercase tracking-wide">Status</div>
+                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+                  Status
+                </div>
                 <div
                   className={`font-semibold mt-0.5 ${
                     lastMigration.applied ? 'text-green-400' : 'text-red-400'
@@ -352,7 +358,9 @@ export default function MigrationPage() {
                 </div>
               </div>
               <div>
-                <div className="text-xs text-slate-500 uppercase tracking-wide">Completed</div>
+                <div className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+                  Completed
+                </div>
                 <div className="font-semibold mt-0.5" title={lastMigration.timestamp}>
                   {formatTimestamp(lastMigration.timestamp, nowTick)}
                 </div>
@@ -410,7 +418,7 @@ export default function MigrationPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="text-xs text-slate-500 tabular-nums">
+                  <div className="text-xs text-[var(--text-muted)] tabular-nums">
                     {m.id?.slice(0, 8) || '—'}
                   </div>
                 </div>

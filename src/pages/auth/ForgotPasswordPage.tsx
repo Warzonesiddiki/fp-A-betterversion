@@ -144,7 +144,7 @@ export default function ForgotPasswordPage() {
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
                 <Input
                   id="email-address"
                   type="email"
@@ -208,7 +208,7 @@ export default function ForgotPasswordPage() {
           <div className="text-center space-y-3">
             <div className="flex items-center gap-4">
               <div className="flex-1 h-px bg-slate-800" />
-              <span className="text-xs text-slate-500">OR</span>
+              <span className="text-xs text-[var(--text-muted)]">OR</span>
               <div className="flex-1 h-px bg-slate-800" />
             </div>
 
@@ -219,7 +219,7 @@ export default function ForgotPasswordPage() {
               <ArrowLeft className="h-3 w-3" /> Back to Sign In
             </button>
 
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-[var(--text-muted)]">
               Don&apos;t have an account?{' '}
               <button
                 onClick={() => navigate('/register')}

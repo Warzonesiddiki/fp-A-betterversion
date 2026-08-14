@@ -285,7 +285,7 @@ export const AllocationRuleBuilder: React.FC<AllocationRuleBuilderProps> = ({
         </div>
 
         {targets.length === 0 && (
-          <p className="text-xs text-slate-500 italic">
+          <p className="text-xs text-[var(--text-muted)] italic">
             No targets added yet. Click &quot;Add Target&quot; to begin.
           </p>
         )}
@@ -295,7 +295,7 @@ export const AllocationRuleBuilder: React.FC<AllocationRuleBuilderProps> = ({
             key={target.id}
             className="flex items-center gap-2 rounded-md border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-2"
           >
-            <ArrowRight className="h-4 w-4 text-slate-500 shrink-0" />
+            <ArrowRight className="h-4 w-4 text-[var(--text-muted)] shrink-0" />
 
             {/* Target member select */}
             <select
@@ -324,14 +324,14 @@ export const AllocationRuleBuilder: React.FC<AllocationRuleBuilderProps> = ({
                   }
                   className="w-20 h-8 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-2 text-xs text-[var(--text-primary)] text-right outline-none"
                 />
-                <span className="text-xs text-slate-500">%</span>
+                <span className="text-xs text-[var(--text-muted)]">%</span>
               </div>
             )}
 
             {/* Driver weight (driver method) */}
             {method === 'driver' && (
               <div className="flex items-center gap-1">
-                <span className="text-[10px] text-slate-500">Weight</span>
+                <span className="text-[10px] text-[var(--text-muted)]">Weight</span>
                 <input
                   type="number"
                   min={0}
@@ -349,7 +349,7 @@ export const AllocationRuleBuilder: React.FC<AllocationRuleBuilderProps> = ({
             <button
               type="button"
               onClick={() => removeTarget(target.id)}
-              className="p-1 rounded text-slate-500 hover:text-red-600 hover:bg-red-500/10 transition-colors"
+              className="p-1 rounded text-[var(--text-muted)] hover:text-red-600 hover:bg-red-500/10 transition-colors"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </button>

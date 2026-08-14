@@ -310,7 +310,7 @@ export default function DataImportPage() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
                 aria-label="Help"
               />
             }
@@ -418,19 +418,19 @@ export default function DataImportPage() {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3 text-sm">
                   <div>
-                    <div className="text-slate-500">Source</div>
+                    <div className="text-[var(--text-muted)]">Source</div>
                     <div className="font-medium">{sourceLabel(detectedSource)}</div>
                   </div>
                   <div>
-                    <div className="text-slate-500">Sheets</div>
+                    <div className="text-[var(--text-muted)]">Sheets</div>
                     <div className="font-medium">{readiness.sheetCount}</div>
                   </div>
                   <div>
-                    <div className="text-slate-500">Rows</div>
+                    <div className="text-[var(--text-muted)]">Rows</div>
                     <div className="font-medium">{readiness.totalRows.toLocaleString()}</div>
                   </div>
                   <div>
-                    <div className="text-slate-500">Formula Complexity</div>
+                    <div className="text-[var(--text-muted)]">Formula Complexity</div>
                     <div className="font-medium capitalize">{readiness.formulaComplexity}</div>
                   </div>
                 </div>
@@ -514,7 +514,7 @@ export default function DataImportPage() {
                                   style={{ width: `${m.confidence * 100}%` }}
                                 />
                               </div>
-                              <span className="text-xs text-slate-500">
+                              <span className="text-xs text-[var(--text-muted)]">
                                 {Math.round(m.confidence * 100)}%
                               </span>
                             </div>
@@ -575,7 +575,9 @@ export default function DataImportPage() {
                     style={{ width: `${migrationProgress}%` }}
                   />
                 </div>
-                <p className="text-xs text-slate-500 mt-2">{migrationProgress}% complete</p>
+                <p className="text-xs text-[var(--text-muted)] mt-2">
+                  {migrationProgress}% complete
+                </p>
               </div>
               {migrationError && (
                 <Alert type="error" title="Migration Error" message={migrationError} />
@@ -641,7 +643,7 @@ export default function DataImportPage() {
               </div>
             </div>
             {currentSummary.lastImport && (
-              <div className="mt-2 text-xs text-slate-500">
+              <div className="mt-2 text-xs text-[var(--text-muted)]">
                 Last import: {currentSummary.lastImport.filename} on{' '}
                 {new Date(currentSummary.lastImport.timestamp).toLocaleDateString()}
               </div>
@@ -677,7 +679,10 @@ export default function DataImportPage() {
                 </p>
                 <div className="flex gap-3 items-center">
                   <div>
-                    <label htmlFor="rec-key-col" className="block text-xs text-slate-500 mb-1">
+                    <label
+                      htmlFor="rec-key-col"
+                      className="block text-xs text-[var(--text-muted)] mb-1"
+                    >
                       Account Key Column
                     </label>
                     <select
@@ -695,7 +700,10 @@ export default function DataImportPage() {
                     </select>
                   </div>
                   <div>
-                    <label htmlFor="rec-val-col" className="block text-xs text-slate-500 mb-1">
+                    <label
+                      htmlFor="rec-val-col"
+                      className="block text-xs text-[var(--text-muted)] mb-1"
+                    >
                       Balance Column
                     </label>
                     <select

@@ -103,7 +103,7 @@ export function GLDataPreview({
                 key={i}
                 className={cn('hover:bg-slate-900/50', errors.length > 0 && 'bg-red-500/5')}
               >
-                <td className="px-4 py-3 text-slate-500">{i + 1}</td>
+                <td className="px-4 py-3 text-[var(--text-muted)]">{i + 1}</td>
                 {Object.entries(mappings).map(([field, col]) => (
                   <td key={field} className="px-4 py-3 text-slate-200">
                     {String(row[col] || '')}

@@ -367,7 +367,7 @@ export default function GLUploadPage() {
             />
           </div>
           <p className="text-sm text-[var(--text-muted)] mt-2">{importProgress}% complete</p>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-[var(--text-muted)] mt-1">
             Processing {rawData.length.toLocaleString()} rows...
           </p>
         </div>
@@ -407,7 +407,7 @@ export default function GLUploadPage() {
           computer.
         </p>
         <FileDropZone onFile={handleFile} accept=".csv,.xlsx,.xls" />
-        <div className="flex gap-4 justify-center mt-4 text-xs text-slate-500">
+        <div className="flex gap-4 justify-center mt-4 text-xs text-[var(--text-muted)]">
           <span>Max: 50MB</span>
           <span>Formats: CSV, XLSX, XLS</span>
           <span>All data stays on your machine</span>
@@ -425,7 +425,7 @@ export default function GLUploadPage() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                 aria-label="Help"
               ></button>
             }
@@ -604,7 +604,7 @@ export default function GLUploadPage() {
                       <tr key={h.id} className="hover:bg-slate-900/50">
                         <td className="py-3 pr-4 max-w-[200px] truncate" title={h.filename}>
                           <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-slate-500 shrink-0" />
+                            <FileText className="h-4 w-4 text-[var(--text-muted)] shrink-0" />
                             <span>{h.filename}</span>
                           </div>
                         </td>

@@ -65,7 +65,7 @@ export function IntegrationCard({
               )}
             </div>
             <p className="text-xs text-slate-400 mb-1">{definition.description}</p>
-            <p className="text-xs text-slate-500 mb-3">
+            <p className="text-xs text-[var(--text-muted)] mb-3">
               <span className="text-slate-400 font-medium">Syncs:</span> {definition.capability}
             </p>
 
@@ -113,7 +113,7 @@ export function IntegrationCard({
                     </>
                   )}
                   {connection.lastImportAt && (
-                    <span className="text-xs text-slate-500 ml-auto">
+                    <span className="text-xs text-[var(--text-muted)] ml-auto">
                       Last import: {connection.lastImportCount ?? 0} rows
                     </span>
                   )}
@@ -128,7 +128,7 @@ export function IntegrationCard({
                     Disconnect
                   </Button>
                   {connection.lastSyncAt && (
-                    <span className="text-xs text-slate-500 ml-auto">
+                    <span className="text-xs text-[var(--text-muted)] ml-auto">
                       Last sync: {formatSyncTime(connection.lastSyncAt)}
                     </span>
                   )}

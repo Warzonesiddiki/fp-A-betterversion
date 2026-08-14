@@ -469,7 +469,7 @@ export default function LeaseDetailPage() {
             <div className="p-4 bg-slate-800 rounded-lg">
               <div className="text-sm text-slate-400 mb-1">Lease Classification</div>
               <div className="text-lg font-semibold">{selectedLease.leaseType}</div>
-              <div className="text-xs text-slate-500 mt-1">
+              <div className="text-xs text-[var(--text-muted)] mt-1">
                 {selectedLease.leaseType === 'Finance' ? 'ASC 842-20 / IFRS 16' : 'ASC 842-10'}
               </div>
             </div>

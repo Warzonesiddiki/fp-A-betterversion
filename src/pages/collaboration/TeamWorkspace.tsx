@@ -477,7 +477,7 @@ export function TeamWorkspace() {
             </CardHeader>
             <CardContent>
               {tasks.length === 0 ? (
-                <p className="text-slate-500 text-sm">No tasks yet.</p>
+                <p className="text-[var(--text-muted)] text-sm">No tasks yet.</p>
               ) : (
                 <ul className="space-y-2 text-sm">
                   {tasks.slice(0, 10).map((t, i) => (
@@ -515,7 +515,7 @@ export function TeamWorkspace() {
             </CardHeader>
             <CardContent>
               {activityLog.length === 0 ? (
-                <p className="text-slate-500 text-sm">No activity yet.</p>
+                <p className="text-[var(--text-muted)] text-sm">No activity yet.</p>
               ) : (
                 <ul className="space-y-2 text-sm">
                   {activityLog.slice(0, 15).map((a, i) => (

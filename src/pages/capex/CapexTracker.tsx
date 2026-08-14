@@ -207,7 +207,7 @@ export function CapexTracker() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                 aria-label="Help"
               >
                 <HelpCircle className="h-5 w-5" />
@@ -224,7 +224,7 @@ export function CapexTracker() {
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4" aria-label="CapEx KPIs">
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
               <DollarSign className="h-4 w-4" />
               Total Budget
             </div>
@@ -233,7 +233,7 @@ export function CapexTracker() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
               <TrendingUp className="h-4 w-4" />
               Total Actual
             </div>
@@ -242,7 +242,7 @@ export function CapexTracker() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
               <Layers className="h-4 w-4" />
               Active Projects
             </div>
@@ -251,7 +251,7 @@ export function CapexTracker() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
               <Truck className="h-4 w-4" />
               Net Asset Value
             </div>
@@ -279,7 +279,7 @@ export function CapexTracker() {
               ariaLabel="Capital projects tracker"
             />
           ) : (
-            <p className="text-sm text-slate-500 text-center py-4">
+            <p className="text-sm text-[var(--text-muted)] text-center py-4">
               No capital projects yet. Add a project to start tracking.
             </p>
           )}
@@ -305,7 +305,9 @@ export function CapexTracker() {
               ariaLabel="Fixed assets"
             />
           ) : (
-            <p className="text-sm text-slate-500 text-center py-4">No fixed assets recorded.</p>
+            <p className="text-sm text-[var(--text-muted)] text-center py-4">
+              No fixed assets recorded.
+            </p>
           )}
         </CardContent>
       </Card>

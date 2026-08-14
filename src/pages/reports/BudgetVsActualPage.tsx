@@ -538,7 +538,7 @@ export default function BudgetVsActualPage() {
               <div>
                 <label
                   htmlFor="filter-account-type"
-                  className="block text-[10px] font-bold uppercase text-slate-500 mb-1"
+                  className="block text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1"
                 >
                   Account Type
                 </label>
@@ -558,7 +558,7 @@ export default function BudgetVsActualPage() {
               <div>
                 <label
                   htmlFor="filter-department"
-                  className="block text-[10px] font-bold uppercase text-slate-500 mb-1"
+                  className="block text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1"
                 >
                   Department
                 </label>
@@ -579,7 +579,7 @@ export default function BudgetVsActualPage() {
               <div>
                 <label
                   htmlFor="filter-min-var"
-                  className="block text-[10px] font-bold uppercase text-slate-500 mb-1"
+                  className="block text-[10px] font-bold uppercase text-[var(--text-muted)] mb-1"
                 >
                   Min Variance %
                 </label>
@@ -638,17 +638,17 @@ export default function BudgetVsActualPage() {
                       tabIndex={0}
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-slate-500 w-5">{idx + 1}</span>
+                        <span className="text-xs font-bold text-[var(--text-muted)] w-5">{idx + 1}</span>
                         <div>
                           <p className="text-sm font-medium text-slate-200">{row.accountName}</p>
-                          <p className="text-[10px] text-slate-500">{row.accountCode}</p>
+                          <p className="text-[10px] text-[var(--text-muted)]">{row.accountCode}</p>
                         </div>
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-bold text-red-400">
                           {formatPercent(row.variancePct, 1)}
                         </p>
-                        <p className="text-[10px] text-slate-500">
+                        <p className="text-[10px] text-[var(--text-muted)]">
                           {formatCurrencyFull(row.variance)}
                         </p>
                       </div>

@@ -75,7 +75,7 @@ export default function ForecastListPage() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                 aria-label="Help"
               ></button>
             }
@@ -135,7 +135,7 @@ export default function ForecastListPage() {
               <tbody className="divide-y divide-slate-800">
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-8 text-slate-500">
+                    <td colSpan={6} className="text-center py-8 text-[var(--text-muted)]">
                       No forecasts match your search.
                     </td>
                   </tr>
@@ -163,7 +163,7 @@ export default function ForecastListPage() {
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-xs text-slate-400">{f.confidenceLevel}</td>
-                      <td className="px-4 py-3 text-xs text-slate-500">
+                      <td className="px-4 py-3 text-xs text-[var(--text-muted)]">
                         {formatRelativeTime(f.lastUpdated || f.createdAt)}
                       </td>
                       <td className="px-4 py-3">

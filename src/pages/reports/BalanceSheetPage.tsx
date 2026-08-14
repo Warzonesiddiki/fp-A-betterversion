@@ -140,7 +140,7 @@ export default function BalanceSheetPage() {
   title="Balance Sheet"
   actions={<button
               onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+              className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
               aria-label="Help"
             ></button>}
 />

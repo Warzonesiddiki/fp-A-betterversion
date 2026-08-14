@@ -268,19 +268,19 @@ export default function REITDashboardPage() {
 
             <div className="space-y-4">
               <div className="flex justify-between text-sm font-medium border-b border-slate-100 pb-2">
-                <span className="text-slate-500">Trailing 12M Growth</span>
+                <span className="text-[var(--text-muted)]">Trailing 12M Growth</span>
                 <span className="text-green-600">+6.4%</span>
               </div>
               <div className="flex justify-between text-sm font-medium border-b border-slate-100 pb-2">
-                <span className="text-slate-500">Peer Group Avg Yield</span>
+                <span className="text-[var(--text-muted)]">Peer Group Avg Yield</span>
                 <span className="text-slate-700">4.82%</span>
               </div>
               <div className="flex justify-between text-sm font-medium border-b border-slate-100 pb-2">
-                <span className="text-slate-500">Debt/EBITDAre</span>
+                <span className="text-[var(--text-muted)]">Debt/EBITDAre</span>
                 <span className="text-slate-700">5.4x</span>
               </div>
               <div className="flex justify-between text-sm font-medium">
-                <span className="text-slate-500">Interest Coverage</span>
+                <span className="text-[var(--text-muted)]">Interest Coverage</span>
                 <span className="text-slate-700">4.1x</span>
               </div>
             </div>

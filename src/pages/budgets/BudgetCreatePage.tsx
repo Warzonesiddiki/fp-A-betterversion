@@ -162,7 +162,7 @@ export default function BudgetCreatePage() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                 aria-label="Help"
               ></button>
             }
@@ -325,7 +325,7 @@ export default function BudgetCreatePage() {
                       <div className="text-sm font-medium">
                         {a.code} — {a.name}
                       </div>
-                      <div className="text-xs text-slate-500">
+                      <div className="text-xs text-[var(--text-muted)]">
                         {a.type} · {a.category}
                       </div>
                     </div>
@@ -367,7 +367,7 @@ export default function BudgetCreatePage() {
                         const key = id + '-' + m;
                         return (
                           <div key={m}>
-                            <label className="text-[10px] text-slate-500 block mb-0.5">
+                            <label className="text-[10px] text-[var(--text-muted)] block mb-0.5">
                               {new Date(form.fiscalYear, m).toLocaleString('default', {
                                 month: 'short',
                               })}

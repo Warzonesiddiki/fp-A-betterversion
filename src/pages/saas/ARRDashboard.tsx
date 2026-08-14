@@ -92,7 +92,7 @@ export default function ARRDashboard() {
           actions={
             <button
               onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors ml-4"
+              className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors ml-4"
               aria-label="Help"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -183,7 +183,9 @@ export default function ARRDashboard() {
                 <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
                   <div className="h-full bg-blue-500 w-[70%]" />
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1.5">70% of target efficiency</p>
+                <p className="text-[10px] text-[var(--text-muted)] mt-1.5">
+                  70% of target efficiency
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -198,11 +200,15 @@ export default function ARRDashboard() {
             <CardContent>
               <div className="space-y-3">
                 <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
-                  <div className="text-[10px] uppercase font-bold text-slate-500">Gross Churn</div>
+                  <div className="text-[10px] uppercase font-bold text-[var(--text-muted)]">
+                    Gross Churn
+                  </div>
                   <div className="text-lg font-bold">2.4%</div>
                 </div>
                 <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
-                  <div className="text-[10px] uppercase font-bold text-slate-500">Net Churn</div>
+                  <div className="text-[10px] uppercase font-bold text-[var(--text-muted)]">
+                    Net Churn
+                  </div>
                   <div className="text-lg font-bold text-emerald-400">-4.2%</div>
                 </div>
               </div>

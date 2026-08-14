@@ -270,7 +270,7 @@ const BenchmarksPage: React.FC = () => {
                 .reverse()
                 .map((res, i) => (
                   <tr key={i} className="border-b border-slate-100 dark:border-slate-700">
-                    <td className="p-2 text-slate-500">
+                    <td className="p-2 text-[var(--text-muted)]">
                       {new Date(res.timestamp).toLocaleString()}
                     </td>
                     <td className="p-2 font-mono uppercase text-xs">{res.name}</td>

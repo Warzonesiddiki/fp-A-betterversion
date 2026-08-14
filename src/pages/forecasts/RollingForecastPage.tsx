@@ -200,7 +200,7 @@ export default function RollingForecastPage() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                 aria-label="Help"
               >
                 <HelpCircle className="h-5 w-5" />
@@ -232,7 +232,7 @@ export default function RollingForecastPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
               <TrendingUp className="h-4 w-4" />
               Forecast Revenue
             </div>
@@ -243,7 +243,7 @@ export default function RollingForecastPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
               <ArrowDownRight className="h-4 w-4" />
               Forecast Expenses
             </div>
@@ -254,7 +254,7 @@ export default function RollingForecastPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
               <ArrowUpRight className="h-4 w-4" />
               Net Income
             </div>
@@ -268,7 +268,7 @@ export default function RollingForecastPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-1">
               <Target className="h-4 w-4" />
               Forecast Accuracy
             </div>
@@ -288,7 +288,7 @@ export default function RollingForecastPage() {
               </CardHeader>
               <CardContent>
                 {stats.trendData.length === 0 ? (
-                  <p className="text-sm text-slate-500">No trend data available.</p>
+                  <p className="text-sm text-[var(--text-muted)]">No trend data available.</p>
                 ) : (
                   <div className="space-y-2">
                     {stats.trendData.map((d) => {
@@ -412,7 +412,7 @@ export default function RollingForecastPage() {
                                 ? variance >= 0
                                   ? 'text-green-400'
                                   : 'text-red-400'
-                                : 'text-slate-500'
+                                : 'text-[var(--text-muted)]'
                             }`}
                           >
                             {d.forecast ? formatPercent(variance) : '-'}

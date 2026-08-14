@@ -280,7 +280,7 @@ export default function BoardPackPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Revenue</div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-1">Revenue</div>
             <div className="text-xl font-black text-green-400 tabular-nums">
               {report ? fmt.currency0(report.revenue) : '-'}
             </div>
@@ -288,7 +288,7 @@ export default function BoardPackPage() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Expenses</div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-1">Expenses</div>
             <div className="text-xl font-black text-red-400 tabular-nums">
               {report ? fmt.currency0(report.expenses) : '-'}
             </div>
@@ -296,7 +296,7 @@ export default function BoardPackPage() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Net Income</div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-1">Net Income</div>
             <div
               className={
                 'text-xl font-black tabular-nums ' +
@@ -309,7 +309,7 @@ export default function BoardPackPage() {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Gross Margin</div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-1">Gross Margin</div>
             <div className="text-xl font-black tabular-nums">
               {report ? formatPercent(report.grossMargin, 1) : '-'}
             </div>
@@ -427,7 +427,7 @@ export default function BoardPackPage() {
                     }}
                   />
                 </div>
-                <p className="text-[10px] text-center font-bold text-slate-500 uppercase">
+                <p className="text-[10px] text-center font-bold text-[var(--text-muted)] uppercase">
                   {report && report.totalBudget > 0
                     ? `${formatPercent((report.expenses / report.totalBudget) * 100, 1)} budget utilization`
                     : '0% utilization'}
@@ -478,7 +478,7 @@ export default function BoardPackPage() {
 
           <div className="space-y-4">
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-2">
                 Executive Commentary
               </h4>
               {editingCommentary ? (
@@ -496,7 +496,7 @@ export default function BoardPackPage() {
             </div>
 
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-2">
                 Variance Highlights
               </h4>
               <div className="space-y-2" data-testid="variance-highlights">
@@ -532,7 +532,7 @@ export default function BoardPackPage() {
                     }}
                     data-testid="add-variance-input"
                   />
-                  <span className="text-xs text-slate-500 self-center">Press Enter to add</span>
+                  <span className="text-xs text-[var(--text-muted)] self-center">Press Enter to add</span>
                 </div>
               )}
             </div>

@@ -79,7 +79,7 @@ export function StepDownConfigPanel({
                       onChange={(e) => updatePct(svc.id, recv.id, parseFloat(e.target.value) || 0)}
                       className="w-14 h-6 rounded border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-1.5 text-[10px] text-right text-[var(--text-primary)] outline-none"
                     />
-                    <span className="text-[10px] text-slate-500">%</span>
+                    <span className="text-[10px] text-[var(--text-muted)]">%</span>
                   </div>
                 ))}
             </div>

@@ -218,7 +218,7 @@ export default function GLExplorerPage() {
 
       <div className="flex gap-3 items-center">
         <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
           <input
             className="w-full pl-9 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm"
             placeholder="Explore entries..."
@@ -306,7 +306,7 @@ export default function GLExplorerPage() {
         </CardContent>
       </Card>
 
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-[var(--text-muted)]">
         {entries.length.toLocaleString()} total · showing first {filtered.length.toLocaleString()}
       </p>
     </div>

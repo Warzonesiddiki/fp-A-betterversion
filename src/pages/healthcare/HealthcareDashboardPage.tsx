@@ -281,11 +281,11 @@ export default function HealthcareDashboardPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="text-lg font-bold">428</div>
-                  <div className="text-[10px] text-slate-500">Nurses on Shift</div>
+                  <div className="text-[10px] text-[var(--text-muted)]">Nurses on Shift</div>
                 </div>
                 <div>
                   <div className="text-lg font-bold">84</div>
-                  <div className="text-[10px] text-slate-500">On-call Doctors</div>
+                  <div className="text-[10px] text-[var(--text-muted)]">On-call Doctors</div>
                 </div>
               </div>
             </div>

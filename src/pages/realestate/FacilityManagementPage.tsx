@@ -210,7 +210,7 @@ export default function FacilityManagementPage() {
                 <Zap className="h-6 w-6 text-amber-600" />
               </div>
               <div>
-                <div className="text-[10px] font-bold text-slate-500 uppercase">
+                <div className="text-[10px] font-bold text-[var(--text-muted)] uppercase">
                   Electricity Avg
                 </div>
                 <div className="text-lg font-bold">$2.45 / sqft</div>
@@ -223,7 +223,9 @@ export default function FacilityManagementPage() {
                 <Droplets className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <div className="text-[10px] font-bold text-slate-500 uppercase">Water / Sewage</div>
+                <div className="text-[10px] font-bold text-[var(--text-muted)] uppercase">
+                  Water / Sewage
+                </div>
                 <div className="text-lg font-bold">$0.82 / sqft</div>
               </div>
               <div className="ml-auto text-[var(--text-muted)] text-xs font-bold">Stable</div>

@@ -399,7 +399,7 @@ export default function CreditRiskPage() {
               </ResponsiveContainer>
             </div>
             <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700">
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+              <div className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">
                 Risk Summary
               </div>
               <div className="space-y-1 text-[10px]">

@@ -134,7 +134,7 @@ export default function FXRatesPage() {
             <tbody className="divide-y divide-slate-800">
               {rates.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-12 text-slate-500">
+                  <td colSpan={5} className="text-center py-12 text-[var(--text-muted)]">
                     <AlertCircle className="h-8 w-8 mx-auto mb-2 text-slate-600" />
                     No exchange rates configured. Add rates to enable multi-currency translation.
                   </td>

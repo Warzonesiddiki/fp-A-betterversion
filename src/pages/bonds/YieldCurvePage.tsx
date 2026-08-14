@@ -272,7 +272,10 @@ export default function YieldCurvePage() {
             {/* Spot & Par Rate */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="targetMaturity" className="text-xs text-slate-500 mb-1 block">
+                <label
+                  htmlFor="targetMaturity"
+                  className="text-xs text-[var(--text-muted)] mb-1 block"
+                >
                   Maturity (years)
                 </label>
                 <Input
@@ -287,7 +290,7 @@ export default function YieldCurvePage() {
                 />
               </div>
               <div className="flex flex-col justify-end">
-                <div className="text-xs text-slate-500">Spot Rate</div>
+                <div className="text-xs text-[var(--text-muted)]">Spot Rate</div>
                 <div className="text-2xl font-black text-blue-600">
                   {formatPercent(spotRate, 3)}
                 </div>
@@ -296,7 +299,7 @@ export default function YieldCurvePage() {
             <div className="grid grid-cols-2 gap-4">
               <div />
               <div>
-                <div className="text-xs text-slate-500">Par Rate</div>
+                <div className="text-xs text-[var(--text-muted)]">Par Rate</div>
                 <div className="text-2xl font-black text-emerald-600">
                   {formatPercent(parRate, 3)}
                 </div>
@@ -305,13 +308,16 @@ export default function YieldCurvePage() {
 
             {/* Forward Rate */}
             <div className="pt-4 border-t border-slate-100">
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <div className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-3 flex items-center gap-2">
                 <GitBranch className="h-3 w-3" aria-hidden="true" />
                 Forward Rate Calculator
               </div>
               <div className="grid grid-cols-3 gap-3 items-end">
                 <div>
-                  <label htmlFor="forwardStart" className="text-xs text-slate-500 mb-1 block">
+                  <label
+                    htmlFor="forwardStart"
+                    className="text-xs text-[var(--text-muted)] mb-1 block"
+                  >
                     Start (yr)
                   </label>
                   <Input
@@ -326,7 +332,10 @@ export default function YieldCurvePage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="forwardEnd" className="text-xs text-slate-500 mb-1 block">
+                  <label
+                    htmlFor="forwardEnd"
+                    className="text-xs text-[var(--text-muted)] mb-1 block"
+                  >
                     End (yr)
                   </label>
                   <Input
@@ -341,7 +350,7 @@ export default function YieldCurvePage() {
                   />
                 </div>
                 <div>
-                  <div className="text-xs text-slate-500">Forward Rate</div>
+                  <div className="text-xs text-[var(--text-muted)]">Forward Rate</div>
                   <div className="text-2xl font-black text-amber-600">
                     {formatPercent(fwdRate, 3)}
                   </div>
@@ -366,19 +375,19 @@ export default function YieldCurvePage() {
                   <tr className="border-b border-slate-200">
                     <th
                       scope="col"
-                      className="text-left py-2 px-3 text-xs font-bold text-slate-500 uppercase"
+                      className="text-left py-2 px-3 text-xs font-bold text-[var(--text-muted)] uppercase"
                     >
                       Maturity (Yrs)
                     </th>
                     <th
                       scope="col"
-                      className="text-right py-2 px-3 text-xs font-bold text-slate-500 uppercase"
+                      className="text-right py-2 px-3 text-xs font-bold text-[var(--text-muted)] uppercase"
                     >
                       Spot Rate
                     </th>
                     <th
                       scope="col"
-                      className="text-right py-2 px-3 text-xs font-bold text-slate-500 uppercase"
+                      className="text-right py-2 px-3 text-xs font-bold text-[var(--text-muted)] uppercase"
                     >
                       Par Rate
                     </th>

@@ -271,7 +271,7 @@ export function CSRDReportGenerator({ className }: CSRDReportGeneratorProps) {
                             <span className="text-white font-medium">
                               {m.value} {m.unit}
                             </span>
-                            <span className="text-slate-500">
+                            <span className="text-[var(--text-muted)]">
                               {' '}
                               / {m.target} {m.unit}
                             </span>

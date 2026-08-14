@@ -51,7 +51,7 @@ exports[`DashboardPage populated-state contract (interim structural baseline) > 
         >
           <button
             aria-label="Help"
-            class="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+            class="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
           >
             <span
               class="h-5 w-5"

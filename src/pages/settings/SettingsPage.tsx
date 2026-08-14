@@ -152,7 +152,10 @@ export default function SettingsPage() {
                       <option value="GBP">GBP - British Pound</option>
                       <option value="JPY">JPY - Japanese Yen</option>
                     </select>
-                    <p id="settings-base-currency-help" className="text-xs text-slate-500 mt-1">
+                    <p
+                      id="settings-base-currency-help"
+                      className="text-xs text-[var(--text-muted)] mt-1"
+                    >
                       Used as the default currency for all financial reports and transactions.
                     </p>
                   </div>
@@ -179,7 +182,10 @@ export default function SettingsPage() {
                       <option value="07">July</option>
                       <option value="10">October</option>
                     </select>
-                    <p id="settings-fiscal-year-start-help" className="text-xs text-slate-500 mt-1">
+                    <p
+                      id="settings-fiscal-year-start-help"
+                      className="text-xs text-[var(--text-muted)] mt-1"
+                    >
                       Determines the 12-month period for budgets, P&L, and variance reports.
                     </p>
                   </div>
@@ -261,7 +267,10 @@ export default function SettingsPage() {
                       <option value="DD/MM/YYYY">DD/MM/YYYY</option>
                       <option value="YYYY-MM-DD">YYYY-MM-DD</option>
                     </select>
-                    <p id="settings-date-format-help" className="text-xs text-slate-500 mt-1">
+                    <p
+                      id="settings-date-format-help"
+                      className="text-xs text-[var(--text-muted)] mt-1"
+                    >
                       Used throughout the application for all date displays and report headers.
                     </p>
                   </div>

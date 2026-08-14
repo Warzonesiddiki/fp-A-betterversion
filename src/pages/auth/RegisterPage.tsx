@@ -131,7 +131,7 @@ export default function RegisterPage() {
             </Button>
           </div>
 
-          <p className="text-xs text-center text-slate-500">
+          <p className="text-xs text-center text-[var(--text-muted)]">
             Already have an account?{' '}
             <button onClick={() => navigate('/login')} className="text-blue-400 hover:underline">
               Sign in

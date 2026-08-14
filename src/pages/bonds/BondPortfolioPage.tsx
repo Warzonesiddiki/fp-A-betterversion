@@ -356,7 +356,7 @@ export default function BondPortfolioPage() {
           </CardHeader>
           <CardContent className="space-y-5 pt-4">
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 Weighted Convexity
               </div>
               <div className="text-xl font-bold">
@@ -367,13 +367,15 @@ export default function BondPortfolioPage() {
               </p>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">Avg Coupon Rate</div>
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
+                Avg Coupon Rate
+              </div>
               <div className="text-xl font-bold">
                 {formatPercent(portfolioMetrics.avgCoupon * 100, 2)}
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 Total Accrued Interest
               </div>
               <div className="text-xl font-bold text-blue-600">
@@ -381,7 +383,7 @@ export default function BondPortfolioPage() {
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 Instruments Held
               </div>
               <div className="text-xl font-bold">{enrichedBonds.length}</div>

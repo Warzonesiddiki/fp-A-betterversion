@@ -149,7 +149,7 @@ function CategorySummaryCard({
           </div>
           <div>
             <p className="text-sm font-medium">{CATEGORY_LABELS[category]}</p>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-[var(--text-muted)]">
               {data.passed}/{data.total} passed
             </p>
           </div>
@@ -182,7 +182,7 @@ function CheckRow({ check }: { check: SOXCheckResult }) {
         <Icon className="h-4 w-4 flex-shrink-0" style={{ color }} />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium truncate">{check.name}</p>
-          <p className="text-xs text-slate-500 truncate">{check.controlId}</p>
+          <p className="text-xs text-[var(--text-muted)] truncate">{check.controlId}</p>
         </div>
         <SeverityBadge severity={check.severity} />
         <StatusBadge status={check.status} />
@@ -193,7 +193,7 @@ function CheckRow({ check }: { check: SOXCheckResult }) {
           <p className="text-xs text-[var(--text-secondary)]">{check.details}</p>
           {check.evidence.length > 0 && (
             <div className="mt-2">
-              <p className="text-xs text-slate-500 mb-1">Evidence:</p>
+              <p className="text-xs text-[var(--text-muted)] mb-1">Evidence:</p>
               <ul className="list-disc list-inside space-y-0.5">
                 {check.evidence.map((e, i) => (
                   <li key={i} className="text-xs text-[var(--text-muted)]">
@@ -496,21 +496,21 @@ export default function SOXCompliancePage() {
                 <div className="grid grid-cols-4 gap-4 mb-4">
                   <div>
                     <p className="text-2xl font-bold text-green-400">{report.summary.passed}</p>
-                    <p className="text-xs text-slate-500">Passed</p>
+                    <p className="text-xs text-[var(--text-muted)]">Passed</p>
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-red-400">{report.summary.failed}</p>
-                    <p className="text-xs text-slate-500">Failed</p>
+                    <p className="text-xs text-[var(--text-muted)]">Failed</p>
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-yellow-400">{report.summary.warnings}</p>
-                    <p className="text-xs text-slate-500">Warnings</p>
+                    <p className="text-xs text-[var(--text-muted)]">Warnings</p>
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-[var(--text-muted)]">
                       {report.summary.total}
                     </p>
-                    <p className="text-xs text-slate-500">Total Checks</p>
+                    <p className="text-xs text-[var(--text-muted)]">Total Checks</p>
                   </div>
                 </div>
                 {report.criticalFindings.length > 0 && (
@@ -567,7 +567,7 @@ export default function SOXCompliancePage() {
           <CardContent className="p-4">
             <div className="flex gap-3 items-end flex-wrap">
               <div>
-                <label htmlFor="category" className="block text-xs text-slate-500 mb-1">
+                <label htmlFor="category" className="block text-xs text-[var(--text-muted)] mb-1">
                   Category
                 </label>
                 <select
@@ -585,7 +585,7 @@ export default function SOXCompliancePage() {
                 </select>
               </div>
               <div>
-                <label htmlFor="status" className="block text-xs text-slate-500 mb-1">
+                <label htmlFor="status" className="block text-xs text-[var(--text-muted)] mb-1">
                   Status
                 </label>
                 <select
@@ -625,7 +625,7 @@ export default function SOXCompliancePage() {
             </div>
             <div className="max-h-[600px] overflow-y-auto">
               {filteredChecks.length === 0 ? (
-                <div className="p-8 text-center text-slate-500">
+                <div className="p-8 text-center text-[var(--text-muted)]">
                   No checks match the current filters.
                 </div>
               ) : (

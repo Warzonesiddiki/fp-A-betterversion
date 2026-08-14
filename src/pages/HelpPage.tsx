@@ -128,7 +128,7 @@ export default function HelpPage() {
     <div className="p-6 space-y-6 max-w-3xl mx-auto">
       <PageHeader title="Help Center" />
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
         <input
           className="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-sm"
           placeholder="Search help topics..."

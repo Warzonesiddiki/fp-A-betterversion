@@ -81,9 +81,9 @@ function HistoryRow({
         className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-[var(--bg-elevated)] transition-colors text-left"
       >
         {expanded ? (
-          <ChevronDown className="h-4 w-4 text-slate-500 shrink-0" />
+          <ChevronDown className="h-4 w-4 text-[var(--text-muted)] shrink-0" />
         ) : (
-          <ChevronRight className="h-4 w-4 text-slate-500 shrink-0" />
+          <ChevronRight className="h-4 w-4 text-[var(--text-muted)] shrink-0" />
         )}
         <div className="flex-1 min-w-0 flex items-center gap-3">
           <span className="text-xs font-medium text-[var(--text-primary)] truncate">
@@ -97,14 +97,18 @@ function HistoryRow({
           >
             {entry.status}
           </span>
-          <span className="text-[10px] text-slate-500">{METHOD_LABELS[entry.method]}</span>
+          <span className="text-[10px] text-[var(--text-muted)]">
+            {METHOD_LABELS[entry.method]}
+          </span>
         </div>
         <div className="flex items-center gap-4 shrink-0">
           <span className="text-xs font-medium text-blue-400">
             {fmt.currency0(entry.totalAllocated)}
           </span>
-          <span className="text-[10px] text-slate-500">{entry.allocationCount} targets</span>
-          <span className="text-[10px] text-slate-500 flex items-center gap-1">
+          <span className="text-[10px] text-[var(--text-muted)]">
+            {entry.allocationCount} targets
+          </span>
+          <span className="text-[10px] text-[var(--text-muted)] flex items-center gap-1">
             <Clock className="h-3 w-3" />
             {formatDate(entry.executedAt)}
           </span>
@@ -115,19 +119,19 @@ function HistoryRow({
         <div className="border-t border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-3 flex flex-col gap-3">
           <div className="grid grid-cols-4 gap-3 text-[10px]">
             <div>
-              <span className="text-slate-500 block">Source</span>
+              <span className="text-[var(--text-muted)] block">Source</span>
               <span className="text-[var(--text-primary)]">{entry.sourceAccount}</span>
             </div>
             <div>
-              <span className="text-slate-500 block">Method</span>
+              <span className="text-[var(--text-muted)] block">Method</span>
               <span className="text-[var(--text-primary)]">{METHOD_LABELS[entry.method]}</span>
             </div>
             <div>
-              <span className="text-slate-500 block">Executed By</span>
+              <span className="text-[var(--text-muted)] block">Executed By</span>
               <span className="text-[var(--text-primary)]">{entry.executedBy}</span>
             </div>
             <div>
-              <span className="text-slate-500 block">Rule ID</span>
+              <span className="text-[var(--text-muted)] block">Rule ID</span>
               <span className="text-[var(--text-primary)] font-mono">{entry.ruleId}</span>
             </div>
           </div>
@@ -137,19 +141,19 @@ function HistoryRow({
               <thead>
                 <tr className="bg-[var(--bg-surface)]">
                   <th
-                    className="px-2 py-1.5 text-left text-[10px] font-medium text-slate-500"
+                    className="px-2 py-1.5 text-left text-[10px] font-medium text-[var(--text-muted)]"
                     scope="col"
                   >
                     Target
                   </th>
                   <th
-                    className="px-2 py-1.5 text-right text-[10px] font-medium text-slate-500"
+                    className="px-2 py-1.5 text-right text-[10px] font-medium text-[var(--text-muted)]"
                     scope="col"
                   >
                     Amount
                   </th>
                   <th
-                    className="px-2 py-1.5 text-right text-[10px] font-medium text-slate-500"
+                    className="px-2 py-1.5 text-right text-[10px] font-medium text-[var(--text-muted)]"
                     scope="col"
                   >
                     %
@@ -172,7 +176,7 @@ function HistoryRow({
             </table>
           </div>
 
-          <p className="text-[10px] text-slate-500 italic">{entry.auditComment}</p>
+          <p className="text-[10px] text-[var(--text-muted)] italic">{entry.auditComment}</p>
 
           <div className="flex items-center gap-2 pt-2 border-t border-[var(--border-subtle)]">
             <button
@@ -242,7 +246,7 @@ export function AllocationAuditTrail({
           <History className="h-5 w-5 text-blue-600" />
           <h3 className="text-sm font-semibold text-[var(--text-primary)]">Allocation History</h3>
         </div>
-        <div className="flex items-center gap-3 text-[10px] text-slate-500">
+        <div className="flex items-center gap-3 text-[10px] text-[var(--text-muted)]">
           <span>{entries.length} total</span>
           <span>{appliedCount} applied</span>
           <span className="text-blue-400 font-medium">{fmt.currency0(totalValue)}</span>
@@ -251,7 +255,7 @@ export function AllocationAuditTrail({
 
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-1.5">
-          <Filter className="h-3.5 w-3.5 text-slate-500" />
+          <Filter className="h-3.5 w-3.5 text-[var(--text-muted)]" />
           <select
             value={methodFilter}
             onChange={(e) => setMethodFilter(e.target.value as AllocationMethod | 'all')}
@@ -285,7 +289,7 @@ export function AllocationAuditTrail({
 
       <div className="flex flex-col gap-1.5 max-h-96 overflow-y-auto">
         {filtered.length === 0 ? (
-          <p className="text-xs text-slate-500 italic text-center py-4">
+          <p className="text-xs text-[var(--text-muted)] italic text-center py-4">
             {entries.length === 0
               ? 'No allocations executed yet.'
               : 'No allocations match the current filters.'}
