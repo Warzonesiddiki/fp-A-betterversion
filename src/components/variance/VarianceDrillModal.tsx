@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { useGLStore } from '@/store/glStore';
@@ -297,10 +298,8 @@ export function VarianceDrillModal({
                       key={group.department}
                       className="hover:bg-[var(--bg-hover)] cursor-pointer transition-colors"
                       onClick={() => handleDrillToDepartment(group.department)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ')
-                          handleDrillToDepartment(group.department);
-                      }}
+                      onKeyDown={activateOnKey(() => handleDrillToDepartment(group.department))}
+                      tabIndex={0}
                     >
                       <td className="px-4 py-2.5 flex items-center gap-2">
                         <Building2 className="h-4 w-4 text-[var(--text-muted)]" />

@@ -541,6 +541,94 @@ describe('UI-07 — empty-state surfaces use theme tokens, not hardcoded palette
   });
 
   /**
+   * UI-07 -- WCAG 2.1.1 Keyboard: anything you can click, you must be able to
+   * operate from the keyboard.
+   *
+   * Clickable table rows are the repo's main offender: `<tr onClick={...}>`
+   * navigates on mouse click but a keyboard user can neither focus it nor
+   * fire it. Verified by rendering, not inference -- a DataTable row with an
+   * onRowClick measured `tabIndex=null`, Enter produced 0 handler calls and a
+   * mouse click produced 1.
+   *
+   * Two distinct defects, both caught here:
+   *   1. onClick with no key handler  -> unreachable by keyboard.
+   *   2. a key handler but no tabIndex -> the element can never hold focus,
+   *      so the handler is dead code (VarianceDrillModal shipped this).
+   *
+   * Exempt, because click is a convenience rather than the only path:
+   *   - `aria-hidden="true"` scrim overlays (Esc closes the dialog).
+   *   - `role="presentation"` stopPropagation guards, which exist purely to
+   *     stop a click reaching an ancestor.
+   *
+   * axe cannot catch either class: it does not simulate key presses, and a
+   * div with an onClick is indistinguishable from a static div in the DOM it
+   * inspects.
+   *
+   * NOTE on parsing: a naive /<tr[^>]*>/ regex truncates the tag at the first
+   * `>` inside `onKeyDown={(e) => {...}}`, which hid real handlers and
+   * inflated this census from 20 to 53. The scan below is brace-aware.
+   */
+  it('every click-activated element is operable by keyboard', () => {
+    const CLICKABLE_TAGS = /<(div|span|li|tr|td|p|section|article)\b/g;
+
+    /** Opening-tag attribute text, skipping `>` inside braces and strings. */
+    function openingTags(src: string): { tag: string; attrs: string; line: number }[] {
+      const out: { tag: string; attrs: string; line: number }[] = [];
+      CLICKABLE_TAGS.lastIndex = 0;
+      let m: RegExpExecArray | null;
+      while ((m = CLICKABLE_TAGS.exec(src)) !== null) {
+        let j = m.index + m[0].length;
+        let depth = 0;
+        let quote: string | null = null;
+        while (j < src.length) {
+          const c = src[j]!;
+          if (quote) {
+            if (c === quote && src[j - 1] !== '\\') quote = null;
+          } else if (c === '"' || c === "'" || c === '`') quote = c;
+          else if (c === '{') depth++;
+          else if (c === '}') depth--;
+          else if (c === '>' && depth === 0) break;
+          j++;
+        }
+        out.push({
+          tag: m[1]!,
+          attrs: src.slice(m.index + m[0].length, j),
+          line: src.slice(0, m.index).split('\n').length,
+        });
+      }
+      return out;
+    }
+
+    const unreachable: string[] = [];
+    const deadHandler: string[] = [];
+
+    for (const file of globSources(resolve(__dirname, '../'))) {
+      if (file.includes('.test.')) continue;
+      const src = readFileSync(file, 'utf8');
+      if (!src.includes('onClick')) continue;
+      for (const { attrs, line } of openingTags(src)) {
+        if (!attrs.includes('onClick')) continue;
+        // Click as a convenience, not the only path.
+        if (attrs.includes('aria-hidden="true"')) continue;
+        if (attrs.includes('role="presentation"')) continue;
+
+        const id = `${file.split('/src/')[1]}:${line}`;
+        if (!/onKey(Down|Press|Up)/.test(attrs)) unreachable.push(id);
+        else if (!attrs.includes('tabIndex')) deadHandler.push(id);
+      }
+    }
+
+    expect(
+      unreachable,
+      'clickable but not keyboard-operable: add onKeyDown={activateOnKey(...)} and tabIndex={0}'
+    ).toEqual([]);
+    expect(
+      deadHandler,
+      'a key handler on an element with no tabIndex can never fire: add tabIndex={0}'
+    ).toEqual([]);
+  });
+
+  /**
    * UI-07 -- an empty state is still a page, so it needs an <h1>.
    *
    * These pages early-return a bare <main> BEFORE reaching their PageHeader,

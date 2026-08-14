@@ -548,8 +548,51 @@ Mutation-verified both ways: M27 (stripping the region from a call site) and
 M28 (stripping it from the shared component) each fail with the file and line,
 so the shared-component exemption is not a blanket escape hatch.
 
-Still open in this section: loading/error-state consistency, keyboard paths, and
-1024×600. The `bg-blue-600` occurrences that remain inside empty-state blocks
+**Keyboard operability (WCAG 2.1.1 A) — DONE.** Clickable table rows were
+mouse-only: `<tr onClick={...}>` navigates on click, but the row has no
+`tabIndex`, so a keyboard user can neither focus it nor fire it. Measured by
+rendering rather than reading -- a `DataTable` row with an `onRowClick`
+reported `tabIndex=null`, and pressing Enter produced **0** handler calls
+against **1** for a mouse click.
+
+The census needed two corrections before it was worth acting on. A naive
+`/<tr[^>]*>/` scan reported 53 offenders, but it truncates the opening tag at
+the first `>` inside `onKeyDown={(e) => {...}}`, hiding handlers that were
+already there; a brace-aware scan gives **20**. Of those, six are correct by
+design -- `aria-hidden="true"` scrim overlays and `role="presentation"`
+`stopPropagation` guards, where click is a convenience and Esc still closes the
+dialog -- leaving **14** real defects, plus one of a second kind.
+
+That second kind is worth naming: `VarianceDrillModal` had an `onKeyDown` but
+no `tabIndex`, so the element could never hold focus and the handler was dead
+code. A handler alone does not make a control operable.
+
+All 15 now use a shared `activateOnKey()` helper (`src/utils/a11yActivate.ts`,
+8 tests) rather than a sixteenth hand-rolled copy of the same arrow function --
+there were already 97 hand-rolled `key === 'Enter'` checks in the tree. It
+fires on Enter and Space, `preventDefault`s Space so activating a row does not
+also scroll the page, and ignores events bubbling from a nested button or link
+so that pressing Enter on a row's "Delete" button does not also navigate the
+row. Rows whose handler is optional (`onRowClick?`) stay out of the tab order
+when no handler is passed, so a static table gains no phantom tab stops.
+
+Guarded by a describe in `buttonContrast.contract.test.ts` (138 → 139) that
+scans every non-test `.tsx` with the same brace-aware parser and asserts both
+classes empty. Mutation-verified three ways: M29 (strip handler + tabIndex from
+a shared component), M30 (keep the handler, drop tabIndex), and M31 (a brand
+new clickable `<div>` in a page, proving the guard is not table-specific) each
+fail with the file and line.
+
+axe cannot catch either class -- it does not simulate key presses, and a
+`<div onClick>` is indistinguishable from a static `<div>` in the DOM it
+inspects. This is the third UI-07 defect class the axe suite was structurally
+blind to.
+
+Still open in this section: loading/error-state consistency and 1024×600.
+Loading and error states were surveyed while here and are in better shape than
+the plan assumed: `Skeleton`, `Spinner`, `LoadingScreen` and the route-level
+suspense fallback all already carry `role="status"`/`aria-busy`, and
+`RouteGroupErrorBoundary` uses `role="alert"` with `aria-live="assertive"`. The `bg-blue-600` occurrences that remain inside empty-state blocks
 were checked and left alone deliberately -- they are skip-links and buttons
 (white on `#2563eb` = 5.17:1, passing), not themed surfaces, so they belong to
 the Button migration rather than here. Raw palette also survives in the

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -174,6 +175,10 @@ export function FXRateManager() {
                       key={p.key}
                       className={`hover:bg-slate-900/50 cursor-pointer ${selectedPair === p.key ? 'bg-slate-800/50' : ''}`}
                       onClick={() => setSelectedPair(selectedPair === p.key ? null : p.key)}
+                      onKeyDown={activateOnKey(() =>
+                        setSelectedPair(selectedPair === p.key ? null : p.key)
+                      )}
+                      tabIndex={0}
                     >
                       <td className="px-4 py-3 font-mono font-medium">
                         {p.from}/{p.to}

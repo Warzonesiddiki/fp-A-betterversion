@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { currencyFormatter } from '@/utils/financialFormatting';
@@ -147,6 +148,8 @@ export default function ForecastListPage() {
                       key={f.id}
                       className="hover:bg-slate-900/50 cursor-pointer"
                       onClick={() => navigate('/forecasts/' + f.id)}
+                      onKeyDown={activateOnKey(() => navigate('/forecasts/' + f.id))}
+                      tabIndex={0}
                     >
                       <td className="px-4 py-3 font-medium">{f.name}</td>
                       <td className="px-4 py-3 text-xs text-slate-400">{f.type}</td>

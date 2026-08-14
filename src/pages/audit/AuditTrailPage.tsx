@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo, useState, useCallback, useRef } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { useNavigate } from 'react-router-dom';
 import { CellAuditTrailEngine } from '@/engines/CellAuditTrailEngine';
 import type { AuditOperation } from '@/engines/CellAuditTrailEngine';
@@ -543,6 +544,10 @@ function AuditTrailContent() {
                           aria-expanded={isExpanded}
                           aria-label={`Audit row ${i + 1} of ${Math.min(500, filtered.length)}: ${e.userName} ${e.operation} on ${e.accountName || e.accountId} at ${e.timestamp}`}
                           onClick={() => setExpandedRowId(isExpanded ? null : rowId)}
+                          onKeyDown={activateOnKey(() =>
+                            setExpandedRowId(isExpanded ? null : rowId)
+                          )}
+                          tabIndex={0}
                         >
                           <td
                             className="px-4 py-2 text-xs text-slate-400 whitespace-nowrap"

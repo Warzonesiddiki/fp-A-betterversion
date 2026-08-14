@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef, memo } from 'react';
 import { ChevronUp, ChevronDown, AlertCircle, Search } from 'lucide-react';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { cn } from '@/utils/cn';
 
 import { Skeleton } from './Skeleton';
@@ -160,6 +161,8 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
         onRowClick && 'cursor-pointer'
       )}
       onClick={() => onRowClick?.(row)}
+      onKeyDown={onRowClick ? activateOnKey(() => onRowClick(row)) : undefined}
+      tabIndex={onRowClick ? 0 : undefined}
       aria-rowindex={rowIdx + 1}
     >
       {columns.map((column) => (
@@ -203,6 +206,8 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
                 onRowClick && 'cursor-pointer'
               )}
               onClick={() => onRowClick?.(row!)}
+              onKeyDown={onRowClick ? activateOnKey(() => onRowClick(row!)) : undefined}
+              tabIndex={onRowClick ? 0 : undefined}
               data-index={virtualRow.index}
               aria-rowindex={virtualRow.index + 1}
             >

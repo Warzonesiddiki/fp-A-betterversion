@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate } from 'react-router-dom';
@@ -309,6 +310,12 @@ export default function GLTrialBalancePage() {
                         state: { accountId: row.accountId || row.accountCode },
                       });
                     }}
+                    onKeyDown={activateOnKey(() => {
+                      navigate('/data/gl-account-analysis', {
+                        state: { accountId: row.accountId || row.accountCode },
+                      });
+                    })}
+                    tabIndex={0}
                     title="Click to analyze account"
                   >
                     <td className="px-4 py-3 font-mono text-xs text-slate-400 group-hover:text-blue-400">

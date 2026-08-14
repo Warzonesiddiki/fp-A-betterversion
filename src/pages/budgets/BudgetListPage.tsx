@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -184,6 +185,8 @@ export default function BudgetListPage() {
                       key={b.id}
                       className="hover:bg-slate-900/50 cursor-pointer"
                       onClick={() => navigate('/budgets/' + b.id)}
+                      onKeyDown={activateOnKey(() => navigate('/budgets/' + b.id))}
+                      tabIndex={0}
                       role="row"
                     >
                       <td className="px-4 py-3 font-medium" role="gridcell">

@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { ChevronRight, ChevronDown, Download, FileText, Table as TableIcon } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
@@ -163,6 +164,10 @@ function GridRow({
             style={cellStyle}
             role="gridcell"
             onClick={() => onCellClick?.(rowIndex, colIdx)}
+            onKeyDown={
+              onCellClick ? activateOnKey(() => onCellClick(rowIndex, colIdx)) : undefined
+            }
+            tabIndex={onCellClick ? 0 : undefined}
           >
             {isLabel && isGrouped && colIdx === allColumns.findIndex((c) => c.type === 'label') && (
               <button
