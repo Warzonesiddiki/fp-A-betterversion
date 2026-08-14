@@ -289,7 +289,11 @@ export function AllocationAuditTrail({
 
       <div className="flex flex-col gap-1.5 max-h-96 overflow-y-auto">
         {filtered.length === 0 ? (
-          <p className="text-xs text-[var(--text-muted)] italic text-center py-4">
+          <p
+            className="text-xs text-[var(--text-muted)] italic text-center py-4"
+            role="status"
+            aria-live="polite"
+          >
             {entries.length === 0
               ? 'No allocations executed yet.'
               : 'No allocations match the current filters.'}

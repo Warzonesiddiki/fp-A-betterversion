@@ -286,7 +286,9 @@ export default function GLJournalsPage() {
                 {pageItems.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="text-center py-12 text-[var(--text-muted)]">
-                      No entries match the current filters.
+                      <span role="status" aria-live="polite">
+                        No entries match the current filters.
+                      </span>
                     </td>
                   </tr>
                 ) : (

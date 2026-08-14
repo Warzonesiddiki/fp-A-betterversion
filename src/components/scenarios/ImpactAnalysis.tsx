@@ -345,8 +345,12 @@ export function ImpactAnalysis({
       )}
 
       {filteredRows.length === 0 && (
-        <div className="flex flex-col items-center gap-2 py-12 text-[var(--text-secondary)]">
-          <Activity className="h-8 w-8" />
+        <div
+          className="flex flex-col items-center gap-2 py-12 text-[var(--text-secondary)]"
+          role="status"
+          aria-live="polite"
+        >
+          <Activity className="h-8 w-8" aria-hidden="true" />
           <p className="text-sm font-medium">No metrics match this filter</p>
           <p className="text-xs">Try selecting a different severity level.</p>
         </div>

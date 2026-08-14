@@ -420,8 +420,12 @@ export const KeyboardShortcutOverlay = memo(function KeyboardShortcutOverlay({
                 />
               ))
             ) : (
-              <div className="flex flex-col items-center justify-center py-16 text-[var(--text-muted)]">
-                <Search className="w-8 h-8 mb-3 opacity-40" />
+              <div
+                className="flex flex-col items-center justify-center py-16 text-[var(--text-muted)]"
+                role="status"
+                aria-live="polite"
+              >
+                <Search className="w-8 h-8 mb-3 opacity-40" aria-hidden="true" />
                 <p className="text-sm">No shortcuts match &ldquo;{search}&rdquo;</p>
               </div>
             )}

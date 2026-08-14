@@ -343,7 +343,9 @@ export function ICMatchingDashboard({
                 {filteredMatches.length === 0 && (
                   <tr>
                     <td colSpan={10} className="p-8 text-center text-muted-foreground">
-                      No matches found. Run Auto-Match or select transactions for Manual Match.
+                      <span role="status" aria-live="polite">
+                        No matches found. Run Auto-Match or select transactions for Manual Match.
+                      </span>
                     </td>
                   </tr>
                 )}

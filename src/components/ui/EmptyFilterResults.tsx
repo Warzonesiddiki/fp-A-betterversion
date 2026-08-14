@@ -42,7 +42,8 @@ export const EmptyFilterResults = memo(function EmptyFilterResults({
   return (
     <div
       className={cn('flex flex-col items-center justify-center py-16 px-4 text-center', className)}
-      role="region"
+      role="status"
+      aria-live="polite"
       aria-label={title}
     >
       <div className="mb-4">

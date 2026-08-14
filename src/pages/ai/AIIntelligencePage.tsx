@@ -532,7 +532,11 @@ export function AIIntelligencePage() {
                   ))}
                 </div>
               ) : (
-                <div className="py-8 text-center text-slate-500 dark:text-slate-400 text-sm">
+                <div
+                  className="py-8 text-center text-slate-500 dark:text-slate-400 text-sm"
+                  role="status"
+                  aria-live="polite"
+                >
                   {results.length === 0
                     ? 'Run analysis from the Overview tab to populate this list.'
                     : 'No results match your current filters.'}

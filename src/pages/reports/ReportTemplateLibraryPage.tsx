@@ -347,7 +347,11 @@ export default function ReportTemplateLibraryPage() {
 
       {/* Empty state overlay */}
       {visibleReports.length === 0 && (search || templateFilter !== 'all') && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-12 flex justify-center">
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-12 flex justify-center"
+          role="status"
+          aria-live="polite"
+        >
           <Card className="pointer-events-auto bg-white shadow-lg dark:bg-gray-800">
             <CardHeader>
               <CardTitle>No reports match your filters</CardTitle>

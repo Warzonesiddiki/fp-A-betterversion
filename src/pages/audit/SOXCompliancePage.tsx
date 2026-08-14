@@ -625,7 +625,11 @@ export default function SOXCompliancePage() {
             </div>
             <div className="max-h-[600px] overflow-y-auto">
               {filteredChecks.length === 0 ? (
-                <div className="p-8 text-center text-[var(--text-muted)]">
+                <div
+                  className="p-8 text-center text-[var(--text-muted)]"
+                  role="status"
+                  aria-live="polite"
+                >
                   No checks match the current filters.
                 </div>
               ) : (

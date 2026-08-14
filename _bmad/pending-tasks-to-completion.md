@@ -493,16 +493,68 @@ immediately surfaced two blocks the block-extractor audit had missed
 `text-slate-200` heading at 1.23:1 and `text-slate-400` body at 2.56:1 in light
 -- effectively invisible. Both are fully tokenised now.
 
+**Empty-state heading level — DONE.** The note below previously claimed 77
+pages render their empty state with an `<h2>` and no `<h1>`. Re-measured by
+rendering rather than grepping, the real number was **46**: those pages
+early-return a bare `<main>` on the no-data branch, before they reach
+`PageHeader`, and `PageHeader` owns the page `<h1>`. A throwaway probe
+confirmed it in the DOM (`BankingDashboard`, `ChartOfAccountsPage`: `h1=0`,
+`h2=1`), so on the branch a fresh install always lands on there was no page
+title at all and the first heading in the document was a level 2.
+
+The heading in such a `<main>` _is_ the page title in that state, so it is now
+an `<h1>` (46 pages, 47 promotions). A `<main>` that renders `PageHeader` is
+exempt -- its `<h1>` comes from the header and the `<h2>`s beneath it are true
+section headings. That exemption was not a guess: the first codemod pass also
+promoted populated-branch section headings such as
+`<h2 class="sr-only">Key Performance Indicators</h2>`, and axe `heading-order`
+failed on `BankStatements`, `ActivityFeed` and `IntegrationSettingsPage` until
+they were reverted. `ForecastBuilderPage` is correct as-is for the same reason.
+
+Guarded by a describe in `buttonContrast.contract.test.ts` (136 → 137) that
+walks every `<main>` block and fails one carrying an `<h2>` with no `<h1>` and
+no `PageHeader`. Mutation-verified both ways: M25 (regressing a single heading
+to `<h2>`) fails it with the file and line; M26 confirms the four
+`PageHeader`-bearing pages do not false-positive. Two tests that pinned
+`level: 2` on an empty-state heading now pin `level: 1`.
+
+**Status messages (WCAG 4.1.3 AA) — DONE.** When a search or filter emptied a
+list, the "no results" message was rendered without moving focus and without a
+live region, so a screen-reader user got silence: the list they were reading
+just stopped existing. Measured by rendering rather than reading -- typing a
+non-matching query into `TemplateGalleryPage` produced the message with **0**
+live regions in the document. axe is structurally unable to flag this (it
+cannot know a static-looking `<p>` is the result of a filter transition), so
+the a11y suite was silent on all of it.
+
+23 of the 24 dynamic no-results messages had no live region; the only correct
+one was `FindReplaceDialog.tsx:362`. All 23 now sit in `role="status"`
+`aria-live="polite"`. Five are inside a `<td>` -- one already carrying
+`role="gridcell"` -- where the role went on a nested `<span>`, because
+`role="status"` on the cell itself would destroy its table-cell semantics.
+Three static prompts on `AIIntelligencePage` that share the same class string
+("Run analysis to begin") were deliberately left silent: they are not
+transitions. Four decorative icons inside these blocks picked up
+`aria-hidden="true"` on the way past.
+
+The shared `EmptySearchResults` and `EmptyFilterResults` had the same bug at
+the source -- both announced via `role="region"`, which announces nothing --
+and are fixed. `EmptyListState` keeps `role="region"`: it is a static
+"nothing here yet" state, not a filter result.
+
+Guarded by a describe in `buttonContrast.contract.test.ts` (137 → 138) that
+fails any no-results string not within 14 lines of a live region.
+Mutation-verified both ways: M27 (stripping the region from a call site) and
+M28 (stripping it from the shared component) each fail with the file and line,
+so the shared-component exemption is not a blanket escape hatch.
+
 Still open in this section: loading/error-state consistency, keyboard paths, and
 1024×600. The `bg-blue-600` occurrences that remain inside empty-state blocks
 were checked and left alone deliberately -- they are skip-links and buttons
 (white on `#2563eb` = 5.17:1, passing), not themed surfaces, so they belong to
 the Button migration rather than here. Raw palette also survives in the
 _populated_ bodies of these same pages (e.g. `BudgetVsActualPage` table cells);
-that is a separate sweep and was not folded in. Note that 77 pages
-render their empty state with an `<h2>` and no `<h1>`; axe reports nothing
-because `page-has-heading-one` only fires on a full document, so this needs a
-direct DOM assertion if it is picked up.
+that is a separate sweep and was not folded in.
 
 ---
 

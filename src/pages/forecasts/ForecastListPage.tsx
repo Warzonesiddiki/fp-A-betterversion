@@ -136,7 +136,9 @@ export default function ForecastListPage() {
                 {filtered.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="text-center py-8 text-[var(--text-muted)]">
-                      No forecasts match your search.
+                      <span role="status" aria-live="polite">
+                        No forecasts match your search.
+                      </span>
                     </td>
                   </tr>
                 ) : (

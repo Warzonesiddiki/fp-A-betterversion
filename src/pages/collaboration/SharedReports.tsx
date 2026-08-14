@@ -397,7 +397,9 @@ export function SharedReports() {
                   ariaLabel="Account breakdown"
                 />
               ) : (
-                <p className="text-[var(--text-muted)]">No accounts match the current filters.</p>
+                <p className="text-[var(--text-muted)]" role="status" aria-live="polite">
+                  No accounts match the current filters.
+                </p>
               )}
             </CardContent>
           </Card>

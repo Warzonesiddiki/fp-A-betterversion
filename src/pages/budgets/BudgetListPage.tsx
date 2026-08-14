@@ -171,9 +171,11 @@ export default function BudgetListPage() {
                       className="text-center py-8 text-[var(--text-muted)]"
                       role="gridcell"
                     >
-                      {search
-                        ? 'No budgets matching "' + search + '"'
-                        : 'No budgets with status "' + statusFilter + '"'}
+                      <span role="status" aria-live="polite">
+                        {search
+                          ? 'No budgets matching "' + search + '"'
+                          : 'No budgets with status "' + statusFilter + '"'}
+                      </span>
                     </td>
                   </tr>
                 ) : (

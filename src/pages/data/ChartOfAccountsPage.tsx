@@ -518,7 +518,11 @@ export default function ChartOfAccountsPage() {
             </table>
           </div>
           {filteredAccounts.length === 0 && (
-            <div className="text-center py-8 text-[var(--text-muted)] text-sm">
+            <div
+              className="text-center py-8 text-[var(--text-muted)] text-sm"
+              role="status"
+              aria-live="polite"
+            >
               No accounts match your search criteria.
             </div>
           )}

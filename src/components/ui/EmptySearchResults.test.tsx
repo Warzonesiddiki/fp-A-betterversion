@@ -48,9 +48,13 @@ describe('EmptySearchResults', () => {
   });
 
   // Accessibility
-  it('has role="region"', () => {
+  // This is a result of a search/filter transition, so it must be announced.
+  // role="region" is a landmark: it announces nothing when the node appears.
+  it('announces itself as a live status message', () => {
     render(<EmptySearchResults />);
-    expect(screen.getByRole('region')).toBeInTheDocument();
+    const status = screen.getByRole('status');
+    expect(status).toBeInTheDocument();
+    expect(status).toHaveAttribute('aria-live', 'polite');
   });
 
   it('has aria-label matching title', () => {

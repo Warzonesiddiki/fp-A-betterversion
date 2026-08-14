@@ -154,8 +154,8 @@ export default function ReportsListPage() {
       ))}
 
       {filtered.length === 0 && (
-        <div className="text-center py-12 text-[var(--text-muted)]">
-          <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
+        <div className="text-center py-12 text-[var(--text-muted)]" role="status" aria-live="polite">
+          <Search className="h-8 w-8 mx-auto mb-2 opacity-50" aria-hidden="true" />
           <p>No reports match &quot;{search}&quot;</p>
         </div>
       )}

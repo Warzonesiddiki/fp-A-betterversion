@@ -490,6 +490,57 @@ describe('UI-07 — empty-state surfaces use theme tokens, not hardcoded palette
   const HAS_DARK_TEXT_OVERRIDE = /\bdark:text-(?:\[|[a-z]+-\d{2,3}|white)/;
 
   /**
+   * UI-07 -- WCAG 4.1.3 Status Messages (AA).
+   *
+   * When a search or filter empties a list, the "no results" message appears
+   * without moving focus. If it is not inside a live region, a screen-reader
+   * user gets silence: the list they were reading simply stops existing.
+   * Proved by rendering, not by reading -- typing a non-matching query into
+   * TemplateGalleryPage rendered the message with 0 live regions in the
+   * document.
+   *
+   * axe cannot catch this. It has no way to know that a static-looking <p> is
+   * the result of a filter transition, so the a11y suite was silent on all 23
+   * occurrences.
+   *
+   * The message must sit in role="status" (or aria-live). On a <td> the role
+   * goes on a nested <span>, because role="status" on the cell would destroy
+   * its table-cell semantics.
+   *
+   * Deliberately NOT covered: static prompts like "Run analysis to begin",
+   * which are not transitions and must stay quiet.
+   */
+  it('every dynamic no-results message sits in a live region', () => {
+    const NO_RESULTS =
+      /no\s+\w+\s+match|no\s+(?:results|matches)\s+found|match\s+your\s+(?:search|filter)/i;
+    const LIVE = /role="status"|aria-live/;
+    const SHARED_EMPTY_STATE = /components\/ui\/Empty(?:SearchResults|FilterResults)\.tsx$/;
+
+    const offenders = globSources(resolve(__dirname, '../')).flatMap((file) => {
+      if (file.includes('.test.')) return [];
+      const lines = readFileSync(file, 'utf8').split('\n');
+      return lines.flatMap((line, i) => {
+        const trimmed = line.trim();
+        if (!NO_RESULTS.test(line)) return [];
+        if (trimmed.startsWith('*') || trimmed.startsWith('//')) return [];
+        // Look back far enough to clear a multi-line opening tag.
+        const context = lines.slice(Math.max(0, i - 14), i + 2).join('\n');
+        if (LIVE.test(context)) return [];
+        // A shared empty-state component declares its copy as a default prop
+        // ABOVE the JSX that carries the live region, so a backward window
+        // cannot see it. Those are covered by the component's own markup.
+        if (SHARED_EMPTY_STATE.test(file) && LIVE.test(lines.join('\n'))) return [];
+        return [`${file.split('/src/')[1]}:${i + 1}`];
+      });
+    });
+
+    expect(
+      offenders,
+      'a filter that empties a list must announce it: wrap the message in role="status"'
+    ).toEqual([]);
+  });
+
+  /**
    * UI-07 -- an empty state is still a page, so it needs an <h1>.
    *
    * These pages early-return a bare <main> BEFORE reaching their PageHeader,

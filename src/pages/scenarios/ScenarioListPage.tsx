@@ -112,7 +112,11 @@ export default function ScenarioListPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filtered.length === 0 ? (
-          <div className="col-span-full text-center py-8 text-[var(--text-muted)]">
+          <div
+            className="col-span-full text-center py-8 text-[var(--text-muted)]"
+            role="status"
+            aria-live="polite"
+          >
             No scenarios match the filter.
           </div>
         ) : (

@@ -526,7 +526,9 @@ function AuditTrailContent() {
                       colSpan={showDiff ? 7 : 5}
                       className="text-center py-8 text-[var(--text-muted)]"
                     >
-                      No entries match filters.
+                      <span role="status" aria-live="polite">
+                        No entries match filters.
+                      </span>
                     </td>
                   </tr>
                 ) : (
