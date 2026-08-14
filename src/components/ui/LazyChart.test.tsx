@@ -24,7 +24,10 @@ describe('LazyChart', () => {
         <div>Chart content</div>
       </LazyChart>
     );
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the component mounted'
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it('shows loading skeleton when not visible', () => {

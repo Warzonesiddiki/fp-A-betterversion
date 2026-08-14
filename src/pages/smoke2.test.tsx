@@ -303,7 +303,10 @@ describe('Page Smoke Tests (Batch 2)', () => {
   describe('CashForecastPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(CashForecastPage, '/cash/forecast', '/cash/forecast');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('does not crash with empty entries', () => {
@@ -320,7 +323,10 @@ describe('Page Smoke Tests (Batch 2)', () => {
         '/treasury/investments',
         '/treasury/investments'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state', () => {
@@ -332,7 +338,10 @@ describe('Page Smoke Tests (Batch 2)', () => {
   describe('ConsolidationDashboard', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(ConsolidationDashboard, '/consolidation', '/consolidation');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state', () => {
@@ -344,7 +353,10 @@ describe('Page Smoke Tests (Batch 2)', () => {
   describe('FXRatesPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(FXRatesPage, '/currency/rates', '/currency/rates');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -356,7 +368,10 @@ describe('Page Smoke Tests (Batch 2)', () => {
   describe('AuditTrailPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(AuditTrailPage, '/audit', '/audit');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('denies access to roles without GDPR audit permission (RBAC gate)', () => {
@@ -375,7 +390,10 @@ describe('Page Smoke Tests (Batch 2)', () => {
   describe('CapExDashboard', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(CapExDashboard, '/capex', '/capex');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -387,7 +405,10 @@ describe('Page Smoke Tests (Batch 2)', () => {
   describe('AIIntelligencePage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(AIIntelligencePage, '/ai', '/ai');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -399,7 +420,10 @@ describe('Page Smoke Tests (Batch 2)', () => {
   describe('LeaseDashboard', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(LeaseDashboard, '/lease', '/lease');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     // NOTE: LeaseDashboard renders a demo lease portfolio (hardcoded sample
@@ -416,7 +440,10 @@ describe('Page Smoke Tests (Batch 2)', () => {
   describe('RevRecDashboard', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(RevRecDashboard, '/revenue', '/revenue');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state', () => {
@@ -428,7 +455,10 @@ describe('Page Smoke Tests (Batch 2)', () => {
   describe('HelpPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(HelpPage, '/help', '/help');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the help center heading', () => {

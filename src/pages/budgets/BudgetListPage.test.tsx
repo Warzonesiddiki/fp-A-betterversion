@@ -72,7 +72,10 @@ describe('BudgetListPage', () => {
 
   it('renders without crashing', () => {
     const { container } = renderPage(BudgetListPage, '/budgets', '/budgets');
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
   });
 
   it('displays the empty state when no budgets exist', () => {

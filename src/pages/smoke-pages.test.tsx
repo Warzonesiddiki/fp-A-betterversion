@@ -132,7 +132,10 @@ describe('Page Smoke Tests — 5 Additional Pages', () => {
   describe('CashFlowPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(CashFlowPage, '/reports/cash-flow', '/reports/cash-flow');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state when no GL entries exist', () => {
@@ -148,7 +151,10 @@ describe('Page Smoke Tests — 5 Additional Pages', () => {
         '/treasury/investments',
         '/treasury/investments'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state when no GL entries exist', () => {
@@ -168,7 +174,10 @@ describe('Page Smoke Tests — 5 Additional Pages', () => {
         '/consolidation/elimination',
         '/consolidation/elimination'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -184,7 +193,10 @@ describe('Page Smoke Tests — 5 Additional Pages', () => {
   describe('FXRatesPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(FXRatesPage, '/currency/fx-rates', '/currency/fx-rates');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state when no GL entries exist', () => {
@@ -196,7 +208,10 @@ describe('Page Smoke Tests — 5 Additional Pages', () => {
   describe('AuditTrailPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(AuditTrailPage, '/audit/trail', '/audit/trail');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('denies access to roles without GDPR audit permission (RBAC gate)', () => {

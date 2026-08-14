@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ReportBuilderEngine,
@@ -23,6 +23,8 @@ export function TemplateModal({
   onLoadSaved,
   savedReports,
 }: TemplateModalProps) {
+  const titleId = useId();
+
   if (!isOpen) return null;
 
   return (
@@ -40,9 +42,14 @@ export function TemplateModal({
           exit={{ scale: 0.95, y: 20 }}
           className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-2xl shadow-2xl w-[520px] max-h-[80vh] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
         >
           <div className="p-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
-            <h2 className="text-sm font-bold text-[var(--text-primary)]">New Report from Template</h2>
+            <h2 id={titleId} className="text-sm font-bold text-[var(--text-primary)]">
+              New Report from Template
+            </h2>
             <button
               onClick={onClose}
               className="text-[var(--text-muted)] hover:text-[var(--text-primary)] text-lg leading-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"

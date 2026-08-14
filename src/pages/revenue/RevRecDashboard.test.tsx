@@ -76,7 +76,10 @@ describe('RevRecDashboard smoke test', () => {
         <RevRecDashboard />
       </MemoryRouter>
     );
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
   });
 
   it('displays no-data state when entries are empty', () => {

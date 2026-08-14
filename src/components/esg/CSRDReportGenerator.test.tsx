@@ -5,6 +5,9 @@ import { CSRDReportGenerator } from './CSRDReportGenerator';
 describe('CSRDReportGenerator', () => {
   it('renders without crashing', () => {
     const { container } = render(<CSRDReportGenerator />);
-    expect(container).toBeDefined();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the component mounted'
+    ).toBeGreaterThanOrEqual(1);
   });
 });

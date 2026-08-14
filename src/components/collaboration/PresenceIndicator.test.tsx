@@ -43,11 +43,6 @@ describe('PresenceIndicator (collaboration)', () => {
     mockUseResourcePresence.mockReturnValue([]);
   });
 
-  it('renders without crashing with no viewers', () => {
-    const { container } = render(<PresenceIndicator resourceType="budget" resourceId="b1" />);
-    expect(container).toBeTruthy();
-  });
-
   it('renders nothing when no viewers', () => {
     const { container } = render(<PresenceIndicator resourceType="budget" resourceId="b1" />);
     expect(container.innerHTML).toBe('');

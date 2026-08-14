@@ -210,7 +210,10 @@ describe('Retail pages smoke tests', () => {
   describe('InventoryDashboard', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(InventoryDashboard, '/retail/inventory');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no data', () => {
       renderPage(InventoryDashboard, '/retail/inventory');
@@ -221,7 +224,10 @@ describe('Retail pages smoke tests', () => {
   describe('InventoryPlanningPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(InventoryPlanningPage, '/retail/inventory-planning');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no data', () => {
       renderPage(InventoryPlanningPage, '/retail/inventory-planning');
@@ -232,7 +238,10 @@ describe('Retail pages smoke tests', () => {
   describe('PromoAnalysisPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(PromoAnalysisPage, '/retail/promo-analysis');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('displays page heading', () => {
       renderPage(PromoAnalysisPage, '/retail/promo-analysis');
@@ -243,7 +252,10 @@ describe('Retail pages smoke tests', () => {
   describe('RetailDashboard', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(RetailDashboard, '/retail/dashboard');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no data', () => {
       renderPage(RetailDashboard, '/retail/dashboard');
@@ -254,7 +266,10 @@ describe('Retail pages smoke tests', () => {
   describe('StoreDashboardPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(StoreDashboardPage, '/retail/stores');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no data', () => {
       renderPage(StoreDashboardPage, '/retail/stores');
@@ -280,7 +295,10 @@ describe('SaaS pages smoke tests', () => {
   describe('ARRDashboard', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(ARRDashboard, '/saas/arr');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no SaaS data', () => {
       renderPage(ARRDashboard, '/saas/arr');
@@ -291,7 +309,10 @@ describe('SaaS pages smoke tests', () => {
   describe('ChurnAnalysisPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(ChurnAnalysisPage, '/saas/churn-analysis');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no data', () => {
       renderPage(ChurnAnalysisPage, '/saas/churn-analysis');
@@ -302,7 +323,10 @@ describe('SaaS pages smoke tests', () => {
   describe('ChurnDashboard', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(ChurnDashboard, '/saas/churn');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no data', () => {
       renderPage(ChurnDashboard, '/saas/churn');
@@ -313,7 +337,10 @@ describe('SaaS pages smoke tests', () => {
   describe('CohortAnalysisPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(CohortAnalysisPage, '/saas/cohort');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no data', () => {
       renderPage(CohortAnalysisPage, '/saas/cohort');

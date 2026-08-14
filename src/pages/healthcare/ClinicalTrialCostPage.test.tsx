@@ -64,7 +64,10 @@ describe('ClinicalTrialCostPage smoke test', () => {
   });
   it('renders without crashing', () => {
     const { container } = renderPage();
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
   });
   it('displays page heading', () => {
     renderPage();

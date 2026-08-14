@@ -174,7 +174,10 @@ describe('Sector, Scenarios, Settings smoke tests', () => {
   describe('SectorPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(SectorPage, '/sector');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no data', () => {
       renderPage(SectorPage, '/sector');
@@ -185,7 +188,10 @@ describe('Sector, Scenarios, Settings smoke tests', () => {
   describe('ScenarioBuilderPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(ScenarioBuilderPage, '/scenarios/builder');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('displays the page heading', () => {
       renderPage(ScenarioBuilderPage, '/scenarios/builder');
@@ -196,7 +202,10 @@ describe('Sector, Scenarios, Settings smoke tests', () => {
   describe('BackupRestorePage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(BackupRestorePage, '/settings/backup');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('displays the page heading', () => {
       renderPage(BackupRestorePage, '/settings/backup');
@@ -207,7 +216,10 @@ describe('Sector, Scenarios, Settings smoke tests', () => {
   describe('IntegrationSettingsPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(IntegrationSettingsPage, '/settings/integrations');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('displays the page heading', () => {
       renderPage(IntegrationSettingsPage, '/settings/integrations');
@@ -218,7 +230,10 @@ describe('Sector, Scenarios, Settings smoke tests', () => {
   describe('SecuritySettingsPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(SecuritySettingsPage, '/settings/security');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('displays the page heading', () => {
       renderPage(SecuritySettingsPage, '/settings/security');
@@ -229,7 +244,10 @@ describe('Sector, Scenarios, Settings smoke tests', () => {
   describe('UserManagementPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(UserManagementPage, '/settings/users');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('displays the page heading', () => {
       renderPage(UserManagementPage, '/settings/users');

@@ -77,7 +77,10 @@ describe('ScenarioComparisonGrid', () => {
     const { container } = render(
       <ScenarioComparisonGrid baseMetrics={baseMetrics} scenarios={scenarios} />
     );
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the component mounted'
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it('displays title', () => {

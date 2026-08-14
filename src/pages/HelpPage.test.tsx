@@ -34,7 +34,10 @@ describe('HelpPage smoke test', () => {
         <HelpPage />
       </MemoryRouter>
     );
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
   });
 
   it('displays the help center heading', () => {

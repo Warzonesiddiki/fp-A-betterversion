@@ -102,7 +102,10 @@ function renderPage(Page: React.ComponentType) {
 describe('Sector Dashboard Pages', () => {
   it('BankingDashboardPage renders without crashing', () => {
     const { container } = renderPage(BankingDashboardPage);
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
   });
 
   it('BankingDashboardPage displays KPI section', () => {
@@ -113,7 +116,10 @@ describe('Sector Dashboard Pages', () => {
 
   it('EnergyDashboardPage renders without crashing', () => {
     const { container } = renderPage(EnergyDashboardPage);
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
   });
 
   it('EnergyDashboardPage displays KPI section', () => {
@@ -123,7 +129,10 @@ describe('Sector Dashboard Pages', () => {
 
   it('HealthcareDashboardPage renders without crashing', () => {
     const { container } = renderPage(HealthcareDashboardPage);
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
   });
 
   it('HealthcareDashboardPage displays KPI section', () => {
@@ -133,7 +142,10 @@ describe('Sector Dashboard Pages', () => {
 
   it('InsuranceDashboardPage renders without crashing', () => {
     const { container } = renderPage(InsuranceDashboardPage);
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
   });
 
   it('InsuranceDashboardPage displays KPI section', () => {
@@ -143,7 +155,10 @@ describe('Sector Dashboard Pages', () => {
 
   it('RealEstateDashboardPage renders without crashing', () => {
     const { container } = renderPage(RealEstateDashboardPage);
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
   });
 
   it('RealEstateDashboardPage displays KPI section', () => {
@@ -153,7 +168,10 @@ describe('Sector Dashboard Pages', () => {
 
   it('ConstructionDashboardPage renders without crashing', () => {
     const { container } = renderPage(ConstructionDashboardPage);
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
   });
 
   it('ConstructionDashboardPage displays KPI section', () => {

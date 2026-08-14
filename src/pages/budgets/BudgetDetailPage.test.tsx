@@ -91,7 +91,10 @@ describe('BudgetDetailPage', () => {
 
   it('renders without crashing when budget is not found', () => {
     const { container } = renderPage(BudgetDetailPage, '/budgets/nonexistent', '/budgets/:id');
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
   });
 
   it('displays not found message for missing budget', () => {

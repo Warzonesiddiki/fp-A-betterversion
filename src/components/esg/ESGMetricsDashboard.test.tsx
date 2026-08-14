@@ -17,7 +17,10 @@ describe('ESGMetricsDashboard', () => {
 
   it('renders without crashing', () => {
     const { container } = render(<ESGMetricsDashboard />);
-    expect(container).toBeDefined();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the component mounted'
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it('renders empty state when no metrics', () => {

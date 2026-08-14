@@ -20,7 +20,10 @@ describe('VersionDiffViewer', () => {
     const { container } = render(
       <VersionDiffViewer diffEntries={[]} sourceLabel="v1" targetLabel="v2" />
     );
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the component mounted'
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it('displays change count', () => {

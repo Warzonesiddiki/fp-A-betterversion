@@ -263,7 +263,10 @@ describe('Page Smoke Tests — 5 Data Pages', () => {
   describe('GLJournalsPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(GLJournalsPage, '/data/gl-journals', '/data/gl-journals');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays empty state when no entries', () => {
@@ -279,7 +282,10 @@ describe('Page Smoke Tests — 5 Data Pages', () => {
   describe('GLReportingPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(GLReportingPage, '/data/gl-reporting', '/data/gl-reporting');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays empty state when no entries', () => {
@@ -299,7 +305,10 @@ describe('Page Smoke Tests — 5 Data Pages', () => {
         '/data/gl-trial-balance',
         '/data/gl-trial-balance'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays empty state when no entries', () => {
@@ -319,7 +328,10 @@ describe('Page Smoke Tests — 5 Data Pages', () => {
   describe('GLUploadPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(GLUploadPage, '/data/gl-upload', '/data/gl-upload');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays upload empty state', () => {
@@ -335,7 +347,10 @@ describe('Page Smoke Tests — 5 Data Pages', () => {
   describe('VersionDiffPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(VersionDiffPage, '/data/version-diff', '/data/version-diff');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {

@@ -100,7 +100,10 @@ describe('OnboardingWizard', () => {
 
   it('renders without crashing', () => {
     const { container } = render(<OnboardingWizard onComplete={() => {}} />);
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the component mounted'
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it('displays welcome message on first step', () => {

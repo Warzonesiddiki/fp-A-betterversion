@@ -188,7 +188,10 @@ describe('Page Smoke Tests — 5 Uncovered Pages', () => {
         '/cash/working-capital',
         '/cash/working-capital'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state when no GL entries exist', () => {
@@ -221,7 +224,10 @@ describe('Page Smoke Tests — 5 Uncovered Pages', () => {
         '/collaboration/approvals',
         '/collaboration/approvals'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -253,7 +259,10 @@ describe('Page Smoke Tests — 5 Uncovered Pages', () => {
   describe('CollaborationPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(CollaborationPage, '/collaboration', '/collaboration');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -274,7 +283,10 @@ describe('Page Smoke Tests — 5 Uncovered Pages', () => {
   describe('ConsolidationDashboard', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(ConsolidationDashboard, '/consolidation', '/consolidation');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -299,7 +311,10 @@ describe('Page Smoke Tests — 5 Uncovered Pages', () => {
         '/consolidation/ownership-tree',
         '/consolidation/ownership-tree'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {

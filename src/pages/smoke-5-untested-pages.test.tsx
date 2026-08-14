@@ -209,7 +209,10 @@ describe('Page Smoke Tests — 5 Untested Pages', () => {
         '/construction/project-costing',
         '/construction/project-costing'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -233,7 +236,10 @@ describe('Page Smoke Tests — 5 Untested Pages', () => {
         '/currency/hedge-management',
         '/currency/hedge-management'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state heading', () => {
@@ -257,7 +263,10 @@ describe('Page Smoke Tests — 5 Untested Pages', () => {
         '/currency/translation-result',
         '/currency/translation-result'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state heading', () => {
@@ -281,7 +290,10 @@ describe('Page Smoke Tests — 5 Untested Pages', () => {
         '/data/chart-of-accounts',
         '/data/chart-of-accounts'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -305,7 +317,10 @@ describe('Page Smoke Tests — 5 Untested Pages', () => {
         '/data/gl-account-analysis',
         '/data/gl-account-analysis'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state heading', () => {

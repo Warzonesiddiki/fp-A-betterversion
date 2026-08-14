@@ -220,7 +220,10 @@ describe('Page Smoke Tests — 5 New Pages', () => {
         '/construction/project-costing',
         '/construction/project-costing'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -280,7 +283,10 @@ describe('Page Smoke Tests — 5 New Pages', () => {
         '/currency/hedge-management',
         '/currency/hedge-management'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
   });
 
@@ -313,7 +319,10 @@ describe('Page Smoke Tests — 5 New Pages', () => {
         '/currency/translation-results',
         '/currency/translation-results'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
   });
 
@@ -355,7 +364,10 @@ describe('Page Smoke Tests — 5 New Pages', () => {
         '/data/chart-of-accounts',
         '/data/chart-of-accounts'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
   });
 
@@ -388,7 +400,10 @@ describe('Page Smoke Tests — 5 New Pages', () => {
         '/data/gl-account-analysis',
         '/data/gl-account-analysis'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
   });
 });

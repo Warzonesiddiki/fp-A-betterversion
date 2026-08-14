@@ -32,6 +32,25 @@ const TAUTOLOGIES = [
     why: 'expect("x").toBe("x")',
   },
   { re: /expect\(\s*1\s*\)\s*\.\s*toBe\(\s*1\s*\)/, why: 'expect(1).toBe(1)' },
+  /**
+   * Not a literal constant, but tautological all the same: `render()` always
+   * returns a container element, so this holds even when the component renders
+   * absolutely nothing. 210 of these were shipped across 110 files under the
+   * name "renders without crashing", and they hid seven pages whose empty state
+   * was a dead end. Assert the rendered DOM instead:
+   *   expect(container.querySelectorAll('*').length).toBeGreaterThanOrEqual(N)
+   */
+  {
+    re: /expect\(\s*container\s*\)\s*\.\s*(?:toBeTruthy\(\s*\)|toBeDefined\(\s*\)|not\s*\.\s*toBeNull\(\s*\))/,
+    why: 'expect(container).toBeTruthy() — always true, even for an empty render',
+  },
+  /**
+   * Same failure mode via the destructured RTL result or a bare mount call.
+   */
+  {
+    re: /expect\(\s*(?:baseElement|wrapper)\s*\)\s*\.\s*(?:toBeTruthy\(\s*\)|toBeDefined\(\s*\))/,
+    why: 'expect(baseElement/wrapper).toBeTruthy() — always true, even for an empty render',
+  },
 ];
 
 function walk(dir, acc = []) {

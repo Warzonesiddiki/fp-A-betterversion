@@ -101,7 +101,10 @@ describe('ICMatchingDashboard', () => {
         entityNames={{}}
       />
     );
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the component mounted'
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it('displays summary cards', () => {

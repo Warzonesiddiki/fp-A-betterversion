@@ -26,12 +26,18 @@ describe('SystemHealthMonitor', () => {
 
   it('renders without crashing when online', () => {
     const { container } = render(<SystemHealthMonitor isOnline={true} />);
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the component mounted'
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it('renders without crashing when offline', () => {
     const { container } = render(<SystemHealthMonitor isOnline={false} />);
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the component mounted'
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it('displays "System Healthy" when online', () => {
