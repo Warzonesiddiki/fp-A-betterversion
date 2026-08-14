@@ -76,11 +76,15 @@ export default function EnergyProductionDashboard() {
 
   if (entries.length === 0)
     return (
-      <div className="p-12 text-center">
-        <Zap className="h-10 w-10 text-yellow-400 mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Energy Data</h2>
+      <main className="p-12 text-center" role="main" aria-label="Energy Production - No Data">
+        <Zap className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
+        <h1 className="text-xl font-semibold mb-2">No Energy Data</h1>
+        <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
+          Import general ledger data with production accounts to track output, capacity and
+          generation trends.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
-      </div>
+      </main>
     );
 
   return (

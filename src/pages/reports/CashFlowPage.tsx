@@ -11,6 +11,7 @@ import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const HELP_SECTIONS = [
   {
@@ -223,8 +224,8 @@ export default function CashFlowPage() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <DollarSign className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <DollarSign className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to generate a Cash Flow statement.</p>
@@ -245,16 +246,16 @@ export default function CashFlowPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">Cash Flow Statement</h1>
-            <button
-              onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
-              aria-label="Help"
-            >
-              <HelpCircle className="h-5 w-5" />
-            </button>
-          </div>
+          <PageHeader
+            title="Cash Flow Statement"
+            actions={<button
+                       onClick={() => setHelpOpen(true)}
+                       className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
+                       aria-label="Help"
+                     >
+                       <HelpCircle className="h-5 w-5" />
+                     </button>}
+          />
           <p className="text-sm text-[var(--text-muted)] mt-1">
             Period ending {period} &middot; {report.entryCount.toLocaleString()} entries
           </p>

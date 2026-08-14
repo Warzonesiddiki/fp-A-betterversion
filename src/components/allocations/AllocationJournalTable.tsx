@@ -47,25 +47,25 @@ export const AllocationJournalTable = memo(function AllocationJournalTable({
           <tr className="border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
             <th
               scope="col"
-              className="px-3 py-2 text-left text-[10px] font-medium text-slate-500 uppercase"
+              className="px-3 py-2 text-left text-[10px] font-medium text-[var(--text-muted)] uppercase"
             >
               Account
             </th>
             <th
               scope="col"
-              className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase"
+              className="px-3 py-2 text-right text-[10px] font-medium text-[var(--text-muted)] uppercase"
             >
               Debit
             </th>
             <th
               scope="col"
-              className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase"
+              className="px-3 py-2 text-right text-[10px] font-medium text-[var(--text-muted)] uppercase"
             >
               Credit
             </th>
             <th
               scope="col"
-              className="px-3 py-2 text-left text-[10px] font-medium text-slate-500 uppercase"
+              className="px-3 py-2 text-left text-[10px] font-medium text-[var(--text-muted)] uppercase"
             >
               Memo
             </th>
@@ -83,7 +83,9 @@ export const AllocationJournalTable = memo(function AllocationJournalTable({
               <td className="px-3 py-1.5 text-xs text-[var(--text-primary)]">
                 <div className="flex flex-col">
                   <span className="font-medium">DR {je.debitAccount}</span>
-                  <span className="text-[10px] text-slate-500">CR {je.creditAccount}</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">
+                    CR {je.creditAccount}
+                  </span>
                 </div>
               </td>
               <td className="px-3 py-1.5 text-xs text-right text-green-400 font-medium">

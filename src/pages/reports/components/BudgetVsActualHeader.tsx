@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { HelpCircle, FileText, Table as TableIcon } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface BudgetVsActualHeaderProps {
   onHelpClick: () => void;
@@ -15,16 +16,16 @@ export const BudgetVsActualHeader = memo(function BudgetVsActualHeader({
 }: BudgetVsActualHeaderProps) {
   return (
     <div className="flex items-center justify-between" role="region" aria-label="BudgetVsActualHeader">
-      <div className="flex items-center space-x-4">
-        <h1 className="text-2xl font-black text-[var(--text-primary)]">Budget vs Actual</h1>
-        <button
-          onClick={onHelpClick}
-          className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-          aria-label="Help"
-        >
-          <HelpCircle className="h-5 w-5" />
-        </button>
-      </div>
+      <PageHeader
+        title="Budget vs Actual"
+        actions={<button
+                   onClick={onHelpClick}
+                   className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+                   aria-label="Help"
+                 >
+                   <HelpCircle className="h-5 w-5" />
+                 </button>}
+      />
       <div className="flex gap-2">
         <Button size="sm" variant="ghost" onClick={onExportPDF} aria-label="Export PDF">
           <FileText className="h-3.5 w-3.5 mr-1.5" />

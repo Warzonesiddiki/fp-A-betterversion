@@ -7,7 +7,7 @@ export function JobCostDashboard() {
       <div className="grid grid-cols-4 gap-4">
         {['Budget', 'Actual', 'SPI', 'CPI'].map((k) => (
           <Card key={k} className="p-4 text-center">
-            <span className="text-xs text-slate-500 uppercase font-bold">{k}</span>
+            <span className="text-xs text-[var(--text-muted)] uppercase font-bold">{k}</span>
             <div className="text-xl font-bold text-[var(--text-primary)]">---</div>
           </Card>
         ))}

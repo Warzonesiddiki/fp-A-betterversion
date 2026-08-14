@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { allTemplates, industryLabels } from '@/config/templates';
 import type { TemplateCategory } from '@/engines/TemplateEngine';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const categoryIcons: Record<TemplateCategory, React.ReactNode> = {
   budget: <LayoutGrid className="h-4 w-4" />,
@@ -61,10 +62,7 @@ export default function TemplatePreviewPage() {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold">{template.name}</h1>
-            <p className="text-muted-foreground">{template.description}</p>
-          </div>
+          <PageHeader title={template.name} purpose={template.description} />
         </div>
         <Button onClick={handleApply} disabled={applied}>
           {applied ? (

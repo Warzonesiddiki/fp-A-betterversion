@@ -126,7 +126,7 @@ export function CompetitiveGapsToolbar({
     >
       {/* (1) Scenario Merge */}
       <div className="flex items-center gap-1 border-r border-slate-200 dark:border-slate-700 pr-2">
-        <Combine className="h-4 w-4 text-slate-500" aria-hidden="true" />
+        <Combine className="h-4 w-4 text-[var(--text-muted)]" aria-hidden="true" />
         <select
           aria-label="Merge source scenario"
           value={mergeSourceId}
@@ -169,7 +169,7 @@ export function CompetitiveGapsToolbar({
         {isLocked ? (
           <Lock className="h-4 w-4 text-amber-700" aria-hidden="true" />
         ) : (
-          <Unlock className="h-4 w-4 text-slate-500" aria-hidden="true" />
+          <Unlock className="h-4 w-4 text-[var(--text-muted)]" aria-hidden="true" />
         )}
         <button
           type="button"

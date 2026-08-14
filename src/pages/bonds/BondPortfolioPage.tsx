@@ -226,8 +226,8 @@ export default function BondPortfolioPage() {
         role="main"
         aria-label="Bond Portfolio page"
       >
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <Landmark className="h-10 w-10 text-slate-400" aria-hidden="true" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <Landmark className="h-10 w-10 text-[var(--text-muted)]" aria-hidden="true" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Bond Data</h2>
         <p className="text-[var(--text-muted)] mb-6">
@@ -356,7 +356,7 @@ export default function BondPortfolioPage() {
           </CardHeader>
           <CardContent className="space-y-5 pt-4">
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 Weighted Convexity
               </div>
               <div className="text-xl font-bold">
@@ -367,13 +367,15 @@ export default function BondPortfolioPage() {
               </p>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">Avg Coupon Rate</div>
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
+                Avg Coupon Rate
+              </div>
               <div className="text-xl font-bold">
                 {formatPercent(portfolioMetrics.avgCoupon * 100, 2)}
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 Total Accrued Interest
               </div>
               <div className="text-xl font-bold text-blue-600">
@@ -381,7 +383,7 @@ export default function BondPortfolioPage() {
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 Instruments Held
               </div>
               <div className="text-xl font-bold">{enrichedBonds.length}</div>

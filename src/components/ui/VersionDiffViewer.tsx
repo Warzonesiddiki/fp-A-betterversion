@@ -22,7 +22,7 @@ export function VersionDiffViewer({
           {diffEntries.length} changes between {sourceLabel} and {targetLabel}
         </p>
         {diffEntries.length === 0 && (
-          <p className="text-sm text-slate-500 mt-2">No differences found.</p>
+          <p className="text-sm text-[var(--text-muted)] mt-2">No differences found.</p>
         )}
       </CardContent>
     </Card>

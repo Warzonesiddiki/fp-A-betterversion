@@ -10,7 +10,7 @@ export function UnderwritingDashboard() {
       </Card>
       <div className="md:col-span-2">
         <Card className="p-6 h-full">
-          <h4 className="text-sm font-bold text-slate-500 mb-4">Premium Trend</h4>
+          <h4 className="text-sm font-bold text-[var(--text-muted)] mb-4">Premium Trend</h4>
           <div className="h-48 bg-slate-900 rounded border border-slate-800 flex items-center justify-center text-slate-600">
             Premium Bar Chart
           </div>

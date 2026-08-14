@@ -24,6 +24,7 @@ import {
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney } from '@/utils/money';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 /**
  * GAP-1 (F-0006) — exact-decimal loan-loss segment aggregates.
@@ -126,8 +127,8 @@ export default function LoanLossPage() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <Percent className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <Percent className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Loan Data</h2>
         <p className="text-[var(--text-muted)] mb-6">
@@ -140,31 +141,26 @@ export default function LoanLossPage() {
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between loan-loss-header">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Percent className="h-6 w-6 text-red-400" />
-            Loan Loss Reserve (ACL)
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleStartTour}
-              className="ml-2 text-blue-400"
-            >
+      <PageHeader
+        className="loan-loss-header"
+        icon={<Percent className="h-6 w-6 text-red-400" />}
+        title="Loan Loss Reserve (ACL)"
+        purpose={<>CECL Methodology &amp; Credit Quality Monitoring</>}
+        actions={
+          <>
+            {/* "Start Guide" was authored inside the <h1>, which put a button
+                into the page's accessible name. It is an action, so it lives
+                with the other actions now. */}
+            <Button variant="ghost" size="sm" onClick={handleStartTour} className="text-blue-400">
               Start Guide
             </Button>
-          </h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            CECL Methodology & Credit Quality Monitoring
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-2" /> Export
-          </Button>
-          <Button size="sm">Provision Journal</Button>
-        </div>
-      </div>
+            <Button variant="outline" size="sm" onClick={handleExport}>
+              <Download className="h-4 w-4 mr-2" /> Export
+            </Button>
+            <Button size="sm">Provision Journal</Button>
+          </>
+        }
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 acl-metrics">
         <KPICard

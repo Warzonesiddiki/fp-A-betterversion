@@ -130,7 +130,7 @@ export default function ProcurementCyclePage() {
           className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4"
           aria-hidden="true"
         />
-        <h2 className="text-xl font-semibold mb-2">No Procurement Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Procurement Data</h1>
         <p className="text-[var(--text-muted)] mb-6">
           Import GL data to view procurement cycle metrics.
         </p>

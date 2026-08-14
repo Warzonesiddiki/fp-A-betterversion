@@ -256,11 +256,11 @@ export default function ConstructionDashboardPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="text-lg font-bold">92.4%</div>
-                  <div className="text-[10px] text-slate-500">Fleet Uptime</div>
+                  <div className="text-[10px] text-[var(--text-muted)]">Fleet Uptime</div>
                 </div>
                 <div>
                   <div className="text-lg font-bold">84%</div>
-                  <div className="text-[10px] text-slate-500">Staff Utilization</div>
+                  <div className="text-[10px] text-[var(--text-muted)]">Staff Utilization</div>
                 </div>
               </div>
             </div>

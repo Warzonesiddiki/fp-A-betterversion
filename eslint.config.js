@@ -103,6 +103,46 @@ export default tseslint.config(
     },
   },
   {
+    // UI-01 step 2/4 — the migrated primitives are expressed purely in the
+    // semantic tokens declared in `src/index.css`. A raw numbered Tailwind
+    // palette utility (`bg-blue-600`, `text-gray-800`) bypasses the token
+    // layer and cannot follow the theme, which is how the two competing
+    // styling systems diverged in the first place. `dark:` variants are
+    // banned for the same reason: every semantic token already flips under
+    // `.light`, so a `dark:` variant is a second source of truth.
+    //
+    // Deliberately scoped to the converted primitives rather than all of
+    // `src/components/ui` — 92 of those files still carry raw utilities, and a
+    // blanket rule would have to be disabled everywhere to land. Add a file
+    // here as it is migrated; the companion contract test
+    // (`src/theme/buttonContrast.contract.test.ts`) tracks the same list and
+    // additionally checks the resulting colours for AA contrast in both themes.
+    files: [
+      'src/components/ui/Button.tsx',
+      'src/components/ui/Card.tsx',
+      'src/components/ui/Input.tsx',
+      'src/components/ui/Badge.tsx',
+      'src/components/ui/Select.tsx',
+      'src/components/ui/Alert.tsx',
+    ],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            'Literal[value=/\\b(?:bg|text|border|ring|from|via|to|placeholder|divide|outline|shadow|accent|caret|fill|stroke)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950)\\b/]',
+          message:
+            'Raw Tailwind palette utility in a migrated UI primitive. Use a semantic token from src/index.css, e.g. bg-[var(--action-fill)] or text-[var(--text-primary)].',
+        },
+        {
+          selector: 'Literal[value=/\\bdark:/]',
+          message:
+            'No `dark:` variants in a migrated UI primitive: the semantic tokens already flip under `.light`. A dark: variant here is a second source of truth that drifts from index.css.',
+        },
+      ],
+    },
+  },
+  {
     // Test files never ship. Fixtures and mocks routinely need `any` (e.g.
     // `(useStore as any).mockReturnValue(...)`); enforcing strict typing there
     // adds churn with zero production value. Production code is any-free and

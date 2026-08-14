@@ -19,6 +19,7 @@ import { Badge } from '@/components/ui/Badge';
 import { BenchmarkService, BenchmarkResult, BenchmarkReport } from '@/services/BenchmarkService';
 import { createLogger } from '@/utils/logger';
 import { formatNumber } from '@/utils/financialFormatting';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const benchmarksPageLogger = createLogger('BenchmarksPage');
 
@@ -84,34 +85,32 @@ const BenchmarksPage: React.FC = () => {
 
   return (
     <div className="p-6 space-y-6 bg-slate-50 dark:bg-slate-900 min-h-screen">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <Activity className="w-6 h-6 text-blue-600" />
-            System Benchmarks
-          </h1>
-          <p className="text-slate-500">Monitor AIEngine and Storage performance trends</p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={loadHistory}
-            disabled={isRunning}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className={`w-4 h-4 ${isRunning ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
-          <Button
-            onClick={runBenchmarks}
-            disabled={isRunning}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            <Play className="w-4 h-4 fill-current" />
-            Run Benchmarks
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        icon={<Activity className="w-6 h-6 text-blue-600" />}
+        title="System Benchmarks"
+        purpose="Monitor AIEngine and Storage performance trends"
+        actions={
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={loadHistory}
+              disabled={isRunning}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${isRunning ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+            <Button
+              onClick={runBenchmarks}
+              disabled={isRunning}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Play className="w-4 h-4 fill-current" />
+              Run Benchmarks
+            </Button>
+          </div>
+        }
+      />
 
       {error && (
         <div
@@ -271,7 +270,7 @@ const BenchmarksPage: React.FC = () => {
                 .reverse()
                 .map((res, i) => (
                   <tr key={i} className="border-b border-slate-100 dark:border-slate-700">
-                    <td className="p-2 text-slate-500">
+                    <td className="p-2 text-[var(--text-muted)]">
                       {new Date(res.timestamp).toLocaleString()}
                     </td>
                     <td className="p-2 font-mono uppercase text-xs">{res.name}</td>

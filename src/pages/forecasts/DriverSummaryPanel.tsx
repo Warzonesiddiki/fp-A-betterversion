@@ -97,7 +97,7 @@ export function DriverSummaryPanel({
             </div>
             <div className="flex justify-between">
               <span style={{ color: 'var(--text-secondary)' }}>New Value</span>
-              <span style={{ color: 'var(--accent)' }}>{lastCascadeResult.newValue}</span>
+              <span style={{ color: 'var(--text-accent)' }}>{lastCascadeResult.newValue}</span>
             </div>
             <div className="flex justify-between">
               <span style={{ color: 'var(--text-secondary)' }}>Affected Cells</span>

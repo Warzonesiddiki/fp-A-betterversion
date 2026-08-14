@@ -49,7 +49,7 @@ export default function SectorPage() {
   if (sectorConfig === null) {
     return (
       <main className="p-12 text-center" role="main" aria-label="Loading Sector">
-        <h2 className="text-xl font-semibold">Loading Sector...</h2>
+        <h1 className="text-xl font-semibold">Loading Sector...</h1>
       </main>
     );
   }

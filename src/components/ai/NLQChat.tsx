@@ -259,9 +259,13 @@ export function NLQChat({ className, maxHeight = '400px' }: NLQChatProps) {
                       style={{ color: 'var(--text-muted)' }}
                     >
                       <span>{msg.result.query.intent}</span>
-                      <span className="text-[var(--border-subtle)]">.</span>
+                      <span aria-hidden="true" className="text-[var(--border-subtle)]">
+                        .
+                      </span>
                       <span>{Math.round(msg.result.query.confidence * 100)}%</span>
-                      <span className="text-[var(--border-subtle)]">.</span>
+                      <span aria-hidden="true" className="text-[var(--border-subtle)]">
+                        .
+                      </span>
                       <span>{msg.result.data.length} pts</span>
                     </div>
                   )}
@@ -318,7 +322,7 @@ export function NLQChat({ className, maxHeight = '400px' }: NLQChatProps) {
               type="submit"
               disabled={!input.trim() || isProcessing}
               className="flex-shrink-0 rounded-md p-1 transition-colors hover:bg-[var(--bg-surface)] disabled:opacity-30"
-              style={{ color: 'var(--accent-primary)' }}
+              style={{ color: 'var(--text-accent)' }}
               aria-label="Send"
             >
               <Send className="h-3 w-3" />

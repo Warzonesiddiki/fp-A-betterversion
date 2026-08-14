@@ -7,6 +7,7 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Leaf } from 'lucide-react';
 import { sumMoney, roundTo } from '@/utils/money';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function EmissionsTradingPage() {
   const { entries } = useGLStore();
@@ -40,7 +41,7 @@ export default function EmissionsTradingPage() {
         aria-label="Emissions Trading Dashboard - No Data"
       >
         <Leaf className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">Emissions Trading — No Data</h2>
+        <h1 className="text-xl font-semibold mb-2">Emissions Trading — No Data</h1>
         <p className="text-[var(--text-muted)] mb-6">
           Import GL data to view carbon credit metrics.
         </p>
@@ -51,8 +52,7 @@ export default function EmissionsTradingPage() {
 
   return (
     <main className="p-6 space-y-6" role="main">
-      <h1 className="text-2xl font-bold">Emissions Trading</h1>
-      <p className="text-sm text-[var(--text-muted)]">Carbon credits and offset tracking</p>
+      <PageHeader title="Emissions Trading" purpose="Carbon credits and offset tracking" />
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue label="Credit Value" value={formatCurrency(stats.creditValue)} />

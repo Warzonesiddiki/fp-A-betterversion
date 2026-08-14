@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -397,6 +398,8 @@ function UnmatchedPanel({
                     selected?.id === t.id && 'bg-blue-50 dark:bg-blue-950/20'
                   )}
                   onClick={() => onSelect(selected?.id === t.id ? null : t)}
+                  onKeyDown={activateOnKey(() => onSelect(selected?.id === t.id ? null : t))}
+                  tabIndex={0}
                 >
                   <td className="p-2">{entityNames[t.entityId] ?? t.entityId}</td>
                   <td className="p-2 font-mono text-xs">{t.accountCode}</td>

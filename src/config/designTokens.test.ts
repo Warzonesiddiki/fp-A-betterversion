@@ -1,78 +1,51 @@
 import { describe, it, expect } from 'vitest';
 import { designTokens } from './designTokens';
 
+/**
+ * `designTokens` is deliberately narrow: it holds the density scale and nothing
+ * else. Everything visual (colour, radius, spacing, elevation, motion) lives in
+ * `src/index.css` so there is exactly one palette. The previous version of this
+ * file asserted the shape of thirteen token groups that no component imported,
+ * and those groups had silently drifted out of agreement with the stylesheet.
+ *
+ * The tests below therefore guard two things: the density values AG Grid reads
+ * at runtime, and the absence of a second palette creeping back in.
+ */
 describe('designTokens config', () => {
-  it('defines the primary brand palette with ten shades', () => {
-    const primary = designTokens.colors.primary as Record<string, string>;
-    expect(Object.keys(primary)).toHaveLength(10);
-    for (const [shade, value] of Object.entries(primary)) {
-      expect(Number(shade)).toBeGreaterThanOrEqual(50);
-      expect(value).toMatch(/^#[0-9a-fA-F]{6}$/);
+  it('defines the three density modes with the metrics AG Grid needs', () => {
+    expect(Object.keys(designTokens.density)).toEqual(['compact', 'standard', 'comfortable']);
+
+    for (const mode of ['compact', 'standard', 'comfortable'] as const) {
+      const metrics = designTokens.density[mode];
+      expect(typeof metrics.rowHeight).toBe('number');
+      expect(typeof metrics.headerHeight).toBe('number');
+      expect(metrics.fontSize).toMatch(/^\d+px$/);
+      expect(metrics.cellPadding).toMatch(/^\d+px \d+px$/);
     }
   });
 
-  it('defines financial semantic colors for positive/negative states', () => {
-    const fin = designTokens.colors.financial;
-    expect(fin.positive).toMatch(/^#/);
-    expect(fin.negative).toMatch(/^#/);
-    expect(fin.neutral).toMatch(/^#/);
-    expect(fin.warning).toMatch(/^#/);
-    expect(fin.highlight).toMatch(/^#/);
-    expect(fin.positive).not.toBe(fin.negative);
+  it('orders the density modes so each step is roomier than the last', () => {
+    const { compact, standard, comfortable } = designTokens.density;
+
+    expect(compact.rowHeight).toBeLessThan(standard.rowHeight);
+    expect(standard.rowHeight).toBeLessThan(comfortable.rowHeight);
+    expect(compact.headerHeight).toBeLessThanOrEqual(standard.headerHeight);
+    expect(standard.headerHeight).toBeLessThanOrEqual(comfortable.headerHeight);
   });
 
-  it('provides a chart palette of unique colors', () => {
-    const charts = designTokens.colors.charts;
-    expect(charts.length).toBeGreaterThanOrEqual(8);
-    expect(new Set(charts).size).toBe(charts.length);
-    for (const c of charts) expect(c).toMatch(/^#[0-9a-fA-F]{6}$/);
+  it('keeps row heights tall enough for a 44px touch target at comfortable', () => {
+    // Comfortable is the accessibility-friendly mode; WCAG 2.5.5 asks for 44px.
+    expect(designTokens.density.comfortable.rowHeight).toBeGreaterThanOrEqual(44);
   });
 
-  it('covers all sectors with a brand color each', () => {
-    const sector = designTokens.sector as Record<string, string>;
-    const keys = Object.keys(sector);
-    expect(keys.length).toBeGreaterThanOrEqual(12);
-    for (const [key, value] of Object.entries(sector)) {
-      expect(value).toMatch(/^#[0-9a-fA-F]{6}$/);
-      expect(key.length).toBeGreaterThan(0);
-    }
-  });
+  it('carries no palette of its own — index.css is the only source of colour', () => {
+    // Regression guard. A second, drifting palette lived here for a long time
+    // (radius xs 2px vs the stylesheet's 4px, negative #dc2626 vs #f43f5e).
+    // Anything colour-, radius- or spacing-shaped belongs in index.css.
+    expect(Object.keys(designTokens)).toEqual(['density']);
 
-  it('semantic tones include info/success/warning/danger/neutral with fg/bg/border', () => {
-    const semantic = designTokens.semantic as Record<string, Record<string, string>>;
-    for (const tone of ['info', 'success', 'warning', 'danger', 'neutral']) {
-      expect(semantic[tone]).toBeDefined();
-      expect(semantic[tone]!.fg).toMatch(/^#/);
-      expect(semantic[tone]!.bg).toMatch(/^#/);
-      expect(semantic[tone]!.border).toMatch(/^#/);
-    }
-  });
-
-  it('exposes typography, spacing, density, radius, elevation, z-index and motion scales', () => {
-    expect(designTokens.typography.sans).toBeTruthy();
-    expect(designTokens.typography.mono).toBeTruthy();
-    expect(designTokens.typography.tabularFigures).toBeTruthy();
-    expect(designTokens.spacing.cell).toBeTruthy();
-    expect(designTokens.spacing.scale).toBeTruthy();
-    expect(designTokens.density.standard).toBeTruthy();
-    expect(designTokens.density.compact).toBeTruthy();
-    expect(designTokens.density.comfortable).toBeTruthy();
-    expect(designTokens.radius.md).toBeTruthy();
-    expect(designTokens.radius.full).toBeTruthy();
-    expect(Object.keys(designTokens.elevation).length).toBeGreaterThanOrEqual(5);
-    expect(designTokens.zIndex.modal).toBeGreaterThan(designTokens.zIndex.base);
-    expect(designTokens.motion.fast).toBeTruthy();
-    expect(designTokens.motion.easeInOut).toBeTruthy();
-    expect(designTokens.breakpoints.md).toBeTruthy();
-  });
-
-  it('exposes focus-ring, chart palette and shadow token groups', () => {
-    expect(designTokens.focusRing.width).toBeTruthy();
-    expect(designTokens.focusRing.color).toMatch(/^#/);
-    expect(designTokens.chartPalette.categorical.length).toBeGreaterThan(0);
-    expect(designTokens.chartPalette.sequential.length).toBeGreaterThan(0);
-    expect(designTokens.chartPalette.diverging.length).toBeGreaterThan(0);
-    expect(designTokens.shadows.card).toBeTruthy();
-    expect(designTokens.shadows.modal).toBeTruthy();
+    const serialised = JSON.stringify(designTokens);
+    expect(serialised).not.toMatch(/#[0-9a-f]{3,8}\b/i);
+    expect(serialised).not.toMatch(/rgba?\(/i);
   });
 });

@@ -10,6 +10,7 @@ import { FileText, DollarSign, Calendar, TrendingUp } from 'lucide-react';
 import Decimal from 'decimal.js';
 import { addMoney, roundTo, sumMoney, toDecimal } from '@/utils/money';
 import type { GLEntry } from '@/types';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 /**
  * GAP-1 (F-0006) — exact-decimal bank statement totals.
@@ -124,7 +125,7 @@ export function BankStatements() {
           Skip to import action
         </a>
         <FileText className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No Bank Statement Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Bank Statement Data</h1>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to view bank statements.</p>
         <Button
           id="import-btn"
@@ -150,14 +151,15 @@ export function BankStatements() {
       >
         Skip to key metrics
       </a>
-      <header className="flex items-center justify-between">
-        <h1 id="statements-heading" className="text-2xl font-bold">
-          Bank Statements
-        </h1>
-        <span className="text-sm text-[var(--text-muted)]">
-          {formatNumber(entries.length)} entries imported
-        </span>
-      </header>
+      <PageHeader
+        title="Bank Statements"
+        titleId="statements-heading"
+        status={
+          <span className="text-sm text-[var(--text-muted)]">
+            {formatNumber(entries.length)} entries imported
+          </span>
+        }
+      />
       <h2 className="sr-only">Key Performance Indicators</h2>
       <section
         id="kpi-section"

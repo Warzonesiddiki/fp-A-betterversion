@@ -276,7 +276,9 @@ export const HedgeManager = memo(function HedgeManager() {
               <div key={m.type} className="p-3 rounded bg-slate-800/50">
                 <div className="text-xs text-slate-400 mb-1">{m.type}</div>
                 <div className="text-lg font-bold">{m.count}</div>
-                <div className="text-xs text-slate-500 tabular-nums">{formatMoney(m.notional)}</div>
+                <div className="text-xs text-[var(--text-muted)] tabular-nums">
+                  {formatMoney(m.notional)}
+                </div>
               </div>
             ))}
           </div>
@@ -314,7 +316,7 @@ export const HedgeManager = memo(function HedgeManager() {
             <tbody className="divide-y divide-slate-800">
               {hedges.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-12 text-slate-500">
+                  <td colSpan={7} className="text-center py-12 text-[var(--text-muted)]">
                     No positions.
                   </td>
                 </tr>

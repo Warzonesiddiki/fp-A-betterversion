@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -79,7 +80,7 @@ export default function BudgetListPage() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                 aria-label="Help"
               ></button>
             }
@@ -116,7 +117,7 @@ export default function BudgetListPage() {
         </div>
         <div className="relative ml-auto">
           <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500"
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-muted)]"
             aria-hidden="true"
           />
           <input
@@ -166,10 +167,16 @@ export default function BudgetListPage() {
               <tbody className="divide-y divide-slate-800">
                 {filtered.length === 0 ? (
                   <tr role="row">
-                    <td colSpan={7} className="text-center py-8 text-slate-500" role="gridcell">
-                      {search
-                        ? 'No budgets matching "' + search + '"'
-                        : 'No budgets with status "' + statusFilter + '"'}
+                    <td
+                      colSpan={7}
+                      className="text-center py-8 text-[var(--text-muted)]"
+                      role="gridcell"
+                    >
+                      <span role="status" aria-live="polite">
+                        {search
+                          ? 'No budgets matching "' + search + '"'
+                          : 'No budgets with status "' + statusFilter + '"'}
+                      </span>
                     </td>
                   </tr>
                 ) : (
@@ -178,6 +185,8 @@ export default function BudgetListPage() {
                       key={b.id}
                       className="hover:bg-slate-900/50 cursor-pointer"
                       onClick={() => navigate('/budgets/' + b.id)}
+                      onKeyDown={activateOnKey(() => navigate('/budgets/' + b.id))}
+                      tabIndex={0}
                       role="row"
                     >
                       <td className="px-4 py-3 font-medium" role="gridcell">
@@ -199,7 +208,7 @@ export default function BudgetListPage() {
                       <td className="px-4 py-3 text-xs text-slate-400" role="gridcell">
                         {(b.departments || []).join(', ') || '-'}
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-500" role="gridcell">
+                      <td className="px-4 py-3 text-xs text-[var(--text-muted)]" role="gridcell">
                         {formatRelativeTime(b.updatedAt)}
                       </td>
                       <td className="px-4 py-3" role="gridcell">

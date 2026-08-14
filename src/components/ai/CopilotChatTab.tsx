@@ -64,7 +64,7 @@ export function ChatTab({
                   className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full"
                   style={{ background: 'var(--accent-primary)', opacity: 0.15 }}
                 >
-                  <Zap className="h-3 w-3" style={{ color: 'var(--accent-primary)' }} />
+                  <Zap className="h-3 w-3" style={{ color: 'var(--text-accent)' }} />
                 </div>
               )}
               <div
@@ -127,10 +127,7 @@ export function ChatTab({
                 className="flex h-6 w-6 items-center justify-center rounded-full"
                 style={{ background: 'var(--accent-primary)', opacity: 0.15 }}
               >
-                <Loader2
-                  className="h-3 w-3 animate-spin"
-                  style={{ color: 'var(--accent-primary)' }}
-                />
+                <Loader2 className="h-3 w-3 animate-spin" style={{ color: 'var(--text-accent)' }} />
               </div>
               <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                 Analyzing...
@@ -181,7 +178,7 @@ export function ChatTab({
             onClick={() => onSend(inputValue)}
             disabled={!inputValue.trim() || isProcessing}
             className="flex-shrink-0 rounded-md p-1 transition-colors hover:bg-[var(--bg-surface)] disabled:opacity-30"
-            style={{ color: 'var(--accent-primary)' }}
+            style={{ color: 'var(--text-accent)' }}
             aria-label="Send message"
           >
             <Send className="h-3.5 w-3.5" />

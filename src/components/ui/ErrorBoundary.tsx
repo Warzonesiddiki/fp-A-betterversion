@@ -80,7 +80,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           <h2 className="text-xl font-bold mb-2 dark:text-gray-100">
             We&apos;ve encountered an unexpected error
           </h2>
-          <p className="text-sm text-slate-400 dark:text-slate-500 mb-2 max-w-md leading-relaxed">
+          <p className="text-sm text-[var(--text-muted)] mb-2 max-w-md leading-relaxed">
             Don&apos;t worry, your data is safe. Try refreshing, or go back to the dashboard.
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-600 mb-6">
@@ -140,7 +140,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                     {this.state.error.toString()}
                   </pre>
                   {this.state.error.stack && (
-                    <pre className="text-xs font-mono text-slate-500 whitespace-pre-wrap break-all mt-2 pt-2 border-t border-slate-800 max-h-48 overflow-y-auto">
+                    <pre className="text-xs font-mono text-[var(--text-muted)] whitespace-pre-wrap break-all mt-2 pt-2 border-t border-slate-800 max-h-48 overflow-y-auto">
                       {this.state.error.stack}
                     </pre>
                   )}

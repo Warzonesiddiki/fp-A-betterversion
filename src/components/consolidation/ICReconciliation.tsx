@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -399,6 +400,8 @@ function ReconciliationRow({
           !exceeds && line.difference > 0 && 'bg-green-50 dark:bg-green-950/20'
         )}
         onClick={onToggle}
+        onKeyDown={activateOnKey(onToggle)}
+        tabIndex={0}
       >
         <td className="p-2">{line.entityA}</td>
         <td className="p-2">{line.entityB}</td>

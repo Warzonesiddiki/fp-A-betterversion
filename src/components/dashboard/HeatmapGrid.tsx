@@ -1,4 +1,5 @@
 import { useMemo, useState, memo } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { cn } from '@/utils/cn';
 import { currencyFormatter, formatCompact, formatPercent } from '@/utils/financialFormatting';
@@ -172,6 +173,10 @@ export const HeatmapGrid = memo(function HeatmapGrid({
                     )}
                     style={{ backgroundColor: bgColor }}
                     onClick={() => onCellClick?.(row, col, value)}
+                    onKeyDown={
+                      onCellClick ? activateOnKey(() => onCellClick(row, col, value)) : undefined
+                    }
+                    tabIndex={onCellClick ? 0 : undefined}
                     onMouseEnter={() => {
                       setHoveredCell({ row, col });
                       onCellHover?.(row, col, value);

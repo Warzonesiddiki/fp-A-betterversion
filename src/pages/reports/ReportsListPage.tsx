@@ -93,8 +93,8 @@ export default function ReportsListPage() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <FileText className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <FileText className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data Available</h2>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to generate financial reports.</p>
@@ -154,8 +154,8 @@ export default function ReportsListPage() {
       ))}
 
       {filtered.length === 0 && (
-        <div className="text-center py-12 text-[var(--text-muted)]">
-          <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
+        <div className="text-center py-12 text-[var(--text-muted)]" role="status" aria-live="polite">
+          <Search className="h-8 w-8 mx-auto mb-2 opacity-50" aria-hidden="true" />
           <p>No reports match &quot;{search}&quot;</p>
         </div>
       )}

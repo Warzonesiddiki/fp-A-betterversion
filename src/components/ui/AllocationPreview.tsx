@@ -102,7 +102,7 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
           <TrendingUp className="h-5 w-5 text-blue-600" />
           <h3 className="text-sm font-semibold text-[var(--text-primary)]">Allocation Preview</h3>
         </div>
-        <span className="text-[10px] text-slate-500">
+        <span className="text-[10px] text-[var(--text-muted)]">
           {new Date(result.timestamp).toLocaleString()}
         </span>
       </div>
@@ -110,23 +110,27 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
       {/* Before / After Summary */}
       <div className="grid grid-cols-3 gap-3">
         <div className="flex flex-col gap-1 rounded-md border border-[var(--border-subtle)] p-3">
-          <span className="text-[10px] text-slate-500 uppercase tracking-wide">Source</span>
+          <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide">
+            Source
+          </span>
           <span className="text-sm font-semibold text-[var(--text-primary)]">
             {fmt.currency(sourceAmount)}
           </span>
-          <span className="text-[10px] text-slate-500">{sourceLabel}</span>
+          <span className="text-[10px] text-[var(--text-muted)]">{sourceLabel}</span>
         </div>
 
         <div className="flex flex-col items-center justify-center">
-          <ArrowRight className="h-5 w-5 text-slate-500" />
+          <ArrowRight className="h-5 w-5 text-[var(--text-muted)]" />
         </div>
 
         <div className="flex flex-col gap-1 rounded-md border border-[var(--border-subtle)] p-3">
-          <span className="text-[10px] text-slate-500 uppercase tracking-wide">Allocated</span>
+          <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide">
+            Allocated
+          </span>
           <span className="text-sm font-semibold text-blue-400">
             {fmt.currency(result.totalAllocated)}
           </span>
-          <span className="text-[10px] text-slate-500">
+          <span className="text-[10px] text-[var(--text-muted)]">
             {result.allocations.length} target{result.allocations.length !== 1 ? 's' : ''}
           </span>
         </div>
@@ -153,31 +157,31 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
             <thead>
               <tr className="border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
                 <th
-                  className="px-3 py-2 text-left text-[10px] font-medium text-slate-500 uppercase tracking-wide"
+                  className="px-3 py-2 text-left text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wide"
                   scope="col"
                 >
                   Target
                 </th>
                 <th
-                  className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase tracking-wide"
+                  className="px-3 py-2 text-right text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wide"
                   scope="col"
                 >
                   Percentage
                 </th>
                 <th
-                  className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase tracking-wide"
+                  className="px-3 py-2 text-right text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wide"
                   scope="col"
                 >
                   Amount
                 </th>
                 <th
-                  className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase tracking-wide"
+                  className="px-3 py-2 text-right text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wide"
                   scope="col"
                 >
                   Effective %
                 </th>
                 <th
-                  className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase tracking-wide"
+                  className="px-3 py-2 text-right text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-wide"
                   scope="col"
                 >
                   Distribution
@@ -241,7 +245,7 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
       )}
 
       {/* Audit Comment */}
-      <div className="text-[10px] text-slate-500 italic">{result.auditComment}</div>
+      <div className="text-[10px] text-[var(--text-muted)] italic">{result.auditComment}</div>
 
       {/* Action Buttons */}
       <div className="flex items-center gap-2 pt-2 border-t border-[var(--border-subtle)]">

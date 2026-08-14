@@ -362,7 +362,10 @@ describe('Page Smoke Tests', () => {
   describe('BudgetListPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(BudgetListPage, '/budgets', '/budgets');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state when no budgets exist', () => {
@@ -374,7 +377,10 @@ describe('Page Smoke Tests', () => {
   describe('BudgetDetailPage', () => {
     it('renders without crashing when budget is not found', () => {
       const { container } = renderPage(BudgetDetailPage, '/budgets/nonexistent', '/budgets/:id');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays not found message for missing budget', () => {
@@ -386,7 +392,10 @@ describe('Page Smoke Tests', () => {
   describe('ForecastListPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(ForecastListPage, '/forecasts', '/forecasts');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state when no forecasts exist', () => {
@@ -398,7 +407,10 @@ describe('Page Smoke Tests', () => {
   describe('ScenarioListPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(ScenarioListPage, '/scenarios', '/scenarios');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state when no scenarios exist', () => {
@@ -410,7 +422,10 @@ describe('Page Smoke Tests', () => {
   describe('ReportsListPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(ReportsListPage, '/reports', '/reports');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the reports heading', () => {
@@ -422,7 +437,10 @@ describe('Page Smoke Tests', () => {
   describe('DashboardPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(DashboardPage, '/', '/');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the finance-workspace setup state when no data exists', () => {
@@ -436,7 +454,10 @@ describe('Page Smoke Tests', () => {
   describe('SettingsPage', () => {
     it('renders without crashing for admin user', () => {
       const { container } = renderPage(SettingsPage, '/settings', '/settings');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the settings heading', () => {
@@ -448,7 +469,10 @@ describe('Page Smoke Tests', () => {
   describe('LoginPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(LoginPage, '/login', '/login');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the login form elements', () => {
@@ -460,7 +484,10 @@ describe('Page Smoke Tests', () => {
   describe('DataImportPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(DataImportPage, '/data/import', '/data/import');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the import heading', () => {
@@ -472,7 +499,10 @@ describe('Page Smoke Tests', () => {
   describe('AnalyticsPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(AnalyticsPage, '/analytics', '/analytics');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the analytics heading', () => {

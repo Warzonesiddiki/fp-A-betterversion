@@ -323,12 +323,12 @@ export default function LeaseDetailPage() {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold">Lease Detail</h1>
-            <p className="text-sm text-[var(--text-muted)]">
-              {selectedLease.property} — schedules computed by LeaseEngine (not mock data)
-            </p>
-          </div>
+          <PageHeader
+            title="Lease Detail"
+            purpose={
+              <>{selectedLease.property} — schedules computed by LeaseEngine (not mock data)</>
+            }
+          />
         </div>
         <div className="flex gap-2">
           <Button size="sm" onClick={() => setFormMode('add')}>
@@ -469,7 +469,7 @@ export default function LeaseDetailPage() {
             <div className="p-4 bg-slate-800 rounded-lg">
               <div className="text-sm text-slate-400 mb-1">Lease Classification</div>
               <div className="text-lg font-semibold">{selectedLease.leaseType}</div>
-              <div className="text-xs text-slate-500 mt-1">
+              <div className="text-xs text-[var(--text-muted)] mt-1">
                 {selectedLease.leaseType === 'Finance' ? 'ASC 842-20 / IFRS 16' : 'ASC 842-10'}
               </div>
             </div>

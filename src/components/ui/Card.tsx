@@ -27,7 +27,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     <div
       ref={ref}
       className={cn(
-        'rounded-xl border bg-card text-card-foreground shadow-sm dark:border-gray-700 dark:bg-gray-800',
+        'rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-panel)] text-[var(--text-primary)] shadow-sm',
         density === 'compact' && 'rounded-lg',
         className
       )}
@@ -49,12 +49,22 @@ const CardHeader = forwardRef<
 ));
 CardHeader.displayName = 'CardHeader';
 
+/**
+ * Heading level for a card title.
+ *
+ * Defaults to `h3`, which is correct for a card nested under a section `h2`.
+ * Pages that place cards directly beneath the `<h1>` from `PageHeader` skip a
+ * level and trip axe's `heading-order` — those pass `as="h2"`. The level is a
+ * prop rather than a hardcoded tag because the correct value depends on where
+ * the card sits in the document, which the primitive cannot know.
+ */
+type HeadingLevel = 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+
 const CardTitle = forwardRef<
-  HTMLParagraphElement,
-  HTMLAttributes<HTMLHeadingElement> & { density?: Density }
->(({ className, density = 'comfortable', ...props }, ref) => (
-  // eslint-disable-next-line jsx-a11y/heading-has-content -- content passed via {...props}
-  <h3
+  HTMLHeadingElement,
+  HTMLAttributes<HTMLHeadingElement> & { density?: Density; as?: HeadingLevel }
+>(({ className, density = 'comfortable', as: Heading = 'h3', ...props }, ref) => (
+  <Heading
     ref={ref}
     className={cn('font-semibold leading-none tracking-tight', densityTitle[density]!, className)}
     {...props}

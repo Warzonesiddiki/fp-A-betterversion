@@ -44,7 +44,7 @@ export const Alert: React.FC<AlertProps> = memo(
                 <button
                   type="button"
                   onClick={onCancel}
-                  className="inline-flex h-9 items-center justify-center rounded-md border border-[var(--border-subtle)] bg-transparent px-4 py-2 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  className="inline-flex h-9 items-center justify-center rounded-md border border-[var(--border-subtle)] bg-transparent px-4 py-2 text-sm font-medium text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
                 >
                   {cancelText}
                 </button>
@@ -54,10 +54,10 @@ export const Alert: React.FC<AlertProps> = memo(
                   type="button"
                   onClick={onConfirm}
                   className={cn(
-                    'inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
+                    'inline-flex h-9 items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-[var(--text-on-accent)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]',
                     variant === 'destructive'
-                      ? 'bg-red-600 hover:bg-red-700 focus-visible:ring-red-500'
-                      : 'bg-blue-600 hover:bg-blue-700'
+                      ? 'bg-[var(--danger-fill)] hover:bg-[var(--danger-fill-hover)]'
+                      : 'bg-[var(--action-fill)] hover:bg-[var(--action-fill-hover)]'
                   )}
                 >
                   {confirmText}

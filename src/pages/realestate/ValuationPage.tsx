@@ -130,8 +130,8 @@ export default function ValuationPage() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <Calculator className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <Calculator className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Valuation Data</h2>
         <p className="text-[var(--text-muted)] mb-6">
@@ -251,7 +251,7 @@ export default function ValuationPage() {
           </CardHeader>
           <CardContent className="space-y-5 pt-4">
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 Total Cost Basis
               </div>
               <div className="text-xl font-bold">
@@ -259,7 +259,7 @@ export default function ValuationPage() {
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 Total Market Value
               </div>
               <div className="text-xl font-bold text-blue-600">
@@ -267,7 +267,7 @@ export default function ValuationPage() {
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 Net Unrealized Gain
               </div>
               <div
@@ -279,7 +279,7 @@ export default function ValuationPage() {
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-xs text-slate-500 uppercase tracking-wider">
+              <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 Loan-to-Value Ratio
               </div>
               <div className="text-xl font-bold">{formatPercent(portfolioStats.ltv, 1)}</div>

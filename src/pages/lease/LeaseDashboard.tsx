@@ -145,8 +145,8 @@ export default function LeaseDashboard() {
             </Button>
           }
         />
-        <div className="rounded-xl border border-dashed border-slate-600 p-10 text-center">
-          <FileText className="h-10 w-10 mx-auto mb-3 text-slate-500" />
+        <div className="rounded-xl border border-dashed border-[var(--border-default)] p-10 text-center">
+          <FileText className="h-10 w-10 mx-auto mb-3 text-[var(--text-muted)]" />
           <p className="text-lg font-medium text-[var(--text-secondary)]">No Lease Data</p>
           <p className="text-sm text-[var(--text-muted)] mt-1">
             Add your first lease to see liability, payment and expiry analytics.
@@ -175,22 +175,24 @@ export default function LeaseDashboard() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Lease Portfolio Dashboard</h1>
-          <p className="text-sm text-[var(--text-muted)]">
+      <PageHeader
+        title="Lease Portfolio Dashboard"
+        purpose={
+          <>
             {activeLeases.length} active leases — liability computed by LeaseEngine (not mock data)
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-1" /> Export
-          </Button>
-          <Button size="sm" onClick={() => navigate('/lease/detail')}>
-            View Details <ArrowRight className="h-4 w-4 ml-1" />
-          </Button>
-        </div>
-      </div>
+          </>
+        }
+        actions={
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleExport}>
+              <Download className="h-4 w-4 mr-1" /> Export
+            </Button>
+            <Button size="sm" onClick={() => navigate('/lease/detail')}>
+              View Details <ArrowRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue

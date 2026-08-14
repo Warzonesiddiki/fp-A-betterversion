@@ -13,7 +13,10 @@ describe('HeadcountHeatmap', () => {
 
   it('renders without crashing', () => {
     const { container } = render(<HeadcountHeatmap />);
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the component mounted'
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it('renders the Heatmap component', () => {

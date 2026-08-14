@@ -130,7 +130,7 @@ export default function RetailDashboard() {
     return (
       <main className="p-12 text-center" aria-label="Retail Dashboard - No Data">
         <Store className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No Retail Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Retail Data</h1>
         <p className="text-[var(--text-muted)] mb-6">
           Import GL data with retail store accounts to view dashboard.
         </p>

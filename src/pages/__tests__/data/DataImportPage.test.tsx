@@ -55,7 +55,7 @@ describe('DataImportPage', () => {
   it('renders empty-state with navigation to GL Upload when no data exists', () => {
     render(<DataImportPage />);
     expect(
-      screen.getByRole('heading', { level: 2, name: /no data imported/i })
+      screen.getByRole('heading', { level: 1, name: /no data imported/i })
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /go to gl upload/i })).toBeInTheDocument();
   });

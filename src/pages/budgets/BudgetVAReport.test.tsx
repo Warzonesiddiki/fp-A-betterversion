@@ -149,7 +149,10 @@ describe('BudgetVAReport smoke test', () => {
         <BudgetVAReport />
       </MemoryRouter>
     );
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
   });
 
   it('displays no-budget-selected state', () => {

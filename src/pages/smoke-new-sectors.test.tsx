@@ -149,7 +149,10 @@ describe('New Sector Page Smoke Tests', () => {
   describe('ManufacturingPage (ProductionDashboardPage)', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(ManufacturingPage, '/manufacturing', '/manufacturing');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the no-data state when entries are empty', () => {
@@ -161,7 +164,10 @@ describe('New Sector Page Smoke Tests', () => {
   describe('LogisticsPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(LogisticsPage, '/logistics', '/logistics');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the no-data state when entries are empty', () => {
@@ -173,7 +179,10 @@ describe('New Sector Page Smoke Tests', () => {
   describe('GovernmentPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(GovernmentPage, '/government', '/government');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the no-data state when entries are empty', () => {
@@ -185,7 +194,10 @@ describe('New Sector Page Smoke Tests', () => {
   describe('EducationPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(EducationPage, '/education', '/education');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the no-data state when entries are empty', () => {
@@ -197,7 +209,10 @@ describe('New Sector Page Smoke Tests', () => {
   describe('SectorPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(SectorPage, '/sector', '/sector');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the no-data state when entries are empty', () => {

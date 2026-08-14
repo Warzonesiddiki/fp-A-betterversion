@@ -29,6 +29,7 @@ import {
 } from 'recharts';
 import { formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { PageHeader } from '@/components/ui/PageHeader';
 // Default assumptions for demo
 const DEFAULT_ASSUMPTIONS = [
   {
@@ -181,22 +182,18 @@ export default function WhatIfPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Sliders className="h-6 w-6" />
-            What-If Sandbox
-          </h1>
-          <p className="text-muted-foreground">
-            Create scenarios, modify assumptions, compare results side-by-side
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={handleCreateSandbox}>
-            <Plus className="h-4 w-4 mr-1" /> New Scenario
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        icon={<Sliders className="h-6 w-6" />}
+        title="What-If Sandbox"
+        purpose="Create scenarios, modify assumptions, compare results side-by-side"
+        actions={
+          <div className="flex gap-2">
+            <Button onClick={handleCreateSandbox}>
+              <Plus className="h-4 w-4 mr-1" /> New Scenario
+            </Button>
+          </div>
+        }
+      />
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

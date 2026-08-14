@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -306,7 +307,7 @@ export function FXPositionGrid() {
             <tbody className="divide-y divide-slate-800">
               {exposure.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-slate-500">
+                  <td colSpan={6} className="text-center py-12 text-[var(--text-muted)]">
                     No positions.
                   </td>
                 </tr>
@@ -318,6 +319,10 @@ export function FXPositionGrid() {
                     onClick={() =>
                       setSelectedCurrency(selectedCurrency === e.currency ? null : e.currency)
                     }
+                    onKeyDown={activateOnKey(() =>
+                      setSelectedCurrency(selectedCurrency === e.currency ? null : e.currency)
+                    )}
+                    tabIndex={0}
                   >
                     <td className="px-4 py-3 font-mono font-medium">{e.currency}</td>
                     <td className="px-4 py-3 text-right tabular-nums text-green-400">

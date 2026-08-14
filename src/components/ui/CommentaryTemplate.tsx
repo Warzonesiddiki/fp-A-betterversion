@@ -220,7 +220,9 @@ function TemplateGroup({
 }: TemplateGroupProps) {
   return (
     <div>
-      <h4 className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">{label}</h4>
+      <h4 className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-1">
+        {label}
+      </h4>
       <div className="space-y-1">
         {templates.map((t) => (
           <div key={t.id}>
@@ -236,7 +238,9 @@ function TemplateGroup({
               {t.name}
             </button>
             {selectedId === t.id && (
-              <p className="text-xs text-slate-500 px-3 py-1 italic">{resolveTemplate(t)}</p>
+              <p className="text-xs text-[var(--text-muted)] px-3 py-1 italic">
+                {resolveTemplate(t)}
+              </p>
             )}
           </div>
         ))}

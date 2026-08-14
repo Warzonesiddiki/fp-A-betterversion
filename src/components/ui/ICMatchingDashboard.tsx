@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { Card, CardHeader, CardTitle, CardContent } from './Card';
 import { Button } from './Button';
@@ -343,7 +344,9 @@ export function ICMatchingDashboard({
                 {filteredMatches.length === 0 && (
                   <tr>
                     <td colSpan={10} className="p-8 text-center text-muted-foreground">
-                      No matches found. Run Auto-Match or select transactions for Manual Match.
+                      <span role="status" aria-live="polite">
+                        No matches found. Run Auto-Match or select transactions for Manual Match.
+                      </span>
                     </td>
                   </tr>
                 )}
@@ -470,6 +473,8 @@ function UnmatchedPanel({
                     selected?.id === t.id && 'bg-blue-50 dark:bg-blue-950/20'
                   )}
                   onClick={() => onSelect(selected?.id === t.id ? null : t)}
+                  onKeyDown={activateOnKey(() => onSelect(selected?.id === t.id ? null : t))}
+                  tabIndex={0}
                 >
                   <td className="p-2">{entityNames[t.entityId] ?? t.entityId}</td>
                   <td className="p-2 font-mono text-xs">{t.accountCode}</td>

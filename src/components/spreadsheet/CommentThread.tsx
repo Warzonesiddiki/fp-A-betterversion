@@ -61,7 +61,7 @@ export function CommentThread({
             {formatRelativeTime(comment.createdAt)}
           </span>
           {comment.mentions.length > 0 && (
-            <span className="text-xs text-[var(--accent-primary)]">
+            <span className="text-xs text-[var(--text-accent)]">
               {comment.mentions.map((m) => `@${m}`).join(' ')}
             </span>
           )}
@@ -72,7 +72,7 @@ export function CommentThread({
             <button
               type="button"
               onClick={() => onUnresolve(comment.id)}
-              className="rounded p-1 text-[var(--color-success)] hover:bg-[var(--surface-hover)]"
+              className="rounded p-1 text-[var(--text-positive)] hover:bg-[var(--surface-hover)]"
               title="Unresolve"
               aria-label="Unresolve comment"
             >
@@ -93,7 +93,7 @@ export function CommentThread({
             <button
               type="button"
               onClick={() => onDelete(comment.id)}
-              className="rounded p-1 text-[var(--color-error)] hover:bg-[var(--surface-hover)]"
+              className="rounded p-1 text-[var(--text-negative)] hover:bg-[var(--surface-hover)]"
               title="Delete"
               aria-label="Delete comment"
             >
@@ -111,7 +111,7 @@ export function CommentThread({
         <button
           type="button"
           onClick={() => setShowReplyBox(!showReplyBox)}
-          className="mt-2 flex items-center gap-1 text-xs text-[var(--text-tertiary)] transition-colors hover:text-[var(--accent-primary)]"
+          className="mt-2 flex items-center gap-1 text-xs text-[var(--text-tertiary)] transition-colors hover:text-[var(--text-accent)]"
         >
           <Reply className="h-3 w-3" />
           Reply

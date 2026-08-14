@@ -70,7 +70,7 @@ export function ReportScheduler({
                 onClick={() => {
                   if (window.confirm('Remove this report schedule?')) onRemove(s.id);
                 }}
-                className="text-[var(--text-muted)] hover:text-[var(--negative)]"
+                className="text-[var(--text-muted)] hover:text-[var(--text-negative)]"
               >
                 Remove
               </button>

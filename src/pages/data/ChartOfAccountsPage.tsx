@@ -304,7 +304,7 @@ export default function ChartOfAccountsPage() {
         </div>
         <div className="mt-8 p-4 bg-slate-900 rounded-lg border border-slate-800">
           <p className="text-xs font-semibold text-slate-400 mb-2">Common Account Ranges</p>
-          <div className="grid grid-cols-3 gap-2 text-xs text-slate-500">
+          <div className="grid grid-cols-3 gap-2 text-xs text-[var(--text-muted)]">
             {accountRanges.map((r) => (
               <div key={r.label}>
                 <span className="font-mono text-slate-400">{r.label}</span>
@@ -326,7 +326,7 @@ export default function ChartOfAccountsPage() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                 aria-label="Help"
               ></button>
             }
@@ -385,7 +385,7 @@ export default function ChartOfAccountsPage() {
 
       <div className="flex gap-3 items-center flex-wrap">
         <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
           <input
             className="w-full pl-9 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             placeholder="Search by code or name..."
@@ -404,7 +404,9 @@ export default function ChartOfAccountsPage() {
             </button>
           ))}
         </div>
-        <span className="text-xs text-slate-500 ml-auto">{filteredAccounts.length} accounts</span>
+        <span className="text-xs text-[var(--text-muted)] ml-auto">
+          {filteredAccounts.length} accounts
+        </span>
       </div>
 
       <Card>
@@ -464,7 +466,7 @@ export default function ChartOfAccountsPage() {
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-xs text-slate-400">{acct.category}</td>
-                    <td className="px-4 py-3 text-right text-xs tabular-nums text-slate-500">
+                    <td className="px-4 py-3 text-right text-xs tabular-nums text-[var(--text-muted)]">
                       {getNormalBalance(acct.type)}
                     </td>
                     <td className="px-4 py-3">
@@ -516,7 +518,11 @@ export default function ChartOfAccountsPage() {
             </table>
           </div>
           {filteredAccounts.length === 0 && (
-            <div className="text-center py-8 text-slate-500 text-sm">
+            <div
+              className="text-center py-8 text-[var(--text-muted)] text-sm"
+              role="status"
+              aria-live="polite"
+            >
               No accounts match your search criteria.
             </div>
           )}

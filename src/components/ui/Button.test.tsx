@@ -37,7 +37,7 @@ describe('Button', () => {
   it('applies default variant class', () => {
     render(<Button>Default</Button>);
     const button = screen.getByRole('button');
-    expect(button.className).toContain('bg-blue-600');
+    expect(button.className).toContain('bg-[var(--action-fill)]');
   });
 
   it('applies outline variant class', () => {
@@ -55,6 +55,6 @@ describe('Button', () => {
   it('applies destructive variant class', () => {
     render(<Button variant="destructive">Danger</Button>);
     const button = screen.getByRole('button');
-    expect(button.className).toContain('bg-red-600');
+    expect(button.className).toContain('bg-[var(--danger-fill)]');
   });
 });

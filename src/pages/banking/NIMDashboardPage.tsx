@@ -12,6 +12,7 @@ import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { divideMoney, multiplyMoney, roundTo, sumMoney } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 /**
  * GAP-1 (F-0006) — exact-decimal NIM component income/asset aggregates.
@@ -94,8 +95,8 @@ export default function NIMDashboardPage() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <Activity className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <Activity className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Banking Data</h2>
         <p className="text-[var(--text-muted)] mb-6">
@@ -108,23 +109,19 @@ export default function NIMDashboardPage() {
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Activity className="h-6 w-6 text-green-400" />
-            NIM Dashboard
-          </h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Net Interest Margin & Spread Analysis
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-2" /> Export
-          </Button>
-          <Button size="sm">Scenario Modeling</Button>
-        </div>
-      </div>
+      <PageHeader
+        icon={<Activity className="h-6 w-6 text-green-400" />}
+        title="NIM Dashboard"
+        purpose="Net Interest Margin & Spread Analysis"
+        actions={
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleExport}>
+              <Download className="h-4 w-4 mr-2" /> Export
+            </Button>
+            <Button size="sm">Scenario Modeling</Button>
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
@@ -165,7 +162,7 @@ export default function NIMDashboardPage() {
             subtitle="Monthly spread analysis"
             height={350}
           >
-            <div className="flex items-center justify-center h-full text-slate-500 italic">
+            <div className="flex items-center justify-center h-full text-[var(--text-muted)] italic">
               Margin vs. Cost Visualization (Line Chart)
             </div>
           </ChartWrapper>
@@ -191,7 +188,7 @@ export default function NIMDashboardPage() {
                 <span className="text-sm font-bold text-red-400">-$1.8M NII</span>
               </div>
             </div>
-            <p className="text-[10px] text-slate-500">
+            <p className="text-[10px] text-[var(--text-muted)]">
               Estimates based on current GAP analysis and asset-sensitive profile.
             </p>
           </CardContent>

@@ -130,8 +130,8 @@ export default function GLJournalsPage() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <BookOpen className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <BookOpen className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Journal Entries</h2>
         <p className="text-[var(--text-muted)] mb-6">
@@ -151,7 +151,7 @@ export default function GLJournalsPage() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                 aria-label="Help"
               ></button>
             }
@@ -233,7 +233,7 @@ export default function GLJournalsPage() {
                 Search
               </label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--text-muted)]" />
                 <input
                   id="search"
                   className="w-48 pl-8 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -285,8 +285,10 @@ export default function GLJournalsPage() {
               <tbody className={`divide-y divide-slate-800 ${isPending ? 'opacity-60' : ''}`}>
                 {pageItems.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-12 text-slate-500">
-                      No entries match the current filters.
+                    <td colSpan={7} className="text-center py-12 text-[var(--text-muted)]">
+                      <span role="status" aria-live="polite">
+                        No entries match the current filters.
+                      </span>
                     </td>
                   </tr>
                 ) : (
@@ -308,7 +310,9 @@ export default function GLJournalsPage() {
                       <td className="px-4 py-3 text-right tabular-nums text-green-400">
                         {e.credit > 0 ? fmt.currency0(e.credit) : ''}
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-500">{e.reference || '-'}</td>
+                      <td className="px-4 py-3 text-xs text-[var(--text-muted)]">
+                        {e.reference || '-'}
+                      </td>
                       <td className="px-2 py-3">
                         <Button
                           size="sm"

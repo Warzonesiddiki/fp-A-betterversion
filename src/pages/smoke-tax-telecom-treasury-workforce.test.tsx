@@ -163,7 +163,10 @@ describe('Tax pages smoke tests', () => {
   describe('TaxProvisionPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(TaxProvisionPage, '/tax/provision');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no data', () => {
       renderPage(TaxProvisionPage, '/tax/provision');
@@ -174,7 +177,10 @@ describe('Tax pages smoke tests', () => {
   describe('TransferPricingPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(TransferPricingPage, '/tax/transfer-pricing');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('displays the page heading', () => {
       renderPage(TransferPricingPage, '/tax/transfer-pricing');
@@ -200,7 +206,10 @@ describe('Telecom page smoke test', () => {
   describe('TelecomPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(TelecomPage, '/telecom');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no data', () => {
       renderPage(TelecomPage, '/telecom');
@@ -226,7 +235,10 @@ describe('Treasury page smoke test', () => {
   describe('FXExposurePage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(FXExposurePage, '/treasury/fx-exposure');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('displays the page heading', () => {
       renderPage(FXExposurePage, '/treasury/fx-exposure');
@@ -252,7 +264,10 @@ describe('Variance page smoke test', () => {
   describe('VarianceDashboardPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(VarianceDashboardPage, '/variance');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no data', () => {
       renderPage(VarianceDashboardPage, '/variance');
@@ -278,7 +293,10 @@ describe('Workforce pages smoke tests', () => {
   describe('CompModelingPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(CompModelingPage, '/workforce/comp-modeling');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no data', () => {
       renderPage(CompModelingPage, '/workforce/comp-modeling');
@@ -289,7 +307,10 @@ describe('Workforce pages smoke tests', () => {
   describe('HeadcountPlanPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(HeadcountPlanPage, '/workforce/headcount');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no data', () => {
       renderPage(HeadcountPlanPage, '/workforce/headcount');
@@ -300,7 +321,10 @@ describe('Workforce pages smoke tests', () => {
   describe('PayrollForecastPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(PayrollForecastPage, '/workforce/payroll');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('displays the page heading', () => {
       // WIRED (C-3): the page renders from the real workforceStore — seed one

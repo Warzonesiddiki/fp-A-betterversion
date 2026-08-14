@@ -32,6 +32,7 @@ import {
 import { sumMoney, subtractMoney, roundTo, toDecimal } from '@/utils/money';
 import { formatPercent as formatPercentDisplay } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { PageHeader } from '@/components/ui/PageHeader';
 /** Local formatPercent delegates to financialFormatting (GAP-1 F-0006). */
 function formatPercent(n: number): string {
   return formatPercentDisplay(n);
@@ -208,43 +209,41 @@ export default function BudgetVAReport() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <FileBarChart className="h-6 w-6 text-blue-400" />
-            Budget vs. Actuals
-          </h1>
-          <p className="text-[var(--text-muted)] text-sm mt-1">
-            Analyze performance against approved plans.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Select
-            value={selectedBudgetId}
-            onChange={setSelectedBudgetId}
-            placeholder="Select Approved Budget"
-            className="w-64"
-            options={approvedBudgets.map((b) => ({
-              value: b.id,
-              label: `${b.name} (${b.fiscalYear})`,
-            }))}
-          />
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Filter
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        icon={<FileBarChart className="h-6 w-6 text-blue-400" />}
+        title="Budget vs. Actuals"
+        purpose="Analyze performance against approved plans."
+        actions={
+          <div className="flex items-center gap-3">
+            <Select
+              value={selectedBudgetId}
+              onChange={setSelectedBudgetId}
+              placeholder="Select Approved Budget"
+              className="w-64"
+              options={approvedBudgets.map((b) => ({
+                value: b.id,
+                label: `${b.name} (${b.fiscalYear})`,
+              }))}
+            />
+            <Button variant="outline" size="sm">
+              <Filter className="h-4 w-4 mr-2" />
+              Filter
+            </Button>
+          </div>
+        }
+      />
 
       {!selectedBudgetId ? (
-        <Card className="bg-slate-900/50 border-dashed border-slate-800 py-12">
+        <Card className="bg-[var(--bg-elevated)]/50 border-dashed border-[var(--border-default)] py-12">
           <CardContent className="text-center space-y-4">
-            <div className="p-4 bg-slate-800 rounded-full inline-block">
-              <FileBarChart className="h-8 w-8 text-slate-500" />
+            <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block">
+              <FileBarChart className="h-8 w-8 text-[var(--text-muted)]" />
             </div>
             <div className="max-w-xs mx-auto">
-              <h3 className="font-semibold text-lg text-slate-200">No Budget Selected</h3>
-              <p className="text-sm text-slate-400 mt-2">
+              <h3 className="font-semibold text-lg text-[var(--text-primary)]">
+                No Budget Selected
+              </h3>
+              <p className="text-sm text-[var(--text-secondary)] mt-2">
                 Select an approved budget from the dropdown above to view the performance report.
               </p>
             </div>

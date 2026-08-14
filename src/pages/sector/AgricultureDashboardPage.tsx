@@ -9,6 +9,7 @@ import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Wheat } from 'lucide-react';
 import { sumMoney, roundTo } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function AgricultureDashboardPage() {
   const { entries } = useGLStore();
@@ -37,7 +38,7 @@ export default function AgricultureDashboardPage() {
     return (
       <main className="p-12 text-center" role="main" aria-label="Agriculture Dashboard - No Data">
         <Wheat className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">Agriculture — No Data</h2>
+        <h1 className="text-xl font-semibold mb-2">Agriculture — No Data</h1>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to view agriculture KPIs.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
@@ -46,10 +47,10 @@ export default function AgricultureDashboardPage() {
 
   return (
     <main className="p-6 space-y-6" role="main">
-      <h1 className="text-2xl font-bold">Agriculture Dashboard</h1>
-      <p className="text-sm text-[var(--text-muted)]">
-        Crop production, livestock, and agribusiness metrics
-      </p>
+      <PageHeader
+        title="Agriculture Dashboard"
+        purpose="Crop production, livestock, and agribusiness metrics"
+      />
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {kpis.map((kpi) => (

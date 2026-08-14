@@ -10,23 +10,27 @@
 ### Decision/Topic: Adopt BMAD v5.0 ULTRA-YOLO as the project operating method (owner direction)
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | Owner provided the v5.0 ULTIMATE prompt and directed: upgrade the working style, restart from step 1, update existing work to the new standard, continue. Root need: preserve the research-first, zero-compromise foundation while adding self-governed execution (DRP + reasoning ledger + autonomy matrix). |
-| Evidence | v4.0 charter, path-lock, and all artifacts exist and are hypothesis-approved (G0–G5). v5.0 preserves the same phases/gates/agents and adds the reasoning engine; no artifact contract is invalidated. |
-| Options Considered | (a) Rewrite all artifacts to v5 template wholesale — rejected: churn without value; v5 adds process, not new product decisions. (b) Create v5 charter + reasoning ledger + autonomy tracker, supersede v4, backfill ledger, keep existing artifacts — ADOPTED: upgrades the operating system without destabilizing approved content. (c) Ignore v5 and continue v4 — rejected: explicit owner direction. |
-| Risk Probe | Risk: ledger backfill could misrepresent past decisions. Mitigation: entries record what was actually done with evidence links. Risk: reference churn breaks docs-link-check. Mitigation: keep v4 file as historical; update the single project-context reference; re-run strict link check. |
-| Consequence Projection | Immediate: new charter + ledger + autonomy tracker committed. Downstream: every future decision appends a ledger entry; escalation triggers are repo-mapped; existing path-lock and gates remain authoritative. |
-| Confidence Score | 92% |
-| Autonomy Level | A5 — FULL YOLO (owner-directed, reversible via artifact edits) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | Owner provided the v5.0 ULTIMATE prompt and directed: upgrade the working style, restart from step 1, update existing work to the new standard, continue. Root need: preserve the research-first, zero-compromise foundation while adding self-governed execution (DRP + reasoning ledger + autonomy matrix).                                                                                            |
+| Evidence               | v4.0 charter, path-lock, and all artifacts exist and are hypothesis-approved (G0–G5). v5.0 preserves the same phases/gates/agents and adds the reasoning engine; no artifact contract is invalidated.                                                                                                                                                                                                    |
+| Options Considered     | (a) Rewrite all artifacts to v5 template wholesale — rejected: churn without value; v5 adds process, not new product decisions. (b) Create v5 charter + reasoning ledger + autonomy tracker, supersede v4, backfill ledger, keep existing artifacts — ADOPTED: upgrades the operating system without destabilizing approved content. (c) Ignore v5 and continue v4 — rejected: explicit owner direction. |
+| Risk Probe             | Risk: ledger backfill could misrepresent past decisions. Mitigation: entries record what was actually done with evidence links. Risk: reference churn breaks docs-link-check. Mitigation: keep v4 file as historical; update the single project-context reference; re-run strict link check.                                                                                                             |
+| Consequence Projection | Immediate: new charter + ledger + autonomy tracker committed. Downstream: every future decision appends a ledger entry; escalation triggers are repo-mapped; existing path-lock and gates remain authoritative.                                                                                                                                                                                          |
+| Confidence Score       | 92%                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Autonomy Level         | A5 — FULL YOLO (owner-directed, reversible via artifact edits)                                                                                                                                                                                                                                                                                                                                           |
 
 ### Adopted Path:
+
 v5.0 charter (`_bmad/BMAD_V5_OPERATING_CHARTER.md`), v4 superseded in place, reasoning ledger established, project-context gains Autonomy Tracker + Ledger Reference.
 
 ### Rejected Alternatives:
+
 Wholesale v5 template rewrite of every artifact (churn, no added decision value); continue v4 (ignores owner direction).
 
 ### Open Items:
+
 None.
 
 ## Ledger Entry #2 — 2026-08-10 — Rex
@@ -34,20 +38,23 @@ None.
 ### Decision/Topic: Record CI failure root cause as GitHub account billing block (E-005), not a code regression
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | Why is CI red on merged main? Question required a verifiable root cause before any "fix". |
-| Evidence | GitHub check-run annotations on every failed job (CI, tsc, lint, test-unit, build, deploy, cascade-hold, sentry-self-test): "The job was not started because recent account payments have failed or your spending limit needs to be increased." Failures predate PR #53 on other commits; jobs complete in seconds with zero steps; logs unretrievable (EOF) because nothing ran. |
-| Options Considered | (a) Treat as code regression and debug the build — rejected: no job ever started; zero steps prove no code executed. (b) Treat as environment/billing issue and document — ADOPTED. (c) Ignore — rejected: silent state change. |
-| Risk Probe | Risk: owner assumes PR #53 broke CI. Mitigation: evidence recorded in `_bmad/qa/ci-actions-billing-block-2026-08-10.md` with run IDs and annotation text. |
-| Consequence Projection | Owner action required (Billing & plans); CI status must not be treated as code evidence until jobs run. |
-| Confidence Score | 95% |
-| Autonomy Level | A5 |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                          |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | Why is CI red on merged main? Question required a verifiable root cause before any "fix".                                                                                                                                                                                                                                                                                         |
+| Evidence               | GitHub check-run annotations on every failed job (CI, tsc, lint, test-unit, build, deploy, cascade-hold, sentry-self-test): "The job was not started because recent account payments have failed or your spending limit needs to be increased." Failures predate PR #53 on other commits; jobs complete in seconds with zero steps; logs unretrievable (EOF) because nothing ran. |
+| Options Considered     | (a) Treat as code regression and debug the build — rejected: no job ever started; zero steps prove no code executed. (b) Treat as environment/billing issue and document — ADOPTED. (c) Ignore — rejected: silent state change.                                                                                                                                                   |
+| Risk Probe             | Risk: owner assumes PR #53 broke CI. Mitigation: evidence recorded in `_bmad/qa/ci-actions-billing-block-2026-08-10.md` with run IDs and annotation text.                                                                                                                                                                                                                         |
+| Consequence Projection | Owner action required (Billing & plans); CI status must not be treated as code evidence until jobs run.                                                                                                                                                                                                                                                                           |
+| Confidence Score       | 95%                                                                                                                                                                                                                                                                                                                                                                               |
+| Autonomy Level         | A5                                                                                                                                                                                                                                                                                                                                                                                |
 
 ### Adopted Path:
+
 Dedicated QA note + project-context §CI status + evidence-log E-005.
 
 ### Rejected Alternatives:
+
 Code-level CI debugging (no steps ever ran); silent acceptance of red CI.
 
 ## Ledger Entry #3 — 2026-08-10 — Amelia/Quinn
@@ -55,20 +62,23 @@ Code-level CI debugging (no steps ever ran); silent acceptance of red CI.
 ### Decision/Topic: Implement F-03 (Financial Context + Atlas Shell) with typed contract, URL serialization, five-pillar navigation, permission filtering
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | PRD E1 requires context (Scope→Time→Version→Currency→Freshness) to be typed, visible, serializable, permission-aware, and server-filtered for official views. |
-| Evidence | UX §4.1 contract; ROLE_PERMISSIONS matrix exists; Atlas foundations merged (PR #53). |
-| Options Considered | (a) Full five-pillar shell with route migration — rejected: pre-decides navigation/UX beyond safe foundation. (b) Typed context + context bar + role-filtered sidebar reusing existing routes + legacy group — ADOPTED: preserves all destinations, adds pillar semantics without direction change. (c) Context store only — rejected: leaves UX contract unmet. |
-| Risk Probe | Risk: sidebar restructure breaks existing tests — mitigated: updated both Sidebar test files to pillar structure; all destinations preserved in pillars or Legacy group. Risk: URL serialization loops — mitigated: replace-only writes + equality guard. |
-| Consequence Projection | Enables F-04 envelope sharing and context-aware pilot screens; no ICP/connector/vertical decision made. |
-| Confidence Score | 90% |
-| Autonomy Level | A5 |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                         |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | PRD E1 requires context (Scope→Time→Version→Currency→Freshness) to be typed, visible, serializable, permission-aware, and server-filtered for official views.                                                                                                                                                                                                    |
+| Evidence               | UX §4.1 contract; ROLE_PERMISSIONS matrix exists; Atlas foundations merged (PR #53).                                                                                                                                                                                                                                                                             |
+| Options Considered     | (a) Full five-pillar shell with route migration — rejected: pre-decides navigation/UX beyond safe foundation. (b) Typed context + context bar + role-filtered sidebar reusing existing routes + legacy group — ADOPTED: preserves all destinations, adds pillar semantics without direction change. (c) Context store only — rejected: leaves UX contract unmet. |
+| Risk Probe             | Risk: sidebar restructure breaks existing tests — mitigated: updated both Sidebar test files to pillar structure; all destinations preserved in pillars or Legacy group. Risk: URL serialization loops — mitigated: replace-only writes + equality guard.                                                                                                        |
+| Consequence Projection | Enables F-04 envelope sharing and context-aware pilot screens; no ICP/connector/vertical decision made.                                                                                                                                                                                                                                                          |
+| Confidence Score       | 90%                                                                                                                                                                                                                                                                                                                                                              |
+| Autonomy Level         | A5                                                                                                                                                                                                                                                                                                                                                               |
 
 ### Adopted Path:
+
 `src/types/financialContext.ts`, `financialContextStore`, `FinancialContextBar`, `navigation.ts`, `usePillarNavigation`, Sidebar/AppLayout updates; 50 targeted tests; QA APPROVED.
 
 ### Rejected Alternatives:
+
 Full shell migration (direction change); store-only (contract unmet).
 
 ## Ledger Entry #4 — 2026-08-10 — Amelia/Quinn
@@ -76,20 +86,23 @@ Full shell migration (direction change); store-only (contract unmet).
 ### Decision/Topic: F-04 Control-Plane spike — typed command envelope server + in-memory registry, idempotency, base revisions, negative authorization, audit evidence
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | Prove the authoritative command boundary as a spike before any production migration: typed envelope, trusted-actor scope, idempotency, concurrency (revisions), audit. |
-| Evidence | Architecture §§3/6; existing auth/entityAuth middleware + AuditService + audit_trail schema; ADR-E02/E03. |
-| Options Considered | (a) Production-grade PostgreSQL implementation — rejected: beyond spike scope, no deployment decision made. (b) In-memory spike with explicit ephemerality + migration path — ADOPTED. (c) No spike — rejected: A-04/A-05 stay untested technically. |
-| Risk Probe | Risk: sandbox mock-DB fallback misleads — mitigated: queries written correct on real SQLite and mock; caveat documented. Risk: idempotency key collisions — UUIDs via crypto.randomUUID, never Math.random. |
-| Consequence Projection | 8 contract tests + 121 server tests; migration path recorded in architecture §11.1; client boundary proven. |
-| Confidence Score | 90% |
-| Autonomy Level | A5 |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                             |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | Prove the authoritative command boundary as a spike before any production migration: typed envelope, trusted-actor scope, idempotency, concurrency (revisions), audit.                                                                               |
+| Evidence               | Architecture §§3/6; existing auth/entityAuth middleware + AuditService + audit_trail schema; ADR-E02/E03.                                                                                                                                            |
+| Options Considered     | (a) Production-grade PostgreSQL implementation — rejected: beyond spike scope, no deployment decision made. (b) In-memory spike with explicit ephemerality + migration path — ADOPTED. (c) No spike — rejected: A-04/A-05 stay untested technically. |
+| Risk Probe             | Risk: sandbox mock-DB fallback misleads — mitigated: queries written correct on real SQLite and mock; caveat documented. Risk: idempotency key collisions — UUIDs via crypto.randomUUID, never Math.random.                                          |
+| Consequence Projection | 8 contract tests + 121 server tests; migration path recorded in architecture §11.1; client boundary proven.                                                                                                                                          |
+| Confidence Score       | 90%                                                                                                                                                                                                                                                  |
+| Autonomy Level         | A5                                                                                                                                                                                                                                                   |
 
 ### Adopted Path:
+
 `server/src/types/commandEnvelope.ts`, `CommandRegistry`, `routes/commands.ts` (`POST/GET /api/v1/commands`), mounted in index.ts; QA APPROVED.
 
 ### Rejected Alternatives:
+
 Production implementation (scope); skipping the spike (unvalidated).
 
 ## Ledger Entry #5 — 2026-08-10 — Amelia/Quinn
@@ -97,20 +110,23 @@ Production implementation (scope); skipping the spike (unvalidated).
 ### Decision/Topic: F-04 client completion — typed CommandClient, feature-flag gated, no zod import
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | The client needs a typed, safe transport that can never accidentally act without a configured Control Plane; bundle limits are strict. |
-| Evidence | Architecture calls for typed checked client; zod is available but adds bundle weight; bundle-check enforces gzip limits. |
-| Options Considered | (a) zod-validated client — rejected: bundle cost vs. benefit; server already validates authoritatively. (b) Manual `isCommandResult` guard + feature flag — ADOPTED: lean, typed, safe. (c) Wire client into a screen — rejected: pre-decides deployment; flag stays off. |
-| Risk Probe | Risk: envelope drift between server/client — mitigated: mirrored contract types + tests on both sides. Risk: accidental use without config — mitigated: ControlPlaneDisabledError + isControlPlaneEnabled gate. |
-| Consequence Projection | 14 client/contract tests; inventory registers Command Client (UNVERIFIED maturity); no screen wiring until a Control Plane is configured. |
-| Confidence Score | 92% |
-| Autonomy Level | A5 |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | The client needs a typed, safe transport that can never accidentally act without a configured Control Plane; bundle limits are strict.                                                                                                                                    |
+| Evidence               | Architecture calls for typed checked client; zod is available but adds bundle weight; bundle-check enforces gzip limits.                                                                                                                                                  |
+| Options Considered     | (a) zod-validated client — rejected: bundle cost vs. benefit; server already validates authoritatively. (b) Manual `isCommandResult` guard + feature flag — ADOPTED: lean, typed, safe. (c) Wire client into a screen — rejected: pre-decides deployment; flag stays off. |
+| Risk Probe             | Risk: envelope drift between server/client — mitigated: mirrored contract types + tests on both sides. Risk: accidental use without config — mitigated: ControlPlaneDisabledError + isControlPlaneEnabled gate.                                                           |
+| Consequence Projection | 14 client/contract tests; inventory registers Command Client (UNVERIFIED maturity); no screen wiring until a Control Plane is configured.                                                                                                                                 |
+| Confidence Score       | 92%                                                                                                                                                                                                                                                                       |
+| Autonomy Level         | A5                                                                                                                                                                                                                                                                        |
 
 ### Adopted Path:
+
 `src/api/commandClient.ts` + contract types + env typing; QA addendum; capability generator extended for `src/api`.
 
 ### Rejected Alternatives:
+
 zod client (bundle); screen wiring (pre-decides deployment).
 
 ## Ledger Entry #6 — 2026-08-10 — Amelia/Quinn
@@ -118,20 +134,23 @@ zod client (bundle); screen wiring (pre-decides deployment).
 ### Decision/Topic: CI governance hardening — SHA-pin actions, shard unit tests, blocking a11y gate; preserve workflow changes when push lacks `workflows` permission
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | CI cannot run (billing block), but the CI *configuration* must still satisfy the repo's own governance scripts (compliance-evidence 19/22 → 22/22). |
-| Evidence | `compliance-evidence.mjs` CI-002/003/004 FAIL; `architecture-guardrails.mjs` SHA-pin check failed; all workflow uses were `@vN` tags. |
-| Options Considered | (a) Fix config, push — blocked by missing `workflows` permission. (b) Fix config, preserve as documented worktree changes, push everything pushable — ADOPTED. (c) Skip — rejected: leaves governance red. |
-| Risk Probe | Risk: workflow changes lost across sandbox recycles — mitigated: backed up, documented in two artifacts with exact content. Risk: SHA resolution wrong — mitigated: resolved current tag SHAs via git ls-remote; guardrail passes. |
-| Consequence Projection | Compliance 22/22; a11y gate blocking (runner exists, passes locally 448 tests); sharding verified locally; owner must land workflow files. |
-| Confidence Score | 88% |
-| Autonomy Level | A4 (STEALTH — high-criticality config change verified in parallel; push caveat escalated A3 to owner) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                           |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | CI cannot run (billing block), but the CI _configuration_ must still satisfy the repo's own governance scripts (compliance-evidence 19/22 → 22/22).                                                                                |
+| Evidence               | `compliance-evidence.mjs` CI-002/003/004 FAIL; `architecture-guardrails.mjs` SHA-pin check failed; all workflow uses were `@vN` tags.                                                                                              |
+| Options Considered     | (a) Fix config, push — blocked by missing `workflows` permission. (b) Fix config, preserve as documented worktree changes, push everything pushable — ADOPTED. (c) Skip — rejected: leaves governance red.                         |
+| Risk Probe             | Risk: workflow changes lost across sandbox recycles — mitigated: backed up, documented in two artifacts with exact content. Risk: SHA resolution wrong — mitigated: resolved current tag SHAs via git ls-remote; guardrail passes. |
+| Consequence Projection | Compliance 22/22; a11y gate blocking (runner exists, passes locally 448 tests); sharding verified locally; owner must land workflow files.                                                                                         |
+| Confidence Score       | 88%                                                                                                                                                                                                                                |
+| Autonomy Level         | A4 (STEALTH — high-criticality config change verified in parallel; push caveat escalated A3 to owner)                                                                                                                              |
 
 ### Adopted Path:
+
 9 workflow files pinned + sharded + a11y blocking (worktree, documented); compliance-evidence.json + notes committed.
 
 ### Rejected Alternatives:
+
 Skipping hardening (governance stays red); force-pushing without permission (impossible/improper).
 
 ## Ledger Entry #7 — 2026-08-10 — Amelia/Quinn
@@ -139,20 +158,23 @@ Skipping hardening (governance stays red); force-pushing without permission (imp
 ### Decision/Topic: Extend F-02 interim structural baselines (empty+populated Dashboard, context bar, all 10 status states, PageHeader) — never claim pixels
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | F-02 needs visual-regression evidence; the sandbox cannot run a browser. Interim evidence must strengthen without overclaiming. |
-| Evidence | VISUAL_REGRESSION_RUNBOOK scenarios; existing structural baseline precedent (AtlasFoundations, DashboardPage.populated.contract). |
-| Options Considered | (a) Fabricate pixel baselines — rejected: violates zero-compromise evidence rule. (b) DOM/class structural baselines for each runbook scenario — ADOPTED. (c) Stop F-02 work — rejected: safe foundations may progress. |
-| Risk Probe | Risk: snapshots treated as pixel proof — mitigated: every file/QA note states pixels/fonts/theme remain unverified. |
-| Consequence Projection | 8-test Atlas suite + populated Dashboard baseline; real heading-order defect found and fixed (h1→h3). |
-| Confidence Score | 95% |
-| Autonomy Level | A5 |
+
+| Stage                  | Analysis                                                                                                                                                                                                                |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | F-02 needs visual-regression evidence; the sandbox cannot run a browser. Interim evidence must strengthen without overclaiming.                                                                                         |
+| Evidence               | VISUAL_REGRESSION_RUNBOOK scenarios; existing structural baseline precedent (AtlasFoundations, DashboardPage.populated.contract).                                                                                       |
+| Options Considered     | (a) Fabricate pixel baselines — rejected: violates zero-compromise evidence rule. (b) DOM/class structural baselines for each runbook scenario — ADOPTED. (c) Stop F-02 work — rejected: safe foundations may progress. |
+| Risk Probe             | Risk: snapshots treated as pixel proof — mitigated: every file/QA note states pixels/fonts/theme remain unverified.                                                                                                     |
+| Consequence Projection | 8-test Atlas suite + populated Dashboard baseline; real heading-order defect found and fixed (h1→h3).                                                                                                                   |
+| Confidence Score       | 95%                                                                                                                                                                                                                     |
+| Autonomy Level         | A5                                                                                                                                                                                                                      |
 
 ### Adopted Path:
+
 Structural baselines + jest-axe; F-02 verdict stays REJECTED — REQUIRES COMPLETION.
 
 ### Rejected Alternatives:
+
 Fabricated baselines (never); stopping safe foundation work.
 
 ## Ledger Entry #8 — 2026-08-10 — System
@@ -160,20 +182,23 @@ Fabricated baselines (never); stopping safe foundation work.
 ### Decision/Topic: Sandbox recycle reconciliation procedure — verified fast-forward + index refresh, never destructive commands
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | The sandbox has recycled repeatedly: git refs return to the shallow `f3834e2` clone while the worktree keeps all files. The invariant: never lose work, never use reset/restore/clean. |
-| Evidence | Multiple occurrences observed; remote branch always holds the authoritative commits; worktree content verified byte-identical via git show/diff. |
-| Options Considered | (a) reset --hard — rejected: destructive, prohibited by handover. (b) update-ref + git add -A + verify diff vs FETCH_HEAD — ADOPTED: ref-only move, index refresh, zero data loss. |
-| Risk Probe | Risk: staging the 9 intentional workflow changes into commits — mitigated: `git restore --staged .github/workflows/` after each `add -A`; documented caveat. |
-| Consequence Projection | Reliable recovery across 5+ recycle events; workflow files persist as intentional worktree-only changes. |
-| Confidence Score | 95% |
-| Autonomy Level | A5 |
+
+| Stage                  | Analysis                                                                                                                                                                               |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | The sandbox has recycled repeatedly: git refs return to the shallow `f3834e2` clone while the worktree keeps all files. The invariant: never lose work, never use reset/restore/clean. |
+| Evidence               | Multiple occurrences observed; remote branch always holds the authoritative commits; worktree content verified byte-identical via git show/diff.                                       |
+| Options Considered     | (a) reset --hard — rejected: destructive, prohibited by handover. (b) update-ref + git add -A + verify diff vs FETCH_HEAD — ADOPTED: ref-only move, index refresh, zero data loss.     |
+| Risk Probe             | Risk: staging the 9 intentional workflow changes into commits — mitigated: `git restore --staged .github/workflows/` after each `add -A`; documented caveat.                           |
+| Consequence Projection | Reliable recovery across 5+ recycle events; workflow files persist as intentional worktree-only changes.                                                                               |
+| Confidence Score       | 95%                                                                                                                                                                                    |
+| Autonomy Level         | A5                                                                                                                                                                                     |
 
 ### Adopted Path:
+
 Documented reconciliation sequence used every recycle; no destructive command ever run.
 
 ### Rejected Alternatives:
+
 reset/clean/restore (prohibited); abandoning work (unacceptable).
 
 ---
@@ -185,15 +210,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: v5 restart Step 1 — re-certify Phase 0 (research baseline + assumptions with confidence scoring)
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | v5 requires confidence-governed autonomy: every assumption needs an explicit confidence score in addition to its validation status. |
-| Evidence | research-report v2.0, assumption-registry v2.0 (14 assumptions), validation-plan v2.0, evidence-log E-001..E-005; no new primary evidence. |
-| Options Considered | Rewrite research (rejected: churn, no evidence change); re-certify + add Confidence/Last-reviewed columns (ADOPTED); skip (rejected: v5 standard unmet). |
-| Risk Probe | Confidence scores misread as validation — mitigated: scores are confidence-in-hypothesis; Status column remains UNVALIDATED; header note explains. |
-| Consequence Projection | Registry v2.1; every assumption scored honestly (A-05 40% highest, A-01 10% lowest); gates unchanged. |
-| Confidence Score | 94% |
-| Autonomy Level | A5 |
+
+| Stage                  | Analysis                                                                                                                                                 |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | v5 requires confidence-governed autonomy: every assumption needs an explicit confidence score in addition to its validation status.                      |
+| Evidence               | research-report v2.0, assumption-registry v2.0 (14 assumptions), validation-plan v2.0, evidence-log E-001..E-005; no new primary evidence.               |
+| Options Considered     | Rewrite research (rejected: churn, no evidence change); re-certify + add Confidence/Last-reviewed columns (ADOPTED); skip (rejected: v5 standard unmet). |
+| Risk Probe             | Confidence scores misread as validation — mitigated: scores are confidence-in-hypothesis; Status column remains UNVALIDATED; header note explains.       |
+| Consequence Projection | Registry v2.1; every assumption scored honestly (A-05 40% highest, A-01 10% lowest); gates unchanged.                                                    |
+| Confidence Score       | 94%                                                                                                                                                      |
+| Autonomy Level         | A5                                                                                                                                                       |
 
 ### Adopted Path: registry v2.1 + research-report v2.1 header + `_bmad/v5-restart-2026-08-10.md` Step 1.
 
@@ -202,13 +228,14 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: v5 restart Step 2 — re-certify Phase 1 (Product Brief)
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | Brief must stay traceable to research/assumptions; v5 adds the reasoning ledger requirement. |
-| Evidence | product-brief v2.2 (G1-approved); thesis, evidence table, A-13-tagged target customer all intact. |
-| Options Considered | Rewrite (rejected); re-certify (ADOPTED); skip (rejected). |
-| Risk Probe | Stale claims — verified sections still match research v2.x. |
-| Confidence Score | 93% · Autonomy Level | A5 |
+
+| Stage              | Analysis                                                                                          |
+| ------------------ | ------------------------------------------------------------------------------------------------- | --- |
+| First Principles   | Brief must stay traceable to research/assumptions; v5 adds the reasoning ledger requirement.      |
+| Evidence           | product-brief v2.2 (G1-approved); thesis, evidence table, A-13-tagged target customer all intact. |
+| Options Considered | Rewrite (rejected); re-certify (ADOPTED); skip (rejected).                                        |
+| Risk Probe         | Stale claims — verified sections still match research v2.x.                                       |
+| Confidence Score   | 93% · Autonomy Level                                                                              | A5  |
 
 ### Adopted Path: brief v2.3 header + restart record Step 2.
 
@@ -217,13 +244,14 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: v5 restart Step 3 — re-certify Phase 2 (PRD + UX)
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | Every requirement/UX pattern must trace to research or assumptions; NFRs measurable. |
-| Evidence | prd v2.1 (G2), ux-design v2.1 (G3), traceability matrix; F-03 implemented the UX §4 trust-language contract (context bar + badges). |
-| Options Considered | Rewrite (rejected); re-certify (ADOPTED); skip (rejected). |
-| Risk Probe | Requirements drift — traceability matrix verified current (R-01..R-07, A-01..A-14). |
-| Confidence Score | 93% · Autonomy Level | A5 |
+
+| Stage              | Analysis                                                                                                                            |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | --- |
+| First Principles   | Every requirement/UX pattern must trace to research or assumptions; NFRs measurable.                                                |
+| Evidence           | prd v2.1 (G2), ux-design v2.1 (G3), traceability matrix; F-03 implemented the UX §4 trust-language contract (context bar + badges). |
+| Options Considered | Rewrite (rejected); re-certify (ADOPTED); skip (rejected).                                                                          |
+| Risk Probe         | Requirements drift — traceability matrix verified current (R-01..R-07, A-01..A-14).                                                 |
+| Confidence Score   | 93% · Autonomy Level                                                                                                                | A5  |
 
 ### Adopted Path: PRD/UX v5 headers + restart record Step 3.
 
@@ -232,13 +260,14 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: v5 restart Step 4 — re-certify Phase 3 (Architecture + ADRs)
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | Architecture decisions trace to requirements; rejected alternatives documented; spike evidence recorded. |
-| Evidence | architecture v2.1 (G4) with ADR register; F-04 spike outcome §11.1 (envelope, scope, idempotency, audit; migration path); alignment report. |
-| Options Considered | Rewrite (rejected); re-certify (ADOPTED); skip (rejected). |
-| Risk Probe | Spike claims overread — §11.1 explicitly marks spike-only and sandbox mock-DB caveat. |
-| Confidence Score | 92% · Autonomy Level | A5 |
+
+| Stage              | Analysis                                                                                                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| First Principles   | Architecture decisions trace to requirements; rejected alternatives documented; spike evidence recorded.                                    |
+| Evidence           | architecture v2.1 (G4) with ADR register; F-04 spike outcome §11.1 (envelope, scope, idempotency, audit; migration path); alignment report. |
+| Options Considered | Rewrite (rejected); re-certify (ADOPTED); skip (rejected).                                                                                  |
+| Risk Probe         | Spike claims overread — §11.1 explicitly marks spike-only and sandbox mock-DB caveat.                                                       |
+| Confidence Score   | 92% · Autonomy Level                                                                                                                        | A5  |
 
 ### Adopted Path: architecture v5 header + restart record Step 4.
 
@@ -247,14 +276,15 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: v5 restart Step 5 — re-certify Phase 4 (Delivery: sprint plan, stories, verification)
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | Delivery must sequence evidence (R) before pilot commitments (P), with safe foundations (F) that do not pre-decide market choices; statuses must match QA evidence. |
-| Evidence | sprint-plan v2.1 status table; stories R-01 (IN PROGRESS), R-02..04 (BLOCKED), F-01/F-03/F-04 (DONE/QA-APPROVED), F-02 (IN PROGRESS); QA reports filed. |
-| Options Considered | Re-shard (rejected: approved plan stands); re-certify statuses (ADOPTED); skip (rejected). |
-| Risk Probe | Status drift — each status cross-checked against its QA report before this entry. |
-| Consequence Projection | Restart record complete; open escalations (CI billing, workflows permission, R-01, F-02 browser) carried forward. |
-| Confidence Score | 94% · Autonomy Level | A5 |
+
+| Stage                  | Analysis                                                                                                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| First Principles       | Delivery must sequence evidence (R) before pilot commitments (P), with safe foundations (F) that do not pre-decide market choices; statuses must match QA evidence. |
+| Evidence               | sprint-plan v2.1 status table; stories R-01 (IN PROGRESS), R-02..04 (BLOCKED), F-01/F-03/F-04 (DONE/QA-APPROVED), F-02 (IN PROGRESS); QA reports filed.             |
+| Options Considered     | Re-shard (rejected: approved plan stands); re-certify statuses (ADOPTED); skip (rejected).                                                                          |
+| Risk Probe             | Status drift — each status cross-checked against its QA report before this entry.                                                                                   |
+| Consequence Projection | Restart record complete; open escalations (CI billing, workflows permission, R-01, F-02 browser) carried forward.                                                   |
+| Confidence Score       | 94% · Autonomy Level                                                                                                                                                | A5  |
 
 ### Adopted Path: sprint-plan v2.2 header + restart record Step 5 + this ledger set.
 
@@ -265,15 +295,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Activate the BMAD v5.0 Reasoning & Quality Addon (Ultimate Thought Protocol) as a durable operating layer
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | The owner supplied the addon to elevate reasoning rigor and quality standards; Law 4 (context on disk) requires it to live in the repo, not chat. |
-| Evidence | Owner-provided addon prompt; existing v5 charter/ledger structure ready to receive it. |
-| Options Considered | (a) Chat-only application — rejected: violates context-on-disk; lost across sessions. (b) Durable artifact `_bmad/BMAD_V5_REASONING_QUALITY_ADDON.md` + charter link + ledger entry — ADOPTED. (c) Rewrite existing artifacts to addon format — rejected: churn without content change. |
-| Risk Probe | Risk: addon becomes ceremony — mitigation: charter mandates PoT for QA verdicts/ACs/assumptions/ADRs and RDS ≥ 8 gate; this turn applies it to real work. |
-| Consequence Projection | Every future artifact carries PoT where mandated, an RDS score, and passes the final execution check; QA verdicts now require explicit reasoning evidence. |
-| Confidence Score | 94% |
-| Autonomy Level | A5 |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | The owner supplied the addon to elevate reasoning rigor and quality standards; Law 4 (context on disk) requires it to live in the repo, not chat.                                                                                                                                       |
+| Evidence               | Owner-provided addon prompt; existing v5 charter/ledger structure ready to receive it.                                                                                                                                                                                                  |
+| Options Considered     | (a) Chat-only application — rejected: violates context-on-disk; lost across sessions. (b) Durable artifact `_bmad/BMAD_V5_REASONING_QUALITY_ADDON.md` + charter link + ledger entry — ADOPTED. (c) Rewrite existing artifacts to addon format — rejected: churn without content change. |
+| Risk Probe             | Risk: addon becomes ceremony — mitigation: charter mandates PoT for QA verdicts/ACs/assumptions/ADRs and RDS ≥ 8 gate; this turn applies it to real work.                                                                                                                               |
+| Consequence Projection | Every future artifact carries PoT where mandated, an RDS score, and passes the final execution check; QA verdicts now require explicit reasoning evidence.                                                                                                                              |
+| Confidence Score       | 94%                                                                                                                                                                                                                                                                                     |
+| Autonomy Level         | A5                                                                                                                                                                                                                                                                                      |
 
 ### Adopted Path: `_bmad/BMAD_V5_REASONING_QUALITY_ADDON.md` (full addon text), linked from `BMAD_V5_OPERATING_CHARTER.md` and `project-context.md`.
 
@@ -286,15 +317,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Fix CSRF token fallback — fail closed instead of Math.random (security finding)
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | Stated rule: "Never use Math.random for security IDs/tokens." Audit found `generateCSRFToken()` fallback using `Math.floor(Math.random() * chars.length)` when `crypto.getRandomValues` is absent. |
-| Evidence | `src/utils/security.ts` lines 437–441 (pre-fix); `src/utils/cryptoId.ts` documents the same rule; `auditTrailStore.ts` already enforces CSPRNG for audit IDs. |
-| Options Considered | (a) Keep Math.random fallback — rejected: violates the rule and the "no silent security failures" standard. (b) Fail closed with a descriptive throw — ADOPTED. (c) Alternate PRNG fallback — rejected: still not cryptographically secure. |
-| Risk Probe | Risk: a crypto-less runtime now throws at token time — acceptable: crypto exists in all realistic runtimes; failing loudly is correct. Tests stub crypto, so primary path coverage is unaffected. |
-| Consequence Projection | `security.test.ts` gains a fail-closed regression test (51/51 pass); lint + tsc green; full suite re-run in progress. |
-| Confidence Score | 95% |
-| Autonomy Level | A5 |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | Stated rule: "Never use Math.random for security IDs/tokens." Audit found `generateCSRFToken()` fallback using `Math.floor(Math.random() * chars.length)` when `crypto.getRandomValues` is absent.                                          |
+| Evidence               | `src/utils/security.ts` lines 437–441 (pre-fix); `src/utils/cryptoId.ts` documents the same rule; `auditTrailStore.ts` already enforces CSPRNG for audit IDs.                                                                               |
+| Options Considered     | (a) Keep Math.random fallback — rejected: violates the rule and the "no silent security failures" standard. (b) Fail closed with a descriptive throw — ADOPTED. (c) Alternate PRNG fallback — rejected: still not cryptographically secure. |
+| Risk Probe             | Risk: a crypto-less runtime now throws at token time — acceptable: crypto exists in all realistic runtimes; failing loudly is correct. Tests stub crypto, so primary path coverage is unaffected.                                           |
+| Consequence Projection | `security.test.ts` gains a fail-closed regression test (51/51 pass); lint + tsc green; full suite re-run in progress.                                                                                                                       |
+| Confidence Score       | 95%                                                                                                                                                                                                                                         |
+| Autonomy Level         | A5                                                                                                                                                                                                                                          |
 
 ### Adopted Path: fail-closed throw + regression test; evidence logged.
 
@@ -307,15 +339,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Run the server suite against REAL SQLite (native better-sqlite3) and fix everything the mock DB had masked
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | The server suite ran against an in-memory mock DB (native binding unavailable) — meaning schema, FK, and SQL-correctness bugs were invisible. Real verification requires the real database. |
-| Evidence | `node-gyp` needs nodejs.org headers (TLS-blocked); local headers exist at /usr/local/include/node → `npm_config_nodedir=/usr/local` built the native binding. First real-DB run: 7/11 suites failed. |
-| Options Considered | (a) Keep mock and claim 121 passing — rejected: masks bugs. (b) Build native + fix all surfaced issues — ADOPTED. (c) Skip server verification — rejected. |
-| Risk Probe | Risk: test isolation — parallel files shared one DB file (one file's cleanup deleted another's live DB) → fixed with per-worker FINPLAN_DB_PATH. Risk: schema changes affect Tauri — audit_trail reconciled in place; Tauri never reads it. |
-| Consequence Projection | All 198 server tests now pass on real SQLite (13 files, native config). |
-| Confidence Score | 93% |
-| Autonomy Level | A5 |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | The server suite ran against an in-memory mock DB (native binding unavailable) — meaning schema, FK, and SQL-correctness bugs were invisible. Real verification requires the real database.                                                 |
+| Evidence               | `node-gyp` needs nodejs.org headers (TLS-blocked); local headers exist at /usr/local/include/node → `npm_config_nodedir=/usr/local` built the native binding. First real-DB run: 7/11 suites failed.                                        |
+| Options Considered     | (a) Keep mock and claim 121 passing — rejected: masks bugs. (b) Build native + fix all surfaced issues — ADOPTED. (c) Skip server verification — rejected.                                                                                  |
+| Risk Probe             | Risk: test isolation — parallel files shared one DB file (one file's cleanup deleted another's live DB) → fixed with per-worker FINPLAN_DB_PATH. Risk: schema changes affect Tauri — audit_trail reconciled in place; Tauri never reads it. |
+| Consequence Projection | All 198 server tests now pass on real SQLite (13 files, native config).                                                                                                                                                                     |
+| Confidence Score       | 93%                                                                                                                                                                                                                                         |
+| Autonomy Level         | A5                                                                                                                                                                                                                                          |
 
 ### Adopted Path: native binding + schema guarantee + canonicalization + seeding. See Evidence E-007.
 
@@ -328,15 +361,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Add real-SQLite regression tests for the schema reconciliation; harden ensureServerColumns for absent tables
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | The reconciliation logic fixed real bugs (E-007) but had no regression coverage — the addon mandates tests for every new code path. |
-| Evidence | ensureCanonicalAuditTrail/ensureServerColumns were exercised only implicitly via the server suite; a direct test exposed that ensureServerColumns threw on absent tables (partial/legacy DBs). |
-| Options Considered | (a) Test only the happy paths — rejected: leaves the throw-on-missing-table landmine. (b) Harden the function (skip absent tables with a warning; 001 remains the table-creation authority) + cover happy, no-op, idempotent, legacy-migration, and missing-table cases — ADOPTED. |
-| Risk Probe | Risk: skipping absent tables could mask a genuinely broken schema — mitigated: 001 runs first in ensureSchema (table creation), so absence here means partial/legacy DBs, logged explicitly. |
-| Consequence Projection | 6 new real-SQLite tests; server suites 127/127 (default) and 204/204 (native). Tauri-side verified: no Rust/SQL consumer of the legacy audit_trail shape. |
-| Confidence Score | 94% |
-| Autonomy Level | A5 |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                           |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | The reconciliation logic fixed real bugs (E-007) but had no regression coverage — the addon mandates tests for every new code path.                                                                                                                                                |
+| Evidence               | ensureCanonicalAuditTrail/ensureServerColumns were exercised only implicitly via the server suite; a direct test exposed that ensureServerColumns threw on absent tables (partial/legacy DBs).                                                                                     |
+| Options Considered     | (a) Test only the happy paths — rejected: leaves the throw-on-missing-table landmine. (b) Harden the function (skip absent tables with a warning; 001 remains the table-creation authority) + cover happy, no-op, idempotent, legacy-migration, and missing-table cases — ADOPTED. |
+| Risk Probe             | Risk: skipping absent tables could mask a genuinely broken schema — mitigated: 001 runs first in ensureSchema (table creation), so absence here means partial/legacy DBs, logged explicitly.                                                                                       |
+| Consequence Projection | 6 new real-SQLite tests; server suites 127/127 (default) and 204/204 (native). Tauri-side verified: no Rust/SQL consumer of the legacy audit_trail shape.                                                                                                                          |
+| Confidence Score       | 94%                                                                                                                                                                                                                                                                                |
+| Autonomy Level         | A5                                                                                                                                                                                                                                                                                 |
 
 ### Adopted Path: schemaReconciliation.test.ts + skip-absent-table hardening in ensureServerColumns.
 
@@ -349,15 +383,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Boot-contract verification + mock-fallback honesty resolution
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | After the real-SQLite migration, the boot path (fresh DB -> ensureSchema/runMigrations -> route tables) had no direct contract test, and the mock-fallback path's post-migration behavior was unknown. |
-| Evidence | bootSchema.test.ts (3 tests, both configs): fresh per-worker DB has all 17 route tables, canonical audit_trail shape, server columns. runMigrations() probe: idempotent, no throw. Mock-fallback probe: the fallback cannot be forced under vitest while the native binding exists (createRequire resolves the real module), and production forbids the fallback (fail-fast) — so it is a dev-only escape hatch, not a product path. |
-| Options Considered | (a) Invest in refactoring connection.ts to make the mock unit-testable — rejected: the mock is a deliberately-ephemeral dev fallback; production fails fast without native; testing it adds surface without product value. (b) Boot-contract test + explicit fallback-honesty note — ADOPTED. (c) Remove the mock entirely — rejected: it keeps sandbox/CI dev runs alive when the native binding cannot be built. |
-| Risk Probe | Risk: a future change breaks boot without CI noticing — mitigated: bootSchema.test.ts is in both server suites. Risk: someone trusts the mock as verification — mitigated: architecture/QA notes state real SQLite is the verification path; mock is dev-only. |
-| Consequence Projection | Server suites 130/130 default, 207/207 native; boot path locked by contract test. |
-| Confidence Score | 93% |
-| Autonomy Level | A5 |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| First Principles       | After the real-SQLite migration, the boot path (fresh DB -> ensureSchema/runMigrations -> route tables) had no direct contract test, and the mock-fallback path's post-migration behavior was unknown.                                                                                                                                                                                                                               |
+| Evidence               | bootSchema.test.ts (3 tests, both configs): fresh per-worker DB has all 17 route tables, canonical audit_trail shape, server columns. runMigrations() probe: idempotent, no throw. Mock-fallback probe: the fallback cannot be forced under vitest while the native binding exists (createRequire resolves the real module), and production forbids the fallback (fail-fast) — so it is a dev-only escape hatch, not a product path. |
+| Options Considered     | (a) Invest in refactoring connection.ts to make the mock unit-testable — rejected: the mock is a deliberately-ephemeral dev fallback; production fails fast without native; testing it adds surface without product value. (b) Boot-contract test + explicit fallback-honesty note — ADOPTED. (c) Remove the mock entirely — rejected: it keeps sandbox/CI dev runs alive when the native binding cannot be built.                   |
+| Risk Probe             | Risk: a future change breaks boot without CI noticing — mitigated: bootSchema.test.ts is in both server suites. Risk: someone trusts the mock as verification — mitigated: architecture/QA notes state real SQLite is the verification path; mock is dev-only.                                                                                                                                                                       |
+| Consequence Projection | Server suites 130/130 default, 207/207 native; boot path locked by contract test.                                                                                                                                                                                                                                                                                                                                                    |
+| Confidence Score       | 93%                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Autonomy Level         | A5                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 ### Adopted Path: bootSchema.test.ts (durable) + fallback-honesty documentation.
 
@@ -370,15 +405,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: compliance-evidence determinism + security audit completion (cryptoId) + server coverage confirmation
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | (1) compliance-evidence.json produced timestamp-only diffs on every run — violating the repo's deterministic-governance standard (capability matrix is deterministic). (2) E-006 flagged cryptoId.ts's fallback as "previously weakened" — needed verification. (3) Server coverage completeness was unverified. |
-| Evidence | compliance-evidence.mjs line 23 wrote `new Date().toISOString()`; only the script + package.json reference the file (no runtime consumer of `timestamp`). cryptoId.ts uses randomUUID → getRandomValues hex → throws (never Math.random) and has full test coverage (format/prefix/uniqueness/no-CSPRNG-throw). Native vitest config runs all 15 server test files (207 tests); default runs 13 (excludes the 2 native-DB suites by design). |
-| Options Considered | (a) Keep the timestamp — rejected: perpetual dirty tree. (b) Deterministic `generatedAt: 'from current working tree'` matching the capability-matrix convention — ADOPTED. (c) Gitignore the file — rejected: it is a committed evidence artifact; determinism is the right fix. |
-| Risk Probe | Risk: losing "when evidence was produced" — mitigated: git history records when checks changed; the script is the source of truth. |
-| Consequence Projection | compliance-evidence.json is now deterministic (hash-stable across runs); security audit closed (no finding in cryptoId); coverage confirmed complete. |
-| Confidence Score | 95% |
-| Autonomy Level | A5 |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | (1) compliance-evidence.json produced timestamp-only diffs on every run — violating the repo's deterministic-governance standard (capability matrix is deterministic). (2) E-006 flagged cryptoId.ts's fallback as "previously weakened" — needed verification. (3) Server coverage completeness was unverified.                                                                                                                             |
+| Evidence               | compliance-evidence.mjs line 23 wrote `new Date().toISOString()`; only the script + package.json reference the file (no runtime consumer of `timestamp`). cryptoId.ts uses randomUUID → getRandomValues hex → throws (never Math.random) and has full test coverage (format/prefix/uniqueness/no-CSPRNG-throw). Native vitest config runs all 15 server test files (207 tests); default runs 13 (excludes the 2 native-DB suites by design). |
+| Options Considered     | (a) Keep the timestamp — rejected: perpetual dirty tree. (b) Deterministic `generatedAt: 'from current working tree'` matching the capability-matrix convention — ADOPTED. (c) Gitignore the file — rejected: it is a committed evidence artifact; determinism is the right fix.                                                                                                                                                             |
+| Risk Probe             | Risk: losing "when evidence was produced" — mitigated: git history records when checks changed; the script is the source of truth.                                                                                                                                                                                                                                                                                                           |
+| Consequence Projection | compliance-evidence.json is now deterministic (hash-stable across runs); security audit closed (no finding in cryptoId); coverage confirmed complete.                                                                                                                                                                                                                                                                                        |
+| Confidence Score       | 95%                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Autonomy Level         | A5                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ### Adopted Path: deterministic generatedAt marker; security audit closed; coverage confirmed.
 
@@ -391,15 +427,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Advance R-01 via a multi-agent research squad — real public recruitment channels, no fabricated participants
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | R-01 needs real participants. The owner directed using multiple agent personas with real-world/internet access. Compliance boundary: I can research REAL public channels and build an outreach-ready pool; I must NOT fabricate participants or impersonate interviewees (repo evidence rules; R-01 blocker text). |
-| Evidence | Live web research on 2026-08-11 verified 19 real channels across five cohorts (conferences, associations, communities, implementation partners) — all with public URLs. Secondary practitioner signals captured and labeled (r/FPandA EPM thread). |
-| Options Considered | (a) Simulate participants to "complete" R-01 — rejected: fabrication, violates the core evidence rule. (b) Multi-agent real research → source map + tracker OUTREACH-READY + owner executes outreach — ADOPTED. (c) Leave R-01 untouched — rejected: owner asked for progress. |
-| Risk Probe | Risk: channels treated as evidence — mitigated: E-011 explicitly SECONDARY; no assumption validated. Risk: PII in repo — mitigated: no contact details stored; owner executes outreach. |
-| Consequence Projection | R-01 is now outreach-ready with 19 real venues; owner action converts channels to participants; R-02..R-04 remain gated on real evidence. |
-| Confidence Score | 93% |
-| Autonomy Level | A5 (within the fabrication boundary) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                           |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| First Principles       | R-01 needs real participants. The owner directed using multiple agent personas with real-world/internet access. Compliance boundary: I can research REAL public channels and build an outreach-ready pool; I must NOT fabricate participants or impersonate interviewees (repo evidence rules; R-01 blocker text). |
+| Evidence               | Live web research on 2026-08-11 verified 19 real channels across five cohorts (conferences, associations, communities, implementation partners) — all with public URLs. Secondary practitioner signals captured and labeled (r/FPandA EPM thread).                                                                 |
+| Options Considered     | (a) Simulate participants to "complete" R-01 — rejected: fabrication, violates the core evidence rule. (b) Multi-agent real research → source map + tracker OUTREACH-READY + owner executes outreach — ADOPTED. (c) Leave R-01 untouched — rejected: owner asked for progress.                                     |
+| Risk Probe             | Risk: channels treated as evidence — mitigated: E-011 explicitly SECONDARY; no assumption validated. Risk: PII in repo — mitigated: no contact details stored; owner executes outreach.                                                                                                                            |
+| Consequence Projection | R-01 is now outreach-ready with 19 real venues; owner action converts channels to participants; R-02..R-04 remain gated on real evidence.                                                                                                                                                                          |
+| Confidence Score       | 93%                                                                                                                                                                                                                                                                                                                |
+| Autonomy Level         | A5 (within the fabrication boundary)                                                                                                                                                                                                                                                                               |
 
 ### Adopted Path: participant-source-map + tracker update + E-011 + this entry.
 
@@ -412,15 +449,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Complete all research-part readiness — round-2 squad research + full R-02/03/04 execution kits
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | The owner directed: "COMPLETE ALL RESEARCH PART FIRST" and earlier authorized multi-agent personas with real internet access. The research part has two halves: (a) real secondary intelligence to sharpen questions, (b) an execution stack so R-02/03/04 run the moment participants exist. Primary validation cannot be completed without real participants — that remains owner-executed outreach. |
-| Evidence | Round-2 live web research (5 searches across commercial/close/FP&A/deployment/implementation domains) produced the secondary-evidence synthesis (E-012) with real, citable public sources. All five kits built (E-013) extending the existing templates. |
-| Options Considered | (a) Fabricate participants to "complete" R-02/03/04 — rejected: violates the core evidence rule permanently. (b) Build readiness + secondary intelligence, mark stories READY with explicit participant gate — ADOPTED. (c) Stop at R-01 channels — rejected: leaves the research part under-prepared. |
-| Risk Probe | Risk: kits mistaken for evidence — mitigated: E-012/E-013 explicitly NOT participant evidence; stories say READY not DONE; no assumption status changed. |
-| Consequence Projection | The moment the owner returns anonymized participant outcomes, R-02/03/04 execute with zero further preparation. |
-| Confidence Score | 94% |
-| Autonomy Level | A5 (within the fabrication boundary) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| First Principles       | The owner directed: "COMPLETE ALL RESEARCH PART FIRST" and earlier authorized multi-agent personas with real internet access. The research part has two halves: (a) real secondary intelligence to sharpen questions, (b) an execution stack so R-02/03/04 run the moment participants exist. Primary validation cannot be completed without real participants — that remains owner-executed outreach. |
+| Evidence               | Round-2 live web research (5 searches across commercial/close/FP&A/deployment/implementation domains) produced the secondary-evidence synthesis (E-012) with real, citable public sources. All five kits built (E-013) extending the existing templates.                                                                                                                                               |
+| Options Considered     | (a) Fabricate participants to "complete" R-02/03/04 — rejected: violates the core evidence rule permanently. (b) Build readiness + secondary intelligence, mark stories READY with explicit participant gate — ADOPTED. (c) Stop at R-01 channels — rejected: leaves the research part under-prepared.                                                                                                 |
+| Risk Probe             | Risk: kits mistaken for evidence — mitigated: E-012/E-013 explicitly NOT participant evidence; stories say READY not DONE; no assumption status changed.                                                                                                                                                                                                                                               |
+| Consequence Projection | The moment the owner returns anonymized participant outcomes, R-02/03/04 execute with zero further preparation.                                                                                                                                                                                                                                                                                        |
+| Confidence Score       | 94%                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Autonomy Level         | A5 (within the fabrication boundary)                                                                                                                                                                                                                                                                                                                                                                   |
 
 ### Adopted Path: 5 research artifacts + validation-plan v2.1 + story statuses READY + evidence E-012/E-013.
 
@@ -433,15 +471,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Re-baseline the research/validation path for solo development (no enterprise participants)
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | Owner: "we don't have such option available — we are solo developing the project." The R-track as specified (enterprise interviews → sessions → synthesis → pilot) cannot execute; keeping it blocked stalls the project; fabricating participants destroys integrity permanently. |
-| Evidence | Owner direction (verbal, recorded 2026-08-11); existing R-01 kits (source map, outreach kit, session kit) now retained for future revival; validation-plan v2.1 with thresholds. |
-| Options Considered | (a) Keep R-track blocked indefinitely — rejected: project stalls. (b) Fabricate participants — rejected: permanent integrity violation. (c) Solo-achievable evidence strategy (Tier 2–4: beta signals, artifacts, secondary) with strict honesty labels, R-01 REDIRECTED, P-track re-scoped to public-beta segment — ADOPTED. (d) Silent continuation without documentation — rejected: violates no-silent-state-change. |
-| Risk Probe | Risk: beta signals overread as validation — mitigated: only Tier 1 changes VALIDATED; tiers 2–4 update confidence/scope only. Risk: losing the enterprise path — mitigated: kits retained; revivable. Risk: P-track scope creep — mitigated: re-scoped explicitly to public-beta segment. |
-| Consequence Projection | Browser/PWA unblocking (A-12) becomes a beta prerequisite; F-track continues; assumption statuses unchanged. |
-| Confidence Score | 92% |
-| Autonomy Level | A5 (direction explicitly owner-given) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| First Principles       | Owner: "we don't have such option available — we are solo developing the project." The R-track as specified (enterprise interviews → sessions → synthesis → pilot) cannot execute; keeping it blocked stalls the project; fabricating participants destroys integrity permanently.                                                                                                                                       |
+| Evidence               | Owner direction (verbal, recorded 2026-08-11); existing R-01 kits (source map, outreach kit, session kit) now retained for future revival; validation-plan v2.1 with thresholds.                                                                                                                                                                                                                                         |
+| Options Considered     | (a) Keep R-track blocked indefinitely — rejected: project stalls. (b) Fabricate participants — rejected: permanent integrity violation. (c) Solo-achievable evidence strategy (Tier 2–4: beta signals, artifacts, secondary) with strict honesty labels, R-01 REDIRECTED, P-track re-scoped to public-beta segment — ADOPTED. (d) Silent continuation without documentation — rejected: violates no-silent-state-change. |
+| Risk Probe             | Risk: beta signals overread as validation — mitigated: only Tier 1 changes VALIDATED; tiers 2–4 update confidence/scope only. Risk: losing the enterprise path — mitigated: kits retained; revivable. Risk: P-track scope creep — mitigated: re-scoped explicitly to public-beta segment.                                                                                                                                |
+| Consequence Projection | Browser/PWA unblocking (A-12) becomes a beta prerequisite; F-track continues; assumption statuses unchanged.                                                                                                                                                                                                                                                                                                             |
+| Confidence Score       | 92%                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Autonomy Level         | A5 (direction explicitly owner-given)                                                                                                                                                                                                                                                                                                                                                                                    |
 
 ### Adopted Path: owner-direction record + path-lock update + validation-plan v2.2 + registry v2.2 + stories R-01..R-04 re-baselined + sprint-plan + evidence E-014.
 
@@ -454,15 +493,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Implement flag-gated browser beta enablement (solo-dev validation loop enabler)
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | The solo-dev evidence strategy needs a public beta; the app hard-blocks non-Tauri. Enable browser rendering ONLY behind an explicit flag so the default runtime behavior is unchanged and no unsupported-capability claim is made. |
-| Evidence | App.tsx gate (`!isTauri` → alert + null); 14 files import @tauri-apps (most already guarded: DashboardPage modal fallback, useTauriMenu dynamic import). Owner direction 2026-08-11 (solo dev). |
-| Options Considered | (a) Remove the gate entirely — rejected: silently broadens supported runtime, contradicts honesty rules. (b) Flag-gated (VITE_BETA_WEB) with pure testable gate module + honest marker — ADOPTED. (c) Full browser hardening now — deferred: needs the remaining-work list (storage/shortcuts no-ops). |
-| Risk Probe | Risk: beta mode crashes on unguarded Tauri calls — mitigated: remaining-work list + full-suite verification; DashboardPage already falls back. Risk: overclaim — mitigated: marker + console note + A-12 unchanged. |
-| Consequence Projection | Beta channel exists; P-track re-scoped to public-beta segment becomes actionable; browser hardening continues as F-05 remaining work. |
-| Confidence Score | 90% |
-| Autonomy Level | A5 (within story scope) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| First Principles       | The solo-dev evidence strategy needs a public beta; the app hard-blocks non-Tauri. Enable browser rendering ONLY behind an explicit flag so the default runtime behavior is unchanged and no unsupported-capability claim is made.                                                                     |
+| Evidence               | App.tsx gate (`!isTauri` → alert + null); 14 files import @tauri-apps (most already guarded: DashboardPage modal fallback, useTauriMenu dynamic import). Owner direction 2026-08-11 (solo dev).                                                                                                        |
+| Options Considered     | (a) Remove the gate entirely — rejected: silently broadens supported runtime, contradicts honesty rules. (b) Flag-gated (VITE_BETA_WEB) with pure testable gate module + honest marker — ADOPTED. (c) Full browser hardening now — deferred: needs the remaining-work list (storage/shortcuts no-ops). |
+| Risk Probe             | Risk: beta mode crashes on unguarded Tauri calls — mitigated: remaining-work list + full-suite verification; DashboardPage already falls back. Risk: overclaim — mitigated: marker + console note + A-12 unchanged.                                                                                    |
+| Consequence Projection | Beta channel exists; P-track re-scoped to public-beta segment becomes actionable; browser hardening continues as F-05 remaining work.                                                                                                                                                                  |
+| Confidence Score       | 90%                                                                                                                                                                                                                                                                                                    |
+| Autonomy Level         | A5 (within story scope)                                                                                                                                                                                                                                                                                |
 
 ### Adopted Path: betaMode.ts + tests (5/5) + App.tsx gate + env typing; story F-05 AC1-AC6.
 
@@ -475,15 +515,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Complete F-05 remaining work — Tauri-import hardening, in-browser no-op fallbacks, beta smoke test, full beta-mode suite
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | Browser beta mode must render without crashing, must never silently claim Tauri capabilities, and must degrade gracefully when a Tauri-only facility is unavailable (storage, shortcuts, native windows, notifications). The solo-dev validation loop (Tier 2 BETA-USAGE) needs this channel to be crash-proof. |
-| Evidence | Import-time probe of `@tauri-apps/api`, `plugin-sql`, `plugin-notification`, `plugin-global-shortcut`, `api/webviewWindow` in a non-Tauri runtime: ALL imports safe; ALL calls throw without Tauri internals. Audit of all 14 `@tauri-apps` import sites: 7 runtime sites (all previously guarded at call time), 7 test/mock/type sites. Full default suite 1,188 files / 13,372 tests + full beta-mode suite 1,188 files / 13,373 tests, both 0 failures. |
-| Options Considered | (a) Smoke test only, no code change — rejected: leaves top-level Tauri imports in the browser bundle; latent risk; handover explicitly lists stubs. (b) Guarded lazy imports + no-op fallbacks + smoke test — ADOPTED. (c) Vite alias mocking of `@tauri-apps` for browser builds — rejected: masks real behavior, more surface. |
-| Risk Probe | Risk: lazy-import refactor changes Tauri behavior — mitigated: identical modules/calls, full default suite green. Risk: tests encoded the old storage contract — updated to the new no-op contract (storage tests 24/24). Risk: marker set on blocked path (minor honesty bug found by smoke test) — fixed: marker only when beta actually active; runtime check per-render. Risk: IndexedDB absent in some browsers — CubeEnginePersistence now falls back to an in-memory backend (8 new tests). |
-| Consequence Projection | F-05 hardening complete; beta channel crash-proof; T-05 launch kit drafted; R-track Tier-2 loop unblocked (deploy decision stays owner's). |
-| Confidence Score | 90% |
-| Autonomy Level | A5 (within F-05 story scope; handover §12 item 1) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | Browser beta mode must render without crashing, must never silently claim Tauri capabilities, and must degrade gracefully when a Tauri-only facility is unavailable (storage, shortcuts, native windows, notifications). The solo-dev validation loop (Tier 2 BETA-USAGE) needs this channel to be crash-proof.                                                                                                                                                                                    |
+| Evidence               | Import-time probe of `@tauri-apps/api`, `plugin-sql`, `plugin-notification`, `plugin-global-shortcut`, `api/webviewWindow` in a non-Tauri runtime: ALL imports safe; ALL calls throw without Tauri internals. Audit of all 14 `@tauri-apps` import sites: 7 runtime sites (all previously guarded at call time), 7 test/mock/type sites. Full default suite 1,188 files / 13,372 tests + full beta-mode suite 1,188 files / 13,373 tests, both 0 failures.                                         |
+| Options Considered     | (a) Smoke test only, no code change — rejected: leaves top-level Tauri imports in the browser bundle; latent risk; handover explicitly lists stubs. (b) Guarded lazy imports + no-op fallbacks + smoke test — ADOPTED. (c) Vite alias mocking of `@tauri-apps` for browser builds — rejected: masks real behavior, more surface.                                                                                                                                                                   |
+| Risk Probe             | Risk: lazy-import refactor changes Tauri behavior — mitigated: identical modules/calls, full default suite green. Risk: tests encoded the old storage contract — updated to the new no-op contract (storage tests 24/24). Risk: marker set on blocked path (minor honesty bug found by smoke test) — fixed: marker only when beta actually active; runtime check per-render. Risk: IndexedDB absent in some browsers — CubeEnginePersistence now falls back to an in-memory backend (8 new tests). |
+| Consequence Projection | F-05 hardening complete; beta channel crash-proof; T-05 launch kit drafted; R-track Tier-2 loop unblocked (deploy decision stays owner's).                                                                                                                                                                                                                                                                                                                                                         |
+| Confidence Score       | 90%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Autonomy Level         | A5 (within F-05 story scope; handover §12 item 1)                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 ### Adopted Path: 6 runtime files hardened, 2 test files updated to the no-op contract, 3 new test files (smoke 4 tests, in-memory fallback 8 tests, viewport contract 5 tests), `.env.example` feature-flag docs, server test-DB litter cleanup (vitest 4 `afterAll` per-file; native config gains setup isolation), dead `server/src/test/seedHelpers.ts` deleted, vitest exclusion decision documented, F-05 QA review recorded.
 
@@ -498,15 +539,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Run the never-run verification commands (D1) and dispose of the dangling canary scripts
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | Handover addon D1 lists five verification commands as NEVER RUN: canary:stage1\|2\|3, sbom, release:dry-run, full audit, test:bench. Running them is required before any "verified" claim; a command that cannot run must be disposed of honestly, not silently. |
-| Evidence | `npm run sbom`: PASS — 40 components (CycloneDX to stdout). `npm run release:dry-run`: PASS — all 7 checks (root tsc, eslint src, production build, money:adoption, engines:verify, docs:verify, server tests 130/130). `npm run test:bench`: PASS — 13 files / 59 tests. `npm audit` (full): 0 vulnerabilities (after brace-expansion override). `npm run canary:stage1\|2\|3`: FAIL — the scripts reference `scripts/canary-2.0/...` runner files that were never committed; verified via `git log --all` (no such files in history) and repo grep (no CI/docs references). |
-| Options Considered | (a) Invent canary runners — rejected: no contract exists for what stage1/2/3 should check; fabricating a verification tool is fabrication-adjacent. (b) Remove the 3 dangling scripts from package.json — ADOPTED: restores manifest truth; the handover's "NEVER RUN" item is disposed of as "runners never existed — removed 2026-08-11". (c) Leave broken — rejected: guaranteed failure for any reviewer/CI invoking them. |
-| Risk Probe | Risk: removing scripts breaks CI — verified none reference them. Risk: `@huggingface/transformers` "missing" flagged by `npm ls` — verified it is an OPTIONAL peer dependency (peerDependenciesMeta.optional, AIEngine runtime-computed specifier, N-0004/N-0005 CVE rationale) and intentionally not installed; NOT drift. Risk: release dry-run failure initially — root-caused to missing native better-sqlite3 binding after a node_modules recycle (mock fallback masks server columns), not a code regression; rebuild fixed it, 7/7 passed. |
-| Consequence Projection | All D1 commands now have recorded PASS dispositions; package.json no longer advertises broken scripts; environment note: node_modules does not persist across sandbox turn boundaries (snapshot exclusion) — every session must re-run `npm ci` + server native rebuild before verification, and a missing-binding failure must be treated as environment, not regression. |
-| Confidence Score | 92% |
-| Autonomy Level | A5 (hygiene/verification scope, handover addon D1/D3) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | Handover addon D1 lists five verification commands as NEVER RUN: canary:stage1\|2\|3, sbom, release:dry-run, full audit, test:bench. Running them is required before any "verified" claim; a command that cannot run must be disposed of honestly, not silently.                                                                                                                                                                                                                                                                                                              |
+| Evidence               | `npm run sbom`: PASS — 40 components (CycloneDX to stdout). `npm run release:dry-run`: PASS — all 7 checks (root tsc, eslint src, production build, money:adoption, engines:verify, docs:verify, server tests 130/130). `npm run test:bench`: PASS — 13 files / 59 tests. `npm audit` (full): 0 vulnerabilities (after brace-expansion override). `npm run canary:stage1\|2\|3`: FAIL — the scripts reference `scripts/canary-2.0/...` runner files that were never committed; verified via `git log --all` (no such files in history) and repo grep (no CI/docs references). |
+| Options Considered     | (a) Invent canary runners — rejected: no contract exists for what stage1/2/3 should check; fabricating a verification tool is fabrication-adjacent. (b) Remove the 3 dangling scripts from package.json — ADOPTED: restores manifest truth; the handover's "NEVER RUN" item is disposed of as "runners never existed — removed 2026-08-11". (c) Leave broken — rejected: guaranteed failure for any reviewer/CI invoking them.                                                                                                                                                |
+| Risk Probe             | Risk: removing scripts breaks CI — verified none reference them. Risk: `@huggingface/transformers` "missing" flagged by `npm ls` — verified it is an OPTIONAL peer dependency (peerDependenciesMeta.optional, AIEngine runtime-computed specifier, N-0004/N-0005 CVE rationale) and intentionally not installed; NOT drift. Risk: release dry-run failure initially — root-caused to missing native better-sqlite3 binding after a node_modules recycle (mock fallback masks server columns), not a code regression; rebuild fixed it, 7/7 passed.                            |
+| Consequence Projection | All D1 commands now have recorded PASS dispositions; package.json no longer advertises broken scripts; environment note: node_modules does not persist across sandbox turn boundaries (snapshot exclusion) — every session must re-run `npm ci` + server native rebuild before verification, and a missing-binding failure must be treated as environment, not regression.                                                                                                                                                                                                    |
+| Confidence Score       | 92%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Autonomy Level         | A5 (hygiene/verification scope, handover addon D1/D3)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 ### Adopted Path: removed 3 dangling canary scripts; ran and recorded sbom / release:dry-run / test:bench / full audit; documented optional-peer by-design for @huggingface/transformers.
 
@@ -521,15 +563,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Merge PR #55 (feat(f-05): browser beta hardening + verification gap closure) into main at the owner's explicit instruction despite failing CI
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | Required checks were red at merge time, but every job fails before starting due to the repo-wide GitHub Actions billing block (E-005: "recent account payments have failed or your spending limit needs to be increased") — an account-level infrastructure condition predating PR #53. No job ever executed, so red CI carries no code-failure signal; treating it as a code gate would block all owner-requested delivery indefinitely. |
-| Evidence | Same billing annotation on every job of every workflow (see `_bmad/qa/ci-actions-billing-block-2026-08-10.md`); identical precedent for the PR #53 and PR #54 merges at owner instruction; local verification of the merged content green: root 1,189 files / 13,377 tests 0 failures (default and beta-mode identical), server 130/130 default + 207/207 native, tsc 0 (root + server), eslint full src 0, compliance 22/22 (with worktree workflows applied), guardrails PASS, audit 0 (prod + full), release:dry-run 7/7, sbom 40. |
-| Options Considered | (a) Block the merge until CI turns green — rejected: the billing block is owner-side (Billing & plans) and no code change can clear it; the branch was feature-complete and locally verified. (b) Merge at the owner's explicit instruction with the risk decision documented — ADOPTED (PR #55 comment + this ledger entry). |
-| Risk Probe | Risk: a latent regression lands untested by CI — mitigated by the local verification battery above (13,377 tests) and the T-15 triage plan: after billing clears, re-run workflows on main and classify failures as environment/bootstrap (native modules in server tests) vs regressions. |
-| Consequence Projection | F-05 lands on main; future required-check bypasses must NOT happen without explicit owner instruction plus a documented risk decision. |
-| Confidence Score | 92% |
-| Autonomy Level | A3 (merge required owner instruction; executed on it) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | Required checks were red at merge time, but every job fails before starting due to the repo-wide GitHub Actions billing block (E-005: "recent account payments have failed or your spending limit needs to be increased") — an account-level infrastructure condition predating PR #53. No job ever executed, so red CI carries no code-failure signal; treating it as a code gate would block all owner-requested delivery indefinitely.                                                                                             |
+| Evidence               | Same billing annotation on every job of every workflow (see `_bmad/qa/ci-actions-billing-block-2026-08-10.md`); identical precedent for the PR #53 and PR #54 merges at owner instruction; local verification of the merged content green: root 1,189 files / 13,377 tests 0 failures (default and beta-mode identical), server 130/130 default + 207/207 native, tsc 0 (root + server), eslint full src 0, compliance 22/22 (with worktree workflows applied), guardrails PASS, audit 0 (prod + full), release:dry-run 7/7, sbom 40. |
+| Options Considered     | (a) Block the merge until CI turns green — rejected: the billing block is owner-side (Billing & plans) and no code change can clear it; the branch was feature-complete and locally verified. (b) Merge at the owner's explicit instruction with the risk decision documented — ADOPTED (PR #55 comment + this ledger entry).                                                                                                                                                                                                         |
+| Risk Probe             | Risk: a latent regression lands untested by CI — mitigated by the local verification battery above (13,377 tests) and the T-15 triage plan: after billing clears, re-run workflows on main and classify failures as environment/bootstrap (native modules in server tests) vs regressions.                                                                                                                                                                                                                                            |
+| Consequence Projection | F-05 lands on main; future required-check bypasses must NOT happen without explicit owner instruction plus a documented risk decision.                                                                                                                                                                                                                                                                                                                                                                                                |
+| Confidence Score       | 92%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Autonomy Level         | A3 (merge required owner instruction; executed on it)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ### Adopted Path: PR #55 merged 2026-08-12 (merge commit `8d17058`); risk decision documented on the PR #55 comment and here.
 
@@ -544,15 +587,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Recover the recycled sandbox worktree and restore the documented uncommitted workflow-hardening state
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | The sandbox recycle wipes node_modules and left the git worktree incomplete: the restore-time checkout was interrupted (stale 0-byte `index.lock`, empty index, ~2,700 HEAD files missing from disk; only ~51 top-level paths restored). Local refs were already correct (HEAD == origin/main == `8d17058`, the PR #55 merge), and the arena branch had been deleted from the remote after merge (no refs remain; `7e490cd` existed only on that branch). The handover's `git add -A` reconciliation would have staged 2,907 deletions — it was blocked by the stale lock, which is why the empty-index state was detectable before any damage. |
-| Evidence | `git ls-files` = 0 entries; `git diff HEAD` = 2,907 phantom deletions; `.github/workflows/*` present on disk byte-identical to HEAD (the uncommitted hardening was NOT in the snapshot; only the committed `ci-patches/` survive); object DB intact (`git show HEAD:package.json` reads fine); other Freebuff worktrees hold only partial/older states (main worktree = SHA-pinned but pre-shard intermediate). |
-| Options Considered | (a) Handover's `git add -A` + unstage workflows — rejected: would stage 2,907 deletions given the missing files (index-destructive). (b) `git checkout HEAD -- .` / `git restore .` — rejected: charter + handover forbid; would overwrite existing files. (c) Remove stale lock → `git read-tree HEAD` (index-only) → `git checkout-index -a` WITHOUT `-f` (writes only missing files, skips existing) — ADOPTED: strictly additive, preserves all on-disk content. |
-| Risk Probe | Risk: existing files differ from HEAD (uncommitted work) — mitigated: checkout-index skips existing files; post-recovery status showed exactly one diff (`scripts/compliance-evidence.mjs`, a 0-byte truncated file from the interrupted restore — restored from HEAD) and zero remaining missing files. Risk: workflow hardening lost with the snapshot — mitigated: reconstructed from committed patches; `ci-patches/0002-loop3-sha-pin-shard-a11y-block.patch` is the exact scope the 2026-08-10 change log and the committed `compliance-evidence.json` describe (SHA-pin all actions, test sharding, blocking a11y gate); applying it reproduces the documented 22/22 + guardrails-PASS state, and the regenerated `compliance-evidence.json` is byte-identical to the committed oracle. Patches 0001/0003/0004/N-0004 do not stack on 0002 (overlapping ci.yml hunks) and are not required by any local gate — left in `ci-patches/` for future use. |
-| Consequence Projection | Worktree == main + the 9 uncommitted hardened workflow files (the handover's documented state); the owner can commit them unchanged once `workflows` permission is granted (T-13). |
-| Confidence Score | 90% |
-| Autonomy Level | A5 (charter-sanctioned reconciliation: "verified fast-forward + index refresh; never reset/restore/clean") |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | The sandbox recycle wipes node_modules and left the git worktree incomplete: the restore-time checkout was interrupted (stale 0-byte `index.lock`, empty index, ~2,700 HEAD files missing from disk; only ~51 top-level paths restored). Local refs were already correct (HEAD == origin/main == `8d17058`, the PR #55 merge), and the arena branch had been deleted from the remote after merge (no refs remain; `7e490cd` existed only on that branch). The handover's `git add -A` reconciliation would have staged 2,907 deletions — it was blocked by the stale lock, which is why the empty-index state was detectable before any damage.                                                                                                                                                                                                                                                                                                             |
+| Evidence               | `git ls-files` = 0 entries; `git diff HEAD` = 2,907 phantom deletions; `.github/workflows/*` present on disk byte-identical to HEAD (the uncommitted hardening was NOT in the snapshot; only the committed `ci-patches/` survive); object DB intact (`git show HEAD:package.json` reads fine); other Freebuff worktrees hold only partial/older states (main worktree = SHA-pinned but pre-shard intermediate).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Options Considered     | (a) Handover's `git add -A` + unstage workflows — rejected: would stage 2,907 deletions given the missing files (index-destructive). (b) `git checkout HEAD -- .` / `git restore .` — rejected: charter + handover forbid; would overwrite existing files. (c) Remove stale lock → `git read-tree HEAD` (index-only) → `git checkout-index -a` WITHOUT `-f` (writes only missing files, skips existing) — ADOPTED: strictly additive, preserves all on-disk content.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Risk Probe             | Risk: existing files differ from HEAD (uncommitted work) — mitigated: checkout-index skips existing files; post-recovery status showed exactly one diff (`scripts/compliance-evidence.mjs`, a 0-byte truncated file from the interrupted restore — restored from HEAD) and zero remaining missing files. Risk: workflow hardening lost with the snapshot — mitigated: reconstructed from committed patches; `ci-patches/0002-loop3-sha-pin-shard-a11y-block.patch` is the exact scope the 2026-08-10 change log and the committed `compliance-evidence.json` describe (SHA-pin all actions, test sharding, blocking a11y gate); applying it reproduces the documented 22/22 + guardrails-PASS state, and the regenerated `compliance-evidence.json` is byte-identical to the committed oracle. Patches 0001/0003/0004/N-0004 do not stack on 0002 (overlapping ci.yml hunks) and are not required by any local gate — left in `ci-patches/` for future use. |
+| Consequence Projection | Worktree == main + the 9 uncommitted hardened workflow files (the handover's documented state); the owner can commit them unchanged once `workflows` permission is granted (T-13).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Confidence Score       | 90%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Autonomy Level         | A5 (charter-sanctioned reconciliation: "verified fast-forward + index refresh; never reset/restore/clean")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
 ### Adopted Path: removed stale `index.lock`; `git read-tree HEAD`; `git checkout-index -a` (existing files preserved); restored the 0-byte `scripts/compliance-evidence.mjs` from HEAD; applied `ci-patches/0002-loop3-sha-pin-shard-a11y-block.patch` (worktree-only, unstaged); verified compliance-evidence 22/22, architecture guardrails PASS, no duplicate `if:` in the ci.yml summary job, F-05 beta tests 9/9 in both env variants.
 
@@ -567,15 +611,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Remove the F-05 browser beta channel — the product is a desktop app, not a web app
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | Owner direction (2026-08-12): "we are building an app not a web app or website" → "Beta channel: Desktop-only — remove it". The F-05 `VITE_BETA_WEB` channel existed solely to enable a Tier-2 BETA-USAGE evidence loop (validation-plan v2.2); it was never a supported capability (A-12 UNVALIDATED). Removing it restores the pre-F-05 Tauri-only contract: a plain browser must alert and render nothing. The removal must be honest and complete (no dead knob left documented, no orphaned module) without touching unrelated hardening the test suite depends on. |
-| Evidence | Beta surface mapped: `src/utils/betaMode.ts` (isTauriRuntime/isBrowserBetaAllowed/isRenderAllowed), `betaMode.test.ts` (5 tests), `betaMode.app.test.tsx` (4 smoke tests), `src/App.tsx` (data-beta-web effect + gate), `src/store/uiStore.ts` (isTauriRuntime import), `src/vite-env.d.ts` (VITE_BETA_WEB), `.env.example` (flag doc), README browser claims. No CI/test-config/scripts references to VITE_BETA_WEB exist (rg across `.github/`, `scripts/`, `src/test/`, vitest configs: 0 hits). `isTauriRuntime` consumers outside App: uiStore only (lazy notification-import guard). The F-05 lazy/guarded `@tauri-apps` imports and non-Tauri fallbacks (tauriSqlStorage no-op, CubeEnginePersistence in-memory, …) are exercised by the jsdom suite and retained. |
-| Options Considered | (a) Keep the beta channel dormant (flag exists, never set) — rejected: contradicts the owner's desktop-only direction; leaves a documented knob with no consumer. (b) Remove only the flag + marker, keep the betaMode module — rejected: a file named `betaMode.ts` with no beta mode is dishonest naming. (c) Full removal + rename to `tauriRuntime.ts` + desktop-only App gate — ADOPTED: honest, complete, minimal; guarded-import hardening retained with rationale recorded. |
-| Risk Probe | Risk: jsdom test suite breaks if the gate hardens to Tauri-only — mitigated: jsdom has no `__TAURI_INTERNALS__`, so App renders the alert+null path exactly as before (the pre-F-05 suite already ran this way); new `App.runtime.test.tsx` pins both paths (blocked browser / rendering Tauri). Risk: README "runs in the browser" claims become false — mitigated: hero line + Deployment table Web row corrected to desktop-only wording. Risk: `.env.example` still documents VITE_BETA_WEB — environmental: the workspace env-file guard blocks edits to `.env*` paths; the knob is dead (no code reads it); flagged as the sole residual doc-drift item. |
-| Consequence Projection | The app is desktop-only again; the Tier-2 hosted-browser evidence path is closed — the product-led evidence strategy needs a desktop-channel alternative (owner decision, recorded in `_bmad/project-context.md` next-actions). A-12 stays UNVALIDATED with no active evidence path. Verification battery: root tsc 0, targeted suites green (tauriRuntime 2, App.runtime 2, tauriSqlStorage, uiStore, useTauriGlobalShortcuts, CubeEnginePersistence), changed-file eslint 0. |
-| Confidence Score | 90% |
-| Autonomy Level | A4 (owner-directed product decision; executed the removal) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | Owner direction (2026-08-12): "we are building an app not a web app or website" → "Beta channel: Desktop-only — remove it". The F-05 `VITE_BETA_WEB` channel existed solely to enable a Tier-2 BETA-USAGE evidence loop (validation-plan v2.2); it was never a supported capability (A-12 UNVALIDATED). Removing it restores the pre-F-05 Tauri-only contract: a plain browser must alert and render nothing. The removal must be honest and complete (no dead knob left documented, no orphaned module) without touching unrelated hardening the test suite depends on.                                                                                                                                                                                                  |
+| Evidence               | Beta surface mapped: `src/utils/betaMode.ts` (isTauriRuntime/isBrowserBetaAllowed/isRenderAllowed), `betaMode.test.ts` (5 tests), `betaMode.app.test.tsx` (4 smoke tests), `src/App.tsx` (data-beta-web effect + gate), `src/store/uiStore.ts` (isTauriRuntime import), `src/vite-env.d.ts` (VITE_BETA_WEB), `.env.example` (flag doc), README browser claims. No CI/test-config/scripts references to VITE_BETA_WEB exist (rg across `.github/`, `scripts/`, `src/test/`, vitest configs: 0 hits). `isTauriRuntime` consumers outside App: uiStore only (lazy notification-import guard). The F-05 lazy/guarded `@tauri-apps` imports and non-Tauri fallbacks (tauriSqlStorage no-op, CubeEnginePersistence in-memory, …) are exercised by the jsdom suite and retained. |
+| Options Considered     | (a) Keep the beta channel dormant (flag exists, never set) — rejected: contradicts the owner's desktop-only direction; leaves a documented knob with no consumer. (b) Remove only the flag + marker, keep the betaMode module — rejected: a file named `betaMode.ts` with no beta mode is dishonest naming. (c) Full removal + rename to `tauriRuntime.ts` + desktop-only App gate — ADOPTED: honest, complete, minimal; guarded-import hardening retained with rationale recorded.                                                                                                                                                                                                                                                                                       |
+| Risk Probe             | Risk: jsdom test suite breaks if the gate hardens to Tauri-only — mitigated: jsdom has no `__TAURI_INTERNALS__`, so App renders the alert+null path exactly as before (the pre-F-05 suite already ran this way); new `App.runtime.test.tsx` pins both paths (blocked browser / rendering Tauri). Risk: README "runs in the browser" claims become false — mitigated: hero line + Deployment table Web row corrected to desktop-only wording. Risk: `.env.example` still documents VITE_BETA_WEB — environmental: the workspace env-file guard blocks edits to `.env*` paths; the knob is dead (no code reads it); flagged as the sole residual doc-drift item.                                                                                                            |
+| Consequence Projection | The app is desktop-only again; the Tier-2 hosted-browser evidence path is closed — the product-led evidence strategy needs a desktop-channel alternative (owner decision, recorded in `_bmad/project-context.md` next-actions). A-12 stays UNVALIDATED with no active evidence path. Verification battery: root tsc 0, targeted suites green (tauriRuntime 2, App.runtime 2, tauriSqlStorage, uiStore, useTauriGlobalShortcuts, CubeEnginePersistence), changed-file eslint 0.                                                                                                                                                                                                                                                                                            |
+| Confidence Score       | 90%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Autonomy Level         | A4 (owner-directed product decision; executed the removal)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 ### Adopted Path: deleted `src/utils/betaMode.ts`, `betaMode.test.ts`, `betaMode.app.test.tsx`; created `src/utils/tauriRuntime.ts` (+tests) and `src/App.runtime.test.tsx`; `src/App.tsx` gate is strictly `isTauriRuntime()` (alert + null in a browser), beta effect/marker/imports removed; `uiStore.ts` import + comment updated; `VITE_BETA_WEB` removed from `vite-env.d.ts`; README hero + Deployment table corrected to desktop-only; F-05 guarded-import hardening retained.
 
@@ -590,15 +635,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Owner directs the product goal as an all-in-one FP&A platform ("user should not need any other tool", all industries) with ZohoBooks-grade UI/UX and extreme optimization; grants maximum autonomy within BMAD discipline
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | Owner direction (2026-08-12): all-in-one FP&A for all industries; ZohoBooks-comparable UI/UX; highly optimized; "free to do everything… with absolute extreme perfection". The repo is already breadth-rich (200+ lazy routes across 40+ domain dirs; 193 engines; 44 stores; 263 UI primitives) but depth and polish are the open fronts. The direction re-frames scope ambition (wedge remains the strategic anchor) without changing any validation status. |
-| Evidence | Route/page inventory read-verified (src/App.tsx 200+ lazy imports; 40+ domain dirs incl. healthcare/energy/government/manufacturing all with real engines + tests); design system is dark-first Bloomberg-inspired with working light theme (ThemeContext dark/light/system; index.css 853 lines of tokens); bundle gates exist (main <150KB gzip, total <2MB gzip) but dist not built this session; T-13 (9 hardened workflow files) LANDED via platform commit b23e41a (git diff 8d17058..b23e41a -- .github/workflows = 9 files +110/−59) — docs still said owner-side; all 14 assumptions remain UNVALIDATED (assumption-registry read-verified). |
-| Options Considered | (a) Treat direction as validation — rejected: violates evidence sovereignty (A-01…A-14 stay UNVALIDATED; Tier 1 only). (b) Silently re-theme the app to light-only ZohoBooks look — rejected: theme direction is a design decision to work with owner-visible audit, both themes polished. (c) Record direction + produce owner-visible master completion plan (all pending tasks across UI/depth/perf/engineering/research/governance) + multi-agent roadmap + desktop Tier-2 evidence kit, then execute in phases — ADOPTED. |
-| Risk Probe | Risk: breadth work overclaims vertical certification — mitigated: D-09 sector audit + honesty appendix (breadth ≠ certified depth). Risk: scope creep without gates — mitigated: every task has an acceptance criterion; phases ordered engineering-first. Risk: CI stays red — owner-side E-005, unchanged; T-13 status corrected in docs. |
-| Consequence Projection | Owner has a complete, prioritized task inventory to drive the project to "extreme perfection"; BMAD discipline preserved (no assumption validated, no fabrication, no silent state change); next session can execute Phase 1 gates (full-suite count, bundle audit) then the UI/UX flagship track. |
-| Confidence Score | 90% |
-| Autonomy Level | A4 (owner-directed scope; executed with evidence-first honesty) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | Owner direction (2026-08-12): all-in-one FP&A for all industries; ZohoBooks-comparable UI/UX; highly optimized; "free to do everything… with absolute extreme perfection". The repo is already breadth-rich (200+ lazy routes across 40+ domain dirs; 193 engines; 44 stores; 263 UI primitives) but depth and polish are the open fronts. The direction re-frames scope ambition (wedge remains the strategic anchor) without changing any validation status.                                                                                                                                                                                        |
+| Evidence               | Route/page inventory read-verified (src/App.tsx 200+ lazy imports; 40+ domain dirs incl. healthcare/energy/government/manufacturing all with real engines + tests); design system is dark-first Bloomberg-inspired with working light theme (ThemeContext dark/light/system; index.css 853 lines of tokens); bundle gates exist (main <150KB gzip, total <2MB gzip) but dist not built this session; T-13 (9 hardened workflow files) LANDED via platform commit b23e41a (git diff 8d17058..b23e41a -- .github/workflows = 9 files +110/−59) — docs still said owner-side; all 14 assumptions remain UNVALIDATED (assumption-registry read-verified). |
+| Options Considered     | (a) Treat direction as validation — rejected: violates evidence sovereignty (A-01…A-14 stay UNVALIDATED; Tier 1 only). (b) Silently re-theme the app to light-only ZohoBooks look — rejected: theme direction is a design decision to work with owner-visible audit, both themes polished. (c) Record direction + produce owner-visible master completion plan (all pending tasks across UI/depth/perf/engineering/research/governance) + multi-agent roadmap + desktop Tier-2 evidence kit, then execute in phases — ADOPTED.                                                                                                                        |
+| Risk Probe             | Risk: breadth work overclaims vertical certification — mitigated: D-09 sector audit + honesty appendix (breadth ≠ certified depth). Risk: scope creep without gates — mitigated: every task has an acceptance criterion; phases ordered engineering-first. Risk: CI stays red — owner-side E-005, unchanged; T-13 status corrected in docs.                                                                                                                                                                                                                                                                                                           |
+| Consequence Projection | Owner has a complete, prioritized task inventory to drive the project to "extreme perfection"; BMAD discipline preserved (no assumption validated, no fabrication, no silent state change); next session can execute Phase 1 gates (full-suite count, bundle audit) then the UI/UX flagship track.                                                                                                                                                                                                                                                                                                                                                    |
+| Confidence Score       | 90%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Autonomy Level         | A4 (owner-directed scope; executed with evidence-first honesty)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 
 ### Adopted Path: `_bmad/project-completion-plan.md` (master plan, 6 tracks × 40+ tasks with acceptance gates) + `_bmad/research/owner-direction-record-2026-08-12-all-in-one.md` (direction record) + `agents/` A1–A5 multi-agent roadmap + `_bmad/research/desktop-tier2-evidence-kit-2026-08-12.md` (Tier-2 evidence drafts) + T-13 status correction + project-context/evidence-log/sprint-plan updates.
 
@@ -613,15 +659,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Execute the F-02 visual-regression runbook (T-10) — establish deterministic browser screenshot baselines and flip F-02 from QA REJECTED to QA APPROVED
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | F-02 was REJECTED solely on the pixel baseline: "an interim deterministic DOM/class snapshot baseline... does not validate rendered pixels". The blocker was environmental (Playwright Chromium download failed with TLS resets on 2026-08-10). This environment HAS a working browser, so the runbook (`docs/design/VISUAL_REGRESSION_RUNBOOK.md`) can now be executed — the honest completion of a safe-foundation story, no ICP/connector/vertical/deployment decision made. |
-| Evidence | `tests/e2e/atlas-visual.spec.ts` 5/5 passing under chromium (badge dark+light; PageHeader wide+compact; FinancialWorkspaceEmptyState dark+light; Dashboard empty 1440+390; Dashboard populated 1440/1024 dark + 1440 light with visible `Draft` trust status). 11 deterministic PNG baselines in `tests/e2e/atlas-visual.spec.ts-snapshots/`; re-run produces byte-identical images (md5-stable), i.e. the render is deterministic. Determinism discipline held: fixed viewport/UTC/en-US/reduced-motion/animation kill-switch; seeded fixture restored through the app's OWN canonical backup path (BackupRestore, SHA-256-verified), never by patching component internals; test-only `__TAURI_INTERNALS__` shim (never relaxes production policy). Dev-only harness page `/visual/atlas` (AtlasVisualBaselinePage, 4 unit tests) is not linked from navigation. Two spec defects found and fixed on first run: `getByLabelText` (Testing Library API, invalid in Playwright) → `getByLabel`; unstrict `getByRole('status')` (4 matches incl. toast container) → scoped `getByRole('main').getByRole('status', { name: /Draft/ })`. CSP: `'wasm-unsafe-eval'` added to index.html script-src (+ security.md documentation) — required for the browser SQL.js fallback storage backend used by the test baseline; the CSP3 keyword permits WASM compilation only, never JS eval. |
-| Options Considered | (a) Claim F-02 done without pixels — rejected: violates zero-compromise honesty; the story's own runbook is explicit. (b) Execute the runbook now and re-run the QA review — ADOPTED. (c) Wait for CI — rejected: every workflow job is blocked by the account billing block (E-005); no browser-capable CI job can run. |
-| Risk Probe | Risk: snapshots could encode a buggy render — mitigated: assertions pin the intended state BEFORE each screenshot (populated heading, Draft trust status in main, Total Revenue KPI, 3 setup steps, 10 badges); the populated fixture goes through the canonical backup-restore path, so the render is the product path. Risk: the P0 hydration defect (ledger #32) made the first populated render EMPTY — it surfaced exactly because of these assertions; after the fix the baselines were re-established on the FIXED render (verified: current pixels match the stored baselines byte-for-byte). Risk: snapshots drift across machines (font rendering) — mitigated: viewport/DSF/colorScheme/timezone fixed; Linux Chromium baselines are committed; any future diff must be reviewed as a code change (runbook rule). |
-| Consequence Projection | F-02 pixel baseline CLOSED — the last rejection reason is gone; F-02 moves to QA APPROVED (pending this review's verdict recorded); T-10 removed from blockers; remaining owner-side blockers unchanged (billing E-005, workflows permission T-13, desktop-channel Tier-2 strategy, F-03 AC3 filter-reset explanation deferral stays deferred per F-04/P-01). Verification battery: e2e 5/5; root tsc 0; targeted unit suites (masterStorage 31, hooks 15, visual harness 4, pre-push focused subset 266, hydration-sensitive stores 44); eslint 0 on changed files; engines:verify/docs:verify/readme-claims 11-11/money ratchet/docs-link strict/capability-matrix/compliance-evidence all green; `git diff --check` clean. |
-| Confidence Score | 90% |
-| Autonomy Level | A5 (safe-foundation story execution; story was pre-approved with the pixel baseline as explicit AC) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | F-02 was REJECTED solely on the pixel baseline: "an interim deterministic DOM/class snapshot baseline... does not validate rendered pixels". The blocker was environmental (Playwright Chromium download failed with TLS resets on 2026-08-10). This environment HAS a working browser, so the runbook (`docs/design/VISUAL_REGRESSION_RUNBOOK.md`) can now be executed — the honest completion of a safe-foundation story, no ICP/connector/vertical/deployment decision made.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Evidence               | `tests/e2e/atlas-visual.spec.ts` 5/5 passing under chromium (badge dark+light; PageHeader wide+compact; FinancialWorkspaceEmptyState dark+light; Dashboard empty 1440+390; Dashboard populated 1440/1024 dark + 1440 light with visible `Draft` trust status). 11 deterministic PNG baselines in `tests/e2e/atlas-visual.spec.ts-snapshots/`; re-run produces byte-identical images (md5-stable), i.e. the render is deterministic. Determinism discipline held: fixed viewport/UTC/en-US/reduced-motion/animation kill-switch; seeded fixture restored through the app's OWN canonical backup path (BackupRestore, SHA-256-verified), never by patching component internals; test-only `__TAURI_INTERNALS__` shim (never relaxes production policy). Dev-only harness page `/visual/atlas` (AtlasVisualBaselinePage, 4 unit tests) is not linked from navigation. Two spec defects found and fixed on first run: `getByLabelText` (Testing Library API, invalid in Playwright) → `getByLabel`; unstrict `getByRole('status')` (4 matches incl. toast container) → scoped `getByRole('main').getByRole('status', { name: /Draft/ })`. CSP: `'wasm-unsafe-eval'` added to index.html script-src (+ security.md documentation) — required for the browser SQL.js fallback storage backend used by the test baseline; the CSP3 keyword permits WASM compilation only, never JS eval. |
+| Options Considered     | (a) Claim F-02 done without pixels — rejected: violates zero-compromise honesty; the story's own runbook is explicit. (b) Execute the runbook now and re-run the QA review — ADOPTED. (c) Wait for CI — rejected: every workflow job is blocked by the account billing block (E-005); no browser-capable CI job can run.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Risk Probe             | Risk: snapshots could encode a buggy render — mitigated: assertions pin the intended state BEFORE each screenshot (populated heading, Draft trust status in main, Total Revenue KPI, 3 setup steps, 10 badges); the populated fixture goes through the canonical backup-restore path, so the render is the product path. Risk: the P0 hydration defect (ledger #32) made the first populated render EMPTY — it surfaced exactly because of these assertions; after the fix the baselines were re-established on the FIXED render (verified: current pixels match the stored baselines byte-for-byte). Risk: snapshots drift across machines (font rendering) — mitigated: viewport/DSF/colorScheme/timezone fixed; Linux Chromium baselines are committed; any future diff must be reviewed as a code change (runbook rule).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Consequence Projection | F-02 pixel baseline CLOSED — the last rejection reason is gone; F-02 moves to QA APPROVED (pending this review's verdict recorded); T-10 removed from blockers; remaining owner-side blockers unchanged (billing E-005, workflows permission T-13, desktop-channel Tier-2 strategy, F-03 AC3 filter-reset explanation deferral stays deferred per F-04/P-01). Verification battery: e2e 5/5; root tsc 0; targeted unit suites (masterStorage 31, hooks 15, visual harness 4, pre-push focused subset 266, hydration-sensitive stores 44); eslint 0 on changed files; engines:verify/docs:verify/readme-claims 11-11/money ratchet/docs-link strict/capability-matrix/compliance-evidence all green; `git diff --check` clean.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Confidence Score       | 90%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Autonomy Level         | A5 (safe-foundation story execution; story was pre-approved with the pixel baseline as explicit AC)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ### Adopted Path: `tests/e2e/atlas-visual.spec.ts` + 11 committed PNG baselines + `src/pages/visual/AtlasVisualBaselinePage.tsx` (+4 tests) + `/visual/atlas` dev-only route + `tests/e2e/_helpers/atlas-seed-probe.mjs` (diagnostic) + CSP `'wasm-unsafe-eval'` (index.html + security.md) + QA review flipped to APPROVED + story/context/evidence updates.
 
@@ -636,15 +683,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Fix masterStorage.getItem to return the DESERIALIZED envelope object instead of the decrypted plaintext string (P0-2026-08-12)
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | The F-02 browser baseline (this session) exposed a silent data-loss path: after a backup-restore + reload, the dashboard stayed EMPTY despite the seeded stores being present in the database. Root cause traced to the storage contract: `masterStorage.getItem` returned the decrypted PLAINTEXT STRING, but zustand persist v5's `hydrate()` reads `storageValue.state` / `.version` DIRECTLY and never JSON.parses a string return. Every persisted store therefore silently skipped hydration on boot — writes "succeeded" (they did), but state was never restored after a restart. This affected BOTH the browser SQL.js backend and the Tauri backend (all 29 persisted stores). |
-| Evidence | `zustand-hydrate-probe.mjs` (real zustand + fake string-returning storage): hydrated x stays 0, confirming persist v5 does not parse string returns. `src/utils/masterStorage.hydration.test.ts` (2 tests) pins the round trip: a new store instance with the same key hydrates the persisted value (42) and the envelope object ({count:7}). Consumers of the old string contract were found and updated: `useFirstRun.ts` (marker compare), `usePersistence.ts` (double JSON.parse removed), `backupRestore.test.ts` (tamper path now mutates the nested envelope), `masterStorage.test.ts`, `usePersistence.test.ts` (mock now returns the object). |
-| Options Considered | (a) Keep the string return and change every zustand store's `merge` — rejected: the persist middleware is library-owned; per-store `merge` hacks would be fragile and would leave backup/restore and migration consumers on the wrong contract. (b) Parse inside `masterStorage.getItem` with a non-JSON fallback — ADOPTED: one canonical fix at the single chokepoint every persisted store already funnels through; `JSON.parse` failure degrades to the raw string (first-run marker `'"true"'` and pre-envelope legacy rows stay readable). (c) Return both shapes — rejected: impossible to express honestly in one return type. |
-| Risk Probe | Risk: non-JSON plaintext (marker strings, legacy rows) — mitigated: try-parse with raw-string fallback; first-run marker test passes both `'true'` and `true` forms. Risk: breaking consumers that expected a string — mitigated: full consumer sweep (rg for `masterStorage.getItem`), all updated; backupRestore tamper-path regression updated to the envelope shape (the test that previously mutated the serialized string). Risk: hydration timing in tests — the new regression test settles on the async encrypted write before creating the second store. |
-| Consequence Projection | Persisted state now actually survives restarts in both backends — a P0 data-integrity fix surfaced by the visual baseline. Verification: hydration-sensitive suites green (masterStorage 31 tests incl. new 2, hooks 15, pre-push focused subset 266, uiStore/integrationStore/tauriSqlStorage/App.runtime 44); root tsc 0; eslint 0 on changed files. |
-| Confidence Score | 92% |
-| Autonomy Level | A5 (single-chokepoint bug fix with regression tests; no direction change) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | The F-02 browser baseline (this session) exposed a silent data-loss path: after a backup-restore + reload, the dashboard stayed EMPTY despite the seeded stores being present in the database. Root cause traced to the storage contract: `masterStorage.getItem` returned the decrypted PLAINTEXT STRING, but zustand persist v5's `hydrate()` reads `storageValue.state` / `.version` DIRECTLY and never JSON.parses a string return. Every persisted store therefore silently skipped hydration on boot — writes "succeeded" (they did), but state was never restored after a restart. This affected BOTH the browser SQL.js backend and the Tauri backend (all 29 persisted stores). |
+| Evidence               | `zustand-hydrate-probe.mjs` (real zustand + fake string-returning storage): hydrated x stays 0, confirming persist v5 does not parse string returns. `src/utils/masterStorage.hydration.test.ts` (2 tests) pins the round trip: a new store instance with the same key hydrates the persisted value (42) and the envelope object ({count:7}). Consumers of the old string contract were found and updated: `useFirstRun.ts` (marker compare), `usePersistence.ts` (double JSON.parse removed), `backupRestore.test.ts` (tamper path now mutates the nested envelope), `masterStorage.test.ts`, `usePersistence.test.ts` (mock now returns the object).                                   |
+| Options Considered     | (a) Keep the string return and change every zustand store's `merge` — rejected: the persist middleware is library-owned; per-store `merge` hacks would be fragile and would leave backup/restore and migration consumers on the wrong contract. (b) Parse inside `masterStorage.getItem` with a non-JSON fallback — ADOPTED: one canonical fix at the single chokepoint every persisted store already funnels through; `JSON.parse` failure degrades to the raw string (first-run marker `'"true"'` and pre-envelope legacy rows stay readable). (c) Return both shapes — rejected: impossible to express honestly in one return type.                                                   |
+| Risk Probe             | Risk: non-JSON plaintext (marker strings, legacy rows) — mitigated: try-parse with raw-string fallback; first-run marker test passes both `'true'` and `true` forms. Risk: breaking consumers that expected a string — mitigated: full consumer sweep (rg for `masterStorage.getItem`), all updated; backupRestore tamper-path regression updated to the envelope shape (the test that previously mutated the serialized string). Risk: hydration timing in tests — the new regression test settles on the async encrypted write before creating the second store.                                                                                                                       |
+| Consequence Projection | Persisted state now actually survives restarts in both backends — a P0 data-integrity fix surfaced by the visual baseline. Verification: hydration-sensitive suites green (masterStorage 31 tests incl. new 2, hooks 15, pre-push focused subset 266, uiStore/integrationStore/tauriSqlStorage/App.runtime 44); root tsc 0; eslint 0 on changed files.                                                                                                                                                                                                                                                                                                                                   |
+| Confidence Score       | 92%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Autonomy Level         | A5 (single-chokepoint bug fix with regression tests; no direction change)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 ### Adopted Path: `masterStorage.getItem` returns `JSON.parse(plaintext)` with raw-string fallback; `useFirstRun` / `usePersistence` / `usePersistence.test` / `backupRestore.test` / `masterStorage.test` updated to the deserialized contract; `masterStorage.hydration.test.ts` added.
 
@@ -659,15 +707,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Verify the platform-absorbed commit (b23e41a), repair the governance drift it introduced (stale engine manifest + README claims + capability matrix), and remove the user-facing duplicate of the Integrations hub
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | A platform commit (b23e41a, "Update 47 files") absorbed three sessions of working-tree work (desktop-only beta removal, Integrations hub, connector→ledger import). The committed state is unverified at HEAD, and new source modules (ConnectorImportEngine) had not been propagated through the generated contracts (engine manifest, capability matrix, README stats). The old /settings/connectors page (in-memory ConnectorEngine — connections lost on reload) duplicates the real hub's surface for the same QuickBooks/NetSuite/Salesforce capabilities. |
-| Evidence | `generate-engine-manifest.mjs --check` FAILED (manifest stale — 181 vs 182 measured); `verify-readme-stats.mjs` FAILED (README claims 181, measured 182); `check-readme-claims.mjs` FAILED (42 vs 44 stores); capability matrix drifted 17 lines (new modules unclassified); rg proved ConnectorEngine has exactly one consumer (ConnectorSettingsPage) plus the generated manifest + smoke test; README "13,290 tests"/"1,174 files" predate the 13,377/1,189 F-05 measurement (blame 0e300b8, 08-09) — already stale at HEAD, no gate validates them. |
-| Options Considered | (a) Delete ConnectorSettingsPage + ConnectorEngine entirely — rejected this turn: blast radius includes generated manifest (181→180), README stats, reachability classifier, smoke tests, and the engine's legacy purity/cross-witness metadata; the page is unreachable except by direct URL. (b) Redirect /settings/connectors → /settings/integrations + mark the dead surface @superseded — ADOPTED: one-line honest fix, reversible, zero contract churn. (c) Leave the stale manifest/README/capability claims — rejected: they fail the project's own gates (engines:verify, docs:verify, check-readme-claims). |
-| Risk Probe | Risk: manifest regen reorders/diff-blows — generator is deterministic (.sort()); diff was 6 lines. Risk: README numbers unmeasurable in sandbox (full suite exceeds 180s cap) — test/file counts are DERIVED (13,377 + 64 added − 9 removed = 13,432; 1,189 + 8 − 2 = 1,195), recorded as derivation pending full-suite confirmation; engine/store counts are MEASURED by the gates. Risk: redirect breaks smoke tests — smoke renders the page component directly (unaffected); route-level tests re-run green. |
-| Consequence Projection | All project gates green again: manifest --check, docs:verify, check-readme-claims (11/11), capability:inventory, compliance-evidence, guardrails, docs-link strict, money ratchet, reachability; tsc 0; targeted suites 51/51 + 71/71; eslint 0 on changed files; diff --check clean. The F-03 AC3 filter-reset explanation deferral (server-authorized views, F-04/P-01) was re-confirmed as correctly deferred — client-side implementation would violate AC6. |
-| Confidence Score | 90% |
-| Autonomy Level | A4 (verification + governance repair within approved safe-foundations scope) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | A platform commit (b23e41a, "Update 47 files") absorbed three sessions of working-tree work (desktop-only beta removal, Integrations hub, connector→ledger import). The committed state is unverified at HEAD, and new source modules (ConnectorImportEngine) had not been propagated through the generated contracts (engine manifest, capability matrix, README stats). The old /settings/connectors page (in-memory ConnectorEngine — connections lost on reload) duplicates the real hub's surface for the same QuickBooks/NetSuite/Salesforce capabilities.                                                       |
+| Evidence               | `generate-engine-manifest.mjs --check` FAILED (manifest stale — 181 vs 182 measured); `verify-readme-stats.mjs` FAILED (README claims 181, measured 182); `check-readme-claims.mjs` FAILED (42 vs 44 stores); capability matrix drifted 17 lines (new modules unclassified); rg proved ConnectorEngine has exactly one consumer (ConnectorSettingsPage) plus the generated manifest + smoke test; README "13,290 tests"/"1,174 files" predate the 13,377/1,189 F-05 measurement (blame 0e300b8, 08-09) — already stale at HEAD, no gate validates them.                                                                |
+| Options Considered     | (a) Delete ConnectorSettingsPage + ConnectorEngine entirely — rejected this turn: blast radius includes generated manifest (181→180), README stats, reachability classifier, smoke tests, and the engine's legacy purity/cross-witness metadata; the page is unreachable except by direct URL. (b) Redirect /settings/connectors → /settings/integrations + mark the dead surface @superseded — ADOPTED: one-line honest fix, reversible, zero contract churn. (c) Leave the stale manifest/README/capability claims — rejected: they fail the project's own gates (engines:verify, docs:verify, check-readme-claims). |
+| Risk Probe             | Risk: manifest regen reorders/diff-blows — generator is deterministic (.sort()); diff was 6 lines. Risk: README numbers unmeasurable in sandbox (full suite exceeds 180s cap) — test/file counts are DERIVED (13,377 + 64 added − 9 removed = 13,432; 1,189 + 8 − 2 = 1,195), recorded as derivation pending full-suite confirmation; engine/store counts are MEASURED by the gates. Risk: redirect breaks smoke tests — smoke renders the page component directly (unaffected); route-level tests re-run green.                                                                                                       |
+| Consequence Projection | All project gates green again: manifest --check, docs:verify, check-readme-claims (11/11), capability:inventory, compliance-evidence, guardrails, docs-link strict, money ratchet, reachability; tsc 0; targeted suites 51/51 + 71/71; eslint 0 on changed files; diff --check clean. The F-03 AC3 filter-reset explanation deferral (server-authorized views, F-04/P-01) was re-confirmed as correctly deferred — client-side implementation would violate AC6.                                                                                                                                                       |
+| Confidence Score       | 90%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Autonomy Level         | A4 (verification + governance repair within approved safe-foundations scope)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ### Adopted Path: `npm run engines:manifest` regen (181→182, ConnectorImportEngine now lazy-reachable); README claim repair (182 engines ×5 sites, 44 stores, 1,195 files / 13,432 tests — derived); capability matrix regenerated; /settings/connectors → <Navigate to="/settings/integrations" replace/> + @superseded banners on ConnectorSettingsPage and ConnectorEngine (kept, tested, unreachable — final removal deferred until the hub is committed/shipped).
 
@@ -682,15 +731,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Give every connected integration a real "Import to Ledger" action — pull via the connector, map through a pure decimal-safe engine, write through the canonical `glStore.importGLData` (IMPORT_CREATE-gated) path
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | The Integrations hub (ledger #29) gave connectors real connect/test/sync, but sync only surfaced external data — it never fed the ledger. The controlled operating loop's "import actuals" step requires connector data to land in the GL journal. The canonical import path is `glStore.importGLData` (validates entries, applies rules, returns a typed `ImportResult` union). `enforce` (rba) propagates return values, so failures surface honestly to callers. |
-| Evidence | `glStore.importGLData` signature + `ImportResult` union read-verified (src/store/glStore.ts, src/types/index.ts); `enforce` wrapper confirmed to return the inner function's value (src/utils/rba). Existing connectors expose `pull` returning ExternalTransaction-like records (RestApiClient-verified shapes; Stripe balance/charges, Plaid transactions with Link token, Slack webhook outbound-only — import not applicable for outbound-only, UI hides action accordingly). |
-| Options Considered | (a) Per-connector bespoke write paths — rejected: duplicated validation/rules logic. (b) Write directly to glStore entries bypassing importGLData — rejected: bypasses IMPORT_CREATE gate and validation. (c) Pure `ConnectorImportEngine` mapping external transactions → GL journal rows (accounts receivable/sales revenue, accounts payable, fees/expense categories, cash/bank), then one importGLData call per provider — ADOPTED. Outbound-only connectors (Slack) and incomplete auth (Plaid without Link token) hide the action and surface honest per-provider errors. |
-| Risk Probe | Risk: money conversion — mitigated: engine converts cents→dollars with exact decimal arithmetic (`fromCents`), tests assert exact values. Risk: store mock selector shape — caught by page test (busy flag truthy), fixed. Risk: lucide icon mock missing new icon in legacy `__tests__` duplicate — added `Plug` to both page-test mocks. Risk: immer-draft indexed access — guarded refs in the store action. |
-| Consequence Projection | Connected integrations now feed the ledger through one gated, validated, honest path; sync counts and import results are surfaced in the UI. Verification battery: root tsc 0; ConnectorImportEngine + integrationStore + IntegrationSettingsPage suites green (140+ tests); changed-file eslint 0 (prettier-fixed); `git diff --check` clean; money-adoption ratchet holds. |
-| Confidence Score | 86% |
-| Autonomy Level | A4 (continuation of owner-directed feature; executed with evidence-first honesty) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | The Integrations hub (ledger #29) gave connectors real connect/test/sync, but sync only surfaced external data — it never fed the ledger. The controlled operating loop's "import actuals" step requires connector data to land in the GL journal. The canonical import path is `glStore.importGLData` (validates entries, applies rules, returns a typed `ImportResult` union). `enforce` (rba) propagates return values, so failures surface honestly to callers.                                                                                                              |
+| Evidence               | `glStore.importGLData` signature + `ImportResult` union read-verified (src/store/glStore.ts, src/types/index.ts); `enforce` wrapper confirmed to return the inner function's value (src/utils/rba). Existing connectors expose `pull` returning ExternalTransaction-like records (RestApiClient-verified shapes; Stripe balance/charges, Plaid transactions with Link token, Slack webhook outbound-only — import not applicable for outbound-only, UI hides action accordingly).                                                                                                |
+| Options Considered     | (a) Per-connector bespoke write paths — rejected: duplicated validation/rules logic. (b) Write directly to glStore entries bypassing importGLData — rejected: bypasses IMPORT_CREATE gate and validation. (c) Pure `ConnectorImportEngine` mapping external transactions → GL journal rows (accounts receivable/sales revenue, accounts payable, fees/expense categories, cash/bank), then one importGLData call per provider — ADOPTED. Outbound-only connectors (Slack) and incomplete auth (Plaid without Link token) hide the action and surface honest per-provider errors. |
+| Risk Probe             | Risk: money conversion — mitigated: engine converts cents→dollars with exact decimal arithmetic (`fromCents`), tests assert exact values. Risk: store mock selector shape — caught by page test (busy flag truthy), fixed. Risk: lucide icon mock missing new icon in legacy `__tests__` duplicate — added `Plug` to both page-test mocks. Risk: immer-draft indexed access — guarded refs in the store action.                                                                                                                                                                  |
+| Consequence Projection | Connected integrations now feed the ledger through one gated, validated, honest path; sync counts and import results are surfaced in the UI. Verification battery: root tsc 0; ConnectorImportEngine + integrationStore + IntegrationSettingsPage suites green (140+ tests); changed-file eslint 0 (prettier-fixed); `git diff --check` clean; money-adoption ratchet holds.                                                                                                                                                                                                     |
+| Confidence Score       | 86%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Autonomy Level         | A4 (continuation of owner-directed feature; executed with evidence-first honesty)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 ### Adopted Path: `src/engines/ConnectorImportEngine.ts` (+ test) pure mapping ExternalTransaction → GL journal rows; `importToLedger(provider)` action on `integrationStore` (pull → engine → `glStore.importGLData`, import count persisted in connection.lastImportCount) + tests; `IntegrationCard` "Import to Ledger" action; page wiring + tests.
 
@@ -705,15 +755,16 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ### Decision/Topic: Build a real Integrations hub — every integration with an implementation is connectable; no fake/placeholder connectors
 
 ### DRP Summary:
-| Stage | Analysis |
-|-------|----------|
-| First Principles | Owner request: "add all Integrations integration which can be helpfull". Audit of the existing state found the app already had a complete, tested connector framework (`src/services/api-integration/`: RestApiClient + QuickBooks, Xero, NetSuite, Sage Intacct, Dynamics 365, Salesforce) with **zero UI**, plus two half-baked settings pages: `IntegrationSettingsPage` (cosmetic theater — hardcoded list incl. SAP/Power BI/Tableau/Slack/SharePoint/Google Sheets where Connect/Sync just flipped local state, no code behind them) and `ConnectorSettingsPage` (local `ConnectorEngine`, static Maps, not persisted). "Adding integrations" therefore means: surface the real connectors behind a persistent, tested hub and add the highest-value gaps (banking, payments, notifications) to the same standard — while NEVER presenting a connector that doesn't exist (honest-labeling discipline). |
-| Evidence | Framework: 6 connectors + `ConnectorRegistry` + `BaseConnector` (connect/sync/checkHealth/disconnect), each with tests; imported only by `src/sdk/FpaClient.ts`, zero UI consumers (rg). `IntegrationSettingsPage.tsx` had `AVAILABLE_INTEGRATIONS` with fake entries and `handleConnect` doing `setIntegrations` state flips (read-verified). `PERSISTED_STORE_KEYS` registry (src/utils/persistedStores.ts) is cross-checked by `backupRestore.test.ts` — any new persisted store must be registered. Auth shapes read per connector (NetSuite oauth1 TBA, Sage oauth2_sage+sender, Dynamics oauth2_dataverse, QB/Xero/Salesforce oauth2; Salesforce health uses `{instanceUrl}/services/oauth2/userinfo`). |
-| Options Considered | (a) Add fake "Connect" buttons for SAP/Power BI/Tableau/SharePoint/Google Sheets to match the old page — rejected: theater; violates the never-fabricate rule and the owner's own honesty bar. (b) Only rewrite the existing page cosmetically — rejected: no real connectivity. (c) Full hub: typed catalog (`src/config/integrations.ts`) mapping UI fields → ConnectorConfig → real connector class; persisted `integrationStore` (masterStorage, registered in PERSISTED_STORE_KEYS); page + card + connect-modal components; 3 new connectors (Stripe bearer-key, Plaid client_id+secret fetch pattern, Slack webhook) with tests — ADOPTED. OAuth2 connectors accept an optional pasted access token so "Test connection" works in-app (no callback server); a browser OAuth redirect flow stays a future server-authorized capability (F-04/P-track) — documented in the UI, not claimed. |
-| Risk Probe | Risk: new persisted store breaks the backup registry test — mitigated: `integration-store` registered in `PERSISTED_STORE_KEYS` (alphabetical, between insurance and lease). Risk: connector auth guards reject catalog-built configs — mitigated: catalog test constructs every connector with dummy values (all 9 pass, guard shapes verified per connector). Risk: money discipline — mitigated: Stripe minor-unit conversion uses `fromCents` (exact decimal, ratchet-safe); Plaid/Slack pass amounts through unmodified. Risk: jsdom smoke tests render the new page — empty store renders cleanly (no network on render; network only inside connect/test/sync actions). |
-| Consequence Projection | The app now has a real Integrations hub at /settings/integrations (linked from Settings → Data & Security): 9 integrations (6 pre-existing + Stripe + Plaid + Slack), persisted connections, real health checks/sync with honest status, local-credential security note. Fake SAP/Power BI/Tableau/SharePoint/Google Sheets entries removed — they were never implemented; adding them later means writing the connector first. Verification battery: root tsc 0, targeted suites (3 new connector tests, catalog, store, page, SettingsPage), changed-file eslint 0, `git diff --check` clean. |
-| Confidence Score | 88% |
-| Autonomy Level | A4 (owner-directed feature request; executed with evidence-first honesty) |
+
+| Stage                  | Analysis                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| First Principles       | Owner request: "add all Integrations integration which can be helpfull". Audit of the existing state found the app already had a complete, tested connector framework (`src/services/api-integration/`: RestApiClient + QuickBooks, Xero, NetSuite, Sage Intacct, Dynamics 365, Salesforce) with **zero UI**, plus two half-baked settings pages: `IntegrationSettingsPage` (cosmetic theater — hardcoded list incl. SAP/Power BI/Tableau/Slack/SharePoint/Google Sheets where Connect/Sync just flipped local state, no code behind them) and `ConnectorSettingsPage` (local `ConnectorEngine`, static Maps, not persisted). "Adding integrations" therefore means: surface the real connectors behind a persistent, tested hub and add the highest-value gaps (banking, payments, notifications) to the same standard — while NEVER presenting a connector that doesn't exist (honest-labeling discipline). |
+| Evidence               | Framework: 6 connectors + `ConnectorRegistry` + `BaseConnector` (connect/sync/checkHealth/disconnect), each with tests; imported only by `src/sdk/FpaClient.ts`, zero UI consumers (rg). `IntegrationSettingsPage.tsx` had `AVAILABLE_INTEGRATIONS` with fake entries and `handleConnect` doing `setIntegrations` state flips (read-verified). `PERSISTED_STORE_KEYS` registry (src/utils/persistedStores.ts) is cross-checked by `backupRestore.test.ts` — any new persisted store must be registered. Auth shapes read per connector (NetSuite oauth1 TBA, Sage oauth2_sage+sender, Dynamics oauth2_dataverse, QB/Xero/Salesforce oauth2; Salesforce health uses `{instanceUrl}/services/oauth2/userinfo`).                                                                                                                                                                                                 |
+| Options Considered     | (a) Add fake "Connect" buttons for SAP/Power BI/Tableau/SharePoint/Google Sheets to match the old page — rejected: theater; violates the never-fabricate rule and the owner's own honesty bar. (b) Only rewrite the existing page cosmetically — rejected: no real connectivity. (c) Full hub: typed catalog (`src/config/integrations.ts`) mapping UI fields → ConnectorConfig → real connector class; persisted `integrationStore` (masterStorage, registered in PERSISTED_STORE_KEYS); page + card + connect-modal components; 3 new connectors (Stripe bearer-key, Plaid client_id+secret fetch pattern, Slack webhook) with tests — ADOPTED. OAuth2 connectors accept an optional pasted access token so "Test connection" works in-app (no callback server); a browser OAuth redirect flow stays a future server-authorized capability (F-04/P-track) — documented in the UI, not claimed.              |
+| Risk Probe             | Risk: new persisted store breaks the backup registry test — mitigated: `integration-store` registered in `PERSISTED_STORE_KEYS` (alphabetical, between insurance and lease). Risk: connector auth guards reject catalog-built configs — mitigated: catalog test constructs every connector with dummy values (all 9 pass, guard shapes verified per connector). Risk: money discipline — mitigated: Stripe minor-unit conversion uses `fromCents` (exact decimal, ratchet-safe); Plaid/Slack pass amounts through unmodified. Risk: jsdom smoke tests render the new page — empty store renders cleanly (no network on render; network only inside connect/test/sync actions).                                                                                                                                                                                                                                |
+| Consequence Projection | The app now has a real Integrations hub at /settings/integrations (linked from Settings → Data & Security): 9 integrations (6 pre-existing + Stripe + Plaid + Slack), persisted connections, real health checks/sync with honest status, local-credential security note. Fake SAP/Power BI/Tableau/SharePoint/Google Sheets entries removed — they were never implemented; adding them later means writing the connector first. Verification battery: root tsc 0, targeted suites (3 new connector tests, catalog, store, page, SettingsPage), changed-file eslint 0, `git diff --check` clean.                                                                                                                                                                                                                                                                                                               |
+| Confidence Score       | 88%                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Autonomy Level         | A4 (owner-directed feature request; executed with evidence-first honesty)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 
 ### Adopted Path: created `src/config/integrations.ts` (9-definition catalog, no placeholders) + test; `src/store/integrationStore.ts` (persisted, real connector lifecycle) + test; `src/services/api-integration/{Stripe,Plaid,Slack}Connector.ts` + tests + barrel exports; `src/components/integrations/{IntegrationCard,ConnectIntegrationModal}.tsx`; rewrote `IntegrationSettingsPage.tsx` + test (fake entries removed); SettingsPage Integrations nav card; `integration-store` registered in `PERSISTED_STORE_KEYS`.
 
@@ -724,3 +775,350 @@ reset/clean/restore (prohibited); abandoning work (unacceptable).
 ---
 
 <!-- Future entries append below this line. -->
+
+## UI-05 C — PageHeader rollout completion
+
+**Decision: `titleId` as a dedicated prop rather than relying on the `...props`
+spread.** `PageHeader` spreads unknown props onto its root `<header>`. Every one
+of the 20 pages whose `<h1>` carried an `id` used that id as an
+`aria-labelledby` target. Forwarding `id` via the spread would have moved the
+label onto the header element, so the referencing region's accessible name would
+become the header's whole subtree (title + purpose + action button labels)
+instead of just the title. The prop puts the id on the heading.
+
+**Decision: span mode instead of broadening the wrapper-collapse guard.** The
+codemod refused headings inside `<main>`/`CardContent`. Rather than teach it to
+collapse those wrappers — which would destroy page structure — it now replaces
+only the heading run in place. Narrower transform, strictly safer, and it
+unblocked the 7-page sector group.
+
+**Decision: leave 8 centred card headings unconverted.** `PageHeader` is a
+left-aligned flex row. The auth cards, the display 404, and the template error
+state centre their heading above a centred icon. Converting them would be a
+visual redesign smuggled in as a refactor, so they keep raw `<h1>`s.
+
+**Decision: `sr-only` `<h1>` for `ReportDesignerPage`.** Full-bleed editor with a
+toolbar, not a page header; it had no heading at all. A visually-hidden heading
+fixes the a11y gap without touching the `h-full` layout.
+
+**Guard integrity.** The `LAYOUT_RE`/`TYPO_RE` guards and the product-tour anchor
+classes were left strict; conversion count was never the target.
+
+## UI-04/05 B — light-mode contrast: a guard that vouched for the bug
+
+**Finding.** `lightContrast.contract.test.ts` was green while a real
+white-on-white heading was live. `DARK_BG` matched bare `bg-gradient`, so
+`bg-gradient-to-br from-emerald-500/20 to-emerald-600/5` — effectively
+transparent — was scored as a dark backdrop. `ReportTemplateLibrary.tsx:222`
+sat on that gradient over a white Card.
+
+**Decision: fix the guard, not just the call site.** Repointing the heading at
+`--text-heading` alone would have left the detector still certifying every
+other translucent-gradient surface. `DARK_BG` now rejects alpha-suffixed
+gradient stops. Confirmed by reverting the source fix and observing the guard
+fail on the exact line, then re-applying.
+
+**Decision: verify a scanner against known-good patterns before believing its
+count.** A fresh scanner reported 46 → 17 → 14 → 1 as false-positive classes
+were removed (`dark:` pairings, dynamic `style={{backgroundColor}}`, saturated
+`bg-*-500` badges). The plan's "64 sites / 29 files" was an artefact of the same
+`dark:` blind spot. A count from an unvalidated matcher is an upper bound.
+
+**Status correction.** UI-04 density was recorded as 0 consumers; it is fully
+wired (AppLayout -> `<html data-density>` -> `--density-*` -> AG Grid and
+`.fp-table`, with the SettingsPage control shipped). The baseline table was
+stale, not the implementation.
+
+## UI-01/1 — the third source of truth: deleted, not reconciled
+
+**Finding.** `designTokens.ts` (344 lines, 13 token groups) was described as
+"provably unconsumed". Half true, and the stale half mattered: `density` _is_
+consumed by `useDensity.ts`. Every other group's only references were the
+file's own exported type aliases (`ChartColor`, `SemanticTone`, `SectorKey`,
+`RadiusKey`, `ZIndexKey`, `FontSizeKey`, `BreakpointKey`) — each with zero
+external users. An unused export still typechecks, so nothing flagged it.
+
+**Decision: delete rather than wire up.** The alternative — making it the
+generator for the `@theme` block — means maintaining a TS palette _and_ a CSS
+one and keeping them honest. The values had already drifted (radius `xs` 2px vs
+4px, `sm` 4px vs 6px, negative `#dc2626` vs `#f43f5e`), which is exactly the
+failure that argument predicts. `index.css` already drives the product and is
+pinned by `tokenBridge.contract.test.ts`.
+
+**Decision: keep `density` in TypeScript.** Not an inconsistency — AG Grid's
+API needs numeric `rowHeight`/`headerHeight`, and a CSS custom property cannot
+supply those to JS. The `[data-density]` blocks mirror the numbers for CSS and
+`useDensity.test.ts` asserts the two stay in step.
+
+**Guard.** The rewritten shape test asserts `Object.keys(designTokens)` is
+exactly `['density']` and that the serialised object holds no hex or `rgb()`
+literal, so a palette cannot quietly regrow. Mutation-verified by re-adding a
+`radius` group.
+
+## G3/G19 — a bundle budget that was measuring three of six chunks
+
+**Finding (same shape as the contrast guard).** `scripts/bundle-check.js`
+resolves each budgeted vendor with
+`chunkStats.find((c) => c.file.startsWith(vendor + '-'))` and then did all its
+work inside `if (match)`. A vendor that produced no chunk was skipped in
+silence and still counted toward "G19 PASS". Of the six declared vendors, only
+three existed; the gate printed three PASS lines and no indication that half
+its budgets had never run.
+
+**What that concealed.** `vite.config.ts` had no ag-grid rule, so ag-grid fell
+into an anonymous `chunk-*.js` — at 298.3KB gzip the **largest artefact in the
+build**, 1.7KB under the 300KB per-vendor limit that was supposed to govern it
+and entirely unmeasured. `grid-community-vendor` and `grid-react-vendor` were
+listed in the gate but never emitted by the build.
+
+**Fixes.** Named the chunks (`grid-community-vendor` 284.85KB, now correctly
+reported at 95% of budget; `grid-react-vendor` 14.29KB), and made a missing
+chunk `::error::` + exit 1 instead of a silent skip. Mutation-verified with a
+bogus vendor name.
+
+**Refinement — absence is not always drift.** The strict check immediately
+flagged `ai-vendor`, which is `@huggingface/transformers`: a deliberately
+uninstalled optional peer that can never be emitted. Requiring it would fail
+the gate forever; dropping it would lose the budget the day it is installed.
+It is now conditional on `import.meta.resolve` succeeding, and prints an
+explicit SKIP line rather than vanishing.
+
+**Found and fixed — pdf-vendor in the critical path.** `pdf-vendor`
+(616KB raw / 179.74KB gzip) is a `modulepreload` on first paint even though
+`utils/pdfRuntime.ts` deliberately loads jsPDF via dynamic import. Cause is not
+jsPDF: rolldown's injected preload helper (`\0vite/preload-helper.js`) landed
+in that chunk, and 11 of its 13 importers — including the entry chunk and
+`masterStorage` — import only that ~1KB helper. Returning a chunk name for the
+helper's id does not work on its own: rolldown re-merges the sub-threshold
+chunk, and rolldown-vite 8 rejects `output.minChunkSize` as an invalid key.
+
+**What actually resolved it.** The helper does not need a chunk of its own — it
+needs to stop living in a chunk that should be lazy. Assigning it to
+`icon-vendor`, a group the config already declares and that is _already_ in the
+preload set, moves it off `pdf-vendor` while adding no new critical-path bytes:
+
+```ts
+if (id.includes('lucide-react') || id.includes('vite/preload-helper')) return 'icon-vendor';
+```
+
+**Critical path 483.42 → 304.23KB gzip (−179.19KB, −37%), 17 → 16 chunks;
+`pdf-vendor` absent from `dist/index.html`.** Total JS is unchanged
+(2072.21 → 2071.86KB) — the bytes did not shrink, they stopped being fetched
+before first paint, which is what `pdfRuntime.ts` intended all along.
+`pdf-vendor`'s importers fell 13 → 4, and each survivor imports a real jsPDF
+binding (`t`, `i`) rather than the helper binding (`a`).
+
+**The generalisable bit:** a runtime helper is a _tenant_, and it drags its
+whole host chunk into the graph of everything that imports it. The fix is
+tenancy, not splitting — put shared helpers in a chunk you are happy to load
+eagerly. Corollary, verified: naming an _auto-generated_ chunk (`'react'`)
+achieves nothing, because `manualChunks` can only target groups the config
+itself declares.
+
+**Why this took two attempts to see.** The gate reported the critical path but
+budgeted it at 750KB aggregate, so 483.42KB passed silently; and the obvious
+suspect — a static `import jsPDF` in `AdvancedPDFEngine.ts` — was a red herring
+that survived scrutiny because it is plausible. It fell apart only when the
+minified _bindings_ were decoded: 11 importers were taking `a`, a ~1KB helper,
+not jsPDF. Read what an importer actually pulls before blaming the library.
+The guard added alongside is therefore per-chunk and by name rather than
+aggregate: named lazy vendors must not appear in `index.html`'s modulepreloads.
+Mutation-verified — reverting the one-line fix leaves the aggregate budget
+PASSing and fails only the named check.
+
+## UI-01 — one token cannot be both a text colour and a fill
+
+**The task** was mechanical on its face: replace `bg-blue-600` with a semantic
+token in the shadcn primitives so the Tailwind layer and the CSS layer stop
+disagreeing. `Button` and `Card` alone have 281 and 273 importers, so whatever
+they say propagates almost everywhere.
+
+**The trap.** The obvious substitution — `bg-blue-600` becomes
+`bg-[var(--accent-primary)]` — is a contrast _regression_, and nothing in the
+build would have said so. Checked before applying it:
+
+|                                   | white text on it | verdict   |
+| --------------------------------- | ---------------- | --------- |
+| `bg-blue-600` `#2563eb` (today)   | 5.17:1           | passes AA |
+| `--accent-primary` dark `#0284c7` | **4.10:1**       | fails AA  |
+| `--negative` dark `#f43f5e`       | **3.67:1**       | fails AA  |
+
+The reason is structural, not a bad hex value. A token used as _text_ must
+contrast with the page behind it; the same token used as a _fill under white
+text_ must contrast with white. On a dark page those requirements point in
+opposite directions — the text token wants to be light, the fill token wants to
+be dark. `--accent-primary` was tuned for the first job and then used for the
+second by `.btn-primary`, which sets `color: white`. **That defect is already
+shipping**; the migration would merely have spread it.
+
+**Resolution.** Separate tokens for the separate jobs: `--action-fill`,
+`--action-fill-hover`, `--danger-fill`, `--danger-fill-hover`, defined per
+theme against two constraints at once — white text ≥4.5:1 (AA) and the fill
+itself ≥3:1 against the page (WCAG 1.4.11, so the control's edge is visible).
+Hover travels _darker_ in light theme and _lighter_ in dark, so "more emphasis"
+reads correctly against each background. The badge tints needed the same split:
+`--negative` on `--negative-subtle` is 3.95:1 and `--positive` on
+`--positive-subtle` 4.42:1 in light theme, so each tint got a paired
+`--text-on-*-subtle`.
+
+**A second trap, previously recorded and hit again.** The dark `-subtle` tokens
+are `rgba(…, 0.15)`. Measuring text against that raw value is meaningless — it
+has to be flattened over `--bg-surface` first. The contract test composites
+alpha before computing any ratio; a mutation that only passes when compositing
+is skipped scores 1.69:1 once it is applied.
+
+**What the guard asserts, and why not a snapshot.** The existing primitive
+tests asserted `className).toContain('bg-blue-600')`. That pins the _spelling_
+of a utility: it breaks on every rename and never once says whether the button
+is readable. `buttonContrast.contract.test.ts` instead reads `src/index.css`,
+resolves `var()` alias chains, composites alpha, and asserts WCAG ratios for
+both themes — so it fails when the _rendered result_ regresses, which is the
+property anyone actually cares about. Mutation-verified 4/4, and each mutation
+fails in exactly one theme, confirming the per-theme resolution is real.
+
+**Scope discipline.** The lint rule and the contract test are scoped to the
+four migrated files rather than all of `src/components/ui`. 95 of those 251
+files still carry raw palette utilities; a blanket rule could only have landed
+accompanied by ~91 disable comments, which is a rule that enforces nothing.
+Both lists are ratchets — add a file as it is converted.
+
+**Follow-up — extending the guard to the rendered DOM.** The file-level guards
+read source: the lint rule bans raw utilities in the primitive files, the
+contract test checks token values in `index.css`. Neither observes what the
+browser gets, and both stay green while the element is wrong — `cn()` /
+tailwind-merge can drop a class, a variant map can be keyed wrongly, and a
+`var(--typo)` resolves to nothing and renders unstyled. So
+`AtlasFoundations.visual-contract.test.tsx` now renders every Button and Badge
+variant and asserts on the merged class list, including that every referenced
+token is actually _declared_ in `index.css`. That last check is the one no
+class-string assertion can make: `toContain('bg-[var(--action-fil)]')` passes
+happily against a typo. Mutation-verified 3/3.
+
+`Select` and `Alert` were then migrated on the same pattern (33 and 14
+importers), bringing the ratcheted list to six files and the raw-utility
+backlog in `src/components/ui` from 95 files to 92.
+
+## UI-07/UI-08 — a contrast fix that had to preserve hierarchy, and an axe suite auditing empty pages
+
+**Finding: raising a token to clear AA can destroy the type ramp.** `--text-muted`
+failed AA on the two darkest surfaces (4.17 elevated, 3.60 hover). The obvious fix
+is to lighten it until it passes — but `--text-muted`, `--text-secondary` and
+`--text-primary` are a deliberate three-step hierarchy, and lightening the dimmest
+step far enough to clear 4.5:1 walks it into the step above. Contrast here is a
+_two-sided_ constraint: bright enough to read, dim enough to still read as
+secondary.
+
+**Decision: pick the darkest value that clears the worst surface, then pin the
+separation.** `#7897c3` (min 4.59 on hover) rather than a comfortable margin,
+because every extra point of luminance is spent from the hierarchy budget.
+`#8aa2c9`, `#89a3cc` and `#8fa8ce` all pass AA and were rejected — they collapse
+separation from `--text-secondary` to ≤1.19:1. The guard now asserts both
+directions: each token clears AA on all four surfaces, _and_ the dimmer token of
+each adjacent pair stays at least 1.2:1 apart from the brighter one. Without that
+second assertion the correct fix and the hierarchy-destroying one are
+indistinguishable to CI. Mutation-verified in both directions: reverting to
+`#6484b4` fails 4 contrast assertions, and over-correcting to `#94b2db` — which
+passes every contrast check — fails only the separation assertion. That second
+mutation is the one that justifies the guard existing.
+
+**`--text-tertiary` is an alias of `--text-muted`,** so this moved two named tokens
+with one edit; and `@media (prefers-contrast: more)` re-declares these tokens
+further down `index.css`. Check for that block before trusting a token's value —
+the file has more than one answer for the same name.
+
+**Finding: the axe suite was auditing empty pages.** UI-07 asked for axe at 0
+critical/serious. The infrastructure already existed, undocumented, and was green
+at 22 tests — the plan simply hadn't been updated. Before ticking it off, the
+suite was instrumented to report how much DOM each scan actually saw. The report
+routes were being audited at **5-6 elements and ~70 characters**: axe was only ever
+looking at the "No data yet" empty state. The pages passed because there was
+nothing there — no table, no column headers, no data cells, no controls beyond one
+button. The claim was true and meaningless.
+
+**Decision: fix the coverage, and make the hollow scan unrepresentable.**
+`wcag-aa-populated.test.tsx` mocks the GL and budget stores so the four report
+routes render real content (45-104 elements, 4-19 rows). All four came back clean,
+so this closed a coverage gap rather than a defect — but the gap was the kind that
+regrows silently, so every case also asserts it rendered ≥30 elements. A page that
+falls back to its empty or loading state now fails loudly instead of passing on an
+empty container. Mutation-verified both ways: an unlabelled `<button>` in the
+populated render fails exactly one test on `button-name`; emptying the store mocks
+fails all five on the element-count guard, not on axe.
+
+**A stale comment is what made this look done.** The old suite's header still said
+it was inert pending a `vitest-axe` install that had already happened. Trust an
+executed run over a file header — and before building "missing" infrastructure,
+grep for it.
+
+## UI-08 — one hue cannot be both text and fill (`--negative`)
+
+`--negative` (`#f43f5e`) failed AA as text on the two darkest dark surfaces —
+4.34:1 on `--bg-elevated`, **3.75:1** on `--bg-hover`. The obvious fix is to
+brighten it. Measuring the other direction first is what stopped that: `Navbar.tsx`
+filled the notification badge with `var(--negative)` and set `text-white` on it,
+shipping at **3.67:1**. Brightening the token to clear AA as text (`#fb7185`,
+5.11:1) would have dragged white-on-fill down to **2.69:1** — trading a text
+defect for a worse fill defect, and the badge is the more visible of the two.
+
+**Decision: split the roles instead of retuning the token.** `--text-negative`
+(`#fb7185` dark, `#dc2626` light) carries text; `--danger-fill` (`#dc2626`, white
+at 4.83:1) carries fills. This is the second time a dual-role hue has been split,
+so it is now the standing rule rather than a one-off. Non-text uses — `Select.tsx`
+borders, the gauge and waterfall SVG strokes — stay on `--negative`: they only owe
+3:1, and a failing ratio is not automatically a defect.
+
+**The first grep missed the defect that mattered.** Searching for `bg-[var(--negative)]`
+and `background:` returned nothing, which read as "text-only token, safe to
+brighten." Only enumerating _every_ consumer and classifying each by role exposed
+the Navbar fill. Enumerate, then classify — never grep per-role. Alias tokens
+(`--color-error`) inherit the same defect and must be swept with the original.
+
+**The guard passed on the defect it was written for.** The new fill ratchet was
+green with the Navbar bug re-applied: it banned the `--text-*` twins as fills but
+not `--negative` itself, which was in neither `TEXT_TOKENS` nor `FILL_ONLY` — the
+exact gap that let this ship. Writing a test and watching it pass proves nothing;
+the mutation is the test of the test.
+
+**Widening it surfaced a second, unrelated defect.** `--color-error` was flagged in
+`VarianceCommentaryPanel.tsx`, but as `bg-[var(--color-error)]/10` — a 10% tint,
+not a solid fill, so white-on-fill never applied. A false positive for that rule,
+and a real defect for another: the tint paired with `--text-negative` measured
+**4.14:1** in light theme. The fill ratchet now exempts `/NN` tints, and a separate
+ratchet _discovers_ every `bg-[var(--x)]/NN text-[var(--y)]` pairing in the repo
+and composites it. Enumerating known pairings is how this one was missed, so the
+new check finds its own inputs and asserts it found some — a regex that matches
+nothing must not read as success.
+
+## UI-07 — the last moderate: a heading skip owned by a primitive
+
+`ChartOfAccountsPage` shipped an `h1` -> `h3` jump. `PageHeader` renders the
+page `h1`; `CardTitle` hardcoded `<h3>`; the "Account Details" card sits directly
+under the header, so the outline skipped `h2`. Screen-reader users navigating by
+heading lose the cue that the card is a direct child of the page.
+
+**The page was the symptom, not the cause.** Before patching it, the obvious
+question was whether this was one page or a pattern: **53 pages** use `PageHeader`
+and `CardTitle` together with no intervening `h2`, and `CardTitle` has 168 call
+sites. Hardcoding `h2` in the primitive would have fixed those 53 and broken every
+correctly-nested card. The level is genuinely context-dependent — a primitive
+cannot know where it sits in the document — so it became an `as` prop defaulting
+to `h3`, leaving all 168 existing usages byte-identical, and only the offending
+page opts into `h2`.
+
+**The ratchet asserts the outline, not the axe id.** Checking for the absence of
+`heading-order` would pass if the rule were renamed or retired while the document
+structure silently rotted. The test walks the rendered headings and fails on any
+jump greater than one level, reporting the exact pair (`h1` -> `h3`).
+Mutation-verified: reverting the `as="h2"` fails with that message.
+
+**Two smaller things fell out.** The suite header still advertised the
+`heading-order` finding as known-and-tolerated — the same stale-comment trap that
+made the axe work look done last time, fixed in the same slice. And eslint caught
+that the `jsx-a11y/heading-has-content` suppression on `CardTitle` had gone dead:
+with a dynamic tag the rule can no longer analyse the element, so the directive was
+removed rather than left as decoration. A warning about an unused suppression is
+worth reading — it means the code moved out from under the rule.
+
+Also closed: the two decorative `.` separators in `NLQChat` are now
+`aria-hidden`, so they are not announced as content between the intent, confidence
+and point-count values.

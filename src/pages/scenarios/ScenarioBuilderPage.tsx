@@ -32,6 +32,7 @@ import { VarianceChart } from '@/components/charts/VarianceChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { PageHeader } from '@/components/ui/PageHeader';
 const baseMetrics = {
   revenue: 48000000,
   cogs: 28800000,
@@ -416,47 +417,44 @@ export default function ScenarioBuilderPage() {
           {saveError}
         </div>
       )}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 id="scenario-builder-heading" className="text-2xl font-bold">
-            Scenario Builder
-          </h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Model assumptions and compare outcomes
-          </p>
-        </div>
-        <div className="flex gap-2" role="group" aria-label="Scenario actions">
-          <Button
-            size="sm"
-            onClick={handleSave}
-            aria-label="Save scenario"
-            data-testid="save-scenario"
-          >
-            <Save className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-            Save Scenario
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={handleExportPDF}
-            aria-label="Export scenario as PDF"
-            data-testid="export-scenario-pdf"
-          >
-            <FileText className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-            PDF
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={handleExportExcel}
-            aria-label="Export scenario as Excel"
-            data-testid="export-scenario-excel"
-          >
-            <TableIcon className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-            Excel
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Scenario Builder"
+        titleId="scenario-builder-heading"
+        purpose="Model assumptions and compare outcomes"
+        actions={
+          <div className="flex gap-2" role="group" aria-label="Scenario actions">
+            <Button
+              size="sm"
+              onClick={handleSave}
+              aria-label="Save scenario"
+              data-testid="save-scenario"
+            >
+              <Save className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              Save Scenario
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleExportPDF}
+              aria-label="Export scenario as PDF"
+              data-testid="export-scenario-pdf"
+            >
+              <FileText className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              PDF
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleExportExcel}
+              aria-label="Export scenario as Excel"
+              data-testid="export-scenario-excel"
+            >
+              <TableIcon className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              Excel
+            </Button>
+          </div>
+        }
+      />
 
       <div
         className="grid grid-cols-4 gap-4"
@@ -482,24 +480,26 @@ export default function ScenarioBuilderPage() {
       <div className="grid grid-cols-2 gap-4" data-testid="probability-kpis">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs uppercase tracking-widest text-slate-500 mb-1">
+            <div className="text-xs uppercase tracking-widest text-[var(--text-muted)] mb-1">
               Prob. Weighted Rev
             </div>
             <div className="text-xl font-black tabular-nums" data-testid="prob-weighted-rev">
               {fmt.currency0(scenarioComparison.probabilityWeightedRevenue)}
             </div>
-            <div className="text-xs text-slate-500">{probability}% probability</div>
+            <div className="text-xs text-[var(--text-muted)]">{probability}% probability</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-xs uppercase tracking-widest text-slate-500 mb-1">
+            <div className="text-xs uppercase tracking-widest text-[var(--text-muted)] mb-1">
               Revenue Variance
             </div>
             <div className="text-xl font-black tabular-nums" data-testid="revenue-variance">
               {fmt.currency0(scenarioComparison.revenueVariance)}
             </div>
-            <div className="text-xs text-slate-500">{scenarioComparison.variancePct}% vs base</div>
+            <div className="text-xs text-[var(--text-muted)]">
+              {scenarioComparison.variancePct}% vs base
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -549,25 +549,33 @@ export default function ScenarioBuilderPage() {
               data-testid="monte-carlo-results"
             >
               <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-center">
-                <div className="text-xs uppercase tracking-widest text-slate-500">Avg Profit</div>
+                <div className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
+                  Avg Profit
+                </div>
                 <div className="text-lg font-black tabular-nums" data-testid="mc-avg">
                   {fmt.currency0(mcResults.avgProfit)}
                 </div>
               </div>
               <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-center">
-                <div className="text-xs uppercase tracking-widest text-slate-500">Median</div>
+                <div className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
+                  Median
+                </div>
                 <div className="text-lg font-black tabular-nums" data-testid="mc-median">
                   {fmt.currency0(mcResults.median)}
                 </div>
               </div>
               <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-center">
-                <div className="text-xs uppercase tracking-widest text-slate-500">P10</div>
+                <div className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
+                  P10
+                </div>
                 <div className="text-lg font-black tabular-nums text-red-400" data-testid="mc-p10">
                   {fmt.currency0(mcResults.p10)}
                 </div>
               </div>
               <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-center">
-                <div className="text-xs uppercase tracking-widest text-slate-500">P90</div>
+                <div className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
+                  P90
+                </div>
                 <div
                   className="text-lg font-black tabular-nums text-emerald-400"
                   data-testid="mc-p90"
@@ -576,7 +584,7 @@ export default function ScenarioBuilderPage() {
                 </div>
               </div>
               <div className="rounded-lg bg-[var(--bg-elevated)] p-3 text-center">
-                <div className="text-xs uppercase tracking-widest text-slate-500">
+                <div className="text-xs uppercase tracking-widest text-[var(--text-muted)]">
                   Profit &gt; 0
                 </div>
                 <div className="text-lg font-black tabular-nums" data-testid="mc-positive">
@@ -683,7 +691,7 @@ export default function ScenarioBuilderPage() {
                 aria-valuetext={`${probability}% (range 0 to 100)`}
                 data-testid="slider-probability"
               />
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-[var(--text-muted)] mt-1">
                 Weights scenario outcomes for expected value
               </p>
             </div>

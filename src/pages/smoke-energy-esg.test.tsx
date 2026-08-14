@@ -249,7 +249,10 @@ describe('Page Smoke Tests — Energy & ESG Pages', () => {
         '/energy/production',
         '/energy/production'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
   });
 
@@ -260,7 +263,10 @@ describe('Page Smoke Tests — Energy & ESG Pages', () => {
   describe('EnergyRiskPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(EnergyRiskPage, '/energy/risk', '/energy/risk');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -290,7 +296,10 @@ describe('Page Smoke Tests — Energy & ESG Pages', () => {
         '/energy/renewable',
         '/energy/renewable'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -338,7 +347,10 @@ describe('Page Smoke Tests — Energy & ESG Pages', () => {
 
     it('renders without crashing', () => {
       const { container } = renderPage(CarbonDashboardPage, '/esg/carbon', '/esg/carbon');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
   });
 
@@ -349,7 +361,10 @@ describe('Page Smoke Tests — Energy & ESG Pages', () => {
   describe('CSRDReportPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(CSRDReportPage, '/esg/csrd', '/esg/csrd');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {

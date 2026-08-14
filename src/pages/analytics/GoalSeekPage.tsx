@@ -10,6 +10,7 @@ import { Target } from 'lucide-react';
 import { formatPercent } from '@/utils/financialFormatting';
 import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface BreakevenResults {
   breakevenRevenue: number;
@@ -130,7 +131,7 @@ export default function GoalSeekPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Financial Modeling</h1>
+      <PageHeader title="Financial Modeling" />
       <div className="flex gap-2">
         {['breakeven', 'goalseek', 'montecarlo'].map((m) => (
           <button

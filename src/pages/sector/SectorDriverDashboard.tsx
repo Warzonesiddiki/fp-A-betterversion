@@ -19,6 +19,7 @@ import {
 } from '@/utils/money';
 import { formatNumber } from '@/utils/formatters';
 import { formatPercent } from '@/utils/financialFormatting';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export type SectorDriverId =
   | 'technology'
@@ -607,7 +608,7 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
         <span className="mx-auto mb-4 block text-3xl text-[var(--text-muted)]" aria-hidden="true">
           ◇
         </span>
-        <h2 className="mb-2 text-xl font-semibold">Sector configuration unavailable</h2>
+        <h1 className="mb-2 text-xl font-semibold">Sector configuration unavailable</h1>
       </main>
     );
   }
@@ -618,9 +619,9 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
         <span className="mx-auto mb-4 block text-3xl text-[var(--text-muted)]" aria-hidden="true">
           ▣
         </span>
-        <h2 className="mb-2 text-xl font-semibold">
+        <h1 className="mb-2 text-xl font-semibold">
           {legacyCopy.title.replace(' Dashboard', '')} — No Data
-        </h2>
+        </h1>
         <p className="mb-6 text-[var(--text-muted)]">
           Import GL data to calculate live sector KPIs and driver scenarios.
         </p>
@@ -665,11 +666,15 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-blue-500">
             Phase 3 Sector Depth
           </p>
-          <h1 className="text-2xl font-bold">{config.name} Driver Modeling Dashboard</h1>
-          <p className="text-sm text-[var(--text-muted)]">
-            {config.description} — KPIs are recomputed from imported GL entries plus live driver
-            controls.
-          </p>
+          <PageHeader
+            title={`${config.name} Driver Modeling Dashboard`}
+            purpose={
+              <>
+                {config.description} — KPIs are recomputed from imported GL entries plus live driver
+                controls.
+              </>
+            }
+          />
         </div>
         <Button variant="secondary" onClick={() => setDrivers(DEFAULT_DRIVERS)}>
           Reset drivers
@@ -757,7 +762,7 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
                 key={signal.label}
                 className="flex items-center justify-between border-b border-slate-200/60 py-2 last:border-0 dark:border-slate-700/60"
               >
-                <span className="text-sm text-slate-500">{signal.label}</span>
+                <span className="text-sm text-[var(--text-muted)]">{signal.label}</span>
                 <span className="font-mono text-sm">{formatMetricValue(signal)}</span>
               </div>
             ))}

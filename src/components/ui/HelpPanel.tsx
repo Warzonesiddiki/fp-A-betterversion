@@ -104,9 +104,7 @@ export const HelpPanel = memo(function HelpPanel({
           sections.map((s, i) => (
             <div key={i} className="mb-6">
               <h3 className="font-semibold text-sm mb-2 dark:text-gray-200">{s.title}</h3>
-              <p className="text-sm text-slate-400 dark:text-slate-500 leading-relaxed">
-                {s.content}
-              </p>
+              <p className="text-sm text-[var(--text-muted)] leading-relaxed">{s.content}</p>
             </div>
           ))
         )}

@@ -248,7 +248,7 @@ export function CurrencyTranslation() {
         <CardContent className="p-4">
           <div className="flex items-center gap-4 flex-wrap">
             <div>
-              <label htmlFor="entity" className="block text-xs text-slate-500 mb-1">
+              <label htmlFor="entity" className="block text-xs text-[var(--text-muted)] mb-1">
                 Entity
               </label>
               <select
@@ -264,9 +264,9 @@ export function CurrencyTranslation() {
                 ))}
               </select>
             </div>
-            <ArrowRight className="h-5 w-5 text-slate-500 mt-4" />
+            <ArrowRight className="h-5 w-5 text-[var(--text-muted)] mt-4" />
             <div>
-              <label htmlFor="parent" className="block text-xs text-slate-500 mb-1">
+              <label htmlFor="parent" className="block text-xs text-[var(--text-muted)] mb-1">
                 Parent
               </label>
               <select
@@ -283,7 +283,7 @@ export function CurrencyTranslation() {
               </select>
             </div>
             <div>
-              <label htmlFor="period" className="block text-xs text-slate-500 mb-1">
+              <label htmlFor="period" className="block text-xs text-[var(--text-muted)] mb-1">
                 Period
               </label>
               <input
@@ -296,19 +296,19 @@ export function CurrencyTranslation() {
             </div>
             <div className="ml-auto flex gap-6 text-sm">
               <div>
-                <span className="text-slate-500">Closing</span>
+                <span className="text-[var(--text-muted)]">Closing</span>
                 <span className="ml-2 font-mono">
                   {closingRate === null ? '— missing' : formatNumber(closingRate, 4)}
                 </span>
               </div>
               <div>
-                <span className="text-slate-500">Average</span>
+                <span className="text-[var(--text-muted)]">Average</span>
                 <span className="ml-2 font-mono">
                   {averageRate === null ? '— missing' : formatNumber(averageRate, 4)}
                 </span>
               </div>
               <div>
-                <span className="text-slate-500">Historical</span>
+                <span className="text-[var(--text-muted)]">Historical</span>
                 <span className="ml-2 font-mono">
                   {historicalRate === null ? '— missing' : formatNumber(historicalRate, 4)}
                 </span>

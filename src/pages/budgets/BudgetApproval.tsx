@@ -10,6 +10,7 @@ import { CheckCircle, Clock, AlertTriangle, DollarSign } from 'lucide-react';
 import Decimal from 'decimal.js';
 import { addMoney, roundTo, sumMoney, toDecimal } from '@/utils/money';
 import type { GLEntry } from '@/types';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 /**
  * GAP-1 (F-0006) — exact-decimal budget-approval totals.
@@ -125,7 +126,7 @@ export function BudgetApproval() {
           className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4"
           aria-hidden="true"
         />
-        <h2 className="text-xl font-semibold mb-2">No Budget Approval Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Budget Approval Data</h1>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to view budget approvals.</p>
         <Button
           id="import-btn"
@@ -151,14 +152,15 @@ export function BudgetApproval() {
       >
         Skip to key metrics
       </a>
-      <header className="flex items-center justify-between">
-        <h1 id="approval-heading" className="text-2xl font-bold">
-          Budget Approval
-        </h1>
-        <span className="text-sm text-[var(--text-muted)]">
-          {formatNumber(entries.length)} entries imported
-        </span>
-      </header>
+      <PageHeader
+        title="Budget Approval"
+        titleId="approval-heading"
+        status={
+          <span className="text-sm text-[var(--text-muted)]">
+            {formatNumber(entries.length)} entries imported
+          </span>
+        }
+      />
       <section
         id="kpi-section"
         className="grid grid-cols-2 md:grid-cols-4 gap-4"

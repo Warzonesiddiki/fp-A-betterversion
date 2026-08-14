@@ -9,6 +9,7 @@ import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Wifi } from 'lucide-react';
 import { sumMoney, roundTo } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export function TelecomDashboardPage() {
   const { entries } = useGLStore();
@@ -61,7 +62,7 @@ export function TelecomDashboardPage() {
     return (
       <main className="p-12 text-center" role="main" aria-label="Telecom Dashboard - No Data">
         <Wifi className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">Telecom — No Data</h2>
+        <h1 className="text-xl font-semibold mb-2">Telecom — No Data</h1>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to view telecom KPIs.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
@@ -70,10 +71,10 @@ export function TelecomDashboardPage() {
 
   return (
     <main className="p-6 space-y-6" role="main">
-      <h1 className="text-2xl font-bold">Telecom Dashboard</h1>
-      <p className="text-sm text-[var(--text-muted)]">
-        ARPU, churn, subscriber growth, and network metrics
-      </p>
+      <PageHeader
+        title="Telecom Dashboard"
+        purpose="ARPU, churn, subscriber growth, and network metrics"
+      />
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {kpis.map((kpi) => (

@@ -5,6 +5,9 @@ import { ColumnMapper } from './ColumnMapper';
 describe('ColumnMapper', () => {
   it('renders without crashing', () => {
     const { container } = render(<ColumnMapper />);
-    expect(container).toBeDefined();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the component mounted'
+    ).toBeGreaterThanOrEqual(1);
   });
 });

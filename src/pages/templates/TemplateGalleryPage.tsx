@@ -222,7 +222,11 @@ export default function TemplateGalleryPage() {
 
       {filteredTemplates.length === 0 && (
         <Card>
-          <CardContent className="p-8 text-center text-muted-foreground">
+          <CardContent
+            className="p-8 text-center text-muted-foreground"
+            role="status"
+            aria-live="polite"
+          >
             <Search className="h-8 w-8 mx-auto mb-2 opacity-50" />
             <p>No templates match your search.</p>
           </CardContent>

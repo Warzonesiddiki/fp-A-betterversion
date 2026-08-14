@@ -147,11 +147,15 @@ export default function GLExplorerPage() {
 
   if (entries.length === 0) {
     return (
-      <div className="p-12 text-center">
-        <Database className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No GL Data</h2>
+      <main className="p-12 text-center" role="main" aria-label="GL Explorer - No Data">
+        <Database className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
+        <h1 className="text-xl font-semibold mb-2">No GL Data</h1>
+        <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
+          Import a general ledger export to browse, filter and drill into individual journal
+          entries.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
-      </div>
+      </main>
     );
   }
 
@@ -214,7 +218,7 @@ export default function GLExplorerPage() {
 
       <div className="flex gap-3 items-center">
         <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
           <input
             className="w-full pl-9 pr-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm"
             placeholder="Explore entries..."
@@ -302,7 +306,7 @@ export default function GLExplorerPage() {
         </CardContent>
       </Card>
 
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-[var(--text-muted)]">
         {entries.length.toLocaleString()} total · showing first {filtered.length.toLocaleString()}
       </p>
     </div>

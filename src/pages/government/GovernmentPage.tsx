@@ -14,6 +14,7 @@ import {
 import { Landmark, FileText, Users, DollarSign } from 'lucide-react';
 import type { GLEntry } from '@/types';
 import { roundTo, sumMoney } from '@/utils/money';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 function computeGovernmentStats(entries: readonly GLEntry[]) {
   const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
@@ -113,7 +114,7 @@ export default function GovernmentPage() {
           Skip to import action
         </a>
         <Landmark className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No Government Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Government Data</h1>
         <p className="text-[var(--text-muted)] mb-6">
           Import GL data to view government financials.
         </p>
@@ -137,14 +138,15 @@ export default function GovernmentPage() {
       >
         Skip to key metrics
       </a>
-      <header className="flex items-center justify-between">
-        <h1 id="gov-heading" className="text-2xl font-bold">
-          Government
-        </h1>
-        <span className="text-sm text-[var(--text-muted)]">
-          {formatNumber(entries.length)} entries imported
-        </span>
-      </header>
+      <PageHeader
+        title="Government"
+        titleId="gov-heading"
+        status={
+          <span className="text-sm text-[var(--text-muted)]">
+            {formatNumber(entries.length)} entries imported
+          </span>
+        }
+      />
       <section
         id="kpi-section"
         className="grid grid-cols-2 md:grid-cols-4 gap-4"

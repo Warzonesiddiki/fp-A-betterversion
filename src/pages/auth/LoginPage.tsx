@@ -178,7 +178,7 @@ export default function LoginPage() {
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
                 <Input
                   id="login-email"
                   type="email"
@@ -219,7 +219,7 @@ export default function LoginPage() {
                 </button>
               </div>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
                 <Input
                   id="login-password"
                   type={showPw ? 'text' : 'password'}
@@ -237,7 +237,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPw(!showPw)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-slate-300"
                   aria-label={showPw ? 'Hide password' : 'Show password'}
                 >
                   {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -289,10 +289,10 @@ export default function LoginPage() {
             <p>
               <code className="text-blue-400">viewer@finplan.com</code> — Viewer (read-only)
             </p>
-            <p className="text-slate-500">Any password works in offline mode.</p>
+            <p className="text-[var(--text-muted)]">Any password works in offline mode.</p>
           </div>
 
-          <p className="text-xs text-center text-slate-500">
+          <p className="text-xs text-center text-[var(--text-muted)]">
             Don&apos;t have an account?{' '}
             <Link to="/register" className="text-blue-400 hover:text-blue-300">
               Register

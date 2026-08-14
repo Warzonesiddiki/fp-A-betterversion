@@ -239,7 +239,11 @@ export const ApprovalQueue = memo(function ApprovalQueue({
           ))}
 
           {filtered.length === 0 && (
-            <div className="text-center py-8 text-[var(--text-muted)]">
+            <div
+              className="text-center py-8 text-[var(--text-muted)]"
+              role="status"
+              aria-live="polite"
+            >
               <p>No requests match your filters.</p>
             </div>
           )}

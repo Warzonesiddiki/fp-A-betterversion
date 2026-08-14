@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import type { GLEntry } from '@/types';
 import { roundTo, sumMoney, formatMoney } from '@/utils/money';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 function computeReportStats(entries: readonly GLEntry[]) {
   const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
@@ -204,7 +205,7 @@ export function SharedReports() {
           Skip to import action
         </a>
         <FileText className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No Shared Reports Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Shared Reports Data</h1>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to view shared reports.</p>
         <Button
           id="import-btn"
@@ -230,44 +231,48 @@ export function SharedReports() {
       >
         Skip to key metrics
       </a>
-      <header className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 id="reports-heading" className="text-2xl font-bold flex items-center gap-2">
-            <FileText className="h-6 w-6 text-blue-700" aria-hidden="true" />
-            Shared Reports
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">
+      <PageHeader
+        icon={<FileText className="h-6 w-6 text-blue-700" aria-hidden="true" />}
+        title="Shared Reports"
+        titleId="reports-heading"
+        purpose={
+          <>
             {formatNumber(entries.length)} entries imported
             {filteredEntries.length !== entries.length &&
               ` • ${formatNumber(filteredEntries.length)} shown`}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <Badge variant="secondary" className="px-3 py-1 gap-1" aria-label="Real-time indicator">
-            <span className="h-2 w-2 rounded-full bg-green-700 animate-pulse" aria-hidden="true" />
-            <span className="text-xs font-medium text-green-700">Live</span>
-          </Badge>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleRefresh}
-            aria-label="Refresh shared reports"
-          >
-            <RefreshCw className="h-4 w-4 mr-1" aria-hidden="true" />
-            Refresh
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleExportCsv}
-            disabled={sortedBreakdown.length === 0}
-            aria-label="Export shared reports to CSV"
-          >
-            <Download className="h-4 w-4 mr-1" aria-hidden="true" />
-            Export CSV
-          </Button>
-        </div>
-      </header>
+          </>
+        }
+        actions={
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge variant="secondary" className="px-3 py-1 gap-1" aria-label="Real-time indicator">
+              <span
+                className="h-2 w-2 rounded-full bg-green-700 animate-pulse"
+                aria-hidden="true"
+              />
+              <span className="text-xs font-medium text-green-700">Live</span>
+            </Badge>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleRefresh}
+              aria-label="Refresh shared reports"
+            >
+              <RefreshCw className="h-4 w-4 mr-1" aria-hidden="true" />
+              Refresh
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleExportCsv}
+              disabled={sortedBreakdown.length === 0}
+              aria-label="Export shared reports to CSV"
+            >
+              <Download className="h-4 w-4 mr-1" aria-hidden="true" />
+              Export CSV
+            </Button>
+          </div>
+        }
+      />
 
       <section
         id="kpi-section"
@@ -392,7 +397,9 @@ export function SharedReports() {
                   ariaLabel="Account breakdown"
                 />
               ) : (
-                <p className="text-[var(--text-muted)]">No accounts match the current filters.</p>
+                <p className="text-[var(--text-muted)]" role="status" aria-live="polite">
+                  No accounts match the current filters.
+                </p>
               )}
             </CardContent>
           </Card>
@@ -409,7 +416,7 @@ export function SharedReports() {
             </CardHeader>
             <CardContent>
               {tasks.length === 0 ? (
-                <p className="text-slate-500 text-sm">No collaboration tasks yet.</p>
+                <p className="text-[var(--text-muted)] text-sm">No collaboration tasks yet.</p>
               ) : (
                 <ul className="space-y-2 text-sm">
                   {tasks.slice(0, 10).map((t, i) => (
@@ -446,7 +453,7 @@ export function SharedReports() {
             </CardHeader>
             <CardContent>
               {comments.length === 0 ? (
-                <p className="text-slate-500 text-sm">No comments yet.</p>
+                <p className="text-[var(--text-muted)] text-sm">No comments yet.</p>
               ) : (
                 <ul className="space-y-2 text-sm">
                   {comments.slice(0, 10).map((c, i) => (

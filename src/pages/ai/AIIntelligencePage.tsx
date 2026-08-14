@@ -27,6 +27,7 @@ import {
   Clock,
   Eye,
 } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface AnomalyResult {
   description: string;
@@ -195,46 +196,42 @@ export function AIIntelligencePage() {
   return (
     <div className="p-6 space-y-6" aria-label="AI Intelligence Center">
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-4">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900 dark:text-slate-100">
-            <Brain className="h-6 w-6 text-purple-700 dark:text-purple-300" />
-            AI Intelligence Center
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
-            Local-first, GPU-accelerated financial analysis.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <Badge
-            variant="secondary"
-            className="px-3 py-1 gap-1"
-            aria-label={`Device status: ${deviceLabel}`}
-          >
-            <Cpu className={`h-4 w-4 ${deviceColor}`} aria-hidden="true" />
-            <span className={`text-xs font-medium ${deviceColor}`}>{deviceLabel}</span>
-          </Badge>
-          {secondsSinceAnalysis !== null && (
-            <span
-              className="text-xs text-slate-500 dark:text-slate-400"
-              aria-live="polite"
-              aria-label={`Last analysis ${secondsSinceAnalysis} seconds ago`}
+      <PageHeader
+        icon={<Brain className="h-6 w-6 text-purple-700 dark:text-purple-300" />}
+        title="AI Intelligence Center"
+        purpose="Local-first, GPU-accelerated financial analysis."
+        actions={
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge
+              variant="secondary"
+              className="px-3 py-1 gap-1"
+              aria-label={`Device status: ${deviceLabel}`}
             >
-              <Clock className="inline h-3 w-3 mr-1" aria-hidden="true" />
-              Last analysis {secondsSinceAnalysis}s ago
-            </span>
-          )}
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleRefresh}
-            aria-label="Refresh AI insights"
-          >
-            <RefreshCw className="h-4 w-4 mr-1" aria-hidden="true" />
-            Refresh
-          </Button>
-        </div>
-      </div>
+              <Cpu className={`h-4 w-4 ${deviceColor}`} aria-hidden="true" />
+              <span className={`text-xs font-medium ${deviceColor}`}>{deviceLabel}</span>
+            </Badge>
+            {secondsSinceAnalysis !== null && (
+              <span
+                className="text-xs text-slate-500 dark:text-slate-400"
+                aria-live="polite"
+                aria-label={`Last analysis ${secondsSinceAnalysis} seconds ago`}
+              >
+                <Clock className="inline h-3 w-3 mr-1" aria-hidden="true" />
+                Last analysis {secondsSinceAnalysis}s ago
+              </span>
+            )}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleRefresh}
+              aria-label="Refresh AI insights"
+            >
+              <RefreshCw className="h-4 w-4 mr-1" aria-hidden="true" />
+              Refresh
+            </Button>
+          </div>
+        }
+      />
 
       {/* KPI cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -348,7 +345,7 @@ export function AIIntelligencePage() {
                     </p>
                     {loading && (
                       <div className="space-y-2">
-                        <div className="flex justify-between text-xs text-slate-500">
+                        <div className="flex justify-between text-xs text-[var(--text-muted)]">
                           <span>Downloading Model...</span>
                           <span>{Math.round(progress)}%</span>
                         </div>
@@ -535,7 +532,11 @@ export function AIIntelligencePage() {
                   ))}
                 </div>
               ) : (
-                <div className="py-8 text-center text-slate-500 dark:text-slate-400 text-sm">
+                <div
+                  className="py-8 text-center text-slate-500 dark:text-slate-400 text-sm"
+                  role="status"
+                  aria-live="polite"
+                >
                   {results.length === 0
                     ? 'Run analysis from the Overview tab to populate this list.'
                     : 'No results match your current filters.'}

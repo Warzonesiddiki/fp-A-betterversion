@@ -61,7 +61,7 @@ function FilterRow({
       />
       <button
         onClick={onRemove}
-        className="text-[var(--text-muted)] hover:text-[var(--negative)] transition-colors flex-shrink-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+        className="text-[var(--text-muted)] hover:text-[var(--text-negative)] transition-colors flex-shrink-0 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
         aria-label={`Remove filter ${filter.label}`}
       >
         <X className="h-3 w-3" />

@@ -233,12 +233,12 @@ export function ReportDesigner() {
             <FilterPanel filters={filters} onAddFilter={(f) => setFilters((p) => [...p, f])} onRemoveFilter={(id) => setFilters((p) => p.filter((f) => f.id !== id))} onUpdateFilter={(id, u) => setFilters((p) => p.map((f) => (f.id === id ? { ...f, ...u } : f)))} className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border-default)] p-3" />
 
             <div onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop(e, 'columns')} className="flex items-center justify-center h-10 border border-dashed border-slate-700 rounded-xl hover:border-blue-500/50 hover:bg-blue-500/5 transition-all group">
-              <span className="text-[10px] uppercase tracking-tighter text-[var(--text-muted)] group-hover:text-[var(--accent-primary)] font-bold flex items-center gap-1.5"><Plus className="h-3 w-3" />Drop Measures or Dimensions for Columns</span>
+              <span className="text-[10px] uppercase tracking-tighter text-[var(--text-muted)] group-hover:text-[var(--text-accent)] font-bold flex items-center gap-1.5"><Plus className="h-3 w-3" />Drop Measures or Dimensions for Columns</span>
             </div>
 
             <div className="flex gap-3 items-start">
               <div onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop(e, 'rows')} className="w-7 self-stretch min-h-[200px] border border-dashed border-slate-700 rounded-xl hover:border-blue-500/50 hover:bg-blue-500/5 transition-all flex items-center justify-center group">
-                <div className="rotate-90 text-[10px] uppercase tracking-tighter text-[var(--text-muted)] group-hover:text-[var(--accent-primary)] font-bold whitespace-nowrap"><Plus className="h-3 w-3 inline mr-1" />Rows</div>
+                <div className="rotate-90 text-[10px] uppercase tracking-tighter text-[var(--text-muted)] group-hover:text-[var(--text-accent)] font-bold whitespace-nowrap"><Plus className="h-3 w-3 inline mr-1" />Rows</div>
               </div>
               <div className="flex-1 bg-[var(--bg-elevated)] rounded-xl border border-[var(--border-default)] p-1 shadow-xl">
                 <ReportGrid layout={report.layout} cubeData={cubeData} onExportPDF={() => handleExport('pdf')} onExportExcel={() => handleExport('excel')} onExportCSV={() => handleExport('csv')} className="rounded-lg overflow-hidden" />

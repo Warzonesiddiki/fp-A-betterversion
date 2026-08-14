@@ -81,7 +81,7 @@ export function TourOverlay() {
             <button
               onClick={stopTour}
               aria-label="Close tour"
-              className="text-slate-500 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+              className="text-[var(--text-muted)] hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
             >
               <X className="h-4 w-4" />
             </button>

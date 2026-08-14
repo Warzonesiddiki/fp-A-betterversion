@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Repeat, ArrowRight, TrendingUp, TrendingDown } from 'lucide-react';
 import { formatNumber } from '@/utils/financialFormatting';
 import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const RATES: Record<string, Record<string, number>> = {
   USD: {
@@ -131,14 +132,17 @@ export default function TranslationResultPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Translation Results</h1>
+      <PageHeader title="Translation Results" />
 
       {/* Currency Selector */}
       <Card>
         <CardContent className="p-4">
           <div className="flex items-center gap-4 flex-wrap">
             <div>
-              <label htmlFor="source-currency" className="block text-xs text-slate-500 mb-1">
+              <label
+                htmlFor="source-currency"
+                className="block text-xs text-[var(--text-muted)] mb-1"
+              >
                 Source Currency
               </label>
               <select
@@ -154,9 +158,12 @@ export default function TranslationResultPage() {
                 ))}
               </select>
             </div>
-            <ArrowRight className="h-5 w-5 text-slate-500 mt-4" />
+            <ArrowRight className="h-5 w-5 text-[var(--text-muted)] mt-4" />
             <div>
-              <label htmlFor="target-currency" className="block text-xs text-slate-500 mb-1">
+              <label
+                htmlFor="target-currency"
+                className="block text-xs text-[var(--text-muted)] mb-1"
+              >
                 Target Currency
               </label>
               <select
@@ -173,7 +180,7 @@ export default function TranslationResultPage() {
               </select>
             </div>
             <div className="ml-auto text-right mt-4">
-              <div className="text-xs text-slate-500">Exchange Rate</div>
+              <div className="text-xs text-[var(--text-muted)]">Exchange Rate</div>
               <div className="text-lg font-bold tabular-nums">{formatNumber(rate, 6)}</div>
             </div>
           </div>

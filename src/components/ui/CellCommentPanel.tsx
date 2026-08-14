@@ -36,7 +36,7 @@ function CommentItem({ comment, replies, engine, currentUser, onReply }: Comment
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="font-medium text-[var(--text-primary)] text-sm">{comment.author}</span>
-          <span className="text-xs text-slate-500">{timeAgo}</span>
+          <span className="text-xs text-[var(--text-muted)]">{timeAgo}</span>
           {comment.mentions.length > 0 && (
             <span className="text-xs text-blue-400">
               {comment.mentions.map((m) => `@${m}`).join(' ')}
@@ -144,7 +144,7 @@ export function CellCommentPanel({
       {/* Comment list */}
       <div className="flex-1 overflow-y-auto px-4 py-2 space-y-3">
         {threads.length === 0 ? (
-          <p className="text-sm text-slate-500 italic py-4">No comments yet.</p>
+          <p className="text-sm text-[var(--text-muted)] italic py-4">No comments yet.</p>
         ) : (
           threads.map((comment) => (
             <CommentItem

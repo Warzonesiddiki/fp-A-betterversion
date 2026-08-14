@@ -22,7 +22,10 @@ describe('ConditionalFormattingRenderers', () => {
           config={{ barColor: '#3b82f6', showValue: true, showAxis: false, style: 'solid' }}
         />
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the component mounted'
+      ).toBeGreaterThanOrEqual(1);
     });
 
     it('displays value when showValue is true', () => {
@@ -56,7 +59,10 @@ describe('ConditionalFormattingRenderers', () => {
           config={{ type: '3-arrows', reverse: false, showIconOnly: true }}
         />
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the component mounted'
+      ).toBeGreaterThanOrEqual(1);
     });
 
     it('renders icon with aria-label', () => {
@@ -78,7 +84,10 @@ describe('ConditionalFormattingRenderers', () => {
           config={{ type: '2-color', minColor: '#00ff00', maxColor: '#ff0000' }}
         />
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the component mounted'
+      ).toBeGreaterThanOrEqual(1);
     });
 
     it('displays value when provided', () => {

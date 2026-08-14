@@ -281,41 +281,41 @@ export default function PeriodClosePage() {
       <LiveRegion message={liveMessage} />
 
       {/* Header */}
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <CalendarCheck className="w-6 h-6" aria-hidden="true" />
-            Period Close
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+      <PageHeader
+        icon={<CalendarCheck className="w-6 h-6" aria-hidden="true" />}
+        title="Period Close"
+        purpose={
+          <>
             Month-end close workflow — state machine, checklist, validation and audit trail. Base
             currency: {organization.baseCurrency || 'USD'}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {chainVerified && (
-            <span
-              className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md ${
-                chainVerified.ok
-                  ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
-                  : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
-              }`}
+          </>
+        }
+        actions={
+          <div className="flex items-center gap-2">
+            {chainVerified && (
+              <span
+                className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md ${
+                  chainVerified.ok
+                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
+                    : 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300'
+                }`}
+              >
+                <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
+                {chainVerified.ok
+                  ? `Audit chain verified (${chainVerified.total} event${chainVerified.total === 1 ? '' : 's'})`
+                  : 'Audit chain BROKEN — investigate'}
+              </span>
+            )}
+            <Link
+              to="/audit/sox"
+              className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
-              {chainVerified.ok
-                ? `Audit chain verified (${chainVerified.total} event${chainVerified.total === 1 ? '' : 's'})`
-                : 'Audit chain BROKEN — investigate'}
-            </span>
-          )}
-          <Link
-            to="/audit/sox"
-            className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <Link2 className="w-3.5 h-3.5" aria-hidden="true" />
-            SOX Compliance
-          </Link>
-        </div>
-      </div>
+              <Link2 className="w-3.5 h-3.5" aria-hidden="true" />
+              SOX Compliance
+            </Link>
+          </div>
+        }
+      />
 
       {/* Period grid */}
       <section aria-label="Fiscal periods">

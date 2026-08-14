@@ -137,7 +137,7 @@ export function CommentaryPanel({
                   <button
                     type="button"
                     onClick={() => handleEdit(idx)}
-                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-slate-500 hover:text-slate-300 p-1 rounded hover:bg-slate-700 transition-opacity"
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-[var(--text-muted)] hover:text-slate-300 p-1 rounded hover:bg-slate-700 transition-opacity"
                     aria-label="Edit commentary"
                   >
                     <Pencil className="h-3.5 w-3.5" />

@@ -85,7 +85,7 @@ export function DriverCard({
                 <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                   →
                 </span>
-                <span className="text-xs font-medium" style={{ color: 'var(--accent)' }}>
+                <span className="text-xs font-medium" style={{ color: 'var(--text-accent)' }}>
                   {formatDriverValue(pendingValue, driver.unit)}
                 </span>
               </>

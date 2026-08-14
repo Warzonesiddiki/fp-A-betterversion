@@ -148,7 +148,7 @@ export function FormulaBar({
           aria-live="polite"
           aria-label={`Active cell: ${activeCell}`}
         >
-          <span className="text-xs font-bold text-[var(--accent-primary)] tabular-nums font-mono">
+          <span className="text-xs font-bold text-[var(--text-accent)] tabular-nums font-mono">
             {activeCell}
           </span>
         </div>

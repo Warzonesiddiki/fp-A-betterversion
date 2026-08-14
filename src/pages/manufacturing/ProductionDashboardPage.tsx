@@ -151,7 +151,7 @@ export default function ProductionDashboardPage() {
               ? 'text-green-400'
               : r.status === 'Maintenance'
                 ? 'text-yellow-400'
-                : 'text-slate-500'
+                : 'text-[var(--text-muted)]'
           }
         >
           {r.status === 'Running' ? (
@@ -201,11 +201,15 @@ export default function ProductionDashboardPage() {
 
   if (entries.length === 0)
     return (
-      <div className="p-12 text-center">
-        <ChartArea className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Production Data</h2>
+      <main className="p-12 text-center" role="main" aria-label="Production Dashboard - No Data">
+        <ChartArea className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
+        <h1 className="text-xl font-semibold mb-2">No Production Data</h1>
+        <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
+          Import general ledger data with production and cost-of-goods accounts to see output, yield
+          and variance.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
-      </div>
+      </main>
     );
 
   return (

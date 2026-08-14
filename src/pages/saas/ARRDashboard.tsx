@@ -11,6 +11,7 @@ import { HelpPanel } from '@/components/ui/HelpPanel';
 import { PAGE_HELP } from '../_docs';
 import { BarChart4, TrendingUp, Users, RefreshCcw } from 'lucide-react';
 import { sumMoney, roundTo } from '@/utils/money';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function ARRDashboard() {
   const { pathname } = useLocation();
@@ -68,8 +69,8 @@ export default function ARRDashboard() {
   if (!metrics) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <BarChart4 className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <BarChart4 className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No SaaS Data Found</h2>
         <p className="text-[var(--text-muted)] mb-6">
@@ -84,31 +85,27 @@ export default function ARRDashboard() {
   return (
     <div className="p-6 space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <TrendingUp className="h-6 w-6 text-emerald-400" />
-              ARR Dashboard
-            </h1>
-            <p className="text-sm text-[var(--text-muted)] mt-1">
-              SaaS Recurring Revenue & Growth Efficiency
-            </p>
-          </div>
-          <button
-            onClick={() => setHelpOpen(true)}
-            className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors ml-4"
-            aria-label="Help"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          </button>
-        </div>
+        <PageHeader
+          icon={<TrendingUp className="h-6 w-6 text-emerald-400" />}
+          title="ARR Dashboard"
+          purpose="SaaS Recurring Revenue & Growth Efficiency"
+          actions={
+            <button
+              onClick={() => setHelpOpen(true)}
+              className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors ml-4"
+              aria-label="Help"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </button>
+          }
+        />
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => navigate('/saas/cohort')}>
             Cohort Analysis
@@ -186,7 +183,9 @@ export default function ARRDashboard() {
                 <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
                   <div className="h-full bg-blue-500 w-[70%]" />
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1.5">70% of target efficiency</p>
+                <p className="text-[10px] text-[var(--text-muted)] mt-1.5">
+                  70% of target efficiency
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -201,11 +200,15 @@ export default function ARRDashboard() {
             <CardContent>
               <div className="space-y-3">
                 <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
-                  <div className="text-[10px] uppercase font-bold text-slate-500">Gross Churn</div>
+                  <div className="text-[10px] uppercase font-bold text-[var(--text-muted)]">
+                    Gross Churn
+                  </div>
                   <div className="text-lg font-bold">2.4%</div>
                 </div>
                 <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
-                  <div className="text-[10px] uppercase font-bold text-slate-500">Net Churn</div>
+                  <div className="text-[10px] uppercase font-bold text-[var(--text-muted)]">
+                    Net Churn
+                  </div>
                   <div className="text-lg font-bold text-emerald-400">-4.2%</div>
                 </div>
               </div>

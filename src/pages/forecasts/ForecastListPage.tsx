@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { currencyFormatter } from '@/utils/financialFormatting';
@@ -51,8 +52,8 @@ export default function ForecastListPage() {
   if (forecasts.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <TrendingUp className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <TrendingUp className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Forecasts Yet</h2>
         <p className="text-[var(--text-muted)] mb-6">
@@ -75,7 +76,7 @@ export default function ForecastListPage() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                 aria-label="Help"
               ></button>
             }
@@ -135,8 +136,10 @@ export default function ForecastListPage() {
               <tbody className="divide-y divide-slate-800">
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-8 text-slate-500">
-                      No forecasts match your search.
+                    <td colSpan={6} className="text-center py-8 text-[var(--text-muted)]">
+                      <span role="status" aria-live="polite">
+                        No forecasts match your search.
+                      </span>
                     </td>
                   </tr>
                 ) : (
@@ -145,6 +148,8 @@ export default function ForecastListPage() {
                       key={f.id}
                       className="hover:bg-slate-900/50 cursor-pointer"
                       onClick={() => navigate('/forecasts/' + f.id)}
+                      onKeyDown={activateOnKey(() => navigate('/forecasts/' + f.id))}
+                      tabIndex={0}
                     >
                       <td className="px-4 py-3 font-medium">{f.name}</td>
                       <td className="px-4 py-3 text-xs text-slate-400">{f.type}</td>
@@ -163,7 +168,7 @@ export default function ForecastListPage() {
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-xs text-slate-400">{f.confidenceLevel}</td>
-                      <td className="px-4 py-3 text-xs text-slate-500">
+                      <td className="px-4 py-3 text-xs text-[var(--text-muted)]">
                         {formatRelativeTime(f.lastUpdated || f.createdAt)}
                       </td>
                       <td className="px-4 py-3">

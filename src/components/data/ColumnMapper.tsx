@@ -109,7 +109,7 @@ export const ColumnMapper: React.FC<ColumnMapperProps> = ({
                     {formatPercent(m.confidence * 100, 0)}
                   </span>
                 </td>
-                <td className="px-4 py-2 text-xs text-slate-500 max-w-[200px] truncate">
+                <td className="px-4 py-2 text-xs text-[var(--text-muted)] max-w-[200px] truncate">
                   {m.reason || '—'}
                 </td>
               </tr>

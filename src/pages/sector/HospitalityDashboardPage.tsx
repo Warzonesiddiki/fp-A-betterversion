@@ -9,6 +9,7 @@ import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Hotel } from 'lucide-react';
 import { sumMoney, roundTo } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function HospitalityDashboardPage() {
   const { entries } = useGLStore();
@@ -37,7 +38,7 @@ export default function HospitalityDashboardPage() {
     return (
       <main className="p-12 text-center" role="main" aria-label="Hospitality Dashboard - No Data">
         <Hotel className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">Hospitality — No Data</h2>
+        <h1 className="text-xl font-semibold mb-2">Hospitality — No Data</h1>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to view hospitality KPIs.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
@@ -46,8 +47,10 @@ export default function HospitalityDashboardPage() {
 
   return (
     <main className="p-6 space-y-6" role="main">
-      <h1 className="text-2xl font-bold">Hospitality Dashboard</h1>
-      <p className="text-sm text-[var(--text-muted)]">RevPAR, ADR, Occupancy, and GOPPAR metrics</p>
+      <PageHeader
+        title="Hospitality Dashboard"
+        purpose="RevPAR, ADR, Occupancy, and GOPPAR metrics"
+      />
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {kpis.map((kpi) => (

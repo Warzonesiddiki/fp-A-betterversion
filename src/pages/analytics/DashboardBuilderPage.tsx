@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { LayoutGrid, Plus, Save, Download, Trash2, GripVertical } from 'lucide-react';
 import { useDashboardStore, type Widget, type WidgetType } from '@/store/dashboardStore';
 import { useAuthStore } from '@/store/authStore';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const DEFAULT_DASHBOARD_NAME = 'My Dashboard';
 
@@ -216,15 +217,15 @@ export default function DashboardBuilderPage() {
         {announcement}
       </div>
       <div className="flex items-center justify-between">
-        <div>
-          <h1 id="db-builder-heading" className="text-2xl font-bold">
-            Dashboard Builder
-            {isEditing && <span className="sr-only"> (edit mode active)</span>}
-          </h1>
-          <p className="text-muted-foreground">
-            Create custom dashboards with drag-and-drop widgets
-          </p>
-        </div>
+        <PageHeader
+          title="Dashboard Builder"
+          titleId="db-builder-heading"
+          purpose="Create custom dashboards with drag-and-drop widgets"
+          // Edit mode was announced by an sr-only span inside the <h1>. It
+          // stays screen-reader-only, but as sibling status rather than part
+          // of the heading's accessible name, so the page's name is stable.
+          status={isEditing ? <span className="sr-only">Edit mode active</span> : null}
+        />
         <div className="flex gap-2">
           <Button
             variant="outline"

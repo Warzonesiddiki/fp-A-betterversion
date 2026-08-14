@@ -23,6 +23,7 @@ import {
   FileSpreadsheet,
 } from 'lucide-react';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -262,59 +263,55 @@ export function NLQChatPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-2rem)] p-6 gap-4">
       {/* Header */}
-      <div className="flex items-center justify-between shrink-0">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <MessageSquare className="h-6 w-6 text-blue-400" />
-            NLQ Chat
-          </h1>
-          <p className="text-[var(--text-muted)] text-sm mt-1">
-            Ask questions about your financial data in plain English.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {queryHistory.length > 0 && (
-            <div className="relative">
-              <Button variant="outline" size="sm" onClick={() => setShowHistory(!showHistory)}>
-                <History className="h-4 w-4 mr-1.5" />
-                History
+      <PageHeader
+        icon={<MessageSquare className="h-6 w-6 text-blue-400" />}
+        title="NLQ Chat"
+        purpose="Ask questions about your financial data in plain English."
+        actions={
+          <div className="flex items-center gap-2 shrink-0">
+            {queryHistory.length > 0 && (
+              <div className="relative">
+                <Button variant="outline" size="sm" onClick={() => setShowHistory(!showHistory)}>
+                  <History className="h-4 w-4 mr-1.5" />
+                  History
+                </Button>
+                {showHistory && (
+                  <div className="absolute right-0 top-full mt-1 z-50 w-72 max-h-64 overflow-y-auto rounded-lg border border-slate-700/50 bg-slate-800 shadow-xl">
+                    {queryHistory.map((q, i) => (
+                      <button
+                        key={i}
+                        onClick={() => handleHistorySelect(q)}
+                        className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-slate-700/50 border-b border-slate-700/30 last:border-0 truncate"
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+            {messages.length > 0 && (
+              <Button variant="outline" size="sm" onClick={handleClear}>
+                <Trash2 className="h-4 w-4 mr-1.5" />
+                Clear
               </Button>
-              {showHistory && (
-                <div className="absolute right-0 top-full mt-1 z-50 w-72 max-h-64 overflow-y-auto rounded-lg border border-slate-700/50 bg-slate-800 shadow-xl">
-                  {queryHistory.map((q, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleHistorySelect(q)}
-                      className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-slate-700/50 border-b border-slate-700/30 last:border-0 truncate"
-                    >
-                      {q}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-          {messages.length > 0 && (
-            <Button variant="outline" size="sm" onClick={handleClear}>
-              <Trash2 className="h-4 w-4 mr-1.5" />
-              Clear
-            </Button>
-          )}
-        </div>
-      </div>
+            )}
+          </div>
+        }
+      />
 
       {/* Chat Area */}
       <div className="flex-1 min-h-0 flex flex-col">
         {isEmpty ? (
           /* Empty State — Examples */
           <div className="flex-1 flex flex-col items-center justify-center gap-6">
-            <div className="flex items-center gap-3 text-slate-500">
+            <div className="flex items-center gap-3 text-[var(--text-muted)]">
               <Sparkles className="h-8 w-8 text-blue-400/50" />
               <div className="text-center">
                 <p className="text-lg font-medium text-[var(--text-secondary)]">
                   Ask anything about your financials
                 </p>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-[var(--text-muted)]">
                   {entries.length > 0
                     ? `${entries.length.toLocaleString()} GL entries loaded`
                     : 'No GL data loaded yet'}
@@ -324,7 +321,7 @@ export function NLQChatPage() {
 
             {routeSuggestions.length > 0 && (
               <div className="flex flex-wrap gap-2 justify-center">
-                <span className="text-xs text-slate-500 self-center">Suggested:</span>
+                <span className="text-xs text-[var(--text-muted)] self-center">Suggested:</span>
                 {routeSuggestions.map((s) => (
                   <button
                     key={s}
@@ -344,7 +341,7 @@ export function NLQChatPage() {
                   onClick={() => handleExampleClick(ex.text)}
                   className="flex items-center gap-2.5 p-3 rounded-lg border border-slate-700/50 bg-slate-800/40 hover:bg-slate-800 hover:border-blue-500/30 transition-colors text-left group"
                 >
-                  <ex.icon className="h-4 w-4 text-slate-500 group-hover:text-blue-400 shrink-0 transition-colors" />
+                  <ex.icon className="h-4 w-4 text-[var(--text-muted)] group-hover:text-blue-400 shrink-0 transition-colors" />
                   <span className="text-sm text-slate-300 group-hover:text-slate-100 transition-colors">
                     {ex.text}
                   </span>
@@ -428,7 +425,7 @@ export function NLQChatPage() {
                             </table>
                           </div>
                           {msg.result.data.length > 15 && (
-                            <p className="text-[11px] text-slate-500 mt-2 text-center">
+                            <p className="text-[11px] text-[var(--text-muted)] mt-2 text-center">
                               Showing 15 of {msg.result.data.length} rows
                             </p>
                           )}
@@ -438,7 +435,7 @@ export function NLQChatPage() {
 
                   {/* Confidence badge + actions for assistant */}
                   {msg.result && (
-                    <div className="flex items-center justify-between text-[11px] text-slate-500">
+                    <div className="flex items-center justify-between text-[11px] text-[var(--text-muted)]">
                       <div className="flex items-center gap-2">
                         <span>
                           Parsed as{' '}
@@ -551,7 +548,7 @@ export function NLQChatPage() {
               placeholder="Ask about your financial data… (Shift+Enter for newline)"
               disabled={isProcessing}
               rows={1}
-              className="w-full h-10 px-4 py-2 rounded-lg bg-slate-800/60 border border-slate-700/50 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-colors disabled:opacity-50 resize-none"
+              className="w-full h-10 px-4 py-2 rounded-lg bg-slate-800/60 border border-slate-700/50 text-sm text-slate-200 placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-colors disabled:opacity-50 resize-none"
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-600 pointer-events-none">
               Ctrl+E export

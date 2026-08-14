@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate } from 'react-router-dom';
@@ -153,8 +154,8 @@ export default function GLTrialBalancePage() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <Scale className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <Scale className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No GL Data</h2>
         <p className="text-[var(--text-muted)] mb-6">
@@ -208,7 +209,7 @@ export default function GLTrialBalancePage() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                 aria-label="Help"
               ></button>
             }
@@ -309,6 +310,12 @@ export default function GLTrialBalancePage() {
                         state: { accountId: row.accountId || row.accountCode },
                       });
                     }}
+                    onKeyDown={activateOnKey(() => {
+                      navigate('/data/gl-account-analysis', {
+                        state: { accountId: row.accountId || row.accountCode },
+                      });
+                    })}
+                    tabIndex={0}
                     title="Click to analyze account"
                   >
                     <td className="px-4 py-3 font-mono text-xs text-slate-400 group-hover:text-blue-400">

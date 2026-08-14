@@ -203,11 +203,18 @@ export default function DepreciationForecastPage() {
 
   if (entries.length === 0)
     return (
-      <div className="p-12 text-center">
-        <TrendingDown className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Data</h2>
+      <main className="p-12 text-center" role="main" aria-label="Depreciation Forecast - No Data">
+        <TrendingDown
+          className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4"
+          aria-hidden="true"
+        />
+        <h1 className="text-xl font-semibold mb-2">No Data</h1>
+        <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
+          Import general ledger data with fixed-asset accounts to project depreciation across future
+          periods.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
-      </div>
+      </main>
     );
 
   return (

@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import type { GLEntry } from '@/types';
 import { roundTo, sumMoney } from '@/utils/money';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface TeamMember {
   id: string;
@@ -264,7 +265,7 @@ export function TeamWorkspace() {
           Skip to import action
         </a>
         <Users className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No Team Workspace Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Team Workspace Data</h1>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to view team workspace.</p>
         <Button
           id="import-btn"
@@ -290,43 +291,47 @@ export function TeamWorkspace() {
       >
         Skip to key metrics
       </a>
-      <header className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 id="workspace-heading" className="text-2xl font-bold flex items-center gap-2">
-            <Users className="h-6 w-6 text-blue-700" aria-hidden="true" />
-            Team Workspace
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">
+      <PageHeader
+        icon={<Users className="h-6 w-6 text-blue-700" aria-hidden="true" />}
+        title="Team Workspace"
+        titleId="workspace-heading"
+        purpose={
+          <>
             {formatNumber(entries.length)} entries imported
             {teamMembers.length} team members • {onlineCount} online
-          </p>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <Badge variant="secondary" className="px-3 py-1 gap-1" aria-label="Real-time indicator">
-            <span className="h-2 w-2 rounded-full bg-green-700 animate-pulse" aria-hidden="true" />
-            <span className="text-xs font-medium text-green-700">Live</span>
-          </Badge>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleRefresh}
-            aria-label="Refresh team workspace"
-          >
-            <RefreshCw className="h-4 w-4 mr-1" aria-hidden="true" />
-            Refresh
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={handleExportCsv}
-            disabled={filteredMembers.length === 0}
-            aria-label="Export team workspace to CSV"
-          >
-            <Download className="h-4 w-4 mr-1" aria-hidden="true" />
-            Export CSV
-          </Button>
-        </div>
-      </header>
+          </>
+        }
+        actions={
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge variant="secondary" className="px-3 py-1 gap-1" aria-label="Real-time indicator">
+              <span
+                className="h-2 w-2 rounded-full bg-green-700 animate-pulse"
+                aria-hidden="true"
+              />
+              <span className="text-xs font-medium text-green-700">Live</span>
+            </Badge>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleRefresh}
+              aria-label="Refresh team workspace"
+            >
+              <RefreshCw className="h-4 w-4 mr-1" aria-hidden="true" />
+              Refresh
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleExportCsv}
+              disabled={filteredMembers.length === 0}
+              aria-label="Export team workspace to CSV"
+            >
+              <Download className="h-4 w-4 mr-1" aria-hidden="true" />
+              Export CSV
+            </Button>
+          </div>
+        }
+      />
 
       <section
         id="kpi-section"
@@ -472,7 +477,7 @@ export function TeamWorkspace() {
             </CardHeader>
             <CardContent>
               {tasks.length === 0 ? (
-                <p className="text-slate-500 text-sm">No tasks yet.</p>
+                <p className="text-[var(--text-muted)] text-sm">No tasks yet.</p>
               ) : (
                 <ul className="space-y-2 text-sm">
                   {tasks.slice(0, 10).map((t, i) => (
@@ -510,7 +515,7 @@ export function TeamWorkspace() {
             </CardHeader>
             <CardContent>
               {activityLog.length === 0 ? (
-                <p className="text-slate-500 text-sm">No activity yet.</p>
+                <p className="text-[var(--text-muted)] text-sm">No activity yet.</p>
               ) : (
                 <ul className="space-y-2 text-sm">
                   {activityLog.slice(0, 15).map((a, i) => (

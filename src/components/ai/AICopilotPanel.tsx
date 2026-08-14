@@ -194,7 +194,7 @@ export function AICopilotPanel({
                 <div className="flex items-center gap-2 px-1">
                   <Loader2
                     className="h-3 w-3 animate-spin"
-                    style={{ color: 'var(--accent-primary)' }}
+                    style={{ color: 'var(--text-accent)' }}
                   />
                   <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
                     Analyzing...
@@ -232,7 +232,7 @@ export function AICopilotPanel({
                 type="submit"
                 disabled={!input.trim() || isProcessing}
                 className="flex-shrink-0 rounded-md p-1 transition-colors hover:bg-[var(--bg-surface)] disabled:opacity-30"
-                style={{ color: 'var(--accent-primary)' }}
+                style={{ color: 'var(--text-accent)' }}
                 aria-label="Send"
               >
                 <Send className="h-3.5 w-3.5" />

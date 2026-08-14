@@ -57,7 +57,7 @@ export function AboutDialog({ isOpen, onClose }: AboutDialogProps) {
             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium"
             style={{
               background: 'var(--accent-primary-light, rgba(59,130,246,0.1))',
-              color: 'var(--accent-primary)',
+              color: 'var(--text-accent)',
             }}
           >
             v{APP_VERSION}

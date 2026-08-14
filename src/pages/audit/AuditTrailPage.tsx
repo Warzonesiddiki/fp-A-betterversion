@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo, useState, useCallback, useRef } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import { useNavigate } from 'react-router-dom';
 import { CellAuditTrailEngine } from '@/engines/CellAuditTrailEngine';
 import type { AuditOperation } from '@/engines/CellAuditTrailEngine';
@@ -18,6 +19,7 @@ import { ScrollText, Download, RefreshCw, ChevronUp, ChevronDown, Search } from 
 import { formatRelativeTimeBudget as formatRelativeTime } from '@/engines/temporal';
 import { auditOpBadges, auditFiltersTokens } from '@/components/audit/auditTokens';
 import { useAuditTrailStore, GDPR_AUDIT_VIEW_ROLES, redactPII } from '@/store/auditTrailStore';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const auditEngine = new CellAuditTrailEngine();
 
@@ -228,8 +230,8 @@ function AuditTrailContent() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <ScrollText className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <ScrollText className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Audit Entries</h2>
         <p className="text-[var(--text-muted)] mb-6">
@@ -243,34 +245,39 @@ function AuditTrailContent() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 id="audit-trail-heading" className="text-2xl font-bold">
-            Audit Trail
-          </h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
+      <PageHeader
+        title="Audit Trail"
+        titleId="audit-trail-heading"
+        purpose={
+          <>
             {filtered.length} of {entries.length} entries shown
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant={showDiff ? 'default' : 'ghost'}
-            onClick={() => setShowDiff((v) => !v)}
-            aria-pressed={showDiff}
-          >
-            {showDiff ? '✓ Diff View' : 'Diff View'}
-          </Button>
-          <Button size="sm" variant="ghost" onClick={() => setEntries(auditEngine.getAllEntries())}>
-            <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
-            Refresh
-          </Button>
-          <Button size="sm" variant="ghost" onClick={handleExport}>
-            <Download className="h-3.5 w-3.5 mr-1.5" />
-            Export
-          </Button>
-        </div>
-      </div>
+          </>
+        }
+        actions={
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant={showDiff ? 'default' : 'ghost'}
+              onClick={() => setShowDiff((v) => !v)}
+              aria-pressed={showDiff}
+            >
+              {showDiff ? '✓ Diff View' : 'Diff View'}
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setEntries(auditEngine.getAllEntries())}
+            >
+              <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+              Refresh
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleExport}>
+              <Download className="h-3.5 w-3.5 mr-1.5" />
+              Export
+            </Button>
+          </div>
+        }
+      />
 
       {/* 4-stat header KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -318,7 +325,9 @@ function AuditTrailContent() {
         <CardContent className="p-4 space-y-3">
           {/* Date range quick presets */}
           <div className="flex gap-2 flex-wrap items-center">
-            <span className="text-xs text-slate-500 uppercase tracking-wide">Quick range:</span>
+            <span className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
+              Quick range:
+            </span>
             {(['24h', '7d', '30d', 'all'] as DatePreset[]).map((p) => (
               <button
                 key={p}
@@ -338,7 +347,7 @@ function AuditTrailContent() {
 
           <div className="flex gap-3 items-end flex-wrap">
             <div>
-              <label className="block text-xs text-slate-500 mb-1" htmlFor="audit-from">
+              <label className="block text-xs text-[var(--text-muted)] mb-1" htmlFor="audit-from">
                 From
               </label>
               <input
@@ -353,7 +362,7 @@ function AuditTrailContent() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1" htmlFor="audit-to">
+              <label className="block text-xs text-[var(--text-muted)] mb-1" htmlFor="audit-to">
                 To
               </label>
               <input
@@ -368,7 +377,7 @@ function AuditTrailContent() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1" htmlFor="audit-user">
+              <label className="block text-xs text-[var(--text-muted)] mb-1" htmlFor="audit-user">
                 User
               </label>
               <input
@@ -380,7 +389,7 @@ function AuditTrailContent() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1" htmlFor="audit-action">
+              <label className="block text-xs text-[var(--text-muted)] mb-1" htmlFor="audit-action">
                 Action
               </label>
               <input
@@ -392,7 +401,10 @@ function AuditTrailContent() {
               />
             </div>
             <div>
-              <label className="block text-xs text-slate-500 mb-1" htmlFor="audit-operation">
+              <label
+                className="block text-xs text-[var(--text-muted)] mb-1"
+                htmlFor="audit-operation"
+              >
                 Operation
               </label>
               <select
@@ -413,7 +425,10 @@ function AuditTrailContent() {
             </div>
             {dataTypes.length > 0 && (
               <div>
-                <label className="block text-xs text-slate-500 mb-1" htmlFor="audit-datatype">
+                <label
+                  className="block text-xs text-[var(--text-muted)] mb-1"
+                  htmlFor="audit-datatype"
+                >
                   Data type
                 </label>
                 <select
@@ -438,7 +453,7 @@ function AuditTrailContent() {
 
           {/* Cross-cell/account search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
             <input
               type="search"
               className="w-full bg-slate-800 border border-slate-700 rounded pl-10 pr-3 py-2 text-sm"
@@ -508,8 +523,13 @@ function AuditTrailContent() {
               <tbody className="divide-y divide-slate-800">
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={showDiff ? 7 : 5} className="text-center py-8 text-slate-500">
-                      No entries match filters.
+                    <td
+                      colSpan={showDiff ? 7 : 5}
+                      className="text-center py-8 text-[var(--text-muted)]"
+                    >
+                      <span role="status" aria-live="polite">
+                        No entries match filters.
+                      </span>
                     </td>
                   </tr>
                 ) : (
@@ -524,6 +544,10 @@ function AuditTrailContent() {
                           aria-expanded={isExpanded}
                           aria-label={`Audit row ${i + 1} of ${Math.min(500, filtered.length)}: ${e.userName} ${e.operation} on ${e.accountName || e.accountId} at ${e.timestamp}`}
                           onClick={() => setExpandedRowId(isExpanded ? null : rowId)}
+                          onKeyDown={activateOnKey(() =>
+                            setExpandedRowId(isExpanded ? null : rowId)
+                          )}
+                          tabIndex={0}
                         >
                           <td
                             className="px-4 py-2 text-xs text-slate-400 whitespace-nowrap"
@@ -569,7 +593,7 @@ function AuditTrailContent() {
                               </td>
                             </>
                           )}
-                          <td className="px-4 py-2 text-xs text-slate-500">
+                          <td className="px-4 py-2 text-xs text-[var(--text-muted)]">
                             {(e.reason || '-').slice(0, 60)}
                             {(e.reason || '').length > 60 ? '…' : ''}
                           </td>
@@ -579,7 +603,7 @@ function AuditTrailContent() {
                             <td colSpan={showDiff ? 7 : 5} className="px-6 py-3">
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                                 <div>
-                                  <div className="text-slate-500 uppercase tracking-wide mb-1">
+                                  <div className="text-[var(--text-muted)] uppercase tracking-wide mb-1">
                                     Cell ID
                                   </div>
                                   <div className="font-mono text-slate-300 break-all">
@@ -587,19 +611,19 @@ function AuditTrailContent() {
                                   </div>
                                 </div>
                                 <div>
-                                  <div className="text-slate-500 uppercase tracking-wide mb-1">
+                                  <div className="text-[var(--text-muted)] uppercase tracking-wide mb-1">
                                     Data type
                                   </div>
                                   <div className="text-slate-300">{e.dataType || '—'}</div>
                                 </div>
                                 <div>
-                                  <div className="text-slate-500 uppercase tracking-wide mb-1">
+                                  <div className="text-[var(--text-muted)] uppercase tracking-wide mb-1">
                                     Source
                                   </div>
                                   <div className="text-slate-300">{e.source || '—'}</div>
                                 </div>
                                 <div>
-                                  <div className="text-slate-500 uppercase tracking-wide mb-1">
+                                  <div className="text-[var(--text-muted)] uppercase tracking-wide mb-1">
                                     Approval
                                   </div>
                                   <div className="text-slate-300">
@@ -609,7 +633,7 @@ function AuditTrailContent() {
                                 </div>
                                 {e.metadata && Object.keys(e.metadata).length > 0 && (
                                   <div className="col-span-2 md:col-span-4">
-                                    <div className="text-slate-500 uppercase tracking-wide mb-1">
+                                    <div className="text-[var(--text-muted)] uppercase tracking-wide mb-1">
                                       Metadata
                                     </div>
                                     <pre className="text-[10px] font-mono text-slate-400 bg-slate-950/50 rounded p-2 overflow-x-auto">
@@ -629,7 +653,7 @@ function AuditTrailContent() {
             </table>
           </div>
           {entries.length > 500 && (
-            <div className="p-3 text-center text-xs text-slate-500 border-t border-slate-800">
+            <div className="p-3 text-center text-xs text-[var(--text-muted)] border-t border-slate-800">
               Showing 500 of {entries.length} entries. Export for full dataset.
             </div>
           )}
@@ -654,7 +678,7 @@ export default function AuditTrailPage() {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
         <div className="p-4 bg-red-900/30 rounded-full inline-block mb-4">
-          <ScrollText className="h-10 w-10 text-red-400" />
+          <ScrollText className="h-10 w-10 text-[var(--text-negative)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2 text-red-300">Access Denied</h2>
         <p className="text-[var(--text-muted)] mb-6">

@@ -23,7 +23,7 @@ import { execSync } from 'node:child_process';
 
 /** Backgrounds dark enough that light text on them is intentional. */
 const DARK_BG =
-  /\bbg-(black|(slate|gray|zinc|neutral|stone)-(600|700|800|900|950)|(blue|indigo|emerald|green|red|rose|amber|orange|purple|violet|sky|cyan|teal|fuchsia|pink|lime|yellow)-(500|600|700|800|900))\b|\bbg-gradient|\bfrom-\w+-(500|600|700|800|900)|\bbg-\[|\bbg-primary\b|\bbg-destructive\b|\bbg-accent\b|\bbg-current\b/;
+  /\bbg-(black|(slate|gray|zinc|neutral|stone)-(600|700|800|900|950)|(blue|indigo|emerald|green|red|rose|amber|orange|purple|violet|sky|cyan|teal|fuchsia|pink|lime|yellow)-(500|600|700|800|900))\b|\bfrom-\w+-(500|600|700|800|900)(?!\/)\b|\bbg-\[|\bbg-primary\b|\bbg-destructive\b|\bbg-accent\b|\bbg-current\b/;
 
 /**
  * Text colours that fail WCAG 2.1 AA against #f8fafc:
@@ -142,6 +142,13 @@ describe('light-mode contrast contract', () => {
     // A dark ancestor makes light text correct.
     expect(DARK_BG.test('rounded bg-blue-600 p-2')).toBe(true);
     expect(DARK_BG.test('rounded bg-white p-2')).toBe(false);
+    // A *translucent* gradient is not a backdrop. `bg-gradient-to-br` with
+    // `from-emerald-500/20 to-emerald-600/5` is all but transparent, so it
+    // leaves white text sitting on the white card underneath. An earlier
+    // version of this guard treated any `bg-gradient` as dark and so missed a
+    // real white-on-white heading in ReportTemplateLibrary.
+    expect(DARK_BG.test('bg-gradient-to-br from-emerald-500/20 to-emerald-600/5')).toBe(false);
+    expect(DARK_BG.test('bg-gradient-to-br from-emerald-500 to-emerald-600')).toBe(true);
     expect(STYLE_BG.test("{{ background: 'var(--accent-primary)' }}")).toBe(true);
   });
 

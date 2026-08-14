@@ -264,7 +264,10 @@ describe('Sector Page Smoke Tests', () => {
   describe('CapitalAdequacyPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(CapitalAdequacyPage, '/banking/capital', '/banking/capital');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -276,7 +279,10 @@ describe('Sector Page Smoke Tests', () => {
   describe('NIMDashboardPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(NIMDashboardPage, '/banking/nim', '/banking/nim');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -288,7 +294,10 @@ describe('Sector Page Smoke Tests', () => {
   describe('InsuranceDashboardPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(InsuranceDashboardPage, '/insurance', '/insurance');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -300,7 +309,10 @@ describe('Sector Page Smoke Tests', () => {
   describe('HealthcareDashboardPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(HealthcareDashboardPage, '/healthcare', '/healthcare');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -312,7 +324,10 @@ describe('Sector Page Smoke Tests', () => {
   describe('EnergyDashboardPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(EnergyDashboardPage, '/energy', '/energy');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -324,7 +339,10 @@ describe('Sector Page Smoke Tests', () => {
   describe('ConstructionDashboardPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(ConstructionDashboardPage, '/construction', '/construction');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -336,7 +354,10 @@ describe('Sector Page Smoke Tests', () => {
   describe('RetailDashboardPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(RetailDashboardPage, '/retail', '/retail');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -348,12 +369,17 @@ describe('Sector Page Smoke Tests', () => {
   describe('ProductionDashboardPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(ProductionDashboardPage, '/manufacturing', '/manufacturing');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
       renderPage(ProductionDashboardPage, '/manufacturing', '/manufacturing');
-      expect(screen.getByText(/Production/i)).toBeInTheDocument();
+      // Target the heading specifically: the empty state's explanatory copy also
+      // says "production", so a bare text query matches the <p> as well.
+      expect(screen.getByRole('heading', { name: /Production/i })).toBeInTheDocument();
     });
   });
 });

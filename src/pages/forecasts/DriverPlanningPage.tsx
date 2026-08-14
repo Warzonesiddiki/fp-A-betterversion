@@ -28,6 +28,7 @@ import { HeatmapChart } from '@/components/charts/HeatmapChart';
 import type { Driver, ImpactAnalysis } from '@/engines/DriverCascadeEngine';
 import { AssumptionEngine } from '@/engines/AssumptionEngine';
 import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -236,30 +237,26 @@ export default function DriverPlanningPage() {
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-            Driver-Based Planning
-          </h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-            Define drivers, set cascade rules, and model financial impacts
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button size="sm" variant="ghost" onClick={() => setShowTemplates(!showTemplates)}>
-            <BookTemplate className="h-3.5 w-3.5 mr-1.5" />
-            Templates
-          </Button>
-          <Button size="sm" variant="ghost" onClick={() => setShowAddForm(!showAddForm)}>
-            <Plus className="h-3.5 w-3.5 mr-1.5" />
-            Add Driver
-          </Button>
-          <Button size="sm" variant="outline" onClick={reset}>
-            <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
-            Reset
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Driver-Based Planning"
+        purpose="Define drivers, set cascade rules, and model financial impacts"
+        actions={
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={() => setShowTemplates(!showTemplates)}>
+              <BookTemplate className="h-3.5 w-3.5 mr-1.5" />
+              Templates
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setShowAddForm(!showAddForm)}>
+              <Plus className="h-3.5 w-3.5 mr-1.5" />
+              Add Driver
+            </Button>
+            <Button size="sm" variant="outline" onClick={reset}>
+              <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
+              Reset
+            </Button>
+          </div>
+        }
+      />
 
       {/* KPI Row */}
       <div className="grid grid-cols-4 gap-4">
@@ -318,7 +315,7 @@ export default function DriverPlanningPage() {
                   <div className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
                     {template.description}
                   </div>
-                  <div className="text-xs mt-2" style={{ color: 'var(--accent)' }}>
+                  <div className="text-xs mt-2" style={{ color: 'var(--text-accent)' }}>
                     {template.drivers.length} drivers
                   </div>
                 </button>
@@ -588,7 +585,7 @@ export default function DriverPlanningPage() {
                                 </span>
                                 <span
                                   className="text-xs font-medium"
-                                  style={{ color: 'var(--accent)' }}
+                                  style={{ color: 'var(--text-accent)' }}
                                 >
                                   {formatDriverValue(pendingValue, driver.unit)}
                                 </span>
@@ -834,7 +831,7 @@ export default function DriverPlanningPage() {
                 </div>
                 <div className="flex justify-between">
                   <span style={{ color: 'var(--text-secondary)' }}>New Value</span>
-                  <span style={{ color: 'var(--accent)' }}>{lastCascadeResult.newValue}</span>
+                  <span style={{ color: 'var(--text-accent)' }}>{lastCascadeResult.newValue}</span>
                 </div>
                 <div className="flex justify-between">
                   <span style={{ color: 'var(--text-secondary)' }}>Affected Cells</span>

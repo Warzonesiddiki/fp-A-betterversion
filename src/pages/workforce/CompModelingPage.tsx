@@ -102,11 +102,15 @@ export default function CompModelingPage() {
 
   if (entries.length === 0)
     return (
-      <div className="p-12 text-center">
-        <BarChart3 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Compensation Data</h2>
+      <main className="p-12 text-center" role="main" aria-label="Compensation Modeling - No Data">
+        <BarChart3 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
+        <h1 className="text-xl font-semibold mb-2">No Compensation Data</h1>
+        <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
+          Import payroll or general ledger data with compensation accounts to model salary, bonus
+          and merit scenarios.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
-      </div>
+      </main>
     );
 
   return (

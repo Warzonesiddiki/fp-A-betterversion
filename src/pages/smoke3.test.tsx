@@ -275,7 +275,10 @@ describe('Page Smoke Tests (Batch 3 — 5 Untested Pages)', () => {
   describe('LoanLossPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(LoanLossPage, '/banking/loan-loss', '/banking/loan-loss');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state when no GL entries', () => {
@@ -293,7 +296,10 @@ describe('Page Smoke Tests (Batch 3 — 5 Untested Pages)', () => {
   describe('BudgetVAReport', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(BudgetVAReport, '/budgets/va-report', '/budgets/va-report');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -315,7 +321,10 @@ describe('Page Smoke Tests (Batch 3 — 5 Untested Pages)', () => {
         '/capex/depreciation',
         '/capex/depreciation'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state when no GL entries', () => {
@@ -333,7 +342,10 @@ describe('Page Smoke Tests (Batch 3 — 5 Untested Pages)', () => {
   describe('DebtSchedulePage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(DebtSchedulePage, '/cash/debt', '/cash/debt');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -360,7 +372,10 @@ describe('Page Smoke Tests (Batch 3 — 5 Untested Pages)', () => {
         '/cash/working-capital',
         '/cash/working-capital'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the empty state when no GL entries', () => {

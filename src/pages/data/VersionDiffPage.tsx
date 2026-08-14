@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useGLStore } from '@/store/glStore';
 import { useBudgetStore } from '@/store/budgetStore';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 /**
  * Build a VersionControlEngine from GL and Budget store data.
@@ -160,10 +161,13 @@ export default function VersionDiffPage() {
         >
           Skip to import action
         </a>
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4" aria-hidden="true">
-          <Database className="h-10 w-10 text-slate-400" />
+        <div
+          className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4"
+          aria-hidden="true"
+        >
+          <Database className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
-        <h2 className="text-xl font-semibold mb-2">No Data to Compare</h2>
+        <h1 className="text-xl font-semibold mb-2">No Data to Compare</h1>
         <p className="text-[var(--text-muted)] mb-6">
           Import GL data or create budget entries to enable version comparison.
         </p>
@@ -181,25 +185,21 @@ export default function VersionDiffPage() {
   return (
     <main className="p-6 space-y-6" role="main" aria-label="Version Diff">
       {/* Header */}
-      <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <ArrowLeftRight className="h-6 w-6 text-blue-400" aria-hidden="true" />
-            Version Diff
-          </h1>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Compare two plan versions side-by-side with cell-level change tracking
-          </p>
-        </div>
-        <Button
-          variant="secondary"
-          disabled={!selectedSourceId || !selectedTargetId}
-          aria-label="Diff auto-computed"
-        >
-          <RefreshCw className="h-4 w-4 mr-2" aria-hidden="true" />
-          Diff Auto-Computed
-        </Button>
-      </header>
+      <PageHeader
+        icon={<ArrowLeftRight className="h-6 w-6 text-blue-400" aria-hidden="true" />}
+        title="Version Diff"
+        purpose="Compare two plan versions side-by-side with cell-level change tracking"
+        actions={
+          <Button
+            variant="secondary"
+            disabled={!selectedSourceId || !selectedTargetId}
+            aria-label="Diff auto-computed"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" aria-hidden="true" />
+            Diff Auto-Computed
+          </Button>
+        }
+      />
 
       {/* Branch Selection */}
       <Card>
@@ -211,7 +211,10 @@ export default function VersionDiffPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Source Branch */}
             <div>
-              <label htmlFor="diff-source" className="block text-xs text-slate-500 mb-1.5">
+              <label
+                htmlFor="diff-source"
+                className="block text-xs text-[var(--text-muted)] mb-1.5"
+              >
                 Source Branch (Base)
               </label>
               <select
@@ -239,7 +242,10 @@ export default function VersionDiffPage() {
 
             {/* Target Branch */}
             <div>
-              <label htmlFor="diff-target" className="block text-xs text-slate-500 mb-1.5">
+              <label
+                htmlFor="diff-target"
+                className="block text-xs text-[var(--text-muted)] mb-1.5"
+              >
                 Target Branch (Compare)
               </label>
               <select
@@ -282,12 +288,12 @@ export default function VersionDiffPage() {
           <Card>
             <CardContent className="p-4">
               <h4 className="text-sm font-semibold text-[var(--text-secondary)] mb-2 flex items-center gap-1.5">
-                <GitCommit className="h-3.5 w-3.5 text-slate-500" aria-hidden="true" />
+                <GitCommit className="h-3.5 w-3.5 text-[var(--text-muted)]" aria-hidden="true" />
                 {sourceBranch?.name} Commits
               </h4>
               <div className="space-y-1.5 max-h-40 overflow-y-auto">
                 {sourceCommits.length === 0 ? (
-                  <p className="text-xs text-slate-500">No commits</p>
+                  <p className="text-xs text-[var(--text-muted)]">No commits</p>
                 ) : (
                   sourceCommits.map((c) => (
                     <div
@@ -307,12 +313,12 @@ export default function VersionDiffPage() {
           <Card>
             <CardContent className="p-4">
               <h4 className="text-sm font-semibold text-[var(--text-secondary)] mb-2 flex items-center gap-1.5">
-                <GitCommit className="h-3.5 w-3.5 text-slate-500" aria-hidden="true" />
+                <GitCommit className="h-3.5 w-3.5 text-[var(--text-muted)]" aria-hidden="true" />
                 {targetBranch?.name} Commits
               </h4>
               <div className="space-y-1.5 max-h-40 overflow-y-auto">
                 {targetCommits.length === 0 ? (
-                  <p className="text-xs text-slate-500">No commits</p>
+                  <p className="text-xs text-[var(--text-muted)]">No commits</p>
                 ) : (
                   targetCommits.map((c) => (
                     <div
@@ -346,13 +352,13 @@ export default function VersionDiffPage() {
       {(!selectedSourceId || !selectedTargetId) && (
         <Card>
           <CardContent className="p-12 text-center">
-            <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-              <ArrowLeftRight className="h-10 w-10 text-slate-400" aria-hidden="true" />
+            <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+              <ArrowLeftRight className="h-10 w-10 text-[var(--text-muted)]" aria-hidden="true" />
             </div>
             <h3 className="text-lg font-semibold text-[var(--text-secondary)] mb-2">
               Select Two Branches
             </h3>
-            <p className="text-sm text-slate-500 max-w-md mx-auto">
+            <p className="text-sm text-[var(--text-muted)] max-w-md mx-auto">
               Choose a source and target branch above to see a detailed cell-level diff between the
               two versions.
             </p>

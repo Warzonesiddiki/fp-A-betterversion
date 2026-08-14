@@ -255,10 +255,10 @@ export default function CreditRiskPage() {
         role="main"
         aria-label="Credit Risk - No Data"
       >
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <ShieldAlert className="h-10 w-10 text-slate-400" aria-hidden="true" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <ShieldAlert className="h-10 w-10 text-[var(--text-muted)]" aria-hidden="true" />
         </div>
-        <h2 className="text-xl font-semibold mb-2">No Credit Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Credit Data</h1>
         <p className="text-[var(--text-muted)] mb-6">
           Import your General Ledger to assess credit risk, probability of default, and expected
           losses across counterparties.
@@ -399,7 +399,7 @@ export default function CreditRiskPage() {
               </ResponsiveContainer>
             </div>
             <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700">
-              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+              <div className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2">
                 Risk Summary
               </div>
               <div className="space-y-1 text-[10px]">

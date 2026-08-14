@@ -11,6 +11,7 @@ import { saveAs } from 'file-saver';
 import { parseCSV } from '@/utils/csv';
 import { subtractMoney, roundTo, toDecimal, formatMoney } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface RecResult {
   matching: number;
@@ -207,28 +208,28 @@ export default function ReconciliationPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3">
-            <ArrowLeftRight className="h-8 w-8 text-blue-400" />
-            Data Reconciliation
-          </h1>
-          <p className="text-[var(--text-muted)] mt-1">
+      <PageHeader
+        icon={<ArrowLeftRight className="h-8 w-8 text-blue-400" />}
+        title="Data Reconciliation"
+        purpose={
+          <>
             Compare imported GL data against external source files with{' '}
             {formatPercent(tolerance * 100)} tolerance matching.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="ghost" onClick={resetAll}>
-            <RefreshCw className="h-4 w-4 mr-2" /> Reset
-          </Button>
-          {result && (
-            <Button onClick={exportDifferences} variant="secondary">
-              <Download className="h-4 w-4 mr-2" /> Export Differences
+          </>
+        }
+        actions={
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={resetAll}>
+              <RefreshCw className="h-4 w-4 mr-2" /> Reset
             </Button>
-          )}
-        </div>
-      </div>
+            {result && (
+              <Button onClick={exportDifferences} variant="secondary">
+                <Download className="h-4 w-4 mr-2" /> Export Differences
+              </Button>
+            )}
+          </div>
+        }
+      />
 
       {/* Status / Instructions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -238,7 +239,9 @@ export default function ReconciliationPage() {
             <div className="text-2xl font-semibold tabular-nums">
               {entries.length.toLocaleString()}
             </div>
-            <div className="text-xs text-slate-500 mt-1">Unique accounts: {glBalances.size}</div>
+            <div className="text-xs text-[var(--text-muted)] mt-1">
+              Unique accounts: {glBalances.size}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -258,9 +261,11 @@ export default function ReconciliationPage() {
                 }}
                 className="w-24"
               />
-              <span className="text-xs text-slate-500">({formatPercent(tolerance * 100)})</span>
+              <span className="text-xs text-[var(--text-muted)]">
+                ({formatPercent(tolerance * 100)})
+              </span>
             </div>
-            <p className="text-[10px] text-slate-500 mt-1">
+            <p className="text-[10px] text-[var(--text-muted)] mt-1">
               Absolute or relative difference allowed
             </p>
           </CardContent>
@@ -352,7 +357,7 @@ export default function ReconciliationPage() {
       )}
 
       {/* Help / Acceptance */}
-      <div className="text-xs text-slate-500 border-t border-slate-800 pt-4">
+      <div className="text-xs text-[var(--text-muted)] border-t border-slate-800 pt-4">
         <strong>Acceptance Criteria (1.1.5):</strong> Side-by-side comparison of GL vs external file
         • 1% (configurable) tolerance • Detailed difference table with match/mismatch/missing •
         Export of differences as CSV. All logic uses live <code>glStore.entries</code> and performs

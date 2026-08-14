@@ -27,15 +27,15 @@ given, so any claim here can be re-checked in one line.
 
 These gates are **green right now**. This is the floor the work must not break.
 
-| Gate | Command | Result |
-| --- | --- | --- |
-| Types | `npx tsc --noEmit` | clean |
-| Lint | `eslint src --max-warnings 0` | clean |
-| Engine manifest | `npm run engines:verify` | 182 engines, current |
-| Docs truth | `npm run docs:verify` | all measured claims match |
-| Repo hygiene | `npm run repo:hygiene` | 2948 tracked files, 0 tracked-ignored |
-| Architecture | `npm run architecture:guardrails` | all pass |
-| Money ratchet | `npm run money:adoption` | holds (209 modules, 0 `toFixed`) |
+| Gate            | Command                           | Result                                |
+| --------------- | --------------------------------- | ------------------------------------- |
+| Types           | `npx tsc --noEmit`                | clean                                 |
+| Lint            | `eslint src --max-warnings 0`     | clean                                 |
+| Engine manifest | `npm run engines:verify`          | 182 engines, current                  |
+| Docs truth      | `npm run docs:verify`             | all measured claims match             |
+| Repo hygiene    | `npm run repo:hygiene`            | 2948 tracked files, 0 tracked-ignored |
+| Architecture    | `npm run architecture:guardrails` | all pass                              |
+| Money ratchet   | `npm run money:adoption`          | holds (209 modules, 0 `toFixed`)      |
 
 **Established (P-00 ✅).** The full suite now runs in this environment via
 `npm run test:sharded`: **1204 files, 13,485 tests** (1 skipped), ~13 min across
@@ -109,7 +109,7 @@ two silent defect classes that no build, lint or test could catch:
 - **287 `var(--…)` references across 50 files pointed at properties that were
   never declared** (`--border` ×44, `--text-tertiary` ×43, `--bg-primary` ×21,
   `--accent` ×17 …), silently invalidating the whole declaration.
-  `--bg-muted` (78 uses) was declared *only* under
+  `--bg-muted` (78 uses) was declared _only_ under
   `[data-high-contrast='true']`, so table zebra striping worked in the
   accessibility mode and nowhere else.
 
@@ -125,16 +125,104 @@ Remaining steps to drive one palette instead of three:
 1. ~~Register the shadcn `--color-*` keys and resolve the dangling vars.~~
    **Done.** Still open: `src/config/designTokens.ts` (344 lines) remains a
    third, **provably unconsumed** source of truth (only its own test imports
-   it) and it *conflicts* with the CSS (radius `xs` 4px vs 2px;
+   it) and it _conflicts_ with the CSS (radius `xs` 4px vs 2px;
    `--negative:#f43f5e` vs `financial.negative:#dc2626`). Either delete it or
    convert it into the generator for the `@theme` block — do not leave both.
+
+   **Done — deleted, all but one group.** Re-measured: of the 13 token groups,
+   the only runtime consumer was `density`, read by `useDensity.ts` for AG
+   Grid's numeric `rowHeight`/`headerHeight` (a CSS custom property cannot feed
+   a JS API, so this one genuinely belongs in TS). Every other group's sole
+   "consumers" were this module's own type aliases — `ChartColor`,
+   `SemanticTone`, `SectorKey`, `RadiusKey`, `ZIndexKey`, `FontSizeKey`,
+   `BreakpointKey`, all exported, all with **zero** external references.
+   `designTokens.ts` is now 49 lines instead of 344, `index.css` is the single
+   palette, and the rewritten shape test asserts `Object.keys(designTokens)`
+   equals `['density']` and that the serialised object contains no hex or
+   `rgb()` literal — mutation-verified by re-adding a `radius` group and
+   watching it fail. The third source of truth is gone rather than reconciled.
+
 2. Restate the Tailwind primitives in terms of semantic tokens
    (`--action-primary`, `--surface-panel`, `--text-body`) instead of raw
    `blue-600`/`gray-800`.
+
+   **Done for the six core primitives — `Button`, `Card`, `Input`, `Badge`,
+   `Select`, `Alert` (281, 273, 46, 47, 33 and 14 importers).** All raw palette
+   utilities and all
+   `dark:` variants are gone from them; every colour now comes from a token
+   that already flips under `.light`, so one declaration is correct in both
+   themes.
+
+   **This surfaced a shipping accessibility defect that the migration would
+   otherwise have inherited.** A colour used as _text_ must contrast with the
+   page; the same colour used as a _fill behind white text_ must contrast with
+   white. Those requirements pull in opposite directions, and the existing
+   tokens only satisfied the first. In dark theme, white on `--accent-primary`
+   (#0284c7) is **4.10:1** and white on `--negative` (#f43f5e) is **3.67:1** —
+   both below AA, both live today via `.btn-primary` / `.btn-danger`. Naively
+   swapping `bg-blue-600` (5.17:1) for `--accent-primary` would have _regressed_
+   contrast. Four new fill tokens (`--action-fill`, `--action-fill-hover`,
+   `--danger-fill`, `--danger-fill-hover`) are defined per theme so white text
+   clears AA (≥4.5:1) _and_ the fill stays ≥3:1 against the page (WCAG 1.4.11).
+   The badge tints needed the same treatment: `--negative` on `--negative-subtle`
+   was 3.95:1 and `--positive` on `--positive-subtle` 4.42:1 in light, so
+   `--text-on-{accent,danger,positive}-subtle` pair with each tint. Note the
+   dark `-subtle` tokens are translucent, so they must be composited over
+   `--bg-surface` before measuring — measuring the raw `rgba()` is meaningless.
+
+   `.btn-primary`/`.btn-danger` were repointed at the fill tokens too. They
+   currently have **zero consumers** (the whole `.btn-*` layer is unused), so
+   this is a latent-defect fix, not a visible change.
+
+   Guards: `src/theme/buttonContrast.contract.test.ts` (30 tests) parses the
+   real `index.css`, resolves `var()` aliases, composites alpha, and asserts
+   contrast per theme — mutation-verified 4/4 (reverting `--action-fill` to
+   `--accent-primary` fails dark only; the raw-`--negative` badge fails light
+   only; a raw utility and a `dark:` variant in a primitive are both caught).
+   An eslint `no-restricted-syntax` rule scoped to the migrated files bans
+   numbered palette utilities and `dark:`; also mutation-verified, including
+   against the two later additions. The scope is deliberately per-file, not all
+   of `src/components/ui` — 92 of those files still carry raw utilities, so a
+   blanket rule could only land by being disabled everywhere. Widen both lists
+   as each file migrates.
+
+   `Select` and `Alert` followed the same pattern. `Alert`'s confirm buttons
+   were the exact white-on-fill case already solved (`bg-blue-600`/`bg-red-600`
+   → the fill tokens); `Select`'s selected-option row was the tint case
+   (`bg-blue-50 text-blue-700` → `--accent-subtle` with its paired
+   `--text-on-accent-subtle`), and its `focus:bg-gray-100 dark:focus:bg-gray-800`
+   pair collapsed to a single `--bg-hover`.
+
 3. Keep the `.fp-*` classes — they are already token-driven and covered by
    `AtlasFoundations.visual-contract.test.tsx` snapshots.
 4. Verified by: extend the visual-contract test with a Button/Card/Input case,
    plus a lint rule banning raw palette utilities in `src/components/ui`.
+
+   **Done — both halves.** Via `buttonContrast.contract.test.ts` and
+   the scoped eslint rule described in step 2. The contract test goes beyond
+   what was asked: rather than snapshotting class strings (which pin the
+   _spelling_ of a class and break on every rename while saying nothing about
+   whether the result is readable), it resolves the tokens and checks actual
+   WCAG ratios in both themes. `DashboardPage.populated.contract.test.tsx`'s
+   DOM baseline was re-recorded — diff is `class=` attributes only, zero
+   structural change — and the `Button`/`Badge` unit tests were repointed from
+   `bg-blue-600`/`bg-red-100` to the token spellings.
+
+   `AtlasFoundations.visual-contract.test.tsx` gained a
+   `UI-01 — migrated primitives` block (5 cases) covering what the file-level
+   guards structurally cannot: the classes that actually reach the DOM after
+   `cn()`/tailwind-merge resolution. It asserts no rendered variant emits a raw
+   palette utility, that fills stay distinct from the text-tuned
+   `--accent-primary`, that every filled variant keeps its paired
+   `--text-on-accent` foreground, and — the case no class-string test can catch
+   — that every `var(--x)` referenced by a rendered primitive is actually
+   **declared** in `index.css`. A typo'd token resolves to nothing and renders
+   unstyled while a `toContain()` assertion still passes. Mutation-verified 3/3
+   (undeclared token; fill reverted to `--accent-primary`; fill stripped of its
+   foreground).
+
+   **Remaining for this step:** the other 92 files in `src/components/ui` that
+   still use raw palette utilities.
 
 Measured surface: 305 of 490 non-test `.tsx` files use raw `slate-`/`gray-`
 utilities; 146 use `dark:`; 247 use `var(--…)`.
@@ -146,7 +234,7 @@ Zoho Books is a light product. FinPlan defaulted to Bloomberg-dark
 terminal); the default and the polished path are now light.
 
 Shipped: `uiStore` seed `dark`→`light`; the `index.html` bootstrap no longer
-falls back to dark (it only opts *in* to dark, and re-resolves `'system'`
+falls back to dark (it only opts _in_ to dark, and re-resolves `'system'`
 against the OS); `.light` gained overrides for every contrast-sensitive token.
 CSP hash updated to `sha256-7Fr6DsWabQ…` and verified against both `index.html`
 and `dist/index.html`.
@@ -154,8 +242,8 @@ and `dist/index.html`.
 **Two further defects surfaced while doing this, neither previously known:**
 
 - **Persistence was broken end to end.** The bootstrap read
-  `localStorage['finplan-theme']`, but *nothing in the codebase ever wrote that
-  key* — the real preference is persisted by `uiStore` into an **encrypted
+  `localStorage['finplan-theme']`, but _nothing in the codebase ever wrote that
+  key_ — the real preference is persisted by `uiStore` into an **encrypted
   SQLite blob** (`finplan-sqljs-db`), which a synchronous inline script cannot
   read. The read therefore always returned `null`, so every reload painted the
   default theme and a user's saved choice never survived. `ThemeContext` now
@@ -243,8 +331,13 @@ two page buttons and 11 E2E `page.goto` calls, plus `/saas/cohort-analysis` and
 Body is 13px with a 4/8/12/16/24/32 spacing scale — already close to the right
 register for finance. Needs: a real type scale (no global H1–H6), line-height
 tokens, tabular figures everywhere money appears, and one grid density contract
-shared by AG Grid and `.data-grid` (`designTokens.density` defines
-compact/standard/comfortable but nothing consumes it).
+shared by AG Grid and `.data-grid`.
+
+Correction to an earlier note here: `designTokens.density` **is** consumed —
+`useDensity.ts` reads it and is wired into `AppLayout.tsx:43`,
+`DataGrid.tsx:68`, `FinPlanGrid.tsx:66`, `SpreadsheetGrid.tsx:80` and
+`SettingsPage.tsx:26`. The gap is that AG Grid and `.data-grid` apply it
+through separate paths, not that it is unused.
 
 ### UI-05 — Page-level consistency pass
 
@@ -301,6 +394,211 @@ and `Intl` calls inline at their use site.
 Consistent loading/empty/error states per route group; WCAG 2.2 AA with axe at 0
 critical/serious; keyboard paths through grids and modals; 1024×600 minimum.
 
+**Colour-contrast slice — DONE.** The AA failure carried over from UI-01 is
+fixed, along with two more found by auditing every token used as text.
+
+The rule is the text/fill split from UI-01, applied in the other direction: a
+hue tuned as a _fill_ is too dark to be _text_ on a dark surface. Measured on
+`--bg-surface`, dark theme:
+
+| Token                           | As text (dark) | Role now           |
+| ------------------------------- | -------------- | ------------------ |
+| `--accent-primary`              | 4.42 ✗         | fill / border only |
+| `--info`, `--accent-secondary`  | 4.05 ✗         | fill / border only |
+| `--positive`, `--color-success` | 3.61 ✗         | fill / border only |
+
+Two text-tuned companions were added (`--text-positive: #4ade80`,
+`--text-info: #818cf8`) to join the existing `--text-accent`. All three clear
+4.5:1 on _every_ dark surface including `--bg-hover`, the worst case, and are
+unchanged-by-design in light theme where the fill hues already pass.
+
+Migrated: 18 `text-[var(--accent-primary)]` sites, 9 status-hue text sites, 16
+inline `style={{ color }}` sites, and 2 `color:` rules in `index.css`. The 13
+`border-`/`ring-` uses were deliberately left alone — WCAG 1.4.11 asks 3:1 of
+non-text, which they meet.
+
+Guarded by two new describes in `buttonContrast.contract.test.ts` (34 → 63
+tests): one measures each `--text-*` token against all four surfaces in both
+themes, the other greps every non-test `.tsx` so a fill hue cannot be
+reintroduced as text. Both were mutation-verified (M8: restoring `#15803d`
+fails 4 assertions; M9: restoring one `text-[var(--accent-primary)]` fails the
+grep with the file and line).
+
+**`--text-muted` — DONE (follow-up).** The deferred item above is fixed:
+`#6484b4` → `#7897c3`, taking it from 4.17:1 on `--bg-elevated` and 3.60:1 on
+`--bg-hover` to 5.32:1 and 4.59:1. `--text-tertiary` aliases it and was fixed
+with it. Light theme was already AA and is untouched.
+
+The interesting constraint was _not_ lightening it further. Muted text only
+had to move far enough to clear AA on the worst surface; going brighter (to
+`#94b2db`, say) also passes contrast while collapsing the gap to
+`--text-secondary` from 1.38:1 to 1.00:1, turning three type steps into two.
+So the ramp ordering and separation are now pinned by their own describe, and
+`buttonContrast.contract.test.ts` measures the whole text ramp — not just the
+accent hues — against all four surfaces (63 → 99 tests). Mutation-verified
+both ways: M10 restoring `#6484b4` fails 4 contrast assertions, M11 the
+over-correction to `#94b2db` fails the hierarchy assertion.
+
+**Axe slice — DONE.** This item was already half-built and the plan had not
+recorded it: `jest-axe`/`vitest-axe` were installed and
+`src/__tests__/a11y/wcag-aa.test.tsx` (22 tests) was green, covering the auth
+pages, the main application pages, the report pages and eight UI primitives.
+
+The green suite was not worth much on its own, so it was instrumented to report
+how much DOM each scan actually saw. The report routes were being audited at
+**5-6 elements and ~70 characters of text** — axe was only ever looking at the
+"No data yet" empty state. Those pages passed because there was nothing there:
+no table, no column headers, no data cells, no controls beyond one button.
+
+The risk lives in the populated state, so `wcag-aa-populated.test.tsx` mocks the
+GL and budget stores and re-scans `ProfitLossPage`, `CashFlowPage`,
+`ChartOfAccountsPage` and `BudgetVsActualPage` with real content (45-104
+elements, 4-19 table rows). All four are clean at 0 critical/serious, so this
+closed a coverage gap rather than a defect. The one finding, `heading-order` on
+`ChartOfAccountsPage`, has since been fixed rather than tolerated: `PageHeader`
+renders the `<h1>` and `CardTitle` hardcoded an `<h3>`, so the level jumped. The
+level is now a `CardTitle` prop (`as?: HeadingLevel`, default `'h3'`, so all 168
+existing usages are byte-identical) and that page opts into `as="h2"`.
+`wcag-aa-populated.test.tsx` ratchets the structure directly -- no heading may
+jump more than one level -- because axe cannot see document-scoped heading rules
+in a fragment render. `DashboardPage`'s populated state was already covered by
+`DashboardPage.populated.contract.test.tsx` and is not duplicated.
+
+Each test also asserts it rendered ≥30 elements, so the hollow-scan failure mode
+cannot come back silently. Mutation-verified both ways: M12 (an unlabelled
+`<button>` in the populated CashFlow render) fails exactly one test on
+`button-name`; M13 (emptying the store mocks) fails all five on the element-count
+guard rather than passing on an empty container.
+
+The `--border-subtle`-as-text item at `NLQChat.tsx:262,264` is also closed: the
+dot separators are decorative, so rather than retune a border token for text
+they are now `aria-hidden="true"` and out of the accessibility tree entirely.
+
+Empty states are partly done. 42 pages drew the empty-state icon on a
+`p-4 bg-slate-800 rounded-full` disc, which is theme-blind: 1.24:1 against the
+dark page (the intended subtle recess) but 14.63:1 against the light page, i.e. a
+near-black blob. Those discs now use `--bg-elevated` (1.13:1 dark / 1.05:1 light)
+with `--text-muted` glyphs (5.32 / 4.91), and the three `text-red-400` glyphs that
+fell to 2.64:1 on the corrected light surface moved to `--text-negative`
+(5.92 / 4.62). A ratchet in `buttonContrast.contract.test.ts` bans the hardcoded
+disc idiom across `src/pages`, which the UI-01 palette lint does not reach.
+
+A second empty-state idiom is now closed too: the dashed outline box. Five
+pages drew it with `border-slate-600`/`border-slate-800`, which is 2.39:1 on
+the dark page (nearly invisible) against 7.58:1 on the light one, and paired it
+with `text-slate-500` glyphs that fail AA in dark at 3.80:1. Those now use
+`--border-default` and `--text-muted`. Extending the ratchet to this idiom
+immediately surfaced two blocks the block-extractor audit had missed
+(`BudgetVAReport.tsx:237`, `GLUploadPage.tsx:496`), one of which also had a
+`text-slate-200` heading at 1.23:1 and `text-slate-400` body at 2.56:1 in light
+-- effectively invisible. Both are fully tokenised now.
+
+**Empty-state heading level — DONE.** The note below previously claimed 77
+pages render their empty state with an `<h2>` and no `<h1>`. Re-measured by
+rendering rather than grepping, the real number was **46**: those pages
+early-return a bare `<main>` on the no-data branch, before they reach
+`PageHeader`, and `PageHeader` owns the page `<h1>`. A throwaway probe
+confirmed it in the DOM (`BankingDashboard`, `ChartOfAccountsPage`: `h1=0`,
+`h2=1`), so on the branch a fresh install always lands on there was no page
+title at all and the first heading in the document was a level 2.
+
+The heading in such a `<main>` _is_ the page title in that state, so it is now
+an `<h1>` (46 pages, 47 promotions). A `<main>` that renders `PageHeader` is
+exempt -- its `<h1>` comes from the header and the `<h2>`s beneath it are true
+section headings. That exemption was not a guess: the first codemod pass also
+promoted populated-branch section headings such as
+`<h2 class="sr-only">Key Performance Indicators</h2>`, and axe `heading-order`
+failed on `BankStatements`, `ActivityFeed` and `IntegrationSettingsPage` until
+they were reverted. `ForecastBuilderPage` is correct as-is for the same reason.
+
+Guarded by a describe in `buttonContrast.contract.test.ts` (136 → 137) that
+walks every `<main>` block and fails one carrying an `<h2>` with no `<h1>` and
+no `PageHeader`. Mutation-verified both ways: M25 (regressing a single heading
+to `<h2>`) fails it with the file and line; M26 confirms the four
+`PageHeader`-bearing pages do not false-positive. Two tests that pinned
+`level: 2` on an empty-state heading now pin `level: 1`.
+
+**Status messages (WCAG 4.1.3 AA) — DONE.** When a search or filter emptied a
+list, the "no results" message was rendered without moving focus and without a
+live region, so a screen-reader user got silence: the list they were reading
+just stopped existing. Measured by rendering rather than reading -- typing a
+non-matching query into `TemplateGalleryPage` produced the message with **0**
+live regions in the document. axe is structurally unable to flag this (it
+cannot know a static-looking `<p>` is the result of a filter transition), so
+the a11y suite was silent on all of it.
+
+23 of the 24 dynamic no-results messages had no live region; the only correct
+one was `FindReplaceDialog.tsx:362`. All 23 now sit in `role="status"`
+`aria-live="polite"`. Five are inside a `<td>` -- one already carrying
+`role="gridcell"` -- where the role went on a nested `<span>`, because
+`role="status"` on the cell itself would destroy its table-cell semantics.
+Three static prompts on `AIIntelligencePage` that share the same class string
+("Run analysis to begin") were deliberately left silent: they are not
+transitions. Four decorative icons inside these blocks picked up
+`aria-hidden="true"` on the way past.
+
+The shared `EmptySearchResults` and `EmptyFilterResults` had the same bug at
+the source -- both announced via `role="region"`, which announces nothing --
+and are fixed. `EmptyListState` keeps `role="region"`: it is a static
+"nothing here yet" state, not a filter result.
+
+Guarded by a describe in `buttonContrast.contract.test.ts` (137 → 138) that
+fails any no-results string not within 14 lines of a live region.
+Mutation-verified both ways: M27 (stripping the region from a call site) and
+M28 (stripping it from the shared component) each fail with the file and line,
+so the shared-component exemption is not a blanket escape hatch.
+
+**Keyboard operability (WCAG 2.1.1 A) — DONE.** Clickable table rows were
+mouse-only: `<tr onClick={...}>` navigates on click, but the row has no
+`tabIndex`, so a keyboard user can neither focus it nor fire it. Measured by
+rendering rather than reading -- a `DataTable` row with an `onRowClick`
+reported `tabIndex=null`, and pressing Enter produced **0** handler calls
+against **1** for a mouse click.
+
+The census needed two corrections before it was worth acting on. A naive
+`/<tr[^>]*>/` scan reported 53 offenders, but it truncates the opening tag at
+the first `>` inside `onKeyDown={(e) => {...}}`, hiding handlers that were
+already there; a brace-aware scan gives **20**. Of those, six are correct by
+design -- `aria-hidden="true"` scrim overlays and `role="presentation"`
+`stopPropagation` guards, where click is a convenience and Esc still closes the
+dialog -- leaving **14** real defects, plus one of a second kind.
+
+That second kind is worth naming: `VarianceDrillModal` had an `onKeyDown` but
+no `tabIndex`, so the element could never hold focus and the handler was dead
+code. A handler alone does not make a control operable.
+
+All 15 now use a shared `activateOnKey()` helper (`src/utils/a11yActivate.ts`,
+8 tests) rather than a sixteenth hand-rolled copy of the same arrow function --
+there were already 97 hand-rolled `key === 'Enter'` checks in the tree. It
+fires on Enter and Space, `preventDefault`s Space so activating a row does not
+also scroll the page, and ignores events bubbling from a nested button or link
+so that pressing Enter on a row's "Delete" button does not also navigate the
+row. Rows whose handler is optional (`onRowClick?`) stay out of the tab order
+when no handler is passed, so a static table gains no phantom tab stops.
+
+Guarded by a describe in `buttonContrast.contract.test.ts` (138 → 139) that
+scans every non-test `.tsx` with the same brace-aware parser and asserts both
+classes empty. Mutation-verified three ways: M29 (strip handler + tabIndex from
+a shared component), M30 (keep the handler, drop tabIndex), and M31 (a brand
+new clickable `<div>` in a page, proving the guard is not table-specific) each
+fail with the file and line.
+
+axe cannot catch either class -- it does not simulate key presses, and a
+`<div onClick>` is indistinguishable from a static `<div>` in the DOM it
+inspects. This is the third UI-07 defect class the axe suite was structurally
+blind to.
+
+Still open in this section: loading/error-state consistency and 1024×600.
+Loading and error states were surveyed while here and are in better shape than
+the plan assumed: `Skeleton`, `Spinner`, `LoadingScreen` and the route-level
+suspense fallback all already carry `role="status"`/`aria-busy`, and
+`RouteGroupErrorBoundary` uses `role="alert"` with `aria-live="assertive"`. The `bg-blue-600` occurrences that remain inside empty-state blocks
+were checked and left alone deliberately -- they are skip-links and buttons
+(white on `#2563eb` = 5.17:1, passing), not themed surfaces, so they belong to
+the Button migration rather than here. Raw palette also survives in the
+_populated_ bodies of these same pages (e.g. `BudgetVsActualPage` table cells);
+that is a separate sweep and was not folded in.
+
 ---
 
 ## 3. Correctness and depth track
@@ -325,9 +623,46 @@ critical/serious; keyboard paths through grids and modals; 1024×600 minimum.
   requests an 8 GB heap on a 3 GB box. Solved with `scripts/test-sharded.mjs`
   (`npm run test:sharded`, `--shards/--workers/--heap/--only`): 1199 files /
   13,447 tests in ~13 min. Single shard: `node scripts/test-sharded.mjs
-  --shards=8 --only=N`.
+--shards=8 --only=N`.
 - **P-01** — Bundle budget: main ≤150 KB gzip, total ≤2 MB (`npm run
-  bundle-check`), with 200 lazy routes and heavy vendor chunks already split.
+bundle-check`), with 200 lazy routes and heavy vendor chunks already split.
+
+  **The gate was only measuring three of its six vendors.** It looked up each
+  budgeted chunk and did all its work inside `if (match)`, so any vendor that
+  produced no chunk was skipped without a word while the run still reported
+  PASS. `vite.config.ts` had no ag-grid rule, so ag-grid sat in an anonymous
+  `chunk-*.js` at **298.3KB gzip — the largest artefact in the build, 1.7KB
+  under the very limit meant to govern it**, unmeasured. Now named
+  (`grid-community-vendor` 284.85KB = 95% of budget, correctly warning;
+  `grid-react-vendor` 14.29KB), and a missing chunk is an error, not a skip —
+  mutation-verified. `ai-vendor` is exempt by name because
+  `@huggingface/transformers` is an intentionally uninstalled optional peer;
+  it prints a SKIP line and re-arms automatically if installed.
+
+  **Done — `pdf-vendor` no longer eagerly preloaded. Critical path 483.42 →
+  304.23KB gzip (−179.19KB, −37%); 17 → 16 preloaded chunks.** Not jsPDF's
+  doing: rolldown's injected preload helper had landed in that chunk, and 11 of
+  its 13 importers (entry chunk included) wanted only that ~1KB helper,
+  defeating the lazy `loadJsPDF()` design in `utils/pdfRuntime.ts`. Fix is one
+  line in `manualChunks` — the helper joins `icon-vendor`, a group that is
+  _already_ in the preload set, so it adds no new critical-path bytes:
+  `if (id.includes('lucide-react') || id.includes('vite/preload-helper'))`.
+  Two dead ends, both re-tested, do not retry: a lone `return 'preload-helper'`
+  is re-merged by rolldown (sub-threshold), and naming the _auto-generated_
+  `react` chunk is a no-op since no such rule is declared. `output.minChunkSize`
+  is rejected by rolldown-vite 8. Total bytes are unchanged (2071.86KB) — this
+  is purely a _when-loaded_ win. `pdf-vendor`'s importers fell 13 → 4, and the
+  survivors take real jsPDF bindings rather than the helper.
+  Regression guard added: `bundle-check.js` now fails if any of
+  `pdf-vendor`/`excel-core-vendor`/`grid-community-vendor`/`ai-vendor` appears
+  in `index.html`'s modulepreloads. The pre-existing 750KB aggregate critical
+  path budget could never have caught this — 483.42KB passed it comfortably —
+  so the guard is per-chunk and by name; mutation-verified by reverting the
+  one-line fix (aggregate still PASS, named guard FAIL).
+
+  Still open here: total JS is at 92.2% of limit (2071.86 / 2248KB) and
+  `grid-community-vendor` at 95.0% — both warn, neither fails.
+
 - **P-02** — 100k-row grid at ≥30 fps; 10k-row GL import <30 s; 500-row PDF <3 s.
   Measure before optimising.
 - **P-03** — Workers (consolidation, Monte Carlo, formula, export) genuinely
@@ -347,7 +682,7 @@ critical/serious; keyboard paths through grids and modals; 1024×600 minimum.
 - **R-03** — CI is red for billing reasons (E-005), owner-side. No gate can be
   called green from CI until that clears.
 - **R-04** — Keep the maturity ladder honest: routes are `BUILT — TEST
-  EVIDENCE`; CONNECTED/GOVERNED/ENTERPRISE-READY stay `UNVERIFIED` until
+EVIDENCE`; CONNECTED/GOVERNED/ENTERPRISE-READY stay `UNVERIFIED` until
   evidence exists. Breadth is not validation.
 
 ---

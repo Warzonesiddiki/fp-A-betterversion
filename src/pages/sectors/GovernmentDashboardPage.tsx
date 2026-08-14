@@ -19,6 +19,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'];
 
@@ -100,19 +101,15 @@ export function GovernmentDashboardPage() {
 
   return (
     <main className="p-6 space-y-6" role="main" aria-label="Government Sector Dashboard">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-            Government Dashboard
-          </h1>
-          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            Public sector FP&A — budget execution, revenue, and fiscal health
-          </p>
-        </div>
-        <Button variant="outline" size="sm">
-          Export Report
-        </Button>
-      </div>
+      <PageHeader
+        title="Government Dashboard"
+        purpose="Public sector FP&A — budget execution, revenue, and fiscal health"
+        actions={
+          <Button variant="outline" size="sm">
+            Export Report
+          </Button>
+        }
+      />
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((kpi) => (

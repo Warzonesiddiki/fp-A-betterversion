@@ -418,7 +418,7 @@ export default function BudgetDetailPage() {
               actions={
                 <button
                   onClick={() => setHelpOpen(true)}
-                  className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                  className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                   aria-label="Help"
                 ></button>
               }
@@ -604,7 +604,7 @@ export default function BudgetDetailPage() {
                   <span className="text-sm font-semibold text-[var(--text-secondary)]">
                     Professional Grid Editor
                   </span>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-[var(--text-muted)]">
                     AG Grid · editable currency cells · drag-fill · Ctrl+C/V · F2 to edit
                   </span>
                 </div>
@@ -643,7 +643,7 @@ export default function BudgetDetailPage() {
                   <tbody className="divide-y divide-slate-800">
                     {groupedByAccount.length === 0 ? (
                       <tr>
-                        <td colSpan={14} className="text-center py-8 text-slate-500">
+                        <td colSpan={14} className="text-center py-8 text-[var(--text-muted)]">
                           No line items in this budget yet.
                         </td>
                       </tr>
@@ -689,8 +689,8 @@ export default function BudgetDetailPage() {
                                     className={
                                       'w-full text-right px-2 py-1 rounded tabular-nums hover:bg-blue-900/20 transition-colors ' +
                                       (li.isLocked || isLocked
-                                        ? 'text-slate-500'
-                                        : 'text-slate-200')
+                                        ? 'text-[var(--text-muted)]'
+                                        : 'text-[var(--text-primary)]')
                                     }
                                     onClick={() =>
                                       !(li.isLocked || isLocked) &&
@@ -743,7 +743,7 @@ export default function BudgetDetailPage() {
                   <History className="h-4 w-4 text-[var(--text-muted)]" />
                   Version History
                 </div>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[var(--text-muted)]">
                   {history.length} version snapshots · position {historyIndex + 1} of{' '}
                   {history.length}
                 </p>
@@ -764,7 +764,7 @@ export default function BudgetDetailPage() {
                   <Lock className="h-4 w-4 text-[var(--text-muted)]" />
                   Cell Locking
                 </div>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[var(--text-muted)]">
                   {budgetLineItems.filter((li) => li.isLocked).length} cells locked ·{' '}
                   {isLocked ? 'budget locked' : 'editing enabled'}
                 </p>
@@ -774,7 +774,7 @@ export default function BudgetDetailPage() {
               <CardContent className="p-4">
                 <div className="text-sm font-semibold mb-1">Approval</div>
                 {budget.status === 'Draft' && (
-                  <p className="text-xs text-slate-500">Not yet submitted</p>
+                  <p className="text-xs text-[var(--text-muted)]">Not yet submitted</p>
                 )}
                 {budget.status === 'InReview' && (
                   <p className="text-xs text-yellow-400">Pending approval</p>
@@ -783,7 +783,7 @@ export default function BudgetDetailPage() {
                   <div>
                     <p className="text-xs text-green-400">Approved (Locked)</p>
                     {budget.approvedAt && (
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-[var(--text-muted)]">
                         {new Date(budget.approvedAt).toLocaleDateString()}
                       </p>
                     )}
@@ -841,13 +841,13 @@ export default function BudgetDetailPage() {
               <div className="space-y-3" data-testid="comments-tab">
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {comments.length === 0 ? (
-                    <p className="text-xs text-slate-500">No comments yet.</p>
+                    <p className="text-xs text-[var(--text-muted)]">No comments yet.</p>
                   ) : (
                     comments.map((c) => (
                       <div key={c.id} className="p-2 bg-slate-800 rounded text-xs">
                         <div className="font-semibold">{c.author}</div>
                         <div className="text-slate-300">{c.text}</div>
-                        <div className="text-slate-500 text-[10px]">
+                        <div className="text-[var(--text-muted)] text-[10px]">
                           {new Date(c.timestamp).toLocaleString()}
                         </div>
                       </div>
@@ -872,7 +872,7 @@ export default function BudgetDetailPage() {
                 {auditLog.map((entry) => (
                   <div key={entry.id} className="p-2 bg-slate-800 rounded text-xs">
                     <div className="text-slate-300">{entry.action}</div>
-                    <div className="text-slate-500 text-[10px]">
+                    <div className="text-[var(--text-muted)] text-[10px]">
                       {entry.user} · {new Date(entry.timestamp).toLocaleString()}
                     </div>
                   </div>
@@ -915,7 +915,9 @@ export default function BudgetDetailPage() {
             </div>
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {snapshots.length === 0 ? (
-                <p className="text-sm text-slate-500 text-center py-4">No snapshots yet.</p>
+                <p className="text-sm text-[var(--text-muted)] text-center py-4">
+                  No snapshots yet.
+                </p>
               ) : (
                 snapshots.map((snap) => (
                   <div
@@ -924,7 +926,7 @@ export default function BudgetDetailPage() {
                   >
                     <div>
                       <div className="font-medium text-sm">{snap.name}</div>
-                      <div className="text-xs text-slate-500">
+                      <div className="text-xs text-[var(--text-muted)]">
                         {new Date(snap.timestamp).toLocaleString()}
                       </div>
                     </div>

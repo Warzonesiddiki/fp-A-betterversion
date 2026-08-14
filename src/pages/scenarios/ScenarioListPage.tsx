@@ -41,8 +41,8 @@ export default function ScenarioListPage() {
   if (scenarios.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <FlaskConical className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <FlaskConical className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Scenarios Yet</h2>
         <p className="text-[var(--text-muted)] mb-6">
@@ -67,7 +67,7 @@ export default function ScenarioListPage() {
             actions={
               <button
                 onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
                 aria-label="Help"
               ></button>
             }
@@ -112,7 +112,11 @@ export default function ScenarioListPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filtered.length === 0 ? (
-          <div className="col-span-full text-center py-8 text-slate-500">
+          <div
+            className="col-span-full text-center py-8 text-[var(--text-muted)]"
+            role="status"
+            aria-live="polite"
+          >
             No scenarios match the filter.
           </div>
         ) : (
@@ -154,7 +158,7 @@ export default function ScenarioListPage() {
                 <p className="text-xs text-[var(--text-muted)] mb-3 line-clamp-2">
                   {s.description}
                 </p>
-                <div className="flex gap-2 text-xs text-slate-500">
+                <div className="flex gap-2 text-xs text-[var(--text-muted)]">
                   <Badge variant="secondary" className="text-[10px]">
                     {s.type}
                   </Badge>

@@ -3,6 +3,20 @@ import { cn } from '../../utils/cn';
 
 export interface PageHeaderProps extends HTMLAttributes<HTMLElement> {
   title: string;
+  /**
+   * Decorative glyph rendered before the title. It is marked `aria-hidden`
+   * because the title already carries the accessible name — an icon that
+   * duplicates it would be announced twice.
+   */
+  icon?: ReactNode;
+  /**
+   * Applied to the `<h1>`, not to the wrapper. Pages that point
+   * `aria-labelledby` at their heading must keep that reference resolving to
+   * the heading itself; spreading `id` through `...props` would move it onto
+   * the wrapper and silently relabel the region with the header's whole
+   * subtree (title + purpose + actions).
+   */
+  titleId?: string;
   /** A concise decision-oriented explanation of why this page exists. */
   purpose?: ReactNode;
   /** Contextual status such as freshness or lifecycle; use FinancialStatusBadge when applicable. */
@@ -16,6 +30,8 @@ export interface PageHeaderProps extends HTMLAttributes<HTMLElement> {
  */
 export function PageHeader({
   title,
+  icon,
+  titleId,
   purpose,
   status,
   actions,
@@ -38,7 +54,14 @@ export function PageHeader({
     >
       <div>
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="fp-page-header__title">{title}</h1>
+          <h1 className="fp-page-header__title" id={titleId}>
+            {icon ? (
+              <span aria-hidden="true" className="fp-page-header__icon">
+                {icon}
+              </span>
+            ) : null}
+            {title}
+          </h1>
           {status}
         </div>
         {purpose ? <div className="fp-page-header__purpose">{purpose}</div> : null}

@@ -7,12 +7,13 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 
 const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
   ({ className, variant = 'default', ...props }, ref) => {
+    // Tinted "-subtle" fills paired with their matching on-subtle text token;
+    // the pairs are contrast-checked per theme in buttonContrast.contract.test.ts.
     const variantClasses = {
-      default: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
-      secondary: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100',
-      destructive: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
-      outline:
-        'border border-[var(--border-default)] bg-transparent text-gray-800 dark:border-gray-600 dark:text-gray-300',
+      default: 'bg-[var(--accent-subtle)] text-[var(--text-on-accent-subtle)]',
+      secondary: 'bg-[var(--bg-elevated)] text-[var(--text-primary)]',
+      destructive: 'bg-[var(--negative-subtle)] text-[var(--text-on-danger-subtle)]',
+      outline: 'border border-[var(--border-default)] bg-transparent text-[var(--text-secondary)]',
     };
 
     return (

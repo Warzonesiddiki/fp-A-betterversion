@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, Fragment } from 'react';
+import { activateOnKey } from '@/utils/a11yActivate';
 import {
   Activity,
   ArrowUpRight,
@@ -274,6 +275,12 @@ export function ImpactAnalysis({
                           key={row.metric.key}
                           className="hover:bg-[var(--bg-hover)] cursor-pointer"
                           onClick={() => onHighlightMetric?.(row.metric.key)}
+                          onKeyDown={
+                            onHighlightMetric
+                              ? activateOnKey(() => onHighlightMetric(row.metric.key))
+                              : undefined
+                          }
+                          tabIndex={onHighlightMetric ? 0 : undefined}
                         >
                           <td className="py-3 pr-4 font-medium text-[var(--text-primary)]">
                             {row.metric.label}
@@ -345,8 +352,12 @@ export function ImpactAnalysis({
       )}
 
       {filteredRows.length === 0 && (
-        <div className="flex flex-col items-center gap-2 py-12 text-[var(--text-secondary)]">
-          <Activity className="h-8 w-8" />
+        <div
+          className="flex flex-col items-center gap-2 py-12 text-[var(--text-secondary)]"
+          role="status"
+          aria-live="polite"
+        >
+          <Activity className="h-8 w-8" aria-hidden="true" />
           <p className="text-sm font-medium">No metrics match this filter</p>
           <p className="text-xs">Try selecting a different severity level.</p>
         </div>

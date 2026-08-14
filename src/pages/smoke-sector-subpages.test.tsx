@@ -268,7 +268,10 @@ describe('Sector Sub-Page Smoke Tests', () => {
   describe('AIIntelligencePage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(AIIntelligencePage, '/ai', '/ai');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -284,7 +287,10 @@ describe('Sector Sub-Page Smoke Tests', () => {
         '/insurance/claims',
         '/insurance/claims'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -300,7 +306,10 @@ describe('Sector Sub-Page Smoke Tests', () => {
         '/healthcare/trials',
         '/healthcare/trials'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -316,7 +325,10 @@ describe('Sector Sub-Page Smoke Tests', () => {
         '/energy/emissions',
         '/energy/emissions'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {
@@ -332,7 +344,10 @@ describe('Sector Sub-Page Smoke Tests', () => {
         '/construction/equipment',
         '/construction/equipment'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays the page heading', () => {

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Settings, LogOut, Save, Clock, Globe, DollarSign, Palette } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -50,7 +51,7 @@ export default function ProfilePage() {
 
   return (
     <div className="p-6 max-w-3xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">Profile</h1>
+      <PageHeader title="Profile" />
 
       <Card>
         <CardHeader>

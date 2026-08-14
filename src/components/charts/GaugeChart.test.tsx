@@ -5,6 +5,9 @@ import { GaugeChart } from './GaugeChart';
 describe('GaugeChart', () => {
   it('renders without crashing', () => {
     const { container } = render(<GaugeChart value={50} />);
-    expect(container).toBeDefined();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the component mounted'
+    ).toBeGreaterThanOrEqual(1);
   });
 });

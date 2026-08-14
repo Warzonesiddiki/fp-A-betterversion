@@ -61,7 +61,10 @@ describe('LeaseDetailPage (BATCH-012 — rewire to LeaseEngine)', () => {
         <LeaseDetailPage />
       </MemoryRouter>
     );
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
   });
 
   it('renders real schedules computed by LeaseEngine (not mock data)', () => {

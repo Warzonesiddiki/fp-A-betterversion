@@ -10,6 +10,7 @@ import { Shield } from 'lucide-react';
 import { sumMoney, roundTo, divideMoney, toDecimal } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 import { computeSectorDriverModel } from './SectorDriverDashboard';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 function formatMetricValue(metric: {
   format: 'currency' | 'percent' | 'number';
@@ -90,7 +91,7 @@ export default function InsuranceDashboardPage() {
     return (
       <main className="p-12 text-center" role="main" aria-label="Insurance Dashboard - No Data">
         <Shield className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">Insurance — No Data</h2>
+        <h1 className="text-xl font-semibold mb-2">Insurance — No Data</h1>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to view insurance KPIs.</p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
@@ -99,8 +100,7 @@ export default function InsuranceDashboardPage() {
 
   return (
     <main className="p-6 space-y-6" role="main">
-      <h1 className="text-2xl font-bold">Insurance Dashboard</h1>
-      <p className="text-sm text-[var(--text-muted)]">Underwriting and claims metrics</p>
+      <PageHeader title="Insurance Dashboard" purpose="Underwriting and claims metrics" />
 
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {model?.metrics.slice(0, 8).map((metric) => (

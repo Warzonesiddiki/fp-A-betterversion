@@ -125,7 +125,7 @@ export default function GrantDisbursementPage() {
     return (
       <main className="p-12 text-center" role="main" aria-label="Grants - No Data">
         <Landmark className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h2 className="text-xl font-semibold mb-2">No Grant Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Grant Data</h1>
         <p className="text-[var(--text-muted)] mb-6">
           Import GL data to view grant disbursement metrics.
         </p>

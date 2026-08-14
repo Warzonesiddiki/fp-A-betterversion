@@ -111,8 +111,8 @@ export default function HealthcareDashboardPage() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <Activity className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <Activity className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Healthcare Data</h2>
         <p className="text-[var(--text-muted)] mb-6">
@@ -281,11 +281,11 @@ export default function HealthcareDashboardPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="text-lg font-bold">428</div>
-                  <div className="text-[10px] text-slate-500">Nurses on Shift</div>
+                  <div className="text-[10px] text-[var(--text-muted)]">Nurses on Shift</div>
                 </div>
                 <div>
                   <div className="text-lg font-bold">84</div>
-                  <div className="text-[10px] text-slate-500">On-call Doctors</div>
+                  <div className="text-[10px] text-[var(--text-muted)]">On-call Doctors</div>
                 </div>
               </div>
             </div>

@@ -11,18 +11,18 @@ All numbers below are **measured**, not estimated. Scanners: `lightscan2.mjs`
 
 ## Baseline before this work
 
-| Metric                                   | Value                                       |
-| ---------------------------------------- | ------------------------------------------- |
-| Suite                                    | 1206 files / 13,495 tests                   |
-| Default theme                            | `light` (`uiStore.ts:20`)                   |
-| Page modules                             | 203                                         |
-| Pages using `PageHeader`                 | **2**                                       |
-| Pages using raw `<h1>`                   | 181, in **21 different class combinations** |
-| `useDensity()` consumers                 | **0**                                       |
-| `designTokens.density` consumers         | **0**                                       |
-| Light-mode contrast bugs (AST-confirmed) | **64 sites / 29 files**                     |
-| Hardcoded `currency: 'USD'`              | 116 sites / 65 files                        |
-| Inline `Intl.NumberFormat`               | 129 sites                                   |
+| Metric                                   | Value                                          |
+| ---------------------------------------- | ---------------------------------------------- |
+| Suite                                    | 1206 files / 13,495 tests                      |
+| Default theme                            | `light` (`uiStore.ts:20`)                      |
+| Page modules                             | 203                                            |
+| Pages using `PageHeader`                 | **2**                                          |
+| Pages using raw `<h1>`                   | 181, in **21 different class combinations**    |
+| `useDensity()` consumers                 | **0**                                          |
+| `designTokens.density` consumers         | **0**                                          |
+| Light-mode contrast bugs (AST-confirmed) | **64 sites / 29 files** (see correction below) |
+| Hardcoded `currency: 'USD'`              | 116 sites / 65 files                           |
+| Inline `Intl.NumberFormat`               | 129 sites                                      |
 
 ## The severe finding
 
@@ -143,8 +143,9 @@ display.
 
 ## C — UI-05 headers: outcome
 
-**Status: partially shipped (114 of 181 pages).** Pages on the canonical
-`PageHeader` went from **2 to 116**.
+**Status: complete (177 of 183 heading-bearing pages).** Pages on the canonical
+`PageHeader` went from **2 to 177**. The 8 raw `<h1>`s that remain are a
+deliberate exclusion, listed below.
 
 ### What changed
 
@@ -154,28 +155,61 @@ A codemod converted the mechanical cases: a raw `<h1>`, an optional sibling
 UI-04, so `PageHeader` was already the visually correct choice; this makes it
 the structurally correct one too.
 
+Migration happened in four passes:
+
+| Pass                                 |  Pages |
+| ------------------------------------ | -----: |
+| bulk codemod over `src/pages`        |     48 |
+| span mode (headings inside `<main>`) |      7 |
+| hand-migrated refusals               |     12 |
+| **total**                            | **67** |
+
+**Span mode** was the significant fix. The codemod originally refused any
+heading whose wrapper was `<main>`, `CardContent`, or otherwise not a plain
+layout `<div>`, because collapsing the wrapper would destroy page structure.
+That was the right instinct with the wrong remedy: those wrappers never needed
+deleting. Span mode replaces only the `<h1>`+`<p>` run in place and leaves the
+wrapper untouched, which converted the whole `src/pages/sector/*` group safely.
+
+Two new `PageHeader` props came out of this work:
+
+- **`titleId`** — all 20 pages whose `<h1>` carried an `id` used that id as an
+  `aria-labelledby` target elsewhere in the same file. `PageHeader` spreads
+  `...props` onto its root `<header>`, so forwarding `id` through the spread
+  would have relabelled the referencing region with the header's entire subtree
+  instead of its title. `titleId` puts the id on the heading specifically.
+- **`icon`** — rendered `aria-hidden` inside the `<h1>`, so decorative glyphs
+  stay out of the accessible name.
+
+Both are regression-tested in `PageHeader.test.tsx` (5 tests).
+
 ### What was deliberately left alone
 
-The codemod refuses anything it cannot prove is safe, and 67 pages tripped a
-guard. These are not oversights, they are cases where an automated rewrite would
-lose information:
+**Eight centred card layouts** keep their raw `<h1>`. `PageHeader` is a
+left-aligned flex row; forcing it into a centred auth card or error state would
+change the visual design, not just the markup:
 
-| Reason                                                   | Pages |
-| -------------------------------------------------------- | ----: |
-| `<h1>` carries extra attributes (ids, aria, handlers)    |    23 |
-| `<h1>` contains elements, not just text (icons, badges)  |    18 |
-| `<h1>` sits directly in `<main>` / `CardContent`         |     8 |
-| wrapper has a shape the codemod does not model           |    14 |
-| `<h1>` is not the first child of its wrapper             |     3 |
-| wrapper carries non-layout classes that would be dropped |     1 |
+| Page                                    | Headings |
+| --------------------------------------- | -------: |
+| `auth/LoginPage`                        |        2 |
+| `auth/ForgotPasswordPage`               |        2 |
+| `auth/RegisterPage`                     |        1 |
+| `auth/OnboardingWizard`                 |        1 |
+| `NotFoundPage` (display 404)            |        1 |
+| `templates/TemplatePreviewPage` (error) |        1 |
 
-The last row is worth keeping in mind: an early version of the codemod silently
-dropped a wrapper's `text-sm text-slate-400` when it hoisted the children into
-`actions`. The guard now requires the collapsed wrapper's classes to be purely
-layout (`flex`, `gap-*`, `items-*`, `justify-*`, margins) before it will discard
-them. These remaining pages need a human decision about where the icon, badge,
-or extra styling belongs in the `PageHeader` API and should be converted as each
-page is next touched.
+`reports/ReportDesignerPage` is a related case: it is a full-bleed editor whose
+toolbar is a control strip rather than a page header, so it got an `sr-only`
+`<h1>` instead — it previously had no heading at all, which was a genuine
+defect.
+
+An early version of the codemod silently dropped a wrapper's
+`text-sm text-slate-400` when it hoisted children into `actions`. The guard now
+requires a collapsed wrapper's classes to be purely layout (`flex`, `gap-*`,
+`items-*`, `justify-*`, margins) before discarding them, and that guard was not
+relaxed to raise the conversion count. Product-tour anchor classes
+(`.loan-loss-header`, `.acl-metrics`) were preserved for the same reason: they
+are `runTour()` selectors whose removal breaks the tour with no test failure.
 
 ### A real accessibility defect this surfaced
 
@@ -194,6 +228,60 @@ two new attributes.
 
 ### Verification
 
-`tsc --noEmit` clean · `eslint src --max-warnings 0` clean · **13,564 tests
-passing across all 8 shards, 0 failing** · guardrails 21/21 · dev server
-compiles and serves the migrated pages.
+`tsc --noEmit` clean · `eslint src --max-warnings 0` clean · **13,567 tests
+passing / 0 failing** (1207 files; baseline 13,564 plus the 3 new `PageHeader`
+tests) · `AtlasFoundations.visual-contract` and `AtlasVisualBaselinePage` both
+green.
+
+## A / B — status correction and the last contrast bug
+
+Re-measuring A and B from scratch, rather than trusting the plan's baseline
+table, showed both were already shipped. The table above was never updated
+after the work landed, which made the remaining scope look far larger than it
+was.
+
+**A — density: shipped.** The baseline recorded `useDensity()` and
+`designTokens.density` at **0 consumers**. Both are now fully wired:
+`useApplyDensity()` in `AppLayout` mirrors the preference onto
+`<html data-density>`; `[data-density]` in `index.css` re-points the
+`--density-*` contract; `DataGrid`, `FinPlanGrid` and `SpreadsheetGrid` read it
+via `useDensity()`/`densityMetrics()`; and `SettingsPage` exposes the
+three-mode radio control. AG Grid and `.fp-table` resolve row metrics from that
+one source, which was the actual requirement.
+
+**B — contrast: shipped, with one genuine bug still live.** The guardrail
+(`src/theme/lightContrast.contract.test.ts`, written during UI-04) was green,
+so the "64 sites" were long since fixed. But green was partly wrong.
+
+The guard treated **any** `bg-gradient` as a dark backdrop. That is not safe:
+
+```
+bg-gradient-to-br from-emerald-500/20 to-emerald-600/5
+```
+
+is all but transparent, so it leaves light text sitting on whatever is
+underneath — here a white `Card`. `ReportTemplateLibrary.tsx:222` rendered
+`<h3 className="font-medium text-white text-sm">{template.name}</h3>` on
+exactly that card: a white-on-white template title on the default theme, and
+the guard was actively vouching for it.
+
+Fixed both sides:
+
+- the heading now uses `text-[var(--text-heading)]`, matching its sibling
+  description which already used `--text-muted`;
+- `DARK_BG` no longer accepts bare `bg-gradient`, and an alpha-suffixed
+  `from-*-500/20` stop no longer counts as dark. Verified by reverting the
+  source fix and watching the guard fail on that exact line, then re-applying.
+
+Two mutation-guard assertions pin the distinction so the hole cannot reopen:
+a translucent gradient is not a backdrop, an opaque one is.
+
+### On the "64 sites" figure
+
+An independent scanner written for this pass reported 46 sites, then 17, then
+14, then 1 as each false-positive class was eliminated — `dark:`-prefixed
+pairings (correct by construction), dynamic `style={{ backgroundColor }}`
+fills, and saturated `bg-*-500` badges. The single survivor was the real bug
+above. Counts from a matcher that has not been tested against known-good
+patterns should be treated as upper bounds, not measurements; the committed
+guard carries a mutation test for precisely this reason.

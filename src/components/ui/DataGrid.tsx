@@ -512,7 +512,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
               className="w-8 h-8 border-4 border-[var(--border-subtle)] border-t-[var(--accent-primary)] rounded-full animate-spin"
               aria-hidden="true"
             />
-            <span className="mt-2 text-xs font-semibold text-[var(--accent-primary)]">
+            <span className="mt-2 text-xs font-semibold text-[var(--text-accent)]">
               Loading Grid...
             </span>
           </div>

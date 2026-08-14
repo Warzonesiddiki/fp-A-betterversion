@@ -140,7 +140,10 @@ describe('CapExDashboard smoke test', () => {
         <CapExDashboard />
       </MemoryRouter>
     );
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
   });
 
   it('displays the Capital Expenditures heading (has inline mock data)', () => {

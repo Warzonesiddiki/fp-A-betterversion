@@ -70,10 +70,33 @@
   --border-strong: #4a68a4;
 
   /* Typography — high contrast, readable */
-  --text-muted: #6484b4;
+  /* UI-07 — #6484b4 was AA only on the two darkest surfaces (4.17:1 on
+     --bg-elevated, 3.60:1 on --bg-hover), and muted text lands on cards and
+     hovered rows constantly. Lightened just far enough to clear 4.5:1 on
+     --bg-hover, the worst case, and no further: the remaining gap to
+     --text-secondary (1.38:1) is what keeps the muted/secondary/primary
+     hierarchy readable as three distinct steps. */
+  --text-muted: #7897c3;
   --text-secondary: #94b2db;
   --text-primary: #f1f5f9;
   --text-accent: #38bdf8;
+
+  /* UI-07 — text-tuned companions for the status hues.
+     --positive/--info/--accent-primary are tuned as *fills* and as light-theme
+     text; on the dark surfaces they fall below AA for normal-size text
+     (#15803d 3.61:1, #6366f1 4.05:1, #0284c7 4.42:1 on --bg-surface). These
+     lightened variants clear 4.5:1 on every dark surface up to --bg-hover, so
+     status *text and icons* have a token that is legible in both themes.
+     Use --positive/--info for fills and borders; use these for glyphs. */
+  --text-positive: #4ade80;
+  --text-info: #818cf8;
+  /* --negative is the same story and was missed in the first pass: #f43f5e is
+     4.34:1 on --bg-elevated and 3.75:1 on --bg-hover, and it is simultaneously
+     used as a *fill* behind white text (the Navbar notification badge) where it
+     is 3.67:1. Those two roles pull in opposite directions — brightening the
+     token for text drops white-on-it to 2.69:1 — so they get separate tokens.
+     Use --danger-fill for fills, --text-negative for text and glyphs. */
+  --text-negative: #fb7185;
 
   /* Accent — Sleek Sky Blue */
   --accent-primary: #0284c7;
@@ -147,6 +170,31 @@
   --surface-hover: var(--bg-hover);
   --text-tertiary: var(--text-muted);
   --text-on-accent: #ffffff;
+
+  /* Filled-surface action tokens (dark theme values).
+     These are deliberately NOT aliases of --accent-primary/--negative. A token
+     used as *text* must contrast with the page; a token used as a *fill* behind
+     white text must contrast with white. Those two requirements pull in
+     opposite directions, and one token cannot satisfy both: in dark theme
+     --accent-primary (#0284c7) under white text is 4.10:1, below AA, and
+     --negative (#f43f5e) is 3.67:1. Both are shipping today via .btn-primary /
+     .btn-danger. The -fill tokens are chosen so white text clears AA (>=4.5:1)
+     while the fill still separates from the page background (>=3:1, WCAG 1.4.11
+     for the control boundary). Pinned by buttonContrast.contract.test.ts —
+     change these only with the ratios re-checked. */
+  --action-fill: #0369a1; /* white 5.93:1 · vs page 3.05:1 */
+  --action-fill-hover: #0277b0; /* white 4.92:1 · vs page 3.67:1 */
+  --danger-fill: #dc2626; /* white 4.83:1 · vs page 3.74:1 */
+  --danger-fill-hover: #e11d48; /* white 4.70:1 · vs page 3.85:1 */
+
+  /* Text placed on the tinted "-subtle" fills (badges, inline status chips).
+     In dark theme the -subtle tokens are translucent, so the effective
+     background is the composite over --bg-surface; these values are checked
+     against that composite, not against the raw token. */
+  --text-on-accent-subtle: #38bdf8; /* 7.16:1 over composited fill */
+  --text-on-danger-subtle: #f43f5e; /* 4.53:1 over composited fill */
+  --text-on-positive-subtle: #4ade80; /* 9.53:1 over composited fill */
+
   --accent: var(--accent-primary);
   --accent-secondary: var(--info);
   --accent-primary-light: var(--accent-subtle);
@@ -185,6 +233,33 @@
   --text-secondary: #475569;
   --text-primary: #0f172a;
   --text-accent: #0369a1;
+
+  /* UI-07 — in light theme the fill hues are already AA as text on #ffffff
+     (#15803d 5.02:1, #4f46e5 6.29:1), so these resolve to the same values the
+     status fills use. The token still exists here so a component can name the
+     text role once and stay correct when the theme flips. */
+  --text-positive: #15803d;
+  --text-info: #4f46e5;
+  /* Light theme's --negative (#dc2626) already clears AA as text (4.53:1 on the
+     worst light surface), so the text twin resolves to the same value here. */
+  --text-negative: #dc2626;
+
+  /* Light-theme filled-surface actions. Same contract as :root — white text
+     >=4.5:1, fill vs #ffffff page >=3:1. Hover goes *darker* here (the dark
+     theme goes lighter) so the direction of travel reads as "more emphasis"
+     against each page background. */
+  --action-fill: #0369a1; /* white 5.93:1 · vs page 5.93:1 */
+  --action-fill-hover: #075985; /* white 7.56:1 · vs page 7.56:1 */
+  --danger-fill: #dc2626; /* white 4.83:1 · vs page 4.83:1 */
+  --danger-fill-hover: #b91c1c; /* white 6.47:1 · vs page 6.47:1 */
+
+  /* On-subtle text. The light -subtle fills are opaque, and the obvious
+     choices fail AA against them: --negative #dc2626 on #fee2e2 is 3.95:1 and
+     --positive #15803d on #d1fae5 is 4.42:1. Darkened one step each. */
+  --text-on-accent-subtle: #0369a1; /* 5.17:1 on #e0f2fe */
+  --text-on-danger-subtle: #b91c1c; /* 5.30:1 on #fee2e2 */
+  --text-on-positive-subtle: #166534; /* 6.29:1 on #d1fae5 */
+
   --accent-subtle: #e0f2fe;
   --focus-ring: #2563eb;
   --positive-subtle: #d1fae5;
@@ -315,8 +390,19 @@ body {
   margin-bottom: var(--space-xl);
 }
 .fp-page-header__title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
   margin: 0;
   color: var(--text-heading);
+}
+/* Decorative leading glyph. It inherits the heading colour rather than
+ * carrying its own so a page cannot reintroduce an off-token accent here. */
+.fp-page-header__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--text-muted);
 }
 .fp-page-header__purpose {
   max-width: 72ch;
@@ -342,12 +428,20 @@ body {
   padding: var(--space-lg) var(--space-xl);
   border-bottom: 1px solid var(--border-subtle);
 }
-.fp-panel__body { padding: var(--space-xl); }
+.fp-panel__body {
+  padding: var(--space-xl);
+}
 
 @media (max-width: 767px) {
-  .fp-page { padding: var(--space-lg); }
-  .fp-page-header { flex-direction: column; }
-  .fp-page-header__actions { justify-content: flex-start; }
+  .fp-page {
+    padding: var(--space-lg);
+  }
+  .fp-page-header {
+    flex-direction: column;
+  }
+  .fp-page-header__actions {
+    justify-content: flex-start;
+  }
 }
 
 /* Atlas setup state: a purposeful finance-workspace setup sequence, not a generic illustration. */
@@ -360,7 +454,10 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
 }
-.fp-workspace-empty-state__icon { margin-bottom: var(--space-lg); color: var(--action-primary); }
+.fp-workspace-empty-state__icon {
+  margin-bottom: var(--space-lg);
+  color: var(--text-accent);
+}
 .fp-workspace-empty-state__steps {
   display: grid;
   gap: var(--space-md);
@@ -368,7 +465,11 @@ body {
   margin: var(--space-xl) 0;
   list-style: none;
 }
-.fp-workspace-empty-state__step { display: flex; align-items: flex-start; gap: var(--space-md); }
+.fp-workspace-empty-state__step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
 .fp-workspace-empty-state__number {
   display: grid;
   flex: 0 0 auto;
@@ -377,12 +478,21 @@ body {
   place-items: center;
   border: 1px solid var(--action-primary);
   border-radius: 999px;
-  color: var(--action-primary);
+  color: var(--text-accent);
   font-size: 0.75rem;
   font-weight: 700;
 }
-.fp-workspace-empty-state__description { display: block; margin-top: 2px; color: var(--text-body); font-size: 0.875rem; }
-.fp-workspace-empty-state__actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+.fp-workspace-empty-state__description {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-body);
+  font-size: 0.875rem;
+}
+.fp-workspace-empty-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
 
 /* FinPlan Atlas — financial lifecycle state; never relies on colour alone. */
 .fp-financial-status {
@@ -408,16 +518,32 @@ body {
   color: var(--text-secondary);
   font-weight: 500;
 }
-.fp-financial-status--draft { color: var(--financial-draft); }
-.fp-financial-status--calculated { color: var(--financial-calculated); }
+.fp-financial-status--draft {
+  color: var(--financial-draft);
+}
+.fp-financial-status--calculated {
+  color: var(--financial-calculated);
+}
 .fp-financial-status--manual,
-.fp-financial-status--aiGenerated { color: var(--financial-manual); }
+.fp-financial-status--aiGenerated {
+  color: var(--financial-manual);
+}
 .fp-financial-status--pendingApproval,
-.fp-financial-status--stale { color: var(--financial-pending); }
-.fp-financial-status--locked { color: var(--financial-locked); }
-.fp-financial-status--certified { color: var(--financial-certified); }
-.fp-financial-status--offlineQueued { color: var(--financial-offline); }
-.fp-financial-status--failed { color: var(--financial-failed); }
+.fp-financial-status--stale {
+  color: var(--financial-pending);
+}
+.fp-financial-status--locked {
+  color: var(--financial-locked);
+}
+.fp-financial-status--certified {
+  color: var(--financial-certified);
+}
+.fp-financial-status--offlineQueued {
+  color: var(--financial-offline);
+}
+.fp-financial-status--failed {
+  color: var(--financial-failed);
+}
 
 /* Terminal-style data grid */
 .data-grid {
@@ -491,13 +617,17 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
 }
+/* Uses the -fill tokens, not --accent-primary: white text on
+   --accent-primary is 4.10:1 in dark theme, below AA. See the token
+   definitions in :root and buttonContrast.contract.test.ts. */
 .btn-primary {
-  background: var(--accent-primary);
-  color: white;
-  border-color: var(--accent-primary);
+  background: var(--action-fill);
+  color: var(--text-on-accent);
+  border-color: var(--action-fill);
 }
 .btn-primary:hover {
-  background: var(--accent-hover);
+  background: var(--action-fill-hover);
+  border-color: var(--action-fill-hover);
 }
 .btn-secondary {
   background: var(--bg-elevated);
@@ -516,12 +646,14 @@ body {
   background: var(--bg-hover);
   color: var(--text-primary);
 }
+/* --negative is a *text* token (#f43f5e in dark) and only reaches 3.67:1
+   under white; --danger-fill is the fill-safe counterpart. */
 .btn-danger {
-  background: var(--negative);
-  color: white;
+  background: var(--danger-fill);
+  color: var(--text-on-accent);
 }
 .btn-danger:hover {
-  background: #e11d48;
+  background: var(--danger-fill-hover);
 }
 .btn-sm {
   padding: 5px 10px;
@@ -587,7 +719,9 @@ body {
 }
 .badge-negative {
   background: var(--negative-subtle);
-  color: var(--negative);
+  /* Text on the composited subtle fill, not on the page — its own token,
+     matching Badge.tsx's destructive variant. 4.53:1 over the flattened fill. */
+  color: var(--text-on-danger-subtle);
 }
 .badge-warning {
   background: var(--warning-subtle);
@@ -796,7 +930,7 @@ body {
   color: var(--positive);
 }
 .fin-negative {
-  color: var(--negative);
+  color: var(--text-negative);
 }
 .fin-neutral {
   color: var(--text-secondary);

@@ -217,7 +217,10 @@ describe('Reports pages smoke tests', () => {
           isVarianceFavorable
         />
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('displays summary labels', () => {
       render(
@@ -241,7 +244,10 @@ describe('Reports pages smoke tests', () => {
           <BudgetVsActualTable data={[]} />
         </MemoryRouter>
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('renders table headers', () => {
       const sampleData = [
@@ -270,7 +276,10 @@ describe('Reports pages smoke tests', () => {
         FinancialStatementTemplatesPage,
         '/reports/financial-templates'
       );
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no GL data', () => {
       renderPage(FinancialStatementTemplatesPage, '/reports/financial-templates');
@@ -281,7 +290,10 @@ describe('Reports pages smoke tests', () => {
   describe('ReportBookBuilderPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(ReportBookBuilderPage, '/reports/book-builder');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no GL data', () => {
       renderPage(ReportBookBuilderPage, '/reports/book-builder');
@@ -292,7 +304,10 @@ describe('Reports pages smoke tests', () => {
   describe('ReportSchedulerPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(ReportSchedulerPage, '/reports/scheduler');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('shows empty state with no GL data', () => {
       renderPage(ReportSchedulerPage, '/reports/scheduler');
@@ -303,7 +318,10 @@ describe('Reports pages smoke tests', () => {
   describe('ReportTemplateLibraryPage', () => {
     it('renders without crashing', () => {
       const { container } = renderPage(ReportTemplateLibraryPage, '/reports/templates');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
     it('renders template library component', () => {
       renderPage(ReportTemplateLibraryPage, '/reports/templates');

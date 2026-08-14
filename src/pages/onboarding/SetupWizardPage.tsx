@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { ProgressStepper } from '@/components/ui/ProgressStepper';
 import { Database, BookOpen, Coins, Building2, Globe, Calendar, Settings } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 type OrgForm = {
   companyName: string;
@@ -70,7 +71,7 @@ export default function SetupWizardPage() {
 
   return (
     <div className="p-6 max-w-2xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">Setup Wizard</h1>
+      <PageHeader title="Setup Wizard" />
       <ProgressStepper steps={steps} currentStep={step} />
 
       {step === 0 && (

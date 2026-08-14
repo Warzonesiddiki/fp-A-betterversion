@@ -53,7 +53,7 @@ function FormulaInput({ onSuggest }: { onSuggest: (description: string) => void 
         }}
         disabled={!value.trim()}
         className="flex-shrink-0 rounded p-1 transition-colors hover:bg-[var(--bg-surface)] disabled:opacity-30"
-        style={{ color: 'var(--accent-primary)' }}
+        style={{ color: 'var(--text-accent)' }}
         aria-label="Get formula suggestion"
       >
         <Sparkles className="h-3.5 w-3.5" />

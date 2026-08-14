@@ -107,37 +107,55 @@ describe('Sector Depth specialized page smoke tests', () => {
 
   it('FleetCostDashboardPage renders dashboard', () => {
     const { container } = renderPage(FleetCostDashboardPage, '/logistics/fleet-cost');
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
     expect(screen.getByRole('main')).toBeInTheDocument();
   });
 
   it('WarehouseCostDashboardPage renders dashboard', () => {
     const { container } = renderPage(WarehouseCostDashboardPage, '/logistics/warehouse-cost');
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
     expect(screen.getByRole('main')).toBeInTheDocument();
   });
 
   it('GrantDisbursementPage renders dashboard', () => {
     const { container } = renderPage(GrantDisbursementPage, '/government/grants');
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
     expect(screen.getByRole('main')).toBeInTheDocument();
   });
 
   it('ProcurementCyclePage renders dashboard', () => {
     const { container } = renderPage(ProcurementCyclePage, '/government/procurement');
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
     expect(screen.getByRole('main')).toBeInTheDocument();
   });
 
   it('EnrollmentRetentionPage renders dashboard', () => {
     const { container } = renderPage(EnrollmentRetentionPage, '/education/enrollment');
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
     expect(screen.getByRole('main')).toBeInTheDocument();
   });
 
   it('ResearchGrantsPage renders dashboard', () => {
     const { container } = renderPage(ResearchGrantsPage, '/education/research-grants');
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the page mounted'
+    ).toBeGreaterThanOrEqual(2);
     expect(screen.getByRole('main')).toBeInTheDocument();
   });
 });

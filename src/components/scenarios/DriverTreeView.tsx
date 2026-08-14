@@ -15,7 +15,7 @@ export function DriverTreeView({
   if (assumptions.length === 0) {
     return (
       <div
-        className="p-6 text-center text-slate-500 bg-slate-900 rounded-lg"
+        className="p-6 text-center text-[var(--text-muted)] bg-slate-900 rounded-lg"
         role="region"
         aria-label="DriverTreeView"
       >
@@ -37,7 +37,7 @@ export function DriverTreeView({
     <div className="space-y-6">
       {Object.entries(groups).map(([type, list]) => (
         <div key={type} className="space-y-3">
-          <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest px-2">
+          <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest px-2">
             {type} Drivers
           </h4>
           <div className="space-y-2">

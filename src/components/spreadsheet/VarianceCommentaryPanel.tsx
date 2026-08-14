@@ -91,7 +91,7 @@ export function VarianceCommentaryPanel({
         aria-expanded={expanded}
       >
         <div className="flex items-center gap-2">
-          <BookTemplate className="h-4 w-4 text-[var(--accent-primary)]" />
+          <BookTemplate className="h-4 w-4 text-[var(--text-accent)]" />
           <span className="text-sm font-semibold text-[var(--text-primary)]">
             Variance Commentary
           </span>
@@ -99,8 +99,8 @@ export function VarianceCommentaryPanel({
             className={cn(
               'rounded-full px-2 py-0.5 text-xs font-medium',
               variance >= 0
-                ? 'bg-[var(--color-success)]/10 text-[var(--color-success)]'
-                : 'bg-[var(--color-error)]/10 text-[var(--color-error)]'
+                ? 'bg-[var(--color-success)]/10 text-[var(--text-on-positive-subtle)]'
+                : 'bg-[var(--color-error)]/10 text-[var(--text-on-danger-subtle)]'
             )}
           >
             {variancePct >= 0 ? '+' : ''}
@@ -133,7 +133,7 @@ export function VarianceCommentaryPanel({
                   aria-label="Copy auto-generated commentary"
                 >
                   {copiedId === 'auto' ? (
-                    <Check className="h-3.5 w-3.5 text-[var(--color-success)]" />
+                    <Check className="h-3.5 w-3.5 text-[var(--text-positive)]" />
                   ) : (
                     <Copy className="h-3.5 w-3.5" />
                   )}
@@ -183,7 +183,7 @@ export function VarianceCommentaryPanel({
                         aria-label={`Copy ${tmpl.name} template`}
                       >
                         {copiedId === tmpl.id ? (
-                          <Check className="h-3 w-3 text-[var(--color-success)]" />
+                          <Check className="h-3 w-3 text-[var(--text-positive)]" />
                         ) : (
                           <Copy className="h-3 w-3" />
                         )}

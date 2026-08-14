@@ -17,6 +17,7 @@ import {
   Cell,
 } from 'recharts';
 import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const COLORS = [
   'var(--accent-primary)',
@@ -90,14 +91,10 @@ export function TelecomDashboardPage() {
 
   return (
     <main className="p-6 space-y-6" role="main" aria-label="Telecom Sector Dashboard">
-      <header>
-        <h1 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-          Telecom Dashboard
-        </h1>
-        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-          Subscriber metrics, ARPU trends, network investment, and segment performance
-        </p>
-      </header>
+      <PageHeader
+        title="Telecom Dashboard"
+        purpose="Subscriber metrics, ARPU trends, network investment, and segment performance"
+      />
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((kpi) => (

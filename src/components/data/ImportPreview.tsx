@@ -44,7 +44,7 @@ export const ImportPreview: React.FC<ImportPreviewProps> = ({
         <table className="w-full text-xs">
           <thead>
             <tr className="bg-slate-900/50 text-left text-slate-400 uppercase">
-              <th className="px-3 py-2 text-slate-500 font-mono" scope="col">
+              <th className="px-3 py-2 text-[var(--text-muted)] font-mono" scope="col">
                 #
               </th>
               {sheet.headers.map((h) => (
@@ -57,7 +57,7 @@ export const ImportPreview: React.FC<ImportPreviewProps> = ({
           <tbody className="divide-y divide-slate-800/50">
             {previewRows.map((row, i) => (
               <tr key={i} className="hover:bg-slate-900/30">
-                <td className="px-3 py-1.5 text-slate-500 font-mono">{i + 2}</td>
+                <td className="px-3 py-1.5 text-[var(--text-muted)] font-mono">{i + 2}</td>
                 {sheet.headers.map((h) => {
                   const val = row[h];
                   const isNum =

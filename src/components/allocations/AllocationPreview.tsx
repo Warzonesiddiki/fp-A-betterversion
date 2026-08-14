@@ -160,24 +160,28 @@ export function AllocationPreview({
           <FileText className="h-5 w-5 text-blue-600" />
           <h3 className="text-sm font-semibold text-[var(--text-primary)]">Allocation Preview</h3>
         </div>
-        <span className="text-[10px] text-slate-500">
+        <span className="text-[10px] text-[var(--text-muted)]">
           {results.length} rule{results.length !== 1 ? 's' : ''}
         </span>
       </div>
 
       <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-center">
         <div className="rounded-md border border-[var(--border-subtle)] p-3">
-          <span className="text-[10px] text-slate-500 uppercase tracking-wide">Source</span>
+          <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide">
+            Source
+          </span>
           <p className="text-sm font-semibold text-[var(--text-primary)]">
             {fmt.currency(sourceAmount)}
           </p>
-          <p className="text-[10px] text-slate-500">{sourceLabel}</p>
+          <p className="text-[10px] text-[var(--text-muted)]">{sourceLabel}</p>
         </div>
-        <ArrowRight className="h-5 w-5 text-slate-500" />
+        <ArrowRight className="h-5 w-5 text-[var(--text-muted)]" />
         <div className="rounded-md border border-[var(--border-subtle)] p-3">
-          <span className="text-[10px] text-slate-500 uppercase tracking-wide">Allocated</span>
+          <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide">
+            Allocated
+          </span>
           <p className="text-sm font-semibold text-blue-400">{fmt.currency(totalAllocated)}</p>
-          <p className="text-[10px] text-slate-500">
+          <p className="text-[10px] text-[var(--text-muted)]">
             {allAllocations.length} target{allAllocations.length !== 1 ? 's' : ''}
           </p>
         </div>
@@ -212,25 +216,25 @@ export function AllocationPreview({
             <thead>
               <tr className="border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
                 <th
-                  className="px-3 py-2 text-left text-[10px] font-medium text-slate-500 uppercase"
+                  className="px-3 py-2 text-left text-[10px] font-medium text-[var(--text-muted)] uppercase"
                   scope="col"
                 >
                   Target
                 </th>
                 <th
-                  className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase"
+                  className="px-3 py-2 text-right text-[10px] font-medium text-[var(--text-muted)] uppercase"
                   scope="col"
                 >
                   Percentage
                 </th>
                 <th
-                  className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase"
+                  className="px-3 py-2 text-right text-[10px] font-medium text-[var(--text-muted)] uppercase"
                   scope="col"
                 >
                   Amount
                 </th>
                 <th
-                  className="px-3 py-2 text-right text-[10px] font-medium text-slate-500 uppercase"
+                  className="px-3 py-2 text-right text-[10px] font-medium text-[var(--text-muted)] uppercase"
                   scope="col"
                 >
                   Distribution
@@ -298,7 +302,10 @@ export function AllocationPreview({
       <div className="flex flex-col gap-1">
         <span className="text-xs font-medium text-slate-400">Audit Trail</span>
         {results.map((r) => (
-          <div key={r.ruleId} className="flex items-start gap-2 text-[10px] text-slate-500">
+          <div
+            key={r.ruleId}
+            className="flex items-start gap-2 text-[10px] text-[var(--text-muted)]"
+          >
             <span className="font-mono text-[var(--text-secondary)] shrink-0">[{r.ruleId}]</span>
             <span className="italic">{r.auditComment}</span>
           </div>

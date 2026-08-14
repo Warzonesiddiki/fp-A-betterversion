@@ -114,8 +114,8 @@ export default function BalanceSheetPage() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <Scale className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <Scale className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No Data</h2>
         <p className="text-[var(--text-muted)] mb-6">Import GL data to generate a Balance Sheet.</p>
@@ -140,7 +140,7 @@ export default function BalanceSheetPage() {
   title="Balance Sheet"
   actions={<button
               onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
+              className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
               aria-label="Help"
             ></button>}
 />

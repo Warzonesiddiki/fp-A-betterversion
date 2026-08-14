@@ -51,7 +51,10 @@ export function ReconciliationPanel({
             </p>
             <div className="flex gap-3 items-center">
               <div>
-                <label htmlFor="rec-key-col" className="block text-xs text-slate-500 mb-1">
+                <label
+                  htmlFor="rec-key-col"
+                  className="block text-xs text-[var(--text-muted)] mb-1"
+                >
                   Account Key Column
                 </label>
                 <select
@@ -69,7 +72,10 @@ export function ReconciliationPanel({
                 </select>
               </div>
               <div>
-                <label htmlFor="rec-val-col" className="block text-xs text-slate-500 mb-1">
+                <label
+                  htmlFor="rec-val-col"
+                  className="block text-xs text-[var(--text-muted)] mb-1"
+                >
                   Balance Column
                 </label>
                 <select

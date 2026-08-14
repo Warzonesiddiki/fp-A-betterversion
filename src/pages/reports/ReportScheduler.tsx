@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { HelpPanel } from '@/components/ui/HelpPanel';
 import { ReportScheduler as SchedulerComponent } from '@/components/reports/ReportScheduler';
 import { Calendar, HelpCircle } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const HELP_SECTIONS = [
   {
@@ -92,8 +93,8 @@ export default function ReportSchedulerPage() {
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-slate-800 rounded-full inline-block mb-4">
-          <Calendar className="h-10 w-10 text-slate-400" />
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <Calendar className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
         <h2 className="text-xl font-semibold mb-2">No GL Data</h2>
         <p className="text-[var(--text-muted)] mb-6">
@@ -122,16 +123,16 @@ export default function ReportSchedulerPage() {
     <div className="p-6 space-y-6" role="main" aria-label="Report Scheduler page">
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">Report Scheduler</h1>
-            <button
-              onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-slate-500 hover:text-white transition-colors"
-              aria-label="Help"
-            >
-              <HelpCircle className="h-5 w-5" />
-            </button>
-          </div>
+          <PageHeader
+            title="Report Scheduler"
+            actions={<button
+                       onClick={() => setHelpOpen(true)}
+                       className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
+                       aria-label="Help"
+                     >
+                       <HelpCircle className="h-5 w-5" />
+                     </button>}
+          />
           <p className="text-sm text-[var(--text-muted)] mt-1">
             {entries.length.toLocaleString()} GL entries available
             {scheduledReports.length > 0 &&

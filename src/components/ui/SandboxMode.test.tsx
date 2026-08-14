@@ -23,12 +23,18 @@ describe('SandboxMode', () => {
 
   it('renders without crashing when inactive', () => {
     const { container } = render(<SandboxMode isActive={false} onToggle={() => {}} />);
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the component mounted'
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it('renders without crashing when active', () => {
     const { container } = render(<SandboxMode isActive={true} onToggle={() => {}} />);
-    expect(container).toBeTruthy();
+    expect(
+      container.querySelectorAll('*').length,
+      'rendered nothing: a truthy container does not prove the component mounted'
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it('shows "Sandbox Mode" button when inactive', () => {

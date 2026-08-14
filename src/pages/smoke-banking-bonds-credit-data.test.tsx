@@ -238,7 +238,10 @@ describe('Page Smoke Tests — Banking, Bonds, Credit, Data', () => {
   describe('BankingDashboard', () => {
     it('renders without crashing (empty state)', () => {
       const { container } = renderPage(BankingDashboard, '/banking', '/banking');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays empty state when no GL data', () => {
@@ -254,7 +257,10 @@ describe('Page Smoke Tests — Banking, Bonds, Credit, Data', () => {
   describe('BondPortfolioPage', () => {
     it('renders without crashing (empty state)', () => {
       const { container } = renderPage(BondPortfolioPage, '/bonds/portfolio', '/bonds/portfolio');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays empty state when no GL data', () => {
@@ -270,7 +276,10 @@ describe('Page Smoke Tests — Banking, Bonds, Credit, Data', () => {
   describe('YieldCurvePage', () => {
     it('renders without crashing (empty state)', () => {
       const { container } = renderPage(YieldCurvePage, '/bonds/yield-curve', '/bonds/yield-curve');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays empty state when no GL data', () => {
@@ -286,7 +295,10 @@ describe('Page Smoke Tests — Banking, Bonds, Credit, Data', () => {
   describe('CreditRiskPage', () => {
     it('renders without crashing (empty state)', () => {
       const { container } = renderPage(CreditRiskPage, '/credit/risk', '/credit/risk');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays empty state when no GL data', () => {
@@ -302,7 +314,10 @@ describe('Page Smoke Tests — Banking, Bonds, Credit, Data', () => {
   describe('GLExplorerPage', () => {
     it('renders without crashing (empty state)', () => {
       const { container } = renderPage(GLExplorerPage, '/data/gl-explorer', '/data/gl-explorer');
-      expect(container).toBeTruthy();
+      expect(
+        container.querySelectorAll('*').length,
+        'rendered nothing: a truthy container does not prove the page mounted'
+      ).toBeGreaterThanOrEqual(2);
     });
 
     it('displays empty state when no GL data', () => {

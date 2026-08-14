@@ -51,28 +51,84 @@ const WARN_THRESHOLD_PCT = 90;
 const MUSE_DOMAINS = [
   { muse: 'Apollo', paths: ['src/engines/', 'src/hooks/', 'src/workers/'] },
   { muse: 'Athena', paths: ['docs/parts/', 'docs/_archive/parts/', 'docs/INDEX', 'PART_'] },
-  { muse: 'Atlas', paths: ['scripts/', 'vite.config', '.github/', 'vitest.bench', 'docs/audits/', 'docs/finalization/', '.openhands/baseline-'] },
-  { muse: 'Hephaestus', paths: ['src/utils/security.ts', 'src/store/authStore.ts', 'src/services/KeyManager', 'src/services/SecureStorage'] },
+  {
+    muse: 'Atlas',
+    paths: [
+      'scripts/',
+      'vite.config',
+      '.github/',
+      'vitest.bench',
+      'docs/audits/',
+      'docs/finalization/',
+      '.openhands/baseline-',
+    ],
+  },
+  {
+    muse: 'Hephaestus',
+    paths: [
+      'src/utils/security.ts',
+      'src/store/authStore.ts',
+      'src/services/KeyManager',
+      'src/services/SecureStorage',
+    ],
+  },
   { muse: 'Prometheus', paths: ['src/store/'] }, // Prometheus owns non-authStore files in src/store/
   { muse: 'Hera', paths: ['src/components/'] },
   { muse: 'Hermes', paths: ['src/pages/', 'App.tsx'] },
   { muse: 'Mnemosyne', paths: ['src/test/', 'tests/', '_docs.ts'] },
   { muse: 'Sentinel', paths: ['tests/e2e/'] },
   { muse: 'Vulcan', paths: ['scripts/perf/', 'tests/perf/', 'tests/load/'] }, // tests/load = load testing raw data per CATCH #196 (5 chaos JSONs)
-  { muse: 'Strategos', paths: ['docs/strategos/', 'docs/vision-pivot/VISION_TO_REALITY_GAP', 'docs/leader/'] },
+  {
+    muse: 'Strategos',
+    paths: ['docs/strategos/', 'docs/vision-pivot/VISION_TO_REALITY_GAP', 'docs/leader/'],
+  },
   { muse: 'Orchestrator', paths: ['docs/codif/', 'docs/orchestrator/', 'docs/leader/CYCLE_'] },
   { muse: 'Themis', paths: ['docs/compliance/'] },
   { muse: 'Tyche', paths: ['docs/analytics/'] },
   { muse: 'Vesta', paths: ['docs/sectors/', 'docs/sector-dashboards/'] },
-  { muse: 'Chronos', paths: ['src/engines/temporal', 'src/engines/periodLock', 'src/engines/varianceAttribution'] },
+  {
+    muse: 'Chronos',
+    paths: ['src/engines/temporal', 'src/engines/periodLock', 'src/engines/varianceAttribution'],
+  },
   { muse: 'Iris', paths: ['docs/persona/'] },
   { muse: 'Calliope', paths: ['docs/api/', 'src/api/'] },
   { muse: 'Artemis', paths: ['src/__tests__/a11y/', 'docs/a11y/'] },
 ];
 
 // Per-Muse draft whitelist
-const MUSE_DRAFT_WHITELIST = new Set(['apollo', 'athena', 'atlas', 'hephaestus', 'prometheus', 'hera', 'hermes', 'mnemosyne', 'sentinel', 'vulcan', 'strategos', 'orchestrator', 'themis', 'tyche', 'vesta', 'chronos', 'iris', 'calliope', 'artemis']);
-function classifyFile(file) { for (const { muse, paths } of MUSE_DOMAINS) { if (paths.some((p) => file.startsWith(p))) return muse; } if (file.startsWith('docs/drafts/')) { const seg = file.split('/')[2]; if (seg && MUSE_DRAFT_WHITELIST.has(seg.toLowerCase())) { return seg.charAt(0).toUpperCase() + seg.slice(1).toLowerCase(); } } return null; }
+const MUSE_DRAFT_WHITELIST = new Set([
+  'apollo',
+  'athena',
+  'atlas',
+  'hephaestus',
+  'prometheus',
+  'hera',
+  'hermes',
+  'mnemosyne',
+  'sentinel',
+  'vulcan',
+  'strategos',
+  'orchestrator',
+  'themis',
+  'tyche',
+  'vesta',
+  'chronos',
+  'iris',
+  'calliope',
+  'artemis',
+]);
+function classifyFile(file) {
+  for (const { muse, paths } of MUSE_DOMAINS) {
+    if (paths.some((p) => file.startsWith(p))) return muse;
+  }
+  if (file.startsWith('docs/drafts/')) {
+    const seg = file.split('/')[2];
+    if (seg && MUSE_DRAFT_WHITELIST.has(seg.toLowerCase())) {
+      return seg.charAt(0).toUpperCase() + seg.slice(1).toLowerCase();
+    }
+  }
+  return null;
+}
 
 function formatKB(bytes) {
   return Math.round((bytes / 1024) * 100) / 100;
@@ -95,36 +151,72 @@ async function main() {
     console.error('dist/assets not found. Run `npm run build` first.');
     process.exit(1);
   }
-  
+
   const htmlPath = path.resolve('dist/index.html');
   if (!fs.existsSync(htmlPath)) {
     console.error('dist/index.html not found.');
     process.exit(1);
   }
   const html = fs.readFileSync(htmlPath, 'utf8');
-  const refs = [...new Set([...html.matchAll(/assets\/[^"']+\.js/g)].map(m => m[0]))];
-  
-  const criticalChunks = refs.filter(r => fs.existsSync(path.join('dist', r)));
+  const refs = [...new Set([...html.matchAll(/assets\/[^"']+\.js/g)].map((m) => m[0]))];
+
+  const criticalChunks = refs.filter((r) => fs.existsSync(path.join('dist', r)));
   let totalCriticalGz = 0;
   for (const r of criticalChunks) {
     totalCriticalGz += await getGzipSize(path.join('dist', r));
   }
-  
+
   const totalCriticalKB = formatKB(totalCriticalGz);
-  console.log(`\nCritical path (index.html modulepreloads): ${totalCriticalKB}KB gzip (${criticalChunks.length} chunks)`);
+  console.log(
+    `\nCritical path (index.html modulepreloads): ${totalCriticalKB}KB gzip (${criticalChunks.length} chunks)`
+  );
 
   const CRITICAL_PATH_LIMIT_KB = 750; // Initial budget based on measured baseline
   const CRITICAL_PATH_WARN_KB = 700;
 
   if (totalCriticalKB > CRITICAL_PATH_LIMIT_KB) {
-    console.error(`\n::error::Critical path ${totalCriticalKB}KB gzip exceeds ${CRITICAL_PATH_LIMIT_KB}KB limit`);
+    console.error(
+      `\n::error::Critical path ${totalCriticalKB}KB gzip exceeds ${CRITICAL_PATH_LIMIT_KB}KB limit`
+    );
     console.log('\n:x: **FAIL:** Critical path exceeds limit');
     fail = 1;
   } else if (totalCriticalKB > CRITICAL_PATH_WARN_KB) {
-    console.warn(`\n::warning::Critical path ${totalCriticalKB}KB gzip near limit (warns at ${CRITICAL_PATH_WARN_KB}KB)`);
+    console.warn(
+      `\n::warning::Critical path ${totalCriticalKB}KB gzip near limit (warns at ${CRITICAL_PATH_WARN_KB}KB)`
+    );
     warnings++;
   } else {
     console.log('\n:white_check_mark: **PASS:** Critical path within limit');
+  }
+
+  // Heavy vendors that exist purely to be loaded on demand must not appear in
+  // the entry's modulepreload set. The aggregate budget above is far too loose
+  // to notice: jsPDF sat in the critical path at 483.42KB total, well under the
+  // 750KB limit, so nothing complained for as long as it took to find by hand.
+  // The cause was not an import of jsPDF at all — rolldown's injected preload
+  // helper had settled into pdf-vendor, and every chunk that lazy-loads
+  // anything imports that helper (see manualChunks in vite.config.ts).
+  // This is a named, per-chunk assertion so the regression is caught by name.
+  const MUST_BE_LAZY = ['pdf-vendor', 'excel-core-vendor', 'grid-community-vendor', 'ai-vendor'];
+  const eagerlyPreloaded = MUST_BE_LAZY.filter((v) =>
+    criticalChunks.some((r) => path.basename(r).startsWith(v + '-'))
+  );
+
+  if (eagerlyPreloaded.length > 0) {
+    for (const vendor of eagerlyPreloaded) {
+      console.error(
+        `\n::error::Lazy vendor ${vendor} is modulepreloaded from index.html — ` +
+          `it must load on demand. Usually this means a shared runtime helper ` +
+          `(e.g. rolldown's preload helper) landed in that chunk and dragged it ` +
+          `into the entry graph; check manualChunks in vite.config.ts.`
+      );
+    }
+    console.log('\n:x: **FAIL:** lazy vendor in critical path');
+    fail = 1;
+  } else {
+    console.log(
+      `:white_check_mark: **PASS:** no lazy vendor in critical path (${MUST_BE_LAZY.join(', ')})`
+    );
   }
 
   const allJsFiles = (await fs.promises.readdir(distAssetsDir))
@@ -152,8 +244,12 @@ async function main() {
     fail = 1;
   } else if (mainKB > MAIN_CHUNK_WARN_KB) {
     const pct = ((mainKB / MAIN_CHUNK_LIMIT_KB) * 100).toFixed(1);
-    console.warn(`\n::warning::Main chunk ${mainKB}KB gzip at ${pct}% of ${MAIN_CHUNK_LIMIT_KB}KB limit (>= ${WARN_THRESHOLD_PCT}%)`);
-    console.log(`\n:warning: **WARN:** Main chunk at ${pct}% of limit (warns at ${MAIN_CHUNK_WARN_KB}KB)`);
+    console.warn(
+      `\n::warning::Main chunk ${mainKB}KB gzip at ${pct}% of ${MAIN_CHUNK_LIMIT_KB}KB limit (>= ${WARN_THRESHOLD_PCT}%)`
+    );
+    console.log(
+      `\n:warning: **WARN:** Main chunk at ${pct}% of limit (warns at ${MAIN_CHUNK_WARN_KB}KB)`
+    );
     warnings++;
   } else {
     console.log('\n:white_check_mark: **PASS:** Main chunk within limit');
@@ -186,8 +282,12 @@ async function main() {
     fail = 1;
   } else if (totalGzipKB > TOTAL_JS_WARN_KB) {
     const pct = ((totalGzipKB / TOTAL_JS_LIMIT_KB) * 100).toFixed(1);
-    console.warn(`\n::warning::Total JS ${totalGzipKB}KB gzip at ${pct}% of ${TOTAL_JS_LIMIT_KB}KB limit (>= ${WARN_THRESHOLD_PCT}%)`);
-    console.log(`\n:warning: **WARN:** Total JS at ${pct}% of limit (warns at ${TOTAL_JS_WARN_KB}KB / 1.8MB)`);
+    console.warn(
+      `\n::warning::Total JS ${totalGzipKB}KB gzip at ${pct}% of ${TOTAL_JS_LIMIT_KB}KB limit (>= ${WARN_THRESHOLD_PCT}%)`
+    );
+    console.log(
+      `\n:warning: **WARN:** Total JS at ${pct}% of limit (warns at ${TOTAL_JS_WARN_KB}KB / 1.8MB)`
+    );
     warnings++;
   } else {
     console.log('\n:white_check_mark: **PASS:** Total JS within limit');
@@ -201,16 +301,83 @@ async function main() {
     'excel-core-vendor',
     'grid-react-vendor',
     'pdf-vendor',
-    'ai-vendor',
     'chart-vendor',
   ];
 
-// Per-Muse draft whitelist
-const MUSE_DRAFT_WHITELIST = new Set(['apollo', 'athena', 'atlas', 'hephaestus', 'prometheus', 'hera', 'hermes', 'mnemosyne', 'sentinel', 'vulcan', 'strategos', 'orchestrator', 'themis', 'tyche', 'vesta', 'chronos', 'iris', 'calliope', 'artemis']);
-function classifyFile(file) { for (const { muse, paths } of MUSE_DOMAINS) { if (paths.some((p) => file.startsWith(p))) return muse; } if (file.startsWith('docs/drafts/')) { const seg = file.split('/')[2]; if (seg && MUSE_DRAFT_WHITELIST.has(seg.toLowerCase())) { return seg.charAt(0).toUpperCase() + seg.slice(1).toLowerCase(); } } return null; }
+  // Budgeted only when the underlying dependency is actually installed.
+  // `ai-vendor` is @huggingface/transformers, a deliberately uninstalled
+  // optional peer (see src/engines/AIEngine.ts) — it can never be emitted, so
+  // requiring it would fail the gate forever, but silently omitting it would
+  // lose the budget the day someone installs it.
+  const optionalLazyVendors = [{ chunk: 'ai-vendor', pkg: '@huggingface/transformers' }];
+
+  for (const { chunk, pkg } of optionalLazyVendors) {
+    let installed = true;
+    try {
+      import.meta.resolve(pkg);
+    } catch {
+      installed = false;
+    }
+    if (installed) {
+      lazyVendors.push(chunk);
+    } else {
+      console.log(`:information_source: G19 SKIP: ${chunk} — optional peer ${pkg} not installed`);
+    }
+  }
+
+  // Per-Muse draft whitelist
+  const MUSE_DRAFT_WHITELIST = new Set([
+    'apollo',
+    'athena',
+    'atlas',
+    'hephaestus',
+    'prometheus',
+    'hera',
+    'hermes',
+    'mnemosyne',
+    'sentinel',
+    'vulcan',
+    'strategos',
+    'orchestrator',
+    'themis',
+    'tyche',
+    'vesta',
+    'chronos',
+    'iris',
+    'calliope',
+    'artemis',
+  ]);
+  function classifyFile(file) {
+    for (const { muse, paths } of MUSE_DOMAINS) {
+      if (paths.some((p) => file.startsWith(p))) return muse;
+    }
+    if (file.startsWith('docs/drafts/')) {
+      const seg = file.split('/')[2];
+      if (seg && MUSE_DRAFT_WHITELIST.has(seg.toLowerCase())) {
+        return seg.charAt(0).toUpperCase() + seg.slice(1).toLowerCase();
+      }
+    }
+    return null;
+  }
   for (const vendor of lazyVendors) {
     const match = chunkStats.find((c) => c.file.startsWith(vendor + '-'));
-    if (match) {
+    if (!match) {
+      // A missing vendor chunk used to be skipped in silence, which made this
+      // gate report PASS for budgets it had never evaluated. That is how
+      // ag-grid grew to 298KB gzip — the largest artefact in the build, within
+      // 2KB of this very limit — inside an anonymous `chunk-*.js` while
+      // grid-community-vendor and grid-react-vendor were listed here but never
+      // produced by vite.config.ts. An expected chunk that does not exist means
+      // the chunk graph and this list have drifted, so say so.
+      console.error(
+        `\n::error::Expected lazy vendor chunk ${vendor}-*.js was not emitted. ` +
+          `Either add a manualChunks rule for it in vite.config.ts, or drop it ` +
+          `from lazyVendors here — a budget that matches nothing is not a budget.`
+      );
+      fail = 1;
+      continue;
+    }
+    {
       const kb = formatKB(match.gz);
       if (kb > LAZY_VENDOR_LIMIT_KB) {
         console.error(
@@ -237,9 +404,13 @@ function classifyFile(file) { for (const { muse, paths } of MUSE_DOMAINS) { if (
   // Final summary
   console.log('');
   if (fail) {
-    console.log(`:x: **G3 + G19 BUNDLE CHECK FAILED** (${warnings} warning${warnings === 1 ? '' : 's'}, failures present)`);
+    console.log(
+      `:x: **G3 + G19 BUNDLE CHECK FAILED** (${warnings} warning${warnings === 1 ? '' : 's'}, failures present)`
+    );
   } else if (warnings) {
-    console.log(`:warning: **G3 + G19 BUNDLE CHECK PASSED WITH ${warnings} WARNING${warnings === 1 ? '' : 'S'}** — review before next dep bump`);
+    console.log(
+      `:warning: **G3 + G19 BUNDLE CHECK PASSED WITH ${warnings} WARNING${warnings === 1 ? '' : 'S'}** — review before next dep bump`
+    );
   } else {
     console.log(`:white_check_mark: **G3 + G19 BUNDLE CHECK ALL PASS** (0 warnings, 0 failures)`);
   }

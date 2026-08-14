@@ -364,7 +364,7 @@ export default function SecuritySettingsPage() {
                   <div className="text-sm font-medium text-white">{activity.action}</div>
                   <div className="text-xs text-slate-400">{activity.detail}</div>
                 </div>
-                <span className="text-xs text-slate-500 shrink-0">{activity.time}</span>
+                <span className="text-xs text-[var(--text-muted)] shrink-0">{activity.time}</span>
               </div>
             ))}
           </div>

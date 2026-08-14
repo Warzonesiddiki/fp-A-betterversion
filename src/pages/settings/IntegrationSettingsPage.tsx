@@ -164,7 +164,11 @@ export default function IntegrationSettingsPage() {
         ))}
         {filtered.length === 0 && (
           <Card>
-            <CardContent className="p-8 text-center text-[var(--text-muted)] text-sm">
+            <CardContent
+              className="p-8 text-center text-[var(--text-muted)] text-sm"
+              role="status"
+              aria-live="polite"
+            >
               No integrations match your search.
             </CardContent>
           </Card>

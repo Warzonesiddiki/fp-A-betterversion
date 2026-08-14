@@ -43,7 +43,7 @@ export const Select: React.FC<SelectProps> = ({
     >
       {label && (
         <label
-          className="text-xs font-medium text-slate-400 dark:text-slate-300"
+          className="text-xs font-medium text-[var(--text-secondary)]"
           id={`${label.replace(/\s+/g, '-').toLowerCase()}-label`}
         >
           {label}
@@ -53,8 +53,10 @@ export const Select: React.FC<SelectProps> = ({
         <SelectPrimitive.Trigger
           id={id}
           className={cn(
-            'flex h-10 w-full items-center justify-between rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-2 text-sm text-[var(--text-primary)] transition-all outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50',
-            error ? 'border-red-500 focus:ring-red-500' : 'hover:border-gray-400'
+            'flex h-10 w-full items-center justify-between rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-2 text-sm text-[var(--text-primary)] transition-all outline-none focus:ring-2 focus:ring-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-50',
+            error
+              ? 'border-[var(--negative)] focus:ring-[var(--negative)]'
+              : 'hover:border-[var(--border-default)]'
           )}
           aria-labelledby={label ? `${label.replace(/\s+/g, '-').toLowerCase()}-label` : undefined}
           aria-invalid={error ? 'true' : undefined}
@@ -86,13 +88,14 @@ export const Select: React.FC<SelectProps> = ({
                   value={option.value}
                   disabled={option.disabled}
                   className={cn(
-                    'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-gray-100 dark:focus:bg-gray-800 focus:text-[var(--text-primary)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 transition-colors',
-                    value === option.value && 'bg-blue-50 text-blue-700 font-medium'
+                    'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-[var(--bg-hover)] focus:text-[var(--text-primary)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 transition-colors',
+                    value === option.value &&
+                      'bg-[var(--accent-subtle)] text-[var(--text-on-accent-subtle)] font-medium'
                   )}
                 >
                   <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
                     <SelectPrimitive.ItemIndicator>
-                      <Check className="h-4 w-4 text-blue-600" />
+                      <Check className="h-4 w-4 text-[var(--text-on-accent-subtle)]" />
                     </SelectPrimitive.ItemIndicator>
                   </span>
                   <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
