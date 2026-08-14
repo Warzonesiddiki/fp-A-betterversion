@@ -395,7 +395,7 @@ export default function BudgetVsActualPage() {
   if (!entries || entries.length === 0) {
     return (
       <div className="p-12 text-center">
-        <Database className="w-12 h-12 mx-auto mb-4 text-slate-500" />
+        <Database className="w-12 h-12 mx-auto mb-4 text-[var(--text-muted)]" />
         <h2 className="text-xl font-bold mb-2">No data yet</h2>
         <p className="text-[var(--text-muted)] mb-6">Import your General Ledger data to see reports.</p>
         <Link
@@ -411,7 +411,7 @@ export default function BudgetVsActualPage() {
   if (budgets.length === 0) {
     return (
       <div className="p-12 text-center">
-        <Database className="w-12 h-12 mx-auto mb-4 text-slate-500" />
+        <Database className="w-12 h-12 mx-auto mb-4 text-[var(--text-muted)]" />
         <h2 className="text-xl font-bold mb-2">No budgets found</h2>
         <p className="text-[var(--text-muted)] mb-6">Create an approved budget to compare against actuals.</p>
         <Link

@@ -234,14 +234,16 @@ export default function BudgetVAReport() {
       />
 
       {!selectedBudgetId ? (
-        <Card className="bg-slate-900/50 border-dashed border-slate-800 py-12">
+        <Card className="bg-[var(--bg-elevated)]/50 border-dashed border-[var(--border-default)] py-12">
           <CardContent className="text-center space-y-4">
             <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block">
-              <FileBarChart className="h-8 w-8 text-slate-500" />
+              <FileBarChart className="h-8 w-8 text-[var(--text-muted)]" />
             </div>
             <div className="max-w-xs mx-auto">
-              <h3 className="font-semibold text-lg text-slate-200">No Budget Selected</h3>
-              <p className="text-sm text-slate-400 mt-2">
+              <h3 className="font-semibold text-lg text-[var(--text-primary)]">
+                No Budget Selected
+              </h3>
+              <p className="text-sm text-[var(--text-secondary)] mt-2">
                 Select an approved budget from the dropdown above to view the performance report.
               </p>
             </div>

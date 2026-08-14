@@ -477,6 +477,33 @@ describe('UI-07 — empty-state surfaces use theme tokens, not hardcoded palette
   });
 
   /**
+   * The second empty-state idiom: a dashed outline box with a large glyph inside,
+   * used where the page keeps its `PageHeader` instead of swapping the whole view
+   * for a disc. Both parts were hardcoded and, like the disc, each could only be
+   * right in one theme -- `border-slate-600` sits at 2.39:1 on the dark page
+   * (nearly invisible) but 7.58:1 on the light one, and `text-slate-500` glyphs
+   * fail AA outright in dark at 3.80:1. `--border-default` and `--text-muted`
+   * track the theme instead.
+   */
+  const EMPTY_STATE_DASHED =
+    /\bborder-dashed\b(?=.*\bborder-(?:slate|gray|zinc|neutral|stone)-\d{2,3}\b)|\bborder-(?:slate|gray|zinc|neutral|stone)-\d{2,3}\b(?=.*\bborder-dashed\b)/;
+
+  it('no page outlines an empty state with a hardcoded dashed border', () => {
+    const offenders = PAGES.flatMap((file) =>
+      readFileSync(file, 'utf8')
+        .split('\n')
+        .map((line, i) => ({ line: line.trim(), n: i + 1 }))
+        .filter(({ line }) => EMPTY_STATE_DASHED.test(line))
+        .map(({ line, n }) => `${file.split('/src/')[1]}:${n} ${line}`)
+    );
+
+    expect(
+      offenders,
+      'use border-[var(--border-default)] so the dashed outline tracks the theme'
+    ).toEqual([]);
+  });
+
+  /**
    * The disc idiom is only half the fix: the glyph inside it must clear WCAG
    * 1.4.11 (3:1, non-text) against the new surface in BOTH themes. Three pages
    * paired a `text-red-400` glyph with the disc, which sat at 2.64:1 on the

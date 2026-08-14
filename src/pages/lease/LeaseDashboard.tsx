@@ -145,8 +145,8 @@ export default function LeaseDashboard() {
             </Button>
           }
         />
-        <div className="rounded-xl border border-dashed border-slate-600 p-10 text-center">
-          <FileText className="h-10 w-10 mx-auto mb-3 text-slate-500" />
+        <div className="rounded-xl border border-dashed border-[var(--border-default)] p-10 text-center">
+          <FileText className="h-10 w-10 mx-auto mb-3 text-[var(--text-muted)]" />
           <p className="text-lg font-medium text-[var(--text-secondary)]">No Lease Data</p>
           <p className="text-sm text-[var(--text-muted)] mt-1">
             Add your first lease to see liability, payment and expiry analytics.

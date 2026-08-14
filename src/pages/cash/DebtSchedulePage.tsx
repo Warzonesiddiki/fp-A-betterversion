@@ -288,8 +288,8 @@ export default function DebtSchedulePage() {
 
         {formCard}
 
-        <div className="rounded-xl border border-dashed border-slate-600 p-10 text-center">
-          <TableIcon className="h-10 w-10 mx-auto mb-3 text-slate-500" />
+        <div className="rounded-xl border border-dashed border-[var(--border-default)] p-10 text-center">
+          <TableIcon className="h-10 w-10 mx-auto mb-3 text-[var(--text-muted)]" />
           <p className="text-lg font-medium text-[var(--text-secondary)]">No Data</p>
           <p className="text-sm text-[var(--text-muted)] mt-1">
             Add debt instruments to see amortization, balance and DSCR analytics.

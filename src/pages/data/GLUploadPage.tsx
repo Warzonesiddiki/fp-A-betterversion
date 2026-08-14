@@ -493,9 +493,9 @@ export default function GLUploadPage() {
               />
             )}
             {csvColumns.length === 0 && (
-              <div className="text-center py-8 bg-slate-900 rounded-lg border border-dashed border-slate-800">
-                <AlertCircle className="h-8 w-8 text-slate-500 mx-auto mb-2" />
-                <p className="text-slate-400">
+              <div className="text-center py-8 bg-[var(--bg-elevated)] rounded-lg border border-dashed border-[var(--border-default)]">
+                <AlertCircle className="h-8 w-8 text-[var(--text-muted)] mx-auto mb-2" />
+                <p className="text-[var(--text-secondary)]">
                   No columns detected. Please upload a valid CSV file.
                 </p>
               </div>

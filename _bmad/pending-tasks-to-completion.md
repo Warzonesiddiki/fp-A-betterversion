@@ -483,9 +483,23 @@ fell to 2.64:1 on the corrected light surface moved to `--text-negative`
 (5.92 / 4.62). A ratchet in `buttonContrast.contract.test.ts` bans the hardcoded
 disc idiom across `src/pages`, which the UI-01 palette lint does not reach.
 
-Still open in this section: loading/error-state consistency, the remaining raw
-palette inside empty-state blocks (16 blocks beyond the disc idiom, mostly
-`bg-blue-600` on Buttons), keyboard paths, and 1024×600. Note that 77 pages
+A second empty-state idiom is now closed too: the dashed outline box. Five
+pages drew it with `border-slate-600`/`border-slate-800`, which is 2.39:1 on
+the dark page (nearly invisible) against 7.58:1 on the light one, and paired it
+with `text-slate-500` glyphs that fail AA in dark at 3.80:1. Those now use
+`--border-default` and `--text-muted`. Extending the ratchet to this idiom
+immediately surfaced two blocks the block-extractor audit had missed
+(`BudgetVAReport.tsx:237`, `GLUploadPage.tsx:496`), one of which also had a
+`text-slate-200` heading at 1.23:1 and `text-slate-400` body at 2.56:1 in light
+-- effectively invisible. Both are fully tokenised now.
+
+Still open in this section: loading/error-state consistency, keyboard paths, and
+1024×600. The `bg-blue-600` occurrences that remain inside empty-state blocks
+were checked and left alone deliberately -- they are skip-links and buttons
+(white on `#2563eb` = 5.17:1, passing), not themed surfaces, so they belong to
+the Button migration rather than here. Raw palette also survives in the
+_populated_ bodies of these same pages (e.g. `BudgetVsActualPage` table cells);
+that is a separate sweep and was not folded in. Note that 77 pages
 render their empty state with an `<h2>` and no `<h1>`; axe reports nothing
 because `page-has-heading-one` only fires on a full document, so this needs a
 direct DOM assertion if it is picked up.
