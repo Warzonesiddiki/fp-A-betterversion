@@ -1122,3 +1122,46 @@ worth reading — it means the code moved out from under the rule.
 Also closed: the two decorative `.` separators in `NLQChat` are now
 `aria-hidden`, so they are not announced as content between the intent, confidence
 and point-count values.
+
+## UI-07 — the 1024×600 minimum was an unverified claim, not a resolved one
+
+The tracker listed "5.5 Responsive layout (1024×600)" as done while the pending
+ledger still had it open. The shell held the two invariants the minimum depends
+on, but nothing pinned either of them, so the "done" was assertion rather than
+evidence.
+
+**jsdom cannot measure layout, and neither width nor height is otherwise visible
+to the suite.** `scrollWidth` and `clientWidth` are both 0 under jsdom, so a
+genuinely overflowing element is invisible to any DOM assertion — and the
+Playwright browser download is blocked in this sandbox (TLS `ECONNRESET`), which
+is why the prior session's T-11 note defers pixels to a browser gate (T-10). The
+honest split is therefore: source-level width ratchet + structural height
+contract, with pixel verification still deferred.
+
+**Width — ban the unambiguous case, and prove the threshold.** The widest
+content area the 1024 viewport can offer is 1024 − 64 (compact rail) − 48
+(md padding) = 912px. A hardcoded width ≥900px is therefore a horizontal-scroll
+defect by construction, whatever container wraps it. The ratchet
+(`src/theme/viewport.contract.test.ts`) catches `w-[…px]`, inline
+`style={{ width: '…px' }}` and CSS `width`/`min-width`, and asserts it scanned
+>400 sources so a silent regex reads as failure. The threshold was verified in
+both directions: 899px passes (no false positive at the boundary) and 900px,
+`minWidth: 905px`, and CSS `width: 950px` each fail with the file and line.
+
+**Height — pin the mechanism, not a number.** At 600px nothing needs to *fit*;
+it needs to be *reachable*. The root is `flex h-screen` and the one scrolling
+surface is `<main class="overflow-y-auto">`. The render contract
+(`src/components/layout/AppLayout.viewport-contract.test.tsx`) fails if any of
+the mechanisms is weakened — `h-screen`, `overflow-y-auto`, the work area's
+`flex-1 min-w-0 overflow-hidden`, the context bar's `flex-wrap`, or the rail's
+`md:relative md:translate-x-0`. Each was mutation-tested by removing exactly one
+and watching its own assertion fail (M4–M8).
+
+**What this slice did *not* do, on purpose.** Fixed-height grids and canvases
+taller than 600px but inside the scrolling main (`GLTrialBalanceGrid`
+`h-[600px]` — also a vestigial stub no page imports — and `BoardPackBuilder`
+`min-h-[600px]`) are reachable and therefore not minimum-viewport violations;
+they belong to the UI-04 density sweep. And "compact rail" at 1024–1439 is
+satisfied by the collapsible rail rather than an invented auto-collapse default,
+which would fight the persisted `sidebarCollapsed` preference without a browser
+to validate the result.
