@@ -588,7 +588,8 @@ axe cannot catch either class -- it does not simulate key presses, and a
 inspects. This is the third UI-07 defect class the axe suite was structurally
 blind to.
 
-Still open in this section: loading/error-state consistency and 1024×600.
+Loading and error states were surveyed here and are already correct; the
+1024×600 minimum is closed below.
 Loading and error states were surveyed while here and are in better shape than
 the plan assumed: `Skeleton`, `Spinner`, `LoadingScreen` and the route-level
 suspense fallback all already carry `role="status"`/`aria-busy`, and
@@ -598,6 +599,41 @@ were checked and left alone deliberately -- they are skip-links and buttons
 the Button migration rather than here. Raw palette also survives in the
 _populated_ bodies of these same pages (e.g. `BudgetVsActualPage` table cells);
 that is a separate sweep and was not folded in.
+
+**1024×600 minimum — DONE (verification + guard).** The shell already held
+the two invariants the minimum depends on, but nothing pinned them — the
+tracker claimed this item done while the pending ledger said open, which is
+an unverified claim, not a resolution. This slice measured and then guarded
+both axes.
+
+The *width* axis cannot be measured in jsdom (`scrollWidth`/`clientWidth`
+are both 0, so an overflowing element is invisible to it). The source-level
+ratchet `src/theme/viewport.contract.test.ts` therefore bans the
+unambiguous case: a hardcoded width ≥ 900px (Tailwind `w-[…px]`, inline
+`style={{ width }}`, or a CSS declaration). 1024 − 64 (compact rail) − 48
+(md padding) = 912px is the widest content area the minimum viewport can
+offer, so anything ≥900px overflows by construction. It scans every
+non-test `.tsx` plus the three stylesheets and asserts it scanned >400
+sources, so a regex that matches nothing reads as failure rather than
+success. Mutation-verified: 899px passes (threshold precision), while 900px,
+`minWidth: 905px` and CSS `width: 950px` each fail with the file and line.
+
+The *height* axis is pinned structurally by
+`src/components/layout/AppLayout.viewport-contract.test.tsx`: the root is
+`flex h-screen` and the single scrolling surface is `<main
+class="overflow-y-auto">`, so content taller than 600px scrolls there rather
+than being trapped off-screen; the work area is `flex-1 min-w-0
+overflow-hidden` and the context bar is `flex-wrap`, so neither can force
+horizontal scroll at 1024; the rail is `md:relative` (fixed at ≥768) and
+collapses to its 64px compact form. Each mechanism was mutation-tested
+(M4–M8: dropping `overflow-y-auto`, `min-w-0`, `flex-wrap`, `md:relative`, or
+`h-screen` each fails its own assertion).
+
+Deferred to UI-04 (tables/density), not this slice: fixed-height grids and
+canvases taller than the 600px viewport but inside the scrolling main —
+`GLTrialBalanceGrid` `h-[600px]` (also a vestigial stub imported by no page)
+and `BoardPackBuilder` `min-h-[600px]`. They stay reachable because the main
+scrolls; they are a density concern, not a minimum-viewport violation.
 
 ---
 
