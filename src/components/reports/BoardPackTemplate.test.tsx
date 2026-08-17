@@ -5,7 +5,25 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BoardPackTemplate } from './BoardPackTemplate';
 
-vi.mock('@/engines/ExportTemplateEngine', () => {
+const exportToExcel = vi.fn().mockResolvedValue(undefined);
+const exportToCSV = vi.fn();
+vi.mock('@/engines/ExportEngine', () => ({
+  ExportEngine: {
+    exportToExcel: (...args: unknown[]) => exportToExcel(...args),
+    exportToCSV: (...args: unknown[]) => exportToCSV(...args),
+  },
+}));
+
+const reportExportFailure = vi.fn();
+vi.mock('@/utils/exportErrorHandler', () => ({
+  reportExportFailure: (...args: unknown[]) => reportExportFailure(...args),
+}));
+
+vi.mock('@/engines/ExportTemplateEngine', async (importOriginal) => {
+  // Keep the REAL resolver helpers: they are the data-binding logic under test.
+  // Only the engine class (which pulls in jsPDF) is stubbed.
+  const actual = await importOriginal<typeof import('@/engines/ExportTemplateEngine')>();
+
   class MockExportTemplateEngine {
     getTemplate = vi.fn().mockReturnValue({
       id: 'tpl-board-pack',
@@ -53,6 +71,7 @@ vi.mock('@/engines/ExportTemplateEngine', () => {
   }
 
   return {
+    ...actual,
     ExportTemplateEngine: MockExportTemplateEngine,
   };
 });
@@ -128,5 +147,36 @@ describe('BoardPackTemplate', () => {
     render(<BoardPackTemplate />);
     expect(screen.getAllByText('Commentary').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText(/Strong performance for Acme Corporation/)).toBeInTheDocument();
+  });
+
+  // --- Regression: empty export ------------------------------------------
+  // The Excel and CSV buttons used to pass `rows: []` unconditionally, so a
+  // user exporting a board pack received four column headers and no data.
+
+  it('exports the rows shown in the preview, never a headers-only file', async () => {
+    exportToExcel.mockClear();
+    render(<BoardPackTemplate />);
+    fireEvent.click(screen.getByRole('button', { name: /show export options/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^excel$/i }));
+
+    await vi.waitFor(() => expect(exportToExcel).toHaveBeenCalledTimes(1));
+
+    const [data] = exportToExcel.mock.calls[0] as [{ headers: string[]; rows: string[][] }];
+    expect(data.rows.length).toBeGreaterThan(0);
+    // The mocked template's P&L row must actually be in the payload.
+    const flat = data.rows.map((r) => r.join('|')).join('\n');
+    expect(flat).toContain('Revenue');
+    expect(flat).toContain('4200000');
+  });
+
+  it('exports the same data to CSV', async () => {
+    exportToCSV.mockClear();
+    render(<BoardPackTemplate />);
+    fireEvent.click(screen.getByRole('button', { name: /show export options/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^csv$/i }));
+
+    await vi.waitFor(() => expect(exportToCSV).toHaveBeenCalledTimes(1));
+    const [data] = exportToCSV.mock.calls[0] as [{ rows: string[][] }];
+    expect(data.rows.map((r) => r.join('|')).join('\n')).toContain('4200000');
   });
 });

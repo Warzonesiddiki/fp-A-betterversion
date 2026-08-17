@@ -1,6 +1,11 @@
 import { useMemo, useState } from 'react';
 import { ExportTemplateEngine } from '@/engines/ExportTemplateEngine';
 import type { ExportContext, TemplateSection } from '@/engines/ExportTemplateEngine';
+import {
+  resolveSectionHeaders,
+  resolveSectionKPIs,
+  resolveSectionRows,
+} from '@/engines/ExportTemplateEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 interface BoardPackTemplateProps {
@@ -33,9 +38,19 @@ function CoverSection({ section, ctx }: { section: TemplateSection; ctx: ExportC
   );
 }
 
-function KPISummarySection({ section }: { section: TemplateSection }) {
-  const kpis =
-    (section.config.kpis as Array<{ label: string; value: string; change?: string }>) ?? [];
+function KPISummarySection({ section, ctx }: { section: TemplateSection; ctx: ExportContext }) {
+  const kpis = resolveSectionKPIs(section, ctx);
+
+  if (kpis.length === 0) {
+    return (
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)] mb-3">{section.title}</h2>
+        <p className="text-sm text-[var(--text-muted)] italic">
+          No data loaded — connect a data source to populate these metrics
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-6">
@@ -78,9 +93,9 @@ function KPISummarySection({ section }: { section: TemplateSection }) {
   );
 }
 
-function TableSection({ section }: { section: TemplateSection }) {
-  const headers = (section.config.headers as string[]) ?? [];
-  const rows = (section.config.rows as string[][]) ?? [];
+function TableSection({ section, ctx }: { section: TemplateSection; ctx: ExportContext }) {
+  const headers = resolveSectionHeaders(section, ctx);
+  const rows = resolveSectionRows(section, ctx);
 
   if (headers.length === 0) return null;
 
@@ -195,6 +210,51 @@ export function BoardPackTemplate({
     engine.generatePDF('tpl-board-pack', ctx);
   };
 
+  /**
+   * Flatten every bound table section into a single sheet, exactly as the
+   * preview renders it. Previously Excel/CSV shipped `rows: []`, so users
+   * received a board pack containing nothing but four column headers.
+   */
+  const buildTabularExport = (): { headers: string[]; rows: string[][] } => {
+    const tables = sections.filter((sec) => sec.type === 'table');
+    const rows: string[][] = [];
+    let width = 0;
+
+    for (const sec of tables) {
+      const secHeaders = resolveSectionHeaders(sec, ctx);
+      const secRows = resolveSectionRows(sec, ctx);
+      if (secRows.length === 0) continue;
+
+      width = Math.max(width, secHeaders.length, ...secRows.map((r) => r.length));
+      if (rows.length > 0) rows.push([]);
+      if (sec.title) rows.push([sec.title]);
+      if (secHeaders.length > 0) rows.push(secHeaders);
+      rows.push(...secRows);
+    }
+
+    // Pad ragged rows so Excel/CSV columns stay aligned across sections.
+    const padded = rows.map((r) => [...r, ...Array<string>(Math.max(0, width - r.length)).fill('')]);
+    return { headers: [`${entity} — ${period} Board Pack (${currency})`], rows: padded };
+  };
+
+  const handleExportTabular = (format: 'excel' | 'csv') => {
+    const data = buildTabularExport();
+    if (data.rows.length === 0) {
+      reportExportFailure(
+        new Error('Board pack has no data to export — connect a data source first.')
+      );
+      return;
+    }
+    const config = { title: `Board Pack ${period}` };
+    void import('@/engines/ExportEngine')
+      .then(({ ExportEngine }) =>
+        format === 'excel'
+          ? ExportEngine.exportToExcel(data, config)
+          : ExportEngine.exportToCSV(data, config)
+      )
+      .catch(reportExportFailure);
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       {/* Toolbar */}
@@ -237,29 +297,13 @@ export function BoardPackTemplate({
               PDF
             </button>
             <button
-              onClick={() => {
-                const exportData = {
-                  headers: ['Line Item', 'Actual', 'Budget', 'Variance'],
-                  rows: [],
-                };
-                import('@/engines/ExportEngine').then(({ ExportEngine }) => {
-                  void ExportEngine.exportToExcel(exportData, { title: `Board Pack ${period}` }).catch(reportExportFailure);
-                });
-              }}
+              onClick={() => handleExportTabular('excel')}
               className="px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
             >
               Excel
             </button>
             <button
-              onClick={() => {
-                const exportData = {
-                  headers: ['Line Item', 'Actual', 'Budget', 'Variance'],
-                  rows: [],
-                };
-                import('@/engines/ExportEngine').then(({ ExportEngine }) => {
-                  ExportEngine.exportToCSV(exportData, { title: `Board Pack ${period}` });
-                });
-              }}
+              onClick={() => handleExportTabular('csv')}
               className="px-3 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-md hover:bg-[var(--bg-hover)] text-sm"
             >
               CSV
@@ -275,9 +319,9 @@ export function BoardPackTemplate({
             case 'cover':
               return <CoverSection key={section.id} section={section} ctx={ctx} />;
             case 'kpi_summary':
-              return <KPISummarySection key={section.id} section={section} />;
+              return <KPISummarySection key={section.id} section={section} ctx={ctx} />;
             case 'table':
-              return <TableSection key={section.id} section={section} />;
+              return <TableSection key={section.id} section={section} ctx={ctx} />;
             case 'text':
               return <TextSection key={section.id} section={section} ctx={ctx} />;
             case 'page_break':

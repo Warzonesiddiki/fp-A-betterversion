@@ -116,6 +116,67 @@ function substituteVars(text: string, ctx: ExportContext): string {
     .replace(/\{preparedBy\}/g, ctx.preparedBy);
 }
 
+export interface TemplateKPI {
+  label: string;
+  value: string;
+  change?: string;
+}
+
+/**
+ * Resolve a section's table rows from the caller-supplied ExportContext.data.
+ *
+ * Built-in templates declare a `dataKey` instead of embedding literal numbers.
+ * A template must NEVER ship hardcoded financial values: an unbound section
+ * renders empty (and callers surface "no data"), because an empty board pack
+ * is a visible failure while a plausible-looking fabricated one is not.
+ *
+ * Accepts either a bare row array or a { headers?, rows } bundle so a caller
+ * can override the column set alongside the data.
+ */
+export function resolveSectionRows(section: TemplateSection, ctx: ExportContext): string[][] {
+  const key = section.config.dataKey as string | undefined;
+  if (key) {
+    const bound = ctx.data?.[key];
+    if (Array.isArray(bound)) return bound as string[][];
+    if (bound && typeof bound === 'object') {
+      const rows = (bound as { rows?: unknown }).rows;
+      if (Array.isArray(rows)) return rows as string[][];
+    }
+  }
+  // Fallback is the template's own rows. This is only safe because no built-in
+  // template ships numeric values: line-item scaffolds carry labels with blank
+  // value cells. Never add literal figures to a template's `rows`.
+  return (section.config.rows as string[][]) ?? [];
+}
+
+/** Resolve a section's table headers, allowing a bound override of the template default. */
+export function resolveSectionHeaders(section: TemplateSection, ctx: ExportContext): string[] {
+  const key = section.config.dataKey as string | undefined;
+  if (key) {
+    const bound = ctx.data?.[key];
+    if (bound && !Array.isArray(bound) && typeof bound === 'object') {
+      const headers = (bound as { headers?: unknown }).headers;
+      if (Array.isArray(headers)) return headers as string[];
+    }
+  }
+  return (section.config.headers as string[]) ?? [];
+}
+
+/** Resolve a KPI section's tiles from ExportContext.data. Unbound => no tiles. */
+export function resolveSectionKPIs(section: TemplateSection, ctx: ExportContext): TemplateKPI[] {
+  const key = section.config.dataKey as string | undefined;
+  if (key) {
+    const bound = ctx.data?.[key];
+    if (Array.isArray(bound)) return bound as TemplateKPI[];
+    if (bound && typeof bound === 'object') {
+      const kpis = (bound as { kpis?: unknown }).kpis;
+      if (Array.isArray(kpis)) return kpis as TemplateKPI[];
+    }
+    return [];
+  }
+  return (section.config.kpis as TemplateKPI[]) ?? [];
+}
+
 function hexToRgb(hex: string): [number, number, number] {
   const h = hex.replace('#', '');
   return [
@@ -342,13 +403,13 @@ export class ExportTemplateEngine {
   private renderKPISummary(
     pdf: JsPDFDoc,
     section: TemplateSection,
-    _ctx: ExportContext,
+    ctx: ExportContext,
     style: TemplateStyle,
     margin: number,
     startY: number
   ): number {
-    const kpis =
-      (section.config.kpis as Array<{ label: string; value: string; change?: string }>) || [];
+    const kpis = resolveSectionKPIs(section, ctx);
+    if (kpis.length === 0) return startY;
     const colW = (pdf.internal.pageSize.width - margin * 2) / Math.min(kpis.length, 4);
     let y = startY;
 
@@ -390,8 +451,8 @@ export class ExportTemplateEngine {
     margin: number,
     startY: number
   ): number {
-    const headers = (section.config.headers as string[]) || [];
-    const rows = (section.config.rows as string[][]) || [];
+    const headers = resolveSectionHeaders(section, ctx);
+    const rows = resolveSectionRows(section, ctx);
     const [pr, pg, pb] = hexToRgb(style.primaryColor);
 
     const resolvedHeaders = headers.map((h) => substituteVars(h, ctx));
@@ -463,21 +524,17 @@ export class ExportTemplateEngine {
           type: 'kpi_summary',
           title: 'Executive Summary',
           order: 1,
-          config: {
-            kpis: [
-              { label: 'Total Revenue', value: '$12.4M', change: '+8.2%' },
-              { label: 'Net Income', value: '$2.1M', change: '+12.5%' },
-              { label: 'EBITDA Margin', value: '24.3%', change: '+1.8pp' },
-              { label: 'Cash Position', value: '$8.7M', change: '-3.1%' },
-            ],
-          },
+          config: { dataKey: 'execKpis' },
         },
         {
           id: 'pl',
           type: 'table',
           title: 'Income Statement',
           order: 2,
-          config: { headers: ['Line Item', 'Actual', 'Budget', 'Variance', 'Var %'], rows: [] },
+          config: {
+            headers: ['Line Item', 'Actual', 'Budget', 'Variance', 'Var %'],
+            dataKey: 'incomeStatement',
+          },
         },
         { id: 'pb1', type: 'page_break', title: '', order: 3, config: {} },
         {
@@ -485,14 +542,14 @@ export class ExportTemplateEngine {
           type: 'table',
           title: 'Balance Sheet',
           order: 4,
-          config: { headers: ['Account', 'Current', 'Prior', 'Change'], rows: [] },
+          config: { headers: ['Account', 'Current', 'Prior', 'Change'], dataKey: 'balanceSheet' },
         },
         {
           id: 'cf',
           type: 'table',
           title: 'Cash Flow Statement',
           order: 5,
-          config: { headers: ['Category', 'Q1', 'Q2', 'Q3', 'Q4', 'FY'], rows: [] },
+          config: { headers: ['Category', 'Q1', 'Q2', 'Q3', 'Q4', 'FY'], dataKey: 'cashFlow' },
         },
         { id: 'pb2', type: 'page_break', title: '', order: 6, config: {} },
         {
@@ -500,7 +557,10 @@ export class ExportTemplateEngine {
           type: 'table',
           title: 'Variance Analysis',
           order: 7,
-          config: { headers: ['Item', 'Actual', 'Budget', 'Variance', 'Driver'], rows: [] },
+          config: {
+            headers: ['Item', 'Actual', 'Budget', 'Variance', 'Driver'],
+            dataKey: 'variance',
+          },
         },
       ],
       style: { ...DEFAULT_STYLE },
@@ -754,42 +814,21 @@ export class ExportTemplateEngine {
           type: 'kpi_summary',
           title: 'Financial KPIs',
           order: 1,
-          config: {
-            kpis: [
-              { label: 'Revenue', value: '$12.4M', change: '+8.2%' },
-              { label: 'EBITDA', value: '$3.0M', change: '+15.1%' },
-              { label: 'Net Margin', value: '16.9%', change: '+2.1pp' },
-              { label: 'ROE', value: '22.4%', change: '+3.2pp' },
-            ],
-          },
+          config: { dataKey: 'financialKpis' },
         },
         {
           id: 'kpi2',
           type: 'kpi_summary',
           title: 'Operational KPIs',
           order: 2,
-          config: {
-            kpis: [
-              { label: 'Headcount', value: '142', change: '+12' },
-              { label: 'Revenue/Employee', value: '$87K', change: '+5.3%' },
-              { label: 'Customer Count', value: '2,847', change: '+186' },
-              { label: 'NPS Score', value: '72', change: '+4' },
-            ],
-          },
+          config: { dataKey: 'operationalKpis' },
         },
         {
           id: 'kpi3',
           type: 'kpi_summary',
           title: 'Cash & Liquidity',
           order: 3,
-          config: {
-            kpis: [
-              { label: 'Cash Position', value: '$8.7M', change: '-3.1%' },
-              { label: 'Burn Rate', value: '$1.2M/mo', change: '-8%' },
-              { label: 'Runway', value: '7.2 mo', change: '+0.5' },
-              { label: 'DSO', value: '38 days', change: '-2' },
-            ],
-          },
+          config: { dataKey: 'liquidityKpis' },
         },
       ],
       style: { ...DEFAULT_STYLE },
