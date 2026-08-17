@@ -1,0 +1,37 @@
+---
+id: MEMORY/MAP/MODULES.md
+status: active
+last_verified: 2026-08-18
+verified_by: arena-agent/session-017
+confidence: medium
+---
+
+# MAP/MODULES — canonical modules and status
+
+Status vocabulary: `shipped` (files exist and are routed/used) · `partial` · `flagged`
+(exists but carries known defects) · `planned` (no files). A module is never `shipped`
+because a plan says so.
+
+| Module | Entry point(s) | Status | Notes |
+| --- | --- | --- | --- |
+| Money primitive | `src/utils/money.ts` | shipped | decimal.js, precision 40, ROUND_HALF_UP |
+| Money-AST detector | `scripts/money-ast-detector.mjs` | shipped | ratchet 489 / 80.05% |
+| Fabrication detector | `scripts/fabrication-detector.mjs` | shipped | ratchet 60 / 19 files |
+| GL store | `src/store/glStore.ts` | shipped | localStorage persist; not server-authoritative |
+| Dashboard | `src/pages/DashboardPage.tsx` + `src/pages/dashboard/dashboardModel.ts` | shipped | session 017: 11 unsafe ops → 0; revenue sign inversion fixed |
+| Credit risk | `src/pages/credit/CreditRiskPage.tsx` + `creditRiskData.ts` | shipped | session 016 |
+| Scenario builder | `src/pages/scenarios/ScenarioBuilderPage.tsx` + `scenarioBuilderModel.ts` | shipped | session 015 |
+| Underwriting | `src/pages/insurance/UnderwritingPage.tsx` + `underwritingData.ts` | shipped | session 015 |
+| Project costing | `src/pages/construction/ProjectCostingPage.tsx` + `projectCostingData.ts` | shipped | session 014 |
+| Tax provision | `src/pages/tax/TaxProvisionPage.tsx` + `taxProvisionData.ts` | shipped | session 011 |
+| Patient revenue | `src/pages/healthcare/PatientRevenuePage.tsx` | flagged | 5 fabrication findings; engine returns hardcoded `denialRate: 4.2` |
+| Healthcare engine | `src/engines/HealthcareEngine.ts` | flagged | money-safe arithmetic, but invented denial rate + 30-day A/R divisor |
+| Construction engine | `src/engines/ConstructionEngine.ts` | flagged | 1.5× backlog invention + Math.abs |
+| Insurance engine | `src/engines/InsuranceEngine.ts` | flagged | 0.85× net-written + premium/360 policy count |
+| Retail engine | `src/engines/RetailEngine.ts` | flagged | 254 / 92.8 mocks remain |
+| Real-estate engine | `src/engines/RealEstateEngine.ts` | flagged | 4.2 / 94.8 / 6.2 mocks + amount-sign fork |
+| Export engines | `src/engines/ProfessionalExportEngine.ts`, `ExportTemplateEngine.ts` | flagged | fabrication 0, but raw floats can cross into autoTable |
+| Board pack | `BoardPackTemplate` (barrel-exported) | partial | NOT routed — no user reaches it |
+| Server API | `server/src/routes/*.ts` (11 route files) | partial | only ~14 non-test frontend files call it |
+| Persistence authority (W0.8) | — | planned | 41 persisting stores, schema fork, no tenancy |
+| MSI installer | — | planned | repo ships NSIS only; GA needs MSI + NSIS |

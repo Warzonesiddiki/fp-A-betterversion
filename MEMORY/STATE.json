@@ -1,0 +1,94 @@
+{
+  "memory_version": "1.0.0",
+  "project": "OmniPlan (finplan-pro) — Warzonesiddiki/fp-A-betterversion",
+  "updated_at": "2026-08-18",
+  "genesis_phase": "Phase 0 / Wave W0.1.1",
+  "now": {
+    "task_id": "T-017",
+    "summary": "W0.1.1 session 017: DashboardPage money-AST 11 -> 0 and PatientRevenuePage fabrication 5 -> 0, both with teeth."
+  },
+  "health": {
+    "shi": null,
+    "uvi": null,
+    "dei": null,
+    "money_ast_safety_pct": 80.05,
+    "money_ast_unsafe_ops": 489,
+    "fabrication_findings": 60,
+    "notes": "SHI/UVI/DEI not re-measured this session. Ratchet numbers measured 2026-08-18."
+  },
+  "capabilities": {
+    "git": true,
+    "gh": true,
+    "shell": true,
+    "node": "v22.22.3",
+    "npm": "10.9.8",
+    "cargo": false,
+    "docker": false,
+    "vitest": true,
+    "playwright": "installed, not run",
+    "push_workflows": false
+  },
+  "stack": {
+    "languages": [
+      "TypeScript",
+      "Rust (tauri, unbuildable here)"
+    ],
+    "frameworks": [
+      "React 19",
+      "Vite",
+      "Tailwind",
+      "Zustand",
+      "Express"
+    ],
+    "pkg": "npm",
+    "test": "npm test (vitest) | npx vitest run <path> --reporter=dot",
+    "dev": "npm run dev",
+    "db": "SQLite (src-tauri/migrations, 35 tables) + server DDL helpers"
+  },
+  "modules": {
+    "money-primitive": "shipped",
+    "money-ast-detector": "shipped",
+    "fabrication-detector": "shipped",
+    "dashboard": "shipped",
+    "credit-risk": "shipped",
+    "scenario-builder": "shipped",
+    "underwriting": "shipped",
+    "project-costing": "shipped",
+    "tax-provision": "shipped",
+    "patient-revenue": "flagged",
+    "healthcare-engine": "flagged",
+    "construction-engine": "flagged",
+    "insurance-engine": "flagged",
+    "retail-engine": "flagged",
+    "realestate-engine": "flagged",
+    "export-engines": "flagged",
+    "board-pack": "partial",
+    "server-api": "partial",
+    "persistence-authority-w08": "planned",
+    "msi-installer": "planned"
+  },
+  "invariants_green": [
+    "INV-001",
+    "INV-002"
+  ],
+  "invariants_red": [
+    "INV-003",
+    "INV-004",
+    "INV-005",
+    "INV-007",
+    "INV-009",
+    "INV-010"
+  ],
+  "blocked": [
+    "CI workflow changes (no `workflows` permission) -> ci-patches/0005-*.patch unapplied",
+    "src-tauri/src/*.rs (no cargo/rustc in sandbox)",
+    "desktop/Tauri verification",
+    "GitHub Vitest coverage job (no coverage/ artifact)"
+  ],
+  "last_session": "sess_017",
+  "integrity": {
+    "last_run": "2026-08-18",
+    "ok": true,
+    "errors": []
+  }
+}
