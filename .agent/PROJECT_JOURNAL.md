@@ -454,3 +454,77 @@ it still fails on a genuinely broken page, so it is a fix rather than a suppress
 **Next:** module 4 is `ProfessionalExportEngine` (26). Carried debts unchanged:
 `scripts/escape-ledger-check.mjs`, wiring `docs:links --strict` into `docs:verify`, retiring
 legacy `money:adoption`, W0.8 persistence authority.
+
+## Session 010 — 2026-08-18 — W0.1.1 module 4: a false positive, and the real bug behind it
+
+**Two changes, and the difference between them is the lesson of this session.**
+
+### 1. Detector precision fix (no money was repaired)
+
+`ProfessionalExportEngine.ts` (26 findings) and `ExportTemplateEngine.ts` (11) were flagged
+entirely on `this.margin.left/right/top` — A4 page geometry in millimetres. `isMonetaryExpression`
+resolves `a.b` property-name-first **with fallback to the object**, so `margin.left` inherits
+money-ness from `margin`. Adding `'margin'` to `AMBIGUOUS_ALONE` drops unsafe ops **620 → 583**
+and safety **78.95% → 79.19%**.
+
+**Zero computed numbers became safer.** The ratchet moved because measurement got more accurate,
+not because the product got more correct. Any reading of that 0.24pp as progress is wrong.
+
+Before suppressing the name I dumped `--json` before and after and diffed per-file counts: exactly
+two files changed (26→0, 11→0) and no other file moved by a single finding, so no true positive
+was lost. That diff is the only thing that makes a suppression safe — without it, adding a word to
+a blocklist is indistinguishable from deleting evidence. Two regression tests lock both directions:
+bare `margin` geometry must yield 0, and `grossMargin`/`ebitdaMargin` must still be flagged, so
+nobody can widen the exclusion to all margins. Teeth verified by reverting the detector (geometry
+test fails). Commit `d9d357b`.
+
+### 2. The board pack was fabricating financials (commit `fb7b601`)
+
+Auditing the file the detector had just declared clean, the actual defect was in plain sight.
+
+`createBoardPackTemplate()` embedded literal figures: **Total Revenue `$12.4M`, Net Income
+`$2.1M`, EBITDA Margin `24.3%`, Cash Position `$8.7M`** — and `tpl-kpi-summary` invented twelve
+more (ROE 22.4%, headcount 142, 2,847 customers, 7.2 months runway). These rendered into a
+**CONFIDENTIAL-stamped PDF for every entity and every period**. `ExportContext` had a `data`
+field that **the engine never read anywhere** — the only reference in the file was an underscored
+`_ctx` parameter — so a caller's real numbers could not reach the page even if they passed them.
+The four financial tables were `rows: []`, so the fabricated KPIs were the _only_ numbers a reader
+saw. Separately the **Excel and CSV buttons passed `rows: []` unconditionally**: four headers, no
+data.
+
+Templates now declare a `dataKey` and bind through `resolveSectionRows/Headers/KPIs`. Unbound
+sections render empty and the export refuses with an explicit error rather than writing a file.
+**An empty pack is a caught error; a plausible fabricated one gets signed and sent to a board.**
+
+**Both test files were vacuous exactly where it mattered.** Each `vi.mock`-ed the whole engine and
+then asserted against its own fixture — the colocated suite checked for `$4.2M`, a number that
+exists nowhere in the product, while shipping `$12.4M` went unnoticed for the life of the file.
+They now `importOriginal` so the real resolvers are exercised. The engine suite asserts **no
+built-in template contains a digit in any KPI value or table value cell**, which fails loudly if
+anyone re-adds a "realistic-looking" placeholder. Teeth verified both ways: reintroducing the
+fabrication fails 3 engine tests, restoring `rows: []` fails 2 component tests.
+
+### What this says about the gate
+
+The money ratchet did not move for change 2, and could not have: it reads arithmetic, and no
+arithmetic was wrong. The numbers were _typed in_. Session 007 found statement fabrication behind
+a dead data-key mapping; this is the same failure mode in the export layer, and the detector is
+blind to both by construction.
+
+So module 4 produced **37 flagged operations resolved with zero risk reduction**, and — in the
+very same files — **16 fabricated financial values plus two broken exports that no gate would
+ever have caught**. The standing caution now has its sharpest evidence: **≥90% AST safety will
+arrive before the money is trustworthy.** Phase 0 exit needs a fabrication gate (no literal
+currency/percentage strings in template or fixture definitions reachable by an export path) that
+does not depend on the AST detector. Logged as a new carried debt alongside the existing
+value-fabrication item.
+
+**Carried debts unchanged:** `scripts/escape-ledger-check.mjs`; wire `docs:links --strict` into
+`docs:verify`; retire legacy `money:adoption`; W0.8 persistence authority; re-derive remaining
+`financial.ts` oracles from published Excel output; `ODDFPRICE`/`ODDLPRICE` are byte-identical and
+both ignore `_firstPeriod`/`_lastPeriod`. **New:** `ProfessionalExportEngine` passes raw numbers
+straight into `autoTable` (`rows: (string|number)[][]`, only column 0 is `String()`-ed), so an
+unformatted float would print verbatim into a board pack — a formatting-boundary gap with no
+detector.
+
+**Next:** module 5 is `TaxProvisionPage` (22).
