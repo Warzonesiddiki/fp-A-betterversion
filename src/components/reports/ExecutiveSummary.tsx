@@ -1,34 +1,40 @@
+import { useMemo } from 'react';
 import { Card } from '@/components/ui/Card';
-import { Sparkline } from '@/components/ui/Sparkline';
+import { useGLStore } from '@/store/glStore';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { deriveExecutiveSummary } from './executiveSummaryData';
 
 export function ExecutiveSummary() {
+  const fmt = useCurrencyFormatter();
+  const { entries } = useGLStore();
+  const derivation = useMemo(() => deriveExecutiveSummary(entries), [entries]);
+
+  const kpis = [
+    { label: 'Revenue', value: fmt.currency0(derivation.revenue) },
+    { label: 'Operating income', value: fmt.currency0(derivation.operatingIncome) },
+    {
+      label: 'Cash',
+      value: derivation.cash === null ? '—' : fmt.currency0(derivation.cash),
+    },
+  ];
+
   return (
     <div className="space-y-8 print:p-0">
       <div className="grid grid-cols-3 gap-6">
-        {[
-          { label: 'Revenue', val: '$4.2M', change: '+12%', data: [5, 6, 5.5, 7, 8] },
-          { label: 'EBITDA', val: '$1.1M', change: '+4%', data: [1, 1.2, 0.9, 1.1, 1.3] },
-          { label: 'Cash Flow', val: '$850k', change: '-2%', data: [1, 0.9, 1.1, 0.8, 0.85] },
-        ].map((k) => (
-          <Card key={k.label} className="p-4 flex items-center justify-between">
-            <div>
-              <span className="text-xs text-[var(--text-muted)] uppercase font-bold">{k.label}</span>
-              <div className="text-2xl font-bold text-[var(--text-primary)]">{k.val}</div>
-              <span className="text-xs text-green-400">{k.change} vs budget</span>
-            </div>
-            <div className="w-24 h-8">
-              <Sparkline data={k.data} color="#3b82f6" />
-            </div>
+        {kpis.map((k) => (
+          <Card key={k.label} className="p-4">
+            <span className="text-xs text-[var(--text-muted)] uppercase font-bold">{k.label}</span>
+            <div className="text-2xl font-bold text-[var(--text-primary)]">{k.value}</div>
           </Card>
         ))}
       </div>
-      <Card className="p-6">
-        <h3 className="font-bold text-[var(--text-primary)] mb-4">Management Commentary</h3>
-        <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-          Strong revenue performance this period driven by new SaaS bookings. Operating expenses
-          remained within budget despite increased marketing spend. Cash position strengthened
-          following timely AR collections.
-        </p>
+      <Card className="p-6 space-y-3">
+        <h3 className="font-bold text-[var(--text-primary)]">Not derivable from the posted GL</h3>
+        {derivation.unavailable.map((item) => (
+          <p key={item.label} className="text-sm text-[var(--text-secondary)] leading-relaxed">
+            <span className="font-medium">{item.label}</span> — {item.reason}
+          </p>
+        ))}
       </Card>
     </div>
   );

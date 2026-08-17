@@ -1,32 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
-}));
-
-vi.mock('@/engines', () => ({
-  CreditRiskEngine: {
-    creditScore: vi.fn(() => ({ rating: 'BBB', score: 70, pd: 0.02 })),
-    lossGivenDefault: vi.fn(() => 0.4),
-    exposureAtDefault: vi.fn(() => 100000),
-    expectedLoss: vi.fn(() => 5000),
-  },
-}));
-
-vi.mock('recharts', () => ({
-  ResponsiveContainer: ({ children }: any) => <div data-testid="rc">{children}</div>,
-  BarChart: ({ children }: any) => <div>{children}</div>,
-  Bar: () => null,
-  XAxis: () => null,
-  YAxis: () => null,
-  CartesianGrid: () => null,
-  Tooltip: () => null,
-  Legend: () => null,
-  Cell: () => null,
-  PieChart: ({ children }: any) => <div>{children}</div>,
-  Pie: () => null,
-}));
+import { useGLStore } from '@/store/glStore';
+import CreditRiskPage from '@/pages/credit/CreditRiskPage';
 
 vi.mock('lucide-react', () => {
   const makeIcon = () => {
@@ -38,15 +14,14 @@ vi.mock('lucide-react', () => {
   };
   return {
     ShieldAlert: makeIcon(),
-    DollarSign: makeIcon(),
-    TrendingDown: makeIcon(),
-    BarChart3: makeIcon(),
-    AlertTriangle: makeIcon(),
     Download: makeIcon(),
     Activity: makeIcon(),
-    Shield: makeIcon(),
+    ArrowUpRight: makeIcon(),
+    ArrowDownRight: makeIcon(),
+    Minus: makeIcon(),
     ChevronUp: makeIcon(),
     ChevronDown: makeIcon(),
+    ChevronsUpDown: makeIcon(),
     Search: makeIcon(),
     Filter: makeIcon(),
     MoreHorizontal: makeIcon(),
@@ -54,8 +29,6 @@ vi.mock('lucide-react', () => {
     ChevronRight: makeIcon(),
   };
 });
-
-import CreditRiskPage from '@/pages/credit/CreditRiskPage';
 
 function renderPage() {
   return render(
@@ -65,10 +38,12 @@ function renderPage() {
   );
 }
 
-describe('CreditRiskPage smoke test', () => {
+describe('CreditRiskPage — no fabricated scorecard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useGLStore.setState({ entries: [] });
   });
+
   it('renders without crashing', () => {
     const { container } = renderPage();
     expect(
@@ -76,8 +51,55 @@ describe('CreditRiskPage smoke test', () => {
       'rendered nothing: a truthy container does not prove the page mounted'
     ).toBeGreaterThanOrEqual(2);
   });
-  it('displays empty state', () => {
+
+  it('displays empty state and no invented EL when the GL is empty', () => {
     renderPage();
     expect(screen.getByText('No Credit Data')).toBeTruthy();
+  });
+
+  it('renders posted assets instead of an invented EAD', () => {
+    useGLStore.setState({
+      entries: [
+        {
+          id: '1',
+          accountId: '1000',
+          accountCode: '1000',
+          accountName: 'Cash',
+          period: '2026-01',
+          periodName: 'Jan',
+          debit: 850,
+          credit: 0,
+          netChange: 850,
+          date: '2026-01-15',
+          amount: 850,
+          description: 'Cash',
+          reference: '',
+          entityId: 'E-1',
+        },
+        {
+          id: '2',
+          accountId: '4000',
+          accountCode: '4000',
+          accountName: 'Revenue',
+          period: '2026-01',
+          periodName: 'Jan',
+          debit: 0,
+          credit: 1000,
+          netChange: 1000,
+          date: '2026-01-15',
+          amount: 1000,
+          description: 'Rev',
+          reference: '',
+          entityId: 'E-1',
+        },
+      ] as never,
+    });
+    renderPage();
+    const body = document.body.textContent ?? '';
+    expect(body).toMatch(/Credit Risk Assessment/);
+    expect(body).toMatch(/\$850/);
+    expect(body).toMatch(/\$1,000/);
+    expect(body).toMatch(/E-1/);
+    expect(body).toMatch(/not derivable/i);
   });
 });
