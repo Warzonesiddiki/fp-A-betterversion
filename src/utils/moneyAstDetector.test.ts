@@ -191,7 +191,40 @@ describe('money AST detector — must NOT flag safe or non-monetary code', () =>
     expect(count).toBe(0);
   });
 
-  it('ignores modules with no monetary content at all', () => {
+  it('ignores PDF page geometry named `margin` (ExportEngine regression)', () => {
+    // `margin` in the export engines is an A4 page margin in millimetres.
+    // 37 findings across ProfessionalExportEngine.ts and ExportTemplateEngine.ts
+    // were this and nothing else. Those files do no money arithmetic at all:
+    // they receive pre-formatted strings and lay them out on a page.
+    const { count } = analyse(`
+      const margin = 14;
+      export function layout(pageW: number, box: { left: number; right: number; top: number }) {
+        const contentW = pageW - margin * 2;
+        const x = box.left + 11;
+        const y = box.top + 6;
+        return contentW - box.right + x + y;
+      }
+    `);
+    expect(count).toBe(0);
+  });
+
+  it('STILL flags qualified margin names, which are money', () => {
+    // The suppression above is deliberately narrow: only the BARE identifier is
+    // ambiguous. If this ever returns 0, the exclusion has been widened too far
+    // and real profit-margin arithmetic is going unchecked.
+    const { findings } = analyse(`
+      export function f(grossMargin: number, marginPct: number, ebitdaMargin: number) {
+        const a = grossMargin - 1;
+        const b = ebitdaMargin + 2;
+        return a + b + marginPct;
+      }
+    `);
+    const flagged = findings.map((f: { code: string }) => f.code).join(' | ');
+    expect(flagged).toContain('grossMargin');
+    expect(flagged).toContain('ebitdaMargin');
+  });
+
+  it('modules with no monetary content at all', () => {
     const { count } = analyse(`
       export const add = (a: number, b: number) => a + b;
       export const idx = (xs: string[], i: number) => xs[i + 1];

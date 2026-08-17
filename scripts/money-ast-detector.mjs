@@ -228,6 +228,13 @@ function looksMonetary(rawName) {
     'current',
     'previous',
     'target',
+    // `margin` alone is PDF page geometry in the export engines (millimetres:
+    // `pageW - margin`, `this.margin.left`) at least as often as it is profit
+    // margin. Qualified forms still match via the substring check below, so
+    // grossMargin / profitMargin / ebitdaMargin / marginPct remain monetary.
+    // Validated 2026-08-18 against ProfessionalExportEngine.ts (A4 layout in mm)
+    // and ExportTemplateEngine.ts.
+    'margin',
   ]);
 
   if (NON_MONEY_CONTAINS.test(name)) {
