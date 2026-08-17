@@ -7,9 +7,10 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "test": "vitest run",
+    "test": "node scripts/ensure-native-db.mjs && vitest run",
     "test:watch": "vitest",
-    "test:native-db": "vitest run --config vitest.native.config.ts src/services/AuditService.test.ts src/middleware/accountLockout.test.ts"
+    "test:native-db": "node scripts/ensure-native-db.mjs && vitest run --config vitest.native.config.ts src/services/AuditService.test.ts src/middleware/accountLockout.test.ts",
+    "ensure-native-db": "node scripts/ensure-native-db.mjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
