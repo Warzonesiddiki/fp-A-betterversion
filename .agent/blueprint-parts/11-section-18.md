@@ -299,6 +299,15 @@ identity is exact (fixed 500k, VC 60%, target 1M ⇒ BE $1,250,000). Empty GL is
 `$58.2M` / Downtown Plaza / CSI quotes are gone; the page reads posted prefixes
 5+6 / 4 (excluding 46) / 13 / 46. `constructionStore` v2 defaults are empty.
 
+#### W0.1.1 progress — `ScenarioBuilderPage.tsx` + underwriting fabrication (2026-08-18)
+
+Ninth money module: 14 → **0**; ratchet 516 → **502 (79.88% safe)**. The $48M
+demo base is gone; shocks apply to posted 4/5/6. Growth+pricing stays additive
+(55.2M, not 55.44M). OpEx is an input, not a hidden 14.4M.
+
+`UnderwritingPage` dropped 6 fabrication findings (72 → **66 / 20 files**).
+`96.4%` / CA-2026-012 filings are gone. `insuranceStore` v2 defaults are empty.
+
 **Exit criterion:** `docs/architecture/PERSISTENCE_MAP.md` exists and is CI-drift-checked; no monetary value
 is persisted as an IEEE-754 `number`; `glStore` is server-authoritative; every local-only
 surface says so.

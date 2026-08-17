@@ -752,3 +752,45 @@ revenue by 1.5 to invent backlog and abs's every amount.
 
 Money-AST: `ScenarioBuilderPage` (14). Fabrication: `UnderwritingPage` (6),
 `ExecutiveSummary` (6).
+
+---
+
+## Session 015 — 2026-08-18 — ScenarioBuilderPage + UnderwritingPage
+
+**Branch:** `arena/01a01148-fp-a-betterversion`
+
+### 1. `ScenarioBuilderPage` (14 → 0). Ratchet 516 → **502 (79.88% safe)**
+
+Real drop: 14 float operations left the product. Unsafe modules 175 → 174.
+
+The comparison function was already on decimal.js, but the page still:
+
+- fed it a hardcoded **$48M / $28.8M / $14.4M** base (and the function itself
+  read a module-level 14.4M opex, so every caller inherited an invented floor);
+- did IEEE-754 `newRevenue - newCogs` on save and
+  `baseRevenue * (1 + g/100) * (1 + p/100)` in Monte Carlo;
+- rendered a six-month $4M comparison series that no ledger produced.
+
+Derivation moved to `src/pages/scenarios/scenarioBuilderModel.ts`. The page
+reads posted prefixes 4/5/6 as the base and empty-states when there is no
+ledger. Growth + pricing stays **additive** (48M + 10% + 5% = 55.2M, not
+compounded 55.44M) — that identity is pinned. OpEx is an input. Teeth:
+reintroducing `newRevenue - newCogs` fails the source guard.
+
+### 2. `UnderwritingPage` (6 → 0 fabrication). Ratchet 72 → **66 / 20 files**
+
+The page ignored the GL and rendered `96.4%` adequacy, `61.4%` loss picks and
+CA/FL/TX/NY filings at `+8.4% / +12.2% / +6.5% / +4.1%`. `insuranceStore`
+persisted the same quotes.
+
+Derivation is `src/pages/insurance/underwritingData.ts`: posted premium (4),
+claims (5), expense (6), loss / expense / combined ratios when the denominator
+exists. Rate adequacy, loss picks and filings are disclosed. Store v2 defaults
+are empty. `InsuranceEngine.calculateStats` is unused — it abs's amounts,
+invents net written as 85% of gross and policy count as premium/360. Teeth:
+injecting `96.4%` fails the seeded-ledger DOM probe.
+
+### Next
+
+Money-AST: `CreditRiskPage` (13) (skip `mockData/index.ts` — that file is the
+fixture factory). Fabrication: `ExecutiveSummary` (6).
