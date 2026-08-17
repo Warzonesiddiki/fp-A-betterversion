@@ -520,6 +520,8 @@ promoted to `BUILT` from this sandbox**, which has no `cargo`/`rustc` and no Win
 
 **This list, not the 193 routes, is the measure of remaining work.**
 
+---
+
 # SECTION 4 — SYSTEM ARCHITECTURE
 
 ## 4.1 The architecture decision (ADR-003, binding)
@@ -1252,6 +1254,8 @@ as the UI. There is no privileged path through Excel.
 | C7   | Plaid, CAMT.053 (banks)                             | 3     | treasury scope confirmed |
 | C8   | Zapier, Make, Workato (iPaaS)                       | 3     | public API GA            |
 
+---
+
 # SECTION 9 — UI/UX SYSTEM SPECIFICATION
 
 ## 9.1 Design philosophy
@@ -1614,6 +1618,8 @@ sizes — small 1M facts, medium 50M, large 500M — generated deterministically
 so results are comparable across runs). Results are published to
 `docs/release/PERFORMANCE_BASELINE.md` and are the only acceptable basis for a scale claim.
 
+---
+
 # SECTION 12 — AI/ML MODULE SPECIFICATION
 
 ## 12.1 The governing constraint
@@ -1812,6 +1818,8 @@ time-boxed access grants; and its own access log. An auditor's session cannot be
 distinguished from a normal read at the data layer — meaning the auditor sees exactly what
 the system holds, not a curated view. Every auditor read is itself logged.
 
+---
+
 # SECTION 14 — REPORTING & EXPORT ENGINE
 
 ## 14.1 Reporting philosophy
@@ -1913,6 +1921,8 @@ Print stylesheets are first-class, not an afterthought: page breaks respect logi
 boundaries, headers repeat on every page, wide reports scale or split predictably, and the
 printed output matches the PDF byte-for-byte in layout. Finance still prints board packs;
 pretending otherwise is not a strategy.
+
+---
 
 # SECTION 15 — API SPECIFICATION
 
@@ -2056,6 +2066,8 @@ published, approval completed, metric certified, integration sync completed or f
 three-statement violation detected. The public API (Phase 3) is the same `/v1` surface with
 scoped API keys, documented in an OpenAPI spec generated from the Zod schemas — never
 hand-written, because hand-written specs lie.
+
+---
 
 # SECTION 16 — INFRASTRUCTURE, DEPLOYMENT & OBSERVABILITY
 
@@ -2214,6 +2226,8 @@ single-tenant restore; failed-migration rollback; integration DLQ drain; audit-c
 verification failure investigation; key rotation; break-glass access; period-close reopen;
 Severity-0 correctness incident; and customer incident communications.
 **An untested runbook does not exist.**
+
+---
 
 # SECTION 17 — TESTING STRATEGY
 
@@ -2497,6 +2511,60 @@ in the derivation module. The guard was verified to fail when a ratio is reintro
 **Note for the remaining worklist:** the mock-data audit did not catch this, because it
 looks for synthetic _arrays_ and this fabrication was inline arithmetic on real data.
 Remaining W0.1.1 modules must be read for invented values, not only for float arithmetic.
+
+#### W0.1.1 progress — `ThreeStatementDashboardPage.tsx` (2026-08-17)
+
+Second module on the worklist: 34 unsafe operations → **0**; ratchet 681 → **647 unsafe
+operations (78.84% safe)**.
+
+This module is the counter-example to fixing money bugs by pattern-matching. It already
+used `sumMoney` and `roundTo`, so it looked compliant — but it wrapped those helpers around
+inputs that were already corrupt, and produced entirely wrong statements. Rendered against
+a genuinely balanced double-entry ledger (owner funds 500 cash, sells 1,000 cash, pays 400
+COGS and 250 opex):
+
+| Line         | Displayed   | Correct |
+| ------------ | ----------- | ------- |
+| Revenue      | **-$1,150** | $1,000  |
+| COGS         | **$0**      | $400    |
+| Gross Profit | **-$1,400** | $600    |
+| Net Income   | **-$1,650** | $350    |
+
+Three stacked root causes:
+
+- **Sign inversion against the engine contract.** Revenue was computed `debit - credit`, so
+  credit-normal accounts came out negative. `ThreeStatementEngine.test.ts` pins the
+  convention as revenue positive / costs negative; the page passed the exact inverse on
+  every line. The interface types (`amount: number`) do not encode sign, so this was only
+  discoverable by reading the engine's own fixtures.
+- **`Math.abs` per entry** on COGS, opex, interest and tax — the same contra-entry defect as
+  module 1: a reversal increased the expense instead of cancelling it.
+- **The view back-solved its own line items.** Rather than using the totals the memo had
+  already computed, the JSX reconstructed Revenue and COGS out of `grossProfit` and
+  `netIncome` (`grossProfit + (grossProfit - netIncome > 0 ? … : 0)`). This is why COGS
+  rendered `$0` despite being computed correctly upstream. `handleExport` repeated the same
+  algebra, so exported workbooks carried the wrong figures too.
+
+Two further correctness problems were found and fixed: equity omitted current-period
+earnings, so `A = L + E` could only balance at zero net income; and cash flow was classified
+by account-code _prefix_ (4/6 operating, 1 investing, 2/3 financing), which conflates accrual
+results with cash movement. Net change in cash is now measured directly on the cash account,
+and the operating/investing/financing split is shown as an em dash with an on-screen note
+that the posted ledger carries no activity mapping — the module-1 disclosure pattern.
+
+Derivation moved to `src/pages/reports/threeStatementData.ts`, pinned by 24 tests in
+`threeStatementData.test.ts` (the table above as an explicit fixture, contra netting,
+sign-contract conformance, `A = L + E` at non-zero net income, decimal exactness, and source
+guards). Mutation-tested: reintroducing the sign inversion fails 8 tests; reintroducing
+`Math.abs` or the back-solve fails their guards.
+
+**Note for the remaining worklist — a second blind spot.** Both modules fixed so far had a
+roughly correct computation and a _view that disagreed with it_ (module 1 emitted keys the
+renderer could never match; module 2 back-solved). Neither static analysis nor the mock-data
+audit can see this class of defect: both needed an actual render probe. The page-level test
+for this module previously asserted only that headings existed and mocked the engine away,
+so it passed throughout. It now renders a known ledger and asserts the figures that reach
+the DOM. **Remaining modules must be verified by rendering, not by reading the memo.**
 
 **Exit criterion:** `docs/architecture/PERSISTENCE_MAP.md` exists and is CI-drift-checked; no monetary value
 is persisted as an IEEE-754 `number`; `glStore` is server-authoritative; every local-only
@@ -2829,6 +2897,8 @@ comm -23 <(not_started_ids) <(scheduled_ids; declared_deferred_ids)
 
 This makes "we forgot to schedule the differentiator" a build failure rather than a
 discovery made two phases later.
+
+---
 
 # SECTION 19 — GAP ANALYSIS VS COMPETITORS
 
@@ -3301,6 +3371,8 @@ that are reproducible by command rather than asserted by hand. The most importan
 conceptual: Phase 0 previously assumed a governed database that does not yet hold the data.
 It no longer does.
 
+---
+
 # SECTION 23 — WINDOWS DESKTOP APPLICATION SPECIFICATION
 
 **Status:** normative, added session 005 at explicit direction. **Supersedes the Codex's
@@ -3508,6 +3580,8 @@ ships as a numbered `ci-patches/*.patch` per ADR-011.
 □ Every desktop claim executed on real Windows, per §23.8 — no capability marked BUILT from this sandbox
 ```
 
+---
+
 # SECTION 24 — THE ZERO-ESCAPE CONTRACT (ALL-IN-ONE, MEASURED)
 
 **Status:** normative, added session 005 at explicit direction: _"an all-in-one FP&A tool, a
@@ -3634,6 +3708,8 @@ node scripts/escape-ledger-check.mjs   # wired into docs:verify
 PARTIAL, and rows 9, 27, and 29 are unowned before this section. OmniPlan is **not** an
 all-in-one product today. This ledger is the instrument that makes the gap visible every
 release instead of at the demo where a user opens Excel.
+
+---
 
 # APPENDIX A — DOMAIN MODULE SPECIFICATIONS (ADDENDUM II, PARTS XXXI–LX)
 

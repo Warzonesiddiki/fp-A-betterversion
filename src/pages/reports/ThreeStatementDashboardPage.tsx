@@ -8,12 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { KPIValue } from '@/components/ui/KPIValue';
-import {
-  ThreeStatementEngine,
-  type IncomeStatementData,
-  type BalanceSheetData,
-  type CashFlowData,
-} from '@/engines/ThreeStatementEngine';
+import { ThreeStatementEngine } from '@/engines/ThreeStatementEngine';
 import { ExportEngine } from '@/engines/ExportEngine';
 import {
   Download,
@@ -25,10 +20,11 @@ import {
   XCircle,
 } from 'lucide-react';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { roundTo, sumMoney } from '@/utils/money';
+import { deriveThreeStatement } from './threeStatementData';
 
-function fmt(n: number): string {
-  return currencyFormatter(reportingCurrency(), { decimals: 0 })(n);
+function fmt(n: number | { toNumber(): number }): string {
+  const value = typeof n === 'number' ? n : n.toNumber();
+  return currencyFormatter(reportingCurrency(), { decimals: 0 })(value);
 }
 
 export default function ThreeStatementDashboardPage() {
@@ -43,201 +39,50 @@ export default function ThreeStatementDashboardPage() {
     document.title = 'FinPlan Pro — Three-Statement Model';
   }, []);
 
-  const { incomeStatement, balanceSheet, cashFlow, result } = useMemo(() => {
+  const { incomeStatement, balanceSheet, cashFlow, totals, result } = useMemo(() => {
     if (entries.length === 0)
-      return { incomeStatement: null, balanceSheet: null, cashFlow: null, result: null };
+      return {
+        incomeStatement: null,
+        balanceSheet: null,
+        cashFlow: null,
+        totals: null,
+        result: null,
+      };
 
-    const filtered = entries.filter((e) => (e.period || e.date.slice(0, 7)) <= period);
+    const derived = deriveThreeStatement(entries, period);
 
-    // Build Income Statement
-    const revenue = filtered.filter((e) => (e.accountCode || '').startsWith('4'));
-    const cogs = filtered.filter((e) => (e.accountCode || '').startsWith('5'));
-    const opex = filtered.filter((e) => (e.accountCode || '').startsWith('6'));
-    const interest = filtered.filter((e) => (e.accountCode || '').startsWith('7'));
-    const tax = filtered.filter((e) => (e.accountCode || '').startsWith('8'));
-
-    const totalRevenue = roundTo(sumMoney(revenue.map((e) => e.debit - e.credit)), 2);
-    const totalCOGS = roundTo(sumMoney(cogs.map((e) => Math.abs(e.debit - e.credit))), 2);
-    const grossProfit = totalRevenue - totalCOGS;
-    const totalOpex = roundTo(sumMoney(opex.map((e) => Math.abs(e.debit - e.credit))), 2);
-    const operatingIncome = grossProfit - totalOpex;
-    const totalInterest = roundTo(sumMoney(interest.map((e) => Math.abs(e.debit - e.credit))), 2);
-    const totalTax = roundTo(sumMoney(tax.map((e) => Math.abs(e.debit - e.credit))), 2);
-    const netIncome = operatingIncome - totalInterest - totalTax;
-
-    const income: IncomeStatementData = {
-      revenue: revenue.map((e) => ({
-        accountCode: e.accountCode || '',
-        accountName: e.description || '',
-        amount: e.debit - e.credit,
-        category: 'revenue' as const,
-      })),
-      cogs: cogs.map((e) => ({
-        accountCode: e.accountCode || '',
-        accountName: e.description || '',
-        amount: Math.abs(e.debit - e.credit),
-        category: 'cogs' as const,
-      })),
-      grossProfit,
-      opex: opex.map((e) => ({
-        accountCode: e.accountCode || '',
-        accountName: e.description || '',
-        amount: Math.abs(e.debit - e.credit),
-        category: 'opex' as const,
-      })),
-      depreciation: [],
-      amortization: [],
-      operatingIncome,
-      interestExpense: interest.map((e) => ({
-        accountCode: e.accountCode || '',
-        accountName: e.description || '',
-        amount: Math.abs(e.debit - e.credit),
-        category: 'interest' as const,
-      })),
-      interestIncome: [],
-      ebit: operatingIncome,
-      taxExpense: tax.map((e) => ({
-        accountCode: e.accountCode || '',
-        accountName: e.description || '',
-        amount: Math.abs(e.debit - e.credit),
-        category: 'tax' as const,
-      })),
-      otherIncome: [],
-      otherExpense: [],
-      netIncome,
-      period,
-    };
-
-    // Build Balance Sheet
-    const assets = filtered.filter((e) => (e.accountCode || '').startsWith('1'));
-    const liabilities = filtered.filter((e) => (e.accountCode || '').startsWith('2'));
-    const equity = filtered.filter((e) => (e.accountCode || '').startsWith('3'));
-
-    const totalAssets = roundTo(sumMoney(assets.map((e) => e.debit - e.credit)), 2);
-    const totalLiabilities = roundTo(sumMoney(liabilities.map((e) => e.credit - e.debit)), 2);
-    const totalEquity = roundTo(sumMoney(equity.map((e) => e.credit - e.debit)), 2);
-
-    const bs: BalanceSheetData = {
-      currentAssets: [],
-      cash: roundTo(
-        sumMoney(
-          filtered
-            .filter((e) => e.accountCode === '1000')
-            .map((e) => e.debit - e.credit)
-        ),
-        2
-      ),
-      accountsReceivable: roundTo(
-        sumMoney(
-          filtered
-            .filter((e) => e.accountCode === '1100')
-            .map((e) => e.debit - e.credit)
-        ),
-        2
-      ),
-      inventory: roundTo(
-        sumMoney(
-          filtered
-            .filter((e) => e.accountCode === '1200')
-            .map((e) => e.debit - e.credit)
-        ),
-        2
-      ),
-      prepaidExpenses: 0,
-      otherCurrentAssets: 0,
-      totalCurrentAssets: 0,
-      nonCurrentAssets: [],
-      propertyPlantEquipment: filtered
-        .filter((e) => e.accountCode === '1600')
-        .reduce((s, e) => s + (e.debit - e.credit), 0),
-      accumulatedDepreciation: 0,
-      netFixedAssets: 0,
-      intangibleAssets: 0,
-      goodwill: 0,
-      otherNonCurrentAssets: 0,
-      totalNonCurrentAssets: 0,
-      totalAssets,
-      currentLiabilities: [],
-      accountsPayable: filtered
-        .filter((e) => e.accountCode === '2100')
-        .reduce((s, e) => s + (e.credit - e.debit), 0),
-      accruedExpenses: 0,
-      shortTermDebt: 0,
-      currentPortionLongTermDebt: 0,
-      otherCurrentLiabilities: 0,
-      totalCurrentLiabilities: 0,
-      nonCurrentLiabilities: [],
-      longTermDebt: 0,
-      deferredTaxLiability: 0,
-      otherNonCurrentLiabilities: 0,
-      totalNonCurrentLiabilities: 0,
-      totalLiabilities,
-      equity: [],
-      commonStock: 0,
-      additionalPaidInCapital: 0,
-      retainedEarnings: totalEquity,
-      accumulatedOtherComprehensiveIncome: 0,
-      treasuryStock: 0,
-      totalEquity,
-      totalLiabilitiesAndEquity: totalLiabilities + totalEquity,
-      period,
-    };
-
-    // Build Cash Flow
-    const operating = filtered.filter(
-      (e) => (e.accountCode || '').startsWith('4') || (e.accountCode || '').startsWith('6')
-    );
-    const investing = filtered.filter((e) => (e.accountCode || '').startsWith('1'));
-    const financing = filtered.filter(
-      (e) => (e.accountCode || '').startsWith('2') || (e.accountCode || '').startsWith('3')
-    );
-
-    const netOps = roundTo(sumMoney(operating.map((e) => e.debit - e.credit)), 2);
-    const netInv = roundTo(sumMoney(investing.map((e) => e.debit - e.credit)), 2);
-    const netFin = roundTo(sumMoney(financing.map((e) => e.debit - e.credit)), 2);
-    const netChange = netOps + netInv + netFin;
-
-    const cf: CashFlowData = {
-      operatingActivities: [],
-      netCashFromOperations: netOps,
-      investingActivities: [],
-      netCashFromInvesting: netInv,
-      financingActivities: [],
-      netCashFromFinancing: netFin,
-      netChangeInCash: netChange,
-      beginningCash: 0,
-      endingCash: netChange,
-      period,
-    };
-
-    // Link statements
+    // Linking may fail with incomplete data — the page still renders the statements.
     let linkResult = null;
     try {
-      linkResult = ThreeStatementEngine.link(income, bs, cf, [], 0);
+      linkResult = ThreeStatementEngine.link(
+        derived.incomeStatement,
+        derived.balanceSheet,
+        derived.cashFlow,
+        [],
+        0
+      );
     } catch {
-      // Linking may fail with incomplete data — that's OK
+      linkResult = null;
     }
 
-    return { incomeStatement: income, balanceSheet: bs, cashFlow: cf, result: linkResult };
+    return { ...derived, result: linkResult };
   }, [entries, period]);
 
   const handleExport = () => {
-    if (!incomeStatement || !balanceSheet || !cashFlow) return;
+    if (!incomeStatement || !balanceSheet || !cashFlow || !totals) return;
     const data = {
       headers: ['Statement', 'Line Item', 'Amount'],
       rows: [
-        [
-          'P&L',
-          'Revenue',
-          incomeStatement.netIncome + (incomeStatement.grossProfit - incomeStatement.netIncome),
-        ],
-        ['P&L', 'Net Income', incomeStatement.netIncome],
+        ['P&L', 'Revenue', totals.revenue.toNumber()],
+        ['P&L', 'COGS', totals.cogs.toNumber()],
+        ['P&L', 'Gross Profit', totals.grossProfit.toNumber()],
+        ['P&L', 'Operating Expenses', totals.opex.toNumber()],
+        ['P&L', 'Operating Income', totals.operatingIncome.toNumber()],
+        ['P&L', 'Net Income', totals.netIncome.toNumber()],
         ['Balance Sheet', 'Total Assets', balanceSheet.totalAssets],
         ['Balance Sheet', 'Total Liabilities', balanceSheet.totalLiabilities],
         ['Balance Sheet', 'Total Equity', balanceSheet.totalEquity],
-        ['Cash Flow', 'Operating', cashFlow.netCashFromOperations],
-        ['Cash Flow', 'Investing', cashFlow.netCashFromInvesting],
-        ['Cash Flow', 'Financing', cashFlow.netCashFromFinancing],
+        ['Cash Flow', 'Net Change in Cash', cashFlow.netChangeInCash],
       ],
     };
     void ExportEngine.exportToPDF(data, {
@@ -259,7 +104,7 @@ export default function ThreeStatementDashboardPage() {
     );
   }
 
-  if (!incomeStatement || !balanceSheet || !cashFlow) {
+  if (!incomeStatement || !balanceSheet || !cashFlow || !totals) {
     return <Skeleton className="h-96 m-6" />;
   }
 
@@ -287,7 +132,7 @@ export default function ThreeStatementDashboardPage() {
           <CardContent className="p-4">
             <KPIValue
               label="Net Income"
-              value={fmt(incomeStatement.netIncome)}
+              value={fmt(totals.netIncome)}
               icon={<TrendingUp className="h-4 w-4" />}
             />
           </CardContent>
@@ -337,57 +182,36 @@ export default function ThreeStatementDashboardPage() {
           <CardContent className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span>Revenue</span>
-              <span>
-                {fmt(
-                  incomeStatement.grossProfit +
-                    (incomeStatement.grossProfit - incomeStatement.netIncome > 0
-                      ? incomeStatement.grossProfit - incomeStatement.netIncome
-                      : 0)
-                )}
-              </span>
+              <span>{fmt(totals.revenue)}</span>
             </div>
             <div className="flex justify-between">
               <span>COGS</span>
-              <span className="text-red-600">
-                {fmt(
-                  incomeStatement.grossProfit > 0
-                    ? incomeStatement.grossProfit - incomeStatement.netIncome > 0
-                      ? incomeStatement.grossProfit
-                      : 0
-                    : 0
-                )}
-              </span>
+              <span className="text-red-600">{fmt(totals.cogs)}</span>
             </div>
             <div className="flex justify-between font-medium border-t pt-1">
               <span>Gross Profit</span>
-              <span>{fmt(incomeStatement.grossProfit)}</span>
+              <span>{fmt(totals.grossProfit)}</span>
             </div>
             <div className="flex justify-between">
               <span>Operating Expenses</span>
-              <span className="text-red-600">
-                {fmt(incomeStatement.grossProfit - incomeStatement.operatingIncome)}
-              </span>
+              <span className="text-red-600">{fmt(totals.opex)}</span>
             </div>
             <div className="flex justify-between font-medium border-t pt-1">
               <span>Operating Income</span>
-              <span>{fmt(incomeStatement.operatingIncome)}</span>
+              <span>{fmt(totals.operatingIncome)}</span>
             </div>
             <div className="flex justify-between">
               <span>Interest</span>
-              <span className="text-red-600">
-                {fmt(roundTo(sumMoney(incomeStatement.interestExpense.map((e) => e.amount)), 2))}
-              </span>
+              <span className="text-red-600">{fmt(totals.interest)}</span>
             </div>
             <div className="flex justify-between">
               <span>Tax</span>
-              <span className="text-red-600">
-                {fmt(roundTo(sumMoney(incomeStatement.taxExpense.map((e) => e.amount)), 2))}
-              </span>
+              <span className="text-red-600">{fmt(totals.tax)}</span>
             </div>
             <div className="flex justify-between font-bold border-t pt-2 text-base">
               <span>Net Income</span>
-              <span className={incomeStatement.netIncome >= 0 ? 'text-green-600' : 'text-red-600'}>
-                {fmt(incomeStatement.netIncome)}
+              <span className={totals.netIncome.gte(0) ? 'text-green-600' : 'text-red-600'}>
+                {fmt(totals.netIncome)}
               </span>
             </div>
           </CardContent>
@@ -430,22 +254,27 @@ export default function ThreeStatementDashboardPage() {
           <CardContent className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span>Operating</span>
-              <span>{fmt(cashFlow.netCashFromOperations)}</span>
+              <span className="text-[var(--text-muted)]">—</span>
             </div>
             <div className="flex justify-between">
               <span>Investing</span>
-              <span>{fmt(cashFlow.netCashFromInvesting)}</span>
+              <span className="text-[var(--text-muted)]">—</span>
             </div>
             <div className="flex justify-between">
               <span>Financing</span>
-              <span>{fmt(cashFlow.netCashFromFinancing)}</span>
+              <span className="text-[var(--text-muted)]">—</span>
             </div>
             <div className="flex justify-between font-bold border-t pt-2 text-base">
-              <span>Net Change</span>
+              <span>Net Change in Cash</span>
               <span className={cashFlow.netChangeInCash >= 0 ? 'text-green-600' : 'text-red-600'}>
                 {fmt(cashFlow.netChangeInCash)}
               </span>
             </div>
+            <p className="text-xs text-[var(--text-muted)] pt-1">
+              Net change in cash is measured directly on the cash account. Splitting it into
+              operating, investing and financing activities requires per-account activity
+              mapping that the posted ledger does not carry, so those lines are not estimated.
+            </p>
           </CardContent>
         </Card>
       </div>

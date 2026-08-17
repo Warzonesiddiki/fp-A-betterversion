@@ -322,3 +322,70 @@ nothing automated is currently looking for fabrication.
 
 **Housekeeping.** Fixed an ID collision introduced last session: two W0.1 rows were both
 numbered 0.1.2. Type-aware detection is now **W0.1.6**; "Eliminate float paths" keeps 0.1.2.
+
+---
+
+## Session 008 — 2026-08-17 — W0.1.1 module 2: `ThreeStatementDashboardPage.tsx`
+
+**Result.** 34 unsafe operations → 0. Ratchet 681 → **647 (78.84% safe)**; baseline re-locked.
+
+**Why this module matters more than its op count.** It was already using `sumMoney` and
+`roundTo`. By every automated signal available before this session it looked like a
+compliant module with some stray arithmetic. It was in fact producing entirely wrong
+financial statements. Rendered against a genuinely balanced double-entry ledger (owner
+funds 500 cash; sells 1,000 cash; pays 400 COGS; pays 250 opex):
+
+| Line         | Displayed   | Correct |
+| ------------ | ----------- | ------- |
+| Revenue      | **-$1,150** | $1,000  |
+| COGS         | **$0**      | $400    |
+| Gross Profit | **-$1,400** | $600    |
+| Net Income   | **-$1,650** | $350    |
+
+Every displayed line was wrong, including the sign of the bottom line. This is the concrete
+demonstration of the rule recorded last session: **wrapping arithmetic in money helpers
+without reading what the arithmetic means launders a K18 defect past the ratchet.**
+
+**Three stacked root causes.**
+
+1. _Sign inversion against the engine contract._ Revenue was computed `debit - credit`, so
+   credit-normal accounts arrived negative. `ThreeStatementEngine.test.ts` pins revenue
+   positive / costs negative. The page passed the exact inverse on every line. Nothing in
+   the TypeScript types encodes this — `amount: number` is sign-agnostic — so the contract
+   was only discoverable by reading the engine's own fixtures. Recorded as a standing rule:
+   before feeding an engine, read its test fixtures for the sign convention.
+2. _`Math.abs` per entry_ on COGS/opex/interest/tax. Same contra-entry defect as module 1: a
+   reversing entry increased the expense instead of cancelling it.
+3. _The view back-solved its own line items._ The memo computed correct-ish totals; the JSX
+   ignored them and reconstructed Revenue and COGS from `grossProfit`/`netIncome` via
+   `grossProfit + (grossProfit - netIncome > 0 ? … : 0)`. That is why COGS rendered `$0`
+   while the memo held 400. `handleExport` repeated the same algebra, so exports were wrong
+   too.
+
+Two further correctness defects fixed in passing: equity omitted current-period earnings, so
+`A = L + E` could only balance at zero net income; and cash flow was classified by account
+code _prefix_ (4/6 operating, 1 investing, 2/3 financing), conflating accrual results with
+cash movement. Net change in cash is now measured directly on the cash account; the
+activity split is shown as an em dash with an on-screen explanation, following the module-1
+disclosure pattern. Fabricating a plausible split would have been the easy option and the
+dishonest one.
+
+**The fix.** Derivation extracted to `src/pages/reports/threeStatementData.ts` (decimal.js,
+contract-correct signs, cumulative `YYYY-MM` cutoff). It publishes `totals` as positive
+magnitudes specifically so the view can never back-solve again. Pinned by 24 tests, and
+mutation-tested rather than assumed: reintroducing the sign inversion fails 8 tests;
+reintroducing `Math.abs` or the back-solve fails their respective guards. The source guards
+strip comments first, after an early version of them tripped on prose describing the defect.
+
+**Second blind spot found — and this one now has a countermeasure.** The page already had a
+test file. It passed before and after the defect, because it asserted only that headings
+rendered and it mocked the engine away entirely. Both modules fixed so far share the shape:
+a roughly correct computation plus a view that silently disagrees with it (module 1 emitted
+lookup keys the renderer could never match; module 2 back-solved). Neither the AST detector
+nor `mock-data:audit` can see this class — both modules required an actual render probe to
+find. `ThreeStatementDashboardPage.test.tsx` now uses the real engine, renders a known
+ledger, and asserts the figures that reach the DOM, including negative assertions against
+the three wrong values. **Remaining W0.1.1 modules are to be verified by rendering, not by
+reading the memo.** Whether this becomes a general gate is still open — noted as a candidate
+rather than adopted, since a naive "every page must have a DOM-value test" rule would be
+expensive and easy to satisfy vacuously.
