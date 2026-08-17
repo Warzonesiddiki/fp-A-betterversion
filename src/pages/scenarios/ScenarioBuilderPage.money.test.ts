@@ -3,13 +3,14 @@
  * Falsification: 5/8 fail vs raw float.
  */
 import { describe, expect, it } from 'vitest';
-import { simulateScenarioComparison } from './ScenarioBuilderPage';
+import { simulateScenarioComparison } from './scenarioBuilderModel';
 
 describe('ScenarioBuilderPage money primitive — simulateScenarioComparison (GAP-1)', () => {
   it('control: zero changes yields zero variance, 100% probability', () => {
     const r = simulateScenarioComparison({
       baseRevenue: 1000000,
       cogs: 500000,
+      opex: 14400000,
       growthRatePct: 0,
       pricingChangePct: 0,
       cogsChangePct: 0,
@@ -28,6 +29,7 @@ describe('ScenarioBuilderPage money primitive — simulateScenarioComparison (GA
     const r = simulateScenarioComparison({
       baseRevenue: 48000000,
       cogs: 28800000,
+      opex: 14400000,
       growthRatePct: 10,
       pricingChangePct: 5,
       cogsChangePct: 0,
@@ -45,6 +47,7 @@ describe('ScenarioBuilderPage money primitive — simulateScenarioComparison (GA
     const r = simulateScenarioComparison({
       baseRevenue: 48000000,
       cogs: 28800000,
+      opex: 14400000,
       growthRatePct: 10,
       pricingChangePct: 5,
       cogsChangePct: 0,
@@ -60,6 +63,7 @@ describe('ScenarioBuilderPage money primitive — simulateScenarioComparison (GA
     const r = simulateScenarioComparison({
       baseRevenue: 48000000,
       cogs: 28800000,
+      opex: 14400000,
       growthRatePct: 0,
       pricingChangePct: 0,
       cogsChangePct: -2,
@@ -76,6 +80,7 @@ describe('ScenarioBuilderPage money primitive — simulateScenarioComparison (GA
     const r = simulateScenarioComparison({
       baseRevenue: 48000000,
       cogs: 28800000,
+      opex: 14400000,
       growthRatePct: 0,
       pricingChangePct: 0,
       cogsChangePct: 0,
@@ -91,6 +96,7 @@ describe('ScenarioBuilderPage money primitive — simulateScenarioComparison (GA
     const r = simulateScenarioComparison({
       baseRevenue: 1000000,
       cogs: 500000,
+      opex: 14400000,
       growthRatePct: 10,
       pricingChangePct: 5,
       cogsChangePct: -2,
@@ -110,6 +116,7 @@ describe('ScenarioBuilderPage money primitive — simulateScenarioComparison (GA
     const r = simulateScenarioComparison({
       baseRevenue: 0.3,
       cogs: 0.1,
+      opex: 0,
       growthRatePct: 10,
       pricingChangePct: 20,
       cogsChangePct: 0,
@@ -126,6 +133,7 @@ describe('ScenarioBuilderPage money primitive — simulateScenarioComparison (GA
     const r = simulateScenarioComparison({
       baseRevenue: 0,
       cogs: 0,
+      opex: 0,
       growthRatePct: 10,
       pricingChangePct: 5,
       cogsChangePct: 0,
@@ -141,6 +149,7 @@ describe('ScenarioBuilderPage money primitive — simulateScenarioComparison (GA
     const base = {
       baseRevenue: 1000000,
       cogs: 500000,
+      opex: 14400000,
       growthRatePct: 10,
       pricingChangePct: 0,
       cogsChangePct: 0,
