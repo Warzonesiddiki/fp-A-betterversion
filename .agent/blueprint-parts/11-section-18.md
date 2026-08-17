@@ -399,6 +399,29 @@ feature may be deferred, but it may not be unscheduled.**
 | F-INTEGRATE-009 | iPaaS connectors                | **v2+, not scheduled** | Commoditised; a public API (§15.7) serves the same need sooner.             |
 | F-INTEGRATE-012 | Market data                     | **v2+, not scheduled** | Licensing cost with no correctness benefit at current scale.                |
 
+### Windows desktop features (Section 23) and escape-closing features (Section 24)
+
+Added session 005. Desktop items carry the §23.8 caveat: **none may be marked `BUILT` from
+this sandbox** (no `cargo`/`rustc`, no Windows); each requires execution on real hardware.
+
+| Feature        | Title                                    | Phase       | Rationale                                                                              |
+| -------------- | ---------------------------------------- | ----------- | -------------------------------------------------------------------------------------- |
+| F-DESK-001     | Native local SQLite database             | **Phase 0** | The desktop half of W0.8 persistence authority — no financial truth in `localStorage`. |
+| F-DESK-006     | OS credential storage                    | **Phase 0** | Key custody for the encrypted local DB; implemented, needs Windows verification.       |
+| F-DESK-012     | Crash reporting with money/PII redaction | **Phase 0** | §12.3 egress rule extends to crash dumps; currently unverified (R-26).                 |
+| F-DESK-002     | True offline modelling                   | **Phase 1** | Makes the §0.5 "local-first + governed" differentiator literally true.                 |
+| F-DESK-003     | File associations + drag-drop            | **Phase 1** | File-system gravity; the desktop's core ergonomic advantage.                           |
+| F-DESK-005     | Native print + page setup                | **Phase 1** | Delivers the §14.8 pixel-fidelity promise a browser cannot honour.                     |
+| F-DESK-010     | Signed auto-update, policy-disableable   | **Phase 1** | Resolves the §23.5 ambiguity before any external distribution.                         |
+| F-DESK-007     | Global shortcut + tray                   | **Phase 2** | Plugins present; wiring only.                                                          |
+| F-DESK-008     | Native notifications                     | **Phase 2** | Pairs with A.11 digests/escalations.                                                   |
+| F-DESK-009     | Multi-window / second monitor            | **Phase 2** | Most-requested FP&A ergonomic; `window-state` plugin present.                          |
+| F-DESK-011     | Local Excel round-trip                   | **Phase 2** | Desktop half of the K20 filter; pairs with F-INTEGRATE-006.                            |
+| F-DESK-004     | Watched-folder ingestion                 | **Phase 2** | Automates the controller-workbook river; gated behind maker-checker.                   |
+| F-ANALYSIS-001 | Native pivot / ad-hoc analysis           | **Phase 2** | Escape ledger row 15 — the top reason analysts return to Excel.                        |
+| F-REPORT-013   | Narrative / MD&A with live bindings      | **Phase 2** | Escape ledger row 27 — removes the Word escape from board-pack production.             |
+| F-REPORT-014   | Model documentation generator            | **Phase 3** | Escape ledger row 30 — replaces the unmaintained handover document.                    |
+
 ### CI enforcement
 
 ```bash

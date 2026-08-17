@@ -57,8 +57,8 @@
   "blueprint": {
     "artifact": ".agent/BLUEPRINT.md",
     "authority": "OMNI-SOVEREIGN CODEX Article XVIII + Addendum I (XXIV-XXX) + Addendum II (XXXI-LXI)",
-    "sections": "0-22 per XVIII-C, verbatim numbering, plus Appendix A (Addendum II domain modules)",
-    "lines": 3532,
+    "sections": 25,
+    "lines": 4209,
     "validation": {
       "xviii_n": "12/12 checked - see BLUEPRINT.md 22.7",
       "addendum_ii": "31/31 checked - see BLUEPRINT.md Appendix A.22",
@@ -79,10 +79,10 @@
     "reaudit_findings": 8,
     "reaudit_record": ".agent/BLUEPRINT.md \u00a722.8",
     "feature_counts": {
-      "total": 98,
+      "total": 113,
       "built": 33,
-      "partial": 35,
-      "not_started": 30,
+      "partial": 42,
+      "not_started": 38,
       "p0_not_started": 13
     },
     "new_adrs": [
@@ -94,7 +94,29 @@
       "R-22 money gate false-green (20)",
       "R-23 schema fork (12)"
     ],
-    "new_workstream": "0.8 persistence authority"
+    "new_workstream": "0.8 persistence authority",
+    "scope_expansion_session": "session_005",
+    "new_sections": [
+      "23 Windows Desktop Application",
+      "24 Zero-Escape Contract (all-in-one, measured)"
+    ],
+    "new_feature_families": [
+      "F-DESK-001..012 (Windows desktop)",
+      "F-ANALYSIS-001",
+      "F-REPORT-013",
+      "F-REPORT-014"
+    ],
+    "new_risks_s005": [
+      "R-24 desktop unverifiable here (20)",
+      "R-25 uninstall destroys ledger (15)",
+      "R-26 crash-dump money egress (15)",
+      "R-27 unsigned installer/SmartScreen (16)",
+      "R-28 WebView2 blank window (12)",
+      "R-29 all-in-one claimed but users escape (20)"
+    ],
+    "windows_tier1": ["Windows 11 x64", "Windows 10 22H2 x64"],
+    "ga_gate_zero_hard_escapes_core20": true,
+    "desktop_verification_blocked_by": "K2: no cargo/rustc/Windows in sandbox (see BLUEPRINT.md 23.8)"
   },
   "indices": {
     "measured_2026_08_17": {

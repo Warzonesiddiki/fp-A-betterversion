@@ -115,4 +115,17 @@ notifications, report viewing.
 **Explicit NON-GOALS:** grid editing, formula authoring, model structure changes, bulk
 imports, admin configuration. These are declared unsupported rather than shipped badly.
 
+## 9.11 Desktop posture (Section 23) — the primary modelling surface
+
+Mobile is review-and-approve; **the desktop is where the work happens.** Windows is a
+Tier-1 target with a shipping Tauri 2 application (§23.2), and it is the reference
+implementation of the local-first plane (§4.3) — not a wrapper around the website.
+
+The UI consequences are binding: the five-pillar shell (§9.3) and ⌘K palette (§9.4) must
+work identically on desktop and web; the grid (§9.5) must meet §11.2 budgets against local
+SQLite with no network hop; and anything the desktop can do better — native print (§23.3
+F-DESK-005), multi-window detach (F-DESK-009), drag-drop import (F-DESK-003) — must be
+_used_, not levelled down to browser capability. Where a capability cannot exist on the
+web, the web surface states so plainly rather than degrading silently.
+
 ---

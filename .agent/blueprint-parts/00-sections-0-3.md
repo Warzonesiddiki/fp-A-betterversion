@@ -69,8 +69,10 @@ and not reordered.
 | 18  | Phased Roadmap                             | Phases 0–3, workstreams, exit gates.                     |
 | 19  | Gap Analysis vs Competitors                | Where the market leaves a hole.                          |
 | 20  | Risk Register                              | What kills this, and the mitigation owner.               |
-| 21  | ADR Log                                    | ADR-001 … ADR-011, binding.                              |
-| 22  | Definition of Done per Phase               | The gates, and the honesty clause.                       |
+| 21  | ADR Log                                    | ADR-001 … ADR-013, binding.                              |
+| 22  | Definition of Done per Phase               | The gates, the honesty clause, and the re-audit record.  |
+| 23  | Windows Desktop Application                | Tier-1 Windows: packaging, signing, offline, DoD.        |
+| 24  | The Zero-Escape Contract                   | All-in-one, measured: escape ledger + Core-20 gate.      |
 | A   | Appendix A — Domain Module Specifications  | Addendum II Parts XXXI–LX detail + coverage map.         |
 
 ---
@@ -354,20 +356,28 @@ Effort: S ≤ 2d · M ≤ 1w · L ≤ 3w · XL > 3w (XL must be decomposed befor
 
 ## 3.3 F-REPORT — Reporting & Analytics
 
-| ID           | Feature                                                  | Phase | Pri | Effort | TODAY                                                   |
-| ------------ | -------------------------------------------------------- | ----- | --- | ------ | ------------------------------------------------------- |
-| F-REPORT-001 | Executive dashboard (KPI tiles, sparklines, RAG)         | 1     | P0  | M      | BUILT (`DashboardPage`)                                 |
-| F-REPORT-002 | Board package generator (branded PDF/PPT from live data) | 2     | P0  | L      | PARTIAL (PDF engine exists; no freeze/watermark/e-sign) |
-| F-REPORT-003 | Flash report, scheduled                                  | 2     | P1  | M      | PARTIAL                                                 |
-| F-REPORT-004 | Management reporting (by dept, cost centre, project)     | 1     | P0  | M      | BUILT                                                   |
-| F-REPORT-005 | Drill-through to source transaction                      | 1     | P0  | L      | PARTIAL (`DrillThroughEngine`) — **not lineage-backed** |
-| F-REPORT-006 | Custom report builder (drag-drop, no-code)               | 2     | P0  | L      | PARTIAL                                                 |
-| F-REPORT-007 | Scheduled distribution (email, Slack, Teams)             | 2     | P1  | M      | NOT STARTED                                             |
-| F-REPORT-008 | Investor reporting templates                             | 2     | P1  | S      | PARTIAL                                                 |
-| F-REPORT-009 | Regulatory helpers (SOX narratives, audit packages)      | 2     | P1  | M      | PARTIAL                                                 |
-| F-REPORT-010 | Benchmark database                                       | 3     | P2  | L      | NOT STARTED                                             |
-| F-REPORT-011 | Cohort analysis                                          | 1     | P1  | M      | BUILT                                                   |
-| F-REPORT-012 | Unit economics dashboard                                 | 1     | P1  | M      | BUILT                                                   |
+| ID             | Feature                                                   | Phase | Pri | Effort | TODAY                                                   |
+| -------------- | --------------------------------------------------------- | ----- | --- | ------ | ------------------------------------------------------- |
+| F-REPORT-001   | Executive dashboard (KPI tiles, sparklines, RAG)          | 1     | P0  | M      | BUILT (`DashboardPage`)                                 |
+| F-REPORT-002   | Board package generator (branded PDF/PPT from live data)  | 2     | P0  | L      | PARTIAL (PDF engine exists; no freeze/watermark/e-sign) |
+| F-REPORT-003   | Flash report, scheduled                                   | 2     | P1  | M      | PARTIAL                                                 |
+| F-REPORT-004   | Management reporting (by dept, cost centre, project)      | 1     | P0  | M      | BUILT                                                   |
+| F-REPORT-005   | Drill-through to source transaction                       | 1     | P0  | L      | PARTIAL (`DrillThroughEngine`) — **not lineage-backed** |
+| F-REPORT-006   | Custom report builder (drag-drop, no-code)                | 2     | P0  | L      | PARTIAL                                                 |
+| F-REPORT-007   | Scheduled distribution (email, Slack, Teams)              | 2     | P1  | M      | NOT STARTED                                             |
+| F-REPORT-008   | Investor reporting templates                              | 2     | P1  | S      | PARTIAL                                                 |
+| F-REPORT-009   | Regulatory helpers (SOX narratives, audit packages)       | 2     | P1  | M      | PARTIAL                                                 |
+| F-REPORT-010   | Benchmark database                                        | 3     | P2  | L      | NOT STARTED                                             |
+| F-REPORT-011   | Cohort analysis                                           | 1     | P1  | M      | BUILT                                                   |
+| F-REPORT-012   | Unit economics dashboard                                  | 1     | P1  | M      | BUILT                                                   |
+| F-REPORT-013   | Narrative / MD&A authoring with live metric bindings      | 2     | P1  | L      | NOT STARTED                                             |
+| F-REPORT-014   | Model documentation generator (drivers, lineage, history) | 3     | P2  | M      | NOT STARTED                                             |
+| F-ANALYSIS-001 | Native pivot / ad-hoc analysis over the metric store      | 2     | P1  | L      | NOT STARTED                                             |
+
+**Escape-driven additions (§24.5).** `F-ANALYSIS-001`, `F-REPORT-013`, and `F-REPORT-014`
+were added by the Zero-Escape Contract audit: each owns a workflow where users would
+otherwise leave for Excel, Word, or a BI tool. Ad-hoc pivot analysis (row 15 of the escape
+ledger) is the most common single reason an analyst abandons a planning tool mid-task.
 
 ## 3.4 F-AI — Intelligence Layer
 
@@ -446,38 +456,66 @@ These are the load-bearing items. **Nothing in 3.1–3.6 can reach `GOVERNED` wi
 | F-MIGRATE-001 | Excel deconstruction protocol (Part XXVIII)                     | 2     | P1     | XL     | NOT STARTED                                       |
 | F-UDF-001     | Wasm-sandboxed user-defined functions (Part XXVI)               | 3     | P2     | XL     | NOT STARTED (`src/wasm` scaffold only)            |
 
+## 3.7.1 F-DESK — Windows desktop application (Section 23)
+
+The repository already ships a Tauri 2 desktop app that the blueprint did not describe.
+These features govern it. Full specification in **Section 23**; per §23.8 none may be marked
+`BUILT` until executed on real Windows, because this environment has no `cargo`/`rustc`.
+
+| ID         | Feature                                          | Phase | Prio   | Size | Status                                                            |
+| ---------- | ------------------------------------------------ | ----- | ------ | ---- | ----------------------------------------------------------------- |
+| F-DESK-001 | Native local SQLite database (`%APPDATA%`)       | 0     | **P0** | M    | PARTIAL (`tauri-plugin-sql`, 35 tables in `src-tauri/migrations`) |
+| F-DESK-002 | True offline modelling                           | 1     | P0     | L    | PARTIAL (local-first stores; authority undefined — W0.8)          |
+| F-DESK-003 | File associations + drag-drop import             | 1     | P1     | M    | NOT STARTED                                                       |
+| F-DESK-004 | Watched-folder ingestion                         | 2     | P2     | M    | NOT STARTED                                                       |
+| F-DESK-005 | Native print + page setup                        | 1     | P1     | M    | NOT STARTED                                                       |
+| F-DESK-006 | OS credential storage (Credential Manager)       | 0     | **P0** | S    | PARTIAL (`secure_storage.rs`, `keyring` 3 — unverified)           |
+| F-DESK-007 | Global shortcut + system tray                    | 2     | P2     | S    | PARTIAL (plugins present, unwired)                                |
+| F-DESK-008 | Native OS notifications                          | 2     | P2     | S    | PARTIAL (plugin present)                                          |
+| F-DESK-009 | Multi-window / detach to second monitor          | 2     | P1     | M    | PARTIAL (`window-state` plugin present)                           |
+| F-DESK-010 | Signed auto-update, policy-disableable           | 1     | P1     | M    | NOT STARTED (dependency present, **unconfigured** — §23.5)        |
+| F-DESK-011 | Local Excel round-trip (open→edit→save in place) | 2     | P1     | XL   | NOT STARTED                                                       |
+| F-DESK-012 | Crash reporting with money/PII redaction         | 1     | **P0** | S    | PARTIAL (`crash_reporter.rs`; redaction unverified)               |
+
 ## 3.8 Feature-count reconciliation
 
 | Bucket                       | Count                                     |
 | ---------------------------- | ----------------------------------------- |
-| Total specified features     | 98                                        |
+| Total specified features     | 113                                       |
 | `BUILT`                      | 33                                        |
-| `PARTIAL`                    | 35                                        |
-| `BUILT` or `PARTIAL` today   | 68                                        |
-| `NOT STARTED`                | 30                                        |
+| `PARTIAL`                    | 42                                        |
+| `BUILT` or `PARTIAL` today   | 75                                        |
+| `NOT STARTED`                | 38                                        |
 | P0 items still `NOT STARTED` | **13** ← this is the true project backlog |
 
-Counts are derived by machine from the tables in §3.1–§3.7, not asserted by hand:
+Counts are derived by machine from the tables in §3.1–§3.7.1, not asserted by hand:
 
 ```bash
 sed -n '/^# SECTION 3/,/^# SECTION 4/p' .agent/BLUEPRINT.md \
   | grep -E '^\| \*?\*?F-[A-Z]+-[0-9]{3}' > /tmp/frows.txt
-wc -l < /tmp/frows.txt                                    # 98 total
-grep -o 'NOT STARTED\|PARTIAL\|BUILT' /tmp/frows.txt | sort | uniq -c   # 33 BUILT / 30 NOT STARTED / 35 PARTIAL
-grep 'NOT STARTED' /tmp/frows.txt | grep -E '\bP0\b' | wc -l            # 13
+wc -l < /tmp/frows.txt                                                  # 113 total
+grep -o 'NOT STARTED\|PARTIAL\|BUILT' /tmp/frows.txt | sort | uniq -c  # 33 / 38 / 42
+grep 'NOT STARTED' /tmp/frows.txt | grep -E '\bP0\b' | wc -l           # 13
 ```
 
 The 13 open P0 items are: F-PLAT-001, F-PLAT-005, F-SEM-001, F-MDM-001, F-OPS-002,
 F-SEC-003, F-SEC-004, F-CTRL-001, F-AI-011, F-INTEGRATE-000, F-WORKFLOW-007,
 F-WORKFLOW-008, F-COLLAB-002.
 
-A fourteenth item, **F-ERR-001** (error-code registry), is classified **P1** in §3.7 yet is
-scheduled in Phase 0 as Workstream 0.4. That is deliberate and not a contradiction: the
-registry is cheap, and every later phase's error contract depends on it, so it is pulled
-forward. It is counted as P1 above so the P0 backlog number stays honest.
+F-ERR-001 (error registry) is **P1** in §3.7 yet scheduled in Phase 0 as Workstream 0.4:
+it is cheap and every later phase's error contract depends on it, so it is pulled forward.
+It is counted as P1 so the P0 backlog number stays honest.
 
-**Correction (session 004):** the previously published figures — 96 total / 61 built-or-partial
-/ 35 not-started / 14 open P0 — were hand-tallied and wrong on every line. The table above is
-machine-derived. Per §22.6 the error is recorded rather than quietly overwritten.
+Three P0 desktop items (F-DESK-001, F-DESK-006, F-DESK-012) are `PARTIAL` rather than
+`NOT STARTED` because the Tauri implementation exists in-repo — but per §23.8 **none may be
+promoted to `BUILT` from this sandbox**, which has no `cargo`/`rustc` and no Windows.
+
+**Count history (§22.6 requires corrections be visible, not silent):**
+
+| Session | Total | Built | Partial | Not started | P0 open | Note                                      |
+| ------- | ----- | ----- | ------- | ----------- | ------- | ----------------------------------------- |
+| 003     | 96    | —     | —       | 35          | 14      | Hand-tallied; **wrong on every line**     |
+| 004     | 98    | 33    | 35      | 30          | 13      | Machine-derived for the first time        |
+| 005     | 113   | 33    | 42      | 38          | 13      | +12 F-DESK (§23) +3 escape-driven (§24.5) |
 
 **This list, not the 193 routes, is the measure of remaining work.**

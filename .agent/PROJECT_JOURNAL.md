@@ -167,3 +167,38 @@ forked across two sources with no drift detection (R-23, W0.8.4).
 
 Verified clean: no encoding corruption, all 98 feature IDs resolve, all §0.6 baseline counts
 still exact against the live repo. Blueprint remains LOCKED, now around reproducible numbers.
+
+## Session 005 — Windows desktop + zero-escape scope expansion
+
+Two requirements added by explicit direction: the tool must run properly on Windows, and it
+must be genuinely all-in-one (no other tool needed). Both were gaps in the locked blueprint.
+
+**Windows (Section 23, new).** "Windows" appeared _once_ in 3,756 lines; MSI, installer, code
+signing and printer appeared _zero_ times — while the repo already ships a complete Tauri 2
+desktop app: 9 plugins, `keyring` credential storage, `secure_storage.rs`, `crash_reporter.rs`,
+strict CSP, and the real 35-table schema in `src-tauri/migrations/`. A shipping surface the
+blueprint didn't describe was an ungoverned surface, and A.19 listed seven client surfaces
+while omitting the one that actually builds. Section 23 now specifies platform tiers (Win 11
+
+- Win 10 22H2 = Tier 1), MSI+NSIS packaging, silent install, code signing, the WebView2
+  blank-window trap, data locations, uninstall/upgrade data safety, the unresolved auto-update
+  ambiguity (dependency present, `plugins: {}` empty), RDS multi-session isolation, and a
+  desktop DoD. 12 `F-DESK-*` features added; §9.11 desktop posture added.
+
+Critical honesty constraint (§23.8): this sandbox has no `cargo`, no `rustc`, no Windows.
+Every desktop claim is "designed for, not proven". Binding rule — no `src-tauri/src/*.rs`
+edits from here, and nothing marked BUILT until executed on real Windows (R-24, score 20).
+
+**Zero-escape (Section 24, new).** "All-in-one" was asserted but never measured. Added a
+definition of an escape (hard / soft / legitimate boundary), a 30-row Escape Ledger mapping
+every monthly FP&A workflow to an owning feature and phase, the Core-20 with a GA gate of
+zero hard escapes, an escape-rate ratchet folded into UVI, and a governed-handoff contract
+for legitimate boundaries. The ledger exposed three workflows with _no owning feature_:
+ad-hoc pivot analysis (the top reason analysts return to Excel), MD&A narrative authoring,
+and model documentation → F-ANALYSIS-001, F-REPORT-013, F-REPORT-014.
+
+Feature universe 98 → 113. P0 backlog unchanged at 13. Six new risks (R-24…R-29).
+Verified: 25 sections, zero orphaned features, all referenced IDs resolve, no encoding damage.
+
+Honest headline: OmniPlan is not all-in-one today and the desktop is unverified from here.
+These sections make both measurable every release rather than discoverable at a demo.

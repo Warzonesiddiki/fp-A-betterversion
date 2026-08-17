@@ -69,8 +69,10 @@ and not reordered.
 | 18  | Phased Roadmap                             | Phases 0–3, workstreams, exit gates.                     |
 | 19  | Gap Analysis vs Competitors                | Where the market leaves a hole.                          |
 | 20  | Risk Register                              | What kills this, and the mitigation owner.               |
-| 21  | ADR Log                                    | ADR-001 … ADR-011, binding.                              |
-| 22  | Definition of Done per Phase               | The gates, and the honesty clause.                       |
+| 21  | ADR Log                                    | ADR-001 … ADR-013, binding.                              |
+| 22  | Definition of Done per Phase               | The gates, the honesty clause, and the re-audit record.  |
+| 23  | Windows Desktop Application                | Tier-1 Windows: packaging, signing, offline, DoD.        |
+| 24  | The Zero-Escape Contract                   | All-in-one, measured: escape ledger + Core-20 gate.      |
 | A   | Appendix A — Domain Module Specifications  | Addendum II Parts XXXI–LX detail + coverage map.         |
 
 ---
@@ -354,20 +356,28 @@ Effort: S ≤ 2d · M ≤ 1w · L ≤ 3w · XL > 3w (XL must be decomposed befor
 
 ## 3.3 F-REPORT — Reporting & Analytics
 
-| ID           | Feature                                                  | Phase | Pri | Effort | TODAY                                                   |
-| ------------ | -------------------------------------------------------- | ----- | --- | ------ | ------------------------------------------------------- |
-| F-REPORT-001 | Executive dashboard (KPI tiles, sparklines, RAG)         | 1     | P0  | M      | BUILT (`DashboardPage`)                                 |
-| F-REPORT-002 | Board package generator (branded PDF/PPT from live data) | 2     | P0  | L      | PARTIAL (PDF engine exists; no freeze/watermark/e-sign) |
-| F-REPORT-003 | Flash report, scheduled                                  | 2     | P1  | M      | PARTIAL                                                 |
-| F-REPORT-004 | Management reporting (by dept, cost centre, project)     | 1     | P0  | M      | BUILT                                                   |
-| F-REPORT-005 | Drill-through to source transaction                      | 1     | P0  | L      | PARTIAL (`DrillThroughEngine`) — **not lineage-backed** |
-| F-REPORT-006 | Custom report builder (drag-drop, no-code)               | 2     | P0  | L      | PARTIAL                                                 |
-| F-REPORT-007 | Scheduled distribution (email, Slack, Teams)             | 2     | P1  | M      | NOT STARTED                                             |
-| F-REPORT-008 | Investor reporting templates                             | 2     | P1  | S      | PARTIAL                                                 |
-| F-REPORT-009 | Regulatory helpers (SOX narratives, audit packages)      | 2     | P1  | M      | PARTIAL                                                 |
-| F-REPORT-010 | Benchmark database                                       | 3     | P2  | L      | NOT STARTED                                             |
-| F-REPORT-011 | Cohort analysis                                          | 1     | P1  | M      | BUILT                                                   |
-| F-REPORT-012 | Unit economics dashboard                                 | 1     | P1  | M      | BUILT                                                   |
+| ID             | Feature                                                   | Phase | Pri | Effort | TODAY                                                   |
+| -------------- | --------------------------------------------------------- | ----- | --- | ------ | ------------------------------------------------------- |
+| F-REPORT-001   | Executive dashboard (KPI tiles, sparklines, RAG)          | 1     | P0  | M      | BUILT (`DashboardPage`)                                 |
+| F-REPORT-002   | Board package generator (branded PDF/PPT from live data)  | 2     | P0  | L      | PARTIAL (PDF engine exists; no freeze/watermark/e-sign) |
+| F-REPORT-003   | Flash report, scheduled                                   | 2     | P1  | M      | PARTIAL                                                 |
+| F-REPORT-004   | Management reporting (by dept, cost centre, project)      | 1     | P0  | M      | BUILT                                                   |
+| F-REPORT-005   | Drill-through to source transaction                       | 1     | P0  | L      | PARTIAL (`DrillThroughEngine`) — **not lineage-backed** |
+| F-REPORT-006   | Custom report builder (drag-drop, no-code)                | 2     | P0  | L      | PARTIAL                                                 |
+| F-REPORT-007   | Scheduled distribution (email, Slack, Teams)              | 2     | P1  | M      | NOT STARTED                                             |
+| F-REPORT-008   | Investor reporting templates                              | 2     | P1  | S      | PARTIAL                                                 |
+| F-REPORT-009   | Regulatory helpers (SOX narratives, audit packages)       | 2     | P1  | M      | PARTIAL                                                 |
+| F-REPORT-010   | Benchmark database                                        | 3     | P2  | L      | NOT STARTED                                             |
+| F-REPORT-011   | Cohort analysis                                           | 1     | P1  | M      | BUILT                                                   |
+| F-REPORT-012   | Unit economics dashboard                                  | 1     | P1  | M      | BUILT                                                   |
+| F-REPORT-013   | Narrative / MD&A authoring with live metric bindings      | 2     | P1  | L      | NOT STARTED                                             |
+| F-REPORT-014   | Model documentation generator (drivers, lineage, history) | 3     | P2  | M      | NOT STARTED                                             |
+| F-ANALYSIS-001 | Native pivot / ad-hoc analysis over the metric store      | 2     | P1  | L      | NOT STARTED                                             |
+
+**Escape-driven additions (§24.5).** `F-ANALYSIS-001`, `F-REPORT-013`, and `F-REPORT-014`
+were added by the Zero-Escape Contract audit: each owns a workflow where users would
+otherwise leave for Excel, Word, or a BI tool. Ad-hoc pivot analysis (row 15 of the escape
+ledger) is the most common single reason an analyst abandons a planning tool mid-task.
 
 ## 3.4 F-AI — Intelligence Layer
 
@@ -446,39 +456,67 @@ These are the load-bearing items. **Nothing in 3.1–3.6 can reach `GOVERNED` wi
 | F-MIGRATE-001 | Excel deconstruction protocol (Part XXVIII)                     | 2     | P1     | XL     | NOT STARTED                                       |
 | F-UDF-001     | Wasm-sandboxed user-defined functions (Part XXVI)               | 3     | P2     | XL     | NOT STARTED (`src/wasm` scaffold only)            |
 
+## 3.7.1 F-DESK — Windows desktop application (Section 23)
+
+The repository already ships a Tauri 2 desktop app that the blueprint did not describe.
+These features govern it. Full specification in **Section 23**; per §23.8 none may be marked
+`BUILT` until executed on real Windows, because this environment has no `cargo`/`rustc`.
+
+| ID         | Feature                                          | Phase | Prio   | Size | Status                                                            |
+| ---------- | ------------------------------------------------ | ----- | ------ | ---- | ----------------------------------------------------------------- |
+| F-DESK-001 | Native local SQLite database (`%APPDATA%`)       | 0     | **P0** | M    | PARTIAL (`tauri-plugin-sql`, 35 tables in `src-tauri/migrations`) |
+| F-DESK-002 | True offline modelling                           | 1     | P0     | L    | PARTIAL (local-first stores; authority undefined — W0.8)          |
+| F-DESK-003 | File associations + drag-drop import             | 1     | P1     | M    | NOT STARTED                                                       |
+| F-DESK-004 | Watched-folder ingestion                         | 2     | P2     | M    | NOT STARTED                                                       |
+| F-DESK-005 | Native print + page setup                        | 1     | P1     | M    | NOT STARTED                                                       |
+| F-DESK-006 | OS credential storage (Credential Manager)       | 0     | **P0** | S    | PARTIAL (`secure_storage.rs`, `keyring` 3 — unverified)           |
+| F-DESK-007 | Global shortcut + system tray                    | 2     | P2     | S    | PARTIAL (plugins present, unwired)                                |
+| F-DESK-008 | Native OS notifications                          | 2     | P2     | S    | PARTIAL (plugin present)                                          |
+| F-DESK-009 | Multi-window / detach to second monitor          | 2     | P1     | M    | PARTIAL (`window-state` plugin present)                           |
+| F-DESK-010 | Signed auto-update, policy-disableable           | 1     | P1     | M    | NOT STARTED (dependency present, **unconfigured** — §23.5)        |
+| F-DESK-011 | Local Excel round-trip (open→edit→save in place) | 2     | P1     | XL   | NOT STARTED                                                       |
+| F-DESK-012 | Crash reporting with money/PII redaction         | 1     | **P0** | S    | PARTIAL (`crash_reporter.rs`; redaction unverified)               |
+
 ## 3.8 Feature-count reconciliation
 
 | Bucket                       | Count                                     |
 | ---------------------------- | ----------------------------------------- |
-| Total specified features     | 98                                        |
+| Total specified features     | 113                                       |
 | `BUILT`                      | 33                                        |
-| `PARTIAL`                    | 35                                        |
-| `BUILT` or `PARTIAL` today   | 68                                        |
-| `NOT STARTED`                | 30                                        |
+| `PARTIAL`                    | 42                                        |
+| `BUILT` or `PARTIAL` today   | 75                                        |
+| `NOT STARTED`                | 38                                        |
 | P0 items still `NOT STARTED` | **13** ← this is the true project backlog |
 
-Counts are derived by machine from the tables in §3.1–§3.7, not asserted by hand:
+Counts are derived by machine from the tables in §3.1–§3.7.1, not asserted by hand:
 
 ```bash
 sed -n '/^# SECTION 3/,/^# SECTION 4/p' .agent/BLUEPRINT.md \
   | grep -E '^\| \*?\*?F-[A-Z]+-[0-9]{3}' > /tmp/frows.txt
-wc -l < /tmp/frows.txt                                    # 98 total
-grep -o 'NOT STARTED\|PARTIAL\|BUILT' /tmp/frows.txt | sort | uniq -c   # 33 BUILT / 30 NOT STARTED / 35 PARTIAL
-grep 'NOT STARTED' /tmp/frows.txt | grep -E '\bP0\b' | wc -l            # 13
+wc -l < /tmp/frows.txt                                                  # 113 total
+grep -o 'NOT STARTED\|PARTIAL\|BUILT' /tmp/frows.txt | sort | uniq -c  # 33 / 38 / 42
+grep 'NOT STARTED' /tmp/frows.txt | grep -E '\bP0\b' | wc -l           # 13
 ```
 
 The 13 open P0 items are: F-PLAT-001, F-PLAT-005, F-SEM-001, F-MDM-001, F-OPS-002,
 F-SEC-003, F-SEC-004, F-CTRL-001, F-AI-011, F-INTEGRATE-000, F-WORKFLOW-007,
 F-WORKFLOW-008, F-COLLAB-002.
 
-A fourteenth item, **F-ERR-001** (error-code registry), is classified **P1** in §3.7 yet is
-scheduled in Phase 0 as Workstream 0.4. That is deliberate and not a contradiction: the
-registry is cheap, and every later phase's error contract depends on it, so it is pulled
-forward. It is counted as P1 above so the P0 backlog number stays honest.
+F-ERR-001 (error registry) is **P1** in §3.7 yet scheduled in Phase 0 as Workstream 0.4:
+it is cheap and every later phase's error contract depends on it, so it is pulled forward.
+It is counted as P1 so the P0 backlog number stays honest.
 
-**Correction (session 004):** the previously published figures — 96 total / 61 built-or-partial
-/ 35 not-started / 14 open P0 — were hand-tallied and wrong on every line. The table above is
-machine-derived. Per §22.6 the error is recorded rather than quietly overwritten.
+Three P0 desktop items (F-DESK-001, F-DESK-006, F-DESK-012) are `PARTIAL` rather than
+`NOT STARTED` because the Tauri implementation exists in-repo — but per §23.8 **none may be
+promoted to `BUILT` from this sandbox**, which has no `cargo`/`rustc` and no Windows.
+
+**Count history (§22.6 requires corrections be visible, not silent):**
+
+| Session | Total | Built | Partial | Not started | P0 open | Note                                      |
+| ------- | ----- | ----- | ------- | ----------- | ------- | ----------------------------------------- |
+| 003     | 96    | —     | —       | 35          | 14      | Hand-tallied; **wrong on every line**     |
+| 004     | 98    | 33    | 35      | 30          | 13      | Machine-derived for the first time        |
+| 005     | 113   | 33    | 42      | 38          | 13      | +12 F-DESK (§23) +3 escape-driven (§24.5) |
 
 **This list, not the 193 routes, is the measure of remaining work.**
 
@@ -1330,6 +1368,19 @@ Mobile is **review and approve**, not modelling.
 notifications, report viewing.
 **Explicit NON-GOALS:** grid editing, formula authoring, model structure changes, bulk
 imports, admin configuration. These are declared unsupported rather than shipped badly.
+
+## 9.11 Desktop posture (Section 23) — the primary modelling surface
+
+Mobile is review-and-approve; **the desktop is where the work happens.** Windows is a
+Tier-1 target with a shipping Tauri 2 application (§23.2), and it is the reference
+implementation of the local-first plane (§4.3) — not a wrapper around the website.
+
+The UI consequences are binding: the five-pillar shell (§9.3) and ⌘K palette (§9.4) must
+work identically on desktop and web; the grid (§9.5) must meet §11.2 budgets against local
+SQLite with no network hop; and anything the desktop can do better — native print (§23.3
+F-DESK-005), multi-window detach (F-DESK-009), drag-drop import (F-DESK-003) — must be
+_used_, not levelled down to browser capability. Where a capability cannot exist on the
+web, the web surface states so plainly rather than degrading silently.
 
 ---
 
@@ -2670,6 +2721,29 @@ feature may be deferred, but it may not be unscheduled.**
 | F-INTEGRATE-009 | iPaaS connectors                | **v2+, not scheduled** | Commoditised; a public API (§15.7) serves the same need sooner.             |
 | F-INTEGRATE-012 | Market data                     | **v2+, not scheduled** | Licensing cost with no correctness benefit at current scale.                |
 
+### Windows desktop features (Section 23) and escape-closing features (Section 24)
+
+Added session 005. Desktop items carry the §23.8 caveat: **none may be marked `BUILT` from
+this sandbox** (no `cargo`/`rustc`, no Windows); each requires execution on real hardware.
+
+| Feature        | Title                                    | Phase       | Rationale                                                                              |
+| -------------- | ---------------------------------------- | ----------- | -------------------------------------------------------------------------------------- |
+| F-DESK-001     | Native local SQLite database             | **Phase 0** | The desktop half of W0.8 persistence authority — no financial truth in `localStorage`. |
+| F-DESK-006     | OS credential storage                    | **Phase 0** | Key custody for the encrypted local DB; implemented, needs Windows verification.       |
+| F-DESK-012     | Crash reporting with money/PII redaction | **Phase 0** | §12.3 egress rule extends to crash dumps; currently unverified (R-26).                 |
+| F-DESK-002     | True offline modelling                   | **Phase 1** | Makes the §0.5 "local-first + governed" differentiator literally true.                 |
+| F-DESK-003     | File associations + drag-drop            | **Phase 1** | File-system gravity; the desktop's core ergonomic advantage.                           |
+| F-DESK-005     | Native print + page setup                | **Phase 1** | Delivers the §14.8 pixel-fidelity promise a browser cannot honour.                     |
+| F-DESK-010     | Signed auto-update, policy-disableable   | **Phase 1** | Resolves the §23.5 ambiguity before any external distribution.                         |
+| F-DESK-007     | Global shortcut + tray                   | **Phase 2** | Plugins present; wiring only.                                                          |
+| F-DESK-008     | Native notifications                     | **Phase 2** | Pairs with A.11 digests/escalations.                                                   |
+| F-DESK-009     | Multi-window / second monitor            | **Phase 2** | Most-requested FP&A ergonomic; `window-state` plugin present.                          |
+| F-DESK-011     | Local Excel round-trip                   | **Phase 2** | Desktop half of the K20 filter; pairs with F-INTEGRATE-006.                            |
+| F-DESK-004     | Watched-folder ingestion                 | **Phase 2** | Automates the controller-workbook river; gated behind maker-checker.                   |
+| F-ANALYSIS-001 | Native pivot / ad-hoc analysis           | **Phase 2** | Escape ledger row 15 — the top reason analysts return to Excel.                        |
+| F-REPORT-013   | Narrative / MD&A with live bindings      | **Phase 2** | Escape ledger row 27 — removes the Word escape from board-pack production.             |
+| F-REPORT-014   | Model documentation generator            | **Phase 3** | Escape ledger row 30 — replaces the unmaintained handover document.                    |
+
 ### CI enforcement
 
 ```bash
@@ -2800,31 +2874,37 @@ every roadmap decision above is subordinate to occupying it.
 Scored as Likelihood (1–5) × Impact (1–5). Anything ≥ 15 requires a named owner and an
 active mitigation in the current phase.
 
-| ID   | Risk                                                                                                                                                                                                                                       | L   | I   | Score  | Mitigation                                                                                                                                             | Trigger to escalate                                                                 |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- | --- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| R-01 | **A wrong number reaches a customer's board pack.** The existential risk.                                                                                                                                                                  | 3   | 5   | **15** | Runtime three-statement gate (0.3), golden fixtures, property tests, mutation testing on money, reconciliation on every import, lineage for every fact | Any `FIN-000` in production                                                         |
-| R-02 | Money-primitive migration stalls at partial adoption, leaving mixed float/decimal paths — the most dangerous possible state                                                                                                                | 4   | 5   | **20** | Ratchet script; Phase 0 gate at 60%, Phase 1 at 90%; no feature work merges that lowers adoption                                                       | Adoption flat for 2 consecutive weeks                                               |
-| R-03 | Scope paralysis — 96 features, 25 verticals, and nothing ships                                                                                                                                                                             | 4   | 4   | **16** | Hard phase gates; Phase 0 ships almost no features on purpose; vertical packs deferred to Phase 2/3                                                    | Phase overruns by > 25%                                                             |
-| R-04 | Retrofitting tenancy later requires touching every table and query                                                                                                                                                                         | 3   | 5   | **15** | `tenant_id` in Phase 0, before anything else stores data (M001)                                                                                        | Any new table shipped without `tenant_id`                                           |
-| R-05 | Cross-tenant data leak                                                                                                                                                                                                                     | 2   | 5   | 10     | Dual enforcement PC4; per-table leak tests; deny-by-default; no admin bypass query                                                                     | Any leak test added without a passing assertion                                     |
-| R-06 | Environment degradation hides real problems — no Docker/Postgres/Rust means RLS, scale, and Wasm claims are unverifiable here                                                                                                              | 5   | 3   | **15** | Explicitly label unverifiable claims "designed for, not proven"; require real-infra validation before any scale or certification claim                 | A scale claim published without a k6 run                                            |
-| R-07 | The 193-route sprawl makes the product unlearnable; users churn in trial                                                                                                                                                                   | 4   | 4   | **16** | Phase 0 workstream 0.5; ≤ 40 routes; ⌘K; ROUTE_MAP drift gate                                                                                          | Trial activation < 40%                                                              |
-| R-08 | Connector built before inbox/outbox → duplicate or lost financial records                                                                                                                                                                  | 3   | 5   | **15** | F-INTEGRATE-000 is a hard prerequisite; no connector PR merges before it                                                                               | Any adapter PR without idempotency                                                  |
-| R-09 | LLM egress of customer monetary data                                                                                                                                                                                                       | 2   | 5   | 10     | Single chokepoint, REDACTED default, per-feature opt-in, audit of every call, zero-retention endpoints only                                            | Any direct SDK import outside the chokepoint                                        |
-| R-10 | Claiming a certification that does not exist                                                                                                                                                                                               | 2   | 5   | 10     | LII honesty matrix; "designed to meet" language until the report is issued; legal review of all claims                                                 | Any marketing draft naming an unissued cert                                         |
-| R-11 | The Codex-prescribed stack (Next.js/Fastify/Prisma/Kafka/Rust) is imposed as a rewrite, destroying 455k lines and 1,228 green tests                                                                                                        | 3   | 5   | **15** | ADR-003 (Section 21) records the reasoned deviation with evidence; evolution path S0→S4 is trigger-based                                               | Any PR that begins a framework migration without a measured trigger                 |
-| R-12 | SQLite → PostgreSQL cutover corrupts or loses data                                                                                                                                                                                         | 2   | 5   | 10     | PC1–PC5 portability from Phase 0; M013 full dress rehearsal with row-count and sum reconciliation; verified backup first                               | Rehearsal reconciliation mismatch of any size                                       |
-| R-13 | Vertical packs fork the engine (violating K19), creating 25 unmaintainable codebases                                                                                                                                                       | 3   | 4   | 12     | PK6 — a pack needing an engine change is rejected; generalise the engine instead                                                                       | Any pack PR touching `src/engines/`                                                 |
-| R-14 | Performance collapses at real scale; the DAG recalc does not hold                                                                                                                                                                          | 3   | 4   | 12     | CP1–CP8; CI perf budgets on a fixed dataset; k6 per tier; profiler with top-50 slowest nodes                                                           | p95 recalc regression > 20%                                                         |
-| R-15 | Audit log tampering or hash-chain break                                                                                                                                                                                                    | 2   | 5   | 10     | DB-level append-only, hash chain, `/v1/audit/verify`, alerting on verification failure                                                                 | Any verify failure                                                                  |
-| R-16 | Collaboration corrupts numbers via silent merge                                                                                                                                                                                            | 3   | 5   | **15** | COL3/COL4 — leases + typed conflict + explicit human resolution; CRDT restricted to non-monetary content                                               | Any last-write-wins path on a decimal                                               |
-| R-17 | Key-person dependency / context loss between sessions                                                                                                                                                                                      | 4   | 3   | 12     | `.agent/` memory discipline, PROJECT_JOURNAL, ADR log, this blueprint as the single source of intent                                                   | Any session starting without reading `.agent/state.json`                            |
-| R-18 | CI cannot be updated from this environment (no `workflows` permission), so gates silently rot                                                                                                                                              | 4   | 3   | 12     | Numbered `ci-patches/*.patch` with apply instructions; track pending patches in state.json                                                             | > 2 unapplied patches                                                               |
-| R-19 | Restatement handled as an in-place edit, silently changing published history                                                                                                                                                               | 2   | 5   | 10     | R1–R5 restatement protocol; new immutable version; SUPERSEDED banners; disclosure checklist                                                            | Any UPDATE on a closed-period fact                                                  |
-| R-21 | **No system of record.** 43 stores persist financial truth to browser `localStorage`; only 14 non-test files call the server (§0.6.1). Clearing site data destroys the ledger; backup/RTO/RPO/audit claims are unbackable while this holds | 4   | 5   | **20** | Workstream 0.8 — persistence authority, money-safe serialization, `glStore` server-authoritative spike; UI must state local-only durability honestly   | Any durability, backup, or audit claim made for a store still classified local-only |
-| R-22 | **The money gate can read green while money is unsafe.** `money:adoption` detects an _import_ of the primitive by regex, not decimal-correct arithmetic; "0 raw `toFixed`" is therefore not evidence of safety                             | 4   | 5   | **20** | Workstream 0.1.0 replaces the regex with an AST detector before the ≥60% gate is trusted; re-baseline expected to fall before it rises                 | Any adoption figure quoted from the import-regex scanner after 0.1.0 lands          |
-| R-23 | Schema forked across `src-tauri/migrations/*.sql` (35 tables) and the server's in-code DDL (9 more) with no drift detection                                                                                                                | 3   | 4   | 12     | Workstream 0.8.4 — single schema source + CI equality gate                                                                                             | Any table defined in one source and not the other                                   |
-| R-20 | Non-payment freezes a customer mid-close, causing regulatory harm                                                                                                                                                                          | 2   | 4   | 8      | Fair-use ladder (XLIV): close and audit paths are never frozen without a legal-notice workflow                                                         | Any hard limit applied to a close path                                              |
+| ID   | Risk                                                                                                                                                                                                                                       | L   | I   | Score  | Mitigation                                                                                                                                                            | Trigger to escalate                                                                 |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- | --- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| R-01 | **A wrong number reaches a customer's board pack.** The existential risk.                                                                                                                                                                  | 3   | 5   | **15** | Runtime three-statement gate (0.3), golden fixtures, property tests, mutation testing on money, reconciliation on every import, lineage for every fact                | Any `FIN-000` in production                                                         |
+| R-02 | Money-primitive migration stalls at partial adoption, leaving mixed float/decimal paths — the most dangerous possible state                                                                                                                | 4   | 5   | **20** | Ratchet script; Phase 0 gate at 60%, Phase 1 at 90%; no feature work merges that lowers adoption                                                                      | Adoption flat for 2 consecutive weeks                                               |
+| R-03 | Scope paralysis — 96 features, 25 verticals, and nothing ships                                                                                                                                                                             | 4   | 4   | **16** | Hard phase gates; Phase 0 ships almost no features on purpose; vertical packs deferred to Phase 2/3                                                                   | Phase overruns by > 25%                                                             |
+| R-04 | Retrofitting tenancy later requires touching every table and query                                                                                                                                                                         | 3   | 5   | **15** | `tenant_id` in Phase 0, before anything else stores data (M001)                                                                                                       | Any new table shipped without `tenant_id`                                           |
+| R-05 | Cross-tenant data leak                                                                                                                                                                                                                     | 2   | 5   | 10     | Dual enforcement PC4; per-table leak tests; deny-by-default; no admin bypass query                                                                                    | Any leak test added without a passing assertion                                     |
+| R-06 | Environment degradation hides real problems — no Docker/Postgres/Rust means RLS, scale, and Wasm claims are unverifiable here                                                                                                              | 5   | 3   | **15** | Explicitly label unverifiable claims "designed for, not proven"; require real-infra validation before any scale or certification claim                                | A scale claim published without a k6 run                                            |
+| R-07 | The 193-route sprawl makes the product unlearnable; users churn in trial                                                                                                                                                                   | 4   | 4   | **16** | Phase 0 workstream 0.5; ≤ 40 routes; ⌘K; ROUTE_MAP drift gate                                                                                                         | Trial activation < 40%                                                              |
+| R-08 | Connector built before inbox/outbox → duplicate or lost financial records                                                                                                                                                                  | 3   | 5   | **15** | F-INTEGRATE-000 is a hard prerequisite; no connector PR merges before it                                                                                              | Any adapter PR without idempotency                                                  |
+| R-09 | LLM egress of customer monetary data                                                                                                                                                                                                       | 2   | 5   | 10     | Single chokepoint, REDACTED default, per-feature opt-in, audit of every call, zero-retention endpoints only                                                           | Any direct SDK import outside the chokepoint                                        |
+| R-10 | Claiming a certification that does not exist                                                                                                                                                                                               | 2   | 5   | 10     | LII honesty matrix; "designed to meet" language until the report is issued; legal review of all claims                                                                | Any marketing draft naming an unissued cert                                         |
+| R-11 | The Codex-prescribed stack (Next.js/Fastify/Prisma/Kafka/Rust) is imposed as a rewrite, destroying 455k lines and 1,228 green tests                                                                                                        | 3   | 5   | **15** | ADR-003 (Section 21) records the reasoned deviation with evidence; evolution path S0→S4 is trigger-based                                                              | Any PR that begins a framework migration without a measured trigger                 |
+| R-12 | SQLite → PostgreSQL cutover corrupts or loses data                                                                                                                                                                                         | 2   | 5   | 10     | PC1–PC5 portability from Phase 0; M013 full dress rehearsal with row-count and sum reconciliation; verified backup first                                              | Rehearsal reconciliation mismatch of any size                                       |
+| R-13 | Vertical packs fork the engine (violating K19), creating 25 unmaintainable codebases                                                                                                                                                       | 3   | 4   | 12     | PK6 — a pack needing an engine change is rejected; generalise the engine instead                                                                                      | Any pack PR touching `src/engines/`                                                 |
+| R-14 | Performance collapses at real scale; the DAG recalc does not hold                                                                                                                                                                          | 3   | 4   | 12     | CP1–CP8; CI perf budgets on a fixed dataset; k6 per tier; profiler with top-50 slowest nodes                                                                          | p95 recalc regression > 20%                                                         |
+| R-15 | Audit log tampering or hash-chain break                                                                                                                                                                                                    | 2   | 5   | 10     | DB-level append-only, hash chain, `/v1/audit/verify`, alerting on verification failure                                                                                | Any verify failure                                                                  |
+| R-16 | Collaboration corrupts numbers via silent merge                                                                                                                                                                                            | 3   | 5   | **15** | COL3/COL4 — leases + typed conflict + explicit human resolution; CRDT restricted to non-monetary content                                                              | Any last-write-wins path on a decimal                                               |
+| R-17 | Key-person dependency / context loss between sessions                                                                                                                                                                                      | 4   | 3   | 12     | `.agent/` memory discipline, PROJECT_JOURNAL, ADR log, this blueprint as the single source of intent                                                                  | Any session starting without reading `.agent/state.json`                            |
+| R-18 | CI cannot be updated from this environment (no `workflows` permission), so gates silently rot                                                                                                                                              | 4   | 3   | 12     | Numbered `ci-patches/*.patch` with apply instructions; track pending patches in state.json                                                                            | > 2 unapplied patches                                                               |
+| R-19 | Restatement handled as an in-place edit, silently changing published history                                                                                                                                                               | 2   | 5   | 10     | R1–R5 restatement protocol; new immutable version; SUPERSEDED banners; disclosure checklist                                                                           | Any UPDATE on a closed-period fact                                                  |
+| R-21 | **No system of record.** 43 stores persist financial truth to browser `localStorage`; only 14 non-test files call the server (§0.6.1). Clearing site data destroys the ledger; backup/RTO/RPO/audit claims are unbackable while this holds | 4   | 5   | **20** | Workstream 0.8 — persistence authority, money-safe serialization, `glStore` server-authoritative spike; UI must state local-only durability honestly                  | Any durability, backup, or audit claim made for a store still classified local-only |
+| R-22 | **The money gate can read green while money is unsafe.** `money:adoption` detects an _import_ of the primitive by regex, not decimal-correct arithmetic; "0 raw `toFixed`" is therefore not evidence of safety                             | 4   | 5   | **20** | Workstream 0.1.0 replaces the regex with an AST detector before the ≥60% gate is trusted; re-baseline expected to fall before it rises                                | Any adoption figure quoted from the import-regex scanner after 0.1.0 lands          |
+| R-23 | Schema forked across `src-tauri/migrations/*.sql` (35 tables) and the server's in-code DDL (9 more) with no drift detection                                                                                                                | 3   | 4   | 12     | Workstream 0.8.4 — single schema source + CI equality gate                                                                                                            | Any table defined in one source and not the other                                   |
+| R-24 | **The Windows desktop app cannot be built or verified in this environment** — no `cargo`/`rustc`/Windows (K2). Rust changes ship blind; every desktop claim is unproven here                                                               | 5   | 4   | **20** | §23.8 verification protocol: no `src-tauri/src/*.rs` edits without a real toolchain; nothing marked BUILT until executed on Windows; desktop CI leg via `ci-patches/` | Any desktop capability marked BUILT from this sandbox                               |
+| R-25 | Uninstall or a botched upgrade destroys the only copy of a customer's ledger (§0.6.1: local is currently authoritative)                                                                                                                    | 3   | 5   | **15** | Uninstall keeps data by default; automatic pre-migration backup; W0.8 makes the server authoritative so local loss is recoverable                                     | Any uninstall/upgrade path that deletes data without confirmation                   |
+| R-26 | Crash reports or telemetry exfiltrate monetary values from a customer machine                                                                                                                                                              | 3   | 5   | **15** | F-DESK-012 redaction before transmission; §12.3 egress chokepoint extends to crash/telemetry; automated scan in CI                                                    | Any crash payload containing a monetary value                                       |
+| R-27 | Unsigned installer trips SmartScreen; enterprise buyers cannot deploy and trust collapses at first contact                                                                                                                                 | 4   | 4   | **16** | Code signing mandatory for GA (§23.4); reputation warm-up; MSI for managed deployment                                                                                 | Any external distribution of an unsigned build                                      |
+| R-28 | WebView2 absent or policy-blocked on older Windows 10 → blank window on launch                                                                                                                                                             | 3   | 4   | 12     | Evergreen bootstrapper + offline installer variant; explicit actionable error; Tier-1 test on clean Win10 22H2                                                        | Any launch path that can render a blank window                                      |
+| R-29 | **"All-in-one" is claimed while users still leave for Excel/Word/PowerPoint** — the promise fails at the demo, not in the backlog                                                                                                          | 4   | 5   | **20** | §24 Zero-Escape Contract: escape ledger, escape-rate ratchet, GA blocked on zero hard escapes in the Core-20                                                          | Any Core-20 row reclassified "legitimate boundary" without an ADR                   |
+| R-20 | Non-payment freezes a customer mid-close, causing regulatory harm                                                                                                                                                                          | 2   | 4   | 8      | Fair-use ladder (XLIV): close and audit paths are never frozen without a legal-notice workflow                                                                        | Any hard limit applied to a close path                                              |
 
 ---
 
@@ -3030,6 +3110,25 @@ skips any line is not done; it is in progress.
   non-goal. Nothing is silently dropped.
 ```
 
+## 22.5.1 Windows desktop & all-in-one GA gates (Sections 23–24)
+
+```
+□ Windows 11 + Windows 10 22H2 clean-install verified (MSI silent + NSIS interactive)
+□ Installer code-signed; SmartScreen clean; offline installer variant available
+□ No blank-window failure mode: WebView2 present, bootstrapped, or actionable error
+□ Full offline session proven: model, calculate, report with the network disabled
+□ Financial data in encrypted %APPDATA% SQLite, key in Credential Manager — never localStorage
+□ Uninstall preserves data by default; upgrade auto-backs-up before migration
+□ Per-user isolation verified under RDS/Citrix multi-session
+□ Crash reports contain zero monetary values or PII (automated scan)
+□ Auto-update signed and policy-disableable, or explicitly disabled — never ambiguous
+□ Every desktop capability executed on real Windows (§23.8) — none marked BUILT from the sandbox
+□ **ZERO hard escapes across the Core-20 workflows (§24.3)**
+□ Escape rate ≤ 5% across the full 30-row ledger, ratcheted in CI
+□ A full monthly cycle — ingest → close → consolidate → variance → reforecast → board pack →
+  distribute — completes without opening Excel, Word, PowerPoint, or a BI tool
+```
+
 ## 22.6 The honesty clause (binding on all phases)
 
 > A phase is complete when its gate passes — not when the calendar says so, and not when
@@ -3078,6 +3177,25 @@ distinguishable from decision.
 **Zero unchecked boxes. Product code may now begin, starting at Phase 0 Workstream 0.1
 (money integrity) — not at AI, VDR, or Pillar Two.**
 
+## 22.9 Scope expansion (session 005) — Windows desktop + zero-escape
+
+Two requirements were added by explicit direction, both of which the locked blueprint
+failed to cover. Neither is a Codex requirement — the Codex mentions Windows once in 3,765
+lines and never specifies a desktop client — so both **supersede the Codex's silence**.
+
+| Requirement                              | Gap found                                                                                                                                                                                                                                                                                                                                        | Response                                                                                                                                                                                                  |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Must run on Windows as a proper tool** | "Windows" appeared **once** in 3,756 lines; `MSI`, `installer`, `code signing`, `printer` appeared **zero** times — while the repo already ships a complete Tauri 2 desktop app (9 plugins, 35-table SQLite schema, `keyring`, strict CSP) that no section described. A shipping surface the blueprint does not govern is an ungoverned surface. | **Section 23** (platform tiers, packaging/MSI+NSIS, code signing, WebView2, auto-update, security, desktop DoD) + **12 `F-DESK-*` features** + **§9.11** desktop posture + A.19 corrected + **R-24–R-28** |
+| **All-in-one; user needs no other tool** | The promise was asserted, never measured. No definition of "escape", no inventory of workflows, no gate. Three common workflows — ad-hoc pivot analysis, MD&A narrative, model documentation — had **no owning feature at all**.                                                                                                                 | **Section 24** (escape definition, 30-row Escape Ledger, Core-20 zero-hard-escape GA gate, escape-rate ratchet in UVI, governed-handoff contract) + **3 new features** + **R-29**                         |
+
+**Net effect on the feature universe:** 98 → **113** (+12 desktop, +3 escape-closing). The P0
+backlog is unchanged at 13, because the desktop P0 items (F-DESK-001/006/012) already exist
+in code as `PARTIAL` — though per §23.8 none may be promoted to `BUILT` from this sandbox.
+
+**The honest headline:** OmniPlan is **not** an all-in-one product today and the desktop app
+is **unverified** from this environment. Sections 23 and 24 do not fix either fact; they make
+both measurable every release instead of discoverable at a customer demo.
+
 ## 22.8 Adversarial re-audit (session 004) — findings and dispositions
 
 The locked blueprint was re-audited against the Codex **and against the repository as
@@ -3107,6 +3225,340 @@ by §22.6's own standard. The blueprint remains **LOCKED**; it is now locked aro
 that are reproducible by command rather than asserted by hand. The most important change is
 conceptual: Phase 0 previously assumed a governed database that does not yet hold the data.
 It no longer does.
+
+# SECTION 23 — WINDOWS DESKTOP APPLICATION SPECIFICATION
+
+**Status:** normative, added session 005 at explicit direction. **Supersedes the Codex's
+silence.** The Codex mentions Windows exactly once (line 2933, "redirect to desktop" for
+phones) and never specifies a desktop client. The directive is that OmniPlan must be _a
+proper tool that runs on Windows_. This section is that specification.
+
+## 23.0 Why this section exists (the gap it closes)
+
+An audit of the locked blueprint found that the word "Windows" appeared **once** in 3,756
+lines, and that `MSI`, `installer`, `code signing`, and `printer` appeared **zero** times —
+while the repository already ships a complete Tauri 2 desktop application:
+
+| Evidence in repo            | Measured                                                                                                                                                    |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src-tauri/tauri.conf.json` | `productName: "FinPlan Pro"`, `bundle.active: true`, `targets: all`, **`bundle.windows.nsis` configured**                                                   |
+| `src-tauri/Cargo.toml`      | Tauri 2 + 9 plugins: `sql(sqlite)`, `fs`, `dialog`, `shell`, `window-state`, `global-shortcut`, `notification`, `updater`, `clipboard-manager`; `keyring` 3 |
+| `src-tauri/src/`            | `lib.rs`, `main.rs`, `secure_storage.rs`, `crash_reporter.rs`                                                                                               |
+| `src-tauri/capabilities/`   | 12 permissions, scoped to appdata/applocaldata/appconfig/applog                                                                                             |
+| `src-tauri/migrations/`     | `001_initial_schema.sql`, `002_cube_schema.sql` — **35 tables, the real schema home**                                                                       |
+| CSP (`app.security.csp`)    | Strict: `default-src 'self'`, `object-src 'none'`, `frame-ancestors 'none'`                                                                                 |
+| `tauri-plugin-updater`      | Dependency present; **`plugins: {}` is empty — updater is not configured** (release gate asserts "updater disabled")                                        |
+
+**A shipping desktop client that the blueprint does not describe is an ungoverned surface.**
+Section 9.10 defines a mobile posture; there was no equivalent desktop posture. A.19 listed
+seven client surfaces and omitted the one that actually builds today. This section makes the
+desktop a first-class, gated deliverable.
+
+## 23.1 The desktop thesis (why Windows is strategic, not a port)
+
+The FP&A buyer is overwhelmingly a Windows organisation, and the incumbent being displaced
+(§19.2, Excel, ~70% of FP&A) is a **local Windows application**. A browser tab does not
+replace a desktop application in this market for four concrete, non-cosmetic reasons:
+
+1. **Offline is the norm, not the exception.** Board prep on a plane, close work in a
+   datacentre-restricted office, audit fieldwork at a client site. §0.5 already sells
+   "local-first + governed" as a differentiator; the desktop is the only surface that
+   makes it literally true.
+2. **File-system gravity.** Real FP&A is a river of `.xlsx` files from controllers, banks,
+   and subsidiaries. A desktop app can watch folders, own file associations, and round-trip
+   files without an upload dialog. K20's Excel two-way sync (F-INTEGRATE-006) is
+   substantially easier and materially better on the desktop.
+3. **Data residency by construction.** "Our financials never leave this machine" is an
+   answer no cloud-only competitor can give, and it closes procurement objections in
+   regulated and family-office segments.
+4. **Grid performance.** A 100k-cell recalc (§11.2 budget: 5 s p95) runs against native
+   SQLite with no network hop. The desktop is the surface most likely to _meet_ the
+   performance contract, not least likely.
+
+**Corollary (binding):** the desktop is **not** a wrapper around a website. It is the
+reference implementation of the local-first plane defined in §4.3, and the web app is the
+same product minus the local file and offline capabilities.
+
+## 23.2 Supported platform matrix (normative)
+
+| Platform                                 | Tier       | Commitment                                                                                        |
+| ---------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------- |
+| **Windows 11 (x64)**                     | **Tier 1** | Primary target. Every release blocked on a green Tier-1 test run. All perf budgets measured here. |
+| **Windows 10 22H2 (x64)**                | **Tier 1** | Supported through Microsoft's EOL (Oct 2025 mainstream; extended per ESU). WebView2 required.     |
+| Windows 11 (ARM64)                       | Tier 2     | Built and smoke-tested; performance budgets not guaranteed.                                       |
+| Windows Server 2019/2022 (RDS)           | Tier 2     | Must run under RDS/Citrix multi-session; per-user data isolation verified (§23.6).                |
+| macOS 13+ (Apple Silicon/Intel)          | Tier 2     | Built and smoke-tested. Not a release blocker.                                                    |
+| Linux (Ubuntu 22.04+, .deb/AppImage)     | Tier 3     | Best effort, community-grade.                                                                     |
+| Web (Chrome/Edge/Firefox/Safari, last 2) | Tier 1     | Full parity except §23.3 desktop-only capabilities.                                               |
+
+**Tier definitions.** Tier 1 = release blocker, full test matrix, perf budgets enforced.
+Tier 2 = builds and passes smoke tests; bugs triaged but do not block release.
+Tier 3 = builds; no guarantee.
+
+**Minimum hardware (Tier 1):** 4-core x64, 8 GB RAM, 2 GB free disk, 1366×768. **Recommended
+for 5M+ facts:** 8-core, 16 GB RAM, SSD. These are stated so that §11 performance budgets
+have a defined reference machine; a budget without a machine is not a budget.
+
+**WebView2 dependency (the classic Windows deployment trap).** Tauri renders through
+Edge WebView2. It is present by default on Windows 11 and on updated Windows 10, but **not
+guaranteed** on stale Windows 10 images. The installer MUST use the WebView2 **evergreen
+bootstrapper** and MUST degrade to a clear, actionable error if installation is blocked by
+policy — never a blank white window. A blank window on launch is a **release-blocking
+defect**, not a support ticket.
+
+## 23.3 Desktop-only capabilities (what justifies the surface)
+
+These are the capabilities that make the desktop worth shipping. Each is a feature with an
+ID, a phase, and an acceptance test — not an aspiration.
+
+| ID         | Capability                     | Phase | Specification                                                                                                                                                               |
+| ---------- | ------------------------------ | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F-DESK-001 | Native local database          | 0     | SQLite via `tauri-plugin-sql`, at `%APPDATA%\OmniPlan\`. **This is the system-of-record fix for the desktop surface** (§0.6.1, W0.8): no financial truth in `localStorage`. |
+| F-DESK-002 | True offline modelling         | 1     | Full model/edit/report with the network cable pulled. Publication requires reconnection and server authorization (§4.4 authority rule).                                     |
+| F-DESK-003 | File associations + drag-drop  | 1     | `.omniplan` model files open on double-click; `.xlsx`/`.csv` dropped on the window enter the import pipeline with reconciliation (§XIX-C).                                  |
+| F-DESK-004 | Watched-folder ingestion       | 2     | Point at a folder; new/changed workbooks are detected, staged, diffed, and queued for approval. Never auto-posted without maker-checker (§13.3).                            |
+| F-DESK-005 | Native print + page setup      | 1     | OS print dialog, real page setup, print preview matching output. Closes the §14.8 pixel-fidelity promise, which no browser can honour.                                      |
+| F-DESK-006 | OS credential storage          | 0     | Tokens and the DB key in Windows Credential Manager via `keyring` (already implemented in `secure_storage.rs`). **Never** in `localStorage` or a plaintext file.            |
+| F-DESK-007 | Global shortcut + tray         | 2     | System-wide ⌘K/Ctrl-K to the command palette; tray shows close-task and approval counts. Plugins already present.                                                           |
+| F-DESK-008 | Native notifications           | 2     | Approval requests, close-task deadlines, failed imports via Windows notifications (§A.11), honouring Focus Assist.                                                          |
+| F-DESK-009 | Multi-window                   | 2     | Detach a report/grid to a second monitor — the single most-requested FP&A ergonomic. Window state persisted (`window-state` plugin present).                                |
+| F-DESK-010 | Signed auto-update             | 1     | See §23.5. Currently a dependency with no configuration; must be either configured-and-signed or explicitly disabled — never ambiguous.                                     |
+| F-DESK-011 | Local Excel round-trip         | 2     | Open→edit→save a workbook in place, preserving formulas (§14.5 XLSX fidelity). The desktop half of the K20 filter (F-INTEGRATE-006).                                        |
+| F-DESK-012 | Crash reporting with redaction | 1     | `crash_reporter.rs` exists. Reports MUST be scrubbed of monetary values and PII before leaving the machine — the §12.3 egress rule applies to crash dumps (see §23.7 R-26). |
+
+## 23.4 Packaging & installation (Windows-native, enterprise-deployable)
+
+| Requirement             | Specification                                                                                                                                                                                |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Installer formats**   | **MSI** (`wix`) for enterprise/GPO/Intune deployment **and** **NSIS** (`.exe`) for self-serve. Repo currently configures NSIS only — MSI is a gap to close.                                  |
+| Per-user vs per-machine | Both. Per-user default (no admin rights); per-machine for managed fleets via MSI with `ALLUSERS=1`.                                                                                          |
+| Silent install          | `msiexec /i OmniPlan.msi /qn` MUST succeed unattended with no dialog. Verified in CI-equivalent VM, not assumed.                                                                             |
+| Install location        | `%LOCALAPPDATA%\Programs\OmniPlan` (per-user) / `%ProgramFiles%\OmniPlan` (per-machine).                                                                                                     |
+| Data location           | `%APPDATA%\OmniPlan\` — DB, logs, config. **Never** in Program Files. Roaming-profile safe: DB in `%LOCALAPPDATA%`, config in `%APPDATA%`.                                                   |
+| Uninstall               | Removes binaries; **prompts before deleting financial data** and defaults to keeping it. Silently destroying a ledger on uninstall is a Severity-0 class defect.                             |
+| Upgrade                 | In-place, preserving the database; forward-only migrations (PC5) run on first launch with an automatic pre-migration backup.                                                                 |
+| **Code signing**        | **Mandatory for GA.** EV or OV certificate; SmartScreen reputation established before public release. An unsigned installer that trips SmartScreen is an unshippable product, not a warning. |
+| Bundle size             | Installer ≤ 60 MB; installed footprint ≤ 250 MB. Tauri's advantage over Electron is real and must not be squandered.                                                                         |
+| Offline installer       | A fully offline installer variant (WebView2 evergreen **standalone**) for air-gapped/regulated sites.                                                                                        |
+
+**Product naming.** The repo ships `productName: "FinPlan Pro"`; the product is **OmniPlan**
+(§0.1). ADR-008 defers the rename to Phase 2. The installer, window title, and Credential
+Manager entries must all change **together with a migration** for `%APPDATA%` paths and
+credential keys — a rename that orphans a user's database is data loss. Tracked as a
+Phase 2 task with an explicit migration step, not a find-and-replace.
+
+## 23.5 Auto-update (currently ambiguous — must be resolved)
+
+`tauri-plugin-updater` is a declared dependency, `plugins` in `tauri.conf.json` is empty, and
+the release gate asserts "updater is disabled (no uncontrolled update endpoint)". That is a
+**safe** state but an **undecided** one. The decision:
+
+- **Phase 0–1:** updater stays **explicitly disabled**. The release gate that asserts this is
+  correct and must remain.
+- **Phase 2:** enable with **mandatory signature verification** (Tauri's minisign public key
+  compiled in; unsigned or mis-signed payloads rejected).
+- **Enterprise:** auto-update MUST be centrally disableable by GPO/registry policy; managed
+  fleets patch through Intune/SCCM, and an app that self-updates against IT policy will be
+  banned from the estate.
+- **Never** auto-update mid-close. If a period close or an approval workflow is in progress,
+  the update defers with a visible, dismissible notice. **Interrupting a close to install a
+  patch is a Severity-1 defect.**
+
+## 23.6 Desktop security posture
+
+The desktop surface **increases** the attack surface and this is stated plainly rather than
+assumed away.
+
+| Control                | Requirement                                                                                                                                                             |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Local DB encryption    | Encrypted at rest with a key in Windows Credential Manager (`keyring`, implemented). Machine-bound; a copied `.db` file is useless without the key.                     |
+| Capability scope       | The 12 Tauri permissions are the **maximum**; `fs` scopes stay confined to app dirs. Any widening requires an ADR. `shell` MUST NOT expose arbitrary command execution. |
+| CSP                    | Current strict CSP (`object-src 'none'`, `frame-ancestors 'none'`) is normative; loosening it requires an ADR.                                                          |
+| IPC boundary           | Every Rust command validates and type-checks its input. The webview is treated as untrusted (XSS in the renderer must not become code execution on the host).           |
+| Multi-session/RDS      | Per-user data isolation verified under RDS/Citrix: user A must not read user B's database. Explicit test, because shared-desktop deployments are common in finance.     |
+| Screen-capture posture | Field masking (§10.3) applies identically on desktop. Optional screenshot-protection flag for restricted views.                                                         |
+| Crash dumps            | Scrubbed of monetary values and PII **before** transmission (F-DESK-012).                                                                                               |
+| Supply chain           | Rust dependencies pinned via `Cargo.lock`; `cargo audit` in the release pipeline once a Rust toolchain exists (K2 blocks this today — see §23.8).                       |
+
+## 23.7 New risks arising from the desktop surface
+
+| ID   | Risk                                                                                                                                                       | L   | I   | Score  | Mitigation                                                                                                                                           |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R-24 | **The desktop app cannot be built or verified in this environment** — no `cargo`/`rustc` (K2). Rust changes ship blind; the Windows build is unproven here | 5   | 4   | **20** | §23.8 verification protocol: no Rust edits without a real toolchain; Windows build/test runs on a real machine or CI runner before any desktop claim |
+| R-25 | Uninstall or a botched upgrade destroys the only copy of a customer's ledger (§0.6.1: local is currently authoritative)                                    | 3   | 5   | **15** | Uninstall defaults to keeping data; pre-migration automatic backup; W0.8 makes the server authoritative so local loss is recoverable                 |
+| R-26 | Crash reports or telemetry exfiltrate monetary values from a customer machine                                                                              | 3   | 5   | **15** | F-DESK-012 redaction before transmission; the §12.3 egress chokepoint rule extends to crash/telemetry paths; egress test in CI                       |
+| R-27 | Unsigned installer trips SmartScreen; enterprise buyers cannot deploy and trust collapses at first contact                                                 | 4   | 4   | **16** | Code signing mandatory for GA (§23.4); reputation warm-up before public launch; MSI for managed deployment                                           |
+| R-28 | WebView2 absent or policy-blocked on older Windows 10 → blank window on launch                                                                             | 3   | 4   | 12     | Evergreen bootstrapper + offline installer variant; explicit actionable error, never a blank window; Tier-1 test on a clean Win10 22H2 image         |
+
+## 23.8 Verification protocol under K2 (honesty about what cannot be proven here)
+
+**This sandbox has no `cargo`, no `rustc`, and no Windows.** Therefore every claim in this
+section is **"designed for, not proven"** until executed on real hardware. Per §22.6 and
+ADR-004 this is stated rather than glossed:
+
+```
+CANNOT be verified in this environment:
+  · Windows build, installer generation, silent install, code signing
+  · WebView2 bootstrapping behaviour on a clean Windows 10 image
+  · RDS/Citrix multi-session isolation
+  · Native print fidelity
+  · Any change to src-tauri/src/*.rs (no compiler → no feedback → no blind edits)
+
+CAN be verified here:
+  · tauri.conf.json / capabilities JSON schema correctness (static)
+  · The TypeScript side of every desktop feature
+  · Migration SQL under src-tauri/migrations/ (SQLite runs headless)
+  · Documentation and gate definitions
+```
+
+**Binding rule:** no `src-tauri/src/*.rs` file is modified from this environment without a
+real toolchain, and **no desktop capability is marked BUILT until it has been executed on
+Windows** by a human or a Windows CI runner. Desktop CI (a `windows-latest` matrix leg)
+ships as a numbered `ci-patches/*.patch` per ADR-011.
+
+## 23.9 Desktop Definition of Done (additive to §22.1)
+
+```
+□ Installs on clean Windows 11 and clean Windows 10 22H2 via MSI and NSIS, silently and interactively
+□ No blank window: WebView2 present, bootstrapped, or a clear actionable error
+□ Launch to interactive ≤ 3 s on the Tier-1 reference machine
+□ Full offline session: model, calculate, report with the network disabled
+□ Financial data in %APPDATA% SQLite, encrypted, key in Credential Manager — never localStorage
+□ Uninstall preserves data by default; upgrade preserves data and auto-backs-up pre-migration
+□ Installer is code-signed; SmartScreen clean (GA)
+□ Print output matches preview (§14.8)
+□ Per-user isolation verified under RDS multi-session
+□ Crash reports contain zero monetary values or PII (automated scan)
+□ Auto-update: signed and policy-disableable, or explicitly disabled — never ambiguous
+□ Every desktop claim executed on real Windows, per §23.8 — no capability marked BUILT from this sandbox
+```
+
+# SECTION 24 — THE ZERO-ESCAPE CONTRACT (ALL-IN-ONE, MEASURED)
+
+**Status:** normative, added session 005 at explicit direction: _"an all-in-one FP&A tool, a
+one-stop solution, so the user doesn't have to use any other tool."_
+
+"All-in-one" is a slogan until it is measured. This section converts it into a falsifiable
+contract with a metric, a ledger, and a CI gate.
+
+## 24.1 The escape event (definition)
+
+> An **escape** is any moment a user must leave OmniPlan to complete a finance workflow that
+> OmniPlan claims to support.
+
+Three kinds, in descending severity:
+
+| Kind                    | Definition                                                                                        | Verdict                                                                 |
+| ----------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Hard escape**         | The workflow is impossible in-product. The user opens Excel/Word/PowerPoint/a BI tool to finish.  | **Defect.** Must be scheduled or the claim withdrawn.                   |
+| **Soft escape**         | Possible in-product but so poor the user leaves anyway (too slow, too many clicks, worse output). | **Defect.** Equivalent to a hard escape; users do not grade on a curve. |
+| **Legitimate boundary** | Outside FP&A's remit — filing with a tax authority, signing a contract, running payroll.          | **Not a defect** — but must be a _governed handoff_ (§24.4).            |
+
+**The distinction that matters:** a legitimate boundary is a place where finance work leaves
+the finance function. An escape is where it leaves _our product_ while remaining finance work.
+Confusing the two is how "all-in-one" quietly becomes false.
+
+## 24.2 The Escape Ledger (normative; the all-in-one scoreboard)
+
+Every workflow a finance team performs in a month is enumerated, classified, and owned.
+This is the operative test of the one-stop promise.
+
+**UVI (User Value Index) is redefined to include escape rate**, so the index cannot rise
+while users still leave the product:
+
+```
+Escape Rate = (hard escapes + soft escapes) / total workflows in the ledger
+Target: Phase 1 ≤ 40%   Phase 2 ≤ 20%   Phase 3 / GA ≤ 5%
+GA gate: ZERO hard escapes in the Core-20 (§24.3).
+```
+
+| #   | Workflow                             | Today       | Owning feature                   | Target phase | Escape class if unmet    |
+| --- | ------------------------------------ | ----------- | -------------------------------- | ------------ | ------------------------ |
+| 1   | Build/maintain an operating model    | PARTIAL     | F-CORE-001/011                   | 1            | Hard (→ Excel)           |
+| 2   | Rolling forecast                     | PARTIAL     | F-PLAN-001                       | 1            | Hard (→ Excel)           |
+| 3   | Budget cycle + submissions           | PARTIAL     | F-PLAN-002, F-WORKFLOW-008       | 1            | Hard (→ Excel)           |
+| 4   | Actuals ingestion from ERP           | PARTIAL     | F-INTEGRATE-000/001              | 1            | Hard (→ manual CSV)      |
+| 5   | Variance analysis + commentary       | PARTIAL     | F-REPORT-003, F-AI-004           | 1            | Soft                     |
+| 6   | Three-statement model                | PARTIAL     | F-CORE-002, F-PLAT-004           | 0            | Hard                     |
+| 7   | Multi-entity consolidation           | PARTIAL     | F-CORE-006                       | 2            | Hard (→ Excel)           |
+| 8   | FX translation (IAS 21)              | BUILT       | F-CORE-005                       | 1            | Hard                     |
+| 9   | Intercompany elimination             | NOT STARTED | A.8                              | 2            | Hard (→ Excel)           |
+| 10  | Period close checklist               | PARTIAL     | F-CLOSE-001, A.4                 | 2            | Hard (→ BlackLine)       |
+| 11  | Journal entries + adjustments        | PARTIAL     | A.4                              | 2            | Hard                     |
+| 12  | Reconciliations                      | PARTIAL     | XIX-C, A.4                       | 2            | Hard (→ Excel)           |
+| 13  | **Board pack production**            | PARTIAL     | F-REPORT-006, A.17               | 2            | **Hard (→ PowerPoint)**  |
+| 14  | Management reporting pack            | PARTIAL     | F-REPORT-002                     | 1            | Hard                     |
+| 15  | Ad-hoc analysis / slice-and-dice     | PARTIAL     | F-REPORT-004, **F-ANALYSIS-001** | 2            | **Soft (→ Excel/BI)**    |
+| 16  | Dashboards + KPI monitoring          | BUILT       | F-REPORT-001                     | 1            | Soft (→ Power BI)        |
+| 17  | Scenario / sensitivity analysis      | PARTIAL     | F-CORE-010, F-PLAN-004           | 1            | Hard                     |
+| 18  | Headcount / workforce planning       | PARTIAL     | F-PLAN-003                       | 2            | Hard (→ Excel)           |
+| 19  | Cash flow forecasting + treasury     | PARTIAL     | A.5                              | 2            | Hard                     |
+| 20  | Capex / project planning             | PARTIAL     | F-PLAN-005                       | 2            | Hard                     |
+| 21  | Revenue recognition (ASC 606)        | NOT STARTED | A.6                              | 3            | Legitimate→governed      |
+| 22  | Lease accounting (IFRS 16)           | NOT STARTED | A.7                              | 3            | Legitimate→governed      |
+| 23  | Tax provision                        | NOT STARTED | A.7                              | 3            | Legitimate→governed      |
+| 24  | Statutory reporting / XBRL           | NOT STARTED | §14.5                            | 3            | **Legitimate boundary**  |
+| 25  | Audit evidence / PBC fulfilment      | PARTIAL     | F-WORKFLOW-007, A.15             | 2            | Hard (→ email+Excel)     |
+| 26  | SOX / ICFR controls testing          | NOT STARTED | A.15                             | 3            | Legitimate→governed      |
+| 27  | Narrative / MD&A authoring           | NOT STARTED | **F-REPORT-013**                 | 2            | **Hard (→ Word)**        |
+| 28  | Data prep / mapping / cleansing      | PARTIAL     | F-INTEGRATE-000, §8.3            | 2            | Hard (→ Excel/ETL)       |
+| 29  | Distributing reports to stakeholders | NOT STARTED | F-REPORT-007                     | 2            | Hard (→ email)           |
+| 30  | Model documentation / handover       | NOT STARTED | **F-REPORT-014**                 | 3            | Soft (→ Word/Confluence) |
+
+**Ledger discipline.** A row may be `Legitimate boundary` **only** with a stated reason and a
+governed handoff (§24.4). Silently reclassifying a hard escape as legitimate to make the
+number look better is a §22.6 honesty-clause violation.
+
+## 24.3 The Core-20 (zero hard escapes at GA)
+
+Rows 1–20 are the **Core-20**: the workflows that define a monthly FP&A cycle. **GA is
+blocked while any Core-20 row is a hard escape.** Rows 21–30 may remain governed boundaries
+at GA provided each has a handoff and a stated roadmap position.
+
+This is the concrete meaning of "the user doesn't have to use any other tool": a full monthly
+cycle — ingest actuals, close, consolidate, analyse variance, reforecast, produce the board
+pack, distribute it — completes without opening Excel, Word, PowerPoint, or a BI tool.
+
+## 24.4 Governed handoff (what a legitimate boundary must provide)
+
+Where OmniPlan legitimately stops, it must hand off rather than dead-end. A governed handoff:
+
+1. **Produces the artefact the receiving system needs** in its required format (e.g. an XBRL
+   instance, a tax-package export, a payment file) — not a screenshot or a raw dump.
+2. **Records the handoff** as an audited event with lineage: what was sent, by whom, from
+   which snapshot, under which FX rate set.
+3. **Reconciles on return** where money comes back (bank statements, payroll postings) per
+   §XIX-C — a handoff without a return reconciliation is an unclosed loop.
+4. **Never loses provenance.** Exported figures carry the §14.5 metadata block so the
+   receiving system's numbers remain traceable to a source fact.
+
+## 24.5 Features added by this analysis
+
+The ledger exposed three gaps with **no owning feature** in §3 — each a hard or soft escape on
+a workflow the product implicitly claims:
+
+| ID                 | Feature                                       | Phase | Why it is required by the all-in-one promise                                                                                                                                                                                                                  |
+| ------------------ | --------------------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **F-ANALYSIS-001** | Native pivot / ad-hoc analysis surface        | 2     | Row 15. "Slice-and-dice" is the single most common reason an FP&A analyst opens Excel against a planning tool. Without a real pivot over the metric store, every other governance guarantee leaks the moment someone needs a cut we did not pre-build.        |
+| **F-REPORT-013**   | Narrative / MD&A authoring with live bindings | 2     | Row 27. Board and management commentary is written in Word today, then numbers are pasted in and go stale. Live-bound narrative (text with metric references that update and re-verify) removes the last document-shaped escape from the board-pack workflow. |
+| **F-REPORT-014**   | Model documentation generator                 | 3     | Row 30. Auto-generated model documentation (drivers, assumptions, lineage, change history) replaces the hand-written Word/Confluence page nobody maintains.                                                                                                   |
+
+These are added to §3.4/§3.3 and scheduled in §18.7, taking the feature universe to **101**.
+
+## 24.6 CI enforcement
+
+```bash
+# 1. Escape ledger must be complete: every row has an owning feature ID and a phase.
+# 2. Every owning feature ID must resolve to a defining row in Section 3.
+# 3. No Core-20 row may be classified "Legitimate boundary" without an ADR reference.
+# 4. Escape rate is computed per release and must not increase (one-way ratchet).
+node scripts/escape-ledger-check.mjs   # wired into docs:verify
+```
+
+**The honest position today.** The measured escape rate is high — most Core-20 rows are
+PARTIAL, and rows 9, 27, and 29 are unowned before this section. OmniPlan is **not** an
+all-in-one product today. This ledger is the instrument that makes the gap visible every
+release instead of at the demo where a user opens Excel.
 
 # APPENDIX A — DOMAIN MODULE SPECIFICATIONS (ADDENDUM II, PARTS XXXI–LX)
 
@@ -3666,16 +4118,17 @@ large (500M).
 
 ## A.19 Client surfaces beyond web (Part XLIX)
 
-| Surface              | Phase | Contract                                                                                                                                                                                                           |
-| -------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Web                  | 1     | Primary. React 19 + Vite (ADR-003).                                                                                                                                                                                |
-| Excel add-in         | 2     | Office.js. Cells bind to metric queries. **Writeback only to unlocked input cells, fully audited, subject to identical period locks and maker-checker.** Offline cache replays through the COL6 conflict protocol. |
-| Google Sheets add-on | 2     | Read-first; writeback under the same rules.                                                                                                                                                                        |
-| Slack / Teams        | 3     | Approve/reject budget lines, ask masked NLQ, complete close tasks. **Never dumps a full P&L into a channel.**                                                                                                      |
-| Mobile               | 2     | Read-only dashboards and approvals; biometric + step-up auth; **no local plaintext database of financials**. Modelling is an explicit non-goal (Section 9.10).                                                     |
-| Browser extension    | 3     | Optional capture of ERP screenshots into the evidence locker.                                                                                                                                                      |
-| Public API + SDKs    | 3     | TypeScript and Python, generated from the OpenAPI document.                                                                                                                                                        |
-| Embed SDK            | 3     | iframe + scoped token for customer portals, field-masked.                                                                                                                                                          |
+| Surface              | Phase | Contract                                                                                                                                                                                                                                                      |
+| -------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Windows desktop**  | **0** | **Tier 1 and already shipping** — Tauri 2 + WebView2, native SQLite, offline modelling, OS credential storage. Full specification in **Section 23**; 12 `F-DESK-*` features in §3.7.1. Per §23.8 nothing here is marked BUILT until executed on real Windows. |
+| Web                  | 1     | Co-primary. React 19 + Vite (ADR-003). Full parity except desktop-only capabilities (§23.3).                                                                                                                                                                  |
+| Excel add-in         | 2     | Office.js. Cells bind to metric queries. **Writeback only to unlocked input cells, fully audited, subject to identical period locks and maker-checker.** Offline cache replays through the COL6 conflict protocol.                                            |
+| Google Sheets add-on | 2     | Read-first; writeback under the same rules.                                                                                                                                                                                                                   |
+| Slack / Teams        | 3     | Approve/reject budget lines, ask masked NLQ, complete close tasks. **Never dumps a full P&L into a channel.**                                                                                                                                                 |
+| Mobile               | 2     | Read-only dashboards and approvals; biometric + step-up auth; **no local plaintext database of financials**. Modelling is an explicit non-goal (Section 9.10).                                                                                                |
+| Browser extension    | 3     | Optional capture of ERP screenshots into the evidence locker.                                                                                                                                                                                                 |
+| Public API + SDKs    | 3     | TypeScript and Python, generated from the OpenAPI document.                                                                                                                                                                                                   |
+| Embed SDK            | 3     | iframe + scoped token for customer portals, field-masked.                                                                                                                                                                                                     |
 
 ---
 
