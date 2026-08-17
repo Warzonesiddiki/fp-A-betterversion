@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { FinancialInstrumentsEngine } from './FinancialInstrumentsEngine';
 
 describe('FinancialInstrumentsEngine', () => {
@@ -136,9 +137,13 @@ describe('FinancialInstrumentsEngine', () => {
     });
 
     it('should calculate WACC', () => {
+      // 0.6×12% + 0.4×6%×(1−25%) = 7.2% + 1.8% = 9%
       const wacc = FinancialInstrumentsEngine.wacc(600, 400, 0.12, 0.06, 0.25);
-      expect(wacc).toBeGreaterThan(0);
-      expect(wacc).toBeLessThan(0.12);
+      expect(wacc).toBe(0.09);
+    });
+
+    it('returns 0 WACC when there is no capital', () => {
+      expect(FinancialInstrumentsEngine.wacc(0, 0, 0.12, 0.06, 0.25)).toBe(0);
     });
 
     it('should have terminal value as significant portion of EV', () => {
@@ -211,5 +216,19 @@ describe('FinancialInstrumentsEngine', () => {
     it('should return 0 for zero PD', () => {
       expect(FinancialInstrumentsEngine.expectedLoss(0, 0.6, 1000000)).toBe(0);
     });
+  });
+});
+
+describe('source-level guards', () => {
+  const source = readFileSync('src/engines/FinancialInstrumentsEngine.ts', 'utf-8')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/.*$/gm, '');
+
+  it('does not subtract bond prices with raw IEEE-754', () => {
+    expect(source).not.toMatch(/calcPrice\s*-\s*price/);
+  });
+
+  it('does not add equityValue and debtValue on floats', () => {
+    expect(source).not.toMatch(/equityValue\s*\+\s*debtValue/);
   });
 });

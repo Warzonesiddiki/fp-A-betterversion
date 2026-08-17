@@ -37,6 +37,7 @@ one, left unfixed, multiplies the cost of everything built on top of it.
 | 0.1.4                        | 100% coverage + mutation ≥ 80% on `src/utils/money.ts`     | Stryker report checked in                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 0.1.5                        | Property tests for allocation, aggregation, FX round-trip  | Section 17.4 suite green                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 0.1.6                        | Type-aware money detection                                 | Upgrade `money-ast-detector.mjs` from name-based to full type resolution via the TS type checker, so money flowing through a generically-named variable is still caught. Expect another honest drop                                                                                                                                                                                                                                                |
+| 0.1.7                        | Fabrication detector                                       | No literal currency/percentage strings in displayed KPI or table values (`value: '$12.4M'`). Export engines fail-closed at zero (session 010 contract). First honest baseline 2026-08-18: **121 findings across 24 files**. Ratchet + pre-push gate 9c (`npm run fabrication:audit`). Does not replace per-module source guards for ratio invention.                                                                                               |
 
 ### Workstream 0.2 — Tenancy & environments (F-PLAT-001, F-OPS-002)
 
@@ -229,6 +230,93 @@ audit can see this class of defect: both needed an actual render probe. The page
 for this module previously asserted only that headings existed and mocked the engine away,
 so it passed throughout. It now renders a known ledger and asserts the figures that reach
 the DOM. **Remaining modules must be verified by rendering, not by reading the memo.**
+
+#### W0.1.1 progress — `TaxProvisionPage.tsx` (2026-08-18)
+
+Fifth module on the worklist: 22 unsafe operations → **0**; ratchet 583 → **561 unsafe
+operations (79.33% safe)**. This move is real: 22 float operations left the product. A new
+safe module (`taxProvisionData.ts`) also entered the denominator.
+
+The float arithmetic was again the smaller defect. The page read the user's GL and then
+invented a four-jurisdiction ASC 740 provision: Federal 70% @ 21%, California 15% @ 8.84%,
+New York 10% @ 6.5%, International 5% @ 12.5%, plus a deferred/current split from more
+ratios, plus a quarterly ETR trend of `18 + ((i * 3) % 5)`. It exported the invention to
+PDF and Excel. Pre-tax income itself was wrong: expenses were prefix-6 only (COGS ignored)
+and `Math.abs` per entry discarded contra. `TaxEngine` — the real ASC 740 engine — was
+never called; calling it with those assumed rates would have been a second fabrication.
+
+Derivation moved to `src/pages/tax/taxProvisionData.ts`. Book tax is emitted only from
+posted accounts (prefixes 4/5/6/7/8). Jurisdiction, deferred/current and statutory
+provision are disclosed as not derivable. Quarterly points are grouped from period tags
+when two or more quarters exist; a single period is not turned into a seasonality curve.
+Pinned by 25 derivation tests + DOM assertions against a known ledger; teeth verified by
+reintroducing `.times(0.7)` (2 tests red).
+
+#### W0.1.7 result — fabrication detector (2026-08-18)
+
+`scripts/fabrication-detector.mjs` is the gate session 010 asked for. It parses the AST
+and flags string literals that look like displayed money (`$12.4M`, `$4.2M`, `$1,234`) or
+percentages (`24.3%`) **only when they are the value of a displayed-figure property**
+(`value`, `val`, `sales`, `variance`, …) plus `taxRate: <number>` in `src/pages`. Template
+marketing copy, SQL `$1`, Excel `$A$1`, format patterns and purpose text are ignored —
+those classes were observed as false positives before the baseline was recorded.
+
+First honest baseline: **121 findings across 24 files** (60 currency, 61 percent). Export
+engines are fail-closed at zero. Enforced as pre-push gate 9c and `npm run fabrication:audit`.
+Both directions pinned by 11 fixture tests in `src/utils/fabricationDetector.test.ts`.
+
+This detector would have caught session 010's board pack. It would **not** have caught
+session 007's ratio invention or this session's `taxRate: 21` table _before_ the page was
+fixed — those are numeric, not formatted strings — which is why per-module source guards
+remain mandatory on every derivation extracted during W0.1.1.
+
+#### W0.1.1 progress — `AutoCommentaryEngine.ts` + REIT fabrication (2026-08-18)
+
+Sixth money module: 16 → **0**; ratchet 561 → **545 (79.44% safe)**. Zero-budget variance
+no longer prints 0%; interpolate no longer currency-formats a growth rate; outlook is the
+YTD-carried-forward identity, not a forecast.
+
+`REITDashboardPage` dropped 20 fabrication findings (121 → **101 / 23 files**). Peer
+quotes and a mocked 5.42% yield are gone; `calculateREITStats` returns null for AFFO,
+NAV/share and yield instead of 10%-of-rent / 1M-shares / 5.42.
+
+#### W0.1.1 progress — `FinancialInstrumentsEngine.ts` + retail fabrication (2026-08-18)
+
+Seventh money module: 15 → **0**; ratchet 545 → **530 (79.56% safe)**. Bond YTM,
+duration, convexity, WACC and trading multiples now use decimal.js. WACC(600,400,12%,6%,25%)
+is the exact 9% identity.
+
+`RetailDashboardPage` dropped 18 fabrication findings (101 → **83 / 22 files**). The
+`$12.4M` / Flagship-NYC demo is gone; the page reads `RetailEngine` + the posted GL.
+
+#### W0.1.1 progress — `GoalSeekPage.tsx` + project-costing fabrication (2026-08-18)
+
+Eighth money module: 14 → **0**; ratchet 530 → **516 (79.72% safe)**. Contribution
+identity is exact (fixed 500k, VC 60%, target 1M ⇒ BE $1,250,000). Empty GL is
+`null`, not a fabricated $1M Monte Carlo base.
+
+`ProjectCostingPage` dropped 11 fabrication findings (83 → **72 / 21 files**).
+`$58.2M` / Downtown Plaza / CSI quotes are gone; the page reads posted prefixes
+5+6 / 4 (excluding 46) / 13 / 46. `constructionStore` v2 defaults are empty.
+
+#### W0.1.1 progress — `ScenarioBuilderPage.tsx` + underwriting fabrication (2026-08-18)
+
+Ninth money module: 14 → **0**; ratchet 516 → **502 (79.88% safe)**. The $48M
+demo base is gone; shocks apply to posted 4/5/6. Growth+pricing stays additive
+(55.2M, not 55.44M). OpEx is an input, not a hidden 14.4M.
+
+`UnderwritingPage` dropped 6 fabrication findings (72 → **66 / 20 files**).
+`96.4%` / CA-2026-012 filings are gone. `insuranceStore` v2 defaults are empty.
+
+#### W0.1.1 progress — `CreditRiskPage.tsx` + executive-summary fabrication (2026-08-18)
+
+Tenth money module: 13 → **0**; ratchet 502 → **489 (80.05% safe)**. Interest is
+no longer 5% of opex; EAD is no longer currentRatio × 1e6 × ROA. Posted
+financials and honest ratios only.
+
+`ExecutiveSummary` dropped 6 fabrication findings (66 → **60 / 19 files**).
+`$4.2M` / SaaS-bookings copy is gone; the component reads posted revenue,
+operating income and cash.
 
 **Exit criterion:** `docs/architecture/PERSISTENCE_MAP.md` exists and is CI-drift-checked; no monetary value
 is persisted as an IEEE-754 `number`; `glStore` is server-authoritative; every local-only

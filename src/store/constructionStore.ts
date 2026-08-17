@@ -43,87 +43,11 @@ export const useConstructionStore = create<ConstructionState>()(
   subscribeWithSelector(
     persist(
       immer((set) => ({
-        costBreakdown: [
-          { name: 'Labor', budget: 1200000, actual: 1150000 },
-          { name: 'Materials', budget: 2400000, actual: 2850000 },
-          { name: 'Equipment', budget: 850000, actual: 720000 },
-          { name: 'Subcontracts', budget: 3200000, actual: 3100000 },
-          { name: 'Overhead', budget: 450000, actual: 480000 },
-        ],
-
-        changeOrders: [
-          {
-            id: 'CO-402',
-            project: 'Downtown Plaza',
-            description: 'Structural steel reinforcement',
-            amount: '+$142k',
-            status: 'Approved',
-            impact: 'High',
-          },
-          {
-            id: 'CO-405',
-            project: 'Skyway Bridge',
-            description: 'Foundation soil remediation',
-            amount: '+$580k',
-            status: 'Pending',
-            impact: 'Critical',
-          },
-          {
-            id: 'CO-398',
-            project: 'Tech Hub',
-            description: 'HVAC specification change',
-            amount: '-$12k',
-            status: 'Approved',
-            impact: 'Low',
-          },
-          {
-            id: 'CO-410',
-            project: 'Downtown Plaza',
-            description: 'Facade material swap',
-            amount: '+$84k',
-            status: 'Rejected',
-            impact: 'Medium',
-          },
-        ],
-
-        costLedger: [
-          {
-            id: '101',
-            code: '03-3000',
-            category: 'Cast-in-Place Concrete',
-            budget: '$1.2M',
-            actual: '$1.1M',
-            variance: '+8.4%',
-            status: 'Under',
-          },
-          {
-            id: '102',
-            code: '05-1000',
-            category: 'Structural Steel',
-            budget: '$2.4M',
-            actual: '$2.9M',
-            variance: '-18.5%',
-            status: 'Over',
-          },
-          {
-            id: '103',
-            code: '23-0000',
-            category: 'HVAC Systems',
-            budget: '$850k',
-            actual: '$820k',
-            variance: '+3.5%',
-            status: 'Under',
-          },
-          {
-            id: '104',
-            code: '26-0000',
-            category: 'Electrical',
-            budget: '$1.5M',
-            actual: '$1.6M',
-            variance: '-6.2%',
-            status: 'Over',
-          },
-        ],
+        // Empty until the user posts a ledger or records a change order.
+        // Persisted v1 seeded Downtown Plaza / CSI quotes; migrate drops them.
+        costBreakdown: [],
+        changeOrders: [],
+        costLedger: [],
 
         setCostBreakdown: enforce(Permissions.BUDGET_UPDATE, 'setCostBreakdown', (items) =>
           set((state) => {
@@ -154,8 +78,13 @@ export const useConstructionStore = create<ConstructionState>()(
       {
         name: 'construction-store',
         storage: masterStorage,
-        version: 1,
-        migrate: (state: unknown) => state,
+        version: 2,
+        migrate: (state: unknown, version: number) => {
+          if (version < 2) {
+            return { costBreakdown: [], changeOrders: [], costLedger: [] };
+          }
+          return state;
+        },
       }
     )
   )

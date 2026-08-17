@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { RealEstateEngine } from './RealEstateEngine';
 import type { GLEntry } from '@/types';
 
@@ -139,17 +140,16 @@ describe('RealEstateEngine', () => {
       expect(result.ffo).toBe(1300000);
     });
 
-    it('should calculate AFFO as FFO minus maintenance CapEx (10% of revenue)', () => {
+    it('does not invent AFFO from a 10% of revenue capex assumption', () => {
       const entries = [
-        gl('4001', 2000000), // rental income
-        gl('5001', 600000), // opex
-        gl('6001', 300000), // dep/amort
-        gl('7001', 100000), // interest
+        gl('4001', 2000000),
+        gl('5001', 600000),
+        gl('6001', 300000),
+        gl('7001', 100000),
       ];
-      // FFO = 1300000, maintenanceCapEx = 2000000 * 0.1 = 200000
-      // AFFO = 1300000 - 200000 = 1100000
       const result = RealEstateEngine.calculateREITStats(entries);
-      expect(result.affo).toBe(1100000);
+      expect(result.ffo).toBe(1300000);
+      expect(result.affo).toBeNull();
     });
 
     it('should calculate payout ratio as dividends / FFO', () => {
@@ -166,28 +166,31 @@ describe('RealEstateEngine', () => {
       expect(result.payoutRatio).toBeCloseTo(38.46, 1);
     });
 
-    it('should return 0 payout ratio when FFO is zero', () => {
+    it('omits payout ratio when FFO is zero rather than reporting 0%', () => {
       const entries = [gl('8001', -500000)];
       const result = RealEstateEngine.calculateREITStats(entries);
-      expect(result.payoutRatio).toBe(0);
+      expect(result.payoutRatio).toBeNull();
     });
 
-    it('should calculate NAV per share assuming 1M shares', () => {
-      const entries = [
-        gl('1601', 20000000), // market value
-        gl('2501', -8000000), // debt
-      ];
-      // NAV = 20000000 - 8000000 = 12000000
-      // navPerShare = 12000000 / 1000000 = 12
+    it('does not invent NAV per share from an assumed 1M share count', () => {
+      const entries = [gl('1601', 20000000), gl('2501', -8000000)];
       const result = RealEstateEngine.calculateREITStats(entries);
-      expect(result.navPerShare).toBe(12);
+      expect(result.navPerShare).toBeNull();
+      expect(result.dividendYield).toBeNull();
     });
 
     it('should handle empty entries', () => {
       const result = RealEstateEngine.calculateREITStats([]);
       expect(result.ffo).toBe(0);
-      expect(result.affo).toBe(0);
-      expect(result.payoutRatio).toBe(0);
+      expect(result.affo).toBeNull();
+      expect(result.payoutRatio).toBeNull();
+      expect(result.dividendYield).toBeNull();
+    });
+
+    it('never returns the retired 5.42 mocked yield', () => {
+      const result = RealEstateEngine.calculateREITStats([gl('4001', 2000000)]);
+      expect(result.dividendYield).not.toBe(5.42);
+      expect(result.dividendYield).toBeNull();
     });
   });
 
@@ -235,5 +238,24 @@ describe('RealEstateEngine', () => {
       const result = RealEstateEngine.getPropertyBreakdown(entries);
       expect(result![0]!.name).toBe('Skyline Tower');
     });
+  });
+});
+
+describe('REIT source guards against reintroduced fabrication', () => {
+  const source = readFileSync('src/engines/RealEstateEngine.ts', 'utf-8')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/.*$/gm, '');
+
+  it('does not hardcode a dividend yield', () => {
+    expect(source).not.toMatch(/5\.42/);
+  });
+
+  it('does not invent AFFO as 10% of rental income', () => {
+    expect(source).not.toMatch(/multiplyMoney\(rentalIncome,\s*['"]0\.1['"]\)/);
+  });
+
+  it('does not invent NAV per share from 1M shares', () => {
+    expect(source).not.toMatch(/1_000_000/);
+    expect(source).not.toMatch(/divideMoney\(\s*nav\s*,\s*1/);
   });
 });

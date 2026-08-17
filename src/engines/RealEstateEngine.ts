@@ -47,10 +47,18 @@ export interface PropertyItem {
 
 export interface REITStats {
   ffo: number;
-  affo: number;
-  navPerShare: number;
-  payoutRatio: number;
-  dividendYield: number;
+  /**
+   * AFFO, NAV/share and dividend yield require maintenance capex, a share
+   * count and a share price. The posted GL does not carry those, so these
+   * are `null` rather than estimated (K18).
+   */
+  affo: number | null;
+  navPerShare: number | null;
+  payoutRatio: number | null;
+  dividendYield: number | null;
+  /** FFO / |dividends| when dividends are posted; otherwise null. */
+  dividendCoverage: number | null;
+  dividends: number;
 }
 
 export interface RealEstateDashboardStats {
@@ -124,24 +132,27 @@ export class RealEstateEngine {
       interest
     );
 
-    // FFO = Net Income + Depreciation + Amortization
+    // FFO = Net Income + Depreciation + Amortization (NAREIT definition).
     const ffo = addMoney(netIncome, depAmort);
 
-    // AFFO = FFO - Maintenance CapEx (assuming 10% of revenue as mock CapEx)
-    const affo = subtractMoney(ffo, multiplyMoney(rentalIncome, '0.1'));
-
-    // NAV = (Market Value - Total Debt) / Shares
-    const portfolio = this.calculatePortfolioStats(entries);
-    const nav = subtractMoney(portfolio.marketValue, sumByPrefix(entries, '25').abs());
+    // AFFO needs posted maintenance capex. Inventing it as 10% of rental
+    // income was a Severity-0 fabrication. NAV/share needs a share count;
+    // dividend yield needs a share price. All three are omitted.
+    const payoutRatio = ffo.lte(0)
+      ? null
+      : roundTo(multiplyMoney(divideMoney(dividends, ffo), 100), RATIO_PLACES);
+    const dividendCoverage = dividends.lte(0)
+      ? null
+      : roundTo(divideMoney(ffo, dividends), RATIO_PLACES);
 
     return {
       ffo: roundTo(ffo, CURRENCY_PLACES),
-      affo: roundTo(affo, CURRENCY_PLACES),
-      navPerShare: roundTo(divideMoney(nav, 1_000_000), RATIO_PLACES), // Assuming 1M shares for scale
-      payoutRatio: ffo.lte(0)
-        ? 0
-        : roundTo(multiplyMoney(divideMoney(dividends, ffo), 100), RATIO_PLACES),
-      dividendYield: 5.42, // Mocked
+      affo: null,
+      navPerShare: null,
+      payoutRatio,
+      dividendYield: null,
+      dividendCoverage,
+      dividends: roundTo(dividends, CURRENCY_PLACES),
     };
   }
 

@@ -1,8 +1,8 @@
 # OmniPlan — Session Handover
 
-**Last updated:** 2026-08-18 (end of session 010)
-**Branch of record:** `arena/01a00e7f-fp-a-betterversion`
-**Merged:** PR #63 → `main`
+**Last updated:** 2026-08-18 (end of session 016)
+**Branch of record:** `arena/01a01148-fp-a-betterversion`
+**Prior merge:** PR #63 → `main`
 
 Paste the "Handover Prompt" section below into a new session to continue.
 
@@ -25,26 +25,31 @@ You are the autonomous Technical Owner / Chief Product Architect for **OmniPlan*
 
 The Article XVIII blueprint gate is **LOCKED** (`.agent/state.json` → `blueprint_status`), so product code is unblocked. Phase 0 / Wave W0.1.1 is in progress: raising AST money safety toward ≥90%.
 
-**Money-AST ratchet: 583 unsafe ops / 179 unsafe modules / 681 safe / 79.19%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b.
+**Money-AST ratchet: 489 unsafe ops / 173 unsafe modules / 694 safe / 80.05%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The 502 → 489 move in session 016 is real (13 float ops left CreditRiskPage).
 
-Completed W0.1.1 modules: `FinancialStatementTemplates` (59→0), `ThreeStatementDashboardPage` (34→0), `SafeMathParser` (27→0), and the two export engines (37 findings, all false positives, fixed in the detector).
+**Fabrication ratchet: 60 findings / 19 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. The 66 → 60 move is real (ExecutiveSummary invented $4.2M pack KPIs removed).
 
-**Next worklist item: `TaxProvisionPage` (22).** Then `AutoCommentaryEngine` (16), `FinancialInstrumentsEngine` (15), `GoalSeekPage` (14), `ScenarioBuilderPage` (14), `mockData/index` (13), `CreditRiskPage` (13), `DashboardPage` (11).
+Completed W0.1.1 modules: `FinancialStatementTemplates` (59→0), `ThreeStatementDashboardPage` (34→0), `SafeMathParser` (27→0), the two export engines (37 findings, all page-geometry false positives), `TaxProvisionPage` (22→0), `AutoCommentaryEngine` (16→0), `FinancialInstrumentsEngine` (15→0), `GoalSeekPage` (14→0), `ScenarioBuilderPage` (14→0), `CreditRiskPage` (13→0).
 
-### Read this before you trust the ratchet
+**Next money-AST worklist item: `DashboardPage` (11).** Skip `mockData/index.ts` (fixture factory).
 
-The single most important lesson of sessions 007–010:
+**Next fabrication worklist (worst first):** `PatientRevenuePage` (5), sector dashboards (Education / Government / Logistics).
+
+### Read this before you trust either ratchet
+
+The single most important lesson of sessions 007–011:
 
 > **The money-AST detector cannot see the worst defects in this codebase.**
 
 It reads _arithmetic_. Every fabrication bug found so far was **hand-typed literals**, which contain no arithmetic at all. Concretely:
 
 - Session 007: a report surface invented statement figures behind a dead data-key mapping.
-- Session 010: `ExportTemplateEngine` hardcoded `$12.4M` revenue, `$2.1M` net income, `24.3%` EBITDA margin (16 literals) that rendered into a **CONFIDENTIAL-stamped board PDF for every entity and every period**, while `ExportContext.data` was never read anywhere in the engine. The detector rated that file clean. Its 26 findings were all page-geometry false positives.
+- Session 010: `ExportTemplateEngine` hardcoded `$12.4M` revenue, `$2.1M` net income, `24.3%` EBITDA margin that rendered into a CONFIDENTIAL-stamped board PDF for every entity and every period.
+- Session 011: `TaxProvisionPage` invented a four-jurisdiction ASC 740 provision (Federal 70%@21%, CA 15%@8.84%, NY 10%@6.5%, International 5%@12.5%) plus a seeded quarterly ETR, and exported it. Pretax itself ignored COGS.
 
-So: **a file at "0 unsafe ops" is un-flagged, not certified.** And the ratchet will cross 90% before the money is trustworthy. When you report progress, say plainly whether a number moved because the product got safer or because measurement got more accurate — the 78.95% → 79.19% move in session 010 was purely the latter and zero numbers became safer.
+The fabrication detector (W0.1.7) now catches the session-010 class (displayed `$12.4M` / `24.3%` in a `value:` property). It does **not** catch numeric ratio invention (`pretax * 0.7`, `taxRate: 21` in a computed object). Per-module source guards remain mandatory on every derivation extracted during W0.1.1.
 
-**Recommended next strategic move (my judgement, not yet approved by the user):** build a **fabrication gate** — no literal currency/percentage strings in template or fixture definitions reachable by an export path — before grinding further down the findings worklist. Two of four sessions found fabrication; none of it was caught by a gate. The user was offered this choice at the end of session 010 and has not yet answered; ask.
+So: **a file at "0 unsafe ops" or "0 fabrication findings" is un-flagged, not certified.** When you report progress, say plainly whether a number moved because the product got safer or because measurement got more accurate.
 
 ### Hard-won rules (violating these has cost real time)
 
@@ -58,11 +63,14 @@ So: **a file at "0 unsafe ops" is un-flagged, not certified.** And the ratchet w
 - **Never lower a gate to pass it (§22.6).** If a gate fails, cut the _next_ phase's scope. Gate changes require an ADR.
 - Only `src/utils/money.ts` is money-safe. **Never** `src/utils/decimalUtils.ts`.
 - Do not guess engine field names (`IncomeStatementData` uses `opex`). Pair every source-text guard with a DOM assertion using the real engine.
+- **Source guards must not trip on disclosure prose.** Session 011's first guard matched the sentence that _named_ the invented jurisdictions. Strip comments, then match assignment patterns (`jurisdiction: '…'`, `.times(0.7)`), not words.
+- **Do not call a correct engine with invented inputs.** `TaxEngine.computeProvision` is money-safe; feeding it `taxRate: 0.21` the GL does not carry would launder a fabrication through a trusted API.
+- **A waterfall that adds the residual as a third step double-counts.** Pretax − tax is the bridge; do not also add net income.
 
 ### Environment and workflow
 
-- **Session is fixed to branch `arena/01a00e7f-fp-a-betterversion`.** Commit and push only there.
-- **Pre-commit** (~45s): eslint (staged) → `tsc --noEmit` → prettier (staged) → secret scan. **Pre-push** (~3–5 min): 11 gates incl. build, P0 shard, README claim checks, money ratchet, cascade-hold ledger.
+- **Session is fixed to branch `arena/01a01148-fp-a-betterversion`.** Commit and push only there.
+- **Pre-commit** (~45s): eslint (staged) → `tsc --noEmit` → prettier (staged) → secret scan. **Pre-push** (~3–5 min): 12 gates incl. build, P0 shard, README claim checks, money ratchet, fabrication ratchet, cascade-hold ledger.
 - **Always push via `start_process`**, never `bash` — pre-push exceeds the bash timeout. Poll with `get_process_output`.
 - **Always `npx prettier --write` before `git add`** on any JSON or MD you generated, or pre-commit fails with husky exit 123.
 - A tracker hook auto-commits `docs(tracker): auto-update progress tracker` after your commits. Expected, not an error.
@@ -71,14 +79,14 @@ So: **a file at "0 unsafe ops" is un-flagged, not certified.** And the ratchet w
 - Sandbox restores wipe `node_modules/` and rewind `HEAD`. First symptom is `Cannot find module 'typescript'`. Recover: `git fetch origin <branch>` → `git reset --soft <sha>` → bare `git reset` → `npm install`.
 - vitest 4.1.7 has **no `basic` reporter** — use default or `--reporter=dot`. Full suite ≈15 min. `0 tests` reported ⇒ suspect a parse error.
 
-### Open debts (carried, none closed)
+### Open debts (carried, none closed this session except the fabrication detector)
 
 **Correctness / gates**
 
-- No fabrication detector (literal financial values reachable by an export path). **Highest-value gap.**
+- Fabrication worklist uncleaned: 60 displayed invented figures across 19 files (ratcheted; ExecutiveSummary invented pack KPIs cleaned in session 016).
 - No detector for raw floats crossing a render/format boundary. Live instance: `ProfessionalExportEngine` types rows as `(string|number)[][]` and passes them to `autoTable` with only column 0 stringified — an unformatted float prints `0.30000000000000004` into a board pack.
 - Detector blind spot: single-line arrow bodies over `args[i]!` (logged for W0.1.6, type-based detection).
-- No automated detector for value fabrication or view/memo divergence.
+- No automated detector for numeric ratio invention or view/memo divergence (source guards are per-module).
 - Re-derive the remaining `formula-functions/financial.ts` oracle values from published Excel output.
 - `ODDFPRICE` / `ODDLPRICE` bodies are byte-identical and both ignore `_firstPeriod` / `_lastPeriod`.
 
@@ -109,18 +117,22 @@ R-21 no system of record (20) · R-22 money-gate false-green (20) · R-24 deskto
 
 ## Key file map
 
-| Path                                 | What it is                                                                         |
-| ------------------------------------ | ---------------------------------------------------------------------------------- |
-| `MASTER HANDOVER PROMPT.txt`         | The Codex, 3,765 lines. Part XVIII @136–853 (blueprint genesis), Addendum II @1965 |
-| `.agent/BLUEPRINT.md`                | Locked blueprint, 25 sections + Appendix A (generated)                             |
-| `.agent/blueprint-parts/`            | **Source of truth** — edit here, concatenate in numeric order                      |
-| `.agent/PROJECT_JOURNAL.md`          | Session narrative + ADRs 001–013. Sessions 007–010 carry the correctness lessons   |
-| `.agent/state.json`                  | `blueprint_status`, indices, phase, queue                                          |
-| `scripts/money-ast-detector.mjs`     | AST money-safety detector (`--update --list --file --json`)                        |
-| `scripts/money-ast-baseline.json`    | Ratchet baseline (583 / 79.19%)                                                    |
-| `src/utils/money.ts`                 | **The only** money primitive: decimal.js, precision 40, ROUND_HALF_UP              |
-| `src/utils/moneyAstDetector.test.ts` | Detector regression locks incl. the `margin` precision fix                         |
-| `MASTER_ROADMAP.md`                  | Waves 1–14; 1–6 done, 7 in progress                                                |
+| Path                                    | What it is                                                                         |
+| --------------------------------------- | ---------------------------------------------------------------------------------- |
+| `MASTER HANDOVER PROMPT.txt`            | The Codex, 3,765 lines. Part XVIII @136–853 (blueprint genesis), Addendum II @1965 |
+| `.agent/BLUEPRINT.md`                   | Locked blueprint, 25 sections + Appendix A (generated)                             |
+| `.agent/blueprint-parts/`               | **Source of truth** — edit here, concatenate in numeric order                      |
+| `.agent/PROJECT_JOURNAL.md`             | Session narrative + ADRs 001–013. Sessions 007–012 carry the correctness lessons   |
+| `.agent/state.json`                     | `blueprint_status`, indices, phase, queue                                          |
+| `scripts/money-ast-detector.mjs`        | AST money-safety detector (`--update --list --file --json`)                        |
+| `scripts/money-ast-baseline.json`       | Ratchet baseline (489 / 80.05%)                                                    |
+| `scripts/fabrication-detector.mjs`      | Displayed-literal fabrication detector (W0.1.7)                                    |
+| `scripts/fabrication-baseline.json`     | Ratchet baseline (60 / 19 files)                                                   |
+| `src/utils/money.ts`                    | **The only** money primitive: decimal.js, precision 40, ROUND_HALF_UP              |
+| `src/utils/moneyAstDetector.test.ts`    | Detector regression locks incl. the `margin` precision fix                         |
+| `src/utils/fabricationDetector.test.ts` | Fabrication detector must-catch / must-ignore locks                                |
+| `src/pages/tax/taxProvisionData.ts`     | Book-tax derivation (no invented jurisdictions)                                    |
+| `MASTER_ROADMAP.md`                     | Waves 1–14; 1–6 done, 7 in progress                                                |
 
 ## Useful commands
 
@@ -129,6 +141,8 @@ node scripts/money-ast-detector.mjs              # check ratchet
 node scripts/money-ast-detector.mjs --list       # ranked worklist
 node scripts/money-ast-detector.mjs --file <p>   # single file
 node scripts/money-ast-detector.mjs --update     # rebaseline (then prettier --write)
+node scripts/fabrication-detector.mjs            # check fabrication ratchet
+node scripts/fabrication-detector.mjs --list     # ranked worklist
 npx vitest run <path> --reporter=dot             # targeted tests
 npm run docs:verify                              # docs gates
 ```

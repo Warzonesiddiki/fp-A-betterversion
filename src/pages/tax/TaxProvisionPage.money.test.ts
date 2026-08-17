@@ -1,85 +1,76 @@
 /**
- * GAP-1 (F-0006) known-answer tests for TaxProvisionPage money patterns.
+ * GAP-1 (F-0006) known-answer tests for tax-provision money patterns.
  *
- * Verifies computeTaxRevenue and computeTaxExpenses use exact money
- * primitives without IEEE-754 floating-point drift.
+ * The previous helpers (computeTaxRevenue / computeTaxExpenses) lived in the
+ * page and used Math.abs on prefix-6 only. Derivation now lives in
+ * taxProvisionData.ts; these pin the same known answers against it.
  */
 
 import { describe, expect, it } from 'vitest';
-import { computeTaxRevenue, computeTaxExpenses } from '@/pages/tax/TaxProvisionPage';
-import type { GLEntry } from '@/types';
+import { deriveTaxProvision, type TaxProvisionGLEntry } from './taxProvisionData';
 
-function makeEntry(code: string, debit: number, credit: number): GLEntry {
+function makeEntry(code: string, debit: number, credit: number): TaxProvisionGLEntry {
   return {
-    id: `entry-${code}-${debit}-${credit}`,
     accountCode: code,
-    accountName: `Account ${code}`,
     debit,
     credit,
-    netChange: debit - credit,
-  } as GLEntry;
+  };
 }
 
 describe('TaxProvisionPage money patterns — known answers (GAP-1)', () => {
-  it('computeTaxRevenue returns 0 for empty entries', () => {
-    expect(computeTaxRevenue([])).toBe(0);
-    expect(computeTaxExpenses([])).toBe(0);
+  it('returns 0 for empty entries', () => {
+    const d = deriveTaxProvision([]);
+    expect(d.revenue.toNumber()).toBe(0);
+    expect(d.opex.toNumber()).toBe(0);
+    expect(d.pretaxIncome.toNumber()).toBe(0);
   });
 
-  it('computeTaxRevenue calculates credit-dominant revenue from accounts starting with 4', () => {
-    const entries = [makeEntry('4000', 0, 10000), makeEntry('4100', 0, 5000)];
-    expect(computeTaxRevenue(entries)).toBe(15000);
+  it('calculates credit-dominant revenue from accounts starting with 4', () => {
+    const d = deriveTaxProvision([makeEntry('4000', 0, 10000), makeEntry('4100', 0, 5000)]);
+    expect(d.revenue.toNumber()).toBe(15000);
   });
 
-  it('computeTaxExpenses calculates absolute expenses from accounts starting with 6', () => {
-    const entries = [makeEntry('6000', 3000, 0), makeEntry('6100', 1500, 0)];
-    expect(computeTaxExpenses(entries)).toBe(4500);
+  it('calculates operating expenses from accounts starting with 6 without Math.abs', () => {
+    const d = deriveTaxProvision([makeEntry('6000', 3000, 0), makeEntry('6100', 1500, 0)]);
+    expect(d.opex.toNumber()).toBe(4500);
   });
 
-  it('computeTaxRevenue and computeTaxExpenses ignore unrelated accounts', () => {
-    const entries = [
+  it('ignores unrelated (balance-sheet) accounts when computing pretax', () => {
+    const d = deriveTaxProvision([
       makeEntry('1000', 10000, 0),
       makeEntry('2000', 0, 5000),
       makeEntry('4000', 0, 2000),
       makeEntry('6000', 500, 0),
-    ];
-    expect(computeTaxRevenue(entries)).toBe(2000);
-    expect(computeTaxExpenses(entries)).toBe(500);
+    ]);
+    expect(d.revenue.toNumber()).toBe(2000);
+    expect(d.opex.toNumber()).toBe(500);
+    expect(d.pretaxIncome.toNumber()).toBe(1500);
   });
 
   it('handles decimal amounts accurately using exact money primitives', () => {
-    const entries = [
+    const d = deriveTaxProvision([
       makeEntry('4000', 0, 0.1),
       makeEntry('4100', 0, 0.2),
       makeEntry('6000', 0.05, 0),
       makeEntry('6100', 0.02, 0),
-    ];
-    expect(computeTaxRevenue(entries)).toBe(0.3);
-    expect(computeTaxExpenses(entries)).toBe(0.07);
+    ]);
+    expect(d.revenue.toNumber()).toBe(0.3);
+    expect(d.opex.toNumber()).toBe(0.07);
+    expect(d.pretaxIncome.toNumber()).toBe(0.23);
   });
 
   it('handles credit-dominant revenue correctly without sign inversion', () => {
-    const entries = [
-      makeEntry('4000', 100, 500), // net credit 400
-    ];
-    expect(computeTaxRevenue(entries)).toBe(400);
+    const d = deriveTaxProvision([makeEntry('4000', 100, 500)]);
+    expect(d.revenue.toNumber()).toBe(400);
   });
 
-  it('computeTaxRevenue sums multiple revenue accounts correctly', () => {
-    const entries = [
-      makeEntry('4010', 0, 1000),
-      makeEntry('4020', 0, 2000),
-      makeEntry('4030', 0, 3000),
-    ];
-    expect(computeTaxRevenue(entries)).toBe(6000);
-  });
-
-  it('computeTaxExpenses sums multiple expense accounts correctly', () => {
-    const entries = [
-      makeEntry('6010', 100, 0),
-      makeEntry('6020', 200, 0),
-      makeEntry('6030', 300, 0),
-    ];
-    expect(computeTaxExpenses(entries)).toBe(600);
+  it('includes COGS (prefix 5) in pretax — the previous helper ignored it', () => {
+    const d = deriveTaxProvision([
+      makeEntry('4000', 0, 1000),
+      makeEntry('5000', 400, 0),
+      makeEntry('6000', 250, 0),
+    ]);
+    expect(d.cogs.toNumber()).toBe(400);
+    expect(d.pretaxIncome.toNumber()).toBe(350);
   });
 });

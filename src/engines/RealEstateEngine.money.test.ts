@@ -19,9 +19,9 @@ describe('RealEstateEngine (money migration)', () => {
     expect(stats.ltv).toBe(40.5405405405);
   });
 
-  it('calculateREITStats returns exact cents on FFO/AFFO', () => {
+  it('calculateREITStats returns exact cents on FFO and omits unauditable AFFO', () => {
     const stats = RealEstateEngine.calculateREITStats(entries);
     expect(stats.ffo).toBe(1480000.0);
-    expect(stats.affo).toBe(1240000.0);
+    expect(stats.affo).toBeNull();
   });
 });

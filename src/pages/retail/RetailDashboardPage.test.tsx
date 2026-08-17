@@ -194,3 +194,41 @@ describe('RetailDashboard (Data-Driven)', () => {
     expect(firstRow).toEqual(['Store S-01', 100000, 40000, 20000, 60000, 30000, '30.0%']);
   });
 });
+
+import RetailDashboardPage from './RetailDashboardPage';
+
+describe('RetailDashboardPage — no fabricated figures', () => {
+  beforeEach(() => {
+    useGLStore.setState({ entries: [] });
+  });
+
+  it('shows empty state and no invented KPIs when the GL is empty', () => {
+    render(
+      <MemoryRouter>
+        <RetailDashboardPage />
+      </MemoryRouter>
+    );
+    expect(screen.getByText(/No Retail Data/i)).toBeInTheDocument();
+    const body = document.body.textContent ?? '';
+    expect(body).not.toMatch(/\$12\.4M/);
+    expect(body).not.toMatch(/Flagship NYC/);
+    expect(body).not.toMatch(/6\.8%/);
+    expect(body).not.toMatch(/24\.2%/);
+  });
+
+  it('renders GL-derived store totals instead of invented peer quotes', () => {
+    useGLStore.setState({ entries: mockEntries });
+    render(
+      <MemoryRouter>
+        <RetailDashboardPage />
+      </MemoryRouter>
+    );
+    const body = document.body.textContent ?? '';
+    expect(body).toMatch(/Retail Dashboard/i);
+    expect(body).toMatch(/\$300,000/);
+    expect(body).not.toMatch(/\$12\.4M/);
+    expect(body).not.toMatch(/Flagship NYC/);
+    expect(body).not.toMatch(/Westside LA/);
+    expect(body).toMatch(/not derivable/i);
+  });
+});

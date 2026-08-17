@@ -108,8 +108,8 @@ export class FinancialInstrumentsEngine {
         periodsToMaturity,
         periodsPerYear
       );
-      const diff = calcPrice - price;
-      if (Math.abs(diff) < tolerance) break;
+      const diff = subtractMoney(calcPrice, price);
+      if (diff.abs().lt(tolerance)) break;
 
       const derivative = this.bondPriceDerivative(
         faceValue,
@@ -118,7 +118,8 @@ export class FinancialInstrumentsEngine {
         periodsToMaturity,
         periodsPerYear
       );
-      ytm -= diff / derivative;
+      if (derivative === 0) break;
+      ytm = subtractMoney(ytm, divideMoney(diff, derivative)).toNumber();
     }
     return ytm;
   }
@@ -133,7 +134,7 @@ export class FinancialInstrumentsEngine {
     const h = 1e-6;
     const p1 = this.bondPrice(faceValue, couponRate, ytm + h, periodsToMaturity, periodsPerYear);
     const p2 = this.bondPrice(faceValue, couponRate, ytm - h, periodsToMaturity, periodsPerYear);
-    return (p1 - p2) / (2 * h);
+    return divideMoney(subtractMoney(p1, p2), 2 * h).toNumber();
   }
 
   static bondDuration(
@@ -143,18 +144,21 @@ export class FinancialInstrumentsEngine {
     periodsToMaturity: number,
     periodsPerYear: number = 2
   ): number {
-    const coupon = (faceValue * couponRate) / periodsPerYear;
-    const rate = ytm / periodsPerYear;
+    const coupon = divideMoney(multiplyMoney(faceValue, couponRate), periodsPerYear);
+    const rate = divideMoney(ytm, periodsPerYear);
     const n = periodsToMaturity * periodsPerYear;
-    const price = this.bondPrice(faceValue, couponRate, ytm, periodsToMaturity, periodsPerYear);
+    const price = toDecimal(
+      this.bondPrice(faceValue, couponRate, ytm, periodsToMaturity, periodsPerYear)
+    );
+    const onePlusR = toDecimal(1).plus(rate);
 
-    let weightedCF = 0;
+    let weightedCF = toDecimal(0);
     for (let t = 1; t <= n; t++) {
-      weightedCF += (t * coupon) / Math.pow(1 + rate, t);
+      weightedCF = addMoney(weightedCF, divideMoney(multiplyMoney(t, coupon), onePlusR.pow(t)));
     }
-    weightedCF += (n * faceValue) / Math.pow(1 + rate, n);
+    weightedCF = addMoney(weightedCF, divideMoney(multiplyMoney(n, faceValue), onePlusR.pow(n)));
 
-    return weightedCF / price / periodsPerYear;
+    return divideMoney(divideMoney(weightedCF, price), periodsPerYear).toNumber();
   }
 
   static bondConvexity(
@@ -164,18 +168,26 @@ export class FinancialInstrumentsEngine {
     periodsToMaturity: number,
     periodsPerYear: number = 2
   ): number {
-    const coupon = (faceValue * couponRate) / periodsPerYear;
-    const rate = ytm / periodsPerYear;
+    const coupon = divideMoney(multiplyMoney(faceValue, couponRate), periodsPerYear);
+    const rate = divideMoney(ytm, periodsPerYear);
     const n = periodsToMaturity * periodsPerYear;
-    const price = this.bondPrice(faceValue, couponRate, ytm, periodsToMaturity, periodsPerYear);
+    const price = toDecimal(
+      this.bondPrice(faceValue, couponRate, ytm, periodsToMaturity, periodsPerYear)
+    );
+    const onePlusR = toDecimal(1).plus(rate);
 
-    let convexity = 0;
+    let convexity = toDecimal(0);
     for (let t = 1; t <= n; t++) {
-      convexity += (coupon * t * (t + 1)) / Math.pow(1 + rate, t + 2);
+      const tTerm = multiplyMoney(multiplyMoney(coupon, t), t + 1);
+      convexity = addMoney(convexity, divideMoney(tTerm, onePlusR.pow(t + 2)));
     }
-    convexity += (faceValue * n * (n + 1)) / Math.pow(1 + rate, n + 2);
+    const nTerm = multiplyMoney(multiplyMoney(faceValue, n), n + 1);
+    convexity = addMoney(convexity, divideMoney(nTerm, onePlusR.pow(n + 2)));
 
-    return convexity / (price * periodsPerYear * periodsPerYear);
+    return divideMoney(
+      convexity,
+      multiplyMoney(multiplyMoney(price, periodsPerYear), periodsPerYear)
+    ).toNumber();
   }
 
   static accruedInterest(
@@ -313,7 +325,7 @@ export class FinancialInstrumentsEngine {
     netDebt: number,
     sharesOutstanding: number
   ): DCFResult {
-    const lastFCF = toDecimal(freeCashFlows[freeCashFlows.length - 1]!);
+    const lastFCF = toDecimal(freeCashFlows.at(-1)!);
     const g = toDecimal(terminalGrowthRate);
     const r = toDecimal(wacc);
     const nd = toDecimal(netDebt);
@@ -336,13 +348,15 @@ export class FinancialInstrumentsEngine {
     );
     const enterpriseValueDec = addMoney(pvFCFsDec, pvTerminal);
     const enterpriseValue = roundTo(enterpriseValueDec);
-    const equityValue = roundTo(subtractMoney(enterpriseValueDec, nd)) / shares.toNumber(); // equity per share
+    const equityValue = shares.isZero()
+      ? 0
+      : roundTo(divideMoney(subtractMoney(enterpriseValueDec, nd), shares));
 
     return {
       freeCashFlows,
       terminalValue,
       enterpriseValue,
-      equityValue: roundTo(equityValue),
+      equityValue,
       wacc,
     };
   }
@@ -354,10 +368,14 @@ export class FinancialInstrumentsEngine {
     costOfDebt: number,
     taxRate: number
   ): number {
-    const total = equityValue + debtValue;
-    const equityWeight = equityValue / total;
-    const debtWeight = debtValue / total;
-    return equityWeight * costOfEquity + debtWeight * costOfDebt * (1 - taxRate);
+    const capital = addMoney(equityValue, debtValue);
+    if (capital.isZero()) return 0;
+    const equityWeight = divideMoney(equityValue, capital);
+    const debtWeight = divideMoney(debtValue, capital);
+    return equityWeight
+      .times(costOfEquity)
+      .plus(debtWeight.times(costOfDebt).times(toDecimal(1).minus(taxRate)))
+      .toNumber();
   }
 
   // ---------------------------------------------------------------------------
@@ -372,11 +390,12 @@ export class FinancialInstrumentsEngine {
     sharesOutstanding: number,
     stockPrice: number
   ): Record<string, number> {
+    const marketCap = multiplyMoney(stockPrice, sharesOutstanding);
     return {
-      evRevenue: enterpriseValue / revenue,
-      evEbitda: enterpriseValue / ebitda,
-      peRatio: (stockPrice * sharesOutstanding) / netIncome,
-      priceToSales: (stockPrice * sharesOutstanding) / revenue,
+      evRevenue: divideMoney(enterpriseValue, revenue).toNumber(),
+      evEbitda: divideMoney(enterpriseValue, ebitda).toNumber(),
+      peRatio: divideMoney(marketCap, netIncome).toNumber(),
+      priceToSales: divideMoney(marketCap, revenue).toNumber(),
     };
   }
 

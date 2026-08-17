@@ -1,8 +1,9 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { useGLStore } from '@/store/glStore';
 import { ExecutiveSummary } from './ExecutiveSummary';
 
 vi.mock('@/components/ui/Card', () => ({
@@ -13,53 +14,85 @@ vi.mock('@/components/ui/Card', () => ({
   ),
 }));
 
-vi.mock('@/components/ui/Sparkline', () => ({
-  Sparkline: ({ data, color }: { data: number[]; color?: string }) => (
-    <div data-testid="sparkline" data-color={color} data-points={data.length} />
-  ),
-}));
+describe('ExecutiveSummary — no fabricated pack figures', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    useGLStore.setState({ entries: [] });
+  });
 
-describe('ExecutiveSummary', () => {
   it('renders without crashing', () => {
     render(<ExecutiveSummary />);
   });
 
-  it('renders the Revenue KPI', () => {
+  it('shows empty KPIs and no invented $4.2M / SaaS commentary when the GL is empty', () => {
     render(<ExecutiveSummary />);
     expect(screen.getByText('Revenue')).toBeInTheDocument();
-    expect(screen.getByText('$4.2M')).toBeInTheDocument();
-    expect(screen.getByText('+12% vs budget')).toBeInTheDocument();
+    expect(screen.getByText('Operating income')).toBeInTheDocument();
+    expect(screen.getByText('Cash')).toBeInTheDocument();
+    const body = document.body.textContent ?? '';
+    expect(body).not.toMatch(/\$4\.2M/);
+    expect(body).not.toMatch(/\$1\.1M/);
+    expect(body).not.toMatch(/\$850k/);
+    expect(body).not.toMatch(/\+12%/);
+    expect(body).not.toMatch(/SaaS bookings/);
+    expect(body).toMatch(/not derivable/i);
   });
 
-  it('renders the EBITDA KPI', () => {
+  it('renders posted revenue and operating income from the GL', () => {
+    useGLStore.setState({
+      entries: [
+        {
+          id: '1',
+          accountId: '4000',
+          accountCode: '4000',
+          accountName: 'Revenue',
+          period: '2026-01',
+          periodName: 'Jan',
+          debit: 0,
+          credit: 1000,
+          netChange: 1000,
+          date: '2026-01-15',
+          amount: 1000,
+          description: 'Sale',
+          reference: '',
+        },
+        {
+          id: '2',
+          accountId: '5000',
+          accountCode: '5000',
+          accountName: 'COGS',
+          period: '2026-01',
+          periodName: 'Jan',
+          debit: 400,
+          credit: 0,
+          netChange: 400,
+          date: '2026-01-15',
+          amount: 400,
+          description: 'COGS',
+          reference: '',
+        },
+        {
+          id: '3',
+          accountId: '1000',
+          accountCode: '1000',
+          accountName: 'Cash',
+          period: '2026-01',
+          periodName: 'Jan',
+          debit: 600,
+          credit: 0,
+          netChange: 600,
+          date: '2026-01-15',
+          amount: 600,
+          description: 'Cash',
+          reference: '',
+        },
+      ] as never,
+    });
     render(<ExecutiveSummary />);
-    expect(screen.getByText('EBITDA')).toBeInTheDocument();
-    expect(screen.getByText('$1.1M')).toBeInTheDocument();
-    expect(screen.getByText('+4% vs budget')).toBeInTheDocument();
-  });
-
-  it('renders the Cash Flow KPI', () => {
-    render(<ExecutiveSummary />);
-    expect(screen.getByText('Cash Flow')).toBeInTheDocument();
-    expect(screen.getByText('$850k')).toBeInTheDocument();
-    expect(screen.getByText('-2% vs budget')).toBeInTheDocument();
-  });
-
-  it('renders sparkline charts for each KPI', () => {
-    render(<ExecutiveSummary />);
-    const sparklines = screen.getAllByTestId('sparkline');
-    expect(sparklines).toHaveLength(3);
-  });
-
-  it('renders the Management Commentary section', () => {
-    render(<ExecutiveSummary />);
-    expect(screen.getByText('Management Commentary')).toBeInTheDocument();
-    expect(screen.getByText(/Strong revenue performance/)).toBeInTheDocument();
-  });
-
-  it('renders commentary with expected content', () => {
-    render(<ExecutiveSummary />);
-    expect(screen.getByText(/Operating expenses remained within budget/)).toBeInTheDocument();
-    expect(screen.getByText(/Cash position strengthened/)).toBeInTheDocument();
+    const body = document.body.textContent ?? '';
+    expect(body).toMatch(/\$1,000/);
+    expect(body).toMatch(/\$600/);
+    expect(body).not.toMatch(/\$4\.2M/);
+    expect(body).not.toMatch(/SaaS bookings/);
   });
 });

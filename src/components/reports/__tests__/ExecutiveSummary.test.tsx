@@ -1,22 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@/test/testUtils';
+import { useGLStore } from '@/store/glStore';
 import { ExecutiveSummary } from '../ExecutiveSummary';
 
 vi.mock('@/components/ui/Card', () => ({ Card: ({ children }: any) => <div>{children}</div> }));
-vi.mock('@/components/ui/Sparkline', () => ({ Sparkline: () => <div data-testid="sparkline" /> }));
 
 describe('ExecutiveSummary', () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    useGLStore.setState({ entries: [] });
+  });
 
   it('renders KPI cards', () => {
     render(<ExecutiveSummary />);
     expect(screen.getByText('Revenue')).toBeTruthy();
-    expect(screen.getByText('EBITDA')).toBeTruthy();
-    expect(screen.getByText('Cash Flow')).toBeTruthy();
+    expect(screen.getByText('Operating income')).toBeTruthy();
+    expect(screen.getByText('Cash')).toBeTruthy();
   });
 
-  it('renders commentary', () => {
+  it('renders the not-derivable disclosure instead of invented commentary', () => {
     render(<ExecutiveSummary />);
-    expect(screen.getByText('Management Commentary')).toBeTruthy();
+    expect(screen.getByText(/Not derivable from the posted GL/i)).toBeTruthy();
   });
 });
