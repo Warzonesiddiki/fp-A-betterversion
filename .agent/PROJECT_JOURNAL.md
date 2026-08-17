@@ -389,3 +389,68 @@ the three wrong values. **Remaining W0.1.1 modules are to be verified by renderi
 reading the memo.** Whether this becomes a general gate is still open — noted as a candidate
 rather than adopted, since a naive "every page must have a DOM-value test" rule would be
 expensive and easy to satisfy vacuously.
+
+---
+
+## Session 009 — W0.1.1 module 3: `SafeMathParser.ts` (27 unsafe ops → 0)
+
+**Commit** `58afb95`. Ratchet 647 → 620 unsafe ops (78.84% → 78.95%). SafeMathParser tests
+381 → 400; all 275 formula-function tests green; full suite 13,819 passing.
+
+**Why 381 green tests certified broken money.** Every existing test passed the _optional_
+argument explicitly. `const [days = 0] = args` binds the parameter to `0`, never `undefined`,
+so the downstream `days ?? 365` was dead code. `DSO(5000,800)` returned **0** instead of 58.4
+— and a zeroed DSO reads as "customers pay instantly", the sort of number that survives
+review because it is clean rather than obviously wrong. Five defaults were dead this way
+(DPO, DSO, DSI, and the DDB/VDB `factor`). The related `args[i]! ?? N` sites were fine: the
+`!` is erased at runtime, so those defaults do fire. **The general rule: exercise optional
+arguments by OMITTING them.** The new regression suite does exactly that, and every one of
+its assertions failed before this commit.
+
+Four further defects, all found by _executing_ the parser rather than reading it: DDB was off
+by one period (`DDB(2400,300,10,1)` → 384, Excel 480); VDB ignored `start_period` because both
+branches of its `if` were byte-identical, and VDB had **no test at all**; EBITDA/EBIT/NOPAT/
+FCFF/FCFE/WACC ran on raw floats (`EBITDA(0.3,0.1,0.1)` → `0.09999999999999998`);
+DOLLAR_DE/DOLLAR_FR took `log10(0)` when `fraction` was 0, producing `-Infinity`.
+
+**The structural finding: this file was a duplicate.** A correct, oracle-tested implementation
+of DDB/VDB/DPO/DSI/DSO already existed in `formula-functions/financial.ts`, using the money
+helpers and with real parameter defaults. SafeMathParser had been maintaining a second,
+divergent copy. Delegating (no import cycle — that module does not import this one) removes
+the fork rather than repairing it, which is the only outcome consistent with K19's
+"don't fork the engine". **Before repairing any duplicated engine code, grep for an existing
+canonical implementation first.**
+
+**An oracle test was itself wrong.** Delegating surfaced an off-by-one in the canonical VDB,
+pinned by a test asserting `VDB(10000,1000,5,2,4) === 4704`. Excel's VDB window is
+start-EXCLUSIVE and end-inclusive — period N is `VDB(N-1,N)`, per Microsoft's published
+`VDB(2400,300,10,0,1) = 480`. Summing from `start` instead of `start+1` double-counts period
+`start`; it only looked correct at `start=0` because `DDB(...,0)` is 0. Implementation and
+test both corrected against the vendor spec. A test named "oracle" is only an oracle if its
+expected values came from the oracle; this one came from the implementation. Worth re-deriving
+the other oracle values from published Excel output at some point rather than trusting the name.
+
+**A detector gap, recorded honestly.** The money-AST detector reported 0 unsafe ops for this
+file while `EBITDA` was still doing float subtraction, because the heuristic is name-based and
+`args[0]! - args[1]!` contains no money-like identifier. The regression test caught it, the
+detector did not. This is the known limitation already tracked as W0.1.6 (type-based
+detection); noting it here as a concrete instance of the false-green it produces. **A file at
+"0 unsafe ops" is not certified — it is merely un-flagged.**
+
+**Ratios were converted, but deliberately, not mechanically.** Eleven of the 27 findings were
+dimensionless quotients (CURRENT_RATIO, ROE, margins). These are not money and wrapping them
+in money helpers would be wrong; they were moved to Decimal for exactness and given
+zero-denominator guards, which is a different change with a different justification.
+
+**Collateral fix: the smoke-test store mocks were broken.** The full-suite run surfaced
+`budgetLines.filter is not a function` in `smoke-all-pages.test.tsx`. This was **already
+failing on HEAD** and is a regression from session 007's module-1 work that the module-scoped
+test runs never showed — a reminder that a green targeted run says nothing about the suite.
+Root cause was in the mock, not the page: all 12 store mocks were `vi.fn(() => state)`, which
+ignores any selector, so a component calling `useBudgetStore((s) => s.lineItems)` received the
+whole state object. The new `mockStore` helper applies the selector when given one. Verified
+it still fails on a genuinely broken page, so it is a fix rather than a suppression.
+
+**Next:** module 4 is `ProfessionalExportEngine` (26). Carried debts unchanged:
+`scripts/escape-ledger-check.mjs`, wiring `docs:links --strict` into `docs:verify`, retiring
+legacy `money:adoption`, W0.8 persistence authority.
