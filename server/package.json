@@ -25,6 +25,10 @@
     "uuid": "^11.1.0",
     "zod": "^3.24.1"
   },
+  "overrides": {
+    "ip-address": "^10.5.0",
+    "body-parser": "^1.20.6"
+  },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/better-sqlite3": "^7.6.12",
