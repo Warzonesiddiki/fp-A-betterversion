@@ -706,3 +706,49 @@ DOM probes reject `$12.4M` and Flagship NYC.
 ### Next
 
 Money-AST: `GoalSeekPage` (14). Fabrication: `ProjectCostingPage` (11).
+
+---
+
+## Session 014 — 2026-08-18 — GoalSeekPage + ProjectCostingPage
+
+**Branch:** `arena/01a01148-fp-a-betterversion`
+
+### 1. `GoalSeekPage` (14 → 0). Ratchet 530 → **516 (79.72% safe)**
+
+Real drop: 14 float operations left the product. Unsafe modules 176 → 175.
+Two new safe modules (`goalSeekModel.ts`, `projectCostingData.ts`) entered the
+denominator.
+
+The page did IEEE-754 `fixed / (cm / 100)` and `(fixed + target) / (cm / 100)`,
+abs'd every expense, and invented a **$1,000,000** Monte Carlo revenue base
+when the GL was empty. Percentile ranks were flagged because `profits.length`
+inherited money-ness from `profit` — those are index arithmetic and stay
+outside money helpers (session 013 `.at(-1)` class).
+
+Derivation moved to `src/pages/analytics/goalSeekModel.ts`. Known answer:
+fixed 500k / VC 60% / target 1M ⇒ CM 40%, BE **$1,250,000**, revenue-for-target
+**$3,750,000**. Inverse recovers the 60%. Empty ledger is `null`, not $1M.
+Volatility is a labelled model assumption, not a hidden `* 0.1`. Teeth:
+reintroducing `.times(0.1)` fails the known-answer + source guard.
+
+### 2. `ProjectCostingPage` (11 → 0 fabrication). Ratchet 83 → **72 / 21 files**
+
+The page ignored the GL and rendered `$58.2M`, `92.4%` utilisation, `$1.24M`
+pending COs, a CPI of `0.98`, Downtown Plaza / Skyway Bridge change orders and
+a CSI ledger with `+$8.4%` rows. `constructionStore` persisted the same quotes
+as defaults for every tenant.
+
+Derivation is `src/pages/construction/projectCostingData.ts`: posted costs
+(prefixes 5+6), contract revenue (prefix 4 excluding 46 — 46 would have been
+swallowed as revenue), WIP 13, billings 46, over/under when both exist. Change
+orders, CSI budgets and CPI are disclosed, not estimated. Store defaults are
+empty; persist v1→v2 drops the seeded quotes. Teeth: injecting `$58.2M` fails
+the DOM probe.
+
+`ConstructionEngine.calculateStats` is still unused here — it multiplies
+revenue by 1.5 to invent backlog and abs's every amount.
+
+### Next
+
+Money-AST: `ScenarioBuilderPage` (14). Fabrication: `UnderwritingPage` (6),
+`ExecutiveSummary` (6).

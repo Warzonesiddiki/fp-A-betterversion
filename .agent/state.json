@@ -1,6 +1,6 @@
 {
   "codex": "ULTIMA",
-  "session_id": "sess_013",
+  "session_id": "sess_014",
   "updated_at": "2026-08-18T00:00:00Z",
   "capabilities": {
     "git": true,
@@ -161,14 +161,14 @@
       "supersedes": "money-adoption.mjs import proxy (reported 25.44%, could not see float arithmetic)",
       "note": "Numbers are not comparable; 740 previously-invisible unsafe ops are now ratcheted."
     },
-    "next": "Continue W0.1.1 worst-first (GoalSeekPage next); fabrication worklist ProjectCostingPage (11)",
+    "next": "Continue W0.1.1 worst-first (ScenarioBuilderPage next); fabrication worklist UnderwritingPage (6)",
     "W0.1.1": {
       "status": "IN PROGRESS",
       "target": "AST money safety >= 90%",
       "current": {
-        "unsafeOperations": 530,
-        "unsafeModules": 176,
-        "safetyPercent": 79.56
+        "unsafeOperations": 516,
+        "unsafeModules": 175,
+        "safetyPercent": 79.72
       },
       "completedModules": [
         "src/pages/reports/FinancialStatementTemplates.tsx (59 -> 0; derivation extracted to src/pages/reports/financialStatementData.ts)",
@@ -177,7 +177,8 @@
         "src/engines/ProfessionalExportEngine.ts + ExportTemplateEngine.ts (37 findings, all page-geometry false positives; detector precision fix)",
         "src/pages/tax/TaxProvisionPage.tsx (22 -> 0; derivation extracted to src/pages/tax/taxProvisionData.ts)",
         "src/engines/AutoCommentaryEngine.ts (16 -> 0; decimal variance, no 0% on zero budget, interpolate no longer currency-formats rates)",
-        "src/engines/FinancialInstrumentsEngine.ts (15 -> 0; bond YTM/duration/convexity/WACC/comps on decimal.js)"
+        "src/engines/FinancialInstrumentsEngine.ts (15 -> 0; bond YTM/duration/convexity/WACC/comps on decimal.js)",
+        "src/pages/analytics/GoalSeekPage.tsx (14 -> 0; derivation extracted to src/pages/analytics/goalSeekModel.ts)"
       ],
       "severity0FindingsFixed": [
         "Balance sheet, P&L splits and the entire budget column were fabricated from hardcoded ratios (cash = assets*0.15, budget = actual*0.95, variance% literal 5.3) while reading the real GL; exportable to PDF/Excel from /reports/templates.",
@@ -188,10 +189,11 @@
         "Cash flow was classified by account-code prefix (4/6 operating, 1 investing, 2/3 financing), conflating accrual results with cash movement. Net change is now measured on the cash account; the activity split is disclosed as not derivable rather than estimated.",
         "TaxProvisionPage invented a four-jurisdiction ASC 740 provision (Federal 70%@21%, CA 15%@8.84%, NY 10%@6.5%, International 5%@12.5%) plus a seeded quarterly ETR and exported it. Pretax ignored COGS and used Math.abs. TaxEngine was never called.",
         "AutoCommentaryEngine used IEEE-754 actual-budget and reported 0% when budget was zero; interpolate currency-formatted growth rates. REITDashboardPage shipped Prologis/AMT/Equinix quotes plus a mocked 5.42% yield, 10% of rent as AFFO and 1M-share NAV for every entity.",
-        "RetailDashboardPage shipped $12.4M / 6.8% / 24.2% and Flagship NYC store quotes with no GL. FinancialInstrumentsEngine still did calcPrice-price and equityValue+debtValue on floats despite claiming a full money migration."
+        "RetailDashboardPage shipped $12.4M / 6.8% / 24.2% and Flagship NYC store quotes with no GL. FinancialInstrumentsEngine still did calcPrice-price and equityValue+debtValue on floats despite claiming a full money migration.",
+        "GoalSeekPage used IEEE-754 fixed/(cm/100) and invented a $1,000,000 Monte Carlo base on an empty GL. ProjectCostingPage shipped $58.2M / 92.4% / Downtown Plaza change orders with no ledger; constructionStore persisted the same quotes as tenant defaults."
       ],
       "processFinding": "mock-data:audit cannot see this class of defect - it looks for synthetic arrays, this was inline arithmetic on real data. Remaining worklist modules must be reviewed for fabricated values, not only unsafe arithmetic.",
-      "nextWorstFirst": ["src/pages/analytics/GoalSeekPage.tsx (14)"],
+      "nextWorstFirst": ["src/pages/scenarios/ScenarioBuilderPage.tsx (14)"],
       "processFinding2": "View-layer divergence is a distinct blind spot: both modules fixed so far had a roughly correct computation and a view that disagreed with it. Neither the AST detector nor mock-data:audit can see it; both required a render probe. The existing page test passed throughout because it mocked the engine and asserted only headings. It now renders a known ledger and asserts DOM figures. Remaining W0.1.1 modules must be verified by rendering."
     },
     "W0.1.6": {
@@ -203,12 +205,12 @@
       "completed": "2026-08-18",
       "deliverable": "scripts/fabrication-detector.mjs + 11 fixture tests + pre-push gate 9c",
       "baseline": {
-        "modulesScanned": 778,
-        "filesWithFindings": 22,
-        "findings": 83,
+        "modulesScanned": 780,
+        "filesWithFindings": 21,
+        "findings": 72,
         "byKind": {
-          "currency-literal": 44,
-          "percent-literal": 39
+          "currency-literal": 38,
+          "percent-literal": 34
         },
         "exportEngineViolations": 0
       },

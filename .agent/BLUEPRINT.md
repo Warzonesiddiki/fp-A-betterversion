@@ -2625,6 +2625,16 @@ is the exact 9% identity.
 `RetailDashboardPage` dropped 18 fabrication findings (101 → **83 / 22 files**). The
 `$12.4M` / Flagship-NYC demo is gone; the page reads `RetailEngine` + the posted GL.
 
+#### W0.1.1 progress — `GoalSeekPage.tsx` + project-costing fabrication (2026-08-18)
+
+Eighth money module: 14 → **0**; ratchet 530 → **516 (79.72% safe)**. Contribution
+identity is exact (fixed 500k, VC 60%, target 1M ⇒ BE $1,250,000). Empty GL is
+`null`, not a fabricated $1M Monte Carlo base.
+
+`ProjectCostingPage` dropped 11 fabrication findings (83 → **72 / 21 files**).
+`$58.2M` / Downtown Plaza / CSI quotes are gone; the page reads posted prefixes
+5+6 / 4 (excluding 46) / 13 / 46. `constructionStore` v2 defaults are empty.
+
 **Exit criterion:** `docs/architecture/PERSISTENCE_MAP.md` exists and is CI-drift-checked; no monetary value
 is persisted as an IEEE-754 `number`; `glStore` is server-authoritative; every local-only
 surface says so.
