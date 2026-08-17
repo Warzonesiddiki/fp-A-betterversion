@@ -190,8 +190,14 @@ describe('depreciation (Excel-verified)', () => {
     expect(DDB(10000, 1000, 5, 3)).toBe(1440);
     expect(DDB(10000, 1000, 5, 5)).toBe(296);
   });
-  it('VDB sums DDB over the period window', () => {
-    expect(VDB(10000, 1000, 5, 2, 4)).toBe(4704);
+  it('VDB sums DDB over a start-exclusive, end-inclusive window', () => {
+    // Excel: the Nth period's depreciation is VDB(..., N-1, N).
+    // Microsoft's published example: VDB(2400,300,10,0,1) = 480.
+    expect(VDB(2400, 300, 10, 0, 1)).toBe(480);
+    expect(VDB(2400, 300, 10, 1, 2)).toBe(384);
+    expect(VDB(2400, 300, 10, 0, 2)).toBe(864);
+    // Periods 3 and 4 of DDB(10000,1000,5,.) = 1440 + 864.
+    expect(VDB(10000, 1000, 5, 2, 4)).toBe(2304);
   });
 });
 
