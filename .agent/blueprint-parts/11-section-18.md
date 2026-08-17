@@ -31,12 +31,12 @@ one, left unfixed, multiplies the cost of everything built on top of it.
 | #                            | Item                                                       | Acceptance                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | ---------------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 0.1.0 ✅ **DONE 2026-08-17** | **Replace the adoption detector before trusting the gate** | The current `money:adoption` scanner counts modules that _import_ `@/utils/money` via regex. Importing the primitive is not proof of using it. Replace with an **AST detector** that flags arithmetic (`+ - * / +=`), comparison (`> < ===`), and `reduce` accumulation on values whose type resolves to a monetary type. Adoption = modules with **zero** unsafe monetary operations. Re-baseline honestly; the number will fall before it rises. |
-| 0.1.2                        | Type-aware money detection                                 | Upgrade `money-ast-detector.mjs` from name-based to full type resolution via the TS type checker, so money flowing through a generically-named variable is still caught. Expect another honest drop                                                                                                                                                                                                                                                |
 | 0.1.1                        | Complete money-primitive migration                         | Safety ≥ 90% measured by the **0.1.0 AST detector** (`npm run money:ast`). First honest baseline 2026-08-17: **78.55% safe — 740 unsafe monetary operations across 184 of 858 monetary modules**. Ratchet enforces monotonic improvement                                                                                                                                                                                                           |
 | 0.1.2                        | Eliminate float paths                                      | Detector reports 0 unsafe monetary operations in financial paths — including the **persistence boundary** (§0.6.1: `localStorage` JSON round-trips) and the store-selector layer, not only `toFixed`/`parseFloat`/`Number()`. Guardrail fails the build on reintroduction                                                                                                                                                                          |
 | 0.1.3                        | Money type is total                                        | `Money = {amount: Decimal, currency: CurrencyCode}`; no bare number crosses an engine boundary                                                                                                                                                                                                                                                                                                                                                     |
 | 0.1.4                        | 100% coverage + mutation ≥ 80% on `src/utils/money.ts`     | Stryker report checked in                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 0.1.5                        | Property tests for allocation, aggregation, FX round-trip  | Section 17.4 suite green                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| 0.1.6                        | Type-aware money detection                                 | Upgrade `money-ast-detector.mjs` from name-based to full type resolution via the TS type checker, so money flowing through a generically-named variable is still caught. Expect another honest drop                                                                                                                                                                                                                                                |
 
 ### Workstream 0.2 — Tenancy & environments (F-PLAT-001, F-OPS-002)
 
@@ -135,7 +135,46 @@ gate 9b and `npm run money:ast`.
 
 **Known limitation (honest):** monetary identification is name-based, not type-based.
 It cannot see money flowing through a variable called `x`. Upgrading to full type
-resolution via the TypeScript type checker is tracked as **W0.1.2**.
+resolution via the TypeScript type checker is tracked as **W0.1.6**.
+
+#### W0.1.1 progress — `FinancialStatementTemplates.tsx` (2026-08-17)
+
+The worst module on the W0.1.1 worklist (59 unsafe operations) is now at **0**, taking the
+ratchet from 740 → **681 unsafe operations (78.7% safe)**.
+
+The float arithmetic turned out to be the _smaller_ defect. The page fabricated financial
+statements from hardcoded ratios while reading the user's real general ledger: cash was
+`assets * 0.15`, receivables `assets * 0.1`, product revenue `revenue * 0.7`, the budget
+column `revenue * 0.95`, and variance percentages were literals (`5.3`) that did not even
+agree with the variance dollars beside them. The output was exportable to PDF and Excel
+from `/reports/templates`. Under K18 this is Severity-0: invented numbers presented as
+statements are worse than an error, because they are plausible.
+
+Two further defects surfaced while fixing it:
+
+- **Only 10 of the 110 emitted keys ever rendered.** The renderer builds its lookup key as
+  `label.toLowerCase().replace(/[^a-z]/g,'')`, so `'product revenue_actual'` (with a space)
+  could never match `productrevenue_actual`. Measured on a live render: 126 of 161 cells
+  were already showing an em dash. Most of the fabrication was dead code that only _looked_
+  authoritative in source review.
+- **Contra entries were double-counted.** Sums used `Math.abs(debit - credit)`, so a sales
+  return or vendor credit _increased_ revenue and COGS instead of reducing them.
+
+Derivation moved to `src/pages/reports/financialStatementData.ts` — decimal.js throughout,
+debit-normal and credit-normal netting per account class, and a hard rule: a line is emitted
+only when the posted GL supports it. Captions the GL cannot substantiate (cash vs
+receivables, D&A, cash-flow activities) are omitted and listed in an on-screen
+"not derivable from the posted General Ledger" disclosure, so absence is explained rather
+than silently blank. Budget-vs-Actual now reads posted `budgetStore` line items and omits
+all budget columns when none exist.
+
+Pinned by 21 tests in `src/pages/reports/financialStatementData.test.ts`, including a
+source-level guard that fails if any ratio multiplier (`* 0.15`, `.times(0.15)`) reappears
+in the derivation module. The guard was verified to fail when a ratio is reintroduced.
+
+**Note for the remaining worklist:** the mock-data audit did not catch this, because it
+looks for synthetic _arrays_ and this fabrication was inline arithmetic on real data.
+Remaining W0.1.1 modules must be read for invented values, not only for float arithmetic.
 
 **Exit criterion:** `docs/architecture/PERSISTENCE_MAP.md` exists and is CI-drift-checked; no monetary value
 is persisted as an IEEE-754 `number`; `glStore` is server-authoritative; every local-only
@@ -147,25 +186,25 @@ surface says so.
 that could not be honestly sized under a week were split; the split is shown here so the
 sizing claim is auditable rather than asserted.
 
-| Item                            | Sub-tasks (each ≤ 1 week)                                                                                                                                                                                            |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0.1.1 Money migration to 60%    | (a) adoption scanner + ratchet script · (b) convert consolidation + variance engines · (c) convert forecast + scenario engines · (d) convert server route boundaries · (e) convert store selectors that format money |
-| 0.1.2 Eliminate float paths     | (a) guardrail script + allow-list of non-financial uses · (b) remediate `src/engines` hits · (c) remediate `server/src` hits                                                                                         |
-| 0.1.3 Total money type          | (a) type definition + codemod · (b) engine boundary signatures · (c) fix fallout                                                                                                                                     |
-| 0.2.1 `tenant_id` everywhere    | (a) M001 migration + backfill · (b) repository signature change · (c) rehearsal test on a seeded copy                                                                                                                |
-| 0.2.2 Environments              | (a) M002 migration · (b) `environment_id` on governed objects · (c) default-to-prod backfill                                                                                                                         |
-| 0.2.3 Repository pattern        | (a) inventory SQL outside `server/src/db/` · (b) move it · (c) guardrail rule                                                                                                                                        |
-| 0.2.4 Policy predicate compiler | (a) predicate DSL + compiler · (b) mandatory query-builder filter · (c) per-table leak test generator                                                                                                                |
-| 0.3.1 Runtime oracle            | (a) extract oracle from test harness into an engine module · (b) wire into write path · (c) non-disableable assertion + negative test                                                                                |
-| 0.4.1 Error registry            | (a) registry source + codegen · (b) migrate existing thrown errors · (c) lint rule                                                                                                                                   |
-| 0.5.1 Route inventory           | (a) route extractor → `docs/product/ROUTE_MAP.md` · (b) pillar classification · (c) drift check in CI                                                                                                                |
-| 0.5.2 Shell + palette           | (a) five-pillar shell · (b) ⌘K palette · (c) permission filtering · (d) ≤3-click E2E                                                                                                                                 |
-| 0.5.3 Route consolidation       | (a) redirect table · (b) collapse batch 1 (≈80 routes) · (c) collapse batch 2 · (d) 404 sweep                                                                                                                        |
-| 0.6.1 LLM chokepoint            | (a) chokepoint module · (b) ban direct SDK imports · (c) redaction default + egress test                                                                                                                             |
-| 0.8.1 Persistence inventory     | (a) enumerate + classify 43 stores · (b) write `docs/architecture/PERSISTENCE_MAP.md` · (c) CI drift check                                                                                                           |
-| 0.8.2 Money-safe serialization  | (a) decimal-string codec · (b) apply to financial stores · (c) 10k-case round-trip property test                                                                                                                     |
-| 0.8.4 Schema fork closure       | (a) diff the two schema sources · (b) reconcile · (c) CI equality gate                                                                                                                                               |
-| 0.8.6 `glStore` authority spike | (a) server read/write path · (b) offline replica + reconnect · (c) typed conflict resolution on decimals                                                                                                             |
+| Item                            | Sub-tasks (each ≤ 1 week)                                                                                                                                                                                                                                                             |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.1.1 Money safety to 90%       | (a) AST detector + ratchet script (done 0.1.0) · (b) `FinancialStatementTemplates.tsx` (done — 59 → 0) · (c) convert consolidation + variance engines · (d) convert forecast + scenario engines · (e) convert server route boundaries · (f) convert store selectors that format money |
+| 0.1.2 Eliminate float paths     | (a) guardrail script + allow-list of non-financial uses · (b) remediate `src/engines` hits · (c) remediate `server/src` hits                                                                                                                                                          |
+| 0.1.3 Total money type          | (a) type definition + codemod · (b) engine boundary signatures · (c) fix fallout                                                                                                                                                                                                      |
+| 0.2.1 `tenant_id` everywhere    | (a) M001 migration + backfill · (b) repository signature change · (c) rehearsal test on a seeded copy                                                                                                                                                                                 |
+| 0.2.2 Environments              | (a) M002 migration · (b) `environment_id` on governed objects · (c) default-to-prod backfill                                                                                                                                                                                          |
+| 0.2.3 Repository pattern        | (a) inventory SQL outside `server/src/db/` · (b) move it · (c) guardrail rule                                                                                                                                                                                                         |
+| 0.2.4 Policy predicate compiler | (a) predicate DSL + compiler · (b) mandatory query-builder filter · (c) per-table leak test generator                                                                                                                                                                                 |
+| 0.3.1 Runtime oracle            | (a) extract oracle from test harness into an engine module · (b) wire into write path · (c) non-disableable assertion + negative test                                                                                                                                                 |
+| 0.4.1 Error registry            | (a) registry source + codegen · (b) migrate existing thrown errors · (c) lint rule                                                                                                                                                                                                    |
+| 0.5.1 Route inventory           | (a) route extractor → `docs/product/ROUTE_MAP.md` · (b) pillar classification · (c) drift check in CI                                                                                                                                                                                 |
+| 0.5.2 Shell + palette           | (a) five-pillar shell · (b) ⌘K palette · (c) permission filtering · (d) ≤3-click E2E                                                                                                                                                                                                  |
+| 0.5.3 Route consolidation       | (a) redirect table · (b) collapse batch 1 (≈80 routes) · (c) collapse batch 2 · (d) 404 sweep                                                                                                                                                                                         |
+| 0.6.1 LLM chokepoint            | (a) chokepoint module · (b) ban direct SDK imports · (c) redaction default + egress test                                                                                                                                                                                              |
+| 0.8.1 Persistence inventory     | (a) enumerate + classify 43 stores · (b) write `docs/architecture/PERSISTENCE_MAP.md` · (c) CI drift check                                                                                                                                                                            |
+| 0.8.2 Money-safe serialization  | (a) decimal-string codec · (b) apply to financial stores · (c) 10k-case round-trip property test                                                                                                                                                                                      |
+| 0.8.4 Schema fork closure       | (a) diff the two schema sources · (b) reconcile · (c) CI equality gate                                                                                                                                                                                                                |
+| 0.8.6 `glStore` authority spike | (a) server read/write path · (b) offline replica + reconnect · (c) typed conflict resolution on decimals                                                                                                                                                                              |
 
 **Phase 0 independence proof.** Phase 0 has **zero dependencies on Phase 1 deliverables**.
 Specifically, it does not require: the lineage graph (F-PLAT-005), the metric store

@@ -77,7 +77,7 @@
     "reaudited_at": "2026-08-17T00:00:00Z",
     "reaudit_session": "session_004",
     "reaudit_findings": 8,
-    "reaudit_record": ".agent/BLUEPRINT.md §22.8",
+    "reaudit_record": ".agent/BLUEPRINT.md \u00a722.8",
     "feature_counts": {
       "total": 113,
       "built": 33,
@@ -145,7 +145,7 @@
       "DEI": 95
     }
   },
-  "phase": "Phase 0 — Foundation (executing)",
+  "phase": "Phase 0 \u2014 Foundation (executing)",
   "phase0": {
     "W0.1.0": {
       "status": "DONE",
@@ -161,10 +161,34 @@
       "supersedes": "money-adoption.mjs import proxy (reported 25.44%, could not see float arithmetic)",
       "note": "Numbers are not comparable; 740 previously-invisible unsafe ops are now ratcheted."
     },
-    "W0.1.2": {
-      "status": "PLANNED",
-      "summary": "Type-aware detection via TS type checker (name-based today)"
+    "next": "Continue W0.1.1 worst-first (ThreeStatementDashboardPage next), then W0.8 persistence authority",
+    "W0.1.1": {
+      "status": "IN PROGRESS",
+      "target": "AST money safety >= 90%",
+      "current": {
+        "unsafeOperations": 681,
+        "unsafeModules": 183,
+        "safetyPercent": 78.7
+      },
+      "completedModules": [
+        "src/pages/reports/FinancialStatementTemplates.tsx (59 -> 0; derivation extracted to src/pages/reports/financialStatementData.ts)"
+      ],
+      "severity0FindingsFixed": [
+        "Balance sheet, P&L splits and the entire budget column were fabricated from hardcoded ratios (cash = assets*0.15, budget = actual*0.95, variance% literal 5.3) while reading the real GL; exportable to PDF/Excel from /reports/templates.",
+        "Contra entries double-counted: Math.abs(debit-credit) made sales returns and vendor credits increase revenue and COGS.",
+        "Only 10 of 110 emitted data keys could ever render (renderer strips non-alpha chars from labels); measured 126 of 161 cells already em dashes."
+      ],
+      "processFinding": "mock-data:audit cannot see this class of defect - it looks for synthetic arrays, this was inline arithmetic on real data. Remaining worklist modules must be reviewed for fabricated values, not only unsafe arithmetic.",
+      "nextWorstFirst": [
+        "src/pages/reports/ThreeStatementDashboardPage.tsx (34)",
+        "src/engines/SafeMathParser.ts (27)",
+        "src/engines/ProfessionalExportEngine.ts (26)",
+        "src/pages/tax/TaxProvisionPage.tsx (22)"
+      ]
     },
-    "next": "W0.1.1 migrate unsafe modules (target safety >=90%), then W0.8 persistence authority"
+    "W0.1.6": {
+      "status": "PLANNED",
+      "summary": "Type-aware detection via TS type checker (name-based today); renumbered from W0.1.2 to resolve an ID collision"
+    }
   }
 }

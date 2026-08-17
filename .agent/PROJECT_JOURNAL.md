@@ -261,3 +261,64 @@ resolution is scheduled as W0.1.2 and will cause another honest drop.
 
 Enforced as pre-push gate 9b and `npm run money:ast`. The legacy ratchet stays for now as a
 second signal; it is retired when W0.1.1 lands.
+
+---
+
+## Session 007 — W0.1.1 begins: the worst money module was also fabricating statements
+
+**Date:** 2026-08-17
+**Branch:** `arena/01a00e7f-fp-a-betterversion`
+
+W0.1.1 targets AST money safety ≥ 90%. Worst-first put
+`src/pages/reports/FinancialStatementTemplates.tsx` at the top with 59 unsafe operations.
+It is now 0, and the ratchet moved 740 → **681 unsafe operations (78.55% → 78.7% safe)**.
+
+**The float arithmetic was the smaller problem.** The page fabricated financial statements
+from hardcoded ratios while reading the user's real general ledger. Cash was `assets * 0.15`,
+receivables `assets * 0.1`, inventory `assets * 0.08`; product/service revenue was a 70/30
+split of total revenue; the entire budget column was `actual * 0.95`; variance percentages
+were literals (`5.3`) that did not agree with the variance dollars rendered next to them.
+The page is routed at `/reports/templates` and exports to PDF and Excel. Under K18 this is
+Severity-0 — invented numbers presented as financial statements are worse than an error,
+because they are plausible enough to be acted on.
+
+**Two more defects found while fixing it.**
+
+1. _Only 10 of 110 emitted keys could ever render._ The renderer derives its lookup key with
+   `label.toLowerCase().replace(/[^a-z]/g,'')`, so the page's `'product revenue_actual'`
+   (with a space) never matched `productrevenue_actual`. I verified this by rendering the
+   page against a real ledger and counting cells: **126 of 161 were already em dashes, 4 were
+   numeric.** Most of the fabrication was dead code that only looked authoritative in review.
+   Worth remembering: reading the source overstated the blast radius; rendering it measured it.
+2. _Contra entries were double-counted._ Balances used `Math.abs(debit - credit)` per entry,
+   so a sales return or a vendor credit **increased** revenue and COGS instead of reducing
+   them. This one was silent, wrong in the same direction every time, and would not have been
+   caught by the money gate at all — `Math.abs` on a float difference is a correctness bug,
+   not a precision bug.
+
+**The fix.** Derivation moved out of the component into
+`src/pages/reports/financialStatementData.ts`: decimal.js end to end, debit-normal vs
+credit-normal netting by account class, and one rule — _emit a line only when the posted GL
+supports it_. Captions the ledger cannot substantiate (cash vs receivables, D&A, cash-flow
+activities) are omitted rather than estimated, and the page renders a
+"not derivable from the posted General Ledger" panel explaining each omission. The renderer
+already printed an em dash for absent keys, so honesty was the cheaper path, not the more
+expensive one. Budget-vs-Actual now reads posted `budgetStore` line items and shows nothing
+at all when no budget exists.
+
+**Guarding the fix.** 21 tests in `src/pages/reports/financialStatementData.test.ts`, covering
+contra netting, margin omission on zero revenue, interest/tax articulation, decimal exactness
+(1,000 × `0.01` = `10`), and explicit assertions that each previously-fabricated key is now
+`undefined`. Plus a source-level guard that fails if any ratio multiplier (`* 0.15`,
+`.times(0.15)`) reappears in the derivation module — verified to actually fail by
+reintroducing `assets.times(0.15)` and watching two tests go red.
+
+**Process finding that changes the rest of W0.1.1.** `npm run mock-data:audit` reports this
+page as clean, and always did: it looks for synthetic _arrays_ with a disposition, and this
+fabrication was inline arithmetic on real data. A file can pass the zero-mock-data gate and
+still invent every number it displays. The remaining worklist modules must be read for
+invented values, not only for unsafe arithmetic — the AST detector finds the float bugs, but
+nothing automated is currently looking for fabrication.
+
+**Housekeeping.** Fixed an ID collision introduced last session: two W0.1 rows were both
+numbered 0.1.2. Type-aware detection is now **W0.1.6**; "Eliminate float paths" keeps 0.1.2.

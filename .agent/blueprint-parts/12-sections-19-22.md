@@ -397,7 +397,7 @@ was done first.
 | ☑   | Every industry pack has at least 10 KPIs defined                  | §7.2 PK2 + §7.4 SaaS exemplar (16 KPIs); PK4 blocks a pack without fixtures                                     |
 | ☑   | Three-statement integrity is testable from day one                | §6.3 TS1–TS5; §18.2 W0.3 promotes it to a runtime gate in Phase 0                                               |
 | ☑   | Security architecture covers all OWASP Top 10 for financial apps  | §10.8 full A01–A10 map + FS1–FS4 finance-specific additions                                                     |
-| ☑   | No floating point anywhere in the monetary calculation path       | §6.4 arithmetic contract; §5.2 D1; §18.2 W0.1.2; static guardrail + `money:adoption` gate                       |
+| ☑   | No floating point anywhere in the monetary calculation path       | §6.4 arithmetic contract; §5.2 D1; §18.2 W0.1.2; static guardrail + `money:ast` gate                            |
 | ☑   | Onboarding path for each persona is < defined time targets        | §2.8 seven personas, seven timed specs                                                                          |
 | ☑   | Technology choices validated against the capability audit (K2)    | §4.2 measured probe; ADR-003 rejects the XVIII-G rewrite; ADR-004 defers Rust/Wasm                              |
 | ☑   | Phase 0 can be completed without Phase 1 dependencies             | §18.2 W0.7 independence proof (explicit non-dependency list)                                                    |
