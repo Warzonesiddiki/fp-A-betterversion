@@ -142,6 +142,41 @@ exceeds depth (no tenancy, no RLS, no lineage graph, no metric store, no workflo
 machine, no environments). The central risk this blueprint manages is exactly that:
 **breadth has been allowed to look like depth.**
 
+### 0.6.1 Where the numbers actually live (measured, session 004)
+
+The single most consequential structural fact about this codebase was not stated in the
+first draft of this blueprint. It is stated here because Phase 0 sequencing depends on it.
+
+| Question                                             | Measured answer                                                                                                                              | Command                                        |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| Zustand stores using `persist()` → `localStorage`    | **43**                                                                                                                                       | `grep -rln 'persist(' src/store`               |
+| Non-test source files that call the server at all    | **14**                                                                                                                                       | `grep -rl 'fetch(\|axios' src \| grep -v test` |
+| Stores holding financial truth persisted client-side | `glStore`, `budgetStore`, `forecastStore`, `scenarioStore`, `debtStore`, `leaseStore`, `capexStore`, `fxRateStore`, `glTrialBalanceStore`, … | `ls src/store`                                 |
+| `tenant_id` occurrences in `server/src/db/`          | **0**                                                                                                                                        | `grep -rn 'tenant' server/src/db/*.ts`         |
+| Schema homes                                         | **2** (`src-tauri/migrations/*.sql` = 35 tables; `server/src/db/migrate.ts` + `auditSchema.ts` = 9 more, created in code)                    | —                                              |
+
+**What this means, plainly.** The general ledger, budgets, forecasts, scenarios, debt,
+leases and FX rates are today persisted as **JSON in browser `localStorage`**, not in the
+database. The Express + SQLite service exists and is well tested, but the application is
+substantially _not wired to it_. Consequences that must drive sequencing:
+
+1. **There is no system of record.** Clearing site data destroys the ledger. No backup
+   (§16.4), no RTO/RPO, no PITR, and no audit trail can be honest while this holds.
+2. **Server-side RLS protects almost nothing** while the authoritative copy of the data sits
+   on the client, outside any policy predicate.
+3. **`localStorage` is a string store.** Every persisted decimal round-trips through
+   `JSON.stringify`. Any money value held as a JS `number` in store state is silently
+   IEEE-754 at the persistence boundary regardless of how carefully the engines compute it —
+   which is why "0 raw `toFixed`" is **not** evidence of decimal safety (§18.2 W0.1).
+4. **The schema is forked in two places.** `src-tauri/migrations/` and the server's
+   in-code DDL can drift apart with nothing detecting it.
+
+This does not invalidate ADR-003 — evolving this codebase is still correct, and the local-first
+posture is a deliberate §0.5 differentiator. But it reframes Phase 0: the platform is closer to
+a **very sophisticated offline workbook** than to a governed cloud system, and the gap between
+those two things is the actual Phase 0 backlog. Workstream 0.8 (below) makes persistence
+authority an explicit, gated deliverable rather than an assumption.
+
 ## 0.7 Index scores — baseline vs target
 
 Scores are computed from the rubric in Section 22.3. Baseline is deliberately harsh.
@@ -278,24 +313,24 @@ Effort: S ≤ 2d · M ≤ 1w · L ≤ 3w · XL > 3w (XL must be decomposed befor
 
 ## 3.1 F-CORE — Financial Engine
 
-| ID         | Feature                                                 | Phase | Pri    | Effort | TODAY                                                                                         |
-| ---------- | ------------------------------------------------------- | ----- | ------ | ------ | --------------------------------------------------------------------------------------------- |
-| F-CORE-001 | Three-statement model engine (P&L, BS, CF), auto-linked | 0→1   | P0     | XL     | BUILT (`ThreeStatementEngine.ts`, oracles test exists)                                        |
-| F-CORE-002 | Driver-based modelling (KPI → revenue → cost cascade)   | 1     | P0     | L      | BUILT (`CascadeCalculationEngine`, `driverStore`)                                             |
-| F-CORE-003 | Zero-based budgeting templates                          | 1     | P1     | M      | BUILT (templates dir)                                                                         |
-| F-CORE-004 | Top-down / bottom-up hybrid planning                    | 1     | P0     | L      | BUILT (allocation + budget engines)                                                           |
-| F-CORE-005 | Multi-currency, 50+ currencies, live + locked rates     | 0→1   | P0     | L      | BUILT (`fxRateStore`, FX engine); **not** IAS 21-verified                                     |
-| F-CORE-006 | Multi-entity consolidation + IC eliminations + NCI      | 1     | P0     | XL     | BUILT (`ConsolidationEngine`, `IntercompanyMatchingEngine`)                                   |
-| F-CORE-007 | Rolling forecast engine, auto-lock actuals              | 1     | P0     | L      | BUILT (`forecastStore`, rolling pages)                                                        |
-| F-CORE-008 | Scenario manager, unlimited scenarios                   | 1     | P0     | L      | BUILT (`ScenarioEngine`)                                                                      |
-| F-CORE-009 | Variance engine (BvA, FvA, YoY, QoQ)                    | 1     | P0     | M      | BUILT (variance engines + pages)                                                              |
-| F-CORE-010 | Version control on models (branch, compare, merge)      | 1     | P0     | XL     | PARTIAL — branch/compare exist; **merge is a gap**                                            |
-| F-CORE-011 | Formula engine (Excel-compatible + financial functions) | 0→1   | P0     | XL     | BUILT (`FormulaEngine`, `ArrayFormulaEngine`, `AdvancedExcelEngine`)                          |
-| F-CORE-012 | Allocation engine (headcount %, revenue %, custom)      | 1     | P0     | M      | BUILT (`AllocationEngine`, `AllocationRuleEngine`)                                            |
-| F-CORE-013 | Period engine (monthly/quarterly/annual, fiscal config) | 0     | P0     | M      | BUILT (`Period*` engines, `server/src/routes/periods.ts`)                                     |
-| F-CORE-014 | Audit trail on every cell change                        | 0→1   | P0     | L      | BUILT client-side; **NOT GOVERNED** — no server-authoritative chain                           |
-| F-CORE-015 | Data validation rules                                   | 1     | P1     | M      | BUILT (`CellValidationEngine`)                                                                |
-| F-CORE-016 | **Decimal precision layer, zero float in money paths**  | 0     | **P0** | M      | BUILT (`src/utils/money.ts`, decimal.js, 0 raw `toFixed`); **enforcement gap: adoption ~22%** |
+| ID         | Feature                                                 | Phase | Pri    | Effort | TODAY                                                                                                                                      |
+| ---------- | ------------------------------------------------------- | ----- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| F-CORE-001 | Three-statement model engine (P&L, BS, CF), auto-linked | 0→1   | P0     | XL     | BUILT (`ThreeStatementEngine.ts`, oracles test exists)                                                                                     |
+| F-CORE-002 | Driver-based modelling (KPI → revenue → cost cascade)   | 1     | P0     | L      | BUILT (`CascadeCalculationEngine`, `driverStore`)                                                                                          |
+| F-CORE-003 | Zero-based budgeting templates                          | 1     | P1     | M      | BUILT (templates dir)                                                                                                                      |
+| F-CORE-004 | Top-down / bottom-up hybrid planning                    | 1     | P0     | L      | BUILT (allocation + budget engines)                                                                                                        |
+| F-CORE-005 | Multi-currency, 50+ currencies, live + locked rates     | 0→1   | P0     | L      | BUILT (`fxRateStore`, FX engine); **not** IAS 21-verified                                                                                  |
+| F-CORE-006 | Multi-entity consolidation + IC eliminations + NCI      | 1     | P0     | XL     | BUILT (`ConsolidationEngine`, `IntercompanyMatchingEngine`)                                                                                |
+| F-CORE-007 | Rolling forecast engine, auto-lock actuals              | 1     | P0     | L      | BUILT (`forecastStore`, rolling pages)                                                                                                     |
+| F-CORE-008 | Scenario manager, unlimited scenarios                   | 1     | P0     | L      | BUILT (`ScenarioEngine`)                                                                                                                   |
+| F-CORE-009 | Variance engine (BvA, FvA, YoY, QoQ)                    | 1     | P0     | M      | BUILT (variance engines + pages)                                                                                                           |
+| F-CORE-010 | Version control on models (branch, compare, merge)      | 1     | P0     | XL     | PARTIAL — branch/compare exist; **merge is a gap**                                                                                         |
+| F-CORE-011 | Formula engine (Excel-compatible + financial functions) | 0→1   | P0     | XL     | BUILT (`FormulaEngine`, `ArrayFormulaEngine`, `AdvancedExcelEngine`)                                                                       |
+| F-CORE-012 | Allocation engine (headcount %, revenue %, custom)      | 1     | P0     | M      | BUILT (`AllocationEngine`, `AllocationRuleEngine`)                                                                                         |
+| F-CORE-013 | Period engine (monthly/quarterly/annual, fiscal config) | 0     | P0     | M      | BUILT (`Period*` engines, `server/src/routes/periods.ts`)                                                                                  |
+| F-CORE-014 | Audit trail on every cell change                        | 0→1   | P0     | L      | BUILT client-side; **NOT GOVERNED** — no server-authoritative chain                                                                        |
+| F-CORE-015 | Data validation rules                                   | 1     | P1     | M      | BUILT (`CellValidationEngine`)                                                                                                             |
+| F-CORE-016 | **Decimal precision layer, zero float in money paths**  | 0     | **P0** | M      | PARTIAL — primitive is correct; **adoption 25.44% by import-proxy (2026-08-17), true decimal-safety unmeasured until W0.1.0 AST detector** |
 
 ## 3.2 F-PLAN — Planning Modules
 
@@ -415,18 +450,37 @@ These are the load-bearing items. **Nothing in 3.1–3.6 can reach `GOVERNED` wi
 
 | Bucket                       | Count                                     |
 | ---------------------------- | ----------------------------------------- |
-| Total specified features     | 96                                        |
-| `BUILT` or `PARTIAL` today   | 61                                        |
-| `NOT STARTED`                | 35                                        |
-| P0 items still `NOT STARTED` | **14** ← this is the true project backlog |
+| Total specified features     | 98                                        |
+| `BUILT`                      | 33                                        |
+| `PARTIAL`                    | 35                                        |
+| `BUILT` or `PARTIAL` today   | 68                                        |
+| `NOT STARTED`                | 30                                        |
+| P0 items still `NOT STARTED` | **13** ← this is the true project backlog |
 
-The 14 open P0 items are: F-PLAT-001, F-PLAT-005, F-SEM-001, F-MDM-001, F-OPS-002,
+Counts are derived by machine from the tables in §3.1–§3.7, not asserted by hand:
+
+```bash
+sed -n '/^# SECTION 3/,/^# SECTION 4/p' .agent/BLUEPRINT.md \
+  | grep -E '^\| \*?\*?F-[A-Z]+-[0-9]{3}' > /tmp/frows.txt
+wc -l < /tmp/frows.txt                                    # 98 total
+grep -o 'NOT STARTED\|PARTIAL\|BUILT' /tmp/frows.txt | sort | uniq -c   # 33 BUILT / 30 NOT STARTED / 35 PARTIAL
+grep 'NOT STARTED' /tmp/frows.txt | grep -E '\bP0\b' | wc -l            # 13
+```
+
+The 13 open P0 items are: F-PLAT-001, F-PLAT-005, F-SEM-001, F-MDM-001, F-OPS-002,
 F-SEC-003, F-SEC-004, F-CTRL-001, F-AI-011, F-INTEGRATE-000, F-WORKFLOW-007,
-F-WORKFLOW-008, F-COLLAB-002, F-ERR-001.
+F-WORKFLOW-008, F-COLLAB-002.
+
+A fourteenth item, **F-ERR-001** (error-code registry), is classified **P1** in §3.7 yet is
+scheduled in Phase 0 as Workstream 0.4. That is deliberate and not a contradiction: the
+registry is cheap, and every later phase's error contract depends on it, so it is pulled
+forward. It is counted as P1 above so the P0 backlog number stays honest.
+
+**Correction (session 004):** the previously published figures — 96 total / 61 built-or-partial
+/ 35 not-started / 14 open P0 — were hand-tallied and wrong on every line. The table above is
+machine-derived. Per §22.6 the error is recorded rather than quietly overwritten.
 
 **This list, not the 193 routes, is the measure of remaining work.**
-
----
 
 # SECTION 4 — SYSTEM ARCHITECTURE
 
@@ -910,6 +964,26 @@ where a jurisdiction or standard demands it — the choice is explicit at the ca
 recorded, never implicit. Residuals from proportional splits are allocated deterministically
 so parts always sum exactly to the parent.
 
+**Deviation from the Codex, recorded (ADR-012).** Codex XVIII-G line 522 mandates
+_"Banker's rounding (round-half-to-even) as default"_. This blueprint defaults to
+`ROUND_HALF_UP` instead. The Codex is internally inconsistent on this point: line 692
+requires that _"0.005 rounds to 0.01 (banker's rounding)"_, but banker's rounding returns
+`0.00` for that input, not `0.01` — verified:
+
+```
+new Decimal('0.005').toDecimalPlaces(2, ROUND_HALF_EVEN) === 0     // Codex line 522 label
+new Decimal('0.005').toDecimalPlaces(2, ROUND_HALF_UP)   === 0.01  // Codex line 692 test
+```
+
+Both mandates cannot hold. We implement the **behaviour the Codex tests for** (line 692)
+rather than the **label it uses** (line 522), because the test is the falsifiable artefact.
+The consequence is stated rather than hidden: HALF_UP carries a small upward bias on exact
+half values — immaterial for presentation, **not** acceptable for statutory allocation in
+jurisdictions that require half-even. Therefore `ROUND_HALF_EVEN` is mandatory, explicitly
+at the call site, for tax provision (A.7), statutory local-GAAP books (A.3), and any
+jurisdiction pack that declares it. `roundMoney()` accepts an explicit mode and no statutory
+path may rely on the default. Full record: **ADR-012, §21**.
+
 ## 6.5 FX protocol (Part XIX-E)
 
 Rate priority: user-entered (board-approved) > integrated feed (ECB/OXR) > CSV import.
@@ -1139,8 +1213,6 @@ as the UI. There is no privileged path through Excel.
 | C6   | Snowflake, BigQuery, Redshift, Databricks           | 3     | —                        |
 | C7   | Plaid, CAMT.053 (banks)                             | 3     | treasury scope confirmed |
 | C8   | Zapier, Make, Workato (iPaaS)                       | 3     | public API GA            |
-
----
 
 # SECTION 9 — UI/UX SYSTEM SPECIFICATION
 
@@ -1491,8 +1563,6 @@ sizes — small 1M facts, medium 50M, large 500M — generated deterministically
 so results are comparable across runs). Results are published to
 `docs/release/PERFORMANCE_BASELINE.md` and are the only acceptable basis for a scale claim.
 
----
-
 # SECTION 12 — AI/ML MODULE SPECIFICATION
 
 ## 12.1 The governing constraint
@@ -1691,8 +1761,6 @@ time-boxed access grants; and its own access log. An auditor's session cannot be
 distinguished from a normal read at the data layer — meaning the auditor sees exactly what
 the system holds, not a curated view. Every auditor read is itself logged.
 
----
-
 # SECTION 14 — REPORTING & EXPORT ENGINE
 
 ## 14.1 Reporting philosophy
@@ -1794,8 +1862,6 @@ Print stylesheets are first-class, not an afterthought: page breaks respect logi
 boundaries, headers repeat on every page, wide reports scale or split predictably, and the
 printed output matches the PDF byte-for-byte in layout. Finance still prints board packs;
 pretending otherwise is not a strategy.
-
----
 
 # SECTION 15 — API SPECIFICATION
 
@@ -1939,8 +2005,6 @@ published, approval completed, metric certified, integration sync completed or f
 three-statement violation detected. The public API (Phase 3) is the same `/v1` surface with
 scoped API keys, documented in an OpenAPI spec generated from the Zod schemas — never
 hand-written, because hand-written specs lie.
-
----
 
 # SECTION 16 — INFRASTRUCTURE, DEPLOYMENT & OBSERVABILITY
 
@@ -2100,8 +2164,6 @@ verification failure investigation; key rotation; break-glass access; period-clo
 Severity-0 correctness incident; and customer incident communications.
 **An untested runbook does not exist.**
 
----
-
 # SECTION 17 — TESTING STRATEGY
 
 ## 17.1 The testing pyramid (target shape)
@@ -2237,13 +2299,14 @@ one, left unfixed, multiplies the cost of everything built on top of it.
 
 ### Workstream 0.1 — Money integrity (highest priority, nothing outranks it)
 
-| #     | Item                                                      | Acceptance                                                                                                                    |
-| ----- | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| 0.1.1 | Complete money-primitive migration                        | Adoption ≥ 60% of the 888 financial modules (from ~22%); ratchet script enforces monotonic increase                           |
-| 0.1.2 | Eliminate float paths                                     | `grep` for `toFixed`/`parseFloat`/`Number()` in financial paths returns 0; guardrail script fails the build on reintroduction |
-| 0.1.3 | Money type is total                                       | `Money = {amount: Decimal, currency: CurrencyCode}`; no bare number crosses an engine boundary                                |
-| 0.1.4 | 100% coverage + mutation ≥ 80% on `src/utils/money.ts`    | Stryker report checked in                                                                                                     |
-| 0.1.5 | Property tests for allocation, aggregation, FX round-trip | Section 17.4 suite green                                                                                                      |
+| #     | Item                                                       | Acceptance                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ----- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.1.0 | **Replace the adoption detector before trusting the gate** | The current `money:adoption` scanner counts modules that _import_ `@/utils/money` via regex. Importing the primitive is not proof of using it. Replace with an **AST detector** that flags arithmetic (`+ - * / +=`), comparison (`> < ===`), and `reduce` accumulation on values whose type resolves to a monetary type. Adoption = modules with **zero** unsafe monetary operations. Re-baseline honestly; the number will fall before it rises. |
+| 0.1.1 | Complete money-primitive migration                         | Adoption ≥ 60% measured by the **0.1.0 AST detector**, over the 912 financial modules currently scanned (import-proxy reading was 25.44% on 2026-08-17); ratchet enforces monotonic increase                                                                                                                                                                                                                                                       |
+| 0.1.2 | Eliminate float paths                                      | Detector reports 0 unsafe monetary operations in financial paths — including the **persistence boundary** (§0.6.1: `localStorage` JSON round-trips) and the store-selector layer, not only `toFixed`/`parseFloat`/`Number()`. Guardrail fails the build on reintroduction                                                                                                                                                                          |
+| 0.1.3 | Money type is total                                        | `Money = {amount: Decimal, currency: CurrencyCode}`; no bare number crosses an engine boundary                                                                                                                                                                                                                                                                                                                                                     |
+| 0.1.4 | 100% coverage + mutation ≥ 80% on `src/utils/money.ts`     | Stryker report checked in                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| 0.1.5 | Property tests for allocation, aggregation, FX round-trip  | Section 17.4 suite green                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ### Workstream 0.2 — Tenancy & environments (F-PLAT-001, F-OPS-002)
 
@@ -2285,6 +2348,35 @@ one, left unfixed, multiplies the cost of everything built on top of it.
 | 0.6.1 | Single LLM chokepoint module                       | Direct SDK import elsewhere = build failure                          |
 | 0.6.2 | REDACTED default mode; opt-in per feature, audited | `FIN`/`AI` code emitted on block; test proves no raw amount egresses |
 
+### Workstream 0.8 — Persistence authority (added session 004, from the §0.6.1 measurement)
+
+**Why this exists.** §0.6.1 measured that 43 stores persist financial state to
+`localStorage` while only 14 non-test files ever call the server, and that `tenant_id`
+appears **zero** times in `server/src/db/`. Workstream 0.2 adds `tenant_id` to a database
+that is not yet the system of record — which would produce governed columns nobody writes
+to. This workstream establishes the authority boundary that 0.2 then governs.
+
+It is deliberately scoped to _authority and safety_, **not** to a full cloud migration. The
+local-first posture stays (it is a §0.5 differentiator); what changes is which copy is
+**authoritative** and whether the client copy can silently corrupt a decimal.
+
+| #     | Task                                     | Acceptance criterion                                                                                                                                                                 |
+| ----- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 0.8.1 | Persistence inventory                    | `docs/architecture/PERSISTENCE_MAP.md` lists all 43 persisted stores, classifies each **financial-truth / user-preference / derived-cache**, and names the authority for each.       |
+| 0.8.2 | Money-safe serialization boundary        | Every persisted monetary value round-trips as a **canonical decimal string**, never a JS `number`. Property test: persist → reload → value is bit-identical for 10k random decimals. |
+| 0.8.3 | Declare the authority rule               | For each financial-truth store: server is authoritative, client is a replica/cache. Encoded as a typed contract, not a comment.                                                      |
+| 0.8.4 | Schema fork closure                      | One schema source. CI fails if `src-tauri/migrations/` and the server's in-code DDL disagree on any shared table.                                                                    |
+| 0.8.5 | Durability honesty in the UI             | Until a store is server-backed, its surface states plainly that data is local-only. No screen may imply durability it does not have.                                                 |
+| 0.8.6 | Sync spike for **one** store (`glStore`) | One financial store demonstrably server-authoritative end-to-end, with offline edit → reconnect → deterministic conflict resolution (never last-write-wins on a decimal).            |
+
+**Deliberately out of scope for Phase 0:** migrating all 43 stores. That is Phase 1 work and
+depends on tenancy (0.2). Phase 0 proves the pattern on the ledger, the highest-value store,
+and makes the remaining gap visible and honest.
+
+**Exit criterion:** `PERSISTENCE_MAP.md` exists and is CI-drift-checked; no monetary value
+is persisted as an IEEE-754 `number`; `glStore` is server-authoritative; every local-only
+surface says so.
+
 ### Workstream 0.7 — Task sizing & independence proof (XVIII-N)
 
 **Every Phase 0 item above is decomposed to a task of ≤ 1 week for one engineer.** Items
@@ -2306,6 +2398,10 @@ sizing claim is auditable rather than asserted.
 | 0.5.2 Shell + palette           | (a) five-pillar shell · (b) ⌘K palette · (c) permission filtering · (d) ≤3-click E2E                                                                                                                                 |
 | 0.5.3 Route consolidation       | (a) redirect table · (b) collapse batch 1 (≈80 routes) · (c) collapse batch 2 · (d) 404 sweep                                                                                                                        |
 | 0.6.1 LLM chokepoint            | (a) chokepoint module · (b) ban direct SDK imports · (c) redaction default + egress test                                                                                                                             |
+| 0.8.1 Persistence inventory     | (a) enumerate + classify 43 stores · (b) write `PERSISTENCE_MAP.md` · (c) CI drift check                                                                                                                             |
+| 0.8.2 Money-safe serialization  | (a) decimal-string codec · (b) apply to financial stores · (c) 10k-case round-trip property test                                                                                                                     |
+| 0.8.4 Schema fork closure       | (a) diff the two schema sources · (b) reconcile · (c) CI equality gate                                                                                                                                               |
+| 0.8.6 `glStore` authority spike | (a) server read/write path · (b) offline replica + reconnect · (c) typed conflict resolution on decimals                                                                                                             |
 
 **Phase 0 independence proof.** Phase 0 has **zero dependencies on Phase 1 deliverables**.
 Specifically, it does not require: the lineage graph (F-PLAT-005), the metric store
@@ -2320,6 +2416,22 @@ schema, guardrails, and shell concerns that exist today:
 0.4 error codes  → new module + codegen; no data dependency
 0.5 navigation   → routing layer only; consumes no new backend capability
 0.6 AI guardrail → chokepoint module; degrades safely to "AI disabled"
+0.8 persistence  → existing stores + existing Express/SQLite service; no new infrastructure
+```
+
+**Intra-phase ordering correction (session 004).** Phase 0 is independent of Phase 1, but it
+is **not** internally unordered. `0.8.1–0.8.3` (persistence authority) must precede
+`0.2.1` (`tenant_id` everywhere): adding tenancy columns to a database that is not yet the
+system of record produces governed columns that nothing writes to, and would let the Phase 0
+gate pass while the ledger still lives in `localStorage`. Required order:
+
+```
+0.1 money ─► 0.8.1–0.8.3 persistence authority ─► 0.2 tenancy ─► 0.3 runtime gate
+                    │
+0.4 error registry ─┼─ independent, any time
+0.5 navigation ─────┤
+0.6 AI guardrail ───┘
+0.8.6 glStore spike ─── after 0.2 (needs tenant scoping to be meaningful)
 ```
 
 The reverse is not true — every Phase 1 workstream depends on Phase 0. That asymmetry is
@@ -2328,7 +2440,11 @@ the reason for the ordering (Section 18.1) and is re-verified at the Phase 0 exi
 ### 🚦 Phase 0 exit gate
 
 ```
-□ Money adoption ≥ 60%; zero float in financial paths; money mutation score ≥ 80%
+□ Money adoption ≥ 60% measured by the AST detector (not the import-regex proxy);
+  zero float in financial paths; money mutation score ≥ 80%
+□ No monetary value is persisted as an IEEE-754 number anywhere (0.8.2 property test green)
+□ PERSISTENCE_MAP.md exists, CI-drift-checked; glStore is server-authoritative (0.8)
+□ One schema source; src-tauri/migrations vs server DDL equality gate green (0.8.4)
 □ tenant_id + environment_id on every governed table; cross-tenant leak test per table green
 □ Three-statement validation runs at RUNTIME and blocks writes
 □ Error registry live; build fails on uncoded errors
@@ -2515,6 +2631,56 @@ Every arrow is a hard dependency. Building a downstream item first guarantees a 
 
 ---
 
+## 18.7 Scheduling ledger — every non-BUILT feature names a phase (ADR-013)
+
+The audit that preceded this section found 16 `NOT STARTED` features present in §3 but
+absent from every phase in §18. Two of them are advertised in §0.5 as headline
+differentiators, and one is the K20 filter itself. This ledger closes that hole: **a
+feature may be deferred, but it may not be unscheduled.**
+
+### Pulled into an existing phase (differentiator-critical)
+
+| Feature         | Title                                      | Phase       | Why it cannot drift                                                                      |
+| --------------- | ------------------------------------------ | ----------- | ---------------------------------------------------------------------------------------- |
+| F-INTEGRATE-006 | Excel/Sheets import + live two-way sync    | **Phase 2** | **K20 filter.** §0.5 sells "Excel deconstruction"; §19.2 makes Excel the real incumbent. |
+| F-MIGRATE-001   | Excel deconstruction protocol (XXVIII)     | **Phase 2** | §0.5 differentiator + PR-06; the 14-day playbook (A.17) is unachievable without it.      |
+| F-REPORT-007    | Scheduled distribution (email/Slack/Teams) | **Phase 2** | A board pack nobody receives is not a board pack; A.11 escalations depend on it.         |
+| F-AI-007        | Forecast accuracy scoring                  | **Phase 2** | §12.4 forecasting claims are unfalsifiable without a scoring backtest.                   |
+| F-PLAN-007      | Pipeline-weighted revenue forecast         | **Phase 2** | Required by the SaaS pack's KPI set (§7.4); a pack without it fails PK2.                 |
+| F-INTEGRATE-002 | CRM connectors                             | **Phase 2** | Prerequisite for F-PLAN-007; gated behind F-INTEGRATE-000.                               |
+| F-INTEGRATE-003 | HRIS connectors                            | **Phase 2** | Workforce planning actuals; gated behind F-INTEGRATE-000.                                |
+| F-INTEGRATE-004 | Billing connectors                         | **Phase 2** | ARR/MRR truth for the SaaS pack; gated behind F-INTEGRATE-000.                           |
+
+### Scheduled to Phase 3 / GA
+
+| Feature         | Title                                   | Phase       | Note                                                                |
+| --------------- | --------------------------------------- | ----------- | ------------------------------------------------------------------- |
+| F-INTEGRATE-005 | Data-warehouse connectors               | **Phase 3** | Enterprise procurement requirement; needs the storage tiers (A.20). |
+| F-AI-010        | Data-quality AI (mapping, dup accounts) | **Phase 3** | Advisory only; must never auto-post (§12.2 tiering).                |
+| F-PLAN-011      | M&A modelling                           | **Phase 3** | Depends on A.16; large surface, low frequency.                      |
+| F-REPORT-010    | Benchmark database                      | **Phase 3** | Requires multi-tenant consented aggregation — privacy gate (A.13).  |
+
+### Explicitly deferred beyond GA (declared, not forgotten)
+
+| Feature         | Title                           | Status                 | Reason                                                                      |
+| --------------- | ------------------------------- | ---------------------- | --------------------------------------------------------------------------- |
+| F-UDF-001       | Wasm-sandboxed UDFs (Part XXVI) | **v2+, not scheduled** | ADR-004 — no `cargo`/`rustc` in this environment; unverifiable, so unbuilt. |
+| F-PLAN-013      | Transfer pricing support        | **v2+, not scheduled** | Needs A.8 intercompany maturity first; niche until enterprise demand.       |
+| F-PLAN-015      | Equity / cap-table modelling    | **v2+, not scheduled** | Adjacent domain; not FP&A core. Revisit on design-partner pull.             |
+| F-INTEGRATE-009 | iPaaS connectors                | **v2+, not scheduled** | Commoditised; a public API (§15.7) serves the same need sooner.             |
+| F-INTEGRATE-012 | Market data                     | **v2+, not scheduled** | Licensing cost with no correctness benefit at current scale.                |
+
+### CI enforcement
+
+```bash
+# Every NOT STARTED feature must be scheduled or explicitly deferred.
+# Empty output = pass. Wired into `docs:verify`.
+comm -23 <(not_started_ids) <(scheduled_ids; declared_deferred_ids)
+```
+
+This makes "we forgot to schedule the differentiator" a build failure rather than a
+discovery made two phases later.
+
 # SECTION 19 — GAP ANALYSIS VS COMPETITORS
 
 ## 19.1 Method
@@ -2634,28 +2800,31 @@ every roadmap decision above is subordinate to occupying it.
 Scored as Likelihood (1–5) × Impact (1–5). Anything ≥ 15 requires a named owner and an
 active mitigation in the current phase.
 
-| ID   | Risk                                                                                                                                | L   | I   | Score  | Mitigation                                                                                                                                             | Trigger to escalate                                                 |
-| ---- | ----------------------------------------------------------------------------------------------------------------------------------- | --- | --- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| R-01 | **A wrong number reaches a customer's board pack.** The existential risk.                                                           | 3   | 5   | **15** | Runtime three-statement gate (0.3), golden fixtures, property tests, mutation testing on money, reconciliation on every import, lineage for every fact | Any `FIN-000` in production                                         |
-| R-02 | Money-primitive migration stalls at partial adoption, leaving mixed float/decimal paths — the most dangerous possible state         | 4   | 5   | **20** | Ratchet script; Phase 0 gate at 60%, Phase 1 at 90%; no feature work merges that lowers adoption                                                       | Adoption flat for 2 consecutive weeks                               |
-| R-03 | Scope paralysis — 96 features, 25 verticals, and nothing ships                                                                      | 4   | 4   | **16** | Hard phase gates; Phase 0 ships almost no features on purpose; vertical packs deferred to Phase 2/3                                                    | Phase overruns by > 25%                                             |
-| R-04 | Retrofitting tenancy later requires touching every table and query                                                                  | 3   | 5   | **15** | `tenant_id` in Phase 0, before anything else stores data (M001)                                                                                        | Any new table shipped without `tenant_id`                           |
-| R-05 | Cross-tenant data leak                                                                                                              | 2   | 5   | 10     | Dual enforcement PC4; per-table leak tests; deny-by-default; no admin bypass query                                                                     | Any leak test added without a passing assertion                     |
-| R-06 | Environment degradation hides real problems — no Docker/Postgres/Rust means RLS, scale, and Wasm claims are unverifiable here       | 5   | 3   | **15** | Explicitly label unverifiable claims "designed for, not proven"; require real-infra validation before any scale or certification claim                 | A scale claim published without a k6 run                            |
-| R-07 | The 193-route sprawl makes the product unlearnable; users churn in trial                                                            | 4   | 4   | **16** | Phase 0 workstream 0.5; ≤ 40 routes; ⌘K; ROUTE_MAP drift gate                                                                                          | Trial activation < 40%                                              |
-| R-08 | Connector built before inbox/outbox → duplicate or lost financial records                                                           | 3   | 5   | **15** | F-INTEGRATE-000 is a hard prerequisite; no connector PR merges before it                                                                               | Any adapter PR without idempotency                                  |
-| R-09 | LLM egress of customer monetary data                                                                                                | 2   | 5   | 10     | Single chokepoint, REDACTED default, per-feature opt-in, audit of every call, zero-retention endpoints only                                            | Any direct SDK import outside the chokepoint                        |
-| R-10 | Claiming a certification that does not exist                                                                                        | 2   | 5   | 10     | LII honesty matrix; "designed to meet" language until the report is issued; legal review of all claims                                                 | Any marketing draft naming an unissued cert                         |
-| R-11 | The Codex-prescribed stack (Next.js/Fastify/Prisma/Kafka/Rust) is imposed as a rewrite, destroying 455k lines and 1,228 green tests | 3   | 5   | **15** | ADR-003 (Section 21) records the reasoned deviation with evidence; evolution path S0→S4 is trigger-based                                               | Any PR that begins a framework migration without a measured trigger |
-| R-12 | SQLite → PostgreSQL cutover corrupts or loses data                                                                                  | 2   | 5   | 10     | PC1–PC5 portability from Phase 0; M013 full dress rehearsal with row-count and sum reconciliation; verified backup first                               | Rehearsal reconciliation mismatch of any size                       |
-| R-13 | Vertical packs fork the engine (violating K19), creating 25 unmaintainable codebases                                                | 3   | 4   | 12     | PK6 — a pack needing an engine change is rejected; generalise the engine instead                                                                       | Any pack PR touching `src/engines/`                                 |
-| R-14 | Performance collapses at real scale; the DAG recalc does not hold                                                                   | 3   | 4   | 12     | CP1–CP8; CI perf budgets on a fixed dataset; k6 per tier; profiler with top-50 slowest nodes                                                           | p95 recalc regression > 20%                                         |
-| R-15 | Audit log tampering or hash-chain break                                                                                             | 2   | 5   | 10     | DB-level append-only, hash chain, `/v1/audit/verify`, alerting on verification failure                                                                 | Any verify failure                                                  |
-| R-16 | Collaboration corrupts numbers via silent merge                                                                                     | 3   | 5   | **15** | COL3/COL4 — leases + typed conflict + explicit human resolution; CRDT restricted to non-monetary content                                               | Any last-write-wins path on a decimal                               |
-| R-17 | Key-person dependency / context loss between sessions                                                                               | 4   | 3   | 12     | `.agent/` memory discipline, PROJECT_JOURNAL, ADR log, this blueprint as the single source of intent                                                   | Any session starting without reading `.agent/state.json`            |
-| R-18 | CI cannot be updated from this environment (no `workflows` permission), so gates silently rot                                       | 4   | 3   | 12     | Numbered `ci-patches/*.patch` with apply instructions; track pending patches in state.json                                                             | > 2 unapplied patches                                               |
-| R-19 | Restatement handled as an in-place edit, silently changing published history                                                        | 2   | 5   | 10     | R1–R5 restatement protocol; new immutable version; SUPERSEDED banners; disclosure checklist                                                            | Any UPDATE on a closed-period fact                                  |
-| R-20 | Non-payment freezes a customer mid-close, causing regulatory harm                                                                   | 2   | 4   | 8      | Fair-use ladder (XLIV): close and audit paths are never frozen without a legal-notice workflow                                                         | Any hard limit applied to a close path                              |
+| ID   | Risk                                                                                                                                                                                                                                       | L   | I   | Score  | Mitigation                                                                                                                                             | Trigger to escalate                                                                 |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- | --- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| R-01 | **A wrong number reaches a customer's board pack.** The existential risk.                                                                                                                                                                  | 3   | 5   | **15** | Runtime three-statement gate (0.3), golden fixtures, property tests, mutation testing on money, reconciliation on every import, lineage for every fact | Any `FIN-000` in production                                                         |
+| R-02 | Money-primitive migration stalls at partial adoption, leaving mixed float/decimal paths — the most dangerous possible state                                                                                                                | 4   | 5   | **20** | Ratchet script; Phase 0 gate at 60%, Phase 1 at 90%; no feature work merges that lowers adoption                                                       | Adoption flat for 2 consecutive weeks                                               |
+| R-03 | Scope paralysis — 96 features, 25 verticals, and nothing ships                                                                                                                                                                             | 4   | 4   | **16** | Hard phase gates; Phase 0 ships almost no features on purpose; vertical packs deferred to Phase 2/3                                                    | Phase overruns by > 25%                                                             |
+| R-04 | Retrofitting tenancy later requires touching every table and query                                                                                                                                                                         | 3   | 5   | **15** | `tenant_id` in Phase 0, before anything else stores data (M001)                                                                                        | Any new table shipped without `tenant_id`                                           |
+| R-05 | Cross-tenant data leak                                                                                                                                                                                                                     | 2   | 5   | 10     | Dual enforcement PC4; per-table leak tests; deny-by-default; no admin bypass query                                                                     | Any leak test added without a passing assertion                                     |
+| R-06 | Environment degradation hides real problems — no Docker/Postgres/Rust means RLS, scale, and Wasm claims are unverifiable here                                                                                                              | 5   | 3   | **15** | Explicitly label unverifiable claims "designed for, not proven"; require real-infra validation before any scale or certification claim                 | A scale claim published without a k6 run                                            |
+| R-07 | The 193-route sprawl makes the product unlearnable; users churn in trial                                                                                                                                                                   | 4   | 4   | **16** | Phase 0 workstream 0.5; ≤ 40 routes; ⌘K; ROUTE_MAP drift gate                                                                                          | Trial activation < 40%                                                              |
+| R-08 | Connector built before inbox/outbox → duplicate or lost financial records                                                                                                                                                                  | 3   | 5   | **15** | F-INTEGRATE-000 is a hard prerequisite; no connector PR merges before it                                                                               | Any adapter PR without idempotency                                                  |
+| R-09 | LLM egress of customer monetary data                                                                                                                                                                                                       | 2   | 5   | 10     | Single chokepoint, REDACTED default, per-feature opt-in, audit of every call, zero-retention endpoints only                                            | Any direct SDK import outside the chokepoint                                        |
+| R-10 | Claiming a certification that does not exist                                                                                                                                                                                               | 2   | 5   | 10     | LII honesty matrix; "designed to meet" language until the report is issued; legal review of all claims                                                 | Any marketing draft naming an unissued cert                                         |
+| R-11 | The Codex-prescribed stack (Next.js/Fastify/Prisma/Kafka/Rust) is imposed as a rewrite, destroying 455k lines and 1,228 green tests                                                                                                        | 3   | 5   | **15** | ADR-003 (Section 21) records the reasoned deviation with evidence; evolution path S0→S4 is trigger-based                                               | Any PR that begins a framework migration without a measured trigger                 |
+| R-12 | SQLite → PostgreSQL cutover corrupts or loses data                                                                                                                                                                                         | 2   | 5   | 10     | PC1–PC5 portability from Phase 0; M013 full dress rehearsal with row-count and sum reconciliation; verified backup first                               | Rehearsal reconciliation mismatch of any size                                       |
+| R-13 | Vertical packs fork the engine (violating K19), creating 25 unmaintainable codebases                                                                                                                                                       | 3   | 4   | 12     | PK6 — a pack needing an engine change is rejected; generalise the engine instead                                                                       | Any pack PR touching `src/engines/`                                                 |
+| R-14 | Performance collapses at real scale; the DAG recalc does not hold                                                                                                                                                                          | 3   | 4   | 12     | CP1–CP8; CI perf budgets on a fixed dataset; k6 per tier; profiler with top-50 slowest nodes                                                           | p95 recalc regression > 20%                                                         |
+| R-15 | Audit log tampering or hash-chain break                                                                                                                                                                                                    | 2   | 5   | 10     | DB-level append-only, hash chain, `/v1/audit/verify`, alerting on verification failure                                                                 | Any verify failure                                                                  |
+| R-16 | Collaboration corrupts numbers via silent merge                                                                                                                                                                                            | 3   | 5   | **15** | COL3/COL4 — leases + typed conflict + explicit human resolution; CRDT restricted to non-monetary content                                               | Any last-write-wins path on a decimal                                               |
+| R-17 | Key-person dependency / context loss between sessions                                                                                                                                                                                      | 4   | 3   | 12     | `.agent/` memory discipline, PROJECT_JOURNAL, ADR log, this blueprint as the single source of intent                                                   | Any session starting without reading `.agent/state.json`                            |
+| R-18 | CI cannot be updated from this environment (no `workflows` permission), so gates silently rot                                                                                                                                              | 4   | 3   | 12     | Numbered `ci-patches/*.patch` with apply instructions; track pending patches in state.json                                                             | > 2 unapplied patches                                                               |
+| R-19 | Restatement handled as an in-place edit, silently changing published history                                                                                                                                                               | 2   | 5   | 10     | R1–R5 restatement protocol; new immutable version; SUPERSEDED banners; disclosure checklist                                                            | Any UPDATE on a closed-period fact                                                  |
+| R-21 | **No system of record.** 43 stores persist financial truth to browser `localStorage`; only 14 non-test files call the server (§0.6.1). Clearing site data destroys the ledger; backup/RTO/RPO/audit claims are unbackable while this holds | 4   | 5   | **20** | Workstream 0.8 — persistence authority, money-safe serialization, `glStore` server-authoritative spike; UI must state local-only durability honestly   | Any durability, backup, or audit claim made for a store still classified local-only |
+| R-22 | **The money gate can read green while money is unsafe.** `money:adoption` detects an _import_ of the primitive by regex, not decimal-correct arithmetic; "0 raw `toFixed`" is therefore not evidence of safety                             | 4   | 5   | **20** | Workstream 0.1.0 replaces the regex with an AST detector before the ≥60% gate is trusted; re-baseline expected to fall before it rises                 | Any adoption figure quoted from the import-regex scanner after 0.1.0 lands          |
+| R-23 | Schema forked across `src-tauri/migrations/*.sql` (35 tables) and the server's in-code DDL (9 more) with no drift detection                                                                                                                | 3   | 4   | 12     | Workstream 0.8.4 — single schema source + CI equality gate                                                                                             | Any table defined in one source and not the other                                   |
+| R-20 | Non-payment freezes a customer mid-close, causing regulatory harm                                                                                                                                                                          | 2   | 4   | 8      | Fair-use ladder (XLIV): close and audit paths are never frozen without a legal-notice workflow                                                         | Any hard limit applied to a close path                                              |
 
 ---
 
@@ -2752,6 +2921,35 @@ without argument — correctness outranks performance (K18).
 **Decision:** deliver every `.github/workflows/**` change as `ci-patches/NNNN-*.patch` with
 apply instructions and track pending patches in `.agent/state.json`. **Consequence:**
 a human step is required for CI evolution; the alternative is a silent CI drift, which is worse.
+
+### ADR-012 — Default rounding is ROUND_HALF_UP, not banker's rounding
+
+**Status:** Accepted (session 004) · **Context:** Codex XVIII-G line 522 mandates banker's
+rounding (half-even) as the default, but Codex line 692 mandates that `0.005` round to
+`0.01`, which is half-**up** behaviour — half-even yields `0.00`. The two instructions are
+mutually exclusive; `src/utils/money.ts` already implements `ROUND_HALF_UP`.
+**Decision:** honour the executable requirement (line 692) over the label (line 522).
+Default `ROUND_HALF_UP`; require explicit `ROUND_HALF_EVEN` at the call site for tax
+provision (A.7), statutory local-GAAP books (A.3), and any jurisdiction pack that declares
+it. No statutory path may rely on the default mode.
+**Consequence:** a small, known upward bias on exact-half values in presentation paths,
+accepted and documented; statutory correctness is preserved by explicit call-site selection
+rather than by a global default. Reversing this decision later is a one-line change to the
+`Decimal.set()` default plus a golden-fixture re-baseline, so the cost of being wrong is low.
+**Alternative rejected:** switching the global default to half-even, which would silently
+change existing golden fixtures and break the Codex's own stated test.
+
+### ADR-013 — Every NOT-STARTED feature must name a phase
+
+**Status:** Accepted (session 004) · **Context:** an audit of the locked blueprint found 16
+`NOT STARTED` features that appear in the Feature Universe (§3) but in **no** phase of the
+roadmap (§18) — including `F-MIGRATE-001` (Excel deconstruction) and `F-INTEGRATE-006`
+(Excel live two-way sync), both of which §0.5 advertises as headline differentiators and
+K20 names as the critical filter. Unscheduled work is how a differentiator quietly becomes
+vapour. **Decision:** §18.7 now carries a scheduling ledger that assigns a phase to every
+non-`BUILT` feature; a feature may be explicitly deferred ("v2+, not scheduled") but it may
+not be silently absent. **Consequence:** the roadmap is auditable by script
+(`comm -23 not-started scheduled` must be empty apart from the declared deferral list).
 
 ---
 
@@ -2880,7 +3078,35 @@ distinguishable from decision.
 **Zero unchecked boxes. Product code may now begin, starting at Phase 0 Workstream 0.1
 (money integrity) — not at AI, VDR, or Pillar Two.**
 
----
+## 22.8 Adversarial re-audit (session 004) — findings and dispositions
+
+The locked blueprint was re-audited against the Codex **and against the repository as
+measured**, on the premise that a document that passes its own checklist may still be wrong.
+Eight defects were found. All are fixed above; each is recorded here because §22.6 forbids
+quietly overwriting a published number.
+
+| #   | Severity     | Finding                                                                                                                                      | Disposition                                                                 |
+| --- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| 1   | **High**     | **§3.8 feature arithmetic was wrong on every line** — published 96 / 61 / 35 / 14; machine count is 98 / 68 / 30 / 13                        | §3.8 rebuilt from a reproducible command; correction stated in place        |
+| 2   | **Critical** | **No system of record.** 43 stores persist financial truth to `localStorage`; 14 non-test files call the server; `tenant_id` = 0 occurrences | New §0.6.1 measurement; new **Workstream 0.8**; new **R-21** (score 20)     |
+| 3   | **Critical** | **The money gate can read green while money is unsafe** — adoption is an import regex, so "0 raw `toFixed`" proves nothing about arithmetic  | New **W0.1.0** AST detector precedes the ≥60% gate; new **R-22** (score 20) |
+| 4   | **High**     | **16 `NOT STARTED` features were in no phase at all**, including F-INTEGRATE-006 (K20 filter) and F-MIGRATE-001 (a §0.5 differentiator)      | New **§18.7 scheduling ledger** + **ADR-013** + CI check                    |
+| 5   | **High**     | **Codex rounding mandate contradicts itself** (line 522 half-even vs line 692 `0.005 → 0.01`); deviation was undocumented                    | **ADR-012**; statutory paths must select half-even explicitly               |
+| 6   | **Medium**   | **Phase 0 was internally unordered** — 0.2 tenancy would add governed columns to a non-authoritative database                                | Intra-phase ordering graph added to §18.7 independence proof                |
+| 7   | **Medium**   | **Schema forked** across `src-tauri/migrations/` (35 tables) and server in-code DDL (9), no drift detection                                  | **W0.8.4** single-source + equality gate; **R-23**                          |
+| 8   | **Low**      | F-ERR-001 is P1 in §3.7 but scheduled in Phase 0 (W0.4), inflating the "14 P0" figure                                                        | Stated explicitly in §3.8; counted as P1                                    |
+
+**What the audit did _not_ find**, having looked: no U+FFFD/encoding corruption (0 occurrences);
+all 98 feature IDs referenced anywhere resolve to a defining row in §3; every §0.6 baseline
+count re-verified against the live repo (2,342 files · 187 engines · 44 stores · 193 routes ·
+1,228 test files — all still exact); the sector `Math.random` hits are doc comments asserting
+its _absence_, not fabricated numbers.
+
+**Honest status of the lock.** These were substantive defects, two of them Severity-critical
+by §22.6's own standard. The blueprint remains **LOCKED**; it is now locked around numbers
+that are reproducible by command rather than asserted by hand. The most important change is
+conceptual: Phase 0 previously assumed a governed database that does not yet hold the data.
+It no longer does.
 
 # APPENDIX A — DOMAIN MODULE SPECIFICATIONS (ADDENDUM II, PARTS XXXI–LX)
 
@@ -3528,5 +3754,3 @@ in the table, without exception.
 | Synthetic data generator spec (LIX)                        | A.18; Section 11.7                                            |
 | Stable error code registry (LX)                            | Section 16.8; A.14                                            |
 | Full tree (LXI) as `docs/architecture/TREE.md`             | Written at lock; see Section 21 ADR index and the lock record |
-
----

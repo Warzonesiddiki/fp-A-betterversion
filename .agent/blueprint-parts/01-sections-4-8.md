@@ -480,6 +480,26 @@ where a jurisdiction or standard demands it — the choice is explicit at the ca
 recorded, never implicit. Residuals from proportional splits are allocated deterministically
 so parts always sum exactly to the parent.
 
+**Deviation from the Codex, recorded (ADR-012).** Codex XVIII-G line 522 mandates
+_"Banker's rounding (round-half-to-even) as default"_. This blueprint defaults to
+`ROUND_HALF_UP` instead. The Codex is internally inconsistent on this point: line 692
+requires that _"0.005 rounds to 0.01 (banker's rounding)"_, but banker's rounding returns
+`0.00` for that input, not `0.01` — verified:
+
+```
+new Decimal('0.005').toDecimalPlaces(2, ROUND_HALF_EVEN) === 0     // Codex line 522 label
+new Decimal('0.005').toDecimalPlaces(2, ROUND_HALF_UP)   === 0.01  // Codex line 692 test
+```
+
+Both mandates cannot hold. We implement the **behaviour the Codex tests for** (line 692)
+rather than the **label it uses** (line 522), because the test is the falsifiable artefact.
+The consequence is stated rather than hidden: HALF_UP carries a small upward bias on exact
+half values — immaterial for presentation, **not** acceptable for statutory allocation in
+jurisdictions that require half-even. Therefore `ROUND_HALF_EVEN` is mandatory, explicitly
+at the call site, for tax provision (A.7), statutory local-GAAP books (A.3), and any
+jurisdiction pack that declares it. `roundMoney()` accepts an explicit mode and no statutory
+path may rely on the default. Full record: **ADR-012, §21**.
+
 ## 6.5 FX protocol (Part XIX-E)
 
 Rate priority: user-entered (board-approved) > integrated feed (ECB/OXR) > CSV import.

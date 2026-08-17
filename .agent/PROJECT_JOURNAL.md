@@ -139,3 +139,31 @@ ADR._ Moving a bar to make a date is the failure mode this document exists to pr
 
 Phase 0, Workstream 0.1: money integrity. Adoption from ~22% to ≥ 60%, zero float in
 financial paths, mutation score ≥ 80% on `src/utils/money.ts`. Nothing outranks it.
+
+## Session 004 — Adversarial blueprint re-audit
+
+Re-audited the LOCKED blueprint against the Codex and against the repository as measured.
+Eight defects found and fixed; full record in `.agent/BLUEPRINT.md` §22.8.
+
+Two were critical and both concerned _false confidence_:
+
+- **No system of record.** 43 Zustand stores persist financial truth (GL, budgets, forecasts,
+  scenarios, debt, leases, FX) to browser `localStorage`; only 14 non-test files call the
+  server; `tenant_id` appears 0 times in `server/src/db/`. Phase 0's tenancy workstream would
+  have added governed columns to a database that does not hold the data. → new §0.6.1
+  measurement, Workstream 0.8 (persistence authority), R-21, and an intra-phase ordering rule
+  putting persistence authority _before_ tenancy.
+- **The money gate could read green while money is unsafe.** `money:adoption` detects an
+  _import_ of `@/utils/money` by regex, so "0 raw `toFixed`" is not evidence of decimal-safe
+  arithmetic. → W0.1.0 replaces it with an AST detector before the ≥60% gate is trusted; R-22.
+  Expect the honest number to fall below 25.44% before it rises.
+
+Also: §3.8 feature arithmetic was wrong on every line (96/61/35/14 → 98/68/30/13, now
+machine-derived); 16 NOT-STARTED features were scheduled in no phase at all, including the
+K20 Excel two-way sync differentiator (→ §18.7 ledger + ADR-013 + CI check, now zero orphans);
+the Codex's rounding mandate contradicts itself (line 522 half-even vs line 692 `0.005 → 0.01`)
+so ADR-012 records the deviation and forces explicit half-even on statutory paths; schema is
+forked across two sources with no drift detection (R-23, W0.8.4).
+
+Verified clean: no encoding corruption, all 98 feature IDs resolve, all §0.6 baseline counts
+still exact against the live repo. Blueprint remains LOCKED, now around reproducible numbers.

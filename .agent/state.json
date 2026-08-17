@@ -73,7 +73,28 @@
       "docs/MASTER_PLAN*.md",
       "GAP_LEDGER.md"
     ],
-    "next_work": "Phase 0 Workstream 0.1 - money integrity (BLUEPRINT.md 18.2)"
+    "next_work": "Phase 0 Workstream 0.1 - money integrity (BLUEPRINT.md 18.2)",
+    "reaudited_at": "2026-08-17T00:00:00Z",
+    "reaudit_session": "session_004",
+    "reaudit_findings": 8,
+    "reaudit_record": ".agent/BLUEPRINT.md \u00a722.8",
+    "feature_counts": {
+      "total": 98,
+      "built": 33,
+      "partial": 35,
+      "not_started": 30,
+      "p0_not_started": 13
+    },
+    "new_adrs": [
+      "ADR-012 rounding half-up vs bankers",
+      "ADR-013 every not-started feature names a phase"
+    ],
+    "new_risks": [
+      "R-21 no system of record (20)",
+      "R-22 money gate false-green (20)",
+      "R-23 schema fork (12)"
+    ],
+    "new_workstream": "0.8 persistence authority"
   },
   "indices": {
     "measured_2026_08_17": {

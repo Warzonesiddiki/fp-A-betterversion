@@ -142,6 +142,41 @@ exceeds depth (no tenancy, no RLS, no lineage graph, no metric store, no workflo
 machine, no environments). The central risk this blueprint manages is exactly that:
 **breadth has been allowed to look like depth.**
 
+### 0.6.1 Where the numbers actually live (measured, session 004)
+
+The single most consequential structural fact about this codebase was not stated in the
+first draft of this blueprint. It is stated here because Phase 0 sequencing depends on it.
+
+| Question                                             | Measured answer                                                                                                                              | Command                                        |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| Zustand stores using `persist()` → `localStorage`    | **43**                                                                                                                                       | `grep -rln 'persist(' src/store`               |
+| Non-test source files that call the server at all    | **14**                                                                                                                                       | `grep -rl 'fetch(\|axios' src \| grep -v test` |
+| Stores holding financial truth persisted client-side | `glStore`, `budgetStore`, `forecastStore`, `scenarioStore`, `debtStore`, `leaseStore`, `capexStore`, `fxRateStore`, `glTrialBalanceStore`, … | `ls src/store`                                 |
+| `tenant_id` occurrences in `server/src/db/`          | **0**                                                                                                                                        | `grep -rn 'tenant' server/src/db/*.ts`         |
+| Schema homes                                         | **2** (`src-tauri/migrations/*.sql` = 35 tables; `server/src/db/migrate.ts` + `auditSchema.ts` = 9 more, created in code)                    | —                                              |
+
+**What this means, plainly.** The general ledger, budgets, forecasts, scenarios, debt,
+leases and FX rates are today persisted as **JSON in browser `localStorage`**, not in the
+database. The Express + SQLite service exists and is well tested, but the application is
+substantially _not wired to it_. Consequences that must drive sequencing:
+
+1. **There is no system of record.** Clearing site data destroys the ledger. No backup
+   (§16.4), no RTO/RPO, no PITR, and no audit trail can be honest while this holds.
+2. **Server-side RLS protects almost nothing** while the authoritative copy of the data sits
+   on the client, outside any policy predicate.
+3. **`localStorage` is a string store.** Every persisted decimal round-trips through
+   `JSON.stringify`. Any money value held as a JS `number` in store state is silently
+   IEEE-754 at the persistence boundary regardless of how carefully the engines compute it —
+   which is why "0 raw `toFixed`" is **not** evidence of decimal safety (§18.2 W0.1).
+4. **The schema is forked in two places.** `src-tauri/migrations/` and the server's
+   in-code DDL can drift apart with nothing detecting it.
+
+This does not invalidate ADR-003 — evolving this codebase is still correct, and the local-first
+posture is a deliberate §0.5 differentiator. But it reframes Phase 0: the platform is closer to
+a **very sophisticated offline workbook** than to a governed cloud system, and the gap between
+those two things is the actual Phase 0 backlog. Workstream 0.8 (below) makes persistence
+authority an explicit, gated deliverable rather than an assumption.
+
 ## 0.7 Index scores — baseline vs target
 
 Scores are computed from the rubric in Section 22.3. Baseline is deliberately harsh.
@@ -278,24 +313,24 @@ Effort: S ≤ 2d · M ≤ 1w · L ≤ 3w · XL > 3w (XL must be decomposed befor
 
 ## 3.1 F-CORE — Financial Engine
 
-| ID         | Feature                                                 | Phase | Pri    | Effort | TODAY                                                                                         |
-| ---------- | ------------------------------------------------------- | ----- | ------ | ------ | --------------------------------------------------------------------------------------------- |
-| F-CORE-001 | Three-statement model engine (P&L, BS, CF), auto-linked | 0→1   | P0     | XL     | BUILT (`ThreeStatementEngine.ts`, oracles test exists)                                        |
-| F-CORE-002 | Driver-based modelling (KPI → revenue → cost cascade)   | 1     | P0     | L      | BUILT (`CascadeCalculationEngine`, `driverStore`)                                             |
-| F-CORE-003 | Zero-based budgeting templates                          | 1     | P1     | M      | BUILT (templates dir)                                                                         |
-| F-CORE-004 | Top-down / bottom-up hybrid planning                    | 1     | P0     | L      | BUILT (allocation + budget engines)                                                           |
-| F-CORE-005 | Multi-currency, 50+ currencies, live + locked rates     | 0→1   | P0     | L      | BUILT (`fxRateStore`, FX engine); **not** IAS 21-verified                                     |
-| F-CORE-006 | Multi-entity consolidation + IC eliminations + NCI      | 1     | P0     | XL     | BUILT (`ConsolidationEngine`, `IntercompanyMatchingEngine`)                                   |
-| F-CORE-007 | Rolling forecast engine, auto-lock actuals              | 1     | P0     | L      | BUILT (`forecastStore`, rolling pages)                                                        |
-| F-CORE-008 | Scenario manager, unlimited scenarios                   | 1     | P0     | L      | BUILT (`ScenarioEngine`)                                                                      |
-| F-CORE-009 | Variance engine (BvA, FvA, YoY, QoQ)                    | 1     | P0     | M      | BUILT (variance engines + pages)                                                              |
-| F-CORE-010 | Version control on models (branch, compare, merge)      | 1     | P0     | XL     | PARTIAL — branch/compare exist; **merge is a gap**                                            |
-| F-CORE-011 | Formula engine (Excel-compatible + financial functions) | 0→1   | P0     | XL     | BUILT (`FormulaEngine`, `ArrayFormulaEngine`, `AdvancedExcelEngine`)                          |
-| F-CORE-012 | Allocation engine (headcount %, revenue %, custom)      | 1     | P0     | M      | BUILT (`AllocationEngine`, `AllocationRuleEngine`)                                            |
-| F-CORE-013 | Period engine (monthly/quarterly/annual, fiscal config) | 0     | P0     | M      | BUILT (`Period*` engines, `server/src/routes/periods.ts`)                                     |
-| F-CORE-014 | Audit trail on every cell change                        | 0→1   | P0     | L      | BUILT client-side; **NOT GOVERNED** — no server-authoritative chain                           |
-| F-CORE-015 | Data validation rules                                   | 1     | P1     | M      | BUILT (`CellValidationEngine`)                                                                |
-| F-CORE-016 | **Decimal precision layer, zero float in money paths**  | 0     | **P0** | M      | BUILT (`src/utils/money.ts`, decimal.js, 0 raw `toFixed`); **enforcement gap: adoption ~22%** |
+| ID         | Feature                                                 | Phase | Pri    | Effort | TODAY                                                                                                                                      |
+| ---------- | ------------------------------------------------------- | ----- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| F-CORE-001 | Three-statement model engine (P&L, BS, CF), auto-linked | 0→1   | P0     | XL     | BUILT (`ThreeStatementEngine.ts`, oracles test exists)                                                                                     |
+| F-CORE-002 | Driver-based modelling (KPI → revenue → cost cascade)   | 1     | P0     | L      | BUILT (`CascadeCalculationEngine`, `driverStore`)                                                                                          |
+| F-CORE-003 | Zero-based budgeting templates                          | 1     | P1     | M      | BUILT (templates dir)                                                                                                                      |
+| F-CORE-004 | Top-down / bottom-up hybrid planning                    | 1     | P0     | L      | BUILT (allocation + budget engines)                                                                                                        |
+| F-CORE-005 | Multi-currency, 50+ currencies, live + locked rates     | 0→1   | P0     | L      | BUILT (`fxRateStore`, FX engine); **not** IAS 21-verified                                                                                  |
+| F-CORE-006 | Multi-entity consolidation + IC eliminations + NCI      | 1     | P0     | XL     | BUILT (`ConsolidationEngine`, `IntercompanyMatchingEngine`)                                                                                |
+| F-CORE-007 | Rolling forecast engine, auto-lock actuals              | 1     | P0     | L      | BUILT (`forecastStore`, rolling pages)                                                                                                     |
+| F-CORE-008 | Scenario manager, unlimited scenarios                   | 1     | P0     | L      | BUILT (`ScenarioEngine`)                                                                                                                   |
+| F-CORE-009 | Variance engine (BvA, FvA, YoY, QoQ)                    | 1     | P0     | M      | BUILT (variance engines + pages)                                                                                                           |
+| F-CORE-010 | Version control on models (branch, compare, merge)      | 1     | P0     | XL     | PARTIAL — branch/compare exist; **merge is a gap**                                                                                         |
+| F-CORE-011 | Formula engine (Excel-compatible + financial functions) | 0→1   | P0     | XL     | BUILT (`FormulaEngine`, `ArrayFormulaEngine`, `AdvancedExcelEngine`)                                                                       |
+| F-CORE-012 | Allocation engine (headcount %, revenue %, custom)      | 1     | P0     | M      | BUILT (`AllocationEngine`, `AllocationRuleEngine`)                                                                                         |
+| F-CORE-013 | Period engine (monthly/quarterly/annual, fiscal config) | 0     | P0     | M      | BUILT (`Period*` engines, `server/src/routes/periods.ts`)                                                                                  |
+| F-CORE-014 | Audit trail on every cell change                        | 0→1   | P0     | L      | BUILT client-side; **NOT GOVERNED** — no server-authoritative chain                                                                        |
+| F-CORE-015 | Data validation rules                                   | 1     | P1     | M      | BUILT (`CellValidationEngine`)                                                                                                             |
+| F-CORE-016 | **Decimal precision layer, zero float in money paths**  | 0     | **P0** | M      | PARTIAL — primitive is correct; **adoption 25.44% by import-proxy (2026-08-17), true decimal-safety unmeasured until W0.1.0 AST detector** |
 
 ## 3.2 F-PLAN — Planning Modules
 
@@ -415,13 +450,34 @@ These are the load-bearing items. **Nothing in 3.1–3.6 can reach `GOVERNED` wi
 
 | Bucket                       | Count                                     |
 | ---------------------------- | ----------------------------------------- |
-| Total specified features     | 96                                        |
-| `BUILT` or `PARTIAL` today   | 61                                        |
-| `NOT STARTED`                | 35                                        |
-| P0 items still `NOT STARTED` | **14** ← this is the true project backlog |
+| Total specified features     | 98                                        |
+| `BUILT`                      | 33                                        |
+| `PARTIAL`                    | 35                                        |
+| `BUILT` or `PARTIAL` today   | 68                                        |
+| `NOT STARTED`                | 30                                        |
+| P0 items still `NOT STARTED` | **13** ← this is the true project backlog |
 
-The 14 open P0 items are: F-PLAT-001, F-PLAT-005, F-SEM-001, F-MDM-001, F-OPS-002,
+Counts are derived by machine from the tables in §3.1–§3.7, not asserted by hand:
+
+```bash
+sed -n '/^# SECTION 3/,/^# SECTION 4/p' .agent/BLUEPRINT.md \
+  | grep -E '^\| \*?\*?F-[A-Z]+-[0-9]{3}' > /tmp/frows.txt
+wc -l < /tmp/frows.txt                                    # 98 total
+grep -o 'NOT STARTED\|PARTIAL\|BUILT' /tmp/frows.txt | sort | uniq -c   # 33 BUILT / 30 NOT STARTED / 35 PARTIAL
+grep 'NOT STARTED' /tmp/frows.txt | grep -E '\bP0\b' | wc -l            # 13
+```
+
+The 13 open P0 items are: F-PLAT-001, F-PLAT-005, F-SEM-001, F-MDM-001, F-OPS-002,
 F-SEC-003, F-SEC-004, F-CTRL-001, F-AI-011, F-INTEGRATE-000, F-WORKFLOW-007,
-F-WORKFLOW-008, F-COLLAB-002, F-ERR-001.
+F-WORKFLOW-008, F-COLLAB-002.
+
+A fourteenth item, **F-ERR-001** (error-code registry), is classified **P1** in §3.7 yet is
+scheduled in Phase 0 as Workstream 0.4. That is deliberate and not a contradiction: the
+registry is cheap, and every later phase's error contract depends on it, so it is pulled
+forward. It is counted as P1 above so the P0 backlog number stays honest.
+
+**Correction (session 004):** the previously published figures — 96 total / 61 built-or-partial
+/ 35 not-started / 14 open P0 — were hand-tallied and wrong on every line. The table above is
+machine-derived. Per §22.6 the error is recorded rather than quietly overwritten.
 
 **This list, not the 193 routes, is the measure of remaining work.**
