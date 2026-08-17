@@ -7,22 +7,10 @@ vi.mock('@/store/glStore', () => ({
   useGLStore: vi.fn(() => ({ entries: [] })),
 }));
 
-vi.mock('@/engines', () => ({
-  HealthcareEngine: {
-    calculatePatientRevenue: vi.fn(() => ({
-      netRevenue: 0,
-      grossCharges: 0,
-      contractuals: 0,
-      cashCollected: 0,
-      badDebt: 0,
-      denialRate: 0,
-      collectionRate: 0,
-      daysInAR: 0,
-    })),
-    getPayerMix: vi.fn(() => []),
-  },
-}));
-
+// NOTE: this file previously mocked '@/engines'. The page imports
+// '@/engines/HealthcareEngine' directly, so that mock never applied — it only
+// looked like isolation. The real engine runs here against an empty ledger;
+// the seeded-ledger probe lives in PatientRevenuePage.money.test.tsx.
 vi.mock('@/components/ui/PeriodPicker', () => ({
   PeriodPicker: () => <div data-testid="period-picker" />,
 }));
