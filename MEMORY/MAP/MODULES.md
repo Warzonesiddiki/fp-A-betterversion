@@ -24,8 +24,8 @@ because a plan says so.
 | Underwriting | `src/pages/insurance/UnderwritingPage.tsx` + `underwritingData.ts` | shipped | session 015 |
 | Project costing | `src/pages/construction/ProjectCostingPage.tsx` + `projectCostingData.ts` | shipped | session 014 |
 | Tax provision | `src/pages/tax/TaxProvisionPage.tsx` + `taxProvisionData.ts` | shipped | session 011 |
-| Patient revenue | `src/pages/healthcare/PatientRevenuePage.tsx` | flagged | 5 fabrication findings; engine returns hardcoded `denialRate: 4.2` |
-| Healthcare engine | `src/engines/HealthcareEngine.ts` | flagged | money-safe arithmetic, but invented denial rate + 30-day A/R divisor |
+| Patient revenue | `src/pages/healthcare/PatientRevenuePage.tsx` | shipped | session 017: fabrication 5 → 0; denial analytics disclosed, not estimated |
+| Healthcare engine | `src/engines/HealthcareEngine.ts` | partial | session 017: `denialRate` is now `null` and the 30-day A/R basis is disclosed; `cashCollected` still sums all 11xx, not patient-only collections (H-004) |
 | Construction engine | `src/engines/ConstructionEngine.ts` | flagged | 1.5× backlog invention + Math.abs |
 | Insurance engine | `src/engines/InsuranceEngine.ts` | flagged | 0.85× net-written + premium/360 policy count |
 | Retail engine | `src/engines/RetailEngine.ts` | flagged | 254 / 92.8 mocks remain |

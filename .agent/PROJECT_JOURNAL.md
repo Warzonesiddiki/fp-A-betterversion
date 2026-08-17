@@ -835,3 +835,100 @@ commentary are disclosed. Teeth: injecting `$4.2M` fails the empty-GL DOM probe.
 
 Money-AST: `DashboardPage` (11) (skip `mockData/index.ts`). Fabrication:
 `PatientRevenuePage` (5).
+
+---
+
+## Session 017 — 2026-08-18 — DashboardPage + PatientRevenuePage (+ MEMORY genesis)
+
+**Branch:** `arena/01a01215-fp-a-betterversion`
+
+### 0. `MEMORY/` secondary brain installed (user-ordered, mid-session)
+
+`MEMORY/` is now the committed cross-agent brain: `INDEX.md` (boot ritual,
+pointer table, danger list), `PROTOCOL.md` (binding rules), `STATE.json`,
+`TRUTH.md` (verified facts only), `ASSUMPTIONS` / `HYPOTHESES` / `ANTI`
+(hallucination vaccine), `INVARIANTS.md`, `MAP/`, `SCHEMA/`, `PRODUCT/`,
+`QUALITY/`, `TASKS/`, `SESSIONS/`, `DECISIONS/`, `PACKS/`, `_system/`.
+`node MEMORY/_system/check.mjs` is the integrity pass (paths exist, no weasel
+words in TRUTH, STATE parses and matches NOW, no secrets, INDEX links resolve,
+front-matter present) — currently PASS. Precedence is **disk > MEMORY > model
+recollection**; MEMORY serves the Codex and never overrides it.
+
+The first integrity run FAILED on six `MAP/TREE.md` entries written as indented
+relative paths; TREE.md now uses repo-relative paths. That is the point of the
+checker: MEMORY that cannot be verified is not memory.
+
+### 1. `DashboardPage` (11 → 0). Ratchet 489 → **477 (80.3% safe)**
+
+Real drop: 12 float operations left the product (11 here, 1 incidental on the
+healthcare page). Unsafe modules 173 → 171.
+
+The detector found arithmetic. Reading the file found worse:
+
+- `monthlyTrend` accumulated `amt = e.debit - e.credit` into `revenue` for
+  prefix-4 accounts. **Revenue was plotted with inverted sign** on the trend
+  chart, the Total Revenue sparkline, the sector-KPI sparklines and the
+  `AnomalyHighlight` input; monthly `netIncome = revenue - expenses` then
+  compounded it. The KPI tile used `credit - debit`, so the tile and the chart
+  disagreed about the sign of a dollar. No detector can see this.
+- Per-entry `Math.abs` on COGS and OpEx: a contra entry (rebate, credit memo,
+  reversal) _increased_ cost. Same class as session 016.
+- `budgetUtilization` rendered `0.0%` in green with a full-width bar when no
+  budget existed — a fabricated "0% used" signal.
+- Sector KPIs summed `debit - credit` for every code then `Math.abs`-ed, so a
+  revenue-coded KPI was right only by accident and a genuinely negative
+  balance displayed positive.
+
+Derivation is `src/pages/dashboard/dashboardModel.ts`: natural balance decides
+sign (revenue = credit − debit, cost = debit − credit), `amount` is the
+fallback only when a row carries no debit/credit, ratios are `null` when the
+denominator is not positive, and `deriveDashboardKpis` returns `null` for an
+empty ledger rather than a zeroed P&L. Known answer: revenue 95,000 (after a
+5,000 refund), COGS 50,000 (after a 10,000 rebate), OpEx 20,000, interest
+2,000, tax 3,000 ⇒ gross profit 45,000, total expenses 75,000, net income
+20,000, margins 47.37 / 21.05 / 78.95%.
+
+`Net Income` now includes prefixes 7 and 8, so the label is true instead of an
+operating subtotal wearing a net-income label, and `Total Expenses` is
+5+6+7+8. The identity `revenue − expenses = net income` is pinned.
+
+Teeth: reverting the page from `/tmp` fails 10 of 13 new assertions, including
+the trend-series sign lock and four source guards.
+
+### 2. `PatientRevenuePage` (5 → 0 fabrication). Ratchet 60 → **55 / 18 files**
+
+The page rendered a five-row denial root-cause table — Eligibility 420 /
+`$840k`, Coding Error 215 / `$450k`, Prior Auth 180 / `$1.2M`, Duplicate Claim
+95 / `$120k`, Medical Necessity 64 / `$2.1M` — identical for every entity and
+every period, through a `DataTable` whose column config (`metric` / `value`)
+did not even match its own rows. It also shipped KPI deltas with narrative
+causes (`+8.4%` "volume increase in Q1", `−0.8` "coding audits effective") and
+seven-point sparkline "histories" with the live value appended, which made
+invented trends look measured.
+
+`HealthcareEngine.calculatePatientRevenue` returned a hardcoded
+`denialRate: 4.2`. A denial rate is denied ÷ submitted claims — 835/837 data a
+general ledger does not carry — so it is now `null` by type, the page discloses
+it, and a source guard forbids reintroducing a numeric assignment. The A/R-days
+30-day divisor is no longer hidden: the engine returns `daysInPeriodBasis` and
+the tile states it.
+
+The pre-existing smoke test mocked `@/engines`, a module this page never
+imports — a mock that never applied while looking like isolation. Removed; the
+new probe runs the real engine on a seeded ledger (gross charges 1,500,000,
+contractuals 300,000, net revenue 1,200,000, collection rate 50.0%, days in A/R
+10.0).
+
+Teeth: reverting page + engine from `/tmp` fails 12 of 15 new assertions.
+
+### 3. Ratchet honesty
+
+Per-file `--json` diff before/after shows exactly two files moved
+(`DashboardPage.tsx` 11→0, `PatientRevenuePage.tsx` 1→0 money; the same
+healthcare page 5→0 fabrication) and **no other file's count changed**. Both
+numbers moved because the product got safer, not because measurement changed.
+
+### Next
+
+Money-AST: next ranked module from `--list` (skip `mockData/index.ts`).
+Fabrication: Education / Government / Logistics dashboards.

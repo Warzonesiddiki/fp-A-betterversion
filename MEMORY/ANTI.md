@@ -86,6 +86,22 @@ confidence: high
         did it; a contra entry then INCREASES the balance it should reduce.
   instead: natural balance -> revenue = credit - debit; cost = debit - credit.
 
+[DO-NOT] Let a chart and its KPI tile derive the same figure separately.
+  seen: DashboardPage's tile used `credit - debit` for revenue while the trend
+        chart used `debit - credit`, so revenue was plotted negative for
+        months on end and nothing failed.
+  instead: one derivation module per surface; the chart and the tile read it.
+  evidence: session 017, src/pages/dashboard/dashboardModel.ts.
+
+[DO-NOT] vi.mock a barrel the page does not import.
+  seen: PatientRevenuePage.test.tsx mocked '@/engines' while the page imports
+        '@/engines/HealthcareEngine'. The mock silently never applied.
+  instead: mock the exact specifier, or better, run the real engine.
+
+[DO-NOT] Render 0 or 0.0% for a metric whose denominator does not exist.
+  seen: budget utilization showed a green "0.0%" bar with no budget posted.
+  instead: null -> '—' plus a sentence saying what is missing.
+
 [DO-NOT] Re-fight pre-push gate 10 on a fresh branch.
   seen: with no @{u} it falls back to `git log -10` and flags already-merged
         squashes 5078e01 and 646bdf4.

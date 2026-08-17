@@ -8,16 +8,17 @@ confidence: high
 
 # TASKS/NOW — the single current critical path
 
-**T-017 · Phase 0 / W0.1.1 session 017 — both tracks in one session.**
+**T-018 · Phase 0 / W0.1.1 session 018 — both tracks in one session.**
 
-1. **Money-AST:** `src/pages/DashboardPage.tsx` (11 unsafe ops) → 0.
-   *In progress:* derivation extracted to `src/pages/dashboard/dashboardModel.ts`; page rewired;
-   detector reports 0 for both files; `tsc` clean. **Remaining:** known-answer unit tests, DOM
-   probe + source guard, teeth check, baseline update.
-2. **Fabrication:** `src/pages/healthcare/PatientRevenuePage.tsx` (5 currency-literal findings:
-   `$840k`, `$450k`, `$1.2M`, `$120k`, `$2.1M` in the denial table) → 0, plus the un-detected
-   inventions on the same page (fixed `change` deltas 8.4 / −0.8 / 1.2 / −2.4, invented sparkline
-   histories) and `HealthcareEngine`'s hardcoded `denialRate: 4.2`.
+1. **Money-AST:** `src/pages/cash/CashForecastPage.tsx` (10 unsafe ops) → 0, then
+   `src/pages/forecasts/RollingForecastPage.tsx` (10).
+   **Skip `src/services/mockData/index.ts` (13) — it is the fixture factory.**
+2. **Fabrication:** `src/pages/sectors/EducationDashboardPage.tsx` (5) → 0, then
+   `GovernmentDashboardPage` (5) and `LogisticsDashboardPage` (5).
 
-Definition of done: both detectors re-run, both baselines updated with prettier, teeth proven,
-journal + `.agent/state.json` + `.agent/HANDOVER.md` + MEMORY updated, two commits, pushed.
+Ratchets to beat: money 477 / 171 modules / 80.3%; fabrication 55 / 18 files.
+
+Definition of done: derivation module on `@/utils/money`, empty-state where the GL cannot support
+a figure, source guard + real-engine DOM probe, teeth proven by `/tmp` revert, per-file `--json`
+diff confined to the files you touched, both baselines updated with prettier, journal +
+`.agent/state.json` + `.agent/HANDOVER.md` + MEMORY written through, two commits, pushed.

@@ -10,8 +10,8 @@ confidence: high
 
 ## Correctness / detection
 
-- 489 unsafe money operations across 173 modules remain (80.05% safe).
-- 60 fabricated displayed literals across 19 files remain.
+- 477 unsafe money operations across 171 modules remain (80.3% safe).
+- 55 fabricated displayed literals across 18 files remain.
 - No detector for a **raw float crossing a render/format boundary**. Live instance:
   `ProfessionalExportEngine` types rows as `(string|number)[][]` and passes them to `autoTable`
   with only column 0 stringified — an unformatted float can print `0.30000000000000004` into a
@@ -44,7 +44,8 @@ confidence: high
   F-SEC-003/004, F-CTRL-001, F-AI-011, F-INTEGRATE-000, F-WORKFLOW-007/008, F-COLLAB-002.
 - Engine mocks still armed: RealEstate (4.2 / 94.8 / 6.2 + amount-sign/prefix-80 fork),
   Retail (254 / 92.8), Construction (1.5× backlog + abs), Insurance (0.85× / 360),
-  Healthcare (`denialRate: 4.2`, 30-day A/R divisor).
+  Healthcare: `denialRate` fixed in session 017; `cashCollected` still sums every 11xx receipt
+  rather than patient collections (H-004).
 
 ## Top risks (score)
 

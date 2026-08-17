@@ -10,8 +10,8 @@ confidence: medium
 
 | Metric | Value | Method | Date |
 | --- | --- | --- | --- |
-| Money-AST safety | 80.05% (694 safe / 173 unsafe modules, 489 unsafe ops) | `node scripts/money-ast-detector.mjs` | 2026-08-18 |
-| Fabrication findings | 60 across 19 files | `node scripts/fabrication-detector.mjs` | 2026-08-18 |
+| Money-AST safety | 80.3% (697 safe / 171 unsafe modules, 477 unsafe ops) | `node scripts/money-ast-detector.mjs` | 2026-08-18 (post-017) |
+| Fabrication findings | 55 across 18 files | `node scripts/fabrication-detector.mjs` | 2026-08-18 (post-017) |
 | `npm install` | ~21 s, 1006 packages, 0 vulnerabilities | install log | 2026-08-18 |
 | `npx tsc --noEmit` | 0 errors, ~45 s | direct run | 2026-08-18 |
 | Full frontend suite | ~15 min (last known), fits in a 3 GB sandbox | session 002 journal | 2026-08-17 |

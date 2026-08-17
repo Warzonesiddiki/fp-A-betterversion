@@ -1,8 +1,8 @@
 # OmniPlan — Session Handover
 
-**Last updated:** 2026-08-18 (end of session 016)
-**Branch of record:** `arena/01a01148-fp-a-betterversion`
-**Prior merge:** PR #63 → `main`
+**Last updated:** 2026-08-18 (end of session 017)
+**Branch of record:** `arena/01a01215-fp-a-betterversion`
+**Prior merge:** PR #64 → `main` @ `646bdf4`
 
 Paste the "Handover Prompt" section below into a new session to continue.
 
@@ -25,15 +25,15 @@ You are the autonomous Technical Owner / Chief Product Architect for **OmniPlan*
 
 The Article XVIII blueprint gate is **LOCKED** (`.agent/state.json` → `blueprint_status`), so product code is unblocked. Phase 0 / Wave W0.1.1 is in progress: raising AST money safety toward ≥90%.
 
-**Money-AST ratchet: 489 unsafe ops / 173 unsafe modules / 694 safe / 80.05%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The 502 → 489 move in session 016 is real (13 float ops left CreditRiskPage).
+**Money-AST ratchet: 477 unsafe ops / 171 unsafe modules / 697 safe / 80.3%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The 489 → 477 move in session 017 is real (12 float ops left DashboardPage and PatientRevenuePage; per-file diff confined to those two files).
 
-**Fabrication ratchet: 60 findings / 19 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. The 66 → 60 move is real (ExecutiveSummary invented $4.2M pack KPIs removed).
+**Fabrication ratchet: 55 findings / 18 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. The 60 → 55 move is real (PatientRevenuePage invented denial table removed).
 
 Completed W0.1.1 modules: `FinancialStatementTemplates` (59→0), `ThreeStatementDashboardPage` (34→0), `SafeMathParser` (27→0), the two export engines (37 findings, all page-geometry false positives), `TaxProvisionPage` (22→0), `AutoCommentaryEngine` (16→0), `FinancialInstrumentsEngine` (15→0), `GoalSeekPage` (14→0), `ScenarioBuilderPage` (14→0), `CreditRiskPage` (13→0).
 
-**Next money-AST worklist item: `DashboardPage` (11).** Skip `mockData/index.ts` (fixture factory).
+**Next money-AST worklist item: `CashForecastPage` (10), then `RollingForecastPage` (10).** Skip `mockData/index.ts` (13, fixture factory).
 
-**Next fabrication worklist (worst first):** `PatientRevenuePage` (5), sector dashboards (Education / Government / Logistics).
+**Next fabrication worklist (worst first):** `EducationDashboardPage` (5), `GovernmentDashboardPage` (5), `LogisticsDashboardPage` (5), then `ForecastBuilderPage` / `ClinicalTrialCostPage` (4).
 
 ### Read this before you trust either ratchet
 
@@ -69,7 +69,8 @@ So: **a file at "0 unsafe ops" or "0 fabrication findings" is un-flagged, not ce
 
 ### Environment and workflow
 
-- **Session is fixed to branch `arena/01a01148-fp-a-betterversion`.** Commit and push only there.
+- **Session is fixed to branch `arena/01a01215-fp-a-betterversion`.** Commit and push only there.
+- **`MEMORY/` is the secondary brain.** Boot with `MEMORY/INDEX.md` → `STATE.json` → `TRUTH.md` → `TASKS/NOW.md`; write through in the same turn; `node MEMORY/_system/check.mjs` must stay PASS. Disk > MEMORY > recollection.
 - **Pre-commit** (~45s): eslint (staged) → `tsc --noEmit` → prettier (staged) → secret scan. **Pre-push** (~3–5 min): 12 gates incl. build, P0 shard, README claim checks, money ratchet, fabrication ratchet, cascade-hold ledger.
 - **Always push via `start_process`**, never `bash` — pre-push exceeds the bash timeout. Poll with `get_process_output`.
 - **Always `npx prettier --write` before `git add`** on any JSON or MD you generated, or pre-commit fails with husky exit 123.
@@ -83,7 +84,7 @@ So: **a file at "0 unsafe ops" or "0 fabrication findings" is un-flagged, not ce
 
 **Correctness / gates**
 
-- Fabrication worklist uncleaned: 60 displayed invented figures across 19 files (ratcheted; ExecutiveSummary invented pack KPIs cleaned in session 016).
+- Fabrication worklist uncleaned: 55 displayed invented figures across 18 files (ratcheted; PatientRevenuePage denial table cleaned in session 017).
 - No detector for raw floats crossing a render/format boundary. Live instance: `ProfessionalExportEngine` types rows as `(string|number)[][]` and passes them to `autoTable` with only column 0 stringified — an unformatted float prints `0.30000000000000004` into a board pack.
 - Detector blind spot: single-line arrow bodies over `args[i]!` (logged for W0.1.6, type-based detection).
 - No automated detector for numeric ratio invention or view/memo divergence (source guards are per-module).

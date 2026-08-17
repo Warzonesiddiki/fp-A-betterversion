@@ -1,20 +1,20 @@
 {
   "memory_version": "1.0.0",
-  "project": "OmniPlan (finplan-pro) — Warzonesiddiki/fp-A-betterversion",
+  "project": "OmniPlan (finplan-pro) \u2014 Warzonesiddiki/fp-A-betterversion",
   "updated_at": "2026-08-18",
   "genesis_phase": "Phase 0 / Wave W0.1.1",
   "now": {
-    "task_id": "T-017",
-    "summary": "W0.1.1 session 017: DashboardPage money-AST 11 -> 0 and PatientRevenuePage fabrication 5 -> 0, both with teeth."
+    "task_id": "T-018",
+    "summary": "W0.1.1 session 018: CashForecastPage money-AST 10 -> 0 and EducationDashboardPage fabrication 5 -> 0, both with teeth."
   },
   "health": {
     "shi": null,
     "uvi": null,
     "dei": null,
-    "money_ast_safety_pct": 80.05,
-    "money_ast_unsafe_ops": 489,
-    "fabrication_findings": 60,
-    "notes": "SHI/UVI/DEI not re-measured this session. Ratchet numbers measured 2026-08-18."
+    "money_ast_safety_pct": 80.3,
+    "money_ast_unsafe_ops": 477,
+    "fabrication_findings": 55,
+    "notes": "SHI/UVI/DEI not measured. Ratchets measured 2026-08-18 after session 017 (489->477, 60->55)."
   },
   "capabilities": {
     "git": true,
@@ -55,8 +55,8 @@
     "underwriting": "shipped",
     "project-costing": "shipped",
     "tax-provision": "shipped",
-    "patient-revenue": "flagged",
-    "healthcare-engine": "flagged",
+    "patient-revenue": "shipped",
+    "healthcare-engine": "partial",
     "construction-engine": "flagged",
     "insurance-engine": "flagged",
     "retail-engine": "flagged",

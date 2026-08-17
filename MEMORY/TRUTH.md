@@ -42,17 +42,18 @@ Nothing here may contain "should", "probably" or "we will".
 
 ## Money-AST ratchet (run 2026-08-18, `node scripts/money-ast-detector.mjs`)
 
-- [MEASURE] modules scanned 963 · handling money 867 · SAFE 694 · UNSAFE 173 ·
-  **unsafe operations 489** · **safety 80.05%**. Baseline `scripts/money-ast-baseline.json`,
-  enforced as pre-push gate 9b.
+- [MEASURE] modules scanned 964 · handling money 868 · SAFE 697 · UNSAFE 171 ·
+  **unsafe operations 477** · **safety 80.3%** (after session 017). Baseline
+  `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. Session start was 489 / 173 /
+  80.05%.
 - [POINTER] `src/utils/money.ts` — the only money-safe primitive (decimal.js, precision 40,
   ROUND_HALF_UP, throws `InvalidMoneyError` on NaN/±Inf/empty).
 
 ## Fabrication ratchet (run 2026-08-18, `node scripts/fabrication-detector.mjs`)
 
-- [MEASURE] modules scanned 784 · files with findings 19 · **findings 60**
-  (35 currency-literal, 25 percent-literal). Export engines at 0. Baseline
-  `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c.
+- [MEASURE] modules scanned 785 · files with findings 18 · **findings 55**
+  (30 currency-literal, 25 percent-literal) after session 017; session start was 60 / 19.
+  Export engines at 0. Baseline `scripts/fabrication-baseline.json`, pre-push gate 9c.
 
 ## Blueprint / process
 
@@ -73,12 +74,25 @@ Nothing here may contain "should", "probably" or "we will".
   `GoalSeekPage` (14), `ScenarioBuilderPage` (14), `CreditRiskPage` (13).
 - [FACT] Fabrication cleared on: REIT, Retail, ProjectCosting, Underwriting, ExecutiveSummary.
 
-## Session 017 (in progress, this session)
+## Session 017 (completed)
 
-- [FACT 2026-08-18] `src/pages/dashboard/dashboardModel.ts` created; `src/pages/DashboardPage.tsx`
-  rewired to it. `node scripts/money-ast-detector.mjs --file src/pages/DashboardPage.tsx` → **0**
-  unsafe ops (was 11); the new model file also reports 0. `npx tsc --noEmit` → 0 errors.
-- [FACT 2026-08-18] Defect found and fixed while extracting: the old `monthlyTrend` accumulated
-  `debit − credit` into `revenue` for prefix-4 accounts, i.e. **revenue was plotted with inverted
-  sign** on the trend chart, the Total Revenue sparkline, the sector sparklines and the anomaly
-  scan, and monthly net income compounded it. This was invisible to both detectors.
+- [POINTER] `src/pages/dashboard/dashboardModel.ts` + `dashboardModel.test.ts` (17 known-answer
+  tests) — the dashboard's only money derivation. `src/pages/DashboardPage.tsx` consumes it and
+  reports **0** unsafe ops (was 11).
+- [FACT 2026-08-18] Severity-0 defect fixed, invisible to both detectors: the old `monthlyTrend`
+  accumulated `debit − credit` into `revenue` for prefix-4 accounts, so **revenue was plotted with
+  inverted sign** on the trend chart, the Total Revenue sparkline, the sector sparklines and the
+  anomaly scan; monthly net income compounded it while the KPI tile used `credit − debit`.
+- [FACT 2026-08-18] `HealthcareEngine.calculatePatientRevenue` no longer returns a hardcoded
+  `denialRate: 4.2`; the field is `null` by type and the A/R divisor is disclosed as
+  `daysInPeriodBasis`. `src/pages/healthcare/PatientRevenuePage.tsx` fabrication 5 → 0.
+- [MEASURE 2026-08-18] Teeth: reverting `DashboardPage.tsx` from `/tmp` fails 10 of 13 new
+  assertions; reverting the healthcare page + engine fails 12 of 15.
+- [MEASURE 2026-08-18] Per-file `--json` diff before/after: only `DashboardPage.tsx` (11→0) and
+  `PatientRevenuePage.tsx` (money 1→0, fabrication 5→0) moved. No other file's count changed, so
+  the ratchet movement is product safety, not measurement drift.
+- [POINTER] Probes: `src/pages/DashboardPage.money.test.tsx`,
+  `src/pages/healthcare/PatientRevenuePage.money.test.tsx` (real engines + source guards).
+- [DECISION] `Net Income` on the dashboard now includes prefixes 7 and 8 and `Total Expenses` is
+  5+6+7+8, so the labels are literally true; the identity revenue − expenses = net income is
+  pinned by test.

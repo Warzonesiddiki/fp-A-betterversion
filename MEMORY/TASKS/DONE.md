@@ -22,9 +22,11 @@ Money-AST modules taken to 0 unsafe ops (real float removal, not remeasurement):
 | GoalSeekPage | 14 | 014 |
 | ScenarioBuilderPage | 14 | 015 |
 | CreditRiskPage | 13 | 016 |
-| DashboardPage | 11 | 017 (this session) |
+| DashboardPage | 11 | 017 |
+| PatientRevenuePage (money) | 1 | 017 |
 
-Fabrication files cleared: REIT, Retail, ProjectCosting, Underwriting, ExecutiveSummary.
+Fabrication files cleared: REIT, Retail, ProjectCosting, Underwriting, ExecutiveSummary,
+PatientRevenuePage (denial table + hardcoded `denialRate: 4.2` in HealthcareEngine).
 
 Infrastructure: money-AST detector + ratchet (gate 9b); fabrication detector + ratchet (gate 9c);
 Article XVIII blueprint LOCKED; ADR-001 `overrides` vulnerability patching; ADR-002 CI audit gate

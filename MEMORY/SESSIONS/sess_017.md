@@ -52,8 +52,14 @@ Hypotheses H-001..H-004 opened.
 - First MEMORY integrity run FAILED (6 errors: `MAP/TREE.md` used indented relative paths the
   checker could not resolve). Fixed TREE.md to full repo-relative paths → PASS.
 
+## Outcome
+
+T-017 complete. Money ratchet 489 → 477 (80.05% → 80.3%, unsafe modules 173 → 171); fabrication
+ratchet 60 → 55 (19 → 18 files). Per-file diff confined to the two target files. Teeth: 10/13 and
+12/15 new assertions fail against the reverted originals. 111 tests green across the touched
+suites; `tsc` and `eslint --max-warnings 0` clean.
+
 ## Next agent should
 
-Finish T-017: known-answer tests for `dashboardModel`, DOM probe + source guard on
-`DashboardPage`, then `PatientRevenuePage` fabrication + `HealthcareEngine.denialRate`, teeth via
-`/tmp` revert, both baselines, two commits, push.
+T-018: money-AST `src/pages/cash/CashForecastPage.tsx` (10), fabrication
+`src/pages/sectors/EducationDashboardPage.tsx` (5). Skip `src/services/mockData/index.ts`.
