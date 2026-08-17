@@ -1,0 +1,170 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 478aed2..525a9e1 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -78,7 +78,7 @@ jobs:
+ 
+       - name: Run tests with coverage (shard ${{ matrix.shard }})
+         run: >-
+-          node --max-old-space-size=81920 node_modules/vitest/vitest.mjs run
++          node --max-old-space-size=8192 node_modules/vitest/vitest.mjs run
+           --shard=${{ matrix.shard }}/4
+           --coverage
+           --reporter=blob
+@@ -117,7 +117,7 @@ jobs:
+           merge-multiple: true
+ 
+       - name: Merge shard reports and emit coverage
+-        run: node --max-old-space-size=81920 node_modules/vitest/vitest.mjs run --merge-reports=.vitest-reports --coverage
++        run: node --max-old-space-size=8192 node_modules/vitest/vitest.mjs run --merge-reports=.vitest-reports --coverage
+ 
+       - name: Upload coverage report
+         if: always()
+@@ -257,6 +257,66 @@ jobs:
+           path: playwright-report/
+           retention-days: 14
+ 
++  server:
++    # The Express/SQLite backend under server/ had NO CI coverage at all, which
++    # is how 9 failing real-SQLite tests (db/bootSchema, db/schemaReconciliation)
++    # reached main unnoticed: server/.npmrc sets `ignore-scripts=true`, so
++    # `npm ci` installs better-sqlite3 without compiling its native binding.
++    # `npm test` now bootstraps that binding via scripts/ensure-native-db.mjs.
++    name: Server (typecheck + tests)
++    runs-on: ubuntu-latest
++    timeout-minutes: 15
++    defaults:
++      run:
++        working-directory: server
++    steps:
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
++
++      - name: Setup Node.js
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
++        with:
++          node-version: ${{ env.NODE_VERSION }}
++          cache: npm
++          cache-dependency-path: server/package-lock.json
++
++      - name: Install dependencies
++        run: npm ci
++
++      - name: TypeScript check
++        run: npx tsc --noEmit
++
++      - name: Unit tests (portable suites)
++        run: npm test
++
++      - name: Unit tests (native-DB suites)
++        run: npm run test:native-db
++
++      - name: Production dependency audit (server)
++        run: npm audit --omit=dev --audit-level=high
++
++  audit:
++    # No CI job ever ran a vulnerability scan, which is how a HIGH-severity
++    # SSRF in `ip-address` (reachable via express-rate-limit's IP keying on the
++    # auth routes) sat unnoticed in the server workspace. `npm run audit:prod`
++    # already existed in package.json but was never wired into a pipeline.
++    name: Dependency Audit (production)
++    runs-on: ubuntu-latest
++    timeout-minutes: 10
++    steps:
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
++
++      - name: Setup Node.js
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
++        with:
++          node-version: ${{ env.NODE_VERSION }}
++          cache: npm
++
++      - name: Install dependencies
++        run: npm ci
++
++      - name: Audit production dependencies (fails on high/critical)
++        run: npm run audit:prod
++
+   a11y:
+     # A11Y-P0-4: NEVER-AGAIN RULE #50 (A11Y-CI-ENFORCEMENT, proposed by Artemis)
+     # Critical a11y violations MUST fail CI. The actual a11y runner is
+@@ -322,9 +382,8 @@ jobs:
+   summary:
+     name: CI Summary
+     if: always()
+-    needs: [typecheck, lint, test, test-merge, build, e2e, a11y]
++    needs: [typecheck, lint, test, test-merge, build, server, audit, e2e, a11y]
+     runs-on: ubuntu-latest
+-    if: always()
+     steps:
+       - name: Check results
+         run: |
+@@ -337,6 +396,8 @@ jobs:
+           echo "| Unit Tests (sharded) | ${{ needs.test.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| Coverage Merge | ${{ needs.test-merge.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| Build & Bundle | ${{ needs.build.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
++          echo "| Server (tsc + tests) | ${{ needs.server.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
++          echo "| Dependency Audit | ${{ needs.audit.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| E2E Tests | ${{ needs.e2e.result == 'success' && ':white_check_mark: Pass' || (needs.e2e.result == 'skipped' && ':fast_forward: Skipped' || ':x: Fail') }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| A11Y | ${{ needs.a11y.result == 'success' && ':white_check_mark: Pass' || (needs.a11y.result == 'skipped' && ':fast_forward: Skipped' || ':x: A11Y violations (see a11y-report artifact)') }} |" >> $GITHUB_STEP_SUMMARY
+ 
+@@ -345,6 +406,8 @@ jobs:
+              [ "${{ needs.test.result }}" != "success" ] || \
+              [ "${{ needs.test-merge.result }}" != "success" ] || \
+              [ "${{ needs.a11y.result }}" != "success" ] || \
++             [ "${{ needs.server.result }}" != "success" ] || \
++             [ "${{ needs.audit.result }}" != "success" ] || \
+              [ "${{ needs.build.result }}" != "success" ]; then
+             echo ""
+             echo ":x: **CI FAILED** - One or more required checks did not pass."
+diff --git a/.github/workflows/test-unit.yml b/.github/workflows/test-unit.yml
+index 2f24a62..1def6af 100644
+--- a/.github/workflows/test-unit.yml
++++ b/.github/workflows/test-unit.yml
+@@ -2,8 +2,8 @@
+ # =============================================================================
+ # FinPlan Pro — Unit Test Workflow (Milestone 1 of CI matrix split)
+ # See docs/drafts/atlas/CI_MATRIX.md §3.3 and docs/drafts/atlas/ci/README.md.
+-# Runs Vitest single-run with 80 GiB heap; uploads coverage to Codecov.
+-# Three witnesses: 8,334+ tests, 80 GiB heap, Codecov token in repo secrets.
++# Runs Vitest single-run with an 8 GiB heap; uploads coverage to Codecov.
++# Heap matches package.json's `test` script (see the note on VITEST_HEAP_MB).
+ # =============================================================================
+ 
+ name: test-unit
+@@ -23,13 +23,19 @@ concurrency:
+ 
+ env:
+   NODE_VERSION: "22"
+-  VITEST_HEAP_GB: "81920"   # Node --max-old-space-size in MiB = 80 GiB
++  # Node --max-old-space-size in MiB. 8 GiB matches package.json's `test`
++  # script and comfortably fits the 16 GiB ubuntu-latest runner. The previous
++  # 81920 (80 GiB) value exceeded the runner's physical RAM by 5x, so it never
++  # bought headroom — it only deferred an OOM into an opaque SIGKILL.
++  VITEST_HEAP_MB: "8192"
+ 
+ jobs:
+   vitest:
+-    name: Vitest (single-run, 80 GiB heap, coverage)
++    name: Vitest (single-run, 8 GiB heap, coverage)
+     runs-on: ubuntu-latest
+-    timeout-minutes: 15
++    # The full suite needs ~17 min wall-clock (longer with --coverage), so the
++    # previous 15 min cap failed this job on essentially every run.
++    timeout-minutes: 30
+     steps:
+       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+ 
+@@ -42,11 +48,8 @@ jobs:
+       - name: Install dependencies (npm ci, lockfile-strict)
+         run: npm ci --no-audit --no-fund
+ 
+-      - name: Run Vitest with 80 GiB heap + coverage
+-        # 80 GiB matches package.json's `test` script; the OOM-kill margin is
+-        # needed because the 197M+ working-tree engines + 825+ pre-existing
+-        # files hold large module graphs. See CI_MATRIX.md §3.3.
+-        run: node --max-old-space-size=${{ env.VITEST_HEAP_GB }} node_modules/vitest/vitest.mjs run --coverage --reporter=default
++      - name: Run Vitest with 8 GiB heap + coverage
++        run: node --max-old-space-size=${{ env.VITEST_HEAP_MB }} node_modules/vitest/vitest.mjs run --coverage --reporter=default
+ 
+       - name: Upload coverage report (artifact, 14-day retention)
+         if: always()

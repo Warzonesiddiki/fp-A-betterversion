@@ -75,3 +75,54 @@ Each gate was executed on this branch before being written into the workflow:
 
 Local success is **not** CI enforcement. The gates only bind once this patch is
 applied and a pipeline run is observed green.
+
+---
+
+# 0005 — server CI job + heap/timeout corrections (2026-08-17)
+
+`ci-patches/0005-server-ci-job-and-heap-timeout-fixes.patch`
+
+Same constraint as above: this app cannot push `.github/workflows/**`, so these
+three CI defects are delivered as a patch. **They are NOT active until a human
+applies it.** The non-workflow half of the fix (the better-sqlite3 bootstrap in
+`server/scripts/ensure-native-db.mjs`) IS committed directly and is already
+effective — the server suite is green locally without this patch.
+
+## Apply
+
+```bash
+git apply ci-patches/0005-server-ci-job-and-heap-timeout-fixes.patch
+git add .github/workflows/ci.yml .github/workflows/test-unit.yml
+git commit -m "ci: add server job, fix duplicate YAML key, correct heap and timeout"
+```
+
+## What the patch changes
+
+| Change                                                              | Why                                                                                                                                                                                    |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| New blocking `server` job (tsc + `npm test` + `npm run test:native-db` + server `npm audit`), wired into the `summary` gate | The 207-test backend had **zero** CI coverage. That is precisely how 9 failing real-SQLite tests reached `main` unnoticed. (Re-lands N-0011, which was never applied.)              |
+| New blocking `audit` job running `npm run audit:prod`, wired into the `summary` gate | **No CI job ever scanned for vulnerabilities.** That is how a HIGH-severity SSRF in `ip-address` (reachable via `express-rate-limit`'s IP keying on the auth routes) sat unnoticed. The `audit:prod` script already existed in `package.json` but was never wired into any pipeline. (Re-lands N-0004, which was never applied.) |
+| Removed the duplicated `if: always()` key on the `summary` job      | `ci.yml` was **invalid YAML** (`duplicated mapping key`, line 327).                                                                                                                    |
+| `test-unit.yml` `timeout-minutes: 15` → `30`                        | The suite takes ~18 min wall-clock (measured: 1086s for 13,738 tests), so the job failed on essentially every run.                                                                     |
+| `--max-old-space-size=81920` → `8192` (ci.yml ×2, test-unit.yml)    | 80 GiB exceeds the `ubuntu-latest` runner's physical RAM by ~5x, so it bought no headroom — it only turned an OOM into an opaque SIGKILL. 8 GiB matches `package.json` and is proven sufficient. |
+
+> Note: `ANALYSIS_AND_FIXES.md` (2026-07-30) already described the heap and
+> timeout fixes as **done**. They were never actually made to the workflow
+> files — verified against `455e74d`. This patch really applies them.
+
+## Verified locally
+
+| Command                                       | Result                                     |
+| --------------------------------------------- | ------------------------------------------ |
+| `npx tsc --noEmit`                            | exit 0                                     |
+| `npx eslint src --max-warnings 0`             | exit 0                                     |
+| `npm test` (frontend)                         | 1212 files — 13,738 passed, 1 skipped      |
+| `npx vite build`                              | exit 0 — PWA generated                     |
+| `cd server && npx tsc --noEmit`               | exit 0                                     |
+| `cd server && npm test`                       | 13 files — 130 passed (was 9 FAILING)      |
+| `cd server && npm run test:native-db`         | 2 files — 77 passed                        |
+| `npm run audit:prod` (root)                   | exit 0 — 0 production vulnerabilities      |
+| `cd server && npm audit --omit=dev --audit-level=high` | exit 0 — 0 vulnerabilities (after the `overrides` patch in the accompanying commit) |
+
+Local success is **not** CI enforcement. The server gate only binds once this
+patch is applied and a pipeline run is observed green.

@@ -1,0 +1,42 @@
+{
+  "codex": "ULTIMA",
+  "session_id": "sess_002",
+  "updated_at": "2026-08-17T05:30:00Z",
+  "capabilities": {
+    "git": true, "gh": true, "node": "v22.22.3", "npm": "10.9.8",
+    "docker": false, "cargo": false, "go": false,
+    "egress": true, "nproc": 2, "mem_gb": 3,
+    "constraint": "workflows cannot be pushed (GitHub App lacks `workflows` permission) -> ci-patches/ convention",
+    "constraint_mem": "sandbox has 3GB RAM; frontend suite normally runs with an 8GB heap flag"
+  },
+  "fingerprint": {
+    "languages": ["TypeScript", "Rust(tauri)"],
+    "frameworks": ["React 19", "Vite 8", "Tailwind 4", "Zustand", "Express"],
+    "monorepo": "root + server/ (independent lockfiles)",
+    "pkg_manager": "npm",
+    "test_command": "npm test (root) | cd server && npm test && npm run test:native-db",
+    "build_command": "npm run build",
+    "lint_command": "npx eslint src --max-warnings 0"
+  },
+  "health": {
+    "notes": "frontend gates green; server 207/207 green; 0 vulns both workspaces"
+  },
+  "queue": [],
+  "blocked": [
+    {
+      "id": "CI-WORKFLOWS",
+      "reason": "GitHub App lacks `workflows` permission; CI fixes delivered as ci-patches/0005-*.patch and require a human `git apply`",
+      "impact": "server job, audit gate, heap + timeout fixes are NOT enforced until applied"
+    }
+  ],
+  "assumptions": [
+    "ip-address/body-parser pinned via `overrides` (patch-level, no manifest change) rather than `npm audit fix --omit=dev`, which prunes devDependencies and breaks tsc",
+    "server/.npmrc `ignore-scripts=true` is a deliberate supply-chain posture and was preserved; the native binding is bootstrapped explicitly instead"
+  ],
+  "completed_this_session": [
+    "recovered lost git history after sandbox re-clone (fast-forward to pushed commit)",
+    "independently verified prior session's native-DB bootstrap self-heals on a fresh clone",
+    "patched HIGH ip-address SSRF + LOW body-parser DoS in server workspace",
+    "added blocking dependency-audit CI gate to ci-patches/0005"
+  ]
+}

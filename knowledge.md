@@ -131,7 +131,7 @@ export const useSomeStore = create<State>()(
 - This repo lives at `C:\Users\Tahir\Desktop\frontend that i want\fp&A` — the `&` and spaces in the parent path break some tools (PowerShell, certain CLIs). Prefer running scripts via `npm run …` over hand-typed PowerShell pipelines.
 - ESLint/TSC stdout in PowerShell may include CRLF + ANSI noise; redirect to a file (`> tsc_out.txt`) and read it instead.
 - Use `npm run` rather than calling node binaries directly when possible — package.json scripts already use `node node_modules/.../...js` to avoid Windows-shim quirks.
-- Vitest hardcodes an 80GB heap (`--max-old-space-size=81920`) in package.json. To run with less memory locally without editing package.json, invoke vitest directly: `node --max-old-space-size=8192 node_modules/vitest/vitest.mjs run`.
+- Vitest runs with an 8GB heap (`--max-old-space-size=8192`) in package.json and in CI. The former 80GB (`81920`) value was removed: it exceeded the CI runner's physical RAM and only masked a hang that has since been fixed.
 
 ## Other
 
