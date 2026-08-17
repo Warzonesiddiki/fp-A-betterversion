@@ -1,5 +1,5 @@
 diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
-index 478aed2..4a38197 100644
+index 478aed2..525a9e1 100644
 --- a/.github/workflows/ci.yml
 +++ b/.github/workflows/ci.yml
 @@ -78,7 +78,7 @@ jobs:
@@ -20,7 +20,7 @@ index 478aed2..4a38197 100644
  
        - name: Upload coverage report
          if: always()
-@@ -257,6 +257,40 @@ jobs:
+@@ -257,6 +257,66 @@ jobs:
            path: playwright-report/
            retention-days: 14
  
@@ -58,33 +58,61 @@ index 478aed2..4a38197 100644
 +      - name: Unit tests (native-DB suites)
 +        run: npm run test:native-db
 +
++      - name: Production dependency audit (server)
++        run: npm audit --omit=dev --audit-level=high
++
++  audit:
++    # No CI job ever ran a vulnerability scan, which is how a HIGH-severity
++    # SSRF in `ip-address` (reachable via express-rate-limit's IP keying on the
++    # auth routes) sat unnoticed in the server workspace. `npm run audit:prod`
++    # already existed in package.json but was never wired into a pipeline.
++    name: Dependency Audit (production)
++    runs-on: ubuntu-latest
++    timeout-minutes: 10
++    steps:
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
++
++      - name: Setup Node.js
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
++        with:
++          node-version: ${{ env.NODE_VERSION }}
++          cache: npm
++
++      - name: Install dependencies
++        run: npm ci
++
++      - name: Audit production dependencies (fails on high/critical)
++        run: npm run audit:prod
++
    a11y:
      # A11Y-P0-4: NEVER-AGAIN RULE #50 (A11Y-CI-ENFORCEMENT, proposed by Artemis)
      # Critical a11y violations MUST fail CI. The actual a11y runner is
-@@ -322,9 +356,8 @@ jobs:
+@@ -322,9 +382,8 @@ jobs:
    summary:
      name: CI Summary
      if: always()
 -    needs: [typecheck, lint, test, test-merge, build, e2e, a11y]
-+    needs: [typecheck, lint, test, test-merge, build, server, e2e, a11y]
++    needs: [typecheck, lint, test, test-merge, build, server, audit, e2e, a11y]
      runs-on: ubuntu-latest
 -    if: always()
      steps:
        - name: Check results
          run: |
-@@ -337,6 +370,7 @@ jobs:
+@@ -337,6 +396,8 @@ jobs:
            echo "| Unit Tests (sharded) | ${{ needs.test.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
            echo "| Coverage Merge | ${{ needs.test-merge.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
            echo "| Build & Bundle | ${{ needs.build.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
 +          echo "| Server (tsc + tests) | ${{ needs.server.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
++          echo "| Dependency Audit | ${{ needs.audit.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
            echo "| E2E Tests | ${{ needs.e2e.result == 'success' && ':white_check_mark: Pass' || (needs.e2e.result == 'skipped' && ':fast_forward: Skipped' || ':x: Fail') }} |" >> $GITHUB_STEP_SUMMARY
            echo "| A11Y | ${{ needs.a11y.result == 'success' && ':white_check_mark: Pass' || (needs.a11y.result == 'skipped' && ':fast_forward: Skipped' || ':x: A11Y violations (see a11y-report artifact)') }} |" >> $GITHUB_STEP_SUMMARY
  
-@@ -345,6 +379,7 @@ jobs:
+@@ -345,6 +406,8 @@ jobs:
               [ "${{ needs.test.result }}" != "success" ] || \
               [ "${{ needs.test-merge.result }}" != "success" ] || \
               [ "${{ needs.a11y.result }}" != "success" ] || \
 +             [ "${{ needs.server.result }}" != "success" ] || \
++             [ "${{ needs.audit.result }}" != "success" ] || \
               [ "${{ needs.build.result }}" != "success" ]; then
              echo ""
              echo ":x: **CI FAILED** - One or more required checks did not pass."
