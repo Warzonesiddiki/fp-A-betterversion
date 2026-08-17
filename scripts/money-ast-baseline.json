@@ -1,0 +1,17 @@
+{
+  "modulesScanned": 954,
+  "monetaryModules": 858,
+  "safeModules": 674,
+  "unsafeModules": 184,
+  "unsafeOperations": 740,
+  "safetyPercent": 78.55,
+  "byKind": {
+    "arithmetic": 580,
+    "reduce-accumulate": 20,
+    "compound-assign": 62,
+    "float-equality": 16,
+    "math-round": 38,
+    "comparison": 24
+  },
+  "recordedAt": "2026-08-17T14:12:18.855Z"
+}

@@ -67,6 +67,13 @@ node scripts/check-dependency-audit.mjs
 echo "→ tautological-assertion scan"
 node scripts/check-tautological-tests.mjs
 
+# Gate 9b: AST money-safety ratchet (Blueprint W0.1.0). The import-proxy
+# metric in money-adoption.mjs cannot see `total += row.amount` on floats; this
+# gate parses the AST and fails if unsafe monetary operations increase.
+# Inspect a module: node scripts/money-ast-detector.mjs --file <path>
+echo "→ AST money-safety ratchet"
+node scripts/money-ast-detector.mjs
+
 # Gate 10 - CASCADE-HOLD-BUNDLE Auto-Detection (NEVER-AGAIN RULE #68
 # CATCH-NUMBERING-COLLISION PREVENTION). Atlas + Hephaestus joint DRI.
 # Spec: docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md (§2: BLOCKED push)

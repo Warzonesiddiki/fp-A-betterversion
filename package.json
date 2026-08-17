@@ -37,7 +37,9 @@
     "financial:oracles": "node --max-old-space-size=8192 node_modules/vitest/vitest.mjs run src/engines/__tests__/financialStatementOracles.test.ts",
     "compliance:evidence": "node scripts/compliance-evidence.mjs",
     "release:dry-run": "node scripts/release-dry-run.mjs",
-    "docs:links": "node scripts/docs-link-check.mjs --strict"
+    "docs:links": "node scripts/docs-link-check.mjs --strict",
+    "money:ast": "node scripts/money-ast-detector.mjs",
+    "money:ast:list": "node scripts/money-ast-detector.mjs --list"
   },
   "dependencies": {
     "@json-render/core": "^0.19.0",

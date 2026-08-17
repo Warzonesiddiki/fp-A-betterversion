@@ -17,7 +17,8 @@
     "PLAN.md": "Historical planning doc.",
     "PROJECT_BACKLOG.md": "Historical backlog snapshot.",
     "PROJECT_INDEX.md": "Historical project index (superseded by docs/GLOSSARY_INDEX.md + README).",
-    "REMEDIATION_REPORT.md": "Historical remediation report."
+    "REMEDIATION_REPORT.md": "Historical remediation report.",
+    ".agent/PROJECT_JOURNAL.md": "Append-only session/decision journal. Its entries quote the exact broken citation strings they record fixing (e.g. the bare `ERROR_CODES.md` forms rewritten in session 005) — the quotes ARE the historical record, and rewriting them would falsify the log. New journal entries must still cite live docs by repo-relative path."
   },
   "targets": {
     "docs/codif/RULE_50.md": "Forward-reference placeholder ('when codif lands') in docs/a11y/WAIVERS.md — intentional, not a broken back-reference.",

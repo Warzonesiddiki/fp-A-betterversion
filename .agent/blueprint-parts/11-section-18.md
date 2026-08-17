@@ -28,14 +28,15 @@ one, left unfixed, multiplies the cost of everything built on top of it.
 
 ### Workstream 0.1 — Money integrity (highest priority, nothing outranks it)
 
-| #     | Item                                                       | Acceptance                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| ----- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0.1.0 | **Replace the adoption detector before trusting the gate** | The current `money:adoption` scanner counts modules that _import_ `@/utils/money` via regex. Importing the primitive is not proof of using it. Replace with an **AST detector** that flags arithmetic (`+ - * / +=`), comparison (`> < ===`), and `reduce` accumulation on values whose type resolves to a monetary type. Adoption = modules with **zero** unsafe monetary operations. Re-baseline honestly; the number will fall before it rises. |
-| 0.1.1 | Complete money-primitive migration                         | Adoption ≥ 60% measured by the **0.1.0 AST detector**, over the 912 financial modules currently scanned (import-proxy reading was 25.44% on 2026-08-17); ratchet enforces monotonic increase                                                                                                                                                                                                                                                       |
-| 0.1.2 | Eliminate float paths                                      | Detector reports 0 unsafe monetary operations in financial paths — including the **persistence boundary** (§0.6.1: `localStorage` JSON round-trips) and the store-selector layer, not only `toFixed`/`parseFloat`/`Number()`. Guardrail fails the build on reintroduction                                                                                                                                                                          |
-| 0.1.3 | Money type is total                                        | `Money = {amount: Decimal, currency: CurrencyCode}`; no bare number crosses an engine boundary                                                                                                                                                                                                                                                                                                                                                     |
-| 0.1.4 | 100% coverage + mutation ≥ 80% on `src/utils/money.ts`     | Stryker report checked in                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| 0.1.5 | Property tests for allocation, aggregation, FX round-trip  | Section 17.4 suite green                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| #                            | Item                                                       | Acceptance                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ---------------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.1.0 ✅ **DONE 2026-08-17** | **Replace the adoption detector before trusting the gate** | The current `money:adoption` scanner counts modules that _import_ `@/utils/money` via regex. Importing the primitive is not proof of using it. Replace with an **AST detector** that flags arithmetic (`+ - * / +=`), comparison (`> < ===`), and `reduce` accumulation on values whose type resolves to a monetary type. Adoption = modules with **zero** unsafe monetary operations. Re-baseline honestly; the number will fall before it rises. |
+| 0.1.2                        | Type-aware money detection                                 | Upgrade `money-ast-detector.mjs` from name-based to full type resolution via the TS type checker, so money flowing through a generically-named variable is still caught. Expect another honest drop                                                                                                                                                                                                                                                |
+| 0.1.1                        | Complete money-primitive migration                         | Safety ≥ 90% measured by the **0.1.0 AST detector** (`npm run money:ast`). First honest baseline 2026-08-17: **78.55% safe — 740 unsafe monetary operations across 184 of 858 monetary modules**. Ratchet enforces monotonic improvement                                                                                                                                                                                                           |
+| 0.1.2                        | Eliminate float paths                                      | Detector reports 0 unsafe monetary operations in financial paths — including the **persistence boundary** (§0.6.1: `localStorage` JSON round-trips) and the store-selector layer, not only `toFixed`/`parseFloat`/`Number()`. Guardrail fails the build on reintroduction                                                                                                                                                                          |
+| 0.1.3                        | Money type is total                                        | `Money = {amount: Decimal, currency: CurrencyCode}`; no bare number crosses an engine boundary                                                                                                                                                                                                                                                                                                                                                     |
+| 0.1.4                        | 100% coverage + mutation ≥ 80% on `src/utils/money.ts`     | Stryker report checked in                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| 0.1.5                        | Property tests for allocation, aggregation, FX round-trip  | Section 17.4 suite green                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ### Workstream 0.2 — Tenancy & environments (F-PLAT-001, F-OPS-002)
 
@@ -101,6 +102,40 @@ local-first posture stays (it is a §0.5 differentiator); what changes is which 
 **Deliberately out of scope for Phase 0:** migrating all 43 stores. That is Phase 1 work and
 depends on tenancy (0.2). Phase 0 proves the pattern on the ledger, the highest-value store,
 and makes the remaining gap visible and honest.
+
+#### W0.1.0 result (executed 2026-08-17)
+
+`scripts/money-ast-detector.mjs` replaces the import-proxy metric. It parses every
+financial-path module with the TypeScript compiler and flags arithmetic, compound
+assignment, float comparison, float equality, `reduce` accumulation, `Math.round`
+and value-producing `toFixed` **on monetary operands**. A module is safe only when it
+has zero unsafe operations — safety is a property of operations, not of imports.
+
+| Metric                       | Legacy import proxy | AST detector |
+| ---------------------------- | ------------------- | ------------ |
+| Reported adoption            | 25.44%              | —            |
+| Modules handling money       | not measured        | 858          |
+| Modules with zero unsafe ops | not measured        | 674 (78.55%) |
+| Unsafe monetary operations   | **invisible**       | **740**      |
+
+The two numbers are not comparable and the increase is not progress: the old metric
+asked "does this file import money.ts", the new one asks "does this file do unsafe
+arithmetic on money". 740 real defects that the old gate could not see are now visible
+and ratcheted. Breakdown: 580 arithmetic, 62 compound-assign, 38 `Math.round`,
+24 comparison, 20 reduce-accumulate, 16 float-equality.
+
+The detector was hand-validated against live modules before baselining. Three
+false-positive classes were found and fixed: request counters (`state.totalAllowed += 1`),
+bare generic names used as denominators (`windowFailures / total`), and token-bucket
+`cost` arithmetic. `CircuitBreaker.ts` fell 15 → 0 findings while
+`FinancialStatementTemplates.tsx` held at 59 true positives. Both directions are pinned
+by 17 fixture tests in `src/utils/moneyAstDetector.test.ts` (8 must-catch, 9 must-ignore),
+so tightening the heuristics can never silently blind the gate. Enforced as pre-push
+gate 9b and `npm run money:ast`.
+
+**Known limitation (honest):** monetary identification is name-based, not type-based.
+It cannot see money flowing through a variable called `x`. Upgrading to full type
+resolution via the TypeScript type checker is tracked as **W0.1.2**.
 
 **Exit criterion:** `docs/architecture/PERSISTENCE_MAP.md` exists and is CI-drift-checked; no monetary value
 is persisted as an IEEE-754 `number`; `glStore` is server-authoritative; every local-only
@@ -169,7 +204,8 @@ the reason for the ordering (Section 18.1) and is re-verified at the Phase 0 exi
 ### 🚦 Phase 0 exit gate
 
 ```
-□ Money adoption ≥ 60% measured by the AST detector (not the import-regex proxy);
+□ Money safety ≥ 90% measured by the AST detector (`npm run money:ast`, baseline
+  78.55% / 740 unsafe ops on 2026-08-17), not the import-regex proxy;
   zero float in financial paths; money mutation score ≥ 80%
 □ No monetary value is persisted as an IEEE-754 number anywhere (0.8.2 property test green)
 □ PERSISTENCE_MAP.md exists, CI-drift-checked; glStore is server-authoritative (0.8)

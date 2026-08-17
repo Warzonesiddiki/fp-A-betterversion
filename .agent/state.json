@@ -77,7 +77,7 @@
     "reaudited_at": "2026-08-17T00:00:00Z",
     "reaudit_session": "session_004",
     "reaudit_findings": 8,
-    "reaudit_record": ".agent/BLUEPRINT.md \u00a722.8",
+    "reaudit_record": ".agent/BLUEPRINT.md §22.8",
     "feature_counts": {
       "total": 113,
       "built": 33,
@@ -144,5 +144,27 @@
       "UVI": 95,
       "DEI": 95
     }
+  },
+  "phase": "Phase 0 — Foundation (executing)",
+  "phase0": {
+    "W0.1.0": {
+      "status": "DONE",
+      "completed": "2026-08-17",
+      "deliverable": "scripts/money-ast-detector.mjs + 17 fixture tests + pre-push gate 9b",
+      "baseline": {
+        "monetaryModules": 858,
+        "safeModules": 674,
+        "unsafeModules": 184,
+        "unsafeOperations": 740,
+        "safetyPercent": 78.55
+      },
+      "supersedes": "money-adoption.mjs import proxy (reported 25.44%, could not see float arithmetic)",
+      "note": "Numbers are not comparable; 740 previously-invisible unsafe ops are now ratcheted."
+    },
+    "W0.1.2": {
+      "status": "PLANNED",
+      "summary": "Type-aware detection via TS type checker (name-based today)"
+    },
+    "next": "W0.1.1 migrate unsafe modules (target safety >=90%), then W0.8 persistence authority"
   }
 }

@@ -222,3 +222,42 @@ silenced:
 `docs:links --strict` now reports 0 broken links, 0 broken citations. Blueprint invariants
 re-verified after regeneration: 25 sections, 113 features (33/42/38), zero orphans, zero
 unresolved F-ids, no encoding damage.
+
+## Session 006 — W0.1.0: the money detector now measures money
+
+Phase 0 execution began at W0.1.0, the task the blueprint flagged as blocking everything
+downstream: the money gate could not be trusted, so no number it produced could be either.
+
+**The flaw.** `scripts/money-adoption.mjs` scored a module as "adopted" if it contained
+`import ... from '@/utils/money'`. That is an import proxy, not a safety measure. A module
+doing `total += row.amount` on IEEE-754 doubles scored as fully adopted provided it imported
+`formatMoney` somewhere for display. The published 25.44% figure measured import statements.
+
+**The replacement.** `scripts/money-ast-detector.mjs` parses every financial-path module with
+the TypeScript compiler and asks whether it performs unsafe arithmetic on a monetary value:
+`+ - * / %`, compound assignment, float comparison, float equality, `reduce` accumulation,
+`Math.round/floor/ceil`, and value-producing `.toFixed()`. Safe only at zero findings.
+
+**First honest baseline: 78.55% safe — 740 unsafe monetary operations across 184 of 858
+monetary modules** (580 arithmetic, 62 compound-assign, 38 Math.round, 24 comparison,
+20 reduce-accumulate, 16 float-equality). The blueprint predicted the number would fall
+before it rose. It did not fall, because it is not the same measurement — the old metric
+counted imports, the new one counts defects. 740 real defects are now visible and ratcheted.
+
+**Validation before trust.** A detector with false positives gets switched off, so it was
+hand-checked against live modules before baselining. Three false-positive classes surfaced
+and were fixed: request counters (`state.totalAllowed += 1` — "total" is a money word but
+this is a tally), bare generic names used as denominators (`windowFailures / total`), and
+token-bucket `cost` arithmetic in the rate limiter. `CircuitBreaker.ts` went 15 → 0 findings
+while `FinancialStatementTemplates.tsx` held at 59 true positives (`s + (e.debit - e.credit)`,
+`revenue - cogs`). Both directions are pinned by 17 fixture tests in
+`src/utils/moneyAstDetector.test.ts` — 8 must-catch, 9 must-ignore, each must-ignore case a
+real false positive observed here. Tightening a heuristic can no longer silently blind
+the gate.
+
+**Known limitation, stated rather than hidden:** identification is name-based, not
+type-based, so money flowing through a variable called `x` is invisible. Full type
+resolution is scheduled as W0.1.2 and will cause another honest drop.
+
+Enforced as pre-push gate 9b and `npm run money:ast`. The legacy ratchet stays for now as a
+second signal; it is retired when W0.1.1 lands.
