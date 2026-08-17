@@ -25,15 +25,15 @@ You are the autonomous Technical Owner / Chief Product Architect for **OmniPlan*
 
 The Article XVIII blueprint gate is **LOCKED** (`.agent/state.json` → `blueprint_status`), so product code is unblocked. Phase 0 / Wave W0.1.1 is in progress: raising AST money safety toward ≥90%.
 
-**Money-AST ratchet: 545 unsafe ops / 177 unsafe modules / 684 safe / 79.44%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The 561 → 545 move in session 012 is real (16 float ops left AutoCommentaryEngine).
+**Money-AST ratchet: 530 unsafe ops / 176 unsafe modules / 685 safe / 79.56%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The 545 → 530 move in session 013 is real (15 float ops left FinancialInstrumentsEngine).
 
-**Fabrication ratchet: 101 findings / 23 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. The 121 → 101 move is real (REIT invented peers and mocked yield removed).
+**Fabrication ratchet: 83 findings / 22 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. The 101 → 83 move is real (RetailDashboardPage invented KPIs and store quotes removed).
 
-Completed W0.1.1 modules: `FinancialStatementTemplates` (59→0), `ThreeStatementDashboardPage` (34→0), `SafeMathParser` (27→0), the two export engines (37 findings, all page-geometry false positives), `TaxProvisionPage` (22→0), `AutoCommentaryEngine` (16→0).
+Completed W0.1.1 modules: `FinancialStatementTemplates` (59→0), `ThreeStatementDashboardPage` (34→0), `SafeMathParser` (27→0), the two export engines (37 findings, all page-geometry false positives), `TaxProvisionPage` (22→0), `AutoCommentaryEngine` (16→0), `FinancialInstrumentsEngine` (15→0).
 
-**Next money-AST worklist item: `FinancialInstrumentsEngine` (15).** Then `GoalSeekPage` (14).
+**Next money-AST worklist item: `GoalSeekPage` (14).**
 
-**Next fabrication worklist (worst first):** `RetailDashboardPage` (18), `ProjectCostingPage` (11), `UnderwritingPage` (6), `ExecutiveSummary` (6).
+**Next fabrication worklist (worst first):** `ProjectCostingPage` (11), `UnderwritingPage` (6), `ExecutiveSummary` (6).
 
 ### Read this before you trust either ratchet
 
@@ -83,7 +83,7 @@ So: **a file at "0 unsafe ops" or "0 fabrication findings" is un-flagged, not ce
 
 **Correctness / gates**
 
-- Fabrication worklist uncleaned: 101 displayed invented figures across 23 files (ratcheted; REIT peers cleaned in session 012).
+- Fabrication worklist uncleaned: 83 displayed invented figures across 22 files (ratcheted; retail invented KPIs cleaned in session 013).
 - No detector for raw floats crossing a render/format boundary. Live instance: `ProfessionalExportEngine` types rows as `(string|number)[][]` and passes them to `autoTable` with only column 0 stringified — an unformatted float prints `0.30000000000000004` into a board pack.
 - Detector blind spot: single-line arrow bodies over `args[i]!` (logged for W0.1.6, type-based detection).
 - No automated detector for numeric ratio invention or view/memo divergence (source guards are per-module).
@@ -125,9 +125,9 @@ R-21 no system of record (20) · R-22 money-gate false-green (20) · R-24 deskto
 | `.agent/PROJECT_JOURNAL.md`             | Session narrative + ADRs 001–013. Sessions 007–012 carry the correctness lessons   |
 | `.agent/state.json`                     | `blueprint_status`, indices, phase, queue                                          |
 | `scripts/money-ast-detector.mjs`        | AST money-safety detector (`--update --list --file --json`)                        |
-| `scripts/money-ast-baseline.json`       | Ratchet baseline (545 / 79.44%)                                                    |
+| `scripts/money-ast-baseline.json`       | Ratchet baseline (530 / 79.56%)                                                    |
 | `scripts/fabrication-detector.mjs`      | Displayed-literal fabrication detector (W0.1.7)                                    |
-| `scripts/fabrication-baseline.json`     | Ratchet baseline (101 / 23 files)                                                  |
+| `scripts/fabrication-baseline.json`     | Ratchet baseline (83 / 22 files)                                                   |
 | `src/utils/money.ts`                    | **The only** money primitive: decimal.js, precision 40, ROUND_HALF_UP              |
 | `src/utils/moneyAstDetector.test.ts`    | Detector regression locks incl. the `margin` precision fix                         |
 | `src/utils/fabricationDetector.test.ts` | Fabrication detector must-catch / must-ignore locks                                |

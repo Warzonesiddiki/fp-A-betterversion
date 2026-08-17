@@ -675,3 +675,34 @@ tests. Disclosure copy does not name the retired figures (session 011 lesson).
 ### Next
 
 Money-AST: `FinancialInstrumentsEngine` (15). Fabrication: `RetailDashboardPage` (18).
+
+---
+
+## Session 013 — 2026-08-18 — FinancialInstrumentsEngine + RetailDashboardPage
+
+**Branch:** `arena/01a01148-fp-a-betterversion`
+
+### 1. `FinancialInstrumentsEngine` (15 → 0). Ratchet 545 → **530 (79.56% safe)**
+
+The file header claimed a complete money migration. It still subtracted bond
+prices (`calcPrice - price`), accumulated duration/convexity cash-flows on
+floats, added `equityValue + debtValue` for WACC, and divided EV/Revenue as
+IEEE-754. One finding was `freeCashFlows.length - 1` inheriting money-ness
+from `cash` — fixed by `.at(-1)`, not by wrapping an index in money helpers.
+
+WACC is now an exact known answer: 0.6×12% + 0.4×6%×(1−25%) = **9%**. Zero
+capital returns 0 rather than NaN. Teeth: restoring `calcPrice - price` fails
+the source guard.
+
+### 2. `RetailDashboardPage` (18 → 0 fabrication). Ratchet 101 → **83 / 22 files**
+
+The routed `/retail/dashboard` page ignored the GL and rendered `$12.4M`,
+`6.8%` comps, `24.2%` conversion and five invented stores (Flagship NYC…).
+A data-driven twin already existed at `/retail/retail`. This page now uses
+`RetailEngine` + `glStore`, empty-states when there is no ledger, and omits
+traffic / conversion / named-store quotes. Teeth: empty and seeded-ledger
+DOM probes reject `$12.4M` and Flagship NYC.
+
+### Next
+
+Money-AST: `GoalSeekPage` (14). Fabrication: `ProjectCostingPage` (11).

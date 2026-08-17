@@ -280,6 +280,15 @@ YTD-carried-forward identity, not a forecast.
 quotes and a mocked 5.42% yield are gone; `calculateREITStats` returns null for AFFO,
 NAV/share and yield instead of 10%-of-rent / 1M-shares / 5.42.
 
+#### W0.1.1 progress — `FinancialInstrumentsEngine.ts` + retail fabrication (2026-08-18)
+
+Seventh money module: 15 → **0**; ratchet 545 → **530 (79.56% safe)**. Bond YTM,
+duration, convexity, WACC and trading multiples now use decimal.js. WACC(600,400,12%,6%,25%)
+is the exact 9% identity.
+
+`RetailDashboardPage` dropped 18 fabrication findings (101 → **83 / 22 files**). The
+`$12.4M` / Flagship-NYC demo is gone; the page reads `RetailEngine` + the posted GL.
+
 **Exit criterion:** `docs/architecture/PERSISTENCE_MAP.md` exists and is CI-drift-checked; no monetary value
 is persisted as an IEEE-754 `number`; `glStore` is server-authoritative; every local-only
 surface says so.
