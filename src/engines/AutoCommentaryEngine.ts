@@ -1,9 +1,24 @@
 /**
- * AutoCommentaryEngine — Auto-generate management commentary
- * Part 6 #2: Turns report production from days to hours
+ * AutoCommentaryEngine — management commentary from posted actuals and budget.
+ *
+ * CORRECTNESS CONTRACT (K18 — wrong numbers are Severity-0):
+ *
+ * 1. All money arithmetic is decimal.js via `@/utils/money`. No IEEE-754
+ *    `actual - budget` or `reduce((s, i) => s + i.actual)`.
+ * 2. A variance *percentage* is omitted when the base is zero. Returning 0%
+ *    would read as "on budget" when the budget does not exist.
+ * 3. Commentary never labels a variance "favorable" or "unfavorable" without
+ *    an account-class sign. Revenue above budget is good; expense above
+ *    budget is not. The engine does not know the class, so it says
+ *    above/below budget.
+ * 4. The full-year "outlook" is not a forecast. It states the mechanical
+ *    identity: if the remaining budget is delivered in full, FY variance
+ *    equals YTD variance.
+ * 5. `interpolate` currency-formats only keys that are money (`amount`,
+ *    `budget`). A growth rate or period count must not become `$15`.
  */
 
-import { formatMoney } from '../utils/money';
+import { formatMoney, subtractMoney, sumMoney, toDecimal, type MoneyInput } from '../utils/money';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { currencyFormatter } from '@/utils/financialFormatting';
 
@@ -24,15 +39,31 @@ interface CommentaryTemplate {
 interface VarianceContext {
   priorYear?: number;
   drivers?: string[];
-  threshold?: number; // percentage threshold for significance
+  threshold?: number;
+}
+
+const MONEY_INTERPOLATION_KEYS = new Set(['amount', 'budget', 'start', 'end']);
+
+function fmtCurrency(value: MoneyInput): string {
+  return currencyFormatter(reportingCurrency(), { maxDecimals: 0 })(toDecimal(value).toNumber());
+}
+
+function fmtPct(value: MoneyInput): string {
+  return formatMoney(toDecimal(value).abs(), { places: 1 });
+}
+
+/**
+ * (actual − base) / |base| × 100. `null` when base is zero — never 0-by-default.
+ */
+function varianceMagnitudePct(actual: MoneyInput, base: MoneyInput) {
+  const b = toDecimal(base);
+  if (b.isZero()) return null;
+  return subtractMoney(actual, base).div(b.abs()).times(100);
 }
 
 export class AutoCommentaryEngine {
-  private static readonly SIGNIFICANCE_THRESHOLD = 5; // 5% variance threshold
+  private static readonly SIGNIFICANCE_THRESHOLD = 5;
 
-  /**
-   * Generate variance commentary for a single line item
-   */
   static generateVarianceCommentary(
     actual: number,
     budget: number,
@@ -40,104 +71,129 @@ export class AutoCommentaryEngine {
     period: string,
     context?: VarianceContext
   ): string {
-    const variance = actual - budget;
-    const variancePct = budget !== 0 ? (variance / Math.abs(budget)) * 100 : 0;
-    const direction = variance >= 0 ? 'above' : 'below';
-    const absVariance = Math.abs(variance);
-    const absPct = Math.abs(variancePct);
+    const variance = subtractMoney(actual, budget);
+    const variancePct = varianceMagnitudePct(actual, budget);
+    const direction = variance.gte(0) ? 'above' : 'below';
+    const parts: string[] = [];
 
-    const fmt = (v: number) => currencyFormatter(reportingCurrency(), { maxDecimals: 0 })(v);
-
-    // Skip commentary for immaterial variances
-    const threshold = context?.threshold ?? this.SIGNIFICANCE_THRESHOLD;
-    if (absPct < threshold) {
-      return `${category} for ${period} was broadly in line with budget at ${fmt(actual)}, representing a ${formatMoney(absPct, { places: 1 })}% variance.`;
+    if (variancePct === null) {
+      parts.push(
+        `${category} for ${period} was ${fmtCurrency(actual)}. A variance percentage is not defined because the budget is zero.`
+      );
+    } else {
+      const threshold = context?.threshold ?? this.SIGNIFICANCE_THRESHOLD;
+      const absPct = variancePct.abs();
+      if (absPct.lt(threshold)) {
+        parts.push(
+          `${category} for ${period} was broadly in line with budget at ${fmtCurrency(actual)}, representing a ${fmtPct(absPct)}% variance.`
+        );
+      } else {
+        parts.push(
+          `${category} for ${period} was ${fmtCurrency(actual)}, ${direction} budget by ${fmtCurrency(variance.abs())} (${fmtPct(absPct)}%).`
+        );
+      }
     }
 
-    let commentary = `${category} for ${period} was ${fmt(actual)}, ${direction} budget by ${fmt(absVariance)} (${formatMoney(absPct, { places: 1 })}%).`;
-
-    // Add driver context if available
     if (context?.drivers && context.drivers.length > 0) {
       const driverText =
         context.drivers.length === 1
           ? `This was primarily driven by ${context.drivers[0]}.`
           : `Key drivers include ${context.drivers.slice(0, -1).join(', ')} and ${context.drivers[context.drivers.length - 1]}.`;
-      commentary += ` ${driverText}`;
+      parts.push(driverText);
     }
 
-    // Add prior year comparison if available
     if (context?.priorYear !== undefined) {
-      const yoyChange = actual - context.priorYear;
-      const yoyPct = context.priorYear !== 0 ? (yoyChange / Math.abs(context.priorYear)) * 100 : 0;
-      const yoyDirection = yoyChange >= 0 ? 'increase' : 'decrease';
-      commentary += ` Compared to prior year (${fmt(context.priorYear)}), this represents a ${yoyDirection} of ${fmt(Math.abs(yoyChange))} (${formatMoney(Math.abs(yoyPct), { places: 1 })}%).`;
+      const yoyChange = subtractMoney(actual, context.priorYear);
+      const yoyPct = varianceMagnitudePct(actual, context.priorYear);
+      const yoyDirection = yoyChange.gte(0) ? 'an increase' : 'a decrease';
+      if (yoyPct === null) {
+        parts.push(
+          `Compared to prior year, a year-over-year percentage is not defined because the prior-year base is zero.`
+        );
+      } else {
+        parts.push(
+          `Compared to prior year (${fmtCurrency(context.priorYear)}), this represents ${yoyDirection} of ${fmtCurrency(yoyChange.abs())} (${fmtPct(yoyPct)}%).`
+        );
+      }
     }
 
-    return commentary;
+    return parts.join(' ');
   }
 
-  /**
-   * Generate section narrative for a group of line items
-   */
   static generateSectionNarrative(section: string, lineItems: LineItem[], period: string): string {
     if (lineItems.length === 0) return `No data available for ${section} in ${period}.`;
 
-    const totalActual = lineItems.reduce((sum, item) => sum + item.actual, 0);
-    const totalBudget = lineItems.reduce((sum, item) => sum + item.budget, 0);
-    const totalVariance = totalActual - totalBudget;
-    const totalVariancePct = totalBudget !== 0 ? (totalVariance / Math.abs(totalBudget)) * 100 : 0;
+    const totalActual = sumMoney(lineItems.map((item) => item.actual));
+    const totalBudget = sumMoney(lineItems.map((item) => item.budget));
+    const totalVariance = subtractMoney(totalActual, totalBudget);
+    const totalVariancePct = varianceMagnitudePct(totalActual, totalBudget);
+    const direction = totalVariance.gte(0) ? 'above' : 'below';
 
-    const fmt = (v: number) => currencyFormatter(reportingCurrency(), { maxDecimals: 0 })(v);
+    const parts: string[] = [];
+    if (totalVariancePct === null) {
+      parts.push(
+        `Total ${section} for ${period} was ${fmtCurrency(totalActual)}. A variance percentage is not defined because the budget is zero.`
+      );
+    } else {
+      parts.push(
+        `Total ${section} for ${period} was ${fmtCurrency(totalActual)}, ${direction} budget by ${fmtCurrency(totalVariance.abs())} (${fmtPct(totalVariancePct)}%).`
+      );
+    }
 
-    const direction = totalVariance >= 0 ? 'above' : 'below';
-
-    // Find top variances
-    const sortedByVariance = [...lineItems]
+    const ranked = [...lineItems]
       .map((item) => ({
-        ...item,
-        variance: item.actual - item.budget,
-        variancePct:
-          item.budget !== 0 ? ((item.actual - item.budget) / Math.abs(item.budget)) * 100 : 0,
+        name: item.name,
+        variance: subtractMoney(item.actual, item.budget),
+        variancePct: varianceMagnitudePct(item.actual, item.budget),
       }))
-      .sort((a, b) => Math.abs(b.variancePct) - Math.abs(a.variancePct));
+      .filter((row) => row.variancePct !== null && row.variancePct.abs().gt(3))
+      .sort((a, b) => b.variancePct!.abs().comparedTo(a.variancePct!.abs()));
 
-    const topVariances = sortedByVariance.slice(0, 3).filter((v) => Math.abs(v.variancePct) > 3);
-
-    let narrative = `Total ${section} for ${period} was ${fmt(totalActual)}, ${direction} budget by ${fmt(Math.abs(totalVariance))} (${formatMoney(Math.abs(totalVariancePct), { places: 1 })}%).`;
-
-    if (topVariances.length > 0) {
-      const varianceLines = topVariances.map((v) => {
-        const vDir = v.variance >= 0 ? 'favorable' : 'unfavorable';
-        return `${v.name} (${vDir} ${fmt(Math.abs(v.variance))})`;
+    const top = ranked.slice(0, 3);
+    if (top.length > 0) {
+      const varianceLines = top.map((row) => {
+        const vDir = row.variance.gte(0) ? 'above budget' : 'below budget';
+        return `${row.name} (${vDir} ${fmtCurrency(row.variance.abs())})`;
       });
-      narrative += ` Notable variances include ${varianceLines.join(', ')}.`;
+      parts.push(`Notable variances include ${varianceLines.join(', ')}.`);
     }
 
-    // Add prior year comparison if available for all items
     const itemsWithPY = lineItems.filter((item) => item.priorYear !== undefined);
-    if (itemsWithPY.length === lineItems.length) {
-      const totalPY = itemsWithPY.reduce((sum, item) => sum + (item.priorYear ?? 0), 0);
-      const yoyChange = totalActual - totalPY;
-      const yoyPct = totalPY !== 0 ? (yoyChange / Math.abs(totalPY)) * 100 : 0;
-      const yoyDir = yoyChange >= 0 ? 'increase' : 'decrease';
-      narrative += ` Year-over-year, ${section} showed a ${yoyDir} of ${fmt(Math.abs(yoyChange))} (${formatMoney(Math.abs(yoyPct), { places: 1 })}%).`;
+    if (itemsWithPY.length === lineItems.length && lineItems.length > 0) {
+      const totalPY = sumMoney(itemsWithPY.map((item) => item.priorYear ?? 0));
+      const yoyChange = subtractMoney(totalActual, totalPY);
+      const yoyPct = varianceMagnitudePct(totalActual, totalPY);
+      const yoyDir = yoyChange.gte(0) ? 'increase' : 'decrease';
+      if (yoyPct === null) {
+        parts.push(
+          `Year-over-year, a percentage change is not defined because the prior-year total is zero.`
+        );
+      } else {
+        parts.push(
+          `Year-over-year, ${section} showed a ${yoyDir} of ${fmtCurrency(yoyChange.abs())} (${fmtPct(yoyPct)}%).`
+        );
+      }
     }
 
-    return narrative;
+    return parts.join(' ');
   }
 
-  /**
-   * Interpolate template with variables
-   * Supports: [period], [amount], [variance], [category], etc.
-   */
   static interpolate(template: string, variables: Record<string, unknown>): string {
     let result = template;
     for (const [key, value] of Object.entries(variables)) {
       const placeholder = `[${key}]`;
-      const formatted =
-        typeof value === 'number'
-          ? currencyFormatter(reportingCurrency(), { maxDecimals: 0 })(value)
-          : String(value ?? '');
+      let formatted: string;
+      if (typeof value === 'number') {
+        if (!Number.isFinite(value)) {
+          formatted = '—';
+        } else if (MONEY_INTERPOLATION_KEYS.has(key)) {
+          formatted = fmtCurrency(value);
+        } else {
+          formatted = String(value);
+        }
+      } else {
+        formatted = String(value ?? '');
+      }
       result = result.replace(
         new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
         formatted
@@ -146,9 +202,6 @@ export class AutoCommentaryEngine {
     return result;
   }
 
-  /**
-   * Get standard commentary templates
-   */
   static getTemplates(): CommentaryTemplate[] {
     return [
       {
@@ -208,9 +261,6 @@ export class AutoCommentaryEngine {
     ];
   }
 
-  /**
-   * Generate outlook commentary based on year-to-date performance
-   */
   static generateOutlook(
     category: string,
     ytdActual: number,
@@ -219,24 +269,28 @@ export class AutoCommentaryEngine {
     _remainingPeriods: number,
     drivers?: string[]
   ): string {
-    const ytdVariance = ytdActual - ytdBudget;
-    const ytdPct = ytdBudget !== 0 ? (ytdVariance / Math.abs(ytdBudget)) * 100 : 0;
+    const ytdVariance = subtractMoney(ytdActual, ytdBudget);
+    const ytdPct = varianceMagnitudePct(ytdActual, ytdBudget);
+    const remainingBudget = subtractMoney(fullYearBudget, ytdBudget);
+    // Identity, not a forecast: remaining budget delivered in full ⇒ FY Δ = YTD Δ.
+    const projectedFullYear = toDecimal(ytdActual).plus(remainingBudget);
+    const projectedVariance = subtractMoney(projectedFullYear, fullYearBudget);
+    const projectedPct = varianceMagnitudePct(projectedFullYear, fullYearBudget);
 
-    const fmt = (v: number) => currencyFormatter(reportingCurrency(), { maxDecimals: 0 })(v);
+    const ytdClause =
+      ytdPct === null
+        ? `Based on year-to-date actuals of ${fmtCurrency(ytdActual)} (variance % undefined — YTD budget is zero)`
+        : `Based on year-to-date performance of ${fmtCurrency(ytdActual)} (${fmtPct(ytdPct)}% ${ytdVariance.gte(0) ? 'above' : 'below'} budget)`;
 
-    const projectedFullYear = ytdActual + (fullYearBudget - ytdBudget); // simple projection
-    const projectedVariance = projectedFullYear - fullYearBudget;
-    const projectedPct =
-      fullYearBudget !== 0 ? (projectedVariance / Math.abs(fullYearBudget)) * 100 : 0;
-
-    let outlook = `Based on year-to-date performance of ${fmt(ytdActual)} (${formatMoney(Math.abs(ytdPct), { places: 1 })}% ${ytdVariance >= 0 ? 'above' : 'below'} budget), `;
-
-    if (Math.abs(projectedPct) < 3) {
-      outlook += `${category} is expected to finish broadly in line with the full-year budget of ${fmt(fullYearBudget)}.`;
-    } else if (projectedPct > 0) {
-      outlook += `${category} is projected to outperform budget by approximately ${fmt(Math.abs(projectedVariance))} (${formatMoney(Math.abs(projectedPct), { places: 1 })}%) for the full year.`;
+    let outlook: string;
+    if (projectedPct === null) {
+      outlook = `${ytdClause}, a full-year variance percentage is not defined because the full-year budget is zero.`;
+    } else if (projectedPct.abs().lt(3)) {
+      outlook = `${ytdClause}, if the remaining budget is delivered in full, ${category} finishes broadly in line with the full-year budget of ${fmtCurrency(fullYearBudget)}.`;
+    } else if (projectedVariance.gt(0)) {
+      outlook = `${ytdClause}, if the remaining budget is delivered in full, ${category} finishes ${fmtCurrency(projectedVariance.abs())} (${fmtPct(projectedPct)}%) above the full-year budget. This is the year-to-date variance carried forward, not a forecast of remaining periods.`;
     } else {
-      outlook += `${category} is at risk of underperforming budget by approximately ${fmt(Math.abs(projectedVariance))} (${formatMoney(Math.abs(projectedPct), { places: 1 })}%) for the full year.`;
+      outlook = `${ytdClause}, if the remaining budget is delivered in full, ${category} finishes ${fmtCurrency(projectedVariance.abs())} (${fmtPct(projectedPct)}%) below the full-year budget. This is the year-to-date variance carried forward, not a forecast of remaining periods.`;
     }
 
     if (drivers && drivers.length > 0) {

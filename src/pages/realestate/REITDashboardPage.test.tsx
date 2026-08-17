@@ -101,4 +101,31 @@ describe('REITDashboardPage smoke test', () => {
     renderPage();
     expect(screen.getByText(/No REIT Data/i)).toBeTruthy();
   });
+
+  it('does not render invented peer quotes or a mocked 5.42% yield', async () => {
+    const { useGLStore } = await import('@/store/glStore');
+    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+      entries: [
+        {
+          id: '1',
+          accountCode: '4001',
+          accountName: 'Rental income',
+          debit: 0,
+          credit: 2000000,
+          amount: 2000000,
+          date: '2026-01-15',
+          period: '2026-01',
+        },
+      ],
+    });
+    renderPage();
+    const body = document.body.textContent ?? '';
+    expect(body).toMatch(/REIT Analytics/i);
+    expect(body).not.toMatch(/Prologis/);
+    expect(body).not.toMatch(/American Tower/);
+    expect(body).not.toMatch(/\$112B/);
+    expect(body).not.toMatch(/5\.42%/);
+    expect(body).not.toMatch(/1\.38x/);
+    expect(body).toMatch(/not derivable/i);
+  });
 });
