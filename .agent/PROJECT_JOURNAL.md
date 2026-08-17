@@ -528,3 +528,101 @@ unformatted float would print verbatim into a board pack — a formatting-bounda
 detector.
 
 **Next:** module 5 is `TaxProvisionPage` (22).
+
+---
+
+## Session 011 — 2026-08-18 — W0.1.1 module 5 + the fabrication gate
+
+**Branch:** `arena/01a01148-fp-a-betterversion`
+**User direction:** work and fix all (fabrication gate _and_ TaxProvisionPage).
+
+Two deliverables. One made the product safer. One made a class of Severity-0 defects
+visible for the first time.
+
+### 1. `TaxProvisionPage` (22 → 0). Ratchet 583 → **561 (79.33% safe)**
+
+This move is real: 22 float operations left the product. A new safe module
+(`src/pages/tax/taxProvisionData.ts`) also entered the denominator (monetary modules
+860 → 861, safe 681 → 683).
+
+**The float arithmetic was the smaller problem.** The page read the user's GL and then
+invented an ASC 740 provision:
+
+| Invention                               | How                                                                |
+| --------------------------------------- | ------------------------------------------------------------------ |
+| Federal / CA / NY / International split | `pretax * 0.7 / 0.15 / 0.1 / 0.05`                                 |
+| Statutory rates                         | literals `21`, `8.84`, `6.5`, `12.5`                               |
+| Deferred vs current                     | more hardcoded ratios (`* 0.03`, `* 0.18`, …)                      |
+| Quarterly ETR trend                     | `18 + ((i * 3) % 5)` and `totalProvision/4 + ((i * 2300) % 10000)` |
+
+All four rendered on screen and exported to PDF/Excel. `TaxEngine` — the real ASC 740
+engine, already money-safe and oracle-tested — was never called. Calling it with those
+assumed rates would have been a second fabrication, so the page still does not call it.
+
+Two further defects in the pretax figure itself:
+
+1. Expenses were prefix-6 only. COGS (5) and interest (7) were ignored, so pretax on the
+   session-008 ledger was **$750 instead of $350**.
+2. `Math.abs` per expense entry — the same contra-entry defect as modules 1 and 2.
+
+**The fix.** Derivation extracted to `taxProvisionData.ts` (decimal.js, debit/credit-normal
+netting, prefixes 4/5/6/7/8). A line is emitted only when the posted GL supports it.
+Jurisdiction, deferred/current and statutory provision are disclosed as not derivable.
+Quarterly points are grouped from period tags when two or more quarters exist; a single
+period is not turned into a seasonality curve. The waterfall is pretax minus tax — the
+old chart also added net income as a third step and double-counted the residual.
+
+Pinned by 25 derivation tests + rewritten money tests + a DOM probe that renders the
+known ledger and asserts `$350 / $70 / 20.0% / $280`, with negative assertions against
+`State (CA)` and `8.84`. The previous page test asserted only that a heading rendered
+and mocked the GL with the wrong field names (`account` / `amount`), so it passed
+throughout. Teeth verified: reintroducing `.times(0.7)` fails 2 tests.
+
+Source guards strip comments first (session 008 lesson). An early version of them
+tripped on the disclosure prose that _named_ the invented jurisdictions; the disclosure
+was rephrased and the guards tightened to object-literal assignment patterns.
+
+### 2. Fabrication detector (W0.1.7) — first honest baseline **121 / 24 files**
+
+The gate session 010 asked for. `scripts/fabrication-detector.mjs` parses the AST and
+flags string literals that look like displayed money (`$12.4M`, `$1,234`) or percentages
+(`24.3%`) **only when they are the value of a displayed-figure property** (`value`,
+`val`, `sales`, `variance`, …), plus `taxRate: <number>` in `src/pages`.
+
+Scoped that way so template marketing copy (`Pre-populated for a $200M company`), SQL
+`$1`, Excel `$A$1`, format patterns and purpose text are not findings. Those classes
+were checked against the live tree before the baseline was recorded.
+
+Export engines are fail-closed at zero (session 010 contract; they are clean). Everything
+else is a ratchet. First baseline: **60 currency-literal + 61 percent-literal = 121
+findings across 24 files**. Worst offenders: `REITDashboardPage` (20),
+`RetailDashboardPage` (18), `ProjectCostingPage` (11), `ExecutiveSummary` (6). Enforced
+as pre-push gate 9c and `npm run fabrication:audit`. Both directions pinned by 11
+fixture tests; the `$12.4M` board-pack case is a must-catch.
+
+**Honest limitation, stated rather than hidden.** This detector would have caught
+session 010. It would **not** have caught session 007's ratio invention or this
+session's `taxRate: 21` table _as originally written_ — those are numeric literals in
+computed objects, not formatted display strings. Per-module source guards remain
+mandatory on every derivation extracted during W0.1.1. A file at "0 fabrication
+findings" is un-flagged, not certified.
+
+**121 is not a regression.** It is the first time these invented KPIs have been counted.
+The number is allowed only to fall.
+
+### What this session did not do
+
+The 24 files on the fabrication worklist were **not** cleaned. That is a multi-session
+grind of the same shape as W0.1.1 and is now gated so it cannot grow. AutoCommentaryEngine
+(16) is the next money-AST module.
+
+### Carried debts
+
+Unchanged, except the fabrication detector is no longer "not written". Remaining:
+raw-float-across-format-boundary (`ProfessionalExportEngine` `autoTable`); W0.1.6
+type-based detection; `financial.ts` oracle re-derivation; `ODDFPRICE`/`ODDLPRICE`;
+`scripts/escape-ledger-check.mjs`; wire `docs:links --strict` into `docs:verify`;
+retire `money:adoption`; W0.8 persistence authority; MSI installer.
+
+**Next:** `AutoCommentaryEngine` (16), and/or the fabrication worklist starting at
+`REITDashboardPage` (20). Same rule: read for invented values, verify by rendering.

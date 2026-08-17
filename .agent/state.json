@@ -1,7 +1,7 @@
 {
   "codex": "ULTIMA",
-  "session_id": "sess_003",
-  "updated_at": "2026-08-17T00:00:00Z",
+  "session_id": "sess_011",
+  "updated_at": "2026-08-18T00:00:00Z",
   "capabilities": {
     "git": true,
     "gh": true,
@@ -161,18 +161,21 @@
       "supersedes": "money-adoption.mjs import proxy (reported 25.44%, could not see float arithmetic)",
       "note": "Numbers are not comparable; 740 previously-invisible unsafe ops are now ratcheted."
     },
-    "next": "Continue W0.1.1 worst-first (SafeMathParser next), then W0.8 persistence authority",
+    "next": "Continue W0.1.1 worst-first (AutoCommentaryEngine next), then W0.8 persistence authority",
     "W0.1.1": {
       "status": "IN PROGRESS",
       "target": "AST money safety >= 90%",
       "current": {
-        "unsafeOperations": 647,
-        "unsafeModules": 182,
-        "safetyPercent": 78.84
+        "unsafeOperations": 561,
+        "unsafeModules": 178,
+        "safetyPercent": 79.33
       },
       "completedModules": [
         "src/pages/reports/FinancialStatementTemplates.tsx (59 -> 0; derivation extracted to src/pages/reports/financialStatementData.ts)",
-        "src/pages/reports/ThreeStatementDashboardPage.tsx (34 -> 0; derivation extracted to src/pages/reports/threeStatementData.ts)"
+        "src/pages/reports/ThreeStatementDashboardPage.tsx (34 -> 0; derivation extracted to src/pages/reports/threeStatementData.ts)",
+        "src/engines/SafeMathParser.ts (27 -> 0)",
+        "src/engines/ProfessionalExportEngine.ts + ExportTemplateEngine.ts (37 findings, all page-geometry false positives; detector precision fix)",
+        "src/pages/tax/TaxProvisionPage.tsx (22 -> 0; derivation extracted to src/pages/tax/taxProvisionData.ts)"
       ],
       "severity0FindingsFixed": [
         "Balance sheet, P&L splits and the entire budget column were fabricated from hardcoded ratios (cash = assets*0.15, budget = actual*0.95, variance% literal 5.3) while reading the real GL; exportable to PDF/Excel from /reports/templates.",
@@ -180,21 +183,36 @@
         "Only 10 of 110 emitted data keys could ever render (renderer strips non-alpha chars from labels); measured 126 of 161 cells already em dashes.",
         "ThreeStatementDashboardPage rendered every income-statement line wrong on a balanced ledger (Revenue -1150 vs 1000, COGS 0 vs 400, Gross Profit -1400 vs 600, Net Income -1650 vs 350). Causes: revenue computed debit-credit (inverse of the engine sign contract pinned in ThreeStatementEngine.test.ts), Math.abs per entry on COGS/opex/interest/tax, and the view back-solving Revenue/COGS from grossProfit/netIncome instead of using computed totals. handleExport repeated the back-solve, so exports were wrong too.",
         "Equity omitted current-period earnings, so A = L + E could only balance at zero net income.",
-        "Cash flow was classified by account-code prefix (4/6 operating, 1 investing, 2/3 financing), conflating accrual results with cash movement. Net change is now measured on the cash account; the activity split is disclosed as not derivable rather than estimated."
+        "Cash flow was classified by account-code prefix (4/6 operating, 1 investing, 2/3 financing), conflating accrual results with cash movement. Net change is now measured on the cash account; the activity split is disclosed as not derivable rather than estimated.",
+        "TaxProvisionPage invented a four-jurisdiction ASC 740 provision (Federal 70%@21%, CA 15%@8.84%, NY 10%@6.5%, International 5%@12.5%) plus a seeded quarterly ETR and exported it. Pretax ignored COGS and used Math.abs. TaxEngine was never called."
       ],
       "processFinding": "mock-data:audit cannot see this class of defect - it looks for synthetic arrays, this was inline arithmetic on real data. Remaining worklist modules must be reviewed for fabricated values, not only unsafe arithmetic.",
       "nextWorstFirst": [
-        "src/engines/SafeMathParser.ts (27)",
-        "src/engines/ProfessionalExportEngine.ts (26)",
-        "src/pages/tax/TaxProvisionPage.tsx (22)",
         "src/engines/AutoCommentaryEngine.ts (16)",
-        "src/engines/FinancialInstrumentsEngine.ts (15)"
+        "src/engines/FinancialInstrumentsEngine.ts (15)",
+        "src/pages/analytics/GoalSeekPage.tsx (14)"
       ],
       "processFinding2": "View-layer divergence is a distinct blind spot: both modules fixed so far had a roughly correct computation and a view that disagreed with it. Neither the AST detector nor mock-data:audit can see it; both required a render probe. The existing page test passed throughout because it mocked the engine and asserted only headings. It now renders a known ledger and asserts DOM figures. Remaining W0.1.1 modules must be verified by rendering."
     },
     "W0.1.6": {
       "status": "PLANNED",
       "summary": "Type-aware detection via TS type checker (name-based today); renumbered from W0.1.2 to resolve an ID collision"
+    },
+    "W0.1.7": {
+      "status": "DONE",
+      "completed": "2026-08-18",
+      "deliverable": "scripts/fabrication-detector.mjs + 11 fixture tests + pre-push gate 9c",
+      "baseline": {
+        "modulesScanned": 778,
+        "filesWithFindings": 24,
+        "findings": 121,
+        "byKind": {
+          "currency-literal": 60,
+          "percent-literal": 61
+        },
+        "exportEngineViolations": 0
+      },
+      "note": "Catches displayed $12.4M / 24.3% literals. Does not catch numeric ratio invention; per-module source guards remain mandatory."
     }
   }
 }
