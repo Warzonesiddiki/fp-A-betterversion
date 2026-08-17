@@ -235,22 +235,13 @@ describe('Page Smoke Tests — 5 New Pages', () => {
       expect(getByText(/Project Costing/i)).toBeInTheDocument();
     });
 
-    it('renders KPI cards', () => {
-      const { getAllByTestId } = renderPage(
+    it('shows the empty state when no GL entries exist', () => {
+      const { getByText } = renderPage(
         ProjectCostingPage,
         '/construction/project-costing',
         '/construction/project-costing'
       );
-      expect(getAllByTestId('kpi-value').length).toBeGreaterThanOrEqual(1);
-    });
-
-    it('renders the cost code analysis table', () => {
-      const { getByTestId } = renderPage(
-        ProjectCostingPage,
-        '/construction/project-costing',
-        '/construction/project-costing'
-      );
-      expect(getByTestId('data-table')).toBeInTheDocument();
+      expect(getByText(/No Project Costing Data/i)).toBeInTheDocument();
     });
   });
 

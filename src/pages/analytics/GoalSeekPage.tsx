@@ -8,26 +8,20 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Target } from 'lucide-react';
 import { formatPercent } from '@/utils/financialFormatting';
-import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { PageHeader } from '@/components/ui/PageHeader';
+import {
+  computeContribution,
+  deriveGoalSeekActuals,
+  modeledTotalCost,
+  modeledVolatility,
+  profitFromDraw,
+  summarizeOutcomes,
+  variableCostPctForTarget,
+  type ContributionResult,
+  type OutcomeSummary,
+} from './goalSeekModel';
 
-interface BreakevenResults {
-  breakevenRevenue: number;
-  revenueForTarget: number;
-  contributionMargin: number;
-  fixedCost: number;
-  variableCostPct: number;
-}
-
-interface MonteCarloResults {
-  count: number;
-  avgProfit: number;
-  median: number;
-  p10: number;
-  p90: number;
-  positivePct: number;
-}
 export default function GoalSeekPage() {
   const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
@@ -37,80 +31,60 @@ export default function GoalSeekPage() {
   const [fixedCost, setFixedCost] = useState(500000);
   const [variableCostPct, setVariableCostPct] = useState(60);
   const [iterations, setIterations] = useState(1000);
-  const [breakevenResults, setBreakevenResults] = useState<BreakevenResults | null>(null);
-  const [monteCarloResults, setMonteCarloResults] = useState<MonteCarloResults | null>(null);
+  const [revenueVolPct, setRevenueVolPct] = useState(10);
+  const [costVolPct, setCostVolPct] = useState(8);
+  const [breakevenResults, setBreakevenResults] = useState<ContributionResult | null>(null);
+  const [monteCarloResults, setMonteCarloResults] = useState<OutcomeSummary | null>(null);
   const [mcError, setMcError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const actuals = useMemo(() => {
-    if (entries.length === 0) return null;
-    const revenue = roundTo(
-      sumMoney(
-        entries.filter((e) => (e.accountCode || '').startsWith('4')).map((e) => e.credit - e.debit)
-      ),
-      2
-    );
-    const expenses = roundTo(
-      sumMoney(
-        entries
-          .filter(
-            (e) => (e.accountCode || '').startsWith('5') || (e.accountCode || '').startsWith('6')
-          )
-          .map((e) => Math.abs(e.debit - e.credit))
-      ),
-      2
-    );
-    return { revenue, expenses, netIncome: roundTo(subtractMoney(revenue, expenses), 2) };
-  }, [entries]);
+  const actuals = useMemo(() => deriveGoalSeekActuals(entries), [entries]);
 
-  const runBreakeven = () => {
-    const contributionMargin = 100 - variableCostPct;
-    const beRevenue = contributionMargin > 0 ? fixedCost / (contributionMargin / 100) : 0;
-    const revForTarget =
-      contributionMargin > 0 ? (fixedCost + targetProfit) / (contributionMargin / 100) : 0;
-    setBreakevenResults({
-      breakevenRevenue: beRevenue,
-      revenueForTarget: revForTarget,
-      contributionMargin,
-      fixedCost,
-      variableCostPct,
-    });
+  const runModel = () => {
+    setBreakevenResults(
+      computeContribution({
+        fixedCost,
+        variableCostPct,
+        targetProfit,
+      })
+    );
   };
 
+  const impliedVc = actuals
+    ? variableCostPctForTarget({
+        revenue: actuals.revenue,
+        fixedCost,
+        targetProfit,
+      })
+    : null;
+
   const runMonteCarlo = async () => {
+    if (!actuals) return;
     setLoading(true);
     setMcError(null);
     try {
-      const base = actuals?.revenue || 1000000;
-      const baseCosts = base * (variableCostPct / 100) + fixedCost;
-      // Real Monte Carlo: sampled revenue/cost distributions run in a Web
-      // Worker with a seeded PRNG (see workers/monte-carlo.worker.ts).
+      const base = actuals.revenue;
+      const baseCosts = modeledTotalCost(base, variableCostPct, fixedCost);
       const response = await executeMonteCarlo({
         iterations,
         seed: Math.floor(Math.random() * 2 ** 31),
         assumptions: [
-          { name: 'revenue', type: 'normal', mean: base, stdDev: base * 0.1 },
-          { name: 'costs', type: 'normal', mean: baseCosts, stdDev: baseCosts * 0.08 },
+          {
+            name: 'revenue',
+            type: 'normal',
+            mean: base,
+            stdDev: modeledVolatility(base, revenueVolPct),
+          },
+          {
+            name: 'costs',
+            type: 'normal',
+            mean: baseCosts,
+            stdDev: modeledVolatility(baseCosts, costVolPct),
+          },
         ],
       });
-      const profits = response.results
-        .map((r) => (r.values.revenue ?? 0) - (r.values.costs ?? 0))
-        .sort((a, b) => a - b);
-      const avgProfit = profits.length
-        ? profits.reduce((sum, p) => sum + p, 0) / profits.length
-        : 0;
-      const median = profits[Math.floor(profits.length / 2)] ?? 0;
-      const p10 = profits[Math.floor(profits.length * 0.1)] ?? 0;
-      const p90 = profits[Math.floor(profits.length * 0.9)] ?? 0;
-      const positiveOutcomes = profits.filter((p) => p >= 0).length;
-      setMonteCarloResults({
-        count: iterations,
-        avgProfit,
-        median,
-        p10,
-        p90,
-        positivePct: (positiveOutcomes / iterations) * 100,
-      });
+      const samples = response.results.map((r) => profitFromDraw(r.values.revenue, r.values.costs));
+      setMonteCarloResults(summarizeOutcomes(samples));
     } catch (err) {
       setMcError(err instanceof Error ? err.message : 'Monte Carlo simulation failed');
     } finally {
@@ -118,7 +92,7 @@ export default function GoalSeekPage() {
     }
   };
 
-  if (!actuals && mode !== 'breakeven') {
+  if (!actuals && mode === 'montecarlo') {
     return (
       <div className="p-12 text-center">
         <Target className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
@@ -152,10 +126,12 @@ export default function GoalSeekPage() {
         ))}
       </div>
 
-      {mode === 'breakeven' && (
+      {(mode === 'breakeven' || mode === 'goalseek') && (
         <Card>
           <CardContent className="p-4 space-y-4">
-            <h3 className="font-semibold">Break-Even Analysis</h3>
+            <h3 className="font-semibold">
+              {mode === 'breakeven' ? 'Break-Even Analysis' : 'Goal Seek'}
+            </h3>
             <div>
               <label htmlFor="fixed-costs" className="block text-xs text-[var(--text-muted)] mb-1">
                 Fixed Costs
@@ -186,7 +162,7 @@ export default function GoalSeekPage() {
                 htmlFor="target-profit-for-goal-seek"
                 className="block text-xs text-[var(--text-muted)] mb-1"
               >
-                Target Profit (for goal seek)
+                Target Profit
               </label>
               <Input
                 id="target-profit-for-goal-seek"
@@ -195,19 +171,25 @@ export default function GoalSeekPage() {
                 onChange={(e) => setTargetProfit(parseFloat(e.target.value) || 0)}
               />
             </div>
-            <Button onClick={runBreakeven}>Calculate</Button>
+            <Button onClick={runModel}>Calculate</Button>
             {breakevenResults && (
               <div className="space-y-2 text-sm pt-4 border-t border-slate-800">
+                {!breakevenResults.valid && (
+                  <p role="alert" className="text-xs text-red-400">
+                    Contribution margin must be positive. Revenue required is not defined when
+                    variable cost is 100% or more of revenue.
+                  </p>
+                )}
                 <div className="flex justify-between">
                   <span className="text-[var(--text-muted)]">Contribution Margin</span>
                   <span className="font-semibold">
-                    {formatPercent(breakevenResults.contributionMargin, 1)}
+                    {formatPercent(breakevenResults.contributionMarginPct, 1)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[var(--text-muted)]">Break-Even Revenue</span>
                   <span className="font-semibold text-green-400">
-                    {fmt.currency0(breakevenResults.breakevenRevenue)}
+                    {fmt.currency0(breakevenResults.breakEvenRevenue)}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -216,6 +198,16 @@ export default function GoalSeekPage() {
                     {fmt.currency0(breakevenResults.revenueForTarget)}
                   </span>
                 </div>
+                {mode === 'goalseek' && impliedVc && actuals && (
+                  <div className="flex justify-between">
+                    <span className="text-[var(--text-muted)]">
+                      VC% that hits the target at posted revenue
+                    </span>
+                    <span className="font-semibold">
+                      {impliedVc.valid ? formatPercent(impliedVc.variableCostPct, 1) : '—'}
+                    </span>
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
@@ -227,7 +219,7 @@ export default function GoalSeekPage() {
           <CardContent className="p-4 space-y-4">
             <h3 className="font-semibold">Monte Carlo Simulation</h3>
             <p className="text-sm text-[var(--text-muted)]">
-              Base revenue: {actuals ? fmt.currency0(actuals.revenue) : '$1,000,000'}
+              Base revenue: {actuals ? fmt.currency0(actuals.revenue) : '—'}
             </p>
             <div>
               <label htmlFor="iterations" className="block text-xs text-[var(--text-muted)] mb-1">
@@ -238,6 +230,28 @@ export default function GoalSeekPage() {
                 type="number"
                 value={iterations}
                 onChange={(e) => setIterations(parseInt(e.target.value) || 100)}
+              />
+            </div>
+            <div>
+              <label htmlFor="revenue-vol" className="block text-xs text-[var(--text-muted)] mb-1">
+                Revenue volatility (model assumption, % of base)
+              </label>
+              <Input
+                id="revenue-vol"
+                type="number"
+                value={revenueVolPct}
+                onChange={(e) => setRevenueVolPct(parseFloat(e.target.value) || 0)}
+              />
+            </div>
+            <div>
+              <label htmlFor="cost-vol" className="block text-xs text-[var(--text-muted)] mb-1">
+                Cost volatility (model assumption, % of modelled cost)
+              </label>
+              <Input
+                id="cost-vol"
+                type="number"
+                value={costVolPct}
+                onChange={(e) => setCostVolPct(parseFloat(e.target.value) || 0)}
               />
             </div>
             <Button onClick={runMonteCarlo} disabled={loading}>
@@ -252,9 +266,7 @@ export default function GoalSeekPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[var(--text-muted)]">Avg Profit</span>
-                  <span className="font-semibold">
-                    {fmt.currency0(monteCarloResults.avgProfit)}
-                  </span>
+                  <span className="font-semibold">{fmt.currency0(monteCarloResults.average)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[var(--text-muted)]">Median</span>
