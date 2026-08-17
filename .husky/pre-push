@@ -74,6 +74,13 @@ node scripts/check-tautological-tests.mjs
 echo "→ AST money-safety ratchet"
 node scripts/money-ast-detector.mjs
 
+# Gate 9c: fabrication ratchet (Blueprint W0.1.7). The money-AST detector
+# cannot see hand-typed `$12.4M` / `24.3%` / `taxRate: 21` — every Severity-0
+# fabrication in sessions 007–011 was a literal, not an arithmetic bug.
+# Export engines are fail-closed at zero. Inspect: --file <path>
+echo "→ fabrication ratchet"
+node scripts/fabrication-detector.mjs
+
 # Gate 10 - CASCADE-HOLD-BUNDLE Auto-Detection (NEVER-AGAIN RULE #68
 # CATCH-NUMBERING-COLLISION PREVENTION). Atlas + Hephaestus joint DRI.
 # Spec: docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md (§2: BLOCKED push)

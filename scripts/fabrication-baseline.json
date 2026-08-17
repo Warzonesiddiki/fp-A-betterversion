@@ -1,0 +1,11 @@
+{
+  "modulesScanned": 778,
+  "filesWithFindings": 24,
+  "findings": 121,
+  "byKind": {
+    "currency-literal": 60,
+    "percent-literal": 61
+  },
+  "exportEngineViolations": [],
+  "recordedAt": "2026-08-17T20:21:08.975Z"
+}
