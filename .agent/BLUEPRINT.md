@@ -2606,6 +2606,16 @@ session 007's ratio invention or this session's `taxRate: 21` table _before_ the
 fixed — those are numeric, not formatted strings — which is why per-module source guards
 remain mandatory on every derivation extracted during W0.1.1.
 
+#### W0.1.1 progress — `AutoCommentaryEngine.ts` + REIT fabrication (2026-08-18)
+
+Sixth money module: 16 → **0**; ratchet 561 → **545 (79.44% safe)**. Zero-budget variance
+no longer prints 0%; interpolate no longer currency-formats a growth rate; outlook is the
+YTD-carried-forward identity, not a forecast.
+
+`REITDashboardPage` dropped 20 fabrication findings (121 → **101 / 23 files**). Peer
+quotes and a mocked 5.42% yield are gone; `calculateREITStats` returns null for AFFO,
+NAV/share and yield instead of 10%-of-rent / 1M-shares / 5.42.
+
 **Exit criterion:** `docs/architecture/PERSISTENCE_MAP.md` exists and is CI-drift-checked; no monetary value
 is persisted as an IEEE-754 `number`; `glStore` is server-authoritative; every local-only
 surface says so.

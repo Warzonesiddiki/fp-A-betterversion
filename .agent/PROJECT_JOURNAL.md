@@ -626,3 +626,52 @@ retire `money:adoption`; W0.8 persistence authority; MSI installer.
 
 **Next:** `AutoCommentaryEngine` (16), and/or the fabrication worklist starting at
 `REITDashboardPage` (20). Same rule: read for invented values, verify by rendering.
+
+---
+
+## Session 012 — 2026-08-18 — AutoCommentaryEngine + REIT fabrication
+
+**Branch:** `arena/01a01148-fp-a-betterversion`
+
+### 1. `AutoCommentaryEngine` (16 → 0). Ratchet 561 → **545 (79.44% safe)**
+
+Real drop: 16 float operations left the product. Unsafe modules 178 → 177.
+
+The previous suite only asserted `typeof commentary === 'string'`. Three defects sat
+behind that:
+
+- IEEE-754 `actual - budget` and `reduce((s, i) => s + i.actual)`.
+- Budget of zero produced a **0% variance** — reads as "on budget" when there is no budget.
+- `interpolate` currency-formatted every number, so a growth rate of 15 became `$15`.
+- Section narrative labelled every positive variance "favorable" without knowing whether
+  the line was revenue or expense.
+
+Money arithmetic now goes through `subtractMoney` / `sumMoney`. A zero base omits the
+percentage. Outlook states the identity (remaining budget delivered in full ⇒ FY variance
+equals YTD variance) instead of pretending to forecast. Interpolate currency-formats only
+`amount`/`budget`/`start`/`end`, and renders `—` for non-finite values so the commentary
+panel's NaN guard still holds. Teeth: reintroducing `actual - budget` fails the source guard.
+
+Two of the original 16 findings were `narrative +=` flagged because `arr` is a substring of
+`narrative`. They went away by joining sentences instead of `+=`. The `arr` heuristic is
+still too greedy; left for a confined detector-precision pass (dump `--json` before/after).
+
+### 2. `REITDashboardPage` (20 → 0 fabrication findings). Ratchet 121 → **101 / 23 files**
+
+The page rendered Prologis / AMT / Equinix / Simon / AvalonBay quotes (`$112B`, `4.2%`
+FFO yield, …) as "sector peer benchmarking" for every entity, plus a risk card of
+`1.38x / +6.4% / 4.82% / 5.4x / 4.1x`, plus sparklines `[5.0, 5.1, …]` and a hardcoded
+`$1.85M` dividend series.
+
+`RealEstateEngine.calculateREITStats` fed it more invention: `dividendYield: 5.42`,
+AFFO = FFO − 10% of rent, NAV/share ÷ 1,000,000 assumed shares. Tests had encoded the
+10% and 1M-share assumptions as expected values.
+
+Engine now returns `null` for AFFO, NAV/share and yield. Payout and coverage are emitted
+only when the denominator exists. The page shows FFO, posted dividends, payout and
+coverage, and a disclosure for the rest. No peer table. Teeth: restoring `5.42` fails 3
+tests. Disclosure copy does not name the retired figures (session 011 lesson).
+
+### Next
+
+Money-AST: `FinancialInstrumentsEngine` (15). Fabrication: `RetailDashboardPage` (18).
