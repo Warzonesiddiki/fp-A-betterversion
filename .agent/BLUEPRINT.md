@@ -1,6 +1,6 @@
 # OMNIPLAN — LOCKED ENGINEERING BLUEPRINT
 
-> **Artifact:** `/.agent/BLUEPRINT.md`
+> **Artifact:** `.agent/BLUEPRINT.md`
 > **Authority:** OMNI-SOVEREIGN CODEX — ULTIMA FP&A Edition, Article XVIII (Blueprint Genesis),
 > plus Addendum I (Parts XXIV–XXX) and Addendum II (Parts XXXI–LXI).
 > **Kernel:** K1–K28 active and supreme.
@@ -519,6 +519,8 @@ promoted to `BUILT` from this sandbox**, which has no `cargo`/`rustc` and no Win
 | 005     | 113   | 33    | 42      | 38          | 13      | +12 F-DESK (§23) +3 escape-driven (§24.5) |
 
 **This list, not the 193 routes, is the measure of remaining work.**
+
+---
 
 # SECTION 4 — SYSTEM ARCHITECTURE
 
@@ -1252,6 +1254,8 @@ as the UI. There is no privileged path through Excel.
 | C7   | Plaid, CAMT.053 (banks)                             | 3     | treasury scope confirmed |
 | C8   | Zapier, Make, Workato (iPaaS)                       | 3     | public API GA            |
 
+---
+
 # SECTION 9 — UI/UX SYSTEM SPECIFICATION
 
 ## 9.1 Design philosophy
@@ -1614,6 +1618,8 @@ sizes — small 1M facts, medium 50M, large 500M — generated deterministically
 so results are comparable across runs). Results are published to
 `docs/release/PERFORMANCE_BASELINE.md` and are the only acceptable basis for a scale claim.
 
+---
+
 # SECTION 12 — AI/ML MODULE SPECIFICATION
 
 ## 12.1 The governing constraint
@@ -1812,6 +1818,8 @@ time-boxed access grants; and its own access log. An auditor's session cannot be
 distinguished from a normal read at the data layer — meaning the auditor sees exactly what
 the system holds, not a curated view. Every auditor read is itself logged.
 
+---
+
 # SECTION 14 — REPORTING & EXPORT ENGINE
 
 ## 14.1 Reporting philosophy
@@ -1913,6 +1921,8 @@ Print stylesheets are first-class, not an afterthought: page breaks respect logi
 boundaries, headers repeat on every page, wide reports scale or split predictably, and the
 printed output matches the PDF byte-for-byte in layout. Finance still prints board packs;
 pretending otherwise is not a strategy.
+
+---
 
 # SECTION 15 — API SPECIFICATION
 
@@ -2056,6 +2066,8 @@ published, approval completed, metric certified, integration sync completed or f
 three-statement violation detected. The public API (Phase 3) is the same `/v1` surface with
 scoped API keys, documented in an OpenAPI spec generated from the Zod schemas — never
 hand-written, because hand-written specs lie.
+
+---
 
 # SECTION 16 — INFRASTRUCTURE, DEPLOYMENT & OBSERVABILITY
 
@@ -2214,6 +2226,8 @@ single-tenant restore; failed-migration rollback; integration DLQ drain; audit-c
 verification failure investigation; key rotation; break-glass access; period-close reopen;
 Severity-0 correctness incident; and customer incident communications.
 **An untested runbook does not exist.**
+
+---
 
 # SECTION 17 — TESTING STRATEGY
 
@@ -2424,7 +2438,7 @@ local-first posture stays (it is a §0.5 differentiator); what changes is which 
 depends on tenancy (0.2). Phase 0 proves the pattern on the ledger, the highest-value store,
 and makes the remaining gap visible and honest.
 
-**Exit criterion:** `PERSISTENCE_MAP.md` exists and is CI-drift-checked; no monetary value
+**Exit criterion:** `docs/architecture/PERSISTENCE_MAP.md` exists and is CI-drift-checked; no monetary value
 is persisted as an IEEE-754 `number`; `glStore` is server-authoritative; every local-only
 surface says so.
 
@@ -2445,11 +2459,11 @@ sizing claim is auditable rather than asserted.
 | 0.2.4 Policy predicate compiler | (a) predicate DSL + compiler · (b) mandatory query-builder filter · (c) per-table leak test generator                                                                                                                |
 | 0.3.1 Runtime oracle            | (a) extract oracle from test harness into an engine module · (b) wire into write path · (c) non-disableable assertion + negative test                                                                                |
 | 0.4.1 Error registry            | (a) registry source + codegen · (b) migrate existing thrown errors · (c) lint rule                                                                                                                                   |
-| 0.5.1 Route inventory           | (a) route extractor → `ROUTE_MAP.md` · (b) pillar classification · (c) drift check in CI                                                                                                                             |
+| 0.5.1 Route inventory           | (a) route extractor → `docs/product/ROUTE_MAP.md` · (b) pillar classification · (c) drift check in CI                                                                                                                |
 | 0.5.2 Shell + palette           | (a) five-pillar shell · (b) ⌘K palette · (c) permission filtering · (d) ≤3-click E2E                                                                                                                                 |
 | 0.5.3 Route consolidation       | (a) redirect table · (b) collapse batch 1 (≈80 routes) · (c) collapse batch 2 · (d) 404 sweep                                                                                                                        |
 | 0.6.1 LLM chokepoint            | (a) chokepoint module · (b) ban direct SDK imports · (c) redaction default + egress test                                                                                                                             |
-| 0.8.1 Persistence inventory     | (a) enumerate + classify 43 stores · (b) write `PERSISTENCE_MAP.md` · (c) CI drift check                                                                                                                             |
+| 0.8.1 Persistence inventory     | (a) enumerate + classify 43 stores · (b) write `docs/architecture/PERSISTENCE_MAP.md` · (c) CI drift check                                                                                                           |
 | 0.8.2 Money-safe serialization  | (a) decimal-string codec · (b) apply to financial stores · (c) 10k-case round-trip property test                                                                                                                     |
 | 0.8.4 Schema fork closure       | (a) diff the two schema sources · (b) reconcile · (c) CI equality gate                                                                                                                                               |
 | 0.8.6 `glStore` authority spike | (a) server read/write path · (b) offline replica + reconnect · (c) typed conflict resolution on decimals                                                                                                             |
@@ -2754,6 +2768,8 @@ comm -23 <(not_started_ids) <(scheduled_ids; declared_deferred_ids)
 
 This makes "we forgot to schedule the differentiator" a build failure rather than a
 discovery made two phases later.
+
+---
 
 # SECTION 19 — GAP ANALYSIS VS COMPETITORS
 
@@ -3226,6 +3242,8 @@ that are reproducible by command rather than asserted by hand. The most importan
 conceptual: Phase 0 previously assumed a governed database that does not yet hold the data.
 It no longer does.
 
+---
+
 # SECTION 23 — WINDOWS DESKTOP APPLICATION SPECIFICATION
 
 **Status:** normative, added session 005 at explicit direction. **Supersedes the Codex's
@@ -3433,6 +3451,8 @@ ships as a numbered `ci-patches/*.patch` per ADR-011.
 □ Every desktop claim executed on real Windows, per §23.8 — no capability marked BUILT from this sandbox
 ```
 
+---
+
 # SECTION 24 — THE ZERO-ESCAPE CONTRACT (ALL-IN-ONE, MEASURED)
 
 **Status:** normative, added session 005 at explicit direction: _"an all-in-one FP&A tool, a
@@ -3559,6 +3579,8 @@ node scripts/escape-ledger-check.mjs   # wired into docs:verify
 PARTIAL, and rows 9, 27, and 29 are unowned before this section. OmniPlan is **not** an
 all-in-one product today. This ledger is the instrument that makes the gap visible every
 release instead of at the demo where a user opens Excel.
+
+---
 
 # APPENDIX A — DOMAIN MODULE SPECIFICATIONS (ADDENDUM II, PARTS XXXI–LX)
 

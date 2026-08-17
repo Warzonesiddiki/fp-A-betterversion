@@ -1,6 +1,6 @@
 # OMNIPLAN — LOCKED ENGINEERING BLUEPRINT
 
-> **Artifact:** `/.agent/BLUEPRINT.md`
+> **Artifact:** `.agent/BLUEPRINT.md`
 > **Authority:** OMNI-SOVEREIGN CODEX — ULTIMA FP&A Edition, Article XVIII (Blueprint Genesis),
 > plus Addendum I (Parts XXIV–XXX) and Addendum II (Parts XXXI–LXI).
 > **Kernel:** K1–K28 active and supreme.

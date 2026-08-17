@@ -202,3 +202,23 @@ Verified: 25 sections, zero orphaned features, all referenced IDs resolve, no en
 
 Honest headline: OmniPlan is not all-in-one today and the desktop is unverified from here.
 These sections make both measurable every release rather than discoverable at a demo.
+
+### Session 005 addendum — docs-link graph closed
+
+Resolved the unknown carried since session 003: `npm run docs:links` exits 1, but it is wired
+into neither `docs:verify` nor `.husky/pre-push`, so it was advisory, not a blocking gate —
+which is exactly why 24 broken citations had accumulated unnoticed. Triaged rather than
+silenced:
+
+- **1 genuine defect** — `/.agent/BLUEPRINT.md` (leading slash) resolved to filesystem root.
+- **7 ambiguous** — bare filenames (`PERSISTENCE_MAP.md`, `ROUTE_MAP.md`, `ERROR_CODES.md`,
+  `FINANCIAL_RULES.md`, `METRIC_REGISTRY.md`, `SOD_MATRIX.md`, `CALENDARS.md`) rewritten to
+  repo-relative paths so they resolve once generated.
+- **11 legitimate forward references** — Phase 0/1 generated artefacts, registered in
+  `scripts/docs-link-allowlist.json` with a dated reason naming the workstream that creates
+  each one, per that file's "deliberate, dated decisions — not dodge-lists" convention. Each
+  entry is removed when its generator lands.
+
+`docs:links --strict` now reports 0 broken links, 0 broken citations. Blueprint invariants
+re-verified after regeneration: 25 sections, 113 features (33/42/38), zero orphans, zero
+unresolved F-ids, no encoding damage.

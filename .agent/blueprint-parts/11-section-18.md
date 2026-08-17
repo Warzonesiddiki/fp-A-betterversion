@@ -102,7 +102,7 @@ local-first posture stays (it is a §0.5 differentiator); what changes is which 
 depends on tenancy (0.2). Phase 0 proves the pattern on the ledger, the highest-value store,
 and makes the remaining gap visible and honest.
 
-**Exit criterion:** `PERSISTENCE_MAP.md` exists and is CI-drift-checked; no monetary value
+**Exit criterion:** `docs/architecture/PERSISTENCE_MAP.md` exists and is CI-drift-checked; no monetary value
 is persisted as an IEEE-754 `number`; `glStore` is server-authoritative; every local-only
 surface says so.
 
@@ -123,11 +123,11 @@ sizing claim is auditable rather than asserted.
 | 0.2.4 Policy predicate compiler | (a) predicate DSL + compiler · (b) mandatory query-builder filter · (c) per-table leak test generator                                                                                                                |
 | 0.3.1 Runtime oracle            | (a) extract oracle from test harness into an engine module · (b) wire into write path · (c) non-disableable assertion + negative test                                                                                |
 | 0.4.1 Error registry            | (a) registry source + codegen · (b) migrate existing thrown errors · (c) lint rule                                                                                                                                   |
-| 0.5.1 Route inventory           | (a) route extractor → `ROUTE_MAP.md` · (b) pillar classification · (c) drift check in CI                                                                                                                             |
+| 0.5.1 Route inventory           | (a) route extractor → `docs/product/ROUTE_MAP.md` · (b) pillar classification · (c) drift check in CI                                                                                                                |
 | 0.5.2 Shell + palette           | (a) five-pillar shell · (b) ⌘K palette · (c) permission filtering · (d) ≤3-click E2E                                                                                                                                 |
 | 0.5.3 Route consolidation       | (a) redirect table · (b) collapse batch 1 (≈80 routes) · (c) collapse batch 2 · (d) 404 sweep                                                                                                                        |
 | 0.6.1 LLM chokepoint            | (a) chokepoint module · (b) ban direct SDK imports · (c) redaction default + egress test                                                                                                                             |
-| 0.8.1 Persistence inventory     | (a) enumerate + classify 43 stores · (b) write `PERSISTENCE_MAP.md` · (c) CI drift check                                                                                                                             |
+| 0.8.1 Persistence inventory     | (a) enumerate + classify 43 stores · (b) write `docs/architecture/PERSISTENCE_MAP.md` · (c) CI drift check                                                                                                           |
 | 0.8.2 Money-safe serialization  | (a) decimal-string codec · (b) apply to financial stores · (c) 10k-case round-trip property test                                                                                                                     |
 | 0.8.4 Schema fork closure       | (a) diff the two schema sources · (b) reconcile · (c) CI equality gate                                                                                                                                               |
 | 0.8.6 `glStore` authority spike | (a) server read/write path · (b) offline replica + reconnect · (c) typed conflict resolution on decimals                                                                                                             |
