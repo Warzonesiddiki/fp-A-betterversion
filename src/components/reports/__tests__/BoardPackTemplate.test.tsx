@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@/test/testUtils';
 import { BoardPackTemplate } from '../BoardPackTemplate';
 
-vi.mock('@/engines/ExportTemplateEngine', () => ({
+vi.mock('@/engines/ExportTemplateEngine', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/engines/ExportTemplateEngine')>()),
   ExportTemplateEngine: class {
     getTemplate() {
       return { id: 'tpl', sections: [] };

@@ -208,8 +208,13 @@ export function VDB(
   start: number,
   end: number
 ): number {
+  // Excel's VDB window is start-EXCLUSIVE and end-inclusive: the first period's
+  // depreciation is VDB(...,0,1) and the second is VDB(...,1,2). Summing from
+  // `start` instead of `start + 1` double-counts period `start`; it only looked
+  // correct for start=0 because DDB(...,0) is 0.
+  // Verified against Microsoft's published example: VDB(2400,300,10,0,1) = 480.
   let total = toDecimal(0);
-  for (let i = Math.ceil(start); i <= Math.floor(end); i++)
+  for (let i = Math.ceil(start) + 1; i <= Math.floor(end); i++)
     total = addMoney(total, DDB(cost, salvage, life, i));
   return roundTo(total);
 }

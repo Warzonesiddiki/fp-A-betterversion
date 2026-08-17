@@ -1,11 +1,18 @@
 {
   "codex": "ULTIMA",
-  "session_id": "sess_002",
-  "updated_at": "2026-08-17T05:30:00Z",
+  "session_id": "sess_003",
+  "updated_at": "2026-08-17T00:00:00Z",
   "capabilities": {
-    "git": true, "gh": true, "node": "v22.22.3", "npm": "10.9.8",
-    "docker": false, "cargo": false, "go": false,
-    "egress": true, "nproc": 2, "mem_gb": 3,
+    "git": true,
+    "gh": true,
+    "node": "v22.22.3",
+    "npm": "10.9.8",
+    "docker": false,
+    "cargo": false,
+    "go": false,
+    "egress": true,
+    "nproc": 2,
+    "mem_gb": 3,
     "constraint": "workflows cannot be pushed (GitHub App lacks `workflows` permission) -> ci-patches/ convention",
     "constraint_mem": "sandbox has 3GB RAM; frontend suite normally runs with an 8GB heap flag"
   },
@@ -34,9 +41,160 @@
     "server/.npmrc `ignore-scripts=true` is a deliberate supply-chain posture and was preserved; the native binding is bootstrapped explicitly instead"
   ],
   "completed_this_session": [
-    "recovered lost git history after sandbox re-clone (fast-forward to pushed commit)",
-    "independently verified prior session's native-DB bootstrap self-heals on a fresh clone",
-    "patched HIGH ip-address SSRF + LOW body-parser DoS in server workspace",
-    "added blocking dependency-audit CI gate to ci-patches/0005"
-  ]
+    "Article XVIII Blueprint Genesis executed end to end",
+    "wrote .agent/BLUEPRINT.md - 3532 lines, sections 0-22 per XVIII-C plus Appendix A",
+    "added section 6.8 financial rule -> test specification map (48 rules)",
+    "added section 10.8 OWASP Top 10 financial mapping (A01-A10 + FS1-FS4)",
+    "added section 2.8 per-persona onboarding time targets with timed specs",
+    "added section 18.2 W0.7 Phase 0 task sizing (<= 1 week) + Phase 1 independence proof",
+    "added Appendix A.22 Addendum II lock-checklist coverage map (31/31)",
+    "wrote docs/architecture/TREE.md verbatim from Part LXI with a Known deviations table",
+    "recorded ADR-001..ADR-011 in BLUEPRINT.md section 21",
+    "set blueprint_status LOCKED - product code is now unblocked"
+  ],
+  "blueprint_status": "LOCKED",
+  "blueprint_locked_at": "2026-08-17T00:00:00Z",
+  "blueprint": {
+    "artifact": ".agent/BLUEPRINT.md",
+    "authority": "OMNI-SOVEREIGN CODEX Article XVIII + Addendum I (XXIV-XXX) + Addendum II (XXXI-LXI)",
+    "sections": 25,
+    "lines": 4209,
+    "validation": {
+      "xviii_n": "12/12 checked - see BLUEPRINT.md 22.7",
+      "addendum_ii": "31/31 checked - see BLUEPRINT.md Appendix A.22",
+      "tree_lxi": "docs/architecture/TREE.md written verbatim with a Known deviations table"
+    },
+    "source_parts": ".agent/blueprint-parts/*.md (concatenated in numeric order)",
+    "supersedes": [
+      "MASTER_ROADMAP.md",
+      "PROJECT_BACKLOG.md",
+      "COMPLETION_TASKLIST_ZERO_COMPROMISE.md",
+      "docs/ZERO_COMPROMISE_PRODUCT_BLUEPRINT.md",
+      "docs/MASTER_PLAN*.md",
+      "GAP_LEDGER.md"
+    ],
+    "next_work": "Phase 0 Workstream 0.1 - money integrity (BLUEPRINT.md 18.2)",
+    "reaudited_at": "2026-08-17T00:00:00Z",
+    "reaudit_session": "session_004",
+    "reaudit_findings": 8,
+    "reaudit_record": ".agent/BLUEPRINT.md \u00a722.8",
+    "feature_counts": {
+      "total": 113,
+      "built": 33,
+      "partial": 42,
+      "not_started": 38,
+      "p0_not_started": 13
+    },
+    "new_adrs": [
+      "ADR-012 rounding half-up vs bankers",
+      "ADR-013 every not-started feature names a phase"
+    ],
+    "new_risks": [
+      "R-21 no system of record (20)",
+      "R-22 money gate false-green (20)",
+      "R-23 schema fork (12)"
+    ],
+    "new_workstream": "0.8 persistence authority",
+    "scope_expansion_session": "session_005",
+    "new_sections": [
+      "23 Windows Desktop Application",
+      "24 Zero-Escape Contract (all-in-one, measured)"
+    ],
+    "new_feature_families": [
+      "F-DESK-001..012 (Windows desktop)",
+      "F-ANALYSIS-001",
+      "F-REPORT-013",
+      "F-REPORT-014"
+    ],
+    "new_risks_s005": [
+      "R-24 desktop unverifiable here (20)",
+      "R-25 uninstall destroys ledger (15)",
+      "R-26 crash-dump money egress (15)",
+      "R-27 unsigned installer/SmartScreen (16)",
+      "R-28 WebView2 blank window (12)",
+      "R-29 all-in-one claimed but users escape (20)"
+    ],
+    "windows_tier1": ["Windows 11 x64", "Windows 10 22H2 x64"],
+    "ga_gate_zero_hard_escapes_core20": true,
+    "desktop_verification_blocked_by": "K2: no cargo/rustc/Windows in sandbox (see BLUEPRINT.md 23.8)"
+  },
+  "indices": {
+    "measured_2026_08_17": {
+      "SHI": 71,
+      "UVI": 44,
+      "DEI": 49
+    },
+    "phase0_gate": {
+      "SHI": 78,
+      "UVI": 52,
+      "DEI": 60
+    },
+    "phase1_gate": {
+      "SHI": 85,
+      "UVI": 74,
+      "DEI": 80
+    },
+    "phase2_gate": {
+      "SHI": 90,
+      "UVI": 88,
+      "DEI": 90
+    },
+    "ga_gate": {
+      "SHI": 92,
+      "UVI": 95,
+      "DEI": 95
+    }
+  },
+  "phase": "Phase 0 \u2014 Foundation (executing)",
+  "phase0": {
+    "W0.1.0": {
+      "status": "DONE",
+      "completed": "2026-08-17",
+      "deliverable": "scripts/money-ast-detector.mjs + 17 fixture tests + pre-push gate 9b",
+      "baseline": {
+        "monetaryModules": 858,
+        "safeModules": 674,
+        "unsafeModules": 184,
+        "unsafeOperations": 740,
+        "safetyPercent": 78.55
+      },
+      "supersedes": "money-adoption.mjs import proxy (reported 25.44%, could not see float arithmetic)",
+      "note": "Numbers are not comparable; 740 previously-invisible unsafe ops are now ratcheted."
+    },
+    "next": "Continue W0.1.1 worst-first (SafeMathParser next), then W0.8 persistence authority",
+    "W0.1.1": {
+      "status": "IN PROGRESS",
+      "target": "AST money safety >= 90%",
+      "current": {
+        "unsafeOperations": 647,
+        "unsafeModules": 182,
+        "safetyPercent": 78.84
+      },
+      "completedModules": [
+        "src/pages/reports/FinancialStatementTemplates.tsx (59 -> 0; derivation extracted to src/pages/reports/financialStatementData.ts)",
+        "src/pages/reports/ThreeStatementDashboardPage.tsx (34 -> 0; derivation extracted to src/pages/reports/threeStatementData.ts)"
+      ],
+      "severity0FindingsFixed": [
+        "Balance sheet, P&L splits and the entire budget column were fabricated from hardcoded ratios (cash = assets*0.15, budget = actual*0.95, variance% literal 5.3) while reading the real GL; exportable to PDF/Excel from /reports/templates.",
+        "Contra entries double-counted: Math.abs(debit-credit) made sales returns and vendor credits increase revenue and COGS.",
+        "Only 10 of 110 emitted data keys could ever render (renderer strips non-alpha chars from labels); measured 126 of 161 cells already em dashes.",
+        "ThreeStatementDashboardPage rendered every income-statement line wrong on a balanced ledger (Revenue -1150 vs 1000, COGS 0 vs 400, Gross Profit -1400 vs 600, Net Income -1650 vs 350). Causes: revenue computed debit-credit (inverse of the engine sign contract pinned in ThreeStatementEngine.test.ts), Math.abs per entry on COGS/opex/interest/tax, and the view back-solving Revenue/COGS from grossProfit/netIncome instead of using computed totals. handleExport repeated the back-solve, so exports were wrong too.",
+        "Equity omitted current-period earnings, so A = L + E could only balance at zero net income.",
+        "Cash flow was classified by account-code prefix (4/6 operating, 1 investing, 2/3 financing), conflating accrual results with cash movement. Net change is now measured on the cash account; the activity split is disclosed as not derivable rather than estimated."
+      ],
+      "processFinding": "mock-data:audit cannot see this class of defect - it looks for synthetic arrays, this was inline arithmetic on real data. Remaining worklist modules must be reviewed for fabricated values, not only unsafe arithmetic.",
+      "nextWorstFirst": [
+        "src/engines/SafeMathParser.ts (27)",
+        "src/engines/ProfessionalExportEngine.ts (26)",
+        "src/pages/tax/TaxProvisionPage.tsx (22)",
+        "src/engines/AutoCommentaryEngine.ts (16)",
+        "src/engines/FinancialInstrumentsEngine.ts (15)"
+      ],
+      "processFinding2": "View-layer divergence is a distinct blind spot: both modules fixed so far had a roughly correct computation and a view that disagreed with it. Neither the AST detector nor mock-data:audit can see it; both required a render probe. The existing page test passed throughout because it mocked the engine and asserted only headings. It now renders a known ledger and asserts DOM figures. Remaining W0.1.1 modules must be verified by rendering."
+    },
+    "W0.1.6": {
+      "status": "PLANNED",
+      "summary": "Type-aware detection via TS type checker (name-based today); renumbered from W0.1.2 to resolve an ID collision"
+    }
+  }
 }

@@ -1728,3 +1728,121 @@ describe('Probe property-based tests — algebraic laws (SafeMathParser)', () =>
     }
   });
 });
+
+/**
+ * Regression suite for W0.1.1 module 3.
+ *
+ * Every one of these assertions failed before the fix, yet the 381 tests above
+ * were all green. The reason is that each existing test passed the OPTIONAL
+ * argument explicitly. `const [days = 0] = args` makes the parameter 0 rather
+ * than undefined, so the downstream `days ?? 365` was unreachable and the
+ * function silently returned 0 whenever a caller omitted the argument.
+ *
+ * The lesson these tests encode: exercise optional arguments by OMITTING them.
+ */
+describe('SafeMathParser — Excel oracles with optional arguments omitted', () => {
+  const parser = new SafeMathParser();
+  const evaluate = (expression: string): number => parser.evaluate(expression);
+
+  describe('days-based working-capital ratios default to a 365-day year', () => {
+    // Previously returned 0 — a zeroed DSO reads as "customers pay instantly".
+    it('DSO(revenue, AR) defaults days to 365', () => {
+      expect(evaluate('DSO(5000, 800)')).toBeCloseTo(58.4, 10);
+    });
+    it('DPO(cogs, AP) defaults days to 365', () => {
+      expect(evaluate('DPO(1000, 200)')).toBeCloseTo(73, 10);
+    });
+    it('DSI(inventory, cogs) defaults days to 365', () => {
+      expect(evaluate('DSI(500, 2000)')).toBeCloseTo(91.25, 10);
+    });
+    it('an explicit days argument still wins over the default', () => {
+      expect(evaluate('DSO(5000, 800, 365)')).toBeCloseTo(58.4, 10);
+      expect(evaluate('DSO(5000, 800, 360)')).toBeCloseTo(57.6, 10);
+      expect(evaluate('DSI(500, 2000, 90)')).toBeCloseTo(22.5, 10);
+    });
+    it('guards a zero denominator instead of returning Infinity', () => {
+      expect(evaluate('DSO(0, 800)')).toBe(0);
+      expect(evaluate('DPO(0, 200)')).toBe(0);
+      expect(evaluate('DSI(500, 0)')).toBe(0);
+    });
+  });
+
+  describe('DDB matches Excel period-for-period', () => {
+    // Excel: DDB(2400,300,10,per,2) => 480, 384, 307.2 for per = 1, 2, 3.
+    // Previously off by one period (per=1 returned period 2's figure) AND
+    // returned 0 outright when the factor argument was omitted.
+    it('DDB(2400,300,10,per) with the factor omitted', () => {
+      expect(evaluate('DDB(2400, 300, 10, 1)')).toBeCloseTo(480, 10);
+      expect(evaluate('DDB(2400, 300, 10, 2)')).toBeCloseTo(384, 10);
+      expect(evaluate('DDB(2400, 300, 10, 3)')).toBeCloseTo(307.2, 10);
+    });
+    it('DDB clamps at the salvage value in the final periods', () => {
+      expect(evaluate('DDB(10000, 1000, 5, 1)')).toBeCloseTo(4000, 10);
+      expect(evaluate('DDB(10000, 1000, 5, 2)')).toBeCloseTo(2400, 10);
+      expect(evaluate('DDB(10000, 1000, 5, 5)')).toBeCloseTo(296, 10);
+    });
+    it('total DDB depreciation never exceeds the depreciable base', () => {
+      let total = 0;
+      for (let period = 1; period <= 5; period++) {
+        total += evaluate(`DDB(10000, 1000, 5, ${period})`);
+      }
+      expect(total).toBeLessThanOrEqual(10000 - 1000);
+    });
+  });
+
+  describe('VDB honours start_period', () => {
+    // VDB had NO test at all before this suite. Its two branches were
+    // byte-identical, so start_period was ignored and it always returned the
+    // cumulative total from period 0.
+    // Excel's window is start-exclusive/end-inclusive: period N is VDB(N-1, N).
+    it('reproduces Microsoft\u2019s published VDB(2400,300,10,0,1) = 480', () => {
+      expect(evaluate('VDB(2400, 300, 10, 0, 1)')).toBeCloseTo(480, 10);
+    });
+    it('VDB(1, 2) is the SECOND period alone, not the cumulative total', () => {
+      expect(evaluate('VDB(2400, 300, 10, 1, 2)')).toBeCloseTo(384, 10);
+    });
+    it('VDB(0, 2) is the cumulative total of periods 1 and 2', () => {
+      expect(evaluate('VDB(2400, 300, 10, 0, 2)')).toBeCloseTo(864, 10);
+    });
+    it('VDB over a window equals the sum of the DDB periods it spans', () => {
+      const window = evaluate('VDB(10000, 1000, 5, 2, 4)');
+      const summed = evaluate('DDB(10000, 1000, 5, 3)') + evaluate('DDB(10000, 1000, 5, 4)');
+      expect(window).toBeCloseTo(summed, 10);
+    });
+    it('an empty window depreciates nothing', () => {
+      expect(evaluate('VDB(2400, 300, 10, 2, 2)')).toBe(0);
+    });
+  });
+
+  describe('fractional dollar conversion round-trips', () => {
+    // Excel: DOLLARDE(1.02, 16) = 1.125 (1 and 2/16ths).
+    it('DOLLAR_DE converts 32nds/16ths notation to decimal', () => {
+      expect(evaluate('DOLLAR_DE(1.02, 16)')).toBeCloseTo(1.125, 10);
+      expect(evaluate('DOLLAR_DE(1.1, 32)')).toBeCloseTo(1.3125, 10);
+    });
+    it('DOLLAR_FR is the exact inverse of DOLLAR_DE', () => {
+      expect(evaluate('DOLLAR_FR(1.125, 16)')).toBeCloseTo(1.02, 10);
+      expect(evaluate('DOLLAR_FR(1.3125, 32)')).toBeCloseTo(1.1, 10);
+    });
+    it('a zero fraction is a division by zero, not NaN or Infinity', () => {
+      // The denominator cannot be 0; log10(0) would have produced -Infinity.
+      expect(evaluate('DOLLAR_DE(1.1, 0)')).toBe(0);
+      expect(evaluate('DOLLAR_FR(1.1, 0)')).toBe(0);
+    });
+  });
+
+  describe('decimal arithmetic removes IEEE-754 drift from reported figures', () => {
+    it('EBITDA(0.3, 0.1, 0.1) is exactly 0.1, not 0.09999999999999998', () => {
+      expect(evaluate('EBITDA(0.3, 0.1, 0.1)')).toBe(0.1);
+    });
+    it('margin ratios are exact', () => {
+      expect(evaluate('GROSS_MARGIN(0.3, 1)')).toBe(0.3);
+      expect(evaluate('NET_MARGIN(70.35, 100)')).toBe(0.7035);
+    });
+    it('ratio helpers guard a zero denominator', () => {
+      expect(evaluate('CURRENT_RATIO(100, 0)')).toBe(0);
+      expect(evaluate('GROSS_MARGIN(100, 0)')).toBe(0);
+      expect(evaluate('ROE(100, 0)')).toBe(0);
+    });
+  });
+});

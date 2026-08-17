@@ -6,86 +6,113 @@ import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
 
+/**
+ * Zustand stores are called BOTH as `useStore()` (whole state) and as
+ * `useStore((s) => s.slice)` (selector). A mock of the form
+ * `vi.fn(() => state)` ignores the selector and hands the caller the entire
+ * state object, so a component doing `useBudgetStore((s) => s.lineItems)`
+ * receives `{budgets, lineItems, ...}` instead of an array — and then blows up
+ * on `.filter is not a function`. That is a defect in the mock, not the page,
+ * and it masks real render failures. `mockStore` applies the selector when one
+ * is supplied.
+ */
+const { mockStore } = vi.hoisted(() => ({
+  mockStore:
+    <T,>(state: T) =>
+    (selector?: (s: T) => unknown) =>
+      typeof selector === 'function' ? selector(state) : state,
+}));
+
 // ── Mock stores ────────────────────────────────────────────────────────────────
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({
-    entries: [],
-    accounts: [],
-    trialBalance: [],
-    accountAnalysis: null,
-    columnMappings: [],
-    isLoading: false,
-    importResult: null,
-    setEntries: vi.fn(),
-    setAccounts: vi.fn(),
-    addEntries: vi.fn(),
-    clearEntries: vi.fn(),
-    setColumnMappings: vi.fn(),
-    importData: vi.fn(),
-  })),
+  useGLStore: vi.fn(
+    mockStore({
+      entries: [],
+      accounts: [],
+      trialBalance: [],
+      accountAnalysis: null,
+      columnMappings: [],
+      isLoading: false,
+      importResult: null,
+      setEntries: vi.fn(),
+      setAccounts: vi.fn(),
+      addEntries: vi.fn(),
+      clearEntries: vi.fn(),
+      setColumnMappings: vi.fn(),
+      importData: vi.fn(),
+    })
+  ),
 }));
 vi.mock('@/store/budgetStore', () => ({
-  useBudgetStore: vi.fn(() => ({
-    budgets: [],
-    lineItems: [],
-    activeBudgetId: null,
-    isLoading: false,
-    error: null,
-    setBudgets: vi.fn(),
-    setActiveBudget: vi.fn(),
-    createBudget: vi.fn(),
-    updateBudget: vi.fn(),
-    deleteBudget: vi.fn(),
-    setError: vi.fn(),
-    clearError: vi.fn(),
-    setLoading: vi.fn(),
-  })),
+  useBudgetStore: vi.fn(
+    mockStore({
+      budgets: [],
+      lineItems: [],
+      activeBudgetId: null,
+      isLoading: false,
+      error: null,
+      setBudgets: vi.fn(),
+      setActiveBudget: vi.fn(),
+      createBudget: vi.fn(),
+      updateBudget: vi.fn(),
+      deleteBudget: vi.fn(),
+      setError: vi.fn(),
+      clearError: vi.fn(),
+      setLoading: vi.fn(),
+    })
+  ),
 }));
 vi.mock('@/store/scenarioStore', () => ({
-  useScenarioStore: vi.fn(() => ({
-    scenarios: [],
-    selectedScenarioId: null,
-    comparedScenarioIds: [],
-    isLoading: false,
-    error: null,
-    setScenarios: vi.fn(),
-    setSelectedScenario: vi.fn(),
-    createScenario: vi.fn(),
-    updateScenario: vi.fn(),
-    deleteScenario: vi.fn(),
-    toggleScenarioComparison: vi.fn(),
-    setError: vi.fn(),
-    clearError: vi.fn(),
-    setLoading: vi.fn(),
-  })),
+  useScenarioStore: vi.fn(
+    mockStore({
+      scenarios: [],
+      selectedScenarioId: null,
+      comparedScenarioIds: [],
+      isLoading: false,
+      error: null,
+      setScenarios: vi.fn(),
+      setSelectedScenario: vi.fn(),
+      createScenario: vi.fn(),
+      updateScenario: vi.fn(),
+      deleteScenario: vi.fn(),
+      toggleScenarioComparison: vi.fn(),
+      setError: vi.fn(),
+      clearError: vi.fn(),
+      setLoading: vi.fn(),
+    })
+  ),
 }));
 vi.mock('@/store/reportStore', () => ({
-  useReportStore: vi.fn(() => ({
-    reports: [],
-    scheduledReports: [],
-    activeReportId: null,
-    isLoading: false,
-    error: null,
-    setReports: vi.fn(),
-    setActiveReport: vi.fn(),
-    createReport: vi.fn(),
-    deleteReport: vi.fn(),
-    setScheduledReports: vi.fn(),
-    addScheduledReport: vi.fn(),
-    deleteScheduledReport: vi.fn(),
-    setError: vi.fn(),
-    clearError: vi.fn(),
-    setLoading: vi.fn(),
-  })),
+  useReportStore: vi.fn(
+    mockStore({
+      reports: [],
+      scheduledReports: [],
+      activeReportId: null,
+      isLoading: false,
+      error: null,
+      setReports: vi.fn(),
+      setActiveReport: vi.fn(),
+      createReport: vi.fn(),
+      deleteReport: vi.fn(),
+      setScheduledReports: vi.fn(),
+      addScheduledReport: vi.fn(),
+      deleteScheduledReport: vi.fn(),
+      setError: vi.fn(),
+      clearError: vi.fn(),
+      setLoading: vi.fn(),
+    })
+  ),
 }));
 vi.mock('@/store/forecastStore', () => ({
-  useForecastStore: vi.fn(() => ({
-    forecasts: [],
-    activeForecastId: null,
-    isLoading: false,
-    setForecasts: vi.fn(),
-    setActiveForecast: vi.fn(),
-  })),
+  useForecastStore: vi.fn(
+    mockStore({
+      forecasts: [],
+      activeForecastId: null,
+      isLoading: false,
+      setForecasts: vi.fn(),
+      setActiveForecast: vi.fn(),
+    })
+  ),
 }));
 vi.mock('@/store/entityStore', () => ({
   useEntityStore: vi.fn((selector?: (s: Record<string, unknown>) => unknown) => {
@@ -94,103 +121,117 @@ vi.mock('@/store/entityStore', () => ({
   }),
 }));
 vi.mock('@/store/collaborationStore', () => ({
-  useCollaborationStore: vi.fn(() => ({
-    comments: [],
-    tasks: [],
-    activityLog: [],
-    isLoading: false,
-    addComment: vi.fn(),
-    addTask: vi.fn(),
-    updateTaskStatus: vi.fn(),
-    addActivity: vi.fn(),
-  })),
+  useCollaborationStore: vi.fn(
+    mockStore({
+      comments: [],
+      tasks: [],
+      activityLog: [],
+      isLoading: false,
+      addComment: vi.fn(),
+      addTask: vi.fn(),
+      updateTaskStatus: vi.fn(),
+      addActivity: vi.fn(),
+    })
+  ),
 }));
 vi.mock('@/store/varianceStore', () => ({
-  useVarianceStore: vi.fn(() => ({
-    analyses: [],
-    isLoading: false,
-    error: null,
-    setAnalyses: vi.fn(),
-    addAnalysis: vi.fn(),
-    deleteAnalysis: vi.fn(),
-    setError: vi.fn(),
-    clearError: vi.fn(),
-    setLoading: vi.fn(),
-  })),
+  useVarianceStore: vi.fn(
+    mockStore({
+      analyses: [],
+      isLoading: false,
+      error: null,
+      setAnalyses: vi.fn(),
+      addAnalysis: vi.fn(),
+      deleteAnalysis: vi.fn(),
+      setError: vi.fn(),
+      clearError: vi.fn(),
+      setLoading: vi.fn(),
+    })
+  ),
 }));
 vi.mock('@/store/driverStore', () => ({
-  useDriverStore: vi.fn(() => ({
-    drivers: [],
-    isLoading: false,
-    error: null,
-    setDrivers: vi.fn(),
-    addDriver: vi.fn(),
-    updateDriver: vi.fn(),
-    deleteDriver: vi.fn(),
-    setError: vi.fn(),
-    clearError: vi.fn(),
-    setLoading: vi.fn(),
-  })),
+  useDriverStore: vi.fn(
+    mockStore({
+      drivers: [],
+      isLoading: false,
+      error: null,
+      setDrivers: vi.fn(),
+      addDriver: vi.fn(),
+      updateDriver: vi.fn(),
+      deleteDriver: vi.fn(),
+      setError: vi.fn(),
+      clearError: vi.fn(),
+      setLoading: vi.fn(),
+    })
+  ),
 }));
 vi.mock('@/store/authStore', () => ({
-  useAuthStore: vi.fn(() => ({
-    user: { id: '1', name: 'Test User', email: 'test@test.com', role: 'admin' },
-    isAuthenticated: true,
-    isLoading: false,
-    tokenExpiry: null,
-    login: vi.fn(),
-    logout: vi.fn(),
-    register: vi.fn(),
-  })),
+  useAuthStore: vi.fn(
+    mockStore({
+      user: { id: '1', name: 'Test User', email: 'test@test.com', role: 'admin' },
+      isAuthenticated: true,
+      isLoading: false,
+      tokenExpiry: null,
+      login: vi.fn(),
+      logout: vi.fn(),
+      register: vi.fn(),
+    })
+  ),
 }));
 vi.mock('@/store/settingsStore', () => ({
-  useSettingsStore: vi.fn(() => ({
-    organization: { name: 'Test Org', baseCurrency: 'USD' },
-    users: [],
-    roles: [],
-    preferences: { activeSector: 'technology', density: 'comfortable' },
-    isLoading: false,
-    error: null,
-    updateOrganization: vi.fn(),
-    setUsers: vi.fn(),
-    addUser: vi.fn(),
-    updateUser: vi.fn(),
-    deleteUser: vi.fn(),
-    setRoles: vi.fn(),
-    updateRolePermissions: vi.fn(),
-    updatePreferences: vi.fn(),
-    setError: vi.fn(),
-    clearError: vi.fn(),
-    setLoading: vi.fn(),
-  })),
+  useSettingsStore: vi.fn(
+    mockStore({
+      organization: { name: 'Test Org', baseCurrency: 'USD' },
+      users: [],
+      roles: [],
+      preferences: { activeSector: 'technology', density: 'comfortable' },
+      isLoading: false,
+      error: null,
+      updateOrganization: vi.fn(),
+      setUsers: vi.fn(),
+      addUser: vi.fn(),
+      updateUser: vi.fn(),
+      deleteUser: vi.fn(),
+      setRoles: vi.fn(),
+      updateRolePermissions: vi.fn(),
+      updatePreferences: vi.fn(),
+      setError: vi.fn(),
+      clearError: vi.fn(),
+      setLoading: vi.fn(),
+    })
+  ),
 }));
 vi.mock('@/store/uiStore', () => ({
-  useUIStore: vi.fn(() => ({
-    mobileSidebarOpen: false,
-    closeMobileSidebar: vi.fn(),
-    theme: 'light',
-    setTheme: vi.fn(),
-  })),
+  useUIStore: vi.fn(
+    mockStore({
+      mobileSidebarOpen: false,
+      closeMobileSidebar: vi.fn(),
+      theme: 'light',
+      setTheme: vi.fn(),
+    })
+  ),
 }));
 vi.mock('@/hooks/usePeriods', () => ({
   usePeriods: vi.fn(() => []),
 }));
 vi.mock('@/hooks/useSector', () => ({
-  useSector: vi.fn(() => ({
-    activeSector: 'technology',
-    sectorConfig: {
-      id: 'technology',
-      name: 'Technology',
-      defaultKPIs: [
-        { id: 'revenue', label: 'Revenue', target: 1000000, format: 'currency' },
-        { id: 'gross_margin', label: 'Gross Margin', target: 0.65, format: 'percent' },
-        { id: 'net_income', label: 'Net Income', target: 200000, format: 'currency' },
-        { id: 'expenses', label: 'Operating Expenses', target: 800000, format: 'currency' },
-      ],
-    },
-    setSector: vi.fn(),
-    availableSectors: [],
-  })),
+  useSector: vi.fn(
+    mockStore({
+      activeSector: 'technology',
+      sectorConfig: {
+        id: 'technology',
+        name: 'Technology',
+        defaultKPIs: [
+          { id: 'revenue', label: 'Revenue', target: 1000000, format: 'currency' },
+          { id: 'gross_margin', label: 'Gross Margin', target: 0.65, format: 'percent' },
+          { id: 'net_income', label: 'Net Income', target: 200000, format: 'currency' },
+          { id: 'expenses', label: 'Operating Expenses', target: 800000, format: 'currency' },
+        ],
+      },
+      setSector: vi.fn(),
+      availableSectors: [],
+    })
+  ),
 }));
 vi.mock('@/components/ui/PeriodPicker', () => ({
   PeriodPicker: () => <div data-testid="period-picker" />,

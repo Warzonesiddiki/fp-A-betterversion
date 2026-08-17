@@ -1,5 +1,12 @@
 import Decimal from 'decimal.js';
 import { formatMoney } from '../utils/money';
+import {
+  DDB as DDB_CANONICAL,
+  VDB as VDB_CANONICAL,
+  DPO as DPO_CANONICAL,
+  DSO as DSO_CANONICAL,
+  DSI as DSI_CANONICAL,
+} from './formula-functions/financial';
 // =============================================================================
 // SAFEMATHPARSER — Bulletproof recursive descent math expression parser
 // NO eval(), NO new Function(), NO dynamic code execution
@@ -722,116 +729,103 @@ const FUNCTIONS: Record<string, FuncImpl> = {
       .dividedBy(lifeD.times(lifeD.plus(1)).div(2))
       .toNumber();
   },
+  // DDB/VDB delegate to the oracle-tested implementations in
+  // ./formula-functions/financial.ts. Keeping a second copy here had already
+  // diverged: it was off by one period and VDB ignored its startPer argument.
   DDB: (args) => {
-    // Decimal-based double-declining balance depreciation
-    const [cost = 0, salvage = 0, life = 0, per = 0, factor = 0] = args;
-
-    const f = factor ?? 2;
-    const costD = new Decimal(cost);
-    const salvageD = new Decimal(salvage);
-    const lifeD = new Decimal(life);
-    let totalDep = new Decimal(0);
-    for (let i = 1; i <= per; i++) {
-      const dep = Decimal.min(
-        costD.minus(totalDep).times(new Decimal(f).div(lifeD)),
-        costD.minus(salvageD).minus(totalDep)
-      );
-      totalDep = totalDep.plus(Decimal.max(dep, 0));
-    }
-    return Decimal.max(costD.minus(totalDep).times(new Decimal(f).div(lifeD)), 0).toNumber();
+    const [cost = 0, salvage = 0, life = 0, per = 0] = args;
+    return DDB_CANONICAL(cost, salvage, life, per);
   },
   VDB: (args) => {
-    const [cost = 0, salvage = 0, life = 0, startPer = 0, endPer = 0, factor = 0, _noSwitch = 0] =
-      args;
-
-    const f = factor ?? 2;
-    let totalDep = 0;
-    for (let i = 1; i <= endPer; i++) {
-      const dep = Math.min((cost - totalDep) * (f / life), cost - salvage - totalDep);
-      if (i > startPer) totalDep += Math.max(dep, 0);
-      else totalDep += Math.max(dep, 0);
-    }
-    return totalDep;
+    const [cost = 0, salvage = 0, life = 0, startPer = 0, endPer = 0] = args;
+    return VDB_CANONICAL(cost, salvage, life, startPer, endPer);
   },
-  DPO: (args) => {
-    const [cogs = 0, accountsPayable = 0, days = 0] = args;
-
-    if (cogs === 0) return 0;
-    return (accountsPayable / cogs) * (days ?? 365);
-  },
-  DSO: (args) => {
-    const [revenue = 0, accountsReceivable = 0, days = 0] = args;
-
-    if (revenue === 0) return 0;
-    return (accountsReceivable / revenue) * (days ?? 365);
-  },
-  DSI: (args) => {
-    const [inventory = 0, cogs = 0, days = 0] = args;
-
-    if (cogs === 0) return 0;
-    return (inventory / cogs) * (days ?? 365);
-  },
+  // The `days` argument is optional and defaults to 365. It must be read from
+  // args directly: a destructuring default of 0 would make `?? 365` unreachable
+  // and silently return 0 whenever the argument was omitted.
+  DPO: (args) => DPO_CANONICAL(args[0] ?? 0, args[1] ?? 0, args[2] ?? 365),
+  DSO: (args) => DSO_CANONICAL(args[0] ?? 0, args[1] ?? 0, args[2] ?? 365),
+  DSI: (args) => DSI_CANONICAL(args[0] ?? 0, args[1] ?? 0, args[2] ?? 365),
   CURRENT_RATIO: (args) => {
     const [currentAssets = 0, currentLiabilities = 0] = args;
 
-    return currentLiabilities === 0 ? 0 : currentAssets / currentLiabilities;
+    return currentLiabilities === 0
+      ? 0
+      : new Decimal(currentAssets).div(currentLiabilities).toNumber();
   },
   QUICK_RATIO: (args) => {
     const [currentAssets = 0, inventory = 0, currentLiabilities = 0] = args;
 
-    return currentLiabilities === 0 ? 0 : (currentAssets - inventory) / currentLiabilities;
+    return currentLiabilities === 0
+      ? 0
+      : new Decimal(currentAssets).minus(inventory).div(currentLiabilities).toNumber();
   },
   DEBT_TO_EQUITY: (args) => {
     const [totalDebt = 0, totalEquity = 0] = args;
 
-    return totalEquity === 0 ? 0 : totalDebt / totalEquity;
+    return totalEquity === 0 ? 0 : new Decimal(totalDebt).div(totalEquity).toNumber();
   },
   INTEREST_COVERAGE: (args) => {
     const [ebit = 0, interestExpense = 0] = args;
 
-    return interestExpense === 0 ? 0 : ebit / interestExpense;
+    return interestExpense === 0 ? 0 : new Decimal(ebit).div(interestExpense).toNumber();
   },
   ROE: (args) => {
     const [netIncome = 0, shareholdersEquity = 0] = args;
 
-    return shareholdersEquity === 0 ? 0 : netIncome / shareholdersEquity;
+    return shareholdersEquity === 0 ? 0 : new Decimal(netIncome).div(shareholdersEquity).toNumber();
   },
   ROA: (args) => {
     const [netIncome = 0, totalAssets = 0] = args;
 
-    return totalAssets === 0 ? 0 : netIncome / totalAssets;
+    return totalAssets === 0 ? 0 : new Decimal(netIncome).div(totalAssets).toNumber();
   },
   ROIC: (args) => {
     const [nopat = 0, investedCapital = 0] = args;
 
-    return investedCapital === 0 ? 0 : nopat / investedCapital;
+    return investedCapital === 0 ? 0 : new Decimal(nopat).div(investedCapital).toNumber();
   },
   GROSS_MARGIN: (args) => {
     const [grossProfit = 0, revenue = 0] = args;
 
-    return revenue === 0 ? 0 : grossProfit / revenue;
+    return revenue === 0 ? 0 : new Decimal(grossProfit).div(revenue).toNumber();
   },
   NET_MARGIN: (args) => {
     const [netIncome = 0, revenue = 0] = args;
 
-    return revenue === 0 ? 0 : netIncome / revenue;
+    return revenue === 0 ? 0 : new Decimal(netIncome).div(revenue).toNumber();
   },
   EBITDA_MARGIN: (args) => {
     const [ebitda = 0, revenue = 0] = args;
 
-    return revenue === 0 ? 0 : ebitda / revenue;
+    return revenue === 0 ? 0 : new Decimal(ebitda).div(revenue).toNumber();
   },
   OPERATING_MARGIN: (args) => {
     const [operatingIncome = 0, revenue = 0] = args;
 
-    return revenue === 0 ? 0 : operatingIncome / revenue;
+    return revenue === 0 ? 0 : new Decimal(operatingIncome).div(revenue).toNumber();
   },
-  EBITDA: (args) => args[0]! - args[1]! - args[2]!,
-  EBIT: (args) => args[0]! - args[1]!,
-  NOPAT: (args) => args[0]! * (1 - args[1]!),
-  FCFF: (args) => args[0]! + args[1]! - args[2]! - args[3]!,
-  FCFE: (args) => args[0]! + args[1]!,
-  WACC: (args) => args[0]! * args[1]! + args[2]! * args[3]! * (1 - args[4]!),
+  // These aggregate currency amounts, so they run on Decimal: in float
+  // arithmetic EBITDA(0.3, 0.1, 0.1) evaluates to 0.09999999999999998.
+  EBITDA: (args) =>
+    new Decimal(args[0] ?? 0)
+      .minus(args[1] ?? 0)
+      .minus(args[2] ?? 0)
+      .toNumber(),
+  EBIT: (args) => new Decimal(args[0] ?? 0).minus(args[1] ?? 0).toNumber(),
+  NOPAT: (args) => new Decimal(args[0] ?? 0).times(new Decimal(1).minus(args[1] ?? 0)).toNumber(),
+  FCFF: (args) =>
+    new Decimal(args[0] ?? 0)
+      .plus(args[1] ?? 0)
+      .minus(args[2] ?? 0)
+      .minus(args[3] ?? 0)
+      .toNumber(),
+  FCFE: (args) => new Decimal(args[0] ?? 0).plus(args[1] ?? 0).toNumber(),
+  WACC: (args) =>
+    new Decimal(args[0] ?? 0)
+      .times(args[1] ?? 0)
+      .plus(new Decimal(args[2] ?? 0).times(args[3] ?? 0).times(new Decimal(1).minus(args[4] ?? 0)))
+      .toNumber(),
   ALLOCATE: (args) => {
     const amount = args[0]!;
     const weights = args.slice(1);
@@ -952,10 +946,11 @@ const FUNCTIONS: Record<string, FuncImpl> = {
   DISCOUNTPAYBACK: (args) => {
     const rate = args[0]!;
     const cashflows = args.slice(1);
-    let cumulative = 0;
+    const onePlusRate = new Decimal(1).plus(rate);
+    let cumulative = new Decimal(0);
     for (let i = 0; i < cashflows.length; i++) {
-      cumulative += cashflows[i]! / Math.pow(1 + rate, i);
-      if (cumulative >= 0) return i;
+      cumulative = cumulative.plus(new Decimal(cashflows[i]!).div(onePlusRate.pow(i)));
+      if (cumulative.gte(0)) return i;
     }
     return -1;
   },
@@ -964,10 +959,11 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     const initialInvestment = args[1]!;
     const cashflows = args.slice(2);
     if (initialInvestment === 0) return 0;
-    let pvCashflows = 0;
+    const onePlusRate = new Decimal(1).plus(rate);
+    let pvCashflows = new Decimal(0);
     for (let i = 0; i < cashflows.length; i++)
-      pvCashflows += cashflows[i]! / Math.pow(1 + rate, i + 1);
-    return pvCashflows / Math.abs(initialInvestment);
+      pvCashflows = pvCashflows.plus(new Decimal(cashflows[i]!).div(onePlusRate.pow(i + 1)));
+    return pvCashflows.div(new Decimal(initialInvestment).abs()).toNumber();
   },
 
   // =========================================================================
@@ -1549,7 +1545,8 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     const [settlement = 0, maturity = 0, price = 0] = args;
 
     const days = (maturity - settlement) / 86400000;
-    return ((100 - price) / price) * (360 / days);
+    if (price === 0 || days === 0) return 0;
+    return new Decimal(100).minus(price).div(price).times(new Decimal(360).div(days)).toNumber();
   },
   TBILLEQ: (args) => {
     const [settlement = 0, maturity = 0, discount = 0] = args;
@@ -1614,20 +1611,22 @@ const FUNCTIONS: Record<string, FuncImpl> = {
   ODDFPRICE: (args) => {
     const [faceValue = 0, couponRate = 0, yieldRate = 0, _firstPeriod = 0, periods = 0] = args;
 
-    const coupon = faceValue * couponRate;
-    let pv = 0;
-    for (let i = 1; i <= periods; i++) pv += coupon / Math.pow(1 + yieldRate, i);
-    pv += faceValue / Math.pow(1 + yieldRate, periods);
-    return pv;
+    const coupon = new Decimal(faceValue).times(couponRate);
+    const onePlusYield = new Decimal(1).plus(yieldRate);
+    let pv = new Decimal(0);
+    for (let i = 1; i <= periods; i++) pv = pv.plus(coupon.div(onePlusYield.pow(i)));
+    pv = pv.plus(new Decimal(faceValue).div(onePlusYield.pow(periods)));
+    return pv.toNumber();
   },
   ODDLPRICE: (args) => {
     const [faceValue = 0, couponRate = 0, yieldRate = 0, _lastPeriod = 0, periods = 0] = args;
 
-    const coupon = faceValue * couponRate;
-    let pv = 0;
-    for (let i = 1; i <= periods; i++) pv += coupon / Math.pow(1 + yieldRate, i);
-    pv += faceValue / Math.pow(1 + yieldRate, periods);
-    return pv;
+    const coupon = new Decimal(faceValue).times(couponRate);
+    const onePlusYield = new Decimal(1).plus(yieldRate);
+    let pv = new Decimal(0);
+    for (let i = 1; i <= periods; i++) pv = pv.plus(coupon.div(onePlusYield.pow(i)));
+    pv = pv.plus(new Decimal(faceValue).div(onePlusYield.pow(periods)));
+    return pv.toNumber();
   },
   RRI: (args) => {
     // Decimal-based RRI: equivalent interest rate for investment growth
@@ -1718,20 +1717,28 @@ const FUNCTIONS: Record<string, FuncImpl> = {
   },
   JIS: (args) => String(args[0]!) as unknown as number,
   ENCODEURL: (args) => encodeURIComponent(String(args[0]!)) as unknown as number,
+  // Fractional dollar notation (e.g. bond prices quoted in 32nds).
+  // `fraction` is the denominator, so a value of 0 has no meaning: Excel
+  // returns #DIV/0! there, and log10(0) would otherwise yield -Infinity.
   DOLLAR_DE: (args) => {
     const [fractionalDollar = 0, fraction = 0] = args;
+    if (fraction === 0) return 0;
 
-    const intPart = Math.floor(fractionalDollar);
-    const fracPart = (fractionalDollar - intPart) * Math.pow(10, Math.ceil(Math.log10(fraction)));
-    return intPart + fracPart / fraction;
+    const dollarD = new Decimal(fractionalDollar);
+    const intPart = dollarD.floor();
+    const scale = new Decimal(10).pow(Math.ceil(Math.log10(Math.abs(fraction))));
+    const fracPart = dollarD.minus(intPart).times(scale);
+    return intPart.plus(fracPart.div(fraction)).toNumber();
   },
   DOLLAR_FR: (args) => {
     const [decimalDollar = 0, fraction = 0] = args;
+    if (fraction === 0) return 0;
 
-    const intPart = Math.floor(decimalDollar);
-    const fracPart =
-      ((decimalDollar - intPart) * fraction) / Math.pow(10, Math.ceil(Math.log10(fraction)));
-    return intPart + fracPart;
+    const dollarD = new Decimal(decimalDollar);
+    const intPart = dollarD.floor();
+    const scale = new Decimal(10).pow(Math.ceil(Math.log10(Math.abs(fraction))));
+    const fracPart = dollarD.minus(intPart).times(fraction).div(scale);
+    return intPart.plus(fracPart).toNumber();
   },
   CLEAN_TEXT: (args) => String(args[0]!).replace(/[\x00-\x1F\x7F-\x9F]/g, '') as unknown as number, // eslint-disable-line no-control-regex
 
