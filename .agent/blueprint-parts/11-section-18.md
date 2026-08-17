@@ -308,6 +308,16 @@ demo base is gone; shocks apply to posted 4/5/6. Growth+pricing stays additive
 `UnderwritingPage` dropped 6 fabrication findings (72 → **66 / 20 files**).
 `96.4%` / CA-2026-012 filings are gone. `insuranceStore` v2 defaults are empty.
 
+#### W0.1.1 progress — `CreditRiskPage.tsx` + executive-summary fabrication (2026-08-18)
+
+Tenth money module: 13 → **0**; ratchet 502 → **489 (80.05% safe)**. Interest is
+no longer 5% of opex; EAD is no longer currentRatio × 1e6 × ROA. Posted
+financials and honest ratios only.
+
+`ExecutiveSummary` dropped 6 fabrication findings (66 → **60 / 19 files**).
+`$4.2M` / SaaS-bookings copy is gone; the component reads posted revenue,
+operating income and cash.
+
 **Exit criterion:** `docs/architecture/PERSISTENCE_MAP.md` exists and is CI-drift-checked; no monetary value
 is persisted as an IEEE-754 `number`; `glStore` is server-authoritative; every local-only
 surface says so.

@@ -794,3 +794,44 @@ injecting `96.4%` fails the seeded-ledger DOM probe.
 
 Money-AST: `CreditRiskPage` (13) (skip `mockData/index.ts` — that file is the
 fixture factory). Fabrication: `ExecutiveSummary` (6).
+
+---
+
+## Session 016 — 2026-08-18 — CreditRiskPage + ExecutiveSummary
+
+**Branch:** `arena/01a01148-fp-a-betterversion`
+
+### 1. `CreditRiskPage` (13 → 0). Ratchet 502 → **489 (80.05% safe)**
+
+Real drop: 13 float operations left the product. Unsafe modules 174 → 173.
+
+The page read the GL and then invented a whole credit book:
+
+- `Math.abs` on every amount (contra entries inflated assets);
+- opex was prefix 5 only (COGS counted, real opex missed);
+- interest coverage = `(rev − opex) / (opex × 0.05)` — a 5% interest assumption;
+- zero-denominator fallbacks 2.5 / 1.5 / 2.0 / 0.5 / 3.0 / 0.05 / 0.3;
+- years-in-business = `5 + entityId % 15`;
+- collateral = currentRatio × 1e6 × ROA × 10, then EAD from 1.2× / 0.7× / CCF 0.5.
+
+`CreditRiskEngine` is money-safe for EL/EAD when given real facility inputs;
+calling it with those inventions would have laundered a fabrication.
+
+Derivation is `src/pages/credit/creditRiskData.ts`. Posted assets / liabilities /
+equity / NI and ratios only when both sides exist. PD / LGD / EAD / EL are
+disclosed. Teeth: reintroducing `.times(0.05)` fails the source guard.
+
+### 2. `ExecutiveSummary` (6 → 0 fabrication). Ratchet 66 → **60 / 19 files**
+
+The component ignored the GL and rendered `$4.2M / +12%`, `$1.1M / +4%`,
+`$850k / −2%` plus a SaaS-bookings narrative for every entity. Tests had
+encoded those quotes.
+
+It now reads posted revenue, operating income (not EBITDA — D&A is not a
+prefix) and cash account 1000. Budget variance, activity-split cash flow and
+commentary are disclosed. Teeth: injecting `$4.2M` fails the empty-GL DOM probe.
+
+### Next
+
+Money-AST: `DashboardPage` (11) (skip `mockData/index.ts`). Fabrication:
+`PatientRevenuePage` (5).
