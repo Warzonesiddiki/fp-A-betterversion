@@ -4,7 +4,7 @@ import { ChartCard } from '@/components/ui/ChartCard';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { useLogisticsStore } from '@/store/logisticsStore';
 
-import { Truck, Package, DollarSign, MapPin, TrendingUp, BarChart3 } from 'lucide-react';
+import { Truck, Package, DollarSign, MapPin, TrendingUp } from 'lucide-react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -17,7 +17,14 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
+import { formatPercent } from '@/utils/financialFormatting';
+import { useGLStore } from '@/store/glStore';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import {
+  deriveLogisticsDashboard,
+  type AccountAmountRow,
+  type LaneRow,
+} from '@/pages/sectors/logisticsDashboardData';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 const COLORS = [
@@ -30,106 +37,79 @@ const COLORS = [
   '#06B6D4',
 ];
 
-const revenueByServiceLine = [
-  { name: 'FTL', revenue: 4820000 },
-  { name: 'LTL', revenue: 2150000 },
-  { name: 'Warehousing', revenue: 1780000 },
-  { name: 'Last-Mile', revenue: 1340000 },
-  { name: 'Freight Forwarding', revenue: 960000 },
-  { name: '3PL', revenue: 720000 },
-];
-
-const costDistribution = [
-  { name: 'Fuel', value: 28 },
-  { name: 'Labor', value: 24 },
-  { name: 'Equipment', value: 15 },
-  { name: 'Warehousing', value: 13 },
-  { name: 'Insurance', value: 8 },
-  { name: 'Maintenance', value: 7 },
-  { name: 'Admin', value: 5 },
-];
-
-const monthlyVolume = [
-  { month: 'Jan', shipments: 12400 },
-  { month: 'Feb', shipments: 11800 },
-  { month: 'Mar', shipments: 13200 },
-  { month: 'Apr', shipments: 14100 },
-  { month: 'May', shipments: 15300 },
-  { month: 'Jun', shipments: 14800 },
-  { month: 'Jul', shipments: 16200 },
-  { month: 'Aug', shipments: 15900 },
-  { month: 'Sep', shipments: 14600 },
-  { month: 'Oct', shipments: 16800 },
-  { month: 'Nov', shipments: 17200 },
-  { month: 'Dec', shipments: 18400 },
-];
-
+/**
+ * Logistics sector dashboard.
+ *
+ * Every figure comes from `@/pages/sectors/logisticsDashboardData` — see its
+ * correctness contract. This page previously shipped three module-level
+ * fixtures (service-line revenue, a cost-share pie, twelve months of shipment
+ * volume), a seven-literal KPI strip, an on-time rate that fell back to 96.4%
+ * for an empty store, and a lane list that rendered route COST in a field it
+ * called revenue.
+ */
 export function LogisticsDashboardPage() {
-  const { routeCosts, getOnTimeRate } = useLogisticsStore();
-
-  const onTimeRate = getOnTimeRate();
-
-  // WIRED (C-3): top lanes straight from logisticsStore routeCosts — no
-  // fabricated fallback. Margin is not modeled in RouteCost, so it renders as
-  // '—' until margin data is imported.
-  const topLanes = routeCosts.map((rc) => ({
-    route: rc.route,
-    volume: rc.volume,
-    revenue: rc.cost,
-    margin: null as number | null,
-  }));
+  const { routeCosts, shipments } = useLogisticsStore();
+  const { entries } = useGLStore();
+  const fmt = useCurrencyFormatter();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Logistics Dashboard';
   }, []);
 
-  const kpis = useMemo(
-    () => [
-      {
-        label: 'Total Freight Revenue',
-        value: '$11.77M',
-        change: 8.4,
-        icon: <DollarSign className="h-4 w-4" />,
-      },
-      {
-        label: 'Cost per Shipment',
-        value: '$842',
-        change: -3.1,
-        icon: <Package className="h-4 w-4" />,
-      },
-      {
-        label: 'On-Time Delivery %',
-        value: onTimeRate > 0 ? `${formatPercent(onTimeRate, 1)}` : '96.4%',
-        change: 1.2,
-        icon: <Truck className="h-4 w-4" />,
-      },
-      {
-        label: 'Fleet Utilization %',
-        value: '82.6%',
-        change: 2.8,
-        icon: <BarChart3 className="h-4 w-4" />,
-      },
-      {
-        label: 'Warehouse Capacity %',
-        value: '78.3%',
-        change: -1.5,
-        icon: <Package className="h-4 w-4" />,
-      },
-      {
-        label: 'Avg Transit Time (days)',
-        value: '3.2',
-        change: -0.4,
-        icon: <MapPin className="h-4 w-4" />,
-      },
-      {
-        label: 'Revenue per Mile',
-        value: '$2.84',
-        change: 5.6,
-        icon: <TrendingUp className="h-4 w-4" />,
-      },
-    ],
-    [onTimeRate]
+  const data = useMemo(
+    () => deriveLogisticsDashboard(entries, shipments, routeCosts),
+    [entries, shipments, routeCosts]
   );
+
+  if (!data) {
+    return (
+      <main
+        className="p-12 text-center max-w-md mx-auto"
+        role="main"
+        aria-label="Logistics Sector Dashboard"
+      >
+        <Truck className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
+        <h2 className="text-xl font-semibold mb-2">No Logistics Data</h2>
+        <p className="text-[var(--text-muted)]">
+          Import ledger activity, shipments or route costs to see freight revenue, cost distribution
+          and lane economics.
+        </p>
+      </main>
+    );
+  }
+
+  const kpis = [
+    {
+      label: 'Posted Freight Revenue',
+      value: fmt.currency0(data.postedRevenue),
+      icon: <DollarSign className="h-4 w-4" />,
+    },
+    {
+      label: 'Posted Operating Cost',
+      value: fmt.currency0(data.postedCost),
+      icon: <Package className="h-4 w-4" />,
+    },
+    {
+      label: 'Cost per Shipment',
+      value: data.costPerShipment === null ? '\u2014' : fmt.currency0(data.costPerShipment),
+      icon: <Package className="h-4 w-4" />,
+    },
+    {
+      label: 'On-Time Delivery %',
+      value: formatPercent(data.onTimeRatePercent, 1),
+      icon: <Truck className="h-4 w-4" />,
+    },
+    {
+      label: 'Shipments Recorded',
+      value: data.shipmentCount.toLocaleString(),
+      icon: <MapPin className="h-4 w-4" />,
+    },
+    {
+      label: 'Net Result',
+      value: fmt.currency0(data.netResult),
+      icon: <TrendingUp className="h-4 w-4" />,
+    },
+  ];
 
   return (
     <main className="p-6 space-y-6" role="main" aria-label="Logistics Sector Dashboard">
@@ -140,36 +120,30 @@ export function LogisticsDashboardPage() {
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {kpis.map((kpi) => (
-          <KPIValue
-            key={kpi.label}
-            label={kpi.label}
-            value={kpi.value}
-            change={kpi.change}
-            icon={kpi.icon}
-          />
+          <KPIValue key={kpi.label} label={kpi.label} value={kpi.value} icon={kpi.icon} />
         ))}
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ChartCard title="Revenue by Service Line" height={300}>
+        <ChartCard title="Revenue by Account" height={300}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={revenueByServiceLine}>
+            <BarChart data={[...data.revenueByAccount]}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
               <XAxis dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
               <YAxis
                 tick={{ fill: 'var(--text-secondary)', fontSize: 12 }}
-                tickFormatter={(v) => `$${formatCompact(v)}`}
+                tickFormatter={(v) => fmt.compact(v)}
               />
               <Tooltip
-                formatter={(v) => [`$${formatCompact(Number(v))}`, 'Revenue']}
+                formatter={(v) => [fmt.currency0(Number(v)), 'Revenue']}
                 contentStyle={{
                   background: 'var(--text-primary)',
                   border: '1px solid var(--border-color)',
                   borderRadius: 8,
                 }}
               />
-              <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
-                {revenueByServiceLine.map((_, i) => (
+              <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                {data.revenueByAccount.map((_, i) => (
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
               </Bar>
@@ -181,7 +155,7 @@ export function LogisticsDashboardPage() {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={costDistribution}
+                data={[...data.costDistribution]}
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
@@ -189,12 +163,12 @@ export function LogisticsDashboardPage() {
                 paddingAngle={2}
                 dataKey="value"
               >
-                {costDistribution.map((_, i) => (
+                {data.costDistribution.map((_, i) => (
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip
-                formatter={(v) => [`${v}%`, 'Share']}
+                formatter={(v) => [fmt.currency0(Number(v)), 'Amount']}
                 contentStyle={{
                   background: 'var(--text-primary)',
                   border: '1px solid var(--border-color)',
@@ -204,14 +178,14 @@ export function LogisticsDashboardPage() {
             </PieChart>
           </ResponsiveContainer>
           <div className="flex flex-wrap justify-center gap-3 mt-2">
-            {costDistribution.map((item, i) => (
+            {data.costDistribution.map((item: AccountAmountRow, i) => (
               <div key={item.name} className="flex items-center gap-1 text-xs">
                 <span
                   className="h-2 w-2 rounded-full"
                   style={{ background: COLORS[i % COLORS.length] }}
                 />
                 <span style={{ color: 'var(--text-secondary)' }}>
-                  {item.name} ({item.value}%)
+                  {item.name} ({formatPercent(item.sharePercent, 1)})
                 </span>
               </div>
             ))}
@@ -222,11 +196,11 @@ export function LogisticsDashboardPage() {
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Top Shipping Lanes</CardTitle>
+            <CardTitle>Route Costs by Lane</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {topLanes.map((lane) => (
+              {data.lanes.map((lane: LaneRow) => (
                 <div
                   key={lane.route}
                   className="flex items-center justify-between py-2 border-b"
@@ -242,10 +216,12 @@ export function LogisticsDashboardPage() {
                   </div>
                   <div className="text-right">
                     <span className="font-mono text-sm" style={{ color: 'var(--text-primary)' }}>
-                      ${formatCompact(lane.revenue)}
+                      {fmt.currency0(lane.cost)}
                     </span>
-                    <span className="text-xs ml-2 text-green-600">
-                      {lane.margin === null ? '—' : `${lane.margin}%`}
+                    <span className="text-xs ml-2" style={{ color: 'var(--text-secondary)' }}>
+                      {lane.costPerLoad === null
+                        ? '\u2014'
+                        : `${fmt.currency0(lane.costPerLoad)}/load`}
                     </span>
                   </div>
                 </div>
@@ -254,27 +230,21 @@ export function LogisticsDashboardPage() {
           </CardContent>
         </Card>
 
-        <ChartCard title="Monthly Shipment Volume" height={240}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={monthlyVolume}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-              <XAxis dataKey="month" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
-              <YAxis
-                tick={{ fill: 'var(--text-secondary)', fontSize: 12 }}
-                tickFormatter={(v) => formatNumber(v / 1000, 0)}
-              />
-              <Tooltip
-                formatter={(v) => [Number(v).toLocaleString(), 'Shipments']}
-                contentStyle={{
-                  background: 'var(--text-primary)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: 8,
-                }}
-              />
-              <Bar dataKey="shipments" fill="var(--accent-primary)" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartCard>
+        <Card>
+          <CardHeader>
+            <CardTitle>Not derivable from the general ledger</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-sm">
+              {data.unavailable.map((u) => (
+                <li key={u.label}>
+                  <span className="font-semibold">{u.label}</span>
+                  <span style={{ color: 'var(--text-secondary)' }}> — {u.reason}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
       </section>
     </main>
   );
