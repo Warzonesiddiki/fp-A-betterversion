@@ -4,9 +4,14 @@ import { ChartCard } from '@/components/ui/ChartCard';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { Button } from '@/components/ui/Button';
 import { useGovernmentStore } from '@/store/governmentStore';
-import { Landmark, Users, DollarSign, Shield, TrendingUp, BarChart3 } from 'lucide-react';
-import { formatCompact } from '@/utils/financialFormatting';
-import { roundTo } from '@/utils/money';
+import { Landmark, DollarSign, Shield, TrendingUp, BarChart3 } from 'lucide-react';
+import { formatPercent } from '@/utils/financialFormatting';
+import { useGLStore } from '@/store/glStore';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import {
+  deriveGovernmentDashboard,
+  type CategoryAmountRow,
+} from '@/pages/sectors/governmentDashboardData';
 import {
   ResponsiveContainer,
   BarChart,
@@ -23,81 +28,71 @@ import { PageHeader } from '@/components/ui/PageHeader';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899'];
 
+/**
+ * Government sector dashboard.
+ *
+ * Every figure comes from `@/pages/sectors/governmentDashboardData` — see its
+ * correctness contract. This page used to fall back to `mockDepartmentBudget`,
+ * `mockRevenueByCategory` and `mockSpendingDistribution` whenever the store was
+ * empty (i.e. in every new workspace), carried a fully hardcoded KPI strip
+ * ($11.8B / $8.95B / $800M / 1.48x / $1.9B / 87.3% / $342) and a typed FY2024
+ * vs FY2025 table, and rendered budget lines as both "revenue" and "spending".
+ */
+
 export function GovernmentDashboardPage() {
   const [activeTab, setActiveTab] = useState<'revenue' | 'spending'>('revenue');
   const { budgetLines } = useGovernmentStore();
+  const { entries } = useGLStore();
+  const fmt = useCurrencyFormatter();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Government Dashboard';
   }, []);
 
-  // demo defaults — replaced by real data when government budget data is imported via the government store
-  const mockDepartmentBudget = [
-    { department: 'Education', allocated: 3100, spent: 2890, pct: 93.2 },
-    { department: 'Healthcare', allocated: 2750, spent: 2610, pct: 94.9 },
-    { department: 'Infrastructure', allocated: 1900, spent: 1720, pct: 90.5 },
-    { department: 'Public Safety', allocated: 1600, spent: 1540, pct: 96.3 },
-    { department: 'Social Services', allocated: 1300, spent: 1180, pct: 90.8 },
-    { department: 'Administration', allocated: 950, spent: 870, pct: 91.6 },
-  ];
-
-  const departmentBudget = budgetLines.length
-    ? budgetLines.map((l) => ({
-        department: l.category,
-        allocated: l.budgeted,
-        spent: l.actual,
-        pct: l.budgeted > 0 ? roundTo((l.actual / l.budgeted) * 100, 1) : 0,
-      }))
-    : mockDepartmentBudget;
-
-  // demo defaults — replaced by real data when revenue category data is imported via the government store
-  const mockRevenueByCategory = [
-    { name: 'Income Tax', value: 4200 },
-    { name: 'Sales Tax', value: 2850 },
-    { name: 'Property Tax', value: 1900 },
-    { name: 'Federal Grants', value: 1650 },
-    { name: 'Fees & Charges', value: 720 },
-    { name: 'Other', value: 480 },
-  ];
-
-  // demo defaults — replaced by real data when spending data is imported via the government store
-  const mockSpendingDistribution = [
-    { name: 'Education', value: 3100 },
-    { name: 'Healthcare', value: 2750 },
-    { name: 'Infrastructure', value: 1900 },
-    { name: 'Public Safety', value: 1600 },
-    { name: 'Debt Service', value: 1200 },
-    { name: 'Administration', value: 950 },
-    { name: 'Social Services', value: 1300 },
-  ];
-
-  const revenueByCategory = budgetLines.length
-    ? budgetLines.map((l) => ({ name: l.category, value: l.budgeted }))
-    : mockRevenueByCategory;
-
-  const spendingDistribution = budgetLines.length
-    ? budgetLines.map((l) => ({ name: l.category, value: l.actual }))
-    : mockSpendingDistribution;
-
-  const fiscalYearComparison = [
-    { metric: 'Total Revenue', fy2024: 10800, fy2025: 11800, change: 9.3 },
-    { metric: 'Total Expenditure', fy2024: 10200, fy2025: 11000, change: 7.8 },
-    { metric: 'Net Surplus', fy2024: 600, fy2025: 800, change: 33.3 },
-    { metric: 'Debt Outstanding', fy2024: 8500, fy2025: 8200, change: -3.5 },
-  ];
-
-  const kpis = useMemo(
-    () => [
-      { label: 'Total Budget Allocation', value: '$11.8B', change: 4.2, icon: DollarSign },
-      { label: 'Tax Revenue Collected', value: '$8.95B', change: 6.1, icon: TrendingUp },
-      { label: 'Operating Surplus/Deficit', value: '$800M', change: 33.3, icon: BarChart3 },
-      { label: 'Debt Service Ratio', value: '1.48x', change: -2.1, icon: Shield },
-      { label: 'Capital Expenditure', value: '$1.9B', change: 8.7, icon: Landmark },
-      { label: 'Program Effectiveness', value: '87.3%', change: 1.9, icon: Users },
-      { label: 'Cost per Citizen', value: '$342', change: -1.4, icon: Users },
-    ],
-    []
+  const data = useMemo(
+    () => deriveGovernmentDashboard(entries, budgetLines),
+    [entries, budgetLines]
   );
+
+  if (!data) {
+    return (
+      <main
+        className="p-12 text-center max-w-md mx-auto"
+        role="main"
+        aria-label="Government Sector Dashboard"
+      >
+        <Landmark className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
+        <h2 className="text-xl font-semibold mb-2">No Government Data</h2>
+        <p className="text-[var(--text-muted)]">
+          Import ledger activity or appropriation lines to see revenue, expenditure and budget
+          execution for your jurisdiction.
+        </p>
+      </main>
+    );
+  }
+
+  const kpis = [
+    { label: 'Posted Revenue', value: fmt.currency0(data.postedRevenue), icon: TrendingUp },
+    {
+      label: 'Posted Expenditure',
+      value: fmt.currency0(data.postedExpenditure),
+      icon: BarChart3,
+    },
+    { label: 'Surplus / (Deficit)', value: fmt.currency0(data.surplus), icon: DollarSign },
+    {
+      label: 'Budget Allocated',
+      value: data.totalAllocated === null ? '\u2014' : fmt.currency0(data.totalAllocated),
+      icon: Landmark,
+    },
+    {
+      label: 'Budget Execution',
+      value: formatPercent(data.overallExecutionPercent, 1),
+      icon: Shield,
+    },
+  ];
+
+  const revenueByCategory = data.revenueByCategory;
+  const spendingDistribution = data.spendingDistribution;
 
   return (
     <main className="p-6 space-y-6" role="main" aria-label="Government Sector Dashboard">
@@ -117,7 +112,6 @@ export function GovernmentDashboardPage() {
             key={kpi.label}
             label={kpi.label}
             value={kpi.value}
-            change={kpi.change}
             icon={<kpi.icon className="h-4 w-4" />}
           />
         ))}
@@ -153,15 +147,17 @@ export function GovernmentDashboardPage() {
           }
         >
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={activeTab === 'revenue' ? revenueByCategory : spendingDistribution}>
+            <BarChart
+              data={[...(activeTab === 'revenue' ? revenueByCategory : spendingDistribution)]}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
               <XAxis dataKey="name" tick={{ fontSize: 11, fill: 'var(--text-secondary)' }} />
               <YAxis
                 tick={{ fontSize: 11, fill: 'var(--text-secondary)' }}
-                tickFormatter={(v: number) => formatCompact(v)}
+                tickFormatter={(v: number) => fmt.compact(v)}
               />
               <Tooltip
-                formatter={(value) => [`$${Number(value).toLocaleString()}M`, 'Amount']}
+                formatter={(value) => [fmt.currency0(Number(value)), 'Amount']}
                 contentStyle={{
                   background: 'var(--card-bg, #1e293b)',
                   border: '1px solid var(--border-color)',
@@ -184,7 +180,7 @@ export function GovernmentDashboardPage() {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={spendingDistribution}
+                data={[...spendingDistribution]}
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
@@ -197,7 +193,7 @@ export function GovernmentDashboardPage() {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value) => [`$${Number(value).toLocaleString()}M`, 'Amount']}
+                formatter={(value) => [fmt.currency0(Number(value)), 'Amount']}
                 contentStyle={{
                   background: 'var(--card-bg, #1e293b)',
                   border: '1px solid var(--border-color)',
@@ -208,7 +204,7 @@ export function GovernmentDashboardPage() {
             </PieChart>
           </ResponsiveContainer>
           <div className="flex flex-wrap gap-3 mt-2 justify-center">
-            {spendingDistribution.map((item, i) => (
+            {spendingDistribution.map((item: CategoryAmountRow, i) => (
               <div key={item.name} className="flex items-center gap-1 text-xs">
                 <span
                   className="w-2.5 h-2.5 rounded-full inline-block"
@@ -249,7 +245,7 @@ export function GovernmentDashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {departmentBudget.map((dept) => (
+                {data.departmentExecution.map((dept) => (
                   <tr
                     key={dept.department}
                     className="border-t"
@@ -262,25 +258,27 @@ export function GovernmentDashboardPage() {
                       className="py-2 text-right font-mono"
                       style={{ color: 'var(--text-primary)' }}
                     >
-                      {formatCompact(dept.allocated)}
+                      {fmt.currency0(dept.allocated)}
                     </td>
                     <td
                       className="py-2 text-right font-mono"
                       style={{ color: 'var(--text-primary)' }}
                     >
-                      {formatCompact(dept.spent)}
+                      {fmt.currency0(dept.spent)}
                     </td>
                     <td className="py-2 text-right font-mono">
                       <span
                         className={
-                          dept.pct >= 95
-                            ? 'text-green-600'
-                            : dept.pct >= 90
-                              ? 'text-yellow-500'
-                              : 'text-red-600'
+                          dept.executionPercent === null
+                            ? 'text-[var(--text-muted)]'
+                            : dept.executionPercent >= 95
+                              ? 'text-green-600'
+                              : dept.executionPercent >= 90
+                                ? 'text-yellow-500'
+                                : 'text-red-600'
                         }
                       >
-                        {dept.pct}%
+                        {formatPercent(dept.executionPercent, 1)}
                       </span>
                     </td>
                   </tr>
@@ -303,10 +301,10 @@ export function GovernmentDashboardPage() {
                     Metric
                   </th>
                   <th scope="col" className="text-right pb-2 font-medium">
-                    FY 2024
+                    {data.priorFiscalYear ? `FY ${data.priorFiscalYear}` : 'Prior FY'}
                   </th>
                   <th scope="col" className="text-right pb-2 font-medium">
-                    FY 2025
+                    {data.currentFiscalYear ? `FY ${data.currentFiscalYear}` : 'Current FY'}
                   </th>
                   <th scope="col" className="text-right pb-2 font-medium">
                     YoY Change
@@ -314,7 +312,7 @@ export function GovernmentDashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {fiscalYearComparison.map((row) => (
+                {data.fiscalYears.map((row) => (
                   <tr
                     key={row.metric}
                     className="border-t"
@@ -327,18 +325,25 @@ export function GovernmentDashboardPage() {
                       className="py-2 text-right font-mono"
                       style={{ color: 'var(--text-primary)' }}
                     >
-                      ${row.fy2024.toLocaleString()}M
+                      {row.prior === null ? '\u2014' : fmt.currency0(row.prior)}
                     </td>
                     <td
                       className="py-2 text-right font-mono"
                       style={{ color: 'var(--text-primary)' }}
                     >
-                      ${row.fy2025.toLocaleString()}M
+                      {fmt.currency0(row.current)}
                     </td>
                     <td className="py-2 text-right font-mono">
-                      <span className={row.change >= 0 ? 'text-green-600' : 'text-red-600'}>
-                        {row.change >= 0 ? '+' : ''}
-                        {row.change}%
+                      <span
+                        className={
+                          row.changePercent === null
+                            ? 'text-[var(--text-muted)]'
+                            : row.changePercent >= 0
+                              ? 'text-green-600'
+                              : 'text-red-600'
+                        }
+                      >
+                        {formatPercent(row.changePercent, 1)}
                       </span>
                     </td>
                   </tr>
@@ -348,6 +353,24 @@ export function GovernmentDashboardPage() {
           </CardContent>
         </Card>
       </section>
+
+      {data.unavailable.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Not derivable from the general ledger</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-sm">
+              {data.unavailable.map((u) => (
+                <li key={u.label}>
+                  <span className="font-semibold">{u.label}</span>
+                  <span className="text-[var(--text-muted)]"> — {u.reason}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
     </main>
   );
 }
