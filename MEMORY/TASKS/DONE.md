@@ -24,9 +24,12 @@ Money-AST modules taken to 0 unsafe ops (real float removal, not remeasurement):
 | CreditRiskPage | 13 | 016 |
 | DashboardPage | 11 | 017 |
 | PatientRevenuePage (money) | 1 | 017 |
+| CashForecastPage | 10 | 018 |
+| EducationDashboardPage (money) | 3 | 018 |
 
 Fabrication files cleared: REIT, Retail, ProjectCosting, Underwriting, ExecutiveSummary,
-PatientRevenuePage (denial table + hardcoded `denialRate: 4.2` in HealthcareEngine).
+PatientRevenuePage (denial table + hardcoded `denialRate: 4.2` in HealthcareEngine),
+EducationDashboardPage (an entire fictional university).
 
 Infrastructure: money-AST detector + ratchet (gate 9b); fabrication detector + ratchet (gate 9c);
 Article XVIII blueprint LOCKED; ADR-001 `overrides` vulnerability patching; ADR-002 CI audit gate

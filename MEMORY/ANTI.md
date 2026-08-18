@@ -102,6 +102,28 @@ confidence: high
   seen: budget utilization showed a green "0.0%" bar with no budget posted.
   instead: null -> '—' plus a sentence saying what is missing.
 
+[DO-NOT] Treat every GL entry as cash.
+  seen: CashForecastPage summed debit - credit over the whole ledger and called
+        the positive half "inflows", so an expense debit was cash received.
+  instead: cash is accounts with prefix 10 / 11. Receipts are debits to those.
+  evidence: session 018, src/pages/cash/cashForecastModel.ts.
+
+[DO-NOT] Split a total with typed weights (70/30, 40/35/15, residual).
+  seen: the cash category table and the tax provision jurisdictions.
+  instead: derive the split from double entry (journal counter-lines) or
+           disclose it as unavailable. Weights that look reasonable are still
+           invented.
+
+[DO-NOT] Decide variance favourability from words in a label.
+  seen: `category.includes('Revenue') ? v > 0 : v < 0` on a hand-typed label.
+  instead: natural balance of the account code decides it.
+
+[DO-NOT] Assume a sectors/* page reads a store.
+  seen: EducationDashboardPage imported no store and rendered a fictional
+        university; a data-driven twin was already routed at /sector/education.
+  instead: check both `src/pages/sector/` and `src/pages/sectors/` before
+           rewriting, and grep the page for `useGLStore` first.
+
 [DO-NOT] Re-fight pre-push gate 10 on a fresh branch.
   seen: with no @{u} it falls back to `git log -10` and flags already-merged
         squashes 5078e01 and 646bdf4.

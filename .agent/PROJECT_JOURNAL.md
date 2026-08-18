@@ -932,3 +932,85 @@ numbers moved because the product got safer, not because measurement changed.
 
 Money-AST: next ranked module from `--list` (skip `mockData/index.ts`).
 Fabrication: Education / Government / Logistics dashboards.
+
+---
+
+## Session 018 — 2026-08-18 — CashForecastPage + EducationDashboardPage
+
+**Branch:** `arena/01a01215-fp-a-betterversion`
+
+Sandbox restore wiped `node_modules` and rewound `HEAD` to `646bdf4` while the
+working tree still held session 017. Recovered per the documented drill:
+`git fetch origin <branch>` → `reset --soft FETCH_HEAD` → bare `reset` →
+`npm install`. The tree matched the pushed branch byte-for-byte; nothing lost.
+
+### 1. `CashForecastPage` (10 → 0). Ratchet 477 → **464 (80.57% safe)**
+
+Real drop: 13 float operations left the product (10 here, 3 on the education
+page). Unsafe modules 171 → 169.
+
+Again the detector found the smaller problem. Three defects it cannot see:
+
+- **"Cash" was the whole ledger.** `computeCashTotals` summed `debit − credit`
+  over _every_ entry and called the positive half "inflows", so a payroll
+  debit to 6xxx counted as cash coming in and a revenue credit reduced cash.
+  Cash is now read from cash accounts (prefix 10 / 11) only.
+- **The category table was six typed weights.** Inflows split 70% Revenue /
+  30% Other Income; outflows 40% Payroll / 35% OpEx / 15% CapEx / residual
+  Debt Service. Categories now come from double entry: each cash line is
+  attributed to the non-cash lines of its own journal, allocated penny-exact
+  in proportion to their amounts, classified by account prefix, with an
+  explicit `Unclassified` bucket and a stated attribution percentage
+  (97.56% on the test ledger). A cash-to-cash transfer is not revenue.
+- **The 13-week forecast was a sawtooth.**
+  `(inflows / 13) * (0.8 + ((i * 13) % 40) * 0.01)`, with a balance ramped by
+  `net + weekNet * (i + 1)`, and a burn rate of `outflows / 4`. The page now
+  shows posted per-period history with a cumulative running balance, averages
+  over periods actually posted, and declares the forward forecast unavailable
+  (it needs A/R + A/P aging, a payroll calendar and a debt-service schedule).
+
+All of it was exported to PDF and Excel.
+
+**A green "known answer" test was pinning the fabrication.**
+`CashForecastPage.money.test.ts` asserted
+`buildCashCategorySplit(...)[0].inflows === 210.14` "because 300.20 \* 0.7".
+That is session 012's lesson again: a test named for an oracle is only an
+oracle if the expected value came from outside the code. Deleted and replaced
+by `cashForecastModel.test.ts` (16 known-answer cases).
+
+### 2. `EducationDashboardPage` (5 → 0 fabrication). Ratchet 55 → **50 / 17 files**
+
+The page read **nothing**. Every figure was a literal for a fictional
+university: `$485.0M` tuition, `$18,240` cost per student, `$105.0M` financial
+aid, `$95.0M` research funding, `4.8%` endowment utilisation, a `15:1`
+student-faculty ratio, 38,700 students across five semesters, a six-slice
+expense pie (Faculty 312M, Admin 145M …) and a six-row budget-vs-actual table —
+identical for every tenant, entity and period. `/sectors/education` and
+`/sector/education` are both routed; the latter already renders the
+driver-based `SectorDriverDashboard`.
+
+Derivation is `src/pages/sectors/educationDashboardData.ts`: revenue (prefix 4)
+and cost (5–8) grouped by account with real shares, and budget line items
+joined to actuals **by account code**. Favourability now follows natural
+balance — the old table decided it with `category.includes('Revenue')` on a
+hand-typed label. Budget lines with no posted actual are dropped rather than
+shown as a 100% shortfall, and a zero budget yields a `null` variance percent.
+Enrolment comes only from the education store when the user has entered it
+(store defaults were already empty); cost per student follows from it or is
+`—`. Endowment utilisation is always disclosed as not derivable.
+
+Its smoke test asserted the invented labels and mocked `useEducationStore` as
+returning a `kpis` array — a shape that store has never had, so the mock proved
+nothing. Rewritten against the real derivation.
+
+### 3. Ratchet honesty
+
+Per-file `--json` diff: `CashForecastPage.tsx` 10→0 and
+`EducationDashboardPage.tsx` 3→0 money, `EducationDashboardPage.tsx` 5→0
+fabrication. No other file moved. Both numbers moved because the product got
+safer.
+
+### Next
+
+Money-AST: `RollingForecastPage` (10) — skip `mockData/index.ts` (13).
+Fabrication: `GovernmentDashboardPage` (5), then `LogisticsDashboardPage` (5).

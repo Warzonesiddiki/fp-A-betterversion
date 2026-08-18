@@ -32,6 +32,9 @@ because a plan says so.
 | Real-estate engine | `src/engines/RealEstateEngine.ts` | flagged | 4.2 / 94.8 / 6.2 mocks + amount-sign fork |
 | Export engines | `src/engines/ProfessionalExportEngine.ts`, `ExportTemplateEngine.ts` | flagged | fabrication 0, but raw floats can cross into autoTable |
 | Board pack | `BoardPackTemplate` (barrel-exported) | partial | NOT routed — no user reaches it |
+| Cash position | `src/pages/cash/CashForecastPage.tsx` + `cashForecastModel.ts` | shipped | session 018: cash-account scoped, categories from journal counter-lines, forward forecast disclosed |
+| Education dashboard | `src/pages/sectors/EducationDashboardPage.tsx` + `educationDashboardData.ts` | shipped | session 018: was 100% invented; now GL + budget derived |
+| Sector dashboards (`src/pages/sectors/*`) | — | flagged | Government / Logistics / Telecom still render invented companies |
 | Server API | `server/src/routes/*.ts` (11 route files) | partial | only ~14 non-test frontend files call it |
 | Persistence authority (W0.8) | — | planned | 41 persisting stores, schema fork, no tenancy |
 | MSI installer | — | planned | repo ships NSIS only; GA needs MSI + NSIS |

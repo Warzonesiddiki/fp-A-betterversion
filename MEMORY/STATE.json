@@ -1,20 +1,20 @@
 {
   "memory_version": "1.0.0",
-  "project": "OmniPlan (finplan-pro) \u2014 Warzonesiddiki/fp-A-betterversion",
+  "project": "OmniPlan (finplan-pro) — Warzonesiddiki/fp-A-betterversion",
   "updated_at": "2026-08-18",
   "genesis_phase": "Phase 0 / Wave W0.1.1",
   "now": {
-    "task_id": "T-018",
-    "summary": "W0.1.1 session 018: CashForecastPage money-AST 10 -> 0 and EducationDashboardPage fabrication 5 -> 0, both with teeth."
+    "task_id": "T-019",
+    "summary": "W0.1.1 session 019: RollingForecastPage money-AST 10 -> 0 and GovernmentDashboardPage fabrication 5 -> 0, both with teeth."
   },
   "health": {
     "shi": null,
     "uvi": null,
     "dei": null,
-    "money_ast_safety_pct": 80.3,
-    "money_ast_unsafe_ops": 477,
-    "fabrication_findings": 55,
-    "notes": "SHI/UVI/DEI not measured. Ratchets measured 2026-08-18 after session 017 (489->477, 60->55)."
+    "money_ast_safety_pct": 80.57,
+    "money_ast_unsafe_ops": 464,
+    "fabrication_findings": 50,
+    "notes": "SHI/UVI/DEI not measured. Ratchets measured 2026-08-18 after session 018 (489 -> 477 -> 464; 60 -> 55 -> 50)."
   },
   "capabilities": {
     "git": true,
@@ -65,7 +65,9 @@
     "board-pack": "partial",
     "server-api": "partial",
     "persistence-authority-w08": "planned",
-    "msi-installer": "planned"
+    "msi-installer": "planned",
+    "cash-forecast": "shipped",
+    "education-dashboard": "shipped"
   },
   "invariants_green": [
     "INV-001",
@@ -85,7 +87,7 @@
     "desktop/Tauri verification",
     "GitHub Vitest coverage job (no coverage/ artifact)"
   ],
-  "last_session": "sess_017",
+  "last_session": "sess_018",
   "integrity": {
     "last_run": "2026-08-18",
     "ok": true,

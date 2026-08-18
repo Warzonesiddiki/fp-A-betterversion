@@ -10,8 +10,9 @@ confidence: high
 
 ## Correctness / detection
 
-- 477 unsafe money operations across 171 modules remain (80.3% safe).
-- 55 fabricated displayed literals across 18 files remain.
+- 464 unsafe money operations across 169 modules remain (80.57% safe).
+- 50 fabricated displayed literals across 17 files remain, concentrated in `src/pages/sectors/*`
+  dashboards that read no store at all.
 - No detector for a **raw float crossing a render/format boundary**. Live instance:
   `ProfessionalExportEngine` types rows as `(string|number)[][]` and passes them to `autoTable`
   with only column 0 stringified — an unformatted float can print `0.30000000000000004` into a

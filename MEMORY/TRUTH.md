@@ -42,17 +42,15 @@ Nothing here may contain "should", "probably" or "we will".
 
 ## Money-AST ratchet (run 2026-08-18, `node scripts/money-ast-detector.mjs`)
 
-- [MEASURE] modules scanned 964 · handling money 868 · SAFE 697 · UNSAFE 171 ·
-  **unsafe operations 477** · **safety 80.3%** (after session 017). Baseline
-  `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. Session start was 489 / 173 /
-  80.05%.
+- [MEASURE] SAFE 700 · UNSAFE 169 · **unsafe operations 464** · **safety 80.57%** (after session
+  018). Baseline `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The arc:
+  489 (s016) → 477 (s017) → 464 (s018), every step a per-file-confined product change.
 - [POINTER] `src/utils/money.ts` — the only money-safe primitive (decimal.js, precision 40,
   ROUND_HALF_UP, throws `InvalidMoneyError` on NaN/±Inf/empty).
 
 ## Fabrication ratchet (run 2026-08-18, `node scripts/fabrication-detector.mjs`)
 
-- [MEASURE] modules scanned 785 · files with findings 18 · **findings 55**
-  (30 currency-literal, 25 percent-literal) after session 017; session start was 60 / 19.
+- [MEASURE] files with findings 17 · **findings 50** after session 018 (60 → 55 → 50).
   Export engines at 0. Baseline `scripts/fabrication-baseline.json`, pre-push gate 9c.
 
 ## Blueprint / process
@@ -96,3 +94,25 @@ Nothing here may contain "should", "probably" or "we will".
 - [DECISION] `Net Income` on the dashboard now includes prefixes 7 and 8 and `Total Expenses` is
   5+6+7+8, so the labels are literally true; the identity revenue − expenses = net income is
   pinned by test.
+
+## Session 018 (completed)
+
+- [POINTER] `src/pages/cash/cashForecastModel.ts` (+ `.test.ts`, 16 known-answer cases) — cash
+  position from cash accounts only (prefixes 10 / 11), categories attributed through journal
+  counter-lines, penny-exact allocation.
+- [FACT 2026-08-18] `CashForecastPage` previously summed `debit − credit` over EVERY ledger entry
+  and called the positive half "inflows", so an expense debit counted as cash received; it split
+  the result with hardcoded 70/30/40/35/15 weights and projected 13 weeks from
+  `(inflows / 13) * (0.8 + ((i * 13) % 40) * 0.01)`. All of it was exported to PDF and Excel.
+  10 unsafe ops → 0.
+- [FACT 2026-08-18] `src/pages/cash/CashForecastPage.money.test.ts` asserted
+  `buildCashCategorySplit(...)[0].inflows === 210.14` ("300.20 * 0.7") — a green test pinning a
+  fabricated weight. Deleted and replaced.
+- [POINTER] `src/pages/sectors/educationDashboardData.ts` (+ `.test.ts`) — revenue/cost grouped by
+  posted account, budget joined to actuals by account code, enrolment only from recorded data.
+- [FACT 2026-08-18] `src/pages/sectors/EducationDashboardPage.tsx` read no store at all: every
+  figure was a literal for a fictional university (38,700 students, `$485.0M` tuition). Fabrication
+  5 → 0, money 3 → 0. Both `/sector/education` and `/sectors/education` are routed; the former
+  renders the driver-based `SectorDriverDashboard`.
+- [MEASURE 2026-08-18] Teeth: reverting both pages from `/tmp` fails 24 of 25 new assertions.
+  Per-file `--json` diff moved only those two files.
