@@ -162,6 +162,29 @@ confidence: high
            container.textContent, whenever the forbidden token also appears in
            prose. And do not leak internal placeholder constants into UI copy.
 
+[DO-NOT] Read a store and discard it while fixtures render.
+  seen: PromoAnalysisPage opened with `const { entries: _entries } =
+        useGLStore();` and rendered five hardcoded campaigns, exporting them.
+  instead: an underscore-prefixed store read is a red flag, not a lint fix.
+           grep for `: _entries` and `_navigate` when auditing a page.
+
+[DO-NOT] Call incremental revenue a return.
+  seen: promo "ROI" was (revenue - baseline - cost) / cost, treating every
+        incremental dollar of revenue as profit.
+  instead: compute on margin, and print the basis next to the number.
+
+[DO-NOT] Hardcode a sign on a variance, lift or change.
+  seen: `+{formatPercent(lift)}` rendered "+-12%" for a campaign that lost
+        money.
+
+[DO-NOT] Publish a model statistic you did not compute.
+  seen: MAPE 4.2%, RMSE $182K, R-Squared 0.94, Bias -1.8% as literals in an
+        array under the heading "Forecast Accuracy"; a fixed 6% + 1.5%/period
+        confidence band; a synthesised past forecast line
+        (actual + 2% - 50,000) that made the model look prescient.
+  instead: walk-forward backtest on the user's own history, residual-based
+           bands, actuals only over past periods.
+
 [DO-NOT] Re-fight pre-push gate 10 on a fresh branch.
   seen: with no @{u} it falls back to `git log -10` and flags already-merged
         squashes 5078e01 and 646bdf4.

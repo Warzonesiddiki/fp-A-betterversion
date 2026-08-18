@@ -40,6 +40,8 @@ because a plan says so.
 | Logistics dashboard | `src/pages/sectors/LogisticsDashboardPage.tsx` + `logisticsDashboardData.ts` | shipped | session 020: fixtures and the 96.4% default removed |
 | Sector dashboards (`src/pages/sectors/*`) | — | flagged | Telecom still renders an invented company |
 | Chart scaling | `src/utils/chartScale.ts` | shipped | layout percentages only — NOT a money helper |
+| Promo analysis | `src/pages/retail/PromoAnalysisPage.tsx` + `promoAnalysisData.ts` | shipped | session 021: campaigns now live in `retailStore.promotions` |
+| Forecast builder | `src/pages/forecasts/ForecastBuilderPage.tsx` + `forecastBuilderData.ts` | shipped | session 021: backtested accuracy, residual bands |
 | Server API | `server/src/routes/*.ts` (11 route files) | partial | only ~14 non-test frontend files call it |
 | Persistence authority (W0.8) | — | planned | 41 persisting stores, schema fork, no tenancy |
 | MSI installer | — | planned | repo ships NSIS only; GA needs MSI + NSIS |

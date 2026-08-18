@@ -1161,3 +1161,83 @@ constants to users at all.
 Money-AST: `PromoAnalysisPage` (10), then `InsuranceEngine` (9) — skip
 `mockData/index.ts` (13). Fabrication: `ForecastBuilderPage` (4),
 `ClinicalTrialCostPage` (4), `TelecomDashboardPage` (4).
+
+---
+
+## Session 021 — 2026-08-18 — PromoAnalysisPage + ForecastBuilderPage
+
+**Branch:** `arena/01a01215-fp-a-betterversion`
+
+Fourth consecutive sandbox rewind; recovered with the documented drill.
+
+### 1. `PromoAnalysisPage` (10 → 0). Ratchet 443 → **430 (81.3% safe)**
+
+Real drop: 13 float operations left the product (10 here, 3 on the forecast
+builder). Unsafe modules 166 → 164.
+
+The tell was in the first line of the component:
+`const { entries: _entries } = useGLStore();` — the ledger was read and thrown
+away. Everything on the page came from five hardcoded campaigns (Summer Sale
+320,000 revenue on 45,000 spend against a 210,000 baseline, Back to School,
+Holiday Bundle, and two more), and all of it was **exported to PDF and Excel**.
+
+Promotions are not ledger objects, so this session added a real
+`retailStore.promotions` collection (persist v1 → v2, defaulting to empty — a
+persisted workspace must not materialise campaigns it never entered) and
+derived the analysis from it.
+
+Two correctness defects beyond the fixtures:
+
+- **ROI treated revenue as profit.** `(revenue − baseline − cost) / cost` is
+  incremental _revenue_ less spend, labelled simply "ROI". Return is now
+  computed on gross margin when a campaign records one, the basis is displayed
+  beside the number, and a mixed set never blends the two bases (it falls back
+  to the revenue basis and says so).
+- **A lift could not be negative.** The column hardcoded a leading `+`, so a
+  campaign that destroyed revenue rendered `+-12%`.
+
+### 2. `ForecastBuilderPage` (4 → 0 fabrication). Ratchet 40 → **36 / 14 files**
+
+- **The forecast was built on six invented months.**
+  `HISTORICAL_ACTUALS = [4_200_000, 3_900_000, 4_500_000, 4_100_000, 4_400_000,
+4_600_000]`. The page never read the ledger. History is now posted revenue by
+  period.
+- **Four accuracy statistics were literals** — `MAPE 4.2%`, `RMSE $182K`,
+  `R-Squared 0.94`, `Bias −1.8%` — rendered under the heading "Forecast
+  Accuracy", plus a `Confidence 87%` tile. They are now produced by a
+  walk-forward backtest of the _selected_ method against the user's own months
+  (so switching method changes the score, as it must), and reported as
+  unavailable below four posted months.
+- **The confidence band was `widenPct = 0.06 + i * 0.015`** — a 6% band
+  widening 1.5 points per period, identical for every dataset and every method.
+  Bands are now `forecast ± 1.96σ` of backtest residuals, omitted entirely when
+  no backtest is possible.
+- **A past forecast that was never made was plotted.** The history chart drew
+  `actual + round(actual * 0.02 − 50_000)` as the forecast line over past
+  months, manufacturing a track record that hugged actuals. Past periods now
+  carry actuals only.
+
+**A green money test was pinning the invented band.**
+`ForecastBuilderPage.money.test.ts` asserted 940,000 / 1,060,000 then
+925,000 / 1,075,000 for a flat 1,000,000 forecast — that is the 6% + 1.5%/period
+rule, encoded as an expectation. Replaced with residual-based assertions. That
+is the third such test found in five sessions (session 018's 70% cash weight,
+session 020's `computeConfidenceBands`, this one).
+
+**An honest wrinkle worth recording:** with the default `standard` seasonality
+preset, a perfectly flat revenue series backtests at _non-zero_ error, because
+the preset imposes a shape the data does not have. That is correct behaviour —
+the backtest charges the model for its own assumption — and the probe asserts
+the derived figure rather than the 0% I first assumed.
+
+### 3. Ratchet honesty
+
+Per-file diff: `PromoAnalysisPage.tsx` 10→0 and `ForecastBuilderPage.tsx` 3→0
+money, `ForecastBuilderPage.tsx` 4→0 fabrication. Nothing else moved.
+
+### Next
+
+Money-AST: `InsuranceEngine` (9) — it invents net written as 0.85× gross and
+policy count as premium/360 — then `BenchmarkingPage` (8). Skip
+`mockData/index.ts` (13). Fabrication: `ClinicalTrialCostPage` (4),
+`TelecomDashboardPage` (4).

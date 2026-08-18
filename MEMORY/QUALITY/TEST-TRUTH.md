@@ -28,6 +28,10 @@ confidence: medium
    protected the fabrication (rewritten, session 019).
    `__tests__/sectors/LogisticsDashboardPage.test.tsx` was the same shape: empty store, asserted
    charts rendered, passing only because of module fixtures (rewritten, session 020).
+   `ForecastBuilderPage.money.test.ts` asserted 940,000 / 1,060,000 then 925,000 / 1,075,000 for a
+   flat 1,000,000 forecast — i.e. the invented 6% + 1.5%/period band, encoded as an oracle
+   (rewritten, session 021). **Three such tests in five sessions: when you remove a fabrication,
+   grep the test suite for the numbers you are deleting.**
 3. **A fake oracle** — `VDB(10000,1000,5,2,4) === 4704` (correct 2304). A test named "oracle" is
    only an oracle if the expected value came from the vendor.
 4. **Explicit-args blindness** — 381 SafeMathParser tests passed every optional argument, missing

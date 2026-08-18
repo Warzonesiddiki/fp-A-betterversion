@@ -42,16 +42,16 @@ Nothing here may contain "should", "probably" or "we will".
 
 ## Money-AST ratchet (run 2026-08-18, `node scripts/money-ast-detector.mjs`)
 
-- [MEASURE] SAFE 705 · UNSAFE 166 · **unsafe operations 443** · **safety 81.03%** (after session
-  020). Baseline `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The arc:
-  489 (s016) → 477 (s017) → 464 (s018) → 453 (s019) → 443 (s020). Every step per-file confined;
-  2 of the s019 ops were layout geometry reclassified into `src/utils/chartScale.ts`, not safety.
+- [MEASURE] SAFE 708 · UNSAFE 164 · **unsafe operations 430** · **safety 81.3%** (after session
+  021). Baseline `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The arc:
+  489 (s016) → 477 → 464 → 453 → 443 → 430 (s021). Every step per-file confined; 2 of the s019
+  ops were layout geometry reclassified into `src/utils/chartScale.ts`, not safety.
 - [POINTER] `src/utils/money.ts` — the only money-safe primitive (decimal.js, precision 40,
   ROUND_HALF_UP, throws `InvalidMoneyError` on NaN/±Inf/empty).
 
 ## Fabrication ratchet (run 2026-08-18, `node scripts/fabrication-detector.mjs`)
 
-- [MEASURE] files with findings 15 · **findings 40** after session 020 (60 → 55 → 50 → 45 → 40).
+- [MEASURE] files with findings 14 · **findings 36** after session 021 (60 → 55 → 50 → 45 → 40 → 36).
   Export engines at 0. Baseline `scripts/fabrication-baseline.json`, pre-push gate 9c.
 
 ## Blueprint / process
@@ -155,3 +155,25 @@ Nothing here may contain "should", "probably" or "we will".
   `avgHoldingPeriod: 4.2`, `location: 'TBD'` and a Core/Value-Add status from a $10M threshold.
   `ValuationPage` no longer calls it; other callers remain exposed.
 - [MEASURE 2026-08-18] Teeth: reverting both pages from `/tmp` fails 20 of 22 new assertions.
+
+## Session 021 (completed)
+
+- [POINTER] `src/pages/retail/promoAnalysisData.ts` (+ `.test.ts`) and a new
+  `retailStore.promotions` collection (persist v1 → v2, defaults empty).
+- [FACT 2026-08-18] `PromoAnalysisPage` opened with `const { entries: _entries } = useGLStore();`
+  — the ledger read and discarded — and rendered five hardcoded campaigns, exporting them to PDF
+  and Excel. Its "ROI" was `(revenue − baseline − cost) / cost`, i.e. incremental REVENUE less
+  spend presented as profit, and its Lift column hardcoded a leading `+`. 10 unsafe ops → 0.
+- [POINTER] `src/pages/forecasts/forecastBuilderData.ts` (+ `.test.ts`) — posted-revenue history,
+  walk-forward backtest (MAPE / RMSE / bias / R²), residual-based prediction bands.
+- [FACT 2026-08-18] `ForecastBuilderPage` forecast from six invented months
+  (`HISTORICAL_ACTUALS`), published four literal accuracy statistics (MAPE 4.2%, RMSE $182K,
+  R² 0.94, Bias −1.8%) and a `Confidence 87%` tile, widened its band by a fixed
+  `0.06 + i * 0.015`, and plotted a past "forecast" line synthesised as
+  `actual + round(actual * 0.02 − 50_000)`. Fabrication 4 → 0, money 3 → 0.
+- [FACT 2026-08-18] A third green money test pinning a fabrication:
+  `ForecastBuilderPage.money.test.ts` asserted the 6% + 1.5%/period band. Replaced.
+- [FACT 2026-08-18] With the default `standard` seasonality preset, a perfectly flat revenue
+  series backtests at non-zero error — the backtest correctly charges the model for the assumption
+  the preset imposes.
+- [MEASURE 2026-08-18] Teeth: reverting both pages from `/tmp` fails 19 of 20 new assertions.
