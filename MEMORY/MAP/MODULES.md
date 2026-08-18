@@ -27,7 +27,7 @@ because a plan says so.
 | Patient revenue | `src/pages/healthcare/PatientRevenuePage.tsx` | shipped | session 017: fabrication 5 → 0; denial analytics disclosed, not estimated |
 | Healthcare engine | `src/engines/HealthcareEngine.ts` | partial | session 017: `denialRate` is now `null` and the 30-day A/R basis is disclosed; `cashCollected` still sums all 11xx, not patient-only collections (H-004) |
 | Construction engine | `src/engines/ConstructionEngine.ts` | flagged | 1.5× backlog invention + Math.abs |
-| Insurance engine | `src/engines/InsuranceEngine.ts` | flagged | 0.85× net-written + premium/360 policy count |
+| Insurance engine | `src/engines/InsuranceEngine.ts` | shipped | session 022: cession-based net written, null policy count, trend from posted periods |
 | Retail engine | `src/engines/RetailEngine.ts` | flagged | 254 / 92.8 mocks remain |
 | Real-estate engine | `src/engines/RealEstateEngine.ts` | flagged | 4.2 / 94.8 / 6.2 mocks + amount-sign fork |
 | Export engines | `src/engines/ProfessionalExportEngine.ts`, `ExportTemplateEngine.ts` | flagged | fabrication 0, but raw floats can cross into autoTable |
@@ -42,6 +42,8 @@ because a plan says so.
 | Chart scaling | `src/utils/chartScale.ts` | shipped | layout percentages only — NOT a money helper |
 | Promo analysis | `src/pages/retail/PromoAnalysisPage.tsx` + `promoAnalysisData.ts` | shipped | session 021: campaigns now live in `retailStore.promotions` |
 | Forecast builder | `src/pages/forecasts/ForecastBuilderPage.tsx` + `forecastBuilderData.ts` | shipped | session 021: backtested accuracy, residual bands |
+| Clinical trials | `src/pages/healthcare/ClinicalTrialCostPage.tsx` + `clinicalTrialData.ts` | shipped | session 022: trials live in `healthcareStore.clinicalTrials` |
+| Healthcare store | `src/store/healthcareStore.ts` | flagged | still persists seeded `qualityMetrics` / `savingsData` / `programs` for every tenant |
 | Server API | `server/src/routes/*.ts` (11 route files) | partial | only ~14 non-test frontend files call it |
 | Persistence authority (W0.8) | — | planned | 41 persisting stores, schema fork, no tenancy |
 | MSI installer | — | planned | repo ships NSIS only; GA needs MSI + NSIS |

@@ -42,16 +42,18 @@ Nothing here may contain "should", "probably" or "we will".
 
 ## Money-AST ratchet (run 2026-08-18, `node scripts/money-ast-detector.mjs`)
 
-- [MEASURE] SAFE 708 · UNSAFE 164 · **unsafe operations 430** · **safety 81.3%** (after session
-  021). Baseline `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The arc:
-  489 (s016) → 477 → 464 → 453 → 443 → 430 (s021). Every step per-file confined; 2 of the s019
-  ops were layout geometry reclassified into `src/utils/chartScale.ts`, not safety.
+- [MEASURE] SAFE 710 · UNSAFE 163 · **unsafe operations 421** · **safety 81.44%** (after session
+  022). Baseline `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The arc:
+  489 (s016) → 477 → 464 → 453 → 443 → 430 → 421 (s022). Every step per-file confined; 2 of the
+  s019 ops were layout geometry reclassified into `src/utils/chartScale.ts`, not safety.
+  NOTE: the session-022 fix commit message says 81.68%; the measured figure is 81.44%.
 - [POINTER] `src/utils/money.ts` — the only money-safe primitive (decimal.js, precision 40,
   ROUND_HALF_UP, throws `InvalidMoneyError` on NaN/±Inf/empty).
 
 ## Fabrication ratchet (run 2026-08-18, `node scripts/fabrication-detector.mjs`)
 
-- [MEASURE] files with findings 14 · **findings 36** after session 021 (60 → 55 → 50 → 45 → 40 → 36).
+- [MEASURE] files with findings 13 · **findings 32** after session 022
+  (60 → 55 → 50 → 45 → 40 → 36 → 32).
   Export engines at 0. Baseline `scripts/fabrication-baseline.json`, pre-push gate 9c.
 
 ## Blueprint / process
@@ -177,3 +179,24 @@ Nothing here may contain "should", "probably" or "we will".
   series backtests at non-zero error — the backtest correctly charges the model for the assumption
   the preset imposes.
 - [MEASURE 2026-08-18] Teeth: reverting both pages from `/tmp` fails 19 of 20 new assertions.
+
+## Session 022 (completed)
+
+- [FACT 2026-08-18] `src/engines/InsuranceEngine.ts` was armed but called by NO product code
+  (H-003 confirmed for this engine). It `Math.abs`-ed every amount, set
+  `netWrittenPremium = gross * 0.85` (an invented 15% cession), derived `policyCount` as
+  `gross / 360` ("Industry average"), and `getCombinedRatioTrend` ignored its argument entirely,
+  returning `58 + sin(i * 9301 + 49297) * 8` loss ratios as a trend. 9 unsafe ops → 0.
+- [POINTER] Cession is now read from posted `43xx`; `netWrittenPremium` and `policyCount` are
+  `null` when unsupported; the trend buckets posted periods and drops periods with no earned
+  premium.
+- [FACT 2026-08-18] Three assertions in `InsuranceEngine.test.ts` encoded those fabrications —
+  the FOURTH such test found in six sessions. A fifth expected `77.83000000000001` from adding two
+  ratios as floats; the decimal engine returns `77.83`, now pinned.
+- [POINTER] `src/pages/healthcare/clinicalTrialData.ts` (+ `.test.ts`) and
+  `healthcareStore.clinicalTrials` (persist v1 → v2, defaults empty).
+- [FACT 2026-08-18] `ClinicalTrialCostPage` hardcoded five studies at named institutions plus a
+  four-literal KPI strip and a "2 active, $13.6M total · 55%" phase breakdown. Fabrication 4 → 0.
+- [FACT 2026-08-18] The money-AST ratchet caught 5 unsafe ops in the REWRITE itself (inline phase
+  grouping with float `+` and `toFixed`). Moved into the derivation with `compareMoney` for sorting.
+- [MEASURE 2026-08-18] Teeth: reverting the engine and the page fails 17 of 20 new assertions.

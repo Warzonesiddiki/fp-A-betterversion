@@ -31,13 +31,15 @@ Money-AST modules taken to 0 unsafe ops (real float removal, not remeasurement):
 | ValuationPage | 10 | 020 |
 | PromoAnalysisPage | 10 | 021 |
 | ForecastBuilderPage (money) | 3 | 021 |
+| InsuranceEngine | 9 | 022 |
 
 Fabrication files cleared: REIT, Retail, ProjectCosting, Underwriting, ExecutiveSummary,
 PatientRevenuePage (denial table + hardcoded `denialRate: 4.2` in HealthcareEngine),
 EducationDashboardPage (an entire fictional university),
 GovernmentDashboardPage (demo fallback + hardcoded KPI strip),
 LogisticsDashboardPage (module fixtures + 96.4% default service level),
-ForecastBuilderPage (invented history + four literal accuracy statistics).
+ForecastBuilderPage (invented history + four literal accuracy statistics),
+ClinicalTrialCostPage (five studies at named institutions).
 
 Infrastructure: money-AST detector + ratchet (gate 9b); fabrication detector + ratchet (gate 9c);
 Article XVIII blueprint LOCKED; ADR-001 `overrides` vulnerability patching; ADR-002 CI audit gate

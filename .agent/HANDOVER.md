@@ -1,6 +1,6 @@
 # OmniPlan — Session Handover
 
-**Last updated:** 2026-08-18 (end of session 021)
+**Last updated:** 2026-08-18 (end of session 022)
 **Branch of record:** `arena/01a01215-fp-a-betterversion`
 **Prior merge:** PR #64 → `main` @ `646bdf4`
 
@@ -25,15 +25,15 @@ You are the autonomous Technical Owner / Chief Product Architect for **OmniPlan*
 
 The Article XVIII blueprint gate is **LOCKED** (`.agent/state.json` → `blueprint_status`), so product code is unblocked. Phase 0 / Wave W0.1.1 is in progress: raising AST money safety toward ≥90%.
 
-**Money-AST ratchet: 430 unsafe ops / 164 unsafe modules / 708 safe / 81.3%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The 443 → 430 move in session 021 is real (13 float ops left PromoAnalysisPage and ForecastBuilderPage). Per-file diff confined to those two files.
+**Money-AST ratchet: 421 unsafe ops / 163 unsafe modules / 710 safe / 81.44%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The 430 → 421 move in session 022 is real (9 float ops left InsuranceEngine). Per-file diff confined to that file.
 
-**Fabrication ratchet: 36 findings / 14 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. The 40 → 36 move is real (ForecastBuilderPage literal accuracy statistics removed).
+**Fabrication ratchet: 32 findings / 13 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. The 36 → 32 move is real (ClinicalTrialCostPage fixture studies removed).
 
 Completed W0.1.1 modules: `FinancialStatementTemplates` (59→0), `ThreeStatementDashboardPage` (34→0), `SafeMathParser` (27→0), the two export engines (37 findings, all page-geometry false positives), `TaxProvisionPage` (22→0), `AutoCommentaryEngine` (16→0), `FinancialInstrumentsEngine` (15→0), `GoalSeekPage` (14→0), `ScenarioBuilderPage` (14→0), `CreditRiskPage` (13→0).
 
-**Next money-AST worklist item: `InsuranceEngine` (9), then `BenchmarkingPage` (8).** Skip `mockData/index.ts` (13, fixture factory).
+**Next money-AST worklist item: `BenchmarkingPage` (8), then `DriverCascadeEngine` (7).** Skip `mockData/index.ts` (13, fixture factory).
 
-**Next fabrication worklist (worst first):** `ClinicalTrialCostPage` (4), `TelecomDashboardPage` (4), `ConstructionDashboardPage` (3).
+**Next fabrication worklist (worst first):** `TelecomDashboardPage` (4), `ConstructionDashboardPage` (3), `EquipmentManagementPage` (3). Also: `healthcareStore` still ships seeded `qualityMetrics` / `savingsData` / `programs` defaults that feed `ValueBasedCarePage`.
 
 ### Read this before you trust either ratchet
 
@@ -84,7 +84,7 @@ So: **a file at "0 unsafe ops" or "0 fabrication findings" is un-flagged, not ce
 
 **Correctness / gates**
 
-- Fabrication worklist uncleaned: 36 displayed invented figures across 14 files (ratcheted; ForecastBuilderPage cleaned in session 021). Sector dashboards ship module fixtures or fall back to demo data when their store is empty — check for that pattern, the detector only sees the literals.
+- Fabrication worklist uncleaned: 32 displayed invented figures across 13 files (ratcheted; ClinicalTrialCostPage cleaned in session 022). Sector dashboards ship module fixtures or fall back to demo data when their store is empty — check for that pattern, the detector only sees the literals.
 - No detector for raw floats crossing a render/format boundary. Live instance: `ProfessionalExportEngine` types rows as `(string|number)[][]` and passes them to `autoTable` with only column 0 stringified — an unformatted float prints `0.30000000000000004` into a board pack.
 - Detector blind spot: single-line arrow bodies over `args[i]!` (logged for W0.1.6, type-based detection).
 - No automated detector for numeric ratio invention or view/memo divergence (source guards are per-module).

@@ -1241,3 +1241,85 @@ Money-AST: `InsuranceEngine` (9) — it invents net written as 0.85× gross and
 policy count as premium/360 — then `BenchmarkingPage` (8). Skip
 `mockData/index.ts` (13). Fabrication: `ClinicalTrialCostPage` (4),
 `TelecomDashboardPage` (4).
+
+---
+
+## Session 022 — 2026-08-18 — InsuranceEngine + ClinicalTrialCostPage
+
+**Branch:** `arena/01a01215-fp-a-betterversion`
+
+Fifth consecutive sandbox rewind; recovered with the documented drill.
+
+**Correction to the fix commit message:** it says 81.68% safe. The measured
+figure is **81.44%** (421 unsafe ops / 163 unsafe modules). The baseline file
+and the gate carry the correct number; the prose in that commit does not.
+
+### 1. `InsuranceEngine` (9 → 0). Ratchet 430 → **421 (81.44% safe)**
+
+Real drop: 9 float operations left the product. Unsafe modules 164 → 163.
+
+The engine was **armed but called by no product code** — `UnderwritingPage`
+stopped using it in session 015 and nothing else picked it up. That is exactly
+hypothesis H-003 in MEMORY: engines that survive because no page calls them.
+Fixed rather than left loaded, because the insurance vertical will need it.
+
+- **`Math.abs` on every amount.** A premium refund or a claim recovery
+  _increased_ the balance it should reduce. Premium is now credit-normal,
+  expense debit-normal, netted.
+- **`netWrittenPremium = grossWrittenPremium * 0.85`** — an invented 15%
+  reinsurance cession applied to every book, for every tenant. It is now gross
+  less posted ceded premium (43xx), or `null` when no cession is posted.
+- **`policyCount = Math.round(gross / 360)`**, commented "Industry average".
+  A ledger records amounts, not policies. `null`.
+- **`getCombinedRatioTrend` ignored its argument entirely** and returned six
+  months of `58 + sin(i * 9301 + 49297) * 8` loss ratios and `26 + … * 3`
+  expense ratios — seeded noise rendered as a ratio trend. It now buckets
+  posted entries by period and drops a period with no earned premium rather
+  than filling it.
+
+**Three assertions encoded those fabrications** (`netWrittenPremium ===
+1250000 * 0.85`, `policyCount === 0` on an empty ledger, "generates a 6-month
+deterministic combined ratio trend"). That is the **fourth** test found
+protecting a fabrication in six sessions. A fifth assertion in the same file
+added the two ratios as JS floats and expected `77.83000000000001`, where the
+decimal engine returns `77.83` — now pinned as a regression lock in the
+opposite direction.
+
+### 2. `ClinicalTrialCostPage` (4 → 0 fabrication). Ratchet 36 → **32 / 13 files**
+
+Five studies at named institutions (Onco-Shield Ph III at Mayo Clinic,
+Neuro-Restore Ph II at Johns Hopkins, Cardio-Flow Ph I at Cleveland Clinic,
+Immuno-Boost Ph III at Cedars-Sinai, RareDisease-7 at Stanford Med), six months
+of budget/actual/enrolment, a four-literal KPI strip (`$24.8M`, `$18.5k`,
+`92.4%`, `$3.2M`) with invented deltas and sparkline histories, and a phase
+breakdown quoting "2 active, $13.6M total · 55%".
+
+Trials are not ledger objects, so this session added
+`healthcareStore.clinicalTrials` (persist v1 → v2, defaulting empty) and
+derived the analysis: variance against recorded budget, cost per patient
+(`null` until someone is enrolled), enrolment rate (`null` without a target),
+phase shares by recorded budget. R&D tax credits are disclosed as a tax
+computation the workspace does not run.
+
+**The ratchet caught my own new code.** The first version of the rewritten page
+grouped phases inline with float `+` and `toFixed(1)` — 5 new unsafe ops. Moved
+into the derivation on decimal.js, with `compareMoney` for the sort.
+
+### 3. Carried forward — a store still shipping seeded defaults
+
+`healthcareStore` persists invented `qualityMetrics`, `savingsData`
+(Orthopedics target 2,400,000 …) and `programs` for every tenant — the same
+class cleaned out of `constructionStore` and `insuranceStore` in sessions
+014–015. They feed `ValueBasedCarePage`, which is on the fabrication worklist.
+Left in place this session to keep the diff honest; flagged in MEMORY.
+
+### 4. Ratchet honesty
+
+Per-file diff: `InsuranceEngine.ts` 9→0 money, `ClinicalTrialCostPage.tsx` 4→0
+fabrication. Nothing else moved.
+
+### Next
+
+Money-AST: `BenchmarkingPage` (8), then `DriverCascadeEngine` (7) — skip
+`mockData/index.ts` (13). Fabrication: `TelecomDashboardPage` (4), then
+`ConstructionDashboardPage` (3) / `EquipmentManagementPage` (3).

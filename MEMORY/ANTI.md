@@ -185,6 +185,18 @@ confidence: high
   instead: walk-forward backtest on the user's own history, residual-based
            bands, actuals only over past periods.
 
+[DO-NOT] Leave an unused engine armed with inventions.
+  seen: InsuranceEngine was called by no product code, and still carried
+        net-written = gross * 0.85, policyCount = gross / 360, and a
+        getCombinedRatioTrend that ignored its argument and returned
+        sin()-seeded noise. "Nothing calls it" is not a defence: the next
+        session wires it up.
+
+[DO-NOT] Trust your OWN rewrite without re-running the detector.
+  seen: session 022's replacement page introduced 5 fresh unsafe ops (inline
+        phase grouping with float + and toFixed).
+  instead: run `--file` on every file you write, not just the one you fixed.
+
 [DO-NOT] Re-fight pre-push gate 10 on a fresh branch.
   seen: with no @{u} it falls back to `git log -10` and flags already-merged
         squashes 5078e01 and 646bdf4.

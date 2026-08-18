@@ -10,10 +10,10 @@ confidence: high
 
 ## Correctness / detection
 
-- 430 unsafe money operations across 164 modules remain (81.3% safe). Phase 0 exit needs ≥90%,
+- 421 unsafe money operations across 163 modules remain (81.44% safe). Phase 0 exit needs ≥90%,
   i.e. roughly 250 — consider a class-wide fix for the `existing.debit += e.debit` grouping idiom
   that recurs across at least six pages.
-- 36 fabricated displayed literals across 14 files remain, concentrated in `src/pages/sectors/*`
+- 32 fabricated displayed literals across 13 files remain, concentrated in `src/pages/sectors/*`
   dashboards that read no store, or fall back to demo fixtures when their store is empty.
 - No detector for a **raw float crossing a render/format boundary**. Live instance:
   `ProfessionalExportEngine` types rows as `(string|number)[][]` and passes them to `autoTable`
@@ -45,6 +45,8 @@ confidence: high
 - `BoardPackTemplate` is exported through the barrel but **not routed** — decide: route or delete.
 - 13 P0-open features in blueprint §3.8: F-PLAT-001/005, F-SEM-001, F-MDM-001, F-OPS-002,
   F-SEC-003/004, F-CTRL-001, F-AI-011, F-INTEGRATE-000, F-WORKFLOW-007/008, F-COLLAB-002.
+- Stores that persist seeded fixtures for every tenant: `healthcareStore` (qualityMetrics,
+  savingsData, programs) — feeds ValueBasedCarePage.
 - Engine mocks still armed: RealEstate (4.2 / 94.8 / 6.2 + amount-sign/prefix-80 fork),
   Retail (254 / 92.8), Construction (1.5× backlog + abs), Insurance (0.85× / 360),
   Healthcare: `denialRate` fixed in session 017; `cashCollected` still sums every 11xx receipt
