@@ -1,23 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import React from 'react';
 
-vi.mock('@/store/educationStore', () => ({
-  useEducationStore: vi.fn(() => ({
-    kpis: [
-      { id: 'enrollment', label: 'Total Enrollment', value: '38,700', change: 4.9 },
-      { id: 'tuition', label: 'Tuition Revenue', value: '$485.0M', change: 3.2 },
-    ],
-  })),
-}));
-vi.mock('lucide-react', () => ({
-  makeIcon: vi.fn(() => ({ className }: { className?: string }) => (
-    <span data-testid="mock-icon" className={className} />
-  )),
-  GraduationCap: () => <span data-testid="mock-icon" />,
-  TrendingUp: () => <span data-testid="mock-icon" />,
-  ArrowUpRight: () => <span data-testid="mock-icon" />,
-  ArrowDownRight: () => <span data-testid="mock-icon" />,
-  Minus: () => <span data-testid="mock-icon" />,
-}));
+/**
+ * Structural smoke test for the sectors education dashboard.
+ *
+ * This file previously asserted `Tuition Revenue`, `Financial Aid Disbursed`
+ * and `Research Funding` — the labels of a hardcoded KPI list for a fictional
+ * university ($485.0M tuition, 38,700 students). It also mocked
+ * `useEducationStore` as returning a `kpis` array, a shape that store has never
+ * had, so the mock proved nothing. The page now derives from the general
+ * ledger, so this file asserts the empty state, and the seeded-ledger
+ * behaviour is covered by `EducationDashboardPage.money.test.tsx`.
+ */
+
+vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
 vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: { children?: React.ReactNode }) => (
     <div data-testid="chart">{children}</div>
@@ -34,24 +30,34 @@ vi.mock('recharts', () => ({
 }));
 
 import { render, screen } from '@/test/testUtils';
+import { useGLStore } from '@/store/glStore';
 import { EducationDashboardPage } from '@/pages/sectors/EducationDashboardPage';
 
 describe('sectors/EducationDashboardPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useGLStore.setState({ entries: [] });
   });
 
-  it('renders the education dashboard', () => {
+  it('renders the education dashboard shell', () => {
     render(<EducationDashboardPage />);
-    expect(screen.getByText(/Education Dashboard/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/Enrollment/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Tuition Revenue/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Operating Cost/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/Financial Aid Disbursed/i)).toBeInTheDocument();
-    expect(screen.getByText(/Research Funding/i)).toBeInTheDocument();
+    expect(screen.getByRole('main', { name: /Education Sector Dashboard/i })).toBeInTheDocument();
   });
 
-  it('renders charts', () => {
+  it('asks for ledger data instead of displaying an invented university', () => {
+    render(<EducationDashboardPage />);
+    expect(screen.getByText('No Education Data')).toBeInTheDocument();
+    expect(screen.queryByText(/\$485\.0M/)).toBeNull();
+    expect(screen.queryByText(/38,700/)).toBeNull();
+  });
+
+  it('renders charts once the ledger has activity', () => {
+    useGLStore.setState({
+      entries: [
+        { id: '1', accountCode: '4010', accountName: 'Tuition', debit: 0, credit: 1000 },
+        { id: '2', accountCode: '6010', accountName: 'Faculty Pay', debit: 400, credit: 0 },
+      ] as never,
+    });
     render(<EducationDashboardPage />);
     expect(screen.getAllByTestId('chart').length).toBeGreaterThan(0);
   });
