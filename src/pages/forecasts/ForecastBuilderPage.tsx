@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { TrendingUp, FileText, Table as TableIcon, Brain, BarChart3 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
-import { sumMoney, roundTo, multiplyMoney, divideMoney } from '@/utils/money';
+import { sumMoney, roundTo } from '@/utils/money';
 import {
   ResponsiveContainer,
   Line,
@@ -19,20 +19,26 @@ import {
   AreaChart,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { formatCompact, formatNumber } from '@/utils/financialFormatting';
+import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { PageHeader } from '@/components/ui/PageHeader';
-export type ForecastMethod = 'linear' | 'cagr' | 'last-3' | 'flat';
-export type SeasonalityPreset = 'standard' | 'q4_spike' | 'summer_peak' | 'flat';
+import { useGLStore } from '@/store/glStore';
+import {
+  backtestForecastMethod,
+  computeForecastSeries,
+  confidenceBandsFromResiduals,
+  deriveMonthlyRevenue,
+  SEASONALITY_WEIGHTS,
+  BAND_Z,
+  MIN_HISTORY_FOR_BACKTEST,
+  type ForecastMethod,
+  type SeasonalityPreset,
+} from '@/pages/forecasts/forecastBuilderData';
 
-export const SEASONALITY_WEIGHTS: Record<SeasonalityPreset, readonly number[]> = {
-  standard: [0.92, 0.88, 0.96, 0.98, 1.02, 1.04, 1.06, 1.04, 1.02, 1.04, 0.98, 1.06],
-  q4_spike: [0.8, 0.82, 0.88, 0.9, 0.95, 0.95, 0.95, 0.9, 0.95, 1.1, 1.35, 1.45],
-  summer_peak: [0.85, 0.85, 0.9, 1.0, 1.1, 1.25, 1.3, 1.25, 1.1, 0.95, 0.85, 0.6],
-  flat: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-};
+// Re-exported for callers and tests that imported them from this page before
+// the derivation moved to `forecastBuilderData`.
+export { computeForecastSeries, SEASONALITY_WEIGHTS, type ForecastMethod, type SeasonalityPreset };
 
-export const HISTORICAL_ACTUALS = [4200000, 3900000, 4500000, 4100000, 4400000, 4600000];
 const MONTH_LABELS = [
   'Jan',
   'Feb',
@@ -49,98 +55,23 @@ const MONTH_LABELS = [
 ];
 
 /**
- * Exact money primitive — compute forecast series.
+ * Forecast builder.
  *
- * Methods:
- * - linear: least-squares trend on historical indices
- * - cagr: compound growth rate from first to last historical; extrapolate
- * - last-3: trailing 3-period average, flat
- * - flat: last value run-rate, flat
- *
- * Seasonality: multiply each base forecast by the weight for that calendar month.
+ * See `@/pages/forecasts/forecastBuilderData` for the correctness contract.
+ * This page used to forecast from six invented months
+ * (HISTORICAL_ACTUALS = 4.2M, 3.9M, 4.5M, 4.1M, 4.4M, 4.6M), publish four
+ * literal accuracy statistics (MAPE 4.2%, RMSE $182K, R² 0.94, Bias −1.8%),
+ * widen a confidence band by a fixed 6% + 1.5%/period, plot a past "forecast"
+ * line synthesised as actual + 2% − 50,000, and report a constant 87%
+ * confidence — then export all of it.
  */
-export function computeForecastSeries(
-  historical: readonly number[],
-  method: ForecastMethod,
-  seasonality: SeasonalityPreset,
-  periods = 6
-): number[] {
-  if (historical.length === 0 || periods <= 0) return [];
-  const weights = SEASONALITY_WEIGHTS[seasonality] ?? SEASONALITY_WEIGHTS.flat;
-  let base: number[] = [];
-
-  if (method === 'linear') {
-    const n = historical.length;
-    const xMean = (n - 1) / 2;
-    const yMean = roundTo(divideMoney(sumMoney(historical), n));
-    let ssXY = 0;
-    let ssXX = 0;
-    for (let i = 0; i < n; i++) {
-      ssXY += (i - xMean) * (historical[i]! - yMean);
-      ssXX += (i - xMean) ** 2;
-    }
-    const slope = ssXX === 0 ? 0 : ssXY / ssXX;
-    const intercept = yMean - slope * xMean;
-    for (let h = 0; h < periods; h++) {
-      const x = n + h;
-      const raw = intercept + slope * x;
-      base.push(roundTo(raw));
-    }
-  } else if (method === 'cagr') {
-    const first = historical[0]!;
-    const last = historical[historical.length - 1]!;
-    const n = historical.length;
-    let growth = 0;
-    if (first !== 0 && n > 1) {
-      const ratio = divideMoney(last, first).toNumber();
-      growth = Math.pow(ratio, 1 / (n - 1)) - 1;
-    }
-    for (let h = 0; h < periods; h++) {
-      const raw = multiplyMoney(last, Math.pow(1 + growth, h + 1)).toNumber();
-      base.push(roundTo(raw));
-    }
-  } else if (method === 'last-3') {
-    const last3 = historical.slice(-3);
-    const avg = roundTo(divideMoney(sumMoney(last3), last3.length));
-    base = Array.from({ length: periods }, () => avg);
-  } else {
-    // flat
-    const last = historical[historical.length - 1]!;
-    base = Array.from({ length: periods }, () => roundTo(last));
-  }
-
-  // Apply seasonality: historical length determines starting calendar offset
-  const startIdx = historical.length % 12;
-  const result: number[] = [];
-  for (let i = 0; i < periods; i++) {
-    const calIdx = (startIdx + i) % 12;
-    const w = weights[calIdx]!;
-    const seasonal = roundTo(multiplyMoney(base[i]!, w));
-    result.push(seasonal);
-  }
-  return result;
+/** `YYYY-MM` plus n months, for labelling projected periods. */
+function addMonthLabel(month: string, n: number): string {
+  const [y, m] = month.split('-').map((x) => Number(x));
+  if (!Number.isFinite(y) || !Number.isFinite(m)) return `${month}+${n}`;
+  const zeroBased = (y as number) * 12 + ((m as number) - 1) + n;
+  return `${String(Math.floor(zeroBased / 12)).padStart(4, '0')}-${String((zeroBased % 12) + 1).padStart(2, '0')}`;
 }
-
-export function computeConfidenceBands(forecast: readonly number[]): {
-  low: number[];
-  high: number[];
-} {
-  const low: number[] = [];
-  const high: number[] = [];
-  forecast.forEach((v, i) => {
-    const widenPct = 0.06 + i * 0.015;
-    low.push(roundTo(multiplyMoney(v, 1 - widenPct)));
-    high.push(roundTo(multiplyMoney(v, 1 + widenPct)));
-  });
-  return { low, high };
-}
-
-const accuracyMetrics = [
-  { metric: 'MAPE', value: '4.2%', description: 'Mean Absolute Percentage Error' },
-  { metric: 'RMSE', value: '$182K', description: 'Root Mean Square Error' },
-  { metric: 'R-Squared', value: '0.94', description: 'Coefficient of Determination' },
-  { metric: 'Bias', value: '-1.8%', description: 'Forecast Bias' },
-];
 
 export default function ForecastBuilderPage() {
   const fmt = useCurrencyFormatter();
@@ -153,35 +84,74 @@ export default function ForecastBuilderPage() {
     document.title = 'FinPlan Pro — Forecast Builder';
   }, []);
 
+  const { entries } = useGLStore();
+
+  const historical = useMemo(() => deriveMonthlyRevenue(entries), [entries]);
+  const historicalValues = useMemo(() => historical.map((h) => h.value), [historical]);
+
   const forecastSeries = useMemo(
-    () => computeForecastSeries(HISTORICAL_ACTUALS, method, seasonality, 6),
-    [method, seasonality]
+    () => computeForecastSeries(historicalValues, method, seasonality, 6),
+    [historicalValues, method, seasonality]
   );
-  const { low: lowBand, high: highBand } = useMemo(
-    () => computeConfidenceBands(forecastSeries),
-    [forecastSeries]
+
+  const accuracy = useMemo(
+    () => backtestForecastMethod(historicalValues, method, seasonality),
+    [historicalValues, method, seasonality]
+  );
+
+  const bands = useMemo(
+    () => confidenceBandsFromResiduals(forecastSeries, accuracy.residualStdDev),
+    [forecastSeries, accuracy.residualStdDev]
   );
 
   const historicalData = useMemo(() => {
-    const hist = HISTORICAL_ACTUALS.map((actual, idx) => ({
-      month: MONTH_LABELS[idx]!,
-      actual,
-      forecast: HISTORICAL_ACTUALS[idx]! + Math.round(HISTORICAL_ACTUALS[idx]! * 0.02 - 50000),
+    // Past periods carry actuals only. A forecast that was never made cannot
+    // be plotted next to the actual it supposedly predicted.
+    const hist = historical.map((h) => ({
+      month: h.month,
+      actual: h.value,
+      forecast: null as number | null,
       low: null as number | null,
       high: null as number | null,
     }));
+    const lastMonth = historical.at(-1)?.month;
     const fcast = forecastSeries.map((fc, idx) => ({
-      month: MONTH_LABELS[HISTORICAL_ACTUALS.length + idx]!,
+      month: lastMonth ? addMonthLabel(lastMonth, idx + 1) : MONTH_LABELS[idx % 12]!,
       actual: null as number | null,
       forecast: fc,
-      low: lowBand[idx]!,
-      high: highBand[idx]!,
+      low: bands ? bands.low[idx]! : null,
+      high: bands ? bands.high[idx]! : null,
     }));
     return [...hist, ...fcast];
-  }, [forecastSeries, lowBand, highBand]);
+  }, [historical, forecastSeries, bands]);
 
   const totalForecast = roundTo(sumMoney(forecastSeries), 2);
-  const avgConfidence = 87;
+
+  const accuracyMetrics = useMemo(
+    () => [
+      {
+        metric: 'MAPE',
+        value: formatPercent(accuracy.mapePercent, 1),
+        description: 'Mean absolute percentage error, walk-forward backtest',
+      },
+      {
+        metric: 'RMSE',
+        value: accuracy.rmse === null ? '\u2014' : fmt.currency0(accuracy.rmse),
+        description: 'Root mean square error of the same backtest',
+      },
+      {
+        metric: 'R-Squared',
+        value: accuracy.rSquared === null ? '\u2014' : formatNumber(accuracy.rSquared, 2),
+        description: 'Variance of posted revenue explained',
+      },
+      {
+        metric: 'Bias',
+        value: formatPercent(accuracy.biasPercent, 1),
+        description: 'Mean signed error; negative means under-forecast',
+      },
+    ],
+    [accuracy, fmt]
+  );
 
   const handleExportPDF = () => {
     setExportError(null);
@@ -270,7 +240,19 @@ export default function ForecastBuilderPage() {
         data-testid="forecast-kpis"
       >
         <KPIValue label="Forecast Total" value={fmt.currency0(totalForecast)} />
-        <KPIValue label="Confidence" value={`${avgConfidence}%`} trend="up" />
+        <KPIValue
+          label="Backtest Samples"
+          value={
+            accuracy.sampleCount > 0
+              ? `${accuracy.sampleCount} period${accuracy.sampleCount === 1 ? '' : 's'}`
+              : '\u2014'
+          }
+          changeLabel={
+            accuracy.sampleCount > 0
+              ? 'method scored against posted months'
+              : `needs ${MIN_HISTORY_FOR_BACKTEST} posted months`
+          }
+        />
         <KPIValue
           label="Method"
           value={
@@ -283,7 +265,11 @@ export default function ForecastBuilderPage() {
                   : 'Flat'
           }
         />
-        <KPIValue label="Accuracy (MAPE)" value="4.2%" trend="up" />
+        <KPIValue
+          label="Accuracy (MAPE, backtest)"
+          value={formatPercent(accuracy.mapePercent, 1)}
+          trend={accuracy.mapePercent !== null && accuracy.mapePercent < 10 ? 'up' : 'neutral'}
+        />
       </div>
 
       {/* Forecast Configuration & Driver Tree */}
@@ -366,9 +352,13 @@ export default function ForecastBuilderPage() {
                   impact: `${formatNumber(SEASONALITY_WEIGHTS[seasonality][6], 2)} for Jul`,
                 },
                 {
-                  driver: 'Confidence Band',
-                  formula: '±6% widening 1.5%/period',
-                  impact: `${fmt.currency0(lowBand[0] || 0)} – ${fmt.currency0(highBand[0] || 0)}`,
+                  driver: 'Prediction Band',
+                  formula: bands
+                    ? `±${BAND_Z}σ of backtest residuals`
+                    : 'unavailable — needs a backtest',
+                  impact: bands
+                    ? `${fmt.currency0(bands.low[0] ?? 0)} – ${fmt.currency0(bands.high[0] ?? 0)}`
+                    : '—',
                 },
                 {
                   driver: 'Driver: Headcount',

@@ -1,12 +1,11 @@
 import { useEffect, useMemo } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { useNavigate } from 'react-router-dom';
-import { useGLStore } from '@/store/glStore';
+import { useRetailStore } from '@/store/retailStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, Column } from '@/components/ui/DataTable';
-import { FileText, Table as TableIcon } from 'lucide-react';
+import { FileText, Table as TableIcon, Tag } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import {
   ResponsiveContainer,
@@ -24,131 +23,60 @@ import {
   Scatter,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { roundTo, sumMoney } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { derivePromoAnalysis } from '@/pages/retail/promoAnalysisData';
+
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
-// demo defaults — replaced by real data when promotion data comes from retail store imports
-const mockPromos = [
-  {
-    id: 'PROMO-001',
-    name: 'Summer Sale',
-    type: 'Percentage',
-    discount: 20,
-    startDate: '2026-06-01',
-    endDate: '2026-06-30',
-    cost: 45000,
-    revenue: 320000,
-    baselineRevenue: 210000,
-    status: 'completed',
-  },
-  {
-    id: 'PROMO-002',
-    name: 'Back to School',
-    type: 'BOGO',
-    discount: 50,
-    startDate: '2026-08-01',
-    endDate: '2026-08-15',
-    cost: 32000,
-    revenue: 280000,
-    baselineRevenue: 180000,
-    status: 'completed',
-  },
-  {
-    id: 'PROMO-003',
-    name: 'Holiday Bundle',
-    type: 'Bundle',
-    discount: 15,
-    startDate: '2026-11-15',
-    endDate: '2026-12-31',
-    cost: 68000,
-    revenue: 520000,
-    baselineRevenue: 340000,
-    status: 'planned',
-  },
-  {
-    id: 'PROMO-004',
-    name: 'Flash Sale',
-    type: 'Flash',
-    discount: 30,
-    startDate: '2026-03-15',
-    endDate: '2026-03-17',
-    cost: 12000,
-    revenue: 95000,
-    baselineRevenue: 45000,
-    status: 'completed',
-  },
-  {
-    id: 'PROMO-005',
-    name: 'Loyalty Reward',
-    type: 'Loyalty',
-    discount: 10,
-    startDate: '2026-01-01',
-    endDate: '2026-12-31',
-    cost: 25000,
-    revenue: 180000,
-    baselineRevenue: 150000,
-    status: 'active',
-  },
-  {
-    id: 'PROMO-006',
-    name: 'Clearance',
-    type: 'Percentage',
-    discount: 40,
-    startDate: '2026-07-01',
-    endDate: '2026-07-31',
-    cost: 18000,
-    revenue: 145000,
-    baselineRevenue: 85000,
-    status: 'planned',
-  },
-];
-
-const typeBreakdown = (() => {
-  const types = new Map<string, number>();
-  mockPromos.forEach((p) => types.set(p.type, (types.get(p.type) || 0) + p.revenue));
-  return [...types.entries()].map(([name, value]) => ({ name, value }));
-})();
-
-const beforeAfterData = mockPromos
-  .filter((p) => p.status === 'completed')
-  .map((p) => ({
-    name: p.name,
-    before: p.baselineRevenue / 1000,
-    after: p.revenue / 1000,
-  }));
-
-const scatterData = mockPromos.map((p) => ({
-  cost: p.cost / 1000,
-  revenue: p.revenue / 1000,
-  name: p.name,
-}));
-
+/**
+ * Promotion analysis.
+ *
+ * Figures come from `@/pages/retail/promoAnalysisData` over promotions the user
+ * recorded in `retailStore`. This page previously hardcoded five campaigns
+ * (Summer Sale, Back to School, Holiday Bundle …), computed every KPI from
+ * them, exported them to PDF and Excel, and read the ledger only to throw it
+ * away (`const { entries: _entries } = useGLStore()`).
+ */
 export default function PromoAnalysisPage() {
   const fmt = useCurrencyFormatter();
-  const { entries: _entries } = useGLStore();
-  const _navigate = useNavigate();
+  const promotions = useRetailStore((s) => s.promotions);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Promo Analysis';
   }, []);
 
-  const totalPromoCost = roundTo(sumMoney(mockPromos.map((p) => p.cost)), 2);
-  const totalPromoRevenue = roundTo(sumMoney(mockPromos.map((p) => p.revenue)), 2);
-  const totalBaseline = roundTo(sumMoney(mockPromos.map((p) => p.baselineRevenue)), 2);
-  const incrementalRevenue = totalPromoRevenue - totalBaseline;
-  const promoROI =
-    totalPromoCost > 0 ? ((incrementalRevenue - totalPromoCost) / totalPromoCost) * 100 : 0;
-  const avgLift =
-    totalBaseline > 0 ? ((totalPromoRevenue - totalBaseline) / totalBaseline) * 100 : 0;
+  const analysis = useMemo(() => derivePromoAnalysis(promotions), [promotions]);
+
+  const beforeAfterData = useMemo(
+    () =>
+      (analysis?.promotions ?? [])
+        .filter((p) => p.status === 'completed')
+        .map((p) => ({ name: p.name, before: p.baselineRevenue, after: p.revenue })),
+    [analysis]
+  );
+
+  const scatterData = useMemo(
+    () =>
+      (analysis?.promotions ?? []).map((p) => ({
+        cost: p.cost,
+        revenue: p.revenue,
+        name: p.name,
+      })),
+    [analysis]
+  );
 
   const columns: Column[] = useMemo(
     () => [
       { key: 'id', header: 'ID', width: '100px' },
       { key: 'name', header: 'Promotion', sortable: true },
       { key: 'type', header: 'Type', sortable: true },
-      { key: 'discount', header: 'Discount', align: 'right', render: (v) => `${v}%` },
+      {
+        key: 'discountPercent',
+        header: 'Discount',
+        align: 'right',
+        render: (v) => formatPercent(v as number, 0),
+      },
       { key: 'cost', header: 'Cost', align: 'right', render: (v) => fmt.currency0(v as number) },
       {
         key: 'revenue',
@@ -163,27 +91,36 @@ export default function PromoAnalysisPage() {
         render: (v) => fmt.currency0(v as number),
       },
       {
-        key: 'lift',
+        key: 'liftPercent',
         header: 'Lift',
         align: 'right',
-        render: (_v, row) => {
-          const baseline = row.baselineRevenue as number;
-          const revenue = row.revenue as number;
-          const lift = baseline > 0 ? ((revenue - baseline) / baseline) * 100 : 0;
-          return <span className="text-green-400">+{formatPercent(lift, 0)}</span>;
+        render: (v) => {
+          const lift = v as number | null;
+          if (lift === null) return <span className="text-[var(--text-muted)]">—</span>;
+          // A lift can be negative; the old table hardcoded a leading '+'.
+          return (
+            <span className={lift >= 0 ? 'text-green-400' : 'text-red-400'}>
+              {formatPercent(lift, 0)}
+            </span>
+          );
         },
       },
       {
-        key: 'roi',
-        header: 'ROI',
+        key: 'roiPercent',
+        header: 'Return on Spend',
         align: 'right',
-        render: (_v, row) => {
-          const cost = row.cost as number;
-          const revenue = row.revenue as number;
-          const baseline = row.baselineRevenue as number;
-          const roi = cost > 0 ? ((revenue - baseline - cost) / cost) * 100 : 0;
+        render: (v, row) => {
+          const roi = v as number | null;
+          if (roi === null) return <span className="text-[var(--text-muted)]">—</span>;
           return (
-            <span className={roi >= 0 ? 'text-green-400' : 'text-red-400'}>
+            <span
+              className={roi >= 0 ? 'text-green-400' : 'text-red-400'}
+              title={
+                row.roiBasis === 'gross-margin'
+                  ? 'Incremental gross margin less spend, over spend.'
+                  : 'Incremental REVENUE less spend, over spend — not profit.'
+              }
+            >
               {formatPercent(roi, 0)}
             </span>
           );
@@ -213,16 +150,17 @@ export default function PromoAnalysisPage() {
   );
 
   const handleExportPDF = () => {
+    if (!analysis) return;
     void ExportEngine.exportToPDF(
       {
-        headers: ['Promotion', 'Type', 'Cost', 'Revenue', 'Baseline', 'ROI'],
-        rows: mockPromos.map((p) => [
+        headers: ['Promotion', 'Type', 'Cost', 'Revenue', 'Baseline', 'Return on Spend'],
+        rows: analysis.promotions.map((p) => [
           p.name,
           p.type,
           fmt.currency0(p.cost),
           fmt.currency0(p.revenue),
           fmt.currency0(p.baselineRevenue),
-          `${formatPercent(((p.revenue - p.baselineRevenue - p.cost) / p.cost) * 100, 0)}`,
+          formatPercent(p.roiPercent, 0),
         ]),
       },
       { title: 'Promotion Analysis' }
@@ -230,14 +168,15 @@ export default function PromoAnalysisPage() {
   };
 
   const handleExportExcel = () => {
+    if (!analysis) return;
     void ExportEngine.exportToExcel(
       {
         headers: ['ID', 'Name', 'Type', 'Discount', 'Cost', 'Revenue', 'Baseline', 'Status'],
-        rows: mockPromos.map((p) => [
+        rows: analysis.promotions.map((p) => [
           p.id,
           p.name,
           p.type,
-          p.discount,
+          p.discountPercent,
           p.cost,
           p.revenue,
           p.baselineRevenue,
@@ -247,6 +186,22 @@ export default function PromoAnalysisPage() {
       { title: 'Promotion_Analysis' }
     ).catch(reportExportFailure);
   };
+
+  if (!analysis) {
+    return (
+      <div className="p-12 text-center max-w-md mx-auto">
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <Tag className="h-10 w-10 text-[var(--text-muted)]" />
+        </div>
+        <h2 className="text-xl font-semibold mb-2">No Promotions Recorded</h2>
+        <p className="text-[var(--text-muted)]">
+          Record a campaign — spend, revenue in the promotion window and the baseline you would have
+          expected — to see lift and return on spend. The general ledger records revenue by account
+          and period, not by campaign, so this workspace will not attribute one for you.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -268,18 +223,27 @@ export default function PromoAnalysisPage() {
       />
 
       <div className="grid grid-cols-4 gap-4">
-        <KPIValue label="Total Promo Spend" value={fmt.currency0(totalPromoCost)} />
+        <KPIValue label="Total Promo Spend" value={fmt.currency0(analysis.totalCost)} />
         <KPIValue
           label="Incremental Revenue"
-          value={fmt.currency0(incrementalRevenue)}
-          trend="up"
+          value={fmt.currency0(analysis.incrementalRevenue)}
+          trend={analysis.incrementalRevenue >= 0 ? 'up' : 'down'}
         />
         <KPIValue
-          label="Promo ROI"
-          value={`${formatPercent(promoROI, 0)}`}
-          trend={promoROI >= 0 ? 'up' : 'down'}
+          label={
+            analysis.roiBasis === 'gross-margin'
+              ? 'Return on Spend (margin)'
+              : 'Return on Spend (revenue basis)'
+          }
+          value={formatPercent(analysis.roiPercent, 0)}
+          changeLabel={`${analysis.marginCoverage} of ${analysis.promotions.length} campaigns record a margin`}
+          trend={analysis.roiPercent !== null && analysis.roiPercent >= 0 ? 'up' : 'down'}
         />
-        <KPIValue label="Avg Lift" value={`+${formatPercent(avgLift, 0)}`} trend="up" />
+        <KPIValue
+          label="Lift vs Baseline"
+          value={formatPercent(analysis.liftPercent, 0)}
+          trend={analysis.liftPercent !== null && analysis.liftPercent >= 0 ? 'up' : 'down'}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-6">
@@ -292,10 +256,10 @@ export default function PromoAnalysisPage() {
               <BarChart data={beforeAfterData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis dataKey="name" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${v}K`} />
+                <YAxis stroke="#94a3b8" tickFormatter={(v) => fmt.compact(Number(v))} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                  formatter={(v: unknown) => `$${v}K`}
+                  formatter={(v: unknown) => fmt.currency0(Number(v))}
                 />
                 <Legend />
                 <Bar dataKey="before" fill="#64748b" name="Baseline" />
@@ -312,7 +276,7 @@ export default function PromoAnalysisPage() {
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
-                  data={typeBreakdown}
+                  data={[...analysis.revenueByType]}
                   dataKey="value"
                   nameKey="name"
                   cx="50%"
@@ -320,7 +284,7 @@ export default function PromoAnalysisPage() {
                   outerRadius={80}
                   label
                 >
-                  {typeBreakdown.map((_, i) => (
+                  {analysis.revenueByType.map((_, i) => (
                     <Cell key={i} fill={COLORS[i]} />
                   ))}
                 </Pie>
@@ -343,16 +307,21 @@ export default function PromoAnalysisPage() {
           <ResponsiveContainer width="100%" height={200}>
             <ScatterChart>
               <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="cost" name="Cost" stroke="#94a3b8" tickFormatter={(v) => `$${v}K`} />
+              <XAxis
+                dataKey="cost"
+                name="Cost"
+                stroke="#94a3b8"
+                tickFormatter={(v) => fmt.compact(Number(v))}
+              />
               <YAxis
                 dataKey="revenue"
                 name="Revenue"
                 stroke="#94a3b8"
-                tickFormatter={(v) => `$${v}K`}
+                tickFormatter={(v) => fmt.compact(Number(v))}
               />
               <Tooltip
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                formatter={(v: unknown) => `$${v}K`}
+                formatter={(v: unknown) => fmt.currency0(Number(v))}
               />
               <Scatter data={scatterData} fill="#3b82f6" />
             </ScatterChart>
@@ -367,13 +336,31 @@ export default function PromoAnalysisPage() {
         <CardContent>
           <DataTable
             columns={columns}
-            data={mockPromos as unknown as Record<string, unknown>[]}
+            data={analysis.promotions as unknown as Record<string, unknown>[]}
             pageSize={10}
             caption="Promotion performance table"
             ariaLabel="Promotion performance data table for retail promo analysis"
           />
         </CardContent>
       </Card>
+
+      {analysis.unavailable.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>How to read these figures</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-sm">
+              {analysis.unavailable.map((u) => (
+                <li key={u.label}>
+                  <span className="font-semibold">{u.label}</span>
+                  <span className="text-[var(--text-muted)]"> — {u.reason}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
