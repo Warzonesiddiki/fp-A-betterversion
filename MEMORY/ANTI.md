@@ -144,6 +144,24 @@ confidence: high
   seen: `confidenceInterval: 8.5` rendered as "+/-8.5%, 95% CI", with help text
         describing it as the historical error distribution.
 
+[DO-NOT] Stamp one aggregate onto every row of a per-row column.
+  seen: ValuationPage put the PORTFOLIO cap rate in each property's "Implied
+        Cap Rate" cell, then value-weighted that constant and called the result
+        a weighted cap rate.
+  instead: derive per row from that row's own inputs, or leave the cell blank.
+
+[DO-NOT] Average percentages when you mean a ratio of totals.
+  seen: "Avg. Appreciation" was the mean of per-property percentages (17.5%)
+        where portfolio gain / portfolio cost is 20.0%.
+  instead: ratio of sums for portfolio figures; say "mean" only if you mean it.
+
+[DO-NOT] Let a guard read the page's own disclosure copy.
+  seen: TWICE in session 020 -- assertions matched 94.8 and FTL inside the
+        "not derivable" text that deliberately names them.
+  instead: assert on the derived data (arrays, series, object keys), not on
+           container.textContent, whenever the forbidden token also appears in
+           prose. And do not leak internal placeholder constants into UI copy.
+
 [DO-NOT] Re-fight pre-push gate 10 on a fresh branch.
   seen: with no @{u} it falls back to `git log -10` and flags already-merged
         squashes 5078e01 and 646bdf4.

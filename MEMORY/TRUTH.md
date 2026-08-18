@@ -42,16 +42,16 @@ Nothing here may contain "should", "probably" or "we will".
 
 ## Money-AST ratchet (run 2026-08-18, `node scripts/money-ast-detector.mjs`)
 
-- [MEASURE] SAFE 703 · UNSAFE 167 · **unsafe operations 453** · **safety 80.87%** (after session
-  019). Baseline `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The arc:
-  489 (s016) → 477 (s017) → 464 (s018) → 453 (s019). Every step was per-file confined; 2 of the
-  s019 ops were layout geometry reclassified into `src/utils/chartScale.ts`, not new safety.
+- [MEASURE] SAFE 705 · UNSAFE 166 · **unsafe operations 443** · **safety 81.03%** (after session
+  020). Baseline `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The arc:
+  489 (s016) → 477 (s017) → 464 (s018) → 453 (s019) → 443 (s020). Every step per-file confined;
+  2 of the s019 ops were layout geometry reclassified into `src/utils/chartScale.ts`, not safety.
 - [POINTER] `src/utils/money.ts` — the only money-safe primitive (decimal.js, precision 40,
   ROUND_HALF_UP, throws `InvalidMoneyError` on NaN/±Inf/empty).
 
 ## Fabrication ratchet (run 2026-08-18, `node scripts/fabrication-detector.mjs`)
 
-- [MEASURE] files with findings 16 · **findings 45** after session 019 (60 → 55 → 50 → 45).
+- [MEASURE] files with findings 15 · **findings 40** after session 020 (60 → 55 → 50 → 45 → 40).
   Export engines at 0. Baseline `scripts/fabrication-baseline.json`, pre-push gate 9c.
 
 ## Blueprint / process
@@ -136,3 +136,22 @@ Nothing here may contain "should", "probably" or "we will".
   workspace), carried a hardcoded KPI strip and FY2024/FY2025 table that touched no store, and
   charted budget lines as both "revenue" and "spending". Fabrication 5 → 0, money 1 → 0.
 - [MEASURE 2026-08-18] Teeth: reverting both pages from `/tmp` fails 21 of 22 new assertions.
+
+## Session 020 (completed)
+
+- [POINTER] `src/pages/realestate/valuationData.ts` (+ `.test.ts`, 11 known-answer cases) —
+  per-property cap rate from that property's own NOI, value-weighted portfolio figures, LTV.
+- [FACT 2026-08-18] `ValuationPage` rendered the PORTFOLIO cap rate on every property row under a
+  column headed "Implied Cap Rate", then took a value-weighted average of that constant (which
+  returns the constant) and displayed it as "Weighted Cap Rate". 10 unsafe ops → 0.
+- [FACT 2026-08-18] Its "Avg. Appreciation" was a mean of per-property percentages (17.5% on the
+  test ledger) where the value-weighted answer is 20.0%. A mean of ratios is not a ratio of sums.
+- [POINTER] `src/pages/sectors/logisticsDashboardData.ts` (+ `.test.ts`) — revenue/cost by posted
+  account, on-time rate from recorded shipments, lane cost per load.
+- [FACT 2026-08-18] `LogisticsDashboardPage` shipped three module fixtures and a seven-literal KPI
+  strip, defaulted on-time delivery to `96.4%` for an empty store, and rendered `RouteCost.cost`
+  in a field named `revenue`. Fabrication 5 → 0.
+- [FACT 2026-08-18] `RealEstateEngine` still returns `yield: 6.2`, `occupancy: 94.8`,
+  `avgHoldingPeriod: 4.2`, `location: 'TBD'` and a Core/Value-Add status from a $10M threshold.
+  `ValuationPage` no longer calls it; other callers remain exposed.
+- [MEASURE 2026-08-18] Teeth: reverting both pages from `/tmp` fails 20 of 22 new assertions.

@@ -1092,3 +1092,72 @@ Per-file diff: `RollingForecastPage.tsx` 10→0 and `GovernmentDashboardPage.tsx
 Money-AST: `ValuationPage` (10) / `PromoAnalysisPage` (10) — skip
 `mockData/index.ts` (13). Fabrication: `LogisticsDashboardPage` (5), then
 `ForecastBuilderPage` / `ClinicalTrialCostPage` (4).
+
+---
+
+## Session 020 — 2026-08-18 — ValuationPage + LogisticsDashboardPage
+
+**Branch:** `arena/01a01215-fp-a-betterversion`
+
+Third consecutive sandbox rewind; recovered with the documented drill.
+
+### 1. `ValuationPage` (10 → 0). Ratchet 453 → **443 (81.03% safe)**
+
+Real drop: 10 float operations left the product. Unsafe modules 167 → 166.
+
+- **One cap rate, stamped on every property.** The table column read
+  "Implied Cap Rate" and every row rendered `dashStats.capRate` — the
+  _portfolio_ figure — so five properties displayed one identical number as if
+  each had been measured. The summary then computed
+  `Σ(capRate × value) / Σ value` over that constant, which returns the
+  constant, and displayed it as "Weighted Cap Rate". Each property now uses its
+  own NOI (its 40xx less its 50xx) or renders blank, and the portfolio rate is
+  a true value-weighted `Σ NOI / Σ value` with coverage stated
+  ("1 of 2 properties").
+- **"Avg. Appreciation" was a mean of percentages.** On the test ledger that is
+  17.5%; the value-weighted figure is 20.0%. Means of ratios are not ratios of
+  sums.
+- **Typed KPI deltas**: `+8.4% vs prior period`, `+15.2% since acquisition`,
+  `+2.1% above market avg`, `−0.15 compression`. Removed — a period comparison
+  needs a valuation history the workspace does not store.
+- **`RealEstateEngine` is no longer called here.** Its breakdown returns
+  `yield: 6.2` (mocked), `location: 'TBD'` and a Core/Value-Add status decided
+  by `cost > 10_000_000`; its dashboard stats carry `occupancy: 94.8` and
+  `avgHoldingPeriod: 4.2`. LTV and NOI are derived directly instead. (The
+  engine still carries those placeholders for other callers — carried debt.)
+
+### 2. `LogisticsDashboardPage` (5 → 0 fabrication). Ratchet 45 → **40 / 15 files**
+
+- Three module-level fixtures rendered for every tenant: service-line revenue
+  (FTL 4,820,000 … 3PL 720,000), a cost pie (Fuel 28% … Admin 5%) and twelve
+  months of shipment volume (Jan 12,400 … Dec 18,400).
+- A seven-literal KPI strip: `$11.77M`, `$842`, `82.6%`, `78.3%`, `3.2` days,
+  `$2.84`/mile.
+- **On-time delivery fell back to `96.4%`** whenever the store was empty —
+  the same demo-fallback class as session 019's government page.
+- **A cost was displayed as a revenue.** "Top Shipping Lanes" mapped
+  `RouteCost.cost` into a field named `revenue`.
+
+Derivation is `src/pages/sectors/logisticsDashboardData.ts`: revenue and cost
+grouped by posted account with real shares, on-time rate from recorded
+shipments (`null`, never a default), cost per shipment only when shipments
+exist, lane economics labelled cost with cost per load. Fleet utilisation,
+warehouse capacity, transit time, revenue per mile and the service-line split
+are disclosed as needing telematics / a WMS / mileage / a COA dimension.
+
+Both legacy smoke tests passed _only_ because of the fixtures and the fallback;
+both rewritten.
+
+### 3. Two guards tripped on their own disclosure prose
+
+The session-011 trap, twice in one session: a data assertion matched `94.8` and
+`FTL` inside the "not derivable" copy that deliberately names them. Fixed by
+asserting against the derived data (`properties`, chart series) rather than
+page text — and the real-estate disclosure no longer leaks internal placeholder
+constants to users at all.
+
+### Next
+
+Money-AST: `PromoAnalysisPage` (10), then `InsuranceEngine` (9) — skip
+`mockData/index.ts` (13). Fabrication: `ForecastBuilderPage` (4),
+`ClinicalTrialCostPage` (4), `TelecomDashboardPage` (4).

@@ -26,6 +26,8 @@ confidence: medium
    `__tests__/sectors/GovernmentDashboardPage.test.tsx` rendered with an EMPTY store and asserted
    departments and charts appeared — it passed only because of the demo fallback, so it actively
    protected the fabrication (rewritten, session 019).
+   `__tests__/sectors/LogisticsDashboardPage.test.tsx` was the same shape: empty store, asserted
+   charts rendered, passing only because of module fixtures (rewritten, session 020).
 3. **A fake oracle** — `VDB(10000,1000,5,2,4) === 4704` (correct 2304). A test named "oracle" is
    only an oracle if the expected value came from the vendor.
 4. **Explicit-args blindness** — 381 SafeMathParser tests passed every optional argument, missing

@@ -36,7 +36,9 @@ because a plan says so.
 | Education dashboard | `src/pages/sectors/EducationDashboardPage.tsx` + `educationDashboardData.ts` | shipped | session 018: was 100% invented; now GL + budget derived |
 | Rolling forecast | `src/pages/forecasts/RollingForecastPage.tsx` + `rollingForecastModel.ts` | shipped | session 019: walk-forward backtest replaced a fake accuracy KPI |
 | Government dashboard | `src/pages/sectors/GovernmentDashboardPage.tsx` + `governmentDashboardData.ts` | shipped | session 019: demo fallback removed |
-| Sector dashboards (`src/pages/sectors/*`) | — | flagged | Logistics / Telecom still render invented companies |
+| Property valuation | `src/pages/realestate/ValuationPage.tsx` + `valuationData.ts` | shipped | session 020: per-property cap rate, engine placeholders no longer called |
+| Logistics dashboard | `src/pages/sectors/LogisticsDashboardPage.tsx` + `logisticsDashboardData.ts` | shipped | session 020: fixtures and the 96.4% default removed |
+| Sector dashboards (`src/pages/sectors/*`) | — | flagged | Telecom still renders an invented company |
 | Chart scaling | `src/utils/chartScale.ts` | shipped | layout percentages only — NOT a money helper |
 | Server API | `server/src/routes/*.ts` (11 route files) | partial | only ~14 non-test frontend files call it |
 | Persistence authority (W0.8) | — | planned | 41 persisting stores, schema fork, no tenancy |
