@@ -1014,3 +1014,81 @@ safer.
 
 Money-AST: `RollingForecastPage` (10) — skip `mockData/index.ts` (13).
 Fabrication: `GovernmentDashboardPage` (5), then `LogisticsDashboardPage` (5).
+
+---
+
+## Session 019 — 2026-08-18 — RollingForecastPage + GovernmentDashboardPage
+
+**Branch:** `arena/01a01215-fp-a-betterversion`
+
+Sandbox restore wiped `node_modules` and rewound `HEAD` again; recovered with
+the documented drill. Second consecutive session — the drill is now reflexive.
+
+### 1. `RollingForecastPage` (10 → 0). Ratchet 464 → **453 (80.87% safe)**
+
+Real drop: 11 of the 13 operations removed are float arithmetic leaving the
+product. **2 are a reclassification, not new safety**: the bar-width
+percentages moved to `src/utils/chartScale.ts`, so layout geometry is no longer
+written over money-named expressions. Said plainly because the ratchet cannot
+tell those apart. Unsafe modules 169 → 167.
+
+Four defects the detectors cannot see:
+
+- **The monthly series mixed the whole ledger.**
+  `existing.actual += e.debit − e.credit` ran over every account, so
+  balance-sheet postings entered the "actual" trend and revenue entered it with
+  the sign flipped. Growth, projection and accuracy all inherited it.
+- **"Forecast Accuracy" never looked at a forecast.** It was
+  `variancePcts.filter((v) => Math.abs(v) < 0.1).length / length` — the share
+  of months whose _actual_ moved less than 10% from the prior month — and it
+  shipped as a headline KPI. Replaced by a walk-forward backtest: fit on the
+  months before k, predict month k, compare with what posted. The difference is
+  not cosmetic: on a steady 10%-growth ledger the old rule reports **0%** while
+  the method is exact; the backtest reports **100%**.
+- **`confidenceInterval: 8.5`** was a literal rendered as `±8.5% · 95% CI`, and
+  the help text described it as "the historical forecast error distribution".
+  Both removed; the interval is declared unavailable.
+- **Premature rounding.** `roundTo(sumMoney(growthRates), 2) / n` rounds the
+  _sum of dimensionless ratios_ to two decimals before dividing, quantising the
+  growth rate to 1/(2n) steps.
+
+Also: the tiles labelled "Forecast Revenue" and "Forecast Expenses" were
+displaying posted actuals. They now say Posted. Revenue and expense growth are
+measured separately and net income is derived from the two projections, so a
+projected margin cannot drift from its own components. Projection requires 3
+posted months with a positive base, otherwise `null` and disclosed.
+
+### 2. `GovernmentDashboardPage` (5 → 0 fabrication). Ratchet 50 → **45 / 16 files**
+
+- **A demo fallback is a fabrication.** `mockDepartmentBudget`,
+  `mockRevenueByCategory` and `mockSpendingDistribution` rendered whenever the
+  government store was empty — the state of every new workspace — so a fresh
+  tenant saw Education allocated 3,100 at 93.2% execution and 4,200 of Income
+  Tax presented as their own figures. The comment called them "demo defaults";
+  the user has no way to know that.
+- The KPI strip (`$11.8B`, `$8.95B`, `$800M`, `1.48x`, `$1.9B`, `87.3%`,
+  `$342`) and the FY2024/FY2025 table never touched a store at all.
+- Budget lines' `budgeted` was charted as "Revenue by Category" and the same
+  lines' `actual` as "Spending Distribution" — one dataset presented as two
+  different things, neither of which it was.
+
+`src/pages/sectors/governmentDashboardData.ts` derives revenue (4) and
+expenditure (5–8) from the ledger, execution from appropriation lines
+(`null` when nothing was allocated), and the fiscal-year comparison from the
+years actually posted (`null` change without a prior year). Debt-service ratio,
+capital expenditure and programme effectiveness / cost per citizen are
+disclosed as not derivable.
+
+Its smoke test passed _only_ because of the demo fallback: it rendered with an
+empty store and asserted departments and charts appeared. Rewritten.
+
+### 3. Ratchet honesty
+
+Per-file diff: `RollingForecastPage.tsx` 10→0 and `GovernmentDashboardPage.tsx`
+1→0 money, `GovernmentDashboardPage.tsx` 5→0 fabrication. Nothing else moved.
+
+### Next
+
+Money-AST: `ValuationPage` (10) / `PromoAnalysisPage` (10) — skip
+`mockData/index.ts` (13). Fabrication: `LogisticsDashboardPage` (5), then
+`ForecastBuilderPage` / `ClinicalTrialCostPage` (4).

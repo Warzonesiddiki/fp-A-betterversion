@@ -34,7 +34,10 @@ because a plan says so.
 | Board pack | `BoardPackTemplate` (barrel-exported) | partial | NOT routed — no user reaches it |
 | Cash position | `src/pages/cash/CashForecastPage.tsx` + `cashForecastModel.ts` | shipped | session 018: cash-account scoped, categories from journal counter-lines, forward forecast disclosed |
 | Education dashboard | `src/pages/sectors/EducationDashboardPage.tsx` + `educationDashboardData.ts` | shipped | session 018: was 100% invented; now GL + budget derived |
-| Sector dashboards (`src/pages/sectors/*`) | — | flagged | Government / Logistics / Telecom still render invented companies |
+| Rolling forecast | `src/pages/forecasts/RollingForecastPage.tsx` + `rollingForecastModel.ts` | shipped | session 019: walk-forward backtest replaced a fake accuracy KPI |
+| Government dashboard | `src/pages/sectors/GovernmentDashboardPage.tsx` + `governmentDashboardData.ts` | shipped | session 019: demo fallback removed |
+| Sector dashboards (`src/pages/sectors/*`) | — | flagged | Logistics / Telecom still render invented companies |
+| Chart scaling | `src/utils/chartScale.ts` | shipped | layout percentages only — NOT a money helper |
 | Server API | `server/src/routes/*.ts` (11 route files) | partial | only ~14 non-test frontend files call it |
 | Persistence authority (W0.8) | — | planned | 41 persisting stores, schema fork, no tenancy |
 | MSI installer | — | planned | repo ships NSIS only; GA needs MSI + NSIS |

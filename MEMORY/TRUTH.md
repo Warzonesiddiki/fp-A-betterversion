@@ -42,15 +42,16 @@ Nothing here may contain "should", "probably" or "we will".
 
 ## Money-AST ratchet (run 2026-08-18, `node scripts/money-ast-detector.mjs`)
 
-- [MEASURE] SAFE 700 · UNSAFE 169 · **unsafe operations 464** · **safety 80.57%** (after session
-  018). Baseline `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The arc:
-  489 (s016) → 477 (s017) → 464 (s018), every step a per-file-confined product change.
+- [MEASURE] SAFE 703 · UNSAFE 167 · **unsafe operations 453** · **safety 80.87%** (after session
+  019). Baseline `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The arc:
+  489 (s016) → 477 (s017) → 464 (s018) → 453 (s019). Every step was per-file confined; 2 of the
+  s019 ops were layout geometry reclassified into `src/utils/chartScale.ts`, not new safety.
 - [POINTER] `src/utils/money.ts` — the only money-safe primitive (decimal.js, precision 40,
   ROUND_HALF_UP, throws `InvalidMoneyError` on NaN/±Inf/empty).
 
 ## Fabrication ratchet (run 2026-08-18, `node scripts/fabrication-detector.mjs`)
 
-- [MEASURE] files with findings 17 · **findings 50** after session 018 (60 → 55 → 50).
+- [MEASURE] files with findings 16 · **findings 45** after session 019 (60 → 55 → 50 → 45).
   Export engines at 0. Baseline `scripts/fabrication-baseline.json`, pre-push gate 9c.
 
 ## Blueprint / process
@@ -116,3 +117,22 @@ Nothing here may contain "should", "probably" or "we will".
   renders the driver-based `SectorDriverDashboard`.
 - [MEASURE 2026-08-18] Teeth: reverting both pages from `/tmp` fails 24 of 25 new assertions.
   Per-file `--json` diff moved only those two files.
+
+## Session 019 (completed)
+
+- [POINTER] `src/pages/forecasts/rollingForecastModel.ts` (+ `.test.ts`, 15 known-answer cases) —
+  P&L-only monthly series, disclosed projection method, walk-forward backtest.
+- [FACT 2026-08-18] `RollingForecastPage`'s "Forecast Accuracy" KPI was the share of months whose
+  ACTUAL moved less than 10% from the prior month — it never compared a forecast to anything. On a
+  steady 10%-growth ledger the old rule reports 0% where the method is exact (backtest: 100%).
+- [FACT 2026-08-18] The same page carried `confidenceInterval: 8.5` rendered as `±8.5% · 95% CI`,
+  averaged growth as `roundTo(sumMoney(growthRates), 2) / n` (rounding a sum of ratios before
+  dividing), built its monthly series from `debit − credit` over every account, and labelled
+  posted actuals as "Forecast Revenue"/"Forecast Expenses". 10 unsafe ops → 0.
+- [POINTER] `src/utils/chartScale.ts` — `scaleToPercent` for bar widths. Layout only; explicitly
+  NOT a money helper.
+- [FACT 2026-08-18] `GovernmentDashboardPage` fell back to `mockDepartmentBudget` /
+  `mockRevenueByCategory` / `mockSpendingDistribution` whenever its store was empty (every new
+  workspace), carried a hardcoded KPI strip and FY2024/FY2025 table that touched no store, and
+  charted budget lines as both "revenue" and "spending". Fabrication 5 → 0, money 1 → 0.
+- [MEASURE 2026-08-18] Teeth: reverting both pages from `/tmp` fails 21 of 22 new assertions.

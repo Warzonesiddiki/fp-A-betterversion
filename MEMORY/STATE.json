@@ -4,17 +4,17 @@
   "updated_at": "2026-08-18",
   "genesis_phase": "Phase 0 / Wave W0.1.1",
   "now": {
-    "task_id": "T-019",
-    "summary": "W0.1.1 session 019: RollingForecastPage money-AST 10 -> 0 and GovernmentDashboardPage fabrication 5 -> 0, both with teeth."
+    "task_id": "T-020",
+    "summary": "W0.1.1 session 020: ValuationPage money-AST 10 -> 0 and LogisticsDashboardPage fabrication 5 -> 0, both with teeth."
   },
   "health": {
     "shi": null,
     "uvi": null,
     "dei": null,
-    "money_ast_safety_pct": 80.57,
-    "money_ast_unsafe_ops": 464,
-    "fabrication_findings": 50,
-    "notes": "SHI/UVI/DEI not measured. Ratchets measured 2026-08-18 after session 018 (489 -> 477 -> 464; 60 -> 55 -> 50)."
+    "money_ast_safety_pct": 80.87,
+    "money_ast_unsafe_ops": 453,
+    "fabrication_findings": 45,
+    "notes": "SHI/UVI/DEI not measured. Ratchets 2026-08-18 after s019 (489->477->464->453; 60->55->50->45). 2 of the s019 ops were layout reclassification, not new safety."
   },
   "capabilities": {
     "git": true,
@@ -67,7 +67,9 @@
     "persistence-authority-w08": "planned",
     "msi-installer": "planned",
     "cash-forecast": "shipped",
-    "education-dashboard": "shipped"
+    "education-dashboard": "shipped",
+    "rolling-forecast": "shipped",
+    "government-dashboard": "shipped"
   },
   "invariants_green": [
     "INV-001",
@@ -87,7 +89,7 @@
     "desktop/Tauri verification",
     "GitHub Vitest coverage job (no coverage/ artifact)"
   ],
-  "last_session": "sess_018",
+  "last_session": "sess_019",
   "integrity": {
     "last_run": "2026-08-18",
     "ok": true,

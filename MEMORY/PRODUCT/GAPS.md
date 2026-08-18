@@ -10,9 +10,11 @@ confidence: high
 
 ## Correctness / detection
 
-- 464 unsafe money operations across 169 modules remain (80.57% safe).
-- 50 fabricated displayed literals across 17 files remain, concentrated in `src/pages/sectors/*`
-  dashboards that read no store at all.
+- 453 unsafe money operations across 167 modules remain (80.87% safe). Phase 0 exit needs ≥90%,
+  i.e. roughly 250 — consider a class-wide fix for the `existing.debit += e.debit` grouping idiom
+  that recurs across at least six pages.
+- 45 fabricated displayed literals across 16 files remain, concentrated in `src/pages/sectors/*`
+  dashboards that read no store, or fall back to demo fixtures when their store is empty.
 - No detector for a **raw float crossing a render/format boundary**. Live instance:
   `ProfessionalExportEngine` types rows as `(string|number)[][]` and passes them to `autoTable`
   with only column 0 stringified — an unformatted float can print `0.30000000000000004` into a

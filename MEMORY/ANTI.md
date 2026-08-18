@@ -124,6 +124,26 @@ confidence: high
   instead: check both `src/pages/sector/` and `src/pages/sectors/` before
            rewriting, and grep the page for `useGLStore` first.
 
+[DO-NOT] Ship a "demo default" fallback on a routed page.
+  seen: GovernmentDashboardPage rendered mockDepartmentBudget /
+        mockRevenueByCategory whenever its store was empty -- i.e. for every
+        new tenant -- with only a code comment saying they were demo data.
+  instead: empty-state. A user cannot see your comment.
+
+[DO-NOT] Name a metric "accuracy" unless it compares a prediction to an actual.
+  seen: forecastAccuracy = share of months whose ACTUAL moved <10% from the
+        prior month. It never looked at a forecast and shipped as a KPI.
+  instead: walk-forward backtest, or null + a disclosure.
+  evidence: session 019, rollingForecastModel.backtestRevenue.
+
+[DO-NOT] Round before you average.
+  seen: roundTo(sumMoney(growthRates), 2) / n quantised the growth rate.
+  instead: keep decimals through the aggregation; round at the edge only.
+
+[DO-NOT] Publish a confidence interval you did not compute.
+  seen: `confidenceInterval: 8.5` rendered as "+/-8.5%, 95% CI", with help text
+        describing it as the historical error distribution.
+
 [DO-NOT] Re-fight pre-push gate 10 on a fresh branch.
   seen: with no @{u} it falls back to `git log -10` and flags already-merged
         squashes 5078e01 and 646bdf4.
