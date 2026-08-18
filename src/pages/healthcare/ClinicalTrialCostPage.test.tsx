@@ -48,6 +48,7 @@ vi.mock('recharts', () => ({
   Legend: () => <div />,
 }));
 
+import { useHealthcareStore } from '@/store/healthcareStore';
 import ClinicalTrialCostPage from '@/pages/healthcare/ClinicalTrialCostPage';
 
 function renderPage() {
@@ -69,7 +70,31 @@ describe('ClinicalTrialCostPage smoke test', () => {
       'rendered nothing: a truthy container does not prove the page mounted'
     ).toBeGreaterThanOrEqual(2);
   });
-  it('displays page heading', () => {
+  it('asks for a study instead of demonstrating five', () => {
+    // With no recorded trials the page empty-states. It previously rendered
+    // five fixture studies at named institutions, so this file could assert
+    // the heading with an empty workspace.
+    renderPage();
+    expect(screen.getByText('No Trials Recorded')).toBeTruthy();
+    expect(screen.queryByText(/Mayo Clinic/)).toBeNull();
+  });
+
+  it('displays page heading once a trial is recorded', () => {
+    useHealthcareStore.setState({
+      clinicalTrials: [
+        {
+          id: 'T-1',
+          name: 'Alpha',
+          site: 'Site One',
+          phase: 'Phase III',
+          budget: 1000,
+          actualSpend: 900,
+          targetEnrollment: 10,
+          enrolled: 5,
+          status: 'active',
+        },
+      ],
+    });
     renderPage();
     expect(screen.getByText('Clinical Trial Costs')).toBeTruthy();
   });
