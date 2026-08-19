@@ -1,13 +1,12 @@
-import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { useState } from 'react';
 
-import { Activity, BarChart3, Download, FileText } from 'lucide-react';
+import { Activity, BarChart3, Download, Shield } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 
 import { KPIValue } from '@/components/ui/KPIValue';
-import { PeriodPicker } from '@/components/ui/PeriodPicker';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import {
   ResponsiveContainer,
@@ -21,115 +20,129 @@ import {
   BarChart,
   Bar,
 } from 'recharts';
-import type { FiscalPeriod } from '@/types';
-import { formatCompact, formatPercent } from '@/utils/financialFormatting';
+import { useGLStore } from '@/store/glStore';
+import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { formatPercent } from '@/utils/financialFormatting';
+import { buildInsuranceDashboardModel } from './insuranceDashboardData';
 
-const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
+/**
+ * Underwriting dashboard, derived from posted GL entries.
+ *
+ * Every figure comes from `./insuranceDashboardData` (which wraps
+ * `InsuranceEngine`). Figures the ledger cannot support are rendered as `—`
+ * and named in the disclosure block rather than filled in — see that module
+ * for the list and the reasoning.
+ */
 
-const combinedRatioTrend = [
-  { month: 'Jan', lossRatio: 62.5, expenseRatio: 28.4, combined: 90.9 },
-  { month: 'Feb', lossRatio: 64.1, expenseRatio: 27.8, combined: 91.9 },
-  { month: 'Mar', lossRatio: 60.8, expenseRatio: 28.1, combined: 88.9 },
-  { month: 'Apr', lossRatio: 58.2, expenseRatio: 27.5, combined: 85.7 },
-  { month: 'May', lossRatio: 59.5, expenseRatio: 27.2, combined: 86.7 },
-  { month: 'Jun', lossRatio: 57.8, expenseRatio: 26.9, combined: 84.7 },
-];
-
-const premiumByLine = [
-  { name: 'Auto', written: 12400000, earned: 11200000, color: '#3b82f6' },
-  { name: 'Homeowners', written: 8200000, earned: 7800000, color: '#10b981' },
-  { name: 'Life', written: 6500000, earned: 6200000, color: '#f59e0b' },
-  { name: 'Commercial', written: 15400000, earned: 14100000, color: '#6366f1' },
-  { name: 'Health', written: 9200000, earned: 8800000, color: '#ec4899' },
-];
-
-const underwritingResults = [
-  {
-    id: 'L-01',
-    line: 'Personal Auto',
-    premium: '$12.4M',
-    losses: '$6.8M',
-    lossRatio: '54.8%',
-    combined: '88.2%',
-    trend: 'Improving',
-  },
-  {
-    id: 'L-02',
-    line: 'Homeowners',
-    premium: '$8.2M',
-    losses: '$5.4M',
-    lossRatio: '65.9%',
-    combined: '95.4%',
-    trend: 'Stable',
-  },
-  {
-    id: 'L-03',
-    line: 'Commercial Property',
-    premium: '$15.4M',
-    losses: '$8.2M',
-    lossRatio: '53.2%',
-    combined: '82.5%',
-    trend: 'Improving',
-  },
-  {
-    id: 'L-04',
-    line: 'Workers Comp',
-    premium: '$5.8M',
-    losses: '$3.9M',
-    lossRatio: '67.2%',
-    combined: '98.1%',
-    trend: 'Worsening',
-  },
-  {
-    id: 'L-05',
-    line: 'General Liability',
-    premium: '$6.5M',
-    losses: '$3.1M',
-    lossRatio: '47.7%',
-    combined: '78.4%',
-    trend: 'Improving',
-  },
-];
-
-const columns: Column[] = [
-  { key: 'line', header: 'Line of Business', sortable: true },
-  { key: 'premium', header: 'Net Written Premium', align: 'right' },
-  { key: 'losses', header: 'Incurred Losses', align: 'right' },
-  { key: 'lossRatio', header: 'Loss Ratio', align: 'right' },
-  { key: 'combined', header: 'Combined Ratio', align: 'right' },
-  {
-    key: 'trend',
-    header: 'Trend',
-    render: (v) => (
-      <span
-        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-          String(v) === 'Improving'
-            ? 'bg-green-100 text-green-700'
-            : String(v) === 'Worsening'
-              ? 'bg-red-100 text-red-700'
-              : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
-        }`}
-      >
-        {String(v)}
-      </span>
-    ),
-  },
-];
+/** Percentage-point ratio, or an em dash when the denominator does not exist. */
+function ratio(value: number | null): string {
+  return value === null ? '—' : formatPercent(value, 2);
+}
 
 export default function InsuranceDashboardPage() {
-  const [periodId, setPeriodId] = useState('P01');
+  const fmt = useCurrencyFormatter();
+  const navigate = useNavigate();
+  const { entries } = useGLStore();
+
+  useEffect(() => {
+    document.title = 'FinPlan Pro — Insurance Dashboard';
+  }, []);
+
+  const model = useMemo(() => buildInsuranceDashboardModel(entries), [entries]);
+
+  const columns: Column[] = useMemo(
+    () => [
+      { key: 'line', header: 'Line of Business', sortable: true },
+      {
+        key: 'written',
+        header: 'Written Premium',
+        align: 'right',
+        render: (v) => fmt.currency0(Number(v)),
+      },
+      {
+        key: 'earned',
+        header: 'Earned Premium',
+        align: 'right',
+        render: (v) => fmt.currency0(Number(v)),
+      },
+      {
+        key: 'writtenLessEarned',
+        header: 'Written − Earned',
+        align: 'right',
+        render: (v) => fmt.currency0(Number(v)),
+      },
+    ],
+    [fmt]
+  );
+
+  const handleExport = () => {
+    const { stats, lineRows } = model;
+    const rows: (string | number)[][] = [
+      ['Gross written premium', stats.grossWrittenPremium],
+      ['Ceded premium (43xx)', stats.cededPremium ?? 'not posted'],
+      ['Net written premium', stats.netWrittenPremium ?? 'not derivable'],
+      ['Earned premium', stats.earnedPremium],
+      ['Loss & LAE', stats.lossExpense],
+      ['Commission and underwriting expense', stats.expenseTotal],
+      ['Loss ratio %', stats.lossRatio ?? 'not derivable'],
+      ['Expense ratio %', stats.expenseRatio ?? 'not derivable'],
+      ['Combined ratio %', stats.combinedRatio ?? 'not derivable'],
+      ['Underwriting income', stats.underwritingIncome],
+      ['Policy count', 'not derivable from a general ledger'],
+      ...lineRows.map((r): (string | number)[] => [
+        `${r.line} — written / earned / difference`,
+        r.written,
+        r.earned,
+        r.writtenLessEarned,
+      ]),
+    ];
+    void ExportEngine.exportToExcel(
+      { headers: ['Measure', 'Value'], rows },
+      { title: 'Underwriting_Results' }
+    ).catch(reportExportFailure);
+  };
+
+  if (!model.hasData) {
+    return (
+      <main className="p-12 text-center max-w-xl mx-auto">
+        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
+          <Shield className="h-10 w-10 text-[var(--text-muted)]" aria-hidden="true" />
+        </div>
+        {/* UI-07: this branch never reaches PageHeader, so the heading here is
+            the document's only <h1>. */}
+        <h1 className="text-xl font-semibold mb-2">Insurance Dashboard</h1>
+        <p className="text-[var(--text-muted)] mb-2">
+          No underwriting activity is posted. This page reads the general ledger and shows nothing
+          until premium, loss or expense accounts carry entries.
+        </p>
+        <p className="text-sm text-[var(--text-muted)] mb-6">
+          Expected account prefixes: 41xx written premium, 42xx earned premium, 43xx ceded premium,
+          51xx loss and LAE, 52xx commission, 53xx underwriting expense.
+        </p>
+        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
+      </main>
+    );
+  }
+
+  const { stats, trend, premiumByLine, lineRows, periodsCovered, priorPeriod } = model;
 
   return (
     <div className="p-6 space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <PageHeader
           title="Insurance Dashboard"
-          purpose="Enterprise underwriting performance: Combined ratio monitoring, premium growth, and loss trends."
+          purpose="Underwriting performance derived from posted premium, loss and expense accounts."
         />
         <div className="flex items-center gap-3">
-          <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
-          <Button variant="outline" size="sm" className="h-10">
-            <Download className="h-4 w-4 mr-2" />
+          {periodsCovered && (
+            <span className="text-xs text-[var(--text-muted)] tabular-nums">
+              Periods {periodsCovered.first} – {periodsCovered.last}
+            </span>
+          )}
+          <Button variant="outline" size="sm" className="h-10" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-2" aria-hidden="true" />
             Export Report
           </Button>
         </div>
@@ -138,35 +151,37 @@ export default function InsuranceDashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
           label="Combined Ratio"
-          value="84.7%"
-          change={-6.2}
-          changeLabel="improving profitability"
-          trend="up"
-          sparklineData={[90.9, 91.9, 88.9, 85.7, 86.7, 84.7]}
+          value={ratio(stats.combinedRatio)}
+          changeLabel={
+            priorPeriod && priorPeriod.combined !== null
+              ? `Prior period ${priorPeriod.month}: ${formatPercent(priorPeriod.combined, 2)}`
+              : 'No prior period to compare'
+          }
+          sparklineData={[...model.combinedSparkline]}
+        />
+        <KPIValue
+          label="Gross Written Premium"
+          value={fmt.currency0(stats.grossWrittenPremium)}
+          changeLabel="Credit-normal total of 41xx accounts"
         />
         <KPIValue
           label="Net Written Premium"
-          value="$51.7M"
-          change={14.2}
-          changeLabel="YTD growth 12%"
-          trend="up"
-          sparklineData={[42, 44, 46, 48, 50, 51.7]}
+          value={stats.netWrittenPremium === null ? '—' : fmt.currency0(stats.netWrittenPremium)}
+          changeLabel={
+            stats.netWrittenPremium === null
+              ? 'Requires posted reinsurance cessions (43xx)'
+              : `Gross less ceded ${fmt.currency0(stats.cededPremium)}`
+          }
         />
         <KPIValue
-          label="Loss Ratio (YTD)"
-          value="58.9%"
-          change={-2.4}
-          changeLabel="favorable reserve dev."
-          trend="up"
-          sparklineData={[62.5, 64.1, 60.8, 58.2, 59.5, 57.8]}
-        />
-        <KPIValue
-          label="Policy Count"
-          value="142,800"
-          change={5.8}
-          changeLabel="new business up 8%"
-          trend="up"
-          sparklineData={[128, 132, 135, 138, 140, 142.8]}
+          label="Loss Ratio"
+          value={ratio(stats.lossRatio)}
+          changeLabel={
+            priorPeriod
+              ? `Prior period ${priorPeriod.month}: ${formatPercent(priorPeriod.lossRatio, 2)}`
+              : 'No prior period to compare'
+          }
+          sparklineData={[...model.lossRatioSparkline]}
         />
       </div>
 
@@ -174,138 +189,165 @@ export default function InsuranceDashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-blue-600" />
+              <Activity className="h-5 w-5 text-blue-600" aria-hidden="true" />
               <CardTitle>Combined Ratio Decomposition</CardTitle>
             </div>
             <CardDescription>
-              {'Loss ratio + Expense ratio = Combined ratio (target < 95%)'}
+              Loss ratio plus expense ratio, by posting period. A period appears only where earned
+              premium exists to divide by.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[350px] w-full pt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={combinedRatioTrend}>
-                  <defs>
-                    <linearGradient id="colorCombined" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="month" axisLine={false} tickLine={false} />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    domain={[0, 100]}
-                    tickFormatter={(v) => `${String(v)}%`}
-                  />
-                  <Tooltip
-                    contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                    formatter={(v) => `${formatPercent(Number(v), 1)}`}
-                  />
-                  <Legend verticalAlign="top" align="right" />
-                  <Area
-                    type="monotone"
-                    dataKey="combined"
-                    name="Combined Ratio"
-                    stroke="#3b82f6"
-                    strokeWidth={3}
-                    fillOpacity={1}
-                    fill="url(#colorCombined)"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="lossRatio"
-                    name="Loss Ratio"
-                    stroke="#ef4444"
-                    strokeWidth={2}
-                    fill="transparent"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="expenseRatio"
-                    name="Expense Ratio"
-                    stroke="#f59e0b"
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                    fill="transparent"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+            {trend.length === 0 ? (
+              <p className="text-sm text-[var(--text-muted)] py-8">
+                No period carries both premium and loss postings, so there is no ratio series to
+                plot.
+              </p>
+            ) : (
+              <div className="h-[350px] w-full pt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={[...trend]}>
+                    <defs>
+                      <linearGradient id="colorCombined" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="month" axisLine={false} tickLine={false} />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(v) => `${String(v)}%`}
+                    />
+                    <Tooltip
+                      contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                      formatter={(v) => formatPercent(Number(v), 2)}
+                    />
+                    <Legend verticalAlign="top" align="right" />
+                    <Area
+                      type="monotone"
+                      dataKey="combined"
+                      name="Combined Ratio"
+                      stroke="#3b82f6"
+                      strokeWidth={3}
+                      fillOpacity={1}
+                      fill="url(#colorCombined)"
+                      connectNulls={false}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="lossRatio"
+                      name="Loss Ratio"
+                      stroke="#ef4444"
+                      strokeWidth={2}
+                      fill="transparent"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="expenseRatio"
+                      name="Expense Ratio"
+                      stroke="#f59e0b"
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      fill="transparent"
+                      connectNulls={false}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-indigo-500" />
+              <BarChart3 className="h-5 w-5 text-indigo-500" aria-hidden="true" />
               <CardTitle>Premium by Line</CardTitle>
             </div>
-            <CardDescription>Written vs. Earned premium</CardDescription>
+            <CardDescription>Written vs. earned premium</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] w-full pt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={premiumByLine} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
-                  <XAxis type="number" hide />
-                  <YAxis
-                    dataKey="name"
-                    type="category"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 10, fontWeight: 600 }}
-                    width={90}
-                  />
-                  <Tooltip
-                    cursor={{ fill: 'transparent' }}
-                    formatter={(v) => `$${formatCompact(Number(v))}`}
-                  />
-                  <Legend />
-                  <Bar
-                    dataKey="written"
-                    name="Written Premium"
-                    fill="#3b82f6"
-                    radius={[0, 4, 4, 0]}
-                    barSize={16}
-                  />
-                  <Bar
-                    dataKey="earned"
-                    name="Earned Premium"
-                    fill="#10b981"
-                    radius={[0, 4, 4, 0]}
-                    barSize={16}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            {premiumByLine.length === 0 ? (
+              <p className="text-sm text-[var(--text-muted)] py-8">
+                No premium account carries a recognised line suffix (41xx/42xx ending 01–05), so
+                premium cannot be split by line.
+              </p>
+            ) : (
+              <div className="h-[300px] w-full pt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={[...premiumByLine]} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+                    <XAxis type="number" hide />
+                    <YAxis
+                      dataKey="name"
+                      type="category"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 10, fontWeight: 600 }}
+                      width={90}
+                    />
+                    <Tooltip
+                      cursor={{ fill: 'transparent' }}
+                      formatter={(v) => fmt.compact(Number(v))}
+                    />
+                    <Legend />
+                    <Bar
+                      dataKey="written"
+                      name="Written Premium"
+                      fill="#3b82f6"
+                      radius={[0, 4, 4, 0]}
+                      barSize={16}
+                    />
+                    <Bar
+                      dataKey="earned"
+                      name="Earned Premium"
+                      fill="#10b981"
+                      radius={[0, 4, 4, 0]}
+                      barSize={16}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Underwriting Results by Line</CardTitle>
-            <CardDescription>
-              Loss ratios, combined ratios, and trend direction for all active product lines
-            </CardDescription>
-          </div>
-          <Button variant="outline" size="sm">
-            <FileText className="h-4 w-4 mr-2" />
-            Detailed Report
-          </Button>
+        <CardHeader>
+          <CardTitle>Underwriting Results by Line</CardTitle>
+          <CardDescription>
+            Premium written and earned per line of business, from the last two digits of the 41xx
+            and 42xx account codes.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable
             columns={columns}
-            data={underwritingResults}
-            caption="Insurance underwriting results"
+            data={[...lineRows]}
+            caption="Underwriting results by line of business"
             ariaLabel="Underwriting results table"
+            emptyMessage="No premium account carries a recognised line suffix."
           />
         </CardContent>
       </Card>
+
+      <section
+        aria-labelledby="insurance-not-derivable"
+        className="text-xs text-[var(--text-muted)] space-y-1"
+      >
+        <h2 id="insurance-not-derivable" className="font-semibold">
+          Not derivable from this ledger
+        </h2>
+        <p>
+          Policy count — a general ledger records amounts, not contracts. Loss and combined ratios
+          per line of business — loss and expense accounts (51xx–53xx) carry no line dimension, so
+          splitting them across lines would require an allocation nobody has posted. Net written
+          premium — shown only when reinsurance cessions are posted to 43xx.
+        </p>
+      </section>
     </div>
   );
 }
