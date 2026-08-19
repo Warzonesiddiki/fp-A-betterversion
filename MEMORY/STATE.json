@@ -1,20 +1,20 @@
 {
   "memory_version": "1.0.0",
-  "project": "OmniPlan (finplan-pro) — Warzonesiddiki/fp-A-betterversion",
+  "project": "OmniPlan (finplan-pro) \u2014 Warzonesiddiki/fp-A-betterversion",
   "updated_at": "2026-08-19",
   "genesis_phase": "Phase 0 / Wave W0.1.1",
   "now": {
-    "task_id": "T-026",
-    "summary": "PR #66 open (session 024+025 waves; money 397 / fabrication 16). Merge #66 only when test-unit green. Then: money-AST next ranked module (BalanceSheetPage 7 is K18-core) + fabrication InsuranceDashboardPage (3)."
+    "task_id": "T-027",
+    "summary": "PR #67 open (money 390 / fabrication 13). tsc, eslint, build ubuntu/macOS/windows, cascade-hold, sentry all PASS; test-unit re-triggered after a 7-hour queue starvation. Merge only when test-unit passes. Then: money-AST LeaseEngine (7) / LeaseDetailPage (7) or the class-wide `existing.debit += e.debit` idiom (16 files); fabrication BoardPackPage (3). URGENT for a human: git apply ci-patches/0005 \u2014 ci.yml is invalid YAML and runs zero jobs."
   },
   "health": {
     "shi": null,
     "uvi": null,
     "dei": null,
-    "money_ast_safety_pct": 81.97,
-    "money_ast_unsafe_ops": 397,
-    "fabrication_findings": 16,
-    "notes": "SHI/UVI/DEI not measured. Ratchets 2026-08-19 after s025: money 489->...->421->404->397 (s025: RevRecEngine 7); fabrication 60->...->32->19->16 (s025: EnergyRiskPage 3). Arc per-file confined every step."
+    "money_ast_safety_pct": 82.13,
+    "money_ast_unsafe_ops": 390,
+    "fabrication_findings": 13,
+    "notes": "SHI/UVI/DEI not measured. Ratchets 2026-08-19 after s026: money 489->...->404->397->390 (s026: BalanceSheetPage 7, plus the K18 retained-earnings identity fix); fabrication 60->...->19->16->13 (s026: InsuranceDashboardPage 3). Arc per-file confined every step; s026 diff moved exactly one file per ratchet."
   },
   "capabilities": {
     "git": true,
@@ -93,7 +93,7 @@
     "src-tauri/src/*.rs (no cargo/rustc in sandbox)",
     "desktop/Tauri verification"
   ],
-  "last_session": "sess_025",
+  "last_session": "sess_026",
   "integrity": {
     "last_run": "2026-08-19",
     "ok": true,

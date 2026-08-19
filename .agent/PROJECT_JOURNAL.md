@@ -1552,3 +1552,119 @@ done. It paid immediately: L1 found the unflagged float reduce; L2 prevented
 an empty-state from hiding a real data source. Cosmic UI evaluated and queued
 post-Phase-0 as an optional theme (QUEUE item 12), not adopted during the
 correctness wave.
+
+## Session 026 — 2026-08-19 — BalanceSheetPage: the identity that could not hold; InsuranceDashboardPage: a page with no ledger
+
+**Branch:** `arena/01a0182b-fp-a-betterversion` (from `main` @ `ec7a66a`, PR #66 merged)
+
+### 1. Money-AST: 397 → 390 (81.97% → 82.13%)
+
+**`BalanceSheetPage` (7 → 0)**, chosen over `LeaseEngine`/`LeaseDetailPage` because
+it is K18-core. The seven flagged operations were the least of it. The L1
+controller pass found a Severity-0 defect neither detector can see:
+
+`computeBalanceSheet` rolled up account prefixes 1, 2 and 3 and then asserted
+`Assets = Liabilities + Equity`. In double entry the sum of debits equals the sum
+of credits, therefore
+
+```
+Assets − Liabilities − PostedEquity  ≡  Revenue − Expenses  ≡  NetIncome
+```
+
+so the page reported **"Off by _net income_"** on any perfectly balanced ledger
+that had traded, and the number it labelled "Total Equity" was contributed
+capital plus _prior_ retained earnings only. Current-period profit sits in the
+open P&L accounts until the books are closed. `src/pages/reports/threeStatementData.ts`
+has derived closing equity as `postedEquity + netIncome` since session 008 — two
+surfaces in the same product disagreed about equity on the same GL, and the suite
+was green.
+
+Three more defects in the same 30 lines:
+
+- the balance test was `Math.abs(diff) < 0.01`, so a genuine one-cent break
+  passed as balanced;
+- the as-of filter compared raw `e.date`, and `'2026-06-30T09:15:00Z' <= '2026-06-30'`
+  is `false`, so an ISO-timestamped entry was dropped from its own day's report;
+- entries whose account code carries no 1–8 class prefix fell out of every total
+  silently — the sheet then could not balance and the page could not say why.
+
+The derivation moved to **`src/pages/reports/balanceSheetData.ts`** (decimal
+throughout, one rounding on emission, exact-zero balance test, unclassified
+movement counted and disclosed). The page now formats and re-adds nothing:
+`report.totalLiabilitiesAndEquity` is derived once. Its empty-state heading went
+`<h2>` → `<h1>` (UI-07) and the dead help button was removed.
+
+24 known-answer cases plus 6 source guards in `balanceSheetData.test.ts`; new DOM
+probes in `BalanceSheetPage.deep.test.tsx` for the traded-books case and the
+unmapped-account note.
+
+### 2. Fabrication: 16 → 13
+
+**`InsuranceDashboardPage` (3 → 0)** read no store and called no engine. The
+detector flagged three strings; the page shipped far more: `142,800` policies,
+six months of typed loss/expense ratios, five premium lines, a five-row
+"Underwriting Results" table of named products with typed per-line loss and
+combined ratios and an `Improving`/`Stable`/`Worsening` trend word, and three
+invented KPI deltas (`change={-6.2}`, `change={14.2}`,
+`changeLabel="YTD growth 12%"`). **KPI deltas, sparkline arrays and trend words
+are invisible to the fabrication detector.**
+
+Worse, its own test file `vi.mock`-ed `@/engines` — a barrel the page did not
+import — so the mock never applied and neither assertion touched a number. That
+is the same shape as the board-pack tests from session 010.
+
+Everything is now derived through **`src/pages/insurance/insuranceDashboardData.ts`**,
+which wraps the real `InsuranceEngine` (de-fabricated in session 022: natural
+balance, no `× 0.85` cession, no `/ 360` policy count, no `sin()`-seeded trend).
+Deliberate absences, disclosed on the page:
+
+- **policy count** — a ledger records amounts, not contracts (`null`);
+- **per-line loss and combined ratios** — the engine's line split reads the last
+  two digits of 41xx/42xx premium codes; 51xx–53xx carry no line dimension, so a
+  per-line ratio would need an allocation nobody posted. The table publishes
+  written, earned and `written − earned`;
+- **net written premium** — shown only when cessions are posted to 43xx.
+
+Ratio movements are quoted as the prior period's own value rather than pushed
+through KPIValue's `%` arrow, because a combined-ratio movement is percentage
+points, not percent change. `insuranceStore`'s persist seeds were read first
+(session-024 trap) and are already empty at version 2. The dead "Detailed Report"
+button was removed and "Export Report" wired to a real Excel export that marks the
+absent measures as absent.
+
+13 known-answer cases + 6 source guards; the page test rewritten to 11 DOM probes
+against the real engine and the real store.
+
+### 3. Verification
+
+- **Per-file `--json` diff** against a `git worktree` of HEAD: exactly one file
+  moved on each ratchet — money `BalanceSheetPage.tsx` 7→0 (158 of 159 untouched),
+  fabrication `InsuranceDashboardPage.tsx` 3→0 (7 of 8 untouched). Both moves are
+  product safety, not measurement drift. Two new modules entered the scan already
+  safe.
+- **Teeth:** with both derivation modules present and only the two pages reverted
+  to HEAD, **21** new assertions fail. Reverting the single line
+  `postedEquity.plus(currentPeriodEarnings)` → `postedEquity` fails **8** more.
+- **L4 caught what the shard would not have.** The first full-suite run came back
+  **1 failed / 14,362 passed** — `src/theme/lightContrast.contract.test.ts` on two
+  new `text-slate-300` cells with no dark ancestor. Swapped for
+  `--text-secondary` and re-run. This is the fifth session in which the full suite
+  found something the 839-test P0 shard does not cover.
+- tsc clean; eslint clean; README claim check green (87 adopters).
+
+### 4. `.agent/state.json` was empty on main
+
+Probing the file the Codex reads at boot step B8 showed **0 bytes**. It held 12,028 bytes at
+`646bdf4` (PR #64), was truncated at `082e70c` (PR #65) and shipped empty again at `ec7a66a`
+(PR #66). `blueprint_status` lives there, so on a strict reading of Article XVIII the last two
+merges left the tree in a state where no product code was permitted. Restored from `646bdf4`
+and brought forward: session id, ratchets (390 / 13), the five W0.1.1 modules completed since,
+and the balance-sheet Severity-0. `wc -c .agent/state.json` is now a documented boot check.
+
+### 5. Carried forward
+
+`src/pages/sector/InsuranceDashboardPage.tsx` (routed at `/sector/insurance`) derives
+"revenue" as `entries.filter(e => e.credit > e.debit).map(e => e.credit)` and "claims"
+from `accountName.toLowerCase().includes('claim')` — a per-entry sign filter and a
+free-text name match, neither of which is a chart-of-accounts rule. Neither detector
+flags it. Logged in `MEMORY/TASKS/NOW.md` as a semantics fix for a later wave.

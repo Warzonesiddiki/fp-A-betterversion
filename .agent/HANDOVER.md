@@ -1,9 +1,9 @@
 # OmniPlan — Session Handover
 
-**Last updated:** 2026-08-19 (end of session 025)
-**Branch of record:** `arena/01a0178d-fp-a-betterversion`
-**Prior merge:** PR #65 → `main` @ `082e70c` (merged 2026-08-19T01:03Z, all checks green incl. test-unit)
-**In flight:** PR #66 (session-024 + session-025 waves; merge only when test-unit green)
+**Last updated:** 2026-08-19 (end of session 026)
+**Branch of record:** `arena/01a0182b-fp-a-betterversion`
+**Prior merges:** PR #65 → `main` @ `082e70c`; PR #66 → `main` @ `ec7a66a` (both green incl. test-unit)
+**In flight:** session-026 wave pair on `arena/01a0182b-fp-a-betterversion` (merge only when test-unit green)
 
 Paste the "Handover Prompt" section below into a new session to continue.
 
@@ -26,15 +26,15 @@ You are the autonomous Technical Owner / Chief Product Architect for **OmniPlan*
 
 The Article XVIII blueprint gate is **LOCKED** (`.agent/state.json` → `blueprint_status`), so product code is unblocked. Phase 0 / Wave W0.1.1 is in progress: raising AST money safety toward ≥90%.
 
-**Money-AST ratchet: 397 unsafe ops / 159 unsafe modules / 723 safe / 81.97%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. Session 025 moved `RevRecEngine` 7→0 (ASC 606 allocation + contract asset/liability on decimal). Per-file diff confined.
+**Money-AST ratchet: 390 unsafe ops / 158 unsafe modules / 726 safe / 82.13%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. Session 026 moved `BalanceSheetPage` 7→0 — and with it a Severity-0 the detector cannot see: the page rolled up prefixes 1/2/3 and asserted `Assets = Liabilities + Equity`, so it reported "Off by _net income_" on every balanced ledger that had traded. Closing equity now includes current-period earnings. Per-file diff confined to that one file.
 
-**Fabrication ratchet: 16 findings / 8 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. Session 025 moved `EnergyRiskPage` 3→0 (honest empty state — no market-risk data source exists).
+**Fabrication ratchet: 13 findings / 7 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. Session 026 moved `InsuranceDashboardPage` 3→0 (read no store, called no engine; now derived from the real `InsuranceEngine`, with policy count and per-line loss ratios disclosed as not derivable).
 
-Completed W0.1.1 modules: `FinancialStatementTemplates` (59→0), `ThreeStatementDashboardPage` (34→0), `SafeMathParser` (27→0), the two export engines (37 findings, all page-geometry false positives), `TaxProvisionPage` (22→0), `AutoCommentaryEngine` (16→0), `FinancialInstrumentsEngine` (15→0), `GoalSeekPage` (14→0), `ScenarioBuilderPage` (14→0), `CreditRiskPage` (13→0), `BenchmarkingPage` (8→0), `DriverCascadeEngine` (7→0), `RevRecEngine` (7→0), `telecomStore` ARPU (2→0).
+Completed W0.1.1 modules: `FinancialStatementTemplates` (59→0), `ThreeStatementDashboardPage` (34→0), `SafeMathParser` (27→0), the two export engines (37 findings, all page-geometry false positives), `TaxProvisionPage` (22→0), `AutoCommentaryEngine` (16→0), `FinancialInstrumentsEngine` (15→0), `GoalSeekPage` (14→0), `ScenarioBuilderPage` (14→0), `CreditRiskPage` (13→0), `BenchmarkingPage` (8→0), `DriverCascadeEngine` (7→0), `RevRecEngine` (7→0), `BalanceSheetPage` (7→0), `telecomStore` ARPU (2→0).
 
-**Next money-AST worklist item:** next ranked module from `node scripts/money-ast-detector.mjs --list`. Skip `mockData/*` (fixture factories). `BalanceSheetPage` (7) is K18-core. Note: the grouping idiom `existing.debit += e.debit` recurs across ≥6 pages — a class-wide fix moves several files at once.
+**Next money-AST worklist item:** next ranked module from `node scripts/money-ast-detector.mjs --list`. Skip `mockData/*` (fixture factories). Candidates: `LeaseEngine` (7), `LeaseDetailPage` (7), `SankeyChart` (6 — check it is not layout geometry), `WorkingCapitalPage` / `HealthcareDashboardPage` / `CashFlowPage` / `StoreDashboardPage` / `DeferredSchedulePage` / `ARRDashboard` (6 each). Still open: the grouping idiom `existing.debit += e.debit` recurs in **16** non-test files (enumerated in `MEMORY/TASKS/NOW.md`) — a class-wide fix moves several at once.
 
-**Next fabrication worklist (worst first):** `InsuranceDashboardPage` (3), `BoardPackPage` (3), then the twos (EmissionsTrading, EnergyDashboard, ClaimsAnalytics, FacilityManagement) and the ones. Check both `src/pages/sector/` and `src/pages/sectors/` twins, grep each page for its store, and read the store's persist seeds first.
+**Next fabrication worklist (worst first):** `BoardPackPage` (3), then the twos (EmissionsTrading, EnergyDashboard, ClaimsAnalytics, FacilityManagement) and the ones (RenewableEnergy, ICReconciliationReport). Check both `src/pages/sector/` and `src/pages/sectors/` twins, grep each page for its store, and read the store's persist seeds first.
 
 ### Read this before you trust either ratchet
 
@@ -67,16 +67,18 @@ So: **a file at "0 unsafe ops" or "0 fabrication findings" is un-flagged, not ce
 - **Source guards must not trip on disclosure prose.** Session 011's first guard matched the sentence that _named_ the invented jurisdictions. Strip comments, then match assignment patterns (`jurisdiction: '…'`, `.times(0.7)`), not words.
 - **Do not call a correct engine with invented inputs.** `TaxEngine.computeProvision` is money-safe; feeding it `taxRate: 0.21` the GL does not carry would launder a fabrication through a trusted API.
 - **A waterfall that adds the residual as a third step double-counts.** Pretax − tax is the bridge; do not also add net income.
+- **Closing equity must include current-period earnings.** `Assets = Liabilities + Equity` cannot hold on a traded ledger without it; a balance sheet that omits it reports an imbalance exactly equal to net income (session 026).
+- **The fabrication detector does not see KPI deltas, sparkline arrays or trend words.** `change={-6.2}` next to a flagged `84.7%` is the same lie in a shape the scanner ignores.
 
 ### Environment and workflow
 
-- **Session is fixed to branch `arena/01a0178d-fp-a-betterversion`.** Commit and push only there. (Each Arena session gets its own `arena/<id>-fp-a-betterversion` branch; PRs always target `main`.)
+- **Session is fixed to branch `arena/01a0182b-fp-a-betterversion`.** Commit and push only there. (Each Arena session gets its own `arena/<id>-fp-a-betterversion` branch; PRs always target `main`.)
 - **`MEMORY/` is the secondary brain.** Boot with `MEMORY/INDEX.md` → `STATE.json` → `TRUTH.md` → `TASKS/NOW.md`; write through in the same turn; `node MEMORY/_system/check.mjs` must stay PASS. Disk > MEMORY > recollection.
 - **Pre-commit** (~45s): eslint (staged) → `tsc --noEmit` → prettier (staged) → secret scan. **Pre-push** (~3–5 min): 12 gates incl. build, P0 shard, README claim checks, money ratchet, fabrication ratchet, cascade-hold ledger.
 - **Always push via `start_process`**, never `bash` — pre-push exceeds the bash timeout. Poll with `get_process_output`.
 - **Always `npx prettier --write` before `git add`** on any JSON or MD you generated, or pre-commit fails with husky exit 123.
 - **CORRECTED (session 023): the CI `test-unit` failure was NOT benign.** The failing step is the Vitest run itself, not the coverage upload. The full suite was genuinely red (6 files) while every pre-push gate passed, because pre-push runs an 839-test P0 shard that excludes the smoke/contract files. Run the FULL suite before opening a PR. A tracker hook auto-commits `docs(tracker): auto-update progress tracker` after your commits. Expected, not an error.
-- **`.github/workflows/**`cannot be pushed** — deliver CI changes via`ci-patches/`for a human to`git apply`. `ci-patches/0005-\*.patch` is still pending (it fixes the 80 GiB heap flag).
+- **`.github/workflows/**`cannot be pushed** — deliver CI changes via`ci-patches/`for a human to`git apply`. **`ci-patches/0005-\*.patch`is still pending and is now urgent:** besides the 80 GiB heap flag and the 15-minute timeout, it removes a duplicated`if: always()`key that makes`ci.yml`**invalid YAML**. That file therefore produces **zero jobs** on every run —`typecheck`, `lint`, the 4-way sharded `test`, `test-merge`, `build`, `e2e`, `a11y`and the blocking`CI Summary`gate have never executed. Measured session 026; see`ci-patches/README.md` § Severity note.
 - **No cargo/rustc in the sandbox** → do not edit `src-tauri/src/*.rs` (§23.8 K2, ADR-011).
 - Sandbox restores wipe `node_modules/` and rewind `HEAD`. First symptom is `Cannot find module 'typescript'`. Recover: `git fetch origin <branch>` → `git reset --soft <sha>` → bare `git reset` → `npm install`.
 - vitest 4.1.7 has **no `basic` reporter** — use default or `--reporter=dot`. Full suite ≈15 min. `0 tests` reported ⇒ suspect a parse error.
@@ -85,7 +87,7 @@ So: **a file at "0 unsafe ops" or "0 fabrication findings" is un-flagged, not ce
 
 **Correctness / gates**
 
-- Fabrication worklist uncleaned: 16 displayed invented figures across 8 files (ratcheted; sessions 024-025 cleaned Telecom/Construction/Equipment/ValueBasedCare + healthcareStore seeds + EnergyRisk). Sector dashboards ship module fixtures or fall back to demo data when their store is empty — check for that pattern, the detector only sees the literals. Also check the STORE's persist seeds — session 024 found the same fabrication living in both the page and the store.
+- Fabrication worklist uncleaned: 13 displayed invented figures across 7 files (ratcheted; sessions 024-025 cleaned Telecom/Construction/Equipment/ValueBasedCare + healthcareStore seeds + EnergyRisk). Sector dashboards ship module fixtures or fall back to demo data when their store is empty — check for that pattern, the detector only sees the literals. Also check the STORE's persist seeds — session 024 found the same fabrication living in both the page and the store.
 - No detector for raw floats crossing a render/format boundary. Live instance: `ProfessionalExportEngine` types rows as `(string|number)[][]` and passes them to `autoTable` with only column 0 stringified — an unformatted float prints `0.30000000000000004` into a board pack.
 - Detector blind spot: single-line arrow bodies over `args[i]!` (logged for W0.1.6, type-based detection).
 - No automated detector for numeric ratio invention or view/memo divergence (source guards are per-module).
@@ -102,6 +104,7 @@ So: **a file at "0 unsafe ops" or "0 fabrication findings" is un-flagged, not ce
 
 **Product**
 
+- `src/pages/sector/InsuranceDashboardPage.tsx` (routed at `/sector/insurance`) derives "revenue" from `entries.filter(e => e.credit > e.debit)` and "claims" from `accountName.toLowerCase().includes('claim')`. Neither is a chart-of-accounts rule and neither detector flags it. Found in session 026, not fixed.
 - `BoardPackTemplate` is exported through the barrel but **not routed** — no user reaches it. Decide whether to route it or delete it.
 - 13 P0-open features in §3.8 (F-PLAT-001/005, F-SEM-001, F-MDM-001, F-OPS-002, F-SEC-003/004, F-CTRL-001, F-AI-011, F-INTEGRATE-000, F-WORKFLOW-007/008, F-COLLAB-002).
 
@@ -127,9 +130,9 @@ R-21 no system of record (20) · R-22 money-gate false-green (20) · R-24 deskto
 | `.agent/PROJECT_JOURNAL.md`             | Session narrative + ADRs 001–013. Sessions 007–012 carry the correctness lessons   |
 | `.agent/state.json`                     | `blueprint_status`, indices, phase, queue                                          |
 | `scripts/money-ast-detector.mjs`        | AST money-safety detector (`--update --list --file --json`)                        |
-| `scripts/money-ast-baseline.json`       | Ratchet baseline (397 / 81.97%)                                                    |
+| `scripts/money-ast-baseline.json`       | Ratchet baseline (390 / 82.13%)                                                    |
 | `scripts/fabrication-detector.mjs`      | Displayed-literal fabrication detector (W0.1.7)                                    |
-| `scripts/fabrication-baseline.json`     | Ratchet baseline (16 / 8 files)                                                    |
+| `scripts/fabrication-baseline.json`     | Ratchet baseline (13 / 7 files)                                                    |
 | `src/utils/money.ts`                    | **The only** money primitive: decimal.js, precision 40, ROUND_HALF_UP              |
 | `src/utils/moneyAstDetector.test.ts`    | Detector regression locks incl. the `margin` precision fix                         |
 | `src/utils/fabricationDetector.test.ts` | Fabrication detector must-catch / must-ignore locks                                |

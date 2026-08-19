@@ -302,7 +302,11 @@ describe('Sector Page Smoke Tests', () => {
 
     it('displays the page heading', () => {
       renderPage(InsuranceDashboardPage, '/insurance', '/insurance');
-      expect(screen.getByText(/Insurance/i)).toBeInTheDocument();
+      // Exact heading, not a loose /Insurance/i: the substring also occurs in
+      // body copy ("reinsurance"), and a loose matcher throws on a second hit.
+      expect(
+        screen.getByRole('heading', { level: 1, name: 'Insurance Dashboard' })
+      ).toBeInTheDocument();
     });
   });
 

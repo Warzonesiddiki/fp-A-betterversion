@@ -258,4 +258,78 @@ confidence: high
         "Churn Risk Mix (active subscribers)".
   instead: exact-text matchers (`getByText('Active Subscribers')`) whenever
            the token can appear in unrelated copy.
+
+[DO-NOT] Assert Assets = Liabilities + Equity without closing the P&L into equity.
+  seen: BalanceSheetPage rolled up prefixes 1/2/3 only. Sum of debits equals
+        sum of credits, so Assets - Liabilities - PostedEquity IS net income;
+        the page told every user with a traded ledger "Off by <net income>",
+        and its "Total Equity" excluded current-period earnings.
+  instead: closing equity = posted equity (prefix 3) + (4 - 5 - 6 - 7 - 8).
+  evidence: session 026, src/pages/reports/balanceSheetData.ts; threeStatementData.ts
+           had it right since session 008 and the two surfaces disagreed.
+
+[DO-NOT] Give a balance/reconciliation check a tolerance window.
+  seen: `Math.abs(diff) < 0.01` reported perfectly balanced books as balanced
+        AND a real one-cent break as balanced.
+  instead: round the UNROUNDED difference once, then test exact zero. Never
+           difference two independently rounded sides -- that mints a phantom cent.
+
+[DO-NOT] Compare an entry date to an as-of date without slicing to 10 chars.
+  seen: `e.date <= asOfDate` with an ISO timestamp: '2026-06-30T09:15:00Z' is
+        NOT <= '2026-06-30', so a same-day entry vanished from its own report.
+  instead: (e.date ?? '').slice(0, 10) <= asOfDate.
+
+[DO-NOT] Let entries with an unmapped account code fall out of every total.
+  seen: prefixes outside 1-8 were filtered into nothing; the sheet then could
+        not balance and the page could not say why.
+  instead: count them, sum their movement, and render the gap as evidence.
+
+[DO-NOT] Assume the fabrication detector sees a KPI delta.
+  seen: InsuranceDashboardPage shipped `change={-6.2}`, `change={14.2}` and
+        `changeLabel="YTD growth 12%"` next to the three literals the detector
+        DID flag. Deltas, sparkline arrays and trend words are invisible to it.
+  instead: derive the delta or quote the prior period's own value. A ratio
+           movement is percentage POINTS -- never render pp through a % arrow.
+
+[DO-NOT] getByText a token that is a substring of a longer domain word.
+  seen: /Insurance/i matched both the h1 and body copy containing
+        "reinsurance", so the smoke test threw once the empty state existed.
+  instead: getByRole('heading', { level: 1, name: 'Insurance Dashboard' }).
+
+[DO-NOT] Stub recharts and forget Sparkline renders its own AreaChart.
+  seen: getByTestId('area-chart') found several elements on any page with a
+        KPI sparkline.
+  instead: stub '@/components/ui/Sparkline' separately -- and make the stub
+           print its data so the sparkline series becomes an assertion.
+
+[DO-NOT] Query DataTable with role="table".
+  seen: it renders role="grid"; getByRole('table', ...) finds nothing.
+
+[DO-NOT] Assume .agent/state.json still has content because TRUTH says it does.
+  seen: it was truncated to 0 bytes in PR #65 and shipped empty through PR #66.
+        The Codex reads blueprint_status from it at boot step B8, so a strict
+        reading of Article XVIII would have halted all product code.
+  instead: `wc -c .agent/state.json` during boot. Restore from the last
+           non-empty commit (`git log -- .agent/state.json`, 646bdf4 = 12,028 B).
+  evidence: session 026.
+
+[DO-NOT] Assume .github/workflows/ci.yml actually runs.
+  seen: a duplicated `if: always()` on the summary job makes the file invalid
+        YAML, so every run completes as failure with ZERO jobs. typecheck,
+        lint, the 4-way sharded test, test-merge, build, e2e, a11y and the
+        blocking CI Summary gate have never executed. The PR page still looks
+        covered because tsc.yml / lint.yml / build.yml / test-unit.yml are
+        separate workflows.
+  instead: a red ci.yml with an empty `.jobs[]` is a PARSE failure, not a test
+           failure. `gh api .../actions/runs/<id>/jobs --jq '.jobs[]|.name'`
+           returning nothing is the tell.
+  evidence: session 026; fix already written in ci-patches/0005.
+
+[DO-NOT] Wait indefinitely on a queued GitHub job.
+  seen: PR #67's test-unit sat in `queued` for 7 h with steps: [] and
+        created_at == updated_at. It is a plain ubuntu-latest job, so it was
+        starvation, not a missing runner label.
+  instead: the App token lacks `actions: write` (gh run cancel / rerun -> 403).
+           Push to the PR branch; `concurrency: cancel-in-progress: true`
+           retires the stale run and queues a fresh one.
 ```
