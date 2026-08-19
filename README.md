@@ -139,11 +139,11 @@ QuickBooks · NetSuite · Xero · Sage Intacct · Microsoft Dynamics 365 · Sale
 
 ### Deployment
 
-| Mode        | Stack                              | Notes                                                                 |
-| ----------- | ---------------------------------- | --------------------------------------------------------------------- |
-| **Desktop** | Tauri 2 + Rust backend             | Fully offline, local-first, data encrypted at rest.                   |
-| **Web build** | React 19 + Vite + Tailwind 4      | Frontend bundle for the Tauri shell; plain-browser rendering is intentionally blocked (desktop-only). |
-| **Server**  | Node + Express + SQLite (mockable) | Multi-user APIs, RBAC, period close, JWT auth; 107 integration tests. |
+| Mode          | Stack                              | Notes                                                                                                 |
+| ------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Desktop**   | Tauri 2 + Rust backend             | Fully offline, local-first, data encrypted at rest.                                                   |
+| **Web build** | React 19 + Vite + Tailwind 4       | Frontend bundle for the Tauri shell; plain-browser rendering is intentionally blocked (desktop-only). |
+| **Server**    | Node + Express + SQLite (mockable) | Multi-user APIs, RBAC, period close, JWT auth; 107 integration tests.                                 |
 
 ---
 
@@ -166,7 +166,7 @@ scripts/            # CI ratchets, engine manifest, audit, SHA-pinning tooling
 > **Financial Engines (182 modules)**, **Zustand Stores (44 stores)**, **Web Workers (4 active)**.
 > Coverage thresholds in `vite.config.ts` are 50% (statements/branches/functions/lines) — this is a
 > floor, not a claim of production coverage; no full-suite coverage run completes inside CI.
-> **Measured adoption: 85 of 258 engine/store modules** route through the canonical money primitive
+> **Measured adoption: 87 of 258 engine/store modules** route through the canonical money primitive
 > at the engine/store layer (with UI-layer adoption continuing in GAP-1; see the ratchet for total
 > financial-path counts).
 
