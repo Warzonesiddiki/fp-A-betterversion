@@ -62,7 +62,7 @@ export function GovernmentDashboardPage() {
         aria-label="Government Sector Dashboard"
       >
         <Landmark className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Government Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Government Data</h1>
         <p className="text-[var(--text-muted)]">
           Import ledger activity or appropriation lines to see revenue, expenditure and budget
           execution for your jurisdiction.

@@ -73,7 +73,7 @@ export function EducationDashboardPage() {
         aria-label="Education Sector Dashboard"
       >
         <GraduationCap className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Education Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Education Data</h1>
         <p className="text-[var(--text-muted)]">
           Import general-ledger activity for your institution to see revenue by source, expense
           distribution and budget variance.

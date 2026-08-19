@@ -132,12 +132,12 @@ export default function ForecastBuilderPage() {
       {
         metric: 'MAPE',
         value: formatPercent(accuracy.mapePercent, 1),
-        description: 'Mean absolute percentage error, walk-forward backtest',
+        description: 'Mean Absolute Percentage Error — walk-forward backtest',
       },
       {
         metric: 'RMSE',
         value: accuracy.rmse === null ? '\u2014' : fmt.currency0(accuracy.rmse),
-        description: 'Root mean square error of the same backtest',
+        description: 'Root Mean Square Error of the same backtest',
       },
       {
         metric: 'R-Squared',

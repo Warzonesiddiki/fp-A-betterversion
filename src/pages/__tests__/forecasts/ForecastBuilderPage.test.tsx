@@ -123,7 +123,10 @@ describe('Page: ForecastBuilderPage', () => {
 
     it('displays accuracy metrics', async () => {
       renderPage(ForecastBuilderPage, '/forecasts/builder', '/forecasts/builder');
-      expect(await screen.findByText('Mean Absolute Percentage Error')).toBeInTheDocument();
+      // The description now names the method that produced the figure: the
+      // statistics come from a walk-forward backtest, not from four literals.
+      expect(await screen.findByText(/Mean Absolute Percentage Error/)).toBeInTheDocument();
+      expect(screen.getByText(/walk-forward backtest/)).toBeInTheDocument();
     });
   });
 

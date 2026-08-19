@@ -69,7 +69,7 @@ export function LogisticsDashboardPage() {
         aria-label="Logistics Sector Dashboard"
       >
         <Truck className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Logistics Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Logistics Data</h1>
         <p className="text-[var(--text-muted)]">
           Import ledger activity, shipments or route costs to see freight revenue, cost distribution
           and lane economics.
