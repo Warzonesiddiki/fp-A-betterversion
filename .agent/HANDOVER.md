@@ -1,7 +1,7 @@
 # OmniPlan — Session Handover
 
-**Last updated:** 2026-08-19 (end of session 026)
-**Branch of record:** `arena/01a0182b-fp-a-betterversion`
+**Last updated:** 2026-08-20 (end of session 027)
+**Branch of record:** `arena/01a01b67-fp-a-betterversion`
 **Prior merges:** PR #65 → `main` @ `082e70c`; PR #66 → `main` @ `ec7a66a` (both green incl. test-unit)
 **In flight:** session-026 wave pair on `arena/01a0182b-fp-a-betterversion` (merge only when test-unit green)
 
@@ -26,9 +26,9 @@ You are the autonomous Technical Owner / Chief Product Architect for **OmniPlan*
 
 The Article XVIII blueprint gate is **LOCKED** (`.agent/state.json` → `blueprint_status`), so product code is unblocked. Phase 0 / Wave W0.1.1 is in progress: raising AST money safety toward ≥90%.
 
-**Money-AST ratchet: 390 unsafe ops / 158 unsafe modules / 726 safe / 82.13%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. Session 026 moved `BalanceSheetPage` 7→0 — and with it a Severity-0 the detector cannot see: the page rolled up prefixes 1/2/3 and asserted `Assets = Liabilities + Equity`, so it reported "Off by _net income_" on every balanced ledger that had traded. Closing equity now includes current-period earnings. Per-file diff confined to that one file.
+**Money-AST ratchet: 376 unsafe ops / 156 unsafe modules / 730 safe / 82.39%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. Session 026 moved `BalanceSheetPage` 7→0 — and with it a Severity-0 the detector cannot see: the page rolled up prefixes 1/2/3 and asserted `Assets = Liabilities + Equity`, so it reported "Off by _net income_" on every balanced ledger that had traded. Closing equity now includes current-period earnings. Per-file diff confined to that one file.
 
-**Fabrication ratchet: 13 findings / 7 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. Session 026 moved `InsuranceDashboardPage` 3→0 (read no store, called no engine; now derived from the real `InsuranceEngine`, with policy count and per-line loss ratios disclosed as not derivable).
+**Fabrication ratchet: 10 findings / 6 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. Session 026 moved `InsuranceDashboardPage` 3→0 (read no store, called no engine; now derived from the real `InsuranceEngine`, with policy count and per-line loss ratios disclosed as not derivable).
 
 Completed W0.1.1 modules: `FinancialStatementTemplates` (59→0), `ThreeStatementDashboardPage` (34→0), `SafeMathParser` (27→0), the two export engines (37 findings, all page-geometry false positives), `TaxProvisionPage` (22→0), `AutoCommentaryEngine` (16→0), `FinancialInstrumentsEngine` (15→0), `GoalSeekPage` (14→0), `ScenarioBuilderPage` (14→0), `CreditRiskPage` (13→0), `BenchmarkingPage` (8→0), `DriverCascadeEngine` (7→0), `RevRecEngine` (7→0), `BalanceSheetPage` (7→0), `telecomStore` ARPU (2→0).
 

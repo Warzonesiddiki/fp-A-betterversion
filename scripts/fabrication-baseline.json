@@ -1,11 +1,11 @@
 {
-  "modulesScanned": 800,
-  "filesWithFindings": 7,
-  "findings": 13,
+  "modulesScanned": 802,
+  "filesWithFindings": 6,
+  "findings": 10,
   "byKind": {
     "percent-literal": 4,
-    "currency-literal": 9
+    "currency-literal": 6
   },
   "exportEngineViolations": [],
-  "recordedAt": "2026-08-19T04:14:36.728Z"
+  "recordedAt": "2026-08-19T19:31:37.181Z"
 }

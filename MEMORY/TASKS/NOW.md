@@ -1,50 +1,33 @@
 ---
 id: MEMORY/TASKS/NOW.md
 status: active
-last_verified: 2026-08-19
-verified_by: arena-agent/session-026
+last_verified: 2026-08-20
+verified_by: arena-agent/session-027
 confidence: high
 ---
 
 # TASKS/NOW — the single current critical path
 
-**T-027 · session-026 wave pair done; open the PR, then take the next pair.**
+**T-028 · session-027 wave pair done; push + PR, then the next pair.**
 
-State: PR #66 **MERGED** into `main` @ `ec7a66a`. This session branched from it and landed
-the T-026 pair: money-AST 397 → **390** (`BalanceSheetPage` 7→0, plus the K18 fix that
-closes current-period earnings into equity) and fabrication 16 → **13**
-(`InsuranceDashboardPage` 3→0, now derived from the real `InsuranceEngine`). Per-file
-`--json` diffs confined to exactly one file each; teeth verified (21 assertions fail on a
-two-page revert; 8 more on a one-line equity revert).
+State: PR #67 is already on `main` @ `8ea4c2f`. This session landed money-AST 390 → **376**
+(`LeaseEngine` 7→0, `LeaseDetailPage` 7→0) and fabrication 13 → **10** (`BoardPackPage`
+3→0). Full suite 1257 / 14,373 / 1 skipped / 0 failed.
 
 Do this in order:
 
-1. Push this branch and open the PR against `main`. `gh pr checks <n>` — merge ONLY when
-   `test-unit` passes. Never merge red. Full suite before the PR, always.
+1. Push this branch and open the PR against `main`. Merge ONLY when `test-unit` passes.
 2. `node scripts/money-ast-detector.mjs --list` — next ranked module.
-   **Skip `src/services/mockData/*`** (fixture factories: `index.ts` 13,
-   `generators.ts` 7, `glData.ts` 5). Real candidates: `LeaseEngine` (7),
-   `LeaseDetailPage` (7), `SankeyChart` (6, check it is not layout geometry),
+   **Skip `src/services/mockData/*`**. Candidates: `SankeyChart` (6 — confirm not layout),
    `WorkingCapitalPage` (6), `HealthcareDashboardPage` (6), `CashFlowPage` (6),
    `StoreDashboardPage` (6), `DeferredSchedulePage` (6), `ARRDashboard` (6).
-3. **Class-wide candidate, still open.** The grouping idiom `existing.debit += e.debit`
-   recurs in 16 non-test files — one fix pattern moves several toward the ≥90% gate:
-   `pages/charts/ChartOfAccountsPage`, `pages/collaboration/{ActivityFeed,SharedReports,TeamWorkspace}`,
-   `pages/consolidation/ConsolidationPage`, `pages/education/EducationPage`,
-   `pages/energy/EnergySectorPage`, `pages/esg/ESGPage`, `pages/government/GovernmentPage`,
-   `pages/healthcare/HealthcarePage`, `pages/insurance/InsurancePage`,
-   `pages/lease/LeaseAccountingPage`, `pages/logistics/LogisticsPage`,
-   `pages/manufacturing/ManufacturingPage`, `pages/saas/SaaSPage`,
-   `pages/telecom/TelecomPage`, `services/mockData/glData.ts` (skip the last).
-4. Fabrication worklist (worst first): `src/pages/reports/BoardPackPage.tsx` (3), then the
-   twos — `energy/EmissionsTradingPage`, `energy/EnergyDashboardPage`,
-   `insurance/ClaimsAnalyticsPage`, `realestate/FacilityManagementPage` — then the ones,
+3. **Class-wide candidate, still open.** `existing.debit += e.debit` in 16 non-test files
+   (enumerated previous NOW). Skip `glData.ts`.
+4. Fabrication worklist: twos — `energy/EmissionsTradingPage`, `energy/EnergyDashboardPage`,
+   `insurance/ClaimsAnalyticsPage`, `realestate/FacilityManagementPage` — then
    `energy/RenewableEnergyPage` and `components/ui/ICReconciliationReport`.
-   Check BOTH `src/pages/sector/` and `src/pages/sectors/` twins first, grep each page for
-   its store, and read the store's persist seeds before rewriting.
 
-Ratchets: money **390** / 158 modules / 82.13%; fabrication **13** / 7 files. Both
-baselines updated in session 026. CHB-008 acknowledges gate 10's fresh-branch squash flags.
+Ratchets: money **376** / 156 modules / 82.39%; fabrication **10** / 6 files.
 
 **Carried debt found this session (not yet fixed):** `src/pages/sector/InsuranceDashboardPage.tsx`
 (routed at `/sector/insurance`) derives "revenue" as `entries.filter(e => e.credit > e.debit)`

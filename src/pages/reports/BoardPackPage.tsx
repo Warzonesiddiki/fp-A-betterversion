@@ -12,75 +12,15 @@ import { FileText, Table as TableIcon, FileText as FileIcon, Save, FolderOpen } 
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
-import { roundTo, sumMoney, subtractMoney, divideMoney } from '@/utils/money';
-import type { GLEntry } from '@/types';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-export interface BoardPackReport {
-  revenue: number;
-  expenses: number;
-  netIncome: number;
-  assets: number;
-  liabilities: number;
-  equity: number;
-  grossMargin: number;
-  totalBudget: number;
-  budgetCount: number;
-  entryCount: number;
-}
+import {
+  computeBoardPackReport,
+  sumByAccountPrefix,
+  type BoardPackReport,
+} from '@/pages/reports/boardPackData';
 
-export function sumByAccountPrefix(
-  entries: readonly GLEntry[],
-  prefixes: readonly string[],
-  mode: 'debit' | 'credit' | 'abs'
-): number {
-  const matched = entries.filter((e) => {
-    const code = e.accountCode || '';
-    return prefixes.some((p) => code.startsWith(p));
-  });
-  const values = matched.map((e) => {
-    if (mode === 'credit') {
-      return subtractMoney(e.credit, e.debit);
-    } else if (mode === 'debit') {
-      return subtractMoney(e.debit, e.credit);
-    } else {
-      return Math.abs(roundTo(subtractMoney(e.debit, e.credit), 2));
-    }
-  });
-  return roundTo(sumMoney(values), 2);
-}
-
-export function computeBoardPackReport(
-  entries: readonly GLEntry[],
-  budgets: readonly { totalAmount?: number }[]
-): BoardPackReport | null {
-  if (entries.length === 0) return null;
-  const revenue = sumByAccountPrefix(entries, ['4'], 'credit');
-  const expenses = sumByAccountPrefix(entries, ['5', '6'], 'abs');
-  const assets = sumByAccountPrefix(entries, ['1'], 'debit');
-  const liabilities = sumByAccountPrefix(entries, ['2'], 'credit');
-  const equity = sumByAccountPrefix(entries, ['3'], 'credit');
-  const netIncome = roundTo(subtractMoney(revenue, expenses), 2);
-  const totalBudget = roundTo(
-    sumMoney(budgets.map((b) => b.totalAmount || 0)),
-    2
-  );
-  const grossMargin =
-    revenue > 0
-      ? roundTo(divideMoney(subtractMoney(revenue, expenses), revenue).times(100), 2)
-      : 0;
-  return {
-    revenue,
-    expenses,
-    netIncome,
-    assets,
-    liabilities,
-    equity,
-    grossMargin,
-    totalBudget,
-    budgetCount: budgets.length,
-    entryCount: entries.length,
-  };
-}
+export type { BoardPackReport };
+export { computeBoardPackReport, sumByAccountPrefix };
 
 interface VarianceHighlight {
   id: string;
@@ -102,14 +42,8 @@ export default function BoardPackPage() {
   const { reports, createReport } = useReportStore();
   const navigate = useNavigate();
 
-  const [commentary, setCommentary] = useState(
-    'Revenue exceeded budget by 8% driven by stronger than expected enterprise bookings. Operating expenses were tightly controlled with a 2% favorable variance vs budget despite higher headcount. Net income of $4.5M represents a 22% YoY improvement. Management expects Q4 momentum to continue with the current pipeline.'
-  );
-  const [varianceHighlights, setVarianceHighlights] = useState<VarianceHighlight[]>([
-    { id: 'vh1', category: 'Travel & Entertainment', variance: '($12,400)', comment: 'Deferred client visits to Q1' },
-    { id: 'vh2', category: 'Software Subscriptions', variance: '($8,200)', comment: 'Annual renewals pulled forward' },
-    { id: 'vh3', category: 'Office Supplies', variance: '$3,500', comment: 'Favorable bulk purchase discount' },
-  ]);
+  const [commentary, setCommentary] = useState('');
+  const [varianceHighlights, setVarianceHighlights] = useState<VarianceHighlight[]>([]);
   const [editingCommentary, setEditingCommentary] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [templateName, setTemplateName] = useState('');
@@ -129,7 +63,11 @@ export default function BoardPackPage() {
         ['2. Exec Summary', 'Revenue', fmt.currency0(report.revenue)],
         ['2. Exec Summary', 'Expenses', fmt.currency0(report.expenses)],
         ['2. Exec Summary', 'Net Income', fmt.currency0(report.netIncome)],
-        ['2. Exec Summary', 'Gross Margin', formatPercent(report.grossMargin, 1)],
+        [
+          '2. Exec Summary',
+          'Gross Margin',
+          report.grossMargin === null ? '—' : formatPercent(report.grossMargin, 1),
+        ],
         ['3. P&L', 'Revenue', fmt.currency0(report.revenue)],
         ['3. P&L', 'Expenses', fmt.currency0(report.expenses)],
         ['3. P&L', 'Net Income', fmt.currency0(report.netIncome)],
@@ -218,8 +156,10 @@ export default function BoardPackPage() {
         <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
           <FileText className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
-        <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-[var(--text-muted)] mb-6">Import GL data to generate the Board Pack.</p>
+        <h1 className="text-xl font-semibold mb-2">Board Pack</h1>
+        <p className="text-[var(--text-muted)] mb-6">
+          No Data — import GL entries to generate the Board Pack.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -500,6 +440,14 @@ export default function BoardPackPage() {
                 Variance Highlights
               </h4>
               <div className="space-y-2" data-testid="variance-highlights">
+                {varianceHighlights.length === 0 && (
+                  <p className="text-sm text-[var(--text-muted)]">
+                    No line-item variance highlights. The GL has no T&amp;E / software /
+                    supplies split, so this pack will not invent Travel, Subscriptions or
+                    Office Supplies figures. Add a highlight only from a number you can
+                    support.
+                  </p>
+                )}
                 {varianceHighlights.map((vh) => (
                   <div key={vh.id} className="flex gap-3 p-3 bg-slate-800/50 rounded-lg items-start">
                     <div className="flex-1">

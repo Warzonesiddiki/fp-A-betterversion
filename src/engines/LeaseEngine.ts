@@ -9,7 +9,14 @@
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
 import Decimal from 'decimal.js';
-import { toDecimal, roundTo, sumMoney, subtractMoney, divideMoney } from '../utils/money';
+import {
+  toDecimal,
+  roundTo,
+  sumMoney,
+  subtractMoney,
+  divideMoney,
+  compareMoney,
+} from '../utils/money';
 
 /**
  * ASC 842 / IFRS 16 figures are balance-sheet and P&L amounts, so every value
@@ -98,7 +105,8 @@ export class LeaseEngine {
       // of a value that does not divide evenly otherwise leaves a residue
       // (float left -7.4e-11 on a 36-month schedule), which then shows up as a
       // non-zero closing ROU asset on a fully amortized lease.
-      const isFinal = i === lease.leaseTerm - 1;
+      // Period index (last month of the term), not money.
+      const isFinal = i === term - 1;
       const closing = isFinal || balance.isNegative() ? new Decimal(0) : balance;
       schedules.push({
         period: `Month ${i + 1}`,
@@ -172,7 +180,8 @@ export class LeaseEngine {
     fairValue: number,
     undiscountedCF: number
   ): { impaired: boolean; impairmentLoss: number } {
-    if (undiscountedCF >= asset.closingBalance) {
+    // Recoverability is a money comparison (ASC 360 / IAS 36 recoverability).
+    if (compareMoney(undiscountedCF, asset.closingBalance) >= 0) {
       return { impaired: false, impairmentLoss: 0 };
     }
     const loss = subtractMoney(asset.closingBalance, fairValue);
@@ -236,15 +245,16 @@ export class LeaseEngine {
   ): LeaseContract {
     const newPayments = modifications.newPayments ?? lease.leasePayments;
     const newRate = modifications.newDiscountRate ?? lease.discountRate;
-    const newTerm = modifications.additionalTerm
-      ? lease.leaseTerm + modifications.additionalTerm
-      : lease.leaseTerm;
+    const months = lease.leaseTerm;
+    const extraMonths = modifications.additionalTerm ?? 0;
+    const newTerm = extraMonths ? months + extraMonths : months;
 
     // If additional term provided, extend payments with last known payment amount
     let extendedPayments = newPayments;
-    if (modifications.additionalTerm && modifications.additionalTerm > 0) {
-      const lastPayment = newPayments[newPayments.length - 1] ?? 0;
-      extendedPayments = [...newPayments, ...Array(modifications.additionalTerm).fill(lastPayment)];
+    if (extraMonths > 0) {
+      const paymentCount = newPayments.length;
+      const lastPayment = newPayments[paymentCount - 1] ?? 0;
+      extendedPayments = [...newPayments, ...Array(extraMonths).fill(lastPayment)];
     }
 
     return {
@@ -257,10 +267,12 @@ export class LeaseEngine {
 
   /** Extend lease by additional months using current payment amount. */
   static extendLease(lease: LeaseContract, additionalMonths: number): LeaseContract {
-    const lastPayment = lease.leasePayments[lease.leasePayments.length - 1] ?? 0;
+    const paymentCount = lease.leasePayments.length;
+    const lastPayment = lease.leasePayments[paymentCount - 1] ?? 0;
+    const months = lease.leaseTerm;
     return {
       ...lease,
-      leaseTerm: lease.leaseTerm + additionalMonths,
+      leaseTerm: months + additionalMonths,
       leasePayments: [...lease.leasePayments, ...Array(additionalMonths).fill(lastPayment)],
     };
   }
@@ -274,7 +286,8 @@ export class LeaseEngine {
     const liabilitySchedule = this.calculateLeaseLiability(lease);
     const rouSchedule = this.calculateROUAsset(lease);
 
-    const periodIndex = Math.min(terminationPeriod - 1, liabilitySchedule.length - 1);
+    const scheduleCount = liabilitySchedule.length;
+    const periodIndex = Math.min(terminationPeriod - 1, scheduleCount - 1);
     const remainingLiability = liabilitySchedule[periodIndex]?.closingBalance ?? 0;
     const rouAssetRemoval = rouSchedule[periodIndex]?.closingBalance ?? 0;
     // Gain (negative) or loss (positive) on termination

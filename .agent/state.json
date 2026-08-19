@@ -1,7 +1,7 @@
 {
   "codex": "ULTIMA",
-  "session_id": "sess_026",
-  "updated_at": "2026-08-19T00:00:00Z",
+  "session_id": "sess_027",
+  "updated_at": "2026-08-20T00:00:00Z",
   "capabilities": {
     "git": true,
     "gh": true,
@@ -28,14 +28,14 @@
   "health": {
     "notes": "frontend gates green; full suite 1254 files green after session 026; server 207/207 green; 0 vulns both workspaces",
     "money_ast": {
-      "unsafeOperations": 390,
-      "unsafeModules": 158,
-      "safeModules": 726,
-      "safetyPercent": 82.13
+      "unsafeOperations": 376,
+      "unsafeModules": 156,
+      "safeModules": 730,
+      "safetyPercent": 82.39
     },
     "fabrication": {
-      "findings": 13,
-      "files": 7,
+      "findings": 10,
+      "files": 6,
       "exportEngines": 0
     }
   },
@@ -172,14 +172,14 @@
       "supersedes": "money-adoption.mjs import proxy (reported 25.44%, could not see float arithmetic)",
       "note": "Numbers are not comparable; 740 previously-invisible unsafe ops are now ratcheted."
     },
-    "next": "W0.1.1 worst-first: money-AST LeaseEngine (7) / LeaseDetailPage (7) or the class-wide `existing.debit += e.debit` grouping idiom (16 non-test files); fabrication BoardPackPage (3).",
+    "next": "W0.1.1 worst-first: SankeyChart (6) / WorkingCapitalPage (6) / grouping idiom; fabrication EmissionsTrading / EnergyDashboard / ClaimsAnalytics / FacilityManagement.",
     "W0.1.1": {
       "status": "IN PROGRESS",
       "target": "AST money safety >= 90%",
       "current": {
-        "unsafeOperations": 390,
-        "unsafeModules": 158,
-        "safetyPercent": 82.13
+        "unsafeOperations": 376,
+        "unsafeModules": 156,
+        "safetyPercent": 82.39
       },
       "completedModules": [
         "src/pages/reports/FinancialStatementTemplates.tsx (59 -> 0; derivation extracted to src/pages/reports/financialStatementData.ts)",
@@ -196,7 +196,9 @@
         "src/engines/DriverCascadeEngine.ts (7 -> 0; cascade deltas/weights/impact sums on decimal)",
         "src/store/telecomStore.ts ARPU (2 -> 0)",
         "src/engines/RevRecEngine.ts (7 -> 0; ASC 606 allocation + contract asset/liability on decimal)",
-        "src/pages/reports/BalanceSheetPage.tsx (7 -> 0; derivation extracted to src/pages/reports/balanceSheetData.ts)"
+        "src/pages/reports/BalanceSheetPage.tsx (7 -> 0; derivation extracted to src/pages/reports/balanceSheetData.ts)",
+        "src/engines/LeaseEngine.ts (7 -> 0; compareMoney recoverability + period/index rename)",
+        "src/pages/lease/LeaseDetailPage.tsx (7 -> 0; derivation extracted to src/pages/lease/leaseDetailData.ts)"
       ],
       "severity0FindingsFixed": [
         "Balance sheet, P&L splits and the entire budget column were fabricated from hardcoded ratios (cash = assets*0.15, budget = actual*0.95, variance% literal 5.3) while reading the real GL; exportable to PDF/Excel from /reports/templates.",
@@ -217,8 +219,8 @@
       "nextWorstFirst": ["src/pages/DashboardPage.tsx (11)"],
       "processFinding2": "View-layer divergence is a distinct blind spot: both modules fixed so far had a roughly correct computation and a view that disagreed with it. Neither the AST detector nor mock-data:audit can see it; both required a render probe. The existing page test passed throughout because it mocked the engine and asserted only headings. It now renders a known ledger and asserts DOM figures. Remaining W0.1.1 modules must be verified by rendering.",
       "fabrication": {
-        "findings": 13,
-        "files": 7,
+        "findings": 10,
+        "files": 6,
         "cleanedRecently": [
           "TelecomDashboardPage",
           "ConstructionDashboardPage",

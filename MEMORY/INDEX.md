@@ -1,8 +1,8 @@
 ---
 id: MEMORY/INDEX.md
 status: active
-last_verified: 2026-08-18
-verified_by: arena-agent/session-017
+last_verified: 2026-08-20
+verified_by: arena-agent/session-027
 confidence: high
 ---
 
@@ -55,10 +55,9 @@ and `.agent/HANDOVER.md`. MEMORY does not replace those — it indexes them.
 
 ## 4. Current phase / NOW
 
-Phase 0, Wave W0.1.1. NOW = *T-027: push + PR the session-026 pair, then the next money-AST
-module (LeaseEngine / LeaseDetailPage / the class-wide `existing.debit += e.debit` idiom) and
-fabrication `BoardPackPage` (3)*. PRs #65 and #66 merged 2026-08-19; session 026 landed money
-397 → 390 and fabrication 16 → 13 → `MEMORY/TASKS/NOW.md`.
+Phase 0, Wave W0.1.1. NOW = *T-028: push + PR the session-027 pair, then SankeyChart /
+WorkingCapital / grouping idiom + fabrication twos*. Session 027 landed money 390 → 376
+(LeaseEngine + LeaseDetailPage) and fabrication 13 → 10 (BoardPackPage).
 
 ## 5. Danger list — the top 5 ways an agent hallucinates THIS repo
 

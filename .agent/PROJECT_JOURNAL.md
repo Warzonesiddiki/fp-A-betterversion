@@ -1668,3 +1668,13 @@ and the balance-sheet Severity-0. `wc -c .agent/state.json` is now a documented 
 from `accountName.toLowerCase().includes('claim')` — a per-entry sign filter and a
 free-text name match, neither of which is a chart-of-accounts rule. Neither detector
 flags it. Logged in `MEMORY/TASKS/NOW.md` as a semantics fix for a later wave.
+
+## Session 027 (2026-08-20)
+
+Money-AST 390 → **376** (`LeaseEngine` 7→0, `LeaseDetailPage` 7→0). Fabrication 13 → **10** (`BoardPackPage` 3→0).
+
+LeaseEngine: six flags were period/index on `lease*` names; recoverability now `compareMoney`.
+LeaseDetail: extracted `leaseDetailData.ts` (no Math.round on money).
+BoardPack: removed seeded T&E/software/supplies literals and $4.5M commentary; closing equity includes NI; gross margin is (rev−COGS)/rev; empty-state h1.
+
+Full suite 1257 / 14373 / 1 skipped / 0 failed. Teeth: 3 source guards fail on page revert.

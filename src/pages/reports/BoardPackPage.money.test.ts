@@ -49,13 +49,13 @@ describe('BoardPackPage money patterns — known answers (GAP-1)', () => {
     expect(total).toBe(6000);
   });
 
-  it('sumByAccountPrefix sums absolute expense accounts (prefixes 5, 6) correctly', () => {
+  it('sumByAccountPrefix sums debit-normal expense accounts (prefixes 5, 6)', () => {
     const entries = [
       makeEntry('5000', 800, 0),
       makeEntry('6000', 300, 0),
       makeEntry('4000', 0, 2000), // ignored
     ];
-    const total = sumByAccountPrefix(entries, ['5', '6'], 'abs');
+    const total = sumByAccountPrefix(entries, ['5', '6'], 'debit');
     expect(total).toBe(1100);
   });
 
@@ -80,16 +80,18 @@ describe('BoardPackPage money patterns — known answers (GAP-1)', () => {
     expect(report?.netIncome).toBe(4500);
   });
 
-  it('computeBoardPackReport calculates balance sheet items (assets, liabilities, equity)', () => {
+  it('computeBoardPackReport closing equity includes current-period earnings', () => {
     const entries = [
       makeEntry('1000', 10000, 0), // assets
       makeEntry('2000', 0, 4000), // liabilities
-      makeEntry('3000', 0, 6000), // equity
+      makeEntry('3000', 0, 5000), // posted equity
+      makeEntry('4000', 0, 1000), // revenue → NI 1000
     ];
     const report = computeBoardPackReport(entries, []);
     expect(report?.assets).toBe(10000);
     expect(report?.liabilities).toBe(4000);
     expect(report?.equity).toBe(6000);
+    expect(report?.netIncome).toBe(1000);
   });
 
   it('computeBoardPackReport computes grossMargin percentage accurately using divideMoney', () => {
@@ -98,7 +100,7 @@ describe('BoardPackPage money patterns — known answers (GAP-1)', () => {
       makeEntry('5000', 500, 0),
     ];
     const report = computeBoardPackReport(entries, []);
-    // (2000 - 500) / 2000 = 75%
+    // Gross margin is (revenue − COGS) / revenue, not (revenue − all expenses).
     expect(report?.grossMargin).toBe(75);
   });
 

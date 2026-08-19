@@ -36,6 +36,12 @@ import { LeaseForm } from '@/components/lease/LeaseForm';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import {
+  liabilityAmortization,
+  meanRate,
+  rouDepreciation,
+  type AmortRow,
+} from '@/pages/lease/leaseDetailData';
 const AS_OF = new Date('2026-01-01T00:00:00Z');
 
 interface LeaseRecord {
@@ -94,57 +100,6 @@ function buildRecord(input: LeaseInput): LeaseRecord {
     status,
     contract,
   };
-}
-
-interface AmortRow {
-  month: string;
-  payment: number;
-  principal: number;
-  interest: number;
-  balance: number;
-}
-
-// REAL liability amortization from LeaseEngine (first 12 periods). Replaces the
-// old local raw-float generator that started from a hardcoded liability.
-function liabilityAmortization(contract: LeaseContract): AmortRow[] {
-  return LeaseEngine.calculateLeaseLiability(contract)
-    .slice(0, 12)
-    .map((e) => ({
-      month: e.period,
-      payment: Math.round(e.payment),
-      principal: Math.round(e.reduction),
-      interest: Math.round(e.interest),
-      balance: Math.round(e.closingBalance),
-    }));
-}
-
-interface DepRow {
-  year: string;
-  bookValue: number;
-  depreciation: number;
-  accumulated: number;
-}
-
-// REAL ROU-asset depreciation from LeaseEngine.calculateROUAsset, aggregated to
-// annual. Replaces the old local straight-line-on-a-fake-asset generator.
-function rouDepreciation(contract: LeaseContract, rouAsset: number): DepRow[] {
-  const sched = LeaseEngine.calculateROUAsset(contract);
-  const years = Math.min(8, Math.ceil(sched.length / 12));
-  return Array.from({ length: years }, (_, i) => {
-    const endMonth = (i + 1) * 12;
-    const entry = sched[Math.min(endMonth, sched.length) - 1];
-    const bookValue = entry ? entry.closingBalance : 0;
-    const depreciation = roundTo(
-      sumMoney(sched.slice(i * 12, endMonth).map((e) => e.depreciation)),
-      2
-    );
-    return {
-      year: `Year ${i + 1}`,
-      bookValue: Math.round(bookValue),
-      depreciation: Math.round(depreciation),
-      accumulated: Math.round(rouAsset - bookValue),
-    };
-  });
 }
 
 export default function LeaseDetailPage() {
@@ -224,9 +179,7 @@ export default function LeaseDetailPage() {
   const active = LEASES.filter((l) => l.status === 'Active');
   const totalLiability = roundTo(sumMoney(active.map((l) => l.liability)), 2);
   const totalRouAsset = roundTo(sumMoney(active.map((l) => l.rouAsset)), 2);
-  const avgRate = active.length
-    ? roundTo(sumMoney(active.map((l) => l.interestRate)), 2) / active.length
-    : 0;
+  const avgRate = meanRate(active.map((l) => l.interestRate));
 
   const amortColumns: Column<AmortRow>[] = [
     { key: 'month', header: 'Month', sortable: true },
@@ -369,7 +322,7 @@ export default function LeaseDetailPage() {
         />
         <KPIValue
           label="Avg Interest Rate"
-          value={`${formatPercent(avgRate, 1)}`}
+          value={avgRate === null ? '—' : `${formatPercent(avgRate, 1)}`}
           icon={<Percent className="h-4 w-4" />}
         />
         <KPIValue
@@ -495,34 +448,34 @@ export default function LeaseDetailPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            {LEASES.map((lease) => (
+            {LEASES.map((row) => (
               <div
-                key={lease.id}
+                key={row.id}
                 className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                  selectedLease.id === lease.id
+                  selectedLease.id === row.id
                     ? 'bg-blue-900/30 border border-blue-500/30'
                     : 'bg-slate-800 hover:bg-slate-700'
                 }`}
-                onClick={() => setSelectedId(lease.id)}
+                onClick={() => setSelectedId(row.id)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') setSelectedId(lease.id);
+                  if (e.key === 'Enter' || e.key === ' ') setSelectedId(row.id);
                 }}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">{lease.property}</div>
+                    <div className="font-medium">{row.property}</div>
                     <div className="text-xs text-slate-400">
-                      {lease.leaseType} | {lease.startDate} to {lease.endDate}
+                      {row.leaseType} | {row.startDate} to {row.endDate}
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold">{fmt.currency0(lease.monthlyPayment)}/mo</div>
+                    <div className="font-semibold">{fmt.currency0(row.monthlyPayment)}/mo</div>
                     <span
-                      className={`text-xs px-2 py-0.5 rounded-full ${lease.status === 'Active' ? 'bg-green-900/50 text-green-400' : 'bg-slate-700 text-slate-400'}`}
+                      className={`text-xs px-2 py-0.5 rounded-full ${row.status === 'Active' ? 'bg-green-900/50 text-green-400' : 'bg-slate-700 text-slate-400'}`}
                     >
-                      {lease.status}
+                      {row.status}
                     </span>
                   </div>
                 </div>
