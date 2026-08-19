@@ -1,26 +1,33 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+/**
+ * Session 024: the page now derives every figure from telecomStore and
+ * empty-states when nothing is recorded — the old fixtures and literal KPI
+ * strip are gone. This test controls the mocked store to exercise both
+ * branches.
+ */
+
+const mockState = {
+  subscribers: [] as Array<{
+    id: string;
+    plan: string;
+    monthlyRevenue: number;
+    churnRisk: 'Low' | 'Medium' | 'High';
+    status: 'Active' | 'Suspended' | 'Churned';
+  }>,
+  networkMetrics: [] as Array<{
+    region: string;
+    uptime: number;
+    avgSpeed: number;
+    subscribers: number;
+  }>,
+  arpuTrends: [] as Array<{ month: string; arpu: number; subscribers: number }>,
+};
+
 vi.mock('@/store/telecomStore', () => ({
-  useTelecomStore: vi.fn(() => ({
-    subscribers: [],
-    plans: [],
-    networkMetrics: [],
-    arpuTrends: [],
-    getTotalSubscribers: vi.fn(() => 0),
-    getAverageARPU: vi.fn(() => 0),
-  })),
+  useTelecomStore: vi.fn(() => mockState),
 }));
-vi.mock('lucide-react', () => ({
-  Wifi: () => <span data-testid="mock-icon" />,
-  Users: () => <span data-testid="mock-icon" />,
-  DollarSign: () => <span data-testid="mock-icon" />,
-  Signal: () => <span data-testid="mock-icon" />,
-  TrendingUp: () => <span data-testid="mock-icon" />,
-  BarChart3: () => <span data-testid="mock-icon" />,
-  ArrowUpRight: () => <span data-testid="mock-icon" />,
-  ArrowDownRight: () => <span data-testid="mock-icon" />,
-  Minus: () => <span data-testid="mock-icon" />,
-}));
+vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
 vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: { children?: React.ReactNode }) => (
     <div data-testid="chart">{children}</div>
@@ -31,33 +38,45 @@ vi.mock('recharts', () => ({
   YAxis: () => null,
   CartesianGrid: () => null,
   Tooltip: () => null,
-  PieChart: () => <div data-testid="pie-chart" />,
-  Pie: () => null,
-  Cell: () => null,
-  LineChart: () => <div data-testid="line-chart" />,
-  Line: () => null,
 }));
 
 import { render, screen } from '@/test/testUtils';
 import { TelecomDashboardPage } from '@/pages/sectors/TelecomDashboardPage';
 
+function resetState(): void {
+  mockState.subscribers = [];
+  mockState.networkMetrics = [];
+  mockState.arpuTrends = [];
+}
+
 describe('sectors/TelecomDashboardPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    resetState();
   });
 
-  it('renders the telecom dashboard', () => {
+  it('empty-states honestly when the workspace has no telecom data', () => {
     render(<TelecomDashboardPage />);
-    expect(screen.getByText(/Telecom Dashboard/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: /No Telecom Data/i })).toBeInTheDocument();
+    // No fabricated KPI strip may render on an empty workspace.
+    expect(screen.queryByText('ARPU')).not.toBeInTheDocument();
+    expect(screen.queryByText('Active Subscribers')).not.toBeInTheDocument();
   });
 
-  it('renders KPI metrics', () => {
+  it('renders recorded KPIs when subscribers exist', () => {
+    mockState.subscribers = [
+      { id: 's1', plan: 'Core', monthlyRevenue: 42.5, churnRisk: 'Low', status: 'Active' },
+      { id: 's2', plan: 'Core', monthlyRevenue: 51.5, churnRisk: 'High', status: 'Active' },
+    ];
     render(<TelecomDashboardPage />);
-    expect(screen.getByText(/Total Subscribers/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/ARPU/i).length).toBeGreaterThan(0);
+    expect(screen.getByText('Active Subscribers')).toBeInTheDocument();
+    expect(screen.getByText('ARPU')).toBeInTheDocument();
+    // (42.5 + 51.5) / 2 = 47.00
+    expect(screen.getByText('$47.00')).toBeInTheDocument();
   });
 
-  it('renders charts', () => {
+  it('renders chart containers when an ARPU trend is recorded', () => {
+    mockState.arpuTrends = [{ month: '2025-01', arpu: 48.2, subscribers: 10 }];
     render(<TelecomDashboardPage />);
     expect(screen.getAllByTestId('chart').length).toBeGreaterThan(0);
   });

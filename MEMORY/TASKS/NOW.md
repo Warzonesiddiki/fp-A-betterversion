@@ -1,33 +1,41 @@
 ---
 id: MEMORY/TASKS/NOW.md
 status: active
-last_verified: 2026-08-18
-verified_by: arena-agent/session-023
+last_verified: 2026-08-19
+verified_by: arena-agent/session-024
 confidence: high
 ---
 
 # TASKS/NOW — the single current critical path
 
-**T-024 · Land PR #65. BLOCKED on GitHub authentication.**
+**T-026 · PR #66 in flight; next wave pair after it merges.**
 
-State: PR #65 (`arena/01a01215-fp-a-betterversion` → `main`) is open and NOT merged.
-A commit repairing six full-suite failures is **committed locally and not pushed** — the token
-expired mid-session (`gh auth status` → "The github.com token in GH_TOKEN is no longer valid").
+State: session-024 commits pushed and **PR #66 opened**
+(`arena/01a0178d-fp-a-betterversion` → `main`); session-025 wave pair pushed onto the same
+PR: money-AST 404 → **397** (RevRecEngine 7→0) and fabrication 19 → **16** (EnergyRiskPage
+3→0), per-file diffs confined, teeth verified (10 assertions fail on revert). GitHub auth
+restored mid-session (the 403 was only the missing `user` scope).
 
-Do this in order once GitHub is reconnected:
+Do this in order:
 
-1. `git push origin arena/01a01215-fp-a-betterversion` (via a background process; pre-push takes
-   3–5 min).
-2. Wait for `test-unit` to re-run on PR #65. It has been red on `main` since PR #64 — the repair
-   commit is what makes it green. Confirm with `gh pr checks 65`.
-3. Merge #65 only when `test-unit` passes. Do NOT merge red.
-4. Then resume the wave: **T-023** — money-AST `src/pages/analytics/BenchmarkingPage.tsx` (8),
-   then `src/engines/DriverCascadeEngine.ts` (7); fabrication
-   `src/pages/sectors/TelecomDashboardPage.tsx` (4), then the construction pages (3 each).
+1. Watch PR #66: `gh pr checks 66` — merge ONLY when `test-unit` passes. Never merge red.
+2. `node scripts/money-ast-detector.mjs --list` — take the next ranked module.
+   **Skip `src/services/mockData/*` — fixture factories.** BalanceSheetPage (7) is K18-core.
+   The grouping idiom `existing.debit += e.debit` recurs across ≥6 pages; a class-wide fix
+   moves several files.
+3. Fabrication worklist (worst first): `src/pages/insurance/InsuranceDashboardPage.tsx` (3),
+   `src/pages/reports/BoardPackPage.tsx` (3), then the twos (Emissions/EnergyDashboards,
+   ClaimsAnalytics, FacilityManagement) and the ones. Check BOTH `src/pages/sector/` and
+   `src/pages/sectors/` twins first, grep each page for its store, and read the store's
+   persist seeds before rewriting.
+4. Push onto the same branch (PR #66 until it merges; then a fresh PR per wave); run the FULL
+   suite before pushing (standing rule from s023).
 
-Ratchets: money 421 / 163 modules / 81.44%; fabrication 32 / 13 files. Both hold locally.
+Ratchets: money **397** / 159 modules / 81.97%; fabrication **16** / 8 files. Both baselines
+updated in session 025. CHB-008 acknowledges gate 10's fresh-branch squash flags.
 
-**New standing rule (session 023):** run the FULL suite before opening a PR. Pre-push runs an
-839-test P0 shard; it did not cover the smoke and contract files, and five sessions of empty-state
-work landed with the suite red. After any page rewrite also run `src/pages/smoke*.test.tsx`,
-`src/pages/__tests__/**` for that area, and `src/theme/buttonContrast.contract.test.ts`.
+**Standing rules (do not drop):** run the FULL suite before opening a PR; after any page
+rewrite also run `src/pages/smoke*.test.tsx`, `src/pages/__tests__/**` for that area, and
+`src/theme/buttonContrast.contract.test.ts`. Run the detector on every file you WRITE. Verify
+teeth via /tmp revert. `npx prettier --write` before `git add` on generated JSON/MD. Push via
+`start_process` (pre-push exceeds the bash timeout).

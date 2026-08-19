@@ -1,222 +1,203 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ChartCard } from '@/components/ui/ChartCard';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { Wifi, Users, DollarSign, Signal, TrendingUp, BarChart3 } from 'lucide-react';
+import { DataTable, type Column } from '@/components/ui/DataTable';
+import { Wifi, Users, DollarSign, Signal, ShieldAlert } from 'lucide-react';
 import { useTelecomStore } from '@/store/telecomStore';
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  PieChart,
-  Pie,
-  Cell,
-} from 'recharts';
-import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
+import { reportingCurrency } from '@/store/financialContextStore';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { currencyFormatter, formatNumber } from '@/utils/financialFormatting';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { deriveTelecomDashboard } from './telecomDashboardData';
 
-const COLORS = [
-  'var(--accent-primary)',
-  'var(--accent-secondary)',
-  '#10B981',
-  '#F59E0B',
-  '#8B5CF6',
-];
+function formatArpu(value: number | null): string {
+  if (value === null) return '—';
+  return currencyFormatter(reportingCurrency(), { minDecimals: 2 })(value);
+}
 
-const revenueBySegment = [
-  { name: 'Mobile', value: 48.2 },
-  { name: 'Broadband', value: 22.6 },
-  { name: 'Enterprise', value: 18.4 },
-  { name: 'IoT', value: 6.1 },
-  { name: 'Content/Media', value: 4.7 },
-];
-
-const capexDistribution = [
-  { name: 'Network Infrastructure', value: 38 },
-  { name: 'Spectrum', value: 22 },
-  { name: '5G Rollout', value: 20 },
-  { name: 'IT Systems', value: 12 },
-  { name: 'Customer Equipment', value: 8 },
-];
-
-const subscriberGrowth = [
-  { quarter: 'Q1 2024', subscribers: 82.4 },
-  { quarter: 'Q2 2024', subscribers: 84.1 },
-  { quarter: 'Q3 2024', subscribers: 86.3 },
-  { quarter: 'Q4 2024', subscribers: 88.7 },
-  { quarter: 'Q1 2025', subscribers: 90.2 },
-  { quarter: 'Q2 2025', subscribers: 92.5 },
+const networkColumns: Column[] = [
+  { key: 'region', header: 'Region', sortable: true },
+  { key: 'uptime', header: 'Uptime %', align: 'right', render: (v) => formatNumber(Number(v), 2) },
+  {
+    key: 'avgSpeed',
+    header: 'Avg Speed (Mbps)',
+    align: 'right',
+    render: (v) => formatNumber(Number(v), 1),
+  },
+  {
+    key: 'subscribers',
+    header: 'Subscribers',
+    align: 'right',
+    render: (v) => formatNumber(Number(v)),
+  },
 ];
 
 export function TelecomDashboardPage() {
-  const [_activeSegment, setActiveSegment] = useState<string | null>(null);
-  const { arpuTrends, getTotalSubscribers, getAverageARPU } = useTelecomStore();
-
-  const totalSubscribers = getTotalSubscribers();
-  const avgARPU = getAverageARPU();
-  // WIRED (C-3): ARPU trend straight from telecomStore — no fabricated
-  // fallback; the panel renders an honest empty state until data is imported.
-  const displayArpuTrend = arpuTrends.map((t) => ({ month: t.month, arpu: t.arpu }));
+  const { subscribers, networkMetrics, arpuTrends } = useTelecomStore();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Telecom Dashboard';
   }, []);
 
-  const kpis = useMemo(
-    () => [
-      {
-        label: 'Total Subscribers',
-        value: totalSubscribers > 0 ? `${formatCompact(totalSubscribers)}` : '—',
-        change: 2.5,
-        icon: Users,
-      },
-      {
-        label: 'ARPU',
-        value: avgARPU > 0 ? `$${formatNumber(avgARPU, 2)}` : '—',
-        change: 1.8,
-        icon: DollarSign,
-      },
-      { label: 'Churn Rate', value: '1.4%', change: -0.3, icon: Signal },
-      { label: 'Network CapEx', value: '$4.8B', change: 12.0, icon: Wifi },
-      { label: 'EBITDA Margin', value: '36.2%', change: 1.1, icon: TrendingUp },
-      { label: '5G Coverage', value: '78.5%', change: 8.2, icon: Signal },
-      { label: 'Customer Acquisition Cost', value: '$142', change: -5.4, icon: BarChart3 },
-    ],
-    [totalSubscribers, avgARPU]
+  const data = useMemo(
+    () => deriveTelecomDashboard(subscribers, networkMetrics, arpuTrends),
+    [subscribers, networkMetrics, arpuTrends]
   );
+
+  if (!data) {
+    return (
+      <main
+        className="p-12 text-center max-w-md mx-auto"
+        role="main"
+        aria-label="Telecom Sector Dashboard"
+      >
+        <Wifi className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
+        <h1 className="text-xl font-semibold mb-2">No Telecom Data</h1>
+        <p className="text-[var(--text-muted)]">
+          Import subscriber records, network metrics or monthly revenue-per-user history to populate
+          this dashboard.
+        </p>
+      </main>
+    );
+  }
+
+  const kpis = [
+    {
+      label: 'Active Subscribers',
+      value: formatNumber(data.activeSubscribers),
+      icon: Users,
+    },
+    {
+      label: 'ARPU',
+      value: formatArpu(data.arpu),
+      icon: DollarSign,
+    },
+    {
+      label: 'High Churn Risk',
+      value: formatNumber(data.churnRisk.high),
+      icon: Signal,
+    },
+  ];
 
   return (
     <main className="p-6 space-y-6" role="main" aria-label="Telecom Sector Dashboard">
       <PageHeader
         title="Telecom Dashboard"
-        purpose="Subscriber metrics, ARPU trends, network investment, and segment performance"
+        purpose="Recorded subscriber, ARPU and network metrics only — no industry placeholders"
       />
 
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {kpis.map((kpi) => (
-          <KPIValue key={kpi.label} label={kpi.label} value={kpi.value} change={kpi.change} />
+          <KPIValue key={kpi.label} label={kpi.label} value={kpi.value} />
         ))}
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ChartCard title="Revenue by Segment ($B)" height={280}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={revenueBySegment} onMouseLeave={() => setActiveSegment(null)}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
-              <XAxis dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
-              <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
-              <Tooltip
-                contentStyle={{
-                  background: 'var(--text-primary)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: 8,
-                }}
-              />
-              <Bar
-                dataKey="value"
-                radius={[4, 4, 0, 0]}
-                onMouseEnter={(_, index) => setActiveSegment(revenueBySegment![index]!.name)}
-              >
-                {revenueBySegment.map((_, index) => (
-                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+        <ChartCard title="Monthly ARPU (recorded)" height={280}>
+          {data.arpuTrends.length === 0 ? (
+            <p className="text-sm p-4" style={{ color: 'var(--text-secondary)' }}>
+              No ARPU history recorded yet.
+            </p>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data.arpuTrends as unknown as Record<string, unknown>[]}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
+                <XAxis dataKey="month" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
+                <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
+                <Tooltip />
+                <Bar
+                  dataKey="arpu"
+                  name="ARPU"
+                  fill="var(--accent-primary)"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </ChartCard>
 
-        <ChartCard title="CapEx Distribution (%)" height={280}>
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={capexDistribution}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={100}
-                paddingAngle={3}
-                dataKey="value"
-                label={({ name, percent }) => `${name} ${formatPercent(percent ?? 0, 0)}`}
-              >
-                {capexDistribution.map((_, index) => (
-                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+        <ChartCard title="Subscriber History (recorded)" height={280}>
+          {data.subscriberHistory.length === 0 ? (
+            <p className="text-sm p-4" style={{ color: 'var(--text-secondary)' }}>
+              No subscriber history recorded yet.
+            </p>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data.subscriberHistory as unknown as Record<string, unknown>[]}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
+                <XAxis dataKey="month" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
+                <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
+                <Tooltip />
+                <Bar
+                  dataKey="subscribers"
+                  name="Subscribers"
+                  fill="var(--accent-secondary)"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </ChartCard>
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Subscriber Growth (Millions)</CardTitle>
+            <CardTitle>Churn Risk Mix (active subscribers)</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {subscriberGrowth.map((row) => (
-                <div key={row.quarter} className="flex justify-between items-center">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                    {row.quarter}
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="h-2 rounded-full"
-                      style={{
-                        width: `${(row.subscribers / 95) * 120}px`,
-                        backgroundColor: 'var(--accent-primary)',
-                      }}
-                    />
-                    <span className="font-mono text-sm w-14 text-right">
-                      {formatNumber(row.subscribers / 1_000_000, 1)}M
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <CardContent className="space-y-2">
+            {(
+              [
+                ['Low', data.churnRisk.low],
+                ['Medium', data.churnRisk.medium],
+                ['High', data.churnRisk.high],
+              ] as const
+            ).map(([label, count]) => (
+              <div key={label} className="flex justify-between text-sm">
+                <span style={{ color: 'var(--text-secondary)' }}>{label} risk</span>
+                <span className="font-mono">{formatNumber(count)}</span>
+              </div>
+            ))}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Revenue per User Trend (Monthly ARPU)</CardTitle>
+            <CardTitle>Network by Region (recorded)</CardTitle>
           </CardHeader>
           <CardContent>
-            {displayArpuTrend.length === 0 ? (
+            {data.networkMetrics.length === 0 ? (
               <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                Import subscriber data to view the ARPU trend.
+                No network metrics recorded yet.
               </p>
             ) : (
-              <div className="space-y-2">
-                {displayArpuTrend.map((row) => (
-                  <div key={row.month} className="flex justify-between items-center">
-                    <span className="text-sm w-10" style={{ color: 'var(--text-secondary)' }}>
-                      {row.month}
-                    </span>
-                    <div className="flex-1 mx-3">
-                      <div
-                        className="h-2 rounded-full"
-                        style={{
-                          width: `${((row.arpu - 40) / 6) * 100}%`,
-                          backgroundColor: 'var(--accent-secondary)',
-                        }}
-                      />
-                    </div>
-                    <span className="font-mono text-sm w-14 text-right">
-                      ${formatNumber(row.arpu, 2)}
-                    </span>
-                  </div>
-                ))}
-              </div>
+              <DataTable
+                columns={networkColumns}
+                data={data.networkMetrics.map((m) => ({ ...m }))}
+                caption="Recorded network uptime, speed and subscribers by region"
+                ariaLabel="Network metrics by region"
+              />
             )}
           </CardContent>
         </Card>
       </section>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <ShieldAlert className="h-4 w-4" />
+            Not shown on this dashboard
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+            Segment revenue, network capital expenditure, realized churn rate, EBITDA margin,
+            coverage and customer-acquisition cost are not recorded in this workspace, so no figure
+            is displayed for them. Record the underlying data to surface those metrics.
+          </p>
+        </CardContent>
+      </Card>
     </main>
   );
 }

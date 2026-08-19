@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { useHealthcareStore } from './healthcareStore';
+import { migrateHealthcareState, useHealthcareStore } from './healthcareStore';
 import { actAs } from '@/test/rbacFixtures';
 
 describe('healthcareStore', () => {
@@ -70,5 +70,41 @@ describe('healthcareStore', () => {
     });
     useHealthcareStore.getState().updateProgram('p-999', { status: 'High' });
     expect(useHealthcareStore!.getState().programs[0]!.status).toBe('Medium');
+  });
+});
+
+describe('healthcareStore migration (session 024 persist bump v2 -> v3)', () => {
+  it('clears the seeded value-based-care collections for upgrading tenants', () => {
+    const seededV2 = {
+      qualityMetrics: [{ subject: 'Readmission', A: 120, B: 110, fullMark: 150 }],
+      savingsData: [{ category: 'Orthopedics', target: 2400000, actual: 2100000, savings: 300000 }],
+      programs: [{ id: 'V-01', program: 'MSSP ACO Track 3' }],
+      clinicalTrials: [{ id: 't1', name: 'User-entered trial' }],
+    };
+    const migrated = migrateHealthcareState(seededV2, 2) as Record<string, unknown>;
+    expect(migrated.qualityMetrics).toEqual([]);
+    expect(migrated.savingsData).toEqual([]);
+    expect(migrated.programs).toEqual([]);
+    // Genuine user input survives the cleanup.
+    expect(migrated.clinicalTrials).toEqual([{ id: 't1', name: 'User-entered trial' }]);
+  });
+
+  it('adds empty clinicalTrials to v1 state and clears seeds', () => {
+    const migrated = migrateHealthcareState({ qualityMetrics: [{ subject: 'x' }] }, 1) as Record<
+      string,
+      unknown
+    >;
+    expect(migrated.clinicalTrials).toEqual([]);
+    expect(migrated.qualityMetrics).toEqual([]);
+  });
+
+  it('leaves v3 state untouched', () => {
+    const v3 = {
+      qualityMetrics: [{ subject: 'User data', A: 1, B: 2, fullMark: 3 }],
+      savingsData: [],
+      programs: [],
+      clinicalTrials: [],
+    };
+    expect(migrateHealthcareState(v3, 3)).toEqual(v3);
   });
 });

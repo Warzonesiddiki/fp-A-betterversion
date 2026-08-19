@@ -1,14 +1,13 @@
-import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
-import { PageHeader } from '@/components/ui/PageHeader';
-import { useState } from 'react';
-
-import { TrendingUp, Briefcase, Clock, Download, Layers } from 'lucide-react';
-
+import { useMemo } from 'react';
+import { HardHat, Download, Info } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { PeriodPicker } from '@/components/ui/PeriodPicker';
-import { DataTable, Column } from '@/components/ui/DataTable';
+import { DataTable, type Column } from '@/components/ui/DataTable';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { useConstructionStore } from '@/store/constructionStore';
+import { reportingCurrency } from '@/store/financialContextStore';
+import { currencyFormatter } from '@/utils/financialFormatting';
 import {
   ResponsiveContainer,
   Bar,
@@ -17,280 +16,192 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ComposedChart,
-  Line,
+  BarChart,
 } from 'recharts';
-import type { FiscalPeriod } from '@/types';
+import { deriveConstructionDashboard } from './constructionDashboardData';
 
-// Mock Data
-const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
+function currency(value: number): string {
+  return currencyFormatter(reportingCurrency(), { minDecimals: 0 })(value);
+}
 
-const backlogTrend = [
-  { month: 'Jan', backlog: 125000000, new_orders: 12000000, revenue: 15000000 },
-  { month: 'Feb', backlog: 122000000, new_orders: 8000000, revenue: 11000000 },
-  { month: 'Mar', backlog: 128000000, new_orders: 18000000, revenue: 12000000 },
-  { month: 'Apr', backlog: 135000000, new_orders: 22000000, revenue: 15000000 },
-  { month: 'May', backlog: 138000000, new_orders: 15000000, revenue: 12000000 },
-  { month: 'Jun', backlog: 142000000, new_orders: 20000000, revenue: 16000000 },
+const changeOrderColumns: Column[] = [
+  { key: 'project', header: 'Project', sortable: true },
+  { key: 'description', header: 'Description' },
+  { key: 'amount', header: 'Amount (as recorded)', align: 'right' },
+  { key: 'status', header: 'Status' },
 ];
 
-const projectStatus = [
-  {
-    id: 'C-88',
-    name: 'Downtown Plaza',
-    client: 'City Dev Corp',
-    status: 'In Progress',
-    budget: '$42.5M',
-    percent_complete: '65%',
-    margin: '12.4%',
-  },
-  {
-    id: 'C-92',
-    name: 'Skyway Bridge',
-    client: 'State DOT',
-    status: 'Delayed',
-    budget: '$118M',
-    percent_complete: '42%',
-    margin: '8.2%',
-  },
-  {
-    id: 'C-75',
-    name: 'Tech Hub Ph II',
-    client: 'Global Systems',
-    status: 'Optimal',
-    budget: '$25.2M',
-    percent_complete: '88%',
-    margin: '14.5%',
-  },
-  {
-    id: 'C-105',
-    name: 'Westside Residential',
-    client: 'Urban Living',
-    status: 'In Progress',
-    budget: '$18.4M',
-    percent_complete: '15%',
-    margin: '11.8%',
-  },
-  {
-    id: 'C-64',
-    name: 'Logistics Center',
-    client: 'FastShip Inc',
-    status: 'Completed',
-    budget: '$32.1M',
-    percent_complete: '100%',
-    margin: '13.2%',
-  },
-];
-
-const columns: Column[] = [
-  { key: 'name', header: 'Project Name', sortable: true },
-  { key: 'client', header: 'Client' },
-  {
-    key: 'status',
-    header: 'Health',
-    render: (v) => (
-      <span
-        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-          String(v) === 'Optimal' || String(v) === 'Completed'
-            ? 'bg-green-100 text-green-700'
-            : String(v) === 'Delayed'
-              ? 'bg-red-100 text-red-700'
-              : 'bg-blue-100 text-blue-700'
-        }`}
-      >
-        {String(v)}
-      </span>
-    ),
-  },
-  { key: 'budget', header: 'Total Budget', align: 'right' },
-  {
-    key: 'percent_complete',
-    header: 'Completion',
-    align: 'right',
-    render: (v) => (
-      <div className="flex flex-col items-end gap-1">
-        <span className="text-[10px] font-bold">{String(v)}</span>
-        <div className="w-16 h-1 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-          <div className="bg-blue-500 h-full" style={{ width: String(v) }} />
-        </div>
-      </div>
-    ),
-  },
-  { key: 'margin', header: 'Est. Margin', align: 'right' },
+const ledgerColumns: Column[] = [
+  { key: 'code', header: 'Code', sortable: true },
+  { key: 'category', header: 'Category' },
+  { key: 'budget', header: 'Budget (as recorded)', align: 'right' },
+  { key: 'actual', header: 'Actual (as recorded)', align: 'right' },
+  { key: 'variance', header: 'Variance (as recorded)', align: 'right' },
+  { key: 'status', header: 'Status' },
 ];
 
 export default function ConstructionDashboardPage() {
-  const [periodId, setPeriodId] = useState('P01');
+  const costBreakdown = useConstructionStore((s) => s.costBreakdown);
+  const changeOrders = useConstructionStore((s) => s.changeOrders);
+  const costLedger = useConstructionStore((s) => s.costLedger);
+
+  const data = useMemo(
+    () => deriveConstructionDashboard(costBreakdown, changeOrders, costLedger),
+    [costBreakdown, changeOrders, costLedger]
+  );
+
+  if (!data) {
+    return (
+      <main
+        className="p-12 text-center max-w-lg mx-auto"
+        role="main"
+        aria-label="Construction Dashboard"
+      >
+        <HardHat className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
+        <h1 className="text-xl font-semibold mb-2">No Construction Data</h1>
+        <p className="text-[var(--text-muted)]">
+          Record a project cost breakdown, change orders or a cost ledger to see budget versus
+          actual totals here. Backlog, project pipeline, resource allocation and fleet telemetry are
+          not recorded objects in this workspace, so this dashboard does not display them.
+        </p>
+      </main>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6 animate-in fade-in duration-500">
-      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <PageHeader
           title="Construction Dashboard"
-          purpose="Global project pipeline: Revenue backlog, margin performance, and resource utilization."
+          purpose="Recorded project cost performance: budget versus actual, change orders and the cost ledger."
         />
-        <div className="flex items-center gap-3">
-          <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
-          <Button variant="outline" size="sm">
-            <Layers className="h-4 w-4 mr-2" />
-            Project Pipeline
-          </Button>
-        </div>
+        <Button variant="outline" size="sm">
+          <Download className="h-4 w-4 mr-2" />
+          WIP Report
+        </Button>
       </div>
 
-      {/* KPIs */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <KPIValue label="Total Budget" value={currency(data.totalBudget)} />
+        <KPIValue label="Actual Cost" value={currency(data.totalActual)} />
         <KPIValue
-          label="Total Backlog"
-          value="$142.5M"
-          change={8.4}
-          changeLabel="new wins in Q1"
-          trend="up"
-          sparklineData={[125, 122, 128, 135, 138, 142.5]}
+          label="Variance (budget − actual)"
+          value={currency(data.totalVariance)}
+          trend={data.totalVariance >= 0 ? 'up' : 'down'}
         />
         <KPIValue
-          label="Revenue (YTD)"
-          value="$74.2M"
-          change={12.1}
-          changeLabel="WIP conversion +5%"
-          trend="up"
-          sparklineData={[15, 11, 12, 15, 12, 16]}
-        />
-        <KPIValue
-          label="Avg. Gross Margin"
-          value="11.8%"
-          change={-0.5}
-          changeLabel="material cost impact"
-          trend="down"
-          sparklineData={[12.5, 12.2, 12.0, 11.9, 11.8, 11.8]}
-        />
-        <KPIValue
-          label="Safety Incidents"
-          value="0"
-          changeLabel="Goal: Zero Harm"
-          trend="neutral"
+          label="Approved Change Orders"
+          value={
+            data.approvedChangeOrderTotal === null ? '—' : currency(data.approvedChangeOrderTotal)
+          }
+          changeLabel={
+            data.pendingChangeOrders > 0 ? `${data.pendingChangeOrders} pending` : 'none pending'
+          }
         />
       </div>
 
-      {/* Main Charts */}
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-blue-600" />
-              <CardTitle>Backlog & Book-to-Bill</CardTitle>
-            </div>
-            <CardDescription>Correlating new orders with revenue recognition</CardDescription>
+            <CardTitle>Budget vs. Actual by Category</CardTitle>
+            <CardDescription>From the recorded project cost breakdown</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[350px] w-full pt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={backlogTrend}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="month" axisLine={false} tickLine={false} />
-                  <YAxis
-                    yAxisId="left"
-                    axisLine={false}
-                    tickLine={false}
-                    tickFormatter={(v) => `$${v / 1000000}M`}
-                  />
-                  <Tooltip />
-                  <Legend verticalAlign="top" align="right" />
-                  <Bar
-                    yAxisId="left"
-                    dataKey="new_orders"
-                    name="New Orders"
-                    fill="#3b82f6"
-                    radius={[4, 4, 0, 0]}
-                    barSize={40}
-                  />
-                  <Line
-                    yAxisId="left"
-                    type="monotone"
-                    dataKey="revenue"
-                    name="Revenue Recognized"
-                    stroke="#10b981"
-                    strokeWidth={3}
-                    dot={{ r: 4 }}
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
-            </div>
+            {data.breakdown.length === 0 ? (
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                No cost breakdown recorded yet.
+              </p>
+            ) : (
+              <div className="h-[350px] w-full pt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={data.breakdown.map((b) => ({ ...b }))}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                    <YAxis axisLine={false} tickLine={false} />
+                    <Tooltip />
+                    <Legend verticalAlign="top" align="right" />
+                    <Bar dataKey="budget" name="Budget" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="actual" name="Actual" fill="#10b981" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <Briefcase className="h-5 w-5 text-indigo-500" />
-              <CardTitle>Resource Allocation</CardTitle>
-            </div>
-            <CardDescription>Direct vs. Subcontracted labor</CardDescription>
+            <CardTitle>Recorded Data</CardTitle>
+            <CardDescription>What this dashboard reads</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6 pt-4">
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-medium">
-                <span>Direct Labor</span>
-                <span>42%</span>
-              </div>
-              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
-                <div className="bg-blue-500 h-2 rounded-full" style={{ width: '42%' }} />
-              </div>
+          <CardContent className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span style={{ color: 'var(--text-secondary)' }}>Cost breakdown lines</span>
+              <span className="font-mono">{data.breakdown.length}</span>
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-medium">
-                <span>Subcontractors</span>
-                <span>58%</span>
-              </div>
-              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
-                <div className="bg-indigo-500 h-2 rounded-full" style={{ width: '58%' }} />
-              </div>
+            <div className="flex justify-between">
+              <span style={{ color: 'var(--text-secondary)' }}>Change orders</span>
+              <span className="font-mono">{changeOrders.length}</span>
             </div>
-
-            <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700">
-              <div className="flex items-center gap-2 text-slate-700 font-bold text-xs uppercase tracking-wider mb-2">
-                <Clock className="h-3 w-3" />
-                Utilization Metrics
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-lg font-bold">92.4%</div>
-                  <div className="text-[10px] text-[var(--text-muted)]">Fleet Uptime</div>
-                </div>
-                <div>
-                  <div className="text-lg font-bold">84%</div>
-                  <div className="text-[10px] text-[var(--text-muted)]">Staff Utilization</div>
-                </div>
-              </div>
+            <div className="flex justify-between">
+              <span style={{ color: 'var(--text-secondary)' }}>Cost ledger rows</span>
+              <span className="font-mono">{data.costLedgerRows.length}</span>
             </div>
+            {data.unparseableAmounts > 0 ? (
+              <p
+                className="text-xs mt-3 flex items-start gap-1"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                <Info className="h-3 w-3 mt-0.5 shrink-0" />
+                {data.unparseableAmounts} recorded amount(s) could not be parsed as money and are
+                excluded from totals.
+              </p>
+            ) : null}
+            <p
+              className="text-xs mt-3 flex items-start gap-1"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              <Info className="h-3 w-3 mt-0.5 shrink-0" />
+              Backlog, project pipeline, resource allocation and fleet telemetry are not recorded in
+              this workspace, so no figure is displayed for them.
+            </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Project Table */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Active Project Portfolio</CardTitle>
-            <CardDescription>
-              Real-time financial status and completion tracking for major contracts
-            </CardDescription>
-          </div>
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            WIP Report
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <DataTable
-            columns={columns}
-            data={projectStatus}
-            caption="Construction project status overview"
-            ariaLabel="Construction project status table"
-          />
-        </CardContent>
-      </Card>
+      {changeOrders.length > 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Change Orders</CardTitle>
+            <CardDescription>Amounts shown exactly as recorded</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DataTable
+              columns={changeOrderColumns}
+              data={changeOrders.map((o) => ({ ...o }))}
+              caption="Recorded construction change orders"
+              ariaLabel="Change orders table"
+            />
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {data.costLedgerRows.length > 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Cost Ledger</CardTitle>
+            <CardDescription>Budget, actual and variance shown exactly as recorded</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DataTable
+              columns={ledgerColumns}
+              data={data.costLedgerRows.map((r) => ({ ...r }))}
+              caption="Recorded construction cost ledger"
+              ariaLabel="Cost ledger table"
+            />
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   );
 }

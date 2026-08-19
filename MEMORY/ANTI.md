@@ -1,8 +1,8 @@
 ---
 id: MEMORY/ANTI.md
 status: active
-last_verified: 2026-08-18
-verified_by: arena-agent/session-017
+last_verified: 2026-08-19
+verified_by: arena-agent/session-024
 confidence: high
 ---
 
@@ -233,4 +233,29 @@ confidence: high
 [DO-NOT] Assume node_modules survives a sandbox restore.
   seen: first symptom is `Cannot find module 'typescript'` from the detectors.
   instead: git fetch origin <session-branch> -> reset to FETCH_HEAD -> npm install.
+
+[DO-NOT] Mock a zustand store as `vi.fn(() => stateObject)`.
+  seen: ValueBasedCarePage subscribes with a selector (`useStore((s) => s.x)`);
+        the mock returned the whole state object FOR the selector result, so
+        `qualityMetrics` was the state object and `.map` threw.
+  instead: `useStore: vi.fn((selector) => selector ? selector(state) : state)`.
+
+[DO-NOT] Clean the page fixtures without checking the store seeds (and vice versa).
+  seen: ValueBasedCarePage carried the SAME fabrication twice — module
+        fixtures in the page and seeded defaults persisted by healthcareStore
+        for every tenant. Cleaning one copy leaves the other shipping.
+  instead: grep the store name from the page, read the store's persist
+           defaults, and clean both in the same commit (persist bump when
+           the seeds are persisted).
+
+[DO-NOT] Leave an unescaped `/` inside a regex literal (e.g. `'@/utils/money'`).
+  seen: `/from '@/utils\/money'/` — esbuild read the regex as ending at
+        `@/utils` and choked: "Unexpected flag t in regular expression literal".
+  instead: escape EVERY slash: `/from '@\/utils\/money'/`.
+
+[DO-NOT] getByText a token that also appears in another heading.
+  seen: /Active Subscribers/i matched both the KPI label and the card title
+        "Churn Risk Mix (active subscribers)".
+  instead: exact-text matchers (`getByText('Active Subscribers')`) whenever
+           the token can appear in unrelated copy.
 ```

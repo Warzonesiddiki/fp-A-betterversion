@@ -1,5 +1,13 @@
 import Decimal from 'decimal.js';
-import { addMoney, allocateMoney, multiplyMoney, roundTo, toDecimal } from '@/utils/money';
+import {
+  addMoney,
+  allocateMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  sumMoney,
+  toDecimal,
+} from '@/utils/money';
 
 export interface PerformanceObligation {
   id: string;
@@ -49,15 +57,22 @@ export class RevRecEngine {
     if (!contract || !Array.isArray(contract.performanceObligations)) {
       return [];
     }
-    const totalStandalone = contract.performanceObligations.reduce(
-      (acc, po) => acc + (Number.isFinite(po.standalonePrice) ? po.standalonePrice : 0),
-      0
+    // Standalone selling prices are money: decimal sum, decimal ratio. The
+    // allocation percentage is a dimensionless weight emitted as a number,
+    // but it is derived from a money division, never IEEE-754 `/`.
+    const totalStandalone = sumMoney(
+      contract.performanceObligations.map((po) =>
+        Number.isFinite(po.standalonePrice) ? po.standalonePrice : 0
+      )
     );
-    if (totalStandalone === 0) return contract.performanceObligations;
+    if (totalStandalone.isZero()) return contract.performanceObligations;
 
     return contract.performanceObligations.map((po) => ({
       ...po,
-      allocationPercentage: po.standalonePrice / totalStandalone,
+      allocationPercentage: divideMoney(
+        Number.isFinite(po.standalonePrice) ? po.standalonePrice : 0,
+        totalStandalone
+      ).toNumber(),
     }));
   }
 
@@ -77,9 +92,9 @@ export class RevRecEngine {
     const weights = allocatedPOs.map((po) =>
       Number.isFinite(po.standalonePrice) ? po.standalonePrice : 0
     );
-    const totalStandalone = weights.reduce((a, b) => a + b, 0);
+    const totalStandalone = sumMoney(weights);
     const allocated: Decimal[] =
-      totalStandalone > 0 && contract.totalValue > 0
+      totalStandalone.greaterThan(0) && contract.totalValue > 0
         ? allocateMoney(contract.totalValue, weights)
         : weights.map(() => new Decimal(0));
 
@@ -209,25 +224,30 @@ export class RevRecEngine {
     periods: string[]
   ): ContractAssetLiability[] {
     const results: ContractAssetLiability[] = [];
-    let cumulativeRecognized = 0;
-    let cumulativeBilled = 0;
+    // Running billed/recognized totals are money: decimal accumulation,
+    // decimal comparison, round only on emission (F-0006).
+    let cumulativeRecognized = new Decimal(0);
+    let cumulativeBilled = new Decimal(0);
 
     periods.forEach((period) => {
       const schedule = schedules.find((s) => s.period === period);
-      const billed = billedAmounts.get(period) || 0;
+      const billed = billedAmounts.get(period) ?? 0;
 
-      cumulativeRecognized += schedule?.amount || 0;
-      cumulativeBilled += billed;
+      cumulativeRecognized = addMoney(cumulativeRecognized, schedule?.amount ?? 0);
+      cumulativeBilled = addMoney(cumulativeBilled, billed);
 
-      const contractAsset = Math.max(0, cumulativeRecognized - cumulativeBilled); // unbilled
-      const contractLiability = Math.max(0, cumulativeBilled - cumulativeRecognized); // deferred
+      const contractAsset = Decimal.max(toDecimal(0), cumulativeRecognized.minus(cumulativeBilled)); // unbilled receivable
+      const contractLiability = Decimal.max(
+        toDecimal(0),
+        cumulativeBilled.minus(cumulativeRecognized)
+      ); // deferred revenue
 
       results.push({
         contractId,
         period,
-        contractAsset,
-        contractLiability,
-        netPosition: contractAsset - contractLiability,
+        contractAsset: roundTo(contractAsset),
+        contractLiability: roundTo(contractLiability),
+        netPosition: roundTo(contractAsset.minus(contractLiability)),
       });
     });
 

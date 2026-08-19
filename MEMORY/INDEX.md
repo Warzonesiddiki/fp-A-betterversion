@@ -55,8 +55,9 @@ and `.agent/HANDOVER.md`. MEMORY does not replace those — it indexes them.
 
 ## 4. Current phase / NOW
 
-Phase 0, Wave W0.1.1. NOW = *money-AST module `DashboardPage` + fabrication file
-`PatientRevenuePage`, in the same session* → `MEMORY/TASKS/NOW.md`.
+Phase 0, Wave W0.1.1. NOW = *T-025: next ranked money-AST module (skip `mockData/index.ts`) +
+fabrication `EnergyRiskPage` (3), in the same session*. PR #65 merged 2026-08-19; session 024
+landed money 421 → 404 and fabrication 32 → 19 → `MEMORY/TASKS/NOW.md`.
 
 ## 5. Danger list — the top 5 ways an agent hallucinates THIS repo
 

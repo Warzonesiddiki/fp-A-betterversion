@@ -220,3 +220,80 @@ Nothing here may contain "should", "probably" or "we will".
 - [FACT 2026-08-18] **BLOCKED:** the GitHub token expired mid-session
   (`gh auth status` → "The github.com token in GH_TOKEN is no longer valid"). The repair commit is
   committed locally and NOT pushed; PR #65 is NOT merged.
+- [FACT 2026-08-19] **RESOLVED:** GitHub reconnected; the repair commit was pushed, `test-unit`
+  re-ran green, and PR **#65 MERGED** at 2026-08-19T01:03:55Z into `main` @ `082e70c`. All PR
+  checks (tsc, eslint, build incl. windows, Cascade-Hold, test-unit) passed; `main` push CI
+  (test-unit included) subsequently green.
+
+## Session 024 (completed)
+
+- [MEASURE 2026-08-19] Money-AST after session 024: SAFE 722 · UNSAFE 160 · **unsafe operations
+  404** · **safety 81.86%**. Per-file `--json` diff moved ONLY `BenchmarkingPage.tsx` (8→0),
+  `DriverCascadeEngine.ts` (7→0), `telecomStore.ts` (2→0); 160 of 163 unsafe files untouched.
+  The move is product safety (decimal derivations + source-guarded probes), not measurement.
+- [MEASURE 2026-08-19] Fabrication after session 024: **19 findings / 9 files**
+  (32 → 19). Moved files only: `TelecomDashboardPage.tsx` (4→0),
+  `ConstructionDashboardPage.tsx` (3→0), `EquipmentManagementPage.tsx` (3→0),
+  `ValueBasedCarePage.tsx` (3→0).
+- [FACT 2026-08-19] `BenchmarkingPage` pre-024: `Math.abs` on every natural-balance group
+  (contra postings increased balances), `|| 1` on every empty denominator, net income skipped
+  prefixes 7 and 8, and the QUICK ratio cell displayed the CURRENT ratio. Now derived in
+  `src/pages/analytics/benchmarkingData.ts`; quick ratio permanently `null` (inventory has no
+  account prefix) with disclosure.
+- [FACT 2026-08-19] `DriverCascadeEngine` is LIVE (consumed by `DriverPlanningPage`,
+  `driverStore`, `DriverPanel`, `CascadeRuleBuilder`) — its cell measures hold currency; all
+  cascade deltas/weights/impact sums now decimal via `@/utils/money`. Behavior preserved:
+  engine tests and all consumer suites green. New probe pins `0.3 + 0.6 = 0.9` (float path
+  reported `0.8999999999999999`).
+- [FACT 2026-08-19] `ValueBasedCarePage` carried the fabrication in TWO places: module fixtures
+  in the page AND seeded defaults persisted by `healthcareStore` for every tenant. Both removed;
+  store persist bumped v2 → v3 clearing `qualityMetrics` / `savingsData` / `programs` on
+  migration (`clinicalTrials` survives). Episode savings now derived as target − actual; the
+  hand-entered `savings` field is ignored in totals.
+- [FACT 2026-08-19] `EquipmentManagementPage`: no equipment/telemetry store or importer exists
+  anywhere in the workspace (probed by grep), so the page is an honest empty state disclosing
+  the absence — no derivation is possible yet.
+- [FACT 2026-08-19] `ConstructionDashboardPage` reads `constructionStore`; no product code
+  writes to that store yet (grep: only tests), so every tenant sees the empty state until data
+  is recorded — which is the fix, not a regression.
+- [MEASURE 2026-08-19] Teeth: reverting all eight production files to HEAD fails **37** of the
+  new assertions (source guards + known-answer DOM probes + migration tests).
+- [MEASURE 2026-08-19] Full suite after session 024: **1252 files · 14,301 passed · 1 skipped ·
+  0 failed** (was 1243 / 14,234). tsc clean; eslint clean on every touched directory.
+- [FACT 2026-08-19] README money.ts adoption claim bumped 85 → 87 to satisfy
+  `scripts/check-readme-claims.mjs` after `DriverCascadeEngine` and `telecomStore` became
+  adopters; pre-push blocked on the stale claim once, then held.
+- [FACT 2026-08-19] **BLOCKED (again):** the GitHub token expired mid-session a second time
+  (`gh api user` → "Bad credentials"). The five session-024 commits are committed locally and
+  NOT pushed; no PR exists for this branch yet.
+- [FACT 2026-08-19] Cosmic UI (`rizkimuhammada/cosmic-ui`, verified by web lookup) is a
+  sci-fi themed Tailwind + React component collection distributed copy-style (no npm runtime
+  package; the npm `cosmic-ui` name is an unrelated 27 kB spacing library). Queued as a
+  post-Phase-0 OPTIONAL-theme decision in `MEMORY/TASKS/QUEUE.md` item 12, not adopted now.
+- [DECISION 2026-08-19] LENS protocol added to `MEMORY/PROTOCOL.md` (user directive): one
+  agent walks four specialist review lenses — FP&A Controller, Red-Team Sentinel,
+  Accessibility/UX, Release Engineer — before any task is declared done.
+
+## Session 025 (completed)
+
+- [FACT 2026-08-19] GitHub auth restored mid-session; session-024 commits pushed, **PR #66
+  opened** from `arena/01a0178d-fp-a-betterversion` (target `main`). The earlier 403 on
+  `gh api user` was only the app token lacking the `user` scope — repo ops worked.
+- [MEASURE 2026-08-19] Money-AST after session 025: SAFE 723 · UNSAFE 159 · **unsafe
+  operations 397** · **safety 81.97%**. Per-file diff confined: `RevRecEngine.ts` 7→0;
+  159 of 160 files untouched. Fabrication: **16 findings / 8 files**; confined move
+  `EnergyRiskPage.tsx` 3→0; 8 of 9 untouched.
+- [FACT 2026-08-19] `RevRecEngine.getContractAssetLiability` pre-025 accumulated billed and
+  recognized totals with float `+=` and subtracted them in float, emitting
+  `30.299999999999997` for a 10.10 + 20.20 contract asset; `allocateTransactionPrice` summed
+  standalone prices with float `reduce` and divided in float. All now decimal via
+  `@/utils/money`, rounding only on emission; existing ASC 606 tests unchanged and green.
+- [FACT 2026-08-19] `EnergyRiskPage` read no store and no engine: VaR, hedge ratio,
+  volatility and four named-counterparty positions were module literals. No market-risk data
+  source exists in the workspace (`energyStore` carries generation only;
+  `FinancialInstrumentsEngine` has zero product callers), so the page is an honest empty
+  state disclosing the absence.
+- [MEASURE 2026-08-19] Teeth: reverting `RevRecEngine.ts` + `EnergyRiskPage.tsx` to HEAD
+  fails **10** of the new assertions; restore returns the batch green.
+- [MEASURE 2026-08-19] Full suite after session 025: **1252 files · 14,306 passed ·
+  1 skipped · 0 failed**. tsc clean; eslint clean on touched files.

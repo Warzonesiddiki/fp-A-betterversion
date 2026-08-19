@@ -2,6 +2,14 @@
 // DRIVER CASCADE ENGINE — DAG-based driver planning with automatic cascading
 // Enables connected planning: change a driver → all downstream cells recalculate
 // Pure TypeScript, deterministic, testable, no AI dependency
+//
+// MONEY DISCIPLINE (session 024, K18): cascade targets are cube measures and
+// routinely hold currency values. Every cell-value delta, weighting and impact
+// sum therefore routes through the decimal helpers in `@/utils/money` — no
+// IEEE-754 `+ - * /` on a cell value, and impact accumulation uses
+// `sumMoney` / `addMoney` rather than float `+=`. Dimensionless driver
+// exponents (the multiplicative ratio raised to `rule.weight`) stay float:
+// they are ratios, not money.
 // =============================================================================
 
 /**
@@ -14,6 +22,15 @@
  * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 25th engine)
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
+
+import {
+  addMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+} from '@/utils/money';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -299,24 +316,34 @@ export class DriverCascadeEngine {
       const currentCellValue =
         readCell(rule.targetCube, rule.targetCoords, rule.targetMeasure) ?? 0;
       let newCellValue: number;
+      // Driver-value delta as an exact decimal; cell values are money-typed
+      // measures, so every weighting below routes through @/utils/money.
+      const driverDelta = subtractMoney(newValue, oldValue);
 
       switch (rule.cascadeType) {
         case 'direct': {
-          const delta = newValue - oldValue;
           switch (rule.impactType) {
             case 'additive':
-              newCellValue = currentCellValue + delta * rule.weight;
+              newCellValue = addMoney(
+                currentCellValue,
+                multiplyMoney(driverDelta, rule.weight)
+              ).toNumber();
               break;
             case 'multiplicative':
               if (oldValue !== 0) {
-                const ratio = newValue / oldValue;
-                newCellValue = currentCellValue * Math.pow(ratio, rule.weight);
+                // Dimensionless ratio of driver values; only the final scale
+                // of the (money) cell value is decimal-backed.
+                const ratio = divideMoney(newValue, oldValue).toNumber();
+                newCellValue = multiplyMoney(
+                  currentCellValue,
+                  Math.pow(ratio, rule.weight)
+                ).toNumber();
               } else {
                 newCellValue = currentCellValue;
               }
               break;
             case 'replacement':
-              newCellValue = newValue * rule.weight;
+              newCellValue = multiplyMoney(newValue, rule.weight).toNumber();
               break;
             default:
               newCellValue = currentCellValue;
@@ -325,8 +352,10 @@ export class DriverCascadeEngine {
         }
 
         case 'weighted': {
-          const delta = newValue - oldValue;
-          newCellValue = currentCellValue + delta * rule.weight;
+          newCellValue = addMoney(
+            currentCellValue,
+            multiplyMoney(driverDelta, rule.weight)
+          ).toNumber();
           break;
         }
 
@@ -354,15 +383,15 @@ export class DriverCascadeEngine {
           newCellValue = currentCellValue;
       }
 
-      const delta = newCellValue - currentCellValue;
-      if (Math.abs(delta) > 0.0001) {
+      const cellDelta = subtractMoney(newCellValue, currentCellValue);
+      if (cellDelta.abs().greaterThan(0.0001)) {
         affectedCells.push({
           cube: rule.targetCube,
           coords: rule.targetCoords,
           measure: rule.targetMeasure,
           oldValue: currentCellValue,
-          newValue: Math.round(newCellValue * 100) / 100,
-          delta: Math.round(delta * 100) / 100,
+          newValue: roundTo(newCellValue, 2),
+          delta: roundTo(cellDelta, 2),
           ruleId: rule.id,
         });
       }
@@ -376,7 +405,7 @@ export class DriverCascadeEngine {
       oldValue,
       newValue,
       affectedCells,
-      totalImpact: affectedCells.reduce((sum, c) => sum + c.delta, 0),
+      totalImpact: sumMoney(affectedCells.map((c) => c.delta)).toNumber(),
       duration,
     };
   }
@@ -499,15 +528,16 @@ export class DriverCascadeEngine {
     if (!driver) throw new Error(`Driver "${driverId}" not found`);
 
     const result = this.calculateCascade(driverId, newValue, readCell);
-    const delta = newValue - driver.currentValue;
-    const percentageChange = driver.currentValue !== 0 ? (delta / driver.currentValue) * 100 : 0;
+    const delta = subtractMoney(newValue, driver.currentValue);
+    const percentageChange =
+      driver.currentValue !== 0 ? divideMoney(delta, driver.currentValue).times(100).toNumber() : 0;
 
     return {
       driverId,
       driverName: driver.name,
       currentValue: driver.currentValue,
       proposedValue: newValue,
-      delta,
+      delta: delta.toNumber(),
       percentageChange,
       affectedCellCount: result.affectedCells.length,
       totalImpact: result.totalImpact,
@@ -525,7 +555,10 @@ export class DriverCascadeEngine {
         groups[cell.cube] = { count: 0, totalImpact: 0 };
       }
       groups![cell.cube]!.count++;
-      groups![cell.cube]!.totalImpact += cell.delta;
+      groups![cell.cube]!.totalImpact = addMoney(
+        groups[cell.cube]!.totalImpact,
+        cell.delta
+      ).toNumber();
     }
     return groups;
   }

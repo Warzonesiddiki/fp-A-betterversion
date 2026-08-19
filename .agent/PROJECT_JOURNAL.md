@@ -1405,3 +1405,150 @@ shard is fast and valuable, but "all gates green" was reported for five
 sessions while the full suite was red. Either widen the shard to include the
 smoke/contract files that every page rewrite touches, or run the full suite
 before opening a PR. Recorded in MEMORY/ANTI.
+
+## Session 024 — 2026-08-19 — PR #65 lands; Benchmarking + DriverCascade money-safety; four fabrication pages and the healthcareStore seeds
+
+**Branch:** `arena/01a0178d-fp-a-betterversion` (forked from merged `082e70c`)
+
+### 1. T-024 resolved at boot
+
+GitHub was reconnected between sessions. The repair commit had been pushed,
+`test-unit` re-ran green, and PR **#65 was MERGED** at 2026-08-19T01:03:55Z
+(`main` @ `082e70c`). All post-merge `main` checks, test-unit included,
+finished green. No merge-red risk materialised.
+
+### 2. Money-AST: 421 → 404 unsafe ops (81.44% → 81.86%)
+
+Three files moved; the per-file `--json` diff proves nothing else did
+(160 of 163 unsafe files untouched):
+
+- **`BenchmarkingPage` (8 → 0)** — extracted
+  `src/pages/analytics/benchmarkingData.ts` (+ 9 known-answer tests). The old
+  page had FOUR Severity-0-class defects, invisible to both detectors:
+  `Math.abs` on every natural-balance group (a contra posting — accumulated
+  depreciation, a revenue reversal — INCREASED the balance); `|| 1` on every
+  empty denominator (dividing by an invented dollar); net income that skipped
+  prefixes 7 and 8 (interest and tax never reduced it); and a **Quick Ratio
+  card that displayed the Current Ratio** (no inventory adjustment existed).
+  The quick ratio is now permanently `null` with a disclosure: inventory has
+  no account-code prefix, so it is not derivable. Net income follows the
+  session-017 DECISION (4 − (5+6+7+8)).
+- **`DriverCascadeEngine` (7 → 0)** — the engine is LIVE (DriverPlanningPage,
+  driverStore, DriverPanel, CascadeRuleBuilder consume it) and its cube
+  measures hold currency. Cascade deltas, weightings and impact accumulation
+  now route through `@/utils/money`; `Math.round(x*100)/100` became
+  `roundTo(x, 2)`. Behavior preserved: engine tests and every consumer suite
+  green. The new probe pins `0.3 + 0.6 = 0.9` — the float path reported
+  `0.8999999999999999` — and a `percentageChange` drift case (3, not
+  2.9999999999999982).
+- **`telecomStore.getAverageARPU` (2 → 0)** — ARPU is money; float
+  `reduce(sum + monthlyRevenue)` became `sumMoney`/`divideMoney`. Drift test:
+  ARPU of [1.1, 2.2, 3.3] is exactly 2.2 (float: 2.2000000000000002).
+
+### 3. Fabrication: 32 → 19 findings (13 → 9 files)
+
+Four files moved; the per-file diff proves nothing else did:
+
+- **`TelecomDashboardPage` (4 → 0)** — module fixtures (segment revenue $B,
+  CapEx pie, six quarters of subscriber growth) and five literal KPIs (churn
+  rate, network CapEx, EBITDA margin, coverage, CAC) removed. The page now
+  derives active subscribers, ARPU (decimal), churn-risk mix, network metrics
+  and subscriber history from `telecomStore` via
+  `src/pages/sectors/telecomDashboardData.ts`, and discloses the unrecorded
+  metrics in a "Not shown" card. Empty state carries the `<h1>` (UI-07).
+- **`ConstructionDashboardPage` (3 → 0)** — read NO store: fictional backlog
+  trend, five invented projects with budgets/margins, hardcoded KPIs and a
+  42/58 labor split. Now derives budget/actual/variance totals, approved
+  change-order value and ledger rows from `constructionStore`
+  (`constructionDashboardData.ts` with strict `parseMoneyText` — unparseable
+  amounts are counted and excluded, never coerced to 0). No product code
+  writes to that store yet, so every tenant sees the honest empty state —
+  which is the fix. Backlog/pipeline/fleet disclosed as not recorded.
+- **`EquipmentManagementPage` (3 → 0)** — no equipment, telemetry or
+  maintenance data source exists anywhere in the workspace (grep-verified).
+  The page is now an honest empty state disclosing exactly that, instead of a
+  five-asset fictional fleet with invented utilization/fuel/service figures.
+- **`ValueBasedCarePage` (3 → 0) + healthcareStore seeds** — the fabrication
+  existed in TWO places: module fixtures in the page AND seeded defaults
+  persisted by `healthcareStore` for every tenant. Both removed. Store
+  persist bumped **v2 → v3**: migration clears `qualityMetrics` /
+  `savingsData` / `programs` for upgrading tenants (`clinicalTrials` — real
+  user input — survives); three migration tests pin it. Episode savings is
+  now DERIVED as target − actual (the hand-entered `savings` field is ignored
+  in totals); aggregate quality score is the ratio of sums (Σ scores ÷ Σ
+  full marks = 83.33% on the known-answer set, where a mean of percentages
+  would wrongly report 85%). ROI and Compliance tiles removed as
+  underivable; disclosed.
+
+### 4. Verification
+
+- Teeth: reverting all eight production files to HEAD fails **37** of the new
+  assertions; restoring returns **130/130** green across the 17 touched files.
+- Full suite: see the numbers reported at push time (run before opening the PR,
+  per the s023 standing rule). tsc clean; eslint clean on every touched dir.
+- Ratchets rebaselined (prettier-written): money 404 / 160 / 81.86%,
+  fabrication 19 / 9. Export engines remain at 0.
+- CHB-008 added to `docs/security/CASCADE_HOLD_LEDGER.md` acknowledging
+  gate 10's fresh-branch flags of the already-merged #64/#65 squashes.
+
+### 5. Lesson for the discipline
+
+A page and its store can carry the SAME fabrication twice — cleaning one copy
+leaves the other shipping to every tenant. When a page reads a store, read
+the store's persist defaults before declaring the surface clean; when a store
+ships seeds, grep for the pages that render them. Recorded in MEMORY/ANTI
+along with the selector-mock and regex-literal traps hit this session.
+
+## Session 025 — 2026-08-19 — PR #66 opens; RevRecEngine money-safety; EnergyRiskPage honesty
+
+**Branch:** `arena/01a0178d-fp-a-betterversion`
+
+### 1. Unblock + PR #66
+
+GitHub auth returned mid-session — the persistent 403 on `gh api user` was only
+the App token lacking the `user` scope; repo operations worked. Session-024's
+five commits pushed through all pre-push gates and **PR #66 opened** (session-024
+wave pair + README adoption fix).
+
+### 2. Money-AST: 404 → 397 (81.86% → 81.97%)
+
+- **`RevRecEngine` (7 → 0)** — the ASC 606 engine. `allocateTransactionPrice`
+  summed standalone selling prices with float `reduce` and derived the
+  allocation percentage with float `/`; `getContractAssetLiability` ran billed
+  and recognized totals on float `+=` and subtraction — emitting
+  `30.299999999999997` for a `10.10 + 20.20` contract asset. All now decimal
+  via `@/utils/money` (`sumMoney`, `divideMoney`, `addMoney`, `Decimal.max`
+  clamps), rounding only on emission. The L1 lens also caught an UNFLAGGED
+  float `weights.reduce` inside `calculateRevenueSchedule` and fixed it.
+  Behavior preserved: the existing ASC 606 suite is untouched and green; the
+  new probe pins the drift case. Per-file diff confined (159/160 untouched).
+
+### 3. Fabrication: 19 → 16
+
+- **`EnergyRiskPage` (3 → 0)** — read nothing at all: a fictional trading book
+  (VaR $2.42M, 78.2% hedge ratio, 16.4% volatility, four named-counterparty
+  derivative positions). L2 verified no recording surface exists — `energyStore`
+  carries generation only, there is no hedge/derivative store, and
+  `FinancialInstrumentsEngine` has zero product callers. Inventing a VaR is
+  exactly the Severity-0 class this wave removes, so the page empty-states with
+  disclosure. Its smoke assertions updated to assert the honesty (no KPI
+  tiles, no positions table until recorded). Per-file diff confined (8/9
+  untouched).
+
+### 4. Verification
+
+Teeth: reverting both production files fails **10** of the new assertions;
+restore returns the batch green (48/48, then 78/78 with money.test.ts). tsc +
+eslint clean. Full suite re-run before push: **1252 files · 14,306 passed ·
+1 skipped · 0 failed**. Baselines rebaselined: money 397 / 159 / 81.97%,
+fabrication 16 / 8.
+
+### 5. Process
+
+LENS protocol (user directive) adopted into `MEMORY/PROTOCOL.md` and applied
+this session: four specialist review passes — FP&A Controller, Red-Team
+Sentinel, Accessibility/UX, Release Engineer — before any task is declared
+done. It paid immediately: L1 found the unflagged float reduce; L2 prevented
+an empty-state from hiding a real data source. Cosmic UI evaluated and queued
+post-Phase-0 as an optional theme (QUEUE item 12), not adopted during the
+correctness wave.

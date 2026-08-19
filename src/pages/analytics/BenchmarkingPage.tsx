@@ -1,208 +1,141 @@
 import { useMemo } from 'react';
-import { reportingCurrency } from '@/store/financialContextStore';
 import { useNavigate } from 'react-router-dom';
+import { BarChart3, Upload } from 'lucide-react';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
-import { Skeleton } from '@/components/ui/Skeleton';
-import { BarChart3 } from 'lucide-react';
-import { currencyFormatter, formatPercent } from '@/utils/financialFormatting';
-import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { FinancialWorkspaceEmptyState } from '@/components/ui/FinancialWorkspaceEmptyState';
+import { formatNumber, formatPercent } from '@/utils/financialFormatting';
+import { deriveBenchmarkRatios, type BenchmarkRatioSet } from './benchmarkingData';
 
-function _formatCurrency(n: number): string {
-  return currencyFormatter(reportingCurrency(), { minDecimals: 0 })(n);
+interface RatioSpec {
+  id: keyof BenchmarkRatioSet;
+  label: string;
+  formula: string;
+  type: 'number' | 'percent';
+  /** Shown under a `null` value: why this GL cannot support the figure. */
+  unavailable?: string;
 }
 
-const RATIOS = [
+const RATIOS: RatioSpec[] = [
   {
     id: 'current',
     label: 'Current Ratio',
     formula: 'Current Assets / Current Liabilities',
-    type: 'number' as const,
+    type: 'number',
+    unavailable: 'No current liabilities are posted to 21xx accounts.',
   },
   {
     id: 'quick',
     label: 'Quick Ratio',
-    formula: '(Current Assets - Inventory) / Current Liabilities',
-    type: 'number' as const,
+    formula: '(Current Assets − Inventory) / Current Liabilities',
+    type: 'number',
+    unavailable:
+      'Inventory is not posted to a distinguishable account prefix in this chart of accounts, so the quick ratio cannot be derived.',
   },
   {
-    id: 'debt-to-equity',
+    id: 'debtToEquity',
     label: 'Debt to Equity',
     formula: 'Total Liabilities / Total Equity',
-    type: 'number' as const,
+    type: 'number',
+    unavailable: 'No equity is posted to 3xxx accounts.',
   },
   {
-    id: 'gross-margin',
+    id: 'grossMargin',
     label: 'Gross Margin',
-    formula: '(Revenue - COGS) / Revenue',
-    type: 'percent' as const,
+    formula: '(Revenue − COGS) / Revenue',
+    type: 'percent',
+    unavailable: 'No revenue is posted to 4xxx accounts.',
   },
   {
-    id: 'net-margin',
+    id: 'netMargin',
     label: 'Net Margin',
     formula: 'Net Income / Revenue',
-    type: 'percent' as const,
+    type: 'percent',
+    unavailable: 'No revenue is posted to 4xxx accounts.',
   },
   {
     id: 'roa',
     label: 'Return on Assets',
     formula: 'Net Income / Total Assets',
-    type: 'percent' as const,
+    type: 'percent',
+    unavailable: 'No assets are posted to 1xxx accounts.',
   },
   {
     id: 'roe',
     label: 'Return on Equity',
     formula: 'Net Income / Total Equity',
-    type: 'percent' as const,
+    type: 'percent',
+    unavailable: 'No equity is posted to 3xxx accounts.',
   },
   {
-    id: 'asset-turnover',
+    id: 'assetTurnover',
     label: 'Asset Turnover',
     formula: 'Revenue / Total Assets',
-    type: 'number' as const,
+    type: 'number',
+    unavailable: 'No assets are posted to 1xxx accounts.',
   },
 ];
 
 export default function BenchmarkingPage() {
   const { entries } = useGLStore();
   const navigate = useNavigate();
-  const ratios = useMemo(() => {
-    if (entries.length === 0) return null;
-    const revenue =
-      Math.abs(
-        roundTo(
-          sumMoney(
-            entries
-              .filter((e) => (e.accountCode || '').startsWith('4'))
-              .map((e) => e.credit - e.debit)
-          ),
-          2
-        )
-      ) || 1;
-    const cogs = roundTo(
-      sumMoney(
-        entries
-          .filter((e) => (e.accountCode || '').startsWith('5'))
-          .map((e) => Math.abs(e.debit - e.credit))
-      ),
-      2
-    );
-    const expenses = roundTo(
-      sumMoney(
-        entries
-          .filter((e) => (e.accountCode || '').startsWith('6'))
-          .map((e) => Math.abs(e.debit - e.credit))
-      ),
-      2
-    );
-    const assets =
-      Math.abs(
-        roundTo(
-          sumMoney(
-            entries
-              .filter((e) => (e.accountCode || '').startsWith('1'))
-              .map((e) => e.debit - e.credit)
-          ),
-          2
-        )
-      ) || 1;
-    const liabilities =
-      Math.abs(
-        roundTo(
-          sumMoney(
-            entries
-              .filter((e) => (e.accountCode || '').startsWith('2'))
-              .map((e) => e.credit - e.debit)
-          ),
-          2
-        )
-      ) || 1;
-    const equity =
-      Math.abs(
-        roundTo(
-          sumMoney(
-            entries
-              .filter((e) => (e.accountCode || '').startsWith('3'))
-              .map((e) => e.credit - e.debit)
-          ),
-          2
-        )
-      ) || 1;
-    const currentAssets =
-      Math.abs(
-        roundTo(
-          sumMoney(
-            entries
-              .filter((e) => (e.accountCode || '').startsWith('11'))
-              .map((e) => e.debit - e.credit)
-          ),
-          2
-        )
-      ) || 1;
-    const currentLiabs =
-      Math.abs(
-        roundTo(
-          sumMoney(
-            entries
-              .filter((e) => (e.accountCode || '').startsWith('21'))
-              .map((e) => e.credit - e.debit)
-          ),
-          2
-        )
-      ) || 1;
-    const netIncome = roundTo(subtractMoney(subtractMoney(revenue, cogs), expenses), 2);
-    return {
-      current: roundTo(divideMoney(currentAssets, currentLiabs), 4),
-      quick: roundTo(divideMoney(currentAssets, currentLiabs), 4),
-      'debt-to-equity': roundTo(divideMoney(liabilities, equity), 4),
-      'gross-margin':
-        revenue > 0 ? roundTo(divideMoney(subtractMoney(revenue, cogs), revenue).times(100), 2) : 0,
-      'net-margin': revenue > 0 ? roundTo(divideMoney(netIncome, revenue).times(100), 2) : 0,
-      roa: assets > 0 ? roundTo(divideMoney(netIncome, assets).times(100), 2) : 0,
-      roe: equity > 0 ? roundTo(divideMoney(netIncome, equity).times(100), 2) : 0,
-      'asset-turnover': assets > 0 ? roundTo(divideMoney(revenue, assets), 4) : 0,
-    };
-  }, [entries]);
 
-  if (entries.length === 0)
+  const derivation = useMemo(() => deriveBenchmarkRatios(entries), [entries]);
+
+  if (!derivation)
     return (
-      <div className="p-12 text-center">
-        <BarChart3 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-[var(--text-muted)] mb-6">Import GL data to calculate benchmarks.</p>
-        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
-      </div>
-    );
-  if (!ratios)
-    return (
-      <div className="p-6">
-        <Skeleton count={8} height="48px" />
-      </div>
+      <FinancialWorkspaceEmptyState
+        icon={<BarChart3 className="h-10 w-10" />}
+        title="No data to benchmark"
+        description="Benchmark ratios are derived from posted general-ledger activity. Import a GL to compute them."
+        steps={[
+          {
+            title: 'Import actuals',
+            description: 'Load a CSV or Excel general-ledger source into your workspace.',
+          },
+        ]}
+        actions={
+          <Button onClick={() => navigate('/data/gl-upload')}>
+            <Upload className="h-4 w-4 mr-2" />
+            Import Data
+          </Button>
+        }
+      />
     );
 
   return (
-    <PageHeader
-      title="Benchmarking"
-      purpose="8 key financial ratios computed from your GL data"
-      actions={
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {RATIOS.map((r) => {
-            const val = ratios[r.id as keyof typeof ratios];
-            const formatted = r.type === 'percent' ? formatPercent(val, 1) : val.toFixed(2);
-            return (
-              <Card key={r.id}>
-                <CardContent className="p-4">
-                  <div className="text-xs text-[var(--text-muted)] mb-1">{r.label}</div>
-                  <div className="text-2xl font-bold tabular-nums">{formatted}</div>
-                  <div className="text-[10px] text-[var(--text-muted)] mt-1">{r.formula}</div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      }
-    />
+    <div className="fp-page space-y-6 p-6">
+      <PageHeader
+        title="Benchmarking"
+        purpose="Eight key financial ratios derived from posted GL activity — natural-balance netting, decimal arithmetic, and a ratio is only shown when its denominator is genuinely posted."
+      />
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {RATIOS.map((r) => {
+          const val = derivation.ratios[r.id];
+          return (
+            <Card key={r.id}>
+              <CardContent className="p-4">
+                <div className="text-xs text-[var(--text-muted)] mb-1">{r.label}</div>
+                <div className="text-2xl font-bold tabular-nums">
+                  {val === null
+                    ? '—'
+                    : r.type === 'percent'
+                      ? formatPercent(val, 2)
+                      : formatNumber(val, 2)}
+                </div>
+                <div className="text-[10px] text-[var(--text-muted)] mt-1">{r.formula}</div>
+                {val === null && r.unavailable ? (
+                  <div className="text-[10px] text-[var(--text-muted)] mt-1 italic">
+                    {r.unavailable}
+                  </div>
+                ) : null}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    </div>
   );
 }

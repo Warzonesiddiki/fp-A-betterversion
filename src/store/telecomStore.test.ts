@@ -162,4 +162,14 @@ describe('telecomStore', () => {
   it('should return 0 ARPU for empty subscribers', () => {
     expect(useTelecomStore.getState().getAverageARPU()).toBe(0);
   });
+
+  it('aggregates ARPU decimally — no IEEE-754 drift (session 024)', () => {
+    useTelecomStore.getState().setSubscribers([
+      { id: 'd1', plan: 'A', monthlyRevenue: 1.1, churnRisk: 'Low', status: 'Active' },
+      { id: 'd2', plan: 'A', monthlyRevenue: 2.2, churnRisk: 'Low', status: 'Active' },
+      { id: 'd3', plan: 'A', monthlyRevenue: 3.3, churnRisk: 'Low', status: 'Active' },
+    ]);
+    // Float path: (1.1 + 2.2 + 3.3) / 3 = 2.2000000000000002.
+    expect(useTelecomStore.getState().getAverageARPU()).toBe(2.2);
+  });
 });
