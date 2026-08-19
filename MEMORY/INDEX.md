@@ -55,9 +55,10 @@ and `.agent/HANDOVER.md`. MEMORY does not replace those — it indexes them.
 
 ## 4. Current phase / NOW
 
-Phase 0, Wave W0.1.1. NOW = *T-025: next ranked money-AST module (skip `mockData/index.ts`) +
-fabrication `EnergyRiskPage` (3), in the same session*. PR #65 merged 2026-08-19; session 024
-landed money 421 → 404 and fabrication 32 → 19 → `MEMORY/TASKS/NOW.md`.
+Phase 0, Wave W0.1.1. NOW = *T-027: push + PR the session-026 pair, then the next money-AST
+module (LeaseEngine / LeaseDetailPage / the class-wide `existing.debit += e.debit` idiom) and
+fabrication `BoardPackPage` (3)*. PRs #65 and #66 merged 2026-08-19; session 026 landed money
+397 → 390 and fabrication 16 → 13 → `MEMORY/TASKS/NOW.md`.
 
 ## 5. Danger list — the top 5 ways an agent hallucinates THIS repo
 
@@ -77,5 +78,5 @@ landed money 421 → 404 and fabrication 32 → 19 → `MEMORY/TASKS/NOW.md`.
 
 ## 6. Last integrity check
 
-2026-08-18 — see `STATE.json.integrity`. Result recorded there by
+2026-08-19 — see `STATE.json.integrity`. Result recorded there by
 `node MEMORY/_system/check.mjs`.
