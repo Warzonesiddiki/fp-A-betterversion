@@ -349,3 +349,39 @@ Nothing here may contain "should", "probably" or "we will".
   B8, so two merges shipped with the Article XVIII gate state destroyed. Restored in session
   026 from `646bdf4` and brought forward (session_id, ratchets, W0.1.1 completed modules,
   the balance-sheet Severity-0). Verified: `blueprint_status` is `LOCKED` again.
+- [FACT 2026-08-19] Session 026 pushed cleanly (all 12 pre-push gates green) and **PR #67**
+  opened from `arena/01a0182b-fp-a-betterversion` → `main`. PR CI: TypeScript, ESLint,
+  Build on ubuntu / macOS / **windows** (Tier 1), Cascade-Hold Ledger and the Sentry
+  self-test all PASS. `test-unit` (Vitest) was still **queued for a runner** — not started,
+  not failed — when the GH token expired. PR #67 is therefore NOT merged.
+- [FACT 2026-08-19] `GH_TOKEN` expired mid-session for the **third** time (sessions 023, 024,
+  026). `gh auth status` → "The github.com token in GH_TOKEN is no longer valid";
+  `git ls-remote` prompts for a username. Everything is committed and pushed, so nothing is
+  at risk — only the merge verdict is blocked.
+- [FACT 2026-08-19] **`.github/workflows/ci.yml` is invalid YAML and produces zero jobs.**
+  The `summary` job carries `if: always()` twice (lines 324 and 327), a duplicated mapping
+  key, so GitHub rejects the file: every run completes as `failure` with an empty `jobs`
+  array and the message "This run likely failed because of a workflow file issue"
+  (run 32217442362 on this branch; identical on `arena/01a0178d-...` and on `main`).
+  Consequence: the `typecheck`, `lint`, `test` (4-way sharded Vitest), `test-merge`,
+  `build`, `e2e`, `a11y` jobs and the blocking `CI Summary` gate defined in that file
+  **have never executed**. PR pages look well covered because the checks that do run come
+  from the separate single-purpose workflows (`tsc.yml`, `lint.yml`, `build.yml`,
+  `test-unit.yml`, `cascade-hold-check.yml`, `sentry-self-test.yml`). `ci.yml` emits no
+  check runs, so it never appears in `gh pr checks`. The fix is already written in
+  `ci-patches/0005-server-ci-job-and-heap-timeout-fixes.patch` and needs a human
+  `git apply` — the handover previously described that patch only as "the 80 GiB heap
+  flag", which understated it.
+- [FACT 2026-08-19] The PR #67 `test-unit` job sat in `queued` for **7 hours** without ever
+  being assigned a runner (`created_at == updated_at == 04:54:53Z`; `steps: []`). It is a
+  plain `ubuntu-latest` job, so this is queue starvation, not a runner-label problem. The
+  GitHub App token lacks `actions: write`, so `gh run cancel` / `gh run rerun` both return
+  403; the only re-trigger available to this agent is a push to the PR branch, which the
+  workflow's `concurrency: cancel-in-progress: true` turns into a fresh run.
+- [FACT 2026-08-19] The sandbox was restored mid-session: `node_modules/` was wiped and local
+  `HEAD` rewound to `ec7a66a`, silently dropping four already-pushed commits from local
+  history while leaving the working tree intact. First symptoms were `npx prettier`
+  re-downloading the package and a `! [rejected] ... (fetch first)` on push. Recovered with
+  the documented drill: `git fetch origin <branch>` → `git reset --soft FETCH_HEAD` → bare
+  `git reset` → `npm install`. Working tree then diffed against the remote tip in exactly
+  the seven expected files, with no duplicated MEMORY entries.

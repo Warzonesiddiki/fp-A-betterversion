@@ -312,4 +312,24 @@ confidence: high
   instead: `wc -c .agent/state.json` during boot. Restore from the last
            non-empty commit (`git log -- .agent/state.json`, 646bdf4 = 12,028 B).
   evidence: session 026.
+
+[DO-NOT] Assume .github/workflows/ci.yml actually runs.
+  seen: a duplicated `if: always()` on the summary job makes the file invalid
+        YAML, so every run completes as failure with ZERO jobs. typecheck,
+        lint, the 4-way sharded test, test-merge, build, e2e, a11y and the
+        blocking CI Summary gate have never executed. The PR page still looks
+        covered because tsc.yml / lint.yml / build.yml / test-unit.yml are
+        separate workflows.
+  instead: a red ci.yml with an empty `.jobs[]` is a PARSE failure, not a test
+           failure. `gh api .../actions/runs/<id>/jobs --jq '.jobs[]|.name'`
+           returning nothing is the tell.
+  evidence: session 026; fix already written in ci-patches/0005.
+
+[DO-NOT] Wait indefinitely on a queued GitHub job.
+  seen: PR #67's test-unit sat in `queued` for 7 h with steps: [] and
+        created_at == updated_at. It is a plain ubuntu-latest job, so it was
+        starvation, not a missing runner label.
+  instead: the App token lacks `actions: write` (gh run cancel / rerun -> 403).
+           Push to the PR branch; `concurrency: cancel-in-progress: true`
+           retires the stale run and queues a fresh one.
 ```

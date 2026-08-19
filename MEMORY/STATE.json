@@ -5,7 +5,7 @@
   "genesis_phase": "Phase 0 / Wave W0.1.1",
   "now": {
     "task_id": "T-027",
-    "summary": "Session 026 wave pair landed on arena/01a0182b (money 390 / fabrication 13). Push, open PR vs main, merge only when test-unit green. Then: money-AST LeaseEngine (7) / LeaseDetailPage (7) or the class-wide `existing.debit += e.debit` idiom (16 files); fabrication BoardPackPage (3)."
+    "summary": "PR #67 open (money 390 / fabrication 13). tsc, eslint, build ubuntu/macOS/windows, cascade-hold, sentry all PASS; test-unit re-triggered after a 7-hour queue starvation. Merge only when test-unit passes. Then: money-AST LeaseEngine (7) / LeaseDetailPage (7) or the class-wide `existing.debit += e.debit` idiom (16 files); fabrication BoardPackPage (3). URGENT for a human: git apply ci-patches/0005 \u2014 ci.yml is invalid YAML and runs zero jobs."
   },
   "health": {
     "shi": null,
