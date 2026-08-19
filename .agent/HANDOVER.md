@@ -1,9 +1,9 @@
 # OmniPlan — Session Handover
 
-**Last updated:** 2026-08-19 (end of session 024)
+**Last updated:** 2026-08-19 (end of session 025)
 **Branch of record:** `arena/01a0178d-fp-a-betterversion`
 **Prior merge:** PR #65 → `main` @ `082e70c` (merged 2026-08-19T01:03Z, all checks green incl. test-unit)
-**PENDING PUSH:** session-024 commits are local and UNPUSHED — the GitHub token expired mid-session (second time; `gh api user` → Bad credentials). Once reconnected: `git push origin arena/01a0178d-fp-a-betterversion` via start_process (pre-push 3–5 min), then open the PR; merge only when `test-unit` passes. Full suite was green at commit time: 1252 files / 14,301 passed / 1 skipped / 0 failed.
+**In flight:** PR #66 (session-024 + session-025 waves; merge only when test-unit green)
 
 Paste the "Handover Prompt" section below into a new session to continue.
 
@@ -26,15 +26,15 @@ You are the autonomous Technical Owner / Chief Product Architect for **OmniPlan*
 
 The Article XVIII blueprint gate is **LOCKED** (`.agent/state.json` → `blueprint_status`), so product code is unblocked. Phase 0 / Wave W0.1.1 is in progress: raising AST money safety toward ≥90%.
 
-**Money-AST ratchet: 404 unsafe ops / 160 unsafe modules / 722 safe / 81.86%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The 421 → 404 move in session 024 is real (BenchmarkingPage 8, DriverCascadeEngine 7, telecomStore 2 → decimal derivations). Per-file diff confined to those three files.
+**Money-AST ratchet: 397 unsafe ops / 159 unsafe modules / 723 safe / 81.97%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. Session 025 moved `RevRecEngine` 7→0 (ASC 606 allocation + contract asset/liability on decimal). Per-file diff confined.
 
-**Fabrication ratchet: 19 findings / 9 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. The 32 → 19 move in session 024 is real (TelecomDashboardPage 4, ConstructionDashboardPage 3, EquipmentManagementPage 3, ValueBasedCarePage 3). `healthcareStore` seeds cleared via persist bump v2 → v3.
+**Fabrication ratchet: 16 findings / 8 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. Session 025 moved `EnergyRiskPage` 3→0 (honest empty state — no market-risk data source exists).
 
-Completed W0.1.1 modules: `FinancialStatementTemplates` (59→0), `ThreeStatementDashboardPage` (34→0), `SafeMathParser` (27→0), the two export engines (37 findings, all page-geometry false positives), `TaxProvisionPage` (22→0), `AutoCommentaryEngine` (16→0), `FinancialInstrumentsEngine` (15→0), `GoalSeekPage` (14→0), `ScenarioBuilderPage` (14→0), `CreditRiskPage` (13→0), `BenchmarkingPage` (8→0), `DriverCascadeEngine` (7→0), `telecomStore` ARPU (2→0).
+Completed W0.1.1 modules: `FinancialStatementTemplates` (59→0), `ThreeStatementDashboardPage` (34→0), `SafeMathParser` (27→0), the two export engines (37 findings, all page-geometry false positives), `TaxProvisionPage` (22→0), `AutoCommentaryEngine` (16→0), `FinancialInstrumentsEngine` (15→0), `GoalSeekPage` (14→0), `ScenarioBuilderPage` (14→0), `CreditRiskPage` (13→0), `BenchmarkingPage` (8→0), `DriverCascadeEngine` (7→0), `RevRecEngine` (7→0), `telecomStore` ARPU (2→0).
 
-**Next money-AST worklist item:** next ranked module from `node scripts/money-ast-detector.mjs --list`. Skip `mockData/index.ts` (13, fixture factory). Note: the grouping idiom `existing.debit += e.debit` recurs across ≥6 pages — a class-wide fix moves several files at once.
+**Next money-AST worklist item:** next ranked module from `node scripts/money-ast-detector.mjs --list`. Skip `mockData/*` (fixture factories). `BalanceSheetPage` (7) is K18-core. Note: the grouping idiom `existing.debit += e.debit` recurs across ≥6 pages — a class-wide fix moves several files at once.
 
-**Next fabrication worklist (worst first):** `EnergyRiskPage` (3), `InsuranceDashboardPage` (3), `BoardPackPage` (3), then the twos (EmissionsTrading, EnergyDashboard, ClaimsAnalytics, FacilityManagement) and the ones. Check both `src/pages/sector/` and `src/pages/sectors/` twins, and grep each page for its store first.
+**Next fabrication worklist (worst first):** `InsuranceDashboardPage` (3), `BoardPackPage` (3), then the twos (EmissionsTrading, EnergyDashboard, ClaimsAnalytics, FacilityManagement) and the ones. Check both `src/pages/sector/` and `src/pages/sectors/` twins, grep each page for its store, and read the store's persist seeds first.
 
 ### Read this before you trust either ratchet
 
@@ -85,7 +85,7 @@ So: **a file at "0 unsafe ops" or "0 fabrication findings" is un-flagged, not ce
 
 **Correctness / gates**
 
-- Fabrication worklist uncleaned: 19 displayed invented figures across 9 files (ratcheted; session 024 cleaned Telecom/Construction/Equipment/ValueBasedCare + healthcareStore seeds). Sector dashboards ship module fixtures or fall back to demo data when their store is empty — check for that pattern, the detector only sees the literals. Also check the STORE's persist seeds — session 024 found the same fabrication living in both the page and the store.
+- Fabrication worklist uncleaned: 16 displayed invented figures across 8 files (ratcheted; sessions 024-025 cleaned Telecom/Construction/Equipment/ValueBasedCare + healthcareStore seeds + EnergyRisk). Sector dashboards ship module fixtures or fall back to demo data when their store is empty — check for that pattern, the detector only sees the literals. Also check the STORE's persist seeds — session 024 found the same fabrication living in both the page and the store.
 - No detector for raw floats crossing a render/format boundary. Live instance: `ProfessionalExportEngine` types rows as `(string|number)[][]` and passes them to `autoTable` with only column 0 stringified — an unformatted float prints `0.30000000000000004` into a board pack.
 - Detector blind spot: single-line arrow bodies over `args[i]!` (logged for W0.1.6, type-based detection).
 - No automated detector for numeric ratio invention or view/memo divergence (source guards are per-module).
@@ -127,9 +127,9 @@ R-21 no system of record (20) · R-22 money-gate false-green (20) · R-24 deskto
 | `.agent/PROJECT_JOURNAL.md`             | Session narrative + ADRs 001–013. Sessions 007–012 carry the correctness lessons   |
 | `.agent/state.json`                     | `blueprint_status`, indices, phase, queue                                          |
 | `scripts/money-ast-detector.mjs`        | AST money-safety detector (`--update --list --file --json`)                        |
-| `scripts/money-ast-baseline.json`       | Ratchet baseline (404 / 81.86%)                                                    |
+| `scripts/money-ast-baseline.json`       | Ratchet baseline (397 / 81.97%)                                                    |
 | `scripts/fabrication-detector.mjs`      | Displayed-literal fabrication detector (W0.1.7)                                    |
-| `scripts/fabrication-baseline.json`     | Ratchet baseline (19 / 9 files)                                                    |
+| `scripts/fabrication-baseline.json`     | Ratchet baseline (16 / 8 files)                                                    |
 | `src/utils/money.ts`                    | **The only** money primitive: decimal.js, precision 40, ROUND_HALF_UP              |
 | `src/utils/moneyAstDetector.test.ts`    | Detector regression locks incl. the `margin` precision fix                         |
 | `src/utils/fabricationDetector.test.ts` | Fabrication detector must-catch / must-ignore locks                                |

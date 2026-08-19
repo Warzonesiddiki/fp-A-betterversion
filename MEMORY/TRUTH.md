@@ -266,3 +266,34 @@ Nothing here may contain "should", "probably" or "we will".
 - [FACT 2026-08-19] **BLOCKED (again):** the GitHub token expired mid-session a second time
   (`gh api user` → "Bad credentials"). The five session-024 commits are committed locally and
   NOT pushed; no PR exists for this branch yet.
+- [FACT 2026-08-19] Cosmic UI (`rizkimuhammada/cosmic-ui`, verified by web lookup) is a
+  sci-fi themed Tailwind + React component collection distributed copy-style (no npm runtime
+  package; the npm `cosmic-ui` name is an unrelated 27 kB spacing library). Queued as a
+  post-Phase-0 OPTIONAL-theme decision in `MEMORY/TASKS/QUEUE.md` item 12, not adopted now.
+- [DECISION 2026-08-19] LENS protocol added to `MEMORY/PROTOCOL.md` (user directive): one
+  agent walks four specialist review lenses — FP&A Controller, Red-Team Sentinel,
+  Accessibility/UX, Release Engineer — before any task is declared done.
+
+## Session 025 (completed)
+
+- [FACT 2026-08-19] GitHub auth restored mid-session; session-024 commits pushed, **PR #66
+  opened** from `arena/01a0178d-fp-a-betterversion` (target `main`). The earlier 403 on
+  `gh api user` was only the app token lacking the `user` scope — repo ops worked.
+- [MEASURE 2026-08-19] Money-AST after session 025: SAFE 723 · UNSAFE 159 · **unsafe
+  operations 397** · **safety 81.97%**. Per-file diff confined: `RevRecEngine.ts` 7→0;
+  159 of 160 files untouched. Fabrication: **16 findings / 8 files**; confined move
+  `EnergyRiskPage.tsx` 3→0; 8 of 9 untouched.
+- [FACT 2026-08-19] `RevRecEngine.getContractAssetLiability` pre-025 accumulated billed and
+  recognized totals with float `+=` and subtracted them in float, emitting
+  `30.299999999999997` for a 10.10 + 20.20 contract asset; `allocateTransactionPrice` summed
+  standalone prices with float `reduce` and divided in float. All now decimal via
+  `@/utils/money`, rounding only on emission; existing ASC 606 tests unchanged and green.
+- [FACT 2026-08-19] `EnergyRiskPage` read no store and no engine: VaR, hedge ratio,
+  volatility and four named-counterparty positions were module literals. No market-risk data
+  source exists in the workspace (`energyStore` carries generation only;
+  `FinancialInstrumentsEngine` has zero product callers), so the page is an honest empty
+  state disclosing the absence.
+- [MEASURE 2026-08-19] Teeth: reverting `RevRecEngine.ts` + `EnergyRiskPage.tsx` to HEAD
+  fails **10** of the new assertions; restore returns the batch green.
+- [MEASURE 2026-08-19] Full suite after session 025: **1252 files · 14,306 passed ·
+  1 skipped · 0 failed**. tsc clean; eslint clean on touched files.

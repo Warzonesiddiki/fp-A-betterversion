@@ -4,17 +4,17 @@
   "updated_at": "2026-08-19",
   "genesis_phase": "Phase 0 / Wave W0.1.1",
   "now": {
-    "task_id": "T-025",
-    "summary": "Next money-AST module from the ranked worklist (skip mockData/index.ts, fixture factory); fabrication EnergyRiskPage (3) -> InsuranceDashboardPage (3) -> BoardPackPage (3). PR #65 landed; open the next PR from arena/01a0178d-fp-a-betterversion."
+    "task_id": "T-026",
+    "summary": "PR #66 open (session 024+025 waves; money 397 / fabrication 16). Merge #66 only when test-unit green. Then: money-AST next ranked module (BalanceSheetPage 7 is K18-core) + fabrication InsuranceDashboardPage (3)."
   },
   "health": {
     "shi": null,
     "uvi": null,
     "dei": null,
-    "money_ast_safety_pct": 81.86,
-    "money_ast_unsafe_ops": 404,
-    "fabrication_findings": 19,
-    "notes": "SHI/UVI/DEI not measured. Ratchets 2026-08-19 after s024: money 489->...->421->404 (BenchmarkingPage 8, DriverCascadeEngine 7, telecomStore 2; per-file diff confined); fabrication 60->...->32->19 (Telecom 4, Construction 3, Equipment 3, ValueBasedCare 3). healthcareStore seeds cleared via persist v3."
+    "money_ast_safety_pct": 81.97,
+    "money_ast_unsafe_ops": 397,
+    "fabrication_findings": 16,
+    "notes": "SHI/UVI/DEI not measured. Ratchets 2026-08-19 after s025: money 489->...->421->404->397 (s025: RevRecEngine 7); fabrication 60->...->32->19->16 (s025: EnergyRiskPage 3). Arc per-file confined every step."
   },
   "capabilities": {
     "git": true,
@@ -89,12 +89,11 @@
     "INV-010"
   ],
   "blocked": [
-    "GitHub token expired mid-session 024 (gh auth status: token in GH_TOKEN no longer valid; gh api user: Bad credentials) -> 5 local commits on arena/01a0178d-fp-a-betterversion are committed and UNPUSHED. Once reconnected: git push origin arena/01a0178d-fp-a-betterversion (pre-push 3-5 min, via start_process), then open the PR and watch test-unit.",
     "CI workflow changes (no `workflows` permission) -> ci-patches/0005-*.patch unapplied; it fixes the 80 GiB heap flag on test-unit",
     "src-tauri/src/*.rs (no cargo/rustc in sandbox)",
     "desktop/Tauri verification"
   ],
-  "last_session": "sess_024",
+  "last_session": "sess_025",
   "integrity": {
     "last_run": "2026-08-19",
     "ok": true,

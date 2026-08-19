@@ -1498,3 +1498,57 @@ leaves the other shipping to every tenant. When a page reads a store, read
 the store's persist defaults before declaring the surface clean; when a store
 ships seeds, grep for the pages that render them. Recorded in MEMORY/ANTI
 along with the selector-mock and regex-literal traps hit this session.
+
+## Session 025 — 2026-08-19 — PR #66 opens; RevRecEngine money-safety; EnergyRiskPage honesty
+
+**Branch:** `arena/01a0178d-fp-a-betterversion`
+
+### 1. Unblock + PR #66
+
+GitHub auth returned mid-session — the persistent 403 on `gh api user` was only
+the App token lacking the `user` scope; repo operations worked. Session-024's
+five commits pushed through all pre-push gates and **PR #66 opened** (session-024
+wave pair + README adoption fix).
+
+### 2. Money-AST: 404 → 397 (81.86% → 81.97%)
+
+- **`RevRecEngine` (7 → 0)** — the ASC 606 engine. `allocateTransactionPrice`
+  summed standalone selling prices with float `reduce` and derived the
+  allocation percentage with float `/`; `getContractAssetLiability` ran billed
+  and recognized totals on float `+=` and subtraction — emitting
+  `30.299999999999997` for a `10.10 + 20.20` contract asset. All now decimal
+  via `@/utils/money` (`sumMoney`, `divideMoney`, `addMoney`, `Decimal.max`
+  clamps), rounding only on emission. The L1 lens also caught an UNFLAGGED
+  float `weights.reduce` inside `calculateRevenueSchedule` and fixed it.
+  Behavior preserved: the existing ASC 606 suite is untouched and green; the
+  new probe pins the drift case. Per-file diff confined (159/160 untouched).
+
+### 3. Fabrication: 19 → 16
+
+- **`EnergyRiskPage` (3 → 0)** — read nothing at all: a fictional trading book
+  (VaR $2.42M, 78.2% hedge ratio, 16.4% volatility, four named-counterparty
+  derivative positions). L2 verified no recording surface exists — `energyStore`
+  carries generation only, there is no hedge/derivative store, and
+  `FinancialInstrumentsEngine` has zero product callers. Inventing a VaR is
+  exactly the Severity-0 class this wave removes, so the page empty-states with
+  disclosure. Its smoke assertions updated to assert the honesty (no KPI
+  tiles, no positions table until recorded). Per-file diff confined (8/9
+  untouched).
+
+### 4. Verification
+
+Teeth: reverting both production files fails **10** of the new assertions;
+restore returns the batch green (48/48, then 78/78 with money.test.ts). tsc +
+eslint clean. Full suite re-run before push: **1252 files · 14,306 passed ·
+1 skipped · 0 failed**. Baselines rebaselined: money 397 / 159 / 81.97%,
+fabrication 16 / 8.
+
+### 5. Process
+
+LENS protocol (user directive) adopted into `MEMORY/PROTOCOL.md` and applied
+this session: four specialist review passes — FP&A Controller, Red-Team
+Sentinel, Accessibility/UX, Release Engineer — before any task is declared
+done. It paid immediately: L1 found the unflagged float reduce; L2 prevented
+an empty-state from hiding a real data source. Cosmic UI evaluated and queued
+post-Phase-0 as an optional theme (QUEUE item 12), not adopted during the
+correctness wave.

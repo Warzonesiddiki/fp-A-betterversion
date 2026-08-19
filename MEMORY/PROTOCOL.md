@@ -38,6 +38,23 @@ PROHIBITED:
   - "Updating" TRUTH to match a plan that is not implemented
   - Deleting ANTI because it is embarrassing
   - Any real key, token, password, customer datum or PII in MEMORY
+
+LENS PROTOCOL (user directive 2026-08-19 — "different persona per task for perfection"):
+  One agent, several specialist review passes. Before ANY task is declared
+  done, walk every lens below and record its objections in the session log.
+  Lenses are checklists and priorities — they change WHAT is checked, not
+  who checks it; never claim separate models or agents.
+    L1 FP&A CONTROLLER      K18 first: could any figure be wrong? Natural
+                            balance, denominators, signs, rounding, period
+                            cutoffs. Severity-0 outranks velocity.
+    L2 RED-TEAM SENTINEL    What do both detectors NOT see? Literals, demo
+                            fallbacks, aggregate stamping, discarded store
+                            reads, correct engines fed invented inputs.
+    L3 ACCESSIBILITY/UX     UI-07 h1 discipline, honest empty states,
+                            contrast contract, labels literally true.
+    L4 RELEASE ENGINEER     Full suite before PR, teeth, gates never
+                            lowered, Windows Tier 1, bundle budgets.
+```
 ```
 
 ## Host-project rules MEMORY serves (does not override)
