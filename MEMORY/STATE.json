@@ -1,20 +1,20 @@
 {
   "memory_version": "1.0.0",
-  "project": "OmniPlan (finplan-pro) \u2014 Warzonesiddiki/fp-A-betterversion",
-  "updated_at": "2026-08-18",
+  "project": "OmniPlan (finplan-pro) — Warzonesiddiki/fp-A-betterversion",
+  "updated_at": "2026-08-19",
   "genesis_phase": "Phase 0 / Wave W0.1.1",
   "now": {
-    "task_id": "T-024",
-    "summary": "BLOCKED on GitHub auth: push the local test-repair commit, let test-unit re-run on PR #65, then merge. Then resume T-023 (BenchmarkingPage 8 / TelecomDashboardPage 4)."
+    "task_id": "T-025",
+    "summary": "Next money-AST module from the ranked worklist (skip mockData/index.ts, fixture factory); fabrication EnergyRiskPage (3) -> InsuranceDashboardPage (3) -> BoardPackPage (3). PR #65 landed; open the next PR from arena/01a0178d-fp-a-betterversion."
   },
   "health": {
     "shi": null,
     "uvi": null,
     "dei": null,
-    "money_ast_safety_pct": 81.44,
-    "money_ast_unsafe_ops": 421,
-    "fabrication_findings": 32,
-    "notes": "SHI/UVI/DEI not measured. Ratchets 2026-08-18 after s022 (489->...->421; 60->...->32). The s022 fix commit prose says 81.68%; measured is 81.44%."
+    "money_ast_safety_pct": 81.86,
+    "money_ast_unsafe_ops": 404,
+    "fabrication_findings": 19,
+    "notes": "SHI/UVI/DEI not measured. Ratchets 2026-08-19 after s024: money 489->...->421->404 (BenchmarkingPage 8, DriverCascadeEngine 7, telecomStore 2; per-file diff confined); fabrication 60->...->32->19 (Telecom 4, Construction 3, Equipment 3, ValueBasedCare 3). healthcareStore seeds cleared via persist v3."
   },
   "capabilities": {
     "git": true,
@@ -89,14 +89,13 @@
     "INV-010"
   ],
   "blocked": [
-    "GitHub token expired mid-session (gh auth status: token in GH_TOKEN no longer valid) -> repair commit unpushed, PR #65 unmerged. User must reconnect GitHub in Arena.",
     "CI workflow changes (no `workflows` permission) -> ci-patches/0005-*.patch unapplied; it fixes the 80 GiB heap flag on test-unit",
     "src-tauri/src/*.rs (no cargo/rustc in sandbox)",
     "desktop/Tauri verification"
   ],
-  "last_session": "sess_023",
+  "last_session": "sess_024",
   "integrity": {
-    "last_run": "2026-08-18",
+    "last_run": "2026-08-19",
     "ok": true,
     "errors": []
   }
