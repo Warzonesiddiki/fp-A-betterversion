@@ -358,6 +358,28 @@ Nothing here may contain "should", "probably" or "we will".
   026). `gh auth status` → "The github.com token in GH_TOKEN is no longer valid";
   `git ls-remote` prompts for a username. Everything is committed and pushed, so nothing is
   at risk — only the merge verdict is blocked.
+## Session 027 (completed)
+
+- [MEASURE 2026-08-20] Money-AST after session 027: SAFE 730 · UNSAFE 156 · **unsafe
+  operations 376** · **safety 82.39%**. Moved: `LeaseEngine.ts` 7→0,
+  `LeaseDetailPage.tsx` 7→0.
+- [MEASURE 2026-08-20] Fabrication after session 027: **10 findings / 6 files**
+  (13 → 10). Moved: `BoardPackPage.tsx` 3→0.
+- [FACT 2026-08-20] Six of seven LeaseEngine flags were period/index arithmetic on
+  identifiers containing `lease`. The seventh was recoverability
+  (`undiscountedCF >= closingBalance`), now `compareMoney`.
+- [FACT 2026-08-20] LeaseDetailPage `Math.round`-ed engine cents on the amortisation
+  table and subtracted `rouAsset - bookValue` in float. Derivation is now
+  `src/pages/lease/leaseDetailData.ts`.
+- [FACT 2026-08-20] BoardPackPage seeded Travel `($12,400)`, Software `($8,200)`,
+  Office Supplies `$3,500` and a `$4.5M / 22% YoY` commentary. Equity omitted
+  current-period earnings; expenses used `Math.abs` on prefixes 5+6 only; the
+  tile labelled Gross Margin used all expenses. Derivation is
+  `src/pages/reports/boardPackData.ts` (closing equity from `computeBalanceSheet`).
+- [MEASURE 2026-08-20] Full suite: **1257 files · 14,373 passed · 1 skipped · 0 failed**.
+- [MEASURE 2026-08-20] Teeth: reverting the two pages to HEAD fails **3** new
+  source-guard assertions.
+
 - [FACT 2026-08-19] **`.github/workflows/ci.yml` is invalid YAML and produces zero jobs.**
   The `summary` job carries `if: always()` twice (lines 324 and 327), a duplicated mapping
   key, so GitHub rejects the file: every run completes as `failure` with an empty `jobs`

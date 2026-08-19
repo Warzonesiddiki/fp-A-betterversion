@@ -1,20 +1,20 @@
 {
   "memory_version": "1.0.0",
   "project": "OmniPlan (finplan-pro) \u2014 Warzonesiddiki/fp-A-betterversion",
-  "updated_at": "2026-08-19",
+  "updated_at": "2026-08-20",
   "genesis_phase": "Phase 0 / Wave W0.1.1",
   "now": {
-    "task_id": "T-027",
-    "summary": "PR #67 open (money 390 / fabrication 13). tsc, eslint, build ubuntu/macOS/windows, cascade-hold, sentry all PASS; test-unit re-triggered after a 7-hour queue starvation. Merge only when test-unit passes. Then: money-AST LeaseEngine (7) / LeaseDetailPage (7) or the class-wide `existing.debit += e.debit` idiom (16 files); fabrication BoardPackPage (3). URGENT for a human: git apply ci-patches/0005 \u2014 ci.yml is invalid YAML and runs zero jobs."
+    "task_id": "T-028",
+    "summary": "Session 027 pair landed (money 376 / fabrication 10). Push + PR; merge only when test-unit green. Next: SankeyChart/WorkingCapital or grouping idiom; fabrication EmissionsTrading/EnergyDashboard/ClaimsAnalytics/FacilityManagement. Human: apply ci-patches/0005 (invalid ci.yml YAML)."
   },
   "health": {
     "shi": null,
     "uvi": null,
     "dei": null,
-    "money_ast_safety_pct": 82.13,
-    "money_ast_unsafe_ops": 390,
-    "fabrication_findings": 13,
-    "notes": "SHI/UVI/DEI not measured. Ratchets 2026-08-19 after s026: money 489->...->404->397->390 (s026: BalanceSheetPage 7, plus the K18 retained-earnings identity fix); fabrication 60->...->19->16->13 (s026: InsuranceDashboardPage 3). Arc per-file confined every step; s026 diff moved exactly one file per ratchet."
+    "money_ast_safety_pct": 82.39,
+    "money_ast_unsafe_ops": 376,
+    "fabrication_findings": 10,
+    "notes": "SHI/UVI/DEI not measured. Ratchets 2026-08-20 after s027: money 489->...->390->376 (LeaseEngine + LeaseDetailPage); fabrication 60->...->13->10 (BoardPackPage)."
   },
   "capabilities": {
     "git": true,
@@ -29,17 +29,8 @@
     "push_workflows": false
   },
   "stack": {
-    "languages": [
-      "TypeScript",
-      "Rust (tauri, unbuildable here)"
-    ],
-    "frameworks": [
-      "React 19",
-      "Vite",
-      "Tailwind",
-      "Zustand",
-      "Express"
-    ],
+    "languages": ["TypeScript", "Rust (tauri, unbuildable here)"],
+    "frameworks": ["React 19", "Vite", "Tailwind", "Zustand", "Express"],
     "pkg": "npm",
     "test": "npm test (vitest) | npx vitest run <path> --reporter=dot",
     "dev": "npm run dev",
@@ -62,7 +53,7 @@
     "retail-engine": "flagged",
     "realestate-engine": "flagged",
     "export-engines": "flagged",
-    "board-pack": "partial",
+    "board-pack": "shipped",
     "server-api": "partial",
     "persistence-authority-w08": "planned",
     "msi-installer": "planned",
@@ -76,26 +67,16 @@
     "forecast-builder": "shipped",
     "clinical-trials": "shipped"
   },
-  "invariants_green": [
-    "INV-001",
-    "INV-002"
-  ],
-  "invariants_red": [
-    "INV-003",
-    "INV-004",
-    "INV-005",
-    "INV-007",
-    "INV-009",
-    "INV-010"
-  ],
+  "invariants_green": ["INV-001", "INV-002"],
+  "invariants_red": ["INV-003", "INV-004", "INV-005", "INV-007", "INV-009", "INV-010"],
   "blocked": [
-    "CI workflow changes (no `workflows` permission) -> ci-patches/0005-*.patch unapplied; it fixes the 80 GiB heap flag on test-unit",
+    "CI workflow changes (no `workflows` permission) -> ci-patches/0005-*.patch unapplied; it fixes invalid ci.yml YAML + heap/timeout",
     "src-tauri/src/*.rs (no cargo/rustc in sandbox)",
     "desktop/Tauri verification"
   ],
-  "last_session": "sess_026",
+  "last_session": "sess_027",
   "integrity": {
-    "last_run": "2026-08-19",
+    "last_run": "2026-08-20",
     "ok": true,
     "errors": []
   }
