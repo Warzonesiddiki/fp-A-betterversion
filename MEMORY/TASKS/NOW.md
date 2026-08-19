@@ -15,7 +15,14 @@ Session 024 landed, on branch `arena/01a0178d-fp-a-betterversion` (forked from t
 `082e70c`): money-AST 421 → **404** and fabrication 32 → **19**, per-file diff confined,
 teeth verified (37 assertions fail on revert).
 
-Do this in order:
+**FIRST — BLOCKED on GitHub auth (token expired mid-session 024, same as s023):** five local
+commits on `arena/01a0178d-fp-a-betterversion` are committed and UNPUSHED (fix + docs + readme
+adoption 85→87). Once GitHub is reconnected in Arena:
+`git push origin arena/01a0178d-fp-a-betterversion` (via start_process; pre-push 3–5 min), then
+open the PR from that branch and merge only when `test-unit` passes. Full suite was green
+before commit: 1252 files / 14,301 passed / 1 skipped / 0 failed.
+
+Then T-025, in order:
 
 1. `node scripts/money-ast-detector.mjs --list` — take the next ranked module.
    **Skip `src/services/mockData/index.ts` (13) — fixture factory.** The grouping idiom

@@ -89,6 +89,7 @@
     "INV-010"
   ],
   "blocked": [
+    "GitHub token expired mid-session 024 (gh auth status: token in GH_TOKEN no longer valid; gh api user: Bad credentials) -> 5 local commits on arena/01a0178d-fp-a-betterversion are committed and UNPUSHED. Once reconnected: git push origin arena/01a0178d-fp-a-betterversion (pre-push 3-5 min, via start_process), then open the PR and watch test-unit.",
     "CI workflow changes (no `workflows` permission) -> ci-patches/0005-*.patch unapplied; it fixes the 80 GiB heap flag on test-unit",
     "src-tauri/src/*.rs (no cargo/rustc in sandbox)",
     "desktop/Tauri verification"

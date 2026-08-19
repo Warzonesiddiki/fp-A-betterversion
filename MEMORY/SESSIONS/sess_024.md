@@ -87,9 +87,18 @@ Ratchets: `scripts/money-ast-baseline.json` 421 → **404** (163 → 160 modules
 - `getByText(/Active Subscribers/i)` collided with the card title "Churn Risk Mix (active
   subscribers)"; exact-text matchers where a token can appear in other headings.
 
+## Blocked at end of session
+
+GitHub token expired mid-session a SECOND time (`gh api user` → Bad credentials) after all
+commits landed. Five commits on `arena/01a0178d-fp-a-betterversion` are committed locally and
+UNPUSHED (fix a754395, docs 7521859, readme 2775251, plus two tracker auto-commits). Once
+GitHub is reconnected: push via start_process (pre-push 3–5 min), open the PR, merge only when
+test-unit is green.
+
 ## Next agent should
 
-T-025: money-AST next on the worklist after `mockData/index.ts` (skip — fixture factory);
-fabrication worklist now: `EnergyRiskPage` (3), `InsuranceDashboardPage` (3), `BoardPackPage`
-(3), then the energy/realestate twos. Engine mocks still armed: RealEstate, Retail,
-Construction. W0.1.6 type-based detection still open.
+FIRST land the unpushed session-024 commits (see Blocked). THEN T-025: money-AST next on the
+worklist after `mockData/index.ts` (skip — fixture factory); fabrication worklist now:
+`EnergyRiskPage` (3), `InsuranceDashboardPage` (3), `BoardPackPage` (3), then the
+energy/realestate twos. Engine mocks still armed: RealEstate, Retail, Construction. W0.1.6
+type-based detection still open.

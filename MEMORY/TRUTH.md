@@ -258,3 +258,11 @@ Nothing here may contain "should", "probably" or "we will".
   is recorded — which is the fix, not a regression.
 - [MEASURE 2026-08-19] Teeth: reverting all eight production files to HEAD fails **37** of the
   new assertions (source guards + known-answer DOM probes + migration tests).
+- [MEASURE 2026-08-19] Full suite after session 024: **1252 files · 14,301 passed · 1 skipped ·
+  0 failed** (was 1243 / 14,234). tsc clean; eslint clean on every touched directory.
+- [FACT 2026-08-19] README money.ts adoption claim bumped 85 → 87 to satisfy
+  `scripts/check-readme-claims.mjs` after `DriverCascadeEngine` and `telecomStore` became
+  adopters; pre-push blocked on the stale claim once, then held.
+- [FACT 2026-08-19] **BLOCKED (again):** the GitHub token expired mid-session a second time
+  (`gh api user` → "Bad credentials"). The five session-024 commits are committed locally and
+  NOT pushed; no PR exists for this branch yet.

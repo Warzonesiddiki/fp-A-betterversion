@@ -3,6 +3,7 @@
 **Last updated:** 2026-08-19 (end of session 024)
 **Branch of record:** `arena/01a0178d-fp-a-betterversion`
 **Prior merge:** PR #65 → `main` @ `082e70c` (merged 2026-08-19T01:03Z, all checks green incl. test-unit)
+**PENDING PUSH:** session-024 commits are local and UNPUSHED — the GitHub token expired mid-session (second time; `gh api user` → Bad credentials). Once reconnected: `git push origin arena/01a0178d-fp-a-betterversion` via start_process (pre-push 3–5 min), then open the PR; merge only when `test-unit` passes. Full suite was green at commit time: 1252 files / 14,301 passed / 1 skipped / 0 failed.
 
 Paste the "Handover Prompt" section below into a new session to continue.
 
