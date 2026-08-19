@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import fs from 'node:fs';
+import path from 'node:path';
 vi.mock('@/store/glStore', () => ({
   useGLStore: vi.fn(() => ({ entries: [] })),
 }));
@@ -60,5 +62,30 @@ describe('EquipmentManagementPage smoke test', () => {
   it('displays page heading', () => {
     renderPage();
     expect(screen.getByText('Equipment Management')).toBeTruthy();
+  });
+
+  it('discloses that no fleet data is recorded (session 024)', () => {
+    renderPage();
+    expect(screen.getByText(/No fleet data is recorded/i)).toBeTruthy();
+  });
+});
+
+describe('EquipmentManagementPage — source guards (session 024)', () => {
+  const src = fs
+    .readFileSync(path.resolve(__dirname, './EquipmentManagementPage.tsx'), 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:\\])\/\/[^\n]*/g, '$1');
+
+  it('no fictional fleet fixtures survive', () => {
+    expect(src).not.toMatch(/utilizationTrend/);
+    expect(src).not.toMatch(/equipmentFleet/);
+    expect(src).not.toMatch(/Tower Crane 550/);
+  });
+
+  it('no hardcoded KPI values survive', () => {
+    expect(src).not.toMatch(/84\.2%/);
+    expect(src).not.toMatch(/\$142k/);
+    expect(src).not.toMatch(/18\.5%/);
+    expect(src).not.toMatch(/92\.4%/);
   });
 });

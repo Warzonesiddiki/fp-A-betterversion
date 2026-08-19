@@ -1,9 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
-}));
+import { useConstructionStore } from '@/store/constructionStore';
 
 vi.mock('@/hooks/usePeriods', () => ({
   usePeriods: vi.fn(() => []),
@@ -11,21 +9,6 @@ vi.mock('@/hooks/usePeriods', () => ({
 
 vi.mock('@/components/ui/PeriodPicker', () => ({
   PeriodPicker: () => <div data-testid="period-picker" />,
-}));
-
-vi.mock('@/engines', () => ({
-  ConstructionEngine: {
-    calculateStats: vi.fn(() => ({
-      totalBacklog: 0,
-      revenueYTD: 0,
-      avgGrossMargin: 0,
-      overUnderBilled: 0,
-      wipValue: 0,
-      billings: 0,
-    })),
-    getBacklogTrend: vi.fn(() => []),
-    getProjectPortfolio: vi.fn(() => []),
-  },
 }));
 
 vi.mock('recharts', () => ({
@@ -38,10 +21,6 @@ vi.mock('recharts', () => ({
   Tooltip: () => null,
   Legend: () => null,
   Cell: () => null,
-  ComposedChart: ({ children }: any) => <div>{children}</div>,
-  Line: () => null,
-  Area: () => null,
-  AreaChart: ({ children }: any) => <div>{children}</div>,
 }));
 
 vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
@@ -50,7 +29,7 @@ import ConstructionDashboardPage from '@/pages/construction/ConstructionDashboar
 
 function renderPage() {
   return render(
-    <MemoryRouter initialEntries={['/construction']}>
+    <MemoryRouter initialEntries={['/construction/dashboard']}>
       <ConstructionDashboardPage />
     </MemoryRouter>
   );
@@ -59,7 +38,13 @@ function renderPage() {
 describe('ConstructionDashboardPage smoke test', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useConstructionStore.setState({ costBreakdown: [], changeOrders: [], costLedger: [] });
   });
+
+  afterEach(() => {
+    useConstructionStore.setState({ costBreakdown: [], changeOrders: [], costLedger: [] });
+  });
+
   it('renders without crashing', () => {
     const { container } = renderPage();
     expect(
@@ -67,7 +52,18 @@ describe('ConstructionDashboardPage smoke test', () => {
       'rendered nothing: a truthy container does not prove the page mounted'
     ).toBeGreaterThanOrEqual(2);
   });
-  it('displays dashboard heading', () => {
+
+  it('empty-states honestly when nothing is recorded', () => {
+    renderPage();
+    expect(screen.getByRole('heading', { level: 1, name: /No Construction Data/i })).toBeTruthy();
+  });
+
+  it('shows the dashboard header once cost data is recorded', () => {
+    useConstructionStore.setState({
+      costBreakdown: [{ name: 'Concrete', budget: 1000, actual: 900 }],
+      changeOrders: [],
+      costLedger: [],
+    });
     renderPage();
     expect(screen.getByText('Construction Dashboard')).toBeTruthy();
   });

@@ -66,67 +66,41 @@ interface HealthcareState {
   removeClinicalTrial: (id: string) => void;
 }
 
+/**
+ * Persist migration (exported for direct testing).
+ *
+ * v1 → v2 introduced `clinicalTrials` (default empty; a persisted v1
+ * workspace must not materialise trials it never entered).
+ * v2 → v3 (session 024) clears the seeded `qualityMetrics`, `savingsData`
+ * and `programs` collections: sessions ≤023 shipped invented quality
+ * scores, episode costs and ACO rows for every tenant, and upgrading
+ * workspaces must not keep fabricated figures that were never their own
+ * records. `clinicalTrials` — genuine user input — survives.
+ */
+export function migrateHealthcareState(state: unknown, version: number): unknown {
+  const base = (state && typeof state === 'object' ? state : {}) as Record<string, unknown>;
+  const withTrials = 'clinicalTrials' in base ? base : { ...base, clinicalTrials: [] };
+  if (version < 3) {
+    return { ...withTrials, qualityMetrics: [], savingsData: [], programs: [] };
+  }
+  return withTrials;
+}
+
 export const useHealthcareStore = create<HealthcareState>()(
   subscribeWithSelector(
     persist(
       immer((set) => ({
-        // NOTE (session 022): `qualityMetrics`, `savingsData` and `programs`
-        // below still ship seeded defaults — invented figures persisted for
-        // every tenant, the same class cleaned out of constructionStore and
-        // insuranceStore in sessions 014–015. They feed ValueBasedCarePage,
-        // which is the next fabrication worklist item; `clinicalTrials` is
-        // added here already empty.
+        // Session 024: `qualityMetrics`, `savingsData` and `programs` no
+        // longer ship seeded defaults. Sessions ≤023 persisted invented
+        // quality scores, episode costs and ACO program rows for EVERY
+        // tenant — the same class cleaned out of constructionStore (s014)
+        // and insuranceStore (s015). They default to empty and are user
+        // input only; the persist bump v2 → v3 below clears them for
+        // upgrading workspaces.
         clinicalTrials: [],
-        qualityMetrics: [
-          { subject: 'Readmission', A: 120, B: 110, fullMark: 150 },
-          { subject: 'Patient Sat', A: 98, B: 130, fullMark: 150 },
-          { subject: 'Mortality', A: 86, B: 130, fullMark: 150 },
-          { subject: 'Safety', A: 99, B: 100, fullMark: 150 },
-          { subject: 'Efficiency', A: 85, B: 90, fullMark: 150 },
-          { subject: 'Clinical', A: 65, B: 85, fullMark: 150 },
-        ],
-
-        savingsData: [
-          { category: 'Orthopedics', target: 2400000, actual: 2100000, savings: 300000 },
-          { category: 'Cardiology', target: 1800000, actual: 1950000, savings: -150000 },
-          { category: 'Neurology', target: 1500000, actual: 1200000, savings: 300000 },
-          { category: 'Primary Care', target: 4500000, actual: 3800000, savings: 700000 },
-        ],
-
-        programs: [
-          {
-            id: 'V-01',
-            program: 'MSSP ACO Track 3',
-            population: '24,500',
-            qualityScore: '94.2%',
-            sharedSavings: '+$2.4M',
-            status: 'High',
-          },
-          {
-            id: 'V-02',
-            program: 'BPCI-Advanced',
-            population: '1,200',
-            qualityScore: '88.7%',
-            sharedSavings: '-$140k',
-            status: 'Watch',
-          },
-          {
-            id: 'V-03',
-            program: 'CJR Bundle',
-            population: '850',
-            qualityScore: '96.8%',
-            sharedSavings: '+$840k',
-            status: 'High',
-          },
-          {
-            id: 'V-04',
-            program: 'Direct Contracting',
-            population: '4,200',
-            qualityScore: '76.3%',
-            sharedSavings: '+$120k',
-            status: 'Medium',
-          },
-        ],
+        qualityMetrics: [],
+        savingsData: [],
+        programs: [],
 
         setQualityMetrics: enforce(Permissions.DASHBOARD_UPDATE, 'setQualityMetrics', (metrics) =>
           set((state) => {
@@ -175,15 +149,8 @@ export const useHealthcareStore = create<HealthcareState>()(
       {
         name: 'healthcare-store',
         storage: masterStorage,
-        version: 2,
-        // v1 -> v2 introduces `clinicalTrials`, defaulting to empty. A
-        // persisted v1 workspace must not materialise trials it never entered.
-        migrate: (state: unknown) => {
-          if (state && typeof state === 'object' && !('clinicalTrials' in state)) {
-            return { ...(state as Record<string, unknown>), clinicalTrials: [] };
-          }
-          return state;
-        },
+        version: 3,
+        migrate: migrateHealthcareState,
       }
     )
   )

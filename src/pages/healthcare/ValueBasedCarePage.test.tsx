@@ -4,11 +4,14 @@ import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
 
 vi.mock('@/store/healthcareStore', () => ({
-  useHealthcareStore: vi.fn(() => ({
-    qualityMetrics: [],
-    savingsData: [],
-    programs: [],
-  })),
+  useHealthcareStore: vi.fn((selector?: (s: Record<string, unknown>) => unknown) => {
+    const state = {
+      qualityMetrics: [],
+      savingsData: [],
+      programs: [],
+    };
+    return selector ? selector(state) : state;
+  }),
 }));
 
 vi.mock('@/components/ui/PeriodPicker', () => ({

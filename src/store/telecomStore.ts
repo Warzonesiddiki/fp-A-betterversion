@@ -3,6 +3,7 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
+import { divideMoney, sumMoney } from '@/utils/money';
 
 export interface Subscriber {
   id: string;
@@ -97,8 +98,9 @@ export const useTelecomStore = create<TelecomState>()(
         getTotalSubscribers: () => get().subscribers.filter((s) => s.status === 'Active').length,
         getAverageARPU: () => {
           const active = get().subscribers.filter((s) => s.status === 'Active');
+          // ARPU is money: decimal aggregation, never float `+` over revenue.
           return active.length > 0
-            ? active.reduce((sum, s) => sum + s.monthlyRevenue, 0) / active.length
+            ? divideMoney(sumMoney(active.map((s) => s.monthlyRevenue)), active.length).toNumber()
             : 0;
         },
       })),

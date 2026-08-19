@@ -21,18 +21,7 @@ vi.mock('@/store/glStore', () => ({
   })),
 }));
 
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
-  return {
-    BarChart3: makeIcon(),
-  };
-});
+vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
 
 import BenchmarkingPage from '@/pages/analytics/BenchmarkingPage';
 
