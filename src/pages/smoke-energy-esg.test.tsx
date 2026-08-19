@@ -274,14 +274,22 @@ describe('Page Smoke Tests — Energy & ESG Pages', () => {
       expect(getByText(/Energy Risk Management/i)).toBeInTheDocument();
     });
 
-    it('renders KPI cards', () => {
-      const { getAllByTestId } = renderPage(EnergyRiskPage, '/energy/risk', '/energy/risk');
-      expect(getAllByTestId('kpi-value').length).toBeGreaterThanOrEqual(1);
+    it('empty-states honestly: no risk data is recorded in the workspace (session 024)', () => {
+      const { getByText, queryAllByTestId } = renderPage(
+        EnergyRiskPage,
+        '/energy/risk',
+        '/energy/risk'
+      );
+      expect(getByText(/No market-risk data is recorded/i)).toBeInTheDocument();
+      // The old page shipped literal VaR/hedge-ratio KPIs from fixtures; the
+      // honest page renders no KPI tiles until positions are recorded.
+      expect(queryAllByTestId('kpi-value').length).toBe(0);
     });
 
-    it('renders the hedge positions table', () => {
-      const { getByTestId } = renderPage(EnergyRiskPage, '/energy/risk', '/energy/risk');
-      expect(getByTestId('data-table')).toBeInTheDocument();
+    it('renders no positions table until hedges are recorded (session 024)', () => {
+      const { queryAllByTestId } = renderPage(EnergyRiskPage, '/energy/risk', '/energy/risk');
+      // The old table showed four fixture positions with named counterparties.
+      expect(queryAllByTestId('data-table').length).toBe(0);
     });
   });
 

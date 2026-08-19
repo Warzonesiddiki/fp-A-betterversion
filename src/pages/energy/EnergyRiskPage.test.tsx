@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const mockGLState = { trialBalance: [], entries: [] };
 vi.mock('@/store/glStore', () => ({
@@ -91,5 +93,30 @@ describe('EnergyRiskPage smoke test', () => {
   it('displays heading', () => {
     renderPage();
     expect(screen.getByRole('heading', { name: /Energy Risk Management/i })).toBeTruthy();
+  });
+});
+
+describe('EnergyRiskPage — source guards (session 024)', () => {
+  const src = fs
+    .readFileSync(path.resolve(__dirname, './EnergyRiskPage.tsx'), 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:\\])\/\/[^\n]*/g, '$1');
+
+  it('no fictional trading-book fixtures survive', () => {
+    expect(src).not.toMatch(/volatilityData/);
+    expect(src).not.toMatch(/riskExposure/);
+    expect(src).not.toMatch(/hedgePositions/);
+    expect(src).not.toMatch(/Goldman Sachs/);
+  });
+
+  it('no hardcoded KPI values survive', () => {
+    expect(src).not.toMatch(/\$2\.42M/);
+    expect(src).not.toMatch(/78\.2%/);
+    expect(src).not.toMatch(/16\.4%/);
+  });
+
+  it('discloses that no market-risk data is recorded', () => {
+    renderPage();
+    expect(screen.getByText(/No market-risk data is recorded/i)).toBeTruthy();
   });
 });
