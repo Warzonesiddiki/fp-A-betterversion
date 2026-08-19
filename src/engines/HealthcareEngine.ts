@@ -19,6 +19,8 @@ import { divideMoney, multiplyMoney, roundTo, subtractMoney, sumMoney } from '..
 
 const CURRENCY_PLACES = 2;
 const RATIO_PLACES = 10;
+/** Stated basis for the A/R-days divisor. Disclosed to every caller. */
+const DAYS_IN_PERIOD_BASIS = 30;
 
 export interface PatientRevenueStats {
   grossCharges: number;
@@ -26,9 +28,21 @@ export interface PatientRevenueStats {
   netRevenue: number;
   cashCollected: number;
   badDebt: number;
-  denialRate: number;
+  /**
+   * Claim denial rate.
+   *
+   * ALWAYS `null`. A denial rate is `denied claims / submitted claims`, and
+   * neither count exists in a general ledger — it lives in claim/remittance
+   * (835/837) data. This field previously returned a hardcoded `4.2`, which
+   * rendered as a real denial rate for every entity and every period. A
+   * consumer must render it as unavailable, never substitute a default.
+   */
+  denialRate: null;
+  /** A/R days on the disclosed `daysInPeriodBasis` divisor below. */
   daysInAR: number;
   collectionRate: number;
+  /** The period-length divisor used for `daysInAR`. Disclosed, not hidden. */
+  daysInPeriodBasis: number;
 }
 
 export interface PayerMix {
@@ -79,9 +93,11 @@ export class HealthcareEngine {
       ? roundTo(multiplyMoney(divideMoney(cashCollectedDec, netRevenueDec), 100), RATIO_PLACES)
       : 0;
 
-    // Days in A/R = (A/R Balance / Net Revenue) * Days in period
-    // Simple 30 day assumption for monthly revenue
-    const dailyRevenueDec = divideMoney(netRevenueDec, 30);
+    // Days in A/R = A/R balance / (net revenue / days in period).
+    // DAYS_IN_PERIOD_BASIS is a stated modelling basis, not a measured period
+    // length; it is returned in the result so the UI can disclose it rather
+    // than presenting the ratio as if the ledger carried a calendar.
+    const dailyRevenueDec = divideMoney(netRevenueDec, DAYS_IN_PERIOD_BASIS);
     const daysInAR = dailyRevenueDec.greaterThan(0)
       ? roundTo(divideMoney(arBalanceDec, dailyRevenueDec), CURRENCY_PLACES)
       : 0;
@@ -92,9 +108,10 @@ export class HealthcareEngine {
       netRevenue,
       cashCollected,
       badDebt,
-      denialRate: 4.2, // Mocked for now, needs transaction-level detail
+      denialRate: null,
       daysInAR,
       collectionRate,
+      daysInPeriodBasis: DAYS_IN_PERIOD_BASIS,
     };
   }
 

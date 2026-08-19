@@ -835,3 +835,573 @@ commentary are disclosed. Teeth: injecting `$4.2M` fails the empty-GL DOM probe.
 
 Money-AST: `DashboardPage` (11) (skip `mockData/index.ts`). Fabrication:
 `PatientRevenuePage` (5).
+
+---
+
+## Session 017 — 2026-08-18 — DashboardPage + PatientRevenuePage (+ MEMORY genesis)
+
+**Branch:** `arena/01a01215-fp-a-betterversion`
+
+### 0. `MEMORY/` secondary brain installed (user-ordered, mid-session)
+
+`MEMORY/` is now the committed cross-agent brain: `INDEX.md` (boot ritual,
+pointer table, danger list), `PROTOCOL.md` (binding rules), `STATE.json`,
+`TRUTH.md` (verified facts only), `ASSUMPTIONS` / `HYPOTHESES` / `ANTI`
+(hallucination vaccine), `INVARIANTS.md`, `MAP/`, `SCHEMA/`, `PRODUCT/`,
+`QUALITY/`, `TASKS/`, `SESSIONS/`, `DECISIONS/`, `PACKS/`, `_system/`.
+`node MEMORY/_system/check.mjs` is the integrity pass (paths exist, no weasel
+words in TRUTH, STATE parses and matches NOW, no secrets, INDEX links resolve,
+front-matter present) — currently PASS. Precedence is **disk > MEMORY > model
+recollection**; MEMORY serves the Codex and never overrides it.
+
+The first integrity run FAILED on six `MAP/TREE.md` entries written as indented
+relative paths; TREE.md now uses repo-relative paths. That is the point of the
+checker: MEMORY that cannot be verified is not memory.
+
+### 1. `DashboardPage` (11 → 0). Ratchet 489 → **477 (80.3% safe)**
+
+Real drop: 12 float operations left the product (11 here, 1 incidental on the
+healthcare page). Unsafe modules 173 → 171.
+
+The detector found arithmetic. Reading the file found worse:
+
+- `monthlyTrend` accumulated `amt = e.debit - e.credit` into `revenue` for
+  prefix-4 accounts. **Revenue was plotted with inverted sign** on the trend
+  chart, the Total Revenue sparkline, the sector-KPI sparklines and the
+  `AnomalyHighlight` input; monthly `netIncome = revenue - expenses` then
+  compounded it. The KPI tile used `credit - debit`, so the tile and the chart
+  disagreed about the sign of a dollar. No detector can see this.
+- Per-entry `Math.abs` on COGS and OpEx: a contra entry (rebate, credit memo,
+  reversal) _increased_ cost. Same class as session 016.
+- `budgetUtilization` rendered `0.0%` in green with a full-width bar when no
+  budget existed — a fabricated "0% used" signal.
+- Sector KPIs summed `debit - credit` for every code then `Math.abs`-ed, so a
+  revenue-coded KPI was right only by accident and a genuinely negative
+  balance displayed positive.
+
+Derivation is `src/pages/dashboard/dashboardModel.ts`: natural balance decides
+sign (revenue = credit − debit, cost = debit − credit), `amount` is the
+fallback only when a row carries no debit/credit, ratios are `null` when the
+denominator is not positive, and `deriveDashboardKpis` returns `null` for an
+empty ledger rather than a zeroed P&L. Known answer: revenue 95,000 (after a
+5,000 refund), COGS 50,000 (after a 10,000 rebate), OpEx 20,000, interest
+2,000, tax 3,000 ⇒ gross profit 45,000, total expenses 75,000, net income
+20,000, margins 47.37 / 21.05 / 78.95%.
+
+`Net Income` now includes prefixes 7 and 8, so the label is true instead of an
+operating subtotal wearing a net-income label, and `Total Expenses` is
+5+6+7+8. The identity `revenue − expenses = net income` is pinned.
+
+Teeth: reverting the page from `/tmp` fails 10 of 13 new assertions, including
+the trend-series sign lock and four source guards.
+
+### 2. `PatientRevenuePage` (5 → 0 fabrication). Ratchet 60 → **55 / 18 files**
+
+The page rendered a five-row denial root-cause table — Eligibility 420 /
+`$840k`, Coding Error 215 / `$450k`, Prior Auth 180 / `$1.2M`, Duplicate Claim
+95 / `$120k`, Medical Necessity 64 / `$2.1M` — identical for every entity and
+every period, through a `DataTable` whose column config (`metric` / `value`)
+did not even match its own rows. It also shipped KPI deltas with narrative
+causes (`+8.4%` "volume increase in Q1", `−0.8` "coding audits effective") and
+seven-point sparkline "histories" with the live value appended, which made
+invented trends look measured.
+
+`HealthcareEngine.calculatePatientRevenue` returned a hardcoded
+`denialRate: 4.2`. A denial rate is denied ÷ submitted claims — 835/837 data a
+general ledger does not carry — so it is now `null` by type, the page discloses
+it, and a source guard forbids reintroducing a numeric assignment. The A/R-days
+30-day divisor is no longer hidden: the engine returns `daysInPeriodBasis` and
+the tile states it.
+
+The pre-existing smoke test mocked `@/engines`, a module this page never
+imports — a mock that never applied while looking like isolation. Removed; the
+new probe runs the real engine on a seeded ledger (gross charges 1,500,000,
+contractuals 300,000, net revenue 1,200,000, collection rate 50.0%, days in A/R
+10.0).
+
+Teeth: reverting page + engine from `/tmp` fails 12 of 15 new assertions.
+
+### 3. Ratchet honesty
+
+Per-file `--json` diff before/after shows exactly two files moved
+(`DashboardPage.tsx` 11→0, `PatientRevenuePage.tsx` 1→0 money; the same
+healthcare page 5→0 fabrication) and **no other file's count changed**. Both
+numbers moved because the product got safer, not because measurement changed.
+
+### Next
+
+Money-AST: next ranked module from `--list` (skip `mockData/index.ts`).
+Fabrication: Education / Government / Logistics dashboards.
+
+---
+
+## Session 018 — 2026-08-18 — CashForecastPage + EducationDashboardPage
+
+**Branch:** `arena/01a01215-fp-a-betterversion`
+
+Sandbox restore wiped `node_modules` and rewound `HEAD` to `646bdf4` while the
+working tree still held session 017. Recovered per the documented drill:
+`git fetch origin <branch>` → `reset --soft FETCH_HEAD` → bare `reset` →
+`npm install`. The tree matched the pushed branch byte-for-byte; nothing lost.
+
+### 1. `CashForecastPage` (10 → 0). Ratchet 477 → **464 (80.57% safe)**
+
+Real drop: 13 float operations left the product (10 here, 3 on the education
+page). Unsafe modules 171 → 169.
+
+Again the detector found the smaller problem. Three defects it cannot see:
+
+- **"Cash" was the whole ledger.** `computeCashTotals` summed `debit − credit`
+  over _every_ entry and called the positive half "inflows", so a payroll
+  debit to 6xxx counted as cash coming in and a revenue credit reduced cash.
+  Cash is now read from cash accounts (prefix 10 / 11) only.
+- **The category table was six typed weights.** Inflows split 70% Revenue /
+  30% Other Income; outflows 40% Payroll / 35% OpEx / 15% CapEx / residual
+  Debt Service. Categories now come from double entry: each cash line is
+  attributed to the non-cash lines of its own journal, allocated penny-exact
+  in proportion to their amounts, classified by account prefix, with an
+  explicit `Unclassified` bucket and a stated attribution percentage
+  (97.56% on the test ledger). A cash-to-cash transfer is not revenue.
+- **The 13-week forecast was a sawtooth.**
+  `(inflows / 13) * (0.8 + ((i * 13) % 40) * 0.01)`, with a balance ramped by
+  `net + weekNet * (i + 1)`, and a burn rate of `outflows / 4`. The page now
+  shows posted per-period history with a cumulative running balance, averages
+  over periods actually posted, and declares the forward forecast unavailable
+  (it needs A/R + A/P aging, a payroll calendar and a debt-service schedule).
+
+All of it was exported to PDF and Excel.
+
+**A green "known answer" test was pinning the fabrication.**
+`CashForecastPage.money.test.ts` asserted
+`buildCashCategorySplit(...)[0].inflows === 210.14` "because 300.20 \* 0.7".
+That is session 012's lesson again: a test named for an oracle is only an
+oracle if the expected value came from outside the code. Deleted and replaced
+by `cashForecastModel.test.ts` (16 known-answer cases).
+
+### 2. `EducationDashboardPage` (5 → 0 fabrication). Ratchet 55 → **50 / 17 files**
+
+The page read **nothing**. Every figure was a literal for a fictional
+university: `$485.0M` tuition, `$18,240` cost per student, `$105.0M` financial
+aid, `$95.0M` research funding, `4.8%` endowment utilisation, a `15:1`
+student-faculty ratio, 38,700 students across five semesters, a six-slice
+expense pie (Faculty 312M, Admin 145M …) and a six-row budget-vs-actual table —
+identical for every tenant, entity and period. `/sectors/education` and
+`/sector/education` are both routed; the latter already renders the
+driver-based `SectorDriverDashboard`.
+
+Derivation is `src/pages/sectors/educationDashboardData.ts`: revenue (prefix 4)
+and cost (5–8) grouped by account with real shares, and budget line items
+joined to actuals **by account code**. Favourability now follows natural
+balance — the old table decided it with `category.includes('Revenue')` on a
+hand-typed label. Budget lines with no posted actual are dropped rather than
+shown as a 100% shortfall, and a zero budget yields a `null` variance percent.
+Enrolment comes only from the education store when the user has entered it
+(store defaults were already empty); cost per student follows from it or is
+`—`. Endowment utilisation is always disclosed as not derivable.
+
+Its smoke test asserted the invented labels and mocked `useEducationStore` as
+returning a `kpis` array — a shape that store has never had, so the mock proved
+nothing. Rewritten against the real derivation.
+
+### 3. Ratchet honesty
+
+Per-file `--json` diff: `CashForecastPage.tsx` 10→0 and
+`EducationDashboardPage.tsx` 3→0 money, `EducationDashboardPage.tsx` 5→0
+fabrication. No other file moved. Both numbers moved because the product got
+safer.
+
+### Next
+
+Money-AST: `RollingForecastPage` (10) — skip `mockData/index.ts` (13).
+Fabrication: `GovernmentDashboardPage` (5), then `LogisticsDashboardPage` (5).
+
+---
+
+## Session 019 — 2026-08-18 — RollingForecastPage + GovernmentDashboardPage
+
+**Branch:** `arena/01a01215-fp-a-betterversion`
+
+Sandbox restore wiped `node_modules` and rewound `HEAD` again; recovered with
+the documented drill. Second consecutive session — the drill is now reflexive.
+
+### 1. `RollingForecastPage` (10 → 0). Ratchet 464 → **453 (80.87% safe)**
+
+Real drop: 11 of the 13 operations removed are float arithmetic leaving the
+product. **2 are a reclassification, not new safety**: the bar-width
+percentages moved to `src/utils/chartScale.ts`, so layout geometry is no longer
+written over money-named expressions. Said plainly because the ratchet cannot
+tell those apart. Unsafe modules 169 → 167.
+
+Four defects the detectors cannot see:
+
+- **The monthly series mixed the whole ledger.**
+  `existing.actual += e.debit − e.credit` ran over every account, so
+  balance-sheet postings entered the "actual" trend and revenue entered it with
+  the sign flipped. Growth, projection and accuracy all inherited it.
+- **"Forecast Accuracy" never looked at a forecast.** It was
+  `variancePcts.filter((v) => Math.abs(v) < 0.1).length / length` — the share
+  of months whose _actual_ moved less than 10% from the prior month — and it
+  shipped as a headline KPI. Replaced by a walk-forward backtest: fit on the
+  months before k, predict month k, compare with what posted. The difference is
+  not cosmetic: on a steady 10%-growth ledger the old rule reports **0%** while
+  the method is exact; the backtest reports **100%**.
+- **`confidenceInterval: 8.5`** was a literal rendered as `±8.5% · 95% CI`, and
+  the help text described it as "the historical forecast error distribution".
+  Both removed; the interval is declared unavailable.
+- **Premature rounding.** `roundTo(sumMoney(growthRates), 2) / n` rounds the
+  _sum of dimensionless ratios_ to two decimals before dividing, quantising the
+  growth rate to 1/(2n) steps.
+
+Also: the tiles labelled "Forecast Revenue" and "Forecast Expenses" were
+displaying posted actuals. They now say Posted. Revenue and expense growth are
+measured separately and net income is derived from the two projections, so a
+projected margin cannot drift from its own components. Projection requires 3
+posted months with a positive base, otherwise `null` and disclosed.
+
+### 2. `GovernmentDashboardPage` (5 → 0 fabrication). Ratchet 50 → **45 / 16 files**
+
+- **A demo fallback is a fabrication.** `mockDepartmentBudget`,
+  `mockRevenueByCategory` and `mockSpendingDistribution` rendered whenever the
+  government store was empty — the state of every new workspace — so a fresh
+  tenant saw Education allocated 3,100 at 93.2% execution and 4,200 of Income
+  Tax presented as their own figures. The comment called them "demo defaults";
+  the user has no way to know that.
+- The KPI strip (`$11.8B`, `$8.95B`, `$800M`, `1.48x`, `$1.9B`, `87.3%`,
+  `$342`) and the FY2024/FY2025 table never touched a store at all.
+- Budget lines' `budgeted` was charted as "Revenue by Category" and the same
+  lines' `actual` as "Spending Distribution" — one dataset presented as two
+  different things, neither of which it was.
+
+`src/pages/sectors/governmentDashboardData.ts` derives revenue (4) and
+expenditure (5–8) from the ledger, execution from appropriation lines
+(`null` when nothing was allocated), and the fiscal-year comparison from the
+years actually posted (`null` change without a prior year). Debt-service ratio,
+capital expenditure and programme effectiveness / cost per citizen are
+disclosed as not derivable.
+
+Its smoke test passed _only_ because of the demo fallback: it rendered with an
+empty store and asserted departments and charts appeared. Rewritten.
+
+### 3. Ratchet honesty
+
+Per-file diff: `RollingForecastPage.tsx` 10→0 and `GovernmentDashboardPage.tsx`
+1→0 money, `GovernmentDashboardPage.tsx` 5→0 fabrication. Nothing else moved.
+
+### Next
+
+Money-AST: `ValuationPage` (10) / `PromoAnalysisPage` (10) — skip
+`mockData/index.ts` (13). Fabrication: `LogisticsDashboardPage` (5), then
+`ForecastBuilderPage` / `ClinicalTrialCostPage` (4).
+
+---
+
+## Session 020 — 2026-08-18 — ValuationPage + LogisticsDashboardPage
+
+**Branch:** `arena/01a01215-fp-a-betterversion`
+
+Third consecutive sandbox rewind; recovered with the documented drill.
+
+### 1. `ValuationPage` (10 → 0). Ratchet 453 → **443 (81.03% safe)**
+
+Real drop: 10 float operations left the product. Unsafe modules 167 → 166.
+
+- **One cap rate, stamped on every property.** The table column read
+  "Implied Cap Rate" and every row rendered `dashStats.capRate` — the
+  _portfolio_ figure — so five properties displayed one identical number as if
+  each had been measured. The summary then computed
+  `Σ(capRate × value) / Σ value` over that constant, which returns the
+  constant, and displayed it as "Weighted Cap Rate". Each property now uses its
+  own NOI (its 40xx less its 50xx) or renders blank, and the portfolio rate is
+  a true value-weighted `Σ NOI / Σ value` with coverage stated
+  ("1 of 2 properties").
+- **"Avg. Appreciation" was a mean of percentages.** On the test ledger that is
+  17.5%; the value-weighted figure is 20.0%. Means of ratios are not ratios of
+  sums.
+- **Typed KPI deltas**: `+8.4% vs prior period`, `+15.2% since acquisition`,
+  `+2.1% above market avg`, `−0.15 compression`. Removed — a period comparison
+  needs a valuation history the workspace does not store.
+- **`RealEstateEngine` is no longer called here.** Its breakdown returns
+  `yield: 6.2` (mocked), `location: 'TBD'` and a Core/Value-Add status decided
+  by `cost > 10_000_000`; its dashboard stats carry `occupancy: 94.8` and
+  `avgHoldingPeriod: 4.2`. LTV and NOI are derived directly instead. (The
+  engine still carries those placeholders for other callers — carried debt.)
+
+### 2. `LogisticsDashboardPage` (5 → 0 fabrication). Ratchet 45 → **40 / 15 files**
+
+- Three module-level fixtures rendered for every tenant: service-line revenue
+  (FTL 4,820,000 … 3PL 720,000), a cost pie (Fuel 28% … Admin 5%) and twelve
+  months of shipment volume (Jan 12,400 … Dec 18,400).
+- A seven-literal KPI strip: `$11.77M`, `$842`, `82.6%`, `78.3%`, `3.2` days,
+  `$2.84`/mile.
+- **On-time delivery fell back to `96.4%`** whenever the store was empty —
+  the same demo-fallback class as session 019's government page.
+- **A cost was displayed as a revenue.** "Top Shipping Lanes" mapped
+  `RouteCost.cost` into a field named `revenue`.
+
+Derivation is `src/pages/sectors/logisticsDashboardData.ts`: revenue and cost
+grouped by posted account with real shares, on-time rate from recorded
+shipments (`null`, never a default), cost per shipment only when shipments
+exist, lane economics labelled cost with cost per load. Fleet utilisation,
+warehouse capacity, transit time, revenue per mile and the service-line split
+are disclosed as needing telematics / a WMS / mileage / a COA dimension.
+
+Both legacy smoke tests passed _only_ because of the fixtures and the fallback;
+both rewritten.
+
+### 3. Two guards tripped on their own disclosure prose
+
+The session-011 trap, twice in one session: a data assertion matched `94.8` and
+`FTL` inside the "not derivable" copy that deliberately names them. Fixed by
+asserting against the derived data (`properties`, chart series) rather than
+page text — and the real-estate disclosure no longer leaks internal placeholder
+constants to users at all.
+
+### Next
+
+Money-AST: `PromoAnalysisPage` (10), then `InsuranceEngine` (9) — skip
+`mockData/index.ts` (13). Fabrication: `ForecastBuilderPage` (4),
+`ClinicalTrialCostPage` (4), `TelecomDashboardPage` (4).
+
+---
+
+## Session 021 — 2026-08-18 — PromoAnalysisPage + ForecastBuilderPage
+
+**Branch:** `arena/01a01215-fp-a-betterversion`
+
+Fourth consecutive sandbox rewind; recovered with the documented drill.
+
+### 1. `PromoAnalysisPage` (10 → 0). Ratchet 443 → **430 (81.3% safe)**
+
+Real drop: 13 float operations left the product (10 here, 3 on the forecast
+builder). Unsafe modules 166 → 164.
+
+The tell was in the first line of the component:
+`const { entries: _entries } = useGLStore();` — the ledger was read and thrown
+away. Everything on the page came from five hardcoded campaigns (Summer Sale
+320,000 revenue on 45,000 spend against a 210,000 baseline, Back to School,
+Holiday Bundle, and two more), and all of it was **exported to PDF and Excel**.
+
+Promotions are not ledger objects, so this session added a real
+`retailStore.promotions` collection (persist v1 → v2, defaulting to empty — a
+persisted workspace must not materialise campaigns it never entered) and
+derived the analysis from it.
+
+Two correctness defects beyond the fixtures:
+
+- **ROI treated revenue as profit.** `(revenue − baseline − cost) / cost` is
+  incremental _revenue_ less spend, labelled simply "ROI". Return is now
+  computed on gross margin when a campaign records one, the basis is displayed
+  beside the number, and a mixed set never blends the two bases (it falls back
+  to the revenue basis and says so).
+- **A lift could not be negative.** The column hardcoded a leading `+`, so a
+  campaign that destroyed revenue rendered `+-12%`.
+
+### 2. `ForecastBuilderPage` (4 → 0 fabrication). Ratchet 40 → **36 / 14 files**
+
+- **The forecast was built on six invented months.**
+  `HISTORICAL_ACTUALS = [4_200_000, 3_900_000, 4_500_000, 4_100_000, 4_400_000,
+4_600_000]`. The page never read the ledger. History is now posted revenue by
+  period.
+- **Four accuracy statistics were literals** — `MAPE 4.2%`, `RMSE $182K`,
+  `R-Squared 0.94`, `Bias −1.8%` — rendered under the heading "Forecast
+  Accuracy", plus a `Confidence 87%` tile. They are now produced by a
+  walk-forward backtest of the _selected_ method against the user's own months
+  (so switching method changes the score, as it must), and reported as
+  unavailable below four posted months.
+- **The confidence band was `widenPct = 0.06 + i * 0.015`** — a 6% band
+  widening 1.5 points per period, identical for every dataset and every method.
+  Bands are now `forecast ± 1.96σ` of backtest residuals, omitted entirely when
+  no backtest is possible.
+- **A past forecast that was never made was plotted.** The history chart drew
+  `actual + round(actual * 0.02 − 50_000)` as the forecast line over past
+  months, manufacturing a track record that hugged actuals. Past periods now
+  carry actuals only.
+
+**A green money test was pinning the invented band.**
+`ForecastBuilderPage.money.test.ts` asserted 940,000 / 1,060,000 then
+925,000 / 1,075,000 for a flat 1,000,000 forecast — that is the 6% + 1.5%/period
+rule, encoded as an expectation. Replaced with residual-based assertions. That
+is the third such test found in five sessions (session 018's 70% cash weight,
+session 020's `computeConfidenceBands`, this one).
+
+**An honest wrinkle worth recording:** with the default `standard` seasonality
+preset, a perfectly flat revenue series backtests at _non-zero_ error, because
+the preset imposes a shape the data does not have. That is correct behaviour —
+the backtest charges the model for its own assumption — and the probe asserts
+the derived figure rather than the 0% I first assumed.
+
+### 3. Ratchet honesty
+
+Per-file diff: `PromoAnalysisPage.tsx` 10→0 and `ForecastBuilderPage.tsx` 3→0
+money, `ForecastBuilderPage.tsx` 4→0 fabrication. Nothing else moved.
+
+### Next
+
+Money-AST: `InsuranceEngine` (9) — it invents net written as 0.85× gross and
+policy count as premium/360 — then `BenchmarkingPage` (8). Skip
+`mockData/index.ts` (13). Fabrication: `ClinicalTrialCostPage` (4),
+`TelecomDashboardPage` (4).
+
+---
+
+## Session 022 — 2026-08-18 — InsuranceEngine + ClinicalTrialCostPage
+
+**Branch:** `arena/01a01215-fp-a-betterversion`
+
+Fifth consecutive sandbox rewind; recovered with the documented drill.
+
+**Correction to the fix commit message:** it says 81.68% safe. The measured
+figure is **81.44%** (421 unsafe ops / 163 unsafe modules). The baseline file
+and the gate carry the correct number; the prose in that commit does not.
+
+### 1. `InsuranceEngine` (9 → 0). Ratchet 430 → **421 (81.44% safe)**
+
+Real drop: 9 float operations left the product. Unsafe modules 164 → 163.
+
+The engine was **armed but called by no product code** — `UnderwritingPage`
+stopped using it in session 015 and nothing else picked it up. That is exactly
+hypothesis H-003 in MEMORY: engines that survive because no page calls them.
+Fixed rather than left loaded, because the insurance vertical will need it.
+
+- **`Math.abs` on every amount.** A premium refund or a claim recovery
+  _increased_ the balance it should reduce. Premium is now credit-normal,
+  expense debit-normal, netted.
+- **`netWrittenPremium = grossWrittenPremium * 0.85`** — an invented 15%
+  reinsurance cession applied to every book, for every tenant. It is now gross
+  less posted ceded premium (43xx), or `null` when no cession is posted.
+- **`policyCount = Math.round(gross / 360)`**, commented "Industry average".
+  A ledger records amounts, not policies. `null`.
+- **`getCombinedRatioTrend` ignored its argument entirely** and returned six
+  months of `58 + sin(i * 9301 + 49297) * 8` loss ratios and `26 + … * 3`
+  expense ratios — seeded noise rendered as a ratio trend. It now buckets
+  posted entries by period and drops a period with no earned premium rather
+  than filling it.
+
+**Three assertions encoded those fabrications** (`netWrittenPremium ===
+1250000 * 0.85`, `policyCount === 0` on an empty ledger, "generates a 6-month
+deterministic combined ratio trend"). That is the **fourth** test found
+protecting a fabrication in six sessions. A fifth assertion in the same file
+added the two ratios as JS floats and expected `77.83000000000001`, where the
+decimal engine returns `77.83` — now pinned as a regression lock in the
+opposite direction.
+
+### 2. `ClinicalTrialCostPage` (4 → 0 fabrication). Ratchet 36 → **32 / 13 files**
+
+Five studies at named institutions (Onco-Shield Ph III at Mayo Clinic,
+Neuro-Restore Ph II at Johns Hopkins, Cardio-Flow Ph I at Cleveland Clinic,
+Immuno-Boost Ph III at Cedars-Sinai, RareDisease-7 at Stanford Med), six months
+of budget/actual/enrolment, a four-literal KPI strip (`$24.8M`, `$18.5k`,
+`92.4%`, `$3.2M`) with invented deltas and sparkline histories, and a phase
+breakdown quoting "2 active, $13.6M total · 55%".
+
+Trials are not ledger objects, so this session added
+`healthcareStore.clinicalTrials` (persist v1 → v2, defaulting empty) and
+derived the analysis: variance against recorded budget, cost per patient
+(`null` until someone is enrolled), enrolment rate (`null` without a target),
+phase shares by recorded budget. R&D tax credits are disclosed as a tax
+computation the workspace does not run.
+
+**The ratchet caught my own new code.** The first version of the rewritten page
+grouped phases inline with float `+` and `toFixed(1)` — 5 new unsafe ops. Moved
+into the derivation on decimal.js, with `compareMoney` for the sort.
+
+### 3. Carried forward — a store still shipping seeded defaults
+
+`healthcareStore` persists invented `qualityMetrics`, `savingsData`
+(Orthopedics target 2,400,000 …) and `programs` for every tenant — the same
+class cleaned out of `constructionStore` and `insuranceStore` in sessions
+014–015. They feed `ValueBasedCarePage`, which is on the fabrication worklist.
+Left in place this session to keep the diff honest; flagged in MEMORY.
+
+### 4. Ratchet honesty
+
+Per-file diff: `InsuranceEngine.ts` 9→0 money, `ClinicalTrialCostPage.tsx` 4→0
+fabrication. Nothing else moved.
+
+### Next
+
+Money-AST: `BenchmarkingPage` (8), then `DriverCascadeEngine` (7) — skip
+`mockData/index.ts` (13). Fabrication: `TelecomDashboardPage` (4), then
+`ConstructionDashboardPage` (3) / `EquipmentManagementPage` (3).
+
+---
+
+## Session 023 — 2026-08-18 — PR #65, and the CI failure that was real
+
+**Branch:** `arena/01a01215-fp-a-betterversion`
+
+### 1. PR #65 opened
+
+`Phase 0 W0.1.1: money-AST 489 → 421, fabrication 60 → 32, and the MEMORY brain`
+— https://github.com/Warzonesiddiki/fp-A-betterversion/pull/65 (26 commits,
+108 files, +10,642 / −1,969).
+
+CI on the PR: TypeScript, ESLint, Build (ubuntu / macOS / **windows** — Tier 1),
+Cascade-Hold Ledger and the Sentry self-test all **pass**. `test-unit`
+(Vitest) **fails**.
+
+### 2. The carried assumption about that CI job was WRONG
+
+`.agent/HANDOVER.md` has said for several sessions: _"GitHub Vitest coverage job
+fails (no coverage/ artifact); that is not a product-test fail."_ Checked
+instead of assumed:
+
+- The failing step is **5 · Run Vitest with 80 GiB heap + coverage**, not the
+  upload. Step 6 (upload coverage artifact) **succeeds**.
+- The same signature is on `main` for the PR #64 push (run 32080862062), so it
+  is pre-existing and not introduced here — but it was never benign.
+
+Running the full suite locally settled it: **6 test files / 6 tests failing**,
+14,225 passing. The suite was genuinely red and had been reported as
+infrastructure noise.
+
+**Why local gates never saw it:** pre-push runs an 839-test P0 shard. None of
+these six files is in that shard, so five sessions of empty-state work landed
+without the collisions ever being visible.
+
+### 3. The six failures
+
+Five were caused by this arc:
+
+- **UI-07 contract** (`buttonContrast.contract.test.ts`): an empty-state
+  `<main>` carrying a heading must start at `<h1>`, because on the no-data
+  branch the page never reaches `PageHeader` and the document ships with no
+  `h1`. Education, Government and Logistics used `<h2>`. A screen-reader user
+  landing there got no page title. Fixed in all three.
+- **`smoke-retail-saas`** and **`__tests__/retail/PromoAnalysisPage`**: the page
+  empty-states now instead of rendering five fixture campaigns, so
+  "Promotion Analysis" is absent with an empty store. Both now assert the empty
+  state _and_ seed a campaign to exercise the populated branch.
+- **`smoke-sector-subpages`**: same shape for `ClinicalTrialCostPage`.
+- **`__tests__/forecasts/ForecastBuilderPage`**: the accuracy description now
+  names its method ("Mean Absolute Percentage Error — walk-forward backtest"),
+  so an exact-string match stopped matching.
+
+One was pre-existing and **masked**:
+
+- **`__tests__/scenarios/ScenarioBuilderPage`** hand-listed its lucide icons and
+  threw `No "Layers" export is defined on the mock` the moment session 015's
+  empty state used `<Layers>`. Switched to the shared `createLucideMock`; the
+  assertion then revealed the page correctly empty-states without a ledger, so
+  it asserts that.
+
+### 4. Verification after the repair
+
+Full suite: **1243 files · 14,234 passed · 1 skipped · 0 failed.**
+`tsc --noEmit` clean · `eslint src --max-warnings 0` clean · money ratchet 421
+holds · fabrication ratchet 32 holds.
+
+### 5. Blocked: GitHub token expired mid-session
+
+`gh auth status` → _"The github.com token in GH_TOKEN is no longer valid."_ The
+repair commit is **committed locally but not pushed**, and PR #65 is **not
+merged**. Do not merge #65 until the repair commit is pushed and `test-unit`
+re-runs — the PR as it stands on the remote is genuinely red.
+
+### 6. Lesson for the ratchet discipline
+
+A gate that runs a shard is not a gate that runs the suite. The pre-push P0
+shard is fast and valuable, but "all gates green" was reported for five
+sessions while the full suite was red. Either widen the shard to include the
+smoke/contract files that every page rewrite touches, or run the full suite
+before opening a PR. Recorded in MEMORY/ANTI.

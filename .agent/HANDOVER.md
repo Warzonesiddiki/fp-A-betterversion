@@ -1,8 +1,8 @@
 # OmniPlan — Session Handover
 
-**Last updated:** 2026-08-18 (end of session 016)
-**Branch of record:** `arena/01a01148-fp-a-betterversion`
-**Prior merge:** PR #63 → `main`
+**Last updated:** 2026-08-18 (end of session 023)
+**Branch of record:** `arena/01a01215-fp-a-betterversion`
+**Prior merge:** PR #64 → `main` @ `646bdf4`
 
 Paste the "Handover Prompt" section below into a new session to continue.
 
@@ -25,15 +25,15 @@ You are the autonomous Technical Owner / Chief Product Architect for **OmniPlan*
 
 The Article XVIII blueprint gate is **LOCKED** (`.agent/state.json` → `blueprint_status`), so product code is unblocked. Phase 0 / Wave W0.1.1 is in progress: raising AST money safety toward ≥90%.
 
-**Money-AST ratchet: 489 unsafe ops / 173 unsafe modules / 694 safe / 80.05%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The 502 → 489 move in session 016 is real (13 float ops left CreditRiskPage).
+**Money-AST ratchet: 421 unsafe ops / 163 unsafe modules / 710 safe / 81.44%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. The 430 → 421 move in session 022 is real (9 float ops left InsuranceEngine). Per-file diff confined to that file.
 
-**Fabrication ratchet: 60 findings / 19 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. The 66 → 60 move is real (ExecutiveSummary invented $4.2M pack KPIs removed).
+**Fabrication ratchet: 32 findings / 13 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. The 36 → 32 move is real (ClinicalTrialCostPage fixture studies removed).
 
 Completed W0.1.1 modules: `FinancialStatementTemplates` (59→0), `ThreeStatementDashboardPage` (34→0), `SafeMathParser` (27→0), the two export engines (37 findings, all page-geometry false positives), `TaxProvisionPage` (22→0), `AutoCommentaryEngine` (16→0), `FinancialInstrumentsEngine` (15→0), `GoalSeekPage` (14→0), `ScenarioBuilderPage` (14→0), `CreditRiskPage` (13→0).
 
-**Next money-AST worklist item: `DashboardPage` (11).** Skip `mockData/index.ts` (fixture factory).
+**Next money-AST worklist item: `BenchmarkingPage` (8), then `DriverCascadeEngine` (7).** Skip `mockData/index.ts` (13, fixture factory).
 
-**Next fabrication worklist (worst first):** `PatientRevenuePage` (5), sector dashboards (Education / Government / Logistics).
+**Next fabrication worklist (worst first):** `TelecomDashboardPage` (4), `ConstructionDashboardPage` (3), `EquipmentManagementPage` (3). Also: `healthcareStore` still ships seeded `qualityMetrics` / `savingsData` / `programs` defaults that feed `ValueBasedCarePage`.
 
 ### Read this before you trust either ratchet
 
@@ -69,12 +69,13 @@ So: **a file at "0 unsafe ops" or "0 fabrication findings" is un-flagged, not ce
 
 ### Environment and workflow
 
-- **Session is fixed to branch `arena/01a01148-fp-a-betterversion`.** Commit and push only there.
+- **Session is fixed to branch `arena/01a01215-fp-a-betterversion`.** Commit and push only there.
+- **`MEMORY/` is the secondary brain.** Boot with `MEMORY/INDEX.md` → `STATE.json` → `TRUTH.md` → `TASKS/NOW.md`; write through in the same turn; `node MEMORY/_system/check.mjs` must stay PASS. Disk > MEMORY > recollection.
 - **Pre-commit** (~45s): eslint (staged) → `tsc --noEmit` → prettier (staged) → secret scan. **Pre-push** (~3–5 min): 12 gates incl. build, P0 shard, README claim checks, money ratchet, fabrication ratchet, cascade-hold ledger.
 - **Always push via `start_process`**, never `bash` — pre-push exceeds the bash timeout. Poll with `get_process_output`.
 - **Always `npx prettier --write` before `git add`** on any JSON or MD you generated, or pre-commit fails with husky exit 123.
-- A tracker hook auto-commits `docs(tracker): auto-update progress tracker` after your commits. Expected, not an error.
-- **`.github/workflows/**`cannot be pushed** — deliver CI changes via`ci-patches/`for a human to`git apply`. `ci-patches/0005-\*.patch` is still pending.
+- **CORRECTED (session 023): the CI `test-unit` failure was NOT benign.** The failing step is the Vitest run itself, not the coverage upload. The full suite was genuinely red (6 files) while every pre-push gate passed, because pre-push runs an 839-test P0 shard that excludes the smoke/contract files. Run the FULL suite before opening a PR. A tracker hook auto-commits `docs(tracker): auto-update progress tracker` after your commits. Expected, not an error.
+- **`.github/workflows/**`cannot be pushed** — deliver CI changes via`ci-patches/`for a human to`git apply`. `ci-patches/0005-\*.patch` is still pending (it fixes the 80 GiB heap flag).
 - **No cargo/rustc in the sandbox** → do not edit `src-tauri/src/*.rs` (§23.8 K2, ADR-011).
 - Sandbox restores wipe `node_modules/` and rewind `HEAD`. First symptom is `Cannot find module 'typescript'`. Recover: `git fetch origin <branch>` → `git reset --soft <sha>` → bare `git reset` → `npm install`.
 - vitest 4.1.7 has **no `basic` reporter** — use default or `--reporter=dot`. Full suite ≈15 min. `0 tests` reported ⇒ suspect a parse error.
@@ -83,7 +84,7 @@ So: **a file at "0 unsafe ops" or "0 fabrication findings" is un-flagged, not ce
 
 **Correctness / gates**
 
-- Fabrication worklist uncleaned: 60 displayed invented figures across 19 files (ratcheted; ExecutiveSummary invented pack KPIs cleaned in session 016).
+- Fabrication worklist uncleaned: 32 displayed invented figures across 13 files (ratcheted; ClinicalTrialCostPage cleaned in session 022). Sector dashboards ship module fixtures or fall back to demo data when their store is empty — check for that pattern, the detector only sees the literals.
 - No detector for raw floats crossing a render/format boundary. Live instance: `ProfessionalExportEngine` types rows as `(string|number)[][]` and passes them to `autoTable` with only column 0 stringified — an unformatted float prints `0.30000000000000004` into a board pack.
 - Detector blind spot: single-line arrow bodies over `args[i]!` (logged for W0.1.6, type-based detection).
 - No automated detector for numeric ratio invention or view/memo divergence (source guards are per-module).

@@ -16,13 +16,10 @@ import {
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import {
-  addMoney,
-  divideMoney,
-  multiplyMoney,
-  roundTo,
-  subtractMoney,
-  sumMoney,
-} from '@/utils/money';
+  deriveCashPosition,
+  type CashCategoryRow,
+  type CashPeriodRow,
+} from '@/pages/cash/cashForecastModel';
 
 import {
   ResponsiveContainer,
@@ -38,108 +35,37 @@ import {
 import { SparklineChart } from '@/components/charts/SparklineChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-interface CategoryRow {
-  category: string;
-  inflows: number;
-  outflows: number;
-  net: number;
-}
-
 /**
- * GAP-1 (F-0006) — exact-decimal 13-week cash flow totals.
- *
- * inflows/outflows/net were raw float reduces/nets over GL net
- * (debit-credit) movement; the heuristic category splits (Revenue 70%,
- * Other Income 30%, Payroll 40%, etc.) multiply those totals by a
- * weight and are also currency-valued. weekInflow/weekOutflow use
- * Math.round and getRandom() — forecasting noise, not financial truth;
- * left as integer rounding. burnRate is currency/time.
+ * Cash position page. Every figure is derived by
+ * `@/pages/cash/cashForecastModel` from posted cash-account activity; see that
+ * module's correctness contract. This page previously treated every ledger
+ * entry as cash, split the totals with hardcoded 70/30/40/35/15 weights, and
+ * projected 13 weeks from a deterministic sawtooth — then exported all of it.
  */
-export interface CashNetEntry {
-  debit: number;
-  credit: number;
-}
-export interface CashSummary {
-  inflows: number;
-  outflows: number;
-  net: number;
-}
-export function computeCashTotals(entries: readonly CashNetEntry[]): CashSummary {
-  const nets = entries.map((e) => e.debit - e.credit);
-  const inflows = roundTo(sumMoney(nets.filter((n) => n > 0)));
-  const outflows = roundTo(sumMoney(nets.filter((n) => n < 0).map((n) => Math.abs(n))));
-  const net = roundTo(subtractMoney(inflows, outflows));
-  return { inflows, outflows, net };
-}
-
-export function buildCashCategorySplit(summary: CashSummary): CategoryRow[] {
-  const { inflows, outflows } = summary;
-  const rev = roundTo(multiplyMoney(inflows, 0.7));
-  const otherInc = roundTo(subtractMoney(inflows, rev)); // residual to keep exact sum
-  const payroll = roundTo(multiplyMoney(outflows, 0.4));
-  const opex = roundTo(multiplyMoney(outflows, 0.35));
-  const capex = roundTo(multiplyMoney(outflows, 0.15));
-  const debt = roundTo(subtractMoney(outflows, addMoney(payroll, addMoney(opex, capex))));
-  return [
-    { category: 'Revenue', inflows: rev, outflows: 0, net: rev },
-    { category: 'Other Income', inflows: otherInc, outflows: 0, net: otherInc },
-    { category: 'Payroll', inflows: 0, outflows: payroll, net: -payroll },
-    { category: 'Operating Expenses', inflows: 0, outflows: opex, net: -opex },
-    { category: 'Capital Expenditures', inflows: 0, outflows: capex, net: -capex },
-    { category: 'Debt Service', inflows: 0, outflows: debt, net: -debt },
-  ];
-}
-
-export function burnRateMonthly(outflows: number): number {
-  return roundTo(divideMoney(outflows, 4));
-}
-
 export default function CashForecastPage() {
   const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = 'FinPlan Pro — Cash Forecast';
+    document.title = 'FinPlan Pro — Cash Position';
   }, []);
 
-  const data = useMemo(() => {
-    if (entries.length === 0) return null;
-    const { inflows, outflows, net } = computeCashTotals(entries);
-    const categories: CategoryRow[] = buildCashCategorySplit({ inflows, outflows, net });
-    const weeks = Array.from({ length: 13 }, (_, i) => `W${i + 1}`);
-    // Forecast weeks use getRandom() jitter and Math.round — stochastic projection,
-    // not financial truth; left as JS number arithmetic (integer rounding of random
-    // variates cannot drift).
-    const forecast = weeks.map((w, i) => {
-      const weekInflow = (inflows / 13) * (0.8 + ((i * 13) % 40) * 0.01);
-      const weekOutflow = (outflows / 13) * (0.8 + ((i * 17) % 40) * 0.01);
-      return {
-        week: w,
-        inflows: Math.round(weekInflow),
-        outflows: Math.round(weekOutflow),
-        net: Math.round(weekInflow - weekOutflow),
-        balance: Math.round(net + (weekInflow - weekOutflow) * (i + 1)),
-      };
-    });
-    const burnRate = burnRateMonthly(outflows);
-    const endingCash = forecast[forecast.length - 1]!.balance;
-    return { inflows, outflows, net, categories, forecast, burnRate, endingCash };
-  }, [entries]);
+  const data = useMemo(() => deriveCashPosition(entries), [entries]);
 
   const handleExportPDF = () => {
     if (!data) return;
     void ExportEngine.exportToPDF(
       {
-        headers: ['Category', 'Inflows', 'Outflows', 'Net'],
+        headers: ['Category', 'Receipts', 'Disbursements', 'Net'],
         rows: data.categories.map((c) => [
           c.category,
-          fmt.currency0(c.inflows),
-          fmt.currency0(c.outflows),
+          fmt.currency0(c.receipts),
+          fmt.currency0(c.disbursements),
           fmt.currency0(c.net),
         ]),
       },
-      { title: 'Cash Forecast Report', companyName: 'FinPlan Pro' }
+      { title: 'Posted Cash Position', companyName: 'FinPlan Pro' }
     ).catch(reportExportFailure);
   };
 
@@ -147,32 +73,32 @@ export default function CashForecastPage() {
     if (!data) return;
     void ExportEngine.exportToExcel(
       {
-        headers: ['Category', 'Inflows', 'Outflows', 'Net'],
+        headers: ['Category', 'Receipts', 'Disbursements', 'Net'],
         rows: data.categories.map((c) => [
           c.category,
-          fmt.currency0(c.inflows),
-          fmt.currency0(c.outflows),
+          fmt.currency0(c.receipts),
+          fmt.currency0(c.disbursements),
           fmt.currency0(c.net),
         ]),
       },
-      { title: 'Cash_Forecast_Report' }
+      { title: 'Posted_Cash_Position' }
     ).catch(reportExportFailure);
   };
 
-  const catColumns: Column<CategoryRow>[] = [
+  const catColumns: Column<CashCategoryRow>[] = [
     { key: 'category', header: 'Category', sortable: true },
     {
-      key: 'inflows',
-      header: 'Inflows',
+      key: 'receipts',
+      header: 'Receipts',
       align: 'right',
-      render: (_, r) => <span className="text-green-400">{fmt.currency0(r.inflows)}</span>,
+      render: (_, r) => <span className="text-green-400">{fmt.currency0(r.receipts)}</span>,
       sortable: true,
     },
     {
-      key: 'outflows',
-      header: 'Outflows',
+      key: 'disbursements',
+      header: 'Disbursements',
       align: 'right',
-      render: (_, r) => <span className="text-red-400">{fmt.currency0(r.outflows)}</span>,
+      render: (_, r) => <span className="text-red-400">{fmt.currency0(r.disbursements)}</span>,
       sortable: true,
     },
     {
@@ -192,8 +118,11 @@ export default function CashForecastPage() {
     return (
       <div className="p-12 text-center">
         <DollarSign className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-[var(--text-muted)] mb-6">Import GL data to forecast cash flow.</p>
+        <h2 className="text-xl font-semibold mb-2">No Cash Activity</h2>
+        <p className="text-[var(--text-muted)] mb-6">
+          Import general-ledger data that posts to cash accounts (codes beginning 10 or 11) to see
+          your cash position.
+        </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
@@ -201,7 +130,10 @@ export default function CashForecastPage() {
   return (
     <div className="p-6 space-y-6 animate-fade-in">
       <PageHeader
-        title="13-Week Cash Forecast"
+        title="Cash Position"
+        purpose={`Posted cash-account activity across ${data.periodCount} period${
+          data.periodCount === 1 ? '' : 's'
+        } · accounts ${data.cashAccountCodes.join(', ')}`}
         actions={
           <div className="flex gap-2">
             <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
@@ -217,52 +149,56 @@ export default function CashForecastPage() {
       />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue
-          label="Operating Cash"
-          value={fmt.currency0(data.net)}
+          label="Posted Cash Balance"
+          value={fmt.currency0(data.postedBalance)}
           icon={<DollarSign className="h-4 w-4" />}
         />
         <KPIValue
-          label="Total Inflows"
-          value={fmt.currency0(data.inflows)}
+          label="Cash Receipts"
+          value={fmt.currency0(data.receipts)}
           icon={<TrendingUp className="h-4 w-4" />}
         />
         <KPIValue
-          label="Total Outflows"
-          value={fmt.currency0(data.outflows)}
+          label="Cash Disbursements"
+          value={fmt.currency0(data.disbursements)}
           icon={<TrendingDown className="h-4 w-4" />}
         />
         <KPIValue
-          label="Ending Cash"
-          value={fmt.currency0(data.endingCash)}
+          label="Avg Net per Period"
+          value={
+            data.averageNetPerPeriod === null ? '\u2014' : fmt.currency0(data.averageNetPerPeriod)
+          }
           icon={<Flame className="h-4 w-4" />}
         />
         <div className="col-span-2 md:col-span-4">
           <Card>
             <CardHeader>
-              <CardTitle>Cash Balance Trend</CardTitle>
+              <CardTitle>Posted Cash Balance Trend</CardTitle>
             </CardHeader>
             <CardContent className="flex items-center gap-4">
               <SparklineChart
-                data={data.forecast.map((w: { balance: number }) => w.balance)}
+                data={data.periods.map((p: CashPeriodRow) => p.runningBalance)}
                 color="#3b82f6"
                 height={50}
                 width={300}
-                ariaLabel="Cash balance sparkline trend"
+                ariaLabel="Posted cash balance sparkline trend"
               />
-              <span className="text-sm text-[var(--text-muted)]">13-week trend</span>
+              <span className="text-sm text-[var(--text-muted)]">
+                {data.periodCount} posted period{data.periodCount === 1 ? '' : 's'}
+              </span>
             </CardContent>
           </Card>
         </div>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Cash Flow Forecast (13 Weeks)</CardTitle>
+          <CardTitle>Posted Cash Flow by Period</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <ComposedChart data={data.forecast}>
+            <ComposedChart data={data.periods}>
               <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="week" stroke="#94a3b8" fontSize={11} />
+              <XAxis dataKey="period" stroke="#94a3b8" fontSize={11} />
               <YAxis
                 stroke="#94a3b8"
                 fontSize={12}
@@ -273,26 +209,59 @@ export default function CashForecastPage() {
                 contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
               />
               <Legend />
-              <Bar dataKey="inflows" fill="#10b981" name="Inflows" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="outflows" fill="#ef4444" name="Outflows" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="receipts" fill="#10b981" name="Receipts" radius={[4, 4, 0, 0]} />
+              <Bar
+                dataKey="disbursements"
+                fill="#ef4444"
+                name="Disbursements"
+                radius={[4, 4, 0, 0]}
+              />
               <Line
                 type="monotone"
-                dataKey="balance"
+                dataKey="runningBalance"
                 stroke="#3b82f6"
                 strokeWidth={2}
-                name="Balance"
+                name="Posted balance"
                 dot={false}
               />
             </ComposedChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
-      <DataTable
-        columns={catColumns}
-        data={data.categories}
-        caption="Cash forecast category breakdown by period"
-        ariaLabel="Cash forecast categories table"
-      />
+      <Card>
+        <CardHeader>
+          <CardTitle>Cash Movement by Counter-Account</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-[var(--text-muted)]">
+            Each cash line is attributed to the non-cash side of its own journal entry.
+            {data.classifiedPercent !== null &&
+              ` ${data.classifiedPercent}% of cash movement carried an identifiable counter-line.`}
+          </p>
+          <DataTable
+            columns={catColumns}
+            data={[...data.categories]}
+            caption="Cash movement attributed to counter-accounts"
+            ariaLabel="Cash movement by counter-account table"
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Not derivable from the general ledger</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2 text-sm">
+            {data.unavailable.map((u) => (
+              <li key={u.label}>
+                <span className="font-semibold">{u.label}</span>
+                <span className="text-[var(--text-muted)]"> — {u.reason}</span>
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -98,9 +98,11 @@ describe('CashForecastPage smoke test', () => {
     ).toBeGreaterThanOrEqual(2);
   });
 
-  it('shows the no data state when entries are empty', () => {
+  it('shows the no-cash-activity state when entries are empty', () => {
     renderPage();
-    expect(screen.getByText(/No Data/i)).toBeInTheDocument();
+    // The page derives from cash accounts (codes 10xx/11xx); with no such
+    // posting there is no cash position to show.
+    expect(screen.getByText(/No Cash Activity/i)).toBeInTheDocument();
   });
 
   it('shows import data button when entries are empty', () => {

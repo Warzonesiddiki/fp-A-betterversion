@@ -50,23 +50,58 @@ describe('InsuranceEngine', () => {
     it('should calculate insurance statistics and ratios accurately', () => {
       const stats = InsuranceEngine.calculateStats(mockEntries);
       expect(stats.grossWrittenPremium).toBe(1250000);
-      expect(stats.netWrittenPremium).toBe(1250000 * 0.85);
       expect(stats.lossExpense).toBe(250000);
       expect(stats.expenseTotal).toBe(80000);
       expect(stats.lossRatio).toBeCloseTo((250000 / 350000) * 100, 2);
-      expect(stats.combinedRatio).toBe(stats.lossRatio + stats.expenseRatio);
-      expect(stats.policyCount).toBeGreaterThan(0);
+      // Decimal addition of the two ratios: 71.43 + 6.40 = 77.83. Adding them
+      // as JS floats in this assertion gives 77.83000000000001 — which is the
+      // whole point of routing the engine through decimal.js.
+      expect(stats.combinedRatio).toBe(77.83);
+      expect(stats.lossRatio! + stats.expenseRatio!).not.toBe(stats.combinedRatio);
       expect(stats.underwritingIncome).toBe(350000 - 250000 - 80000);
+    });
+
+    it('reports net written premium only when a cession is posted', () => {
+      // The previous assertion here was `netWrittenPremium === 1250000 * 0.85`
+      // — a green test pinning an invented 15% reinsurance cession applied to
+      // every book. Net written now requires posted 43xx activity.
+      const stats = InsuranceEngine.calculateStats(mockEntries);
+      expect(stats.netWrittenPremium).toBeNull();
+      expect(stats.cededPremium).toBeNull();
+
+      const withCession = [
+        ...mockEntries,
+        gl('4300', 250000, 0, 250000, 'Reinsurance ceded', '2024-01'),
+      ];
+      const ceded = InsuranceEngine.calculateStats(withCession);
+      expect(ceded.cededPremium).toBe(250000);
+      expect(ceded.netWrittenPremium).toBe(1000000);
+    });
+
+    it('never derives a policy count from an average premium', () => {
+      // Was Math.round(grossWrittenPremium / 360), commented "Industry average".
+      expect(InsuranceEngine.calculateStats(mockEntries).policyCount).toBeNull();
+    });
+
+    it('nets contra entries instead of absolute-valuing them', () => {
+      const withRefund = [
+        ...mockEntries,
+        gl('4100', 100000, 0, -100000, 'Premium refund', '2024-02'),
+      ];
+      // Math.abs per entry gave 1,350,000; netting gives 1,150,000.
+      expect(InsuranceEngine.calculateStats(withRefund).grossWrittenPremium).toBe(1150000);
     });
 
     it('should handle empty entries safely without divide-by-zero crashes', () => {
       const stats = InsuranceEngine.calculateStats([]);
       expect(stats.grossWrittenPremium).toBe(0);
       expect(stats.lossExpense).toBe(0);
-      expect(stats.lossRatio).toBe(0);
-      expect(stats.expenseRatio).toBe(0);
-      expect(stats.combinedRatio).toBe(0);
-      expect(stats.policyCount).toBe(0);
+      // A ratio with no denominator is unavailable, not zero.
+      expect(stats.lossRatio).toBeNull();
+      expect(stats.expenseRatio).toBeNull();
+      expect(stats.combinedRatio).toBeNull();
+      expect(stats.policyCount).toBeNull();
+      expect(stats.netWrittenPremium).toBeNull();
     });
   });
 
@@ -88,12 +123,28 @@ describe('InsuranceEngine', () => {
   });
 
   describe('getCombinedRatioTrend', () => {
-    it('generates a 6-month deterministic combined ratio trend', () => {
+    it('derives the trend from posted periods, not from seeded noise', () => {
+      // This previously asserted six months of Jan–Jun, which the engine
+      // produced by ignoring its argument entirely and returning
+      // `58 + sin(i * 9301 + 49297) * 8` loss ratios.
       const trend = InsuranceEngine.getCombinedRatioTrend(mockEntries);
-      expect(trend).toHaveLength(6);
-      expect(trend[0]!.month).toBe('Jan');
-      expect(trend[0]!.combined).toBeGreaterThan(0);
-      expect(trend[5]!.month).toBe('Jun');
+      expect(trend.map((t) => t.month)).toEqual(['2024-01']);
+      // 2024-01: loss 150,000 over earned 350,000 = 42.86%
+      expect(trend[0]!.lossRatio).toBeCloseTo(42.86, 1);
+      // expenses 80,000 over written 800,000 = 10.00%
+      expect(trend[0]!.expenseRatio).toBeCloseTo(10, 1);
+      expect(trend[0]!.combined).toBeCloseTo(52.86, 1);
+    });
+
+    it('drops a period with no earned premium rather than inventing a point', () => {
+      // 2024-02 in the fixture posts written premium and a claim but no earned
+      // premium, so it has no loss ratio to plot.
+      const trend = InsuranceEngine.getCombinedRatioTrend(mockEntries);
+      expect(trend.find((t) => t.month === '2024-02')).toBeUndefined();
+    });
+
+    it('returns nothing for an empty ledger', () => {
+      expect(InsuranceEngine.getCombinedRatioTrend([])).toEqual([]);
     });
   });
 });

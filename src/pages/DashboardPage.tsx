@@ -28,7 +28,11 @@ import { createLogger } from '@/utils/logger';
 
 const dashboardLogger = createLogger('Dashboard');
 import { formatPercent } from '@/utils/financialFormatting';
-import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
+import {
+  deriveDashboardKpis,
+  deriveMonthlyTrend,
+  deriveSectorKpis,
+} from '@/pages/dashboard/dashboardModel';
 import {
   AreaChart,
   Area,
@@ -120,93 +124,17 @@ export default function DashboardPage() {
   const { sectorConfig } = useSector();
   const navigate = useNavigate();
 
-  const kpis = useMemo(() => {
-    if (entries.length === 0) return null;
-    const totalRevenue = roundTo(
-      sumMoney(
-        entries.filter((e) => (e.accountCode || '').startsWith('4')).map((e) => e.credit - e.debit)
-      ),
-      2
-    );
-    const totalCOGS = roundTo(
-      sumMoney(
-        entries
-          .filter((e) => (e.accountCode || '').startsWith('5'))
-          .map((e) => Math.abs(e.debit - e.credit))
-      ),
-      2
-    );
-    const totalExpenses = roundTo(
-      sumMoney(
-        entries
-          .filter((e) => (e.accountCode || '').startsWith('6'))
-          .map((e) => Math.abs(e.debit - e.credit))
-      ),
-      2
-    );
-    const netIncome = roundTo(
-      subtractMoney(totalRevenue, roundTo(sumMoney([totalCOGS, totalExpenses]), 2)),
-      2
-    );
-    const grossProfit = roundTo(subtractMoney(totalRevenue, totalCOGS), 2);
-    const grossMargin =
-      totalRevenue > 0 ? roundTo(divideMoney(grossProfit, totalRevenue).times(100), 2) : 0;
-    const activeBudgets = budgets.filter(
-      (b) => b.status === 'Approved' || b.status === 'InReview'
-    ).length;
-    const totalBudgetAmount = roundTo(sumMoney(budgets.map((b) => b.totalAmount || 0)), 2);
-    const budgetUtilization =
-      totalBudgetAmount > 0
-        ? roundTo(divideMoney(Math.abs(totalExpenses + totalCOGS), totalBudgetAmount).times(100), 2)
-        : 0;
-    return {
-      totalRevenue,
-      totalCOGS,
-      totalExpenses,
-      netIncome,
-      grossProfit,
-      grossMargin,
-      activeBudgets,
-      totalBudgetAmount,
-      budgetUtilization,
-    };
-  }, [entries, budgets]);
+  // Every figure below comes from `@/pages/dashboard/dashboardModel` so the
+  // tiles, the ratios and the trend chart share one decimal.js derivation and
+  // one sign convention. See that module's correctness contract (K18).
+  const kpis = useMemo(() => deriveDashboardKpis(entries, budgets), [entries, budgets]);
 
-  const monthlyTrend = useMemo(() => {
-    if (entries.length === 0) return [];
-    const map = new Map<string, { revenue: number; expenses: number; count: number }>();
-    entries.forEach((e) => {
-      const month = e.period || e.date?.slice(0, 7);
-      if (!month) return;
-      const existing = map.get(month) || { revenue: 0, expenses: 0, count: 0 };
-      const amt = e.debit - e.credit;
-      if ((e.accountCode || '').startsWith('4')) existing.revenue += amt;
-      else if ((e.accountCode || '').startsWith('5') || (e.accountCode || '').startsWith('6'))
-        existing.expenses += Math.abs(amt);
-      existing.count++;
-      map.set(month, existing);
-    });
-    return Array.from(map.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .slice(-12)
-      .map(([month, d]) => ({
-        month,
-        revenue: d.revenue,
-        expenses: d.expenses,
-        netIncome: d.revenue - d.expenses,
-      }));
-  }, [entries]);
+  const monthlyTrend = useMemo(() => deriveMonthlyTrend(entries), [entries]);
 
-  const sectorKPIs = useMemo(() => {
-    if (!sectorConfig || entries.length === 0) return null;
-    return sectorConfig.defaultKPIs.map((kpi) => {
-      const matchingEntries = entries.filter((e) =>
-        kpi.accountCodes?.includes(e.accountCode || '')
-      );
-      const value = roundTo(sumMoney(matchingEntries.map((e) => e.debit - e.credit)), 2);
-      return { label: kpi.label, value: Math.abs(value), format: 'currency' as const, key: kpi.id };
-    });
-  }, [sectorConfig, entries]);
+  const sectorKPIs = useMemo(
+    () => deriveSectorKpis(entries, sectorConfig?.defaultKPIs),
+    [sectorConfig, entries]
+  );
 
   if (entries.length === 0 && budgets.length === 0) {
     return (
@@ -322,8 +250,16 @@ export default function DashboardPage() {
             title="Gross Profit"
             value={kpis.grossProfit}
             format="currency"
-            trend={kpis.grossMargin > 50 ? 'up' : kpis.grossMargin > 20 ? 'neutral' : 'down'}
-            change={kpis.grossMargin}
+            trend={
+              kpis.grossMargin === null
+                ? 'neutral'
+                : kpis.grossMargin > 50
+                  ? 'up'
+                  : kpis.grossMargin > 20
+                    ? 'neutral'
+                    : 'down'
+            }
+            change={kpis.grossMargin ?? undefined}
           />
         </div>
         <div
@@ -355,12 +291,18 @@ export default function DashboardPage() {
         >
           <KPICard
             title="Total Expenses"
-            value={kpis.totalExpenses + kpis.totalCOGS}
+            value={kpis.totalExpenses}
             format="currency"
             trend={
-              kpis.budgetUtilization > 80 ? 'down' : kpis.budgetUtilization > 50 ? 'neutral' : 'up'
+              kpis.budgetUtilization === null
+                ? 'neutral'
+                : kpis.budgetUtilization > 80
+                  ? 'down'
+                  : kpis.budgetUtilization > 50
+                    ? 'neutral'
+                    : 'up'
             }
-            change={kpis.budgetUtilization}
+            change={kpis.budgetUtilization ?? undefined}
           />
         </div>
       </div>
@@ -390,40 +332,56 @@ export default function DashboardPage() {
                 <span
                   className={
                     'font-semibold ' +
-                    (kpis.budgetUtilization > 80
-                      ? 'text-red-400'
-                      : kpis.budgetUtilization > 50
-                        ? 'text-yellow-400'
-                        : 'text-green-400')
+                    (kpis.budgetUtilization === null
+                      ? 'text-[var(--text-muted)]'
+                      : kpis.budgetUtilization > 80
+                        ? 'text-red-400'
+                        : kpis.budgetUtilization > 50
+                          ? 'text-yellow-400'
+                          : 'text-green-400')
+                  }
+                  title={
+                    kpis.budgetUtilization === null
+                      ? 'No approved budget amount is posted, so utilization cannot be computed.'
+                      : undefined
                   }
                 >
                   {formatPercent(kpis.budgetUtilization)}
                 </span>
               </div>
-              <div className="w-full bg-slate-800 rounded-full h-2 mt-1">
-                <div
-                  className={
-                    'h-full rounded-full transition-all ' +
-                    (kpis.budgetUtilization > 80
-                      ? 'bg-red-500'
-                      : kpis.budgetUtilization > 50
-                        ? 'bg-yellow-500'
-                        : 'bg-green-500')
-                  }
-                  style={{ width: Math.min(kpis.budgetUtilization, 100) + '%' }}
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="flex justify-center mt-3">
-                <GaugeChart
-                  value={Math.min(kpis.budgetUtilization, 100)}
-                  max={100}
-                  target={80}
-                  label="Budget Used"
-                  size={120}
-                  ariaLabel="Budget utilization gauge"
-                />
-              </div>
+              {kpis.budgetUtilization === null ? (
+                <p className="text-xs text-[var(--text-muted)]">
+                  Utilization needs a posted budget amount to divide by. Create or import a budget
+                  to see it.
+                </p>
+              ) : (
+                <>
+                  <div className="w-full bg-slate-800 rounded-full h-2 mt-1">
+                    <div
+                      className={
+                        'h-full rounded-full transition-all ' +
+                        (kpis.budgetUtilization > 80
+                          ? 'bg-red-500'
+                          : kpis.budgetUtilization > 50
+                            ? 'bg-yellow-500'
+                            : 'bg-green-500')
+                      }
+                      style={{ width: Math.min(kpis.budgetUtilization, 100) + '%' }}
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="flex justify-center mt-3">
+                    <GaugeChart
+                      value={Math.min(kpis.budgetUtilization, 100)}
+                      max={100}
+                      target={80}
+                      label="Budget Used"
+                      size={120}
+                      ariaLabel="Budget utilization gauge"
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -446,9 +404,7 @@ export default function DashboardPage() {
               <div className="flex justify-between">
                 <span className="text-[var(--text-muted)]">Expense Ratio</span>
                 <span className="font-semibold tabular-nums">
-                  {kpis.totalRevenue > 0
-                    ? formatPercent((kpis.totalExpenses / kpis.totalRevenue) * 100)
-                    : 'N/A'}
+                  {formatPercent(kpis.expenseRatio)}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -459,9 +415,7 @@ export default function DashboardPage() {
                     (kpis.netIncome >= 0 ? 'text-green-400' : 'text-red-400')
                   }
                 >
-                  {kpis.totalRevenue > 0
-                    ? formatPercent((kpis.netIncome / kpis.totalRevenue) * 100)
-                    : 'N/A'}
+                  {formatPercent(kpis.netMargin)}
                 </span>
               </div>
               <div className="pt-2">

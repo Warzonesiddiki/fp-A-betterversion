@@ -5,22 +5,58 @@
  * @category insurance
  * @sector 11 (Insurance)
  * @since 1.0.0
- * @author Metis (purity audit 2026-06-18, T-3.26.6 JSDoc bulk — 17th engine)
- * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
+ *
+ * CORRECTNESS CONTRACT (K18 — wrong numbers are Severity-0), session 021+:
+ *
+ * 1. **Natural balance, never `Math.abs`.** Premium accounts are credit-normal
+ *    and expense accounts debit-normal. Every figure here used to be
+ *    `Math.abs(amount)`, so a premium refund or a claim recovery INCREASED the
+ *    balance it should have reduced.
+ * 2. **Net written premium requires posted cessions.** It was
+ *    `grossWrittenPremium * 0.85` — an invented 15% reinsurance cession
+ *    applied to every book. It is now gross less posted ceded premium (43xx),
+ *    or `null` when no cession is posted.
+ * 3. **Policy count is not derivable from a ledger.** It was
+ *    `Math.round(grossWrittenPremium / 360)` with the comment "Industry
+ *    average". A general ledger records amounts, not policies, so it is
+ *    `null`.
+ * 4. **A trend must come from the data.** `getCombinedRatioTrend` ignored its
+ *    argument entirely and returned six months of
+ *    `58 + sin(i * 9301 + 49297) * 8` loss ratios and `26 + … * 3` expense
+ *    ratios — seeded noise presented as a ratio trend. It now buckets posted
+ *    entries by period and emits a point only where earned premium exists.
+ * 5. Ratios are `null` when their denominator is not positive; no zero
+ *    stand-ins.
+ * 6. All arithmetic is decimal.js via `@/utils/money`.
+ *
+ * Account-code conventions:
+ * - 41xx written premium (credit-normal) · 42xx earned premium (credit-normal)
+ * - 43xx reinsurance ceded (debit-normal) · 44xx investment income
+ * - 51xx loss & LAE · 52xx commission · 53xx underwriting expense (debit-normal)
  */
 import type { GLEntry } from '@/types';
-import { roundTo } from '../utils/money';
+import Decimal from 'decimal.js';
+import { divideMoney, roundTo, sumMoney, toDecimal, type MoneyInput } from '../utils/money';
 
 export interface InsuranceStats {
   grossWrittenPremium: number;
-  netWrittenPremium: number;
+  /** Gross less posted cessions (43xx). `null` when no cession is posted. */
+  netWrittenPremium: number | null;
+  cededPremium: number | null;
   earnedPremium: number;
   lossExpense: number;
   expenseTotal: number;
-  lossRatio: number;
-  expenseRatio: number;
-  combinedRatio: number;
-  policyCount: number;
+  /** Percent. `null` when earned premium is not positive. */
+  lossRatio: number | null;
+  /** Percent. `null` when written premium is not positive. */
+  expenseRatio: number | null;
+  /** Percent. `null` unless BOTH components exist. */
+  combinedRatio: number | null;
+  /**
+   * ALWAYS `null`. A ledger records amounts, not policies. This was
+   * `gross / 360`; consumers must render the absence.
+   */
+  policyCount: null;
   underwritingIncome: number;
 }
 
@@ -34,11 +70,63 @@ export interface PremiumByLine {
 export interface CombinedRatioTrend {
   month: string;
   lossRatio: number;
-  expenseRatio: number;
-  combined: number;
+  /** `null` when no written premium is posted in the period. */
+  expenseRatio: number | null;
+  combined: number | null;
 }
 
 const LINE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ec4899'];
+
+const ZERO = new Decimal(0);
+const CURRENCY_PLACES = 2;
+const RATIO_PLACES = 2;
+
+function money(value: MoneyInput | null | undefined): Decimal {
+  if (value === null || value === undefined) return ZERO;
+  return toDecimal(value);
+}
+
+function hasDebitCredit(entry: GLEntry): boolean {
+  const debit = entry.debit;
+  const credit = entry.credit;
+  if (debit == null && credit == null) return false;
+  if (debit === 0 && credit === 0 && entry.amount != null && entry.amount !== 0) return false;
+  return true;
+}
+
+/** Expenses and ceded premium are debit-normal. */
+function debitNormal(entry: GLEntry): Decimal {
+  if (hasDebitCredit(entry)) return money(entry.debit).minus(money(entry.credit));
+  return money(entry.amount);
+}
+
+/** Premium is credit-normal. */
+function creditNormal(entry: GLEntry): Decimal {
+  if (hasDebitCredit(entry)) return money(entry.credit).minus(money(entry.debit));
+  return money(entry.amount);
+}
+
+function sumPrefix(
+  entries: readonly GLEntry[],
+  prefix: string,
+  sign: (e: GLEntry) => Decimal
+): Decimal {
+  return sumMoney(entries.filter((e) => (e.accountCode ?? '').startsWith(prefix)).map(sign));
+}
+
+function hasPrefix(entries: readonly GLEntry[], prefix: string): boolean {
+  return entries.some((e) => (e.accountCode ?? '').startsWith(prefix));
+}
+
+function cash(value: Decimal): number {
+  return roundTo(value, CURRENCY_PLACES);
+}
+
+/** Percent, or `null` when the denominator is not positive. */
+function percentOf(numer: Decimal, denom: Decimal): number | null {
+  if (!denom.greaterThan(0)) return null;
+  return roundTo(divideMoney(numer, denom).times(100), RATIO_PLACES);
+}
 
 export class InsuranceEngine {
   /**
@@ -52,50 +140,34 @@ export class InsuranceEngine {
    * - 44xx: Investment Income
    */
   static calculateStats(entries: GLEntry[]): InsuranceStats {
-    const getAmount = (e: GLEntry): number => e.amount ?? (e.debit ?? 0) - (e.credit ?? 0);
+    const grossWrittenPremium = sumPrefix(entries, '41', creditNormal);
+    const earnedPremium = sumPrefix(entries, '42', creditNormal);
+    const hasCession = hasPrefix(entries, '43');
+    const cededPremium = hasCession ? sumPrefix(entries, '43', debitNormal) : null;
+    const lossExpense = sumPrefix(entries, '51', debitNormal);
+    const commissionExpense = sumPrefix(entries, '52', debitNormal);
+    const underwritingExpense = sumPrefix(entries, '53', debitNormal);
+    const expenseTotal = commissionExpense.plus(underwritingExpense);
 
-    const grossWrittenPremium = entries
-      .filter((e) => e.accountCode.startsWith('41'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
-
-    const earnedPremium = entries
-      .filter((e) => e.accountCode.startsWith('42'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
-
-    const lossExpense = entries
-      .filter((e) => e.accountCode.startsWith('51'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
-
-    const commissionExpense = entries
-      .filter((e) => e.accountCode.startsWith('52'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
-
-    const underwritingExpense = entries
-      .filter((e) => e.accountCode.startsWith('53'))
-      .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
-
-    const expenseTotal = commissionExpense + underwritingExpense;
-    const netWrittenPremium = grossWrittenPremium * 0.85; // Approximate after reinsurance
-    const lossRatio = earnedPremium > 0 ? (lossExpense / earnedPremium) * 100 : 0;
-    const expenseRatio = grossWrittenPremium > 0 ? (expenseTotal / grossWrittenPremium) * 100 : 0;
-    const combinedRatio = lossRatio + expenseRatio;
-    const underwritingIncome = earnedPremium - lossExpense - expenseTotal;
-
-    // Derive policy count from average premium
-    const avgPremium = 360; // Industry average
-    const policyCount = grossWrittenPremium > 0 ? Math.round(grossWrittenPremium / avgPremium) : 0;
+    const lossRatio = percentOf(lossExpense, earnedPremium);
+    const expenseRatio = percentOf(expenseTotal, grossWrittenPremium);
 
     return {
-      grossWrittenPremium,
-      netWrittenPremium,
-      earnedPremium,
-      lossExpense,
-      expenseTotal,
+      grossWrittenPremium: cash(grossWrittenPremium),
+      netWrittenPremium:
+        cededPremium === null ? null : cash(grossWrittenPremium.minus(cededPremium)),
+      cededPremium: cededPremium === null ? null : cash(cededPremium),
+      earnedPremium: cash(earnedPremium),
+      lossExpense: cash(lossExpense),
+      expenseTotal: cash(expenseTotal),
       lossRatio,
       expenseRatio,
-      combinedRatio,
-      policyCount,
-      underwritingIncome,
+      combinedRatio:
+        lossRatio === null || expenseRatio === null
+          ? null
+          : roundTo(toDecimal(lossRatio).plus(expenseRatio), RATIO_PLACES),
+      policyCount: null,
+      underwritingIncome: cash(earnedPremium.minus(lossExpense).minus(expenseTotal)),
     };
   }
 
@@ -111,47 +183,76 @@ export class InsuranceEngine {
       { suffix: '05', name: 'Health' },
     ];
 
-    const getAmount = (e: GLEntry): number => e.amount ?? (e.debit ?? 0) - (e.credit ?? 0);
-
     return lines
       .map((line, idx) => {
-        const written = entries
-          .filter((e) => e.accountCode.startsWith('41') && e.accountCode.endsWith(line.suffix))
-          .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
-
-        const earned = entries
-          .filter((e) => e.accountCode.startsWith('42') && e.accountCode.endsWith(line.suffix))
-          .reduce((s, e) => s + Math.abs(getAmount(e)), 0);
+        const written = sumMoney(
+          entries
+            .filter((e) => e.accountCode.startsWith('41') && e.accountCode.endsWith(line.suffix))
+            .map(creditNormal)
+        );
+        const earned = sumMoney(
+          entries
+            .filter((e) => e.accountCode.startsWith('42') && e.accountCode.endsWith(line.suffix))
+            .map(creditNormal)
+        );
 
         return {
           name: line.name,
-          written,
-          earned,
+          written: cash(written),
+          earned: cash(earned),
           color: LINE_COLORS[idx % LINE_COLORS.length]!,
         };
       })
-      .filter((l) => l.written > 0 || l.earned > 0);
+      .filter((l) => l.written !== 0 || l.earned !== 0);
   }
 
   /**
    * Builds combined ratio trend from monthly entries.
    */
-  static getCombinedRatioTrend(_entries: GLEntry[]): CombinedRatioTrend[] {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    return months.map((month, i) => {
-      // Use seeded pseudo-random for deterministic mock-like trend
-      const sr = (s: number) => {
-        const x = Math.sin(s * 9301 + 49297) * 49297;
-        return x - Math.floor(x);
+  static getCombinedRatioTrend(entries: GLEntry[]): CombinedRatioTrend[] {
+    const byPeriod = new Map<
+      string,
+      { earned: Decimal; written: Decimal; loss: Decimal; expense: Decimal }
+    >();
+
+    for (const entry of entries) {
+      const month = entry.period || entry.date?.slice(0, 7);
+      if (!month) continue;
+      const code = entry.accountCode ?? '';
+      const bucket = byPeriod.get(month) ?? {
+        earned: ZERO,
+        written: ZERO,
+        loss: ZERO,
+        expense: ZERO,
       };
-      const lossRatio = 58 + sr(i * 3) * 8;
-      const expenseRatio = 26 + sr(i * 3 + 1) * 3;
-      return {
-        month,
-        lossRatio: roundTo(lossRatio, 1),
-        expenseRatio: roundTo(expenseRatio, 1),
-        combined: roundTo(lossRatio + expenseRatio, 1),
-      };
-    });
+      if (code.startsWith('41')) bucket.written = bucket.written.plus(creditNormal(entry));
+      else if (code.startsWith('42')) bucket.earned = bucket.earned.plus(creditNormal(entry));
+      else if (code.startsWith('51')) bucket.loss = bucket.loss.plus(debitNormal(entry));
+      else if (code.startsWith('52') || code.startsWith('53'))
+        bucket.expense = bucket.expense.plus(debitNormal(entry));
+      else continue;
+      byPeriod.set(month, bucket);
+    }
+
+    return [...byPeriod.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .flatMap(([month, b]) => {
+        const lossRatio = percentOf(b.loss, b.earned);
+        // No earned premium in the period means no loss ratio to plot; the
+        // point is dropped rather than filled with noise.
+        if (lossRatio === null) return [];
+        const expenseRatio = percentOf(b.expense, b.written);
+        return [
+          {
+            month,
+            lossRatio,
+            expenseRatio,
+            combined:
+              expenseRatio === null
+                ? null
+                : roundTo(toDecimal(lossRatio).plus(expenseRatio), RATIO_PLACES),
+          },
+        ];
+      });
   }
 }

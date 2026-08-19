@@ -27,20 +27,56 @@ export interface ProgramEntry {
   status: 'High' | 'Watch' | 'Medium';
 }
 
+/**
+ * A clinical trial the user has actually recorded.
+ *
+ * Added in session 022. `ClinicalTrialCostPage` previously hardcoded five
+ * trials at named institutions (Onco-Shield Ph III at Mayo Clinic,
+ * Neuro-Restore Ph II at Johns Hopkins, …) with budgets and spend, plus six
+ * months of budget/actual/enrolment. Trials are not general-ledger objects, so
+ * they live here as user input and default to an empty list.
+ */
+export interface ClinicalTrial {
+  id: string;
+  name: string;
+  site: string;
+  phase: string;
+  /** Approved trial budget. */
+  budget: number;
+  /** Spend recorded against the trial to date. */
+  actualSpend: number;
+  /** Patients targeted for enrolment. */
+  targetEnrollment: number;
+  /** Patients enrolled to date. */
+  enrolled: number;
+  status: 'planned' | 'enrolling' | 'active' | 'completed';
+}
+
 interface HealthcareState {
   qualityMetrics: QualityMetric[];
   savingsData: SavingsEntry[];
   programs: ProgramEntry[];
+  clinicalTrials: ClinicalTrial[];
   setQualityMetrics: (metrics: QualityMetric[]) => void;
   setSavingsData: (data: SavingsEntry[]) => void;
   addProgram: (program: ProgramEntry) => void;
   updateProgram: (id: string, updates: Partial<ProgramEntry>) => void;
+  setClinicalTrials: (trials: ClinicalTrial[]) => void;
+  addClinicalTrial: (trial: ClinicalTrial) => void;
+  removeClinicalTrial: (id: string) => void;
 }
 
 export const useHealthcareStore = create<HealthcareState>()(
   subscribeWithSelector(
     persist(
       immer((set) => ({
+        // NOTE (session 022): `qualityMetrics`, `savingsData` and `programs`
+        // below still ship seeded defaults — invented figures persisted for
+        // every tenant, the same class cleaned out of constructionStore and
+        // insuranceStore in sessions 014–015. They feed ValueBasedCarePage,
+        // which is the next fabrication worklist item; `clinicalTrials` is
+        // added here already empty.
+        clinicalTrials: [],
         qualityMetrics: [
           { subject: 'Readmission', A: 120, B: 110, fullMark: 150 },
           { subject: 'Patient Sat', A: 98, B: 130, fullMark: 150 },
@@ -116,13 +152,38 @@ export const useHealthcareStore = create<HealthcareState>()(
             if (idx !== -1) Object.assign(state.programs[idx]!, updates);
           })
         ),
+
+        setClinicalTrials: enforce(Permissions.ENTITY_UPDATE, 'setClinicalTrials', (trials) =>
+          set((state) => {
+            state.clinicalTrials = trials;
+          })
+        ),
+
+        addClinicalTrial: enforce(Permissions.ENTITY_CREATE, 'addClinicalTrial', (trial) =>
+          set((state) => {
+            state.clinicalTrials.push(trial);
+          })
+        ),
+
+        removeClinicalTrial: enforce(Permissions.ENTITY_DELETE, 'removeClinicalTrial', (id) =>
+          set((state) => {
+            state.clinicalTrials = state.clinicalTrials.filter((t) => t.id !== id);
+          })
+        ),
       })),
 
       {
         name: 'healthcare-store',
         storage: masterStorage,
-        version: 1,
-        migrate: (state: unknown) => state,
+        version: 2,
+        // v1 -> v2 introduces `clinicalTrials`, defaulting to empty. A
+        // persisted v1 workspace must not materialise trials it never entered.
+        migrate: (state: unknown) => {
+          if (state && typeof state === 'object' && !('clinicalTrials' in state)) {
+            return { ...(state as Record<string, unknown>), clinicalTrials: [] };
+          }
+          return state;
+        },
       }
     )
   )

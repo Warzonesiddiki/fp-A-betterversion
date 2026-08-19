@@ -37,20 +37,10 @@ vi.mock('@/components/ui/KPIValue', () => ({
   KPIValue: ({ label }: { label: string }) => <div data-testid="kpi">{label}</div>,
 }));
 
-vi.mock('lucide-react', () => {
-  const mk = () => () => <svg />;
-  return {
-    FileText: mk(),
-    Table: mk(),
-    Save: mk(),
-    Plus: mk(),
-    Trash2: mk(),
-    Download: mk(),
-    Play: mk(),
-    RefreshCw: mk(),
-    ChevronDown: mk(),
-  };
-});
+// Hand-listing icons breaks the moment a page adds one: this file failed with
+// `No "Layers" export is defined on the "lucide-react" mock` after the page's
+// empty state started using <Layers>. The shared mock synthesises any icon.
+vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
 
 const scenarioStore = {
   scenarios: [],
@@ -66,10 +56,13 @@ vi.mock('@/store/scenarioStore', () => ({
 describe('ScenarioBuilderPage', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('renders scenario builder heading', () => {
+  it('asks for a ledger when none is loaded', () => {
+    // Session 015 gave this page an empty state: it no longer invents a
+    // $48M / $28.8M / $14.4M base. With no GL entries the page IS the empty
+    // state, so the page <h1> from PageHeader is not rendered. This assertion
+    // previously passed only because the hand-listed lucide mock threw before
+    // the empty state could render.
     render(<ScenarioBuilderPage />);
-    expect(
-      screen.getByRole('heading', { level: 1, name: /scenario builder/i })
-    ).toBeInTheDocument();
+    expect(screen.getByText('No Scenario Builder Data')).toBeInTheDocument();
   });
 });

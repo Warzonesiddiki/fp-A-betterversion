@@ -26,9 +26,42 @@ export interface RetailStoreLocation {
   conversionRate: number;
 }
 
+/**
+ * A promotion the user has actually recorded.
+ *
+ * Added in session 021. `PromoAnalysisPage` previously hardcoded five
+ * campaigns (Summer Sale, Back to School, Holiday Bundle …) with costs,
+ * revenues and baselines, read the GL only to discard it (`entries: _entries`)
+ * and exported the invented figures to PDF and Excel. Promotions are not
+ * general-ledger objects, so they live here as user input and default to an
+ * empty list — a workspace with no campaigns shows no campaigns.
+ */
+export interface RetailPromotion {
+  id: string;
+  name: string;
+  type: string;
+  /** Discount offered, percent. */
+  discountPercent: number;
+  startDate: string;
+  endDate: string;
+  /** Promotion spend. */
+  cost: number;
+  /** Revenue recorded during the promotion window. */
+  revenue: number;
+  /** Revenue that would have been expected without it. */
+  baselineRevenue: number;
+  /**
+   * Gross margin on incremental revenue, percent. Optional: without it, return
+   * on spend can only be stated on a revenue basis, never as profit.
+   */
+  grossMarginPercent?: number;
+  status: 'planned' | 'active' | 'completed';
+}
+
 interface RetailState {
   products: RetailProduct[];
   stores: RetailStoreLocation[];
+  promotions: RetailPromotion[];
   isLoading: boolean;
   error: string | null;
   setProducts: (products: RetailProduct[]) => void;
@@ -36,6 +69,9 @@ interface RetailState {
   updateProduct: (id: string, updates: Partial<RetailProduct>) => void;
   removeProduct: (id: string) => void;
   setStores: (stores: RetailStoreLocation[]) => void;
+  setPromotions: (promotions: RetailPromotion[]) => void;
+  addPromotion: (promotion: RetailPromotion) => void;
+  removePromotion: (id: string) => void;
   setLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
   clearAll: () => void;
@@ -50,6 +86,7 @@ export const useRetailStore = create<RetailState>()(
       immer((set, get) => ({
         products: [],
         stores: [],
+        promotions: [],
         isLoading: false,
         error: null,
 
@@ -84,6 +121,24 @@ export const useRetailStore = create<RetailState>()(
           })
         ),
 
+        setPromotions: enforce(Permissions.ENTITY_UPDATE, 'setPromotions', (promotions) =>
+          set((state) => {
+            state.promotions = promotions;
+          })
+        ),
+
+        addPromotion: enforce(Permissions.ENTITY_CREATE, 'addPromotion', (promotion) =>
+          set((state) => {
+            state.promotions.push(promotion);
+          })
+        ),
+
+        removePromotion: enforce(Permissions.ENTITY_DELETE, 'removePromotion', (id) =>
+          set((state) => {
+            state.promotions = state.promotions.filter((p) => p.id !== id);
+          })
+        ),
+
         setLoading: (isLoading) =>
           set((state) => {
             state.isLoading = isLoading;
@@ -98,6 +153,7 @@ export const useRetailStore = create<RetailState>()(
           set((state) => {
             state.products = [];
             state.stores = [];
+            state.promotions = [];
             state.isLoading = false;
             state.error = null;
           })
@@ -113,8 +169,15 @@ export const useRetailStore = create<RetailState>()(
       {
         name: 'retail-store',
         storage: masterStorage,
-        version: 1,
-        migrate: (state: unknown) => state,
+        version: 2,
+        // v1 -> v2 introduces `promotions`, defaulting to empty. A persisted v1
+        // workspace must not materialise campaigns it never entered.
+        migrate: (state: unknown) => {
+          if (state && typeof state === 'object' && !('promotions' in state)) {
+            return { ...(state as Record<string, unknown>), promotions: [] };
+          }
+          return state;
+        },
       }
     )
   )

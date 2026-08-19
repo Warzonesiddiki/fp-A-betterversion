@@ -1,0 +1,103 @@
+{
+  "memory_version": "1.0.0",
+  "project": "OmniPlan (finplan-pro) \u2014 Warzonesiddiki/fp-A-betterversion",
+  "updated_at": "2026-08-18",
+  "genesis_phase": "Phase 0 / Wave W0.1.1",
+  "now": {
+    "task_id": "T-024",
+    "summary": "BLOCKED on GitHub auth: push the local test-repair commit, let test-unit re-run on PR #65, then merge. Then resume T-023 (BenchmarkingPage 8 / TelecomDashboardPage 4)."
+  },
+  "health": {
+    "shi": null,
+    "uvi": null,
+    "dei": null,
+    "money_ast_safety_pct": 81.44,
+    "money_ast_unsafe_ops": 421,
+    "fabrication_findings": 32,
+    "notes": "SHI/UVI/DEI not measured. Ratchets 2026-08-18 after s022 (489->...->421; 60->...->32). The s022 fix commit prose says 81.68%; measured is 81.44%."
+  },
+  "capabilities": {
+    "git": true,
+    "gh": true,
+    "shell": true,
+    "node": "v22.22.3",
+    "npm": "10.9.8",
+    "cargo": false,
+    "docker": false,
+    "vitest": true,
+    "playwright": "installed, not run",
+    "push_workflows": false
+  },
+  "stack": {
+    "languages": [
+      "TypeScript",
+      "Rust (tauri, unbuildable here)"
+    ],
+    "frameworks": [
+      "React 19",
+      "Vite",
+      "Tailwind",
+      "Zustand",
+      "Express"
+    ],
+    "pkg": "npm",
+    "test": "npm test (vitest) | npx vitest run <path> --reporter=dot",
+    "dev": "npm run dev",
+    "db": "SQLite (src-tauri/migrations, 35 tables) + server DDL helpers"
+  },
+  "modules": {
+    "money-primitive": "shipped",
+    "money-ast-detector": "shipped",
+    "fabrication-detector": "shipped",
+    "dashboard": "shipped",
+    "credit-risk": "shipped",
+    "scenario-builder": "shipped",
+    "underwriting": "shipped",
+    "project-costing": "shipped",
+    "tax-provision": "shipped",
+    "patient-revenue": "shipped",
+    "healthcare-engine": "partial",
+    "construction-engine": "flagged",
+    "insurance-engine": "shipped",
+    "retail-engine": "flagged",
+    "realestate-engine": "flagged",
+    "export-engines": "flagged",
+    "board-pack": "partial",
+    "server-api": "partial",
+    "persistence-authority-w08": "planned",
+    "msi-installer": "planned",
+    "cash-forecast": "shipped",
+    "education-dashboard": "shipped",
+    "rolling-forecast": "shipped",
+    "government-dashboard": "shipped",
+    "property-valuation": "shipped",
+    "logistics-dashboard": "shipped",
+    "promo-analysis": "shipped",
+    "forecast-builder": "shipped",
+    "clinical-trials": "shipped"
+  },
+  "invariants_green": [
+    "INV-001",
+    "INV-002"
+  ],
+  "invariants_red": [
+    "INV-003",
+    "INV-004",
+    "INV-005",
+    "INV-007",
+    "INV-009",
+    "INV-010"
+  ],
+  "blocked": [
+    "GitHub token expired mid-session (gh auth status: token in GH_TOKEN no longer valid) -> repair commit unpushed, PR #65 unmerged. User must reconnect GitHub in Arena.",
+    "CI workflow changes (no `workflows` permission) -> ci-patches/0005-*.patch unapplied; it fixes the 80 GiB heap flag on test-unit",
+    "src-tauri/src/*.rs (no cargo/rustc in sandbox)",
+    "desktop/Tauri verification"
+  ],
+  "last_session": "sess_023",
+  "integrity": {
+    "last_run": "2026-08-18",
+    "ok": true,
+    "errors": []
+  }
+}

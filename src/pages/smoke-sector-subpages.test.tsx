@@ -235,6 +235,7 @@ import ClaimsAnalyticsPage from '@/pages/insurance/ClaimsAnalyticsPage';
 import ClinicalTrialCostPage from '@/pages/healthcare/ClinicalTrialCostPage';
 import EmissionsTradingPage from '@/pages/energy/EmissionsTradingPage';
 import EquipmentManagementPage from '@/pages/construction/EquipmentManagementPage';
+import { useHealthcareStore } from '@/store/healthcareStore';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -312,7 +313,30 @@ describe('Sector Sub-Page Smoke Tests', () => {
       ).toBeGreaterThanOrEqual(2);
     });
 
-    it('displays the page heading', () => {
+    it('asks for a study when none is recorded', () => {
+      // Trials come from healthcareStore.clinicalTrials; the page used to
+      // hardcode five studies at named institutions.
+      useHealthcareStore.setState({ clinicalTrials: [] });
+      renderPage(ClinicalTrialCostPage, '/healthcare/trials', '/healthcare/trials');
+      expect(screen.getByText('No Trials Recorded')).toBeInTheDocument();
+    });
+
+    it('displays the page heading once a study is recorded', () => {
+      useHealthcareStore.setState({
+        clinicalTrials: [
+          {
+            id: 'T-1',
+            name: 'Alpha',
+            site: 'Site One',
+            phase: 'Phase I',
+            budget: 1000,
+            actualSpend: 500,
+            targetEnrollment: 10,
+            enrolled: 5,
+            status: 'active',
+          },
+        ],
+      });
       renderPage(ClinicalTrialCostPage, '/healthcare/trials', '/healthcare/trials');
       expect(screen.getByText(/Clinical Trial/i)).toBeInTheDocument();
     });

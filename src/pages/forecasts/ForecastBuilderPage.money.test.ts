@@ -6,9 +6,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   computeForecastSeries,
-  computeConfidenceBands,
+  confidenceBandsFromResiduals,
   SEASONALITY_WEIGHTS,
-} from './ForecastBuilderPage';
+} from './forecastBuilderData';
 
 describe('ForecastBuilderPage money primitive — computeForecastSeries (GAP-1)', () => {
   it('empty historical returns empty (control)', () => {
@@ -66,13 +66,23 @@ describe('ForecastBuilderPage money primitive — computeForecastSeries (GAP-1)'
     });
   });
 
-  it('confidence bands are symmetric around forecast with money rounding', () => {
+  it('bands come from measured residuals, not a fixed widening', () => {
+    // The previous assertion here pinned the invented band: 6% widening plus
+    // 1.5 points per period (940,000 / 1,060,000 then 925,000 / 1,075,000),
+    // identical for every dataset and every method. It was green, and it
+    // protected a fabrication.
     const forecast = [1000000, 1000000];
-    const { low, high } = computeConfidenceBands(forecast);
-    expect(low[0]).toBe(940000);
-    expect(high[0]).toBe(1060000);
-    expect(low[1]).toBe(925000);
-    expect(high[1]).toBe(1075000);
+    const band = confidenceBandsFromResiduals(forecast, 50000, 2)!;
+    expect(band.low).toEqual([900000, 900000]);
+    expect(band.high).toEqual([1100000, 1100000]);
+    // Flat residual dispersion means a flat band; it does not fan out because
+    // a developer thought a fan looked right.
+    expect(band.low[0]).toBe(band.low[1]);
+  });
+
+  it('publishes no band at all when there is nothing to measure', () => {
+    expect(confidenceBandsFromResiduals([1000000], null)).toBeNull();
+    expect(confidenceBandsFromResiduals([1000000], 0)).toBeNull();
   });
 
   it('handles three 0.335 cents with half-up rounding (old float → 0.335 drift)', () => {

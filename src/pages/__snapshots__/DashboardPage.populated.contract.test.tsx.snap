@@ -190,27 +190,17 @@ exports[`DashboardPage populated-state contract (interim structural baseline) > 
                 Utilization
               </span>
               <span
-                class="font-semibold text-green-400"
+                class="font-semibold text-[var(--text-muted)]"
+                title="No approved budget amount is posted, so utilization cannot be computed."
               >
-                0.0%
+                —
               </span>
             </div>
-            <div
-              class="w-full bg-slate-800 rounded-full h-2 mt-1"
+            <p
+              class="text-xs text-[var(--text-muted)]"
             >
-              <div
-                aria-hidden="true"
-                class="h-full rounded-full transition-all bg-green-500"
-                style="width: 0%;"
-              />
-            </div>
-            <div
-              class="flex justify-center mt-3"
-            >
-              <div
-                data-testid="gauge-chart"
-              />
-            </div>
+              Utilization needs a posted budget amount to divide by. Create or import a budget to see it.
+            </p>
           </div>
         </div>
       </div>
@@ -261,7 +251,7 @@ exports[`DashboardPage populated-state contract (interim structural baseline) > 
               <span
                 class="font-semibold tabular-nums"
               >
-                9.1%
+                36.4%
               </span>
             </div>
             <div

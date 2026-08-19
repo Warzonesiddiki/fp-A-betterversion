@@ -1,27 +1,41 @@
+/**
+ * Patient revenue cycle — every figure is derived from the posted GL.
+ *
+ * CORRECTNESS CONTRACT (K18):
+ *
+ * 1. NEVER render a figure the ledger cannot support. Removed in this pass:
+ *    - a five-row denial root-cause table ($840k / $450k / $1.2M / $120k /
+ *      $2.1M against counts 420 / 215 / 180 / 95 / 64) that was identical for
+ *      every entity and every period, and was additionally rendered through a
+ *      column config (`metric` / `value`) that did not match its own rows;
+ *    - KPI deltas +8.4% / -0.8 / +1.2 / -2.4 with narrative causes
+ *      ("volume increase in Q1", "coding audits effective");
+ *    - seven-point sparkline "histories" (10.2 … 12.2, 5.2 … 4.3, 92.5 … 94.5,
+ *      42 … 39) with the live value appended, which made invented trends look
+ *      measured.
+ * 2. A denial rate needs claim/remittance (835/837) data. The GL does not
+ *    carry it, so `HealthcareEngine` returns `null` and this page discloses
+ *    it. It used to be a hardcoded 4.2.
+ * 3. Days in A/R is shown with its divisor basis disclosed, because the basis
+ *    is a modelling assumption, not a measured calendar.
+ */
 import type { FiscalPeriod } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 
-const columns = [
-  { key: 'metric', header: 'Metric' },
-  { key: 'value', header: 'Value' },
-];
 import { useMemo, useState } from 'react';
 import {
   DollarSign,
   PieChart as PieChartIcon,
   BarChart2,
-  FileCheck,
   AlertCircle,
   Download,
-  CreditCard,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { PeriodPicker } from '@/components/ui/PeriodPicker';
-import { DataTable } from '@/components/ui/DataTable';
 import {
   ResponsiveContainer,
   PieChart,
@@ -54,6 +68,9 @@ export default function PatientRevenuePage() {
     return HealthcareEngine.getPayerMix(entries);
   }, [entries]);
 
+  // Engine returns null by contract; render the absence, never a default.
+  const denialRateDisplay = stats.denialRate === null ? '\u2014' : `${stats.denialRate}%`;
+
   const revenueCycleData = useMemo(
     () => [
       { stage: 'Charges', amount: stats.grossCharges },
@@ -64,14 +81,6 @@ export default function PatientRevenuePage() {
     ],
     [stats]
   );
-
-  const denialAnalytics = [
-    { reason: 'Eligibility', count: 420, value: '$840k', trend: 'down' },
-    { reason: 'Coding Error', count: 215, value: '$450k', trend: 'up' },
-    { reason: 'Prior Auth', count: 180, value: '$1.2M', trend: 'stable' },
-    { reason: 'Duplicate Claim', count: 95, value: '$120k', trend: 'down' },
-    { reason: 'Medical Necessity', count: 64, value: '$2.1M', trend: 'up' },
-  ];
 
   if (entries.length === 0) {
     return (
@@ -111,34 +120,22 @@ export default function PatientRevenuePage() {
         <KPIValue
           label="Gross Charges"
           value={fmtCurrency.custom()(stats.grossCharges)}
-          change={8.4}
-          changeLabel="volume increase in Q1"
-          trend="up"
-          sparklineData={[10.2, 10.8, 11.2, 11.5, 11.8, 12.2, stats.grossCharges / 1000000]}
+          changeLabel="posted to 40xx"
         />
         <KPIValue
-          label="Denial Rate"
-          value={`${stats.denialRate}%`}
-          change={-0.8}
-          changeLabel="coding audits effective"
-          trend="up" // Up is good for lower denial rate
-          sparklineData={[5.2, 5.0, 4.8, 4.7, 4.5, 4.3, stats.denialRate]}
+          label="Net Revenue"
+          value={fmtCurrency.custom()(stats.netRevenue)}
+          changeLabel="gross charges less 41xx contractuals"
         />
         <KPIValue
           label="Collection Rate"
-          value={`${formatPercent(stats.collectionRate, 1)}`}
-          change={1.2}
-          changeLabel="net of contractuals"
-          trend="up"
-          sparklineData={[92.5, 93.0, 93.2, 93.8, 94.1, 94.5, stats.collectionRate]}
+          value={formatPercent(stats.collectionRate, 1)}
+          changeLabel="11xx cash against net revenue"
         />
         <KPIValue
           label="Days in A/R"
           value={formatNumber(stats.daysInAR, 1)}
-          change={-2.4}
-          changeLabel="billing cycle faster"
-          trend="up" // Up is good for fewer days
-          sparklineData={[42, 41, 40.5, 40, 39.5, 39, stats.daysInAR]}
+          changeLabel={`12xx balance on a ${stats.daysInPeriodBasis}-day basis`}
         />
       </div>
 
@@ -223,36 +220,36 @@ export default function PatientRevenuePage() {
         </Card>
       </div>
 
-      {/* Denial Table */}
+      {/* Denial analytics: disclosed, not estimated */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-red-600" />
-              <CardTitle>Denial Root Cause Analysis</CardTitle>
-            </div>
-            <CardDescription>
-              High-value claims requiring appeal or process correction
-            </CardDescription>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-5 w-5 text-red-600" />
+            <CardTitle>Denial Root Cause Analysis</CardTitle>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm">
-              <FileCheck className="h-4 w-4 mr-2" />
-              Assign Appeals
-            </Button>
-            <Button variant="outline" size="sm">
-              <CreditCard className="h-4 w-4 mr-2" />
-              Payer Rules
-            </Button>
-          </div>
+          <CardDescription>
+            Requires claim and remittance detail, which the general ledger does not carry
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <DataTable
-            columns={columns}
-            data={denialAnalytics}
-            caption="Denial root cause analysis table"
-            ariaLabel="Denial root cause analysis data table for patient revenue"
-          />
+          <div className="space-y-3 text-sm">
+            <p className="text-[var(--text-muted)]">
+              Denial counts, denial rate and denied dollars are claim-level facts. They come from
+              837 submissions and 835 remittance advice, not from posted journal entries, so this
+              workspace cannot derive them from your ledger.
+            </p>
+            <ul className="list-disc pl-5 text-[var(--text-muted)] space-y-1">
+              <li>Denial rate — unavailable ({denialRateDisplay})</li>
+              <li>
+                Denials by root cause (eligibility, coding, prior auth, medical necessity) —
+                unavailable
+              </li>
+              <li>Denied dollars and appeal recovery — unavailable</li>
+            </ul>
+            <p className="text-[var(--text-muted)]">
+              Connect a claims or clearinghouse feed to populate this analysis.
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>

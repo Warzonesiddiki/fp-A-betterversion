@@ -20,7 +20,7 @@ import {
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';
-import { RealEstateEngine } from '@/engines/RealEstateEngine';
+import { deriveValuation, type PropertyValuationRow } from '@/pages/realestate/valuationData';
 import { formatPercent } from '@/utils/financialFormatting';
 
 const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
@@ -32,19 +32,19 @@ export default function ValuationPage() {
     () => [
       { key: 'name', header: 'Property', sortable: true },
       {
-        key: 'purchasePrice',
+        key: 'costBasis',
         header: 'Cost Basis',
         align: 'right',
         render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
       },
       {
-        key: 'currentVal',
+        key: 'appraisedValue',
         header: 'Appraised Value',
         align: 'right',
         render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
       },
       {
-        key: 'gain',
+        key: 'unrealizedGain',
         header: 'Unrealized Gain',
         align: 'right',
         render: (v) => {
@@ -59,11 +59,12 @@ export default function ValuationPage() {
         },
       },
       {
-        key: 'gainPct',
+        key: 'appreciationPercent',
         header: 'Appreciation %',
         align: 'right',
         render: (v) => {
-          const num = v as number;
+          const num = v as number | null;
+          if (num === null) return <span className="text-[var(--text-muted)]">—</span>;
           return (
             <span className={num >= 0 ? 'text-green-600' : 'text-red-600'}>
               {num >= 0 ? '+' : ''}
@@ -73,10 +74,10 @@ export default function ValuationPage() {
         },
       },
       {
-        key: 'capRate',
-        header: 'Implied Cap Rate',
+        key: 'capRatePercent',
+        header: 'Cap Rate (own NOI)',
         align: 'right',
-        render: (v) => `${formatPercent(v as number, 2)}`,
+        render: (v) => formatPercent(v as number | null, 2),
       },
     ],
     [fmtCurrency]
@@ -84,50 +85,25 @@ export default function ValuationPage() {
   const { entries } = useGLStore();
   const [periodId, setPeriodId] = useState('P01');
 
-  const portfolioStats = useMemo(() => {
-    return RealEstateEngine.calculatePortfolioStats(entries);
-  }, [entries]);
+  // Every figure comes from `@/pages/realestate/valuationData` — see its
+  // correctness contract. RealEstateEngine is deliberately NOT called here:
+  // its breakdown carries a mocked 6.2 yield, a 'TBD' location and a
+  // Core/Value-Add status decided by a $10M cost threshold, and its dashboard
+  // cap rate is a portfolio figure that was being stamped onto every row.
+  const valuation = useMemo(() => deriveValuation(entries), [entries]);
 
-  const dashStats = useMemo(() => {
-    return RealEstateEngine.calculateDashboardStats(entries);
-  }, [entries]);
+  const valuationTrend = useMemo(
+    () =>
+      (valuation?.properties ?? []).map((p) => ({
+        property: p.name,
+        cost: p.costBasis,
+        market: p.appraisedValue,
+        gain: p.unrealizedGain,
+      })),
+    [valuation]
+  );
 
-  const valuationData = useMemo(() => {
-    const breakdown = RealEstateEngine.getPropertyBreakdown(entries);
-    return breakdown.map((p) => ({
-      ...p,
-      gain: p.currentVal - p.purchasePrice,
-      gainPct: p.purchasePrice > 0 ? ((p.currentVal - p.purchasePrice) / p.purchasePrice) * 100 : 0,
-      capRate: dashStats.capRate,
-    }));
-  }, [entries, dashStats.capRate]);
-
-  const valuationTrend = useMemo(() => {
-    const breakdown = RealEstateEngine.getPropertyBreakdown(entries);
-    return breakdown.map((p) => ({
-      property: p.name,
-      cost: p.purchasePrice,
-      market: p.currentVal,
-      gain: p.currentVal - p.purchasePrice,
-    }));
-  }, [entries]);
-
-  const summaryMetrics = useMemo(() => {
-    const totalGain = valuationData.reduce((acc, p) => acc + p.gain, 0);
-    const avgAppreciation =
-      valuationData.length > 0
-        ? valuationData.reduce((acc, p) => acc + p.gainPct, 0) / valuationData.length
-        : 0;
-    const totalCostBasis = valuationData.reduce((acc, p) => acc + p.purchasePrice, 0);
-    const totalMarketValue = valuationData.reduce((acc, p) => acc + p.currentVal, 0);
-    const weightedCapRate =
-      totalMarketValue > 0
-        ? valuationData.reduce((acc, p) => acc + p.capRate * p.currentVal, 0) / totalMarketValue
-        : 0;
-    return { totalGain, avgAppreciation, totalCostBasis, totalMarketValue, weightedCapRate };
-  }, [valuationData]);
-
-  if (entries.length === 0) {
+  if (!valuation) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
         <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
@@ -135,8 +111,8 @@ export default function ValuationPage() {
         </div>
         <h2 className="text-xl font-semibold mb-2">No Valuation Data</h2>
         <p className="text-[var(--text-muted)] mb-6">
-          Import your General Ledger and fixed asset schedule to view property valuations and
-          appreciation analysis.
+          Import general-ledger activity that posts property cost (15xx) or appraised value (16xx)
+          by entity to see valuations and appreciation.
         </p>
         <Button>Import Data</Button>
       </div>
@@ -169,34 +145,30 @@ export default function ValuationPage() {
         <KPIValue
           label="Total Appraised Value"
           value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(
-            summaryMetrics.totalMarketValue
+            valuation.totalAppraisedValue
           )}
-          change={8.4}
-          changeLabel="vs prior period"
-          trend="up"
+          changeLabel="posted 16xx balances"
         />
         <KPIValue
           label="Total Unrealized Gain"
           value={fmtCurrency.custom({ maxDecimals: 1, compact: true, signDisplay: 'always' })(
-            summaryMetrics.totalGain
+            valuation.totalUnrealizedGain
           )}
-          change={15.2}
-          changeLabel="since acquisition"
-          trend="up"
+          changeLabel="appraised less cost basis"
         />
         <KPIValue
-          label="Avg. Appreciation"
-          value={`${formatPercent(summaryMetrics.avgAppreciation, 1)}`}
-          change={2.1}
-          changeLabel="above market avg"
-          trend="up"
+          label="Portfolio Appreciation"
+          value={formatPercent(valuation.portfolioAppreciationPercent, 1)}
+          changeLabel="gain ÷ cost basis"
         />
         <KPIValue
           label="Weighted Cap Rate"
-          value={`${formatPercent(summaryMetrics.weightedCapRate, 2)}`}
-          change={-0.15}
-          changeLabel="compression"
-          trend="neutral"
+          value={formatPercent(valuation.weightedCapRatePercent, 2)}
+          changeLabel={
+            valuation.capRateCoverage > 0
+              ? `${valuation.capRateCoverage} of ${valuation.properties.length} properties`
+              : 'no property posts rental income'
+          }
         />
       </div>
 
@@ -255,15 +227,15 @@ export default function ValuationPage() {
                 Total Cost Basis
               </div>
               <div className="text-xl font-bold">
-                {fmtCurrency.custom({ maxDecimals: 0 })(summaryMetrics.totalCostBasis)}
+                {fmtCurrency.custom({ maxDecimals: 0 })(valuation.totalCostBasis)}
               </div>
             </div>
             <div className="space-y-1">
               <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
-                Total Market Value
+                Total Appraised Value
               </div>
               <div className="text-xl font-bold text-blue-600">
-                {fmtCurrency.custom({ maxDecimals: 0 })(summaryMetrics.totalMarketValue)}
+                {fmtCurrency.custom({ maxDecimals: 0 })(valuation.totalAppraisedValue)}
               </div>
             </div>
             <div className="space-y-1">
@@ -271,10 +243,10 @@ export default function ValuationPage() {
                 Net Unrealized Gain
               </div>
               <div
-                className={`text-xl font-bold ${summaryMetrics.totalGain >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                className={`text-xl font-bold ${valuation.totalUnrealizedGain >= 0 ? 'text-green-600' : 'text-red-600'}`}
               >
                 {fmtCurrency.custom({ maxDecimals: 0, signDisplay: 'always' })(
-                  summaryMetrics.totalGain
+                  valuation.totalUnrealizedGain
                 )}
               </div>
             </div>
@@ -282,17 +254,22 @@ export default function ValuationPage() {
               <div className="text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 Loan-to-Value Ratio
               </div>
-              <div className="text-xl font-bold">{formatPercent(portfolioStats.ltv, 1)}</div>
+              <div className="text-xl font-bold">
+                {formatPercent(valuation.loanToValuePercent, 1)}
+              </div>
             </div>
             <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
               <div className="text-xs text-blue-700 font-bold uppercase tracking-wider mb-1">
                 NOI
               </div>
               <div className="text-lg font-bold text-blue-800">
-                {fmtCurrency.custom({ maxDecimals: 0 })(dashStats.noi)}
+                {valuation.totalNoi === null
+                  ? '—'
+                  : fmtCurrency.custom({ maxDecimals: 0 })(valuation.totalNoi)}
               </div>
               <p className="text-[10px] text-blue-600 mt-1">
-                Net Operating Income drives implied cap rate and valuation multiples.
+                Posted rental income (40xx) less property operating expense (50xx). Each
+                property&apos;s cap rate uses its own NOI, never the portfolio figure.
               </p>
             </div>
           </CardContent>
@@ -315,12 +292,30 @@ export default function ValuationPage() {
         <CardContent>
           <DataTable
             columns={valuationColumns}
-            data={valuationData}
+            data={valuation.properties as PropertyValuationRow[]}
             caption="Property valuation detail table"
             ariaLabel="Property valuation detail data table for real estate valuation"
           />
         </CardContent>
       </Card>
+
+      {valuation.unavailable.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Not derivable from the general ledger</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-sm">
+              {valuation.unavailable.map((u) => (
+                <li key={u.label}>
+                  <span className="font-semibold">{u.label}</span>
+                  <span className="text-[var(--text-muted)]"> — {u.reason}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

@@ -40,6 +40,7 @@ vi.mock('recharts', () => ({
 }));
 
 import { render, screen } from '@/test/testUtils';
+import { useRetailStore } from '@/store/retailStore';
 import PromoAnalysisPage from '@/pages/retail/PromoAnalysisPage';
 
 describe('PromoAnalysisPage', () => {
@@ -47,7 +48,29 @@ describe('PromoAnalysisPage', () => {
     vi.clearAllMocks();
   });
 
-  it('renders the promo analysis page', () => {
+  it('asks for a campaign when none is recorded', () => {
+    useRetailStore.setState({ promotions: [] });
+    render(<PromoAnalysisPage />);
+    expect(screen.getByText('No Promotions Recorded')).toBeInTheDocument();
+  });
+
+  it('renders the promo analysis page once a campaign is recorded', () => {
+    useRetailStore.setState({
+      promotions: [
+        {
+          id: 'P-1',
+          name: 'Test Campaign',
+          type: 'Percentage',
+          discountPercent: 10,
+          startDate: '2026-01-01',
+          endDate: '2026-01-31',
+          cost: 100,
+          revenue: 500,
+          baselineRevenue: 400,
+          status: 'completed',
+        },
+      ],
+    });
     render(<PromoAnalysisPage />);
     expect(screen.getByText(/Promotion Analysis/i)).toBeInTheDocument();
   });

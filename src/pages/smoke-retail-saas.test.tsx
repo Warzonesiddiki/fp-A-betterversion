@@ -180,6 +180,7 @@ import ARRDashboard from '@/pages/saas/ARRDashboard';
 import ChurnAnalysisPage from '@/pages/saas/ChurnAnalysisPage';
 import ChurnDashboard from '@/pages/saas/ChurnDashboard';
 import CohortAnalysisPage from '@/pages/saas/CohortAnalysisPage';
+import { useRetailStore } from '@/store/retailStore';
 
 // ---------------------------------------------------------------------------
 // Helper
@@ -243,7 +244,31 @@ describe('Retail pages smoke tests', () => {
         'rendered nothing: a truthy container does not prove the page mounted'
       ).toBeGreaterThanOrEqual(2);
     });
-    it('displays page heading', () => {
+    it('asks for a campaign when none is recorded', () => {
+      // The page derives from retailStore.promotions and empty-states when the
+      // workspace has none; it used to render five fixture campaigns.
+      useRetailStore.setState({ promotions: [] });
+      renderPage(PromoAnalysisPage, '/retail/promo-analysis');
+      expect(screen.getByText('No Promotions Recorded')).toBeTruthy();
+    });
+
+    it('displays page heading once a campaign is recorded', () => {
+      useRetailStore.setState({
+        promotions: [
+          {
+            id: 'P-1',
+            name: 'Test Campaign',
+            type: 'Percentage',
+            discountPercent: 10,
+            startDate: '2026-01-01',
+            endDate: '2026-01-31',
+            cost: 100,
+            revenue: 500,
+            baselineRevenue: 400,
+            status: 'completed',
+          },
+        ],
+      });
       renderPage(PromoAnalysisPage, '/retail/promo-analysis');
       expect(screen.getByText('Promotion Analysis')).toBeTruthy();
     });
