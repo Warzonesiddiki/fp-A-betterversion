@@ -1,6 +1,6 @@
 # OmniPlan — Session Handover
 
-**Last updated:** 2026-08-18 (end of session 022)
+**Last updated:** 2026-08-18 (end of session 023)
 **Branch of record:** `arena/01a01215-fp-a-betterversion`
 **Prior merge:** PR #64 → `main` @ `646bdf4`
 
@@ -74,8 +74,8 @@ So: **a file at "0 unsafe ops" or "0 fabrication findings" is un-flagged, not ce
 - **Pre-commit** (~45s): eslint (staged) → `tsc --noEmit` → prettier (staged) → secret scan. **Pre-push** (~3–5 min): 12 gates incl. build, P0 shard, README claim checks, money ratchet, fabrication ratchet, cascade-hold ledger.
 - **Always push via `start_process`**, never `bash` — pre-push exceeds the bash timeout. Poll with `get_process_output`.
 - **Always `npx prettier --write` before `git add`** on any JSON or MD you generated, or pre-commit fails with husky exit 123.
-- A tracker hook auto-commits `docs(tracker): auto-update progress tracker` after your commits. Expected, not an error.
-- **`.github/workflows/**`cannot be pushed** — deliver CI changes via`ci-patches/`for a human to`git apply`. `ci-patches/0005-\*.patch` is still pending.
+- **CORRECTED (session 023): the CI `test-unit` failure was NOT benign.** The failing step is the Vitest run itself, not the coverage upload. The full suite was genuinely red (6 files) while every pre-push gate passed, because pre-push runs an 839-test P0 shard that excludes the smoke/contract files. Run the FULL suite before opening a PR. A tracker hook auto-commits `docs(tracker): auto-update progress tracker` after your commits. Expected, not an error.
+- **`.github/workflows/**`cannot be pushed** — deliver CI changes via`ci-patches/`for a human to`git apply`. `ci-patches/0005-\*.patch` is still pending (it fixes the 80 GiB heap flag).
 - **No cargo/rustc in the sandbox** → do not edit `src-tauri/src/*.rs` (§23.8 K2, ADR-011).
 - Sandbox restores wipe `node_modules/` and rewind `HEAD`. First symptom is `Cannot find module 'typescript'`. Recover: `git fetch origin <branch>` → `git reset --soft <sha>` → bare `git reset` → `npm install`.
 - vitest 4.1.7 has **no `basic` reporter** — use default or `--reporter=dot`. Full suite ≈15 min. `0 tests` reported ⇒ suspect a parse error.

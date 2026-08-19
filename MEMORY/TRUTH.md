@@ -200,3 +200,23 @@ Nothing here may contain "should", "probably" or "we will".
 - [FACT 2026-08-18] The money-AST ratchet caught 5 unsafe ops in the REWRITE itself (inline phase
   grouping with float `+` and `toFixed`). Moved into the derivation with `compareMoney` for sorting.
 - [MEASURE 2026-08-18] Teeth: reverting the engine and the page fails 17 of 20 new assertions.
+
+## Session 023 (PR + CI truth)
+
+- [FACT 2026-08-18] PR **#65** opened: `arena/01a01215-fp-a-betterversion` → `main`, 26 commits,
+  108 files, +10,642 / −1,969. NOT merged (see blocked).
+- [MEASURE 2026-08-18] PR CI: TypeScript, ESLint, Build on ubuntu / macOS / **windows** (Tier 1),
+  Cascade-Hold Ledger, Sentry self-test all PASS. `test-unit` (Vitest) FAILS.
+- [FACT 2026-08-18] **The carried claim that the CI Vitest failure is "no coverage/ artifact, not a
+  product-test fail" was WRONG.** The failing step is `5 · Run Vitest with 80 GiB heap + coverage`;
+  step 6 (artifact upload) succeeds. Same signature on `main` since PR #64 (run 32080862062).
+- [MEASURE 2026-08-18] A local full-suite run proved it: **6 files / 6 tests failing**, 14,225
+  passing. Five caused by this arc's empty states, one (`ScenarioBuilderPage`) pre-existing and
+  masked by a hand-listed lucide mock throwing before the assertion.
+- [FACT 2026-08-18] Root cause of the blind spot: pre-push runs an **839-test P0 shard**; none of
+  the six files is in it. "All gates green" was reported for five sessions while the suite was red.
+- [MEASURE 2026-08-18] After repair: **1243 files · 14,234 passed · 1 skipped · 0 failed**;
+  tsc clean; eslint clean; ratchets 421 / 32 hold.
+- [FACT 2026-08-18] **BLOCKED:** the GitHub token expired mid-session
+  (`gh auth status` → "The github.com token in GH_TOKEN is no longer valid"). The repair commit is
+  committed locally and NOT pushed; PR #65 is NOT merged.

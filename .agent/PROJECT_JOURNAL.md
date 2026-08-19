@@ -1323,3 +1323,85 @@ fabrication. Nothing else moved.
 Money-AST: `BenchmarkingPage` (8), then `DriverCascadeEngine` (7) — skip
 `mockData/index.ts` (13). Fabrication: `TelecomDashboardPage` (4), then
 `ConstructionDashboardPage` (3) / `EquipmentManagementPage` (3).
+
+---
+
+## Session 023 — 2026-08-18 — PR #65, and the CI failure that was real
+
+**Branch:** `arena/01a01215-fp-a-betterversion`
+
+### 1. PR #65 opened
+
+`Phase 0 W0.1.1: money-AST 489 → 421, fabrication 60 → 32, and the MEMORY brain`
+— https://github.com/Warzonesiddiki/fp-A-betterversion/pull/65 (26 commits,
+108 files, +10,642 / −1,969).
+
+CI on the PR: TypeScript, ESLint, Build (ubuntu / macOS / **windows** — Tier 1),
+Cascade-Hold Ledger and the Sentry self-test all **pass**. `test-unit`
+(Vitest) **fails**.
+
+### 2. The carried assumption about that CI job was WRONG
+
+`.agent/HANDOVER.md` has said for several sessions: _"GitHub Vitest coverage job
+fails (no coverage/ artifact); that is not a product-test fail."_ Checked
+instead of assumed:
+
+- The failing step is **5 · Run Vitest with 80 GiB heap + coverage**, not the
+  upload. Step 6 (upload coverage artifact) **succeeds**.
+- The same signature is on `main` for the PR #64 push (run 32080862062), so it
+  is pre-existing and not introduced here — but it was never benign.
+
+Running the full suite locally settled it: **6 test files / 6 tests failing**,
+14,225 passing. The suite was genuinely red and had been reported as
+infrastructure noise.
+
+**Why local gates never saw it:** pre-push runs an 839-test P0 shard. None of
+these six files is in that shard, so five sessions of empty-state work landed
+without the collisions ever being visible.
+
+### 3. The six failures
+
+Five were caused by this arc:
+
+- **UI-07 contract** (`buttonContrast.contract.test.ts`): an empty-state
+  `<main>` carrying a heading must start at `<h1>`, because on the no-data
+  branch the page never reaches `PageHeader` and the document ships with no
+  `h1`. Education, Government and Logistics used `<h2>`. A screen-reader user
+  landing there got no page title. Fixed in all three.
+- **`smoke-retail-saas`** and **`__tests__/retail/PromoAnalysisPage`**: the page
+  empty-states now instead of rendering five fixture campaigns, so
+  "Promotion Analysis" is absent with an empty store. Both now assert the empty
+  state _and_ seed a campaign to exercise the populated branch.
+- **`smoke-sector-subpages`**: same shape for `ClinicalTrialCostPage`.
+- **`__tests__/forecasts/ForecastBuilderPage`**: the accuracy description now
+  names its method ("Mean Absolute Percentage Error — walk-forward backtest"),
+  so an exact-string match stopped matching.
+
+One was pre-existing and **masked**:
+
+- **`__tests__/scenarios/ScenarioBuilderPage`** hand-listed its lucide icons and
+  threw `No "Layers" export is defined on the mock` the moment session 015's
+  empty state used `<Layers>`. Switched to the shared `createLucideMock`; the
+  assertion then revealed the page correctly empty-states without a ledger, so
+  it asserts that.
+
+### 4. Verification after the repair
+
+Full suite: **1243 files · 14,234 passed · 1 skipped · 0 failed.**
+`tsc --noEmit` clean · `eslint src --max-warnings 0` clean · money ratchet 421
+holds · fabrication ratchet 32 holds.
+
+### 5. Blocked: GitHub token expired mid-session
+
+`gh auth status` → _"The github.com token in GH_TOKEN is no longer valid."_ The
+repair commit is **committed locally but not pushed**, and PR #65 is **not
+merged**. Do not merge #65 until the repair commit is pushed and `test-unit`
+re-runs — the PR as it stands on the remote is genuinely red.
+
+### 6. Lesson for the ratchet discipline
+
+A gate that runs a shard is not a gate that runs the suite. The pre-push P0
+shard is fast and valuable, but "all gates green" was reported for five
+sessions while the full suite was red. Either widen the shard to include the
+smoke/contract files that every page rewrite touches, or run the full suite
+before opening a PR. Recorded in MEMORY/ANTI.

@@ -1,11 +1,11 @@
 {
   "memory_version": "1.0.0",
-  "project": "OmniPlan (finplan-pro) — Warzonesiddiki/fp-A-betterversion",
+  "project": "OmniPlan (finplan-pro) \u2014 Warzonesiddiki/fp-A-betterversion",
   "updated_at": "2026-08-18",
   "genesis_phase": "Phase 0 / Wave W0.1.1",
   "now": {
-    "task_id": "T-023",
-    "summary": "W0.1.1 session 023: BenchmarkingPage money-AST 8 -> 0 and TelecomDashboardPage fabrication 4 -> 0, both with teeth."
+    "task_id": "T-024",
+    "summary": "BLOCKED on GitHub auth: push the local test-repair commit, let test-unit re-run on PR #65, then merge. Then resume T-023 (BenchmarkingPage 8 / TelecomDashboardPage 4)."
   },
   "health": {
     "shi": null,
@@ -89,12 +89,12 @@
     "INV-010"
   ],
   "blocked": [
-    "CI workflow changes (no `workflows` permission) -> ci-patches/0005-*.patch unapplied",
+    "GitHub token expired mid-session (gh auth status: token in GH_TOKEN no longer valid) -> repair commit unpushed, PR #65 unmerged. User must reconnect GitHub in Arena.",
+    "CI workflow changes (no `workflows` permission) -> ci-patches/0005-*.patch unapplied; it fixes the 80 GiB heap flag on test-unit",
     "src-tauri/src/*.rs (no cargo/rustc in sandbox)",
-    "desktop/Tauri verification",
-    "GitHub Vitest coverage job (no coverage/ artifact)"
+    "desktop/Tauri verification"
   ],
-  "last_session": "sess_022",
+  "last_session": "sess_023",
   "integrity": {
     "last_run": "2026-08-18",
     "ok": true,

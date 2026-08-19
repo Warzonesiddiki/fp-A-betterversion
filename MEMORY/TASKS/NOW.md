@@ -2,40 +2,32 @@
 id: MEMORY/TASKS/NOW.md
 status: active
 last_verified: 2026-08-18
-verified_by: arena-agent/session-022
+verified_by: arena-agent/session-023
 confidence: high
 ---
 
 # TASKS/NOW — the single current critical path
 
-**T-023 · Phase 0 / W0.1.1 session 023 — both tracks in one session.**
+**T-024 · Land PR #65. BLOCKED on GitHub authentication.**
 
-1. **Money-AST:** `src/pages/analytics/BenchmarkingPage.tsx` (8 unsafe ops) → 0, then
-   `src/engines/DriverCascadeEngine.ts` (7).
-   **Skip `src/services/mockData/index.ts` (13) — it is the fixture factory.**
-2. **Fabrication:** `src/pages/sectors/TelecomDashboardPage.tsx` (4) → 0, then
-   `src/pages/construction/ConstructionDashboardPage.tsx` (3) and
-   `src/pages/construction/EquipmentManagementPage.tsx` (3).
+State: PR #65 (`arena/01a01215-fp-a-betterversion` → `main`) is open and NOT merged.
+A commit repairing six full-suite failures is **committed locally and not pushed** — the token
+expired mid-session (`gh auth status` → "The github.com token in GH_TOKEN is no longer valid").
 
-**Also queued (fabrication the detector cannot see):** `healthcareStore` still persists seeded
-`qualityMetrics`, `savingsData` (Orthopedics target 2,400,000 …) and `programs` for every tenant.
-They feed `ValueBasedCarePage`. Clear them to empty with a persist-version bump when you take that
-page, exactly as `constructionStore` (s014) and `insuranceStore` (s015) were cleared.
+Do this in order once GitHub is reconnected:
 
-Ratchets to beat: money 421 / 163 modules / 81.44%; fabrication 32 / 13 files.
+1. `git push origin arena/01a01215-fp-a-betterversion` (via a background process; pre-push takes
+   3–5 min).
+2. Wait for `test-unit` to re-run on PR #65. It has been red on `main` since PR #64 — the repair
+   commit is what makes it green. Confirm with `gh pr checks 65`.
+3. Merge #65 only when `test-unit` passes. Do NOT merge red.
+4. Then resume the wave: **T-023** — money-AST `src/pages/analytics/BenchmarkingPage.tsx` (8),
+   then `src/engines/DriverCascadeEngine.ts` (7); fabrication
+   `src/pages/sectors/TelecomDashboardPage.tsx` (4), then the construction pages (3 each).
 
-Four shapes seen in every recent session — check before writing code:
-- a store read and discarded (`const { entries: _entries } = useGLStore()`) while fixtures render;
-- a demo fallback when a store is empty;
-- an engine armed with inventions that no page currently calls (fix it, do not leave it loaded);
-- a green "known answer" test that encodes the fabrication you are about to remove — **four found
-  in six sessions**. Grep the suite for the numbers you are deleting.
+Ratchets: money 421 / 163 modules / 81.44%; fabrication 32 / 13 files. Both hold locally.
 
-And check your OWN new code with the detector before committing: the session-022 rewrite
-introduced 5 unsafe ops that the ratchet caught.
-
-Definition of done: derivation module on `@/utils/money`, empty-state where the data cannot
-support a figure, source guard + real-engine DOM probe (assert on DATA, not page text), teeth
-proven by `/tmp` revert, per-file `--json` diff confined to the files you touched, both baselines
-updated with prettier, journal + `.agent/state.json` + `.agent/HANDOVER.md` + MEMORY written
-through, two commits, pushed.
+**New standing rule (session 023):** run the FULL suite before opening a PR. Pre-push runs an
+839-test P0 shard; it did not cover the smoke and contract files, and five sessions of empty-state
+work landed with the suite red. After any page rewrite also run `src/pages/smoke*.test.tsx`,
+`src/pages/__tests__/**` for that area, and `src/theme/buttonContrast.contract.test.ts`.

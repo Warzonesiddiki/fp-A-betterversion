@@ -197,6 +197,34 @@ confidence: high
         phase grouping with float + and toFixed).
   instead: run `--file` on every file you write, not just the one you fixed.
 
+[DO-NOT] Report "all gates green" from a shard.
+  seen: pre-push runs an 839-test P0 shard. Five sessions of empty-state work
+        landed with the FULL suite red (6 files) because none of the smoke or
+        contract files is in that shard.
+  instead: run the full suite before opening a PR, and after any page rewrite
+           run `smoke*.test.tsx`, `__tests__/**` for that area, and
+           `src/theme/buttonContrast.contract.test.ts`.
+
+[DO-NOT] Inherit a claim that a red CI job is benign.
+  seen: the handover said the Vitest job fails for a missing coverage artifact.
+        The failing step was the test run itself; the upload succeeded. The
+        suite was genuinely red and had been for two merges.
+  instead: open the job's step list (gh api .../jobs/<id> --jq '.steps[]')
+           before repeating any "known failure" story.
+
+[DO-NOT] Give an empty state an <h2>.
+  seen: Education / Government / Logistics empty-state <main> elements carried
+        an <h2>; on the no-data branch the page never reaches PageHeader, so
+        the document shipped with no <h1> at all.
+  instead: the heading inside an empty-state <main> IS the page title -> <h1>.
+  enforced by: src/theme/buttonContrast.contract.test.ts (UI-07).
+
+[DO-NOT] Hand-list icons in a lucide mock.
+  seen: ScenarioBuilderPage's test threw `No "Layers" export is defined` the
+        moment the page's empty state used a new icon -- masking a real
+        assertion failure underneath.
+  instead: vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock())
+
 [DO-NOT] Re-fight pre-push gate 10 on a fresh branch.
   seen: with no @{u} it falls back to `git log -10` and flags already-merged
         squashes 5078e01 and 646bdf4.
