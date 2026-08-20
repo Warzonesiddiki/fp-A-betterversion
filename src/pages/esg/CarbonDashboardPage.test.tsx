@@ -72,7 +72,7 @@ describe('CarbonDashboardPage smoke test', () => {
     // and discloses the missing emissions feed. The new heading is
     // "No Carbon Data" — asserting the absence of fabricated scope
     // numbers is the regression lock.
-    expect(screen.getByText(/No Carbon Data/i)).toBeTruthy();
+    expect(screen.getByText(/No Data/i)).toBeTruthy();
     expect(screen.queryByText(/Scope 1 \(Direct\)/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Natural Gas Combustion/)).not.toBeInTheDocument();
   });

@@ -35,7 +35,7 @@ export default function CarbonDashboardPage() {
         <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
           <Leaf className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
-        <h2 className="text-xl font-semibold mb-2">No Carbon Data</h2>
+        <h2 className="text-xl font-semibold mb-2">No Data — Carbon</h2>
         <p className="text-[var(--text-muted)] mb-6">
           Import GL data and connect a sustainability / emissions feed to populate this dashboard.
         </p>
