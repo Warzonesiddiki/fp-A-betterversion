@@ -15,7 +15,7 @@ confidence: medium
           precision 40, ROUND_HALF_UP). No IEEE-754 + - * / on a currency value.
   enforced_by: scripts/money-ast-detector.mjs (pre-push gate 9b, ratchet only)
   severity: P0
-  note: ratchet caps regression; 489 unsafe ops remain, so this is NOT yet global.
+  note: ratchet caps regression; 25 unsafe ops remain, all in mockData fixtures.
 
 [INV-002] No displayed financial figure may be a hand-typed literal.
   enforced_by: scripts/fabrication-detector.mjs (pre-push gate 9c) + per-module
@@ -53,8 +53,11 @@ confidence: medium
   severity: P1
 
 [INV-009] No IEEE-754 money persisted to any store or DB.
-  enforced_by: NONE  <-- Phase 0 exit requirement, test not written
+  enforced_by: src/utils/moneySerialize.ts (masterStorage tags money keys as $d:)
+               + src/utils/moneySerialize.test.ts (10k property test)
   severity: P0
+  note: at-rest form is a canonical decimal string. In-memory hydrate is still
+        number for store compatibility. SQLite REAL columns are M003, not this.
 
 [INV-010] Multi-tenant isolation: tenant_id / environment_id on every financial
           row, with a per-table leak test.

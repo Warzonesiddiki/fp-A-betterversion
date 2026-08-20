@@ -140,6 +140,13 @@ describe('AppLayout', () => {
     expect(screen.getAllByText('Local workspace data').length).toBeGreaterThan(0);
   });
 
+  it('shows the W0.8.5 local-only durability banner', () => {
+    renderWithRouter(<AppLayout />);
+    const banner = screen.getByTestId('durability-banner');
+    expect(banner.textContent).toMatch(/local only/i);
+    expect(banner.textContent).toMatch(/not a backup/i);
+  });
+
   it('serializes context changes into the URL', () => {
     function UrlProbe() {
       const location = useLocation();

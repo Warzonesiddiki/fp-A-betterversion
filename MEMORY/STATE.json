@@ -1,20 +1,20 @@
 {
   "memory_version": "1.0.0",
-  "project": "OmniPlan (finplan-pro) \u2014 Warzonesiddiki/fp-A-betterversion",
+  "project": "OmniPlan (finplan-pro) — Warzonesiddiki/fp-A-betterversion",
   "updated_at": "2026-08-20",
-  "genesis_phase": "Phase 0 / Wave W0.1.1",
+  "genesis_phase": "Phase 0 / W0.8 persistence authority",
   "now": {
-    "task_id": "T-029",
-    "summary": "Session 028 complete: money 376 -> 156 (-58% unsafe ops); fabrication 10 -> 0. 14,387 tests + 130 server all green. Detector gained @money-ast-allow documented file-level suppression (SankeyChart/FX/ThreatModel/Solver/etc). 16 grouping-idiom sector pages + 7 fabrication-rewrite pages + 11 engine-conversion modules fixed. 41 new fabrication-regression tests + 2 detector-regression tests added. Next: continue 2-op worklist (94 unsafe modules), then push to remote."
+    "task_id": "T-031",
+    "summary": "Session 031: Session Zero re-audit + W0.8.1–0.8.5 (persistence map, money-safe serialize, authority contract, schema equality, DurabilityBanner). Next: W0.2 tenancy, then W0.8.6 glStore spike."
   },
   "health": {
     "shi": null,
     "uvi": null,
     "dei": null,
-    "money_ast_safety_pct": 89.39,
-    "money_ast_unsafe_ops": 156,
+    "money_ast_safety_pct": 99.66,
+    "money_ast_unsafe_ops": 25,
     "fabrication_findings": 0,
-    "notes": "SHI/UVI/DEI not measured. Ratchets 2026-08-20 after s028: money 376->338->277; fabrication 10->0. SankeyChart suppressed via documented @money-ast-allow marker (regression-tested). New @money-ast-allow feature tested: must-catch + must-ignore; reason printed to stderr for human review. SankeyChart now correctly identified as page-geometry."
+    "notes": "SHI/UVI/DEI not re-measured. Money 99.66% (mockData only). Fabrication 0. W0.8.1–0.8.5 done."
   },
   "capabilities": {
     "git": true,
@@ -29,17 +29,8 @@
     "push_workflows": false
   },
   "stack": {
-    "languages": [
-      "TypeScript",
-      "Rust (tauri, unbuildable here)"
-    ],
-    "frameworks": [
-      "React 19",
-      "Vite",
-      "Tailwind",
-      "Zustand",
-      "Express"
-    ],
+    "languages": ["TypeScript", "Rust (tauri, unbuildable here)"],
+    "frameworks": ["React 19", "Vite", "Tailwind", "Zustand", "Express"],
     "pkg": "npm",
     "test": "npm test (vitest) | npx vitest run <path> --reporter=dot",
     "dev": "npm run dev",
@@ -49,51 +40,18 @@
     "money-primitive": "shipped",
     "money-ast-detector": "shipped",
     "fabrication-detector": "shipped",
-    "dashboard": "shipped",
-    "credit-risk": "shipped",
-    "scenario-builder": "shipped",
-    "underwriting": "shipped",
-    "project-costing": "shipped",
-    "tax-provision": "shipped",
-    "patient-revenue": "shipped",
-    "healthcare-engine": "partial",
-    "construction-engine": "flagged",
-    "insurance-engine": "shipped",
-    "retail-engine": "flagged",
-    "realestate-engine": "flagged",
-    "export-engines": "flagged",
-    "board-pack": "shipped",
+    "persistence-authority-w08": "partial",
     "server-api": "partial",
-    "persistence-authority-w08": "planned",
-    "msi-installer": "planned",
-    "cash-forecast": "shipped",
-    "education-dashboard": "shipped",
-    "rolling-forecast": "shipped",
-    "government-dashboard": "shipped",
-    "property-valuation": "shipped",
-    "logistics-dashboard": "shipped",
-    "promo-analysis": "shipped",
-    "forecast-builder": "shipped",
-    "clinical-trials": "shipped"
+    "msi-installer": "planned"
   },
-  "invariants_green": [
-    "INV-001",
-    "INV-002"
-  ],
-  "invariants_red": [
-    "INV-003",
-    "INV-004",
-    "INV-005",
-    "INV-007",
-    "INV-009",
-    "INV-010"
-  ],
+  "invariants_green": ["INV-001", "INV-002", "INV-009"],
+  "invariants_red": ["INV-003", "INV-004", "INV-005", "INV-007", "INV-010"],
   "blocked": [
-    "CI workflow changes (no `workflows` permission) -> ci-patches/0005-*.patch unapplied; it fixes invalid ci.yml YAML + heap/timeout",
+    "CI workflow changes (no `workflows` permission) -> ci-patches/0005-*.patch unapplied",
     "src-tauri/src/*.rs (no cargo/rustc in sandbox)",
-    "desktop/Tauri verification"
+    "W0.8.6 glStore spike blocked on W0.2 tenancy"
   ],
-  "last_session": "sess_028",
+  "last_session": "sess_031",
   "integrity": {
     "last_run": "2026-08-20",
     "ok": true,

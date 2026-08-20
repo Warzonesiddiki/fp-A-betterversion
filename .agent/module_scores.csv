@@ -1,0 +1,20 @@
+layer,grade,decision,rationale
+ui-framework,A,KEEP,React19+Vite8; 1200+ tests; ADR-003
+desktop-tauri,B,KEEP,shipping but unverifiable here (no cargo)
+state-zustand,B,REFACTOR,persist now money-tagged; still local-draft SoR
+grid-ag-grid,A,KEEP,product primary interface
+charts-recharts,B,KEEP,adequate for board packs
+money-primitive,A,KEEP,decimal.js; AST safety 99.66%
+validation-zod,A,KEEP,used on server routes
+api-express,B,KEEP,Phase1 transport; not a rewrite
+db-sqlite,B,KEEP,S0/S1; postgres at S2
+engines-core,B,KEEP,187 modules; deepen do not replace
+engines-sector,C,REFACTOR,callers fabricated; engines being disarmed
+pages-routes,D,STRANGLE,193 lazy routes; W0.5 to <=40
+stores-financial,C,REFACTOR,41 persist; all financial-truth still local-draft
+server-gl-routes,B,KEEP,exist; client unwired (W0.8.6 after tenancy)
+tenancy,U,REBUILD,0 tenant_id in server/src/db; W0.2 next
+lineage,U,REBUILD,F-PLAT-005 not started
+metric-store,U,REBUILD,F-SEM-001 not started
+workflow-machines,D,STRANGLE,imperative today; F-WORKFLOW-008
+vertical-packs,D,STRANGLE,UI config not PK1-PK6 packs
