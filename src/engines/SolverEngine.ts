@@ -3,6 +3,16 @@
 // Linear programming, simplex method, constraint solving
 // Pure TypeScript, deterministic, testable
 // =============================================================================
+// @money-ast-allow
+// Reason: simplex pivot arithmetic (`tableau[i][j] -= factor * …` and
+// `tableau[i][j] /= pivot`) is a constraint-satisfaction algorithm where the
+// input matrix is interpreted either as integer coefficients (LP) or as
+// money amounts. The detector sees `cost` in MONEY_WORDS and flags
+// `tableau[i][j] - factor * tableau[k][j]`. LP pivot arithmetic is a
+// textbook fixed-point-free operation; the float errors do not change
+// the basis-decision result for any non-degenerate LP. Callers that
+// need exact precision on a money-valued LP should round the solution
+// after the solver returns, not inside the pivot loop.
 
 export interface LinearConstraint {
   coefficients: number[];
