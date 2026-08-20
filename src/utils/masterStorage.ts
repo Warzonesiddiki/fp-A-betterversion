@@ -2,6 +2,7 @@ import type { PersistStorage } from 'zustand/middleware';
 import { sqlJsStorage } from './sqlJsStorage';
 import { tauriSqlStorage, isTauri } from './tauriSqlStorage';
 import { wrapChunkedStorage } from './chunkedStorage';
+import { decodeMoneyGraph, encodeMoneyGraph } from './moneySerialize';
 
 let _isTauriCache: boolean | null = null;
 
@@ -295,7 +296,10 @@ export const masterStorage: MasterStorage = {
         // (writes succeeded) but was never restored after a restart, in both
         // the browser and Tauri backends. Parse here so zustand, backup/restore,
         // and the migration/benchmark consumers all receive the real object.
-        return JSON.parse(plaintext) as unknown as NonNullable<
+        const parsed = JSON.parse(plaintext) as unknown;
+        // W0.8.2: revive `$d:` money tags. `as: 'number'` is a compatibility
+        // concession for stores typed as number; the at-rest form is a string.
+        return decodeMoneyGraph(parsed, { as: 'number' }) as NonNullable<
           Awaited<ReturnType<MasterStorage['getItem']>>
         >;
       } catch {
@@ -316,7 +320,10 @@ export const masterStorage: MasterStorage = {
   },
   setItem: async (name, value) => {
     try {
-      const serialized = typeof value === 'string' ? value : JSON.stringify(value);
+      // W0.8.2: money fields become `$d:<canonical>` strings before JSON, so
+      // IEEE-754 cannot leak into the persisted envelope (INV-009).
+      const payload = value !== null && typeof value === 'object' ? encodeMoneyGraph(value) : value;
+      const serialized = typeof payload === 'string' ? payload : JSON.stringify(payload);
       let encryptedValue: string;
       try {
         encryptedValue = await encryptStorageValue(serialized);

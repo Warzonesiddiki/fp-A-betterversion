@@ -1678,3 +1678,57 @@ LeaseDetail: extracted `leaseDetailData.ts` (no Math.round on money).
 BoardPack: removed seeded T&E/software/supplies literals and $4.5M commentary; closing equity includes NI; gross margin is (rev−COGS)/rev; empty-state h1.
 
 Full suite 1257 / 14373 / 1 skipped / 0 failed. Teeth: 3 source guards fail on page revert.
+
+## Session 031 — 2026-08-20 — Session Zero re-audit + W0.8.1–0.8.5
+
+**Branch:** `arena/01a02032-fp-a-betterversion`
+**Starting commit:** `f2ea326` (session 030, money-AST 99.66%)
+
+Money was already at the Phase 0 gate (≥90%). The constitution says: fix money, then
+authority. W0.8 is the authority workstream (R-21, score 20).
+
+### Session Zero
+
+Re-measured rather than copying prior counts. 2,425 TS/TSX files, 187 engines, 44 store
+modules, **41 persist() stores**, 193 lazy routes, `tenant_id` = 0 in `server/src/db/`.
+Artefacts: `.agent/repo_audit.md`, `repo_inventory.md`, `module_scores.csv`,
+`fake_finance_findings.md`, `ui_ux_audit.md`. Decision remains EVOLVE, not rewrite.
+
+### W0.8.1 Persistence inventory
+
+`src/domain/persistenceAuthority.ts` is the typed contract. `docs/architecture/PERSISTENCE_MAP.md`
+is generated. `scripts/persistence-map-check.mjs` fails CI if a `persist({ name: '*-store' })`
+appears without a registry row. 41/41 match.
+
+### W0.8.2 Money-safe serialization
+
+`src/utils/moneySerialize.ts` tags money-keyed numbers as `$d:<canonical>` before JSON.
+`masterStorage.setItem` encodes objects; `getItem` revives tags. Property test: 10,000
+deterministic cent-precision Decimals round-trip bit-identically, plus non-cent literals
+(`1.005`). INV-009 now has an executor. Honest concession: in-memory hydrate is still a
+JS number so existing stores type-check; the *at-rest* form is the string. SQLite REAL
+columns are M003, not this gate.
+
+### W0.8.3 Authority rule
+
+Financial-truth stores cannot be `authority: 'local'`. Today every financial-truth row is
+`local-draft`. `gl-store` is the W0.8.6 spike target and is still a draft.
+
+### W0.8.4 Schema fork
+
+`scripts/schema-equality-check.mjs`: 35 SQL tables, 10 in-code DDL tables, 1 shared
+(`audit_trail`) — columns agree. SQL-only and server-only lists are documented, not failed.
+
+### W0.8.5 Durability honesty
+
+`DurabilityBanner` on `AppLayout`: "Draft workspace — local only. Clearing site data
+permanently destroys them. This is not a backup." Not colour-only. axe-clean.
+
+### Not done (sequenced)
+
+W0.8.6 glStore spike waits on W0.2 tenancy (blueprint intra-phase order). Next session: tenancy.
+
+### Verification
+
+tsc clean. eslint on touched files clean. money-AST 0 on moneySerialize. fabrication 0.
+Targeted tests 55/55 then 39/39 after the import fix. Persistence map + schema equality green.

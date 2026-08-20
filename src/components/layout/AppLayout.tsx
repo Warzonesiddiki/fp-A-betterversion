@@ -3,6 +3,7 @@ import { useUIStore } from '@/store/uiStore';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
 import { FinancialContextBar, type FinancialEntityOption } from './FinancialContextBar';
+import { DurabilityBanner } from './DurabilityBanner';
 import { HelpPanel } from './HelpPanel';
 import { ToastContainer } from '@/components/ui/ToastContainer';
 import { CommandPalette } from '@/components/ui/CommandPalette';
@@ -146,6 +147,7 @@ export default function AppLayout() {
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <Navbar />
         <FinancialContextBar entities={DRAFT_ENTITY_OPTIONS} />
+        <DurabilityBanner />
         <main
           id="main-content"
           ref={mainContentRef}

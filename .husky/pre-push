@@ -34,6 +34,8 @@ npx vitest run \
   src/store/glStore.smoke.test.ts \
   src/utils/spreadsheetSanitize.test.ts \
   src/utils/__tests__/masterStorage.security.test.ts \
+  src/utils/moneySerialize.test.ts \
+  src/domain/persistenceAuthority.test.ts \
   src/components/layout/ \
   src/plugins/ \
   src/utils/storage/safeJSONStorage.test.ts \
@@ -80,6 +82,11 @@ node scripts/money-ast-detector.mjs
 # Export engines are fail-closed at zero. Inspect: --file <path>
 echo "→ fabrication ratchet"
 node scripts/fabrication-detector.mjs
+
+# Gate 9d: persistence-map drift (W0.8.1) and schema-home equality (W0.8.4).
+echo "→ persistence map + schema equality"
+node scripts/persistence-map-check.mjs
+node scripts/schema-equality-check.mjs
 
 # Gate 10 - CASCADE-HOLD-BUNDLE Auto-Detection (NEVER-AGAIN RULE #68
 # CATCH-NUMBERING-COLLISION PREVENTION). Atlas + Hephaestus joint DRI.

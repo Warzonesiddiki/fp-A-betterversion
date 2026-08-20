@@ -27,7 +27,7 @@
     "tracker:update": "node scripts/update-tracker.mjs",
     "mock-data:audit": "node scripts/mock-data-audit.mjs",
     "type-safety:ratchet": "node scripts/type-safety-ratchet.mjs",
-    "docs:verify": "node scripts/verify-readme-stats.mjs",
+    "docs:verify": "node scripts/verify-readme-stats.mjs && node scripts/persistence-map-check.mjs && node scripts/schema-equality-check.mjs",
     "engines:manifest": "node scripts/generate-engine-manifest.mjs",
     "engines:verify": "node scripts/generate-engine-manifest.mjs --check",
     "export:verify": "node scripts/export-verify.mjs",
@@ -41,7 +41,9 @@
     "money:ast": "node scripts/money-ast-detector.mjs",
     "money:ast:list": "node scripts/money-ast-detector.mjs --list",
     "fabrication:audit": "node scripts/fabrication-detector.mjs",
-    "fabrication:list": "node scripts/fabrication-detector.mjs --list"
+    "fabrication:list": "node scripts/fabrication-detector.mjs --list",
+    "persistence:map": "node scripts/persistence-map-check.mjs",
+    "schema:equality": "node scripts/schema-equality-check.mjs"
   },
   "dependencies": {
     "@json-render/core": "^0.19.0",

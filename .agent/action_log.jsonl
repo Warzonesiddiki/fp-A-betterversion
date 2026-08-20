@@ -1,0 +1,6 @@
+{"ts":"2026-08-20T17:30:00Z","session":"sess_031","action":"session_zero_audit","result":"measured 2425 ts files, 41 persist stores, 193 routes, money 99.66%, fabrication 0, tenant_id=0"}
+{"ts":"2026-08-20T17:40:00Z","session":"sess_031","action":"w08.1_persistence_map","result":"src/domain/persistenceAuthority.ts + docs/architecture/PERSISTENCE_MAP.md + scripts/persistence-map-check.mjs; 41/41 match"}
+{"ts":"2026-08-20T17:42:00Z","session":"sess_031","action":"w08.2_money_serialize","result":"src/utils/moneySerialize.ts; 10k cent-precision property test; masterStorage encode/decode; INV-009"}
+{"ts":"2026-08-20T17:43:00Z","session":"sess_031","action":"w08.3_authority_contract","result":"typed PERSISTED_STORES; financial-truth cannot be authority=local"}
+{"ts":"2026-08-20T17:44:00Z","session":"sess_031","action":"w08.4_schema_equality","result":"scripts/schema-equality-check.mjs; 35 SQL / 10 server / 1 shared (audit_trail) columns agree"}
+{"ts":"2026-08-20T17:45:00Z","session":"sess_031","action":"w08.5_durability_banner","result":"DurabilityBanner on AppLayout; local-only / not a backup / clearing site data destroys ledger"}

@@ -2,7 +2,7 @@
 id: MEMORY/INDEX.md
 status: active
 last_verified: 2026-08-20
-verified_by: arena-agent/session-027
+verified_by: arena-agent/session-031
 confidence: high
 ---
 
@@ -15,8 +15,8 @@ desktop-first (Tauri) + web (React 19 / Vite) all-in-one FP&A platform whose sta
 replace Excel, Anaplan, Adaptive, Vena, Planful and Power BI across all industry verticals. The
 governing constitution is `MASTER HANDOVER PROMPT.txt` (the Codex, K1–K20). The engineering
 contract is `.agent/BLUEPRINT.md`, which is **LOCKED**, so product code is unblocked. Work is
-currently in **Phase 0 / Wave W0.1.1**: removing IEEE-754 float arithmetic from money paths and
-removing fabricated (hand-typed) financial figures from user-facing surfaces.
+currently in **Phase 0 / W0.8 persistence authority**: money-AST is at 99.66%; the remaining
+critical path is tenancy then making `glStore` server-authoritative.
 
 MEMORY is the anti-hallucination brain. Repair order: **disk > MEMORY > your recollection.**
 
@@ -55,9 +55,8 @@ and `.agent/HANDOVER.md`. MEMORY does not replace those — it indexes them.
 
 ## 4. Current phase / NOW
 
-Phase 0, Wave W0.1.1. NOW = *T-028: push + PR the session-027 pair, then SankeyChart /
-WorkingCapital / grouping idiom + fabrication twos*. Session 027 landed money 390 → 376
-(LeaseEngine + LeaseDetailPage) and fabrication 13 → 10 (BoardPackPage).
+Phase 0, W0.8. NOW = *T-031: W0.8.1–0.8.5 landed; next is W0.2 tenancy then W0.8.6 glStore spike*.
+Money-AST 99.66% (25 ops, mockData only). Fabrication 0.
 
 ## 5. Danger list — the top 5 ways an agent hallucinates THIS repo
 

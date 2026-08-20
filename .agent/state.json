@@ -1,7 +1,7 @@
 {
   "codex": "ULTIMA",
-  "session_id": "sess_030",
-  "updated_at": "2026-08-20T13:00:00Z",
+  "session_id": "sess_031",
+  "updated_at": "2026-08-20T18:00:00Z",
   "capabilities": {
     "git": true,
     "gh": true,
@@ -26,7 +26,7 @@
     "lint_command": "npx eslint src --max-warnings 0"
   },
   "health": {
-    "notes": "Session 030 final: money 80 -> 25 (-55, 68.75% reduction); safety 93.45% -> 99.66%. 883/886 monetary modules at zero unsafe ops. Only 3 mockData fixture files remain (25 ops). InsuranceDashboardPage rewritten with chart-of-accounts filters (41xx/43xx/51xx/52xx). Fabrication 0 maintained.",
+    "notes": "Session 031: Session Zero re-audit + W0.8.1\u20130.8.5. Money 99.66% / 25 ops (mockData only) unchanged. Fabrication 0. Persistence map 41 stores; money-safe $d: serialization; schema equality gate; DurabilityBanner. Next: W0.2 tenancy.",
     "money_ast": {
       "unsafeOperations": 25,
       "unsafeModules": 3,
@@ -42,7 +42,28 @@
     "money_ast_unsafe_ops": 25,
     "fabrication_findings": 0
   },
-  "queue": [],
+  "queue": [
+    {
+      "id": "W0.2",
+      "summary": "tenant_id + environment_id on governed tables; per-table leak test"
+    },
+    {
+      "id": "W0.3",
+      "summary": "runtime three-statement gate on server writes"
+    },
+    {
+      "id": "W0.8.6",
+      "summary": "glStore server-authoritative spike (after tenancy)"
+    },
+    {
+      "id": "W0.4",
+      "summary": "stable error-code registry"
+    },
+    {
+      "id": "W0.5",
+      "summary": "5-pillar nav, <=40 routes"
+    }
+  ],
   "blocked": [
     {
       "id": "CI-WORKFLOWS",
@@ -294,6 +315,15 @@
         "exportEngineViolations": 0
       },
       "note": "Catches displayed $12.4M / 24.3% literals. Does not catch numeric ratio invention; per-module source guards remain mandatory."
+    },
+    "W0.8": {
+      "status": "IN PROGRESS",
+      "W0.8.1": "DONE \u2014 PERSISTENCE_MAP.md + drift check, 41 stores",
+      "W0.8.2": "DONE \u2014 moneySerialize + 10k property test; masterStorage tags money keys",
+      "W0.8.3": "DONE \u2014 typed PERSISTED_STORES contract",
+      "W0.8.4": "DONE \u2014 schema-equality-check.mjs (35 SQL / 10 server / 1 shared)",
+      "W0.8.5": "DONE \u2014 DurabilityBanner local-only disclosure",
+      "W0.8.6": "BLOCKED on W0.2 tenancy (glStore spike)"
     }
   },
   "restored_note": "This file was 0 bytes on main from 082e70c (PR #65) through ec7a66a (PR #66) \u2014 two merges shipped with the Article XVIII boot state (B8 blueprint_status) destroyed. Restored in session 026 from 646bdf4 and brought forward. Do not let a truncated state.json reach main again: the Codex boot sequence reads blueprint_status from here."

@@ -33,9 +33,9 @@ confidence: high
 - `docs:links --strict` exists as a script but is not part of `docs:verify` / pre-push.
 - Legacy `money:adoption` (~25%) measures imports, not operations — retire after W0.1.1; never
   conflate with AST safety.
-- **W0.8 persistence authority not started**: 41 persisting stores hold financial truth, ~14
-  non-test server callers, `tenant` has 0 hits in `server/src/db/`, schema fork (35 Tauri tables
-  vs the server DDL set).
+- **W0.8 persistence authority partial (sess_031):** inventory, `$d:` serialization, authority
+  contract, schema-equality gate, DurabilityBanner done. glStore is still local-draft (W0.8.6
+  after tenancy). `tenant` still has 0 hits in `server/src/db/` (W0.2).
 - **MSI installer missing** (NSIS only) — Section 23 requires MSI + NSIS at GA.
 - `ci-patches/0005-*.patch` unapplied, so those CI gates are not enforced.
 - GitHub Vitest coverage job fails for lack of a `coverage/` artifact — not a product-test failure.

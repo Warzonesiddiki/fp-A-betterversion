@@ -8,17 +8,15 @@ confidence: high
 
 # TASKS/QUEUE — ordered next work
 
-1. Money-AST: next ranked module from `node scripts/money-ast-detector.mjs --list`
-   (**skip `src/services/mockData/index.ts` — it is the fixture factory**).
-2. Fabrication: Education → Government → Logistics sector dashboards.
-3. Write a test for INV-009 (no IEEE-754 money persisted) — currently `enforced_by: NONE`.
+1. **W0.2 tenancy** — `tenant_id` + `environment_id` on governed tables; per-table leak tests.
+2. **W0.8.6** glStore server-authoritative spike (after tenancy).
+3. **W0.3** runtime three-statement gate on server writes.
 4. Write `scripts/escape-ledger-check.mjs` (Section 24) and wire into `docs:verify`.
 5. Wire `docs:links --strict` into `docs:verify` / pre-push.
 6. W0.1.6 type-based detection: raw float across a format boundary; fix `arr`/`cash` substring FPs.
 7. Disarm engine mocks: RealEstate, Retail, Construction (Insurance cleaned s022;
    Healthcare's patientRevenue fixed s017).
-8. W0.8 persistence authority (before W0.2): glStore authoritative, schema equality, tenancy +
-   per-table leak tests.
+8. INV-009 money-persist test written sess_031 (`src/utils/moneySerialize.test.ts`). SQLite REAL columns remain M003.
 9. Decide `BoardPackTemplate`: route it or delete it.
 10. Re-derive `formula-functions/financial.ts` oracles; split `ODDFPRICE`/`ODDLPRICE`.
 11. Retire legacy `money:adoption` after W0.1.1.
