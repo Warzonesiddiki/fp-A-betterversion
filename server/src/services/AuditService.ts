@@ -1,3 +1,15 @@
+// @money-ast-allow
+// Reason: this file is a server-side audit retention service. The
+// arithmetic flagged is:
+//   1. `loginTotalRow.count - loginSuccessRow.count` (line 948):
+//      integer subtraction of two row counts.
+//   2. `totalPruned += auditResult.changes` and friends (lines 974, 981,
+//      988): accumulating integer row-count `changes` from SQLite DELETE
+//      statements.
+// No money value crosses these expressions. The detector flags them
+// because `totalPruned` and `loginTotalRow` look like money totals
+// (`total` is in MONEY_WORDS) and `loginTotalRow` is a row count named
+// like a money total. The audit service never holds a money amount.
 import crypto from 'node:crypto';
 import { db } from '../db/connection.js';
 import { AUDIT_HMAC_SECRET } from '../config/env.js';

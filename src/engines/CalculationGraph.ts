@@ -1,3 +1,15 @@
+// @money-ast-allow
+// Reason: this is a graph-engine module for spreadsheet-style cell
+// dependency tracking. The flagged arithmetic is:
+//   1. `totalDeps += node.dependencies.size` — accumulating an integer
+//      Set size (count of cell dependencies, not money).
+//   2. `totalCalcTime += node.calculationTime` — accumulating a duration
+//      in milliseconds.
+//   3. `totalCalcTime / this.nodes.size` — averaging a duration over a
+//      node count.
+// The detector flags them because `totalDeps` / `totalCalcTime` look like
+// money totals (the `total` prefix), but no money value crosses these
+// expressions. They are pure dependency-graph statistics.
 /**
  * CalculationGraph — Cell dependency graph for spreadsheet-like recalculation
  *

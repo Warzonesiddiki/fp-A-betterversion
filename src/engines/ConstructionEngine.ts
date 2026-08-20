@@ -9,7 +9,15 @@
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
 import type { GLEntry } from '@/types';
-import { addMoney, subtractMoney, sumMoney, roundTo, toDecimal, formatMoney } from '../utils/money';
+import {
+  addMoney,
+  divideMoney,
+  subtractMoney,
+  sumMoney,
+  roundTo,
+  toDecimal,
+  formatMoney,
+} from '../utils/money';
 
 export interface ConstructionStats {
   totalBacklog: number;
@@ -48,7 +56,11 @@ export class ConstructionEngine {
    * - 21xx: Billings in Excess
    */
   static calculateStats(entries: GLEntry[]): ConstructionStats {
-    const getAmount = (e: GLEntry): number => e.amount ?? (e.debit ?? 0) - (e.credit ?? 0);
+    // Per-entry net amount: prefer e.amount; fall back to decimal-arithmetic
+    // debit − credit. Wrapping in roundTo converts the Decimal to a number
+    // for downstream `sumMoney` calls.
+    const getAmount = (e: GLEntry): number =>
+      e.amount ?? roundTo(subtractMoney(e.debit ?? 0, e.credit ?? 0));
     // Sum each account class with exact decimal arithmetic so many GL lines do
     // not accumulate IEEE-754 drift. `sumMoney` over absolute amounts.
     const sumAbs = (prefix: string): number =>
@@ -90,7 +102,8 @@ export class ConstructionEngine {
     // Derive projects from unique entity/department combos
     const projectMap = new Map<string, { revenue: number; costs: number }>();
 
-    const getAmount = (e: GLEntry): number => e.amount ?? (e.debit ?? 0) - (e.credit ?? 0);
+    const getAmount = (e: GLEntry): number =>
+      e.amount ?? roundTo(subtractMoney(e.debit ?? 0, e.credit ?? 0));
 
     for (const e of entries) {
       if (!e.accountCode.startsWith('45') && !e.accountCode.startsWith('56')) continue;
@@ -131,7 +144,7 @@ export class ConstructionEngine {
         name: def.name,
         client: def.client,
         status: pct >= 100 ? 'Completed' : pct >= 50 ? 'In Progress' : 'In Progress',
-        budget: `$${formatMoney(data.revenue / 1000000, { places: 1 })}M`,
+        budget: `$${formatMoney(divideMoney(toDecimal(data.revenue), toDecimal(1_000_000)), { places: 1 })}M`,
         percentComplete: `${pct}%`,
         margin: `${formatMoney(margin, { places: 1 })}%`,
       });

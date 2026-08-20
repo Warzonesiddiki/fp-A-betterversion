@@ -1,3 +1,16 @@
+// @money-ast-allow
+// Reason: this engine reconciles dimensionless forecast variances and
+// operates on array indices. The flagged arithmetic is:
+//   1. `variances.reduce((s, v) => s + v.maxVariancePercent, 0) /
+//      variances.length` (line 131): averaging a percent (a dimensionless
+//      ratio) over the number of variances.
+//   2. `amounts.length - 1` (lines 192, 195): integer arithmetic on the
+//      index of the last element in a forecast-source array.
+// No money value crosses any of these expressions. The detector flags
+// them because the variable names overlap with MONEY_WORDS (e.g.,
+// `variance`), but the inputs are integer / dimensionless.
+// Forecast amount comparisons across sources go through `divideMoney` and
+// `addMoney` already (see the `default` branch).
 /**
  * @fileoverview Forecast Reconciliation Engine — Reconcile top-down vs bottom-up forecasts (variance analysis, convergence tracking, merge strategies)
  * @purity-tier 1 PURE
