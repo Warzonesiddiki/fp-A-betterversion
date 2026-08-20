@@ -19,7 +19,7 @@ import {
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { roundTo, sumMoney } from '@/utils/money';
+import { addMoney, divideMoney, roundTo, subtractMoney, sumMoney, toDecimal } from '@/utils/money';
 import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface InventoryItem {
@@ -165,7 +165,7 @@ export default function InventoryPage() {
         sumMoney(
           entries
             .filter((e) => (e.accountCode || '').startsWith('13'))
-            .map((e) => Math.abs(e.debit - e.credit))
+            .map((e) => Math.abs(subtractMoney(e.debit, e.credit).toNumber()))
         ),
         2
       ),
@@ -181,18 +181,22 @@ export default function InventoryPage() {
     sumMoney(
       entries
         .filter((e) => (e.accountCode || '').startsWith('5'))
-        .map((e) => Math.abs(e.debit - e.credit))
+        .map((e) => Math.abs(subtractMoney(e.debit, e.credit).toNumber()))
     ),
     2
   );
   const avgInventory = totalValue > 0 ? totalValue : glInventory;
-  const turnoverRatio = avgInventory > 0 && cogs > 0 ? cogs / avgInventory : 0;
+  const turnoverRatio =
+    avgInventory > 0 && cogs > 0
+      ? roundTo(divideMoney(toDecimal(cogs), toDecimal(avgInventory)), 4)
+      : 0;
   const daysInventory = turnoverRatio > 0 ? 365 / turnoverRatio : 0;
 
   const categoryData = useMemo(() => {
     const cats: Record<string, number> = {};
     mockInventory.forEach((i) => {
-      cats[i.category] = (cats[i.category] || 0) + i.totalValue;
+      const prev = cats[i.category] ?? 0;
+      cats[i.category] = addMoney(prev, i.totalValue).toNumber();
     });
     return Object.entries(cats).map(([name, value]) => ({ name, value }));
   }, []);
