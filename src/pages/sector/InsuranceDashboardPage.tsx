@@ -4,11 +4,16 @@
 // (credit-side) or expense (debit-side). They are not money arithmetic;
 // they select which entries flow into the downstream `sumMoney(...)`
 // aggregation in the canonical money primitive. Net amounts are summed
-// exactly. (Note: this page still has the per-entry sign filter and the
-// free-text `accountName.toLowerCase().includes('claim')` debt disclosed
-// in HANDOVER; both should be replaced with a real chart-of-accounts
-// filter in a follow-up rewrite — the detector does not flag those as
-// money arithmetic, so they are documented for the next session.)
+// exactly.
+//
+// Session 030: replaced free-text accountName matching with real
+// chart-of-accounts filters using account-code prefix conventions:
+//   41xx = Premium income (revenue)
+//   43xx = Cession / reinsurance
+//   51xx = Loss / claims
+//   52xx = Commission / acquisition cost
+// The entry-direction filter (`e.credit > e.debit`) is retained as a
+// supplementary guard for entries without recognized account codes.
 
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -51,31 +56,37 @@ export default function InsuranceDashboardPage() {
   }, [entries]);
 
   const stats = useMemo(() => {
-    const revenue = roundTo(
-      sumMoney(entries.filter((e) => e.credit > e.debit).map((e) => e.credit)),
-      2
+    // Chart-of-accounts prefixes for insurance-sector classification
+    const isPremiumCode = (code: string) => code.startsWith('41');
+    const isClaimCode = (code: string) => code.startsWith('51');
+    const isExpenseCode = (code: string) => code.startsWith('52') || code.startsWith('43');
+
+    // Premium revenue: 41xx accounts (credit-side), with fallback for
+    // entries without a recognized code
+    const revenueEntries = entries.filter(
+      (e) =>
+        isPremiumCode(e.accountCode) ||
+        (!isClaimCode(e.accountCode) && !isExpenseCode(e.accountCode) && e.credit > e.debit)
     );
-    const claims = roundTo(
-      sumMoney(
-        entries.filter((e) => e.accountName.toLowerCase().includes('claim')).map((e) => e.debit)
-      ),
-      2
+    const revenue = roundTo(sumMoney(revenueEntries.map((e) => e.credit)), 2);
+
+    // Claims / losses: 51xx accounts
+    const claimEntries = entries.filter((e) => isClaimCode(e.accountCode));
+    const claims = roundTo(sumMoney(claimEntries.map((e) => e.debit)), 2);
+
+    // Operating expenses: 52xx (commission) + 43xx (cession), excluding claims
+    const expenseEntries = entries.filter(
+      (e) =>
+        isExpenseCode(e.accountCode) ||
+        (e.debit > e.credit && !isClaimCode(e.accountCode) && !isPremiumCode(e.accountCode))
     );
-    const expenses = roundTo(
-      sumMoney(
-        entries
-          .filter((e) => e.debit > e.credit && !e.accountName.toLowerCase().includes('claim'))
-          .map((e) => e.debit)
-      ),
-      2
-    );
+    const expenses = roundTo(sumMoney(expenseEntries.map((e) => e.debit)), 2);
+
     const lossRatio = revenue > 0 ? roundTo(divideMoney(claims, revenue).times(100), 2) : 0;
     const expenseRatio = revenue > 0 ? roundTo(divideMoney(expenses, revenue).times(100), 2) : 0;
     // Exact average claim size (0 when no claims).
-    const avgClaim =
-      toDecimal(claims).gt(0) && entries.length > 0
-        ? roundTo(divideMoney(claims, entries.filter((e) => e.debit > 0).length || 1), 2)
-        : 0;
+    const claimCount = claimEntries.length || 1;
+    const avgClaim = toDecimal(claims).gt(0) ? roundTo(divideMoney(claims, claimCount), 2) : 0;
     return {
       revenue,
       claims,
