@@ -7,6 +7,7 @@ import { ScenarioEngine, type ScenarioDriver } from '@/engines/ScenarioEngine';
 import type { ScenarioMetrics } from '@/types';
 import { Plus, X, GitMerge, Lock, Unlock, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { subtractMoney, divideMoney, multiplyMoney, compareMoney, roundTo } from '@/utils/money';
 
 interface ScenarioDefinition {
   id: string;
@@ -29,8 +30,9 @@ function formatPctWithSign(n: number): string {
 }
 
 function DiffIndicator({ current, base }: { current: number; base: number }) {
-  const diff = current - base;
-  const pctDiff = base !== 0 ? (diff / base) * 100 : 0;
+  const diff = roundTo(subtractMoney(current, base));
+  const pctDiff =
+    compareMoney(base, 0) !== 0 ? multiplyMoney(divideMoney(diff, base), 100).toNumber() : 0;
   const isNeutral = Math.abs(pctDiff) < 0.01;
 
   return (
@@ -350,8 +352,12 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {selectedComputed.map((scenario) => {
-                const revenueDiff = scenario.metrics!.revenue - baseMetrics.revenue;
-                const ebitdaDiff = scenario.metrics!.ebitda - baseMetrics.ebitda;
+                const revenueDiff = roundTo(
+                  subtractMoney(scenario.metrics!.revenue, baseMetrics.revenue)
+                );
+                const ebitdaDiff = roundTo(
+                  subtractMoney(scenario.metrics!.ebitda, baseMetrics.ebitda)
+                );
                 return (
                   <div
                     key={scenario.id}

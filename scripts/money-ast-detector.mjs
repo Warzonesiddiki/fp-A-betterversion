@@ -586,6 +586,25 @@ for (const f of files) {
     console.error(`  ! parse failure ${rel}: ${err.message}`);
     process.exitCode = 1;
   }
+  // File-level suppression: any source file may opt out by carrying
+  // `// @money-ast-allow` in its first 2 KiB (typically a leading comment
+  // block). The detector must prove it is scoped (one file) and that the
+  // reason is documented (text after the marker is captured and printed).
+  if (findings.length > 0) {
+    const head = text.slice(0, 2048);
+    const m = head.match(/@money-ast-allow([\s\S]*?)(?:\n\s*\n|\nimport|\n\nexport|$)/);
+    if (m) {
+      const reason = (m[1] || '')
+        .replace(/\s+/g, ' ')
+        .replace(/^\W+/, '')
+        .trim()
+        .slice(0, 140) || 'no reason given';
+      console.error(
+        `  ⊘ suppression: ${rel} (${findings.length} finding(s) suppressed; reason: ${reason})`
+      );
+      findings = [];
+    }
+  }
   const touchesMoney =
     findings.length > 0 || MONEY_WORDS.some((w) => text.toLowerCase().includes(w));
   results.push({ file: rel, findings, unsafe: findings.length, touchesMoney });

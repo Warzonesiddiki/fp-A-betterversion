@@ -36,6 +36,7 @@ vi.mock('lucide-react', () => {
     ChevronUp: makeIcon(),
     ChevronDown: makeIcon(),
     ChevronsUpDown: makeIcon(),
+    AlertTriangle: makeIcon(),
   };
 });
 

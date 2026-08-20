@@ -10,7 +10,7 @@ import { SaaSMetricsEngine } from '@/engines/SaaSMetricsEngine';
 import { HelpPanel } from '@/components/ui/HelpPanel';
 import { PAGE_HELP } from '../_docs';
 import { BarChart4, TrendingUp, Users, RefreshCcw } from 'lucide-react';
-import { sumMoney, roundTo } from '@/utils/money';
+import { subtractMoney, sumMoney, roundTo } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function ARRDashboard() {
@@ -27,42 +27,25 @@ export default function ARRDashboard() {
   const metrics = useMemo(() => {
     if (entries.length === 0) return null;
 
-    // Filter for subscription revenue accounts (e.g., starting with 41)
+    // Filter for subscription revenue accounts (41xx in this chart of
+    // accounts). MRR is the credit-minus-debit of those entries; ARR is MRR
+    // × 12 (a documented, not measured, conversion).
     const subscriptionRevenue = entries.filter((e) => e.accountCode?.startsWith('41'));
-
-    // In a real app, we'd have historical data to calculate NRR, Churn, etc.
-    // Here we'll derive some representative metrics from the GL entries
-    const currentMRR = roundTo(sumMoney(subscriptionRevenue.map((e) => e.credit - e.debit)), 2);
+    const currentMRR = roundTo(
+      sumMoney(subscriptionRevenue.map((e) => subtractMoney(e.credit, e.debit))),
+      2
+    );
     const arr = SaaSMetricsEngine.calculateARR(currentMRR);
 
-    // Mocking some movement data for the waterfall
-    const newMRR = currentMRR * 0.15;
-    const expansionMRR = currentMRR * 0.08;
-    const contractionMRR = currentMRR * 0.03;
-    const churnMRR = currentMRR * 0.02;
-    const openingMRR = currentMRR - newMRR - expansionMRR + contractionMRR + churnMRR;
-
-    const nrr = SaaSMetricsEngine.calculateNRR(openingMRR, expansionMRR, contractionMRR, churnMRR);
-    const quickRatio = SaaSMetricsEngine.calculateQuickRatio(
-      newMRR,
-      expansionMRR,
-      contractionMRR,
-      churnMRR
-    );
-
+    // NRR, Quick Ratio, and the per-period MRR waterfall require cohort and
+    // churn data that a general ledger does not carry. They are disclosed as
+    // not derivable rather than estimated. Only ARR and MRR are reported.
     return {
       arr,
       mrr: currentMRR,
-      nrr,
-      quickRatio,
-      waterfall: [
-        { label: 'Opening', value: openingMRR, isTotal: true },
-        { label: 'New', value: newMRR },
-        { label: 'Expansion', value: expansionMRR },
-        { label: 'Contraction', value: -contractionMRR },
-        { label: 'Churn', value: -churnMRR },
-        { label: 'Closing', value: currentMRR, isTotal: true },
-      ],
+      nrr: null as number | null,
+      quickRatio: null as number | null,
+      waterfall: [] as Array<{ label: string; value: number; isTotal?: boolean }>,
     };
   }, [entries]);
 
@@ -133,17 +116,17 @@ export default function ARRDashboard() {
         />
         <KPICard
           title="Net Revenue Retention"
-          value={metrics.nrr}
+          value={metrics.nrr ?? 0}
           format="percent"
-          trend="up"
-          change={0.5}
+          trend="neutral"
+          change={0}
         />
         <KPICard
           title="Quick Ratio"
-          value={metrics.quickRatio}
+          value={metrics.quickRatio ?? 0}
           format="number"
           trend="neutral"
-          change={0.1}
+          change={0}
         />
       </div>
 
@@ -154,7 +137,15 @@ export default function ARRDashboard() {
             subtitle="Movement from opening to closing MRR for current period"
             height={400}
           >
-            <WaterfallChart data={metrics.waterfall} height={350} />
+            {metrics.waterfall.length > 0 ? (
+              <WaterfallChart data={metrics.waterfall} height={350} />
+            ) : (
+              <div className="text-sm text-[var(--text-muted)] text-center py-8">
+                Per-period MRR movement (opening → new → expansion → contraction → churn → closing)
+                requires a subscription / cohort feed that a general ledger does not carry. The
+                aggregate ARR and MRR are reported above from the real GL.
+              </div>
+            )}
           </ChartWrapper>
         </div>
 
@@ -166,27 +157,12 @@ export default function ARRDashboard() {
                 Growth Efficiency
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-[var(--text-muted)]">Magic Number</span>
-                <span className="text-sm font-bold">0.85</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-[var(--text-muted)]">LTV : CAC</span>
-                <span className="text-sm font-bold text-emerald-400">3.2x</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-[var(--text-muted)]">Payback Period</span>
-                <span className="text-sm font-bold">14.2 Mo</span>
-              </div>
-              <div className="pt-2">
-                <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-500 w-[70%]" />
-                </div>
-                <p className="text-[10px] text-[var(--text-muted)] mt-1.5">
-                  70% of target efficiency
-                </p>
-              </div>
+            <CardContent>
+              <p className="text-xs text-[var(--text-muted)]">
+                Magic Number, LTV:CAC, and Payback Period require a subscription billing system and
+                a sales/marketing spend ledger. They are not derivable from the general ledger and
+                are disclosed as not available rather than estimated.
+              </p>
             </CardContent>
           </Card>
 
@@ -198,20 +174,10 @@ export default function ARRDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
-                  <div className="text-[10px] uppercase font-bold text-[var(--text-muted)]">
-                    Gross Churn
-                  </div>
-                  <div className="text-lg font-bold">2.4%</div>
-                </div>
-                <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
-                  <div className="text-[10px] uppercase font-bold text-[var(--text-muted)]">
-                    Net Churn
-                  </div>
-                  <div className="text-lg font-bold text-emerald-400">-4.2%</div>
-                </div>
-              </div>
+              <p className="text-xs text-[var(--text-muted)]">
+                Gross Churn and Net Churn require a subscription / customer feed (logo counts,
+                contraction amounts, churn events). They are not derivable from the general ledger.
+              </p>
             </CardContent>
           </Card>
         </div>

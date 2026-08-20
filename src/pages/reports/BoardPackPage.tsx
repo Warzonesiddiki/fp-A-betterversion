@@ -1,3 +1,11 @@
+// @money-ast-allow Reason: this file is the Board Pack page. The flagged
+// `(report.expenses / report.totalBudget) * 100` is a budget-utilization
+// PERCENTAGE for the progress-bar visual. The numerator and denominator
+// are pre-computed by `computeBoardPackReport` (which uses the canonical
+// money primitive); the percentage itself is a unitless ratio (0..100)
+// shown only in the UI bar. No money is summed or accumulated in the
+// flagged expression.
+
 import { useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 

@@ -1,3 +1,10 @@
+// @money-ast-allow
+// Reason: keyboard-navigation engine for a spreadsheet-style grid. The
+// flagged arithmetic is `context.totalCols - 1` (last-column index) —
+// integer arithmetic on a column-count integer. The detector flags it
+// because `totalCols` looks like a money total (`total` is in
+// MONEY_WORDS), but `context.totalCols` is a column count, not a money
+// amount.
 export interface GridPosition {
   row: number;
   col: number;

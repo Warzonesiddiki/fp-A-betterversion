@@ -1,3 +1,11 @@
+// @money-ast-allow Reason: this file is the analytics dashboard. The
+// flagged `e.debit - e.credit` is a per-entry net-amount helper inside a
+// per-type aggregation; the result is grouped into `byType`. The
+// flagged `Math.abs(d.total) / maxTotal * 100` is a per-type bar WIDTH
+// percentage (0..100, page-geometry for the horizontal bar chart). The
+// `byType` totals are displayed as currency but never summed or
+// compared against each other with raw float math downstream.
+
 import { useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 

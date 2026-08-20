@@ -83,12 +83,14 @@ export function computeWorkingCapital(entries: readonly WCEntry[]): WCSummary {
         .filter(
           (e) => (e.accountCode || '').startsWith('11') || (e.accountCode || '').startsWith('12')
         )
-        .map((e) => e.debit - e.credit)
+        .map((e) => subtractMoney(e.debit, e.credit))
     )
   );
   const liabilities = roundTo(
     sumMoney(
-      entries.filter((e) => (e.accountCode || '').startsWith('21')).map((e) => e.credit - e.debit)
+      entries
+        .filter((e) => (e.accountCode || '').startsWith('21'))
+        .map((e) => subtractMoney(e.credit, e.debit))
     )
   );
   const wc = roundTo(subtractMoney(assets, liabilities));
@@ -97,14 +99,16 @@ export function computeWorkingCapital(entries: readonly WCEntry[]): WCSummary {
     liabilities > 0 ? roundTo(divideMoney(multiplyMoney(assets, 0.7), liabilities), 4) : 0;
   const revenue = roundTo(
     sumMoney(
-      entries.filter((e) => (e.accountCode || '').startsWith('4')).map((e) => e.debit - e.credit)
+      entries
+        .filter((e) => (e.accountCode || '').startsWith('4'))
+        .map((e) => subtractMoney(e.debit, e.credit))
     )
   );
   const cogs = roundTo(
     sumMoney(
       entries
         .filter((e) => (e.accountCode || '').startsWith('5'))
-        .map((e) => Math.abs(e.debit - e.credit))
+        .map((e) => Math.abs(subtractMoney(e.debit, e.credit).toNumber()))
     )
   );
 
@@ -162,13 +166,20 @@ export default function WorkingCapitalPage() {
     const base = computeWorkingCapital(entries);
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     // trend series is a stochastic projection with Math.round + getRandom()
-    // jitter — integer rounding of random variates cannot produce float
-    // drift, left as JS number math.
+    // jitter. Multiplication is done in decimal and converted back to a
+    // number for the chart. The jitter factors (0.9, 0.02, 0.01, etc.) are
+    // dimensionless ratios; the only money-shaped value is the base, which
+    // is multiplied through multiplyMoney. The resulting chart point is a
+    // rounded integer — the same precision the chart label needs.
     const trend = months.map((m, i) => ({
       month: m,
-      assets: Math.round(base.assets * (0.9 + i * 0.02 + ((i * 3) % 5) * 0.01)),
-      liabilities: Math.round(base.liabilities * (0.9 + i * 0.02 + ((i * 7) % 5) * 0.01)),
-      wc: Math.round(base.wc * (0.85 + i * 0.03 + ((i * 11) % 10) * 0.01)),
+      assets: Math.round(
+        multiplyMoney(base.assets, 0.9 + i * 0.02 + ((i * 3) % 5) * 0.01).toNumber()
+      ),
+      liabilities: Math.round(
+        multiplyMoney(base.liabilities, 0.9 + i * 0.02 + ((i * 7) % 5) * 0.01).toNumber()
+      ),
+      wc: Math.round(multiplyMoney(base.wc, 0.85 + i * 0.03 + ((i * 11) % 10) * 0.01).toNumber()),
     }));
     return { ...base, trend };
   }, [entries]);

@@ -5,6 +5,7 @@ import {
   formatPercent,
   formatVariance,
 } from '@/utils/financialFormatting';
+import { subtractMoney, divideMoney, multiplyMoney, compareMoney, roundTo } from '@/utils/money';
 
 /**
  * Pre-configured AG Grid column types for financial data.
@@ -30,7 +31,7 @@ export const financialColumnTypes: Record<string, ColDef> = {
       'text-green-600': (p) => Number(p.value) > 0,
     },
     filter: 'agNumberColumnFilter',
-    comparator: (a, b) => (a ?? 0) - (b ?? 0),
+    comparator: (a, b) => roundTo(subtractMoney(a ?? 0, b ?? 0)),
   },
 
   compactCurrency: {
@@ -45,7 +46,7 @@ export const financialColumnTypes: Record<string, ColDef> = {
       return formatCurrency(num);
     },
     filter: 'agNumberColumnFilter',
-    comparator: (a, b) => (a ?? 0) - (b ?? 0),
+    comparator: (a, b) => roundTo(subtractMoney(a ?? 0, b ?? 0)),
   },
 
   percentage: {
@@ -60,7 +61,7 @@ export const financialColumnTypes: Record<string, ColDef> = {
       'text-green-600': (p) => Number(p.value) > 0,
     },
     filter: 'agNumberColumnFilter',
-    comparator: (a, b) => (a ?? 0) - (b ?? 0),
+    comparator: (a, b) => roundTo(subtractMoney(a ?? 0, b ?? 0)),
   },
 
   variance: {
@@ -76,7 +77,7 @@ export const financialColumnTypes: Record<string, ColDef> = {
       'bg-red-50 text-red-700': (p) => Number(p.value) < 0,
     },
     filter: 'agNumberColumnFilter',
-    comparator: (a, b) => (a ?? 0) - (b ?? 0),
+    comparator: (a, b) => roundTo(subtractMoney(a ?? 0, b ?? 0)),
   },
 
   period: {
@@ -240,7 +241,7 @@ export function createVarianceColumns(
         valueGetter: (params) => {
           const actual = Number(params.data?.[actualField] ?? 0);
           const budget = Number(params.data?.[budgetField] ?? 0);
-          return actual - budget;
+          return roundTo(subtractMoney(actual, budget));
         },
       },
       {
@@ -251,8 +252,11 @@ export function createVarianceColumns(
         valueGetter: (params) => {
           const actual = Number(params.data?.[actualField] ?? 0);
           const budget = Number(params.data?.[budgetField] ?? 0);
-          if (budget === 0) return 0;
-          return ((actual - budget) / Math.abs(budget)) * 100;
+          if (compareMoney(budget, 0) === 0) return 0;
+          return multiplyMoney(
+            divideMoney(subtractMoney(actual, budget), Math.abs(budget)),
+            100
+          ).toNumber();
         },
       },
     ],

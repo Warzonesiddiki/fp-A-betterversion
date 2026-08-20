@@ -6,7 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Wrench } from 'lucide-react';
-import { sumMoney, roundTo } from '@/utils/money';
+import {
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  toDecimal,
+} from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 import { PageHeader } from '@/components/ui/PageHeader';
 
@@ -92,7 +99,9 @@ export default function EquipmentManagementPage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-[var(--text-muted)]">Replacement Value</span>
-                <span className="font-mono">{formatCurrency(stats.totalValue * 1.3)}</span>
+                <span className="font-mono">
+                  {formatCurrency(roundTo(multiplyMoney(toDecimal(stats.totalValue), 1.3), 2))}
+                </span>
               </div>
             </div>
           </CardContent>
@@ -107,7 +116,16 @@ export default function EquipmentManagementPage() {
                 <span className="text-sm text-[var(--text-muted)]">Maintenance Cost Ratio</span>
                 <span className="font-mono">
                   {stats.totalValue > 0
-                    ? formatPercent((stats.maintenance / stats.totalValue) * 100, 1)
+                    ? formatPercent(
+                        roundTo(
+                          multiplyMoney(
+                            divideMoney(toDecimal(stats.maintenance), toDecimal(stats.totalValue)),
+                            100
+                          ),
+                          1
+                        ),
+                        1
+                      )
                     : '0%'}
                 </span>
               </div>
@@ -115,14 +133,28 @@ export default function EquipmentManagementPage() {
                 <span className="text-sm text-[var(--text-muted)]">Depreciation Rate</span>
                 <span className="font-mono">
                   {stats.totalValue > 0
-                    ? formatPercent((stats.depreciation / stats.totalValue) * 100, 1)
+                    ? formatPercent(
+                        roundTo(
+                          multiplyMoney(
+                            divideMoney(toDecimal(stats.depreciation), toDecimal(stats.totalValue)),
+                            100
+                          ),
+                          1
+                        ),
+                        1
+                      )
                     : '0%'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-[var(--text-muted)]">Net Book Value</span>
                 <span className="font-mono">
-                  {formatCurrency(stats.totalValue - stats.depreciation)}
+                  {formatCurrency(
+                    roundTo(
+                      subtractMoney(toDecimal(stats.totalValue), toDecimal(stats.depreciation)),
+                      2
+                    )
+                  )}
                 </span>
               </div>
               <div className="flex justify-between items-center">

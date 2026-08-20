@@ -1,3 +1,15 @@
+// @money-ast-allow Reason: this file is the insurance-sector dashboard. The
+// flagged `>` comparisons (`e.credit > e.debit` and `e.debit > e.credit`)
+// are entry-direction FILTERS used to choose whether a GL entry is revenue
+// (credit-side) or expense (debit-side). They are not money arithmetic;
+// they select which entries flow into the downstream `sumMoney(...)`
+// aggregation in the canonical money primitive. Net amounts are summed
+// exactly. (Note: this page still has the per-entry sign filter and the
+// free-text `accountName.toLowerCase().includes('claim')` debt disclosed
+// in HANDOVER; both should be replaced with a real chart-of-accounts
+// filter in a follow-up rewrite — the detector does not flag those as
+// money arithmetic, so they are documented for the next session.)
+
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';

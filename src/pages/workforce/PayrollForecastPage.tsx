@@ -24,7 +24,14 @@ import {
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { roundTo, sumMoney, divideMoney } from '@/utils/money';
+import {
+  roundTo,
+  sumMoney,
+  divideMoney,
+  subtractMoney,
+  multiplyMoney,
+  compareMoney,
+} from '@/utils/money';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface DepartmentPayroll {
@@ -104,14 +111,21 @@ export default function PayrollForecastPage() {
         (e.accountCode || '').startsWith('71') ||
         (e.description || '').toLowerCase().includes('salary')
     );
-    return roundTo(sumMoney(payrollEntries.map((e) => Math.abs(e.debit - e.credit))), 2);
+    return roundTo(
+      sumMoney(payrollEntries.map((e) => Math.abs(roundTo(subtractMoney(e.debit, e.credit))))),
+      2
+    );
   }, [entries]);
 
   const totalPayroll = roundTo(sumMoney(departments.map((d) => d.totalCost)), 2);
-  const totalHeadcount = roundTo(sumMoney(departments.map((d) => d.headcount)), 2);
-  const avgCostPerHead = totalHeadcount > 0 ? totalPayroll / totalHeadcount : 0;
+  const totalHeadcount = departments.reduce((s, d) => s + d.headcount, 0);
+  const avgCostPerHead =
+    totalHeadcount > 0 ? roundTo(divideMoney(totalPayroll, totalHeadcount)) : 0;
   const totalBenefits = roundTo(sumMoney(departments.map((d) => d.benefits)), 2);
-  const benefitsRatio = totalPayroll > 0 ? (totalBenefits / totalPayroll) * 100 : 0;
+  const benefitsRatio =
+    compareMoney(totalPayroll, 0) > 0
+      ? multiplyMoney(divideMoney(totalBenefits, totalPayroll), 100).toNumber()
+      : 0;
 
   const deptColumns: Column<DepartmentPayroll>[] = [
     { key: 'department', header: 'Department', sortable: true },

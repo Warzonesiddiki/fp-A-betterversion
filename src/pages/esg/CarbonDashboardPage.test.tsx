@@ -64,8 +64,16 @@ describe('CarbonDashboardPage smoke test', () => {
       'rendered nothing: a truthy container does not prove the page mounted'
     ).toBeGreaterThanOrEqual(2);
   });
-  it('displays expected empty state', () => {
+  it('displays expected empty state with the carbon-domain title (session 028)', () => {
     renderPage();
+    // Pre-session-028: page rendered fabricated scope buckets
+    // (Scope 1: 12500, Scope 2: 8200, Scope 3: 35800) even with no GL
+    // entries. Post-session-028: page empty-states when entries.length === 0
+    // and discloses the missing emissions feed. The new heading is
+    // "No Carbon Data" — asserting the absence of fabricated scope
+    // numbers is the regression lock.
     expect(screen.getByText(/No Data/i)).toBeTruthy();
+    expect(screen.queryByText(/Scope 1 \(Direct\)/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Natural Gas Combustion/)).not.toBeInTheDocument();
   });
 });

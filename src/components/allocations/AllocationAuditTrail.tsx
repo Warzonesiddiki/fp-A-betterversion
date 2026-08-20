@@ -4,6 +4,7 @@ import { cn } from '@/utils/cn';
 import type { AllocationMethod } from '@/engines/AllocationEngine';
 import { formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { sumMoney } from '@/utils/money';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -230,9 +231,9 @@ export function AllocationAuditTrail({
   }, [entries, methodFilter, statusFilter, searchTerm]);
 
   const appliedCount = entries.filter((e) => e.status === 'applied').length;
-  const totalValue = entries
-    .filter((e) => e.status === 'applied')
-    .reduce((s, e) => s + e.totalAllocated, 0);
+  const totalValue = sumMoney(
+    entries.filter((e) => e.status === 'applied').map((e) => e.totalAllocated)
+  ).toNumber();
 
   return (
     <div

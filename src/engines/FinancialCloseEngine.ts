@@ -11,6 +11,13 @@
 //   PERF:       O(V+E) for DAG, O(n) for progress/status.
 //   COMPLIANCE: Period lock is irreversible; cannot lock with incomplete deps.
 // =============================================================================
+//
+// @money-ast-allow Reason: this file is the financial-close WORKFLOW engine.
+// The flagged arithmetic is `(completed / totalTasks) * 100` where
+// `completed` and `totalTasks` are integer task counts (length of completed
+// vs total), not currency. The result is `percentComplete` (0–100), a UI
+// progress percentage. There is no money in this expression.
+// =============================================================================
 
 // --- Type Definitions ---
 

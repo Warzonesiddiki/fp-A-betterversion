@@ -1,3 +1,10 @@
+// @money-ast-allow
+// Reason: this is a Sankey diagram (page-geometry), sibling to the
+// already-suppressed src/components/ui/SankeyChart.tsx. The flagged
+// arithmetic is `(n.value / totalValue) * availableH` and similar — the
+// (n.value / totalValue) ratio × available pixel height produces a
+// SVG y-offset, not a money amount. The detector cannot see that
+// `availableH`, `sn.h`, `tn.h` are pixel constants.
 import { useMemo, memo } from 'react';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { cn } from '@/utils/cn';

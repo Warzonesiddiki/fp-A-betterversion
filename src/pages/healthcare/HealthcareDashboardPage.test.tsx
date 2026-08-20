@@ -107,15 +107,35 @@ describe('HealthcareDashboardPage (Data-Driven)', () => {
       </MemoryRouter>
     );
 
-    // Cardiology revenue = $50,000
-    // patients = 50000 / 2500 = 20
+    // Cardiology revenue = $50,000 (derived from the real GL).
     expect(screen.getByText(/Cardiology/)).toBeInTheDocument();
-    // In DataTable, currency is formatted. Let's see how it formats.
-    // revenue: deptRevenue, and format is:
-    // If it's compact or normal? We'll just check for '$50' or '50'
     expect(screen.getByText(/50000/)).toBeInTheDocument();
 
     // Check if Neurology is rendered
     expect(screen.getByTestId('data-table')).toHaveTextContent(/Neurology/);
+  });
+
+  it('does not fabricate margin or efficiency from department name', () => {
+    // Session 028: pre-existing test gap. The page used to compute
+    // margin = 15 + ((d.name.charCodeAt(0) * 3) % 15) and
+    // efficiency = 85 + ((d.name.charCodeAt(0) * 2) % 12) — a function of
+    // the first character of the department name. That is a Severity-0
+    // fabrication: it renders a different number for every department and
+    // is not backed by a general ledger. The page must now render those
+    // columns as '—' (not derivable from a GL).
+    render(
+      <MemoryRouter>
+        <HealthcareDashboardPage />
+      </MemoryRouter>
+    );
+    const table = screen.getByTestId('data-table');
+    // Cardiology's first char 'C' (charCode 67). Pre-fix margin would be
+    // 15 + (67*3 % 15) = 15 + 6 = 21; pre-fix efficiency would be
+    // 85 + (67*2 % 12) = 85 + 2 = 87. Neither literal must appear.
+    expect(table.textContent).not.toMatch(/\b21\.0\s*%/);
+    expect(table.textContent).not.toMatch(/\b87\s*%/);
+    // Same check for Neurology ('N' = 78).
+    expect(table.textContent).not.toMatch(/\b15\.4\s*%/);
+    expect(table.textContent).not.toMatch(/\b89\s*%/);
   });
 });

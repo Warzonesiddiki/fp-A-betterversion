@@ -10,6 +10,7 @@ import {
   Legend,
   ReferenceLine,
 } from 'recharts';
+import { subtractMoney, divideMoney, multiplyMoney, compareMoney, roundTo } from '@/utils/money';
 
 export interface VarianceDataPoint {
   name: string;
@@ -34,8 +35,14 @@ export function VarianceChart({
 }: VarianceChartProps) {
   const chartData = data.map((d) => ({
     ...d,
-    variance: d.actual - d.budget,
-    variancePct: d.budget !== 0 ? ((d.actual - d.budget) / Math.abs(d.budget)) * 100 : 0,
+    variance: roundTo(subtractMoney(d.actual, d.budget)),
+    variancePct:
+      compareMoney(d.budget, 0) !== 0
+        ? multiplyMoney(
+            divideMoney(subtractMoney(d.actual, d.budget), Math.abs(d.budget)),
+            100
+          ).toNumber()
+        : 0,
   }));
 
   return (

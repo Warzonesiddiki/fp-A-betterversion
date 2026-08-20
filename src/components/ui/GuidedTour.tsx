@@ -1,3 +1,10 @@
+// @money-ast-allow
+// Reason: this is a guided-tour / walkthrough component. The flagged
+// arithmetic is `currentStep + 1` and `currentStep - 1` — integer
+// arithmetic on a step index. The detector flags `currentStep` because
+// of MONEY_WORDS overlap (none actually — but the `+` / `-` on an
+// integer is the same shape as a money-amount accumulation). The values
+// are integer step counters, not money.
 import React, { memo, useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { cn } from '@/utils/cn';

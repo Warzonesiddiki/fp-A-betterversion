@@ -21,6 +21,13 @@
  *
  * @module engines/VarianceAttributionEngine
  */
+//
+// @money-ast-allow Reason: this file is the ASC 280 variance-attribution
+// engine. The flagged arithmetic in `.sort()` comparators is
+// `b.absoluteVariance - a.absoluteVariance`, a numeric comparator that
+// returns < 0 / 0 / > 0. Sort comparators are pure ordering functions; the
+// subtracted difference is discarded and only its sign is used.
+// =============================================================================
 
 import { divideMoney, multiplyMoney, subtractMoney, sumMoney, toDecimal } from '../utils/money';
 

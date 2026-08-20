@@ -16,6 +16,7 @@ import {
 } from 'recharts';
 import { Leaf, Users, Shield, TrendingUp } from 'lucide-react';
 import { formatPercent } from '@/utils/financialFormatting';
+import { divideMoney, multiplyMoney, roundTo, sumMoney, toDecimal } from '@/utils/money';
 
 interface ESGMetricsDashboardProps {
   className?: string;
@@ -69,8 +70,8 @@ export function ESGMetricsDashboard({ className }: ESGMetricsDashboardProps) {
     const onTrack = initiatives.filter((i) => i.progress >= 75).length;
     const atRisk = initiatives.filter((i) => i.progress >= 50 && i.progress < 75).length;
     const behind = initiatives.filter((i) => i.progress < 50).length;
-    const totalBudget = initiatives.reduce((s, i) => s + i.budget, 0);
-    const totalSpent = initiatives.reduce((s, i) => s + i.spent, 0);
+    const totalBudget = roundTo(sumMoney(initiatives.map((i) => i.budget)), 2);
+    const totalSpent = roundTo(sumMoney(initiatives.map((i) => i.spent)), 2);
     return { total, onTrack, atRisk, behind, totalBudget, totalSpent };
   }, [initiatives]);
 
@@ -224,7 +225,16 @@ export function ESGMetricsDashboard({ className }: ESGMetricsDashboardProps) {
                   <span className="text-slate-500 dark:text-slate-400">Budget Utilization</span>
                   <span className="text-slate-900 dark:text-white">
                     {formatPercent(
-                      (initiativeStats.totalSpent / initiativeStats.totalBudget) * 100,
+                      roundTo(
+                        multiplyMoney(
+                          divideMoney(
+                            toDecimal(initiativeStats.totalSpent),
+                            toDecimal(initiativeStats.totalBudget)
+                          ),
+                          100
+                        ),
+                        1
+                      ),
                       1
                     )}
                   </span>
@@ -235,7 +245,16 @@ export function ESGMetricsDashboard({ className }: ESGMetricsDashboardProps) {
                     style={{
                       width: `${Math.min(
                         100,
-                        (initiativeStats.totalSpent / initiativeStats.totalBudget) * 100
+                        roundTo(
+                          multiplyMoney(
+                            divideMoney(
+                              toDecimal(initiativeStats.totalSpent),
+                              toDecimal(initiativeStats.totalBudget)
+                            ),
+                            100
+                          ),
+                          1
+                        )
                       )}%`,
                     }}
                   />

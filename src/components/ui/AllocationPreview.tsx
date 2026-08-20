@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { Check, X, Pencil, ArrowRight, TrendingUp } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { formatPercent } from '@/utils/financialFormatting';
+import { divideMoney, multiplyMoney, roundTo, subtractMoney, toDecimal } from '@/utils/money';
 import type { AllocationResult, AllocationEntry } from '@/engines/AllocationEngine';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
@@ -30,7 +31,14 @@ const AllocationRow: React.FC<{
   index: number;
 }> = ({ entry, sourceAmount, index }) => {
   const fmt = useCurrencyFormatter();
-  const effectivePct = sourceAmount > 0 ? (entry.amount / sourceAmount) * 100 : 0;
+  // effectivePct: dimensionless ratio (entry / sourceAmount) × 100.
+  const effectivePct =
+    sourceAmount > 0
+      ? roundTo(
+          multiplyMoney(divideMoney(toDecimal(entry.amount), toDecimal(sourceAmount)), 100),
+          2
+        )
+      : 0;
 
   return (
     <tr
@@ -85,7 +93,10 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
     onAccept?.(result);
   }, [onAccept, result]);
 
-  const remaining = sourceAmount - result.totalAllocated;
+  const remaining = roundTo(
+    subtractMoney(toDecimal(sourceAmount), toDecimal(result.totalAllocated)),
+    2
+  );
   const isBalanced = Math.abs(remaining) < 0.01;
 
   return (
@@ -211,7 +222,15 @@ export const AllocationPreview: React.FC<AllocationPreviewProps> = ({
                 </td>
                 <td className="px-3 py-2 text-xs text-right font-semibold text-[var(--text-primary)]">
                   {sourceAmount > 0
-                    ? formatPercent((result.totalAllocated / sourceAmount) * 100)
+                    ? formatPercent(
+                        roundTo(
+                          multiplyMoney(
+                            divideMoney(toDecimal(result.totalAllocated), toDecimal(sourceAmount)),
+                            100
+                          ),
+                          2
+                        )
+                      )
                     : '—'}
                 </td>
                 <td />

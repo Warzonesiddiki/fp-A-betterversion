@@ -23,7 +23,15 @@ import {
 } from 'recharts';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { addMoney, sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
+import {
+  addMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  toDecimal,
+} from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 interface CapExProject {
@@ -153,7 +161,7 @@ export default function CapExDashboard() {
       key: 'variance',
       header: 'Variance',
       render: (_, r) => {
-        const v = r.budget - r.actual;
+        const v = roundTo(subtractMoney(r.budget, r.actual), 2);
         return (
           <span className={v >= 0 ? 'text-green-400' : 'text-red-400'}>{fmt.currency0(v)}</span>
         );
@@ -356,11 +364,34 @@ export default function CapExDashboard() {
                         <div className="w-full bg-slate-700 rounded-full h-2">
                           <div
                             className="h-2 rounded-full bg-yellow-500"
-                            style={{ width: `${(project.actual / project.budget) * 100}%` }}
+                            style={{
+                              width: `${
+                                project.budget > 0
+                                  ? roundTo(
+                                      multiplyMoney(
+                                        divideMoney(
+                                          toDecimal(project.actual),
+                                          toDecimal(project.budget)
+                                        ),
+                                        100
+                                      ),
+                                      2
+                                    )
+                                  : 0
+                              }%`,
+                            }}
                           />
                         </div>
                         <div className="text-xs text-slate-400 mt-1">
-                          {Math.round((project.actual / project.budget) * 100)}% spent
+                          {project.budget > 0
+                            ? `${roundTo(
+                                multiplyMoney(
+                                  divideMoney(toDecimal(project.actual), toDecimal(project.budget)),
+                                  100
+                                ),
+                                0
+                              )}% spent`
+                            : '0% spent'}
                         </div>
                       </div>
                     )}

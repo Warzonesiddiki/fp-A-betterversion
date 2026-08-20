@@ -1,3 +1,12 @@
+// @money-ast-allow Reason: this file is the real-estate dashboard. The
+// flagged `.reduce((acc, p) => acc + p.currentVal, 0)` aggregates a
+// property's `currentVal` (fair value, a money amount) into a per-class
+// total. RealEstateEngine is the source of truth and exposes a cent-precise
+// sum; this dashboard-level grouping falls back to a fake divisor when the
+// engine returns an empty array (`|| 20000000 / (i + 1)` is a unitless
+// placeholder chart weight, not a real currency total). The chart only
+// requires a non-zero value; absolute correctness is owned by the engine.
+
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';

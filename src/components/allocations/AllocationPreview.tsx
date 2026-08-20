@@ -15,6 +15,7 @@ import { AllocationJournalTable } from './AllocationJournalTable';
 import type { JournalEntry } from './AllocationJournalTable';
 import { formatPercent as formatPercentLocal } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { sumMoney, subtractMoney, divideMoney, multiplyMoney, roundTo } from '@/utils/money';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -124,7 +125,7 @@ export function AllocationPreview({
     [results]
   );
   const totalAllocated = useMemo(
-    () => allAllocations.reduce((s, a) => s + a.amount, 0),
+    () => sumMoney(allAllocations.map((a) => a.amount)).toNumber(),
     [allAllocations]
   );
   const journalEntries = useMemo(
@@ -132,7 +133,7 @@ export function AllocationPreview({
     [results, sourceLabel]
   );
 
-  const remaining = sourceAmount - totalAllocated;
+  const remaining = roundTo(subtractMoney(sourceAmount, totalAllocated));
   const isBalanced = Math.abs(remaining) < 0.01;
 
   const byTarget = useMemo(() => {
@@ -244,7 +245,9 @@ export function AllocationPreview({
             <tbody>
               {allAllocations.map((entry, i) => {
                 const effPct =
-                  sourceAmount > 0 ? (entry.amount / sourceAmount) * 100 : entry.percentage;
+                  sourceAmount > 0
+                    ? multiplyMoney(divideMoney(entry.amount, sourceAmount), 100).toNumber()
+                    : entry.percentage;
                 return (
                   <tr
                     key={`${entry.target}-${i}`}

@@ -23,7 +23,7 @@ import {
   Bar,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { roundTo, sumMoney } from '@/utils/money';
+import { divideMoney, multiplyMoney, roundTo, sumMoney, toDecimal } from '@/utils/money';
 import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 const COLORS = ['#f59e0b', '#3b82f6', '#06b6d4', '#6b7280'];
@@ -54,13 +54,28 @@ export default function EnergyProductionDashboard() {
 
   const totalProduction = roundTo(sumMoney(SOURCES.map((src) => src.value)), 2);
   const totalRevenue = roundTo(sumMoney(SOURCES.map((src) => src.revenue)), 2);
-  const totalCost = SOURCES.reduce((s, src) => s + src.cost * src.value, 0);
-  const avgCostPerMWh = totalCost / totalProduction;
-  const capacityFactor = (totalProduction / (15000 * 6)) * 100;
+  // totalCost: cost × MWh for each source, summed on the decimal primitive.
+  const totalCost = roundTo(
+    sumMoney(SOURCES.map((src) => multiplyMoney(toDecimal(src.cost), toDecimal(src.value)))),
+    2
+  );
+  // avgCostPerMWh: totalCost / totalProduction (both money over MWh units
+  // — the result is currency per MWh).
+  const avgCostPerMWh =
+    totalProduction > 0
+      ? roundTo(divideMoney(toDecimal(totalCost), toDecimal(totalProduction)), 2)
+      : 0;
+  // capacityFactor: dimensionless ratio of production over a stated
+  // theoretical max. The 15000*6 is a fixed benchmark, dimensionless over
+  // MWh. The result is a percentage.
+  const capacityFactor = roundTo(
+    multiplyMoney(divideMoney(toDecimal(totalProduction), toDecimal(15000 * 6)), 100),
+    2
+  );
 
   const costVsRevenue = SOURCES.map((s) => ({
     name: s.name,
-    cost: s.cost * s.value,
+    cost: roundTo(multiplyMoney(toDecimal(s.cost), toDecimal(s.value)), 2),
     revenue: s.revenue,
   }));
 
@@ -103,7 +118,7 @@ export default function EnergyProductionDashboard() {
       <div className="grid gap-4 md:grid-cols-4">
         <KPIValue
           label="Total Production"
-          value={`${formatNumber(totalProduction / 1000, 1)}GWh`}
+          value={`${formatNumber(divideMoney(toDecimal(totalProduction), toDecimal(1000)).toNumber(), 1)}GWh`}
           icon={<Zap className="h-4 w-4" />}
         />
         <KPIValue

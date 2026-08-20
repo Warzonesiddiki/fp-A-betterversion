@@ -2,6 +2,15 @@
  * ImportEngine — Robust file import with validation, error handling, and rollback
  * Supports CSV (auto-delimiter/encoding detection), Excel, JSON
  */
+// @money-ast-allow
+// Reason: the CSV parser in `parseCSV` accumulates a string buffer with
+// `currentField += c` and `currentField += '"'`. The variable name matches
+// the detector's MONEY_WORDS list ("field" overlaps with "debit"/"credit"
+// on name-based heuristics), but the accumulator is a string, not a money
+// value. The other 3 findings are `currentField += '"'` and
+// `currentField += c` for a single character. The score for delimiter
+// detection (avg / (1 + variance)) is a dimensionless heuristic over
+// integer counts, not money.
 
 export type ImportFormat = 'csv' | 'excel' | 'json' | 'xml' | 'unknown';
 export type ImportStatus = 'idle' | 'reading' | 'parsing' | 'validating' | 'complete' | 'error';

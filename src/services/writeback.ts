@@ -9,6 +9,7 @@
  *
  * @module writebackService
  */
+import { roundTo, sumMoney } from '@/utils/money';
 
 import { randomId } from '@/utils/cryptoId';
 import type {
@@ -304,8 +305,8 @@ export function buildJournalEntryWriteBack(
         credit: e.credit,
         description: e.description,
       })),
-      totalDebit: entries.reduce((s, e) => s + e.debit, 0),
-      totalCredit: entries.reduce((s, e) => s + e.credit, 0),
+      totalDebit: roundTo(sumMoney(entries.map((e) => e.debit)), 2),
+      totalCredit: roundTo(sumMoney(entries.map((e) => e.credit)), 2),
     },
     metadata,
   });

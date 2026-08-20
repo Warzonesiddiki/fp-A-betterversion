@@ -8,7 +8,7 @@ import { DataTable, Column } from '@/components/ui/DataTable';
 import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
 import { Factory, DollarSign, Layers, TrendingUp } from 'lucide-react';
 import type { GLEntry } from '@/types';
-import { roundTo, sumMoney } from '@/utils/money';
+import { addMoney, roundTo, sumMoney } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 function computeManufacturingStats(entries: readonly GLEntry[]) {
@@ -29,9 +29,9 @@ function computeManufacturingStats(entries: readonly GLEntry[]) {
       net: 0,
       count: 0,
     };
-    existing.debit += e.debit;
-    existing.credit += e.credit;
-    existing.net += e.netChange;
+    existing.debit = addMoney(existing.debit, e.debit ?? 0).toNumber();
+    existing.credit = addMoney(existing.credit, e.credit ?? 0).toNumber();
+    existing.net = addMoney(existing.net, e.netChange ?? 0).toNumber();
     existing.count += 1;
     accountMap.set(e.accountCode, existing);
   }

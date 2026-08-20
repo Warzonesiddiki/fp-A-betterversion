@@ -4,6 +4,7 @@ import { cn } from '@/utils/cn';
 import { formatPercent } from '@/utils/financialFormatting';
 import type { AllocationResult, AllocationMethod } from '@/engines/AllocationEngine';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { sumMoney } from '@/utils/money';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -239,9 +240,9 @@ export const AllocationHistory: React.FC<AllocationHistoryProps> = ({
 
   const totalCount = entries.length;
   const appliedCount = entries.filter((e) => e.status === 'applied').length;
-  const totalValue = entries
-    .filter((e) => e.status === 'applied')
-    .reduce((s, e) => s + e.result.totalAllocated, 0);
+  const totalValue = sumMoney(
+    entries.filter((e) => e.status === 'applied').map((e) => e.result.totalAllocated)
+  ).toNumber();
 
   return (
     <div

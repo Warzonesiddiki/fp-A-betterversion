@@ -15,7 +15,14 @@ import {
 import { TrendingDown, Calculator, Download, Settings } from 'lucide-react';
 import { DepreciationEngine, type DepreciationEntry } from '@/engines/DepreciationEngine';
 import Decimal from 'decimal.js';
-import { roundTo, subtractMoney, sumMoney } from '@/utils/money';
+import {
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  toDecimal,
+} from '@/utils/money';
 
 /**
  * GAP-1 (F-0006) — exact-decimal depreciation page totals.
@@ -236,7 +243,17 @@ export default function DepreciationPage() {
           <CardContent className="p-4">
             <KPIValue
               label="Depreciation Rate"
-              value={totalCost > 0 ? (totalAccumulated / totalCost) * 100 : 0}
+              value={
+                totalCost > 0
+                  ? roundTo(
+                      multiplyMoney(
+                        divideMoney(toDecimal(totalAccumulated), toDecimal(totalCost)),
+                        100
+                      ),
+                      2
+                    )
+                  : 0
+              }
               format="percent"
             />
           </CardContent>
@@ -319,10 +336,10 @@ export default function DepreciationPage() {
                   >
                     <td className="px-3 py-2">{asset.name}</td>
                     <td className="px-3 py-2 text-right font-mono">
-                      ${Math.round(asset.cost / 1000)}K
+                      ${roundTo(divideMoney(asset.cost, 1000), 0)}K
                     </td>
                     <td className="px-3 py-2 text-right font-mono" data-testid={`nbv-${asset.id}`}>
-                      ${Math.round(asset.currentValue / 1000)}K
+                      ${roundTo(divideMoney(asset.currentValue, 1000), 0)}K
                     </td>
                     <td className="px-3 py-2 text-center text-xs">{asset.method}</td>
                   </tr>

@@ -70,9 +70,9 @@ export default function CashFlowPage() {
     const balance = (arr: typeof entries, prefix: string, isLiability = false) => {
       const filtered = arr.filter((e) => (e.accountCode || '').startsWith(prefix));
       if (isLiability) {
-        return roundTo(sumMoney(filtered.map((e) => e.credit - e.debit)), 2);
+        return roundTo(sumMoney(filtered.map((e) => subtractMoney(e.credit, e.debit))), 2);
       }
-      return roundTo(sumMoney(filtered.map((e) => e.debit - e.credit)), 2);
+      return roundTo(sumMoney(filtered.map((e) => subtractMoney(e.debit, e.credit))), 2);
     };
 
     const netIncome = (() => {
@@ -80,7 +80,7 @@ export default function CashFlowPage() {
         sumMoney(
           periodEntries
             .filter((e) => (e.accountCode || '').startsWith('4'))
-            .map((e) => e.credit - e.debit)
+            .map((e) => subtractMoney(e.credit, e.debit))
         ),
         2
       );
@@ -91,7 +91,7 @@ export default function CashFlowPage() {
               (e) =>
                 (e.accountCode || '').startsWith('5') || (e.accountCode || '').startsWith('6')
             )
-            .map((e) => e.debit - e.credit)
+            .map((e) => subtractMoney(e.debit, e.credit))
         ),
         2
       );
@@ -106,7 +106,7 @@ export default function CashFlowPage() {
               (e.accountCode || '').startsWith('6') &&
               (e.description || '').toLowerCase().includes('deprec')
           )
-          .map((e) => e.debit - e.credit)
+          .map((e) => subtractMoney(e.debit, e.credit))
       ),
       2
     );
@@ -129,7 +129,7 @@ export default function CashFlowPage() {
       sumMoney(
         periodEntries
           .filter((e) => (e.accountCode || '').startsWith('31'))
-          .map((e) => e.debit - e.credit)
+          .map((e) => subtractMoney(e.debit, e.credit))
       ),
       2
     );

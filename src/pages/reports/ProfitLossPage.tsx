@@ -38,7 +38,7 @@ export function computeProfitLoss(
     sumMoney(
       filtered
         .filter((e) => (e.accountCode || '').startsWith('4'))
-        .map((e) => e.credit - e.debit)
+        .map((e) => subtractMoney(e.credit, e.debit))
     ),
     2
   );
@@ -46,7 +46,7 @@ export function computeProfitLoss(
     sumMoney(
       filtered
         .filter((e) => (e.accountCode || '').startsWith('5'))
-        .map((e) => Math.abs(e.debit - e.credit))
+        .map((e) => Math.abs(subtractMoney(e.debit, e.credit).toNumber()))
     ),
     2
   );
@@ -54,7 +54,7 @@ export function computeProfitLoss(
     sumMoney(
       filtered
         .filter((e) => (e.accountCode || '').startsWith('6'))
-        .map((e) => Math.abs(e.debit - e.credit))
+        .map((e) => Math.abs(subtractMoney(e.debit, e.credit).toNumber()))
     ),
     2
   );

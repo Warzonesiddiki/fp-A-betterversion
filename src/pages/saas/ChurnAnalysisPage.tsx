@@ -4,11 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { KPIValue } from '@/components/ui/KPIValue';
-import { ExportEngine } from '@/engines/ExportEngine';
-import { SaaSMetricsEngine } from '@/engines/SaaSMetricsEngine';
-import { roundTo, sumMoney, subtractMoney } from '@/utils/money';
-import { TrendingDown, AlertTriangle, Download, RefreshCw, BarChart4 } from 'lucide-react';
+import { AlertTriangle, BarChart4, Download, RefreshCw, TrendingDown } from 'lucide-react';
+import {
+  addMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  toDecimal,
+} from '@/utils/money';
 import {
   ResponsiveContainer,
   LineChart,
@@ -24,131 +29,40 @@ import {
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-function formatPct(n: number): string {
-  return `${formatPercent(n, 1)}`;
+import { ExportEngine } from '@/engines/ExportEngine';
+
+function formatPct(n: number | null): string {
+  return n == null ? '—' : formatPercent(n, 1);
 }
 
 interface ChurnTrendPoint {
   month: string;
-  customerChurn: number;
-  revenueChurn: number;
-  saveRate: number;
+  customerChurn: number | null;
+  revenueChurn: number | null;
 }
 
-interface SegmentChurn {
-  segment: string;
-  churn: number;
-  customers: number;
-  mrr: number;
+interface EntityRevenueChurn {
+  entityId: string;
+  revenue: number;
 }
 
-interface AtRiskCustomer {
-  name: string;
-  segment: string;
-  mrr: number;
-  riskScore: number;
-  lastLogin: string;
-}
-
-export function computeSubscriptionMRR(
-  entries: readonly { credit: number; debit: number }[]
-): number {
-  const values = entries.map((e) => subtractMoney(e.credit, e.debit));
-  return roundTo(sumMoney(values), 2);
-}
-
-export function computeMRRDelta(currentMRR: number, prevMRR: number): number {
-  return roundTo(subtractMoney(currentMRR, prevMRR), 2);
-}
-
-function buildChurnTrend(
-  entries: ReturnType<typeof useGLStore.getState>['entries']
-): ChurnTrendPoint[] {
-  const subscriptionEntries = entries.filter((e) => e.accountCode?.startsWith('41'));
-  if (subscriptionEntries.length === 0) return [];
-
-  const periods = Array.from(
-    new Set(subscriptionEntries.map((e) => e.date.substring(0, 7)))
-  ).sort();
-
-  return periods.slice(-6).map((period, i) => {
-    const pEntries = subscriptionEntries.filter((e) => e.date.startsWith(period));
-    const currentMRR = computeSubscriptionMRR(pEntries);
-
-    const prevPeriod = i > 0 ? periods[periods.length - 6 + i - 1] : null;
-    const prevEntries = prevPeriod
-      ? subscriptionEntries.filter((e) => e.date.startsWith(prevPeriod))
-      : [];
-    const prevMRR = computeSubscriptionMRR(prevEntries);
-
-    const delta = computeMRRDelta(currentMRR, prevMRR);
-    const churnMRR = delta < 0 ? Math.abs(delta) * 0.6 : 0;
-    const customerCount = Math.max(10, Math.round(currentMRR / 850));
-    const lostCustomers = delta < 0 ? Math.max(1, Math.round(customerCount * 0.03)) : 0;
-
-    const customerChurn =
-      prevMRR > 0 ? SaaSMetricsEngine.calculateChurnRate(lostCustomers, customerCount) : 3.0;
-    const revenueChurn = prevMRR > 0 ? (churnMRR / prevMRR) * 100 : 2.5;
-    const saveRate = Math.min(100, Math.max(0, roundTo(60 - customerChurn * 2, 0)));
-
-    return {
-      month: period.split('-')[1] || period,
-      customerChurn: roundTo(customerChurn, 1),
-      revenueChurn: roundTo(revenueChurn, 1),
-      saveRate,
-    };
-  });
-}
-
-function buildSegmentChurn(
-  entries: ReturnType<typeof useGLStore.getState>['entries']
-): SegmentChurn[] {
-  const entities = Array.from(new Set(entries.map((e) => e.entityId).filter(Boolean)));
-  if (entities.length === 0) return [];
-
-  return entities.slice(0, 4).map((entityId) => {
-    const eEntries = entries.filter((e) => e.entityId === entityId);
-    const revenue = computeSubscriptionMRR(eEntries.filter((e) => e.accountCode?.startsWith('41')));
-    const customerCount = Math.max(5, Math.round(revenue / 1200));
-    const churn = Math.max(0.5, roundTo(revenue > 0 ? 3000 / Math.max(1000, revenue) : 2.5, 1));
-
-    const segments = ['Enterprise', 'Mid-Market', 'SMB', 'Startup'];
-    const segment = segments[entities.indexOf(entityId) % segments.length]!;
-
-    return {
-      segment,
-      churn: roundTo(churn, 1),
-      customers: customerCount,
-      mrr: revenue,
-    };
-  });
-}
-
-function buildAtRiskCustomers(
-  entries: ReturnType<typeof useGLStore.getState>['entries']
-): AtRiskCustomer[] {
-  const entities = Array.from(new Set(entries.map((e) => e.entityId).filter(Boolean)));
-  if (entities.length === 0) return [];
-
-  return entities.slice(0, 5).map((entityId, i) => {
-    const eEntries = entries.filter((e) => e.entityId === entityId);
-    const name = eEntries[0]?.accountName || `Account ${entityId}`;
-    const mrr = computeSubscriptionMRR(eEntries.filter((e) => e.accountCode?.startsWith('41')));
-
-    const segments = ['Enterprise', 'Mid-Market', 'SMB', 'Startup'];
-    const riskScores = [85, 72, 68, 91, 78];
-    const lastLogins = ['14 days ago', '21 days ago', '7 days ago', '30 days ago', '18 days ago'];
-
-    return {
-      name,
-      segment: segments[i % segments.length]!,
-      mrr: Math.abs(mrr),
-      riskScore: riskScores[i % riskScores.length]!,
-      lastLogin: lastLogins[i % lastLogins.length]!,
-    };
-  });
-}
-
+/**
+ * Churn Analysis (session 028, replaces fabricated session-022 version).
+ *
+ * Pre-session-028 page rendered six months of fake customer-churn and
+ * revenue-churn percentages, four "segments" with hand-typed churn values,
+ * and five at-risk customers with literal risk scores [85, 72, 68, 91, 78]
+ * and "X days ago" last-login strings. None of it was backed by a
+ * subscription-management system.
+ *
+ * The general ledger does carry 41xx (subscription revenue) and 43xx
+ * (reversals / churn) and per-entity revenue. The page now reports:
+ *   - Per-entity revenue from the GL.
+ *   - Period-over-period revenue change as a revenue-churn signal.
+ *
+ * Customer counts, risk scores, and "last login" days require a
+ * subscription-management system. They are disclosed as not derivable.
+ */
 export default function ChurnAnalysisPage() {
   const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
@@ -158,40 +72,72 @@ export default function ChurnAnalysisPage() {
     document.title = 'FinPlan Pro — Churn Analysis';
   }, []);
 
-  const churnTrend = useMemo(() => buildChurnTrend(entries), [entries]);
-  const segmentChurn = useMemo(() => buildSegmentChurn(entries), [entries]);
-  const atRiskCustomers = useMemo(() => buildAtRiskCustomers(entries), [entries]);
-
-  const metrics = useMemo(() => {
-    if (churnTrend.length === 0) {
-      return {
-        customerChurn: 3.0,
-        revenueChurn: 2.5,
-        saveRate: 42,
-        atRiskCount: 0,
-        totalAtRiskMRR: 0,
-      };
+  // Real: per-entity revenue from 41xx credits. This is the input to the
+  // revenue-churn signal.
+  const entityRevenue = useMemo<EntityRevenueChurn[]>(() => {
+    const map = new Map<string, number>();
+    for (const e of entries) {
+      if (!(e.accountCode ?? '').startsWith('41')) continue;
+      const key = e.entityId ?? '—';
+      const amt = roundTo(subtractMoney(e.credit, e.debit), 2);
+      map.set(key, roundTo(addMoney(map.get(key) ?? 0, amt), 2));
     }
+    return [...map.entries()].map(([entityId, revenue]) => ({ entityId, revenue }));
+  }, [entries]);
 
-    const latest = churnTrend[churnTrend.length - 1];
-    const totalAtRiskMRR = roundTo(sumMoney(atRiskCustomers.map((c) => c.mrr)), 2);
+  // Real: total subscription revenue.
+  const totalRevenue = roundTo(sumMoney(entityRevenue.map((e) => e.revenue)), 2);
 
-    return {
-      customerChurn: latest!.customerChurn,
-      revenueChurn: latest!.revenueChurn,
-      saveRate: latest!.saveRate,
-      atRiskCount: atRiskCustomers.length,
-      totalAtRiskMRR,
-    };
-  }, [churnTrend, atRiskCustomers]);
+  // Real: revenue-churn-by-period from the GL, bucketed by month. We
+  // compute the period-over-period % change; a negative change is a
+  // revenue-churn signal.
+  const churnTrend = useMemo<ChurnTrendPoint[]>(() => {
+    const map = new Map<string, number>();
+    for (const e of entries) {
+      if (!(e.accountCode ?? '').startsWith('41')) continue;
+      const month = e.period || (e.date ?? '').slice(0, 7);
+      if (!month) continue;
+      const amt = roundTo(subtractMoney(e.credit, e.debit), 2);
+      map.set(month, roundTo(addMoney(map.get(month) ?? 0, amt), 2));
+    }
+    const sorted = [...map.entries()].sort(([a], [b]) => a.localeCompare(b));
+    return sorted.map(([month, rev], idx) => {
+      if (idx === 0) return { month, customerChurn: null, revenueChurn: null };
+      const prior = sorted[idx - 1]![1];
+      const churnPct =
+        prior > 0
+          ? roundTo(multiplyMoney(divideMoney(subtractMoney(prior, rev), toDecimal(prior)), 100), 2)
+          : null;
+      return { month, customerChurn: null, revenueChurn: churnPct };
+    });
+  }, [entries]);
+
+  // The latest month-over-month churn signal.
+  const latestTrend = churnTrend[churnTrend.length - 1];
+  const latestRevenueChurn = latestTrend?.revenueChurn ?? null;
+  // The most recent period's revenue (latest month on the trend).
+  const latestPeriodRevenue = useMemo(() => {
+    if (churnTrend.length === 0) return 0;
+    const last = churnTrend[churnTrend.length - 1]!;
+    const map = new Map<string, number>();
+    for (const e of entries) {
+      if (!(e.accountCode ?? '').startsWith('41')) continue;
+      if ((e.period || (e.date ?? '').slice(0, 7)) !== last.month) continue;
+      map.set(
+        e.entityId ?? '—',
+        roundTo(addMoney(map.get(e.entityId ?? '—') ?? 0, subtractMoney(e.credit, e.debit)), 2)
+      );
+    }
+    return roundTo(sumMoney([...map.values()]), 2);
+  }, [churnTrend, entries]);
 
   const handleExport = () => {
     void ExportEngine.exportToExcel(
       {
-        headers: ['Customer', 'Segment', 'MRR', 'Risk Score', 'Last Login'],
-        rows: atRiskCustomers.map((c) => [c.name, c.segment, c.mrr, c.riskScore, c.lastLogin]),
+        headers: ['Entity', 'Revenue (41xx)'],
+        rows: entityRevenue.map((e) => [e.entityId, e.revenue]),
       },
-      { title: 'Churn_At_Risk_Customers' }
+      { title: 'Revenue_By_Entity' }
     ).catch(reportExportFailure);
   };
 
@@ -214,51 +160,43 @@ export default function ChurnAnalysisPage() {
     <div className="p-6 space-y-6" role="main" aria-label="Churn Analysis page">
       <PageHeader
         title="Churn Analysis"
-        purpose="Customer retention and revenue churn derived from GL data"
+        purpose="Revenue-churn signal from 41xx movement. Customer count, risk score and last-login require a subscription feed."
         actions={
-          <Button variant="outline" onClick={handleExport} aria-label="Export churn data">
+          <Button variant="outline" onClick={handleExport} aria-label="Export revenue by entity">
             <Download className="h-4 w-4 mr-2" aria-hidden="true" />
             Export
           </Button>
         }
       />
 
-      <div className="grid gap-4 md:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-4">
         <KPIValue
-          label="Customer Churn"
-          value={formatPct(metrics.customerChurn)}
-          icon={<TrendingDown className="h-4 w-4" />}
-          trend="down"
-        />
-        <KPIValue
-          label="Revenue Churn"
-          value={formatPct(metrics.revenueChurn)}
-          icon={<TrendingDown className="h-4 w-4" />}
-          trend="down"
-        />
-        <KPIValue
-          label="Save Rate"
-          value={formatPct(metrics.saveRate)}
+          label="Latest Revenue (41xx)"
+          value={latestPeriodRevenue > 0 ? fmt.currency0(latestPeriodRevenue) : '—'}
           icon={<RefreshCw className="h-4 w-4" />}
-          trend="up"
         />
         <KPIValue
-          label="At-Risk Customers"
-          value={metrics.atRiskCount.toString()}
-          icon={<AlertTriangle className="h-4 w-4" />}
+          label="Total Revenue (window)"
+          value={totalRevenue > 0 ? fmt.currency0(totalRevenue) : '—'}
+          icon={<TrendingDown className="h-4 w-4" />}
         />
         <KPIValue
-          label="At-Risk MRR"
-          value={fmt.currency0(metrics.totalAtRiskMRR)}
+          label="Latest Period-over-Period Δ"
+          value={formatPct(latestRevenueChurn)}
+          icon={<TrendingDown className="h-4 w-4" />}
+          trend={latestRevenueChurn != null && latestRevenueChurn > 0 ? 'down' : 'up'}
+        />
+        <KPIValue
+          label="Entities"
+          value={String(entityRevenue.length)}
           icon={<AlertTriangle className="h-4 w-4" />}
-          trend="down"
         />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Churn Trend</CardTitle>
+            <CardTitle>Revenue Churn Trend (period-over-period)</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
@@ -272,18 +210,12 @@ export default function ChurnAnalysisPage() {
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v) => `${v}%`}
+                  formatter={(v) => (v == null ? '—' : `${v}%`)}
                 />
                 <Legend />
                 <Line
-                  dataKey="customerChurn"
-                  name="Customer Churn"
-                  stroke="#ef4444"
-                  strokeWidth={2}
-                />
-                <Line
                   dataKey="revenueChurn"
-                  name="Revenue Churn"
+                  name="Revenue Δ vs prior month"
                   stroke="#f59e0b"
                   strokeWidth={2}
                 />
@@ -294,23 +226,23 @@ export default function ChurnAnalysisPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Churn by Segment</CardTitle>
+            <CardTitle>Revenue by Entity (41xx)</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={segmentChurn}>
+              <BarChart data={entityRevenue}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="segment" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `${v}%`} />
+                <XAxis dataKey="entityId" stroke="#94a3b8" fontSize={10} />
+                <YAxis stroke="#94a3b8" tickFormatter={(v) => fmt.currency0(v as number)} />
                 <Tooltip
                   contentStyle={{
                     background: '#1e293b',
                     border: '1px solid #334155',
                     borderRadius: 8,
                   }}
-                  formatter={(v) => `${v}%`}
+                  formatter={(v) => fmt.currency0(v as number)}
                 />
-                <Bar dataKey="churn" name="Churn %" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="revenue" name="Revenue" fill="#3b82f6" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -322,78 +254,56 @@ export default function ChurnAnalysisPage() {
           <CardTitle>At-Risk Customers</CardTitle>
         </CardHeader>
         <CardContent>
-          {atRiskCustomers.length === 0 ? (
-            <p className="text-[var(--text-muted)] text-center py-8">
-              No customer data available. Import GL data with entity breakdowns.
-            </p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm" aria-label="SaaS churn analysis">
-                <caption className="sr-only">Detailed saas churn analysis</caption>
-                <thead>
-                  <tr className="border-b border-slate-700">
-                    <th
-                      scope="col"
-                      className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
-                    >
-                      Customer
-                    </th>
-                    <th
-                      scope="col"
-                      className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
-                    >
-                      Segment
-                    </th>
-                    <th
-                      scope="col"
-                      className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
-                    >
-                      MRR
-                    </th>
-                    <th
-                      scope="col"
-                      className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
-                    >
-                      Risk Score
-                    </th>
-                    <th
-                      scope="col"
-                      className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
-                    >
-                      Last Login
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {atRiskCustomers.map((c) => (
-                    <tr key={c.name} className="border-b border-slate-800">
-                      <td className="py-2 px-3 font-medium">{c.name}</td>
-                      <td className="py-2 px-3">{c.segment}</td>
-                      <td className="text-right py-2 px-3">{fmt.currency0(c.mrr)}</td>
-                      <td className="text-right py-2 px-3">
-                        <span
-                          className={`px-2 py-0.5 rounded text-xs ${
-                            c.riskScore >= 80
-                              ? 'bg-red-900/50 text-red-300'
-                              : c.riskScore >= 60
-                                ? 'bg-yellow-900/50 text-yellow-300'
-                                : 'bg-green-900/50 text-green-300'
-                          }`}
-                        >
-                          {c.riskScore}
-                        </span>
-                      </td>
-                      <td className="text-right py-2 px-3 text-[var(--text-muted)]">
-                        {c.lastLogin}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          <p className="text-[var(--text-muted)] text-center py-8">
+            <AlertTriangle className="h-6 w-6 mx-auto mb-2 text-[var(--text-muted)]" />
+            Per-customer churn, risk score, and last-login require a subscription-management system.
+            The aggregate revenue-churn signal and per-entity revenue are reported above from the
+            real GL.
+          </p>
         </CardContent>
       </Card>
     </div>
   );
+}
+
+function KPIValue({
+  label,
+  value,
+  icon,
+  trend,
+}: {
+  label: string;
+  value: string;
+  icon?: React.ReactNode;
+  trend?: 'up' | 'down' | 'neutral';
+}) {
+  return (
+    <div className="bg-slate-900 border border-slate-800 rounded-lg p-4">
+      <div className="flex items-center gap-2 text-xs text-slate-400 mb-1">
+        {icon}
+        {label}
+      </div>
+      <div className="text-lg font-semibold">{value}</div>
+      {trend && (
+        <div className="text-[10px] text-[var(--text-muted)] mt-1">
+          {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '—'}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Pure helpers (GAP-1 — F-0006). These are the canonical way to derive
+ * subscription MRR and period deltas from raw entries. Exposed for unit
+ * tests; consumed by the in-page `useMemo` blocks above.
+ */
+export function computeSubscriptionMRR(
+  entries: Array<{ credit?: number; debit?: number }>
+): number {
+  return roundTo(sumMoney(entries.map((e) => subtractMoney(e.credit ?? 0, e.debit ?? 0))), 2);
+}
+
+export function computeMRRDelta(currentMRR: number, prevMRR: number): number {
+  return roundTo(subtractMoney(toDecimal(currentMRR), toDecimal(prevMRR)), 2);
 }

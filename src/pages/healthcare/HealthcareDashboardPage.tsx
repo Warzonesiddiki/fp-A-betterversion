@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { PeriodPicker } from '@/components/ui/PeriodPicker';
 import { DataTable, Column } from '@/components/ui/DataTable';
-import { sumMoney, roundTo } from '@/utils/money';
+import { divideMoney, roundTo, sumMoney } from '@/utils/money';
 
 import {
   ResponsiveContainer,
@@ -50,20 +50,40 @@ export default function HealthcareDashboardPage() {
         align: 'right',
         render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
       },
-      { key: 'patients', header: 'Patient Count', align: 'right' },
       {
         key: 'margin',
         header: 'Operating Margin',
         align: 'right',
-        render: (v) => (
-          <span
-            className={(v as number) > 20 ? 'text-green-600 font-bold' : 'text-blue-600 font-bold'}
-          >
-            {formatPercent(v as number, 1)}
-          </span>
-        ),
+        render: (v) =>
+          v == null ? (
+            <span className="text-[var(--text-muted)]">—</span>
+          ) : (
+            <span
+              className={
+                (v as number) > 20 ? 'text-green-600 font-bold' : 'text-blue-600 font-bold'
+              }
+            >
+              {formatPercent(v as number, 1)}
+            </span>
+          ),
       },
-      { key: 'efficiency', header: 'Efficiency Score', align: 'right', render: (v) => `${v}%` },
+      {
+        key: 'efficiency',
+        header: 'Efficiency Score',
+        align: 'right',
+        render: (v) => (v == null ? <span className="text-[var(--text-muted)]">—</span> : `${v}%`),
+      },
+      {
+        key: 'patients',
+        header: 'Patient Count',
+        align: 'right',
+        render: (v) =>
+          v == null ? (
+            <span className="text-[var(--text-muted)]">—</span>
+          ) : (
+            <span>{String(v)}</span>
+          ),
+      },
     ],
     [fmtCurrency]
   );
@@ -85,6 +105,10 @@ export default function HealthcareDashboardPage() {
 
     return depts
       .map((d) => {
+        // Derive revenue from the 40xx GL slice for this department suffix.
+        // The general ledger does not carry department-level opex, encounter
+        // counts, or operating-margin inputs, so the other columns are
+        // returned as null and rendered as 'not derivable' (see columns).
         const deptRevenue = roundTo(
           sumMoney(
             entries
@@ -97,12 +121,9 @@ export default function HealthcareDashboardPage() {
         return {
           dept: d.name,
           revenue: deptRevenue,
-          patients: Math.floor(deptRevenue / 2500) || 0,
-          margin: Math.min(30, Math.max(15, roundTo(15 + ((d.name.charCodeAt(0) * 3) % 15), 1))),
-          efficiency: Math.min(
-            97,
-            Math.max(85, roundTo(85 + ((d.name.charCodeAt(0) * 2) % 12), 0))
-          ),
+          patients: null as number | null,
+          margin: null as number | null,
+          efficiency: null as number | null,
         };
       })
       .filter((d) => d.revenue > 0);
@@ -148,11 +169,21 @@ export default function HealthcareDashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
           label="Estimated Admissions"
-          value={Math.floor(stats.netRevenue / 5000).toLocaleString()}
+          // Admission estimate = net revenue / $5,000 average revenue per admission.
+          // Disclosed modelling basis, not a measured encounter count.
+          value={Math.floor(roundTo(divideMoney(stats.netRevenue, 5000), 0)).toLocaleString()}
           change={4.2}
           changeLabel="inpatient up 5%"
           trend="up"
-          sparklineData={[1100, 1150, 1120, 1180, 1210, 1230, stats.netRevenue / 5000]}
+          sparklineData={[
+            1100,
+            1150,
+            1120,
+            1180,
+            1210,
+            1230,
+            roundTo(divideMoney(stats.netRevenue, 5000), 0),
+          ]}
         />
         <KPIValue
           label="Avg. Length of Stay"
@@ -168,7 +199,16 @@ export default function HealthcareDashboardPage() {
           change={12.1}
           changeLabel="reimbursements up"
           trend="up"
-          sparklineData={[7.2, 7.5, 7.4, 7.8, 8.1, 8.3, stats.netRevenue / 1000000]}
+          // Sparkline is millions of dollars — convert on decimal, round to 1 dp.
+          sparklineData={[
+            7.2,
+            7.5,
+            7.4,
+            7.8,
+            8.1,
+            8.3,
+            roundTo(divideMoney(stats.netRevenue, 1_000_000), 1),
+          ]}
         />
         <KPIValue
           label="Collection Rate"
@@ -245,49 +285,24 @@ export default function HealthcareDashboardPage() {
             <CardDescription>Bed occupancy and room efficiency</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-medium">
-                <span>ICU Occupancy</span>
-                <span className="text-red-600 font-bold">92%</span>
-              </div>
-              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
-                <div className="bg-red-500 h-2 rounded-full" style={{ width: '92%' }} />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-medium">
-                <span>General Ward</span>
-                <span className="text-green-600 font-bold">74%</span>
-              </div>
-              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
-                <div className="bg-green-500 h-2 rounded-full" style={{ width: '74%' }} />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm font-medium">
-                <span>Surgery Suites</span>
-                <span className="text-blue-600 font-bold">85%</span>
-              </div>
-              <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
-                <div className="bg-blue-500 h-2 rounded-full" style={{ width: '85%' }} />
-              </div>
-            </div>
-
-            <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700">
-              <div className="flex items-center gap-2 text-slate-700 font-bold text-xs uppercase tracking-wider mb-2">
-                <Activity className="h-3 w-3" />
-                Staffing Status
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-lg font-bold">428</div>
-                  <div className="text-[10px] text-[var(--text-muted)]">Nurses on Shift</div>
-                </div>
-                <div>
-                  <div className="text-lg font-bold">84</div>
-                  <div className="text-[10px] text-[var(--text-muted)]">On-call Doctors</div>
-                </div>
-              </div>
+            {/* Facility-utilization percentages and on-shift staffing counts are
+                NOT derivable from a general ledger. They require a bed-management
+                feed and a workforce roster. We disclose the gap rather than
+                ship hand-typed placeholders. */}
+            <div className="text-sm text-[var(--text-muted)] space-y-2">
+              <p>
+                <span className="font-medium text-[var(--text-primary)]">
+                  ICU Occupancy, General Ward, Surgery Suites
+                </span>{' '}
+                — bed-occupancy percentages are not derivable from the GL. Connect a bed-management
+                feed to populate this card.
+              </p>
+              <p>
+                <span className="font-medium text-[var(--text-primary)]">
+                  Nurses on Shift, On-call Doctors
+                </span>{' '}
+                — staffing counts require a workforce roster, not a ledger.
+              </p>
             </div>
           </CardContent>
         </Card>

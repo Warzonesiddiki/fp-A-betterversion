@@ -5,6 +5,7 @@
 // =============================================================================
 
 import { randomId } from '@/utils/cryptoId';
+import { divideMoney, roundTo, sumMoney, toDecimal } from '../utils/money';
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -351,8 +352,9 @@ export class WhatIfSandboxEngine {
       };
     }
 
-    const totalDelta = differences.reduce((sum, d) => sum + d.delta, 0);
-    const totalPercent = differences.reduce((sum, d) => sum + d.percentChange, 0);
+    const totalDelta = sumMoney(differences.map((d) => d.delta));
+    const totalPercent = sumMoney(differences.map((d) => d.percentChange));
+    const count = toDecimal(differences.length);
 
     return {
       totalDifferences: differences.length,
@@ -360,8 +362,8 @@ export class WhatIfSandboxEngine {
       largestPercentChange:
         [...differences].sort((a, b) => Math.abs(b.percentChange) - Math.abs(a.percentChange))[0] ??
         null,
-      averageDelta: Math.round((totalDelta / differences.length) * 100) / 100,
-      averagePercentChange: Math.round((totalPercent / differences.length) * 100) / 100,
+      averageDelta: roundTo(divideMoney(totalDelta, count), 2),
+      averagePercentChange: roundTo(divideMoney(totalPercent, count), 2),
     };
   }
 

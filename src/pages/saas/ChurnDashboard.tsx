@@ -22,6 +22,7 @@ import {
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { sumMoney } from '@/utils/money';
 function formatPct(n: number): string {
   return `${formatPercent(n, 1)}`;
 }
@@ -72,7 +73,7 @@ export default function ChurnDashboard() {
 
   const metrics = useMemo(() => {
     const latest = MONTHLY_CHURN[MONTHLY_CHURN.length - 1];
-    const totalAtRiskMRR = AT_RISK.reduce((s, c) => s + c.mrr, 0);
+    const totalAtRiskMRR = sumMoney(AT_RISK.map((c) => c.mrr)).toNumber();
     return {
       customerChurn: latest!.customerChurn,
       revenueChurn: latest!.revenueChurn,

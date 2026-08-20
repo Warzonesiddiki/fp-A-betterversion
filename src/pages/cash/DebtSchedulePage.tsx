@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { DebtScheduleEngine } from '@/engines/DebtScheduleEngine';
+import { multiplyMoney, roundTo, sumMoney, toDecimal } from '@/utils/money';
 import {
   ResponsiveContainer,
   BarChart,
@@ -68,8 +69,11 @@ export default function DebtSchedulePage() {
   );
 
   const totalDebt = CONSOLIDATED.totalDebt;
-  const weightedRate = CONSOLIDATED.weightedAverageRate * 100;
-  const annualDebtService = CONSOLIDATED.totalMonthlyPayment * 12;
+  const weightedRate = roundTo(multiplyMoney(toDecimal(CONSOLIDATED.weightedAverageRate), 100), 4);
+  const annualDebtService = roundTo(
+    multiplyMoney(toDecimal(CONSOLIDATED.totalMonthlyPayment), 12),
+    2
+  );
   const dscr = CONSOLIDATED.debtServiceCoverageRatio ?? 0;
 
   // REAL per-instrument display rows: payments, maturity and balance-at-maturity
@@ -95,20 +99,27 @@ export default function DebtSchedulePage() {
       const yearIdx = i + 1;
       const start = (yearIdx - 1) * 12 + 1;
       const end = yearIdx * 12;
-      let principal = 0;
-      let interest = 0;
-      let balance = 0;
+      // principal/interest/balance are summed in decimal.js and converted
+      // back to a rounded number for the chart.
+      const principalEntries: number[] = [];
+      const interestEntries: number[] = [];
+      const balanceEntries: number[] = [];
       for (const { result } of SCHEDULES) {
         for (const e of result.schedule) {
           if (e.period >= start && e.period <= end) {
-            principal += e.principal;
-            interest += e.interest;
+            principalEntries.push(e.principal);
+            interestEntries.push(e.interest);
           }
         }
         const last = result.schedule[Math.min(end, result.schedule.length) - 1];
-        balance += last ? last.endingBalance : 0;
+        if (last) balanceEntries.push(last.endingBalance);
       }
-      return { year: String(baseYear + i), principal, interest, balance };
+      return {
+        year: String(baseYear + i),
+        principal: roundTo(sumMoney(principalEntries), 2),
+        interest: roundTo(sumMoney(interestEntries), 2),
+        balance: roundTo(sumMoney(balanceEntries), 2),
+      };
     });
   }, [SCHEDULES]);
 

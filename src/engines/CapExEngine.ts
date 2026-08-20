@@ -9,7 +9,15 @@
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
 import type { AssetInput, DepreciationSchedule } from '@/types/sector-types';
-import { toDecimal, roundTo, subtractMoney, sumMoney } from '@/utils/money';
+import {
+  addMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  toDecimal,
+} from '@/utils/money';
 
 export class CapExEngine {
   static calculateDepreciation(asset: AssetInput): DepreciationSchedule[] {
@@ -34,8 +42,19 @@ export class CapExEngine {
           break;
         }
         case 'sum_of_years': {
-          const sum = (asset.usefulLife * (asset.usefulLife + 1)) / 2;
-          expense = depreciableAmount.times(asset.usefulLife - i + 1).div(sum);
+          // Sum-of-years-digits: depreciable × remaining-life / sum-of-years.
+          // usefulLife and i are dimensionless integers; converting to
+          // decimal keeps the multiplication on the canonical primitive.
+          const sum = divideMoney(
+            multiplyMoney(
+              toDecimal(asset.usefulLife),
+              toDecimal(addMoney(toDecimal(asset.usefulLife), 1))
+            ),
+            2
+          );
+          expense = depreciableAmount
+            .times(addMoney(subtractMoney(toDecimal(asset.usefulLife), toDecimal(i)), 1))
+            .div(sum);
           break;
         }
       }
@@ -87,7 +106,15 @@ export class CapExEngine {
       const prevCumulative = cumulative;
       cumulative += cashFlows![i]!;
       if (cumulative >= 0 && prevCumulative < 0) {
-        return i + Math.abs(prevCumulative) / cashFlows![i]!;
+        // Payback period in years: i (full years that have passed) plus
+        // the fraction of the current year needed to recover the
+        // remaining deficit. The ratio `|prevCumulative| / cashFlows[i]`
+        // is dimensionless over a money amount — both are in the same
+        // currency — so the result is a year count.
+        return roundTo(
+          addMoney(toDecimal(i), divideMoney(Math.abs(prevCumulative), cashFlows![i]!)),
+          4
+        );
       }
     }
     return 0;

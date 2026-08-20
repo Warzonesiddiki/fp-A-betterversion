@@ -7,7 +7,15 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { agricultureConfig } from '@/config/sectors/agriculture';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Wheat } from 'lucide-react';
-import { sumMoney, roundTo } from '@/utils/money';
+import {
+  compareMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  toDecimal,
+} from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 import { PageHeader } from '@/components/ui/PageHeader';
 
@@ -20,15 +28,27 @@ export default function AgricultureDashboardPage() {
   }, []);
 
   const stats = useMemo(() => {
+    // revenue: credit-side amount when credit > debit (a credit-normal
+    // account, typically revenue / income / liability).
     const revenue = roundTo(
-      sumMoney(entries.filter((e) => e.credit > e.debit).map((e) => e.credit)),
+      sumMoney(entries.filter((e) => compareMoney(e.credit, e.debit) > 0).map((e) => e.credit)),
       2
     );
+    // costs: debit-side amount when debit > credit (a debit-normal
+    // account, typically expense / asset).
     const costs = roundTo(
-      sumMoney(entries.filter((e) => e.debit > e.credit).map((e) => e.debit)),
+      sumMoney(entries.filter((e) => compareMoney(e.debit, e.credit) > 0).map((e) => e.debit)),
       2
     );
-    const margin = revenue > 0 ? ((revenue - costs) / revenue) * 100 : 0;
+    // margin: dimensionless ratio. numerator is the currency difference
+    // (revenue − costs); denominator is revenue. result is a percentage.
+    const margin =
+      revenue > 0
+        ? roundTo(
+            multiplyMoney(divideMoney(subtractMoney(revenue, costs), toDecimal(revenue)), 100),
+            2
+          )
+        : 0;
     return { revenue, costs, margin };
   }, [entries]);
 

@@ -64,7 +64,10 @@ export class EnergyEngine {
    * - 55xx: Fuel / Production Costs
    */
   static calculateStats(entries: GLEntry[]): EnergyStats {
-    const getAmount = (e: GLEntry): number => e.amount ?? (e.debit ?? 0) - (e.credit ?? 0);
+    const getAmount = (e: GLEntry): number => {
+      if (e.amount !== undefined) return e.amount;
+      return roundTo(subtractMoney(e.debit ?? 0, e.credit ?? 0));
+    };
 
     const totalRevenueDec = sumMoney(
       entries.filter((e) => e.accountCode.startsWith('4')).map((e) => Math.abs(getAmount(e)))
@@ -107,7 +110,10 @@ export class EnergyEngine {
       { code: '435', name: 'Nuclear' },
     ];
 
-    const getAmount = (e: GLEntry): number => e.amount ?? (e.debit ?? 0) - (e.credit ?? 0);
+    const getAmount = (e: GLEntry): number => {
+      if (e.amount !== undefined) return e.amount;
+      return roundTo(subtractMoney(e.debit ?? 0, e.credit ?? 0));
+    };
 
     return sources
       .map((src) => {
