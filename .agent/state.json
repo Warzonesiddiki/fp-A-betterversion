@@ -1,7 +1,7 @@
 {
   "codex": "ULTIMA",
-  "session_id": "sess_028",
-  "updated_at": "2026-08-20T01:00:00Z",
+  "session_id": "sess_030",
+  "updated_at": "2026-08-20T13:00:00Z",
   "capabilities": {
     "git": true,
     "gh": true,
@@ -26,20 +26,20 @@
     "lint_command": "npx eslint src --max-warnings 0"
   },
   "health": {
-    "notes": "Session 028 final: money 376 -> 156 (-220, 58% reduction); fabrication 10 -> 0 (full ratchet closure). 14,387 tests pass + 130 server = 14,517 green. SankeyChart + FXPositionGrid + 13 other modules use documented @money-ast-allow file-level suppressions. The detector now distinguishes money-shape from layout-geometry / identity-check / count-arithmetic, with a printed reason per suppression.",
+    "notes": "Session 030 final: money 80 -> 25 (-55, 68.75% reduction); safety 93.45% -> 99.66%. 883/886 monetary modules at zero unsafe ops. Only 3 mockData fixture files remain (25 ops). InsuranceDashboardPage rewritten with chart-of-accounts filters (41xx/43xx/51xx/52xx). Fabrication 0 maintained.",
     "money_ast": {
-      "unsafeOperations": 376,
-      "unsafeModules": 156,
-      "safeModules": 730,
-      "safetyPercent": 82.39
+      "unsafeOperations": 25,
+      "unsafeModules": 3,
+      "safeModules": 883,
+      "safetyPercent": 99.66
     },
     "fabrication": {
       "findings": 10,
       "files": 6,
       "exportEngines": 0
     },
-    "money_ast_safety_pct": 89.39,
-    "money_ast_unsafe_ops": 156,
+    "money_ast_safety_pct": 99.66,
+    "money_ast_unsafe_ops": 25,
     "fabrication_findings": 0
   },
   "queue": [],
@@ -180,9 +180,9 @@
       "status": "IN PROGRESS",
       "target": "AST money safety >= 90%",
       "current": {
-        "unsafeOperations": 156,
-        "unsafeModules": 94,
-        "safetyPercent": 89.39
+        "unsafeOperations": 25,
+        "unsafeModules": 3,
+        "safetyPercent": 99.66
       },
       "completedModules": [
         "src/pages/reports/FinancialStatementTemplates.tsx (59 -> 0; derivation extracted to src/pages/reports/financialStatementData.ts)",
