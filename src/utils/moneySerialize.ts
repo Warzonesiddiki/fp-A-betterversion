@@ -107,15 +107,14 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function isNumericMoneyInput(value: unknown): value is number | string {
-  if (typeof value === 'number') return Number.isFinite(value);
-  if (typeof value === 'string') {
-    if (value.startsWith(MONEY_TAG)) return false;
-    const trimmed = value.trim();
-    if (trimmed.length === 0) return false;
-    return /^-?\d+(\.\d+)?$/.test(trimmed);
-  }
-  return false;
+/**
+ * Only IEEE-754 numbers are rewritten. Canonical decimal *strings* are already
+ * the safe persist form (INV-009) and must round-trip unchanged — tagging
+ * `'150000.00'` and hydrating it as `150000` silently destroyed backup/restore
+ * fixtures and any store that already persisted money as text.
+ */
+function isUnsafeMoneyNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
 }
 
 /**
@@ -133,7 +132,7 @@ export function encodeMoneyGraph(value: unknown, key = ''): unknown {
     }
     return out;
   }
-  if (key && isMoneyKey(key) && isNumericMoneyInput(value)) {
+  if (key && isMoneyKey(key) && isUnsafeMoneyNumber(value)) {
     return encodeMoneyValue(value);
   }
   return value;

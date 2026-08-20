@@ -77,7 +77,7 @@ describe('encodeMoneyGraph / decodeMoneyGraph', () => {
   it('INV-009: persisted JSON of a GL-shaped payload has no numeric money', () => {
     const payload = {
       state: {
-        entries: [{ debit: '1.005', credit: '0', amount: '1.005', netChange: '1.005' }],
+        entries: [{ debit: 100.5, credit: 0, amount: 100.5, netChange: 100.5 }],
       },
       version: 1,
     };
@@ -85,7 +85,15 @@ describe('encodeMoneyGraph / decodeMoneyGraph', () => {
     const serialized = JSON.stringify(encoded);
     expect(jsonContainsNumericMoney(serialized)).toBe(false);
     expect(serialized).toContain(MONEY_TAG);
-    expect(serialized).not.toMatch(/"debit":1(\.005)?([,}])/);
+    expect(serialized).not.toMatch(/"debit":100\.5/);
+  });
+
+  it('leaves already-safe decimal strings untouched (backup/restore contract)', () => {
+    const input = {
+      entries: [{ debit: '0.00', credit: '150000.00', amount: '150000.00' }],
+      totalAmount: '1000000.00',
+    };
+    expect(encodeMoneyGraph(input)).toEqual(input);
   });
 
   it('decode as number is a compatibility round-trip for cent-exact values', () => {
