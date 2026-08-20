@@ -329,9 +329,12 @@ export class FXEngine {
         'must be finite'
       );
     }
-    const translatedAtCurrent = baseAmount * currentRate;
-    const translatedAtHistorical = baseAmount * historicalRate;
-    return translatedAtCurrent - translatedAtHistorical;
+    const translatedAtCurrent = multiplyMoney(toDecimal(baseAmount), currentRate).toNumber();
+    const translatedAtHistorical = multiplyMoney(toDecimal(baseAmount), historicalRate).toNumber();
+    return roundTo(
+      subtractMoney(toDecimal(translatedAtCurrent), toDecimal(translatedAtHistorical)),
+      2
+    );
   }
 
   /**

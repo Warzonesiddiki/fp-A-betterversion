@@ -20,6 +20,7 @@ import {
   roundTo,
   subtractMoney,
   sumMoney,
+  toDecimal,
 } from '../utils/money';
 
 export interface CostStructure {
@@ -204,16 +205,29 @@ export class BreakEvenEngine {
   ): Array<{ label: string; breakEvenUnits: number; change: number }> {
     const base = this.calculate(basePrice, baseCost);
     return variations.map((v, i) => {
-      const result = this.calculate(basePrice + v.priceChange, {
-        fixedCosts: baseCost.fixedCosts + v.fixedCostChange,
-        variableCostPerUnit: baseCost.variableCostPerUnit + v.variableCostChange,
+      const result = this.calculate(addMoney(toDecimal(basePrice), v.priceChange).toNumber(), {
+        fixedCosts: addMoney(toDecimal(baseCost.fixedCosts), v.fixedCostChange).toNumber(),
+        variableCostPerUnit: addMoney(
+          toDecimal(baseCost.variableCostPerUnit),
+          v.variableCostChange
+        ).toNumber(),
       });
       return {
         label: `Scenario ${i + 1}`,
         breakEvenUnits: result.breakEvenUnits,
+        // % change of break-even units: dimensionless ratio × 100.
         change:
           base.breakEvenUnits > 0
-            ? ((result.breakEvenUnits - base.breakEvenUnits) / base.breakEvenUnits) * 100
+            ? roundTo(
+                multiplyMoney(
+                  divideMoney(
+                    subtractMoney(result.breakEvenUnits, base.breakEvenUnits),
+                    base.breakEvenUnits
+                  ),
+                  100
+                ),
+                2
+              )
             : 0,
       };
     });

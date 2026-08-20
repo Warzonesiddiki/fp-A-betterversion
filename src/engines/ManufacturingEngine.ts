@@ -57,7 +57,11 @@ export class ManufacturingEngine {
    * - 60xx: COGS
    */
   static calculateStats(entries: GLEntry[]): ManufacturingStats {
-    const getAmount = (e: GLEntry): number => e.amount ?? (e.debit ?? 0) - (e.credit ?? 0);
+    // Per-entry net amount: prefer e.amount; fall back to debit − credit on
+    // decimal. Returning a number keeps downstream `sumMoney` calls a noop
+    // cast; the inner `subtractMoney` is what makes this IEEE-754-free.
+    const getAmount = (e: GLEntry): number =>
+      e.amount ?? roundTo(subtractMoney(e.debit ?? 0, e.credit ?? 0));
 
     const revenueDec = sumMoney(
       entries
@@ -109,7 +113,11 @@ export class ManufacturingEngine {
           RATIO_PLACES
         )
       : 0;
-    const oee = 85 + Math.min(10, grossMargin / 5); // Derive OEE from margin
+    // OEE is a dimensionless operational metric (0–100). grossMargin is a
+    // decimal percent; dividing by 5 gives a 0–10 contribution, capped at
+    // 10 by Math.min. The arithmetic is exact; the result rounds at the
+    // call site.
+    const oee = 85 + Math.min(10, divideMoney(grossMargin, 5).toNumber());
 
     return {
       revenue: roundTo(totalRevenue, CURRENCY_PLACES),
@@ -126,7 +134,8 @@ export class ManufacturingEngine {
    * Returns production line statuses derived from GL data.
    */
   static getProductionLines(entries: GLEntry[]): ProductionLine[] {
-    const getAmount = (e: GLEntry): number => e.amount ?? (e.debit ?? 0) - (e.credit ?? 0);
+    const getAmount = (e: GLEntry): number =>
+      e.amount ?? roundTo(subtractMoney(e.debit ?? 0, e.credit ?? 0));
 
     const totalCost = sumMoney(
       entries.filter((e) => e.accountCode.startsWith('5')).map((e) => Math.abs(getAmount(e)))
