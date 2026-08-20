@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { usePeriodCloseStore } from '@/store/periodCloseStore';
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
+import { addMoney, roundTo, subtractMoney, toDecimal } from '@/utils/money';
 import { PeriodCloseStateMachine } from '@/engines/PeriodCloseStateMachine';
 import { SOXComplianceEngine } from '@/engines/SOXComplianceEngine';
 import type { SOXReport, SOXCheckResult, SOXControlCategory } from '@/engines/SOXComplianceEngine';
@@ -328,22 +329,33 @@ export default function SOXCompliancePage() {
     const trialBalance = useGLStore.getState().trialBalance;
     const entries = useGLStore.getState().entries;
 
-    // Calculate balance sheet from trial balance
-    let assets = 0;
-    let liabilities = 0;
-    let equity = 0;
+    // Calculate balance sheet from trial balance. Ending balance per row
+    // is the canonical `endingBalance` (if present) or beginning + debits
+    // − credits. All arithmetic on the decimal primitive.
+    let assets = toDecimal(0);
+    let liabilities = toDecimal(0);
+    let equity = toDecimal(0);
     for (const row of trialBalance) {
-      const ending = row.endingBalance ?? row.beginningBalance + row.debit - row.credit;
-      if (row.accountType === 'Asset') assets += ending;
-      else if (row.accountType === 'Liability') liabilities += ending;
-      else if (row.accountType === 'Equity') equity += ending;
+      const ending =
+        row.endingBalance != null
+          ? toDecimal(row.endingBalance)
+          : addMoney(
+              subtractMoney(toDecimal(row.beginningBalance), toDecimal(row.debit)),
+              toDecimal(row.credit)
+            );
+      if (row.accountType === 'Asset') assets = addMoney(assets, ending);
+      else if (row.accountType === 'Liability') liabilities = addMoney(liabilities, ending);
+      else if (row.accountType === 'Equity') equity = addMoney(equity, ending);
     }
+    const assetsR = roundTo(assets, 2);
+    const liabilitiesR = roundTo(liabilities, 2);
+    const equityR = roundTo(equity, 2);
 
     // Fallback to sensible defaults when no GL data exists
     const bs = {
-      assets: assets || 100000,
-      liabilities: liabilities || 60000,
-      equity: equity || 40000,
+      assets: assetsR || 100000,
+      liabilities: liabilitiesR || 60000,
+      equity: equityR || 40000,
     };
 
     // Derive ledger entries from GL entries
