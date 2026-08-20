@@ -90,7 +90,7 @@ export class LoanAmortizationEngine {
       });
     }
 
-    const totalPayment = rows.reduce((sum, row) => sum + row.payment, 0);
+    const totalPayment = sumMoney(rows.map((row) => row.payment)).toNumber();
     return {
       schedule: rows,
       totalInterest: roundTo(totalInterest),

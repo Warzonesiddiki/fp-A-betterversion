@@ -1,3 +1,11 @@
+// @money-ast-allow Reason: this file is the sector-aggregator page. The
+// flagged `>` comparisons (`entry.credit > entry.debit` and
+// `entry.debit > entry.credit`) are entry-direction FILTERS used to
+// choose whether a GL entry is revenue (credit-side) or expense
+// (debit-side). They are not money arithmetic; they select which entries
+// flow into the downstream `sumMoney(...)` aggregation in the canonical
+// money primitive. Net amounts are summed exactly.
+
 import { useSector } from '@/hooks/useSector';
 import type { GLEntry } from '@/types';
 import { divideMoney, roundTo, subtractMoney, sumMoney } from '@/utils/money';

@@ -1,3 +1,11 @@
+// @money-ast-allow Reason: this file is the sector-driver dashboard. The
+// flagged `>` comparisons (`(entry.credit ?? 0) > (entry.debit ?? 0)` and
+// `(entry.debit ?? 0) > (entry.credit ?? 0)`) are entry-direction FILTERS
+// used to choose whether a GL entry is revenue (credit-side) or expense
+// (debit-side). They are not money arithmetic; they select which entries
+// flow into the downstream `sumMoney(...)` aggregation in the canonical
+// money primitive. Net amounts are summed exactly.
+
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Decimal from 'decimal.js';

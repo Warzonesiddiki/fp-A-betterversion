@@ -110,7 +110,13 @@ export class IntercompanyMatchingEngine {
           debitTransaction: debit,
           creditTransaction: credit,
           matchedAmount: Math.min(debit.amount, credit.amount),
-          variance: Math.abs(debit.amount - credit.amount),
+          variance: roundTo(
+            subtractMoney(
+              Math.max(debit.amount, credit.amount),
+              Math.min(debit.amount, credit.amount)
+            ),
+            IC_PLACES
+          ),
           tolerance,
           status: 'auto_matched',
           matchedBy: 'system',
@@ -142,7 +148,10 @@ export class IntercompanyMatchingEngine {
       debitTransaction: debit,
       creditTransaction: credit,
       matchedAmount: Math.min(debit.amount, credit.amount),
-      variance: Math.abs(debit.amount - credit.amount),
+      variance: roundTo(
+        subtractMoney(Math.max(debit.amount, credit.amount), Math.min(debit.amount, credit.amount)),
+        IC_PLACES
+      ),
       tolerance: 0,
       status: 'manual_matched',
       matchedBy: userId,

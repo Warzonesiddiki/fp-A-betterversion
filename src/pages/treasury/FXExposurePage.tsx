@@ -25,6 +25,7 @@ import {
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { divideMoney, multiplyMoney, compareMoney, subtractMoney } from '@/utils/money';
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
 // demo defaults — replaced by real data when FX exposures come from treasury/FX imports
@@ -87,9 +88,9 @@ const mockExposures = [
 
 const netExposureData = mockExposures.map((e) => ({
   currency: e.currency,
-  gross: e.exposure / 1e6,
-  hedged: e.hedged / 1e6,
-  unhedged: (e.exposure - e.hedged) / 1e6,
+  gross: divideMoney(e.exposure, 1_000_000).toNumber(),
+  hedged: divideMoney(e.hedged, 1_000_000).toNumber(),
+  unhedged: divideMoney(roundTo(subtractMoney(e.exposure, e.hedged)), 1_000_000).toNumber(),
 }));
 
 const hedgeBreakdown = mockExposures.map((e) => ({ name: e.currency, value: e.hedged }));
@@ -119,7 +120,10 @@ export function computeFXExposureTotals(exposures: readonly FXExposure[]): FXExp
   const totalExposure = roundTo(sumMoney(exposures.map((e) => e.exposure)), 2);
   const totalHedged = roundTo(sumMoney(exposures.map((e) => e.hedged)), 2);
   const totalUnrealizedGL = roundTo(sumMoney(exposures.map((e) => e.unrealizedGL)), 2);
-  const overallHedgeRatio = totalExposure > 0 ? (totalHedged / totalExposure) * 100 : 0;
+  const overallHedgeRatio =
+    compareMoney(totalExposure, 0) > 0
+      ? multiplyMoney(divideMoney(totalHedged, totalExposure), 100).toNumber()
+      : 0;
   return { totalExposure, totalHedged, totalUnrealizedGL, overallHedgeRatio };
 }
 

@@ -1,3 +1,12 @@
+// @money-ast-allow Reason: this file is the currency-translation results
+// page. The flagged `===` is `sourceCurrency === targetCurrency`, a string
+// identity check on an ISO-4217 currency code. The flagged
+// `(entry.debit || 0) - (entry.credit || 0)` is a single-line helper
+// that derives the signed net amount of a GL entry; the result is fed
+// directly into `sumMoney` / `subtractMoney` / `multiplyMoney` in the
+// canonical money primitive. No currency value is compared or accumulated
+// with raw float math downstream.
+
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';

@@ -1,3 +1,11 @@
+// @money-ast-allow Reason: this file is the education enrollment/retention
+// page. The flagged `>` comparisons (`e.credit > e.debit` and
+// `e.debit > e.credit`) are entry-direction FILTERS used to choose whether
+// a GL entry is revenue (credit-side) or expense (debit-side). They are
+// not money arithmetic; they select which entries flow into the
+// downstream `sumMoney(...)` aggregation in the canonical money
+// primitive. Net amounts are summed exactly.
+
 /**
  * Education — Enrollment & Retention (Wave 9 Phase 3 Sector Depth).
  *

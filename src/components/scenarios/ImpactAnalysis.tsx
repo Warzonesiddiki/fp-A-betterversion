@@ -24,6 +24,7 @@ import {
   type CategoryMetricDef,
   type Severity,
 } from './scenarioUtils';
+import { subtractMoney, divideMoney, multiplyMoney, compareMoney, roundTo } from '@/utils/money';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -84,8 +85,11 @@ export function ImpactAnalysis({
       const baseValue = baseScenario.calculatedMetrics[metric.key];
       const changes = compareScenarios.map((s) => {
         const value = s.calculatedMetrics[metric.key];
-        const delta = value - baseValue;
-        const pctChange = baseValue !== 0 ? (delta / Math.abs(baseValue)) * 100 : 0;
+        const delta = roundTo(subtractMoney(value, baseValue));
+        const pctChange =
+          compareMoney(baseValue, 0) !== 0
+            ? multiplyMoney(divideMoney(delta, Math.abs(baseValue)), 100).toNumber()
+            : 0;
         return {
           scenarioId: s.id,
           scenarioName: s.name,
@@ -173,10 +177,15 @@ export function ImpactAnalysis({
       {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {compareScenarios.map((s) => {
-          const totalDelta = s.calculatedMetrics.revenue - baseScenario.calculatedMetrics.revenue;
+          const totalDelta = roundTo(
+            subtractMoney(s.calculatedMetrics.revenue, baseScenario.calculatedMetrics.revenue)
+          );
           const pctDelta =
-            baseScenario.calculatedMetrics.revenue !== 0
-              ? (totalDelta / Math.abs(baseScenario.calculatedMetrics.revenue)) * 100
+            compareMoney(baseScenario.calculatedMetrics.revenue, 0) !== 0
+              ? multiplyMoney(
+                  divideMoney(totalDelta, Math.abs(baseScenario.calculatedMetrics.revenue)),
+                  100
+                ).toNumber()
               : 0;
           const isPositive = totalDelta >= 0;
           return (

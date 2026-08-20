@@ -10,6 +10,15 @@
 // metrics (not money) and keep float math. No raw + - * / on currency values
 // remains.
 // =============================================================================
+//
+// @money-ast-allow Reason: this file is the rolling-forecast engine. The
+// flagged arithmetic in `calculateTrend` is
+// `(curr - prev) / Math.abs(prev)` where `prev` and `curr` are the most
+// recent two actual period values, but the result is a unitless growth-rate
+// ratio (e.g. 0.04 = +4%), not a money value. The result feeds back into
+// `multiplyMoney(p.value, 1 + trend)` where the only money arithmetic is
+// done through the money primitive.
+// =============================================================================
 
 import { addMoney, multiplyMoney, roundTo, toDecimal } from '../utils/money';
 

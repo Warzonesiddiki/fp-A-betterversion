@@ -12,6 +12,14 @@
  * Validation is real and blocking: the submit handler refuses to create a lease
  * with a bad term, non-positive payment, out-of-range discount rate or invalid
  * date. Nothing is silently coerced — a rejected field shows why.
+ *
+ * @money-ast-allow Reason: this file is the lease data-entry form. The
+ * flagged arithmetic (`Math.round(lease.discountRate * 1000000) / 10000`
+ * and `Math.round(ratePct * 10000) / 1000000`) is a unit-conversion between
+ * percentage and rate representations of the SAME discount rate (a unitless
+ * ratio, e.g. 0.06 == 6%). The result feeds `lease.discountRate`, a
+ * unitless ratio, not a money amount. Money math happens elsewhere via
+ * `LeaseEngine` + the canonical money primitive.
  */
 import { useCallback, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/Button';

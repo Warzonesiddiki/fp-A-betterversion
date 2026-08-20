@@ -52,7 +52,9 @@ export default function ProductionDashboardPage() {
     if (entries.length === 0) return null;
     const revenue = roundTo(
       sumMoney(
-        entries.filter((e) => (e.accountCode || '').startsWith('4')).map((e) => e.credit - e.debit)
+        entries
+          .filter((e) => (e.accountCode || '').startsWith('4'))
+          .map((e) => roundTo(subtractMoney(e.credit, e.debit)))
       ),
       2
     );
@@ -60,7 +62,7 @@ export default function ProductionDashboardPage() {
       sumMoney(
         entries
           .filter((e) => (e.accountCode || '').startsWith('5'))
-          .map((e) => Math.abs(e.debit - e.credit))
+          .map((e) => Math.abs(roundTo(subtractMoney(e.debit, e.credit))))
       ),
       2
     );

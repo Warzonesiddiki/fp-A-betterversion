@@ -15,7 +15,14 @@ import {
 } from 'recharts';
 import { Scale, TrendingUp, Download } from 'lucide-react';
 import { FairValueEngine } from '@/engines/FairValueEngine';
-import { roundTo, sumMoney } from '@/utils/money';
+import {
+  roundTo,
+  sumMoney,
+  subtractMoney,
+  divideMoney,
+  multiplyMoney,
+  compareMoney,
+} from '@/utils/money';
 import { formatCompact } from '@/utils/financialFormatting';
 
 interface FairValueItem {
@@ -147,7 +154,7 @@ export default function FairValuePage() {
 
   const levelData = [1, 2, 3].map((level) => ({
     name: levelLabels[level as keyof typeof levelLabels],
-    value: items.filter((i) => i.level === level).reduce((s, i) => s + i.fairValue, 0),
+    value: sumMoney(items.filter((i) => i.level === level).map((i) => i.fairValue)).toNumber(),
     color: levelColors[level as keyof typeof levelColors],
   }));
 
@@ -196,10 +203,14 @@ export default function FairValuePage() {
             <KPIValue
               label="Level 3 %"
               value={
-                totalFair > 0
-                  ? (items.filter((i) => i.level === 3).reduce((s, i) => s + i.fairValue, 0) /
-                      totalFair) *
-                    100
+                compareMoney(totalFair, 0) > 0
+                  ? multiplyMoney(
+                      divideMoney(
+                        sumMoney(items.filter((i) => i.level === 3).map((i) => i.fairValue)),
+                        totalFair
+                      ),
+                      100
+                    ).toNumber()
                   : 0
               }
               format="percent"
@@ -258,7 +269,13 @@ export default function FairValuePage() {
             <div className="space-y-3">
               {['Opening Balance', 'Gains/Losses', 'Purchases', 'Sales', 'Closing Balance'].map(
                 (item, i) => {
-                  const values = [totalBook - totalGain, totalGain, 0, 0, totalFair];
+                  const values = [
+                    roundTo(subtractMoney(totalBook, totalGain)),
+                    totalGain,
+                    0,
+                    0,
+                    totalFair,
+                  ];
                   return (
                     <div key={item} className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">{item}</span>

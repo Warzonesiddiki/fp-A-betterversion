@@ -9,7 +9,15 @@
  * @see docs/CAVEMAN_PERSIST/CYCLE_25_TURN_381_PLUS_METIS_T3_26_180_PLUS_ENGINES_PURE_FUNCTION_AUDIT_2ND_WITNESS_v0_2.md
  */
 
-import { toDecimal, roundTo, sumMoney, addMoney, subtractMoney, divideMoney } from '../utils/money';
+import {
+  toDecimal,
+  roundTo,
+  sumMoney,
+  addMoney,
+  subtractMoney,
+  divideMoney,
+  compareMoney,
+} from '../utils/money';
 
 export interface CashFlowCategory {
   name: string;
@@ -125,11 +133,11 @@ export class CashFlowWaterfallEngine {
     monthlyBurn: number,
     monthlyRevenue: number
   ): { monthsRemaining: number; runwayDate: string; sustainable: boolean } {
-    const netBurn = monthlyBurn - monthlyRevenue;
-    if (netBurn <= 0) {
+    const netBurn = roundTo(subtractMoney(monthlyBurn, monthlyRevenue));
+    if (compareMoney(netBurn, 0) <= 0) {
       return { monthsRemaining: Infinity, runwayDate: 'Sustainable', sustainable: true };
     }
-    const monthsRemaining = currentCash / netBurn;
+    const monthsRemaining = divideMoney(currentCash, netBurn).toNumber();
     const runwayDate = new Date();
     runwayDate.setMonth(runwayDate.getMonth() + Math.round(monthsRemaining));
     return {

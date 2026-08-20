@@ -31,7 +31,14 @@ import { VarianceChart } from '@/components/charts/VarianceChart';
 import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
 import { AnomalyHighlight } from '@/components/ai/AnomalyHighlight';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { roundTo, sumMoney, subtractMoney } from '@/utils/money';
+import {
+  roundTo,
+  sumMoney,
+  subtractMoney,
+  multiplyMoney,
+  divideMoney,
+  compareMoney,
+} from '@/utils/money';
 import type { GLEntry } from '@/types';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
@@ -150,8 +157,14 @@ export default function VarianceDashboardPage() {
       // (spending less than planned) is favorable — so variance is defined
       // as (budget - actual) for cost categories and (actual - budget) for
       // revenue, consistently yielding "positive variance = favorable".
-      const variance = cat.key === 'Revenue' ? actual - budget : budget - actual;
-      const variancePct = budget !== 0 ? (variance / Math.abs(budget)) * 100 : 0;
+      const variance =
+        cat.key === 'Revenue'
+          ? roundTo(subtractMoney(actual, budget))
+          : roundTo(subtractMoney(budget, actual));
+      const variancePct =
+        compareMoney(budget, 0) !== 0
+          ? multiplyMoney(divideMoney(variance, Math.abs(budget)), 100).toNumber()
+          : 0;
       return {
         account: cat.key,
         budget,

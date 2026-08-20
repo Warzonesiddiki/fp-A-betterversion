@@ -4,6 +4,7 @@ import { cn } from '@/utils/cn';
 import { formatNumber, formatPercent } from '@/utils/financialFormatting';
 import { AutoCommentaryEngine } from '@/engines/AutoCommentaryEngine';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { subtractMoney, divideMoney, multiplyMoney, compareMoney, roundTo } from '@/utils/money';
 
 interface VarianceCommentaryPanelProps {
   actual: number;
@@ -36,8 +37,11 @@ export function VarianceCommentaryPanel({
   // figures. Non-finite inputs render as a neutral zero state rather than a
   // silent "NaN%" (the pre-money behavior this surfaced).
   const hasValidInputs = Number.isFinite(actual) && Number.isFinite(budget);
-  const variance = hasValidInputs ? actual - budget : 0;
-  const variancePct = hasValidInputs && budget !== 0 ? (variance / Math.abs(budget)) * 100 : 0;
+  const variance = hasValidInputs ? roundTo(subtractMoney(actual, budget)) : 0;
+  const variancePct =
+    hasValidInputs && compareMoney(budget, 0) !== 0
+      ? multiplyMoney(divideMoney(variance, Math.abs(budget)), 100).toNumber()
+      : 0;
 
   const autoCommentary: string = hasValidInputs
     ? AutoCommentaryEngine.generateVarianceCommentary(actual, budget, category, period, {

@@ -15,7 +15,7 @@ import {
   TrendingDown,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
-import { roundTo } from '@/utils/money';
+import { roundTo, sumMoney, multiplyMoney, divideMoney, subtractMoney } from '@/utils/money';
 
 import {
   ResponsiveContainer,
@@ -54,9 +54,11 @@ export default function HeadcountPlanPage() {
     const salaryEntries = entries.filter(
       (e) => (e.accountCode || '').startsWith('71') || (e.accountCode || '').startsWith('72')
     );
-    const totalCost = salaryEntries.reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
+    const totalCost = sumMoney(
+      salaryEntries.map((e) => Math.abs(roundTo(subtractMoney(e.debit, e.credit))))
+    ).toNumber();
     const count = salaryEntries.length;
-    const avgCost = count > 0 ? totalCost / count : 0;
+    const avgCost = count > 0 ? divideMoney(totalCost, count).toNumber() : 0;
     const departments = ['Engineering', 'Sales', 'Marketing', 'Finance', 'Operations', 'HR'];
     const deptData: DeptRow[] = departments.map((dept, idx) => {
       const current = Math.floor(15 + ((idx * 7) % 40));
@@ -66,7 +68,7 @@ export default function HeadcountPlanPage() {
         current,
         planned,
         variance: planned - current,
-        cost: roundTo(current * avgCost, 2),
+        cost: roundTo(multiplyMoney(current, avgCost), 2),
       };
     });
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];

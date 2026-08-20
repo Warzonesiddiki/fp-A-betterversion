@@ -1,4 +1,11 @@
-import { formatMoney } from '../utils/money';
+import {
+  formatMoney,
+  subtractMoney,
+  divideMoney,
+  multiplyMoney,
+  compareMoney,
+  roundTo,
+} from '../utils/money';
 
 /**
  * ChartAnnotationEngine — Annotations for financial charts
@@ -108,8 +115,11 @@ export class ChartAnnotationEngine {
     const annotations: ChartAnnotation[] = [];
 
     for (const item of data) {
-      const variance = item.actual - item.budget;
-      const pct = item.budget !== 0 ? (variance / Math.abs(item.budget)) * 100 : 0;
+      const variance = roundTo(subtractMoney(item.actual, item.budget));
+      const pct =
+        compareMoney(item.budget, 0) !== 0
+          ? multiplyMoney(divideMoney(variance, Math.abs(item.budget)), 100).toNumber()
+          : 0;
 
       if (Math.abs(pct) > 20) {
         annotations.push(

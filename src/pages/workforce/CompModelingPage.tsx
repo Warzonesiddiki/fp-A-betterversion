@@ -18,7 +18,14 @@ import {
   Line,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { roundTo, sumMoney } from '@/utils/money';
+import {
+  roundTo,
+  sumMoney,
+  multiplyMoney,
+  addMoney,
+  subtractMoney,
+  divideMoney,
+} from '@/utils/money';
 import { formatCompact } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 const LEVELS = [
@@ -42,22 +49,28 @@ export default function CompModelingPage() {
   const compData = useMemo(
     () =>
       LEVELS.map((l) => {
-        const midpoint = (l.min + l.max) / 2;
-        const totalCost = midpoint * l.headcount;
-        const newCost = totalCost * (1 + meritPct / 100);
-        return { ...l, midpoint, totalCost, newCost, increase: newCost - totalCost };
+        const midpoint = divideMoney(addMoney(l.min, l.max), 2).toNumber();
+        const totalCost = multiplyMoney(midpoint, l.headcount).toNumber();
+        const newCost = multiplyMoney(totalCost, 1 + meritPct / 100).toNumber();
+        return {
+          ...l,
+          midpoint,
+          totalCost,
+          newCost,
+          increase: roundTo(subtractMoney(newCost, totalCost)),
+        };
       }),
     [meritPct]
   );
 
   const projections = useMemo(() => {
     const years = [2026, 2027, 2028, 2029, 2030];
+    const currentSum = roundTo(sumMoney(compData.map((l) => l.totalCost)), 2);
+    const newSum = roundTo(sumMoney(compData.map((l) => l.newCost)), 2);
     return years.map((year, i) => ({
       year: String(year),
-      current:
-        roundTo(sumMoney(compData.map((l) => l.totalCost)), 2) * Math.pow(1 + meritPct / 100, i),
-      projected:
-        roundTo(sumMoney(compData.map((l) => l.newCost)), 2) * Math.pow(1 + meritPct / 100, i),
+      current: multiplyMoney(currentSum, Math.pow(1 + meritPct / 100, i)).toNumber(),
+      projected: multiplyMoney(newSum, Math.pow(1 + meritPct / 100, i)).toNumber(),
     }));
   }, [compData, meritPct]);
 
@@ -67,8 +80,8 @@ export default function CompModelingPage() {
     return {
       currentTotal,
       newTotal,
-      budgetImpact: newTotal - currentTotal,
-      totalHeadcount: roundTo(sumMoney(compData.map((l) => l.headcount)), 2),
+      budgetImpact: roundTo(subtractMoney(newTotal, currentTotal)),
+      totalHeadcount: compData.reduce((s, l) => s + l.headcount, 0),
     };
   }, [compData]);
 

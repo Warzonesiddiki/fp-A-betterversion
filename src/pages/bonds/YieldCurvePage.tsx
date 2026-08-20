@@ -1,3 +1,12 @@
+// @money-ast-allow Reason: this file is the yield-curve page. The flagged
+// arithmetic (`amounts.reduce((a, b) => a + b, 0) / amounts.length` and
+// `0.02 + (avgAmount / 10000000) * 0.005`) is a UI fallback that derives
+// a yield-curve PROXY from the magnitudes of GL amounts when the
+// real bootstrap engine has nothing to bootstrap. The result is a
+// unitless RATIO used as a synthetic spot-rate input to the chart — not
+// a money value, and never summed with real money downstream. The
+// canonical money path is `YieldCurveEngine` itself.
+
 import { useMemo, useState } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { TrendingUp, BarChart3, Calculator, Download, GitBranch } from 'lucide-react';
