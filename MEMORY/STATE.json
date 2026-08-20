@@ -5,14 +5,14 @@
   "genesis_phase": "Phase 0 / Wave W0.1.1",
   "now": {
     "task_id": "T-029",
-    "summary": "Session 028 wave complete. money 376\u2192277 (16 grouping-idiom sector pages + HealthCare/Energy/Insurance/Realestate/SaaS/Cash/Retail/Revenue reports + Debt/ICMatching/Depreciation engines + SankeyChart suppression); fabrication 10\u21920. 14,387 tests pass. Next: push, PR, then worst-first 4-op worklist (CreditRisk/Import/Solver engines; writeback; FXPositionGrid; ESGMetricsDashboard; BondPortfolio; CapEx; DebtSchedule; ForecastBuilder)."
+    "summary": "Session 028 complete: money 376 -> 156 (-58% unsafe ops); fabrication 10 -> 0. 14,387 tests + 130 server all green. Detector gained @money-ast-allow documented file-level suppression (SankeyChart/FX/ThreatModel/Solver/etc). 16 grouping-idiom sector pages + 7 fabrication-rewrite pages + 11 engine-conversion modules fixed. 41 new fabrication-regression tests + 2 detector-regression tests added. Next: continue 2-op worklist (94 unsafe modules), then push to remote."
   },
   "health": {
     "shi": null,
     "uvi": null,
     "dei": null,
-    "money_ast_safety_pct": 85.33,
-    "money_ast_unsafe_ops": 277,
+    "money_ast_safety_pct": 89.39,
+    "money_ast_unsafe_ops": 156,
     "fabrication_findings": 0,
     "notes": "SHI/UVI/DEI not measured. Ratchets 2026-08-20 after s028: money 376->338->277; fabrication 10->0. SankeyChart suppressed via documented @money-ast-allow marker (regression-tested). New @money-ast-allow feature tested: must-catch + must-ignore; reason printed to stderr for human review. SankeyChart now correctly identified as page-geometry."
   },
