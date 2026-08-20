@@ -1,6 +1,15 @@
 import type { GLEntry } from '@/types';
 import type { EliminationEntry } from './ConsolidationEngine';
-import { toDecimal, roundTo, sumMoney, subtractMoney, divideMoney } from '../utils/money';
+import {
+  toDecimal,
+  roundTo,
+  sumMoney,
+  subtractMoney,
+  divideMoney,
+  multiplyMoney,
+  addMoney,
+  compareMoney,
+} from '../utils/money';
 
 /**
  * Intercompany balances must eliminate to ZERO on consolidation, so every
@@ -206,22 +215,44 @@ export class ICMatchingEngine {
           Math.floor((new Date(source.date).getTime() - new Date(target.date).getTime()) / 86400000)
         );
 
-        // Exact match
+        // Exact match — score is a ratio in [0, 1]. The date and amount
+        // contributions are dimensionless penalties; dividing by `absSource`
+        // and the date-tolerance floor keeps the score stable.
+        const sourceOrOne = absSource || 1;
         if (
-          amountDiff <= this.tolerance.amountTolerance &&
+          compareMoney(amountDiff, this.tolerance.amountTolerance) <= 0 &&
           pctDiff <= this.tolerance.percentageTolerance &&
           dateDiff <= this.tolerance.dateToleranceDays
         ) {
-          const score = 1 - amountDiff / (absSource || 1) - dateDiff * 0.01;
+          const exactScore = roundTo(
+            subtractMoney(
+              toDecimal(1),
+              addMoney(
+                divideMoney(amountDiff, sourceOrOne),
+                multiplyMoney(toDecimal(dateDiff), toDecimal(0.01))
+              )
+            ),
+            4
+          );
+          const score = Math.max(0, exactScore);
           if (!bestMatch || score > bestMatch.score) {
-            bestMatch = { target, score: Math.max(0, score), method: 'exact' };
+            bestMatch = { target, score, method: 'exact' };
           }
         }
         // Fuzzy amount match
-        else if (amountDiff <= this.tolerance.amountTolerance * 2) {
-          const score = 0.5 - (amountDiff / (absSource || 1)) * 0.5;
+        else if (
+          compareMoney(amountDiff, multiplyMoney(this.tolerance.amountTolerance, 2).toNumber()) <= 0
+        ) {
+          const fuzzyScore = roundTo(
+            subtractMoney(
+              toDecimal(0.5),
+              multiplyMoney(divideMoney(amountDiff, sourceOrOne), toDecimal(0.5))
+            ),
+            4
+          );
+          const score = Math.max(0, fuzzyScore);
           if (!bestMatch || score > bestMatch.score) {
-            bestMatch = { target, score: Math.max(0, score), method: 'fuzzy_amount' };
+            bestMatch = { target, score, method: 'fuzzy_amount' };
           }
         }
       }

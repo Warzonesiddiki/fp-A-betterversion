@@ -1,7 +1,7 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { useState } from 'react';
-import { Sun, Wind, Droplets, Leaf, Battery, Download, LayoutGrid, FileText } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Sun, Wind, Droplets, Battery, Download, AlertTriangle } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -21,112 +21,70 @@ import {
   Cell,
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
+import { useEnergyStore } from '@/store/energyStore';
+import { roundTo, sumMoney } from '@/utils/money';
 
-// Mock Data
 const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
-const generationTrend = [
-  { date: '2026-01-01', solar: 450, wind: 320, hydro: 180, total: 950 },
-  { date: '2026-01-05', solar: 480, wind: 290, hydro: 175, total: 945 },
-  { date: '2026-01-10', solar: 520, wind: 410, hydro: 190, total: 1120 },
-  { date: '2026-01-15', solar: 410, wind: 550, hydro: 210, total: 1170 },
-  { date: '2026-01-20', solar: 550, wind: 380, hydro: 205, total: 1135 },
-  { date: '2026-01-25', solar: 590, wind: 310, hydro: 195, total: 1095 },
-  { date: '2026-01-31', solar: 540, wind: 350, hydro: 200, total: 1090 },
-];
-
-const capacityMix = [
-  { name: 'Solar', value: 1200, color: '#f59e0b' },
-  { name: 'Onshore Wind', value: 850, color: '#10b981' },
-  { name: 'Offshore Wind', value: 450, color: '#059669' },
-  { name: 'Small Hydro', value: 280, color: '#3b82f6' },
-  { name: 'Battery Storage', value: 500, color: '#8b5cf6' },
-];
-
-const renewableAssets = [
-  {
-    id: 'S-01',
-    name: 'Mojave Solar I',
-    type: 'Solar',
-    capacity: '250 MW',
-    outputYTD: '42.5 GWh',
-    availability: '98.5%',
-    roi: '12.4%',
-  },
-  {
-    id: 'W-05',
-    name: 'North Sea Wind',
-    type: 'Wind',
-    capacity: '400 MW',
-    outputYTD: '85.2 GWh',
-    availability: '92.1%',
-    roi: '10.8%',
-  },
-  {
-    id: 'H-02',
-    name: 'Blue River Hydro',
-    type: 'Hydro',
-    capacity: '120 MW',
-    outputYTD: '28.4 GWh',
-    availability: '96.8%',
-    roi: '15.2%',
-  },
-  {
-    id: 'S-02',
-    name: 'Arizona Array',
-    type: 'Solar',
-    capacity: '150 MW',
-    outputYTD: '31.1 GWh',
-    availability: '97.2%',
-    roi: '11.5%',
-  },
-  {
-    id: 'B-01',
-    name: 'Tesla Megapack Hub',
-    type: 'Storage',
-    capacity: '100 MW',
-    outputYTD: 'N/A',
-    availability: '99.9%',
-    roi: '8.4%',
-  },
-];
-
-const columns: Column[] = [
-  { key: 'name', header: 'Asset Name', sortable: true },
-  {
-    key: 'type',
-    header: 'Type',
-    render: (value) => (
-      <div className="flex items-center gap-2">
-        {String(value) === 'Solar' && <Sun className="h-3 w-3 text-amber-700" />}
-        {String(value) === 'Wind' && <Wind className="h-3 w-3 text-emerald-700" />}
-        {String(value) === 'Hydro' && <Droplets className="h-3 w-3 text-blue-600" />}
-        {String(value) === 'Storage' && <Battery className="h-3 w-3 text-purple-600" />}
-        <span>{String(value ?? '')}</span>
-      </div>
-    ),
-  },
-  { key: 'capacity', header: 'Capacity', align: 'right' },
-  { key: 'outputYTD', header: 'Output YTD', align: 'right' },
-  {
-    key: 'availability',
-    header: 'Availability',
-    align: 'right',
-    render: (v) => (
-      <span
-        className={
-          parseFloat(String(v)) > 95 ? 'text-green-700 font-bold' : 'text-amber-700 font-bold'
-        }
-      >
-        {String(v)}
-      </span>
-    ),
-  },
-  { key: 'roi', header: 'ROI', align: 'right' },
-];
-
+/**
+ * Renewable Energy (session 028, replaces fabricated session-022 version).
+ *
+ * Pre-session-028 page rendered seven hand-typed daily generation points,
+ * five fictional capacity-mix slices, five named facilities with hand-typed
+ * capacity / outputYTD / availability / ROI, and four literal KPIs
+ * (Solar 1.2 GW, Wind 850 MW, RECs 4,250, ROI 11.8%) plus a fabricated
+ * "124,500 tons CO2" sustainability card. None of it was backed by the
+ * energy store.
+ *
+ * The page now derives everything it can from the real `useEnergyStore`:
+ *   - Asset count and per-type asset mix.
+ *   - Generation trend (real recorded points).
+ *   - Total generation across the recorded window.
+ *
+ * RECs, carbon offset, and per-asset ROI are NOT derivable from a
+ * generation store and are disclosed.
+ */
 export default function RenewableEnergyPage() {
   const [periodId, setPeriodId] = useState('P01');
+  const { assets, generationTrend, capacityMix } = useEnergyStore();
+
+  const totalGeneration = useMemo(
+    () => roundTo(sumMoney(generationTrend.map((g) => g.total)), 2),
+    [generationTrend]
+  );
+  const latestPoint = generationTrend.at(-1);
+  const solarNow = latestPoint?.solar ?? null;
+  const windNow = latestPoint?.wind ?? null;
+  const hydroNow = latestPoint?.hydro ?? null;
+
+  // Per-type mix: prefer capacityMix; otherwise count assets per type.
+  const perSource = useMemo(() => {
+    if (capacityMix.length > 0) return capacityMix;
+    const map = new Map<string, number>();
+    for (const a of assets) map.set(a.type, (map.get(a.type) ?? 0) + 1);
+    return Array.from(map.entries()).map(([name, value]) => ({ name, value, color: '#64748b' }));
+  }, [assets, capacityMix]);
+
+  const columns: Column[] = [
+    { key: 'name', header: 'Asset Name', sortable: true },
+    {
+      key: 'type',
+      header: 'Type',
+      render: (value) => (
+        <div className="flex items-center gap-2">
+          {String(value) === 'Solar' && <Sun className="h-3 w-3 text-amber-700" />}
+          {String(value) === 'Wind' && <Wind className="h-3 w-3 text-emerald-700" />}
+          {String(value) === 'Hydro' && <Droplets className="h-3 w-3 text-blue-600" />}
+          {String(value) === 'Storage' && <Battery className="h-3 w-3 text-purple-600" />}
+          <span>{String(value ?? '')}</span>
+        </div>
+      ),
+    },
+    { key: 'capacity', header: 'Capacity', align: 'right' },
+    { key: 'outputYTD', header: 'Output YTD', align: 'right' },
+    { key: 'availability', header: 'Availability', align: 'right' },
+    { key: 'roi', header: 'ROI', align: 'right' },
+  ];
 
   return (
     <div className="p-6 space-y-6 animate-in slide-in-from-bottom-2 duration-500">
@@ -138,44 +96,38 @@ export default function RenewableEnergyPage() {
         />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
-          <Button variant="outline" size="sm" className="h-10">
+          <Button variant="outline" size="sm" className="h-10" disabled={assets.length === 0}>
             <Download className="h-4 w-4 mr-2" />
             Download Report
           </Button>
         </div>
       </div>
 
-      {/* KPIs */}
+      {/* KPIs — all derived */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
-          label="Solar Generation"
-          value="1.2 GW"
-          change={5.4}
-          changeLabel="vs last year"
-          sparklineData={[30, 32, 45, 42, 55, 60, 58]}
+          label="Solar (latest period)"
+          value={solarNow == null ? '—' : formatMwh(solarNow)}
+          changeLabel={latestPoint ? `as of ${latestPoint.date}` : 'no generation on file'}
         />
         <KPIValue
-          label="Wind Output"
-          value="850 MW"
-          change={12.1}
-          changeLabel="new offshore online"
-          trend="up"
-          sparklineData={[20, 25, 22, 35, 48, 42, 50]}
+          label="Wind (latest period)"
+          value={windNow == null ? '—' : formatMwh(windNow)}
+          changeLabel={latestPoint ? `as of ${latestPoint.date}` : 'no generation on file'}
         />
         <KPIValue
-          label="RECs Generated"
-          value="4,250"
-          change={8.4}
-          changeLabel="Renewable Energy Credits"
-          sparklineData={[10, 15, 12, 18, 22, 25, 28]}
+          label="Hydro (latest period)"
+          value={hydroNow == null ? '—' : formatMwh(hydroNow)}
+          changeLabel={latestPoint ? `as of ${latestPoint.date}` : 'no generation on file'}
         />
         <KPIValue
-          label="Portfolio ROI"
-          value="11.8%"
-          change={1.2}
-          changeLabel="above 10.5% target"
-          trend="up"
-          sparklineData={[10.5, 10.8, 11.0, 11.2, 11.5, 11.7, 11.8]}
+          label="Total Generation (window)"
+          value={totalGeneration > 0 ? formatMwh(totalGeneration) : '—'}
+          changeLabel={
+            generationTrend.length > 0
+              ? `${generationTrend.length} periods on file`
+              : 'no generation on file'
+          }
         />
       </div>
 
@@ -185,63 +137,69 @@ export default function RenewableEnergyPage() {
           <CardHeader>
             <CardTitle>Daily Generation Mix (MW)</CardTitle>
             <CardDescription>
-              Real-time tracking of renewable energy source performance
+              {generationTrend.length > 0
+                ? 'Recorded renewable generation over time'
+                : 'No generation recorded yet'}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[350px] w-full pt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={generationTrend}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis
-                    dataKey="date"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 10, fill: '#94a3b8' }}
-                    tickFormatter={(v) => v.split('-')[2]}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fill: '#64748b' }}
-                  />
-                  <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }} />
-                  <Legend verticalAlign="top" align="right" />
-                  <Line
-                    type="monotone"
-                    dataKey="solar"
-                    name="Solar"
-                    stroke="#f59e0b"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="wind"
-                    name="Wind"
-                    stroke="#10b981"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="hydro"
-                    name="Hydro"
-                    stroke="#3b82f6"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="total"
-                    name="Total Mix"
-                    stroke="#64748b"
-                    strokeWidth={3}
-                    strokeDasharray="4 4"
-                    dot={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              {generationTrend.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={generationTrend}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis
+                      dataKey="date"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 10, fill: '#94a3b8' }}
+                      tickFormatter={(v) => (typeof v === 'string' ? v.split('-')[2] : v)}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: '#64748b' }}
+                    />
+                    <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }} />
+                    <Legend verticalAlign="top" align="right" />
+                    <Line
+                      type="monotone"
+                      dataKey="solar"
+                      name="Solar"
+                      stroke="#f59e0b"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="wind"
+                      name="Wind"
+                      stroke="#10b981"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="hydro"
+                      name="Hydro"
+                      stroke="#3b82f6"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="total"
+                      name="Total Mix"
+                      stroke="#64748b"
+                      strokeWidth={3}
+                      strokeDasharray="4 4"
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <EmptyState message="No generation trend recorded yet." />
+              )}
             </div>
           </CardContent>
         </Card>
@@ -249,36 +207,43 @@ export default function RenewableEnergyPage() {
         <Card>
           <CardHeader>
             <CardTitle>Capacity Distribution</CardTitle>
-            <CardDescription>Diversification by technology</CardDescription>
+            <CardDescription>
+              {perSource.length > 0 ? 'Distribution by technology' : 'No assets recorded'}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full pt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={capacityMix}
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {capacityMix.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend layout="vertical" align="right" verticalAlign="middle" />
-                </PieChart>
-              </ResponsiveContainer>
+              {perSource.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={perSource}
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                      nameKey="name"
+                    >
+                      {perSource.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend layout="vertical" align="right" verticalAlign="middle" />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <EmptyState message="No assets to chart." />
+              )}
             </div>
-            <div className="mt-6 p-3 bg-blue-50 rounded-lg border border-blue-100">
-              <div className="flex items-center gap-2 text-blue-700 font-bold text-xs uppercase tracking-wider">
-                <Leaf className="h-3 w-3" />
+            <div className="mt-6 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-2 text-slate-700 font-bold text-xs uppercase tracking-wider">
+                <AlertTriangle className="h-3 w-3" />
                 Sustainability Impact
               </div>
-              <p className="text-blue-600 text-[10px] mt-1 font-medium leading-relaxed">
-                Your portfolio currently offsets <span className="font-bold">124,500 tons</span> of
-                CO2 annually, equivalent to planting <span className="font-bold">2.1M trees</span>.
+              <p className="text-slate-600 text-[11px] mt-1 leading-relaxed">
+                Renewable Energy Credits (RECs) and CO2 offset are not derivable from a generation
+                store. Connect a REC registry feed to populate this card.
               </p>
             </div>
           </CardContent>
@@ -289,31 +254,45 @@ export default function RenewableEnergyPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Asset Portfolio Detailed View</CardTitle>
+            <CardTitle>Asset Portfolio</CardTitle>
             <CardDescription>
-              Monitoring profitability and uptime across 24 strategic sites
+              {assets.length > 0
+                ? `Recorded assets (${assets.length} facilities)`
+                : 'No assets recorded'}
             </CardDescription>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm">
-              <LayoutGrid className="h-4 w-4 mr-2" />
-              Grid View
-            </Button>
-            <Button variant="ghost" size="sm">
-              <FileText className="h-4 w-4 mr-2" />
-              Audit Logs
-            </Button>
           </div>
         </CardHeader>
         <CardContent>
-          <DataTable
-            columns={columns}
-            data={renewableAssets}
-            caption="Renewable energy asset portfolio"
-            ariaLabel="Renewable assets table"
-          />
+          {assets.length > 0 ? (
+            <DataTable
+              columns={columns}
+              data={assets}
+              caption="Renewable energy asset portfolio"
+              ariaLabel="Renewable assets table"
+            />
+          ) : (
+            <div className="text-sm text-[var(--text-muted)]">
+              <p>No renewable assets recorded yet.</p>
+              <p>Add assets in the energy store to populate this table.</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
   );
+}
+
+function EmptyState({ message }: { message: string }) {
+  return (
+    <div className="h-full flex items-center justify-center text-sm text-[var(--text-muted)]">
+      <div className="text-center max-w-sm">
+        <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-[var(--text-muted)]" />
+        <p>{message}</p>
+      </div>
+    </div>
+  );
+}
+
+function formatMwh(n: number): string {
+  return new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 }).format(n);
 }

@@ -1,3 +1,8 @@
+// @money-ast-allow
+// Reason: page-geometry arithmetic. `value` here is a flow-weight (a pixel
+// ratio), not a money value. The expression `(val / totalValue) * VIEW_HEIGHT + GAP`
+// produces a SVG y-offset, not a currency amount. The detector's name-based
+// matcher cannot see that `VIEW_HEIGHT` and `GAP` are pixel constants.
 import React, { useMemo } from 'react';
 import { cn } from '@/utils/cn';
 import { formatPercent } from '@/utils/financialFormatting';

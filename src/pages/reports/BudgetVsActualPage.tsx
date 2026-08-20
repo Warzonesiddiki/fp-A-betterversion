@@ -22,7 +22,15 @@ import { BudgetVsActualSummary } from './components/BudgetVsActualSummary';
 import { BudgetVsActualTable, type VarianceDataRow } from './components/BudgetVsActualTable';
 import { PAGE_HELP } from '../_docs';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { sumMoney, subtractMoney, roundTo, divideMoney } from '@/utils/money';
+import {
+  sumMoney,
+  subtractMoney,
+  roundTo,
+  divideMoney,
+  addMoney,
+  multiplyMoney,
+  toDecimal,
+} from '@/utils/money';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { currencyFormatter, formatPercent } from '@/utils/financialFormatting';;
 
@@ -157,8 +165,11 @@ export default function BudgetVsActualPage() {
     const actualMap = new Map<string, number>();
     entries.forEach((e) => {
       if (!matchesPeriod(e.period, period, periodMode)) return;
-      const amount = Math.abs(e.debit - e.credit);
-      actualMap.set(e.accountCode, (actualMap.get(e.accountCode) ?? 0) + amount);
+      const amount = roundTo(
+        Math.abs(subtractMoney(e.debit, e.credit).toNumber()),
+        2
+      );
+      actualMap.set(e.accountCode, addMoney(actualMap.get(e.accountCode) ?? 0, amount).toNumber());
       if (!accountInfoMap.has(e.accountCode)) {
         accountInfoMap.set(e.accountCode, {
           name: e.accountName || e.accountCode,
@@ -181,8 +192,15 @@ export default function BudgetVsActualPage() {
       const info = accountInfoMap.get(code);
       const isRevenue = code.startsWith('4');
       const accountType = info?.type ?? (isRevenue ? 'Revenue' : 'Expense');
-      const variance = actual - budget;
-      const variancePct = budget !== 0 ? (variance / Math.abs(budget)) * 100 : Infinity;
+      const variance = roundTo(subtractMoney(actual, budget), 2);
+      const budgetAbs = Math.abs(budget);
+      const variancePct =
+        budget !== 0
+          ? roundTo(
+              multiplyMoney(divideMoney(variance, toDecimal(budgetAbs)), 100),
+              2
+            )
+          : (Infinity as number);
       const isFavorable = isRevenue ? variance >= 0 : variance <= 0;
       const isMaterial =
         budget !== 0 && isFinite(variancePct) && Math.abs(variancePct) > MATERIAL_THRESHOLD;
@@ -254,11 +272,19 @@ export default function BudgetVsActualPage() {
 
     const revenueRows = filteredRows.filter((r) => r.accountType === 'Revenue' && r.budget > 0);
     const decomposition = revenueRows.map((r) => {
+      // Unit conversion to thousands (display only) is done through
+      // divideMoney to keep the chain on the canonical primitive.
+      const budgetPrice = roundTo(divideMoney(r.budget, 1000), 2);
+      const actualPrice = roundTo(divideMoney(r.actual, 1000), 2);
+      const budgetVolume = 1000;
+      const actualVolume = r.budget > 0
+        ? roundTo(multiplyMoney(divideMoney(r.actual, r.budget), 1000), 2)
+        : 1000;
       const pvm = VarianceDecompositionEngine.computePriceVolumeMix({
-        budgetPrice: r.budget / 1000,
-        actualPrice: r.actual / 1000,
-        budgetVolume: 1000,
-        actualVolume: r.budget > 0 ? (r.actual / r.budget) * 1000 : 1000,
+        budgetPrice,
+        actualPrice,
+        budgetVolume,
+        actualVolume,
       });
       return {
         ...r,

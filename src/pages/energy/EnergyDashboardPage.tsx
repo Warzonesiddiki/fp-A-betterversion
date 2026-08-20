@@ -1,8 +1,8 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { BarChart3, Download, RefreshCw } from 'lucide-react';
+import { AlertTriangle, Download, RefreshCw } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 
 import { Button } from '@/components/ui/Button';
@@ -23,101 +23,94 @@ import {
   Cell,
 } from 'recharts';
 import type { FiscalPeriod } from '@/types';
-import { formatCompact, formatPercent } from '@/utils/financialFormatting';
+import { useEnergyStore } from '@/store/energyStore';
+import { useGLStore } from '@/store/glStore';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatPercent } from '@/utils/financialFormatting';
 
-// Mock Data
 const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
-const trendData = [
-  { month: 'Jan', revenue: 1250000, cost: 850000, production: 4200 },
-  { month: 'Feb', revenue: 1320000, cost: 880000, production: 4500 },
-  { month: 'Mar', revenue: 1180000, cost: 920000, production: 4100 },
-  { month: 'Apr', revenue: 1450000, cost: 910000, production: 4800 },
-  { month: 'May', revenue: 1600000, cost: 950000, production: 5200 },
-  { month: 'Jun', revenue: 1550000, cost: 940000, production: 5000 },
-];
-
-const sourceData = [
-  { name: 'Solar', value: 450, color: '#f59e0b' },
-  { name: 'Wind', value: 380, color: '#10b981' },
-  { name: 'Hydro', value: 210, color: '#3b82f6' },
-  { name: 'Thermal', value: 150, color: '#6366f1' },
-  { name: 'Nuclear', value: 300, color: '#8b5cf6' },
-];
-
-const assetPerformance = [
-  {
-    id: '1',
-    asset: 'Solar Farm Alpha',
-    output: '24.5 MWh',
-    efficiency: '94.2%',
-    status: 'Optimal',
-    cost: '$12,400',
-  },
-  {
-    id: '2',
-    asset: 'Wind Park Beta',
-    output: '18.2 MWh',
-    efficiency: '88.7%',
-    status: 'Maintenance',
-    cost: '$15,800',
-  },
-  {
-    id: '3',
-    asset: 'Hydro Station Gamma',
-    output: '12.8 MWh',
-    efficiency: '91.5%',
-    status: 'Optimal',
-    cost: '$8,200',
-  },
-  {
-    id: '4',
-    asset: 'Solar Array Delta',
-    output: '15.4 MWh',
-    efficiency: '76.3%',
-    status: 'Warning',
-    cost: '$14,100',
-  },
-  {
-    id: '5',
-    asset: 'Thermal Plant Epsilon',
-    output: '42.1 MWh',
-    efficiency: '82.1%',
-    status: 'Optimal',
-    cost: '$54,000',
-  },
-];
-
-const columns: Column[] = [
-  { key: 'asset', header: 'Asset Name', sortable: true },
-  { key: 'output', header: 'Energy Output', align: 'right' },
-  { key: 'efficiency', header: 'Efficiency', align: 'right' },
-  {
-    key: 'status',
-    header: 'Status',
-    render: (value) => (
-      <span
-        className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-          String(value) === 'Optimal'
-            ? 'bg-green-100 text-green-700'
-            : String(value) === 'Maintenance'
-              ? 'bg-blue-100 text-blue-700'
-              : 'bg-yellow-100 text-yellow-700'
-        }`}
-      >
-        {String(value)}
-      </span>
-    ),
-  },
-  { key: 'cost', header: 'Operating Cost', align: 'right' },
-];
-
+/**
+ * Energy Dashboard (session 028, replaces fabricated session-022 version).
+ *
+ * Pre-session-028 page rendered six months of fictional revenue/cost/production
+ * numbers, a five-source mix with hand-typed MW values, and five named
+ * facilities with hand-typed MWh outputs, efficiency percentages and dollar
+ * costs — none of which was backed by the energy store or a general ledger.
+ *
+ * The page now derives everything it can from `useEnergyStore` and
+ * `useGLStore`:
+ *   - Total generation across the recorded window (sum of the real
+ *     `generationTrend` totals).
+ *   - Capacity mix by source type (counted from real recorded assets).
+ *   - Per-asset list, output and capacity (read straight from the real
+ *     energy store).
+ *   - GL entry count.
+ *
+ * Per-asset operating cost, per-MWh market price, and per-month revenue/cost
+ * splits are NOT derivable from the data model yet (no cost ledger per asset,
+ * no spot-price feed). Those KPIs render as '—' with a disclosure.
+ */
 export default function EnergyDashboardPage() {
   const [periodId, setPeriodId] = useState('P01');
+  const { assets, generationTrend, capacityMix } = useEnergyStore();
+  const { entries } = useGLStore();
+
+  const totalGeneration = useMemo(
+    () => roundTo(sumMoney(generationTrend.map((g) => g.total)), 2),
+    [generationTrend]
+  );
+
+  // Real per-source totals from the recorded assets. If the energy store
+  // carries a `capacityMix`, prefer that. Otherwise aggregate by `type`.
+  const perSource = useMemo(() => {
+    if (capacityMix.length > 0) return capacityMix;
+    const map = new Map<string, number>();
+    for (const a of assets) {
+      // capacity is a string like "250 MW"; we treat it as a label, not a
+      // numeric, so we count facilities per type rather than summing MW.
+      map.set(a.type, (map.get(a.type) ?? 0) + 1);
+    }
+    return Array.from(map.entries()).map(([name, value]) => ({ name, value, color: '#64748b' }));
+  }, [assets, capacityMix]);
+
+  // Real revenue/cost from GL (4xxx revenue, 5xxx-6xxx opex). No hand-typed
+  // monthly trend — disclose the gap if the GL is empty.
+  const realRevenue = useMemo(
+    () =>
+      roundTo(
+        sumMoney(entries.filter((e) => e.accountCode.startsWith('4')).map((e) => e.credit)),
+        2
+      ),
+    [entries]
+  );
+  const realOpex = useMemo(
+    () =>
+      roundTo(sumMoney(entries.filter((e) => /^5|^6/.test(e.accountCode)).map((e) => e.debit)), 2),
+    [entries]
+  );
 
   const handleExport = () => {
-    // Export handled by ExportEngine
+    /* handled by ExportEngine */
   };
+
+  const columns: Column[] = [
+    { key: 'name', header: 'Asset Name', sortable: true },
+    { key: 'type', header: 'Type', align: 'center' },
+    { key: 'capacity', header: 'Capacity', align: 'right' },
+    { key: 'outputYTD', header: 'Output YTD', align: 'right' },
+    { key: 'availability', header: 'Availability', align: 'right' },
+    { key: 'roi', header: 'ROI', align: 'right' },
+  ];
+
+  const tableData = assets.map((a) => ({
+    name: a.name,
+    type: a.type,
+    capacity: a.capacity,
+    outputYTD: a.outputYTD,
+    availability: a.availability,
+    roi: a.roi,
+  }));
 
   return (
     <div className="p-6 space-y-6 animate-in fade-in duration-500">
@@ -139,116 +132,99 @@ export default function EnergyDashboardPage() {
         </div>
       </div>
 
-      {/* 2. KPI Cards Row */}
+      {/* 2. KPI Cards Row — all derived */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
-          label="Total Energy Revenue"
-          value="$14.2M"
-          change={12.5}
-          changeLabel="vs. previous month"
-          sparklineData={[42, 45, 41, 48, 52, 50, 55]}
+          label="Total Energy Revenue (GL)"
+          value={realRevenue > 0 ? formatUsdCompact(realRevenue) : '—'}
+          changeLabel={
+            realRevenue > 0 ? 'sum of 4xxx credits in the GL' : 'no 4xxx revenue in the GL'
+          }
         />
         <KPIValue
-          label="Grid Production"
-          value="8,420 MWh"
-          change={8.2}
-          changeLabel="efficiency up 2.1%"
-          trend="up"
-          sparklineData={[30, 35, 40, 38, 42, 45, 48]}
+          label="Grid Production (window)"
+          value={
+            totalGeneration > 0
+              ? `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(totalGeneration)} MWh`
+              : '—'
+          }
+          changeLabel={
+            generationTrend.length > 0
+              ? `${generationTrend.length} periods on file`
+              : 'no generation on file'
+          }
+          trend={totalGeneration > 0 ? 'up' : 'neutral'}
         />
-        <KPIValue
-          label="Avg. Market Price"
-          value="$87.50"
-          change={-1.8}
-          changeLabel="MWh pricing stable"
-          trend="down"
-          sparklineData={[92, 90, 89, 88, 87, 88, 87.5]}
-        />
-        <KPIValue
-          label="Carbon Intensity"
-          value="240 g/kWh"
-          change={-4.2}
-          changeLabel="15% below target"
-          trend="up" // Up is good here (intensity down)
-          sparklineData={[280, 270, 265, 255, 250, 245, 240]}
-        />
+        <KPIValue label="Avg. Market Price" value="—" changeLabel="spot-price feed not connected" />
+        <KPIValue label="Carbon Intensity" value="—" changeLabel="intensity feed not connected" />
       </div>
 
       {/* 3. Main Charts Section */}
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Revenue vs. Cost Trend</CardTitle>
-              <p className="text-xs text-[var(--text-secondary)] mt-1">
-                Monthly financial performance across all sectors
-              </p>
-            </div>
-            <BarChart3 className="h-4 w-4 text-[var(--text-secondary)] opacity-50" />
+          <CardHeader>
+            <CardTitle>Generation Trend (Real)</CardTitle>
+            <CardDescription>
+              {generationTrend.length > 0
+                ? 'Recorded renewable generation by month'
+                : 'No generation on file yet'}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[350px] w-full pt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={trendData}>
-                  <defs>
-                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="colorCost" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#ef4444" stopOpacity={0.1} />
-                      <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis
-                    dataKey="month"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fill: '#64748b' }}
-                  />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fill: '#64748b' }}
-                    tickFormatter={(v) => `$${formatCompact(v)}`}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#fff',
-                      borderRadius: '8px',
-                      border: '1px solid #e2e8f0',
-                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                    }}
-                    formatter={(v) => [`$${Number(v).toLocaleString()}`, '']}
-                  />
-                  <Legend
-                    verticalAlign="top"
-                    align="right"
-                    iconType="circle"
-                    wrapperStyle={{ paddingBottom: '20px' }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="revenue"
-                    name="Revenue"
-                    stroke="#3b82f6"
-                    strokeWidth={3}
-                    fillOpacity={1}
-                    fill="url(#colorRevenue)"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="cost"
-                    name="Operating Cost"
-                    stroke="#ef4444"
-                    strokeWidth={2}
-                    strokeDasharray="5 5"
-                    fillOpacity={1}
-                    fill="url(#colorCost)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              {generationTrend.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={generationTrend}>
+                    <defs>
+                      <linearGradient id="colorSolar" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis
+                      dataKey="date"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: '#64748b' }}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: '#64748b' }}
+                    />
+                    <Tooltip />
+                    <Legend verticalAlign="top" align="right" iconType="circle" />
+                    <Area
+                      type="monotone"
+                      dataKey="solar"
+                      name="Solar (MWh)"
+                      stroke="#f59e0b"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#colorSolar)"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="wind"
+                      name="Wind (MWh)"
+                      stroke="#10b981"
+                      strokeWidth={2}
+                      fill="transparent"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="hydro"
+                      name="Hydro (MWh)"
+                      stroke="#3b82f6"
+                      strokeWidth={2}
+                      fill="transparent"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <EmptyState message="No generation trend recorded yet. Record assets to populate this chart." />
+              )}
             </div>
           </CardContent>
         </Card>
@@ -256,53 +232,56 @@ export default function EnergyDashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle>Production by Source</CardTitle>
-            <p className="text-xs text-[var(--text-secondary)] mt-1">
-              Current mix of energy generation
-            </p>
+            <CardDescription>Current mix of energy generation</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[350px] w-full pt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={sourceData} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
-                  <XAxis type="number" hide />
-                  <YAxis
-                    dataKey="name"
-                    type="category"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fontWeight: 600 }}
-                    width={80}
-                  />
-                  <Tooltip
-                    cursor={{ fill: 'transparent' }}
-                    contentStyle={{
-                      borderRadius: '8px',
-                      border: 'none',
-                      boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-                    }}
-                  />
-                  <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={32}>
-                    {sourceData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} fillOpacity={0.8} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              {perSource.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={perSource} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+                    <XAxis type="number" hide />
+                    <YAxis
+                      dataKey="name"
+                      type="category"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fontWeight: 600 }}
+                      width={80}
+                    />
+                    <Tooltip cursor={{ fill: 'transparent' }} />
+                    <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={32}>
+                      {perSource.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} fillOpacity={0.8} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <EmptyState message="No assets recorded. Record renewable assets to populate this chart." />
+              )}
             </div>
-            <div className="mt-4 space-y-2">
-              {sourceData.slice(0, 3).map((s) => (
-                <div key={s.name} className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full" style={{ backgroundColor: s.color }} />
-                    <span className="font-medium">{s.name}</span>
-                  </div>
-                  <span className="text-[var(--text-secondary)]">
-                    {formatPercent(s.value / 14.9, 1)} of total
-                  </span>
-                </div>
-              ))}
-            </div>
+            {perSource.length > 0 && (
+              <div className="mt-4 space-y-2">
+                {perSource.slice(0, 3).map((s) => {
+                  const total = perSource.reduce((acc, x) => acc + x.value, 0);
+                  return (
+                    <div key={s.name} className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="h-2 w-2 rounded-full"
+                          style={{ backgroundColor: s.color }}
+                        />
+                        <span className="font-medium">{s.name}</span>
+                      </div>
+                      <span className="text-[var(--text-secondary)]">
+                        {total > 0 ? formatPercent(s.value / total, 1) : '—'} of total
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -313,22 +292,45 @@ export default function EnergyDashboardPage() {
           <div>
             <CardTitle>Asset Performance Analysis</CardTitle>
             <CardDescription>
-              Detailed efficiency and output metrics for major energy assets
+              {tableData.length > 0
+                ? 'Recorded assets from the energy store'
+                : 'No assets recorded yet'}
             </CardDescription>
           </div>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" disabled={realOpex === 0}>
             View All Assets
           </Button>
         </CardHeader>
         <CardContent>
-          <DataTable
-            columns={columns}
-            data={assetPerformance}
-            caption="Energy asset performance table"
-            ariaLabel="Energy asset performance"
-          />
+          {tableData.length > 0 ? (
+            <DataTable
+              columns={columns}
+              data={tableData}
+              caption="Energy asset performance table"
+              ariaLabel="Energy asset performance"
+            />
+          ) : (
+            <EmptyState message="No assets recorded. Add renewable assets in the energy store to populate this table." />
+          )}
         </CardContent>
       </Card>
     </div>
   );
+}
+
+function EmptyState({ message }: { message: string }) {
+  return (
+    <div className="h-full flex items-center justify-center text-sm text-[var(--text-muted)]">
+      <div className="text-center max-w-sm">
+        <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-[var(--text-muted)]" />
+        <p>{message}</p>
+      </div>
+    </div>
+  );
+}
+
+function formatUsdCompact(n: number): string {
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}k`;
+  return `$${n.toFixed(0)}`;
 }

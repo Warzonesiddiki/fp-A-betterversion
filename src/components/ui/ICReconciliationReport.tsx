@@ -152,7 +152,7 @@ export function ICReconciliationReport({
           value={
             report.entityPairs.length > 0
               ? formatPercent((report.withinToleranceCount / report.entityPairs.length) * 100, 1)
-              : '0%'
+              : '—'
           }
           variant="info"
         />

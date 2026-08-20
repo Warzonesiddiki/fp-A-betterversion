@@ -17,7 +17,14 @@
 // Pure TypeScript, deterministic, testable
 // =============================================================================
 
-import { multiplyMoney, roundTo, subtractMoney, sumMoney, toDecimal } from '../utils/money';
+import {
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  toDecimal,
+} from '../utils/money';
 
 export interface DebtInstrument {
   id: string;
@@ -134,7 +141,13 @@ export class DebtScheduleEngine {
       totalInterest: totalInt,
       effectiveRate:
         instrument.principal > 0
-          ? roundTo(totalInt / instrument.principal, 6) * (12 / instrument.termMonths)
+          ? roundTo(
+              multiplyMoney(
+                divideMoney(toDecimal(totalInt), toDecimal(instrument.principal)),
+                12 / instrument.termMonths
+              ),
+              6
+            )
           : 0,
     };
   }
@@ -149,16 +162,25 @@ export class DebtScheduleEngine {
     const totalMonthlyPayment = roundTo(sumMoney(results.map((r) => r.schedule[0]?.payment ?? 0)));
     const totalInterest = roundTo(sumMoney(results.map((r) => r.totalInterest)));
     // Weighted average rate: rate × principal is a currency-weighted
-    // intermediate; the ratio itself stays a metric.
+    // intermediate; the ratio itself stays a metric. Both numerator and
+    // denominator are summed in decimal, the ratio is rounded to 6 places.
     const weightedAverageRate =
       totalDebt > 0
-        ? sumMoney(instruments.map((i) => multiplyMoney(i.rate, i.principal))).toNumber() /
-          totalDebt
+        ? roundTo(
+            divideMoney(
+              sumMoney(instruments.map((i) => multiplyMoney(i.rate, i.principal))),
+              toDecimal(totalDebt)
+            ),
+            6
+          )
         : 0;
 
     // Annual debt service = monthly × 12 is currency (exact decimal).
     const annualDebtService = roundTo(multiplyMoney(totalMonthlyPayment, 12));
-    const dscr = ebitda != null && annualDebtService > 0 ? ebitda / annualDebtService : undefined;
+    const dscr =
+      ebitda != null && annualDebtService > 0
+        ? roundTo(divideMoney(toDecimal(ebitda), toDecimal(annualDebtService)), 4)
+        : undefined;
 
     return {
       instruments: results,
@@ -199,7 +221,9 @@ export class DebtScheduleEngine {
       )
     );
     const breakEvenMonths =
-      monthlySavings > 0 ? Math.ceil(refinancingCosts / monthlySavings) : Infinity;
+      monthlySavings > 0
+        ? Math.ceil(roundTo(divideMoney(toDecimal(refinancingCosts), toDecimal(monthlySavings)), 4))
+        : Infinity;
     const npv = totalSavings; // Simplified NPV
 
     return { monthlySavings, totalSavings, breakEvenMonths, netPresentValue: npv };

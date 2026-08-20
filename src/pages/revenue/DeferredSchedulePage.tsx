@@ -4,16 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { KPIValue } from '@/components/ui/KPIValue';
-import { type Column } from '@/components/ui/DataTable';
+import { AlertTriangle, Calendar, Download, FileText } from 'lucide-react';
 import {
-  Download,
-  Calendar,
-  DollarSign,
-  TrendingUp,
-  ChevronDown,
-  ChevronRight,
-} from 'lucide-react';
+  addMoney,
+  roundTo,
+  sumMoney,
+  subtractMoney,
+  divideMoney,
+  multiplyMoney,
+} from '@/utils/money';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { formatPercent } from '@/utils/financialFormatting';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -22,227 +23,97 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
-  BarChart,
-  Bar,
 } from 'recharts';
-import { ExportEngine } from '@/engines/ExportEngine';
-import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { formatCompact, formatPercent } from '@/utils/financialFormatting';
-import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-interface ContractRecord {
-  id: string;
-  customer: string;
-  contractValue: number;
-  deferredBalance: number;
-  recognizedYTD: number;
-  startDate: string;
-  endDate: string;
-  monthlyRecognition: number;
-  status: 'Active' | 'Completed' | 'Pending';
-}
 
-// demo defaults — replaced by real data when contract schedules come from RevRec engine contracts when imported
-const mockContracts: ContractRecord[] = [
-  {
-    id: 'CTR001',
-    customer: 'Acme Corp',
-    contractValue: 480000,
-    deferredBalance: 320000,
-    recognizedYTD: 160000,
-    startDate: '2026-01-01',
-    endDate: '2027-12-31',
-    monthlyRecognition: 20000,
-    status: 'Active',
-  },
-  {
-    id: 'CTR002',
-    customer: 'TechStart Inc',
-    contractValue: 240000,
-    deferredBalance: 180000,
-    recognizedYTD: 60000,
-    startDate: '2026-03-01',
-    endDate: '2028-02-28',
-    monthlyRecognition: 10000,
-    status: 'Active',
-  },
-  {
-    id: 'CTR003',
-    customer: 'Global Solutions',
-    contractValue: 960000,
-    deferredBalance: 480000,
-    recognizedYTD: 480000,
-    startDate: '2025-01-01',
-    endDate: '2026-12-31',
-    monthlyRecognition: 40000,
-    status: 'Active',
-  },
-  {
-    id: 'CTR004',
-    customer: 'DataFlow LLC',
-    contractValue: 180000,
-    deferredBalance: 45000,
-    recognizedYTD: 135000,
-    startDate: '2025-06-01',
-    endDate: '2026-05-31',
-    monthlyRecognition: 15000,
-    status: 'Active',
-  },
-  {
-    id: 'CTR005',
-    customer: 'CloudFirst',
-    contractValue: 360000,
-    deferredBalance: 300000,
-    recognizedYTD: 60000,
-    startDate: '2026-04-01',
-    endDate: '2028-03-31',
-    monthlyRecognition: 15000,
-    status: 'Active',
-  },
-  {
-    id: 'CTR006',
-    customer: 'Legacy Systems',
-    contractValue: 120000,
-    deferredBalance: 0,
-    recognizedYTD: 120000,
-    startDate: '2025-01-01',
-    endDate: '2025-12-31',
-    monthlyRecognition: 10000,
-    status: 'Completed',
-  },
-];
-
-const monthlyRecognitionData = [
-  { month: 'Jan', recognized: 85000, deferred: 32000 },
-  { month: 'Feb', recognized: 92000, deferred: 28000 },
-  { month: 'Mar', recognized: 88000, deferred: 35000 },
-  { month: 'Apr', recognized: 95000, deferred: 25000 },
-  { month: 'May', recognized: 100000, deferred: 30000 },
-  { month: 'Jun', recognized: 98000, deferred: 22000 },
-  { month: 'Jul', recognized: 105000, deferred: 18000 },
-  { month: 'Aug', recognized: 110000, deferred: 15000 },
-  { month: 'Sep', recognized: 108000, deferred: 20000 },
-  { month: 'Oct', recognized: 112000, deferred: 12000 },
-  { month: 'Nov', recognized: 115000, deferred: 10000 },
-  { month: 'Dec', recognized: 120000, deferred: 8000 },
-];
-
-const deferredTrend = [
-  { month: 'Jan', balance: 1200000 },
-  { month: 'Feb', balance: 1168000 },
-  { month: 'Mar', balance: 1205000 },
-  { month: 'Apr', balance: 1180000 },
-  { month: 'May', balance: 1155000 },
-  { month: 'Jun', balance: 1130000 },
-  { month: 'Jul', balance: 1112000 },
-  { month: 'Aug', balance: 1097000 },
-  { month: 'Sep', balance: 1080000 },
-  { month: 'Oct', balance: 1068000 },
-  { month: 'Nov', balance: 1058000 },
-  { month: 'Dec', balance: 1050000 },
-];
-
+/**
+ * Deferred Revenue Schedule (session 028, replaces fabricated session-022 version).
+ *
+ * Pre-session-028 page rendered five named contracts (Acme Corp, TechStart
+ * Inc, Global Solutions, DataFlow LLC, …) with hand-typed contract value,
+ * deferred balance, recognized YTD and monthly recognition — none backed by a
+ * contract ledger.
+ *
+ * The general ledger does carry deferred revenue as 23xx accounts (ASC 606
+ * liability). The page now reports the GL-derived deferred balance and the
+ * period movement. Per-contract breakdowns require a contract-management
+ * feed and are disclosed as not derivable.
+ */
 export default function DeferredSchedulePage() {
-  const fmt = useCurrencyFormatter();
-  const { entries } = useGLStore();
   const navigate = useNavigate();
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const { entries } = useGLStore();
+  const fmt = useCurrencyFormatter();
+  // Per-contract expansion is disabled: the per-contract list was removed
+  // because it relied on hand-typed fixture data. Keep the state hook so
+  // future contract-feed integration can re-enable expansion without a
+  // signature change.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = 'FinPlan Pro - Deferred Revenue Schedule';
   }, []);
 
-  const _glDeferred = useMemo(
+  // Real: 23xx is the deferred revenue liability per the standard chart of
+  // accounts. We sum the credit balance minus debit (reversals).
+  const totalDeferred = useMemo(
     () =>
-      entries
-        .filter((e) => (e.accountCode || '').startsWith('23'))
-        .reduce((s, e) => s + Math.abs(e.credit - e.debit), 0),
+      roundTo(
+        sumMoney(
+          entries
+            .filter((e) => (e.accountCode ?? '').startsWith('23'))
+            .map((e) => subtractMoney(e.credit, e.debit))
+        ),
+        2
+      ),
     [entries]
   );
 
-  const totalDeferred = mockContracts.reduce((s, c) => s + c.deferredBalance, 0);
-  const totalRecognizedYTD = mockContracts.reduce((s, c) => s + c.recognizedYTD, 0);
-  const totalContractValue = mockContracts.reduce((s, c) => s + c.contractValue, 0);
-  const recognitionRate =
-    totalContractValue > 0 ? (totalRecognizedYTD / totalContractValue) * 100 : 0;
-
-  const _contractColumns: Column<ContractRecord>[] = [
-    {
-      key: 'id',
-      header: '',
-      render: (_, r) => (
-        <button onClick={() => setExpandedId(expandedId === r.id ? null : r.id)} className="p-1">
-          {expandedId === r.id ? (
-            <ChevronDown className="h-4 w-4" />
-          ) : (
-            <ChevronRight className="h-4 w-4" />
-          )}
-        </button>
+  // Real: 42xx is earned/deferred revenue. The portion NOT yet earned is
+  // roughly the deferred balance; we report 42xx credits as a proxy for
+  // earned-to-date revenue. (A full ASC 606 contract-by-contract waterfall
+  // requires a contract feed — disclosed below.)
+  const totalEarned42 = useMemo(
+    () =>
+      roundTo(
+        sumMoney(
+          entries.filter((e) => (e.accountCode ?? '').startsWith('42')).map((e) => e.credit)
+        ),
+        2
       ),
-    },
-    { key: 'customer', header: 'Customer', sortable: true },
-    {
-      key: 'contractValue',
-      header: 'Contract Value',
-      render: (_, r) => fmt.currency0(r.contractValue),
-      sortable: true,
-    },
-    {
-      key: 'deferredBalance',
-      header: 'Deferred Balance',
-      render: (_, r) => <span className="text-yellow-400">{fmt.currency0(r.deferredBalance)}</span>,
-      sortable: true,
-    },
-    {
-      key: 'recognizedYTD',
-      header: 'Recognized YTD',
-      render: (_, r) => <span className="text-green-400">{fmt.currency0(r.recognizedYTD)}</span>,
-      sortable: true,
-    },
-    {
-      key: 'status',
-      header: 'Status',
-      render: (_, r) => (
-        <span
-          className={`text-xs px-2 py-0.5 rounded-full ${
-            r.status === 'Active'
-              ? 'bg-green-900/50 text-green-400'
-              : r.status === 'Completed'
-                ? 'bg-blue-900/50 text-blue-400'
-                : 'bg-yellow-900/50 text-yellow-400'
-          }`}
-        >
-          {r.status}
-        </span>
-      ),
-    },
-  ];
+    [entries]
+  );
 
-  const handleExport = () => {
-    void ExportEngine.exportToPDF(
-      {
-        headers: ['Customer', 'Contract Value', 'Deferred', 'Recognized YTD', 'Status'],
-        rows: mockContracts.map((c) => [
-          c.customer,
-          c.contractValue,
-          c.deferredBalance,
-          c.recognizedYTD,
-          c.status,
-        ]),
-      },
-      { title: 'Deferred Revenue Schedule' }
-    ).catch(reportExportFailure);
-  };
+  // Recognition-rate ratio. Both numerator and denominator come from the GL;
+  // the ratio is dimensionless, so we use divideMoney + multiplyMoney(100).
+  const totalPool = addMoney(totalEarned42, totalDeferred);
+  const recognitionRate = totalPool.greaterThan(0)
+    ? roundTo(multiplyMoney(divideMoney(totalEarned42, totalPool), 100), 2)
+    : 0;
 
-  const hasData = entries.length > 0 || mockContracts.length > 0;
+  // Real: deferred balance by period from the GL, bucketed by month. Only
+  // periods with a non-zero 23xx movement are emitted.
+  const deferredTrend = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const e of entries) {
+      if (!(e.accountCode ?? '').startsWith('23')) continue;
+      const month = e.period || (e.date ?? '').slice(0, 7);
+      if (!month) continue;
+      const d = roundTo(subtractMoney(e.credit, e.debit), 2);
+      const prior = map.get(month) ?? 0;
+      map.set(month, roundTo(prior + d, 2));
+    }
+    return [...map.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([month, balance]) => ({ month, balance }));
+  }, [entries]);
 
-  if (!hasData) {
+  if (entries.length === 0) {
     return (
       <div className="p-12 text-center">
         <Calendar className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
         <h2 className="text-xl font-semibold mb-2">No Deferred Revenue Data</h2>
         <p className="text-[var(--text-muted)] mb-6">
-          Import GL data with deferred revenue accounts.
+          Import GL data with deferred revenue accounts (23xx) to populate this schedule.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
@@ -253,9 +124,9 @@ export default function DeferredSchedulePage() {
     <div className="p-6 space-y-6">
       <PageHeader
         title="Deferred Revenue Schedule"
-        purpose={<>{mockContracts.length}contracts tracked</>}
+        purpose="ASC 606 deferred-revenue liability and period movement from the GL."
         actions={
-          <Button variant="outline" size="sm" onClick={handleExport}>
+          <Button variant="outline" size="sm" disabled>
             <Download className="h-4 w-4 mr-1" /> Export
           </Button>
         }
@@ -263,194 +134,111 @@ export default function DeferredSchedulePage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPIValue
-          label="Total Deferred"
-          value={fmt.currency0(totalDeferred)}
-          icon={<DollarSign className="h-4 w-4" />}
-        />
-        <KPIValue
-          label="Recognized YTD"
-          value={fmt.currency0(totalRecognizedYTD)}
-          icon={<TrendingUp className="h-4 w-4" />}
-        />
-        <KPIValue
-          label="Contract Value"
-          value={fmt.currency0(totalContractValue)}
+          label="Total Deferred (23xx)"
+          value={totalDeferred > 0 ? fmt.currency0(totalDeferred) : '—'}
           icon={<Calendar className="h-4 w-4" />}
+        />
+        <KPIValue
+          label="Earned Revenue (42xx)"
+          value={totalEarned42 > 0 ? fmt.currency0(totalEarned42) : '—'}
+          icon={<FileText className="h-4 w-4" />}
         />
         <KPIValue
           label="Recognition Rate"
           value={`${formatPercent(recognitionRate, 1)}`}
-          icon={<TrendingUp className="h-4 w-4" />}
+          icon={<FileText className="h-4 w-4" />}
+        />
+        <KPIValue
+          label="GL Entries"
+          value={String(entries.length)}
+          icon={<FileText className="h-4 w-4" />}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Deferred Revenue Balance Trend</CardTitle>
+            <CardTitle>Deferred Revenue Movement by Period</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <AreaChart data={deferredTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} />
-                <YAxis
-                  stroke="#94a3b8"
-                  fontSize={12}
-                  tickFormatter={(v) => `$${formatCompact(v)}`}
-                />
-                <Tooltip
-                  formatter={(v) => fmt.currency0(Number(v))}
-                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="balance"
-                  stroke="#f59e0b"
-                  fill="#f59e0b"
-                  fillOpacity={0.15}
-                  name="Deferred Balance"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            <div className="h-[300px] w-full">
+              {deferredTrend.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={deferredTrend}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                    <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} />
+                    <YAxis stroke="#94a3b8" fontSize={12} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#1e293b',
+                        border: '1px solid #334155',
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="balance"
+                      name="23xx net (credit − debit)"
+                      stroke="#3b82f6"
+                      fill="#3b82f6"
+                      fillOpacity={0.3}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <EmptyChart message="No 23xx movements in the GL." />
+              )}
+            </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Monthly Recognition vs Deferrals</CardTitle>
+            <CardTitle>Per-Contract Detail</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={monthlyRecognitionData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} />
-                <YAxis
-                  stroke="#94a3b8"
-                  fontSize={12}
-                  tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`}
-                />
-                <Tooltip
-                  formatter={(v) => fmt.currency0(Number(v))}
-                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                />
-                <Legend />
-                <Bar dataKey="recognized" fill="#10b981" name="Recognized" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="deferred" fill="#f59e0b" name="Deferred" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="text-sm text-[var(--text-muted)] space-y-3">
+              <p>
+                <AlertTriangle className="h-4 w-4 inline-block mr-1" />
+                Per-contract deferred balance, recognized-to-date, monthly recognition and remaining
+                months require a contract-management feed. The GL carries the aggregate 23xx
+                liability but does not carry the contract-by-contract allocation.
+              </p>
+              <p>Connect a contract ledger to populate the per-contract schedule below.</p>
+            </div>
           </CardContent>
         </Card>
       </div>
+    </div>
+  );
+}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Contract Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {mockContracts.map((contract) => (
-              <div key={contract.id} className="bg-slate-800 rounded-lg overflow-hidden">
-                <div
-                  className="p-4 flex items-center justify-between cursor-pointer hover:bg-slate-700/50 transition-colors"
-                  onClick={() => setExpandedId(expandedId === contract.id ? null : contract.id)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ')
-                      setExpandedId(expandedId === contract.id ? null : contract.id);
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    {expandedId === contract.id ? (
-                      <ChevronDown className="h-4 w-4 text-slate-400" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4 text-slate-400" />
-                    )}
-                    <div>
-                      <div className="font-medium">{contract.customer}</div>
-                      <div className="text-xs text-slate-400">
-                        {contract.id} | {contract.startDate} to {contract.endDate}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-6">
-                    <div className="text-right">
-                      <div className="text-sm font-semibold">
-                        {fmt.currency0(contract.contractValue)}
-                      </div>
-                      <div className="text-xs text-slate-400">Contract Value</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-semibold text-yellow-400">
-                        {fmt.currency0(contract.deferredBalance)}
-                      </div>
-                      <div className="text-xs text-slate-400">Deferred</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-semibold text-green-400">
-                        {fmt.currency0(contract.recognizedYTD)}
-                      </div>
-                      <div className="text-xs text-slate-400">Recognized</div>
-                    </div>
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full ${
-                        contract.status === 'Active'
-                          ? 'bg-green-900/50 text-green-400'
-                          : contract.status === 'Completed'
-                            ? 'bg-blue-900/50 text-blue-400'
-                            : 'bg-yellow-900/50 text-yellow-400'
-                      }`}
-                    >
-                      {contract.status}
-                    </span>
-                  </div>
-                </div>
-                {expandedId === contract.id && (
-                  <div className="px-4 pb-4 pt-0 border-t border-slate-700">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3">
-                      <div>
-                        <div className="text-xs text-slate-400">Monthly Recognition</div>
-                        <div className="font-medium">
-                          {fmt.currency0(contract.monthlyRecognition)}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-slate-400">Remaining Months</div>
-                        <div className="font-medium">
-                          {contract.deferredBalance > 0
-                            ? Math.ceil(contract.deferredBalance / contract.monthlyRecognition)
-                            : 0}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-slate-400">% Recognized</div>
-                        <div className="font-medium">
-                          {formatPercent(
-                            (contract.recognizedYTD / contract.contractValue) * 100,
-                            1
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-slate-400">Completion</div>
-                        <div className="w-full bg-slate-700 rounded-full h-2 mt-1">
-                          <div
-                            className="h-2 rounded-full bg-green-500"
-                            style={{
-                              width: `${(contract.recognizedYTD / contract.contractValue) * 100}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+function KPIValue({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: string;
+  icon?: React.ReactNode;
+}) {
+  return (
+    <div className="bg-slate-900 border border-slate-800 rounded-lg p-4">
+      <div className="flex items-center gap-2 text-xs text-slate-400 mb-1">
+        {icon}
+        {label}
+      </div>
+      <div className="text-lg font-semibold">{value}</div>
+    </div>
+  );
+}
+
+function EmptyChart({ message }: { message: string }) {
+  return (
+    <div className="h-full flex items-center justify-center text-sm text-[var(--text-muted)]">
+      <div className="text-center max-w-sm">
+        <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-[var(--text-muted)]" />
+        <p>{message}</p>
+      </div>
     </div>
   );
 }

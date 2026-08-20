@@ -15,7 +15,7 @@ import {
   DollarSign,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
-import { roundTo } from '@/utils/money';
+import { divideMoney, multiplyMoney, roundTo, subtractMoney, sumMoney } from '@/utils/money';
 
 import {
   ResponsiveContainer,
@@ -51,12 +51,24 @@ export default function StoreDashboardPage() {
     if (entries.length === 0) return null;
     const revenueEntries = entries.filter((e) => (e.accountCode || '').startsWith('4'));
     const cogsEntries = entries.filter((e) => (e.accountCode || '').startsWith('5'));
-    const totalRevenue = revenueEntries.reduce((s, e) => s + (e.debit - e.credit), 0);
-    const totalCOGS = cogsEntries.reduce((s, e) => s + Math.abs(e.debit - e.credit), 0);
-    const grossMargin = totalRevenue > 0 ? ((totalRevenue - totalCOGS) / totalRevenue) * 100 : 0;
+    const totalRevenue = roundTo(
+      sumMoney(revenueEntries.map((e) => subtractMoney(e.debit, e.credit))),
+      2
+    );
+    const totalCOGS = roundTo(
+      sumMoney(cogsEntries.map((e) => Math.abs(subtractMoney(e.debit, e.credit).toNumber()))),
+      2
+    );
+    const grossMargin =
+      totalRevenue > 0
+        ? roundTo(
+            multiplyMoney(divideMoney(subtractMoney(totalRevenue, totalCOGS), totalRevenue), 100),
+            2
+          )
+        : 0;
     const storeNames = ['Downtown', 'Mall', 'Airport', 'Online', 'Suburban'];
     const storeData: StoreRow[] = storeNames.map((name, _i) => {
-      const rev = roundTo(totalRevenue * (0.15 + ((_i * 7) % 20) * 0.01), 2);
+      const rev = roundTo(multiplyMoney(totalRevenue, 0.15 + ((_i * 7) % 20) * 0.01).toNumber(), 2);
       const txn = Math.floor(rev / (40 + ((_i * 11) % 30)));
       return {
         store: name,
@@ -73,7 +85,7 @@ export default function StoreDashboardPage() {
       storeData,
       chartData: storeData.map((s) => ({
         name: s.store,
-        revenue: Math.round(s.revenue),
+        revenue: roundTo(s.revenue, 0),
         transactions: s.transactions,
       })),
     };

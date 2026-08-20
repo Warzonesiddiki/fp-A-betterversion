@@ -231,4 +231,30 @@ describe('money AST detector — must NOT flag safe or non-monetary code', () =>
     `);
     expect(count).toBe(0);
   });
+
+  it('respects a `@money-ast-allow` file-level suppression (SankeyChart regression)', () => {
+    // SankeyChart is page-geometry: `(val / totalValue) * VIEW_HEIGHT + GAP`
+    // produces a SVG y-offset, not a currency amount. The detector cannot see
+    // that VIEW_HEIGHT and GAP are pixel constants. A file-level
+    // `@money-ast-allow` marker with a documented reason scopes the
+    // suppression to one file and prints the reason to stderr.
+    const { count, findings } = analyse(`
+      // @money-ast-allow
+      // Reason: page-geometry arithmetic — flow-weight × pixel height.
+      export const offset = (val: number, totalValue: number, h: number) =>
+        (val / totalValue) * h + 10;
+    `);
+    expect(count).toBe(0);
+    expect(findings).toEqual([]);
+  });
+
+  it('does NOT silently suppress a file without the marker', () => {
+    // The same arithmetic without the marker must still be flagged. The
+    // suppression is opt-in, file-scoped, and requires a reason.
+    const { count } = analyse(`
+      export const offset = (val: number, totalValue: number, h: number) =>
+        (val / totalValue) * h + 10;
+    `);
+    expect(count).toBeGreaterThan(0);
+  });
 });

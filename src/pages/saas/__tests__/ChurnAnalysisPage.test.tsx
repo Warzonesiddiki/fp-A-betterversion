@@ -79,9 +79,17 @@ describe('ChurnAnalysisPage', () => {
     expect(screen.getByText(/churn trend/i)).toBeDefined();
   });
 
-  it('renders segment analysis', () => {
+  it('does not fabricate per-customer churn / risk-score / last-login (session 028)', () => {
+    // Pre-session-028: a 'segment' table with hand-typed Enterprise /
+    // Mid-Market / SMB / Startup segments and risk scores [85, 72, 68, 91,
+    // 78] rendered for every tenant. The GL cannot carry per-customer
+    // churn. The page must now disclose the gap rather than ship fake
+    // segments and risk scores.
     render(<ChurnAnalysisPage />);
-    expect(screen.getByText(/segment/i)).toBeDefined();
+    expect(screen.queryByText(/Enterprise/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Mid-Market/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/days ago/i)).not.toBeInTheDocument();
+    expect(screen.getAllByText(/subscription-management/i).length).toBeGreaterThan(0);
   });
 
   it('renders charts', () => {

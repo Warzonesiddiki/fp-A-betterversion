@@ -22,7 +22,7 @@ import {
   Eye,
 } from 'lucide-react';
 import type { GLEntry } from '@/types';
-import { roundTo, sumMoney, formatMoney } from '@/utils/money';
+import { addMoney, roundTo, sumMoney, formatMoney } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 function computeReportStats(entries: readonly GLEntry[]) {
@@ -43,9 +43,9 @@ function computeReportStats(entries: readonly GLEntry[]) {
       net: 0,
       count: 0,
     };
-    existing.debit += e.debit;
-    existing.credit += e.credit;
-    existing.net += e.netChange;
+    existing.debit = addMoney(existing.debit, e.debit ?? 0).toNumber();
+    existing.credit = addMoney(existing.credit, e.credit ?? 0).toNumber();
+    existing.net = addMoney(existing.net, e.netChange ?? 0).toNumber();
     existing.count += 1;
     accountMap.set(e.accountCode, existing);
   }

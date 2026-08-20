@@ -4,17 +4,17 @@
   "updated_at": "2026-08-20",
   "genesis_phase": "Phase 0 / Wave W0.1.1",
   "now": {
-    "task_id": "T-028",
-    "summary": "Session 027 pair landed (money 376 / fabrication 10). Push + PR; merge only when test-unit green. Next: SankeyChart/WorkingCapital or grouping idiom; fabrication EmissionsTrading/EnergyDashboard/ClaimsAnalytics/FacilityManagement. Human: apply ci-patches/0005 (invalid ci.yml YAML)."
+    "task_id": "T-029",
+    "summary": "Session 028 wave complete. money 376\u2192277 (16 grouping-idiom sector pages + HealthCare/Energy/Insurance/Realestate/SaaS/Cash/Retail/Revenue reports + Debt/ICMatching/Depreciation engines + SankeyChart suppression); fabrication 10\u21920. 14,387 tests pass. Next: push, PR, then worst-first 4-op worklist (CreditRisk/Import/Solver engines; writeback; FXPositionGrid; ESGMetricsDashboard; BondPortfolio; CapEx; DebtSchedule; ForecastBuilder)."
   },
   "health": {
     "shi": null,
     "uvi": null,
     "dei": null,
-    "money_ast_safety_pct": 82.39,
-    "money_ast_unsafe_ops": 376,
-    "fabrication_findings": 10,
-    "notes": "SHI/UVI/DEI not measured. Ratchets 2026-08-20 after s027: money 489->...->390->376 (LeaseEngine + LeaseDetailPage); fabrication 60->...->13->10 (BoardPackPage)."
+    "money_ast_safety_pct": 85.33,
+    "money_ast_unsafe_ops": 277,
+    "fabrication_findings": 0,
+    "notes": "SHI/UVI/DEI not measured. Ratchets 2026-08-20 after s028: money 376->338->277; fabrication 10->0. SankeyChart suppressed via documented @money-ast-allow marker (regression-tested). New @money-ast-allow feature tested: must-catch + must-ignore; reason printed to stderr for human review. SankeyChart now correctly identified as page-geometry."
   },
   "capabilities": {
     "git": true,
@@ -29,8 +29,17 @@
     "push_workflows": false
   },
   "stack": {
-    "languages": ["TypeScript", "Rust (tauri, unbuildable here)"],
-    "frameworks": ["React 19", "Vite", "Tailwind", "Zustand", "Express"],
+    "languages": [
+      "TypeScript",
+      "Rust (tauri, unbuildable here)"
+    ],
+    "frameworks": [
+      "React 19",
+      "Vite",
+      "Tailwind",
+      "Zustand",
+      "Express"
+    ],
     "pkg": "npm",
     "test": "npm test (vitest) | npx vitest run <path> --reporter=dot",
     "dev": "npm run dev",
@@ -67,14 +76,24 @@
     "forecast-builder": "shipped",
     "clinical-trials": "shipped"
   },
-  "invariants_green": ["INV-001", "INV-002"],
-  "invariants_red": ["INV-003", "INV-004", "INV-005", "INV-007", "INV-009", "INV-010"],
+  "invariants_green": [
+    "INV-001",
+    "INV-002"
+  ],
+  "invariants_red": [
+    "INV-003",
+    "INV-004",
+    "INV-005",
+    "INV-007",
+    "INV-009",
+    "INV-010"
+  ],
   "blocked": [
     "CI workflow changes (no `workflows` permission) -> ci-patches/0005-*.patch unapplied; it fixes invalid ci.yml YAML + heap/timeout",
     "src-tauri/src/*.rs (no cargo/rustc in sandbox)",
     "desktop/Tauri verification"
   ],
-  "last_session": "sess_027",
+  "last_session": "sess_028",
   "integrity": {
     "last_run": "2026-08-20",
     "ok": true,
