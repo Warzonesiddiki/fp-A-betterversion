@@ -20,7 +20,7 @@ import { useGLStore } from '@/store/glStore';
 import { BondPricingEngine } from '@/engines/BondPricingEngine';
 import type { GLEntry } from '@/types';
 import { formatNumber, formatPercent } from '@/utils/financialFormatting';
-import { sumMoney, roundTo, divideMoney } from '@/utils/money';
+import { sumMoney, roundTo, divideMoney, multiplyMoney } from '@/utils/money';
 
 /** Derive synthetic bond instruments from GL entries. */
 function deriveBondsFromGL(entries: GLEntry[]) {
@@ -161,7 +161,10 @@ export default function BondPortfolioPage() {
       totalMarketValue > 0
         ? roundTo(
             divideMoney(
-              roundTo(sumMoney(enrichedBonds.map((b) => b.modifiedDuration * b.price)), 6),
+              roundTo(
+                sumMoney(enrichedBonds.map((b) => multiplyMoney(b.modifiedDuration, b.price))),
+                6
+              ),
               totalMarketValue
             ),
             4
@@ -171,7 +174,7 @@ export default function BondPortfolioPage() {
       totalMarketValue > 0
         ? roundTo(
             divideMoney(
-              roundTo(sumMoney(enrichedBonds.map((b) => b.convexity * b.price)), 6),
+              roundTo(sumMoney(enrichedBonds.map((b) => multiplyMoney(b.convexity, b.price))), 6),
               totalMarketValue
             ),
             4
@@ -181,7 +184,7 @@ export default function BondPortfolioPage() {
       totalMarketValue > 0
         ? roundTo(
             divideMoney(
-              roundTo(sumMoney(enrichedBonds.map((b) => b.ytm * b.price)), 6),
+              roundTo(sumMoney(enrichedBonds.map((b) => multiplyMoney(b.ytm, b.price))), 6),
               totalMarketValue
             ),
             4
@@ -192,7 +195,10 @@ export default function BondPortfolioPage() {
       totalFaceValue > 0
         ? roundTo(
             divideMoney(
-              roundTo(sumMoney(enrichedBonds.map((b) => b.couponRate * b.faceValue)), 6),
+              roundTo(
+                sumMoney(enrichedBonds.map((b) => multiplyMoney(b.couponRate, b.faceValue))),
+                6
+              ),
               totalFaceValue
             ),
             4
@@ -371,7 +377,7 @@ export default function BondPortfolioPage() {
                 Avg Coupon Rate
               </div>
               <div className="text-xl font-bold">
-                {formatPercent(portfolioMetrics.avgCoupon * 100, 2)}
+                {formatPercent(multiplyMoney(portfolioMetrics.avgCoupon, 100).toNumber(), 2)}
               </div>
             </div>
             <div className="space-y-1">

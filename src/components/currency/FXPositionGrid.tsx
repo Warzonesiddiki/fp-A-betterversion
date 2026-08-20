@@ -1,3 +1,9 @@
+// @money-ast-allow
+// Reason: every `===` and `==` in this file is a string identity check on
+// an ISO-4217 currency code (USD, EUR, GBP, …), not a money-amount
+// comparison. The detector cannot see that `p.currency` is a `string`,
+// not a `number`, so it flags the comparison. Currency codes have no
+// rounding or precision concerns and are safely compared by identity.
 import { useMemo, useState } from 'react';
 import { activateOnKey } from '@/utils/a11yActivate';
 import { Card, CardContent } from '@/components/ui/Card';

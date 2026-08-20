@@ -285,7 +285,7 @@ function KPIValue({
       </div>
       <div className="text-lg font-semibold">{value}</div>
       {trend && (
-        <div className="text-[10px] text-slate-500 mt-1">
+        <div className="text-[10px] text-[var(--text-muted)] mt-1">
           {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '—'}
         </div>
       )}
