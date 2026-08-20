@@ -1,3 +1,17 @@
+// @money-ast-allow
+// Reason: this file is the security threat model. The flagged
+// arithmetic is:
+//   1. `t.asset === asset` (line 495): a property identity check on a
+//      string asset name; not a money comparison.
+//   2. `riskByAsset[asset]!.meanDread / riskByAsset[asset]!.count`
+//      (line 702): averaging a per-asset DREAD risk score over the
+//      threat count. DREAD is a dimensionless ordinal score (0..10),
+//      not money.
+//   3. `totalMitigated / allThreats.length` (line 713): proportion of
+//      mitigated threats, dimensionless.
+// No money value crosses any of these expressions. The detector flags
+// them because of MONEY_WORDS overlap with `asset` (matches `asset` /
+// `assets`).
 import { formatMoney } from '../utils/money';
 
 /**

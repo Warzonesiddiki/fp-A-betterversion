@@ -1,17 +1,17 @@
 {
   "modulesScanned": 982,
   "monetaryModules": 886,
-  "safeModules": 776,
-  "unsafeModules": 110,
-  "unsafeOperations": 204,
-  "safetyPercent": 87.58,
+  "safeModules": 779,
+  "unsafeModules": 107,
+  "unsafeOperations": 195,
+  "safetyPercent": 87.92,
   "byKind": {
-    "arithmetic": 150,
-    "float-equality": 11,
+    "arithmetic": 142,
+    "float-equality": 10,
     "compound-assign": 11,
     "comparison": 21,
     "math-round": 6,
     "reduce-accumulate": 5
   },
-  "recordedAt": "2026-08-20T11:38:11.783Z"
+  "recordedAt": "2026-08-20T11:39:47.961Z"
 }

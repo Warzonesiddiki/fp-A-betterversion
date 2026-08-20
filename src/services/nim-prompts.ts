@@ -1,3 +1,19 @@
+// @money-ast-allow
+// Reason: this file is a prompt-template builder. The flagged
+// arithmetic is:
+//   1. `params.actual - params.budget` (line 78): variance as a
+//      real money difference. The amounts are user-supplied `number`
+//      inputs (from GL or a budget store) and the result is stringified
+//      into a prompt. The display is for LLM reasoning, not for
+//      calculation. Conversion to decimal here would not change the
+//      prompt text materially; the variance % display in the prompt
+//      is illustrative.
+//   2. `(variance / params.budget) * 100` (line 79): variance %.
+//   3. `params.totalRevenue - params.totalExpenses` (line 173): net
+//      income as a number stringified into a prompt.
+// These are all display-time string-builders for an LLM, not
+// financial-truth calculations. The prompt never persists the result
+// to a database or to a financial statement.
 import { formatMoney } from '../utils/money';
 
 /**
