@@ -1,3 +1,9 @@
+// @money-ast-allow
+// Reason: this is a pagination component. The flagged arithmetic is
+// `totalPages - 1` and `totalPages - 2` — integer arithmetic on a page
+// count. The detector flags them because `totalPages` looks like a money
+// total (`total` is in MONEY_WORDS), but the value is a page index, not
+// a money amount.
 import React from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { cn } from '@/utils/cn';

@@ -6,6 +6,7 @@ import { ExportMenu } from './ExportMenu';
 import type { ScenarioMetrics } from '@/types';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { roundTo, subtractMoney, toDecimal } from '@/utils/money';
 
 interface ScenarioColumn {
   id: string;
@@ -20,7 +21,7 @@ interface ScenarioComparisonGridProps {
   className?: string;
 }
 function varianceColor(current: number, base: number, metric: string): string {
-  const diff = current - base;
+  const diff = roundTo(subtractMoney(toDecimal(current), toDecimal(base)), 4);
   if (Math.abs(diff) < 0.01) return 'text-[var(--text-muted)]';
   // For cost metrics (burnRate), lower is better
   const invertMetrics = ['burnRate'];
@@ -81,13 +82,18 @@ export function ScenarioComparisonGrid({
     return fmt.currency0(val);
   };
 
-  // Impact ranking: sort scenarios by revenue delta from base
+  // Impact ranking: sort scenarios by |revenue − base.revenue|.
   const rankedScenarios = useMemo(() => {
-    return [...scenarios].sort(
-      (a, b) =>
-        Math.abs(b.metrics.revenue - baseMetrics.revenue) -
-        Math.abs(a.metrics.revenue - baseMetrics.revenue)
-    );
+    const abs = (n: number) => Math.abs(n);
+    return [...scenarios].sort((a, b) => {
+      const aDelta = abs(
+        roundTo(subtractMoney(toDecimal(a.metrics.revenue), toDecimal(baseMetrics.revenue)), 4)
+      );
+      const bDelta = abs(
+        roundTo(subtractMoney(toDecimal(b.metrics.revenue), toDecimal(baseMetrics.revenue)), 4)
+      );
+      return bDelta - aDelta;
+    });
   }, [scenarios, baseMetrics]);
 
   const handleExport = (format: 'pdf' | 'excel' | 'csv') => {
@@ -195,7 +201,10 @@ export function ScenarioComparisonGrid({
         {/* Summary row */}
         <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
           {rankedScenarios.map((s) => {
-            const revenueDelta = s.metrics.revenue - baseMetrics.revenue;
+            const revenueDelta = roundTo(
+              subtractMoney(toDecimal(s.metrics.revenue), toDecimal(baseMetrics.revenue)),
+              2
+            );
             const isPositive = revenueDelta >= 0;
             return (
               <div

@@ -7,7 +7,14 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { telecomConfig } from '@/config/sectors/telecom';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Wifi } from 'lucide-react';
-import { sumMoney, roundTo } from '@/utils/money';
+import {
+  compareMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  sumMoney,
+  toDecimal,
+} from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 import { PageHeader } from '@/components/ui/PageHeader';
 
@@ -21,7 +28,7 @@ export function TelecomDashboardPage() {
 
   const stats = useMemo(() => {
     const revenue = roundTo(
-      sumMoney(entries.filter((e) => e.credit > e.debit).map((e) => e.credit)),
+      sumMoney(entries.filter((e) => compareMoney(e.credit, e.debit) > 0).map((e) => e.credit)),
       2
     );
     const capex = roundTo(
@@ -40,7 +47,11 @@ export function TelecomDashboardPage() {
     const opex = roundTo(
       sumMoney(
         entries
-          .filter((e) => e.debit > e.credit && !e.accountName.toLowerCase().includes('capital'))
+          .filter(
+            (e) =>
+              compareMoney(e.debit, e.credit) > 0 &&
+              !e.accountName.toLowerCase().includes('capital')
+          )
           .map((e) => e.debit)
       ),
       2
@@ -136,7 +147,7 @@ export function TelecomDashboardPage() {
                 <span className="text-sm text-[var(--text-muted)]">CAPEX / Revenue</span>
                 <span className="font-mono">
                   {stats.revenue > 0
-                    ? `${formatPercent((stats.capex / stats.revenue) * 100, 1)}`
+                    ? `${formatPercent(roundTo(multiplyMoney(divideMoney(toDecimal(stats.capex), toDecimal(stats.revenue)), 100), 1), 1)}`
                     : '—'}
                 </span>
               </div>
