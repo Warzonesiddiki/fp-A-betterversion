@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Delivery success rate: successful / totalDeliveries is a count ratio, not money
 import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // REPORT SCHEDULING ENGINE

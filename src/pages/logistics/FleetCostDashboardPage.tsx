@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Entry-direction filter: e.credit > e.debit selects credit-heavy entries for sumMoney, not a money result
 /**
  * Logistics — Fleet Cost Dashboard (Wave 9 Phase 3 Sector Depth).
  *

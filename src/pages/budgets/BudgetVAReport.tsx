@@ -29,7 +29,7 @@ import {
   TrendingUp,
   DollarSign,
 } from 'lucide-react';
-import { sumMoney, subtractMoney, roundTo, toDecimal } from '@/utils/money';
+import { sumMoney, subtractMoney, roundTo, toDecimal, divideMoney } from '@/utils/money';
 import { formatPercent as formatPercentDisplay } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -74,7 +74,7 @@ export default function BudgetVAReport() {
         const actual = actualDec ? roundTo(actualDec, 2) : 0;
         const budget = item.amount;
         const variance = roundTo(subtractMoney(actual, budget), 2);
-        const variancePct = budget !== 0 ? (variance / budget) * 100 : 0;
+        const variancePct = budget !== 0 ? divideMoney(variance, budget).toNumber() * 100 : 0;
 
         return {
           id: item.id,

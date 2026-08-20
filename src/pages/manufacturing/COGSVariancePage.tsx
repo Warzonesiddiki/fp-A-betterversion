@@ -8,6 +8,7 @@ import { KPICard } from '@/components/dashboard/KPICard';
 import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { COGSVarianceEngine } from '@/engines/COGSVarianceEngine';
 import { HelpPanel } from '@/components/ui/HelpPanel';
+import { divideMoney } from '@/utils/money';
 import { PAGE_HELP } from '../_docs';
 import { Activity, Factory, Package, AlertCircle } from 'lucide-react';
 import {
@@ -39,7 +40,10 @@ export default function COGSVariancePage() {
     const res = COGSVarianceEngine.calculateGLVariances(entries);
     return {
       ...res,
-      variancePercent: (res.totalVariance / res.standardCOGS) * 100,
+      variancePercent:
+        res.standardCOGS !== 0
+          ? divideMoney(res.totalVariance, res.standardCOGS).toNumber() * 100
+          : 0,
     };
   }, [entries]);
 

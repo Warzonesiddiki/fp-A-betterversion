@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: QuickBooks reconciliation: qb.Balance === qb.TotalAmt is an equality guard, not arithmetic
 /**
  * API Integration Framework - QuickBooks Connector
  *

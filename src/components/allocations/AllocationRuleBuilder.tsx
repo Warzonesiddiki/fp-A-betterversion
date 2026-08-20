@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Allocation percentage validation: pctTotal - 100 checks if weights sum to 100%, not money
 import { randomId } from '@/utils/cryptoId';
 import { useState, useCallback, useEffect } from 'react';
 import {

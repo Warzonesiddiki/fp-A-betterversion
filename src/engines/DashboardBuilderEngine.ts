@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Integer widget count: totalWidgets += d.widgets.length counts dashboard widgets, not money
 import { randomId } from '@/utils/cryptoId';
 // =============================================================================
 // DASHBOARD BUILDER ENGINE

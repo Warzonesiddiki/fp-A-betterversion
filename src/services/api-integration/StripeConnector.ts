@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Timestamp conversion: charge.created * 1000 converts Unix seconds to milliseconds, not money
 /**
  * API Integration Framework - Stripe Connector
  *

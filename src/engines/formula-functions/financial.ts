@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Coupon-per-period: _coupon / _freq is a rate conversion (annual coupon / frequency), dimensionless
 // =============================================================================
 // FORMULA FUNCTION REGISTRY — Financial, Growth, Allocation & Currency
 // =============================================================================

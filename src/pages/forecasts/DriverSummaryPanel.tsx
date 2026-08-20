@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Heatmap cell value: r.weight * value is a dimensionless driver weight times a driver index value
 import { Plus, Copy, BookTemplate, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';

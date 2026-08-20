@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: EBITDA margin ratio: (metrics.ebitda / metrics.revenue) * 100 is a dimensionless percentage, not money
 // =============================================================================
 // MONTE CARLO SIMULATION ENGINE — Full-featured probabilistic analysis
 // Integrates with ScenarioEngine for financial scenario generation

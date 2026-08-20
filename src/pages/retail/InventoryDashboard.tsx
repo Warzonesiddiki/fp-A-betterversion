@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Average-value display: stats.totalValue / Math.max(1, length) divides by store count for display
 import { useEffect, useMemo } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';

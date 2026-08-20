@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: String cursor position: value.length - currentToken.length is character-index arithmetic, not money
 import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { Check, X, FlaskConical } from 'lucide-react';
 import { cn } from '@/utils/cn';

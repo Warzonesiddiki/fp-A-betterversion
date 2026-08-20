@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { Download, BarChart4, Users, TrendingDown, DollarSign } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
-import { sumMoney, roundTo } from '@/utils/money';
+import { sumMoney, roundTo, subtractMoney } from '@/utils/money';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
@@ -58,8 +58,9 @@ export default function CohortAnalysisPage() {
     const avgRevPerCohort =
       entries.length > 0
         ? roundTo(
-            sumMoney(entries.map((e) => Math.abs((e.debit ?? 0) - (e.credit ?? 0)))).toNumber() /
-              cohortSizes.length,
+            sumMoney(
+              entries.map((e) => Math.abs(subtractMoney(e.debit ?? 0, e.credit ?? 0).toNumber()))
+            ).toNumber() / cohortSizes.length,
             2
           )
         : 250000;

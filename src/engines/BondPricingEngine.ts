@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Day-count fraction: daysSinceLastCoupon / daysInPeriod is a dimensionless accrual ratio, not money
 /**
  * @fileoverview Bond Pricing Engine — Yield to maturity, Macaulay/modified duration, convexity, accrued interest
  * @purity-tier 1 PURE

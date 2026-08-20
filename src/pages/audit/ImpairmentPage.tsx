@@ -94,7 +94,7 @@ const ASSETS: Asset[] = ASSET_INPUTS.map((input) => {
     id: input.id,
     name: input.name,
     carryingAmount: input.carryingAmount,
-    recoverableAmount: Math.round(recoverableAmount),
+    recoverableAmount: roundTo(recoverableAmount, 0),
     impairmentLoss: verdict.impairmentLoss,
     status: verdict.isImpaired ? ('impaired' as const) : ('not_impaired' as const),
     testDate: input.testDate,

@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Sort comparator: b.revenue - a.revenue returns sign for Array.sort(), not a money result
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';

@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: File size calculation: currentFile.size / 1024 converts bytes to kilobytes, not money
 import React, { useState, useCallback } from 'react';
 import { formatNumber } from '@/utils/financialFormatting';
 import {

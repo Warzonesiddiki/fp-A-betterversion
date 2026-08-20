@@ -14,7 +14,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { LoanAmortizationEngine } from '@/engines/LoanAmortizationEngine';
 import { FEATURE_FLAGS, isFeatureActive, type FeatureFlagKey } from '@/utils/feature-flags';
 import { Button } from '@/components/ui/Button';
-import { sumMoney, roundTo } from '@/utils/money';
+import { sumMoney, roundTo, addMoney } from '@/utils/money';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
@@ -61,7 +61,11 @@ export function computeLoanScheduleTotals(
     ? roundTo(sumMoney(schedule.map((r) => r.principal)), 2)
     : 0;
   // totalPayment is the gross cash that flowed through — interest + principal.
-  return { totalInterest, totalPrincipal, totalPayment: totalInterest + totalPrincipal };
+  return {
+    totalInterest,
+    totalPrincipal,
+    totalPayment: addMoney(totalInterest, totalPrincipal).toNumber(),
+  };
 }
 
 export default function LoanAmortizationPage() {

@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Non-monetary quantity: totalCO2 += tons accumulates metric tons of CO2, not money
 /**
  * @fileoverview ESG metrics: carbon footprint (scopes 1/2/3), diversity, energy consumption
  * @purity-tier 1 PURE

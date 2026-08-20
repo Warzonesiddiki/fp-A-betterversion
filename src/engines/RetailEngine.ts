@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Sort comparator: b.netProfit - a.netProfit returns sign for Array.sort(), not a money result
 import type { GLEntry } from '@/types';
 import { divideMoney, roundTo, subtractMoney, sumMoney } from '../utils/money';
 

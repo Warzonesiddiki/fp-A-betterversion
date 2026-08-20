@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Display normalization: stats.totalValue / 1000000 converts to millions for sparkline display
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';

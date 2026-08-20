@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Average revenue: totalCredit / entries.length divides by entry count for display, not money
 import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';

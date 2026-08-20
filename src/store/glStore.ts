@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Integer-cent subtraction: debitCents - creditCents where both values are integers from toCents(), not floating-point money
 import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';

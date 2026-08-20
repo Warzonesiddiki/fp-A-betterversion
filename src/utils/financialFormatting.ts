@@ -3,7 +3,7 @@
  * Used across ALL grids, charts, KPI cards, reports
  */
 
-import { formatMoney } from './money';
+import { formatMoney, subtractMoney, divideMoney } from './money';
 
 interface FormatConfig {
   locale: string;
@@ -159,8 +159,8 @@ export function formatVariance(
   actual: number,
   budget: number
 ): { text: string; className: string; percentage: string } {
-  const diff = actual - budget;
-  const pct = budget !== 0 ? (diff / Math.abs(budget)) * 100 : 0;
+  const diff = subtractMoney(actual, budget).toNumber();
+  const pct = budget !== 0 ? divideMoney(diff, Math.abs(budget)).toNumber() * 100 : 0;
   const text = formatCurrency(diff, { negativeStyle: 'minus' });
   const percentage = `(${pct >= 0 ? '+' : ''}${formatMoney(pct, { places: 1 })}%)`;
   let className = 'fin-neutral';

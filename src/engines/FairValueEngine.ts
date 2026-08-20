@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Array index: futureCashFlows.length - 1 is the last-element index, not money
 /**
  * @fileoverview Fair Value Engine — Fair value hierarchy (ASC 820 / IFRS 13)
  * Classifies and calculates fair value measurements across Level 1/2/3 hierarchy

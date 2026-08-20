@@ -1,4 +1,5 @@
 import { randomId } from '@/utils/cryptoId';
+import { subtractMoney } from '@/utils/money';
 import {
   GLImportService,
   type GLImportOptions,
@@ -129,13 +130,10 @@ export class ImportPipeline {
             typeof row.credit === 'number'
               ? row.credit
               : parseFloat(String(row.credit ?? '0')) || 0,
-          netChange:
-            (typeof row.debit === 'number'
-              ? row.debit
-              : parseFloat(String(row.debit ?? '0')) || 0) -
-            (typeof row.credit === 'number'
-              ? row.credit
-              : parseFloat(String(row.credit ?? '0')) || 0),
+          netChange: subtractMoney(
+            typeof row.debit === 'number' ? row.debit : parseFloat(String(row.debit ?? '0')) || 0,
+            typeof row.credit === 'number' ? row.credit : parseFloat(String(row.credit ?? '0')) || 0
+          ).toNumber(),
           date: String(row.date ?? ''),
           amount: typeof row.amount === 'number' ? row.amount : 0,
           description: String(row.description ?? ''),

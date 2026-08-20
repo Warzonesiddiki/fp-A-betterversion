@@ -15,7 +15,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
-import { roundTo, sumMoney, subtractMoney } from '@/utils/money';
+import { roundTo, sumMoney, subtractMoney, multiplyMoney } from '@/utils/money';
 import type { GLEntry } from '@/types';
 import {
   ResponsiveContainer,
@@ -287,7 +287,7 @@ export default function RevRecDashboard() {
           <GaugeChart
             value={data.recognized}
             max={data.revenue}
-            target={data.revenue * 0.9}
+            target={multiplyMoney(data.revenue, 0.9).toNumber()}
             label="Recognized"
             formatValue={(v) => `$${v ? formatCompact(v) : '—'}`}
             ariaLabel="Revenue recognition gauge"

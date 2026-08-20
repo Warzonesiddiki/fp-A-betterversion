@@ -8,6 +8,7 @@ import { VersionControlEngine } from '@/engines/VersionControlEngine';
 import { VersionDiffViewer } from '@/components/ui/VersionDiffViewer';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
+import { subtractMoney } from '@/utils/money';
 import { Badge } from '@/components/ui/Badge';
 import {
   GitBranch,
@@ -51,7 +52,7 @@ function createEngineFromStores(
       },
       measure: 'amount' as const,
       oldValue: null,
-      newValue: e.netChange ?? e.amount ?? e.debit - e.credit,
+      newValue: e.netChange ?? e.amount ?? subtractMoney(e.debit, e.credit).toNumber(),
     }));
     engine.commit(mainBranch.id, `Imported ${glEntries.length} GL entries`, 'system', changes);
   }

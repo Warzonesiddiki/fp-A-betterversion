@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Rounding-residual arithmetic: targetTotal - sum operates on pre-rounded numbers in a largest-remainder allocator
 import { formatMoney } from './money';
 
 const EPSILON = 1e-9;
