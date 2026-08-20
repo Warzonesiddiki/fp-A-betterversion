@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: String identity check: entity.currency !== entity.functionalCurrency compares ISO-4217 codes, not amounts
 /**
  * @purity-tier TIER_1_PURE — All 12 static methods (topoSort, detectCycles,
  * computeOwnershipChain, computeFXImpact, aggregateIntercompany, computeNCI,

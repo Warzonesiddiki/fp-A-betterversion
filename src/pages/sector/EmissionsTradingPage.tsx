@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { formatCurrency, formatNumber } from '@/utils/formatters';
 import { Leaf } from 'lucide-react';
-import { sumMoney, roundTo } from '@/utils/money';
+import { sumMoney, roundTo, subtractMoney } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function EmissionsTradingPage() {
@@ -60,7 +60,7 @@ export default function EmissionsTradingPage() {
         <KPIValue label="Credit Entries" value={formatNumber(stats.count)} />
         <KPIValue
           label="Net Position"
-          value={formatCurrency(stats.creditValue - stats.offsetCost)}
+          value={formatCurrency(subtractMoney(stats.creditValue, stats.offsetCost).toNumber())}
         />
       </section>
 

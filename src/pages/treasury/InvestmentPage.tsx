@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Weighted yield ratio: weightedSum / totalValue produces a dimensionless yield percentage
 import { useEffect } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';

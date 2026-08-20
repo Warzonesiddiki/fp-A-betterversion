@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Entry-direction filter: e.credit > e.debit selects credit-heavy entries for sumMoney, not a money result
 /**
  * Education — Research Grants (Wave 9 Phase 3 Sector Depth).
  *

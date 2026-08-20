@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: String identity check: f.fromCurrency === f.toCurrency compares ISO-4217 codes, not amounts
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { activateOnKey } from '@/utils/a11yActivate';
 import { Card, CardContent } from '@/components/ui/Card';

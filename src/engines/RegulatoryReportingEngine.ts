@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Control coverage percent: (testedControls / totalControls) * 100 is a count-based ratio, not money
 // =============================================================================
 // REGULATORY REPORTING ENGINE — SOX 404 / IFRS / GDPR / GAAP Report Generation
 // Pure TypeScript, deterministic, testable. Generates regulatory reports

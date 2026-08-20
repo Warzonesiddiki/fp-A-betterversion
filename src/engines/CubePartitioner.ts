@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Integer cell count: pc.totalCells -= cellCount is a partition-size counter, not money
 // =============================================================================
 // CUBE PARTITIONER — Split cubes by dimension for performance
 // Enables parallel querying and reduces memory pressure

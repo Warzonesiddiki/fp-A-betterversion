@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Pagination index: totalPages - 1 is a page-number calculation, not money
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 

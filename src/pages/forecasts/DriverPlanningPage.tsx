@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Heatmap cell value: r.weight * value is a dimensionless driver weight times a driver index value
 // =============================================================================
 // DRIVER PLANNING PAGE — Full-page driver-based planning interface
 // Manage drivers, define cascade rules, and preview impacts before applying

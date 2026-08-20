@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Bar-width percentage: (Math.abs(m.net) / accountStats.maxNet) * 100 is chart geometry, not money
 import { useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 

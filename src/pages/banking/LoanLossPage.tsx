@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: NPL ratio: (nplAbs / balance) * 100 is a percentage for display, not money arithmetic
 import React, { useMemo } from 'react';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useNavigate } from 'react-router-dom';

@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Utilization percentage: (totalCredit / totalDebit) * 100 is a budget-utilization ratio for display
 import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';

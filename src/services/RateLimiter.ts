@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Backpressure counter: totalBackpressure += state.totalBackpressure is an integer rate-limit metric, not money
 import { randomId } from '@/utils/cryptoId';
 // FinPlan Pro v1.0.0 — Phase 7 PATCH 14 (Hephaestus, 2026-06-16)
 //

@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Step index: currentStep + 1 is integer step navigation, not money
 import React, { memo } from 'react';
 import { Check } from 'lucide-react';
 import { cn } from '@/utils/cn';

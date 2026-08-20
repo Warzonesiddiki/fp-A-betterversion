@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Entry-direction filter: e.debit > e.credit selects debit-heavy entries for sumMoney, not a money result
 /**
  * Government — Grants & Disbursement (Wave 9 Phase 3 Sector Depth).
  *

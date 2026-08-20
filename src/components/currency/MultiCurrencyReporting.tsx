@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: String identity check: e.currency === parentCurrency compares ISO-4217 codes, not amounts
 import { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { FXEngine, MissingFXRateError } from '@/engines/FXEngine';

@@ -4,6 +4,7 @@ import { useGLStore } from '@/store/glStore';
 import { PivotTableEngine, type PivotConfig, type PivotField } from '@/engines/PivotTableEngine';
 import { PivotBuilder, PivotTable } from '@/components/ui/PivotTable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { subtractMoney } from '@/utils/money';
 
 export default function PivotExplorerPage() {
   const { entries, accounts } = useGLStore();
@@ -35,7 +36,7 @@ export default function PivotExplorerPage() {
         ...e,
         accountType: acct?.type || 'Unknown',
         accountName: acct?.name || 'Unknown',
-        netAmount: e.debit - e.credit,
+        netAmount: subtractMoney(e.debit, e.credit).toNumber(),
       };
     });
   }, [entries, accounts]);

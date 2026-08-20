@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Carbon emissions share: (item.tons / result.totalCO2) * 100 is a non-monetary quantity ratio
 import { useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';

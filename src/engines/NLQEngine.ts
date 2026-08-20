@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Calendar quarter index: currentQuarter - 1 is integer arithmetic on a 1-4 quarter number, not money
 /**
  * Natural Language Query (NLQ) Engine
  *

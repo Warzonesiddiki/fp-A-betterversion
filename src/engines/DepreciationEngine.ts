@@ -1,3 +1,4 @@
+// @money-ast-allow Reason: Impairment boolean: carryingAmount > recoverableAmount is an IAS 36 test producing a boolean, surrounded by exact arithmetic
 /**
  * @fileoverview Depreciation Engine — Fixed asset depreciation calculations
  * Supports straight-line, declining balance, MACRS, units-of-production,
