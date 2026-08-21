@@ -1772,3 +1772,96 @@ routes still unscoped (W0.2b); login flow does not yet sign tenantId claims
 suite/build not re-run (no diff surface); money gates unaffected and re-verified.
 
 **Next:** W0.2b adoption sweep, then W0.3 runtime three-statement gate.
+
+## Session 033 (2026-08-22) — Resumption: the in-flight wave verified, fixed, and landed
+
+**Branch:** `phase0/w02-tenancy` (continued; sess_032's commits already on it)
+
+Resumed per Part VIII. Found a **72-file uncommitted wave** spanning four workstreams
+(W0.2b route tenancy, W0.3 gate, W0.4 registry, W0.5 slice 1 + K30 + probe harness +
+W0.8.6 draft) — a K9 half-mutated tree left by an interrupted session. Verified every
+plane before committing anything (K0), then fixed what verification exposed.
+
+### 1. The red gate test that was really two defects (W0.3, Severity-0 class)
+
+Server suite: 240/241, failing `computeEntityLedgerTotals`. Chasing it exposed:
+
+- **Stale fixture**: the function had been refactored to integer-cent rows
+  (`net_cents`) but the unit test still fed `net_debit` — everything silently
+  defaulted to zero.
+- **The real bug underneath**: `assertEntityLedgerIntegrity` asserted
+  `A − Exp = L + E + Rev`, which is wrong algebra (`⇔ A = L+E+Rev+Exp`) and would
+  have reported `delta = −2·Exp` on any balanced ledger carrying expense activity —
+  **false-blocking every legitimate GL write once OpEx existed**. Correct open-ledger
+  identity: `A + Exp = L + E + Rev ⇔ A = L + E + NI`.
+- **A second silent-drop**: aggregation keyed a nonexistent `'Expense'` type while
+  the schema CHECK constrains accounts to `Revenue/COGS/OpEx/CapEx/Asset/Liability/
+Equity` — real expense accounts (`OpEx`, `COGS`) would never have entered the
+  identity at all. Same class as session 026's balance-sheet prefix drop.
+- Fix: closed-vocabulary mapping (debit-normal `Asset/CapEx/OpEx/COGS`; credit-normal
+  `Liability/Equity/Revenue`), **fail-closed FP-0303** on unknown types (registered
+  additively in the W0.4 registry), stale docblocks corrected, and a runtime
+  regression test: a balanced Asset/Revenue/OpEx batch must be ACCEPTED.
+- **Teeth proven** per HANDOVER rule: temporarily reverting `.plus`→`.minus` fails
+  exactly that new test; restore returns green.
+
+The garbled scratch comment in the failing test (`650 must equal 750?? No…`) shows
+the interrupted session had smelled this and pinned the mapping instead of chasing
+it. Lesson recorded: **a comment that argues with its own fixture is a defect report,
+not noise.**
+
+### 2. Money ratchet 25 → 0: honest, with receipts
+
+Baseline moved to 100% alongside a +227-line detector change (W0.1.6 type-aware
+detection). Per D-002/HANDOVER ("prove suppressions are confined") I re-ran the HEAD
+detector against the current tree: it still reports **11 float-equality findings,
+every one an ISO-4217 currency-code string comparison** (`fromCurrency === toCurrency`
+etc.) — the documented false-positive class retired by type proof. The prior 25 real
+arithmetic ops are genuinely gone from product code. Both facts recorded so nobody
+has to trust the header comment.
+
+### 3. Render-probe bring-up
+
+Three pilot probes failed; triage:
+
+- `ProfitLossPage.probe` / `WorkingCapitalPage.probe`: missing
+  `import { screen } from '@testing-library/react'` — they hit an empty global, so
+  `screen.getByText is not a function` after all figure assertions had passed. A
+  debug `console.log('SCREENTYPE', …)` was left in one of them.
+- `BalanceSheetPage.probe`: exact-match query didn't account for the page's
+  legitimate directional clause ("— assets exceed liabilities + equity"); now
+  asserts the full message verbatim.
+- `WorkingCapitalPage.probe`: CCC appears twice (KPI card + table) → `getAllByText`.
+
+No page-side divergence found by the pilots yet — the harness works and stays.
+
+### 4. Two gates disagreed about a generated file (K7)
+
+Pre-commit prettier reformatted `docs/product/ROUTE_MAP.md` (padded the markdown
+table) while pre-push gate 9e compares generator output verbatim → permanent
+staleness. Resolution per K7: the generator solely owns the artifact; canonical
+table regenerated, path added to `.prettierignore`. Both gates green.
+
+### 5. Hygiene debt the hooks caught
+
+The interrupted session's files had never met the gates: 305 auto-fixable
+prettier/eslint errors across server sources plus 4 unused imports
+(`requireRole`, `bcrypt`, `beforeAll/afterAll`, unused `db`). All fixed properly;
+server suite re-run green afterwards (25 files / 243 tests; native-db 83).
+
+### 6. Commits (branch `phase0/w02-tenancy`)
+
+- `719e866f` money(W0.1.6): type-aware detector; ratchet 100% honest
+- `424d164e` server(W0.2b+W0.3+W0.4): tenancy adoption, three-statement gate (+S0 fix), error registry
+- `fa31c55f` web(W0.5 slice 1 + K30 + W0.8.6 draft): PillarNav, route consolidation, probes
+- `50ba62f2` fix(W0.5): ROUTE_MAP generated-artifact status, prettier excluded
+- `b10116ce` chore(ci+hygiene): ci-patches 0006/0007 delivered, tool dirs ignored
+
+Deliberately NOT committed: local `.github/workflows/*.yml` edits (patch-only
+convention; content already delivered as 0006/0007 for human application).
+
+### Next
+
+W0.8.6 promotion (glStore entries through the server-authoritative boundary using
+the landed commit namespace/conflict types), then W0.5 slice 2 toward ≤40 routes,
+then W0.9 LLM egress chokepoint.

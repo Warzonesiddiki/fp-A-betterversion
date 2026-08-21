@@ -1,5 +1,27 @@
 # CI gate patches (apply manually)
 
+## Status (2026-08-22 audit)
+
+| Patch                                                                      | Status                       | Notes                                                                                                                                                                           |
+| -------------------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `0001-ci-gates-F-0021-F-0024-F-0034.patch`                                 | SUPERSEDED                   | Does not apply (context drift); F-0024/F-0034 gates already live in `.husky/` locally; dependency-audit gate landed via 0005's `audit` job.                                     |
+| `0002-loop3-sha-pin-shard-a11y-block.patch`                                | SUPERSEDED (content applied) | Patch does not apply, but its content is in the tree: all `uses:` refs SHA-pinned to 40-hex commits; sharded test matrix + `test-merge` + blocking a11y gate present in ci.yml. |
+| `0003-gap7-sha-pin-workflows.patch`                                        | SUPERSEDED                   | Same as 0002 — SHA-pinning already landed.                                                                                                                                      |
+| `0004-completion-audit-workflow-hardening.patch` + mega patch (`N-0004-…`) | SUPERSEDED                   | Superseded by 0005 (N-0004/N-0011) and 0006 (N-0013/N-0014).                                                                                                                    |
+| `0005-server-ci-job-and-heap-timeout-fixes.patch`                          | **APPLIED**                  | Server job, audit job, duplicate `if: always()` removed, heap 8192, timeout fixed. ci.yml parses valid.                                                                         |
+| `0006-audit-and-docs-jobs.patch`                                           | **APPLIED**                  | Blocking `docs` job (`docs:verify` + `engines:verify`), wired into summary hard gate. Both scripts verified green locally.                                                      |
+| `0007-money-fabrication-detectors.patch`                                   | **APPLIED**                  | Blocking `money-integrity` job (`money-ast-detector.mjs` + `fabrication-detector.mjs`), wired into summary hard gate.                                                           |
+
+Also local-only no longer: Gate 9f in `.husky/pre-push` runs the same `docs:verify` + `engines:verify` pair.
+
+## Remaining human-gated
+
+The push itself. All of the above lives in the working tree; until a human pushes, GitHub never sees it and no CI run has ever executed. First green CI run on a PR is the acceptance criterion.
+
+---
+
+# Historical context
+
 GitHub refuses pushes from this app that modify `.github/workflows/**`:
 
 ```

@@ -1,7 +1,7 @@
 {
   "codex": "ULTIMA",
-  "session_id": "sess_032",
-  "updated_at": "2026-08-22T00:30:00Z",
+  "session_id": "sess_033",
+  "updated_at": "2026-08-22T04:40:00Z",
   "capabilities": {
     "git": true,
     "gh": true,
@@ -26,42 +26,34 @@
     "lint_command": "npx eslint src --max-warnings 0"
   },
   "health": {
-    "notes": "Session 032: W0.2 tenancy DONE. tenant_id on all 42 tenant-data tables (+environment_id on 13 governed); tenants table; ensureTenancy reconciliation; registry ratchet + 42 per-table leak tests + GL route-level leak tests. Money 99.66% / 25 ops unchanged; fabrication 0. Next: W0.2b route adoption, W0.3 three-statement gate.",
+    "notes": "Session 033: W0.2b route tenancy adoption DONE (budgets/scenarios/forecasts/reports/entities/periods + JWT tenant claims). W0.3 runtime three-statement gate DONE - and fixed a Severity-0 IN the gate before it could ship: open-ledger identity is A+Exp=L+E+Rev over the closed type vocabulary (Asset/CapEx/OpEx/COGS|Liability/Equity/Revenue), fail-closed FP-0303 on unknown types; the shipped draft had A-Exp=L+E+Rev (delta=-2*Exp on any ledger with expenses -> would false-block every legitimate write) and mapped a nonexistent 'Expense' type. W0.4 error registry DONE. W0.5 slice 1 DONE (PillarNav, /sectors/* collapse, ROUTE_MAP + drift gate). Money ratchet 100%/0 with proven-confined suppressions (HEAD detector cross-check: only ISO currency-code string equality remains, retired by type proof). Server 25 files/243 + native-db 83 green.",
     "money_ast": {
-      "unsafeOperations": 25,
-      "unsafeModules": 3,
-      "safeModules": 886,
-      "safetyPercent": 99.66
+      "unsafeOperations": 0,
+      "unsafeModules": 0,
+      "safeModules": 893,
+      "safetyPercent": 100
     },
     "fabrication": {
-      "findings": 10,
-      "files": 6,
+      "findings": 0,
+      "files": 0,
       "exportEngines": 0
     },
-    "money_ast_safety_pct": 99.66,
-    "money_ast_unsafe_ops": 25,
+    "money_ast_safety_pct": 100,
+    "money_ast_unsafe_ops": 0,
     "fabrication_findings": 0
   },
   "queue": [
     {
-      "id": "W0.2b",
-      "summary": "extend tenant scoping + leak tests to budgets/scenarios/forecasts/reports/entities/periods routes; wire tenantId into login JWT claims"
-    },
-    {
-      "id": "W0.3",
-      "summary": "runtime three-statement gate on server writes"
-    },
-    {
       "id": "W0.8.6",
-      "summary": "glStore server-authoritative spike (tenancy landed; store must be tenant-scoped)"
+      "summary": "promote glStore server-authoritative persistence (draft plumbing + commit namespace + typed conflicts landed in fa31c55f; entries still local-authoritative)"
     },
     {
-      "id": "W0.4",
-      "summary": "stable error-code registry"
+      "id": "W0.5-slice2",
+      "summary": "continue route consolidation toward <=40 top-level targets (191 routes inventoried, 33 top-level after slice 1); enforce pillar mapping via routemap gate"
     },
     {
-      "id": "W0.5",
-      "summary": "5-pillar nav, <=40 routes"
+      "id": "W0.9",
+      "summary": "LLM egress chokepoint + redaction (Phase 0 remaining item)"
     }
   ],
   "blocked": [
@@ -76,14 +68,14 @@
     "server/.npmrc `ignore-scripts=true` is a deliberate supply-chain posture and was preserved; the native binding is bootstrapped explicitly instead"
   ],
   "completed_this_session": [
-    "W0.2 tenancy: tenant_id TEXT NOT NULL DEFAULT 'default' on all 35 SQL-home tables + 7 server-home tables (42 registry entries)",
-    "environment_id TEXT NOT NULL DEFAULT 'dev' on 13 governed surfaces (gl/budgets/scenarios/forecasts/reports/cube facts+history+snapshots)",
-    "tenants root table + seeded default tenant (ensureTenancy, idempotent, wired into ensureSchema + runMigrations)",
-    "legacy-DB reconciliation verified by test: DROP COLUMN then ensureTenancy restores + backfills",
-    "registry ratchet: any future table absent from TENANT_SCOPED_TABLES or exempt list fails the build",
-    "42 per-table cross-tenant leak assertions + GL route-level leak suite (write stamping, read/delete/aggregate scoping, legacy-token fallback)",
-    "audit_trail rebuild DDL mirrored for W0.8.4 equality gate; users/refresh_tokens gain tenant_id",
-    "gates: server tsc clean; schema-equality green; default server suite 15 files / 183 tests green; native-db suites 77 tests green"
+    "sess_033 (resumption): verified + committed the interrupted in-flight wave on phase0/w02-tenancy",
+    "W0.2b route tenancy adoption + JWT tenant claims + auth/refresh/trustProxy hardening suites (424d164e)",
+    "W0.3 runtime three-statement gate with S0 identity+vocabulary fix, teeth-proven regression test (424d164e)",
+    "W0.4 stable error-code registry FP-0001..0900 incl. new FP-0303 fail-closed unmapped-type violation (424d164e)",
+    "money detector W0.1.6 type-aware upgrade; ratchet 25 -> 0 honest via old-vs-new detector cross-check (719e866f)",
+    "W0.5 slice 1 PillarNav + route consolidation + ROUTE_MAP drift gate 9e; K30 state coverage; render-probe harness + 3 pilot specs (fa31c55f)",
+    "ROUTE_MAP declared generated artifact, excluded from prettier - gate conflict resolved per K7 (50ba62f2)",
+    "ci-patches 0006/0007 delivered; session tool dirs ignored; import-audit utility (b10116ce)"
   ],
   "blueprint_status": "LOCKED",
   "blueprint_locked_at": "2026-08-17T00:00:00Z",
