@@ -5,3 +5,6 @@ src-tauri
 .tauri
 AUDIT_LOGS
 reports
+# Generated artifact (scripts/generate-route-map.js owns it; K7). The drift
+# check compares generator output verbatim, so prettier must not reformat it.
+docs/product/ROUTE_MAP.md
