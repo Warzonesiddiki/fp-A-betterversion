@@ -1,7 +1,7 @@
 {
   "codex": "ULTIMA",
-  "session_id": "sess_031",
-  "updated_at": "2026-08-20T18:00:00Z",
+  "session_id": "sess_032",
+  "updated_at": "2026-08-22T00:30:00Z",
   "capabilities": {
     "git": true,
     "gh": true,
@@ -26,11 +26,11 @@
     "lint_command": "npx eslint src --max-warnings 0"
   },
   "health": {
-    "notes": "Session 031: Session Zero re-audit + W0.8.1\u20130.8.5. Money 99.66% / 25 ops (mockData only) unchanged. Fabrication 0. Persistence map 41 stores; money-safe $d: serialization; schema equality gate; DurabilityBanner. Next: W0.2 tenancy.",
+    "notes": "Session 032: W0.2 tenancy DONE. tenant_id on all 42 tenant-data tables (+environment_id on 13 governed); tenants table; ensureTenancy reconciliation; registry ratchet + 42 per-table leak tests + GL route-level leak tests. Money 99.66% / 25 ops unchanged; fabrication 0. Next: W0.2b route adoption, W0.3 three-statement gate.",
     "money_ast": {
       "unsafeOperations": 25,
       "unsafeModules": 3,
-      "safeModules": 883,
+      "safeModules": 886,
       "safetyPercent": 99.66
     },
     "fabrication": {
@@ -44,8 +44,8 @@
   },
   "queue": [
     {
-      "id": "W0.2",
-      "summary": "tenant_id + environment_id on governed tables; per-table leak test"
+      "id": "W0.2b",
+      "summary": "extend tenant scoping + leak tests to budgets/scenarios/forecasts/reports/entities/periods routes; wire tenantId into login JWT claims"
     },
     {
       "id": "W0.3",
@@ -53,7 +53,7 @@
     },
     {
       "id": "W0.8.6",
-      "summary": "glStore server-authoritative spike (after tenancy)"
+      "summary": "glStore server-authoritative spike (tenancy landed; store must be tenant-scoped)"
     },
     {
       "id": "W0.4",
@@ -76,16 +76,14 @@
     "server/.npmrc `ignore-scripts=true` is a deliberate supply-chain posture and was preserved; the native binding is bootstrapped explicitly instead"
   ],
   "completed_this_session": [
-    "Article XVIII Blueprint Genesis executed end to end",
-    "wrote .agent/BLUEPRINT.md - 3532 lines, sections 0-22 per XVIII-C plus Appendix A",
-    "added section 6.8 financial rule -> test specification map (48 rules)",
-    "added section 10.8 OWASP Top 10 financial mapping (A01-A10 + FS1-FS4)",
-    "added section 2.8 per-persona onboarding time targets with timed specs",
-    "added section 18.2 W0.7 Phase 0 task sizing (<= 1 week) + Phase 1 independence proof",
-    "added Appendix A.22 Addendum II lock-checklist coverage map (31/31)",
-    "wrote docs/architecture/TREE.md verbatim from Part LXI with a Known deviations table",
-    "recorded ADR-001..ADR-011 in BLUEPRINT.md section 21",
-    "set blueprint_status LOCKED - product code is now unblocked"
+    "W0.2 tenancy: tenant_id TEXT NOT NULL DEFAULT 'default' on all 35 SQL-home tables + 7 server-home tables (42 registry entries)",
+    "environment_id TEXT NOT NULL DEFAULT 'dev' on 13 governed surfaces (gl/budgets/scenarios/forecasts/reports/cube facts+history+snapshots)",
+    "tenants root table + seeded default tenant (ensureTenancy, idempotent, wired into ensureSchema + runMigrations)",
+    "legacy-DB reconciliation verified by test: DROP COLUMN then ensureTenancy restores + backfills",
+    "registry ratchet: any future table absent from TENANT_SCOPED_TABLES or exempt list fails the build",
+    "42 per-table cross-tenant leak assertions + GL route-level leak suite (write stamping, read/delete/aggregate scoping, legacy-token fallback)",
+    "audit_trail rebuild DDL mirrored for W0.8.4 equality gate; users/refresh_tokens gain tenant_id",
+    "gates: server tsc clean; schema-equality green; default server suite 15 files / 183 tests green; native-db suites 77 tests green"
   ],
   "blueprint_status": "LOCKED",
   "blueprint_locked_at": "2026-08-17T00:00:00Z",

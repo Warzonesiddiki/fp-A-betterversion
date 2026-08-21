@@ -7,6 +7,7 @@ import {
   ensureCanonicalAuditTrail,
   ensureServerColumns,
 } from './migrate.js';
+import { ensureTenancy } from './tenancy.js';
 import { createAuditTables } from './auditSchema.js';
 import { ensureEntityAccessTable } from '../middleware/entityAuth.js';
 
@@ -18,7 +19,11 @@ const MIGRATIONS_DIR = path.resolve(__dirname, '../../../src-tauri/migrations');
 /** Minimal structural shape of the database required by DDL helpers. */
 export interface SqliteDdl {
   exec(sql: string): void;
-  prepare(sql: string): { all(...params: unknown[]): unknown[] };
+  prepare(sql: string): {
+    all(...params: unknown[]): unknown[];
+    get(...params: unknown[]): unknown;
+    run(...params: unknown[]): unknown;
+  };
 }
 
 function runSqlFile(db: SqliteDdl, filePath: string): void {
@@ -52,4 +57,5 @@ export function ensureSchema(db: SqliteDdl): void {
   createPeriodCloseStateTable(db);
   ensureCanonicalAuditTrail(db);
   ensureServerColumns(db);
+  ensureTenancy(db);
 }

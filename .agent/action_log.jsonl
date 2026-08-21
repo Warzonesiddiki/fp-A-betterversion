@@ -4,3 +4,5 @@
 {"ts":"2026-08-20T17:43:00Z","session":"sess_031","action":"w08.3_authority_contract","result":"typed PERSISTED_STORES; financial-truth cannot be authority=local"}
 {"ts":"2026-08-20T17:44:00Z","session":"sess_031","action":"w08.4_schema_equality","result":"scripts/schema-equality-check.mjs; 35 SQL / 10 server / 1 shared (audit_trail) columns agree"}
 {"ts":"2026-08-20T17:45:00Z","session":"sess_031","action":"w08.5_durability_banner","result":"DurabilityBanner on AppLayout; local-only / not a backup / clearing site data destroys ledger"}
+{"ts":"2026-08-22T00:30:00Z","session":"sess_032","action":"W0.2_tenancy","result":"42 tables tenant_id (+13 environment_id), tenants table, ensureTenancy reconciliation, registry ratchet, 48+5 leak tests; server 183+77 green; tsc clean; equality gate green"} 
+{"ts":"2026-08-22T00:30:00Z","session":"sess_032","action":"W0.2_tenancy","result":"42 tables tenant_id (+13 environment_id), tenants table, ensureTenancy reconciliation, registry ratchet, 48+5 leak tests; server 183+77 green; tsc clean; equality gate green"}

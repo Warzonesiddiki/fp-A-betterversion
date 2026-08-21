@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { db } from './connection.js';
 import { ensureEntityAccessTable } from '../middleware/entityAuth.js';
 import { createAuditTables } from './auditSchema.js';
+import { ensureTenancy } from './tenancy.js';
 import type { SqliteDdl } from './schema.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -68,6 +69,7 @@ export function createAuthTables(db: SqliteDdl): void {
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
+      tenant_id TEXT NOT NULL DEFAULT 'default',
       email TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
       first_name TEXT NOT NULL,
@@ -84,6 +86,7 @@ export function createAuthTables(db: SqliteDdl): void {
 
     CREATE TABLE IF NOT EXISTS refresh_tokens (
       id TEXT PRIMARY KEY,
+      tenant_id TEXT NOT NULL DEFAULT 'default',
       user_id TEXT NOT NULL,
       token TEXT UNIQUE NOT NULL,
       expires_at DATETIME NOT NULL,
@@ -133,6 +136,7 @@ export function ensureCanonicalAuditTrail(db: SqliteDdl): void {
     ALTER TABLE audit_trail RENAME TO audit_trail_legacy;
     CREATE TABLE audit_trail (
       id TEXT PRIMARY KEY,
+      tenant_id TEXT NOT NULL DEFAULT 'default',
       user_id TEXT,
       action TEXT NOT NULL,
       entity_type TEXT,
@@ -222,6 +226,10 @@ export function runMigrations(): void {
   // Migration: is_closed (boolean) → close_state (enum: open/soft-close/hard-close/locked)
   console.log('[migrate] Applying period close state machine migration...');
   createPeriodCloseStateTable(db);
+
+  // W0.2: tenancy reconciliation — tenants table + tenant_id/environment_id
+  console.log('[migrate] Applying tenancy reconciliation...');
+  ensureTenancy(db);
 
   console.log('[migrate] All migrations complete.');
 }

@@ -4,7 +4,9 @@
 
 -- 1. Cube Cells — Core data storage for CubeEngine
 CREATE TABLE IF NOT EXISTS cube_cells (
-    id TEXT PRIMARY KEY,          -- cellKey: "{cube}|{sorted dims}|{measure}"
+    id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
+    environment_id TEXT NOT NULL DEFAULT 'dev',          -- cellKey: "{cube}|{sorted dims}|{measure}"
     cube TEXT NOT NULL,
     coords TEXT NOT NULL,          -- JSON of coords object: {"Account":"acc:1001","Time":"2026-Q1"}
     measure TEXT NOT NULL,
@@ -24,6 +26,7 @@ CREATE INDEX IF NOT EXISTS idx_cube_cells_created ON cube_cells(created_at);
 -- 2. Cube Dimensions — Dimension definitions
 CREATE TABLE IF NOT EXISTS cube_dimensions (
     name TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     type TEXT NOT NULL CHECK (type IN ('system', 'user')),
     hierarchies TEXT NOT NULL,     -- JSON array of HierarchyDefinition
     attributes TEXT NOT NULL,      -- JSON array of AttributeDefinition
@@ -35,6 +38,7 @@ CREATE TABLE IF NOT EXISTS cube_dimensions (
 -- 3. Cube Definitions — Cube metadata
 CREATE TABLE IF NOT EXISTS cube_cubes (
     name TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     dimensions TEXT NOT NULL,      -- JSON array of dimension names
     measures TEXT NOT NULL,        -- JSON array of MeasureDefinition
     storage TEXT NOT NULL CHECK (storage IN ('sparse', 'dense')),
@@ -45,6 +49,8 @@ CREATE TABLE IF NOT EXISTS cube_cubes (
 -- 4. Cube History — Cell change history for audit trail
 CREATE TABLE IF NOT EXISTS cube_history (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
+    environment_id TEXT NOT NULL DEFAULT 'dev',
     cell_id TEXT NOT NULL,
     old_value TEXT,                -- JSON of old value (null for new cells)
     new_value TEXT NOT NULL,       -- JSON of new value
@@ -60,6 +66,8 @@ CREATE INDEX IF NOT EXISTS idx_cube_history_data_type ON cube_history(data_type)
 -- 5. Cube Snapshots — Point-in-time snapshots of cube state
 CREATE TABLE IF NOT EXISTS cube_snapshots (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
+    environment_id TEXT NOT NULL DEFAULT 'dev',
     name TEXT NOT NULL,
     description TEXT,
     cells TEXT NOT NULL,           -- JSON map of cellId -> value
@@ -72,6 +80,8 @@ CREATE INDEX IF NOT EXISTS idx_cube_snapshots_created ON cube_snapshots(created_
 -- 6. Cube Snapshot Diffs — Differences between snapshots
 CREATE TABLE IF NOT EXISTS cube_snapshot_diffs (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
+    environment_id TEXT NOT NULL DEFAULT 'dev',
     snapshot_a_id TEXT NOT NULL,
     snapshot_b_id TEXT NOT NULL,
     diff_data TEXT NOT NULL,       -- JSON of CubeDiff object
@@ -85,3 +95,7 @@ CREATE TABLE IF NOT EXISTS cube_snapshot_diffs (
 
 CREATE INDEX IF NOT EXISTS idx_cube_diffs_snapshot_a ON cube_snapshot_diffs(snapshot_a_id);
 CREATE INDEX IF NOT EXISTS idx_cube_diffs_snapshot_b ON cube_snapshot_diffs(snapshot_b_id);
+
+-- Tenancy (W0.2): tenant-scoped access indexes on high-volume surfaces
+CREATE INDEX IF NOT EXISTS idx_cube_cells_tenant ON cube_cells(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_cube_history_tenant ON cube_history(tenant_id);

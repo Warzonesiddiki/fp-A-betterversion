@@ -1706,7 +1706,7 @@ appears without a registry row. 41/41 match.
 `masterStorage.setItem` encodes objects; `getItem` revives tags. Property test: 10,000
 deterministic cent-precision Decimals round-trip bit-identically, plus non-cent literals
 (`1.005`). INV-009 now has an executor. Honest concession: in-memory hydrate is still a
-JS number so existing stores type-check; the *at-rest* form is the string. SQLite REAL
+JS number so existing stores type-check; the _at-rest_ form is the string. SQLite REAL
 columns are M003, not this gate.
 
 ### W0.8.3 Authority rule
@@ -1732,3 +1732,43 @@ W0.8.6 glStore spike waits on W0.2 tenancy (blueprint intra-phase order). Next s
 
 tsc clean. eslint on touched files clean. money-AST 0 on moneySerialize. fabrication 0.
 Targeted tests 55/55 then 39/39 after the import fix. Persistence map + schema equality green.
+
+## Session 032 (2026-08-22) — W0.2 Tenancy (Phase 0)
+
+**Resumption:** sess_031 state verified against reality before mutation (K0/D-002):
+money-AST detector re-run → 99.66% / 25 unsafe ops / 3 modules, ratchet holds;
+fabrication detector → 0 findings. Sandbox had been recycled: node_modules absent
+(root+server reinstalled via `npx npm@10.9.8 ci` — npm 12 rejects the lockfile),
+and node v26 (ABI 147) has no better-sqlite3 prebuilt → restored Node 22.18
+toolchain copy under %TEMP%\opencode\node22 and fetched the ABI-127 binding with
+prebuild-install. Server suites require this (mock fallback cannot run bootSchema).
+
+**W0.2 shipped (branch `phase0/w02-tenancy`):**
+
+- `tenant_id TEXT NOT NULL DEFAULT 'default'` on all 35 SQL-home tables + users/
+  refresh*tokens/user_entity_access/period_close_audit/audit_log/audit_permission*
+  changes/audit_data_changes (42 registry entries in server/src/db/tenancy.ts).
+- `environment_id TEXT NOT NULL DEFAULT 'dev'` on 13 governed surfaces.
+- `tenants` root table, seeded 'default'; ensureTenancy(db) idempotent reconciliation
+  wired into ensureSchema() AND runMigrations(); legacy DBs ALTERed + backfilled
+  (test proves DROP COLUMN → restore → backfill).
+- Ratchet: any table not registered or exempt fails tenancy.test.ts (exempt =
+  login_attempts + audit_login_attempts, global security telemetry by design).
+- Leak tests: per-table two-tenant seed → scoped select returns exactly own row
+  (anti-vacuous count guard); route-level GL suite proves write stamping from JWT
+  claim, read/delete/trial-balance scoping, bulk inheritance, legacy-token fallback.
+- gl_entries routes are the first enforcement site (GET/POST/bulk/DELETE +
+  trial-balance join); resolveTenantId never trusts client input.
+
+**Verification:** server tsc clean; W0.8.4 schema-equality gate green (shared
+audit_trail mirrored); default server suite 15 files / **183 passed**; native-db
+suites **77 passed**. Pre-existing EADDRINUSE unhandled noise reproduced on
+untouched suites (periods+commands) — not introduced here; backlog hygiene item:
+per-worker PORT or lazy listen in index.ts.
+
+**Honest limits (not done):** budgets/scenarios/forecasts/reports/entities/periods
+routes still unscoped (W0.2b); login flow does not yet sign tenantId claims
+(W0.2b); no RLS yet (SQLite Phase-0 posture; Postgres S2). Client untouched → root
+suite/build not re-run (no diff surface); money gates unaffected and re-verified.
+
+**Next:** W0.2b adoption sweep, then W0.3 runtime three-statement gate.

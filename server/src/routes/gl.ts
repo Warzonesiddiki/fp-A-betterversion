@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { Decimal } from 'decimal.js';
 import { db } from '../db/connection.js';
+import { resolveTenantId } from '../db/tenancy.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { requireEntityWriteAccess, filterByEntityAccess } from '../middleware/entityAuth.js';
 
@@ -124,6 +125,10 @@ router.get('/entries', filterByEntityAccess, (req: Request, res: Response) => {
     const conditions: string[] = [];
     const params: unknown[] = [];
 
+    // Tenant scope (W0.2): a request only ever sees its own tenant's rows.
+    conditions.push('ge.tenant_id = ?');
+    params.push(resolveTenantId(req.user));
+
     // Entity-level access filter
     const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as
       | string[]
@@ -229,10 +234,11 @@ router.post(
       const id = uuidv4();
 
       db.prepare(
-        `INSERT INTO gl_entries (id, account_id, entity_id, post_date, amount, debit, credit, description, reference, department_id, created_by, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+        `INSERT INTO gl_entries (id, tenant_id, account_id, entity_id, post_date, amount, debit, credit, description, reference, department_id, created_by, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
       ).run(
         id,
+        resolveTenantId(req.user),
         account_id,
         entity_id,
         post_date,
@@ -292,8 +298,8 @@ router.post(
       }
 
       const insertStmt = db.prepare(
-        `INSERT INTO gl_entries (id, account_id, entity_id, post_date, amount, debit, credit, description, reference, department_id, created_by, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+        `INSERT INTO gl_entries (id, tenant_id, account_id, entity_id, post_date, amount, debit, credit, description, reference, department_id, created_by, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
       );
 
       const ids: string[] = [];
@@ -303,6 +309,7 @@ router.post(
           ids.push(id);
           insertStmt.run(
             id,
+            resolveTenantId(req.user),
             entry.account_id,
             entry.entity_id,
             entry.post_date,
@@ -336,15 +343,18 @@ router.delete(
   (req: Request, res: Response) => {
     try {
       const existing = db
-        .prepare('SELECT id FROM gl_entries WHERE id = ?')
-        .get(String(req.params.id));
+        .prepare('SELECT id FROM gl_entries WHERE id = ? AND tenant_id = ?')
+        .get(String(req.params.id), resolveTenantId(req.user));
 
       if (!existing) {
         res.status(404).json({ error: 'GL entry not found' });
         return;
       }
 
-      db.prepare('DELETE FROM gl_entries WHERE id = ?').run(String(req.params.id));
+      db.prepare('DELETE FROM gl_entries WHERE id = ? AND tenant_id = ?').run(
+        String(req.params.id),
+        resolveTenantId(req.user)
+      );
 
       audit('DELETE', 'gl_entry', String(req.params.id), req.user!.id);
 
@@ -518,6 +528,11 @@ router.get('/trial-balance', filterByEntityAccess, (req: Request, res: Response)
     const { entity_id, date_from, date_to } = req.query;
     const conditions: string[] = [];
     const params: unknown[] = [];
+
+    // Tenant scope (W0.2): the aggregate joins gl_entries — constrain the
+    // fact side even when no other filter is present.
+    conditions.push('ge.tenant_id = ?');
+    params.push(resolveTenantId(req.user));
 
     // Entity-level access filter
     const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as

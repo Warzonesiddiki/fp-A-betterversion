@@ -6,6 +6,8 @@ export interface JwtPayload {
   id: string;
   email: string;
   role: string;
+  /** Tenant claim (W0.2). Absent in legacy tokens → DEFAULT_TENANT_ID. */
+  tenantId?: string;
 }
 
 // Extend Express Request to include user
@@ -37,7 +39,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
     const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
     req.user = decoded;
     next();
-  } catch (err) {
+  } catch {
     res.status(401).json({ error: 'Invalid or expired token' });
   }
 }

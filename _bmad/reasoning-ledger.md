@@ -1144,12 +1144,13 @@ content area the 1024 viewport can offer is 1024 − 64 (compact rail) − 48
 defect by construction, whatever container wraps it. The ratchet
 (`src/theme/viewport.contract.test.ts`) catches `w-[…px]`, inline
 `style={{ width: '…px' }}` and CSS `width`/`min-width`, and asserts it scanned
->400 sources so a silent regex reads as failure. The threshold was verified in
-both directions: 899px passes (no false positive at the boundary) and 900px,
-`minWidth: 905px`, and CSS `width: 950px` each fail with the file and line.
 
-**Height — pin the mechanism, not a number.** At 600px nothing needs to *fit*;
-it needs to be *reachable*. The root is `flex h-screen` and the one scrolling
+> 400 sources so a silent regex reads as failure. The threshold was verified in
+> both directions: 899px passes (no false positive at the boundary) and 900px,
+> `minWidth: 905px`, and CSS `width: 950px` each fail with the file and line.
+
+**Height — pin the mechanism, not a number.** At 600px nothing needs to _fit_;
+it needs to be _reachable_. The root is `flex h-screen` and the one scrolling
 surface is `<main class="overflow-y-auto">`. The render contract
 (`src/components/layout/AppLayout.viewport-contract.test.tsx`) fails if any of
 the mechanisms is weakened — `h-screen`, `overflow-y-auto`, the work area's
@@ -1157,7 +1158,7 @@ the mechanisms is weakened — `h-screen`, `overflow-y-auto`, the work area's
 `md:relative md:translate-x-0`. Each was mutation-tested by removing exactly one
 and watching its own assertion fail (M4–M8).
 
-**What this slice did *not* do, on purpose.** Fixed-height grids and canvases
+**What this slice did _not_ do, on purpose.** Fixed-height grids and canvases
 taller than 600px but inside the scrolling main (`GLTrialBalanceGrid`
 `h-[600px]` — also a vestigial stub no page imports — and `BoardPackBuilder`
 `min-h-[600px]`) are reachable and therefore not minimum-viewport violations;
@@ -1165,3 +1166,31 @@ they belong to the UI-04 density sweep. And "compact rail" at 1024–1439 is
 satisfied by the collapsible rail rather than an invented auto-collapse default,
 which would fight the persisted `sidebarCollapsed` preference without a browser
 to validate the result.
+
+---
+
+## sess_032 — W0.2 Tenancy foundation (2026-08-22) · DRP-FULL · A5 (confidence 90%)
+
+**Decision:** Land tenancy as additive schema + registry ratchet + leak-test suite, with
+gl_entries routes as the first enforcement site. `tenant_id` on all 42 tenant-data tables
+(both schema homes), `environment_id` on 13 governed surfaces, `tenants` root table,
+idempotent `ensureTenancy(db)` reconciliation in ensureSchema + runMigrations.
+
+**Evidence:** money-AST re-run 99.66%/25 ops; fabrication 0; server tsc clean;
+schema-equality gate green; default server suite 183 passed / native-db 77 passed
+(incl. 48 tenancy schema tests + 5 GL route leak tests).
+
+**Options considered:** (1) registry-only ALTER without editing 001/002 SQL — rejected:
+CREATE statements would misstate real shape and the Tauri shell embeds the same files via
+include_str! (single source of truth preserved instead). (2) Full route retrofit across all
+9 route files in one slice — rejected: exceeds one time-boxed cycle, risks half-mutated tree
+(K9); replaced by declared W0.2b adoption queue with the registry ratchet guaranteeing no
+silent gaps. (3) Chosen: additive columns + reconciliation + ratchet + GL-first enforcement.
+
+**Assumptions tagged:** 'default'/'dev' literal ids acceptable until tenant provisioning
+exists (Phase 1); users.email stays globally unique until composite uniqueness needed;
+RLS deferred to Postgres S2 per blueprint S-state table.
+
+**Consequence projection:** existing single-tenant data lands in tenant 'default' (K17
+safe — numbers untouched, gl.money tests green); future facts cannot enter unregistered
+tables without failing CI (K26 enforced mechanically).
