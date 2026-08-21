@@ -167,9 +167,40 @@ export function ensureServerColumns(db: SqliteDdl): void {
     ['budgets', 'entity_id', 'TEXT'],
     ['budgets', 'deleted_at', 'TEXT'],
     ['forecasts', 'entity_id', 'TEXT'],
+    // W0.2b: route/schema drift surfaced by the new tenancy leak tests —
+    // these routes were already broken against real SQLite (INSERTs named
+    // columns absent from 001_initial_schema.sql). Additive-only alignment;
+    // the .sql files remain the table-creation authority.
+    ['forecasts', 'budget_id', 'TEXT'],
+    ['forecasts', 'method', 'TEXT'],
     ['reports', 'entity_id', 'TEXT'],
+    // SEC-2: rotation keeps old refresh-token rows (revoked) instead of
+    // deleting them, so a replayed token can be detected and all of the
+    // user's sessions revoked. NULL = active; timestamp = revoked.
+    ['refresh_tokens', 'revoked_at', 'TEXT'],
+    ['reports', 'fiscal_year', 'INTEGER'],
+    ['reports', 'period', 'TEXT'],
+    ['report_templates', 'report_type', 'TEXT'],
+    ['report_templates', 'template_config', 'TEXT'],
+    ['report_templates', 'is_default', 'INTEGER'],
+    ['entities', 'type', 'TEXT'],
+    ['entities', 'base_currency', 'TEXT'],
+    ['entities', 'fiscal_year_start', 'INTEGER'],
+    ['entities', 'description', 'TEXT'],
+    ['departments', 'entity_id', 'TEXT'],
+    ['departments', 'parent_id', 'TEXT'],
+    ['departments', 'manager_id', 'TEXT'],
+    ['departments', 'description', 'TEXT'],
     ['scenarios', 'entity_id', 'TEXT'],
     ['scenarios', 'budget_id', 'TEXT'],
+    ['scenarios', 'type', 'TEXT'],
+    ['scenario_line_items', 'base_amount', 'REAL'],
+    ['scenario_line_items', 'adjusted_amount', 'REAL'],
+    ['scenario_line_items', 'department_id', 'TEXT'],
+    ['forecast_periods', 'period_number', 'INTEGER'],
+    ['forecast_periods', 'start_date', 'TEXT'],
+    ['forecast_periods', 'end_date', 'TEXT'],
+    ['forecast_periods', 'label', 'TEXT'],
     ['gl_entries', 'created_by', 'TEXT'],
   ];
   for (const [table, column, type] of serverColumns) {
@@ -186,6 +217,23 @@ export function ensureServerColumns(db: SqliteDdl): void {
       console.log(`[migrate] Added ${table}.${column} ${type}`);
     }
   }
+}
+
+/**
+ * W0.3-fix (MEDIUM): the three-statement gate aggregates gl_entries by
+ * (tenant_id, entity_id) on EVERY write path. Without a covering composite
+ * index each gate evaluation is a full-table scan, degrading linearly with
+ * ledger size. Idempotent; safe for fresh and legacy databases alike.
+ */
+export function ensureGateIndexes(db: SqliteDdl): void {
+  const columns = db.prepare('PRAGMA table_info(gl_entries)').all() as { name: string }[];
+  if (columns.length === 0) {
+    console.warn('[migrate] Skipping gl_entries composite index: table not present');
+    return;
+  }
+  db.exec(
+    'CREATE INDEX IF NOT EXISTS idx_gl_entries_tenant_entity ON gl_entries(tenant_id, entity_id)'
+  );
 }
 
 export function runMigrations(): void {
@@ -209,6 +257,10 @@ export function runMigrations(): void {
 
   // Add server-route columns missing from the base schema.
   ensureServerColumns(db);
+
+  // W0.3-fix: gate-supporting indexes (idempotent).
+  console.log('[migrate] Ensuring three-statement gate indexes...');
+  ensureGateIndexes(db);
 
   // Create auth-specific tables
   console.log('[migrate] Creating auth tables...');

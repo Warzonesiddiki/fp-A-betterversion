@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db/connection.js';
+import { resolveTenantId } from '../db/tenancy.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { commandEnvelopeSchema, type CommandResult } from '../types/commandEnvelope.js';
 import { CommandRegistry } from '../services/CommandRegistry.js';
@@ -40,12 +41,13 @@ function audit(
   entityType: string,
   entityId: string,
   userId: string,
+  tenantId: string,
   details?: Record<string, unknown>
 ): void {
   db.prepare(
-    `INSERT INTO audit_trail (id, action, entity_type, entity_id, user_id, details, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`
-  ).run(uuidv4(), action, entityType, entityId, userId, JSON.stringify(details ?? {}));
+    `INSERT INTO audit_trail (id, tenant_id, action, entity_type, entity_id, user_id, details, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+  ).run(uuidv4(), tenantId, action, entityType, entityId, userId, JSON.stringify(details ?? {}));
 }
 
 /**
@@ -134,7 +136,7 @@ router.post('/commands', (req: Request, res: Response) => {
     return;
   }
 
-  audit('command', 'command', envelope.commandId, userId, {
+  audit('command', 'command', envelope.commandId, userId, resolveTenantId(req.user), {
     commandId: envelope.commandId,
     commandType: envelope.commandType,
     entityId: envelope.scope.entityId,

@@ -29,6 +29,9 @@ process.env.FINPLAN_DB_PATH = TEST_DB;
 // concurrent vitest PROCESSES (e.g., parallel workstreams) never share or
 // delete each other's live database.
 process.env.PORT = String(3700 + Number(workerId));
+// Rate-limit headroom for tests that legitimately hit /api/auth many times
+// (e.g., SEC-1/SEC-2 refresh-token suites); production default is unchanged.
+process.env.RATE_LIMIT_AUTH_MAX = process.env.RATE_LIMIT_AUTH_MAX ?? '50';
 if (process.env.FINPLAN_TEST_DB_TAG) {
   process.env.FINPLAN_DB_PATH = path.join(
     __dirname,

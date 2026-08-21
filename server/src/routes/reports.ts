@@ -2,7 +2,8 @@ import { Router, Response, Request } from 'express';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db/connection.js';
-import { authMiddleware, requireRole } from '../middleware/auth.js';
+import { resolveTenantId } from '../db/tenancy.js';
+import { authMiddleware } from '../middleware/auth.js';
 import {
   requireEntityAccess,
   requireEntityWriteAccess,
@@ -58,12 +59,29 @@ function audit(
   entityType: string,
   entityId: string,
   userId: string,
+  tenantId?: string,
   details?: Record<string, unknown>
 ) {
   db.prepare(
-    `INSERT INTO audit_trail (id, action, entity_type, entity_id, user_id, details, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`
-  ).run(uuidv4(), action, entityType, entityId, userId, JSON.stringify(details ?? {}));
+    `INSERT INTO audit_trail (id, tenant_id, action, entity_type, entity_id, user_id, details, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+  ).run(
+    uuidv4(),
+    tenantId ?? 'default',
+    action,
+    entityType,
+    entityId,
+    userId,
+    JSON.stringify(details ?? {})
+  );
+}
+
+// API-facing statuses are TitleCase; the schema CHECK on reports.status only
+// permits the lowercase set ('draft'|'active'|'archived'|'locked').
+function toDbStatus(status?: string): string | undefined {
+  if (status === undefined) return undefined;
+  if (status === 'Published') return 'active';
+  return status.toLowerCase();
 }
 
 // --- Report Routes ---
@@ -74,6 +92,10 @@ router.get('/', filterByEntityAccess, (req: Request, res: Response) => {
     const { report_type, status, entity_id, limit = '50', offset = '0' } = req.query;
     const conditions: string[] = [];
     const params: unknown[] = [];
+
+    // Tenant scope (W0.2b)
+    conditions.push('r.tenant_id = ?');
+    params.push(resolveTenantId(req.user));
 
     // Entity-level access filter
     const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as
@@ -138,6 +160,10 @@ router.get('/templates', (req: Request, res: Response) => {
     const conditions: string[] = [];
     const params: unknown[] = [];
 
+    // Tenant scope (W0.2b)
+    conditions.push('rt.tenant_id = ?');
+    params.push(resolveTenantId(req.user));
+
     if (report_type && typeof report_type === 'string') {
       conditions.push('rt.report_type = ?');
       params.push(report_type);
@@ -168,20 +194,30 @@ router.post('/templates', (req: Request, res: Response) => {
     const { name, description, report_type, template_config, is_default } = parsed.data;
     const id = uuidv4();
 
+    // The base schema's NOT NULL columns (template_type/config/layout) are
+    // populated from the API payload; report_type/is_default are additive
+    // columns reconciled by ensureServerColumns.
     db.prepare(
-      `INSERT INTO report_templates (id, name, description, report_type, template_config, is_default, created_by, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+      `INSERT INTO report_templates (id, tenant_id, name, description, report_type, template_config, is_default, template_type, config, layout, created_by, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
     ).run(
       id,
+      resolveTenantId(req.user),
       name,
       description ?? null,
       report_type,
       JSON.stringify(template_config),
       is_default ? 1 : 0,
+      'custom',
+      JSON.stringify(template_config),
+      '{}',
       req.user!.id
     );
 
-    audit('CREATE', 'report_template', id, req.user!.id, { name, report_type });
+    audit('CREATE', 'report_template', id, req.user!.id, resolveTenantId(req.user), {
+      name,
+      report_type,
+    });
 
     const template = db.prepare('SELECT * FROM report_templates WHERE id = ?').get(id);
     res.status(201).json(template);
@@ -199,9 +235,9 @@ router.get('/:id', requireEntityAccess('reports'), (req: Request, res: Response)
         `SELECT r.*, e.name AS entity_name
        FROM reports r
        LEFT JOIN entities e ON e.id = r.entity_id
-       WHERE r.id = ?`
+       WHERE r.id = ? AND r.tenant_id = ?`
       )
-      .get(String(req.params.id));
+      .get(String(req.params.id), resolveTenantId(req.user));
 
     if (!report) {
       res.status(404).json({ error: 'Report not found' });
@@ -232,10 +268,11 @@ router.post(
       const id = uuidv4();
 
       db.prepare(
-        `INSERT INTO reports (id, name, report_type, description, entity_id, fiscal_year, period, filters, status, created_by, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+        `INSERT INTO reports (id, tenant_id, name, report_type, description, entity_id, fiscal_year, period, filters, status, created_by, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
       ).run(
         id,
+        resolveTenantId(req.user),
         name,
         report_type,
         description ?? null,
@@ -243,11 +280,11 @@ router.post(
         fiscal_year ?? null,
         period ?? null,
         filters ? JSON.stringify(filters) : null,
-        status ?? 'Draft',
+        toDbStatus(status) ?? 'draft',
         req.user!.id
       );
 
-      audit('CREATE', 'report', id, req.user!.id, { name, report_type });
+      audit('CREATE', 'report', id, req.user!.id, resolveTenantId(req.user), { name, report_type });
 
       const report = db.prepare('SELECT * FROM reports WHERE id = ?').get(id);
       res.status(201).json(report);
@@ -261,13 +298,22 @@ router.post(
 // PUT /:id — update report
 router.put('/:id', requireEntityWriteAccess('reports'), (req: Request, res: Response) => {
   try {
+    // W0.2b-fixes (LOW-2): status changes are workflow-gated (explicit
+    // submit/approve/reject/transition endpoints); direct status assignment
+    // via PUT would bypass those gates.
+    if ('status' in req.body) {
+      res.status(400).json({ error: 'Status changes must use the dedicated workflow endpoints' });
+      return;
+    }
     const parsed = UpdateReportSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
       return;
     }
 
-    const existing = db.prepare('SELECT id FROM reports WHERE id = ?').get(String(req.params.id));
+    const existing = db
+      .prepare('SELECT id FROM reports WHERE id = ? AND tenant_id = ?')
+      .get(String(req.params.id), resolveTenantId(req.user));
 
     if (!existing) {
       res.status(404).json({ error: 'Report not found' });
@@ -280,7 +326,13 @@ router.put('/:id', requireEntityWriteAccess('reports'), (req: Request, res: Resp
     for (const [key, value] of Object.entries(parsed.data)) {
       if (value !== undefined) {
         fields.push(`${key} = ?`);
-        values.push(key === 'filters' ? JSON.stringify(value) : value);
+        values.push(
+          key === 'filters'
+            ? JSON.stringify(value)
+            : key === 'status'
+              ? toDbStatus(String(value))
+              : value
+        );
       }
     }
 
@@ -292,11 +344,23 @@ router.put('/:id', requireEntityWriteAccess('reports'), (req: Request, res: Resp
     fields.push("updated_at = datetime('now')");
     values.push(String(req.params.id));
 
-    db.prepare(`UPDATE reports SET ${fields.join(', ')} WHERE id = ?`).run(...values);
+    db.prepare('UPDATE reports SET ' + fields.join(', ') + ' WHERE id = ? AND tenant_id = ?').run(
+      ...values,
+      resolveTenantId(req.user)
+    );
 
-    audit('UPDATE', 'report', String(req.params.id), req.user!.id, parsed.data);
+    audit(
+      'UPDATE',
+      'report',
+      String(req.params.id),
+      req.user!.id,
+      resolveTenantId(req.user),
+      parsed.data
+    );
 
-    const report = db.prepare('SELECT * FROM reports WHERE id = ?').get(String(req.params.id));
+    const report = db
+      .prepare('SELECT * FROM reports WHERE id = ? AND tenant_id = ?')
+      .get(String(req.params.id), resolveTenantId(req.user));
     res.json(report);
   } catch (err) {
     console.error('PUT /reports/:id error:', err);
@@ -307,16 +371,21 @@ router.put('/:id', requireEntityWriteAccess('reports'), (req: Request, res: Resp
 // DELETE /:id — delete report
 router.delete('/:id', requireEntityWriteAccess('reports'), (req: Request, res: Response) => {
   try {
-    const existing = db.prepare('SELECT id FROM reports WHERE id = ?').get(String(req.params.id));
+    const existing = db
+      .prepare('SELECT id FROM reports WHERE id = ? AND tenant_id = ?')
+      .get(String(req.params.id), resolveTenantId(req.user));
 
     if (!existing) {
       res.status(404).json({ error: 'Report not found' });
       return;
     }
 
-    db.prepare('DELETE FROM reports WHERE id = ?').run(String(req.params.id));
+    db.prepare('DELETE FROM reports WHERE id = ? AND tenant_id = ?').run(
+      String(req.params.id),
+      resolveTenantId(req.user)
+    );
 
-    audit('DELETE', 'report', String(req.params.id), req.user!.id);
+    audit('DELETE', 'report', String(req.params.id), req.user!.id, resolveTenantId(req.user));
 
     res.status(204).send();
   } catch (err) {

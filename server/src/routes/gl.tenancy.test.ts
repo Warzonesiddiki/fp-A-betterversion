@@ -19,6 +19,7 @@ const TENANT_B = 'tenant-gl-b';
 const LEGACY = undefined; // token without a tenantId claim
 
 const ACCOUNT_ID = '10000000-0000-0000-0000-00000000a001';
+const EQUITY_ID = '10000000-0000-0000-0000-00000000a0e1';
 const ENTITY_ID = '20000000-0000-0000-0000-00000000e001';
 
 function tokenFor(id: string, email: string, tenantId?: string): string {
@@ -49,6 +50,12 @@ describe('GL tenancy enforcement (W0.2)', () => {
       `INSERT OR REPLACE INTO accounts (id, name, code, type, is_active)
        VALUES (?, 'Tenancy Probe Account', 'TACC-1', 'Asset', 1)`
     ).run(ACCOUNT_ID);
+    // W0.3: the runtime three-statement gate blocks single-sided postings,
+    // so probes book balanced Dr/Cr pairs against this equity account.
+    db.prepare(
+      `INSERT OR REPLACE INTO accounts (id, name, code, type, is_active)
+       VALUES (?, 'Tenancy Probe Equity', 'TEQ-1', 'Equity', 1)`
+    ).run(EQUITY_ID);
     db.prepare(
       `INSERT OR REPLACE INTO entities (id, name, code, is_active)
        VALUES (?, 'Tenancy Probe Entity', 'TENT-1', 1)`
@@ -59,20 +66,34 @@ describe('GL tenancy enforcement (W0.2)', () => {
     tokenLegacy = tokenFor('gl-ten-legacy', 'gl-ten-legacy@finplan.test', LEGACY);
   });
 
+  /** Post a balanced pair (Dr asset / Cr equity) — the gate rejects
+   *  single-sided postings. Returns the primary entry id. */
   async function postEntry(token: string, amount: number): Promise<string> {
     const res = await request(app)
-      .post('/api/gl/entries')
+      .post('/api/gl/entries/bulk')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        account_id: ACCOUNT_ID,
-        entity_id: ENTITY_ID,
-        post_date: '2026-02-10',
-        amount,
-        debit: amount,
-        credit: 0,
+        entries: [
+          {
+            account_id: ACCOUNT_ID,
+            entity_id: ENTITY_ID,
+            post_date: '2026-02-10',
+            amount,
+            debit: amount,
+            credit: 0,
+          },
+          {
+            account_id: EQUITY_ID,
+            entity_id: ENTITY_ID,
+            post_date: '2026-02-10',
+            amount,
+            debit: 0,
+            credit: amount,
+          },
+        ],
       });
     expect(res.status).toBe(201);
-    return (res.body as { id: string }).id;
+    return (res.body as { ids: string[] }).ids[0];
   }
 
   it('stamps writes with the caller tenant and hides them from other tenants', async () => {
@@ -101,18 +122,31 @@ describe('GL tenancy enforcement (W0.2)', () => {
   });
 
   it('scopes trial-balance aggregation to the caller tenant', async () => {
-    // Tenant B books a CREDIT so its aggregate is distinguishable from A's
-    // (every other probe books debits).
+    // Tenant B books a CREDIT on the asset account, balanced by a debit on
+    // equity (W0.3 gate requires balanced books), so its aggregate remains
+    // distinguishable from A's (every other probe books debits on the asset).
     const resCredit = await request(app)
-      .post('/api/gl/entries')
+      .post('/api/gl/entries/bulk')
       .set('Authorization', `Bearer ${tokenB}`)
       .send({
-        account_id: ACCOUNT_ID,
-        entity_id: ENTITY_ID,
-        post_date: '2026-02-12',
-        amount: 500,
-        debit: 0,
-        credit: 500,
+        entries: [
+          {
+            account_id: ACCOUNT_ID,
+            entity_id: ENTITY_ID,
+            post_date: '2026-02-12',
+            amount: 500,
+            debit: 0,
+            credit: 500,
+          },
+          {
+            account_id: EQUITY_ID,
+            entity_id: ENTITY_ID,
+            post_date: '2026-02-12',
+            amount: 500,
+            debit: 500,
+            credit: 0,
+          },
+        ],
       });
     expect(resCredit.status).toBe(201);
 
@@ -171,6 +205,16 @@ describe('GL tenancy enforcement (W0.2)', () => {
             amount: 20,
             debit: 0,
             credit: 20,
+          },
+          {
+            // Balancing leg so the batch passes the W0.3 three-statement gate
+            // (net asset position −10 must be offset by equity).
+            account_id: EQUITY_ID,
+            entity_id: ENTITY_ID,
+            post_date: '2026-02-11',
+            amount: 10,
+            debit: 10,
+            credit: 0,
           },
         ],
       });

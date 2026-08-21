@@ -2,6 +2,7 @@ import { Router, Response, Request } from 'express';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db/connection.js';
+import { resolveTenantId } from '../db/tenancy.js';
 import { authMiddleware } from '../middleware/auth.js';
 import {
   requireEntityAccess,
@@ -50,12 +51,28 @@ function audit(
   entityType: string,
   entityId: string,
   userId: string,
+  tenantId?: string,
   details?: Record<string, unknown>
 ) {
   db.prepare(
-    `INSERT INTO audit_trail (id, action, entity_type, entity_id, user_id, details, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`
-  ).run(uuidv4(), action, entityType, entityId, userId, JSON.stringify(details ?? {}));
+    `INSERT INTO audit_trail (id, tenant_id, action, entity_type, entity_id, user_id, details, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+  ).run(
+    uuidv4(),
+    tenantId ?? 'default',
+    action,
+    entityType,
+    entityId,
+    userId,
+    JSON.stringify(details ?? {})
+  );
+}
+
+// API-facing statuses are TitleCase; the schema CHECK on scenarios.status
+// only permits the lowercase set ('draft'|'active'|'archived'|'locked').
+function toDbStatus(status?: string): string | undefined {
+  if (status === undefined) return undefined;
+  return status.toLowerCase();
 }
 
 // --- Routes ---
@@ -66,6 +83,10 @@ router.get('/', filterByEntityAccess, (req: Request, res: Response) => {
     const { type, status, fiscal_year, limit = '50', offset = '0' } = req.query;
     const conditions: string[] = [];
     const params: unknown[] = [];
+
+    // Tenant scope (W0.2b)
+    conditions.push('s.tenant_id = ?');
+    params.push(resolveTenantId(req.user));
 
     // Entity-level access filter
     const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as
@@ -133,9 +154,9 @@ router.get('/:id', requireEntityAccess('scenarios'), (req: Request, res: Respons
        FROM scenarios s
        LEFT JOIN entities e ON e.id = s.entity_id
        LEFT JOIN budgets b ON b.id = s.budget_id
-       WHERE s.id = ?`
+       WHERE s.id = ? AND s.tenant_id = ?`
       )
-      .get(String(req.params.id));
+      .get(String(req.params.id), resolveTenantId(req.user));
 
     if (!scenario) {
       res.status(404).json({ error: 'Scenario not found' });
@@ -149,10 +170,10 @@ router.get('/:id', requireEntityAccess('scenarios'), (req: Request, res: Respons
        FROM scenario_line_items sli
        LEFT JOIN accounts a ON a.id = sli.account_id
        LEFT JOIN departments d ON d.id = sli.department_id
-       WHERE sli.scenario_id = ?
+       WHERE sli.scenario_id = ? AND sli.tenant_id = ?
        ORDER BY sli.month, a.code`
       )
-      .all(String(req.params.id));
+      .all(String(req.params.id), resolveTenantId(req.user));
 
     res.json({ ...(scenario as Record<string, unknown>), line_items: lineItems });
   } catch (err) {
@@ -177,21 +198,22 @@ router.post(
       const id = uuidv4();
 
       db.prepare(
-        `INSERT INTO scenarios (id, name, description, type, fiscal_year, entity_id, budget_id, status, created_by, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+        `INSERT INTO scenarios (id, tenant_id, name, description, type, fiscal_year, entity_id, budget_id, status, created_by, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
       ).run(
         id,
+        resolveTenantId(req.user),
         name,
         description ?? null,
         type ?? 'custom',
         fiscal_year ?? null,
         entity_id ?? null,
         budget_id ?? null,
-        status ?? 'Draft',
+        status ?? 'draft',
         req.user!.id
       );
 
-      audit('CREATE', 'scenario', id, req.user!.id, { name, type });
+      audit('CREATE', 'scenario', id, req.user!.id, resolveTenantId(req.user), { name, type });
 
       const scenario = db.prepare('SELECT * FROM scenarios WHERE id = ?').get(id);
       res.status(201).json(scenario);
@@ -205,13 +227,22 @@ router.post(
 // PUT /:id — update scenario
 router.put('/:id', requireEntityWriteAccess('scenarios'), (req: Request, res: Response) => {
   try {
+    // W0.2b-fixes (LOW-2): status changes are workflow-gated (explicit
+    // submit/approve/reject/transition endpoints); direct status assignment
+    // via PUT would bypass those gates.
+    if ('status' in req.body) {
+      res.status(400).json({ error: 'Status changes must use the dedicated workflow endpoints' });
+      return;
+    }
     const parsed = UpdateScenarioSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
       return;
     }
 
-    const existing = db.prepare('SELECT id FROM scenarios WHERE id = ?').get(String(req.params.id));
+    const existing = db
+      .prepare('SELECT id FROM scenarios WHERE id = ? AND tenant_id = ?')
+      .get(String(req.params.id), resolveTenantId(req.user));
 
     if (!existing) {
       res.status(404).json({ error: 'Scenario not found' });
@@ -224,7 +255,7 @@ router.put('/:id', requireEntityWriteAccess('scenarios'), (req: Request, res: Re
     for (const [key, value] of Object.entries(parsed.data)) {
       if (value !== undefined) {
         fields.push(`${key} = ?`);
-        values.push(value);
+        values.push(key === 'status' ? toDbStatus(String(value)) : value);
       }
     }
 
@@ -236,11 +267,23 @@ router.put('/:id', requireEntityWriteAccess('scenarios'), (req: Request, res: Re
     fields.push("updated_at = datetime('now')");
     values.push(String(req.params.id));
 
-    db.prepare(`UPDATE scenarios SET ${fields.join(', ')} WHERE id = ?`).run(...values);
+    db.prepare(`UPDATE scenarios SET ${fields.join(', ')} WHERE id = ? AND tenant_id = ?`).run(
+      ...values,
+      resolveTenantId(req.user)
+    );
 
-    audit('UPDATE', 'scenario', String(req.params.id), req.user!.id, parsed.data);
+    audit(
+      'UPDATE',
+      'scenario',
+      String(req.params.id),
+      req.user!.id,
+      resolveTenantId(req.user),
+      parsed.data
+    );
 
-    const scenario = db.prepare('SELECT * FROM scenarios WHERE id = ?').get(String(req.params.id));
+    const scenario = db
+      .prepare('SELECT * FROM scenarios WHERE id = ? AND tenant_id = ?')
+      .get(String(req.params.id), resolveTenantId(req.user));
     res.json(scenario);
   } catch (err) {
     console.error('PUT /scenarios/:id error:', err);
@@ -251,7 +294,9 @@ router.put('/:id', requireEntityWriteAccess('scenarios'), (req: Request, res: Re
 // DELETE /:id — delete scenario
 router.delete('/:id', requireEntityWriteAccess('scenarios'), (req: Request, res: Response) => {
   try {
-    const existing = db.prepare('SELECT id FROM scenarios WHERE id = ?').get(String(req.params.id));
+    const existing = db
+      .prepare('SELECT id FROM scenarios WHERE id = ? AND tenant_id = ?')
+      .get(String(req.params.id), resolveTenantId(req.user));
 
     if (!existing) {
       res.status(404).json({ error: 'Scenario not found' });
@@ -259,13 +304,19 @@ router.delete('/:id', requireEntityWriteAccess('scenarios'), (req: Request, res:
     }
 
     const deleteScenario = db.transaction((scenarioId: string) => {
-      db.prepare('DELETE FROM scenario_line_items WHERE scenario_id = ?').run(scenarioId);
-      db.prepare('DELETE FROM scenarios WHERE id = ?').run(scenarioId);
+      db.prepare('DELETE FROM scenario_line_items WHERE scenario_id = ? AND tenant_id = ?').run(
+        scenarioId,
+        resolveTenantId(req.user)
+      );
+      db.prepare('DELETE FROM scenarios WHERE id = ? AND tenant_id = ?').run(
+        scenarioId,
+        resolveTenantId(req.user)
+      );
     });
 
     deleteScenario(String(req.params.id));
 
-    audit('DELETE', 'scenario', String(req.params.id), req.user!.id);
+    audit('DELETE', 'scenario', String(req.params.id), req.user!.id, resolveTenantId(req.user));
 
     res.status(204).send();
   } catch (err) {
@@ -281,8 +332,8 @@ router.get(
   (req: Request, res: Response) => {
     try {
       const scenario = db
-        .prepare('SELECT id FROM scenarios WHERE id = ?')
-        .get(String(req.params.id));
+        .prepare('SELECT id FROM scenarios WHERE id = ? AND tenant_id = ?')
+        .get(String(req.params.id), resolveTenantId(req.user));
 
       if (!scenario) {
         res.status(404).json({ error: 'Scenario not found' });
@@ -296,10 +347,10 @@ router.get(
        FROM scenario_line_items sli
        LEFT JOIN accounts a ON a.id = sli.account_id
        LEFT JOIN departments d ON d.id = sli.department_id
-       WHERE sli.scenario_id = ?
+       WHERE sli.scenario_id = ? AND sli.tenant_id = ?
        ORDER BY sli.month, a.code`
         )
-        .all(String(req.params.id));
+        .all(String(req.params.id), resolveTenantId(req.user));
 
       res.json(items);
     } catch (err) {
@@ -322,8 +373,8 @@ router.post(
       }
 
       const scenario = db
-        .prepare('SELECT id FROM scenarios WHERE id = ?')
-        .get(String(req.params.id));
+        .prepare('SELECT id FROM scenarios WHERE id = ? AND tenant_id = ?')
+        .get(String(req.params.id), resolveTenantId(req.user));
 
       if (!scenario) {
         res.status(404).json({ error: 'Scenario not found' });
@@ -342,10 +393,11 @@ router.post(
       const id = uuidv4();
 
       db.prepare(
-        `INSERT INTO scenario_line_items (id, scenario_id, account_id, month, base_amount, adjusted_amount, adjustment_pct, department_id, notes, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+        `INSERT INTO scenario_line_items (id, tenant_id, scenario_id, account_id, month, base_amount, adjusted_amount, adjustment_pct, department_id, notes, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
       ).run(
         id,
+        resolveTenantId(req.user),
         String(req.params.id),
         account_id,
         month,
@@ -356,7 +408,7 @@ router.post(
         notes ?? null
       );
 
-      audit('CREATE', 'scenario_line_item', id, req.user!.id, {
+      audit('CREATE', 'scenario_line_item', id, req.user!.id, resolveTenantId(req.user), {
         scenario_id: String(req.params.id),
         account_id,
         month,
@@ -383,8 +435,8 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
     }
 
     const scenario = db
-      .prepare('SELECT * FROM scenarios WHERE id = ?')
-      .get(String(req.params.id)) as Record<string, unknown> | undefined;
+      .prepare('SELECT * FROM scenarios WHERE id = ? AND tenant_id = ?')
+      .get(String(req.params.id), resolveTenantId(req.user)) as Record<string, unknown> | undefined;
 
     if (!scenario) {
       res.status(404).json({ error: 'Scenario not found' });
@@ -394,8 +446,8 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
     const { target, target_id, apply_adjustments } = parsed.data;
 
     const lineItems = db
-      .prepare('SELECT * FROM scenario_line_items WHERE scenario_id = ?')
-      .all(String(req.params.id)) as Record<string, unknown>[];
+      .prepare('SELECT * FROM scenario_line_items WHERE scenario_id = ? AND tenant_id = ?')
+      .all(String(req.params.id), resolveTenantId(req.user)) as Record<string, unknown>[];
 
     if (lineItems.length === 0) {
       res.status(400).json({ error: 'Scenario has no line items to apply' });
@@ -413,8 +465,12 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
       }
 
       const budget = db
-        .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
-        .get(budgetId as string) as { id: string; status: string } | undefined;
+        .prepare(
+          'SELECT id, status FROM budgets WHERE id = ? AND tenant_id = ? AND deleted_at IS NULL'
+        )
+        .get(budgetId as string, resolveTenantId(req.user)) as
+        | { id: string; status: string }
+        | undefined;
 
       if (!budget) {
         res.status(404).json({ error: 'Target budget not found' });
@@ -427,8 +483,8 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
       }
 
       const upsertItem = db.prepare(
-        `INSERT INTO budget_line_items (id, budget_id, account_id, month, amount, department_id, notes, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+        `INSERT INTO budget_line_items (id, tenant_id, budget_id, account_id, month, amount, department_id, notes, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
          ON CONFLICT(budget_id, account_id, month) DO UPDATE SET
            amount = excluded.amount, notes = excluded.notes, updated_at = datetime('now')`
       );
@@ -439,17 +495,20 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
             apply_adjustments !== false ? Number(item.adjusted_amount) : Number(item.base_amount);
           const existingItem = db
             .prepare(
-              'SELECT id FROM budget_line_items WHERE budget_id = ? AND account_id = ? AND month = ?'
+              'SELECT id FROM budget_line_items WHERE budget_id = ? AND tenant_id = ? AND account_id = ? AND month = ?'
             )
-            .get(budgetId, item.account_id, item.month) as { id: string } | undefined;
+            .get(budgetId, resolveTenantId(req.user), item.account_id, item.month) as
+            | { id: string }
+            | undefined;
 
           if (existingItem) {
             db.prepare(
-              "UPDATE budget_line_items SET amount = ?, notes = ?, updated_at = datetime('now') WHERE id = ?"
-            ).run(amount, item.notes ?? null, existingItem.id);
+              "UPDATE budget_line_items SET amount = ?, notes = ?, updated_at = datetime('now') WHERE id = ? AND tenant_id = ?"
+            ).run(amount, item.notes ?? null, existingItem.id, resolveTenantId(req.user));
           } else {
             upsertItem.run(
               uuidv4(),
+              resolveTenantId(req.user),
               budgetId,
               item.account_id,
               item.month,
@@ -471,7 +530,9 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
         return;
       }
 
-      const forecast = db.prepare('SELECT id FROM forecasts WHERE id = ?').get(forecastId);
+      const forecast = db
+        .prepare('SELECT id FROM forecasts WHERE id = ? AND tenant_id = ?')
+        .get(forecastId, resolveTenantId(req.user));
 
       if (!forecast) {
         res.status(404).json({ error: 'Target forecast not found' });
@@ -480,8 +541,10 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
 
       // Get periods for the forecast to map months to period IDs
       const periods = db
-        .prepare('SELECT * FROM forecast_periods WHERE forecast_id = ? ORDER BY period_number')
-        .all(forecastId) as Record<string, unknown>[];
+        .prepare(
+          'SELECT * FROM forecast_periods WHERE forecast_id = ? AND tenant_id = ? ORDER BY period_number'
+        )
+        .all(forecastId, resolveTenantId(req.user)) as Record<string, unknown>[];
 
       const periodMap = new Map<number, string>();
       for (const p of periods) {
@@ -498,20 +561,23 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
 
           const existingItem = db
             .prepare(
-              'SELECT id FROM forecast_line_items WHERE forecast_id = ? AND account_id = ? AND period_id = ?'
+              'SELECT id FROM forecast_line_items WHERE forecast_id = ? AND tenant_id = ? AND account_id = ? AND period_id = ?'
             )
-            .get(forecastId, item.account_id, periodId) as { id: string } | undefined;
+            .get(forecastId, resolveTenantId(req.user), item.account_id, periodId) as
+            | { id: string }
+            | undefined;
 
           if (existingItem) {
             db.prepare(
-              "UPDATE forecast_line_items SET amount = ?, notes = ?, updated_at = datetime('now') WHERE id = ?"
-            ).run(amount, item.notes ?? null, existingItem.id);
+              "UPDATE forecast_line_items SET amount = ?, notes = ?, updated_at = datetime('now') WHERE id = ? AND tenant_id = ?"
+            ).run(amount, item.notes ?? null, existingItem.id, resolveTenantId(req.user));
           } else {
             db.prepare(
-              `INSERT INTO forecast_line_items (id, forecast_id, account_id, period_id, amount, department_id, notes, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+              `INSERT INTO forecast_line_items (id, tenant_id, forecast_id, account_id, period_id, amount, department_id, notes, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
             ).run(
               uuidv4(),
+              resolveTenantId(req.user),
               forecastId,
               item.account_id,
               periodId,
@@ -527,7 +593,7 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
       applyToForecast(lineItems);
     }
 
-    audit('APPLY', 'scenario', String(req.params.id), req.user!.id, {
+    audit('APPLY', 'scenario', String(req.params.id), req.user!.id, resolveTenantId(req.user), {
       target,
       target_id,
       applied_count: appliedCount,

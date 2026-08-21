@@ -2,6 +2,7 @@ import { Router, Response, Request } from 'express';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db/connection.js';
+import { resolveTenantId } from '../db/tenancy.js';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
 import { filterByEntityAccess, requireEntityAccess } from '../middleware/entityAuth.js';
 
@@ -40,12 +41,21 @@ function audit(
   entityType: string,
   entityId: string,
   userId: string,
+  tenantId?: string,
   details?: Record<string, unknown>
 ) {
   db.prepare(
-    `INSERT INTO audit_trail (id, action, entity_type, entity_id, user_id, details, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`
-  ).run(uuidv4(), action, entityType, entityId, userId, JSON.stringify(details ?? {}));
+    `INSERT INTO audit_trail (id, tenant_id, action, entity_type, entity_id, user_id, details, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+  ).run(
+    uuidv4(),
+    tenantId ?? 'default',
+    action,
+    entityType,
+    entityId,
+    userId,
+    JSON.stringify(details ?? {})
+  );
 }
 
 // --- Entity Routes ---
@@ -60,17 +70,18 @@ router.get('/', filterByEntityAccess, (req: Request, res: Response) => {
     let query = `SELECT e.*, pe.name AS parent_name
        FROM entities e
        LEFT JOIN entities pe ON pe.id = e.parent_id`;
-    const params: unknown[] = [];
+    const conditions: string[] = ['e.tenant_id = ?'];
+    const params: unknown[] = [resolveTenantId(req.user)];
 
     if (entityFilter !== null && entityFilter.length > 0) {
-      query += ` WHERE e.id IN (${entityFilter.map(() => '?').join(', ')})`;
+      conditions.push(`e.id IN (${entityFilter.map(() => '?').join(', ')})`);
       params.push(...entityFilter);
     } else if (entityFilter !== null && entityFilter.length === 0) {
       res.json([]);
       return;
     }
 
-    query += ' ORDER BY e.name';
+    query += ` WHERE ${conditions.join(' AND ')} ORDER BY e.name`;
 
     const rows = db.prepare(query).all(...params);
     res.json(rows);
@@ -88,9 +99,9 @@ router.get('/:id', requireEntityAccess('entities'), (req: Request, res: Response
         `SELECT e.*, pe.name AS parent_name
        FROM entities e
        LEFT JOIN entities pe ON pe.id = e.parent_id
-       WHERE e.id = ?`
+       WHERE e.id = ? AND e.tenant_id = ?`
       )
-      .get(String(req.params.id));
+      .get(String(req.params.id), resolveTenantId(req.user));
 
     if (!entity) {
       res.status(404).json({ error: 'Entity not found' });
@@ -135,10 +146,11 @@ router.post('/', requireRole('Admin'), (req: Request, res: Response) => {
     const id = uuidv4();
 
     db.prepare(
-      `INSERT INTO entities (id, name, code, type, base_currency, fiscal_year_start, parent_id, description, is_active, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+      `INSERT INTO entities (id, tenant_id, name, code, type, base_currency, fiscal_year_start, parent_id, description, is_active, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
     ).run(
       id,
+      resolveTenantId(req.user),
       name,
       code,
       type ?? 'company',
@@ -149,7 +161,7 @@ router.post('/', requireRole('Admin'), (req: Request, res: Response) => {
       (is_active ?? true) ? 1 : 0
     );
 
-    audit('CREATE', 'entity', id, req.user!.id, { name, code, type });
+    audit('CREATE', 'entity', id, req.user!.id, resolveTenantId(req.user), { name, code, type });
 
     const entity = db.prepare('SELECT * FROM entities WHERE id = ?').get(id);
     res.status(201).json(entity);
@@ -168,7 +180,9 @@ router.put('/:id', requireRole('Admin'), (req: Request, res: Response) => {
       return;
     }
 
-    const existing = db.prepare('SELECT id FROM entities WHERE id = ?').get(String(req.params.id));
+    const existing = db
+      .prepare('SELECT id FROM entities WHERE id = ? AND tenant_id = ?')
+      .get(String(req.params.id), resolveTenantId(req.user));
 
     if (!existing) {
       res.status(404).json({ error: 'Entity not found' });
@@ -205,11 +219,23 @@ router.put('/:id', requireRole('Admin'), (req: Request, res: Response) => {
     fields.push("updated_at = datetime('now')");
     values.push(String(req.params.id));
 
-    db.prepare(`UPDATE entities SET ${fields.join(', ')} WHERE id = ?`).run(...values);
+    db.prepare('UPDATE entities SET ' + fields.join(', ') + ' WHERE id = ? AND tenant_id = ?').run(
+      ...values,
+      resolveTenantId(req.user)
+    );
 
-    audit('UPDATE', 'entity', String(req.params.id), req.user!.id, parsed.data);
+    audit(
+      'UPDATE',
+      'entity',
+      String(req.params.id),
+      req.user!.id,
+      resolveTenantId(req.user),
+      parsed.data
+    );
 
-    const entity = db.prepare('SELECT * FROM entities WHERE id = ?').get(String(req.params.id));
+    const entity = db
+      .prepare('SELECT * FROM entities WHERE id = ? AND tenant_id = ?')
+      .get(String(req.params.id), resolveTenantId(req.user));
     res.json(entity);
   } catch (err) {
     console.error('PUT /entities/:id error:', err);
@@ -223,8 +249,8 @@ router.put('/:id', requireRole('Admin'), (req: Request, res: Response) => {
 router.get('/departments/list', (req: Request, res: Response) => {
   try {
     const { entity_id } = req.query;
-    const conditions: string[] = [];
-    const params: unknown[] = [];
+    const conditions: string[] = ['d.tenant_id = ?'];
+    const params: unknown[] = [resolveTenantId(req.user)];
 
     if (entity_id && typeof entity_id === 'string') {
       conditions.push('d.entity_id = ?');
@@ -266,10 +292,11 @@ router.post('/departments', requireRole('Admin'), (req: Request, res: Response) 
     const id = uuidv4();
 
     db.prepare(
-      `INSERT INTO departments (id, name, code, entity_id, parent_id, manager_id, description, is_active, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+      `INSERT INTO departments (id, tenant_id, name, code, entity_id, parent_id, manager_id, description, is_active, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
     ).run(
       id,
+      resolveTenantId(req.user),
       name,
       code,
       entity_id,
@@ -279,7 +306,11 @@ router.post('/departments', requireRole('Admin'), (req: Request, res: Response) 
       (is_active ?? true) ? 1 : 0
     );
 
-    audit('CREATE', 'department', id, req.user!.id, { name, code, entity_id });
+    audit('CREATE', 'department', id, req.user!.id, resolveTenantId(req.user), {
+      name,
+      code,
+      entity_id,
+    });
 
     const department = db.prepare('SELECT * FROM departments WHERE id = ?').get(id);
     res.status(201).json(department);

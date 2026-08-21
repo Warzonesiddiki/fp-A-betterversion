@@ -4,6 +4,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { Decimal } from 'decimal.js';
 import { db } from '../db/connection.js';
 import { resolveTenantId } from '../db/tenancy.js';
+import {
+  assertEntityLedgerIntegrity,
+  ThreeStatementGateError,
+} from '../gates/threeStatementGate.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { requireEntityWriteAccess, filterByEntityAccess } from '../middleware/entityAuth.js';
 
@@ -108,12 +112,21 @@ function audit(
   entityType: string,
   entityId: string,
   userId: string,
+  tenantId?: string,
   details?: Record<string, unknown>
 ) {
   db.prepare(
-    `INSERT INTO audit_trail (id, action, entity_type, entity_id, user_id, details, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`
-  ).run(uuidv4(), action, entityType, entityId, userId, JSON.stringify(details ?? {}));
+    `INSERT INTO audit_trail (id, tenant_id, action, entity_type, entity_id, user_id, details, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+  ).run(
+    uuidv4(),
+    tenantId ?? 'default',
+    action,
+    entityType,
+    entityId,
+    userId,
+    JSON.stringify(details ?? {})
+  );
 }
 
 // --- GL Entry Routes ---
@@ -233,25 +246,33 @@ router.post(
 
       const id = uuidv4();
 
-      db.prepare(
-        `INSERT INTO gl_entries (id, tenant_id, account_id, entity_id, post_date, amount, debit, credit, description, reference, department_id, created_by, created_at)
+      // W0.3 runtime three-statement gate: the insert and the integrity check
+      // share one transaction, so a violating write rolls back entirely.
+      // The gate is non-disableable — there is no flag to consult.
+      const tenantId = resolveTenantId(req.user);
+      db.transaction(() => {
+        db.prepare(
+          `INSERT INTO gl_entries (id, tenant_id, account_id, entity_id, post_date, amount, debit, credit, description, reference, department_id, created_by, created_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
-      ).run(
-        id,
-        resolveTenantId(req.user),
-        account_id,
-        entity_id,
-        post_date,
-        amount,
-        debit,
-        credit,
-        description ?? null,
-        reference ?? null,
-        department_id ?? null,
-        req.user!.id
-      );
+        ).run(
+          id,
+          tenantId,
+          account_id,
+          entity_id,
+          post_date,
+          amount,
+          debit,
+          credit,
+          description ?? null,
+          reference ?? null,
+          department_id ?? null,
+          req.user!.id
+        );
 
-      audit('CREATE', 'gl_entry', id, req.user!.id, {
+        assertEntityLedgerIntegrity(tenantId, entity_id);
+      })();
+
+      audit('CREATE', 'gl_entry', id, req.user!.id, resolveTenantId(req.user), {
         account_id,
         entity_id,
         post_date,
@@ -263,6 +284,14 @@ router.post(
       const entry = db.prepare('SELECT * FROM gl_entries WHERE id = ?').get(id);
       res.status(201).json(entry);
     } catch (err) {
+      if (err instanceof ThreeStatementGateError) {
+        res.status(422).json({
+          error: 'Three-statement gate violation',
+          code: err.violations[0]?.errorCode,
+          violations: err.toPayload(),
+        });
+        return;
+      }
       console.error('POST /gl/entries error:', err);
       res.status(500).json({ error: 'Failed to create GL entry' });
     }
@@ -303,13 +332,15 @@ router.post(
       );
 
       const ids: string[] = [];
+      const tenantId = resolveTenantId(req.user);
+      const entityIds = new Set(parsed.data.entries.map((e) => e.entity_id));
       const insertMany = db.transaction((entries: z.infer<typeof BulkGLEntrySchema>['entries']) => {
         for (const entry of entries) {
           const id = uuidv4();
           ids.push(id);
           insertStmt.run(
             id,
-            resolveTenantId(req.user),
+            tenantId,
             entry.account_id,
             entry.entity_id,
             entry.post_date,
@@ -322,14 +353,31 @@ router.post(
             req.user!.id
           );
         }
+
+        // W0.3 runtime three-statement gate (non-disableable): every touched
+        // entity's ledger must still satisfy A = L + E (+ open-period NI),
+        // checked INSIDE the transaction so a violation rolls the batch back.
+        for (const entityId of entityIds) {
+          assertEntityLedgerIntegrity(tenantId, entityId);
+        }
       });
 
       insertMany(parsed.data.entries);
 
-      audit('BULK_CREATE', 'gl_entry', ids.join(','), req.user!.id, { count: ids.length });
+      audit('BULK_CREATE', 'gl_entry', ids.join(','), req.user!.id, resolveTenantId(req.user), {
+        count: ids.length,
+      });
 
       res.status(201).json({ message: `Created ${ids.length} entries`, ids });
     } catch (err) {
+      if (err instanceof ThreeStatementGateError) {
+        res.status(422).json({
+          error: 'Three-statement gate violation',
+          code: err.violations[0]?.errorCode,
+          violations: err.toPayload(),
+        });
+        return;
+      }
       console.error('POST /gl/entries/bulk error:', err);
       res.status(500).json({ error: 'Failed to bulk create GL entries' });
     }
@@ -342,24 +390,40 @@ router.delete(
   requireEntityWriteAccess('gl_entries'),
   (req: Request, res: Response) => {
     try {
+      const tenantId = resolveTenantId(req.user);
       const existing = db
-        .prepare('SELECT id FROM gl_entries WHERE id = ? AND tenant_id = ?')
-        .get(String(req.params.id), resolveTenantId(req.user));
+        .prepare('SELECT id, entity_id FROM gl_entries WHERE id = ? AND tenant_id = ?')
+        .get(String(req.params.id), tenantId) as { id: string; entity_id: string } | undefined;
 
       if (!existing) {
         res.status(404).json({ error: 'GL entry not found' });
         return;
       }
 
-      db.prepare('DELETE FROM gl_entries WHERE id = ? AND tenant_id = ?').run(
-        String(req.params.id),
-        resolveTenantId(req.user)
-      );
+      // W0.3-fix (HIGH): the delete and the integrity check share one
+      // transaction — removing a single leg of a balanced pair must roll
+      // back instead of permanently breaking A=L+E. Non-disableable.
+      db.transaction(() => {
+        db.prepare('DELETE FROM gl_entries WHERE id = ? AND tenant_id = ?').run(
+          String(req.params.id),
+          tenantId
+        );
 
-      audit('DELETE', 'gl_entry', String(req.params.id), req.user!.id);
+        assertEntityLedgerIntegrity(tenantId, existing.entity_id);
+      })();
+
+      audit('DELETE', 'gl_entry', String(req.params.id), req.user!.id, tenantId);
 
       res.status(204).send();
     } catch (err) {
+      if (err instanceof ThreeStatementGateError) {
+        res.status(422).json({
+          error: 'Three-statement gate violation',
+          code: err.violations[0]?.errorCode,
+          violations: err.toPayload(),
+        });
+        return;
+      }
       console.error('DELETE /gl/entries/:id error:', err);
       res.status(500).json({ error: 'Failed to delete GL entry' });
     }
@@ -454,7 +518,7 @@ router.post('/accounts', (req: Request, res: Response) => {
       (is_active ?? true) ? 1 : 0
     );
 
-    audit('CREATE', 'account', id, req.user!.id, { code, name, type });
+    audit('CREATE', 'account', id, req.user!.id, resolveTenantId(req.user), { code, name, type });
 
     const account = db.prepare('SELECT * FROM accounts WHERE id = ?').get(id);
     res.status(201).json(account);
@@ -512,7 +576,14 @@ router.put('/accounts/:id', (req: Request, res: Response) => {
 
     db.prepare(`UPDATE accounts SET ${fields.join(', ')} WHERE id = ?`).run(...values);
 
-    audit('UPDATE', 'account', String(req.params.id), req.user!.id, parsed.data);
+    audit(
+      'UPDATE',
+      'account',
+      String(req.params.id),
+      req.user!.id,
+      resolveTenantId(req.user),
+      parsed.data
+    );
 
     const account = db.prepare('SELECT * FROM accounts WHERE id = ?').get(String(req.params.id));
     res.json(account);

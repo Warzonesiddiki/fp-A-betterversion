@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
@@ -49,6 +50,7 @@ interface UserRow {
   last_name: string;
   role: string;
   entity_id: string | null;
+  tenant_id: string | null;
   is_active: number;
   created_at: string;
   updated_at: string;
@@ -59,13 +61,35 @@ interface RefreshTokenRow {
   user_id: string;
   token: string;
   expires_at: string;
+  revoked_at: string | null;
   created_at: string;
 }
 
-function generateAccessToken(user: { id: string; email: string; role: string }): string {
-  return jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, {
-    expiresIn: ACCESS_TOKEN_EXPIRY,
-  });
+// SEC-1: refresh tokens are stored only as sha256 hashes at rest. The raw
+// token exists solely in the API response; a database read no longer yields
+// a usable credential.
+function hashRefreshToken(token: string): string {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+function generateAccessToken(user: {
+  id: string;
+  email: string;
+  role: string;
+  tenant_id?: string | null;
+}): string {
+  return jwt.sign(
+    {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      ...(user.tenant_id ? { tenantId: user.tenant_id } : {}),
+    },
+    JWT_SECRET,
+    {
+      expiresIn: ACCESS_TOKEN_EXPIRY,
+    }
+  );
 }
 
 function generateRefreshToken(): string {
@@ -122,7 +146,7 @@ router.post('/register', validate(registerSchema), async (req, res) => {
 
     db.prepare(
       'INSERT INTO refresh_tokens (id, user_id, token, expires_at) VALUES (?, ?, ?, ?)'
-    ).run(uuidv4(), userId, refreshToken, refreshExpiresAt);
+    ).run(uuidv4(), userId, hashRefreshToken(refreshToken), refreshExpiresAt);
 
     // Fetch the created user
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId) as UserRow;
@@ -148,7 +172,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     const ipAddress = req.ip ?? req.socket.remoteAddress ?? null;
 
     // Check if account is locked due to too many failed attempts
-    const lockoutStatus = checkAccountLockout(email);
+    const lockoutStatus = checkAccountLockout(email, ipAddress);
     if (lockoutStatus.locked) {
       res.status(423).json({
         error: `Account is locked due to too many failed login attempts. Try again in ${lockoutStatus.remainingMinutes} minute${lockoutStatus.remainingMinutes !== 1 ? 's' : ''}.`,
@@ -180,7 +204,7 @@ router.post('/login', validate(loginSchema), async (req, res) => {
       recordLoginAttempt(email, ipAddress, false);
 
       // Re-check lockout after recording the failed attempt
-      const updatedStatus = checkAccountLockout(email);
+      const updatedStatus = checkAccountLockout(email, ipAddress);
       if (updatedStatus.locked) {
         res.status(423).json({
           error: `Account is locked due to too many failed login attempts. Try again in ${updatedStatus.remainingMinutes} minute${updatedStatus.remainingMinutes !== 1 ? 's' : ''}.`,
@@ -200,14 +224,19 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     recordLoginAttempt(email, ipAddress, true);
 
     // Generate tokens
-    const accessToken = generateAccessToken({ id: user.id, email: user.email, role: user.role });
+    const accessToken = generateAccessToken({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      tenant_id: user.tenant_id,
+    });
     const refreshToken = generateRefreshToken();
     const refreshExpiresAt = new Date(Date.now() + REFRESH_TOKEN_EXPIRY_MS).toISOString();
 
     // Store refresh token
     db.prepare(
       'INSERT INTO refresh_tokens (id, user_id, token, expires_at) VALUES (?, ?, ?, ?)'
-    ).run(uuidv4(), user.id, refreshToken, refreshExpiresAt);
+    ).run(uuidv4(), user.id, hashRefreshToken(refreshToken), refreshExpiresAt);
 
     res.json({
       user: sanitizeUser(user),
@@ -228,13 +257,24 @@ router.post('/refresh', validate(refreshSchema), (req, res) => {
   try {
     const { refreshToken } = req.validated as z.infer<typeof refreshSchema>;
 
-    // Look up refresh token in DB
-    const row = db.prepare('SELECT * FROM refresh_tokens WHERE token = ?').get(refreshToken) as
-      | RefreshTokenRow
-      | undefined;
+    // SEC-1: lookup is by hash — the presented raw token never matches the DB.
+    const row = db
+      .prepare('SELECT * FROM refresh_tokens WHERE token = ?')
+      .get(hashRefreshToken(refreshToken)) as RefreshTokenRow | undefined;
 
     if (!row) {
       res.status(401).json({ error: 'Invalid refresh token' });
+      return;
+    }
+
+    // SEC-2: reuse detection. A revoked token being replayed means either a
+    // stolen token racing the rotation or a client retrying an old response;
+    // in both cases the safest action is to revoke every token for the user.
+    if (row.revoked_at !== null) {
+      db.prepare(
+        "UPDATE refresh_tokens SET revoked_at = datetime('now') WHERE user_id = ? AND revoked_at IS NULL"
+      ).run(row.user_id);
+      res.status(401).json({ error: 'Refresh token reuse detected; all sessions revoked' });
       return;
     }
 
@@ -255,9 +295,30 @@ router.post('/refresh', validate(refreshSchema), (req, res) => {
       return;
     }
 
-    const accessToken = generateAccessToken({ id: user.id, email: user.email, role: user.role });
+    // SEC-2: rotate — revoke the presented token and issue a fresh one. The
+    // old row is kept (revoked) so a later replay triggers reuse detection.
+    const newRefreshToken = generateRefreshToken();
+    const rotate = db.transaction((rowId: string) => {
+      db.prepare("UPDATE refresh_tokens SET revoked_at = datetime('now') WHERE id = ?").run(rowId);
+      db.prepare(
+        'INSERT INTO refresh_tokens (id, user_id, token, expires_at) VALUES (?, ?, ?, ?)'
+      ).run(
+        uuidv4(),
+        user.id,
+        hashRefreshToken(newRefreshToken),
+        new Date(Date.now() + REFRESH_TOKEN_EXPIRY_MS).toISOString()
+      );
+    });
+    rotate(row.id);
 
-    res.json({ accessToken });
+    const accessToken = generateAccessToken({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      tenant_id: user.tenant_id,
+    });
+
+    res.json({ accessToken, refreshToken: newRefreshToken });
   } catch (err) {
     console.error('[auth] Refresh error:', err);
     res.status(500).json({ error: 'Internal server error' });
@@ -272,10 +333,16 @@ router.post('/logout', validate(logoutSchema), (req, res) => {
   try {
     const { refreshToken } = req.validated as z.infer<typeof logoutSchema>;
 
-    const result = db.prepare('DELETE FROM refresh_tokens WHERE token = ?').run(refreshToken);
+    // SEC-1/SEC-2: revoke by hash and keep the row so a replay of this token
+    // later triggers reuse detection instead of looking "invalid".
+    const result = db
+      .prepare(
+        "UPDATE refresh_tokens SET revoked_at = datetime('now') WHERE token = ? AND revoked_at IS NULL"
+      )
+      .run(hashRefreshToken(refreshToken));
 
     if (result.changes === 0) {
-      // Token not found — still treat as success (idempotent logout)
+      // Token not found or already revoked — still treat as success (idempotent logout)
       res.json({ message: 'Logged out successfully' });
       return;
     }

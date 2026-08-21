@@ -49,3 +49,29 @@ function resolveAuditSecret(): string {
 
 export const AUDIT_HMAC_SECRET = resolveAuditSecret();
 export { NODE_ENV, IS_PRODUCTION };
+
+/**
+ * SEC-3 — parse TRUST_PROXY into an Express `app.set('trust proxy', ...)` value.
+ *
+ * Accepted forms:
+ *   - unset / empty  -> undefined (Express default preserved)
+ *   - "true"/"false" -> boolean
+ *   - integer        -> hop count
+ *   - otherwise      -> comma-separated subnet list, e.g. "10.0.0.1, 10.0.0.2"
+ *
+ * Config-driven so proxied deployments get correct req.ip for rate limiting
+ * and lockout without hardcoding a topology.
+ */
+export function resolveTrustProxy(
+  raw: string | undefined
+): boolean | number | string[] | undefined {
+  if (raw === undefined || raw === '') return undefined;
+  const normalized = raw.trim().toLowerCase();
+  if (normalized === 'true') return true;
+  if (normalized === 'false') return false;
+  if (/^\d+$/.test(normalized)) return parseInt(normalized, 10);
+  return raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+}

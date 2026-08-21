@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
 import { filterByEntityAccess } from '../middleware/entityAuth.js';
 import { auditService } from '../services/AuditService.js';
+import { resolveTenantId } from '../db/tenancy.js';
 import type { AuditCategory, AuditSeverity, AuditAction } from '../services/AuditService.js';
 
 const router = Router();
@@ -98,6 +99,7 @@ router.get('/', (req, res) => {
   try {
     const filter = req.query as QueryFilter;
     const result = auditService.query({
+      tenantId: resolveTenantId(req.user),
       category: filter.category as AuditCategory | undefined,
       action: filter.action as AuditAction | undefined,
       severity: filter.severity as AuditSeverity | undefined,
@@ -130,10 +132,13 @@ router.get('/', (req, res) => {
 router.get('/stats', (req, res) => {
   try {
     const { startDate, endDate } = req.query as { startDate?: string; endDate?: string };
-    const stats = auditService.getStats({
-      startDate,
-      endDate,
-    });
+    const stats = auditService.getStats(
+      {
+        startDate,
+        endDate,
+      },
+      resolveTenantId(req.user)
+    );
     res.json(stats);
   } catch (err) {
     console.error('[audit] Stats error:', err);
@@ -219,7 +224,7 @@ router.get('/data-changes', (req, res) => {
 router.get('/resource/:type/:id', (req, res) => {
   try {
     const { type, id } = req.params;
-    const entries = auditService.getResourceHistory(type, id);
+    const entries = auditService.getResourceHistory(type, id, resolveTenantId(req.user));
     res.json({ entries, total: entries.length });
   } catch (err) {
     console.error('[audit] Resource history error:', err);
@@ -235,7 +240,7 @@ router.get('/user/:userId', (req, res) => {
   try {
     const { userId } = req.params;
     const limit = parseInt((req.query.limit as string) ?? '100', 10);
-    const entries = auditService.getUserActivity(userId, limit);
+    const entries = auditService.getUserActivity(userId, limit, resolveTenantId(req.user));
     res.json({ entries, total: entries.length });
   } catch (err) {
     console.error('[audit] User activity error:', err);
@@ -249,7 +254,7 @@ router.get('/user/:userId', (req, res) => {
 
 router.get('/entry/:id', (req, res) => {
   try {
-    const entry = auditService.getById(String(req.params.id));
+    const entry = auditService.getById(String(req.params.id), resolveTenantId(req.user));
     if (!entry) {
       res.status(404).json({ error: 'Audit entry not found' });
       return;
@@ -285,6 +290,7 @@ router.post('/export', (req, res) => {
 
     if (format === 'csv') {
       const csv = auditService.exportCSV({
+        tenantId: resolveTenantId(req.user),
         category: filter.category as AuditCategory | undefined,
         startDate: filter.startDate,
         endDate: filter.endDate,
@@ -295,6 +301,7 @@ router.post('/export', (req, res) => {
       res.send(csv);
     } else {
       const json = auditService.exportJSON({
+        tenantId: resolveTenantId(req.user),
         category: filter.category as AuditCategory | undefined,
         startDate: filter.startDate,
         endDate: filter.endDate,

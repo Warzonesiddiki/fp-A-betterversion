@@ -2,6 +2,7 @@ import { Router, Response, Request } from 'express';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db/connection.js';
+import { resolveTenantId } from '../db/tenancy.js';
 import { authMiddleware } from '../middleware/auth.js';
 import {
   requireEntityAccess,
@@ -47,12 +48,21 @@ function audit(
   entityType: string,
   entityId: string,
   userId: string,
+  tenantId?: string,
   details?: Record<string, unknown>
 ) {
   db.prepare(
-    `INSERT INTO audit_trail (id, action, entity_type, entity_id, user_id, details, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`
-  ).run(uuidv4(), action, entityType, entityId, userId, JSON.stringify(details ?? {}));
+    `INSERT INTO audit_trail (id, tenant_id, action, entity_type, entity_id, user_id, details, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+  ).run(
+    uuidv4(),
+    tenantId ?? 'default',
+    action,
+    entityType,
+    entityId,
+    userId,
+    JSON.stringify(details ?? {})
+  );
 }
 
 // --- Routes ---
@@ -63,6 +73,10 @@ router.get('/', filterByEntityAccess, (req: Request, res: Response) => {
     const { status, limit = '50', offset = '0' } = req.query;
     const conditions: string[] = ['b.deleted_at IS NULL'];
     const params: unknown[] = [];
+
+    // Tenant scope (W0.2b): a request only ever sees its own tenant's rows.
+    conditions.push('b.tenant_id = ?');
+    params.push(resolveTenantId(req.user));
 
     // Entity-level access filter
     const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as
@@ -121,9 +135,9 @@ router.get('/:id', requireEntityAccess('budgets'), (req: Request, res: Response)
         `SELECT b.*, e.name AS entity_name
        FROM budgets b
        LEFT JOIN entities e ON e.id = b.entity_id
-       WHERE b.id = ? AND b.deleted_at IS NULL`
+       WHERE b.id = ? AND b.tenant_id = ? AND b.deleted_at IS NULL`
       )
-      .get(String(req.params.id));
+      .get(String(req.params.id), resolveTenantId(req.user));
 
     if (!budget) {
       res.status(404).json({ error: 'Budget not found' });
@@ -137,10 +151,10 @@ router.get('/:id', requireEntityAccess('budgets'), (req: Request, res: Response)
        FROM budget_line_items bli
        LEFT JOIN accounts a ON a.id = bli.account_id
        LEFT JOIN departments d ON d.id = bli.department_id
-       WHERE bli.budget_id = ?
+       WHERE bli.budget_id = ? AND bli.tenant_id = ?
        ORDER BY bli.month, a.code`
       )
-      .all(String(req.params.id));
+      .all(String(req.params.id), resolveTenantId(req.user));
 
     res.json({ ...(budget as Record<string, unknown>), line_items: lineItems });
   } catch (err) {
@@ -165,10 +179,11 @@ router.post(
       const id = uuidv4();
 
       db.prepare(
-        `INSERT INTO budgets (id, name, description, fiscal_year, base_currency, entity_id, status, created_by, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+        `INSERT INTO budgets (id, tenant_id, name, description, fiscal_year, base_currency, entity_id, status, created_by, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
       ).run(
         id,
+        resolveTenantId(req.user),
         name,
         description ?? null,
         fiscal_year,
@@ -178,7 +193,7 @@ router.post(
         req.user!.id
       );
 
-      audit('CREATE', 'budget', id, req.user!.id, { name, fiscal_year });
+      audit('CREATE', 'budget', id, req.user!.id, resolveTenantId(req.user), { name, fiscal_year });
 
       const budget = db.prepare('SELECT * FROM budgets WHERE id = ?').get(id);
       res.status(201).json(budget);
@@ -192,6 +207,13 @@ router.post(
 // PUT /:id — update budget
 router.put('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: Response) => {
   try {
+    // W0.2b-fixes (LOW-2): status changes are workflow-gated (explicit
+    // submit/approve/reject/transition endpoints); direct status assignment
+    // via PUT would bypass those gates.
+    if ('status' in req.body) {
+      res.status(400).json({ error: 'Status changes must use the dedicated workflow endpoints' });
+      return;
+    }
     const parsed = UpdateBudgetSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
@@ -199,8 +221,12 @@ router.put('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: Resp
     }
 
     const existing = db
-      .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
-      .get(String(req.params.id)) as { id: string; status: string } | undefined;
+      .prepare(
+        'SELECT id, status FROM budgets WHERE id = ? AND tenant_id = ? AND deleted_at IS NULL'
+      )
+      .get(String(req.params.id), resolveTenantId(req.user)) as
+      | { id: string; status: string }
+      | undefined;
 
     if (!existing) {
       res.status(404).json({ error: 'Budget not found' });
@@ -230,11 +256,23 @@ router.put('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: Resp
     fields.push("updated_at = datetime('now')");
     values.push(String(req.params.id));
 
-    db.prepare(`UPDATE budgets SET ${fields.join(', ')} WHERE id = ?`).run(...values);
+    db.prepare(`UPDATE budgets SET ${fields.join(', ')} WHERE id = ? AND tenant_id = ?`).run(
+      ...values,
+      resolveTenantId(req.user)
+    );
 
-    audit('UPDATE', 'budget', String(req.params.id), req.user!.id, parsed.data);
+    audit(
+      'UPDATE',
+      'budget',
+      String(req.params.id),
+      req.user!.id,
+      resolveTenantId(req.user),
+      parsed.data
+    );
 
-    const budget = db.prepare('SELECT * FROM budgets WHERE id = ?').get(String(req.params.id));
+    const budget = db
+      .prepare('SELECT * FROM budgets WHERE id = ? AND tenant_id = ?')
+      .get(String(req.params.id), resolveTenantId(req.user));
     res.json(budget);
   } catch (err) {
     console.error('PUT /budgets/:id error:', err);
@@ -246,8 +284,8 @@ router.put('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: Resp
 router.delete('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: Response) => {
   try {
     const existing = db
-      .prepare('SELECT id FROM budgets WHERE id = ? AND deleted_at IS NULL')
-      .get(String(req.params.id));
+      .prepare('SELECT id FROM budgets WHERE id = ? AND tenant_id = ? AND deleted_at IS NULL')
+      .get(String(req.params.id), resolveTenantId(req.user));
 
     if (!existing) {
       res.status(404).json({ error: 'Budget not found' });
@@ -255,10 +293,10 @@ router.delete('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: R
     }
 
     db.prepare(
-      "UPDATE budgets SET status = 'Cancelled', deleted_at = datetime('now'), updated_at = datetime('now') WHERE id = ?"
-    ).run(String(req.params.id));
+      "UPDATE budgets SET status = 'Cancelled', deleted_at = datetime('now'), updated_at = datetime('now') WHERE id = ? AND tenant_id = ?"
+    ).run(String(req.params.id), resolveTenantId(req.user));
 
-    audit('DELETE', 'budget', String(req.params.id), req.user!.id);
+    audit('DELETE', 'budget', String(req.params.id), req.user!.id, resolveTenantId(req.user));
     res.status(204).send();
   } catch (err) {
     console.error('DELETE /budgets/:id error:', err);
@@ -270,8 +308,12 @@ router.delete('/:id', requireEntityWriteAccess('budgets'), (req: Request, res: R
 router.post('/:id/submit', requireEntityWriteAccess('budgets'), (req: Request, res: Response) => {
   try {
     const existing = db
-      .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
-      .get(String(req.params.id)) as { id: string; status: string } | undefined;
+      .prepare(
+        'SELECT id, status FROM budgets WHERE id = ? AND tenant_id = ? AND deleted_at IS NULL'
+      )
+      .get(String(req.params.id), resolveTenantId(req.user)) as
+      | { id: string; status: string }
+      | undefined;
 
     if (!existing) {
       res.status(404).json({ error: 'Budget not found' });
@@ -284,10 +326,10 @@ router.post('/:id/submit', requireEntityWriteAccess('budgets'), (req: Request, r
     }
 
     db.prepare(
-      "UPDATE budgets SET status = 'InReview', updated_at = datetime('now') WHERE id = ?"
-    ).run(String(req.params.id));
+      "UPDATE budgets SET status = 'InReview', updated_at = datetime('now') WHERE id = ? AND tenant_id = ?"
+    ).run(String(req.params.id), resolveTenantId(req.user));
 
-    audit('SUBMIT', 'budget', String(req.params.id), req.user!.id, {
+    audit('SUBMIT', 'budget', String(req.params.id), req.user!.id, resolveTenantId(req.user), {
       from: existing.status,
       to: 'InReview',
     });
@@ -304,8 +346,12 @@ router.post('/:id/submit', requireEntityWriteAccess('budgets'), (req: Request, r
 router.post('/:id/approve', requireEntityWriteAccess('budgets'), (req: Request, res: Response) => {
   try {
     const existing = db
-      .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
-      .get(String(req.params.id)) as { id: string; status: string } | undefined;
+      .prepare(
+        'SELECT id, status FROM budgets WHERE id = ? AND tenant_id = ? AND deleted_at IS NULL'
+      )
+      .get(String(req.params.id), resolveTenantId(req.user)) as
+      | { id: string; status: string }
+      | undefined;
 
     if (!existing) {
       res.status(404).json({ error: 'Budget not found' });
@@ -318,10 +364,10 @@ router.post('/:id/approve', requireEntityWriteAccess('budgets'), (req: Request, 
     }
 
     db.prepare(
-      "UPDATE budgets SET status = 'Approved', approved_by = ?, approved_at = datetime('now'), updated_at = datetime('now') WHERE id = ?"
-    ).run(req.user!.id, String(req.params.id));
+      "UPDATE budgets SET status = 'Approved', approved_by = ?, approved_at = datetime('now'), updated_at = datetime('now') WHERE id = ? AND tenant_id = ?"
+    ).run(req.user!.id, String(req.params.id), resolveTenantId(req.user));
 
-    audit('APPROVE', 'budget', String(req.params.id), req.user!.id, {
+    audit('APPROVE', 'budget', String(req.params.id), req.user!.id, resolveTenantId(req.user), {
       from: existing.status,
       to: 'Approved',
     });
@@ -344,8 +390,12 @@ router.post('/:id/reject', requireEntityWriteAccess('budgets'), (req: Request, r
     }
 
     const existing = db
-      .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
-      .get(String(req.params.id)) as { id: string; status: string } | undefined;
+      .prepare(
+        'SELECT id, status FROM budgets WHERE id = ? AND tenant_id = ? AND deleted_at IS NULL'
+      )
+      .get(String(req.params.id), resolveTenantId(req.user)) as
+      | { id: string; status: string }
+      | undefined;
 
     if (!existing) {
       res.status(404).json({ error: 'Budget not found' });
@@ -358,10 +408,10 @@ router.post('/:id/reject', requireEntityWriteAccess('budgets'), (req: Request, r
     }
 
     db.prepare(
-      "UPDATE budgets SET status = 'Rejected', rejection_reason = ?, updated_at = datetime('now') WHERE id = ?"
-    ).run(parsed.data.comment ?? null, String(req.params.id));
+      "UPDATE budgets SET status = 'Rejected', rejection_reason = ?, updated_at = datetime('now') WHERE id = ? AND tenant_id = ?"
+    ).run(parsed.data.comment ?? null, String(req.params.id), resolveTenantId(req.user));
 
-    audit('REJECT', 'budget', String(req.params.id), req.user!.id, {
+    audit('REJECT', 'budget', String(req.params.id), req.user!.id, resolveTenantId(req.user), {
       from: existing.status,
       to: 'Rejected',
       reason: parsed.data.comment,
@@ -382,8 +432,8 @@ router.get(
   (req: Request, res: Response) => {
     try {
       const budget = db
-        .prepare('SELECT id FROM budgets WHERE id = ? AND deleted_at IS NULL')
-        .get(String(req.params.id));
+        .prepare('SELECT id FROM budgets WHERE id = ? AND tenant_id = ? AND deleted_at IS NULL')
+        .get(String(req.params.id), resolveTenantId(req.user));
 
       if (!budget) {
         res.status(404).json({ error: 'Budget not found' });
@@ -397,10 +447,10 @@ router.get(
        FROM budget_line_items bli
        LEFT JOIN accounts a ON a.id = bli.account_id
        LEFT JOIN departments d ON d.id = bli.department_id
-       WHERE bli.budget_id = ?
+       WHERE bli.budget_id = ? AND bli.tenant_id = ?
        ORDER BY bli.month, a.code`
         )
-        .all(String(req.params.id));
+        .all(String(req.params.id), resolveTenantId(req.user));
 
       res.json(items);
     } catch (err) {
@@ -423,8 +473,12 @@ router.post(
       }
 
       const budget = db
-        .prepare('SELECT id, status FROM budgets WHERE id = ? AND deleted_at IS NULL')
-        .get(String(req.params.id)) as { id: string; status: string } | undefined;
+        .prepare(
+          'SELECT id, status FROM budgets WHERE id = ? AND tenant_id = ? AND deleted_at IS NULL'
+        )
+        .get(String(req.params.id), resolveTenantId(req.user)) as
+        | { id: string; status: string }
+        | undefined;
 
       if (!budget) {
         res.status(404).json({ error: 'Budget not found' });
@@ -440,10 +494,11 @@ router.post(
       const id = uuidv4();
 
       db.prepare(
-        `INSERT INTO budget_line_items (id, budget_id, account_id, month, amount, department_id, notes, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+        `INSERT INTO budget_line_items (id, tenant_id, budget_id, account_id, month, amount, department_id, notes, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
       ).run(
         id,
+        resolveTenantId(req.user),
         String(req.params.id),
         account_id,
         month,
@@ -452,7 +507,7 @@ router.post(
         notes ?? null
       );
 
-      audit('CREATE', 'budget_line_item', id, req.user!.id, {
+      audit('CREATE', 'budget_line_item', id, req.user!.id, resolveTenantId(req.user), {
         budget_id: String(req.params.id),
         account_id,
         month,
@@ -485,9 +540,9 @@ router.put(
           `SELECT bli.id, bli.budget_id, b.status
        FROM budget_line_items bli
        JOIN budgets b ON b.id = bli.budget_id
-       WHERE bli.id = ? AND b.deleted_at IS NULL`
+       WHERE bli.id = ? AND b.tenant_id = ? AND b.deleted_at IS NULL`
         )
-        .get(String(req.params.itemId)) as
+        .get(String(req.params.itemId), resolveTenantId(req.user)) as
         | { id: string; budget_id: string; status: string }
         | undefined;
 
@@ -519,9 +574,18 @@ router.put(
       fields.push("updated_at = datetime('now')");
       values.push(String(req.params.itemId));
 
-      db.prepare(`UPDATE budget_line_items SET ${fields.join(', ')} WHERE id = ?`).run(...values);
+      db.prepare(
+        'UPDATE budget_line_items SET ' + fields.join(', ') + ' WHERE id = ? AND tenant_id = ?'
+      ).run(...values, resolveTenantId(req.user));
 
-      audit('UPDATE', 'budget_line_item', String(req.params.itemId), req.user!.id, parsed.data);
+      audit(
+        'UPDATE',
+        'budget_line_item',
+        String(req.params.itemId),
+        req.user!.id,
+        resolveTenantId(req.user),
+        parsed.data
+      );
 
       const item = db
         .prepare('SELECT * FROM budget_line_items WHERE id = ?')
@@ -545,9 +609,9 @@ router.delete(
           `SELECT bli.id, bli.budget_id, b.status
        FROM budget_line_items bli
        JOIN budgets b ON b.id = bli.budget_id
-       WHERE bli.id = ? AND b.deleted_at IS NULL`
+       WHERE bli.id = ? AND b.tenant_id = ? AND b.deleted_at IS NULL`
         )
-        .get(String(req.params.itemId)) as
+        .get(String(req.params.itemId), resolveTenantId(req.user)) as
         | { id: string; budget_id: string; status: string }
         | undefined;
 
@@ -561,9 +625,18 @@ router.delete(
         return;
       }
 
-      db.prepare('DELETE FROM budget_line_items WHERE id = ?').run(String(req.params.itemId));
+      db.prepare('DELETE FROM budget_line_items WHERE id = ? AND tenant_id = ?').run(
+        String(req.params.itemId),
+        resolveTenantId(req.user)
+      );
 
-      audit('DELETE', 'budget_line_item', String(req.params.itemId), req.user!.id);
+      audit(
+        'DELETE',
+        'budget_line_item',
+        String(req.params.itemId),
+        req.user!.id,
+        resolveTenantId(req.user)
+      );
 
       res.status(204).send();
     } catch (err) {
