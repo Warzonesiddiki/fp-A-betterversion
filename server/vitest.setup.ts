@@ -22,6 +22,21 @@ const TEST_DB = path.join(__dirname, 'data', `test-finplan-${workerId}.db`);
 
 process.env.FINPLAN_DB_PATH = TEST_DB;
 
+// W0.2 hygiene: index.ts calls app.listen() at import time. Without a
+// per-worker port, every route-test file that imports the app races on :3001
+// and vitest reports EADDRINUSE as unhandled noise on every run.
+// FINPLAN_TEST_DB_TAG additionally namespaces the disposable DB file so two
+// concurrent vitest PROCESSES (e.g., parallel workstreams) never share or
+// delete each other's live database.
+process.env.PORT = String(3700 + Number(workerId));
+if (process.env.FINPLAN_TEST_DB_TAG) {
+  process.env.FINPLAN_DB_PATH = path.join(
+    __dirname,
+    'data',
+    `test-finplan-${process.env.FINPLAN_TEST_DB_TAG}-${workerId}.db`
+  );
+}
+
 function removeTestDb(): void {
   for (const suffix of ['', '-shm', '-wal']) {
     try {
