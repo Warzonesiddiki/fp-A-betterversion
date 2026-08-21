@@ -676,7 +676,7 @@ export default function BudgetDetailPage() {
                                 {isEditing ? (
                                   <input
                                     type="number"
-                                    className="w-full bg-blue-900/30 border border-blue-500 rounded px-2 py-1 text-right text-sm tabular-nums focus:outline-none"
+                                    className="w-full bg-blue-900/30 border border-blue-500 rounded px-2 py-1 text-right text-sm tabular-nums focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
                                     value={editValue}
                                     onChange={(e) => setEditValue(e.target.value)}
                                     onBlur={handleCellSave}

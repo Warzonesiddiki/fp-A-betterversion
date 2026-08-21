@@ -6,6 +6,7 @@ import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { Scale, FileText, Table as TableIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
@@ -30,7 +31,7 @@ export default function BalanceSheetPage() {
     document.title = 'FinPlan Pro — Balance Sheet';
   }, []);
 
-  const { entries } = useGLStore();
+  const { entries, importError } = useGLStore();
   const navigate = useNavigate();
   const [asOfDate, setAsOfDate] = useState(() => new Date().toISOString().slice(0, 10));
 
@@ -69,6 +70,18 @@ export default function BalanceSheetPage() {
     const data = { headers: ['Account', 'Amount'], rows: exportRows(report) };
     void ExportEngine.exportToExcel(data, { title: 'Balance_Sheet' }).catch(reportExportFailure);
   };
+
+  if (importError) {
+    return (
+      <ErrorState
+        title="Failed to load data"
+        message={importError}
+        errorCode="GL-IMPORT-ERROR"
+        onRetry={() => window.location.reload()}
+        secondaryAction={{ label: 'Go to Data Import', onClick: () => navigate('/data') }}
+      />
+    );
+  }
 
   if (entries.length === 0) {
     return (

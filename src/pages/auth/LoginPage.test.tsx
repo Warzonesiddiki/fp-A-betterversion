@@ -144,4 +144,25 @@ describe('LoginPage', () => {
     expect(screen.getByLabelText('Password')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Sign In/i })).toBeInTheDocument();
   });
+
+  it('moves focus into the forgot-password view on swap and back (K32-7)', async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(screen.getByRole('button', { name: /Forgot password/i }));
+
+    // Focus lands in the reset view's first field.
+    const forgotEmail = document.getElementById('email') as HTMLInputElement;
+    expect(forgotEmail).toBeTruthy();
+    await waitFor(() => {
+      expect(document.activeElement).toBe(forgotEmail);
+    });
+
+    // Returning to login restores focus into the login view's email field.
+    await user.click(screen.getAllByRole('button', { name: /Back to Login/i })[0]);
+    const loginEmail = document.getElementById('login-email') as HTMLInputElement;
+    await waitFor(() => {
+      expect(document.activeElement).toBe(loginEmail);
+    });
+  });
 });

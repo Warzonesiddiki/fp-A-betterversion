@@ -1,4 +1,5 @@
 import type { GLAccount, VarianceAnalysis, MonthlyVariance } from '@/types';
+import Decimal from 'decimal.js';
 
 import { glAccounts, getAccountsByType, getAccountById, getAccountByCode } from './accounts';
 import { users, departments as userDepts, entities as userEntities } from './users';
@@ -810,9 +811,9 @@ export const CHART_OF_ACCOUNTS: GLAccount[] = [
 
 function generateMonthlyValues(baseMonthly: number, growth: number, variance: number): number[] {
   return Array.from({ length: 12 }, (_, i) => {
-    const trend = baseMonthly * (1 + growth * (i / 11));
-    const noise = trend * variance * (Math.random() - 0.5);
-    return Math.round(trend + noise);
+    const trend = new Decimal(baseMonthly).times(new Decimal(1).plus(growth * (i / 11)));
+    const noise = trend.times(variance).times(Math.random() - 0.5);
+    return trend.plus(noise).toDecimalPlaces(0, Decimal.ROUND_HALF_UP).toNumber();
   });
 }
 
@@ -865,7 +866,10 @@ for (const [code, data] of Object.entries(_seedData)) {
   const budget = Array.from({ length: 12 }, (_, i) => {
     const step = i / 11;
     const growthFactor = 1 + 0.08 * step;
-    return Math.round(budgetMonthly * growthFactor);
+    return new Decimal(budgetMonthly)
+      .times(growthFactor)
+      .toDecimalPlaces(0, Decimal.ROUND_HALF_UP)
+      .toNumber();
   });
   MONTHLY_BUDGET[code] = budget;
 
@@ -931,8 +935,8 @@ export function computeVarianceAnalysis(
   const account = CHART_OF_ACCOUNTS.find((a) => a.code === accountCode);
   if (!account) return null;
 
-  let budgetTotal = 0;
-  let actualTotal = 0;
+  let budgetTotal = new Decimal(0);
+  let actualTotal = new Decimal(0);
   const monthlyBreakdown: MonthlyVariance[] = [];
 
   const monthNames = [
@@ -953,32 +957,33 @@ export function computeVarianceAnalysis(
   for (let m = 1; m <= throughMonth; m++) {
     const b = getAccountBalance(accountCode, m, 'budget');
     const a = getAccountBalance(accountCode, m, 'actual');
-    const v = a - b;
-    const pct = b !== 0 ? (v / Math.abs(b)) * 100 : 0;
-    budgetTotal += b;
-    actualTotal += a;
+    const v = new Decimal(a).minus(b);
+    const pct = b !== 0 ? v.dividedBy(Math.abs(b)).times(100) : new Decimal(0);
+    budgetTotal = budgetTotal.plus(b);
+    actualTotal = actualTotal.plus(a);
     monthlyBreakdown.push({
       month: m,
       monthName: monthNames[m - 1]!,
       budget: b,
       actual: a,
-      variance: v,
-      percent: Math.round(pct * 100) / 100,
+      variance: v.toNumber(),
+      percent: pct.toDecimalPlaces(2).toNumber(),
     });
   }
 
-  const dollarVariance = actualTotal - budgetTotal;
-  const percentVariance = budgetTotal !== 0 ? (dollarVariance / Math.abs(budgetTotal)) * 100 : 0;
+  const dollarVariance = actualTotal.minus(budgetTotal);
+  const percentVariance = budgetTotal.isZero()
+    ? new Decimal(0)
+    : dollarVariance.dividedBy(budgetTotal.abs()).times(100);
 
   const isRevenue = account.type === 'Revenue';
-  const varianceStatus: VarianceAnalysis['varianceStatus'] =
-    dollarVariance === 0
-      ? 'Neutral'
-      : dollarVariance > 0 === isRevenue
-        ? 'Favorable'
-        : 'Unfavorable';
+  const varianceStatus: VarianceAnalysis['varianceStatus'] = dollarVariance.isZero()
+    ? 'Neutral'
+    : dollarVariance.greaterThan(0) === isRevenue
+      ? 'Favorable'
+      : 'Unfavorable';
 
-  const absPct = Math.abs(percentVariance);
+  const absPct = percentVariance.abs().toNumber();
   const thresholdStatus: VarianceAnalysis['thresholdStatus'] =
     absPct > 10 ? 'Significant' : absPct > 5 ? 'Watch' : 'Within';
 
@@ -988,18 +993,18 @@ export function computeVarianceAnalysis(
     accountName: account.name,
     accountCode: account.code,
     accountType: account.type,
-    budgetAmount: budgetTotal,
-    actualAmount: actualTotal,
-    forecastAmount: budgetTotal + dollarVariance * 0.7,
-    dollarVariance,
-    percentVariance: Math.round(percentVariance * 100) / 100,
+    budgetAmount: budgetTotal.toNumber(),
+    actualAmount: actualTotal.toNumber(),
+    forecastAmount: budgetTotal.plus(dollarVariance.times(0.7)).toNumber(),
+    dollarVariance: dollarVariance.toNumber(),
+    percentVariance: percentVariance.toDecimalPlaces(2).toNumber(),
     varianceStatus,
     thresholdStatus,
     commentary: null,
     commentaryStatus: 'NotStarted',
     monthlyBreakdown,
     rateVariance: 0,
-    volumeVariance: dollarVariance,
+    volumeVariance: dollarVariance.toNumber(),
   };
 }
 
@@ -1029,18 +1034,20 @@ export function computePLStatement(throughMonth: number, type: 'budget' | 'actua
     };
   }
 
-  const revenue = result['Revenue']?.amount ?? 0;
-  const cogs = result['COGS']?.amount ?? 0;
-  const opex = result['OpEx']?.amount ?? 0;
+  const revenue = new Decimal(result['Revenue']?.amount ?? 0);
+  const cogs = new Decimal(result['COGS']?.amount ?? 0);
+  const opex = new Decimal(result['OpEx']?.amount ?? 0);
+  const grossProfit = revenue.minus(cogs);
+  const operatingIncome = grossProfit.minus(opex);
 
   return {
-    revenue,
-    cogs,
-    grossProfit: revenue - cogs,
-    opex,
-    ebitda: revenue - cogs - opex + getYTD('7800', throughMonth, type),
-    operatingIncome: revenue - cogs - opex,
-    netIncome: revenue - cogs - opex - getYTD('7900', throughMonth, type),
+    revenue: revenue.toNumber(),
+    cogs: cogs.toNumber(),
+    grossProfit: grossProfit.toNumber(),
+    opex: opex.toNumber(),
+    ebitda: operatingIncome.plus(getYTD('7800', throughMonth, type)).toNumber(),
+    operatingIncome: operatingIncome.toNumber(),
+    netIncome: operatingIncome.minus(getYTD('7900', throughMonth, type)).toNumber(),
     sections: result,
   };
 }

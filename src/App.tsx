@@ -220,8 +220,6 @@ const ValueBasedCarePage = lazy(() => import('./pages/healthcare/ValueBasedCareP
 const EnergySectorPage = lazy(() => import('./pages/energy/EnergySectorPage'));
 const ESGPage = lazy(() => import('./pages/esg/ESGPage'));
 const ManufacturingPage = lazy(() => import('./pages/manufacturing/ManufacturingPage'));
-const RetailDashboard = lazy(() => import('./pages/retail/RetailDashboard'));
-const RetailDashboardPage = lazy(() => import('./pages/retail/RetailDashboardPage'));
 const InventoryDashboard = lazy(() => import('./pages/retail/InventoryDashboard'));
 const InventoryPlanningPage = lazy(() => import('./pages/retail/InventoryPlanningPage'));
 const StorePerformancePage = lazy(() => import('./pages/retail/StorePerformancePage'));
@@ -236,7 +234,6 @@ const FinancialStatementTemplates = lazy(
 const TemplatePreviewPage = lazy(() => import('./pages/templates/TemplatePreviewPage'));
 const ChartShowcasePage = lazy(() => import('./pages/charts/ChartShowcasePage'));
 const AtlasVisualBaselinePage = lazy(() => import('./pages/visual/AtlasVisualBaselinePage'));
-const ChartOfAccountsPageCharts = lazy(() => import('./pages/charts/ChartOfAccountsPage'));
 const ActivityFeed = lazy(() => import('./pages/collaboration/ActivityFeed'));
 const SharedReports = lazy(() => import('./pages/collaboration/SharedReports'));
 const TeamWorkspace = lazy(() => import('./pages/collaboration/TeamWorkspace'));
@@ -267,16 +264,7 @@ const SectorRetailDashboardPage = lazy(() => import('./pages/sector/RetailDashbo
 const SectorDashboardPage = lazy(() => import('./pages/sector/SectorPage'));
 const TechnologyDashboardPage = lazy(() => import('./pages/sector/TechnologyDashboardPage'));
 const TelecommunicationsDashboardPage = lazy(() => import('./pages/sector/TelecomDashboardPage'));
-const SectorsEducationDashboardPage = lazy(() => import('./pages/sectors/EducationDashboardPage'));
-const SectorsGovernmentDashboardPage = lazy(
-  () => import('./pages/sectors/GovernmentDashboardPage')
-);
-const SectorsLogisticsDashboardPage = lazy(() => import('./pages/sectors/LogisticsDashboardPage'));
-const SectorsTelecomDashboardPage = lazy(() => import('./pages/sectors/TelecomDashboardPage'));
-const EducationPage = lazy(() => import('./pages/sector/EducationDashboardPage'));
-const GovernmentPage = lazy(() => import('./pages/sector/GovernmentDashboardPage'));
-const LogisticsPage = lazy(() => import('./pages/sector/LogisticsDashboardPage'));
-const TelecomPage = lazy(() => import('./pages/sector/TelecomDashboardPage'));
+// W0.5 slice 1: /sectors/* duplicates removed — /sectors/* now redirects to /sector/* (RC3).
 
 // Wave 9 Phase 3 — sector-depth specialized pages
 const FleetCostDashboardPage = lazy(() => import('./pages/logistics/FleetCostDashboardPage'));
@@ -487,10 +475,13 @@ export default function App() {
                 <Route path="/energy/sector" element={<EnergySectorPage />} />
                 <Route path="/esg/overview" element={<ESGPage />} />
                 <Route path="/manufacturing/overview" element={<ManufacturingPage />} />
-                <Route path="/retail/dashboard" element={<RetailDashboardPage />} />
+                <Route path="/retail/retail" element={<Navigate to="/retail/stores" replace />} />
+                <Route
+                  path="/retail/dashboard"
+                  element={<Navigate to="/retail/stores" replace />}
+                />
                 <Route path="/retail/inventory" element={<InventoryDashboard />} />
                 <Route path="/retail/inventory-planning" element={<InventoryPlanningPage />} />
-                <Route path="/retail/retail" element={<RetailDashboard />} />
                 <Route path="/retail/performance" element={<StorePerformancePage />} />
                 <Route path="/saas/churn-analysis" element={<ChurnAnalysisPage />} />
                 <Route path="/saas/overview" element={<SaaSPage />} />
@@ -506,7 +497,10 @@ export default function App() {
                 <Route path="/settings/integrations" element={<IntegrationSettingsPage />} />
                 <Route path="/settings/security" element={<SecuritySettingsPage />} />
                 <Route path="/templates/preview" element={<TemplatePreviewPage />} />
-                <Route path="/charts/chart-of-accounts" element={<ChartOfAccountsPageCharts />} />
+                <Route
+                  path="/charts/chart-of-accounts"
+                  element={<Navigate to="/data/chart-of-accounts" replace />}
+                />
                 <Route path="/charts/showcase" element={<ChartShowcasePage />} />
                 <Route path="/reports/designer" element={<ReportDesignerPage />} />
                 <Route path="/reports/scheduler" element={<ReportScheduler />} />
@@ -633,24 +627,40 @@ export default function App() {
                   path="/sector/telecommunications"
                   element={<TelecommunicationsDashboardPage />}
                 />
-                <Route path="/sectors/education" element={<SectorsEducationDashboardPage />} />
-                <Route path="/sectors/government" element={<SectorsGovernmentDashboardPage />} />
-                <Route path="/sectors/logistics" element={<SectorsLogisticsDashboardPage />} />
-                <Route path="/sectors/telecom" element={<SectorsTelecomDashboardPage />} />
-                <Route path="/education" element={<EducationPage />} />
+                <Route
+                  path="/sectors/education"
+                  element={<Navigate to="/sector/education" replace />}
+                />
+                <Route
+                  path="/sectors/government"
+                  element={<Navigate to="/sector/government" replace />}
+                />
+                <Route
+                  path="/sectors/logistics"
+                  element={<Navigate to="/sector/logistics" replace />}
+                />
+                <Route
+                  path="/sectors/telecom"
+                  element={<Navigate to="/sector/telecom" replace />}
+                />
+                {/* W0.5 slice 1 (RC3): alias roots redirect to canonical sector pages. */}
+                <Route path="/education" element={<Navigate to="/sector/education" replace />} />
                 <Route path="/education/enrollment" element={<EnrollmentRetentionPage />} />
                 <Route path="/education/research-grants" element={<ResearchGrantsPage />} />
-                <Route path="/government" element={<GovernmentPage />} />
+                <Route path="/government" element={<Navigate to="/sector/government" replace />} />
                 <Route path="/government/grants" element={<GrantDisbursementPage />} />
                 <Route path="/government/procurement" element={<ProcurementCyclePage />} />
-                <Route path="/logistics" element={<LogisticsPage />} />
+                <Route path="/logistics" element={<Navigate to="/sector/logistics" replace />} />
                 <Route path="/logistics/fleet-cost" element={<FleetCostDashboardPage />} />
                 <Route path="/logistics/warehouse-cost" element={<WarehouseCostDashboardPage />} />
-                <Route path="/telecom" element={<TelecomPage />} />
-                <Route path="/forecasts/compare" element={<ScenarioComparisonPage />} />
-                <Route path="/forecasts/auto-update" element={<RollingForecastPage />} />
-                <Route path="/scenarios/merge" element={<ScenarioComparisonPage />} />
-                <Route path="/scenarios/lock" element={<ScenarioComparisonPage />} />
+                <Route path="/telecom" element={<Navigate to="/sector/telecom" replace />} />
+                <Route path="/forecasts/compare" element={<Navigate to="/scenarios" replace />} />
+                <Route
+                  path="/forecasts/auto-update"
+                  element={<Navigate to="/forecasts" replace />}
+                />
+                <Route path="/scenarios/merge" element={<Navigate to="/scenarios" replace />} />
+                <Route path="/scenarios/lock" element={<Navigate to="/scenarios" replace />} />
               </Route>
             </Route>
 

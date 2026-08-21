@@ -802,6 +802,21 @@ export interface GLState {
   lastImportResult: ImportResult | null;
   importHistory: ImportHistoryEntry[];
   lastImportEntryIds: string[];
+  /** W0.8.6 (K25): per-entry server sync status; drafts are client-only until committed. */
+  entrySyncState: Record<string, 'draft' | 'pending' | 'committed' | 'failed'>;
+  /** W0.8.6: active environment context for server commits (W0.2 environments). */
+  environmentId: string;
+  setEnvironmentId: (environmentId: string) => void;
+  /**
+   * W0.8.6 spike: commit draft entries to the server via GlCommitNamespace
+   * (K25 — official numbers only through server persistence). Returns a
+   * per-batch outcome summary.
+   */
+  commitDraftsToServer: () => Promise<{
+    committed: number;
+    failed: number;
+    conflicts: { code: string; message: string }[];
+  }>;
   setEntries: (entries: GLEntry[]) => void;
   addEntries: (entries: GLEntry[]) => void;
   addEntry: (entry: GLEntry | GLEntry[]) => void;

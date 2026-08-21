@@ -67,6 +67,11 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
   const [currentPage, setCurrentPage] = useState(1);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // K32-5: ARIA grid arrow-key navigation. Roving tabindex over data cells;
+  // Arrow keys move the focused cell within visible rows.
+  const [focusedCell, setFocusedCell] = useState<{ row: number; col: number } | null>(null);
+  const cellRefs = useRef(new Map<string, HTMLTableCellElement>());
+
   // Handle sorting
   const sortedData = useMemo(() => {
     const items = [...(data ?? [])];
@@ -152,7 +157,29 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
     );
   }
 
-  // Render a single row (shared between virtual and paginated modes)
+  // Render a single row (shared between virtual and paginated modes).
+  // `absRow` is the index within filteredData for K32-5 cell navigation.
+  const renderCells = (row: Record<string, unknown>, absRow: number) =>
+    columns.map((column, colIdx) => (
+      <td
+        key={column.key}
+        ref={setCellRef(absRow, colIdx)}
+        tabIndex={cellTabIndex(absRow, colIdx)}
+        aria-selected={
+          focusedCell?.row === absRow && focusedCell?.col === colIdx ? true : undefined
+        }
+        onFocus={() => setFocusedCell({ row: absRow, col: colIdx })}
+        className={cn(
+          'px-4 py-3 text-[var(--text-primary)] whitespace-nowrap',
+          'focus-visible:outline-none focus-visible:bg-[var(--bg-hover)] dark:focus-visible:bg-gray-700/60',
+          column.align === 'right' && 'text-right',
+          column.align === 'center' && 'text-center'
+        )}
+      >
+        {column.render ? column.render(row[column.key], row) : String(row[column.key] ?? '')}
+      </td>
+    ));
+
   const renderRow = (row: Record<string, unknown>, rowIdx: number) => (
     <tr
       key={(row.id as React.Key) ?? rowIdx}
@@ -165,18 +192,7 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
       tabIndex={onRowClick ? 0 : undefined}
       aria-rowindex={rowIdx + 1}
     >
-      {columns.map((column) => (
-        <td
-          key={column.key}
-          className={cn(
-            'px-4 py-3 text-[var(--text-primary)] whitespace-nowrap',
-            column.align === 'right' && 'text-right',
-            column.align === 'center' && 'text-center'
-          )}
-        >
-          {column.render ? column.render(row[column.key], row) : String(row[column.key] ?? '')}
-        </td>
-      ))}
+      {renderCells(row, rowIdx)}
     </tr>
   );
 
@@ -211,20 +227,7 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
               data-index={virtualRow.index}
               aria-rowindex={virtualRow.index + 1}
             >
-              {columns.map((column) => (
-                <td
-                  key={column.key}
-                  className={cn(
-                    'px-4 py-3 text-[var(--text-primary)] whitespace-nowrap',
-                    column.align === 'right' && 'text-right',
-                    column.align === 'center' && 'text-center'
-                  )}
-                >
-                  {column.render
-                    ? column.render(row?.[column.key], row!)
-                    : String(row?.[column.key] ?? '')}
-                </td>
-              ))}
+              {renderCells(row!, virtualRow.index)}
             </tr>
           );
         })}
@@ -263,7 +266,7 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
           </td>
         </tr>
       ) : (
-        paginatedData.map((row, rowIdx) => renderRow(row, rowIdx))
+        paginatedData.map((row, rowIdx) => renderRow(row, (currentPage - 1) * pageSize + rowIdx))
       )}
     </tbody>
   );
@@ -271,6 +274,46 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
   const getAriaSort = (columnKey: string): 'ascending' | 'descending' | undefined => {
     if (sortConfig?.key !== columnKey) return undefined;
     return sortConfig.direction === 'asc' ? 'ascending' : 'descending';
+  };
+
+  // K32-5: arrow-key cell navigation per the ARIA grid pattern.
+  const NAV_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+  const handleGridKeyDown = (e: React.KeyboardEvent) => {
+    if (!NAV_KEYS.includes(e.key)) return;
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'TH' || target.tagName === 'INPUT') return;
+    if (filteredData.length === 0 || columns.length === 0) return;
+    e.preventDefault();
+
+    const start = focusedCell ?? { row: 0, col: 0 };
+    let { row, col } = start;
+    if (e.key === 'ArrowDown') row += 1;
+    else if (e.key === 'ArrowUp') row -= 1;
+    else if (e.key === 'ArrowRight') col += 1;
+    else col -= 1;
+
+    row = Math.min(Math.max(row, 0), filteredData.length - 1);
+    col = Math.min(Math.max(col, 0), columns.length - 1);
+    setFocusedCell({ row, col });
+
+    // In virtual mode ensure the target row is rendered before focusing.
+    if (useVirtual) virtualizer.scrollToIndex(row, { align: 'auto' });
+    requestAnimationFrame(() => {
+      cellRefs.current.get(`${row}:${col}`)?.focus();
+    });
+  };
+
+  // Roving tabindex: focused cell is the single tab stop among data cells;
+  // when nothing is focused yet, the first visible cell acts as the tab stop.
+  const cellTabIndex = (absRow: number, colIdx: number): number => {
+    if (focusedCell) return focusedCell.row === absRow && focusedCell.col === colIdx ? 0 : -1;
+    return absRow === 0 && colIdx === 0 ? 0 : -1;
+  };
+
+  const setCellRef = (absRow: number, colIdx: number) => (el: HTMLTableCellElement | null) => {
+    const key = `${absRow}:${colIdx}`;
+    if (el) cellRefs.current.set(key, el);
+    else cellRefs.current.delete(key);
   };
 
   return (
@@ -288,6 +331,7 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
           aria-rowcount={filteredData.length}
           aria-colcount={columns.length}
           aria-label={ariaLabel || caption}
+          onKeyDown={handleGridKeyDown}
         >
           {caption && (
             <caption

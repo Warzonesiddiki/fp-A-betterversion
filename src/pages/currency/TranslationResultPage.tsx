@@ -15,6 +15,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Repeat, ArrowRight, TrendingUp, TrendingDown } from 'lucide-react';
 import { formatNumber } from '@/utils/financialFormatting';
 import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
+import { buildTranslationEntries } from './translationResultData';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 const RATES: Record<string, Record<string, number>> = {
@@ -75,14 +76,6 @@ function formatCurrency(n: number, currency: string): string {
   }).format(n);
 }
 
-interface TranslationEntry {
-  accountCode: string;
-  accountName: string;
-  originalAmount: number;
-  translatedAmount: number;
-  gainLoss: number;
-}
-
 export default function TranslationResultPage() {
   const { entries } = useGLStore();
   const navigate = useNavigate();
@@ -94,28 +87,7 @@ export default function TranslationResultPage() {
     return RATES[sourceCurrency]?.[targetCurrency] ?? 1;
   }, [sourceCurrency, targetCurrency]);
 
-  const translationData = useMemo((): TranslationEntry[] => {
-    const accountMap = new Map<string, { name: string; total: number }>();
-    for (const entry of entries) {
-      const code = entry.accountCode || 'Unknown';
-      const existing = accountMap.get(code);
-      const amount = (entry.debit || 0) - (entry.credit || 0);
-      if (existing) {
-        existing.total += amount;
-      } else {
-        accountMap.set(code, { name: entry.accountName || code, total: amount });
-      }
-    }
-    return Array.from(accountMap.entries())
-      .map(([code, { name, total }]) => ({
-        accountCode: code,
-        accountName: name,
-        originalAmount: total,
-        translatedAmount: total * rate,
-        gainLoss: total * rate - total,
-      }))
-      .sort((a, b) => a.accountCode.localeCompare(b.accountCode));
-  }, [entries, rate]);
+  const translationData = useMemo(() => buildTranslationEntries(entries, rate), [entries, rate]);
 
   const totals = useMemo(() => {
     const original = roundTo(sumMoney(translationData.map((e) => e.originalAmount)), 2);

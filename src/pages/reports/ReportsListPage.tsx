@@ -14,6 +14,8 @@ import {
   Scale,
 } from 'lucide-react';
 import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { activateOnKey } from '@/utils/a11yActivate';
 
 const reports = [
   {
@@ -61,7 +63,12 @@ const reports = [
 ];
 
 export default function ReportsListPage() {
-  const { entries } = useGLStore();
+  const { entries, importError } = useGLStore();
+  // K30 loading-state review: no async skeleton here by design — `entries`
+  // is a synchronous read from the persisted Zustand GL store and the report
+  // catalog above is static, so there is no pending state to represent.
+  // The empty-state branch below covers "no data yet"; a skeleton would be
+  // a fake loading indicator.
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [search, setSearch] = useState('');
@@ -90,6 +97,18 @@ export default function ReportsListPage() {
     return cats;
   }, [filtered]);
 
+  if (importError) {
+    return (
+      <ErrorState
+        title="Failed to load data"
+        message={importError}
+        errorCode="GL-IMPORT-ERROR"
+        onRetry={() => window.location.reload()}
+        secondaryAction={{ label: 'Go to Data Import', onClick: () => navigate('/data') }}
+      />
+    );
+  }
+
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
@@ -117,7 +136,7 @@ export default function ReportsListPage() {
               placeholder="Search reports..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-sm w-60"
+              className="bg-slate-800 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-sm w-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
               aria-label="Search reports"
             />
           </div>
@@ -135,8 +154,12 @@ export default function ReportsListPage() {
             {items.map((r) => (
               <Card
                 key={r.name}
-                className="cursor-pointer hover:border-blue-500/50 transition-all"
+                role="button"
+                tabIndex={0}
+                aria-label={`Open ${r.name} report`}
+                className="cursor-pointer hover:border-blue-500/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2"
                 onClick={() => navigate(r.path)}
+                onKeyDown={activateOnKey<HTMLDivElement>(() => navigate(r.path))}
               >
                 <CardContent className="p-4 flex items-start gap-3">
                   <div className="p-2 bg-slate-800 rounded-lg shrink-0">

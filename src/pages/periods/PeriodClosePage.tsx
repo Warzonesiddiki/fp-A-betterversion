@@ -194,6 +194,29 @@ export default function PeriodClosePage() {
   const canHardClose = readiness ? isTransitionAllowed(readiness, 'hard-close') : false;
   const canLock = readiness ? isTransitionAllowed(readiness, 'lock') : false;
 
+  // K32-8: the blocking reason for the selected entry's primary action,
+  // exposed via aria-describedby + a polite live region instead of a
+  // title-only tooltip (tooltips are invisible to keyboard and many SRs).
+  const blockReason: string | null = (() => {
+    if (busy !== null) return `Waiting for "${busy}" to finish.`;
+    if (!entry) return null;
+    if (entry.state === 'open' && canClose && !canSoftClose)
+      return 'Blocked: GL data or trial balance checks fail.';
+    if (entry.state === 'soft-close' && canClose && !canHardClose)
+      return 'Blocked: see pre-close validation.';
+    if (entry.state === 'hard-close' && canClose && !canLock)
+      return 'Blocked: see pre-close validation.';
+    if (
+      (entry.state === 'soft-close' || entry.state === 'hard-close') &&
+      canReopen &&
+      reason.trim().length === 0
+    )
+      return 'A reason is required to reopen.';
+    if (entry.state === 'locked' && isAdmin && reason.trim().length === 0)
+      return 'A reason is required to force-reopen.';
+    return null;
+  })();
+
   // Live region: announce status changes so screen-reader users are told when
   // a period's state changes (a11y Q5.4 pattern).
   useEffect(() => {
@@ -475,8 +498,9 @@ export default function PeriodClosePage() {
                         size="sm"
                         onClick={() => void runTransition('soft-close')}
                         disabled={busy !== null || !canSoftClose}
-                        title={
-                          canSoftClose ? undefined : 'Blocked: GL data or trial balance checks fail'
+                        aria-disabled={busy !== null || !canSoftClose}
+                        aria-describedby={
+                          busy !== null || !canSoftClose ? 'period-close-block-reason' : undefined
                         }
                       >
                         {busy === 'soft-close' ? 'Closing…' : 'Start soft close'}
@@ -488,7 +512,10 @@ export default function PeriodClosePage() {
                         variant="secondary"
                         onClick={() => void runTransition('hard-close')}
                         disabled={busy !== null || !canHardClose}
-                        title={canHardClose ? undefined : 'Blocked: see pre-close validation'}
+                        aria-disabled={busy !== null || !canHardClose}
+                        aria-describedby={
+                          busy !== null || !canHardClose ? 'period-close-block-reason' : undefined
+                        }
                       >
                         {busy === 'hard-close' ? 'Closing…' : 'Hard close'}
                       </Button>
@@ -499,7 +526,10 @@ export default function PeriodClosePage() {
                         variant="secondary"
                         onClick={() => void runTransition('lock')}
                         disabled={busy !== null || !canLock}
-                        title={canLock ? undefined : 'Blocked: see pre-close validation'}
+                        aria-disabled={busy !== null || !canLock}
+                        aria-describedby={
+                          busy !== null || !canLock ? 'period-close-block-reason' : undefined
+                        }
                       >
                         <Lock className="w-3.5 h-3.5 mr-1.5" aria-hidden="true" />
                         {busy === 'lock' ? 'Locking…' : 'Lock period'}
@@ -512,9 +542,10 @@ export default function PeriodClosePage() {
                           variant="outline"
                           onClick={() => void runTransition('reopen')}
                           disabled={busy !== null || reason.trim().length === 0}
-                          title={
-                            reason.trim().length === 0
-                              ? 'A reason is required to reopen'
+                          aria-disabled={busy !== null || reason.trim().length === 0}
+                          aria-describedby={
+                            busy !== null || reason.trim().length === 0
+                              ? 'period-close-block-reason'
                               : undefined
                           }
                         >
@@ -528,9 +559,10 @@ export default function PeriodClosePage() {
                         variant="destructive"
                         onClick={() => void runTransition('force-reopen')}
                         disabled={busy !== null || reason.trim().length === 0}
-                        title={
-                          reason.trim().length === 0
-                            ? 'A reason is required to force-reopen'
+                        aria-disabled={busy !== null || reason.trim().length === 0}
+                        aria-describedby={
+                          busy !== null || reason.trim().length === 0
+                            ? 'period-close-block-reason'
                             : undefined
                         }
                       >
@@ -539,6 +571,16 @@ export default function PeriodClosePage() {
                       </Button>
                     )}
                   </div>
+                  {/* K32-8: blocking reason exposed as visible, programmatically
+                      associated text (polite live region) instead of title-only tooltip */}
+                  <p
+                    id="period-close-block-reason"
+                    aria-live="polite"
+                    data-testid="period-close-block-reason"
+                    className="text-xs text-[var(--text-muted)] min-h-4"
+                  >
+                    {blockReason ?? ''}
+                  </p>
                   {actionError && (
                     <p
                       role="alert"

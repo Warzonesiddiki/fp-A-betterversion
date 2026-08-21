@@ -23,6 +23,9 @@ import {
   toDecimal,
 } from '../utils/money';
 import { UndoRedoEngine } from '@/engines/UndoRedoEngine';
+import { FpaClient } from '@/sdk/FpaClient';
+import { GlCommitNamespace } from '@/sdk/gl/GlCommitNamespace';
+import type { GlJournalBatch, GlCommitResult } from '@/sdk/gl/GlCommitNamespace';
 import { useCubeStore } from './cubeStore';
 import { useUIStore } from './uiStore';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
@@ -63,6 +66,70 @@ interface MonthGroupAccum {
 }
 
 const undoEngine = new UndoRedoEngine<GLSnapshot>(100);
+
+// ── W0.8.6: server commit channel (K25) ─────────────────────────────────────
+// Injectable for tests; defaults to a client over the default base URL.
+// The namespace never mutates the store — outcomes are applied explicitly.
+let glCommitClient: GlCommitNamespace = new GlCommitNamespace(
+  new FpaClient({ auth: { type: 'bearer', token: '' } })
+);
+
+/** Test/infra hook: replace the server-commit transport. */
+export function setGlCommitClient(client: GlCommitNamespace): void {
+  glCommitClient = client;
+}
+
+function toJournalBatch(entries: GLEntry[], environmentId: string): GlJournalBatch {
+  const journalId =
+    entries.find((e) => e.journalId)?.journalId ??
+    `batch-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+  return {
+    journalId,
+    environmentId,
+    lines: entries.map((e) => ({
+      accountId: e.accountId || e.accountCode,
+      entityId: e.entityId,
+      postDate: e.postDate || e.date,
+      debit: e.debit,
+      credit: e.credit,
+      description: e.description,
+      reference: e.reference,
+    })),
+  };
+}
+
+async function applyCommitResult(
+  result: GlCommitResult<readonly { id: string }[]> | GlCommitResult<void>,
+  draftIds: readonly string[],
+  set: (fn: (state: GLState) => void) => void
+): Promise<{ committed: boolean; conflictCode?: string; message?: string }> {
+  if (result.status === 'committed') {
+    set((state) => {
+      for (const id of draftIds) {
+        state.entrySyncState[id] = 'committed';
+      }
+    });
+    return { committed: true };
+  }
+  if (result.status === 'conflict') {
+    set((state) => {
+      for (const id of draftIds) {
+        state.entrySyncState[id] = 'failed';
+      }
+    });
+    return {
+      committed: false,
+      conflictCode: result.conflict.code,
+      message: result.conflict.message,
+    };
+  }
+  set((state) => {
+    for (const id of draftIds) {
+      state.entrySyncState[id] = 'failed';
+    }
+  });
+  return { committed: false, message: result.status === 'error' ? result.message : undefined };
+}
 
 function toFiniteNumber(value: unknown, fallback = 0): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
@@ -144,6 +211,80 @@ export const useGLStore = create<GLState>()(
         lastImportResult: null,
         importHistory: [],
         lastImportEntryIds: [],
+        entrySyncState: {},
+        environmentId: 'dev',
+
+        // --- W0.8.6 server-authoritative commit path (K25) ---
+        setEnvironmentId: enforce(Permissions.UI_UPDATE, 'setEnvironmentId', (environmentId) =>
+          set({ environmentId })
+        ),
+
+        commitDraftsToServer: enforce(
+          Permissions.IMPORT_CREATE,
+          'commitDraftsToServer',
+          async () => {
+            const { entries, entrySyncState, environmentId, validateEntries } = get();
+            const drafts = entries.filter((e) => (entrySyncState[e.id] ?? 'draft') === 'draft');
+            const conflicts: { code: string; message: string }[] = [];
+            let committed = 0;
+            let failed = 0;
+
+            if (drafts.length === 0) return { committed, failed, conflicts };
+
+            set((state) => {
+              for (const e of drafts) state.entrySyncState[e.id] = 'pending';
+            });
+
+            // Group drafts by journal so each balanced journal commits atomically.
+            const groups = new Map<string, GLEntry[]>();
+            for (const entry of drafts) {
+              const key = entry.journalId ?? '__import_batch__';
+              const group = groups.get(key);
+              if (group) group.push(entry);
+              else groups.set(key, [entry]);
+            }
+
+            for (const group of groups.values()) {
+              const validation = validateEntries(group);
+              if (!validation.isValid) {
+                failed += group.length;
+                await applyCommitResult(
+                  { status: 'error', message: validation.errors[0] ?? 'validation failed' },
+                  group.map((e) => e.id),
+                  set
+                );
+                conflicts.push({
+                  code: 'FP-0002',
+                  message: validation.errors.slice(0, 3).join('; '),
+                });
+                continue;
+              }
+
+              const result = await glCommitClient.createJournalBatch({
+                batch: toJournalBatch(group, environmentId),
+                idempotencyKey: `gl-${environmentId}-${group[0]?.journalId ?? Date.now()}`,
+              });
+              const outcome = await applyCommitResult(
+                result,
+                group.map((e) => e.id),
+                set
+              );
+              if (outcome.committed) {
+                committed += group.length;
+              } else {
+                failed += group.length;
+                if (outcome.conflictCode) {
+                  conflicts.push({ code: outcome.conflictCode, message: outcome.message ?? '' });
+                }
+              }
+            }
+
+            if (failed > 0) {
+              set({ importError: `${failed} draft entr(ies) failed server commit` });
+            }
+            return { committed, failed, conflicts };
+          }
+        ),
 
         // --- Undo/Redo Actions ---
         undo: enforce(Permissions.UI_UPDATE, 'undo', () => {
@@ -437,6 +578,7 @@ export const useGLStore = create<GLState>()(
             accountAnalysis: null,
             dateFilter: null,
             accountFilter: [],
+            entrySyncState: {},
           });
           useUIStore.getState().addToast({
             type: 'info',
@@ -491,6 +633,7 @@ export const useGLStore = create<GLState>()(
 
             const ids = new Set(state.lastImportEntryIds);
             state.entries = state.entries.filter((e) => !ids.has(e.id));
+            for (const id of ids) delete state.entrySyncState[id];
             state.lastImportEntryIds = [];
             state.lastImportResult = null;
             state.importStatus = 'idle';
@@ -766,6 +909,8 @@ export const useGLStore = create<GLState>()(
           entries: state.entries,
           importHistory: state.importHistory,
           columnMapping: state.columnMapping,
+          entrySyncState: state.entrySyncState,
+          environmentId: state.environmentId,
         }),
       }
     )

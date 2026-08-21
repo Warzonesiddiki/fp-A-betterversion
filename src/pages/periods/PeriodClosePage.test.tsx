@@ -222,4 +222,51 @@ describe('PeriodClosePage', () => {
       '/audit/sox'
     );
   });
+
+  // K32-8: blocking reason exposed via aria-disabled + associated text/live
+  // region instead of a title-only tooltip.
+  it('K32-8: blocked soft-close exposes reason via aria-describedby and visible live region', async () => {
+    useGLStore.setState({ entries: unbalancedAugustEntries() });
+    render(<PeriodClosePage />);
+
+    const softClose = await screen.findByRole('button', { name: /Start soft close/i });
+    expect(softClose).toBeDisabled();
+    expect(softClose).toHaveAttribute('aria-disabled', 'true');
+    expect(softClose).toHaveAttribute('aria-describedby', 'period-close-block-reason');
+    expect(softClose).not.toHaveAttribute('title');
+
+    const liveRegion = screen.getByTestId('period-close-block-reason');
+    expect(liveRegion).toHaveAttribute('aria-live', 'polite');
+    await waitFor(() => {
+      expect(liveRegion).toHaveTextContent(/Blocked: GL data or trial balance checks fail/i);
+    });
+  });
+
+  it('K32-8: reopen button blocked on empty reason shows the reason in the live region', async () => {
+    useGLStore.setState({ entries: balancedAugustEntries() });
+    render(<PeriodClosePage />);
+    fireEvent.click(await screen.findByRole('button', { name: /Start soft close/i }));
+
+    const reopen = await screen.findByRole('button', { name: /Reopen period/i });
+    expect(reopen).toBeDisabled();
+    expect(reopen).toHaveAttribute('aria-describedby', 'period-close-block-reason');
+    const liveRegion = screen.getByTestId('period-close-block-reason');
+    // After soft-close, hard-close gating may take precedence in blockReason;
+    // what matters is that SOME blocking reason is exposed programmatically.
+    await waitFor(() => {
+      expect(liveRegion.textContent!.length).toBeGreaterThan(0);
+    });
+    expect(reopen).toHaveAttribute('aria-disabled', 'true');
+
+    // Filling the reason clears the block.
+    fireEvent.change(screen.getByLabelText(/Reason for close or reopen/i), {
+      target: { value: 'Audit correction' },
+    });
+    await waitFor(() => {
+      expect(reopen).toBeEnabled();
+    });
+    // The hard-close action may still legitimately be blocked — only the
+    // reopen button's own gating (empty reason) was cleared.
+    expect(reopen).not.toHaveAttribute('aria-describedby', 'period-close-block-reason');
+  });
 });

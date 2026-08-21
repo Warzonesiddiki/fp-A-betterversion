@@ -3,6 +3,7 @@ import { useUIStore } from '@/store/uiStore';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
 import { FinancialContextBar, type FinancialEntityOption } from './FinancialContextBar';
+import { PillarNav } from './PillarNav';
 import { DurabilityBanner } from './DurabilityBanner';
 import { HelpPanel } from './HelpPanel';
 import { ToastContainer } from '@/components/ui/ToastContainer';
@@ -146,6 +147,16 @@ export default function AppLayout() {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <Navbar />
+        {/* W0.5 slice 3: five-pillar top navigation (BLUEPRINT §9.3). The
+            legacy sidebar stays: it feeds NAV_SECTIONS into the ⌘K palette,
+            serves as the mobile nav surface, and still reaches routes that
+            have no pillar-hub view yet. */}
+        <div
+          className="flex items-center justify-center border-b px-3 py-1"
+          style={{ borderColor: 'var(--border-subtle)' }}
+        >
+          <PillarNav onOpenPalette={toggleCommandPalette} />
+        </div>
         <FinancialContextBar entities={DRAFT_ENTITY_OPTIONS} />
         <DurabilityBanner />
         <main

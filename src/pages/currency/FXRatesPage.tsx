@@ -1,9 +1,3 @@
-// @money-ast-allow Reason: this file is the FX Rates page. The flagged
-// `===` are string identity checks on ISO-4217 currency codes (USD, EUR,
-// GBP, …) used to validate that the from/to currencies in an exchange
-// rate are distinct and to match a rate to its source currency. These
-// are not money-amount comparisons.
-
 import { useCallback, useState } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';

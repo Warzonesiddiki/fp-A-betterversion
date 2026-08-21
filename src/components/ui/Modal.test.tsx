@@ -113,6 +113,23 @@ describe('Modal', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  it('backdrop is not a keyboard tab stop (K32-3: pointer-only click-to-dismiss)', () => {
+    const onClose = vi.fn();
+    render(
+      <Modal isOpen={true} onClose={onClose} title="Backdrop Test">
+        <button>Inside</button>
+      </Modal>
+    );
+    const backdrop = document.querySelector('.fixed.inset-0.bg-black');
+    expect(backdrop).not.toBeNull();
+    // No role=button / tabIndex on the backdrop — it must not appear in tab order.
+    expect(backdrop?.getAttribute('role')).toBeNull();
+    expect(backdrop?.getAttribute('tabindex')).toBeNull();
+    // Pointer users can still dismiss by clicking it.
+    fireEvent.click(backdrop!);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it('renders title with proper aria-labelledby (WCAG 4.1.2 Name/Role/Value)', () => {
     render(
       <Modal isOpen={true} onClose={vi.fn()} title="Accessible Title">

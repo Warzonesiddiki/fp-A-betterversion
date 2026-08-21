@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -27,10 +27,26 @@ export default function LoginPage() {
   const [showForgotPw, setShowForgotPw] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotSent, setForgotSent] = useState(false);
+  // K32-7: when the login <-> forgot-password views swap, focus must land in
+  // the new view's first field (or its primary button on the "sent" state) so
+  // keyboard/SR users are not left focused on a removed element.
+  const forgotEmailInputRef = useRef<HTMLInputElement>(null);
+  const forgotBackButtonRef = useRef<HTMLButtonElement>(null);
+  const loginEmailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Login';
   }, []);
+
+  // K32-7: focus management on login <-> forgot-password view swaps.
+  useEffect(() => {
+    if (!showForgotPw) {
+      if (!isAuthenticated) loginEmailInputRef.current?.focus();
+      return;
+    }
+    if (forgotSent) forgotBackButtonRef.current?.focus();
+    else forgotEmailInputRef.current?.focus();
+  }, [showForgotPw, forgotSent, isAuthenticated]);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -113,6 +129,7 @@ export default function LoginPage() {
                 <Button
                   variant="outline"
                   className="w-full"
+                  ref={forgotBackButtonRef}
                   onClick={() => {
                     setShowForgotPw(false);
                     setForgotSent(false);
@@ -129,6 +146,7 @@ export default function LoginPage() {
                   </label>
                   <Input
                     id="email"
+                    ref={forgotEmailInputRef}
                     type="email"
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
@@ -181,6 +199,7 @@ export default function LoginPage() {
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--text-muted)]" />
                 <Input
                   id="login-email"
+                  ref={loginEmailInputRef}
                   type="email"
                   value={email}
                   onChange={(e) => {

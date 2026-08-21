@@ -2,13 +2,17 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import React from 'react';
 
+const glState = vi.hoisted(() => ({
+  entries: [] as unknown[],
+}));
+
 vi.mock('@/store/glStore', () => ({
   useGLStore: vi.fn(() => ({
-    entries: [],
+    entries: glState.entries,
     accounts: [],
     trialBalance: [],
     accountAnalysis: null,
@@ -21,26 +25,6 @@ vi.mock('@/store/glStore', () => ({
     clearEntries: vi.fn(),
   })),
 }));
-
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
-  return {
-    FileText: makeIcon(),
-    BarChart3: makeIcon(),
-    DollarSign: makeIcon(),
-    TrendingUp: makeIcon(),
-    Layers: makeIcon(),
-    Search: makeIcon(),
-    Download: makeIcon(),
-    Scale: makeIcon(),
-  };
-});
 
 import ReportsListPage from '@/pages/reports/ReportsListPage';
 
@@ -71,5 +55,19 @@ describe('ReportsListPage', () => {
   it('displays the empty state when no GL entries exist', () => {
     renderPage(ReportsListPage, '/reports', '/reports');
     expect(screen.getByText(/No Data Available/i)).toBeInTheDocument();
+  });
+
+  it('exposes report cards as keyboard-operable buttons (K32-1)', () => {
+    glState.entries = [{ id: 'e1' }];
+    const { container } = renderPage(ReportsListPage, '/reports', '/reports');
+    const cards = container.querySelectorAll('[role="button"][tabindex="0"]');
+    expect(cards.length).toBeGreaterThan(0);
+    for (const card of cards) {
+      expect(card.getAttribute('aria-label')).toBeTruthy();
+    }
+    // Enter on a card navigates to the report route.
+    const target = cards[0] as HTMLElement;
+    fireEvent.keyDown(target, { key: 'Enter' });
+    expect(screen.getByText('Redirected')).toBeInTheDocument();
   });
 });

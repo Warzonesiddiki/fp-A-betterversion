@@ -6,6 +6,7 @@ import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { BarChart3, FileText, Table as TableIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
@@ -86,7 +87,7 @@ export default function ProfitLossPage() {
     document.title = 'FinPlan Pro — Profit Loss';
   }, []);
 
-  const { entries } = useGLStore();
+  const { entries, importError } = useGLStore();
   const navigate = useNavigate();
   const [period, setPeriod] = useState(() => {
     const now = new Date();
@@ -130,6 +131,18 @@ export default function ProfitLossPage() {
     };
     void ExportEngine.exportToExcel(data, { title: 'Profit_Loss_Statement' }).catch(reportExportFailure);
   };
+
+  if (importError) {
+    return (
+      <ErrorState
+        title="Failed to load data"
+        message={importError}
+        errorCode="GL-IMPORT-ERROR"
+        onRetry={() => window.location.reload()}
+        secondaryAction={{ label: 'Go to Data Import', onClick: () => navigate('/data') }}
+      />
+    );
+  }
 
   if (entries.length === 0) {
     return (

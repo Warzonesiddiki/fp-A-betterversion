@@ -7,6 +7,7 @@ import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { ThreeStatementEngine } from '@/engines/ThreeStatementEngine';
 import { ExportEngine } from '@/engines/ExportEngine';
@@ -29,7 +30,7 @@ function fmt(n: number | { toNumber(): number }): string {
 
 export default function ThreeStatementDashboardPage() {
   const navigate = useNavigate();
-  const { entries } = useGLStore();
+  const { entries, importError } = useGLStore();
   const [period, setPeriod] = useState(() => {
     const now = new Date();
     return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
@@ -90,6 +91,18 @@ export default function ThreeStatementDashboardPage() {
       subtitle: `Period: ${period}`,
     }).catch(reportExportFailure);
   };
+
+  if (importError) {
+    return (
+      <ErrorState
+        title="Failed to load data"
+        message={importError}
+        errorCode="GL-IMPORT-ERROR"
+        onRetry={() => window.location.reload()}
+        secondaryAction={{ label: 'Go to Data Import', onClick: () => navigate('/data') }}
+      />
+    );
+  }
 
   if (entries.length === 0) {
     return (

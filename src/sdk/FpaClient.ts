@@ -53,6 +53,7 @@ import {
   SDK_VERSION,
 } from './types';
 import { RealtimeChannel } from './realtime/RealtimeChannel';
+import { GlCommitNamespace } from './gl/GlCommitNamespace';
 
 // ─── Auth translation ────────────────────────────────────────────────────────
 
@@ -389,6 +390,7 @@ export class FpaClient {
   public readonly qbo: QboNamespace;
   public readonly xero: XeroNamespace;
   public readonly custom: CustomNamespace;
+  public readonly gl: GlCommitNamespace;
   public readonly realtime: RealtimeFactory;
 
   private readonly rest: RestApiClient;
@@ -419,6 +421,7 @@ export class FpaClient {
     this.qbo = new QboNamespace(this);
     this.xero = new XeroNamespace(this);
     this.custom = new CustomNamespace(this);
+    this.gl = new GlCommitNamespace(this);
     this.realtime = new RealtimeFactory(this);
   }
 

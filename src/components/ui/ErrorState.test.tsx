@@ -58,9 +58,32 @@ describe('ErrorState', () => {
     expect(screen.getByRole('alert')).toBeInTheDocument();
   });
 
-  it('has aria-live="polite"', () => {
+  it('has aria-live="assertive"', () => {
     render(<ErrorState message="Error occurred" />);
-    expect(screen.getByRole('alert')).toHaveAttribute('aria-live', 'polite');
+    expect(screen.getByRole('alert')).toHaveAttribute('aria-live', 'assertive');
+  });
+
+  it('renders error code when provided', () => {
+    render(<ErrorState message="Failed" errorCode="GL-IMPORT-500" />);
+    expect(screen.getByTestId('error-code')).toHaveTextContent('GL-IMPORT-500');
+  });
+
+  it('does not render error code when omitted', () => {
+    render(<ErrorState message="Failed" />);
+    expect(screen.queryByTestId('error-code')).not.toBeInTheDocument();
+  });
+
+  it('renders secondary action and calls its handler', () => {
+    const onSecondary = vi.fn();
+    render(
+      <ErrorState
+        message="Failed"
+        onRetry={() => {}}
+        secondaryAction={{ label: 'Go back', onClick: onSecondary }}
+      />
+    );
+    fireEvent.click(screen.getByText('Go back'));
+    expect(onSecondary).toHaveBeenCalledOnce();
   });
 
   // --- Custom className ---

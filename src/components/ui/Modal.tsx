@@ -68,15 +68,14 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
     return (
       <div className="fixed inset-0 z-50 overflow-y-auto">
         <div className="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+          {/* Click-to-dismiss backdrop. Pointer-only by design: it must NOT be
+              a keyboard tab stop (it sits inside the dialog's focus trap and
+              would otherwise trap Tab on an invisible control). Keyboard users
+              dismiss with Escape or the visible Close button. */}
           <div
             className="fixed inset-0 bg-black bg-opacity-50 transition-opacity motion-reduce:transition-none"
             aria-hidden="true"
             onClick={onClose}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') onClose();
-            }}
-            role="button"
-            tabIndex={0}
           />
 
           <span className="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">
