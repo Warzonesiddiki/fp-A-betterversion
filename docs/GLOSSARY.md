@@ -23,14 +23,14 @@
 
 **6 fixes applied (Path A self-apply, ~15 min):**
 
-| #   | Entry                                 | Fix type                      | Old                                                 | New                                                                                                                                                 |
-| --- | ------------------------------------- | ----------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Honest Labeling L271                  | NEEDS-FIX (file missing)      | `docs/drafts/mnemosyne/jsdoc-v0.4-masterStorage.md` | `docs/drafts/athena/BOARD_SCAN_D001_D009_ERRATUM_2026-06-13.md` (the erratum that codified the 9th Honest Labeling moment + 6th D-009 codification) |
-| 2   | pre-write L420                        | NEEDS-FIX (file missing)      | `docs/drafts/mnemosyne/ONBOARDING-v0.1.md`          | `docs/ONBOARDING.md` (T-MN-003 v0.1, 295L)                                                                                                          |
-| 3   | founder-led motion L213-214           | MOSTLY OK (line drift)        | `PERSONAS.md:317`                                   | `PERSONAS.md:321` (the actual "Founder-Finance Fiona" line)                                                                                         |
-| 4   | PLG motion L404                       | MOSTLY OK (weak anchor)       | `CHANNEL_MOTIONS_v0.md:435` (Referral Tier 1 bonus) | `CHANNEL_MOTIONS_v0.md:439` (actual "ICP-3 as the PLG secondary" footer note)                                                                       |
-| 5   | PLG motion L409                       | MOSTLY OK (TENTATIVE missing) | `(empirical, cross-Muse triangulated)`              | `(TENTATIVE per D-007 — 1 of 3 anchors is weak)`                                                                                                    |
-| 6   | All TASKBOARD.md citations (8 places) | PATH DRIFT (shorthand)        | `docs/TASKBOARD.md`                                 | `docs/drafts/TASKBOARD.md` (actual file location)                                                                                                   |
+| #   | Entry                                 | Fix type                      | Old                                                         | New                                                                                                                                                         |
+| --- | ------------------------------------- | ----------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Honest Labeling L271                  | NEEDS-FIX (file missing)      | docs/drafts/mnemosyne/jsdoc-v0.4-masterStorage.md [removed] | docs/drafts/athena/BOARD_SCAN_D001_D009_ERRATUM_2026-06-13.md [removed] (the erratum that codified the 9th Honest Labeling moment + 6th D-009 codification) |
+| 2   | pre-write L420                        | NEEDS-FIX (file missing)      | docs/drafts/mnemosyne/ONBOARDING-v0.1.md [removed]          | `docs/ONBOARDING.md` (T-MN-003 v0.1, 295L)                                                                                                                  |
+| 3   | founder-led motion L213-214           | MOSTLY OK (line drift)        | PERSONAS.md:317 [removed]                                   | PERSONAS.md:321 [removed] (the actual "Founder-Finance Fiona" line)                                                                                         |
+| 4   | PLG motion L404                       | MOSTLY OK (weak anchor)       | CHANNEL_MOTIONS_v0.md:435 [removed] (Referral Tier 1 bonus) | CHANNEL_MOTIONS_v0.md:439 [removed] (actual "ICP-3 as the PLG secondary" footer note)                                                                       |
+| 5   | PLG motion L409                       | MOSTLY OK (TENTATIVE missing) | `(empirical, cross-Muse triangulated)`                      | `(TENTATIVE per D-007 — 1 of 3 anchors is weak)`                                                                                                            |
+| 6   | All TASKBOARD.md citations (8 places) | PATH DRIFT (shorthand)        | docs/TASKBOARD.md [removed]                                 | docs/drafts/TASKBOARD.md [removed] (actual file location)                                                                                                   |
 
 **6th codification 1st real use:** Athena applied "D-009 violation can appear in your own audit claims" via Glob-verify on all 14 new entries. Caught 2 file-missing + 1 line-drift + 1 weak-anchor + 8 path-drift issues. All recoverable with 1-line edits.
 
@@ -56,9 +56,9 @@
 
 **In our product (Three-Witnesses):**
 
-- `docs/drafts/iris/PERSONAS.md:300` — Cross-persona ACV row: Carla $30-60K, Chris $600-3,600/yr ($50-300/mo), Vera $50-300K
-- `docs/drafts/iris/PERSONAS.md:290` — "defend a $150-300K ACV for ICP-2"
-- `docs/drafts/hermes/PRICING.md:23, 55` — Enterprise "starting at $250K/yr ACV floor"; Business tier "ACV $250K-$1.5M/yr"
+- docs/drafts/iris/PERSONAS.md:300 [removed] — Cross-persona ACV row: Carla $30-60K, Chris $600-3,600/yr ($50-300/mo), Vera $50-300K
+- docs/drafts/iris/PERSONAS.md:290 [removed] — "defend a $150-300K ACV for ICP-2"
+- docs/drafts/hermes/PRICING.md:23, 55 [removed] — Enterprise "starting at $250K/yr ACV floor"; Business tier "ACV $250K-$1.5M/yr"
 
 **Related terms:** ARR, ARPU, ICP-numbering, Vera, Carla, Chris, Payback period
 **Honest Labeling:** (empirical, cross-Muse triangulated via PERSONAS.md + PRICING.md)
@@ -72,9 +72,9 @@
 
 **In our product (Three-Witnesses):**
 
-- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:82` — "$5,988 ARPU" (channel-economics line item)
-- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:324` — "ARPU = $5,988/yr (Business tier Pro annual)"
-- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:307, 336` — ARPU anchored to channel scoring and LTV math
+- docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:82 [removed] — "$5,988 ARPU" (channel-economics line item)
+- docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:324 [removed] — "ARPU = $5,988/yr (Business tier Pro annual)"
+- docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:307, 336 [removed] — ARPU anchored to channel scoring and LTV math
 
 **Related terms:** ACV, ARR, MRR, NRR, Payback period
 **Honest Labeling:** (empirical, cross-Muse triangulated via CHANNEL_MOTIONS_v0.md)
@@ -86,7 +86,7 @@
 
 **Definition:** The annualized value of all recurring subscription contracts at a point in time, normalized to a 1-year basis. Excludes one-time fees, professional services, and any non-recurring revenue. The headline SaaS metric for growth-rate reporting.
 
-**In our product:** See `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel-economics baseline), `docs/drafts/hermes/PRICING.md` (tier revenue modeling).
+**In our product:** See docs/drafts/hermes/CHANNEL_MOTIONS_v0.md [removed] (channel-economics baseline), docs/drafts/hermes/PRICING.md [removed] (tier revenue modeling).
 
 **Related terms:** MRR, NRR, GRR, ACV, Churn
 **External reference:** SaaS Capital, "The SaaS Metrics 2.0 Guide" (https://saascapital.com)
@@ -121,7 +121,7 @@
 
 **Definition:** The rate at which a company is spending its cash reserves, typically expressed as a monthly figure. Gross burn = total monthly operating expenses. Net burn = gross burn minus monthly revenue. A key input to Runway.
 
-**In our product:** `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel-economics baseline), `docs/ARCHITECTURE.md` (cash flow engine).
+**In our product:** docs/drafts/hermes/CHANNEL_MOTIONS_v0.md [removed] (channel-economics baseline), `docs/ARCHITECTURE.md` (cash flow engine).
 
 **Related terms:** Runway, Cash Flow, FP&A
 **External reference:** Y Combinator, "Guide to Burn Rate" (https://ycombinator.com)
@@ -134,7 +134,7 @@
 
 **Definition:** The fully-loaded cost to acquire one new customer. CAC = (Sales + Marketing spend in period) ÷ (New customers acquired in period). Used in LTV/CAC ratio and CAC payback period calculations.
 
-**In our product:** `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel-economics line item), `docs/drafts/hermes/PRICING.md` (CAC payback modeling).
+**In our product:** docs/drafts/hermes/CHANNEL_MOTIONS_v0.md [removed] (channel-economics line item), docs/drafts/hermes/PRICING.md [removed] (CAC payback modeling).
 
 **Related terms:** LTV, Payback period, ARPU, ACV
 **External reference:** David Skok, "SaaS Metrics 2.0" (https://saasmetrics2.com)
@@ -145,7 +145,7 @@
 
 **Definition:** The movement of cash into and out of a business over a period. Three sections: Operating (day-to-day business), Investing (capex, acquisitions), Financing (debt, equity). The cash flow statement reconciles to balance-sheet cash.
 
-**In our product:** `docs/ARCHITECTURE.md` (cash flow engine), `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel cash-flow projections).
+**In our product:** `docs/ARCHITECTURE.md` (cash flow engine), docs/drafts/hermes/CHANNEL_MOTIONS_v0.md [removed] (channel cash-flow projections).
 
 **Related terms:** Balance Sheet, Burn Rate, Runway, Working Capital
 **External reference:** IFRS IAS 7, US GAAP ASC 230
@@ -156,7 +156,7 @@
 
 **Definition:** The loss of customers or revenue over a period. Logo churn = % of customers lost. Revenue churn = % of MRR/ARR lost. Voluntary (customer choice) vs involuntary (payment failure) distinction matters for intervention design.
 
-**In our product:** `docs/drafts/iris/PERSONAS.md:309` (churn-risk row across personas), `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel churn modeling).
+**In our product:** docs/drafts/iris/PERSONAS.md:309 [removed] (churn-risk row across personas), docs/drafts/hermes/CHANNEL_MOTIONS_v0.md [removed] (channel churn modeling).
 
 **Related terms:** NRR, GRR, Day-7 activation, Day-90 renewal, switching cost perception
 **External reference:** OpenView Partners 2024 SaaS Benchmarks (https://openviewpartners.com)
@@ -167,7 +167,7 @@
 
 **Definition:** Direct costs attributable to producing the goods or services sold. In SaaS, COGS typically includes hosting, third-party APIs, payment processing, and customer-success headcount. Distinct from operating expenses (sales, R&D, G&A).
 
-**In our product:** `docs/drafts/hermes/PRICING.md` (tier gross-margin modeling), `docs/ARCHITECTURE.md` (revenue/cost engine).
+**In our product:** docs/drafts/hermes/PRICING.md [removed] (tier gross-margin modeling), `docs/ARCHITECTURE.md` (revenue/cost engine).
 
 **Related terms:** Gross Margin, P&L, FP&A
 **External reference:** IFRS IAS 2, US GAAP ASC 330
@@ -182,9 +182,9 @@
 
 **In our product (Three-Witnesses):**
 
-- `docs/drafts/TASKBOARD.md:264` — D-009 definition ("Cross-Muse triangulation... verify every claim against actual source code")
-- `docs/drafts/TASKBOARD.md:419-421` — D-009 applied to T-MN-008 v0.4 masterStorage carryover
-- `docs/drafts/athena/jsdoc-revalidation-v0.4.md` — D-009 documented in Athena v0.3 re-validation
+- `AGENTS.md` (Disciplines §D-009) — canonical living definition: verify every cross-Muse claim against actual source code
+- `docs/STRATEGIC_DECISIONS_LOG.md` (§D-009 row) — strategic-layer codification: status reports that cannot be triangulated are downgraded from "done" to "claimed done"
+- Historical anchors (cycle 5-8 era; drafts corpus removed in the 2026-08-07 docs triage): docs/drafts/TASKBOARD.md:264 (D-009 definition), docs/drafts/TASKBOARD.md:419-421 (applied to T-MN-008 v0.4 masterStorage carryover), docs/drafts/athena/jsdoc-revalidation-v0.4.md (documented in Athena v0.3 re-validation)
 
 **Related terms:** D-007 pre-write, Honest Labeling, ICP-numbering
 **Honest Labeling:** (internal cohort discipline, not externally documented)
@@ -196,7 +196,7 @@
 
 **Definition:** A valuation method that estimates the present value of expected future cash flows, discounted at a rate reflecting the riskiness of the cash flows (WACC for firm, cost of equity for equity). The foundation of intrinsic-value analysis.
 
-**In our product:** `docs/ARCHITECTURE.md` (DCF calculation pipeline), `docs/drafts/hermes/PRICING.md` (valuation context for tier pricing).
+**In our product:** `docs/ARCHITECTURE.md` (DCF calculation pipeline), docs/drafts/hermes/PRICING.md [removed] (valuation context for tier pricing).
 
 **Related terms:** NPV, IRR, Sensitivity Analysis, WACC
 **External reference:** McKinsey, "Valuation: Measuring and Managing the Value of Companies"
@@ -209,9 +209,9 @@
 
 **In our product (Three-Witnesses):**
 
-- `docs/drafts/iris/PERSONAS.md:198` — "if the first 7 days are confusing, Chris is gone"
-- `docs/drafts/iris/PERSONAS.md:309` — Churn risk for Chris = "I never got past day 7"
-- `docs/drafts/iris/PERSONAS.md:7` — "Day-in-the-life" line test (Iris v0.2 cohort)
+- docs/drafts/iris/PERSONAS.md:198 [removed] — "if the first 7 days are confusing, Chris is gone"
+- docs/drafts/iris/PERSONAS.md:309 [removed] — Churn risk for Chris = "I never got past day 7"
+- docs/drafts/iris/PERSONAS.md:7 [removed] — "Day-in-the-life" line test (Iris v0.2 cohort)
 
 **Related terms:** PLG motion, Day-90 renewal, switching cost perception, Chris
 **Honest Labeling:** (empirical, cross-Muse triangulated via PERSONAS.md)
@@ -225,9 +225,9 @@
 
 **In our product (Three-Witnesses):**
 
-- `docs/drafts/iris/PERSONAS.md:189` — "Chris churns at 30/60/90 day inflection points"
-- `docs/drafts/iris/PERSONAS.md:309` — Renewal/churn rows in persona churn matrix
-- `docs/drafts/iris/PERSONAS.md:7` — "Day-in-the-life" line test (Iris v0.2 cohort)
+- docs/drafts/iris/PERSONAS.md:189 [removed] — "Chris churns at 30/60/90 day inflection points"
+- docs/drafts/iris/PERSONAS.md:309 [removed] — Renewal/churn rows in persona churn matrix
+- docs/drafts/iris/PERSONAS.md:7 [removed] — "Day-in-the-life" line test (Iris v0.2 cohort)
 
 **Related terms:** Day-7 activation, PLG motion, Chris, NRR, GRR
 **Honest Labeling:** (empirical, cross-Muse triangulated via PERSONAS.md)
@@ -241,7 +241,7 @@
 
 **Definition:** Earnings Before Interest, Taxes, Depreciation, and Amortization. A proxy for operating cash flow that strips out financing and non-cash items. The standard profitability metric in PE/VC deal modeling and SaaS valuation multiples.
 
-**In our product:** `docs/drafts/hermes/PRICING.md` (valuation context for tier pricing), `docs/ARCHITECTURE.md` (P&L engine).
+**In our product:** docs/drafts/hermes/PRICING.md [removed] (valuation context for tier pricing), `docs/ARCHITECTURE.md` (P&L engine).
 
 **Related terms:** P&L, COGS, DCF
 **External reference:** Damodaran, "The Dark Side of Valuation" (https://pages.stern.nyu.edu/~adamodar)
@@ -256,9 +256,9 @@
 
 **In our product (Three-Witnesses):**
 
-- `docs/drafts/iris/PERSONAS.md:321` — "Add 2 personas we know are missing: Founder-Finance Fiona" (founder-archetype buyer for Carla-tier deals; founder-led motion context)
-- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` — Channel strategy context for founder-led → AE-led transition
-- `docs/drafts/hermes/PRICING.md` — Pre-scale tier pricing (founder-led sales motion implicit)
+- docs/drafts/iris/PERSONAS.md:321 [removed] — "Add 2 personas we know are missing: Founder-Finance Fiona" (founder-archetype buyer for Carla-tier deals; founder-led motion context)
+- docs/drafts/hermes/CHANNEL_MOTIONS_v0.md [removed] — Channel strategy context for founder-led → AE-led transition
+- docs/drafts/hermes/PRICING.md [removed] — Pre-scale tier pricing (founder-led sales motion implicit)
 
 **Related terms:** PLG motion, Carla, Vera, Chris
 **Honest Labeling:** (empirical, cross-Muse triangulated via PERSONAS.md + CHANNEL_MOTIONS_v0.md)
@@ -281,7 +281,7 @@
 
 **Definition:** A projection of future financial outcomes based on historical data, assumptions, and models. Rolling forecasts are continuously updated; static forecasts are fixed at a point in time. Pairs with Budget vs Actual variance reporting.
 
-**In our product:** `docs/ARCHITECTURE.md` (forecast engine), `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel revenue forecasts).
+**In our product:** `docs/ARCHITECTURE.md` (forecast engine), docs/drafts/hermes/CHANNEL_MOTIONS_v0.md [removed] (channel revenue forecasts).
 
 **Related terms:** Budget vs Actual, Scenario, Sensitivity Analysis, FP&A
 **External reference:** CFI, "Financial Forecasting" (https://corporatefinanceinstitute.com)
@@ -297,7 +297,7 @@
 **In our product (Three-Witnesses):**
 
 - `docs/GLOSSARY.md:NRR` (v0.1 entry) — natural complement
-- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` — Channel retention modeling
+- docs/drafts/hermes/CHANNEL_MOTIONS_v0.md [removed] — Channel retention modeling
 - Cross-link to Churn, NRR, MRR (retention stack)
 
 **Related terms:** NRR, Churn, ARR, MRR
@@ -314,10 +314,8 @@
 
 **In our product (Three-Witnesses):**
 
-- `docs/drafts/TASKBOARD.md:500-505` — Honest Labeling 5-Muses cohort formation
-- `docs/drafts/TASKBOARD.md:664-673` — Honest Labeling propagated to 6-Muses (Prometheus added)
-- `docs/drafts/TASKBOARD.md:762-767, 874-909` — Honest Labeling applied in cycles 5-6
-- `docs/drafts/athena/BOARD_SCAN_D001_D009_ERRATUM_2026-06-13.md` — Explicit use in T-AT-009 erratum (9th Honest Labeling moment + 6th D-009 codification: "D-009 violation can appear in your own audit claims")
+- `AGENTS.md` (Disciplines §D-007) — Honest Labeling cohort record: 13 fabrications caught, 0 escaped
+- Historical anchors (cycle 5-8 era; drafts corpus removed in the 2026-08-07 docs triage): docs/drafts/TASKBOARD.md:500-505 (5-Muses cohort formation), docs/drafts/TASKBOARD.md:664-673 (propagated to 6-Muses, Prometheus added), docs/drafts/TASKBOARD.md:762-767, 874-909 (applied in cycles 5-6), docs/drafts/athena/BOARD_SCAN_D001_D009_ERRATUM_2026-06-13.md (T-AT-009 erratum: 9th Honest Labeling moment + 6th D-009 codification "D-009 violation can appear in your own audit claims")
 
 **Related terms:** D-009 framework, pre-write, ICP-numbering
 **Honest Labeling:** (internal cohort discipline, not externally documented — self-referential)
@@ -335,8 +333,8 @@
 
 - `docs/ARCHITECTURE.md:246` — "ICP-1 (Carla) / ICP-2 (Vera) / ICP-3 (Chris)"
 - `docs/ARCHITECTURE.md:585` — Cross-Muse ICP-numbering reference
-- `docs/drafts/TASKBOARD.md:497` — Felix→Vera reconciliation (origin of canonical numbering)
-- `docs/drafts/iris/PERSONAS.md` — Three personas with ICP-1/2/3 labels
+- `AGENTS.md` (Disciplines §D-011/§D-012) — 4-ICP verdict + canonical ICP-numbering (Carla=ICP-1, Vera=ICP-2, Chris=ICP-3, Beth=ICP-4)
+- Historical anchors (cycle 5 era; drafts corpus removed in the 2026-08-07 docs triage): docs/drafts/TASKBOARD.md:497 (Felix→Vera reconciliation, origin of canonical numbering), docs/drafts/iris/PERSONAS.md (three personas with ICP-1/2/3 labels)
 
 **Related terms:** Carla, Vera, Chris, D-009 framework
 **Honest Labeling:** (internal cohort discipline, not externally documented)
@@ -348,7 +346,7 @@
 
 **Definition:** The discount rate that makes the NPV of a series of cash flows equal to zero. Used in capital budgeting to rank projects or investments. The higher the IRR, the more desirable the investment. A project is acceptable if IRR > required rate of return (hurdle rate).
 
-**In our product:** `docs/ARCHITECTURE.md` (scenario engine IRR calculation), `docs/drafts/hermes/PRICING.md` (valuation context).
+**In our product:** `docs/ARCHITECTURE.md` (scenario engine IRR calculation), docs/drafts/hermes/PRICING.md [removed] (valuation context).
 
 **Related terms:** NPV, DCF, Sensitivity Analysis
 **External reference:** McKinsey, "Valuation: Measuring and Managing the Value of Companies"
@@ -361,7 +359,7 @@
 
 **Definition:** The total revenue a customer is expected to generate over the lifetime of the relationship. LTV = ARPU × Gross Margin ÷ Churn Rate (simplified). The LTV/CAC ratio is the canonical SaaS efficiency metric; > 3 is healthy, > 5 is exceptional.
 
-**In our product:** `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel LTV modeling), `docs/ARCHITECTURE.md` (churn engine for LTV input).
+**In our product:** docs/drafts/hermes/CHANNEL_MOTIONS_v0.md [removed] (channel LTV modeling), `docs/ARCHITECTURE.md` (churn engine for LTV input).
 
 **Related terms:** CAC, Payback period, ARPU, Churn
 **External reference:** David Skok, "SaaS Metrics 2.0" (https://saasmetrics2.com)
@@ -374,7 +372,7 @@
 
 **Definition:** A simulation method that uses repeated random sampling to compute the probability distribution of an outcome. Used in FP&A for risk modeling, scenario analysis, and confidence-interval estimation around forecasts (e.g., "P50 / P90 revenue outcomes").
 
-**In our product:** `docs/ARCHITECTURE.md` (Monte Carlo engine), `docs/drafts/athena/SENSITIVITY-v0.1.md` (sensitivity pre-write).
+**In our product:** `docs/ARCHITECTURE.md` (Monte Carlo engine), docs/drafts/athena/SENSITIVITY-v0.1.md [removed] (sensitivity pre-write).
 
 **Related terms:** Sensitivity Analysis, Scenario, Forecast
 **External reference:** Wikipedia, "Monte Carlo method" (https://en.wikipedia.org/wiki/Monte_Carlo_method)
@@ -385,7 +383,7 @@
 
 **Definition:** The normalized monthly value of all recurring subscription contracts. MRR × 12 ≈ ARR (when contracts are stable). The granular (monthly) counterpart to ARR; used for tracking growth velocity and detecting inflection points.
 
-**In our product:** `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel MRR modeling), `docs/ARCHITECTURE.md` (revenue engine).
+**In our product:** docs/drafts/hermes/CHANNEL_MOTIONS_v0.md [removed] (channel MRR modeling), `docs/ARCHITECTURE.md` (revenue engine).
 
 **Related terms:** ARR, NRR, GRR, ARPU
 **External reference:** SaaS Capital, "MRR" (https://saascapital.com)
@@ -398,7 +396,7 @@
 
 **Definition:** The sum of the present values of all future cash flows (positive and negative) over the life of an investment, discounted at the required rate of return. NPV > 0 means the investment is value-accretive at the discount rate. The gold-standard capital-budgeting metric.
 
-**In our product:** `docs/ARCHITECTURE.md` (DCF engine NPV calculation), `docs/drafts/hermes/PRICING.md` (valuation context).
+**In our product:** `docs/ARCHITECTURE.md` (DCF engine NPV calculation), docs/drafts/hermes/PRICING.md [removed] (valuation context).
 
 **Related terms:** DCF, IRR, Sensitivity Analysis
 **External reference:** Damodaran, "Investment Valuation" (https://pages.stern.nyu.edu/~adamodar)
@@ -409,7 +407,7 @@
 
 **Definition:** The percentage of recurring revenue retained from existing customers, INCLUDING expansion revenue (upsell, cross-sell). NRR = (Starting MRR + Expansion MRR - Churned MRR - Contraction MRR) ÷ Starting MRR. Can exceed 100% if expansion > churn. Best-in-class SaaS NRR is 120%+.
 
-**In our product (v0.2 cross-link enhancement):** Cross-link to GRR (which excludes expansion), Churn, MRR. See `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel NRR modeling), `docs/ARCHITECTURE.md` (retention engine).
+**In our product (v0.2 cross-link enhancement):** Cross-link to GRR (which excludes expansion), Churn, MRR. See docs/drafts/hermes/CHANNEL_MOTIONS_v0.md [removed] (channel NRR modeling), `docs/ARCHITECTURE.md` (retention engine).
 
 **Related terms:** GRR, Churn, MRR, ARR (v0.2 cross-link added)
 **External reference:** OpenView Partners, "Net Dollar Retention" (https://openviewpartners.com)
@@ -435,7 +433,7 @@
 
 **Definition:** A financial statement summarizing a company's revenues, expenses, and profits over a period. Also called the Income Statement. Pairs with the Balance Sheet (point-in-time) and Cash Flow Statement (period).
 
-**In our product:** `docs/ARCHITECTURE.md` (P&L engine), `docs/drafts/hermes/PRICING.md` (P&L line items for tier modeling).
+**In our product:** `docs/ARCHITECTURE.md` (P&L engine), docs/drafts/hermes/PRICING.md [removed] (P&L line items for tier modeling).
 
 **Related terms:** Balance Sheet, Cash Flow, COGS, EBITDA
 **External reference:** IFRS IAS 1, US GAAP ASC 220
@@ -448,9 +446,9 @@
 
 **In our product (Three-Witnesses):**
 
-- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:82` — Channel economics ("$5,988 ARPU" → payback modeling)
-- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:307, 336` — Payback referenced in motion scoring
-- `docs/drafts/hermes/PRICING.md` — Payback context for tier pricing
+- docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:82 [removed] — Channel economics ("$5,988 ARPU" → payback modeling)
+- docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:307, 336 [removed] — Payback referenced in motion scoring
+- docs/drafts/hermes/PRICING.md [removed] — Payback context for tier pricing
 
 **Related terms:** ACV, ARPU, CAC, LTV
 **Honest Labeling:** (empirical, cross-Muse triangulated via CHANNEL_MOTIONS_v0.md + PRICING.md)
@@ -464,9 +462,9 @@
 
 **In our product (Three-Witnesses):**
 
-- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:439` — "ICP-3 (Chris, FP&A Lead) as the PLG secondary" (Chris as PLG motion anchor; ICP-numbering note footer)
-- `docs/drafts/iris/PERSONAS.md:189-198` — Chris's PLG profile ("if the first 7 days are confusing, Chris is gone")
-- `docs/drafts/iris/PERSONAS.md:7` — Day-in-the-life PLG test
+- docs/drafts/hermes/CHANNEL_MOTIONS_v0.md:439 [removed] — "ICP-3 (Chris, FP&A Lead) as the PLG secondary" (Chris as PLG motion anchor; ICP-numbering note footer)
+- docs/drafts/iris/PERSONAS.md:189-198 [removed] — Chris's PLG profile ("if the first 7 days are confusing, Chris is gone")
+- docs/drafts/iris/PERSONAS.md:7 [removed] — Day-in-the-life PLG test
 
 **Related terms:** founder-led motion, Day-7 activation, Chris, switching cost perception
 **Honest Labeling:** (TENTATIVE per D-007 — 1 of 3 anchors is weak: CHANNEL_MOTIONS_v0.md:439 is a footer note, not a primary PLG reference; PERSONAS.md anchors are stronger)
@@ -480,8 +478,7 @@
 
 **In our product (Three-Witnesses):**
 
-- `docs/drafts/TASKBOARD.md:262, 264, 290, 299, 302, 416, 417, 419-421` — D-007 pre-write pattern references
-- `docs/drafts/TASKBOARD.md:545, 549-551, 565, 691` — D-007 applied across cycles
+- Historical anchors (cycle 5-8 era; drafts corpus removed in the 2026-08-07 docs triage): docs/drafts/TASKBOARD.md (:262, 264, 290, 299, 302, 416, 417, 419-421 — D-007 pre-write pattern references; :545, 549-551, 565, 691 — D-007 applied across cycles)
 - `docs/ONBOARDING.md` — T-MN-003 v0.1 (cycle 7, 295L) followed pre-write pattern
 
 **Related terms:** D-009 framework, Honest Labeling, ICP-numbering
@@ -496,7 +493,7 @@
 
 **Definition:** The number of months a company can continue operating at its current burn rate before exhausting cash reserves. Runway = Current Cash ÷ Net Monthly Burn. Critical fundraising signal; < 6 months triggers urgent raise, > 18 months provides comfort.
 
-**In our product:** `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel runway scenarios), `docs/ARCHITECTURE.md` (cash flow engine).
+**In our product:** docs/drafts/hermes/CHANNEL_MOTIONS_v0.md [removed] (channel runway scenarios), `docs/ARCHITECTURE.md` (cash flow engine).
 
 **Related terms:** Burn Rate, Cash Flow, FP&A
 **External reference:** Y Combinator, "Runway Calculator" (https://ycombinator.com)
@@ -509,7 +506,7 @@
 
 **Definition:** A coherent set of assumptions about the future that produces a complete financial outcome (revenue, costs, cash, P&L). Scenarios differ from sensitivity analyses in that they shift multiple assumptions coherently, not one variable at a time. Typical scenario sets: Base / Bull / Bear.
 
-**In our product:** `docs/ARCHITECTURE.md` (scenario engine), `docs/drafts/athena/SENSITIVITY-v0.1.md` (sensitivity pre-write).
+**In our product:** `docs/ARCHITECTURE.md` (scenario engine), docs/drafts/athena/SENSITIVITY-v0.1.md [removed] (sensitivity pre-write).
 
 **Related terms:** Sensitivity Analysis, Forecast, Monte Carlo, FP&A
 **External reference:** CFI, "Scenario Analysis" (https://corporatefinanceinstitute.com)
@@ -520,7 +517,7 @@
 
 **Definition:** An analysis that measures how the output of a model changes as one or more inputs are varied, holding all other inputs constant. Used in FP&A to identify which assumptions have the most impact on outcomes (tornado diagrams, spider charts).
 
-**In our product:** `docs/ARCHITECTURE.md` (sensitivity engine), `docs/drafts/athena/SENSITIVITY-v0.1.md` (pre-write cohort).
+**In our product:** `docs/ARCHITECTURE.md` (sensitivity engine), docs/drafts/athena/SENSITIVITY-v0.1.md [removed] (pre-write cohort).
 
 **Related terms:** Scenario, Monte Carlo, Forecast, FP&A
 **External reference:** CFI, "Sensitivity Analysis" (https://corporatefinanceinstitute.com)
@@ -533,8 +530,8 @@
 
 **In our product (Three-Witnesses):**
 
-- `docs/drafts/iris/SWITCHING_COST_ANALYSIS.md:1-60` — Iris T-IR-011 pre-write (analytical framework)
-- `docs/drafts/iris/PERSONAS.md:309` — Churn risk row references switching cost implicitly
+- docs/drafts/iris/SWITCHING_COST_ANALYSIS.md:1-60 [removed] — Iris T-IR-011 pre-write (analytical framework)
+- docs/drafts/iris/PERSONAS.md:309 [removed] — Churn risk row references switching cost implicitly
 - Cross-link to Chris (low switching cost = high churn at Day-90)
 
 **Related terms:** Chris, Day-7 activation, Day-90 renewal, Churn
@@ -549,7 +546,7 @@
 
 **Definition:** The difference between an actual outcome and a planned (budgeted or forecast) outcome. Variance = Actual - Plan. Favorable vs unfavorable is context-dependent. Reported via Budget vs Actual reports.
 
-**In our product:** `docs/ARCHITECTURE.md` (variance engine), `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` (channel variance reporting).
+**In our product:** `docs/ARCHITECTURE.md` (variance engine), docs/drafts/hermes/CHANNEL_MOTIONS_v0.md [removed] (channel variance reporting).
 
 **Related terms:** Budget vs Actual, Forecast, FP&A
 **External reference:** CFI, "Variance Analysis" (https://corporatefinanceinstitute.com)
@@ -562,10 +559,10 @@
 
 **In our product (Three-Witnesses):**
 
-- `docs/drafts/iris/PERSONAS.md:227-291` — Vera persona full spec
+- docs/drafts/iris/PERSONAS.md:227-291 [removed] — Vera persona full spec
 - `docs/ARCHITECTURE.md:246, 585` — "ICP-2 (Vera)" canonical reference
-- `docs/drafts/hermes/PRICING.md` — Vera-tier pricing context (Business + Enterprise overlap)
-- `docs/drafts/hermes/CHANNEL_MOTIONS_v0.md` — Vera's role in channel strategy
+- docs/drafts/hermes/PRICING.md [removed] — Vera-tier pricing context (Business + Enterprise overlap)
+- docs/drafts/hermes/CHANNEL_MOTIONS_v0.md [removed] — Vera's role in channel strategy
 
 **Related terms:** ICP-numbering, Carla, Chris, ACV, Payback period
 **Honest Labeling:** (internal cohort persona, not externally documented)
@@ -579,7 +576,7 @@
 
 **Definition:** The capital available for day-to-day operations, calculated as Current Assets minus Current Liabilities. Positive working capital = short-term liquidity. Negative working capital = potential solvency issues. A key cash-flow management metric.
 
-**In our product:** `docs/ARCHITECTURE.md` (working capital engine), `docs/drafts/hermes/PRICING.md` (working capital context for tier pricing).
+**In our product:** `docs/ARCHITECTURE.md` (working capital engine), docs/drafts/hermes/PRICING.md [removed] (working capital context for tier pricing).
 
 **Related terms:** Balance Sheet, Cash Flow, FP&A
 **External reference:** IFRS IAS 1, US GAAP ASC 210
