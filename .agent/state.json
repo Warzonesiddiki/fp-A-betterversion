@@ -1,7 +1,7 @@
 {
   "codex": "ULTIMA",
   "session_id": "sess_033",
-  "updated_at": "2026-08-23T00:30:00Z",
+  "updated_at": "2026-08-23T02:10:00Z",
   "capabilities": {
     "git": true,
     "gh": true,
@@ -21,8 +21,17 @@
     "constraint_mem": "20GB RAM: overlap root suite + server suites freely; serialize full-suite vs production build only"
   },
   "fingerprint": {
-    "languages": ["TypeScript", "Rust(tauri)"],
-    "frameworks": ["React 19", "Vite 8", "Tailwind 4", "Zustand", "Express"],
+    "languages": [
+      "TypeScript",
+      "Rust(tauri)"
+    ],
+    "frameworks": [
+      "React 19",
+      "Vite 8",
+      "Tailwind 4",
+      "Zustand",
+      "Express"
+    ],
     "monorepo": "root + server/ (independent lockfiles)",
     "pkg_manager": "npm",
     "test_command": "npm test (root) | cd server && npm test && npm run test:native-db",
@@ -49,7 +58,7 @@
   "queue": [
     {
       "id": "W0.8.6",
-      "summary": "SERVER HALF DONE (f6b34650: tombstones, idempotent Idempotency-Key replay with FP-0401 payload conflicts, version columns, entries:[{id,version}] responses). REMAINS: client promotion - glStore commitDraftsToServer wired to product trigger + boot drain, applyCommitResult must persist server ids/versions for If-Match, undo/redo sync-state-aware, e2e seed migration (legacy rows hydrate as draft -> duplicate-posting hazard)"
+      "summary": "CLIENT PROMOTION WAVES 1-2 DONE (6fc332be G6 UUID resolver: server ids/versions land on rows, arity-mismatch fail-closed; 7447c1f7 DurabilityBanner publish trigger for import:create users + undo/redo snapshots carry entrySyncState/entryVersions). REMAINS: SDK listEntries + boot hydrate of committed rows; importHistory migration to server."
     },
     {
       "id": "W0.5-slice2",
@@ -65,15 +74,15 @@
     },
     {
       "id": "W-FAB-002",
-      "summary": "PART-1 DONE (da8eac31): SectorDriverDashboard model core rebuilt — signed prefix-first classification (absEntryAmount/invented bases/filledMetrics filler/x0.62 claims/regulatory fabrications removed), null-with-disclosure metrics, separated labeled Scenario simulator; 23-spec honest suite; sector cluster 75/75. REMAINS part-2: sector-config descriptions still advertise removed KPIs (banking 'NIM, CET1, NPL' copy in sectors/*.ts), LEGACY_SECTOR_COPY sr-only label sweep, render-probe specs per sector branch, and the phase0-exit vertical-truthfulness sweep across other industry packs (amendment item 3)."
+      "summary": "PART-1 + PART-2 DONE (da8eac31 signed prefix classifier / no invented bases / null-with-disclosure / labeled simulator; 7ee5c3cc config pruning 24 fabricated ids across 12 sectors + honest descriptions; 730b2dea legacy sr-only copy sweep). REMAINS per phase0-exit amendment item 3: vertical-truthfulness sweep over OTHER industry packs."
     },
     {
       "id": "W-K30-001",
-      "summary": "four-state remediation per K30 audit (26 core routes audited): wire shared ErrorState + skeleton + empty-with-h1 beyond the 7 covered reports pages; error-with-retry exists on 5/26 today; fix order: ForecastBuilderPage, BudgetDetailPage, BudgetVAReport, PeriodClosePage, ScenarioBuilderPage, WhatIfPage, CashForecastPage, FXRatesPage, GLJournalsPage, BudgetListPage"
+      "summary": "four-state remediation per K30 audit (26 core routes audited): wire shared ErrorState + skeleton + empty-with-h1 beyond the 7 covered reports pages; error-with-retry exists on 5/26 today; fix order: ForecastBuilderPage, BudgetDetailPage, BudgetVAReport, PeriodClosePage, ScenarioBuilderPage, WhatIfPage, CashForecastPage, FXRatesPage, GLJournalsPage, BudgetListPage | DONE THIS WAVE: ScenarioBuilderPage (d39602c7), ICEliminationPage mockPairs fabrication removed + four-states (1163e012), BoardPackPage probe (d5f6fea6). Remaining fix-order list shrinks accordingly."
     },
     {
       "id": "W-A11Y-001",
-      "summary": "nav/palette WCAG 2.2 AA fixes from audit: BLOCKERS CommandPalette aria-hidden-on-focused-overlay (L161) + missing focus trap (reuse ShortcutHelpModal L19-42 pattern); MAJORS option buttons tabIndex=-1 + listbox role=group structure + LiveRegion result count + PillarNav badge aria-label composition + badge contrast --action-fill + focus-ring token colors + scrim token pair + closed mobile sidebar inert/conditional-render; MINORS m1-m11 incl. skip-link tabIndex, scroll-behavior under prefers-reduced-motion; also fix phantom .claude/rules/finplan-accessibility.md reference in CLAUDE.md or create the rule file"
+      "summary": "nav/palette WCAG 2.2 AA fixes from audit: BLOCKERS CommandPalette aria-hidden-on-focused-overlay (L161) + missing focus trap (reuse ShortcutHelpModal L19-42 pattern); MAJORS option buttons tabIndex=-1 + listbox role=group structure + LiveRegion result count + PillarNav badge aria-label composition + badge contrast --action-fill + focus-ring token colors + scrim token pair + closed mobile sidebar inert/conditional-render; MINORS m1-m11 incl. skip-link tabIndex, scroll-behavior under prefers-reduced-motion; also fix phantom .claude/rules/finplan-accessibility.md reference in CLAUDE.md or create the rule file | DONE THIS WAVE: m-sweep minors (skip-link decision pinned by tests + inline style removed; scroll-behavior gated under prefers-reduced-motion) and phantom rule file created (.claude/rules/finplan-accessibility.md, gitignored locally)."
     },
     {
       "id": "W-DESK-01",
@@ -131,7 +140,9 @@
     "sess_033 resumption II: failure-cluster triage complete - masterStorage cross-file env-pollution root-caused and hardened",
     "theme contracts cluster fixed: lightContrast find->node:fs walker, buttonContrast Windows path normalization",
     "product fixes surfaced by honest contracts: BudgetListPage muted-token contrast; text.date.test.ts UTC serial helper",
-    "verification battery executed: server 243+83, detectors 100%/0, ROUTE_MAP regenerated, cargo check, production build"
+    "verification battery executed: server 243+83, detectors 100%/0, ROUTE_MAP regenerated, cargo check, production build",
+    "15-subagent fleet wave: sectors config p2, sr-only sweep, DataTable/Skeleton/Sidebar a11y M1-M5, skip-link+reduced-motion minors, .claude a11y rule file, server W0.2c lanes A+B (server suite 28 files/286 tests), ICElimination K30 + mockPairs fabrication removed, escape-ledger evidence rows, ci-patch 0008 artifact, journal Part 4, docs-truth battery 9/10 (docs:links pre-existing debt only)",
+    "cross-lane integration fixes: CashFlowPage probe fixture arithmetic corrected (page math verified right; view untouched), skeleton-consumer specs re-pinned to announce-once contract, CommandPalette empty-listbox axe violation fixed, wcag-aa DataTable case uses real props"
   ],
   "blueprint_status": "LOCKED",
   "blueprint_locked_at": "2026-08-17T00:00:00Z",
@@ -195,7 +206,10 @@
       "R-28 WebView2 blank window (12)",
       "R-29 all-in-one claimed but users escape (20)"
     ],
-    "windows_tier1": ["Windows 11 x64", "Windows 10 22H2 x64"],
+    "windows_tier1": [
+      "Windows 11 x64",
+      "Windows 10 22H2 x64"
+    ],
     "ga_gate_zero_hard_escapes_core20": true,
     "desktop_verification_blocked_by": "K2: no cargo/rustc/Windows in sandbox (see BLUEPRINT.md 23.8)"
   },

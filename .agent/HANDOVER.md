@@ -255,3 +255,44 @@ M-tier; W-A11Y-002 backlog.
 VERIFICATION STATE: tsc/eslint/prettier clean; money-ast 100%/0; fabrication 0;
 sector cluster 75/75; scenario cluster 32/32; PeriodClose 16/16; README gates
 green. Full-suite + build re-run at next pre-push.
+
+## SESSION 033 FLEET WAVE (2026-08-23 early) - read after continuation above
+
+Directive change: SOLO mode revoked by founder - a 15-subagent fleet ran on
+disjoint file territories (edits-only; orchestrator serialized all commits).
+All 15 lanes reported. Commits: 6fc332be G6 -> 7447c1f7 publish trigger ->
+7ee5c3cc sector-config p2 -> db9902b5 a11y M1-M5 batch -> 730b2dea sr-only
+sweep -> 1163e012 ICElimination K30 -> server W0.2c batch -> cross-lane
+fixup. state.json queue entries updated in place.
+
+KEY RESULTS:
+
+- glStore promotion waves 1-2: G6 UUID/version resolver (fail-closed arity),
+  DurabilityBanner publish trigger (import:create RBAC-gated), undo/redo
+  sync-aware snapshots. REMAINS: SDK listEntries + boot hydrate.
+- W-FAB-002 p1+p2 COMPLETE: model honesty + config pruning (24 fabricated
+  ids) + legacy copy sweep. REMAINS: other industry packs sweep.
+- Server W0.2c M-tier DONE: scenario entity-scope fail-closed (FP-0201),
+  entity_id immutable (FP-0410), scoped listings, dup codes (FP-0402);
+  server suite 28 files / 286 tests green. LEFTOVERS flagged: departments
+  POST inserts nonexistent updated_at (500s); entity code-uniqueness is
+  DB-global not tenant-scoped; POST /gl/accounts lacks role gate.
+- a11y: DataTable ARIA grid (M2/M3), Skeleton announce-once (M5), Sidebar
+  rail names (M1), skip-link/reduced-motion minors, .claude a11y rule file
+  created (gitignored locally - shipping needs a repo policy call).
+- Probes caught real spec rot, not page bugs: CashFlow probe fixture had
+  unbalanced rows/wrong constants; corrected with balanced pairs under real
+  COA prefixes (cash=11xx). Page math verified right throughout.
+- ci-patch/0008-node26-bump.patch authored + git-apply --check verified
+  (human apply required like 0006/0007).
+- docs:links gate has PRE-EXISTING debt (~130 citations in .agent/journal,
+  docs/GLOSSARY.md, STRATEGIC_DECISIONS_LOG.md + missing skill-creator refs)
+  - not in pre-push battery; queued as its own cleanup lane.
+
+SKILLS INSTALLED (founder directive): configuring-tauri-capabilities (maps to
+W-DESK-01), json-render react/zustand adapters (vercel-labs). Searched and
+rejected per quality rubric: playwright/finance ecosystems (top item <150
+installs or wrong domain).
+
+NEXT QUEUE (post-fleet): glStore boot hydrate; industry-pack truthfulness
+sweep; server leftovers trio; docs:links debt; W0.9 egress chokepoint.
