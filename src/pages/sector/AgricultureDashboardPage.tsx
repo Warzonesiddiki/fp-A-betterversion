@@ -128,7 +128,7 @@ export default function AgricultureDashboardPage() {
                 </span>
               </div>
             </div>
-            <p className="text-xs text-[var(--text-muted)] mt-4">
+            <p role="status" className="text-xs text-[var(--text-muted)] mt-4">
               Numerator: debits on accounts whose name mentions labor, wages or payroll.
               Denominator: all posted costs. `—` means no account matched, not a zero share.
             </p>

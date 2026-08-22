@@ -173,9 +173,11 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
           focusedCell?.row === absRow && focusedCell?.col === colIdx ? true : undefined
         }
         onFocus={() => setFocusedCell({ row: absRow, col: colIdx })}
+        onClick={onRowClick ? () => onRowClick(row) : undefined}
         onKeyDown={onRowClick ? activateOnKey(() => onRowClick(row)) : undefined}
         className={cn(
-          'px-4 py-3 text-[var(--text-primary)] whitespace-nowrap cursor-default',
+          'px-4 py-3 text-[var(--text-primary)] whitespace-nowrap',
+          onRowClick ? 'cursor-pointer' : 'cursor-default',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset',
           'focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400',
           'focus-visible:bg-[var(--bg-hover)] dark:focus-visible:bg-gray-700/60',
@@ -190,11 +192,7 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
   const renderRow = (row: Record<string, unknown>, rowIdx: number, isFirstRendered: boolean) => (
     <tr
       key={(row.id as React.Key) ?? rowIdx}
-      className={cn(
-        'transition-colors hover:bg-[var(--bg-surface)]/50 dark:hover:bg-gray-700/50 group',
-        onRowClick && 'cursor-pointer'
-      )}
-      onClick={() => onRowClick?.(row)}
+      className="transition-colors hover:bg-[var(--bg-surface)]/50 dark:hover:bg-gray-700/50 group"
       aria-rowindex={rowIdx + 1}
     >
       {renderCells(row, rowIdx, isFirstRendered)}
@@ -223,11 +221,7 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
           return (
             <tr
               key={(row!.id as React.Key) ?? virtualRow.index}
-              className={cn(
-                'transition-colors hover:bg-[var(--bg-surface)]/50 dark:hover:bg-gray-700/50 group',
-                onRowClick && 'cursor-pointer'
-              )}
-              onClick={() => onRowClick?.(row!)}
+              className="transition-colors hover:bg-[var(--bg-surface)]/50 dark:hover:bg-gray-700/50 group"
               data-index={virtualRow.index}
               aria-rowindex={virtualRow.index + 1}
             >

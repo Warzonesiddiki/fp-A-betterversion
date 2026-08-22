@@ -195,7 +195,8 @@ describe('Sector, Scenarios, Settings smoke tests', () => {
     });
     it('displays the page heading', () => {
       renderPage(ScenarioBuilderPage, '/scenarios/builder');
-      expect(screen.getByText(/Scenario Builder/i)).toBeTruthy();
+      // Empty branch renders h1 + EmptyState title; anchor to the heading.
+      expect(screen.getByRole('heading', { level: 1, name: /Scenario Builder/i })).toBeTruthy();
     });
   });
 

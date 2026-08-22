@@ -27,20 +27,12 @@ vi.mock('@/store/glStore', () => {
 });
 
 vi.mock('@/store/energyStore', () => ({
+  // K17: default mock is an EMPTY workspace — the real store no longer ships
+  // demo assets/generation, so smokes must not resurrect them.
   useEnergyStore: vi.fn(() => ({
-    assets: [
-      {
-        id: 'S-01',
-        name: 'Mojave Solar I',
-        type: 'Solar',
-        capacity: '250 MW',
-        outputYTD: '42.5 GWh',
-        availability: '98.5%',
-        roi: '12.4%',
-      },
-    ],
-    generationTrend: [{ date: '2026-01-01', solar: 450, wind: 320, hydro: 180, total: 950 }],
-    capacityMix: [{ name: 'Solar', value: 1200, color: '#f59e0b' }],
+    assets: [],
+    generationTrend: [],
+    capacityMix: [],
     setAssets: vi.fn(),
     addAsset: vi.fn(),
     removeAsset: vi.fn(),
@@ -138,6 +130,13 @@ vi.mock('lucide-react', () => {
     return Icon;
   };
   return {
+    // Shared EmptyState default-icon set (K30 empty branches pull these in).
+    Inbox: makeIcon(),
+    Search: makeIcon(),
+    FileX: makeIcon(),
+    AlertCircle: makeIcon(),
+    Layers: makeIcon(),
+    Info: makeIcon(),
     ShieldAlert: makeIcon(),
     TrendingDown: makeIcon(),
     AlertTriangle: makeIcon(),
@@ -231,16 +230,20 @@ describe('Page Smoke Tests — Energy & ESG Pages', () => {
         '/energy/production',
         '/energy/production'
       );
-      expect(getByText(/No Energy Data/i)).toBeInTheDocument();
+      // K30 rewrite: honest disclosure instead of invented generation data.
+      expect(getByText(/No energy production data/i)).toBeInTheDocument();
+      expect(getByText(/never estimated/i)).toBeInTheDocument();
     });
 
-    it('shows the import data button in empty state', () => {
-      const { getByRole } = renderPage(
+    it('keeps the honest no-CTA empty state (recording happens in the workspace)', () => {
+      const { queryByRole } = renderPage(
         EnergyProductionDashboard,
         '/energy/production',
         '/energy/production'
       );
-      expect(getByRole('button', { name: /Import Data/i })).toBeInTheDocument();
+      // No invented CTA: generation is recorded in the energy workspace, so
+      // there is intentionally nothing to import from GL upload here.
+      expect(queryByRole('button', { name: /Import Data/i })).not.toBeInTheDocument();
     });
 
     it('renders without crashing', () => {
@@ -328,13 +331,16 @@ describe('Page Smoke Tests — Energy & ESG Pages', () => {
       expect(getAllByTestId('kpi-value').length).toBeGreaterThanOrEqual(1);
     });
 
-    it('renders the asset portfolio table', () => {
-      const { getByTestId } = renderPage(
+    it('renders the honest empty workspace when no assets are recorded', () => {
+      const { queryByTestId, getByRole, getByText } = renderPage(
         RenewableEnergyPage,
         '/energy/renewable',
         '/energy/renewable'
       );
-      expect(getByTestId('data-table')).toBeInTheDocument();
+      // K17: no demo portfolio — an empty energy store renders the disclosure
+      // surface, not a fabricated asset table.
+      expect(queryByTestId('data-table')).not.toBeInTheDocument();
+      expect(getByRole('heading', { level: 1, name: /Renewable Energy/i })).toBeInTheDocument();
     });
   });
 
