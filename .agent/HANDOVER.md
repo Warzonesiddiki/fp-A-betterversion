@@ -69,10 +69,13 @@ will). npm note: global shim is npm 12; lockfile ops stay pinned via
    walker; buttonContrast backslash-path regex breakage) + text.date serial()
    helper rewritten in UTC space (IST LMT offset drifted local-midnight math a
    full day; impl untouched).
-5. `7ccfe586` masterStorage env-pollution REPRODUCED + hardened (shared
-   worker-thread process.env leak; beforeEach scrub/restore); page-test and
-   determinism clusters verified. **FULL SUITE: 1272 files / 14 495 passed /
-   0 failed / 1 skipped.**
+5. `7ccfe586` masterStorage env-pollution REPRODUCED + hardened. Mechanism
+   proven by experiment: vitest threads pool shares ONE process.env per
+   worker across test files, AND parent-process poisoning reproduces it solo
+   (`MASTER_STORAGE_KEY=… npx vitest run` → "resolved undefined" signature).
+   setup.ts EXONERATED — its L204-227 is only a localStorage polyfill; zero
+   current src/ writers exist. Guard: file-level beforeEach scrub + afterEach
+   restore, defense-in-depth in-test re-scrub (K5 strength unchanged).
 6. `a6d7447a` journal second half, state.json, action_log.
    `.github/workflows/*.yml` edits stay uncommitted by convention (= ci-patches
    0006/0007).
