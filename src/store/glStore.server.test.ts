@@ -56,28 +56,32 @@ describe('glStore server-authoritative commit path (W0.8.6 spike)', () => {
       importHistory: [],
       lastImportEntryIds: [],
       entrySyncState: {},
+      entryVersions: {},
       environmentId: 'dev',
     });
   });
 
-  it('commits drafts via createJournalBatch and marks them committed', async () => {
+  it('commits drafts and resolves them to server UUIDs + versions (G6)', async () => {
     const calls: { batch: unknown; idempotencyKey: string }[] = [];
     setGlCommitClient(
       fakeClient((input) => {
         calls.push(input);
         return Promise.resolve({
           status: 'committed',
-          value: [{ id: 'srv-1', version: 1 }],
+          value: [
+            { id: '0b9e6c1a-0001-4000-8000-000000000001', version: 1 },
+            { id: '0b9e6c1a-0002-4000-8000-000000000002', version: 1 },
+          ],
         });
       })
     );
 
     const { addEntries, commitDraftsToServer } = useGLStore.getState();
     addEntries([
-      makeEntry('e1'),
-      makeEntry('e2', { debit: 0, credit: 100, netChange: -100, amount: -100 }),
+      makeEntry('gl-1700000000-0'),
+      makeEntry('gl-1700000000-1', { debit: 0, credit: 100, netChange: -100, amount: -100 }),
     ]);
-    expect(useGLStore.getState().entrySyncState.e1 ?? 'draft').toBe('draft');
+    expect(useGLStore.getState().entrySyncState['gl-1700000000-0'] ?? 'draft').toBe('draft');
 
     const summary = await commitDraftsToServer();
 
@@ -86,9 +90,56 @@ describe('glStore server-authoritative commit path (W0.8.6 spike)', () => {
     // K27/K25: atomic batch carries an idempotency key and the env context.
     expect(calls[0]!.idempotencyKey).toContain('gl-dev-');
     expect((calls[0]!.batch as { environmentId: string }).environmentId).toBe('dev');
-    const sync = useGLStore.getState().entrySyncState;
-    expect(sync.e1).toBe('committed');
-    expect(sync.e2).toBe('committed');
+
+    const state = useGLStore.getState();
+    // Server identity replaces the client-generated ids entirely.
+    expect(state.entries.map((e) => e.id)).toEqual([
+      '0b9e6c1a-0001-4000-8000-000000000001',
+      '0b9e6c1a-0002-4000-8000-000000000002',
+    ]);
+    expect(state.entries.some((e) => e.id.startsWith('gl-'))).toBe(false);
+    // Sync state and If-Match versions are keyed by SERVER id.
+    expect(state.entrySyncState['0b9e6c1a-0001-4000-8000-000000000001']).toBe('committed');
+    expect(state.entryVersions['0b9e6c1a-0001-4000-8000-000000000001']).toBe(1);
+    expect(state.entrySyncState['gl-1700000000-0']).toBeUndefined();
+    // Batch token remaps so undoLastImport targets the server rows.
+    expect(state.lastImportEntryIds).toEqual([
+      '0b9e6c1a-0001-4000-8000-000000000001',
+      '0b9e6c1a-0002-4000-8000-000000000002',
+    ]);
+
+    // A second drain finds no drafts — retries cannot double-post.
+    const retry = await commitDraftsToServer();
+    expect(retry).toEqual({ committed: 0, failed: 0, conflicts: [] });
+    expect(calls).toHaveLength(1);
+  });
+
+  it('fails closed when the server acknowledges a different arity than sent', async () => {
+    setGlCommitClient(
+      fakeClient(() =>
+        Promise.resolve({
+          status: 'committed',
+          value: [{ id: 'srv-only-one', version: 1 }], // sent 2 lines
+        })
+      )
+    );
+
+    const { addEntries, commitDraftsToServer } = useGLStore.getState();
+    addEntries([
+      makeEntry('e1'),
+      makeEntry('e2', { debit: 0, credit: 100, netChange: -100, amount: -100 }),
+    ]);
+
+    const summary = await commitDraftsToServer();
+
+    // Identity is unknowable → nothing may be marked committed or remapped.
+    expect(summary.committed).toBe(0);
+    expect(summary.failed).toBe(2);
+    expect(useGLStore.getState().importError).toContain('failed server commit');
+    const state = useGLStore.getState();
+    expect(state.entries.map((e) => e.id)).toEqual(['e1', 'e2']);
+    expect(state.entrySyncState.e1).toBe('failed');
+    expect(state.entryVersions).toEqual({});
   });
 
   it('marks entries failed on FP-0400 conflict without throwing (K27)', async () => {

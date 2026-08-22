@@ -804,6 +804,12 @@ export interface GLState {
   lastImportEntryIds: string[];
   /** W0.8.6 (K25): per-entry server sync status; drafts are client-only until committed. */
   entrySyncState: Record<string, 'draft' | 'pending' | 'committed' | 'failed'>;
+  /**
+   * W0.8.6 (K27): optimistic-concurrency versions for committed rows, keyed by
+   * SERVER id. Captured at commit time from the server response; consumed as
+   * If-Match on any future conditional write.
+   */
+  entryVersions: Record<string, number>;
   /** W0.8.6: active environment context for server commits (W0.2 environments). */
   environmentId: string;
   setEnvironmentId: (environmentId: string) => void;

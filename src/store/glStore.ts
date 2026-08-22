@@ -99,35 +99,67 @@ function toJournalBatch(entries: GLEntry[], environmentId: string): GlJournalBat
 }
 
 async function applyCommitResult(
-  result: GlCommitResult<readonly { id: string }[]> | GlCommitResult<void>,
-  draftIds: readonly string[],
+  result: GlCommitResult<readonly { id: string; version: number }[]> | GlCommitResult<void>,
+  drafts: readonly GLEntry[],
   set: (fn: (state: GLState) => void) => void
 ): Promise<{ committed: boolean; conflictCode?: string; message?: string }> {
-  if (result.status === 'committed') {
+  const markFailed = () => {
     set((state) => {
-      for (const id of draftIds) {
-        state.entrySyncState[id] = 'committed';
+      for (const e of drafts) state.entrySyncState[e.id] = 'failed';
+    });
+  };
+  if (result.status === 'committed') {
+    // Discriminated union over two generics: only the entries-typed member
+    // carries a usable value array.
+    const serverEntries: readonly { id: string; version: number }[] = Array.isArray(
+      (result as { value?: unknown }).value
+    )
+      ? (result as { value: readonly { id: string; version: number }[] }).value
+      : [];
+    // G6 UUID resolver (P0): the server is the identity authority. Its bulk
+    // response lists {id, version} in request-line order (fresh insert loop
+    // and idempotent replay alike), so a same-arity response resolves each
+    // draft to its authoritative row. Client-generated ids (`gl-*`,
+    // `draft:*`) are replaced by server UUIDs and versions are captured for
+    // If-Match. A different arity means we CANNOT know the mapping — fail
+    // closed rather than guess identities on financial records.
+    if (serverEntries.length !== drafts.length) {
+      markFailed();
+      return {
+        committed: false,
+        message: `commit result arity mismatch: sent ${drafts.length}, server acknowledged ${serverEntries.length}`,
+      };
+    }
+    const idRemap = new Map<string, string>();
+    set((state) => {
+      for (let i = 0; i < drafts.length; i++) {
+        const draft = drafts[i];
+        const committedRow = serverEntries[i];
+        if (!draft || !committedRow) continue;
+        const oldId = draft.id;
+        const entry = state.entries.find((e) => e.id === oldId);
+        if (!entry) continue;
+        delete state.entrySyncState[oldId];
+        delete state.entryVersions[oldId];
+        // Immer draft: runtime re-key of a readonly-tagged identity field.
+        (entry as { id: string }).id = committedRow.id;
+        idRemap.set(oldId, committedRow.id);
+        state.entrySyncState[committedRow.id] = 'committed';
+        state.entryVersions[committedRow.id] = committedRow.version;
       }
+      state.lastImportEntryIds = state.lastImportEntryIds.map((id) => idRemap.get(id) ?? id);
     });
     return { committed: true };
   }
   if (result.status === 'conflict') {
-    set((state) => {
-      for (const id of draftIds) {
-        state.entrySyncState[id] = 'failed';
-      }
-    });
+    markFailed();
     return {
       committed: false,
       conflictCode: result.conflict.code,
       message: result.conflict.message,
     };
   }
-  set((state) => {
-    for (const id of draftIds) {
-      state.entrySyncState[id] = 'failed';
-    }
-  });
+  markFailed();
   return { committed: false, message: result.status === 'error' ? result.message : undefined };
 }
 
@@ -212,6 +244,7 @@ export const useGLStore = create<GLState>()(
         importHistory: [],
         lastImportEntryIds: [],
         entrySyncState: {},
+        entryVersions: {},
         environmentId: 'dev',
 
         // --- W0.8.6 server-authoritative commit path (K25) ---
@@ -250,7 +283,7 @@ export const useGLStore = create<GLState>()(
                 failed += group.length;
                 await applyCommitResult(
                   { status: 'error', message: validation.errors[0] ?? 'validation failed' },
-                  group.map((e) => e.id),
+                  group,
                   set
                 );
                 conflicts.push({
@@ -264,11 +297,7 @@ export const useGLStore = create<GLState>()(
                 batch: toJournalBatch(group, environmentId),
                 idempotencyKey: `gl-${environmentId}-${group[0]?.journalId ?? Date.now()}`,
               });
-              const outcome = await applyCommitResult(
-                result,
-                group.map((e) => e.id),
-                set
-              );
+              const outcome = await applyCommitResult(result, group, set);
               if (outcome.committed) {
                 committed += group.length;
               } else {
@@ -910,6 +939,7 @@ export const useGLStore = create<GLState>()(
           importHistory: state.importHistory,
           columnMapping: state.columnMapping,
           entrySyncState: state.entrySyncState,
+          entryVersions: state.entryVersions,
           environmentId: state.environmentId,
         }),
       }
