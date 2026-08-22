@@ -57,10 +57,12 @@ describe('BankingDashboardPage', () => {
     });
     render(<BankingDashboardPage />);
     expect(screen.getByText('Banking Dashboard')).toBeInTheDocument();
-    expect(screen.getByText(/Total Assets/i)).toBeInTheDocument();
-    expect(screen.getByText(/Total Liabilities/i)).toBeInTheDocument();
-    expect(screen.getByText(/Interest Income/i)).toBeInTheDocument();
-    expect(screen.getByText(/Capital.*Risk/i)).toBeInTheDocument();
-    expect(screen.getByText(/NPL Ratio/i)).toBeInTheDocument();
+    // Exact legacy-copy labels; broad regexes now also match honest NIM
+    // disclosure notes ("Needs interest income/expense accounts…").
+    expect(screen.getByText('Total Assets')).toBeInTheDocument();
+    expect(screen.getByText('Total Liabilities')).toBeInTheDocument();
+    expect(screen.getByText('Interest Income')).toBeInTheDocument();
+    expect(screen.getByText('Capital & Risk')).toBeInTheDocument();
+    expect(screen.getByText('NPL Ratio')).toBeInTheDocument();
   });
 });

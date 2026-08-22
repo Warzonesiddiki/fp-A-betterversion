@@ -59,7 +59,7 @@ describe('SectorDriverDashboard', () => {
   });
 
   it('renders without crashing for the technology sector', () => {
-    render(<SectorDriverDashboard />);
+    render(<SectorDriverDashboard sectorId="technology" />);
     // sector heading or content rendered
     expect(screen.getByRole('main')).toBeInTheDocument();
   });

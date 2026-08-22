@@ -70,6 +70,11 @@ describe('SectorPage', () => {
     });
     render(<SectorPage />);
     expect(screen.getByText(/Sector Analysis/i)).toBeInTheDocument();
-    expect(screen.getByText(/Gross Margin/i)).toBeInTheDocument();
+    // Banking legacy copy renders; the assets-only ledger yields NO invented
+    // gross-margin/NIM numbers — NIM discloses why it is not derivable.
+    expect(screen.getByText('Total Assets')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Needs interest income\/expense accounts and asset-class balances/i)
+    ).toBeInTheDocument();
   });
 });
