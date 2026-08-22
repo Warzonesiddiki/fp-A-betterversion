@@ -96,32 +96,10 @@ vi.mock('@/components/ui/FinPlanGrid', () => ({
   ),
 }));
 
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
-  return {
-    ArrowLeft: makeIcon(),
-    Undo2: makeIcon(),
-    Redo2: makeIcon(),
-    Lock: makeIcon(),
-    Unlock: makeIcon(),
-    Save: makeIcon(),
-    Send: makeIcon(),
-    CheckCircle: makeIcon(),
-    XCircle: makeIcon(),
-    History: makeIcon(),
-    MessageSquare: makeIcon(),
-    Table: makeIcon(),
-    Grid3X3: makeIcon(),
-    Camera: makeIcon(),
-    RotateCcw: makeIcon(),
-  };
-});
+// The page now pulls in EmptyState/Skeleton/ErrorState, whose icon imports
+// resolve through the shared proxy lucide double (N-0001) — a hand-rolled
+// fixed-name mock breaks at module-evaluation time.
+vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
 
 import BudgetDetailPage from '@/pages/budgets/BudgetDetailPage';
 

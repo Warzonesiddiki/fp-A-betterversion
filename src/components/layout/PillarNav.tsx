@@ -102,10 +102,15 @@ export function PillarNav({ badgeCounts, onOpenPalette }: PillarNavProps) {
             onKeyDown={(e) => handleKeyDown(e, index)}
             tabIndex={active ? 0 : -1}
             aria-current={active ? 'page' : undefined}
+            aria-label={
+              count !== undefined && count > 0
+                ? `${pillar.label}, ${count > 99 ? '99+' : count} pending items`
+                : undefined
+            }
             data-pillar={pillar.id}
             data-active={active || undefined}
             data-testid={`pillar-${pillar.id}`}
-            className={`relative flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 ${
+            className={`relative flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-[var(--bg-root)] ${
               active ? 'font-semibold' : ''
             }`}
             style={{
@@ -118,10 +123,9 @@ export function PillarNav({ badgeCounts, onOpenPalette }: PillarNavProps) {
             {count !== undefined && count > 0 && (
               <span
                 data-testid={`pillar-badge-${pillar.id}`}
-                aria-label={`${count} items`}
                 className="inline-flex min-w-[1.25rem] justify-center rounded-full px-1 py-0.5 text-[10px] leading-none"
                 style={{
-                  background: 'var(--accent-primary)',
+                  background: 'var(--action-fill)',
                   color: 'var(--text-on-accent)',
                 }}
               >
@@ -136,7 +140,7 @@ export function PillarNav({ badgeCounts, onOpenPalette }: PillarNavProps) {
         onClick={onOpenPalette}
         aria-label="Open command palette"
         data-testid="pillar-nav-palette"
-        className="ml-2 flex items-center gap-1 rounded-md px-2 py-1.5 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2"
+        className="ml-2 flex items-center gap-1 rounded-md px-2 py-1.5 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-[var(--bg-root)]"
         style={{ color: 'var(--text-muted)', border: '1px solid var(--border-subtle)' }}
       >
         <Command className="h-3.5 w-3.5" aria-hidden="true" />

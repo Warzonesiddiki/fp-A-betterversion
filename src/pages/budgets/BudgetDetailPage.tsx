@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
 import { FinPlanGrid } from '@/components/ui/FinPlanGrid';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 import {
   ArrowLeft,
   Undo2,
@@ -97,8 +100,13 @@ export default function BudgetDetailPage() {
     submitBudget,
     approveBudget,
     rejectBudget,
+    // W-K30-001 (2): gate the not-found flash while the store hydrates.
+    isLoading: budgetLoading,
   } = useBudgetStore();
-  const { accounts } = useGLStore();
+  // W-K30-001 (2): the only error channel exposed by the underlying stores is
+  // the GL import error (budgetStore persists no error field); a failed GL
+  // import strips account names/codes from this workspace, so it is surfaced.
+  const { accounts, importError } = useGLStore();
 
   const budget = budgets.find((b) => b.id === id);
 
@@ -389,6 +397,38 @@ export default function BudgetDetailPage() {
     );
   }
 
+  if (budgetLoading) {
+    // W-K30-001 (2): skeleton while the budget store hydrates, so a cold
+    // start does not flash "Budget Not Found" for an existing id. The static
+    // PageHeader keeps an h1 in the document during this branch.
+    return (
+      <div className="p-6 space-y-6">
+        <PageHeader title="Budget Detail" purpose="Budget line-item editor" />
+        <div data-testid="budget-detail-loading" className="space-y-4">
+          <Skeleton count={1} height="40px" width="40%" />
+          <Skeleton count={1} variant="card" height="160px" />
+          <Skeleton count={4} variant="text" height="24px" />
+        </div>
+      </div>
+    );
+  }
+
+  if (importError) {
+    return (
+      <div className="p-6 space-y-6">
+        <PageHeader title="Budget Detail" purpose="Budget line-item editor" />
+        <ErrorState
+          title="Failed to load budget workspace"
+          message={importError}
+          errorCode="GL-IMPORT-ERROR"
+          onRetry={() => window.location.reload()}
+          retryLabel="Retry"
+          secondaryAction={{ label: 'Back to Budgets', onClick: () => navigate('/budgets') }}
+        />
+      </div>
+    );
+  }
+
   if (!budget) {
     return (
       <div className="p-12 text-center">
@@ -643,8 +683,24 @@ export default function BudgetDetailPage() {
                   <tbody className="divide-y divide-slate-800">
                     {groupedByAccount.length === 0 ? (
                       <tr>
-                        <td colSpan={14} className="text-center py-8 text-[var(--text-muted)]">
-                          No line items in this budget yet.
+                        <td colSpan={14}>
+                          {/* W-K30-001 (2): was a bare "No line items…" cell.
+                              The page h1 comes from PageHeader above, so the
+                              EmptyState h3 keeps heading order intact. */}
+                          <EmptyState
+                            variant="no-data"
+                            title="No line items yet"
+                            description="This budget has no line items yet. Open the grid editor to add your first row."
+                            action={
+                              <Button
+                                size="sm"
+                                onClick={() => setViewMode('grid')}
+                                data-testid="add-first-line-item"
+                              >
+                                Add first line item
+                              </Button>
+                            }
+                          />
                         </td>
                       </tr>
                     ) : (

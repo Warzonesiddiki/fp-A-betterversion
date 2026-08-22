@@ -66,6 +66,22 @@ describe('PillarNav', () => {
     expect(window.location.pathname).toBe('/reports');
   });
 
+  it('navigates to the pillar hub on Enter', async () => {
+    const user = userEvent.setup();
+    setup({}, '/analytics');
+    pillar('report').focus();
+    await user.keyboard('{Enter}');
+    expect(window.location.pathname).toBe('/reports');
+  });
+
+  it('exposes pending-item counts in the anchor accessible name', () => {
+    // A11Y PASS 1: badge count is announced via the anchor's accessible name,
+    // not an aria-label on the inner badge span.
+    setup({ badgeCounts: { admin: 3 } });
+    expect(pillar('admin')).toHaveAccessibleName('Admin, 3 pending items');
+    expect(screen.getByTestId('pillar-badge-admin')).not.toHaveAttribute('aria-label');
+  });
+
   it('invokes the ⌘K palette entry point stub', async () => {
     const onOpenPalette = vi.fn();
     const user = userEvent.setup();

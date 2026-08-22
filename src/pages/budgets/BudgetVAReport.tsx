@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useBudgetStore } from '@/store/budgetStore';
 import { useGLStore } from '@/store/glStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -7,6 +8,8 @@ import { Select } from '@/components/ui/Select';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import { WaterfallChart, WaterfallItem } from '@/components/ui/WaterfallChart';
 import { VarianceChart, VarianceDataPoint } from '@/components/charts/VarianceChart';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 import {
   BarChart,
   Bar,
@@ -40,8 +43,10 @@ function formatPercent(n: number): string {
 
 export default function BudgetVAReport() {
   const fmt = useCurrencyFormatter();
+  const navigate = useNavigate();
   const { budgets, lineItems } = useBudgetStore();
-  const { entries } = useGLStore();
+  // W-K30-001 (3): surface the GL error channel and the posted-actuals guard.
+  const { entries, importError } = useGLStore();
   const [selectedBudgetId, setSelectedBudgetId] = useState<string>('');
 
   const approvedBudgets = useMemo(() => budgets.filter((b) => b.status === 'Approved'), [budgets]);
@@ -207,6 +212,28 @@ export default function BudgetVAReport() {
     },
   ];
 
+  // W-K30-001 (3): a failed GL import leaves this report without actuals to
+  // compare — surface it instead of silently rendering zero-variance rows.
+  if (importError) {
+    return (
+      <div className="p-6 space-y-6">
+        <PageHeader
+          icon={<FileBarChart className="h-6 w-6 text-blue-400" />}
+          title="Budget vs. Actuals"
+          purpose="Analyze performance against approved plans."
+        />
+        <ErrorState
+          title="Failed to load actuals"
+          message={importError}
+          errorCode="GL-IMPORT-ERROR"
+          onRetry={() => window.location.reload()}
+          retryLabel="Retry"
+          secondaryAction={{ label: 'Go to Data Import', onClick: () => navigate('/data') }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 space-y-6">
       <PageHeader
@@ -234,19 +261,38 @@ export default function BudgetVAReport() {
       />
 
       {!selectedBudgetId ? (
-        <Card className="bg-[var(--bg-elevated)]/50 border-dashed border-[var(--border-default)] py-12">
-          <CardContent className="text-center space-y-4">
-            <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block">
-              <FileBarChart className="h-8 w-8 text-[var(--text-muted)]" />
-            </div>
-            <div className="max-w-xs mx-auto">
-              <h3 className="font-semibold text-lg text-[var(--text-primary)]">
-                No Budget Selected
-              </h3>
-              <p className="text-sm text-[var(--text-secondary)] mt-2">
-                Select an approved budget from the dropdown above to view the performance report.
-              </p>
-            </div>
+        <Card className="bg-[var(--bg-elevated)]/50 border-dashed border-[var(--border-default)]">
+          <CardContent>
+            {/* W-K30-001 (3): was a bare h3 guidance card. PageHeader above
+                owns the page h1, so EmptyState's h3 keeps heading order. */}
+            <EmptyState
+              variant="no-data"
+              icon={<FileBarChart className="h-8 w-8 text-[var(--text-muted)]" />}
+              title="No Budget Selected"
+              description="Select an approved budget from the dropdown above to view the performance report."
+              action={
+                <Button variant="outline" size="sm" onClick={() => navigate('/budgets')}>
+                  Go to Budgets
+                </Button>
+              }
+            />
+          </CardContent>
+        </Card>
+      ) : entries.length === 0 ? (
+        // W-K30-001 (3): budget selected but no posted GL actuals exist.
+        <Card>
+          <CardContent>
+            <EmptyState
+              variant="no-file"
+              icon={<FileBarChart className="h-8 w-8 text-[var(--text-muted)]" />}
+              title="No posted actuals"
+              description="The selected budget has no general-ledger activity to compare against. Import or post GL actuals, then return to this report."
+              action={
+                <Button size="sm" onClick={() => navigate('/data/gl-upload')}>
+                  Import Data
+                </Button>
+              }
+            />
           </CardContent>
         </Card>
       ) : (
