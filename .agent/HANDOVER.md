@@ -296,3 +296,30 @@ installs or wrong domain).
 
 NEXT QUEUE (post-fleet): glStore boot hydrate; industry-pack truthfulness
 sweep; server leftovers trio; docs:links debt; W0.9 egress chokepoint.
+
+## SESSION 033 WAVE-3 CLOSE (2026-08-23 ~04:45) - read after fleet wave
+
+All 14 wave-2 subagent lanes + orchestrator integration lane LANDED and
+committed in logical batches (a1d2ad01 .. f9bc73fc + docs commits).
+Wave-3 re-tasks on the same agent roster also landed: R1 routes slice-2,
+R2 engine placeholder null-contracts, R4 ClaimsAnalytics dead export
+removed, R5 announce-once adoption x5, R6 docs-links win32 fix + MEMORY
+citations (strict gate now 0/0 repo-wide), R7 ci-patch 0009, R8 KPI trend
+honesty, R9 AppLayout single skip link, R10 mockPeriods renames, R11
+server environment_id filter (292 tests), R12/R13 ledger evidence +
+energy K17 locks, R14 last 3 sector configs.
+
+K17 STORE SWEEP COMPLETE: energyStore demo assets/generation/mix removed
+(1bea2f3a), debtStore SEED_INSTRUMENTS ($65.5M fake facilities) removed,
+leaseStore SEED_LEASES (6 invented leases) removed - factories ship [],
+persist v2 migrate strips retired seed ids while preserving user rows.
+Verified-clean siblings documented (construction/insurance/healthcare/
+realEstate stores).
+
+REMAINING OPEN (small, spec-ready): README refresh to final counts at next
+battery; W0.9 production wiring (no workflow routes through llmEgress yet);
+ClaimsAnalytics per-claim export awaits a real claim-management feed;
+desktop orphan modules disposition (crash_reporter/secure_storage).
+
+PUSH DEBT: origin still at bc3d44b7; this wave adds ~25 commits awaiting the
+final clean battery + push.
