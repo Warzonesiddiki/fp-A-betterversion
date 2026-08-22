@@ -231,7 +231,7 @@
 | 174 | `/sectors/education` | (Navigate) | — | redirect -> /sector/education |
 | 175 | `/sectors/government` | (Navigate) | — | redirect -> /sector/government |
 | 176 | `/sectors/logistics` | (Navigate) | — | redirect -> /sector/logistics |
-| 177 | `/sectors/telecom` | (Navigate) | — | redirect -> /sector/telecom |
+| 177 | `/sectors/telecom` | (Navigate) | — | redirect -> /sector/telecommunications |
 | 178 | `/education` | (Navigate) | — | redirect -> /sector/education |
 | 179 | `/education/enrollment` | EnrollmentRetentionPage | — | view (sector capability, §3.1) |
 | 180 | `/education/research-grants` | ResearchGrantsPage | — | view (sector capability, §3.1) |
@@ -241,7 +241,7 @@
 | 184 | `/logistics` | (Navigate) | — | redirect -> /sector/logistics |
 | 185 | `/logistics/fleet-cost` | FleetCostDashboardPage | — | view (sector capability, §3.1) |
 | 186 | `/logistics/warehouse-cost` | WarehouseCostDashboardPage | — | view (sector capability, §3.1) |
-| 187 | `/telecom` | (Navigate) | — | redirect -> /sector/telecom |
+| 187 | `/telecom` | (Navigate) | — | redirect -> /sector/telecommunications |
 | 188 | `/forecasts/compare` | (Navigate) | — | redirect -> /scenarios |
 | 189 | `/forecasts/auto-update` | (Navigate) | — | redirect -> /forecasts |
 | 190 | `/scenarios/merge` | (Navigate) | — | redirect -> /scenarios |

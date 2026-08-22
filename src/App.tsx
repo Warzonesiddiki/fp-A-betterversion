@@ -641,7 +641,7 @@ export default function App() {
                 />
                 <Route
                   path="/sectors/telecom"
-                  element={<Navigate to="/sector/telecom" replace />}
+                  element={<Navigate to="/sector/telecommunications" replace />}
                 />
                 {/* W0.5 slice 1 (RC3): alias roots redirect to canonical sector pages. */}
                 <Route path="/education" element={<Navigate to="/sector/education" replace />} />
@@ -653,7 +653,10 @@ export default function App() {
                 <Route path="/logistics" element={<Navigate to="/sector/logistics" replace />} />
                 <Route path="/logistics/fleet-cost" element={<FleetCostDashboardPage />} />
                 <Route path="/logistics/warehouse-cost" element={<WarehouseCostDashboardPage />} />
-                <Route path="/telecom" element={<Navigate to="/sector/telecom" replace />} />
+                <Route
+                  path="/telecom"
+                  element={<Navigate to="/sector/telecommunications" replace />}
+                />
                 <Route path="/forecasts/compare" element={<Navigate to="/scenarios" replace />} />
                 <Route
                   path="/forecasts/auto-update"
