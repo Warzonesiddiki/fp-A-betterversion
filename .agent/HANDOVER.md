@@ -212,3 +212,46 @@ STILL OPEN (spec-complete, solo-ready):
 
 USER DIRECTIVES ACTIVE: non-stop loop; SOLO mode (no subagents); latest Node;
 zero compromises; retry through provider errors.
+
+## SESSION 033 CONTINUATION (2026-08-22/23) - read after the addendum above
+
+LANDED on phase0/w02-tenancy (local; push at wave end):
+
+- ada953e6 test(period-close): orphaned K30 four-states specs from died wave
+  bfec73a0 verified 16/16 against the b3f5312d page and landed.
+- 661dd9ab docs(readme): all five audited stale clusters fixed with live
+  measurements — tests 14,495/1,272; server 247/25 + native-db 83 (measured);
+  money triple-contradiction resolved onto money:ast truth (990 scanned /
+  896 safe / 0 unsafe / 100%, Gate 9b; fabrication Gate 9c = 0); adoption
+  denominator 258→255 (208 engines + 47 store non-test; importers re-measured
+  88, Gate 7 PASS); verticals 78→18 sector routes + 14 templates; footer
+  re-verification stamp 7c09eea9. check-readme-claims 11/11, verify-readme-stats,
+  prettier green.
+- d39602c7 feat(scenarios/K30): ScenarioBuilderPage four-states — shared
+  EmptyState under mounted h1, MC in-flight skeleton, ErrorState retry for
+  save/MC failures; NO fake page-hydrate skeleton (derivation is synchronous);
+  new 5-spec component suite (real stores, PeriodClose idiom).
+- da8eac31 fix(sector/W-FAB-002 p1): SectorDriverDashboard rebuilt. Signed
+  prefix-first classifier replaces regex+absEntryAmount; invented bases,
+  filledMetrics target-filler, x0.62 claims fallback and regulatory
+  fabrications (cet1/solvency-180/npl/loan_deposit/backlog/wip/ar_days/
+  case_mix/cost_per_citizen/faculty-90000/portfolio×16…) REMOVED; derived
+  metrics null-with-disclosure; driver KPIs moved to a labeled "Scenario
+  simulator" card with per-metric basis strings; header copy now states the
+  measured-vs-projection split. Tests rewritten per K5: sign-sensitivity,
+  insurance identity 60/25/85, filler-absence, disclosure-not-number.
+  NOTE: honest fixtures caught a real classifier defect mid-wave (prefix-5
+  claim rows never reached the claims bucket) — fixed in-wave.
+
+REMAINING W-FAB-002 part-2: sectors/\*.ts config copy still advertises removed
+KPIs (e.g. banking description "NIM, CET1, NPL"); LEGACY_SECTOR_COPY sr-only
+sweep; render-probe specs per sector branch; industry-pack vertical-truthfulness
+sweep (phase0-exit amendment item 3).
+
+NEXT QUEUE after that: BoardPackPage probe spec; glStore client promotion
+(G6 UUID resolver P0 blocker); ci-patch 0008 human apply; W0.2c-hardening
+M-tier; W-A11Y-002 backlog.
+
+VERIFICATION STATE: tsc/eslint/prettier clean; money-ast 100%/0; fabrication 0;
+sector cluster 75/75; scenario cluster 32/32; PeriodClose 16/16; README gates
+green. Full-suite + build re-run at next pre-push.
