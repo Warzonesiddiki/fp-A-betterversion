@@ -17,6 +17,9 @@ import entitiesRouter from './routes/entities.js';
 import exportRouter from './routes/export.js';
 import periodsRouter from './routes/periods.js';
 import commandsRouter from './routes/commands.js';
+// Wave 3 (lane R24): server-held-key NVIDIA NIM proxy — the browser never
+// touches NIM credentials; see server/src/routes/ai.ts for the contract.
+import aiRouter from './routes/ai.js';
 import { authMiddleware, requireRole } from './middleware/auth.js';
 import { auditRequestMiddleware } from './middleware/auditMiddleware.js';
 import { authLimiter, generalLimiter } from './middleware/rateLimit.js';
@@ -136,6 +139,10 @@ app.use('/api/periods', generalLimiter, periodsRouter);
 // F-04 spike: authoritative command boundary (typed envelope, idempotency,
 // base revisions, trusted-actor scope, typed errors, audit evidence).
 app.use('/api/v1', generalLimiter, commandsRouter);
+
+// Wave 3 (lane R24): AI NIM proxy — JWT-gated inside the router; per-tenant
+// limiting is applied by the router itself on top of the IP limiter here.
+app.use('/api/ai', generalLimiter, aiRouter);
 
 // ---------------------------------------------------------------------------
 // Incident Response — wired (SECURITY FIX M-05), zod-validated (SEC-5)
