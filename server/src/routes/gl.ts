@@ -167,7 +167,15 @@ function audit(
 // GET /entries — list GL entries with filters
 router.get('/entries', filterByEntityAccess, (req: Request, res: Response) => {
   try {
-    const { account_id, entity_id, date_from, date_to, limit = '50', offset = '0' } = req.query;
+    const {
+      account_id,
+      entity_id,
+      date_from,
+      date_to,
+      limit = '50',
+      offset = '0',
+      environment_id,
+    } = req.query;
     const conditions: string[] = [];
     const params: unknown[] = [];
 
@@ -189,6 +197,21 @@ router.get('/entries', filterByEntityAccess, (req: Request, res: Response) => {
     } else if (entityFilter !== null && entityFilter.length === 0) {
       res.json({ data: [], total: 0, limit: Number(limit), offset: Number(offset) });
       return;
+    }
+
+    // W0.2 environment scoping (wave-3 lane R11): EXACT match when the caller
+    // supplies environment_id — mirroring how writes scope it (the bulk/single
+    // INSERTs leave the column to its NOT NULL DEFAULT 'dev', so a defaulted
+    // row stores plain 'dev' and must satisfy ONLY a 'dev' request, never a
+    // 'uat'/'prod' one; there is deliberately no DEFAULT-coalescing here).
+    // Absent param stays tenant-wide across environments: tenant_id remains
+    // the W0.2 security boundary (resolveTenantId), while environment_id is
+    // the Dev/UAT/Prod promotion dimension — so hydration callers that do not
+    // pass the param keep their current superset view instead of failing
+    // closed to an empty ledger.
+    if (environment_id && typeof environment_id === 'string') {
+      conditions.push('ge.environment_id = ?');
+      params.push(environment_id);
     }
 
     if (account_id && typeof account_id === 'string') {
