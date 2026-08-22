@@ -406,7 +406,8 @@ export default function BudgetDetailPage() {
       <div className="p-6 space-y-6">
         <PageHeader title="Budget Detail" purpose="Budget line-item editor" />
         <div data-testid="budget-detail-loading" className="space-y-4">
-          <Skeleton count={1} height="40px" width="40%" />
+          {/* W-A11Y-002 M5: one polite announcement for the whole hydrate branch. */}
+          <Skeleton count={1} height="40px" width="40%" srLabel="Loading budget detail…" />
           <Skeleton count={1} variant="card" height="160px" />
           <Skeleton count={4} variant="text" height="24px" />
         </div>

@@ -113,11 +113,15 @@ describe('ForecastBuilderPage — W-K30-001 state coverage', () => {
     glState = { entries: [], isLoading: true, importError: null };
     const { container } = renderPage();
     expect(screen.getByTestId('forecast-builder-loading')).toBeInTheDocument();
-    // Skeletons are decorative (aria-hidden) — no live-region spam.
+    // W-A11Y-002 M5 announce-once: bars stay decorative (aria-hidden) and the
+    // whole loading branch owns exactly ONE polite status announcement.
     expect(
       screen.getByTestId('forecast-builder-loading').querySelector('[aria-hidden="true"]')
     ).toBeTruthy();
-    expect(screen.queryByRole('status')).toBeNull();
+    const statuses = screen.getAllByRole('status');
+    expect(statuses).toHaveLength(1);
+    expect(statuses[0]).toHaveAttribute('aria-live', 'polite');
+    expect(statuses[0]).toHaveTextContent(/loading/i);
     expect(container.querySelector('[data-testid="forecast-kpis"]')).not.toBeInTheDocument();
     expect(container.querySelector('[data-testid="forecast-config"]')).not.toBeInTheDocument();
     // The h1 survives every branch (heading-order discipline).

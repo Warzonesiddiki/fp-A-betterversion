@@ -240,7 +240,8 @@ export default function PeriodClosePage() {
       <div className="p-6 space-y-6 max-w-7xl">
         <PageHeader title="Period Close" purpose="Loading period close workflow…" />
         <div data-testid="period-close-loading" className="space-y-4">
-          <Skeleton count={1} height="40px" width="40%" />
+          {/* W-A11Y-002 M5: one polite announcement for the whole hydrate branch. */}
+          <Skeleton count={1} height="40px" width="40%" srLabel="Loading period close workflow…" />
           <Skeleton count={1} variant="card" height="160px" />
           <Skeleton count={6} variant="text" height="24px" />
         </div>

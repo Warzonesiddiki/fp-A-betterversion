@@ -250,7 +250,8 @@ export default function CashFlowPage() {
   if (!report) {
     return (
       <div className="p-6">
-        <Skeleton count={12} height="32px" />
+        {/* W-A11Y-002 M5: one polite announcement for the whole statement skeleton. */}
+        <Skeleton count={12} height="32px" srLabel="Loading cash flow statement…" />
       </div>
     );
   }

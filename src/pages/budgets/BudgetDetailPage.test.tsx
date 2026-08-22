@@ -137,12 +137,15 @@ describe('BudgetDetailPage — W-K30-001 state coverage', () => {
     budgetState = { budgets: [], activeBudgetId: null, lineItems: [], isLoading: true };
     const { container } = renderPage('/budgets/b1', '/budgets/:id');
     expect(screen.getByTestId('budget-detail-loading')).toBeInTheDocument();
-    // Skeletons are decorative (aria-hidden) — no live-region spam; the page
-    // owns the single announcement via its own status region if any.
+    // W-A11Y-002 M5 announce-once: bars stay decorative (aria-hidden) and the
+    // whole hydrate branch owns exactly ONE polite status announcement.
     expect(
       screen.getByTestId('budget-detail-loading').querySelector('[aria-hidden="true"]')
     ).toBeTruthy();
-    expect(screen.queryByRole('status')).toBeNull();
+    const statuses = screen.getAllByRole('status');
+    expect(statuses).toHaveLength(1);
+    expect(statuses[0]).toHaveAttribute('aria-live', 'polite');
+    expect(statuses[0]).toHaveTextContent(/loading/i);
     // The pre-existing "Budget Not Found" flash must NOT appear during load…
     expect(screen.queryByText(/Budget not found/i)).not.toBeInTheDocument();
     // …and no editor chrome renders yet.

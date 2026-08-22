@@ -243,7 +243,8 @@ export default function ForecastBuilderPage() {
           document heading order. */}
       {isLoading ? (
         <div data-testid="forecast-builder-loading" className="space-y-4">
-          <Skeleton count={1} height="40px" width="30%" />
+          {/* W-A11Y-002 M5: one polite announcement for the whole loading branch. */}
+          <Skeleton count={1} height="40px" width="30%" srLabel="Loading forecast builder…" />
           <Skeleton count={4} variant="card" height="120px" />
           <Skeleton count={6} variant="text" height="24px" />
         </div>

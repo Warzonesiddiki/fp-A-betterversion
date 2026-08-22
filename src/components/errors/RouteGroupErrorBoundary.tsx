@@ -152,10 +152,14 @@ export function RouteSkeleton({ domain }: { domain: Domain }) {
 
 function PageSkeleton({ layout }: { layout: string }) {
   return (
-    <div className="p-6 space-y-6" role="status" aria-label="Loading page..." aria-busy="true">
+    // W-A11Y-002 M5 announce-once: the srLabel on the header skeleton below is
+    // the single polite status region for EVERY route-group fallback rendered
+    // through PageSkeleton/RouteSkeleton; all bars stay aria-hidden inside
+    // Skeleton, so no per-bar or per-instance announcements occur.
+    <div className="p-6 space-y-6" aria-busy="true">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <Skeleton variant="circular" width="2rem" height="2rem" />
+        <Skeleton variant="circular" width="2rem" height="2rem" srLabel="Loading page…" />
         <div className="flex-1 space-y-2">
           <Skeleton variant="text" width="40%" height="1.25rem" />
           <Skeleton variant="text" width="25%" height="0.75rem" />
@@ -220,8 +224,6 @@ function PageSkeleton({ layout }: { layout: string }) {
           <Skeleton variant="card" height="4rem" />
         </div>
       )}
-
-      <span className="sr-only">Loading page content...</span>
     </div>
   );
 }
