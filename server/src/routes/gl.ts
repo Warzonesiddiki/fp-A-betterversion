@@ -1,4 +1,5 @@
 import { Router, Response, Request } from 'express';
+import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { Decimal } from 'decimal.js';
@@ -141,6 +142,10 @@ router.get('/entries', filterByEntityAccess, (req: Request, res: Response) => {
     // Tenant scope (W0.2): a request only ever sees its own tenant's rows.
     conditions.push('ge.tenant_id = ?');
     params.push(resolveTenantId(req.user));
+
+    // W0.8.6: tombstoned (soft-deleted) rows are retained for K25 audit but
+    // never appear in listings or pagination totals.
+    conditions.push('ge.deleted_at IS NULL');
 
     // Entity-level access filter
     const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as
@@ -310,6 +315,47 @@ router.post(
         return;
       }
 
+      const tenantId = resolveTenantId(req.user);
+
+      // W0.8.6 (K13/K27): idempotent journal replay. A retried commit with
+      // the same Idempotency-Key returns the ORIGINAL rows (never a second
+      // posting); the same key with a DIFFERENT payload is the caller's bug
+      // and surfaces as FP-0401. Tombstones keep their key consumed so a
+      // replay finds them instead of minting duplicates.
+      const idemKey = req.header('idempotency-key')?.trim() || null;
+      const idemHash =
+        idemKey && parsed.success
+          ? createHash('sha256').update(JSON.stringify(parsed.data)).digest('hex')
+          : null;
+      if (idemKey) {
+        const prior = db
+          .prepare(
+            'SELECT id, version, idempotency_hash FROM gl_entries WHERE tenant_id = ? AND idempotency_key = ?'
+          )
+          .all(tenantId, idemKey) as {
+          id: string;
+          version: number;
+          idempotency_hash: string | null;
+        }[];
+        if (prior.length > 0) {
+          if (prior.some((r) => r.idempotency_hash !== idemHash)) {
+            res.status(409).json({
+              error: 'Idempotency key conflict',
+              code: 'FP-0401',
+              message: 'Idempotency-Key was already used with a different payload',
+            });
+            return;
+          }
+          res.status(200).json({
+            message: 'Replayed original commit for Idempotency-Key',
+            ids: prior.map((r) => r.id),
+            entries: prior.map((r) => ({ id: r.id, version: r.version })),
+            replayed: true,
+          });
+          return;
+        }
+      }
+
       for (const entry of parsed.data.entries) {
         const closedPeriod = db
           .prepare(
@@ -327,17 +373,18 @@ router.post(
       }
 
       const insertStmt = db.prepare(
-        `INSERT INTO gl_entries (id, tenant_id, account_id, entity_id, post_date, amount, debit, credit, description, reference, department_id, created_by, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+        `INSERT INTO gl_entries (id, tenant_id, account_id, entity_id, post_date, amount, debit, credit, description, reference, department_id, created_by, journal_id, idempotency_key, idempotency_hash, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
       );
 
       const ids: string[] = [];
-      const tenantId = resolveTenantId(req.user);
+      const entriesOut: { id: string; version: number }[] = [];
       const entityIds = new Set(parsed.data.entries.map((e) => e.entity_id));
       const insertMany = db.transaction((entries: z.infer<typeof BulkGLEntrySchema>['entries']) => {
         for (const entry of entries) {
           const id = uuidv4();
           ids.push(id);
+          entriesOut.push({ id, version: 1 });
           insertStmt.run(
             id,
             tenantId,
@@ -350,7 +397,10 @@ router.post(
             entry.description ?? null,
             entry.reference ?? null,
             entry.department_id ?? null,
-            req.user!.id
+            req.user!.id,
+            (entry as { journal_id?: string }).journal_id ?? null,
+            idemKey,
+            idemHash
           );
         }
 
@@ -368,7 +418,12 @@ router.post(
         count: ids.length,
       });
 
-      res.status(201).json({ message: `Created ${ids.length} entries`, ids });
+      res.status(201).json({
+        message: `Created ${ids.length} entries`,
+        ids,
+        entries: entriesOut,
+        replayed: false,
+      });
     } catch (err) {
       if (err instanceof ThreeStatementGateError) {
         res.status(422).json({
@@ -384,15 +439,20 @@ router.post(
   }
 );
 
-// DELETE /entries/:id — delete GL entry
+// DELETE /entries/:id — soft-delete (tombstone) a GL entry
 router.delete(
   '/entries/:id',
   requireEntityWriteAccess('gl_entries'),
   (req: Request, res: Response) => {
     try {
       const tenantId = resolveTenantId(req.user);
+      // W0.8.6: deleted_at IS NULL in the pre-check means re-deleting an
+      // already-tombstoned row is a clean 404 instead of re-running the
+      // gate and re-emitting audit noise (budgets.ts precedent).
       const existing = db
-        .prepare('SELECT id, entity_id FROM gl_entries WHERE id = ? AND tenant_id = ?')
+        .prepare(
+          'SELECT id, entity_id FROM gl_entries WHERE id = ? AND tenant_id = ? AND deleted_at IS NULL'
+        )
         .get(String(req.params.id), tenantId) as { id: string; entity_id: string } | undefined;
 
       if (!existing) {
@@ -400,14 +460,16 @@ router.delete(
         return;
       }
 
-      // W0.3-fix (HIGH): the delete and the integrity check share one
-      // transaction — removing a single leg of a balanced pair must roll
-      // back instead of permanently breaking A=L+E. Non-disableable.
+      // W0.3-fix (HIGH) + W0.8.6: the tombstone and the integrity check
+      // share one transaction. The UPDATE must precede the gate call so the
+      // removed leg stops counting BEFORE Assets=L+E is evaluated — the
+      // inverse order would reject every legal soft delete with FP-0300.
+      // K25: rows are retained (deleted_at), never physically erased; SOX
+      // 7-year retention is declared policy.
       db.transaction(() => {
-        db.prepare('DELETE FROM gl_entries WHERE id = ? AND tenant_id = ?').run(
-          String(req.params.id),
-          tenantId
-        );
+        db.prepare(
+          "UPDATE gl_entries SET deleted_at = datetime('now'), version = version + 1 WHERE id = ? AND tenant_id = ? AND deleted_at IS NULL"
+        ).run(String(req.params.id), tenantId);
 
         assertEntityLedgerIntegrity(tenantId, existing.entity_id);
       })();
@@ -604,6 +666,11 @@ router.get('/trial-balance', filterByEntityAccess, (req: Request, res: Response)
     // fact side even when no other filter is present.
     conditions.push('ge.tenant_id = ?');
     params.push(resolveTenantId(req.user));
+
+    // W0.8.6: tombstones are retained but never contribute to balances.
+    // This stays in the ON-clause (joinCondition), preserving LEFT-JOIN
+    // semantics for accounts whose only entries are deleted.
+    conditions.push('ge.deleted_at IS NULL');
 
     // Entity-level access filter
     const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as

@@ -308,7 +308,7 @@ router.post('/pdf', (req: Request, res: Response) => {
         case 'trial_balance': {
           // Tenant scope (W0.2c): the aggregate joins gl_entries — constrain
           // the fact side so a tenant only ever exports its own postings.
-          const conditions: string[] = ['ge.tenant_id = ?'];
+          const conditions: string[] = ['ge.tenant_id = ?', 'ge.deleted_at IS NULL'];
           const params: unknown[] = [resolveTenantId(req.user)];
           if (entity_id) {
             conditions.push('ge.entity_id = ?');
@@ -374,6 +374,7 @@ router.post('/pdf', (req: Request, res: Response) => {
                JOIN budgets b ON b.id = bli.budget_id
                JOIN accounts a ON a.id = bli.account_id
                LEFT JOIN gl_entries ge ON ge.account_id = bli.account_id
+                 AND ge.deleted_at IS NULL
                  AND ge.post_date >= date(b.fiscal_year || '-01-01')
                  AND ge.post_date <= date(b.fiscal_year || '-12-31')
                ${whereCond}

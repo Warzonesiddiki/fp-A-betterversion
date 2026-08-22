@@ -305,7 +305,7 @@ export function assertEntityLedgerIntegrity(tenantId: string, entityId: string):
                 AS net_cents
        FROM gl_entries ge
        JOIN accounts a ON a.id = ge.account_id
-       WHERE ge.tenant_id = ? AND ge.entity_id = ?
+       WHERE ge.tenant_id = ? AND ge.entity_id = ? AND ge.deleted_at IS NULL
        GROUP BY a.type`
     )
     .all(tenantId, entityId) as TypeNetRow[];

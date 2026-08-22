@@ -47,6 +47,18 @@ describe('real SQLite boot schema (fresh DB via vitest.setup)', () => {
     expect(cols('forecasts')).toContain('entity_id');
     expect(cols('reports')).toContain('entity_id');
     expect(cols('scenarios')).toEqual(expect.arrayContaining(['entity_id', 'budget_id']));
-    expect(cols('gl_entries')).toContain('created_by');
+    expect(
+      cols('gl_entries'),
+      'W0.8.6 commit protocol columns (journal replay + K25 tombstone)'
+    ).toEqual(
+      expect.arrayContaining([
+        'created_by',
+        'journal_id',
+        'idempotency_key',
+        'idempotency_hash',
+        'version',
+        'deleted_at',
+      ])
+    );
   });
 });

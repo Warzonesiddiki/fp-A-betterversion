@@ -69,6 +69,11 @@ CREATE TABLE IF NOT EXISTS gl_entries (
     batch_id TEXT,
     created_by TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    journal_id TEXT,
+    idempotency_key TEXT,
+    idempotency_hash TEXT,
+    version INTEGER NOT NULL DEFAULT 1,
+    deleted_at TEXT,
     FOREIGN KEY (account_id) REFERENCES accounts(id),
     FOREIGN KEY (entity_id) REFERENCES entities(id),
     FOREIGN KEY (department_id) REFERENCES departments(id)
@@ -505,6 +510,16 @@ CREATE INDEX IF NOT EXISTS idx_gl_entries_date ON gl_entries(post_date);
 CREATE INDEX IF NOT EXISTS idx_gl_entries_account ON gl_entries(account_id);
 CREATE INDEX IF NOT EXISTS idx_gl_entries_entity ON gl_entries(entity_id);
 CREATE INDEX IF NOT EXISTS idx_gl_entries_batch ON gl_entries(batch_id);
+-- W0.8.6 (K27): idempotent journal replay lookup. The KEY identifies a
+-- BATCH (journal), so multiple rows legitimately share it — uniqueness is
+-- enforced transactionally in the route (claim-check inside the insert
+-- transaction; better-sqlite3 is synchronous/single-threaded). Scoped by
+-- tenant_id so one tenant's keys never interact with another's; deleted
+-- rows keep their key so a replay finds the tombstone instead of minting
+-- duplicates. Postgres S2 note: replace with UNIQUE(tenant_id,
+-- idempotency_key, journal_line).
+CREATE INDEX IF NOT EXISTS idx_gl_entries_tenant_idem
+    ON gl_entries(tenant_id, idempotency_key);
 CREATE INDEX IF NOT EXISTS idx_budget_items_lookup ON budget_line_items(budget_id, account_id);
 CREATE INDEX IF NOT EXISTS idx_budget_items_period ON budget_line_items(period_id);
 CREATE INDEX IF NOT EXISTS idx_audit_trail_entity ON audit_trail(entity_type, entity_id);

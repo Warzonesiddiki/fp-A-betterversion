@@ -202,6 +202,14 @@ export function ensureServerColumns(db: SqliteDdl): void {
     ['forecast_periods', 'end_date', 'TEXT'],
     ['forecast_periods', 'label', 'TEXT'],
     ['gl_entries', 'created_by', 'TEXT'],
+    // W0.8.6 server-authoritative commit protocol (K25/K27). Legacy
+    // databases gain these via ALTER; pre-existing rows read version=1 and
+    // deleted_at=NULL, which are exactly the alive-and-v1 semantics.
+    ['gl_entries', 'journal_id', 'TEXT'],
+    ['gl_entries', 'idempotency_key', 'TEXT'],
+    ['gl_entries', 'idempotency_hash', 'TEXT'],
+    ['gl_entries', 'version', 'INTEGER NOT NULL DEFAULT 1'],
+    ['gl_entries', 'deleted_at', 'TEXT'],
   ];
   for (const [table, column, type] of serverColumns) {
     const columns = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
@@ -233,6 +241,13 @@ export function ensureGateIndexes(db: SqliteDdl): void {
   }
   db.exec(
     'CREATE INDEX IF NOT EXISTS idx_gl_entries_tenant_entity ON gl_entries(tenant_id, entity_id)'
+  );
+  // W0.8.6: mirror of idx_gl_entries_tenant_idem in 001_initial_schema.sql
+  // for legacy databases created before the column existed. Idempotent.
+  // Batch-scoped claim uniqueness lives in the route transaction (see the
+  // .sql header note for the Postgres S2 form).
+  db.exec(
+    'CREATE INDEX IF NOT EXISTS idx_gl_entries_tenant_idem ON gl_entries(tenant_id, idempotency_key)'
   );
 }
 

@@ -350,6 +350,79 @@ describe('runtime gate on GL writes (violation-blocking case)', () => {
     expect(equity?.c ?? 0).toBeCloseTo(250, 2);
   });
 
+  it('replays the original commit for a repeated Idempotency-Key and conflicts on payload change', async () => {
+    // K13/K27: a retried journal commit must never double-post.
+    const entityId = '20000000-0000-0000-0000-00000000f004';
+    db.prepare(
+      `INSERT OR REPLACE INTO entities (id, name, code, is_active) VALUES (?, 'Gate Entity Idem', 'GATE-ENT4', 1)`
+    ).run(entityId);
+
+    const body = {
+      entries: [
+        {
+          account_id: ASSET_ID,
+          entity_id: entityId,
+          post_date: '2026-03-09',
+          amount: 70,
+          debit: 70,
+          credit: 0,
+        },
+        {
+          account_id: EQUITY_ID,
+          entity_id: entityId,
+          post_date: '2026-03-09',
+          amount: 70,
+          debit: 0,
+          credit: 70,
+        },
+      ],
+    };
+    const headers = { Authorization: `Bearer ${token}`, 'Idempotency-Key': 'idem-test-key-1' };
+
+    const first = await request(app).post('/api/gl/entries/bulk').set(headers).send(body);
+    expect(first.status).toBe(201);
+    expect(first.body.replayed).toBe(false);
+    const originalIds = first.body.ids as string[];
+
+    const retry = await request(app).post('/api/gl/entries/bulk').set(headers).send(body);
+    expect(retry.status).toBe(200);
+    expect(retry.body.replayed).toBe(true);
+    expect(retry.body.ids).toEqual(originalIds);
+
+    // Same key, different payload -> the caller's bug surfaces as FP-0401
+    // and NOTHING is posted for it.
+    const conflict = await request(app)
+      .post('/api/gl/entries/bulk')
+      .set({ Authorization: `Bearer ${token}`, 'Idempotency-Key': 'idem-test-key-1' })
+      .send({
+        entries: [
+          {
+            account_id: ASSET_ID,
+            entity_id: entityId,
+            post_date: '2026-03-10',
+            amount: 5,
+            debit: 5,
+            credit: 0,
+          },
+          {
+            account_id: EQUITY_ID,
+            entity_id: entityId,
+            post_date: '2026-03-10',
+            amount: 5,
+            debit: 0,
+            credit: 5,
+          },
+        ],
+      });
+    expect(conflict.status).toBe(409);
+    expect(conflict.body.code).toBe('FP-0401');
+
+    const count = db
+      .prepare('SELECT COUNT(*) AS n FROM gl_entries WHERE entity_id = ?')
+      .get(entityId) as { n: number };
+    expect(count.n).toBe(2); // exactly the original pair — retries posted nothing
+  });
+
   it('is non-disableable: no configuration path exists in the module surface', async () => {
     // Structural guard: the gate module exports no flag/toggle of any kind.
     const gateModule = await import('./threeStatementGate.js');
@@ -444,10 +517,84 @@ describe('runtime gate on GL DELETE (W0.3-fix HIGH regression)', () => {
       .set('Authorization', `Bearer ${token}`);
     expect(del.status).toBe(204);
 
-    const gone = db.prepare('SELECT COUNT(*) AS n FROM gl_entries WHERE id = ?').get(neutralId) as {
-      n: number;
-    };
-    expect(gone.n).toBe(0);
+    // W0.8.6 (K25): deletion is a TOMBSTONE — the row survives with
+    // deleted_at set and an bumped version, so SOX 7-year retention holds.
+    const tombstone = db
+      .prepare('SELECT deleted_at, version FROM gl_entries WHERE id = ?')
+      .get(neutralId) as { deleted_at: string | null; version: number } | undefined;
+    expect(tombstone).toBeDefined();
+    expect(tombstone!.deleted_at).not.toBeNull();
+    expect(tombstone!.version).toBeGreaterThan(1);
+  });
+
+  it('returns 404 when re-deleting an already-tombstoned entry (no re-gate, no re-audit)', async () => {
+    // A self-offsetting entry (debit = credit) can be removed without
+    // disturbing the identity, so its tombstone is reachable in one step.
+    const res = await request(app)
+      .post('/api/gl/entries')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        account_id: ASSET_ID,
+        entity_id: ENTITY2_ID,
+        post_date: '2026-03-07',
+        amount: 40,
+        debit: 40,
+        credit: 40,
+      });
+    expect(res.status).toBe(201);
+    const id = (res.body as { id: string }).id;
+
+    const first = await request(app)
+      .delete(`/api/gl/entries/${id}`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(first.status).toBe(204);
+
+    const again = await request(app)
+      .delete(`/api/gl/entries/${id}`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(again.status).toBe(404);
+  });
+
+  it('excludes tombstoned rows from trial-balance aggregates', async () => {
+    // A self-offsetting entry inflates BOTH gross columns by its amount
+    // while leaving its net balance at zero — so after tombstoning it, the
+    // balance cannot detect the exclusion but Total Debit must drop by
+    // exactly the entry's debit. That is the observable proof that the
+    // aggregate skips deleted rows instead of silently keeping them.
+    const res = await request(app)
+      .post('/api/gl/entries')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        account_id: ASSET_ID,
+        entity_id: ENTITY2_ID,
+        post_date: '2026-03-08',
+        amount: 90,
+        debit: 90,
+        credit: 90,
+      });
+    expect(res.status).toBe(201);
+    const id = (res.body as { id: string }).id;
+
+    const posted = await request(app)
+      .get('/api/gl/trial-balance')
+      .set('Authorization', `Bearer ${token}`);
+    const debitWithEntry = (
+      posted.body.accounts as { account_id: string; total_debit: number }[]
+    ).find((r) => r.account_id === ASSET_ID)!.total_debit;
+
+    const del = await request(app)
+      .delete(`/api/gl/entries/${id}`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(del.status).toBe(204);
+
+    const after = await request(app)
+      .get('/api/gl/trial-balance')
+      .set('Authorization', `Bearer ${token}`);
+    const debitAfterTombstone = (
+      after.body.accounts as { account_id: string; total_debit: number }[]
+    ).find((r) => r.account_id === ASSET_ID)!.total_debit;
+
+    expect(debitWithEntry - debitAfterTombstone).toBeCloseTo(90, 2);
   });
 
   it('still returns 404 for an unknown or cross-tenant id before any gating', async () => {
