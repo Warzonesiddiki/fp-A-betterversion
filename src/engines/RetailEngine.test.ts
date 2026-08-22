@@ -158,6 +158,74 @@ describe('RetailEngine', () => {
       const result = RetailEngine.getStoreBreakdown(entries);
       expect(result).toHaveLength(3);
     });
+
+    // -------------------------------------------------------------------------
+    // Breakdown coverage for the entityId grouping path consumed by
+    // StoreDashboardPage / RetailDashboardPage (wave-3 lane R15).
+    // -------------------------------------------------------------------------
+
+    it('groups entityId-tagged rows per store without cross-contamination', () => {
+      const entries = [
+        gl('4001', 500000, { entityId: 'store-1' }),
+        gl('4002', 200000, { entityId: 'store-2' }), // interleaved, other store
+        gl('4001', 200000, { entityId: 'store-1' }),
+        gl('5001', 50000, { entityId: 'store-2' }),
+      ];
+      const result = RetailEngine.getStoreBreakdown(entries);
+      expect(result).toHaveLength(2);
+      const store1 = result.find((s) => s.id === 'store-1');
+      const store2 = result.find((s) => s.id === 'store-2');
+      expect(store1!.revenue).toBe(700000); // only store-1 postings
+      expect(store1!.cogs).toBe(0);
+      expect(store2!.revenue).toBe(200000);
+      expect(store2!.cogs).toBe(50000);
+    });
+
+    it('excludes untagged entries from every store group', () => {
+      const entries = [
+        gl('4001', 500000, { entityId: 'store-1' }),
+        // No entityId at all: belongs to no store, must not inflate store-1
+        // nor synthesize an extra "untagged" group.
+        gl('4001', 999999, { entityId: undefined }),
+      ];
+      const result = RetailEngine.getStoreBreakdown(entries);
+      expect(result).toHaveLength(1);
+      expect(result![0]!.id).toBe('store-1');
+      expect(result![0]!.revenue).toBe(500000);
+    });
+
+    it('treats credited COGS reversals as cost reductions (signed, no Math.abs)', () => {
+      const entries = [
+        gl('4001', 500000, { entityId: 'store-1' }),
+        gl('5001', 200000, { entityId: 'store-1' }),
+        // A credit/reversal posting: negative amount must SUBTRACT from cost,
+        // never be folded into it by magnitude.
+        gl('5001', -50000, { entityId: 'store-1' }),
+      ];
+      const result = RetailEngine.getStoreBreakdown(entries);
+      expect(result![0]!.cogs).toBe(150000);
+      expect(result![0]!.grossProfit).toBe(350000);
+      expect(result![0]!.netProfit).toBe(350000);
+    });
+
+    it('omits zero-activity stores instead of zero-filling them', () => {
+      const entries = [
+        gl('4001', 500000, { entityId: 'store-1' }),
+        // Activity on accounts outside the store P&L prefixes only…
+        gl('6050', 1234, { entityId: 'store-2' }),
+        // …and a store whose only revenue posting nets to exactly zero.
+        gl('4001', 0, { entityId: 'store-3' }),
+      ];
+      const result = RetailEngine.getStoreBreakdown(entries);
+      expect(result.map((s) => s.id)).toEqual(['store-1']);
+      expect(result![0]!.revenue).toBeGreaterThan(0);
+    });
+
+    it('falls back to Store <id> labeling when entries carry no usable accountName', () => {
+      const entries = [gl('4001', 100000, { entityId: 'store-9', accountName: '' })];
+      const result = RetailEngine.getStoreBreakdown(entries);
+      expect(result![0]!.name).toBe('Store store-9');
+    });
   });
 
   describe('calculateDashboardStats', () => {
@@ -182,17 +250,23 @@ describe('RetailEngine', () => {
       expect(result.avgNetMargin).toBe(30);
     });
 
-    it('should return default values when no stores have revenue', () => {
+    it('returns null operational metrics when no stores have revenue', () => {
       const result = RetailEngine.calculateDashboardStats([]);
       expect(result.avgRevenuePerStore).toBe(0);
       expect(result.avgNetMargin).toBe(0);
-      expect(result.avgCustSat).toBe(92.8);
+      // Null-unless-posted: the GL carries neither labor hours nor survey
+      // scores, so both operational fields stay null, never placeholders.
+      expect(result.salesPerLaborHour).toBeNull();
+      expect(result.avgCustSat).toBeNull();
     });
 
-    it('should return salesPerLaborHour as placeholder 254', () => {
+    it('keeps salesPerLaborHour and avgCustSat null even when stores have revenue', () => {
       const entries = [gl('4001', 500000, { entityId: 'store-1' })];
       const result = RetailEngine.calculateDashboardStats(entries);
-      expect(result.salesPerLaborHour).toBe(254);
+      // Labor-cost postings (51xx) must not resurrect the retired hardcoded
+      // stand-ins: hours and satisfaction are not ledger-measurable.
+      expect(result.salesPerLaborHour).toBeNull();
+      expect(result.avgCustSat).toBeNull();
     });
   });
 
