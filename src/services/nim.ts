@@ -22,14 +22,21 @@ if (
 }
 
 const NIM_BASE_URL = import.meta.env.VITE_NIM_BASE_URL || 'https://integrate.api.nvidia.com/v1';
-const NIM_API_KEY_1 = import.meta.env.VITE_NIM_API_KEY_1 || '';
-const NIM_API_KEY_2 = import.meta.env.VITE_NIM_API_KEY_2 || '';
 
+// Keys are read LAZILY (per call) rather than snapshotted at module load so
+// that gating consumers (e.g. AutoCommentaryEngine, W0.9 lane R19) and tests
+// observe current env state; Vite inlines build-time values either way.
 // Round-robin key rotation for rate limit distribution
 let activeKeyIndex = 0;
 
+function getConfiguredKeys(): string[] {
+  return [import.meta.env.VITE_NIM_API_KEY_1, import.meta.env.VITE_NIM_API_KEY_2].filter(
+    (key): key is string => Boolean(key)
+  );
+}
+
 function getApiKey(): string {
-  const keys = [NIM_API_KEY_1, NIM_API_KEY_2].filter(Boolean);
+  const keys = getConfiguredKeys();
   if (keys.length === 0) {
     throw new Error(
       'NIM API keys not configured. Set VITE_NIM_API_KEY_1 and/or VITE_NIM_API_KEY_2 in .env'
@@ -256,9 +263,9 @@ export async function summarizeBudget(budgetData: {
 // --- Utility ---
 
 export function isNimConfigured(): boolean {
-  return Boolean(NIM_API_KEY_1 || NIM_API_KEY_2);
+  return getConfiguredKeys().length > 0;
 }
 
 export function getNimKeyCount(): number {
-  return [NIM_API_KEY_1, NIM_API_KEY_2].filter(Boolean).length;
+  return getConfiguredKeys().length;
 }

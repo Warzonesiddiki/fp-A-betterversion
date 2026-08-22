@@ -5,9 +5,10 @@
  * asserted `typeof commentary === 'string'`, so float drift, a 0% variance
  * on a zero budget, and currency-formatting a growth rate all shipped.
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { AutoCommentaryEngine } from './AutoCommentaryEngine';
+import { setLlmEgressAuditSink, type LlmEgressAuditEvent } from '@/services/llm/llmEgress';
 
 describe('AutoCommentaryEngine.generateVarianceCommentary', () => {
   it('states the exact above-budget variance on a known pair', () => {
@@ -187,5 +188,155 @@ describe('source-level guards', () => {
   it('does not label variances favorable without an account class', () => {
     expect(source).not.toMatch(/['"]favorable['"]/);
     expect(source).not.toMatch(/['"]unfavorable['"]/);
+  });
+});
+
+describe('AutoCommentaryEngine.generateSectionNarrativeEnhanced (W0.9 egress wiring)', () => {
+  let mockFetch: ReturnType<typeof vi.fn>;
+  const ITEMS = [
+    { name: 'Licenses', actual: 120000, budget: 100000 },
+    { name: 'Support', actual: 80000, budget: 100000 },
+  ];
+  const SECTION = 'Revenue';
+  const PERIOD = 'Q1 2026';
+
+  beforeEach(() => {
+    mockFetch = vi.fn();
+    vi.stubGlobal('fetch', mockFetch);
+  });
+
+  afterEach(() => {
+    setLlmEgressAuditSink(null);
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+
+  function enableEgress(): void {
+    vi.stubEnv('VITE_LLM_EGRESS_ENABLED', 'true');
+    vi.stubEnv('VITE_NIM_API_KEY_1', 'key-aaa');
+  }
+
+  it('uses the local path and never touches transport when egress is disabled', async () => {
+    // VITE_LLM_EGRESS_ENABLED unset -> kill switch closed by default.
+    const events: LlmEgressAuditEvent[] = [];
+    setLlmEgressAuditSink({ append: (event) => events.push(event) });
+
+    const result = await AutoCommentaryEngine.generateSectionNarrativeEnhanced(
+      SECTION,
+      ITEMS,
+      PERIOD
+    );
+
+    expect(result.source).toBe('local');
+    expect(result.text).toBe(AutoCommentaryEngine.generateSectionNarrative(SECTION, ITEMS, PERIOD));
+    expect(mockFetch).not.toHaveBeenCalled();
+    expect(events).toHaveLength(0);
+  });
+
+  it('routes through the chokepoint when egress is enabled and the host is allowlisted', async () => {
+    enableEgress();
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          id: 'n1',
+          choices: [
+            {
+              index: 0,
+              message: { role: 'assistant', content: '  Polished narrative from the model.  ' },
+              finish_reason: 'stop',
+            },
+          ],
+          usage: {},
+        }),
+    });
+    const events: LlmEgressAuditEvent[] = [];
+    setLlmEgressAuditSink({ append: (event) => events.push(event) });
+
+    const result = await AutoCommentaryEngine.generateSectionNarrativeEnhanced(
+      SECTION,
+      ITEMS,
+      PERIOD
+    );
+
+    expect(result.source).toBe('llm');
+    expect(result.text).toBe('Polished narrative from the model.');
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    const [url] = mockFetch.mock.calls[0]!;
+    expect(String(url)).toContain('integrate.api.nvidia.com/v1/chat/completions');
+
+    // Gating proof via the audit hook: exactly one audited attempt on the
+    // default-allowed NVIDIA endpoint.
+    expect(events).toHaveLength(1);
+    expect(events[0]!.endpoint).toContain('integrate.api.nvidia.com');
+    expect(typeof events[0]!.promptBytes).toBe('number');
+    expect(events[0]!.promptBytes).toBeGreaterThan(0);
+    expect(typeof events[0]!.redactions).toBe('number');
+
+    // The prompt payload carries the derived facts.
+    const body = JSON.parse(mockFetch.mock.calls[0]![1].body);
+    expect(body.messages[0].role).toBe('system');
+    expect(body.messages[1].content).toContain('"Revenue"');
+    expect(body.messages[1].content).toContain('Licenses: actual=120,000');
+  });
+
+  it('falls back to the local text without throwing when the host is not allowed', async () => {
+    vi.stubEnv('VITE_LLM_EGRESS_ENABLED', 'true');
+    vi.stubEnv('VITE_NIM_API_KEY_1', 'key-aaa');
+    // Deny nvidia by allowlisting only a different host.
+    vi.stubEnv('VITE_LLM_EGRESS_ALLOWED_HOSTS', 'other-host.example.com');
+    const events: LlmEgressAuditEvent[] = [];
+    setLlmEgressAuditSink({ append: (event) => events.push(event) });
+
+    const result = await AutoCommentaryEngine.generateSectionNarrativeEnhanced(
+      SECTION,
+      ITEMS,
+      PERIOD
+    );
+
+    expect(result.source).toBe('local');
+    expect(result.text).toBe(AutoCommentaryEngine.generateSectionNarrative(SECTION, ITEMS, PERIOD));
+    expect(mockFetch).not.toHaveBeenCalled();
+    // Gate rejections fire before the audit hook.
+    expect(events).toHaveLength(0);
+  });
+
+  it('falls back to the local text when the model response is non-OK', async () => {
+    enableEgress();
+    mockFetch.mockResolvedValue({ ok: false, status: 503, text: () => Promise.resolve('down') });
+
+    const result = await AutoCommentaryEngine.generateSectionNarrativeEnhanced(
+      SECTION,
+      ITEMS,
+      PERIOD
+    );
+
+    expect(result.source).toBe('local');
+    expect(result.text).toBe(AutoCommentaryEngine.generateSectionNarrative(SECTION, ITEMS, PERIOD));
+  });
+
+  it('falls back to the local text when the model returns empty content', async () => {
+    enableEgress();
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          id: 'empty',
+          choices: [
+            { index: 0, message: { role: 'assistant', content: '' }, finish_reason: 'stop' },
+          ],
+          usage: {},
+        }),
+    });
+
+    const result = await AutoCommentaryEngine.generateSectionNarrativeEnhanced(
+      SECTION,
+      ITEMS,
+      PERIOD
+    );
+
+    expect(result.source).toBe('local');
+    expect(mockFetch).toHaveBeenCalledTimes(1);
   });
 });
