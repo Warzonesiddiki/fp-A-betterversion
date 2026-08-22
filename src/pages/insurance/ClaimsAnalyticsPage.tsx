@@ -1,7 +1,7 @@
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useMemo, useState } from 'react';
-import { AlertTriangle, BarChart3, Download, Filter, PieChart as PieChartIcon } from 'lucide-react';
+import { AlertTriangle, BarChart3, Filter, PieChart as PieChartIcon } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -48,6 +48,12 @@ const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
  *
  * No hand-typed KPI literals remain. The 5-segment pie is replaced by a
  * real per-line earned premium mix that is empty when no premium is posted.
+ *
+ * There is deliberately NO "Loss Run Export" control: a loss run is per-claim
+ * data (claimant, reserve, settlement) that the GL does not carry, and this
+ * page shows no claim rows — an export button here was an enabled no-op that
+ * implied unavailable detail. Removed rather than wired to mislabeled GL
+ * aggregates (K17/K18).
  */
 export default function ClaimsAnalyticsPage() {
   const [periodId, setPeriodId] = useState('P01');
@@ -131,10 +137,6 @@ export default function ClaimsAnalyticsPage() {
         />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
-          <Button variant="outline" size="sm" className="h-10" disabled={entries.length === 0}>
-            <Download className="h-4 w-4 mr-2" />
-            Loss Run Export
-          </Button>
         </div>
       </div>
 

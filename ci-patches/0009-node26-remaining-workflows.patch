@@ -1,0 +1,84 @@
+# 0009 — CI Node.js 22 -> 26 bump, remaining workflows (2026-08-22)
+#
+# Purpose:
+#   Completes the Node 26 rollout started by ci-patches/0008 (ci.yml +
+#   test-unit.yml) by bumping every Node version pin in the four remaining
+#   workflows that still pinned Node 22:
+#     - `.github/workflows/tsc.yml`    (`env.NODE_VERSION` default)
+#     - `.github/workflows/lint.yml`   (`env.NODE_VERSION` default)
+#     - `.github/workflows/build.yml`  (`env.NODE_VERSION` default)
+#     - `.github/workflows/deploy.yml` (literal `node-version: 22`)
+#   The three env-default workflows dereference `${{ env.NODE_VERSION }}` in
+#   their `actions/setup-node` steps, so one line each is sufficient
+#   (setup-node's npm cache key derives from the resolved node version).
+#
+# Why a patch file instead of a direct push:
+#   This repository's GitHub App lacks the `workflows` permission; any push
+#   touching `.github/workflows/**` is rejected with "refusing to allow a
+#   GitHub App to create or update workflow ... without `workflows`
+#   permission". CI fixes are therefore delivered under ci-patches/ for a
+#   human to apply (same convention as 0005/0006/0007/0008).
+#
+# Apply (after or together with 0008):
+#   git apply ci-patches/0009-node26-remaining-workflows.patch
+#   git add .github/workflows/tsc.yml .github/workflows/lint.yml \
+#           .github/workflows/build.yml .github/workflows/deploy.yml
+#   git commit -m "ci: bump Node 22 -> 26 in tsc/lint/build/deploy workflows"
+#
+# Safety rationale (better-sqlite3):
+#   The server job compiles/loads `better-sqlite3`. v13 ships N-API prebuilds,
+#   which are ABI-stable across Node major versions, so the Node 22 -> 26 jump
+#   does not require a native rebuild or a dependency bump. Verified locally
+#   on Node 26.7.0: server suite green.
+diff --git a/.github/workflows/build.yml b/.github/workflows/build.yml
+index c2ecafbc..3bf26c8c 100644
+--- a/.github/workflows/build.yml
++++ b/.github/workflows/build.yml
+@@ -23,7 +23,7 @@ concurrency:
+   cancel-in-progress: true
+ 
+ env:
+-  NODE_VERSION: "22"
++  NODE_VERSION: "26"
+   # G3/G19 limits enforced by scripts/bundle-check.js (single source of truth)
+   # MAIN_CHUNK_KB=150, TOTAL_JS_KB=2048, LAZY_VENDOR_KB=300, WARN_THRESHOLD_PCT=90
+   # See docs/vision-pivot/INFRASTRUCTURE_READINESS.md §G3 + §G19 for thresholds.
+diff --git a/.github/workflows/deploy.yml b/.github/workflows/deploy.yml
+index e76c8faa..6a94da02 100644
+--- a/.github/workflows/deploy.yml
++++ b/.github/workflows/deploy.yml
+@@ -21,7 +21,7 @@ jobs:
+       - name: Setup Node.js
+         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+         with:
+-          node-version: 22
++          node-version: 26
+           cache: npm
+ 
+       - name: Install dependencies
+diff --git a/.github/workflows/lint.yml b/.github/workflows/lint.yml
+index 8b7e7164..15da6eae 100644
+--- a/.github/workflows/lint.yml
++++ b/.github/workflows/lint.yml
+@@ -22,7 +22,7 @@ concurrency:
+   cancel-in-progress: true
+ 
+ env:
+-  NODE_VERSION: "22"
++  NODE_VERSION: "26"
+ 
+ jobs:
+   eslint:
+diff --git a/.github/workflows/tsc.yml b/.github/workflows/tsc.yml
+index e14e0df0..a44dae6c 100644
+--- a/.github/workflows/tsc.yml
++++ b/.github/workflows/tsc.yml
+@@ -21,7 +21,7 @@ concurrency:
+   cancel-in-progress: true
+ 
+ env:
+-  NODE_VERSION: "22"
++  NODE_VERSION: "26"
+ 
+ jobs:
+   typecheck:
