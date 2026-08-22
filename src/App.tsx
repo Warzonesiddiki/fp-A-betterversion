@@ -373,14 +373,12 @@ export default function App() {
             />
 
             <Route element={<AppLayout />}>
-              <Route
-                path="/"
-                element={
-                  <ErrorBoundary>
-                    <DashboardPage />
-                  </ErrorBoundary>
-                }
-              />
+              {/* W0.5 slice 2 (RC3): "/" was a pure alias of "/dashboard" — both
+                  mounted the identical DashboardPage element. One canonical hub
+                  now renders it ("/dashboard", the PillarNav PLAN hub); legacy
+                  root links (error fallbacks, Ctrl+1, NotFound "Go Home") keep
+                  working through this in-shell replace redirect. */}
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route
                 path="/dashboard"
                 element={

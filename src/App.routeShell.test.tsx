@@ -15,6 +15,22 @@
 import { describe, expect, it } from 'vitest';
 import { APP_SOURCE, CHROMELESS_ROUTES, layoutEnd, layoutStart, pathsIn } from '@/test/routeTable';
 
+/**
+ * Map every Navigate-only alias route to its redirect target.
+ *
+ * Tolerant of whitespace/newlines between `element={` and the JSX child
+ * (the same App.tsx formatting quirk the route-map generator's B0 fix
+ * handles), so the two scanners cannot disagree about which aliases exist.
+ */
+function navigateTargets(source: string): Map<string, string> {
+  const targets = new Map<string, string>();
+  const re = /<Route\s+path="([^"]+)"\s+element=\{\s*<Navigate[\s\S]*?to="([^"]+)"/g;
+  for (const m of source.matchAll(re)) {
+    targets.set(m[1]!, m[2]!);
+  }
+  return targets;
+}
+
 describe('route shell contract (UI-03)', () => {
   it('renders every navigable route inside AppLayout', () => {
     const start = layoutStart();
@@ -61,8 +77,33 @@ describe('route shell contract (UI-03)', () => {
 
     // 200 routed screens, per docs/CAPABILITY_TRUTH_MATRIX.md, plus the 21
     // W0.5 slice-2 rescue aliases (RC3 redirects for never-declared deep links).
+    //
+    // Pin delta in W0.5 slice-2 route consolidation: 221 → 221 (Δ0). The
+    // consolidation converted "/" from a second DashboardPage mount into an
+    // in-place <Navigate to="/dashboard"> alias — an element swap that adds
+    // and removes no <Route> declaration, so the inventory count is unchanged.
     expect(all).toHaveLength(221);
     // Aliases to the same page are allowed; identical path strings are not.
     expect(new Set(all).size).toBe(all.length);
+  });
+
+  it('resolves every Navigate-only alias to a declared route', () => {
+    const declared = new Set(pathsIn(APP_SOURCE));
+    const broken = [...navigateTargets(APP_SOURCE)].filter(([_from, to]) => !declared.has(to));
+
+    // An alias pointing at a path no route declares is a silent 404 loop:
+    // the redirect fires and lands on the catch-all instead of the surface.
+    expect(broken.map(([from]) => from)).toEqual([]);
+  });
+
+  it('keeps "/" as a pure alias of the /dashboard hub', () => {
+    // W0.5 slice 2: "/" and "/dashboard" both mounted DashboardPage; the root
+    // is now the redirect and the hub is the only rendered surface.
+    expect(navigateTargets(APP_SOURCE).get('/')).toBe('/dashboard');
+
+    // Exactly one direct mount remains — the consolidation must not leave a
+    // duplicate dashboard surface behind on either path.
+    const mounts = [...APP_SOURCE.matchAll(/<DashboardPage\s*\/>/g)];
+    expect(mounts).toHaveLength(1);
   });
 });
