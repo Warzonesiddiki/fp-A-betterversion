@@ -49,23 +49,40 @@ export function TEXT(v: number, fmt: number): number {
 // =============================================================================
 // DATE FUNCTIONS
 // =============================================================================
+//
+// Excel 1900-system serials live in PURE UTC DAY-NUMBER SPACE (serial 1 =
+// 1900-01-01; engines use the 1899-12-30 epoch offset). The previous
+// implementation mixed UTC-anchored instants (`(s - 25569) * 86400000`) with
+// local-midnight epochs and local getters, so every YEAR/MONTH/DAY/WEEKDAY/
+// WEEKNUM-style read drifted ±1 day depending on the host timezone (published
+// Excel output is the oracle — session 010 lesson — so expected values are
+// sacred and the implementation must be zone-independent).
+
+const EXCEL_EPOCH_MS = Date.UTC(1899, 11, 30); // 1899-12-30T00:00:00Z
+
+/** Excel serial → UTC-midnight Date (no local-time involvement). */
+function serialToDate(s: number): Date {
+  return new Date(EXCEL_EPOCH_MS + Math.round(s) * 86400000);
+}
+
+/** UTC calendar Date → Excel serial (whole days). */
+function dateToSerial(d: Date): number {
+  return Math.round((d.getTime() - EXCEL_EPOCH_MS) / 86400000);
+}
 
 export function DATE(y: number, m: number, d: number): number {
-  const dt = new Date(y, m - 1, d);
-  const epoch = new Date(1899, 11, 30);
-  return Math.floor((dt.getTime() - epoch.getTime()) / 86400000);
+  // Date.UTC normalizes month>12 / day<=0 overflow exactly like the old
+  // constructor-pair math did, but without any local-offset skew.
+  return dateToSerial(new Date(Date.UTC(y, m - 1, d)));
 }
 export function YEAR(s: number): number {
-  const dt = new Date((s - 25569) * 86400000);
-  return dt.getFullYear();
+  return serialToDate(s).getUTCFullYear();
 }
 export function MONTH(s: number): number {
-  const dt = new Date((s - 25569) * 86400000);
-  return dt.getMonth() + 1;
+  return serialToDate(s).getUTCMonth() + 1;
 }
 export function DAY(s: number): number {
-  const dt = new Date((s - 25569) * 86400000);
-  return dt.getDate();
+  return serialToDate(s).getUTCDate();
 }
 export function HOUR(s: number): number {
   return Math.floor((s % 1) * 24);
@@ -77,32 +94,32 @@ export function SECOND(s: number): number {
   return Math.floor(((s % 1) * 86400) % 60);
 }
 export function EOMONTH(s: number, months: number): number {
-  const dt = new Date((s - 25569) * 86400000);
-  dt.setMonth(dt.getMonth() + months + 1, 0);
-  const epoch = new Date(1899, 11, 30);
-  return Math.floor((dt.getTime() - epoch.getTime()) / 86400000);
+  const d = serialToDate(s);
+  // Day 0 of the following UTC month = last day of the target month
+  // (leap-year safe, no local calendar involved).
+  return dateToSerial(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + months + 1, 0)));
 }
 export function EDATE(s: number, months: number): number {
-  const dt = new Date((s - 25569) * 86400000);
-  const day = dt.getDate();
-  // Move to the 1st, then add months, then clamp the day to the target
+  const d = serialToDate(s);
+  // Move to the 1st of the target UTC month, then clamp the day to that
   // month's length (Excel clamps: 2024-01-31 + 1M = 2024-02-29, not Mar 2).
-  dt.setDate(1);
-  dt.setMonth(dt.getMonth() + months);
-  const lastDay = new Date(dt.getFullYear(), dt.getMonth() + 1, 0).getDate();
-  dt.setDate(Math.min(day, lastDay));
-  const epoch = new Date(1899, 11, 30);
-  return Math.floor((dt.getTime() - epoch.getTime()) / 86400000);
+  const target = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + months, 1));
+  const lastDay = new Date(
+    Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)
+  ).getUTCDate();
+  target.setUTCDate(Math.min(d.getUTCDate(), lastDay));
+  return dateToSerial(target);
 }
 export function DATEDIF(s1: number, s2: number, unit: number): number {
-  const d1 = new Date((s1 - 25569) * 86400000),
-    d2 = new Date((s2 - 25569) * 86400000);
-  const diff = d2.getTime() - d1.getTime();
-  return unit === 1
-    ? Math.floor(diff / 86400000)
-    : unit === 2
-      ? Math.floor(diff / 2592000000)
-      : Math.floor(diff / 31536000000);
+  if (unit === 1) return Math.round(s2) - Math.round(s1);
+  // Complete calendar months/years between two serials (Excel semantics),
+  // computed in UTC day-number space.
+  const a = serialToDate(s1);
+  const b = serialToDate(s2);
+  let months = (b.getUTCFullYear() - a.getUTCFullYear()) * 12 + (b.getUTCMonth() - a.getUTCMonth());
+  if (b.getUTCDate() < a.getUTCDate()) months--;
+  if (unit === 2) return months;
+  return Math.floor(months / 12);
 }
 export function DAYS(s1: number, s2: number): number {
   return s2 - s1;
@@ -122,8 +139,8 @@ export function YEARFRAC(s1: number, s2: number): number {
   return DAYS360(s1, s2) / 360;
 }
 export function NOW(): number {
-  const epoch = new Date(1899, 11, 30);
-  return (Date.now() - epoch.getTime()) / 86400000;
+  // Pure UTC epoch math — no local-midnight epoch mixing.
+  return (Date.now() - EXCEL_EPOCH_MS) / 86400000;
 }
 export function TODAY(): number {
   return Math.floor(NOW());
@@ -132,30 +149,32 @@ export function TIME(h: number, m: number, s: number): number {
   return (h * 3600 + m * 60 + s) / 86400;
 }
 export function WEEKNUM(s: number): number {
-  const dt = new Date((s - 25569) * 86400000);
-  const jan1 = new Date(dt.getFullYear(), 0, 1);
-  return Math.ceil(((dt.getTime() - jan1.getTime()) / 86400000 + jan1.getDay() + 1) / 7);
+  const d = serialToDate(s);
+  const jan1 = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  // Excel default (type 1): weeks start Sunday; the week containing Jan 1
+  // is week 1.
+  const dayOfYear = Math.round(s) - dateToSerial(jan1) + 1;
+  return Math.floor((dayOfYear + jan1.getUTCDay() - 1) / 7) + 1;
 }
 export function ISOWEEKNUM(s: number): number {
-  const dt = new Date((s - 25569) * 86400000);
-  const d = new Date(Date.UTC(dt.getFullYear(), dt.getMonth(), dt.getDate()));
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+  const d = serialToDate(s);
+  const utc = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  utc.setUTCDate(utc.getUTCDate() + 4 - (utc.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
+  return Math.ceil(((utc.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
 }
 export function NETWORKDAYS(s1: number, s2: number): number {
   let count = 0;
   const start = Math.round(s1),
     end = Math.round(s2);
   for (let d = start; d <= end; d++) {
-    const dt = new Date((d - 25569) * 86400000).getDay();
-    if (dt !== 0 && dt !== 6) count++;
+    const dow = serialToDate(d).getUTCDay();
+    if (dow !== 0 && dow !== 6) count++;
   }
   return count;
 }
 export function WEEKDAY(s: number, returnType = 1): number {
-  const dt = new Date((s - 25569) * 86400000);
-  const day = dt.getDay(); // 0=Sunday
+  const day = serialToDate(s).getUTCDay(); // 0=Sunday
   if (returnType === 2) return day === 0 ? 7 : day; // 1=Monday, 7=Sunday
   if (returnType === 3) return day === 0 ? 6 : day - 1; // 0=Monday, 6=Sunday
   return day + 1; // 1=Sunday, 7=Saturday (default)
@@ -166,8 +185,8 @@ export function WORKDAY(s: number, days: number): number {
   const dir = days > 0 ? 1 : -1;
   while (remaining > 0) {
     d += dir;
-    const dt = new Date((d - 25569) * 86400000).getDay();
-    if (dt !== 0 && dt !== 6) remaining--;
+    const dow = serialToDate(d).getUTCDay();
+    if (dow !== 0 && dow !== 6) remaining--;
   }
   return d;
 }
@@ -649,8 +668,7 @@ export function registerTextFunctions(r: (fn: FormulaFunction) => void): void {
     minArgs: 1,
     maxArgs: 2,
     impl: (s: number, returnType = 1) => {
-      const dt = new Date((s - 25569) * 86400000);
-      const day = dt.getDay(); // 0=Sunday
+      const day = serialToDate(s).getUTCDay(); // 0=Sunday (pure UTC serial math)
       if (returnType === 2) return day + 1 === 7 ? 7 : day + 1; // 1=Monday, 7=Sunday
       if (returnType === 3) return day === 0 ? 6 : day - 1; // 0=Monday, 6=Sunday
       return day + 1; // 1=Sunday, 7=Saturday (default)

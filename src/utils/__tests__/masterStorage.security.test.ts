@@ -68,6 +68,33 @@ import {
   type StorageErrorEvent,
 } from '../masterStorage';
 
+// ---------------------------------------------------------------------------
+// Cross-file env-pollution guard (latent full-suite failure, reproduced).
+//
+// The vitest threads pool gives every test FILE a fresh module graph, but all
+// files landing on the same worker thread share ONE `process.env`. Any
+// sibling file that assigns MASTER_STORAGE_KEY and fails to clean up (or a
+// parent CI process that exports it) therefore satisfies resolveKeyMaterial()
+// in masterStorage.ts, and the "encryption failure (key unavailable)" test
+// sees setItem() RESOLVE instead of rejecting — exactly the historical
+// intermittent failure signature ("promise resolved \"undefined\"").
+//
+// Scrub the variable before EVERY test in this file and restore whatever the
+// outer environment had afterwards. The env-override describe below sets the
+// variable explicitly and cleans up in its own finally, so it is unaffected.
+// ---------------------------------------------------------------------------
+let savedMasterStorageKey: string | undefined;
+
+beforeEach(() => {
+  savedMasterStorageKey = process.env.MASTER_STORAGE_KEY;
+  delete process.env.MASTER_STORAGE_KEY;
+});
+
+afterEach(() => {
+  if (savedMasterStorageKey === undefined) delete process.env.MASTER_STORAGE_KEY;
+  else process.env.MASTER_STORAGE_KEY = savedMasterStorageKey;
+});
+
 describe('F-0014: no hardcoded storage key', () => {
   it('the retired hardcoded key literal appears nowhere in src/utils', () => {
     // Needle assembled at runtime so this regression test itself does not
@@ -91,6 +118,11 @@ describe('F-0014: no hardcoded storage key', () => {
   });
 
   it('generates and persists a per-install device key (never shipped)', async () => {
+    // This test exercises the GENERATED device-key path specifically. A
+    // MASTER_STORAGE_KEY leaked from another file on this worker thread would
+    // satisfy resolveKeyMaterial() and make the localStorage assertion below
+    // fail spuriously (reproduced cross-file) — re-scrub it locally.
+    delete process.env.MASTER_STORAGE_KEY;
     localStorage.removeItem('finplan.storage-key.v1');
     await masterStorage.setItem('key-provenance-test', 'secret-value');
     const storedKey = localStorage.getItem('finplan.storage-key.v1');
@@ -178,10 +210,18 @@ describe('F-0011: no silent storage writes (KAV-14)', () => {
   });
 
   it('encryption failure (key unavailable) surfaces and throws', async () => {
-    // Remove both key sources: no env override, no localStorage device key,
-    // and break localStorage.setItem so the device key cannot persist.
+    // Remove ALL key sources: no MASTER_STORAGE_KEY env var (re-scrubbed here
+    // even though the file-level guard already does — a sibling file leaking
+    // the variable on this worker thread must never resurrect it), no
+    // localStorage device key, and break localStorage.setItem so the device
+    // key cannot persist.
+    // NOTE: the runtime's localStorage exposes getItem/setItem as OWN
+    // instance properties (vitest jsdom populator), so spying
+    // `Storage.prototype` silently no-ops — the fault must be injected on
+    // the instance the storage layer actually calls.
+    delete process.env.MASTER_STORAGE_KEY;
     localStorage.removeItem('finplan.storage-key.v1');
-    const setSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    const setSpy = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
       throw new DOMException('denied', 'SecurityError');
     });
     const events: StorageErrorEvent[] = [];

@@ -32,6 +32,8 @@ vi.mock('lucide-react', async () => {
     AlertTriangle: make(),
     ChevronDown: make(),
     CheckCircle: make(),
+    // ErrorState renders a RefreshCw retry icon (fa31c55f).
+    RefreshCw: make(),
   };
 });
 

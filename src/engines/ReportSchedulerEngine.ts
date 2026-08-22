@@ -44,15 +44,21 @@ export class ReportSchedulerEngine {
   private schedules = new Map<string, ScheduleEntry>();
   private runs: ScheduleRun[] = [];
 
+  /**
+   * `referenceDate` makes schedule creation deterministic: callers (and
+   * tests) can pin the clock instead of depending on wall-clock "now".
+   * Defaults to the current time, preserving the original 4-arg API.
+   */
   createSchedule(
     reportId: string,
     reportName: string,
     config: ScheduleConfig,
-    recipients: string[] = []
+    recipients: string[] = [],
+    referenceDate: Date = new Date()
   ): ScheduleEntry {
     const id = randomId('sched');
-    const now = new Date().toISOString();
-    const nextRun = this.calculateNextRun(config);
+    const now = referenceDate.toISOString();
+    const nextRun = this.calculateNextRun(config, referenceDate);
 
     const entry: ScheduleEntry = {
       id,
@@ -165,32 +171,37 @@ export class ReportSchedulerEngine {
     this.runs = parsed.runs;
   }
 
-  private calculateNextRun(config: ScheduleConfig): string {
-    const now = new Date();
-    const next = new Date(now);
-    next.setHours(config.hour, config.minute, 0, 0);
+  // Next-run math runs entirely in UTC day/time space. The previous
+  // local-wall-clock arithmetic (`setHours`/`getDay`) made nextRun
+  // machine-dependent: a 09:00 schedule serialized as 03:30Z under
+  // Asia/Kolkata and month boundaries shifted across UTC dates (e.g. "Sept 1"
+  // became Aug 31T18:30Z). `hour`/`minute`/`dayOfWeek`/`dayOfMonth` are
+  // interpreted as UTC so the ISO-string nextRun contract holds everywhere.
+  private calculateNextRun(config: ScheduleConfig, now: Date = new Date()): string {
+    const next = new Date(now.getTime());
+    next.setUTCHours(config.hour, config.minute, 0, 0);
 
     switch (config.frequency) {
       case 'daily':
-        if (next <= now) next.setDate(next.getDate() + 1);
+        if (next <= now) next.setUTCDate(next.getUTCDate() + 1);
         break;
       case 'weekly':
-        next.setDate(next.getDate() + (((config.dayOfWeek ?? 1) - next.getDay() + 7) % 7));
-        if (next <= now) next.setDate(next.getDate() + 7);
+        next.setUTCDate(next.getUTCDate() + (((config.dayOfWeek ?? 1) - next.getUTCDay() + 7) % 7));
+        if (next <= now) next.setUTCDate(next.getUTCDate() + 7);
         break;
       case 'monthly':
-        next.setDate(config.dayOfMonth ?? 1);
-        if (next <= now) next.setMonth(next.getMonth() + 1);
+        next.setUTCDate(config.dayOfMonth ?? 1);
+        if (next <= now) next.setUTCMonth(next.getUTCMonth() + 1);
         break;
       case 'quarterly':
-        next.setMonth(Math.floor(next.getMonth() / 3) * 3 + 3, 1);
+        next.setUTCMonth(Math.floor(next.getUTCMonth() / 3) * 3 + 3, 1);
         break;
       case 'yearly':
-        next.setMonth(0, 1);
-        if (next <= now) next.setFullYear(next.getFullYear() + 1);
+        next.setUTCMonth(0, 1);
+        if (next <= now) next.setUTCFullYear(next.getUTCFullYear() + 1);
         break;
       case 'custom':
-        if (next <= now) next.setDate(next.getDate() + 1);
+        if (next <= now) next.setUTCDate(next.getUTCDate() + 1);
         break;
     }
 

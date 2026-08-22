@@ -2,10 +2,20 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import BudgetVsActualPage from '../../reports/BudgetVsActualPage';
 
-vi.mock('react-router-dom', () => ({
-  Link: ({ children, to }: { children: React.ReactNode; to: string }) => <a href={to}>{children}</a>,
-  useLocation: () => ({ search: '', state: {} }),
-}));
+// Partial mock: spread the real module so every export resolves (incl.
+// useNavigate, added by fa31c55f for K30 CTA wiring), then override the
+// pieces the page reads while rendering OUTSIDE a <Router>.
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router-dom')>();
+  return {
+    ...actual,
+    Link: ({ children, to }: { children: React.ReactNode; to: string }) => (
+      <a href={to}>{children}</a>
+    ),
+    useLocation: () => ({ search: '', state: {} }),
+    useNavigate: vi.fn(),
+  };
+});
 
 vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,

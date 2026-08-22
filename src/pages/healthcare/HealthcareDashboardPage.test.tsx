@@ -96,8 +96,13 @@ describe('HealthcareDashboardPage (Data-Driven)', () => {
 
     // Gross Charges = $80,000
     // Net Patient Revenue = 80k - 10k(contractuals) = $70,000
-    // Let's check Net Patient Revenue is rendered as compact
-    expect(screen.getByText(/\$70\.0K/)).toBeInTheDocument();
+    // The KPI renders through the real pipeline: HealthcareEngine ->
+    // useCurrencyFormatter.custom({ maxDecimals: 1, compact: true }) ->
+    // Intl.NumberFormat(notation: 'compact'), whose en-US output drops the
+    // trailing ".0" — $70,000 renders as '$70K' (the legacy formatCompact
+    // helper emitted '$70.0K'). Exact-match pins the computed value AND the
+    // formatter contract.
+    expect(screen.getByText('$70K')).toBeInTheDocument();
   });
 
   it('renders data table rows with department performance', () => {
