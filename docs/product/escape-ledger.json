@@ -15,7 +15,7 @@
     {
       "id": 3,
       "status": "partial",
-      "evidence": "/budgets create+approval flows exist; submission workflow F-WORKFLOW-008 open"
+      "evidence": "/budgets create+approval flows exist; submission workflow F-WORKFLOW-008 open; budgets trio K30 four-states (a1d2ad01): BudgetListPage loading skeleton + shared EmptyState + RBAC-throw ErrorState channel across five actions, BudgetVAReport loading branch + honest no-approved-budget copy + zero-plan-lines disclosure REPLACING fabricated zero-variance chrome, BudgetDetail not-found upgraded to shared EmptyState under h1 and seeded fake audit entry removed"
     },
     {
       "id": 4,
@@ -40,7 +40,7 @@
     {
       "id": 8,
       "status": "built",
-      "evidence": "/currency/fx-rates + MultiCurrencyEngine IAS 21 translation (verified money-safe)"
+      "evidence": "/currency/fx-rates + MultiCurrencyEngine IAS 21 translation (verified money-safe); FXRatesPage de-fabrication (a1d2ad01): hardcoded INITIAL_RATES quotes removed — were rendered as user data — now wired to real fxRateStore manual-source writes with dual empty states and RBAC-denied mutations surfacing ErrorState with exact-action retry"
     },
     {
       "id": 9,
@@ -55,7 +55,7 @@
     {
       "id": 11,
       "status": "partial",
-      "evidence": "GL entries POST/bulk/tombstone via /api/gl (W0.8.6); G6 UUID resolver (6fc332be, P0): server-authoritative identity — gl-*/draft:* draft ids remapped to server UUIDs with version capture for If-Match, arity-mismatched commits fail closed rather than guess identities on financial records (glStore.applyCommitResult); W0.2c account integrity hardening (8b617858 + 85ad8466): PUT /gl/accounts/:id rejects entity_id re-binding (409 FP-0410 — entity binding immutable post-create), duplicate account codes surface as typed 409 FP-0402 incl SQLITE_CONSTRAINT_UNIQUE mapping with uniqueness tenant-scoped (was a DB-global existence oracle), GET /gl/accounts scoped by JWT-resolved entity access (query param narrows never widens; zero grants → []), POST /gl/accounts Admin-gated like PUT (accounts.integrity.test.ts); adjustments UI still partial"
+      "evidence": "GL entries POST/bulk/tombstone via /api/gl (W0.8.6); G6 UUID resolver (6fc332be, P0): server-authoritative identity — gl-*/draft:* draft ids remapped to server UUIDs with version capture for If-Match, arity-mismatched commits fail closed rather than guess identities on financial records (glStore.applyCommitResult); W0.2c account integrity hardening (8b617858 + 85ad8466): PUT /gl/accounts/:id rejects entity_id re-binding (409 FP-0410 — entity binding immutable post-create), duplicate account codes surface as typed 409 FP-0402 incl SQLITE_CONSTRAINT_UNIQUE mapping with uniqueness tenant-scoped (was a DB-global existence oracle), GET /gl/accounts scoped by JWT-resolved entity access (query param narrows never widens; zero grants → []), POST /gl/accounts Admin-gated like PUT (accounts.integrity.test.ts); server hydration chain landed: SDK GlCommitNamespace.listEntries GET /api/gl/entries?environment_id via the real listing handler with a defensive mapper that drops id-less rows and never invents versions, banner Pull-server-rows surface (6f4f1b49) + boot-hydrate hydrateCommittedFromServer classify-before-mutate merge — committed rows converge to server values+versions, drafts/pending/failed never overwritten or dropped, trial balance invalidated only on change, transport errors no-op {hydrated:0} (83a2a683); GLJournalsPage K30 empty state under h1 + CSV-export-failure ErrorState with exact-action retry (a1d2ad01); adjustments UI still partial"
     },
     {
       "id": 12,
@@ -80,12 +80,12 @@
     {
       "id": 16,
       "status": "built",
-      "evidence": "/dashboard KPI tiles + sector dashboards derive from real stores; W-FAB-002 part-1 de-fabrication remediation (da8eac31): computeSectorDriverModel pinned honest by money tests across all 12 sectors — signed prefix-first classification (absEntryAmount magnitude aggregator retired), target-x-factor filler retired in favor of null-with-disclosure, fabricated KPI ids banned from measured metrics (absent or labeled simulator-only), simulator surface separated from measured KPIs, insurance combined-ratio identity derived from real premium/claims/opex with the x0.62 claims fallback retired (SectorDriverDashboard.money.test.ts); wave-2 continuation: fabricated KPI ids pruned + descriptions made honest across all 12 sector configs, -89 lines of invented metric definitions (7ee5c3cc), and the legacy sr-only copy block removed from SectorDriverDashboard with Banking/Education/Government/Logistics/SectorPage specs re-pinned to real rendered surfaces (730b2dea)"
+      "evidence": "/dashboard KPI tiles + sector dashboards derive from real stores; W-FAB-002 part-1 de-fabrication remediation (da8eac31): computeSectorDriverModel pinned honest by money tests across all 12 sectors — signed prefix-first classification (absEntryAmount magnitude aggregator retired), target-x-factor filler retired in favor of null-with-disclosure, fabricated KPI ids banned from measured metrics (absent or labeled simulator-only), simulator surface separated from measured KPIs, insurance combined-ratio identity derived from real premium/claims/opex with the x0.62 claims fallback retired (SectorDriverDashboard.money.test.ts); wave-2 continuation: fabricated KPI ids pruned + descriptions made honest across all 12 sector configs, -89 lines of invented metric definitions (7ee5c3cc), and the legacy sr-only copy block removed from SectorDriverDashboard with Banking/Education/Government/Logistics/SectorPage specs re-pinned to real rendered surfaces (730b2dea); wave-3 continuation: vertical sweep de-fabricated all 12 industry dirs — invented datasets removed, real stores wired, disclosures added, money-test pinning extended (educationMetrics/governmentMetrics.money.test.ts et al.) (7dad753d), and energyStore demo seeds removed — 5 invented assets / 7 trend points / capacity mix had shipped as persisted defaults that pages rendered as user data on first run; store now honors its contracted empty defaults (1bea2f3a)"
     },
     {
       "id": 17,
       "status": "partial",
-      "evidence": "/scenarios builder + what-if; Monte Carlo workers present; K30 four-states landed on ScenarioBuilderPage (d39602c7): empty-ledger EmptyState with import CTA, in-flight skeleton during Monte Carlo run, failed-run ErrorState retry succeeds, failed-save ErrorState retry persists the scenario (ScenarioBuilderPage.test.tsx 'K30' cases); server W0.2c entity-scope hardening (8b617858): all 8 scenario routes reject cross-entity read/write/apply with 403 FP-0201, NULL-entity scenarios fail closed on every operation, absent entityFilter no longer falls through to an unfiltered tenant query, apply asserts base AND target budget/forecast entity scope BEFORE any write or state disclosure — zero rows written on rejection, test-verified (scenarios.entityScope.test.ts); end-to-end sensitivity chain still partial"
+      "evidence": "/scenarios builder + what-if; Monte Carlo workers present; K30 four-states landed on ScenarioBuilderPage (d39602c7): empty-ledger EmptyState with import CTA, in-flight skeleton during Monte Carlo run, failed-run ErrorState retry succeeds, failed-save ErrorState retry persists the scenario (ScenarioBuilderPage.test.tsx 'K30' cases); server W0.2c entity-scope hardening (8b617858): all 8 scenario routes reject cross-entity read/write/apply with 403 FP-0201, NULL-entity scenarios fail closed on every operation, absent entityFilter no longer falls through to an unfiltered tenant query, apply asserts base AND target budget/forecast entity scope BEFORE any write or state disclosure — zero rows written on rejection, test-verified (scenarios.entityScope.test.ts); WhatIfPage K30 four-states completed (a1d2ad01): empty-ledger EmptyState with New Scenario CTA under mounted h1, previously swallowed compare failures now ErrorState role=alert retrying exactly the failed action, demo-default assumptions honestly labeled, stale compare-target reset; legacy mocked __tests__ mirror retired for colocated real-engine spec (7 tests incl. a no-fake-skeleton honesty pin); end-to-end sensitivity chain still partial"
     },
     {
       "id": 18,
@@ -95,7 +95,7 @@
     {
       "id": 19,
       "status": "partial",
-      "evidence": "/cash/forecast + treasury pages; A.5 treasury depth partial"
+      "evidence": "/cash/forecast + treasury pages; CashForecastPage K30 empty branch rebuilt as shared EmptyState under h1, content untouched (model already K18-contracted), real-glStore spec 5 tests (a1d2ad01); A.5 treasury depth partial"
     },
     {
       "id": 20,
