@@ -1,6 +1,6 @@
 {
   "$schema_note": "Blueprint Â§24.2 Escape Ledger status file. Rows/canon live in scripts/escape-ledger-check.mjs (transcribed verbatim from .agent/blueprint-parts/12c-section-24.md). Every wave that ships or regresses a workflow updates its row and MUST cite evidence (route/engine/test that proves the status). Reclassifying a Hard row as legitimate requires a Blueprint amendment (Â§22.6 honesty clause).",
-  "updated_at": "2026-08-22",
+  "updated_at": "2026-08-23",
   "rows": [
     {
       "id": 1,
@@ -50,12 +50,12 @@
     {
       "id": 10,
       "status": "partial",
-      "evidence": "/periods/close lifecycle states shipped; checklist completeness F-CLOSE-001 partial"
+      "evidence": "/periods/close lifecycle states shipped; K30 four-states specs landed on PeriodClosePage (ada953e6): hydrate skeleton, EmptyState CTA re-entering close flow, in-flight transition skeleton, failed-transition ErrorState retry succeeds (PeriodClosePage.test.tsx 'K30' cases); checklist completeness F-CLOSE-001 still partial"
     },
     {
       "id": 11,
       "status": "partial",
-      "evidence": "GL entries POST/bulk/tombstone via /api/gl (W0.8.6); adjustments UI partial"
+      "evidence": "GL entries POST/bulk/tombstone via /api/gl (W0.8.6); G6 UUID resolver (6fc332be, P0): server-authoritative identity — gl-*/draft:* draft ids remapped to server UUIDs with version capture for If-Match, arity-mismatched commits fail closed rather than guess identities on financial records (glStore.applyCommitResult); adjustments UI still partial"
     },
     {
       "id": 12,
@@ -65,7 +65,7 @@
     {
       "id": 13,
       "status": "partial",
-      "evidence": "/board-pack generator v0 renders from real data; PPTX export + signoff A.17 open"
+      "evidence": "/board-pack generator v0 renders from real data; render-probe (d5f6fea6) pins DOM figures figure-for-figure to independently re-derived balanced double-entry ledger arithmetic (revenue 50k, expenses 43k incl interest+tax, NI 7k, equity 107k incl current-period earnings) and rejects divergence classes (dropped interest/tax, equity-without-earnings, flipped NI, margin-on-total-cost); K30 empty/error states wired (BoardPackPage.probe.test.tsx); PPTX export + signoff A.17 still open"
     },
     {
       "id": 14,
@@ -80,12 +80,12 @@
     {
       "id": 16,
       "status": "built",
-      "evidence": "/dashboard KPI tiles + sector dashboards derive from real stores (post de-fabrication)"
+      "evidence": "/dashboard KPI tiles + sector dashboards derive from real stores; W-FAB-002 part-1 de-fabrication remediation (da8eac31): computeSectorDriverModel pinned honest by money tests across all 12 sectors — signed prefix-first classification (absEntryAmount magnitude aggregator retired), target-x-factor filler retired in favor of null-with-disclosure, fabricated KPI ids banned from measured metrics (absent or labeled simulator-only), simulator surface separated from measured KPIs, insurance combined-ratio identity derived from real premium/claims/opex with the x0.62 claims fallback retired (SectorDriverDashboard.money.test.ts)"
     },
     {
       "id": 17,
       "status": "partial",
-      "evidence": "/scenarios builder + what-if; Monte Carlo workers present; sensitivity chain partial"
+      "evidence": "/scenarios builder + what-if; Monte Carlo workers present; K30 four-states landed on ScenarioBuilderPage (d39602c7): empty-ledger EmptyState with import CTA, in-flight skeleton during Monte Carlo run, failed-run ErrorState retry succeeds, failed-save ErrorState retry persists the scenario (ScenarioBuilderPage.test.tsx 'K30' cases); end-to-end sensitivity chain still partial"
     },
     {
       "id": 18,

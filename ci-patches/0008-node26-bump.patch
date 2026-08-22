@@ -1,0 +1,53 @@
+# 0008 — CI Node.js 22 -> 26 bump (2026-08-22)
+#
+# Purpose:
+#   Bumps every Node version pin in `.github/workflows/ci.yml` and
+#   `.github/workflows/test-unit.yml` from 22 to 26. Both workflows pin Node
+#   via a single `env.NODE_VERSION` default ("22"); all `actions/setup-node`
+#   steps dereference `${{ env.NODE_VERSION }}`, so one line per workflow is
+#   sufficient (setup-node's npm cache key derives from the resolved node
+#   version, so cache keys follow automatically).
+#
+# Why a patch file instead of a direct push:
+#   This repository's GitHub App lacks the `workflows` permission; any push
+#   touching `.github/workflows/**` is rejected with "refusing to allow a
+#   GitHub App to create or update workflow ... without `workflows`
+#   permission". CI fixes are therefore delivered under ci-patches/ for a
+#   human to apply (same convention as 0005/0006/0007).
+#
+# Apply:
+#   git apply ci-patches/0008-node26-bump.patch
+#   git add .github/workflows/ci.yml .github/workflows/test-unit.yml
+#   git commit -m "ci: bump Node 22 -> 26 in ci.yml and test-unit.yml"
+#
+# Safety rationale (better-sqlite3):
+#   The server job compiles/loads `better-sqlite3`. v13 ships N-API prebuilds,
+#   which are ABI-stable across Node major versions, so the Node 22 -> 26 jump
+#   does not require a native rebuild or a dependency bump. Verified locally
+#   on Node 26.7.0: server suite green.
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 318a1bf2..bf5464a0 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -14,7 +14,7 @@ concurrency:
+   cancel-in-progress: true
+ 
+ env:
+-  NODE_VERSION: "22"
++  NODE_VERSION: "26"
+   MAIN_CHUNK_LIMIT: 150    # KB gzip
+   TOTAL_JS_LIMIT: 2048     # KB gzip
+ 
+diff --git a/.github/workflows/test-unit.yml b/.github/workflows/test-unit.yml
+index 1def6afa..0d0c5f13 100644
+--- a/.github/workflows/test-unit.yml
++++ b/.github/workflows/test-unit.yml
+@@ -22,7 +22,7 @@ concurrency:
+   cancel-in-progress: true
+ 
+ env:
+-  NODE_VERSION: "22"
++  NODE_VERSION: "26"
+   # Node --max-old-space-size in MiB. 8 GiB matches package.json's `test`
+   # script and comfortably fits the 16 GiB ubuntu-latest runner. The previous
+   # 81920 (80 GiB) value exceeded the runner's physical RAM by 5x, so it never

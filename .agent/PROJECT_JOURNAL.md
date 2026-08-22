@@ -1966,3 +1966,153 @@ audit output or a missing instrument, scoreboard measured before any remediation
 claim; Chris OK operational - all five fixes run today, advisory modes prevent
 false-blocking of routine pushes; Beth OK user/customer - the scoreboard measures
 exactly what a CFO buys: workflows completed without leaving the product).
+
+## Session 033, Part 4 (2026-08-22→23) — past-midnight continuation wave: K30 orphans, README truth pass, four-states, W-FAB-002 p1, BoardPack probe, G6 UUID resolver
+
+**Branch:** `phase0/w02-tenancy`. Eight work commits landed between 2026-08-22 20:01
+(`ada953e6`) and 2026-08-23 01:01 (`85439664`) local — verified via
+`git log --date=format-local:'%Y-%m-%d %H:%M'`; tracker auto-updates interleave between
+work commits throughout. At writing time origin sits at push point `bc3d44b7` with HEAD
+ahead 4 (`git status`: d5f6fea6, 350437f7, 6fc332be, 85439664 unpushed).
+
+### 11. Orphaned PeriodClose K30 specs landed first (ada953e6)
+
+The surviving test-half of died wave bfec73a0: hydrate skeleton (`period-close-loading`),
+empty-state CTA re-entry (`period-close-init`), in-flight transition skeleton, ErrorState
+role=alert retry path. Page-half had already shipped inside b3f5312d. Commit body records
+16/16 green against HEAD; diff is +76 in PeriodClosePage.test.tsx and nothing else
+(`git show --stat`).
+
+### 12. README truth pass: five audited clusters replaced with live measurements (661dd9ab)
+
+Remediation of the 12e80ee1 audit, every replacement value measured live, per commit body:
+tests 13,438/1,197 → **14,495/1,272** (badge, getting-started, scripts and quality-gates
+tables, release gate); server census 107 → **247 tests / 25 files** plus native-db 83
+measured live; the money triple-contradiction resolved onto the canonical money:ast
+ratchet — '98 of 380' / '2 of 23' / '98/380+2/23' variants removed, now **990 scanned /
+896 safe / 0 unsafe / 100%** via money:ast Gate 9b + fabrication Gate 9c = 0, legacy
+import-proxy marked retired-pending per the adjudication (action_log 2026-08-22T19:05Z:
+all 7 raw toFixed sites are roundMoney().toFixed() round-then-format); adoption
+denominator 258→**255** (208 engines + 47 store non-test modules), importer numerator
+re-measured at 88; unsupported '78 verticals' → measured **18 `/sector/*` dashboard
+routes** (ROUTE_MAP rows 164-181) + **14 templates** in src/templates, sector pack list
+rewritten to the real routes; footer re-verification stamp base commit 7c09eea9, report
+date 2026-08-22. Gates after edit per commit body: check-readme-claims **11/11 PASS**
+(Gate 7), verify-readme-stats PASS, prettier clean. Diff 47+/44−.
+
+The prettier gate earned its keep in-wave here: pre-commit Gate 3 runs
+`prettier --check` on staged markdown (.husky/pre-commit:30-36) and rejected the first
+staging's hand-built tables — what landed is the gate-formatted layout (padded `:---`
+separator rows are visible in the 661dd9ab diff). Single-squash landing means no
+intermediate commit exists to cite for the rejection itself.
+
+### 13. ScenarioBuilderPage four-states — and an honesty note about skeletons (d39602c7)
+
+Empty branch now renders the shared EmptyState under a mounted PageHeader (h1 discipline
+restored; was an h2-only early return) with a testid'd Import Data CTA; Monte Carlo
+in-flight shows a real skeleton region (`scenario-mc-skeleton`, aria-busy) beside the
+disabled run control; save failure and simulation failure use the shared ErrorState
+role=alert whose retry re-runs exactly the failed action (replacing ad-hoc red alert
+boxes). The load-bearing honesty note: **no fake page-hydrate skeleton**, because base
+derivation is synchronous from persisted stores — the only honest in-flight surface is
+the worker call. New 167-line spec file (real stores, PeriodClose idiom); cluster tsc 0 /
+eslint 0 / prettier clean, 32/32 across page/money/model.
+
+### 14. W-FAB-002 part 1: SectorDriverDashboard rebuilt on signed classification (da8eac31)
+
+Audit baseline (.agent/W-FAB-002-sectordriver-fabrication-audit.md): 66/66 sector KPIs
+were class-C fabricated. The rebuild kills the systemic plumbing, not just the numbers:
+the absEntryAmount max(|d−c|,|net|) magnitude trick is replaced by signed creditNormal /
+debitNormal sums everywhere; regex-over-'code name' textOf bucketing is demoted to a
+name-only fallback while account-code prefixes classify first (4/5/6 P&L, 1/2/3 balance
+sheet); invented bases (assetBase=rev×2, debtBase=exp×0.55, productionBase=rev÷100) and
+the filledMetrics target×growthFactor×efficiencyFactor filler are deleted; the insurance
+x0.62 claims fallback and the cross-sector regulatory fabrications (banking
+cet1/npl_ratio/loan_deposit_ratio, technology arr/quick_ratio, retail atv/gmroi, energy
+production/boe/lifting/carbon, construction backlog/wip, healthcare
+ar_days/case_mix_index, government cost_per_citizen/revenue_collection_gap, education
+revenue_per_student/faculty_ratio, insurance retention/solvency-180) are removed outright.
+Derived metrics are null-with-disclosure when a denominator class is absent
+(gross_margin, inventory_turnover=cogs/inventory, banking nim+efficiency, insurance
+gwp/loss/expense/combined from real premiums+claims+opex, realestate noi/cap_rate/ltv).
+Driver-arithmetic KPIs move into a labeled 'Scenario simulator' card declaring each basis
+string, never merged into measured KPIs; header copy now states the measured-vs-projection
+split. Tests rewritten per K5: 23 specs pin exact identities (insurance identity 60/25/85),
+sign sensitivity (a debited revenue row REDUCES revenue), disclosure-not-number nulls, and
+filler absence; sector cluster 75/75.
+
+And the wave's own honest fixture caught a real classifier defect: prefix-5 claim rows
+never reached the claims bucket — found mid-wave and fixed in-wave (recorded in
+HANDOVER.md by 55c19467; no separate commit exists since the fix predates the landing).
+
+### 15. BoardPackPage render-probe #4: ledger arithmetic held against the DOM (d5f6fea6)
+
+Fourth probe in the W0.5 harness series re-derives every pack figure from a balanced
+double-entry ledger independently of boardPackData/computeBalanceSheet, then holds the DOM
+to them figure-for-figure: expenses include interest+tax classes (7xxx/8xxx), equity
+includes current-period earnings (100k posted + 7k = 107k), the A = L + E identity, budget
+utilization from real budget totals — plus divergence-class negatives (cost-only margin
+14%, earnings-less equity, flipped net income, revenue+COGS conflation) and both K30
+states. New 166-line probe file.
+
+### 16. Push point bc3d44b7: full pre-push battery green
+
+Mid-wave, 55c19467 recorded this exact wave into .agent/HANDOVER.md (+43) and state.json
+(+9/−2) — the record several citations above lean on. bc3d44b7 is a tracker auto-update
+(PROGRESS_TRACKER.html, 1 insertion) serving as the push-point marker: origin sits exactly
+there while HEAD is ahead 4 (git status + log decoration, run this session). The hook at
+.husky/pre-push gates every push with set -e over: tsc --noEmit; eslint --max-warnings 0;
+vitest P0 shard (FXEngine, ConsolidationEngine, SafeMathParser, glValidation,
+glStore.smoke, spreadsheetSanitize, masterStorage.security, moneySerialize,
+persistenceAuthority, components/layout/, plugins/, safeJSONStorage); npm run build;
+bundle-check; version consistency; readme claim check (Gate 7); dependency audit;
+tautological scan; money AST ratchet (9b); fabrication ratchet (9c); persistence-map +
+schema-equality (9d); route-map drift (9e); docs-truth + engine manifest (9f);
+escape-ledger advisory (9g); cascade-hold ledger check (Gate 10). Honest labeling: this
+lane verified the gate list by reading the hook and verified the push landed via refs;
+individual gate executions were not re-run here — under set -e, a landed push implies
+every gate exited 0, which is also what HANDOVER promised ("Full-suite + build re-run at
+next pre-push").
+
+### 17. W0.8.6-G6 UUID resolver: server identity lands on client rows (6fc332be)
+
+P0 blocker from plan v2: applyCommitResult discarded the server's entries:[{id,version}]
+payload, so committed rows kept client-generated ids and no version was ever captured for
+If-Match. Committed responses now resolve positionally (server returns request-line order
+on both the fresh-insert and idempotent-replay paths): entry ids are re-keyed to server
+UUIDs, entryVersions[serverId] = version recorded, syncState re-keyed, and the
+lastImportEntryIds batch token is remapped so undoLastImport targets server rows. Arity
+mismatch (sent N, acknowledged M) fails closed — nothing marked committed, nothing
+remapped; identity on financial records is never guessed. GLState gains persisted
+entryVersions; specs rewritten per K5 (G6 remap + retry-cannot-double-post, fail-closed
+arity, conflict path unchanged). glStore cluster 19/19; tsc 0; eslint 0. Diff spans
+glStore.ts, glStore.server.test.ts, types/index.ts (115+/28−).
+
+The first G6 attempt failed tsc on exactly the two hazards this design invites:
+readonly-typed entry payloads meeting Immer mutation, and narrowing over GlCommitResult
+union shapes. Both were fixed in-wave before the single squashed landing — the committed
+code carries the witnesses (`GlCommitResult<readonly { id: string; version: number }[]>`,
+`readonly GLEntry[]`, and the '// Immer draft: runtime re-key of a readonly-tagged
+identity field' comment). No intermediate commit exists to cite; the final state compiles
+clean per the commit body.
+
+### In-wave honesty ledger (this part)
+
+- Three repairs happened mid-wave and are invisible to history as separate commits
+  (single-squash landings): the G6 tsc readonly/narrowing fixes (→ 6fc332be), the
+  prefix-5 claims-bucket defect caught BY the new honest fixtures (→ da8eac31; recorded
+  at HANDOVER.md:243-244), and the README table rewrite forced by the pre-commit prettier
+  gate (→ 661dd9ab).
+- Every measurement above traces to a named SHA's commit body/diff or a file read this
+  session; nothing is claimed from memory alone.
+
+### Open items
+
+- **W-FAB-002 part-2 (in flight):** sectors/\*.ts config copy still advertises removed
+  KPIs; LEGACY_SECTOR_COPY sr-only sweep; per-sector render-probes; industry-pack
+  vertical-truthfulness sweep (HANDOVER.md via 55c19467).
+- **glStore promotion remainder:** product trigger + boot drain still owed (plan v2
+  G1-G5/G7/G8 remain; updateEntry descoped — no server PUT).
+- **W0.2c-hardening M-tier and W-A11Y lanes in flight** (HANDOVER.md items 7/9).
+- Four commits unpushed at writing time (d5f6fea6, 350437f7, 6fc332be, 85439664): the
+  next push re-runs the full battery over them.

@@ -351,8 +351,13 @@
 * {
   box-sizing: border-box;
 }
-html {
-  scroll-behavior: smooth;
+/* W-A11Y-001 m-minor: smooth scrolling is progressive enhancement only.
+   Users with (prefers-reduced-motion: reduce) — e.g. vestibular disorders —
+   get instant anchor/programmatic jumps instead of animated scrolling. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 body {
   margin: 0;
