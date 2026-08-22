@@ -220,6 +220,14 @@ const rows = routes.map((r) => {
 });
 
 // RC1 enforcement: no unassigned pillars survive generation.
+// Alias-inheritance: a redirect whose target is a declared route inherits
+// that route's pillar (terminates; future alias batches self-classify).
+for (const r of rows) {
+  if (r.pillar === '—' && r.navigateTo) {
+    const t = rows.find((x) => x.path === r.navigateTo);
+    if (t && t.pillar !== '—') r.pillar = t.pillar;
+  }
+}
 const unassigned = rows.filter((r) => r.pillar === '—').map((r) => r.path);
 if (unassigned.length > 0) {
   console.error(

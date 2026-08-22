@@ -59,8 +59,9 @@ describe('route shell contract (UI-03)', () => {
   it('does not lose or duplicate any route while the tree is restructured', () => {
     const all = pathsIn(APP_SOURCE);
 
-    // 200 routed screens, per docs/CAPABILITY_TRUTH_MATRIX.md.
-    expect(all).toHaveLength(200);
+    // 200 routed screens, per docs/CAPABILITY_TRUTH_MATRIX.md, plus the 21
+    // W0.5 slice-2 rescue aliases (RC3 redirects for never-declared deep links).
+    expect(all).toHaveLength(221);
     // Aliases to the same page are allowed; identical path strings are not.
     expect(new Set(all).size).toBe(all.length);
   });

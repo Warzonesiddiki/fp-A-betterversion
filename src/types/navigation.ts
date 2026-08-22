@@ -70,6 +70,11 @@ export const NAV_SECTIONS: readonly NavSection[] = [
           { path: '/', label: 'Dashboard', hidden: true },
           { path: '/dashboard', label: 'Dashboard' },
           { path: '/board-pack', label: 'Board Pack' },
+          {
+            path: '/reports/board-pack/new',
+            label: 'Board Pack (legacy path)',
+            hidden: true,
+          },
           { path: '/profile', label: 'My Profile' },
           { path: '/help', label: 'Help Center' },
           { path: '/docs/api', label: 'API Reference' },
@@ -164,6 +169,11 @@ export const NAV_SECTIONS: readonly NavSection[] = [
         label: null,
         items: [
           { path: '/variance', label: 'Variance Analysis', permission: 'variance:read' },
+          {
+            path: '/reports/variance',
+            label: 'Variance Analysis (legacy path)',
+            hidden: true,
+          },
           { path: '/analytics', label: 'Advanced Analytics', permission: 'analytics:read' },
           { path: '/analytics/benchmarking', label: 'Benchmarking', permission: 'analytics:read' },
           { path: '/analytics/goal-seek', label: 'Goal Seek', permission: 'analytics:read' },
@@ -249,6 +259,14 @@ export const NAV_SECTIONS: readonly NavSection[] = [
           { path: '/audit/sox', label: 'SOX Audit', permission: 'audit:read' },
           { path: '/audit/fair-value', label: 'Fair Value (ASC 820)', permission: 'audit:read' },
           { path: '/audit/impairment', label: 'Impairment (ASC 360)', permission: 'audit:read' },
+          { path: '/audit', label: 'Audit Trail (legacy path)', hidden: true },
+          { path: '/audit-trail', label: 'Audit Trail (legacy path)', hidden: true },
+          { path: '/sox', label: 'SOX Audit (legacy path)', hidden: true },
+          {
+            path: '/compliance/sox',
+            label: 'SOX Audit (legacy path)',
+            hidden: true,
+          },
         ],
       },
       {
@@ -263,6 +281,11 @@ export const NAV_SECTIONS: readonly NavSection[] = [
             permission: 'gl:reconcile',
           },
           { path: '/data/version-diff', label: 'Version Diff', permission: 'import:read' },
+          {
+            path: '/reconciliation',
+            label: 'Data Reconciliation (legacy path)',
+            hidden: true,
+          },
           { path: '/accounting/depreciation', label: 'Depreciation Schedule' },
           { path: '/accounting/multi-book', label: 'Multi-Book Accounting' },
         ],
@@ -281,11 +304,41 @@ export const NAV_SECTIONS: readonly NavSection[] = [
             permission: 'import:read',
           },
           { path: '/data/gl-reporting', label: 'GL Reporting', permission: 'import:read' },
+          {
+            path: '/reports/trial-balance',
+            label: 'Trial Balance (legacy path)',
+            hidden: true,
+          },
         ],
       },
       {
         label: 'Period Close',
-        items: [{ path: '/periods/close', label: 'Period Close', permission: 'period:read' }],
+        items: [
+          { path: '/periods/close', label: 'Period Close', permission: 'period:read' },
+          { path: '/periods', label: 'Period Close (legacy path)', hidden: true },
+          { path: '/period-close', label: 'Period Close (legacy path)', hidden: true },
+          {
+            path: '/period-close/trial-balance',
+            label: 'Period Close (legacy path)',
+            hidden: true,
+          },
+          {
+            path: '/period-close/consolidation',
+            label: 'Period Close (legacy path)',
+            hidden: true,
+          },
+          { path: '/period-close/lock', label: 'Period Close (legacy path)', hidden: true },
+          {
+            path: '/period-close/checklist',
+            label: 'Period Close (legacy path)',
+            hidden: true,
+          },
+          {
+            path: '/period-close/signoff',
+            label: 'Period Close (legacy path)',
+            hidden: true,
+          },
+        ],
       },
       {
         label: 'Revenue & Leases',
@@ -316,6 +369,11 @@ export const NAV_SECTIONS: readonly NavSection[] = [
           { path: '/cash/forecast', label: 'Cash Forecast' },
           { path: '/cash/debt', label: 'Debt Schedule' },
           { path: '/cash/working-capital', label: 'Working Capital' },
+          {
+            path: '/cash-forecast',
+            label: 'Cash Forecast (legacy path)',
+            hidden: true,
+          },
         ],
       },
       {
@@ -324,6 +382,11 @@ export const NAV_SECTIONS: readonly NavSection[] = [
           { path: '/currency/fx-rates', label: 'Exchange Rates' },
           { path: '/currency/translation', label: 'Translation Results' },
           { path: '/currency/hedging', label: 'Hedge Management' },
+          {
+            path: '/fx-rates',
+            label: 'Exchange Rates (legacy path)',
+            hidden: true,
+          },
         ],
       },
       {
@@ -363,6 +426,16 @@ export const NAV_SECTIONS: readonly NavSection[] = [
             permission: 'entity:read',
           },
           { path: '/consolidation/ownership', label: 'Ownership Tree', permission: 'entity:read' },
+          {
+            path: '/ic-elimination',
+            label: 'Intercompany Eliminations (legacy path)',
+            hidden: true,
+          },
+          {
+            path: '/intercompany/*',
+            label: 'Intercompany Eliminations (legacy path)',
+            hidden: true,
+          },
         ],
       },
     ],
@@ -558,6 +631,8 @@ export const NAV_SECTIONS: readonly NavSection[] = [
           { path: '/settings/integrations', label: 'Integrations', permission: 'settings:read' },
           { path: '/settings/security', label: 'Security', permission: 'settings:read' },
           { path: '/settings', label: 'System Settings', permission: 'settings:read' },
+          { path: '/backup', label: 'Backup (legacy path)', hidden: true },
+          { path: '/backup/restore', label: 'Backup (legacy path)', hidden: true },
         ],
       },
       {

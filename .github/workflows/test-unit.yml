@@ -2,8 +2,8 @@
 # =============================================================================
 # FinPlan Pro — Unit Test Workflow (Milestone 1 of CI matrix split)
 # See docs/drafts/atlas/CI_MATRIX.md §3.3 and docs/drafts/atlas/ci/README.md.
-# Runs Vitest single-run with 80 GiB heap; uploads coverage to Codecov.
-# Three witnesses: 8,334+ tests, 80 GiB heap, Codecov token in repo secrets.
+# Runs Vitest single-run with an 8 GiB heap; uploads coverage to Codecov.
+# Heap matches package.json's `test` script (see the note on VITEST_HEAP_MB).
 # =============================================================================
 
 name: test-unit
@@ -23,13 +23,19 @@ concurrency:
 
 env:
   NODE_VERSION: "22"
-  VITEST_HEAP_GB: "81920"   # Node --max-old-space-size in MiB = 80 GiB
+  # Node --max-old-space-size in MiB. 8 GiB matches package.json's `test`
+  # script and comfortably fits the 16 GiB ubuntu-latest runner. The previous
+  # 81920 (80 GiB) value exceeded the runner's physical RAM by 5x, so it never
+  # bought headroom — it only deferred an OOM into an opaque SIGKILL.
+  VITEST_HEAP_MB: "8192"
 
 jobs:
   vitest:
-    name: Vitest (single-run, 80 GiB heap, coverage)
+    name: Vitest (single-run, 8 GiB heap, coverage)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # The full suite needs ~17 min wall-clock (longer with --coverage), so the
+    # previous 15 min cap failed this job on essentially every run.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
@@ -42,11 +48,8 @@ jobs:
       - name: Install dependencies (npm ci, lockfile-strict)
         run: npm ci --no-audit --no-fund
 
-      - name: Run Vitest with 80 GiB heap + coverage
-        # 80 GiB matches package.json's `test` script; the OOM-kill margin is
-        # needed because the 197M+ working-tree engines + 825+ pre-existing
-        # files hold large module graphs. See CI_MATRIX.md §3.3.
-        run: node --max-old-space-size=${{ env.VITEST_HEAP_GB }} node_modules/vitest/vitest.mjs run --coverage --reporter=default
+      - name: Run Vitest with 8 GiB heap + coverage
+        run: node --max-old-space-size=${{ env.VITEST_HEAP_MB }} node_modules/vitest/vitest.mjs run --coverage --reporter=default
 
       - name: Upload coverage report (artifact, 14-day retention)
         if: always()

@@ -26,7 +26,6 @@ import {
   ShieldCheck,
   CheckCircle2,
   XCircle,
-  AlertTriangle,
   FileDown,
   Link2,
   RefreshCw,
@@ -35,6 +34,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { LiveRegion } from '@/components/ui/LiveRegion';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { useGLStore } from '@/store/glStore';
 import { useBudgetStore } from '@/store/budgetStore';
 import { useSettingsStore } from '@/store/settingsStore';
@@ -141,6 +143,9 @@ export default function PeriodClosePage() {
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  // K30 four-states: remembers the transition whose attempt failed so the
+  // ErrorState retry control can re-run exactly that action.
+  const [lastFailedTransition, setLastFailedTransition] = useState<CloseTransition | null>(null);
   const [chainVerified, setChainVerified] = useState<{ ok: boolean; total: number } | null>(null);
   const [liveMessage, setLiveMessage] = useState('');
 
@@ -227,14 +232,51 @@ export default function PeriodClosePage() {
     }
   }, [selected, entry]);
 
+  if (!initialized) {
+    // K30 four-states: skeleton while the close store hydrates, so a cold
+    // start never flashes the degenerate "no periods" text. PageHeader stays
+    // mounted to keep a page-level h1 in this branch.
+    return (
+      <div className="p-6 space-y-6 max-w-7xl">
+        <PageHeader title="Period Close" purpose="Loading period close workflow…" />
+        <div data-testid="period-close-loading" className="space-y-4">
+          <Skeleton count={1} height="40px" width="40%" />
+          <Skeleton count={1} variant="card" height="160px" />
+          <Skeleton count={6} variant="text" height="24px" />
+        </div>
+      </div>
+    );
+  }
+
   if (!selected || !entry) {
-    return <PageHeader title="Period Close" purpose="No fiscal periods available." />;
+    // K30 four-states: a real EmptyState with a CTA back into the close flow
+    // instead of purpose-text-only. initialize() rebuilds one close entry per
+    // fiscal period from the fiscal calendar.
+    return (
+      <div className="p-6 space-y-6 max-w-7xl">
+        <PageHeader title="Period Close" purpose="Month-end close workflow." />
+        <EmptyState
+          variant="no-data"
+          title="No fiscal periods to close"
+          description="The period close workflow has no initialized fiscal periods yet. Initialize the close workflow to build periods from the fiscal calendar, then start closing."
+          action={
+            <Button
+              onClick={() => initialize(periods, DEFAULT_JURISDICTION)}
+              data-testid="period-close-init"
+            >
+              Initialize period close
+            </Button>
+          }
+        />
+      </div>
+    );
   }
 
   const runTransition = async (transition: CloseTransition) => {
     if (!selected || busy) return;
     setBusy(transition);
     setActionError(null);
+    setLastFailedTransition(transition);
     const trialBalance =
       transition === 'hard-close' || transition === 'lock'
         ? entriesForPeriod(glEntries, selected).map((e) => ({
@@ -259,6 +301,7 @@ export default function PeriodClosePage() {
       `${selected.name} ${selected.year} ${transition.replace('-', ' ')} — state is now ${PeriodCloseStateMachine.getStateLabel(result.newState)}`
     );
     setReason('');
+    setLastFailedTransition(null);
     if (transition === 'lock') {
       const locked = [result.lockedLineItems ?? 0, result.lockedScenarios ?? 0];
       setLiveMessage(
@@ -480,6 +523,19 @@ export default function PeriodClosePage() {
               {canClose || canReopen ? (
                 <div className="space-y-3 pt-2 border-t border-gray-200 dark:border-gray-700">
                   <h3 className="text-sm font-semibold">Actions</h3>
+                  {/* K30 four-states: visible skeleton region while a close/
+                      reopen transition is in flight (buttons stay disabled via
+                      busy; the region is announced to assistive tech). */}
+                  {busy !== null && (
+                    <div
+                      data-testid="period-close-transition-skeleton"
+                      aria-busy="true"
+                      className="space-y-2"
+                    >
+                      <Skeleton count={1} height="20px" width="35%" />
+                      <Skeleton count={2} variant="text" height="16px" />
+                    </div>
+                  )}
                   <div>
                     <label htmlFor="close-reason" className="sr-only">
                       Reason for close or reopen
@@ -582,13 +638,20 @@ export default function PeriodClosePage() {
                     {blockReason ?? ''}
                   </p>
                   {actionError && (
-                    <p
-                      role="alert"
-                      className="text-sm text-red-600 dark:text-red-400 flex items-center gap-1.5"
-                    >
-                      <AlertTriangle className="w-4 h-4 shrink-0" aria-hidden="true" />
-                      {actionError}
-                    </p>
+                    /* K30 four-states: shared ErrorState (role=alert) with an
+                       explicit retry that re-runs the failed transition. */
+                    <ErrorState
+                      title="Period action failed"
+                      message={actionError}
+                      errorCode="PERIOD-CLOSE-ACTION"
+                      className="py-6"
+                      onRetry={
+                        lastFailedTransition
+                          ? () => void runTransition(lastFailedTransition)
+                          : undefined
+                      }
+                      retryLabel={`Retry ${lastFailedTransition?.replace(/-/g, ' ') ?? 'action'}`}
+                    />
                   )}
                   {!canClose && !canReopen && (
                     <p className="text-xs text-muted-foreground">

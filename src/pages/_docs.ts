@@ -1657,4 +1657,215 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
       },
     ],
   },
+
+  // ── W0.5 slice 2 legacy aliases (RC3) ──────────────────────────────────────
+  // Compatibility paths that redirect to their canonical surfaces; kept here so
+  // the help panel (and _docs.test.ts route coverage) treats them like routes.
+  '/audit': {
+    title: 'Audit Trail',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias that redirects to the Audit Trail (/audit/trail), the immutable log of every ledger-affecting action.',
+      },
+    ],
+  },
+  '/audit-trail': {
+    title: 'Audit Trail',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias that redirects to the Audit Trail (/audit/trail), the immutable log of every ledger-affecting action.',
+      },
+    ],
+  },
+  '/sox': {
+    title: 'SOX Audit',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias that redirects to the SOX compliance dashboard (/audit/sox) for control mapping and evidence collection.',
+      },
+    ],
+  },
+  '/compliance/sox': {
+    title: 'SOX Audit',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias that redirects to the SOX compliance dashboard (/audit/sox) for control mapping and evidence collection.',
+      },
+    ],
+  },
+  '/periods': {
+    title: 'Period Close',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias that redirects to the Period Close workspace (/periods/close) for checklists, locks and sign-off.',
+      },
+    ],
+  },
+  '/period-close': {
+    title: 'Period Close',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias that redirects to the Period Close workspace (/periods/close) for checklists, locks and sign-off.',
+      },
+    ],
+  },
+  '/period-close/trial-balance': {
+    title: 'Period Close',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias for the period-close trial-balance step; redirects to /periods/close where the trial balance lives.',
+      },
+    ],
+  },
+  '/period-close/consolidation': {
+    title: 'Period Close',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias for the period-close consolidation step; redirects to /periods/close.',
+      },
+    ],
+  },
+  '/period-close/lock': {
+    title: 'Period Close',
+    sections: [
+      {
+        title: 'What is this page?',
+        content: 'A legacy alias for period locking; redirects to /periods/close.',
+      },
+    ],
+  },
+  '/period-close/checklist': {
+    title: 'Period Close',
+    sections: [
+      {
+        title: 'What is this page?',
+        content: 'A legacy alias for the close checklist; redirects to /periods/close.',
+      },
+    ],
+  },
+  '/period-close/signoff': {
+    title: 'Period Close',
+    sections: [
+      {
+        title: 'What is this page?',
+        content: 'A legacy alias for close sign-off; redirects to /periods/close.',
+      },
+    ],
+  },
+  '/cash-forecast': {
+    title: 'Cash Forecast',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias that redirects to the Cash Forecast (/cash/forecast) for 13-week liquidity planning.',
+      },
+    ],
+  },
+  '/fx-rates': {
+    title: 'Exchange Rates',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias that redirects to Exchange Rates (/currency/fx-rates) for maintaining spot and forward rates.',
+      },
+    ],
+  },
+  '/reconciliation': {
+    title: 'Data Reconciliation',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias that redirects to Data Reconciliation (/data/reconciliation) for matching imported statements against the GL.',
+      },
+    ],
+  },
+  '/reports/trial-balance': {
+    title: 'Trial Balance',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias that redirects to the Trial Balance (/data/gl-trial-balance) with debit/credit totals per account.',
+      },
+    ],
+  },
+  '/backup': {
+    title: 'Backup & Restore',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias that redirects to Backup & Restore (/settings/backup) for snapshots and recovery.',
+      },
+    ],
+  },
+  '/backup/restore': {
+    title: 'Backup & Restore',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias for restoring from a snapshot; redirects to Backup & Restore (/settings/backup).',
+      },
+    ],
+  },
+  '/reports/variance': {
+    title: 'Variance Analysis',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias that redirects to the Variance Analysis dashboard (/variance) for budget-vs-actual drivers.',
+      },
+    ],
+  },
+  '/reports/board-pack/new': {
+    title: 'Board Pack',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias for board-pack generation; redirects to the Board Pack (/board-pack).',
+      },
+    ],
+  },
+  '/ic-elimination': {
+    title: 'Intercompany Eliminations',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A legacy alias that redirects to Intercompany Eliminations (/consolidation/ic-eliminations).',
+      },
+    ],
+  },
+  '/intercompany/*': {
+    title: 'Intercompany Eliminations',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'Legacy intercompany URLs (e.g. /intercompany/new) redirect to Intercompany Eliminations (/consolidation/ic-eliminations).',
+      },
+    ],
+  },
 };

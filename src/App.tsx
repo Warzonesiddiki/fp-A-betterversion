@@ -665,6 +665,82 @@ export default function App() {
                 <Route path="/scenarios/merge" element={<Navigate to="/scenarios" replace />} />
                 <Route path="/scenarios/lock" element={<Navigate to="/scenarios" replace />} />
               </Route>
+
+              {/* W0.5 slice 2 (RC3): rescue aliases for deep links that were never
+                  declared routes — journey specs (tests/e2e/journeys/*), stale
+                  bookmarks and old menu entries now land on the real surface
+                  instead of the 404 catch-all. Navigate-only: no chrome needed,
+                  but they live inside the shell so the UI-03 route-shell contract
+                  sees them as ordinary in-shell paths. */}
+              <Route element={<RouteGroupWrapper domain="utility" />}>
+                {/* Audit family */}
+                <Route path="/audit" element={<Navigate to="/audit/trail" replace />} />
+                <Route path="/audit-trail" element={<Navigate to="/audit/trail" replace />} />
+                <Route path="/sox" element={<Navigate to="/audit/sox" replace />} />
+                <Route path="/compliance/sox" element={<Navigate to="/audit/sox" replace />} />
+
+                {/* Period close family */}
+                <Route path="/periods" element={<Navigate to="/periods/close" replace />} />
+                <Route path="/period-close" element={<Navigate to="/periods/close" replace />} />
+                <Route
+                  path="/period-close/trial-balance"
+                  element={<Navigate to="/periods/close" replace />}
+                />
+                <Route
+                  path="/period-close/consolidation"
+                  element={<Navigate to="/periods/close" replace />}
+                />
+                <Route
+                  path="/period-close/lock"
+                  element={<Navigate to="/periods/close" replace />}
+                />
+                <Route
+                  path="/period-close/checklist"
+                  element={<Navigate to="/periods/close" replace />}
+                />
+                <Route
+                  path="/period-close/signoff"
+                  element={<Navigate to="/periods/close" replace />}
+                />
+
+                {/* Cash & treasury */}
+                <Route path="/cash-forecast" element={<Navigate to="/cash/forecast" replace />} />
+                <Route path="/fx-rates" element={<Navigate to="/currency/fx-rates" replace />} />
+
+                {/* Data & GL */}
+                <Route
+                  path="/reconciliation"
+                  element={<Navigate to="/data/reconciliation" replace />}
+                />
+                <Route
+                  path="/reports/trial-balance"
+                  element={<Navigate to="/data/gl-trial-balance" replace />}
+                />
+
+                {/* Settings */}
+                <Route path="/backup" element={<Navigate to="/settings/backup" replace />} />
+                <Route
+                  path="/backup/restore"
+                  element={<Navigate to="/settings/backup" replace />}
+                />
+
+                {/* Reporting */}
+                <Route path="/reports/variance" element={<Navigate to="/variance" replace />} />
+                <Route
+                  path="/reports/board-pack/new"
+                  element={<Navigate to="/board-pack" replace />}
+                />
+
+                {/* Consolidation */}
+                <Route
+                  path="/ic-elimination"
+                  element={<Navigate to="/consolidation/ic-eliminations" replace />}
+                />
+                <Route
+                  path="/intercompany/*"
+                  element={<Navigate to="/consolidation/ic-eliminations" replace />}
+                />
+              </Route>
             </Route>
 
             <Route
