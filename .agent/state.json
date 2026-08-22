@@ -5,16 +5,20 @@
   "capabilities": {
     "git": true,
     "gh": true,
-    "node": "v22.22.3",
-    "npm": "10.9.8",
+    "node": "v26.7.0 SYSTEM DEFAULT (user directive 2026-08-22: track Current/latest; server tsc+243 tests+native-db 83 verified green on it); Node 22.23.2 user-scoped at %LOCALAPPDATA%\\Programs\\node22 for CI-parity debugging",
+    "npm": "12.0.2 global shim; lockfile operations stay pinned via npx npm@10.9.8 ci",
     "docker": false,
-    "cargo": false,
+    "cargo": true,
     "go": false,
     "egress": true,
-    "nproc": 2,
-    "mem_gb": 3,
-    "constraint": "workflows cannot be pushed (GitHub App lacks `workflows` permission) -> ci-patches/ convention",
-    "constraint_mem": "sandbox has 3GB RAM; frontend suite normally runs with an 8GB heap flag"
+    "nproc": 4,
+    "mem_gb": 19.8,
+    "hw_measured_at": "2026-08-22T05:30:00Z",
+    "hw": "real laptop i7-10510U 4c/8t, 20GB RAM, MX330; MSVC BuildTools v18 (VC.Tools.x86.x64) present; WebView2 present; rustup stable-msvc cargo 1.98 user-scoped - src-tauri now verifiable (R-24 mitigation)",
+    "playwright": "chromium + winldd installed 2026-08-22 (E2E was dead on this machine before)",
+    "constraint": "workflows cannot be pushed (GitHub App lacks `workflows` permission) -> ci-patches/ convention; CI still pins Node 22 until a deliberate ci-patch bumps it",
+    "constraint_gh": "gh CLI user-scoped at %LOCALAPPDATA%\\Programs\\gh\\bin",
+    "constraint_mem": "20GB RAM: overlap root suite + server suites freely; serialize full-suite vs production build only"
   },
   "fingerprint": {
     "languages": ["TypeScript", "Rust(tauri)"],
@@ -54,6 +58,14 @@
     {
       "id": "W0.9",
       "summary": "LLM egress chokepoint + redaction (Phase 0 remaining item)"
+    },
+    {
+      "id": "W-FAB-001",
+      "summary": "sector InsuranceDashboardPage (audited): delete credit>debit revenue fallback + debit-side expense sweep + 43xx-as-expense + ??90/??180 fixture constants + variance-as-change arrows; gate on hasInsuranceAccounts not entries.length; single derivation via buildInsuranceDashboardModel (41xx GWP credit-normal / 42xx earned / 43xx ceded separate / 51-53xx loss+commission+UW); null-with-disclosure ratios; RETENTION+SOLVENCY+POLICY-COUNT not derivable -> remove; REWRITE pinning tests (SectorInsurance.money.test.ts known answers 21.7/13.3/35/100/180, sector-pages.test.tsx generic-code fixtures)"
+    },
+    {
+      "id": "W-FAB-002",
+      "summary": "SectorDriverDashboard shared model (all sector branches): free-text accountCode+accountName regex bucketing, Math.abs magnitude aggregation absEntryAmount, invented bases assetBase/debtBase=exp*0.55/equityBase, DEFAULT_DRIVERS {8,92,86,5}, insurance x0.62 claims fallback + formula retention/solvency anchored to config target, value=target*growthFactor*efficiencyFactor fallback - audit every sector branch and de-fabricate or relabel as explicit scenario-simulator separated from actuals pages"
     }
   ],
   "blocked": [
