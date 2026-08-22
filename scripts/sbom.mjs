@@ -7,8 +7,30 @@
  */
 
 import { spawnSync } from 'child_process';
+import { existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 
 const ROOT = process.cwd();
+
+/**
+ * Spawn npm reliably on every dev machine. On Windows there is no `npm`
+ * executable — only `npm.cmd`, which Node refuses to spawn without a shell
+ * (ENOENT under spawnSync). Prefer the real CLI shipped beside Node
+ * (`<node>/node_modules/npm/bin/npm-cli.js`), fall back to bare `npm`.
+ */
+function runNpm(args, options) {
+  const localCli = join(
+    dirname(process.execPath),
+    'node_modules',
+    'npm',
+    'bin',
+    'npm-cli.js'
+  );
+  if (existsSync(localCli)) {
+    return spawnSync(process.execPath, [localCli, ...args], options);
+  }
+  return spawnSync('npm', args, options);
+}
 
 console.log('📋 Generating Software Bill of Materials\n');
 
@@ -17,7 +39,7 @@ try {
   // transitive dedup mismatch (e.g. glob@11 under archiver-utils via exceljs),
   // while STILL emitting a valid --json payload on stdout. Capture stdout
   // regardless of exit status and only fail if it is not parseable JSON.
-  const res = spawnSync('npm', ['ls', '--omit=dev', '--json', '--all'], {
+  const res = runNpm(['ls', '--omit=dev', '--json', '--all'], {
     cwd: ROOT,
     encoding: 'utf-8',
     maxBuffer: 10 * 1024 * 1024,
