@@ -165,6 +165,13 @@ export const ERROR_CODES = defineErrorCodes([
     description: 'Duplicate idempotency key.',
   },
   {
+    code: 'FP-0402',
+    httpStatus: 409,
+    category: 'conflict',
+    description:
+      'Duplicate natural key — a resource with the same unique code already exists in scope (W0.2c account-code uniqueness).',
+  },
+  {
     code: 'FP-0410',
     httpStatus: 409,
     category: 'conflict',
@@ -252,6 +259,8 @@ export const errors = {
     new AppError('FP-0400', message).toPayload(details),
   duplicateIdempotency: (message?: string, details?: unknown) =>
     new AppError('FP-0401', message).toPayload(details),
+  duplicateKey: (message?: string, details?: unknown) =>
+    new AppError('FP-0402', message).toPayload(details),
   notFound: (message?: string) => new AppError('FP-0500', message),
   internal: (message?: string) => new AppError('FP-0900', message),
 } as const;

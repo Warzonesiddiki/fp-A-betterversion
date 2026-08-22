@@ -11,6 +11,7 @@ import {
 } from '../gates/threeStatementGate.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { requireEntityWriteAccess, filterByEntityAccess } from '../middleware/entityAuth.js';
+import { AppError } from '../types/errorCodes.js';
 
 /**
  * MONEY MIGRATION (2026-08-04, GAP-1 / F-0006): trial-balance totals are
@@ -110,6 +111,32 @@ const CreateAccountSchema = z.object({
 });
 
 const UpdateAccountSchema = CreateAccountSchema.partial();
+
+/**
+ * W0.2c (duplicate-code surfacing): the schema-level UNIQUE(accounts.code) is
+ * DB-wide while the route pre-check is deliberately tenant-scoped (H-1 — a
+ * tenant-scoped check avoids blocking tenants whose codes merely collide
+ * cross-tenant at check time). A collision outside the caller's tenant scope,
+ * or a same-tenant race between check and insert, therefore surfaces here as
+ * a raw constraint throw. Detect it so it becomes a typed 409 (FP-0402)
+ * instead of an untyped 500.
+ */
+function isUniqueConstraintViolation(err: unknown): boolean {
+  if (err instanceof Error) {
+    const sqliteCode = (err as Error & { code?: unknown }).code;
+    if (typeof sqliteCode === 'string' && sqliteCode.startsWith('SQLITE_CONSTRAINT_UNIQUE')) {
+      return true;
+    }
+    return /UNIQUE constraint failed/i.test(err.message);
+  }
+  return false;
+}
+
+/** Uniform typed 409 payload for account-code collisions (W0.2c). */
+function duplicateAccountCodePayload() {
+  const conflict = new AppError('FP-0402', 'Account code already exists');
+  return { status: conflict.httpStatus, body: conflict.toPayload({ field: 'code' }) };
+}
 
 // --- Helpers ---
 
@@ -502,7 +529,7 @@ router.delete(
 // --- Chart of Accounts Routes ---
 
 // GET /accounts — list chart of accounts, optional entity_id filter, hierarchical
-router.get('/accounts', (req: Request, res: Response) => {
+router.get('/accounts', filterByEntityAccess, (req: Request, res: Response) => {
   try {
     const { entity_id } = req.query;
     // H-1 red-team fix: the chart of accounts is tenant data. Without this
@@ -510,6 +537,26 @@ router.get('/accounts', (req: Request, res: Response) => {
     const conditions: string[] = ['a.tenant_id = ?'];
     const params: unknown[] = [resolveTenantId(req.user)];
 
+    // W0.2c fix (empty-entityFilter fallthrough): visibility comes from the
+    // JWT-resolved permission set attached by filterByEntityAccess — never
+    // from trusting the query param alone. null filter = global Admin (whole
+    // tenant); [] = no permitted entities → empty COA; populated → intersect.
+    // Accounts without an entity binding follow requireEntityAccess's
+    // documented fallback (unbound resource stays readable within tenant).
+    const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as
+      | string[]
+      | null;
+    if (entityFilter !== null && entityFilter.length > 0) {
+      conditions.push(
+        `(a.entity_id IS NULL OR a.entity_id IN (${entityFilter.map(() => '?').join(', ')}))`
+      );
+      params.push(...entityFilter);
+    } else if (entityFilter !== null && entityFilter.length === 0) {
+      res.json([]);
+      return;
+    }
+
+    // The query param may only NARROW the permitted scope; it can never widen it.
     if (entity_id && typeof entity_id === 'string') {
       conditions.push('a.entity_id = ?');
       params.push(entity_id);
@@ -568,12 +615,15 @@ router.post('/accounts', (req: Request, res: Response) => {
 
     // H-1 red-team fix: duplicate-code check scoped per tenant. The old
     // global check let tenant A's code block tenant B (existence oracle).
+    // W0.2c: the collision response is a typed 409 (FP-0402), aligned with
+    // the schema/gate expectation of tenant-wide account-code uniqueness.
     const duplicate = db
       .prepare('SELECT id FROM accounts WHERE code = ? AND tenant_id = ?')
       .get(code, tenantId);
 
     if (duplicate) {
-      res.status(400).json({ error: 'Account code already exists' });
+      const conflict = duplicateAccountCodePayload();
+      res.status(conflict.status).json(conflict.body);
       return;
     }
 
@@ -599,6 +649,11 @@ router.post('/accounts', (req: Request, res: Response) => {
     const account = db.prepare('SELECT * FROM accounts WHERE id = ?').get(id);
     res.status(201).json(account);
   } catch (err) {
+    if (isUniqueConstraintViolation(err)) {
+      const conflict = duplicateAccountCodePayload();
+      res.status(conflict.status).json(conflict.body);
+      return;
+    }
     console.error('POST /gl/accounts error:', err);
     res.status(500).json({ error: 'Failed to create account' });
   }
@@ -630,14 +685,28 @@ router.put('/accounts/:id', (req: Request, res: Response) => {
       return;
     }
 
-    // Check unique code if code is being changed (tenant-scoped)
+    // W0.2c fix (entity binding immutable post-create): an update may never
+    // re-bind an account to another entity — that would move realized
+    // financial rows across entity boundaries retroactively and silently
+    // flip which entity-scoped users can see them. Rebinding requires an
+    // explicit migration path (admin + tenancy validation) which does not
+    // exist yet, so any attempt is rejected with a typed conflict.
+    if (parsed.data.entity_id !== undefined) {
+      const conflict = new AppError('FP-0410', 'Entity binding is immutable after creation');
+      res.status(conflict.httpStatus).json(conflict.toPayload({ field: 'entity_id' }));
+      return;
+    }
+
+    // Check unique code if code is being changed (tenant-scoped; typed 409
+    // per W0.2c alignment with tenant-wide uniqueness).
     if (parsed.data.code) {
       const duplicate = db
         .prepare('SELECT id FROM accounts WHERE code = ? AND tenant_id = ? AND id != ?')
         .get(parsed.data.code, tenantId, String(req.params.id));
 
       if (duplicate) {
-        res.status(400).json({ error: 'Account code already exists' });
+        const conflict = duplicateAccountCodePayload();
+        res.status(conflict.status).json(conflict.body);
         return;
       }
     }
@@ -677,6 +746,11 @@ router.put('/accounts/:id', (req: Request, res: Response) => {
     const account = db.prepare('SELECT * FROM accounts WHERE id = ?').get(String(req.params.id));
     res.json(account);
   } catch (err) {
+    if (isUniqueConstraintViolation(err)) {
+      const conflict = duplicateAccountCodePayload();
+      res.status(conflict.status).json(conflict.body);
+      return;
+    }
     console.error('PUT /gl/accounts/:id error:', err);
     res.status(500).json({ error: 'Failed to update account' });
   }

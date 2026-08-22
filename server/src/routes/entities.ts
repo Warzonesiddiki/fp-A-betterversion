@@ -246,12 +246,32 @@ router.put('/:id', requireRole('Admin'), (req: Request, res: Response) => {
 // --- Department Routes ---
 
 // GET /departments — list departments
-router.get('/departments/list', (req: Request, res: Response) => {
+router.get('/departments/list', filterByEntityAccess, (req: Request, res: Response) => {
   try {
     const { entity_id } = req.query;
     const conditions: string[] = ['d.tenant_id = ?'];
     const params: unknown[] = [resolveTenantId(req.user)];
 
+    // W0.2c fix (empty-entityFilter fallthrough): visibility comes from the
+    // JWT-resolved permission set attached by filterByEntityAccess — never
+    // from trusting the query param alone. null filter = global Admin (whole
+    // tenant); [] = no permitted entities → empty list; populated → intersect.
+    // Departments without an entity binding follow requireEntityAccess's
+    // documented fallback (unbound resource stays readable within tenant).
+    const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as
+      | string[]
+      | null;
+    if (entityFilter !== null && entityFilter.length > 0) {
+      conditions.push(
+        `(d.entity_id IS NULL OR d.entity_id IN (${entityFilter.map(() => '?').join(', ')}))`
+      );
+      params.push(...entityFilter);
+    } else if (entityFilter !== null && entityFilter.length === 0) {
+      res.json([]);
+      return;
+    }
+
+    // The query param may only NARROW the permitted scope; it can never widen it.
     if (entity_id && typeof entity_id === 'string') {
       conditions.push('d.entity_id = ?');
       params.push(entity_id);

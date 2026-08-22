@@ -11,14 +11,10 @@ import type { SqliteDdl } from '../db/schema.js';
 
 type EntityRole = 'viewer' | 'analyst' | 'manager' | 'admin';
 
-const ROLE_HIERARCHY: Record<EntityRole, number> = {
-  viewer: 0,
-  analyst: 1,
-  manager: 2,
-  admin: 3,
-};
-
-const WRITE_ROLES: EntityRole[] = ['analyst', 'manager', 'admin'];
+// Exported (W0.2c-hardening) for read-only reuse by route-level scope
+// assertions in scenarios.ts. Additive only: the middleware factories below
+// keep their exact prior behaviour.
+export const WRITE_ROLES: EntityRole[] = ['analyst', 'manager', 'admin'];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -33,7 +29,7 @@ function isGlobalAdmin(req: Request): boolean {
  * Looks up the user's entity role from the user_entity_access table.
  * Falls back to the user's global role if no explicit entity access row exists.
  */
-function getEntityRole(userId: string, entityId: string): EntityRole | null {
+export function getEntityRole(userId: string, entityId: string): EntityRole | null {
   const row = db
     .prepare('SELECT role FROM user_entity_access WHERE user_id = ? AND entity_id = ?')
     .get(userId, entityId) as { role: string } | undefined;
@@ -66,7 +62,7 @@ function getEntityRole(userId: string, entityId: string): EntityRole | null {
  * Returns an array of entity IDs the user has access to.
  * Admin users get access to all entities.
  */
-function getAccessibleEntityIds(userId: string, globalRole: string): string[] {
+export function getAccessibleEntityIds(userId: string, globalRole: string): string[] {
   if (globalRole === 'Admin') {
     const rows = db.prepare('SELECT id FROM entities').all() as { id: string }[];
     return rows.map((r) => r.id);
@@ -157,9 +153,13 @@ export function requireEntityAccess(
     // Check if user has access to this entity
     const entityRole = getEntityRole(req.user.id, entityId);
     if (!entityRole) {
+      // W0.2c-hardening (lane S9): `code` added additively so machine
+      // consumers receive the stable registry id (errorCodes.ts FP-0201,
+      // cross-entity scope denial). Legacy fields retained verbatim.
       res.status(403).json({
         error: 'Access denied',
         message: 'You do not have access to this entity',
+        code: 'FP-0201',
       });
       return;
     }
@@ -225,9 +225,11 @@ export function requireEntityWriteAccess(
 
     const entityRole = getEntityRole(req.user.id, entityId);
     if (!entityRole) {
+      // W0.2c-hardening (lane S9): additive `code` — see requireEntityAccess.
       res.status(403).json({
         error: 'Access denied',
         message: 'You do not have access to this entity',
+        code: 'FP-0201',
       });
       return;
     }
@@ -323,9 +325,11 @@ export function requireParentEntityAccess(parentTable: string, parentForeignKey:
 
     const entityRole = getEntityRole(req.user.id, parent.entity_id);
     if (!entityRole) {
+      // W0.2c-hardening (lane S9): additive `code` — see requireEntityAccess.
       res.status(403).json({
         error: 'Access denied',
         message: 'You do not have access to this entity',
+        code: 'FP-0201',
       });
       return;
     }

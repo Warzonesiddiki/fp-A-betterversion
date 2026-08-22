@@ -3,13 +3,17 @@ import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db/connection.js';
 import { resolveTenantId } from '../db/tenancy.js';
-import { authMiddleware } from '../middleware/auth.js';
+import { authMiddleware, type JwtPayload } from '../middleware/auth.js';
 import {
   requireEntityAccess,
   requireEntityWriteAccess,
   filterByEntityAccess,
   requireParentEntityAccess,
+  getAccessibleEntityIds,
+  getEntityRole,
+  WRITE_ROLES,
 } from '../middleware/entityAuth.js';
+import { errors } from '../types/errorCodes.js';
 
 const router = Router();
 router.use(authMiddleware);
@@ -75,6 +79,55 @@ function toDbStatus(status?: string): string | undefined {
   return status.toLowerCase();
 }
 
+// --- Entity-scope assertions (W0.2c-hardening) ------------------------------
+//
+// The shared entityAuth middleware is deliberately permissive when a resource
+// carries no resolvable entity_id (entity scoping is optional for several of
+// the resources it guards). Scenario surfaces are entity-scoped by contract,
+// so every scenario route re-asserts here that the caller's scope RESOLVES and
+// COVERS every entity the request touches — the scenario's own base entity AND
+// any target budget/forecast/entity referenced in the payload (defect 1:
+// entity-crossing on apply/read). Unresolvable or out-of-scope contexts are
+// rejected with FP-0201 ("cross-tenant entity scope denied", HTTP 403) from
+// the stable error-code registry — never a silently-allowed request (defect 2:
+// allow-through). Global Admins bypass exactly as they do in the shared
+// middleware; K25/K27 write semantics downstream are untouched.
+
+/** null = Global Admin (unrestricted, mirrors isGlobalAdmin); otherwise the
+ *  concrete set of entity ids the principal may act on. */
+function entityScopeOf(user: JwtPayload): string[] | null {
+  if (user.role === 'Admin') return null;
+  return getAccessibleEntityIds(user.id, user.role);
+}
+
+/** Typed FP-0201 rejection payload for every scenario-route scope failure. */
+function denyCrossEntityScope(res: Response, details: Record<string, unknown>): void {
+  res
+    .status(403)
+    .json(
+      errors.crossTenantScope('Cross-entity access denied for this scenario operation', details)
+    );
+}
+
+/**
+ * True only when the caller's scope resolves AND grants at least the required
+ * role level on entityId. Fail-closed: a missing/unresolvable entity context
+ * NEVER passes for scoped (non-Global-Admin) callers.
+ */
+function scopeCovers(
+  scope: string[] | null,
+  user: JwtPayload,
+  entityId: string | null | undefined,
+  need: 'read' | 'write'
+): boolean {
+  if (scope === null) return true;
+  if (!entityId) return false;
+  if (!scope.includes(entityId)) return false;
+  const role = getEntityRole(user.id, entityId);
+  if (!role) return false;
+  return need === 'read' ? true : WRITE_ROLES.includes(role);
+}
+
 // --- Routes ---
 
 // GET / — list scenarios
@@ -88,16 +141,25 @@ router.get('/', filterByEntityAccess, (req: Request, res: Response) => {
     conditions.push('s.tenant_id = ?');
     params.push(resolveTenantId(req.user));
 
-    // Entity-level access filter
+    // Entity-level access filter (fail closed, W0.2c): `null` is the reserved
+    // Global-Admin marker set by filterByEntityAccess ("no filter"). An ABSENT
+    // (undefined) filter means the guard never ran — return an empty page
+    // instead of falling through to an unfiltered, entity-crossing result.
     const entityFilter = (req as unknown as Record<string, unknown>).entityFilter as
       | string[]
-      | null;
-    if (entityFilter !== null && entityFilter.length > 0) {
-      conditions.push(`s.entity_id IN (${entityFilter.map(() => '?').join(', ')})`);
-      params.push(...entityFilter);
-    } else if (entityFilter !== null && entityFilter.length === 0) {
+      | null
+      | undefined;
+    if (entityFilter === undefined) {
       res.json({ data: [], total: 0, limit: Number(limit), offset: Number(offset) });
       return;
+    }
+    if (entityFilter !== null && entityFilter.length === 0) {
+      res.json({ data: [], total: 0, limit: Number(limit), offset: Number(offset) });
+      return;
+    }
+    if (entityFilter !== null) {
+      conditions.push(`s.entity_id IN (${entityFilter.map(() => '?').join(', ')})`);
+      params.push(...entityFilter);
     }
 
     if (type && typeof type === 'string') {
@@ -163,6 +225,24 @@ router.get('/:id', requireEntityAccess('scenarios'), (req: Request, res: Respons
       return;
     }
 
+    // W0.2c-hardening: the scenario's base entity must resolve and sit inside
+    // the caller's scope (fail closed when entity_id is unresolvable).
+    if (
+      !scopeCovers(
+        entityScopeOf(req.user!),
+        req.user!,
+        (scenario as Record<string, unknown>).entity_id as string | null,
+        'read'
+      )
+    ) {
+      denyCrossEntityScope(res, {
+        resource: 'scenario',
+        scenario_id: String(req.params.id),
+        required: 'read',
+      });
+      return;
+    }
+
     const lineItems = db
       .prepare(
         `SELECT sli.*, a.name AS account_name, a.code AS account_code,
@@ -196,6 +276,31 @@ router.post(
 
       const { name, description, type, fiscal_year, entity_id, budget_id, status } = parsed.data;
       const id = uuidv4();
+
+      // W0.2c-hardening: a payload-referenced budget must exist within the
+      // tenant AND sit inside the caller's entity scope (write). Blocks
+      // creating a scenario that re-parents another entity's budget.
+      if (budget_id) {
+        const budget = db
+          .prepare('SELECT id, entity_id FROM budgets WHERE id = ? AND tenant_id = ?')
+          .get(budget_id, resolveTenantId(req.user)) as
+          | { id: string; entity_id: string | null }
+          | undefined;
+
+        if (!budget) {
+          res.status(404).json({ error: 'Budget not found' });
+          return;
+        }
+
+        if (!scopeCovers(entityScopeOf(req.user!), req.user!, budget.entity_id, 'write')) {
+          denyCrossEntityScope(res, {
+            resource: 'budget',
+            budget_id,
+            required: 'write',
+          });
+          return;
+        }
+      }
 
       db.prepare(
         `INSERT INTO scenarios (id, tenant_id, name, description, type, fiscal_year, entity_id, budget_id, status, created_by, created_at, updated_at)
@@ -241,12 +346,60 @@ router.put('/:id', requireEntityWriteAccess('scenarios'), (req: Request, res: Re
     }
 
     const existing = db
-      .prepare('SELECT id FROM scenarios WHERE id = ? AND tenant_id = ?')
-      .get(String(req.params.id), resolveTenantId(req.user));
+      .prepare('SELECT id, entity_id FROM scenarios WHERE id = ? AND tenant_id = ?')
+      .get(String(req.params.id), resolveTenantId(req.user)) as
+      | { id: string; entity_id: string | null }
+      | undefined;
 
     if (!existing) {
       res.status(404).json({ error: 'Scenario not found' });
       return;
+    }
+
+    // W0.2c-hardening: writes require a resolvable, in-scope entity on the
+    // scenario itself...
+    if (!scopeCovers(entityScopeOf(req.user!), req.user!, existing.entity_id, 'write')) {
+      denyCrossEntityScope(res, {
+        resource: 'scenario',
+        scenario_id: String(req.params.id),
+        required: 'write',
+      });
+      return;
+    }
+
+    // ...and any entity/budget the payload re-points to must equally sit
+    // inside the caller's scope (blocks cross-entity re-parenting).
+    if (
+      parsed.data.entity_id !== undefined &&
+      !scopeCovers(entityScopeOf(req.user!), req.user!, parsed.data.entity_id, 'write')
+    ) {
+      denyCrossEntityScope(res, {
+        resource: 'entity',
+        entity_id: parsed.data.entity_id,
+        required: 'write',
+      });
+      return;
+    }
+    if (parsed.data.budget_id !== undefined) {
+      const budget = db
+        .prepare('SELECT id, entity_id FROM budgets WHERE id = ? AND tenant_id = ?')
+        .get(parsed.data.budget_id, resolveTenantId(req.user)) as
+        | { id: string; entity_id: string | null }
+        | undefined;
+
+      if (!budget) {
+        res.status(404).json({ error: 'Budget not found' });
+        return;
+      }
+
+      if (!scopeCovers(entityScopeOf(req.user!), req.user!, budget.entity_id, 'write')) {
+        denyCrossEntityScope(res, {
+          resource: 'budget',
+          budget_id: parsed.data.budget_id,
+          required: 'write',
+        });
+        return;
+      }
     }
 
     const fields: string[] = [];
@@ -295,11 +448,24 @@ router.put('/:id', requireEntityWriteAccess('scenarios'), (req: Request, res: Re
 router.delete('/:id', requireEntityWriteAccess('scenarios'), (req: Request, res: Response) => {
   try {
     const existing = db
-      .prepare('SELECT id FROM scenarios WHERE id = ? AND tenant_id = ?')
-      .get(String(req.params.id), resolveTenantId(req.user));
+      .prepare('SELECT id, entity_id FROM scenarios WHERE id = ? AND tenant_id = ?')
+      .get(String(req.params.id), resolveTenantId(req.user)) as
+      | { id: string; entity_id: string | null }
+      | undefined;
 
     if (!existing) {
       res.status(404).json({ error: 'Scenario not found' });
+      return;
+    }
+
+    // W0.2c-hardening: deletes require a resolvable, in-scope entity on the
+    // scenario (fail closed when entity_id is unresolvable).
+    if (!scopeCovers(entityScopeOf(req.user!), req.user!, existing.entity_id, 'write')) {
+      denyCrossEntityScope(res, {
+        resource: 'scenario',
+        scenario_id: String(req.params.id),
+        required: 'write',
+      });
       return;
     }
 
@@ -332,11 +498,24 @@ router.get(
   (req: Request, res: Response) => {
     try {
       const scenario = db
-        .prepare('SELECT id FROM scenarios WHERE id = ? AND tenant_id = ?')
-        .get(String(req.params.id), resolveTenantId(req.user));
+        .prepare('SELECT id, entity_id FROM scenarios WHERE id = ? AND tenant_id = ?')
+        .get(String(req.params.id), resolveTenantId(req.user)) as
+        | { id: string; entity_id: string | null }
+        | undefined;
 
       if (!scenario) {
         res.status(404).json({ error: 'Scenario not found' });
+        return;
+      }
+
+      // W0.2c-hardening: the parent scenario's entity must resolve and sit in
+      // the caller's scope (fail closed when unresolvable).
+      if (!scopeCovers(entityScopeOf(req.user!), req.user!, scenario.entity_id, 'read')) {
+        denyCrossEntityScope(res, {
+          resource: 'scenario',
+          scenario_id: String(req.params.id),
+          required: 'read',
+        });
         return;
       }
 
@@ -373,11 +552,24 @@ router.post(
       }
 
       const scenario = db
-        .prepare('SELECT id FROM scenarios WHERE id = ? AND tenant_id = ?')
-        .get(String(req.params.id), resolveTenantId(req.user));
+        .prepare('SELECT id, entity_id FROM scenarios WHERE id = ? AND tenant_id = ?')
+        .get(String(req.params.id), resolveTenantId(req.user)) as
+        | { id: string; entity_id: string | null }
+        | undefined;
 
       if (!scenario) {
         res.status(404).json({ error: 'Scenario not found' });
+        return;
+      }
+
+      // W0.2c-hardening: adding items requires a resolvable, in-scope entity
+      // on the parent scenario (fail closed when unresolvable).
+      if (!scopeCovers(entityScopeOf(req.user!), req.user!, scenario.entity_id, 'write')) {
+        denyCrossEntityScope(res, {
+          resource: 'scenario',
+          scenario_id: String(req.params.id),
+          required: 'write',
+        });
         return;
       }
 
@@ -443,6 +635,25 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
       return;
     }
 
+    // W0.2c-hardening (defect 1): applying requires write access to the
+    // scenario's BASE entity, resolvable and in scope (fail closed when
+    // entity_id is unresolvable).
+    if (
+      !scopeCovers(
+        entityScopeOf(req.user!),
+        req.user!,
+        scenario.entity_id as string | null,
+        'write'
+      )
+    ) {
+      denyCrossEntityScope(res, {
+        resource: 'scenario',
+        scenario_id: String(req.params.id),
+        required: 'write',
+      });
+      return;
+    }
+
     const { target, target_id, apply_adjustments } = parsed.data;
 
     const lineItems = db
@@ -466,14 +677,27 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
 
       const budget = db
         .prepare(
-          'SELECT id, status FROM budgets WHERE id = ? AND tenant_id = ? AND deleted_at IS NULL'
+          'SELECT id, entity_id, status FROM budgets WHERE id = ? AND tenant_id = ? AND deleted_at IS NULL'
         )
         .get(budgetId as string, resolveTenantId(req.user)) as
-        | { id: string; status: string }
+        | { id: string; entity_id: string | null; status: string }
         | undefined;
 
       if (!budget) {
         res.status(404).json({ error: 'Target budget not found' });
+        return;
+      }
+
+      // W0.2c-hardening (defect 1): the TARGET budget's entity must also
+      // resolve and sit inside the caller's scope with write access — a user
+      // scoped to entity X must never push scenario numbers into another
+      // entity's budget.
+      if (!scopeCovers(entityScopeOf(req.user!), req.user!, budget.entity_id, 'write')) {
+        denyCrossEntityScope(res, {
+          resource: 'budget',
+          budget_id: String(budgetId),
+          required: 'write',
+        });
         return;
       }
 
@@ -482,11 +706,15 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
         return;
       }
 
-      const upsertItem = db.prepare(
+      // W0.2c-hardening: plain INSERT (no ON CONFLICT) — the schema defines
+      // no UNIQUE(budget_id, account_id, month) target for that clause, so
+      // the previous statement always failed against real SQLite. The
+      // transaction below already existence-checks each row and takes the
+      // UPDATE branch on hits (K27 money-safe: same single-connection,
+      // serialized semantics as before).
+      const insertItem = db.prepare(
         `INSERT INTO budget_line_items (id, tenant_id, budget_id, account_id, month, amount, department_id, notes, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
-         ON CONFLICT(budget_id, account_id, month) DO UPDATE SET
-           amount = excluded.amount, notes = excluded.notes, updated_at = datetime('now')`
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
       );
 
       const applyToBudget = db.transaction((items: Record<string, unknown>[]) => {
@@ -506,7 +734,7 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
               "UPDATE budget_line_items SET amount = ?, notes = ?, updated_at = datetime('now') WHERE id = ? AND tenant_id = ?"
             ).run(amount, item.notes ?? null, existingItem.id, resolveTenantId(req.user));
           } else {
-            upsertItem.run(
+            insertItem.run(
               uuidv4(),
               resolveTenantId(req.user),
               budgetId,
@@ -531,11 +759,25 @@ router.post('/:id/apply', requireEntityWriteAccess('scenarios'), (req: Request, 
       }
 
       const forecast = db
-        .prepare('SELECT id FROM forecasts WHERE id = ? AND tenant_id = ?')
-        .get(forecastId, resolveTenantId(req.user));
+        .prepare('SELECT id, entity_id FROM forecasts WHERE id = ? AND tenant_id = ?')
+        .get(forecastId, resolveTenantId(req.user)) as
+        | { id: string; entity_id: string | null }
+        | undefined;
 
       if (!forecast) {
         res.status(404).json({ error: 'Target forecast not found' });
+        return;
+      }
+
+      // W0.2c-hardening (defect 1): the TARGET forecast's entity must also
+      // resolve and sit inside the caller's scope with write access — same
+      // entity-crossing guard as the budget target.
+      if (!scopeCovers(entityScopeOf(req.user!), req.user!, forecast.entity_id, 'write')) {
+        denyCrossEntityScope(res, {
+          resource: 'forecast',
+          forecast_id: String(forecastId),
+          required: 'write',
+        });
         return;
       }
 

@@ -191,12 +191,26 @@ export function ensureServerColumns(db: SqliteDdl): void {
     ['departments', 'parent_id', 'TEXT'],
     ['departments', 'manager_id', 'TEXT'],
     ['departments', 'description', 'TEXT'],
+    // W0.2c (lane S10): the /gl/accounts routes write accounts.description
+    // (CreateAccountSchema) but 001_initial_schema.sql never had that column,
+    // so every POST/PUT carrying a description failed with SQLITE_ERROR.
+    // Same additive route/schema-drift alignment as the W0.2b entries above;
+    // the .sql files remain the table-creation authority.
+    ['accounts', 'description', 'TEXT'],
     ['scenarios', 'entity_id', 'TEXT'],
     ['scenarios', 'budget_id', 'TEXT'],
     ['scenarios', 'type', 'TEXT'],
     ['scenario_line_items', 'base_amount', 'REAL'],
     ['scenario_line_items', 'adjusted_amount', 'REAL'],
     ['scenario_line_items', 'department_id', 'TEXT'],
+    // W0.2c (lane S9): scenarios.apply and the budgets/forecasts line-item
+    // writers name budget_line_items / forecast_line_items.department_id,
+    // which 001_initial_schema.sql never carried — every such INSERT failed
+    // against real SQLite ("no column named department_id"). Same additive
+    // route/schema-drift alignment as the entries above; no index or
+    // constraint changes, the .sql files remain the table-creation authority.
+    ['budget_line_items', 'department_id', 'TEXT'],
+    ['forecast_line_items', 'department_id', 'TEXT'],
     ['forecast_periods', 'period_number', 'INTEGER'],
     ['forecast_periods', 'start_date', 'TEXT'],
     ['forecast_periods', 'end_date', 'TEXT'],
