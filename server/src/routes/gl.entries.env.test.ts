@@ -194,4 +194,39 @@ describe('GL entries environment_id filtering (W0.2 wave-3 R11)', () => {
     expect((filtered.body as { total: number }).total).toBe(2);
     expect((filtered.body as { data: unknown[] }).data).toHaveLength(1);
   });
+
+  it('resolves the PERSISTENCE_MAP "/api/gl" shorthand with an identical payload to GET /entries (R30)', async () => {
+    // Same seed, back-to-back reads of the unchanged table: both documented
+    // paths must return byte-identical JSON because they share one handler.
+    const canonical = await request(app)
+      .get('/api/gl/entries')
+      .set('Authorization', `Bearer ${tokenA}`);
+    const shorthand = await request(app)
+      .get('/api/gl')
+      .set('Authorization', `Bearer ${tokenA}`);
+    const shorthandSlash = await request(app)
+      .get('/api/gl/')
+      .set('Authorization', `Bearer ${tokenA}`);
+
+    expect(canonical.status).toBe(200);
+    expect(shorthand.status).toBe(200);
+    expect(shorthandSlash.status).toBe(200);
+
+    const canonicalShape = Object.keys(canonical.body as object).sort();
+    expect(Object.keys(shorthand.body as object).sort()).toEqual(canonicalShape);
+    expect(shorthand.body).toEqual(canonical.body);
+    expect(shorthandSlash.body).toEqual(canonical.body);
+
+    // The shorthand honours the same filters too (shared handler, not a copy).
+    const narrowedAlias = await request(app)
+      .get('/api/gl')
+      .query({ environment_id: 'uat' })
+      .set('Authorization', `Bearer ${tokenA}`);
+    expect(narrowedAlias.status).toBe(200);
+    const uatIds = new Set(
+      (narrowedAlias.body as { data: { id: string }[] }).data.map((row) => row.id)
+    );
+    expect(uatIds.has(ID_UAT_1)).toBe(true);
+    expect(uatIds.has(ID_DEV_1)).toBe(false);
+  });
 });

@@ -164,8 +164,14 @@ function audit(
 
 // --- GL Entry Routes ---
 
-// GET /entries — list GL entries with filters
-router.get('/entries', filterByEntityAccess, (req: Request, res: Response) => {
+/**
+ * Shared listing handler for GET /entries and the documented '/api/gl'
+ * shorthand (docs/PERSISTENCE_MAP). One function, one SQL body: the alias is
+ * registered on the SAME handler so the two paths can never drift apart
+ * (R30) — identical filters (tenant, tombstone, entity access,
+ * environment_id), identical response shape {data,total,limit,offset}.
+ */
+const listGlEntries = (req: Request, res: Response): void => {
   try {
     const {
       account_id,
@@ -263,7 +269,14 @@ router.get('/entries', filterByEntityAccess, (req: Request, res: Response) => {
     console.error('GET /gl/entries error:', err);
     res.status(500).json({ error: 'Failed to fetch GL entries' });
   }
-});
+};
+
+// GET /entries — list GL entries with filters
+router.get('/entries', filterByEntityAccess, listGlEntries);
+
+// GET / and /entries share one handler: the PERSISTENCE_MAP shorthand
+// '/api/gl' resolves to the exact same contract as GET /api/gl/entries.
+router.get('/', filterByEntityAccess, listGlEntries);
 
 // POST /entries — create GL entry
 router.post(
