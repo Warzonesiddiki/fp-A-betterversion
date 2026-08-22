@@ -6,14 +6,38 @@
   "nav": {
     "dashboard": "Dashboard",
     "budgets": "Budgets",
+    "bva": "Budget vs. Ist",
     "forecasts": "Prognosen",
-    "scenarios": "Szenarien",
     "reports": "Berichte",
-    "data": "Daten",
-    "consolidation": "Konsolidierung",
     "analytics": "Analytik",
+    "variance": "Abweichung",
+    "scenarios": "Szenarien",
+    "aiAnalyst": "KI-Analyst",
+    "saas": "SaaS",
+    "manufacturing": "Fertigung",
+    "retail": "Handel",
+    "banking": "Banking",
+    "healthcare": "Gesundheitswesen",
+    "energy": "Energie",
+    "esg": "ESG",
+    "data": "Daten",
+    "dataManagement": "Datenverwaltung",
+    "collaboration": "Zusammenarbeit",
+    "approvals": "Genehmigungen",
     "settings": "Einstellungen",
     "help": "Hilfe"
+  },
+  "sidebar": {
+    "sections": {
+      "main": "Hauptbereich",
+      "analysis": "Analyse",
+      "industries": "Branchen",
+      "management": "Verwaltung"
+    },
+    "quickSearch": "Schnellsuche...",
+    "lightMode": "Helles Design",
+    "darkMode": "Dunkles Design",
+    "collapse": "Einklappen"
   },
   "buttons": {
     "save": "Speichern",
@@ -33,12 +57,57 @@
     "close": "Schließen",
     "back": "Zurück",
     "next": "Weiter",
+    "continue": "Fortfahren",
     "finish": "Fertigstellen",
     "undo": "Rückgängig",
     "redo": "Wiederholen",
     "copy": "Kopieren",
     "paste": "Einfügen",
     "cut": "Ausschneiden"
+  },
+  "onboarding": {
+    "steps": {
+      "welcome": "Willkommen",
+      "company": "Unternehmen",
+      "data": "Daten",
+      "review": "Prüfen",
+      "done": "Fertig"
+    },
+    "welcome": {
+      "title": "Willkommen bei FinPlan Pro",
+      "description": "Diese App hilft Ihnen, Budgets, Prognosen und Finanzberichte an einem Ort zu verwalten – vollständig offline. Keine Cloud, keine Abos, keine Daten verlassen Ihren Computer.",
+      "start": "Los geht's"
+    },
+    "setup": {
+      "title": "Unternehmenseinrichtung",
+      "companyName": "Unternehmensname",
+      "companyNamePlaceholder": "Unternehmensnamen eingeben",
+      "industry": "Branche/Sektor",
+      "fiscalYear": "Geschäftsjahr",
+      "fiscalYearStart": "Beginn des Geschäftsjahres",
+      "baseCurrency": "Basiswährung",
+      "sector": "Sektor"
+    },
+    "import": {
+      "title": "Importieren Sie Ihre Daten",
+      "description": "Laden Sie Ihre Hauptbuchdaten (GL) im CSV- oder Excel-Format hoch, um Ihr Dashboard zu füllen.",
+      "skip": "Vorerst überspringen"
+    },
+    "review": {
+      "title": "Daten überprüfen",
+      "empty": "Sie können Ihre Daten später über die Datenverwaltung importieren."
+    },
+    "finish": {
+      "title": "Alles bereit!",
+      "description": "Ihr Workspace ist bereit. Das können Sie als Nächstes tun:",
+      "nextSteps": {
+        "viewDashboard": "Sehen Sie sich Ihr Dashboard an",
+        "createBudget": "Erstellen Sie Ihr erstes Budget",
+        "generateReports": "Erstellen Sie Finanzberichte"
+      },
+      "confirm": "Bestätigen & Abschließen",
+      "goDashboard": "Zum Dashboard"
+    }
   },
   "forms": {
     "required": "Dieses Feld ist erforderlich",
@@ -49,12 +118,28 @@
     "passwordMismatch": "Passwörter stimmen nicht überein",
     "entityName": "Entity-Name",
     "accountName": "Kontoname",
+    "account": "Konto",
     "period": "Zeitraum",
     "amount": "Betrag",
     "currency": "Währung",
     "description": "Beschreibung",
     "category": "Kategorie",
-    "status": "Status"
+    "status": "Status",
+    "date": "Datum"
+  },
+  "months": {
+    "january": "Januar",
+    "february": "Februar",
+    "march": "März",
+    "april": "April",
+    "may": "Mai",
+    "june": "Juni",
+    "july": "Juli",
+    "august": "August",
+    "september": "September",
+    "october": "Oktober",
+    "november": "November",
+    "december": "Dezember"
   },
   "status": {
     "loading": "Wird geladen...",
@@ -65,7 +150,11 @@
     "empty": "Keine Ergebnisse gefunden",
     "success": "Vorgang erfolgreich abgeschlossen",
     "confirm": "Sind Sie sicher?",
-    "unsavedChanges": "Sie haben nicht gespeicherte Änderungen"
+    "unsavedChanges": "Sie haben nicht gespeicherte Änderungen",
+    "overdue": "Überfällig",
+    "pending": "Ausstehend",
+    "inProgress": "In Bearbeitung",
+    "selectMin": "Wählen Sie mindestens 2 Elemente aus"
   },
   "financial": {
     "revenue": "Umsatz",
@@ -95,8 +184,23 @@
     "taxProvision": "Steuerrückstellung",
     "deferredTax": "Latente Steuern"
   },
+  "common": {
+    "search": "Suchen...",
+    "noResults": "Keine Ergebnisse",
+    "loading": "Wird geladen...",
+    "retry": "Erneut versuchen",
+    "selectAll": "Alle auswählen",
+    "deselectAll": "Auswahl aufheben",
+    "showMore": "Mehr anzeigen",
+    "showLess": "Weniger anzeigen",
+    "viewAll": "Alles anzeigen",
+    "total": "Gesamt",
+    "average": "Durchschnitt",
+    "count": "Anzahl"
+  },
   "errors": {
     "generic": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+    "somethingWentWrong": "Etwas ist schiefgelaufen",
     "network": "Netzwerkfehler. Überprüfen Sie Ihre Verbindung.",
     "unauthorized": "Sie sind nicht berechtigt, diese Aktion auszuführen.",
     "notFound": "Die angeforderte Ressource wurde nicht gefunden.",
@@ -111,7 +215,13 @@
     "recentActivity": "Letzte Aktivitäten",
     "kpiSummary": "KPI-Zusammenfassung",
     "quickActions": "Schnellaktionen",
-    "notifications": "Benachrichtigungen"
+    "notifications": "Benachrichtigungen",
+    "noPendingRequests": "Keine offenen Anfragen",
+    "noSlaBreaches": "Keine SLA-Verletzungen",
+    "noResults": "Keine Ergebnisse",
+    "charts": "Diagramme",
+    "recentReports": "Neueste Berichte",
+    "recentBudgets": "Neueste Budgets"
   },
   "time": {
     "today": "Heute",
@@ -200,7 +310,60 @@
     "comparison": "Szenariovergleich",
     "merge": "Szenarios zusammenführen",
     "lock": "Szenario sperren",
-    "unlock": "Szenario entsperren"
+    "unlock": "Szenario entsperren",
+    "selectMin": "Wählen Sie mindestens 2 Szenarien zum Vergleichen aus",
+    "selectMinMerge": "Wählen Sie mindestens 2 Szenarien zum Zusammenführen aus",
+    "noScenarios": "Keine Szenarien gefunden"
+  },
+  "export": {
+    "format": "Exportformat",
+    "pdf": "PDF",
+    "excel": "Excel",
+    "csv": "CSV",
+    "exporting": "Wird exportiert...",
+    "exportSuccess": "Export abgeschlossen",
+    "exportFailed": "Export fehlgeschlagen"
+  },
+  "accounts": {
+    "notFound": "Keine Konten gefunden",
+    "tree": "Kontenbaum",
+    "code": "Kontonummer",
+    "name": "Kontobezeichnung",
+    "type": "Kontoart",
+    "parent": "Übergeordnetes Konto"
+  },
+  "drivers": {
+    "notConfigured": "Keine Treiber konfiguriert",
+    "addDriver": "Treiber hinzufügen",
+    "driverName": "Treibername",
+    "driverType": "Treiberart"
+  },
+  "commands": {
+    "notFound": "Keine Befehle gefunden",
+    "palette": "Befehlspalette",
+    "recent": "Letzte Befehle"
+  },
+  "formula": {
+    "insertReference": "Referenz einfügen",
+    "availableFunctions": "Verfügbare Funktionen",
+    "syntax": "Syntax",
+    "result": "Ergebnis",
+    "error": "Formelfehler"
+  },
+  "ai": {
+    "analyzing": "Ihre Anfrage wird analysiert...",
+    "noResults": "Keine KI-Ergebnisse",
+    "askQuestion": "Stellen Sie eine Frage...",
+    "insights": "Einblicke",
+    "suggestions": "Vorschläge"
+  },
+  "operators": {
+    "greaterThan": "Größer als",
+    "lessThan": "Kleiner als",
+    "equals": "Gleich",
+    "notEquals": "Ungleich",
+    "contains": "Enthält",
+    "between": "Zwischen"
   },
   "consolidation": {
     "entity": "Einheit",
@@ -227,10 +390,5 @@
     "collapse": "Einklappen",
     "previous": "Zurück",
     "nextPage": "Nächste Seite"
-  },
-  "onboarding": {
-    "setup": {
-      "sector": "Sektor"
-    }
   }
 }
