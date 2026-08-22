@@ -94,6 +94,9 @@ function classify(p) {
       '/tax/provision',
       '/accounting/depreciation',
       '/data',
+      '/data/chart-of-accounts',
+      '/periods/close',
+      '/help',
       '/settings',
       '/plugins',
       '/admin/debug',
@@ -108,11 +111,11 @@ function classify(p) {
     '/sectors/education': '/sector/education',
     '/sectors/government': '/sector/government',
     '/sectors/logistics': '/sector/logistics',
-    '/sectors/telecom': '/sector/telecom',
+    '/sectors/telecom': '/sector/telecommunications',
     '/education': '/sector/education',
     '/government': '/sector/government',
     '/logistics': '/sector/logistics',
-    '/telecom': '/sector/telecom',
+    '/telecom': '/sector/telecommunications',
     '/retail/retail': '/retail/stores',
     '/retail/dashboard': '/retail/stores',
     '/forecasts/compare': '/scenarios',
@@ -127,7 +130,12 @@ function classify(p) {
 }
 
 const src = fs.readFileSync(APP_TSX, 'utf8');
-const re = /<Route\s+path="([^"]+)"\s+element=\{(?:<Navigate[^>]*to="([^"]+)"[^>]*>|<(\w+))/g;
+// B0 (W0.5 slice-2): tolerate whitespace/newlines between element={ and its
+// JSX child. The previous regex required '<' immediately after 'element={'
+// and silently missed every ErrorBoundary-wrapped route (auth pages, /,
+// /dashboard, catch-all) — the gate inventoried 191 of 200 literals.
+const re =
+  /<Route\s+path="([^"]+)"\s+element=\{\s*(?:<Navigate[\s\S]*?to="([^"]+)"|<([A-Za-z][\w.]*))/g;
 const routes = [];
 let m;
 while ((m = re.exec(src)) !== null) {
@@ -165,9 +173,61 @@ const rows = routes.map((r) => {
       '/telecom',
     ].includes(r.path);
   if (isSector && !disp.startsWith('redirect')) disp = 'view (sector capability, §3.1)';
-  const pillar = TOP_LEVEL.find(([, p]) => p === r.path)?.[0] ?? '—';
+  // B0 (RC1): every route maps to exactly one pillar via longest-prefix
+  // match against the canonical targets. A route with no pillar fails the
+  // gate instead of shipping as an unowned '—' row.
+  let pillar = '—';
+  let best = -1;
+  for (const [p, target] of TOP_LEVEL) {
+    if (r.path === target && target !== '/') {
+      pillar = p;
+      best = r.path.length;
+      break;
+    }
+    if (target !== '/' && r.path.startsWith(target) && target.length > best) {
+      pillar = p;
+      best = target.length;
+    }
+  }
+  if (pillar === '—' && (r.path === '/' || r.path === '/dashboard')) pillar = 'PLAN';
+  // B0 second pass — family defaults for namespaces whose consolidation is
+  // planned but not yet executed (W0.5 slice-2 batches B7-B10). These keep
+  // RC1 satisfiable today without pretending the fold already happened.
+  if (pillar === '—') {
+    const FAMILY_DEFAULTS = [
+      ['ANALYZE', /^\/sector/],
+      ['ANALYZE', /^\/sectors/],
+      [
+        'ANALYZE',
+        /^\/(banking|bonds|credit|construction|realestate|insurance|healthcare|energy|esg|manufacturing|retail|saas|telecom)\b/,
+      ],
+      ['ANALYZE', /^\/(education|government|logistics)(\/|$)/],
+      ['ANALYZE', /^\/(charts|visual)\//],
+      ['REPORT', /^\/collaboration/],
+      ['PLAN', /^\/cash\//],
+      ['ADMIN', /^\/docs\//],
+      ['ADMIN', /^\/profile/],
+      ['ADMIN', /^\*$/],
+    ];
+    for (const [p, re] of FAMILY_DEFAULTS) {
+      if (re.test(r.path)) {
+        pillar = p;
+        break;
+      }
+    }
+  }
   return { ...r, pillar, disposition: disp };
 });
+
+// RC1 enforcement: no unassigned pillars survive generation.
+const unassigned = rows.filter((r) => r.pillar === '—').map((r) => r.path);
+if (unassigned.length > 0) {
+  console.error(
+    `RC1 violated: ${unassigned.length} route(s) have no pillar mapping:\n  ${unassigned.join('\n  ')}\n` +
+      'Add the path to TOP_LEVEL or teach classify() its disposition.'
+  );
+  process.exit(1);
+}
 
 const counts = {};
 for (const r of rows)
