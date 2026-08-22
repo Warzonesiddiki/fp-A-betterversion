@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import ts from 'typescript';
-import { readFileSync } from 'node:fs';
-import { execSync } from 'node:child_process';
+import { readFileSync, readdirSync } from 'node:fs';
+import { join, sep } from 'node:path';
 
 /**
  * UI-04 — light-mode contrast guardrail.
@@ -47,6 +47,37 @@ interface Hit {
   className: string;
 }
 
+/**
+ * Pure node:fs replacement for the Unix `find` invocation this test used to
+ * shell out to. It preserves the exact file-set semantics of
+ *
+ *   find src -name '*.tsx' -not -name '*.test.tsx'
+ *        -not -path '*<slash>test<slash>*' -not -path '*<slash>__tests__<slash>*'
+ *   (where <slash> stands for the forward slash; a literal one before the
+ *   asterisk would terminate this block comment)
+ *
+ * i.e. every .tsx under src/ except *.test.tsx files and anything inside a
+ * test or __tests__ directory. Paths are normalised to forward slashes so the
+ * exclusion patterns, hit reports and shared-component regexes behave
+ * identically on Windows (where readdirSync yields backslash separators).
+ */
+function listTsxSources(root: string): string[] {
+  const out: string[] = [];
+  const walk = (dir: string): void => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (entry.name === 'test' || entry.name === '__tests__') continue;
+      const full = join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+      } else if (entry.name.endsWith('.tsx') && !entry.name.endsWith('.test.tsx')) {
+        out.push(full.split(sep).join('/'));
+      }
+    }
+  };
+  walk(root);
+  return out;
+}
+
 function readAttributes(open: ts.JsxOpeningElement | ts.JsxSelfClosingElement) {
   let className = '';
   let style = '';
@@ -60,13 +91,7 @@ function readAttributes(open: ts.JsxOpeningElement | ts.JsxSelfClosingElement) {
 }
 
 function scan(): Hit[] {
-  const files = execSync(
-    "find src -name '*.tsx' ! -name '*.test.tsx' ! -path '*/test/*' ! -path '*/__tests__/*'",
-    { encoding: 'utf8' }
-  )
-    .trim()
-    .split('\n')
-    .filter(Boolean);
+  const files = listTsxSources('src');
 
   const hits: Hit[] = [];
   for (const file of files) {
@@ -153,11 +178,11 @@ describe('light-mode contrast contract', () => {
   });
 
   it('scans a meaningful number of files', () => {
-    // Guards against the find command silently returning nothing.
-    const count = execSync(
-      "find src -name '*.tsx' ! -name '*.test.tsx' ! -path '*/test/*' ! -path '*/__tests__/*' | wc -l",
-      { encoding: 'utf8' }
-    ).trim();
-    expect(Number(count)).toBeGreaterThan(400);
+    // Guards against the walker silently returning nothing. The threshold is
+    // derivable from the repo itself: `find src -name '*.tsx' ! -name
+    // '*.test.tsx' ! -path '*/test/*' ! -path '*/__tests__/*' | wc -l` counts
+    // 496 files today, so a healthy scan must land in the same order of
+    // magnitude — and far above the ~7 files vitest collects under src/theme.
+    expect(listTsxSources('src').length).toBeGreaterThan(400);
   });
 });
