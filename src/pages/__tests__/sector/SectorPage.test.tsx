@@ -69,10 +69,18 @@ describe('SectorPage', () => {
       },
     });
     render(<SectorPage />);
-    expect(screen.getByText(/Sector Analysis/i)).toBeInTheDocument();
-    // Banking legacy copy renders; the assets-only ledger yields NO invented
-    // gross-margin/NIM numbers — NIM discloses why it is not derivable.
-    expect(screen.getByText('Total Assets')).toBeInTheDocument();
+    // 'Banking' config routes SectorPage to the banking driver dashboard;
+    // assert the real PageHeader title, not the retired invisible legacy copy.
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Banking / Financial Services Driver Modeling Dashboard',
+      })
+    ).toBeInTheDocument();
+    // The assets-only ledger classifies into the Data lineage card; it yields
+    // NO invented gross-margin/NIM numbers — NIM discloses why it is not
+    // derivable.
+    expect(screen.getByText('Assets (classified)')).toBeInTheDocument();
     expect(
       screen.getByText(/Needs interest income\/expense accounts and asset-class balances/i)
     ).toBeInTheDocument();

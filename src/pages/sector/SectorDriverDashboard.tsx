@@ -891,13 +891,6 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
     <main className="space-y-6 p-6" role="main" aria-label={`${config.name} driver model`}>
       <header className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <span className="sr-only">Sector Analysis</span>
-          <span className="sr-only">{legacyCopy.title}</span>
-          {legacyCopy.labels.map((label) => (
-            <span key={label} className="sr-only">
-              {label}
-            </span>
-          ))}
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-blue-500">
             Phase 3 Sector Depth
           </p>

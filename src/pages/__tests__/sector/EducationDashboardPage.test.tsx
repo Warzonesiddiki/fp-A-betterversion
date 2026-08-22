@@ -46,8 +46,20 @@ describe('EducationDashboardPage', () => {
       ],
     });
     render(<EducationDashboardPage />);
-    expect(screen.getByText(/Education Dashboard/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/Tuition Revenue/i).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText(/Grant Income/i).length).toBeGreaterThanOrEqual(1);
+    // Real header surface: canonical PageHeader title from the sector config
+    // (not the retired invisible LEGACY_SECTOR_COPY spans).
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Education / Higher Ed Driver Modeling Dashboard',
+      })
+    ).toBeInTheDocument();
+    // The tuition-only ledger classifies revenue but posts neither a COGS
+    // nor an OpEx class, so Operating Margin stays honestly null with its
+    // disclosure note.
+    expect(screen.getByText('Actual Revenue (classified)')).toBeInTheDocument();
+    expect(screen.getByText('Revenue (classified)')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Operating Margin' })).toBeInTheDocument();
+    expect(screen.getByText('No expense-class accounts posted.')).toBeInTheDocument();
   });
 });

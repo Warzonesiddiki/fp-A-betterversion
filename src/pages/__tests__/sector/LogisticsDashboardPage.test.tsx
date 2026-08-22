@@ -56,8 +56,20 @@ describe('LogisticsDashboardPage', () => {
       ],
     });
     render(<LogisticsDashboardPage />);
-    expect(screen.getByText(/Logistics Dashboard/i)).toBeInTheDocument();
-    expect(screen.getByText(/Total Revenue/i)).toBeInTheDocument();
-    expect(screen.getByText(/Fleet Costs/i)).toBeInTheDocument();
+    // Real header surface: canonical PageHeader title from the sector config
+    // (not the retired invisible LEGACY_SECTOR_COPY spans).
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Logistics & Supply Chain Driver Modeling Dashboard',
+      })
+    ).toBeInTheDocument();
+    // Both P&L classes post in this ledger (4xxx freight revenue, 5xxx fleet
+    // costs), so the Data lineage card shows both classified signals.
+    expect(screen.getByText('Actual Revenue (classified)')).toBeInTheDocument();
+    expect(screen.getByText('Revenue (classified)')).toBeInTheDocument();
+    expect(screen.getByText('COGS (classified)')).toBeInTheDocument();
+    // Driver-driven projections render in the simulator with their basis.
+    expect(screen.getByText('On-Time Delivery Rate')).toBeInTheDocument();
   });
 });
