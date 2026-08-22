@@ -43,6 +43,12 @@ interface GLSnapshot {
   accounts: GLAccount[];
   trialBalance: TrialBalanceRow[];
   accountAnalysis: AccountAnalysis | null;
+  /** W0.8.6: sync identity travels with the rows — an undo past a server
+   * commit must restore the exact id→syncState/version mapping, or a
+   * committed row would come back looking like a draft under its old
+   * client-side id (identity corruption on financial records). */
+  entrySyncState: GLState['entrySyncState'];
+  entryVersions: GLState['entryVersions'];
 }
 
 /** Trial-balance accumulator holding Decimal currency values (F-0006). */
@@ -215,6 +221,8 @@ function captureGLSnapshot(get: () => ReturnType<typeof useGLStore.getState>) {
     accounts: state.accounts,
     trialBalance: state.trialBalance,
     accountAnalysis: state.accountAnalysis,
+    entrySyncState: state.entrySyncState,
+    entryVersions: state.entryVersions,
   });
 }
 
@@ -324,6 +332,8 @@ export const useGLStore = create<GLState>()(
               accounts: snapshot.accounts,
               trialBalance: snapshot.trialBalance,
               accountAnalysis: snapshot.accountAnalysis,
+              entrySyncState: snapshot.entrySyncState,
+              entryVersions: snapshot.entryVersions,
             });
           }
         }),
@@ -336,6 +346,8 @@ export const useGLStore = create<GLState>()(
               accounts: snapshot.accounts,
               trialBalance: snapshot.trialBalance,
               accountAnalysis: snapshot.accountAnalysis,
+              entrySyncState: snapshot.entrySyncState,
+              entryVersions: snapshot.entryVersions,
             });
           }
         }),
