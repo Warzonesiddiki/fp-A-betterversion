@@ -135,8 +135,11 @@ router.post('/', requireRole('Admin'), (req: Request, res: Response) => {
       is_active,
     } = parsed.data;
 
-    // Check unique code
-    const duplicate = db.prepare('SELECT id FROM entities WHERE code = ?').get(code);
+    // Check unique code (tenant-scoped — W0.2c leftover: was DB-global, which
+    // both leaked a cross-tenant existence oracle and blocked legit codes).
+    const duplicate = db
+      .prepare('SELECT id FROM entities WHERE code = ? AND tenant_id = ?')
+      .get(code, resolveTenantId(req.user));
 
     if (duplicate) {
       res.status(400).json({ error: 'Entity code already exists' });
@@ -189,11 +192,11 @@ router.put('/:id', requireRole('Admin'), (req: Request, res: Response) => {
       return;
     }
 
-    // Check unique code if code is being changed
+    // Check unique code if code is being changed (tenant-scoped — W0.2c)
     if (parsed.data.code) {
       const duplicate = db
-        .prepare('SELECT id FROM entities WHERE code = ? AND id != ?')
-        .get(parsed.data.code, String(req.params.id));
+        .prepare('SELECT id FROM entities WHERE code = ? AND tenant_id = ? AND id != ?')
+        .get(parsed.data.code, resolveTenantId(req.user), String(req.params.id));
 
       if (duplicate) {
         res.status(400).json({ error: 'Entity code already exists' });
@@ -312,8 +315,10 @@ router.post('/departments', requireRole('Admin'), (req: Request, res: Response) 
     const id = uuidv4();
 
     db.prepare(
-      `INSERT INTO departments (id, tenant_id, name, code, entity_id, parent_id, manager_id, description, is_active, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+      // W0.2c leftover fix: the departments table has no updated_at column —
+      // the previous INSERT named it and 500'd against real SQLite.
+      `INSERT INTO departments (id, tenant_id, name, code, entity_id, parent_id, manager_id, description, is_active, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
     ).run(
       id,
       resolveTenantId(req.user),

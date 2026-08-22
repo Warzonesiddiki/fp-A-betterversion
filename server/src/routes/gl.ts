@@ -610,6 +610,14 @@ router.post('/accounts', (req: Request, res: Response) => {
       return;
     }
 
+    // W0.2c leftover fix: creating a COA account is structural, so gate it
+    // exactly like PUT /accounts/:id (previously any authenticated user
+    // could mint accounts in any permitted entity).
+    if (req.user!.role !== 'Admin') {
+      res.status(403).json({ error: 'Insufficient permissions' });
+      return;
+    }
+
     const { code, name, type, parent_id, entity_id, description, is_active } = parsed.data;
     const tenantId = resolveTenantId(req.user);
 
