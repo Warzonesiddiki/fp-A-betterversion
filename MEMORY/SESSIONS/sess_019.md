@@ -15,7 +15,7 @@ T-019: money-AST `RollingForecastPage` (10) → 0 and fabrication
 
 ## Read
 
-`MEMORY/INDEX.md` → `STATE.json` → `TRUTH.md` → `TASKS/NOW.md`, then
+`MEMORY/INDEX.md` → `STATE.json` → `MEMORY/TRUTH.md` → `MEMORY/TASKS/NOW.md`, then
 `src/pages/forecasts/RollingForecastPage.tsx`,
 `src/pages/sectors/GovernmentDashboardPage.tsx`, `src/store/governmentStore.ts`,
 `src/pages/__tests__/sectors/GovernmentDashboardPage.test.tsx`.

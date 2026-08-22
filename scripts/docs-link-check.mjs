@@ -135,7 +135,9 @@ const allMd = [...walk(ROOT)];
 const mdCount = allMd.length;
 for (const file of allMd) {
   const content = readFileSync(file, 'utf8');
-  const rel = relative(ROOT, file);
+  // Normalize win32 path separators so allowlist keys ('docs/x.md', '.agent/…')
+  // and the 'reports/' prefix match regardless of platform. No scoring change.
+  const rel = relative(ROOT, file).replace(/\\/g, '/');
   if (allowFile(rel)) continue; // deliberate whole-file exemption (historical record)
 
   // 1. markdown links

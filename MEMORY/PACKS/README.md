@@ -16,5 +16,5 @@ healthcare, insurance, construction, retail, real estate (REIT), education, gove
 energy, ESG, plus sector engines under `src/engines/`.
 
 Status: most vertical pages are being audited for fabrication one at a time. Several sector
-engines still carry invented constants — see `MEMORY/PRODUCT/GAPS.md` and `MAP/MODULES.md`
+engines still carry invented constants — see `MEMORY/PRODUCT/GAPS.md` and `MEMORY/MAP/MODULES.md`
 (`flagged`). Do not treat a vertical page as trustworthy because it renders.

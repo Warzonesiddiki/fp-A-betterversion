@@ -28,7 +28,7 @@ cube_history cube_snapshots cube_snapshot_diffs
 `ensureCanonicalAuditTrail`, `ensureServerColumns`, `createAuditTables`, `ensureEntityAccessTable`)
 and also runs the Tauri migrations directory (`MIGRATIONS_DIR` resolves to
 `src-tauri/migrations`). The historical "9 server DDL tables vs 35 Tauri tables" fork is tracked in
-`PRODUCT/GAPS.md`; exact current server-only table list is **UNVERIFIED** this session.
+`MEMORY/PRODUCT/GAPS.md`; exact current server-only table list is **UNVERIFIED** this session.
 
 ## Tenancy
 

@@ -14,7 +14,7 @@ T-020: money-AST `ValuationPage` (10) → 0 and fabrication `LogisticsDashboardP
 
 ## Read
 
-`MEMORY/INDEX.md` → `STATE.json` → `TRUTH.md` → `TASKS/NOW.md`, then
+`MEMORY/INDEX.md` → `STATE.json` → `MEMORY/TRUTH.md` → `MEMORY/TASKS/NOW.md`, then
 `src/pages/realestate/ValuationPage.tsx`, `src/engines/RealEstateEngine.ts`,
 `src/pages/sectors/LogisticsDashboardPage.tsx`, `src/store/logisticsStore.ts`.
 

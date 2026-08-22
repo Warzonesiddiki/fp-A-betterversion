@@ -14,7 +14,7 @@ T-022: money-AST `InsuranceEngine` (9) → 0 and fabrication `ClinicalTrialCostP
 
 ## Read
 
-`MEMORY/INDEX.md` → `STATE.json` → `TRUTH.md` → `TASKS/NOW.md`, then
+`MEMORY/INDEX.md` → `STATE.json` → `MEMORY/TRUTH.md` → `MEMORY/TASKS/NOW.md`, then
 `src/engines/InsuranceEngine.ts` + its test, `src/pages/healthcare/ClinicalTrialCostPage.tsx`,
 `src/store/healthcareStore.ts`, `src/store/retailStore.ts` (as the precedent for a new collection).
 
