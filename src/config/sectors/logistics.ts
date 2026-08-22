@@ -5,22 +5,8 @@ export const logisticsConfig: SectorConfig = {
   name: 'Logistics & Supply Chain',
   description: 'Fleet management, transportation, and warehousing metrics',
   defaultKPIs: [
-    {
-      id: 'cost_per_mile',
-      label: 'Cost Per Mile',
-      format: 'currency',
-      target: 2.15,
-      lowerIsBetter: true,
-    },
     { id: 'on_time_delivery', label: 'On-Time Delivery Rate', format: 'percent', target: 98 },
     { id: 'fleet_utilization', label: 'Fleet Utilization Rate', format: 'percent', target: 85 },
-    {
-      id: 'warehousing_cost_pct',
-      label: 'Warehouse Cost % Revenue',
-      format: 'percent',
-      target: 12,
-      lowerIsBetter: true,
-    },
     { id: 'inventory_turnover', label: 'Inventory Turnover', format: 'number', target: 8.5 },
     {
       id: 'empty_miles_pct',

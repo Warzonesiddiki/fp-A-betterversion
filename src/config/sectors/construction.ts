@@ -3,9 +3,8 @@ import type { SectorConfig } from './index';
 export const constructionConfig: SectorConfig = {
   id: 'construction',
   name: 'Construction / Infrastructure',
-  description: 'Project metrics: Completion, Backlog, WIP, Change Orders',
+  description: 'Project metrics: Completion, Change Orders, Utilization',
   defaultKPIs: [
-    { id: 'backlog', label: 'Work Backlog', format: 'currency', target: 250000000 },
     { id: 'completion_percent', label: 'Avg Project Completion', format: 'percent', target: 65 },
     {
       id: 'gross_margin_per_project',
@@ -29,7 +28,6 @@ export const constructionConfig: SectorConfig = {
       lowerIsBetter: true,
     },
     { id: 'utilization', label: 'Equipment Utilization', format: 'percent', target: 75 },
-    { id: 'wip', label: 'Work in Progress', format: 'currency', target: 50000000 },
     { id: 'overbilling', label: 'Overbilling/Underbilling', format: 'currency', target: 0 },
     { id: 'job_cost', label: 'Job Cost % Complete', format: 'percent', target: 65 },
   ],
