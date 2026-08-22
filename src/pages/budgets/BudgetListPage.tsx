@@ -74,7 +74,10 @@ export default function BudgetListPage() {
       const q = search.toLowerCase();
       list = list.filter((b) => b.name.toLowerCase().includes(q));
     }
-    return list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    // R18: copy before sort — budgets comes from the immer store, which
+    // freezes its arrays after every action; the in-place sort crashed the
+    // page as soon as more than one budget needed reordering.
+    return [...list].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }, [budgets, statusFilter, search]);
 
   const statusBadgeVariant = (status: string) => {
