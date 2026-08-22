@@ -24,7 +24,12 @@ export interface InventoryStats {
   totalValue: number;
   turnover: number;
   daysOnHand: number;
-  stockouts: number;
+  /**
+   * Stockout incidents are warehouse events (shortages, unfilled issues); the
+   * GL posts no account class that records them, so this engine cannot count
+   * them. null means "not measurable from the ledger", never a mocked value.
+   */
+  stockouts: number | null;
 }
 
 export class InventoryEngine {
@@ -53,7 +58,9 @@ export class InventoryEngine {
       daysOnHand: cogs.lte(0)
         ? 0
         : roundTo(divideMoney(inventoryValue, divideMoney(cogs, 30)), RATIO_PLACES),
-      stockouts: 4, // Mocked
+      // Null-with-contract: no GL account class records stockout events, so
+      // this stays null instead of a mocked incident count.
+      stockouts: null,
     };
   }
 
