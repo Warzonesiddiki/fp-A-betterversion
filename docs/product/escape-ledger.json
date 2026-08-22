@@ -35,7 +35,7 @@
     {
       "id": 7,
       "status": "partial",
-      "evidence": "/consolidation pages exist; IC elimination engine A.8 not started"
+      "evidence": "/consolidation pages exist; IC elimination engines + routed client surface are real (see row 9) — end-to-end consolidation run wiring incomplete"
     },
     {
       "id": 8,
@@ -44,8 +44,8 @@
     },
     {
       "id": 9,
-      "status": "not-started",
-      "evidence": "ELIMINATION ENGINES EXIST with money tests (ConsolidationEngine.eliminateIntercompany :566 exact -0.3; IntercompanyMatchingEngine; ICMatchingEngine.generateEliminations; consolidation.worker): workflow not assembled into a routed surface. Prior no-engine text was factually wrong (docs-truth audit 2026-08-22)"
+      "status": "partial",
+      "evidence": "Routed surface /consolidation/ic-eliminations shipped (1163e012): renders ONLY real IntercompanyMatchingEngine state — fabricated mockPairs demo balances removed (K17/K18 de-fabrication) — with auto-match + createEliminations running against the engine and K30 states (empty-ledger EmptyState CTA, failed-action ErrorState role=alert whose retry re-runs the exact failed action; hydrate skeleton deliberately absent because reads are synchronous, nothing faked) (ICEliminationPage.test.tsx). Escape remains HARD: no production ingestion path into the engine (addTransactions has no non-test caller), no server persistence, not wired into the consolidated close run."
     },
     {
       "id": 10,
@@ -55,7 +55,7 @@
     {
       "id": 11,
       "status": "partial",
-      "evidence": "GL entries POST/bulk/tombstone via /api/gl (W0.8.6); G6 UUID resolver (6fc332be, P0): server-authoritative identity — gl-*/draft:* draft ids remapped to server UUIDs with version capture for If-Match, arity-mismatched commits fail closed rather than guess identities on financial records (glStore.applyCommitResult); adjustments UI still partial"
+      "evidence": "GL entries POST/bulk/tombstone via /api/gl (W0.8.6); G6 UUID resolver (6fc332be, P0): server-authoritative identity — gl-*/draft:* draft ids remapped to server UUIDs with version capture for If-Match, arity-mismatched commits fail closed rather than guess identities on financial records (glStore.applyCommitResult); W0.2c account integrity hardening (8b617858 + 85ad8466): PUT /gl/accounts/:id rejects entity_id re-binding (409 FP-0410 — entity binding immutable post-create), duplicate account codes surface as typed 409 FP-0402 incl SQLITE_CONSTRAINT_UNIQUE mapping with uniqueness tenant-scoped (was a DB-global existence oracle), GET /gl/accounts scoped by JWT-resolved entity access (query param narrows never widens; zero grants → []), POST /gl/accounts Admin-gated like PUT (accounts.integrity.test.ts); adjustments UI still partial"
     },
     {
       "id": 12,
@@ -80,12 +80,12 @@
     {
       "id": 16,
       "status": "built",
-      "evidence": "/dashboard KPI tiles + sector dashboards derive from real stores; W-FAB-002 part-1 de-fabrication remediation (da8eac31): computeSectorDriverModel pinned honest by money tests across all 12 sectors — signed prefix-first classification (absEntryAmount magnitude aggregator retired), target-x-factor filler retired in favor of null-with-disclosure, fabricated KPI ids banned from measured metrics (absent or labeled simulator-only), simulator surface separated from measured KPIs, insurance combined-ratio identity derived from real premium/claims/opex with the x0.62 claims fallback retired (SectorDriverDashboard.money.test.ts)"
+      "evidence": "/dashboard KPI tiles + sector dashboards derive from real stores; W-FAB-002 part-1 de-fabrication remediation (da8eac31): computeSectorDriverModel pinned honest by money tests across all 12 sectors — signed prefix-first classification (absEntryAmount magnitude aggregator retired), target-x-factor filler retired in favor of null-with-disclosure, fabricated KPI ids banned from measured metrics (absent or labeled simulator-only), simulator surface separated from measured KPIs, insurance combined-ratio identity derived from real premium/claims/opex with the x0.62 claims fallback retired (SectorDriverDashboard.money.test.ts); wave-2 continuation: fabricated KPI ids pruned + descriptions made honest across all 12 sector configs, -89 lines of invented metric definitions (7ee5c3cc), and the legacy sr-only copy block removed from SectorDriverDashboard with Banking/Education/Government/Logistics/SectorPage specs re-pinned to real rendered surfaces (730b2dea)"
     },
     {
       "id": 17,
       "status": "partial",
-      "evidence": "/scenarios builder + what-if; Monte Carlo workers present; K30 four-states landed on ScenarioBuilderPage (d39602c7): empty-ledger EmptyState with import CTA, in-flight skeleton during Monte Carlo run, failed-run ErrorState retry succeeds, failed-save ErrorState retry persists the scenario (ScenarioBuilderPage.test.tsx 'K30' cases); end-to-end sensitivity chain still partial"
+      "evidence": "/scenarios builder + what-if; Monte Carlo workers present; K30 four-states landed on ScenarioBuilderPage (d39602c7): empty-ledger EmptyState with import CTA, in-flight skeleton during Monte Carlo run, failed-run ErrorState retry succeeds, failed-save ErrorState retry persists the scenario (ScenarioBuilderPage.test.tsx 'K30' cases); server W0.2c entity-scope hardening (8b617858): all 8 scenario routes reject cross-entity read/write/apply with 403 FP-0201, NULL-entity scenarios fail closed on every operation, absent entityFilter no longer falls through to an unfiltered tenant query, apply asserts base AND target budget/forecast entity scope BEFORE any write or state disclosure — zero rows written on rejection, test-verified (scenarios.entityScope.test.ts); end-to-end sensitivity chain still partial"
     },
     {
       "id": 18,

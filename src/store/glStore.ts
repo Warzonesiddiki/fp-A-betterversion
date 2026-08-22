@@ -25,7 +25,7 @@ import {
 import { UndoRedoEngine } from '@/engines/UndoRedoEngine';
 import { FpaClient } from '@/sdk/FpaClient';
 import { GlCommitNamespace } from '@/sdk/gl/GlCommitNamespace';
-import type { GlJournalBatch, GlCommitResult } from '@/sdk/gl/GlCommitNamespace';
+import type { GlJournalBatch, GlCommitResult, GlListedEntry } from '@/sdk/gl/GlCommitNamespace';
 import { useCubeStore } from './cubeStore';
 import { useUIStore } from './uiStore';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
@@ -171,6 +171,51 @@ async function applyCommitResult(
 
 function toFiniteNumber(value: unknown, fallback = 0): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+}
+
+/**
+ * W0.8.6 boot hydrate: overlay one server-listed row onto a committed local
+ * entry. Server-provided fields win; fields the listing does not carry keep
+ * their local values (accountName, journalId, entityId, …). period/periodName
+ * are re-derived from the merged date so the row stays internally consistent
+ * after normalizeGLEntry recomputes netChange/amount.
+ */
+function mergeListedEntry(local: GLEntry, row: GlListedEntry): Partial<GLEntry> {
+  const date = row.postDate ?? row.date ?? local.postDate ?? local.date;
+  const month = date ? date.slice(0, 7) : '';
+  return {
+    ...local,
+    id: row.id,
+    accountId: row.accountId ?? local.accountId,
+    accountCode: row.accountCode ?? local.accountCode,
+    postDate: date,
+    date,
+    debit: row.debit,
+    credit: row.credit,
+    period: month,
+    periodName: month,
+    ...(row.description !== undefined ? { description: row.description } : {}),
+    ...(row.reference !== undefined ? { reference: row.reference } : {}),
+  };
+}
+
+/** W0.8.6 boot hydrate: shape a locally-absent server row for adoption. */
+function listedToGLEntry(row: GlListedEntry): Partial<GLEntry> {
+  const date = row.postDate ?? row.date ?? '';
+  const month = date ? date.slice(0, 7) : '';
+  return {
+    id: row.id,
+    accountId: row.accountId ?? '',
+    accountCode: row.accountCode ?? row.accountId ?? '',
+    postDate: date,
+    date,
+    debit: row.debit,
+    credit: row.credit,
+    period: month,
+    periodName: month,
+    description: row.description ?? '',
+    reference: row.reference ?? '',
+  };
 }
 
 function normalizeGLEntry(
@@ -320,6 +365,71 @@ export const useGLStore = create<GLState>()(
               set({ importError: `${failed} draft entr(ies) failed server commit` });
             }
             return { committed, failed, conflicts };
+          }
+        ),
+
+        // --- W0.8.6 boot hydrate (plan §5): converge the replica ---
+        hydrateCommittedFromServer: enforce(
+          Permissions.IMPORT_CREATE,
+          'hydrateCommittedFromServer',
+          async () => {
+            const { environmentId } = get();
+            const result = await glCommitClient.listEntries({ environmentId });
+            if (result.status !== 'listed') return { hydrated: 0 };
+
+            // Classify BEFORE mutating (K25/K27): decide every row's fate
+            // against a stable pre-image, then apply in one pass. A server row
+            // wins only over an ALREADY-COMMITTED local or a locally-absent
+            // id; draft/pending/failed locals are skipped entirely — retention
+            // beats erasure and nothing is silently lost. Missing syncState on
+            // an existing row defaults to 'draft' (the same default
+            // commitDraftsToServer uses), so legacy untracked rows are
+            // protected too.
+            const before = get();
+            const updates: { index: number; next: GLEntry; version?: number }[] = [];
+            const inserts: { entry: GLEntry; version?: number }[] = [];
+            const seen = new Set<string>();
+            for (const row of result.entries) {
+              if (seen.has(row.id)) continue;
+              seen.add(row.id);
+              const index = before.entries.findIndex((e) => e.id === row.id);
+              if (index >= 0) {
+                if ((before.entrySyncState[row.id] ?? 'draft') !== 'committed') continue;
+                const local = before.entries[index];
+                if (!local) continue;
+                updates.push({
+                  index,
+                  next: normalizeGLEntry(mergeListedEntry(local, row), index, 'gl-srv'),
+                  version: row.version,
+                });
+              } else {
+                inserts.push({
+                  entry: normalizeGLEntry(listedToGLEntry(row), 0, 'gl-srv'),
+                  version: row.version,
+                });
+              }
+            }
+
+            if (updates.length === 0 && inserts.length === 0) return { hydrated: 0 };
+
+            set((state) => {
+              for (const u of updates) {
+                state.entries[u.index] = u.next;
+                state.entrySyncState[u.next.id] = 'committed';
+                // Version capture only when the listing provided one — never
+                // invent or overwrite a version we were not given.
+                if (u.version !== undefined) state.entryVersions[u.next.id] = u.version;
+              }
+              for (const i of inserts) {
+                state.entries.push(i.entry);
+                state.entrySyncState[i.entry.id] = 'committed';
+                if (i.version !== undefined) state.entryVersions[i.entry.id] = i.version;
+              }
+              // Derived aggregates no longer reflect the converged rows.
+              state.trialBalance = [];
+              state.accountAnalysis = null;
+            });
+            return { hydrated: updates.length + inserts.length };
           }
         ),
 

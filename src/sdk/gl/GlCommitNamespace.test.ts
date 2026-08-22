@@ -188,3 +188,88 @@ describe('parseGlConflict robustness', () => {
     }
   });
 });
+
+describe('GlCommitNamespace.listEntries', () => {
+  // Mirrors what GET /api/gl/entries actually returns: `SELECT ge.*` snake_case
+  // columns plus the accounts LEFT JOIN aliases (server/src/routes/gl.ts).
+  const listedRow = {
+    id: 'uuid-1',
+    version: 3,
+    tenant_id: 'default',
+    environment_id: 'dev',
+    account_id: 'acc-1',
+    account_code: '1000',
+    post_date: '2026-01-31',
+    amount: 250,
+    debit: 250,
+    credit: 0,
+    description: 'from server',
+    reference: 'REF-9',
+  };
+
+  it('GETs /api/gl/entries scoped by environment_id and maps snake_case rows', async () => {
+    const { client, request } = makeClient();
+    request.mockResolvedValueOnce(
+      okResponse({ data: [listedRow], total: 1, limit: 50, offset: 0 })
+    );
+
+    const result = await client.gl.listEntries({ environmentId: 'dev' });
+
+    expect(result.status).toBe('listed');
+    if (result.status === 'listed') {
+      expect(result.entries).toEqual([
+        {
+          id: 'uuid-1',
+          version: 3,
+          accountId: 'acc-1',
+          accountCode: '1000',
+          postDate: '2026-01-31',
+          debit: 250,
+          credit: 0,
+          description: 'from server',
+          reference: 'REF-9',
+        },
+      ]);
+    }
+    const config = request.mock.calls[0]![0] as ApiRequestConfig;
+    expect(config.method).toBe('GET');
+    expect(config.url).toBe('/api/gl/entries');
+    expect(config.params).toEqual({ environment_id: 'dev' });
+  });
+
+  it('surfaces version as undefined when the handler does not select it', async () => {
+    const { client, request } = makeClient();
+    request.mockResolvedValueOnce(okResponse({ data: [{ ...listedRow, version: undefined }] }));
+
+    const result = await client.gl.listEntries({ environmentId: 'dev' });
+
+    expect(result.status).toBe('listed');
+    if (result.status === 'listed') {
+      expect(result.entries[0]?.id).toBe('uuid-1');
+      expect(result.entries[0]?.version).toBeUndefined();
+    }
+  });
+
+  it('drops malformed rows instead of guessing identities on financial data', async () => {
+    const { client, request } = makeClient();
+    request.mockResolvedValueOnce(
+      okResponse({ data: [null, 'nope', { no_id: true }, { id: '', version: 1 }, listedRow] })
+    );
+
+    const result = await client.gl.listEntries({ environmentId: 'dev' });
+
+    expect(result.status).toBe('listed');
+    if (result.status === 'listed') {
+      expect(result.entries.map((e) => e.id)).toEqual(['uuid-1']);
+    }
+  });
+
+  it('maps transport failure to a typed error instead of throwing past the namespace', async () => {
+    const { client, request } = makeClient();
+    request.mockRejectedValueOnce(new ApiError('boom', 500, 'ISE'));
+
+    const result = await client.gl.listEntries({ environmentId: 'dev' });
+
+    expect(result.status).toBe('error');
+  });
+});

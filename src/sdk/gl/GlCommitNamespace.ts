@@ -65,6 +65,44 @@ export interface DeleteEntryInput {
 }
 
 /**
+ * One committed row as listed by the server's GL listing handler
+ * (`GET /api/gl/entries`, W0.8.6 boot hydrate). Keys mirror what the handler
+ * actually returns after camelCase mapping: `SELECT ge.*` supplies
+ * `id/account_id/post_date/debit/credit/description/reference/version`, the
+ * accounts LEFT JOIN supplies `account_code`.
+ */
+export interface GlListedEntry {
+  readonly id: string;
+  /**
+   * Server revision (gl_entries.version, K27 If-Match fuel). The current
+   * handler selects it via `ge.*`; surfaced as undefined when a payload ever
+   * omits it so callers SKIP version capture instead of inventing one.
+   */
+  readonly version?: number;
+  readonly accountId?: string;
+  readonly accountCode?: string;
+  /** Server rows carry post_date; `date` tolerates alternate payload shapes. */
+  readonly postDate?: string;
+  readonly date?: string;
+  readonly debit: number;
+  readonly credit: number;
+  readonly description?: string;
+  readonly reference?: string;
+}
+
+export interface ListEntriesInput {
+  readonly environmentId: string;
+}
+
+/**
+ * Discriminated read outcome for `listEntries`. Deliberately separate from
+ * `GlCommitResult`: a GET has no conflict/tombstone semantics to model.
+ */
+export type GlListResult =
+  | { status: 'listed'; entries: readonly GlListedEntry[] }
+  | { status: 'error'; message: string };
+
+/**
  * Discriminated commit outcome. `committed` carries the authoritative value;
  * `conflict` carries a parsed, typed 409; anything else is `error`.
  */
@@ -91,6 +129,37 @@ function errorMessage(err: unknown): string {
 function conflictFrom(err: unknown): GlConflict | null {
   if (errorStatus(err) !== 409) return null;
   return parseGlConflict(errorData(err));
+}
+
+/**
+ * Map one raw listing row (snake_case `ge.*` + joined aliases) onto
+ * `GlListedEntry`. Defensive by design: hydrated financial data must never
+ * trust payload shape, so rows without a usable `id` are dropped rather than
+ * guessed into existence. Exported for direct unit testing.
+ */
+export function toGlListedEntry(raw: unknown): GlListedEntry | null {
+  if (typeof raw !== 'object' || raw === null) return null;
+  const row = raw as Record<string, unknown>;
+  if (typeof row.id !== 'string' || row.id === '') return null;
+  const finite = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
+  const text = (v: unknown): string | undefined =>
+    typeof v === 'string' && v.length > 0 ? v : undefined;
+  return {
+    id: row.id,
+    // ge.* selects gl_entries.version; when a payload ever omits it we surface
+    // undefined so the caller skips version capture (K27 — never invent one).
+    ...(typeof row.version === 'number' && Number.isFinite(row.version)
+      ? { version: row.version }
+      : {}),
+    accountId: text(row.account_id),
+    accountCode: text(row.account_code),
+    postDate: text(row.post_date),
+    date: text(row.date),
+    debit: finite(row.debit),
+    credit: finite(row.credit),
+    description: text(row.description),
+    reference: text(row.reference),
+  };
 }
 
 export class GlCommitNamespace {
@@ -168,6 +237,41 @@ export class GlCommitNamespace {
       if (errorStatus(err) === 404) return { status: 'already_deleted' };
       const conflict = conflictFrom(err);
       if (conflict) return { status: 'conflict', conflict };
+      return { status: 'error', message: errorMessage(err) };
+    }
+  }
+
+  /**
+   * List committed entries for an environment (W0.8.6 boot hydrate, plan §5).
+   *
+   * Hits the server's GL listing handler (`GET /api/gl/entries`, tenant-scoped
+   * server-side; `environment_id` travels as the query param so the
+   * environment filter applies the moment the server honors it). The response
+   * envelope is `{ data, total, limit, offset }`; only `data` is consumed.
+   * Read-only — nothing caller-side is mutated and transport failures surface
+   * as `{status:'error'}` instead of throwing past this namespace.
+   */
+  public async listEntries(input: ListEntriesInput): Promise<GlListResult> {
+    try {
+      const response = await this.client.request<unknown>({
+        method: 'GET',
+        url: `${API_BASE}/entries`,
+        params: { environment_id: input.environmentId },
+      });
+      const payload = response.data;
+      const rows: readonly unknown[] =
+        payload !== null &&
+        typeof payload === 'object' &&
+        Array.isArray((payload as { data?: unknown }).data)
+          ? (payload as { data: readonly unknown[] }).data
+          : [];
+      const entries: GlListedEntry[] = [];
+      for (const raw of rows) {
+        const mapped = toGlListedEntry(raw);
+        if (mapped !== null) entries.push(mapped);
+      }
+      return { status: 'listed', entries };
+    } catch (err) {
       return { status: 'error', message: errorMessage(err) };
     }
   }

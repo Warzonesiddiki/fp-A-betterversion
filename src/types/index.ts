@@ -823,6 +823,15 @@ export interface GLState {
     failed: number;
     conflicts: { code: string; message: string }[];
   }>;
+  /**
+   * W0.8.6 boot hydrate (plan §5): pull the active environment's committed
+   * entries from the server and merge them into the local replica so it
+   * converges after a fresh boot. Merge discipline (K25/K27): server values
+   * overwrite ONLY locals whose entrySyncState is 'committed' or whose id is
+   * absent locally; draft/pending/failed rows are never overwritten or
+   * dropped, and versions are captured whenever the listing provides them.
+   */
+  hydrateCommittedFromServer: () => Promise<{ hydrated: number }>;
   setEntries: (entries: GLEntry[]) => void;
   addEntries: (entries: GLEntry[]) => void;
   addEntry: (entry: GLEntry | GLEntry[]) => void;
