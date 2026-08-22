@@ -24,7 +24,7 @@ import type { FiscalPeriod } from '@/types';
 import { useEnergyStore } from '@/store/energyStore';
 import { roundTo, sumMoney } from '@/utils/money';
 
-const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
+const fiscalPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
 /**
  * Renewable Energy (session 028, replaces fabricated session-022 version).
@@ -95,7 +95,7 @@ export default function RenewableEnergyPage() {
           purpose="Performance analytics for zero-emission assets and portfolio diversification."
         />
         <div className="flex items-center gap-3">
-          <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
+          <PeriodPicker value={periodId} onChange={setPeriodId} periods={fiscalPeriods} />
           <Button variant="outline" size="sm" className="h-10" disabled={assets.length === 0}>
             <Download className="h-4 w-4 mr-2" />
             Download Report

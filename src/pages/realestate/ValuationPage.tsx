@@ -23,7 +23,7 @@ import { useGLStore } from '@/store/glStore';
 import { deriveValuation, type PropertyValuationRow } from '@/pages/realestate/valuationData';
 import { formatPercent } from '@/utils/financialFormatting';
 
-const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
+const fiscalPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
 export default function ValuationPage() {
   const fmtCurrency = useCurrencyFormatter();
@@ -132,7 +132,7 @@ export default function ValuationPage() {
           purpose="Fair value assessment, appraisal tracking, and appreciation analysis across your portfolio."
         />
         <div className="flex items-center gap-3">
-          <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
+          <PeriodPicker value={periodId} onChange={setPeriodId} periods={fiscalPeriods} />
           <Button variant="outline" size="sm" aria-label="Valuation report">
             <Download className="h-4 w-4 mr-2" aria-hidden="true" />
             Valuation Report
