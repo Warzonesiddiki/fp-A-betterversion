@@ -1,3 +1,15 @@
+//! OmniPlan (finplan-pro) Windows shell entry point.
+//!
+//! F-0020 (updater policy, relocated from a `_updater_comment` field that
+//! `tauri-build` rejects): the updater is DISABLED. updates.finplanpro.com is
+//! not controlled infrastructure, so an active updater would poll a
+//! dead/uncontrolled domain. Re-enable only with controlled update
+//! infrastructure (endpoints + signing key + tests);
+//! scripts/check-version-consistency.mjs blocks unverified re-enablement.
+//! Tauri v2 semantics: a removed legacy v1-style `updater` block plus NO
+//! `plugins.updater` entry IS the disabled state; re-enabling means adding
+//! the tauri-plugin-updater crate + config + signing keys together.
+
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use tauri::menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder};

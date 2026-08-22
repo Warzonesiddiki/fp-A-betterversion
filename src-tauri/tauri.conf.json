@@ -8,12 +8,6 @@
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build"
   },
-  "updater": {
-    "active": false,
-    "endpoints": [],
-    "dialog": false,
-    "pubkey": ""
-  },
   "app": {
     "windows": [
       {
@@ -93,6 +87,5 @@
         "description": "Comma-Separated Values"
       }
     ]
-  },
-  "_updater_comment": "F-0020: updater DISABLED. updates.finplanpro.com is not controlled infrastructure, so an active updater would poll a dead/uncontrolled domain. Re-enable only with controlled update infrastructure (endpoints + signing key + tests); scripts/check-version-consistency.mjs blocks unverified re-enablement."
+  }
 }
