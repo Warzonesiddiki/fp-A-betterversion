@@ -18,9 +18,9 @@
 
 <br/>
 
-|                                                                                               <!-- -->                                                                                                |                                                                                           <!-- -->                                                                                            |                                                                                            <!-- -->                                                                                            |                                                                                                  <!-- -->                                                                                                   |
-| :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">182</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines Shipped</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">78</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Industry Verticals</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">13,438</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Automated Tests</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">182</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines (182 modules)</div></div> |
+|                                                                                               <!-- -->                                                                                                |                                                                                               <!-- -->                                                                                               |                                                                                            <!-- -->                                                                                            |                                                                                                  <!-- -->                                                                                                   |
+| :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">182</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines Shipped</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">18</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Sector Dashboards Shipped</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">14,495</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Automated Tests</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">182</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines (182 modules)</div></div> |
 
 <br/>
 
@@ -51,7 +51,7 @@ FinPlan Pro attacks each failure mode directly.
 | **Slow monthly close**     | Close cycles stretch days-to-weeks across emails and workbook versions.                    | Soft/hard close state machine with adjusting-entry support, RBAC-gated posting, period-lock lifecycle proven by 24 HTTP-level integration tests.         |
 | **Multi-entity chaos**     | IC eliminations, FX, minority interest done by hand.                                       | ASC 810/830 consolidation engine + dedicated Web Worker: eliminations, NCI, FX translation, category totals, balance check — verified exact to the cent. |
 | **Scenario paralysis**     | "What if revenue drops 15%?" takes days of re-modeling.                                    | Scenario, Monte-Carlo, driver-based and rolling-forecast engines answer in seconds; AI copilot surfaces alerts and NLQ answers.                          |
-| **Vertical blindness**     | Generic tools lack sector KPIs (SaaS churn, construction WIP, healthcare patient revenue). | 78 pre-wired sector templates with sector-specific engines, stores, pages, dashboards.                                                                   |
+| **Vertical blindness**     | Generic tools lack sector KPIs (SaaS churn, construction WIP, healthcare patient revenue). | 18 pre-wired sector dashboards backed by 14 planning templates, with sector-specific engines and stores.                                                 |
 | **Cloud lock-in**          | Many regulated orgs cannot put ledger data in SaaS clouds.                                 | Offline-first Tauri desktop: everything computes on-device, local encrypted storage, zero cloud requirement.                                             |
 | **Audit-grade evidence**   | Results are trusted because "the analyst said so."                                         | Every migrated money path ships a `*.money.test.ts` with exact known answers, falsified against the old float code before being accepted.                |
 
@@ -69,7 +69,7 @@ npm install
 # 2. Run the dev server (web UI on http://localhost:5173)
 npm run dev
 
-# 3. Run the full quality gate (TypeScript · ESLint · Prettier · 13,438 tests)
+# 3. Run the full quality gate (TypeScript · ESLint · Prettier · 14,495 tests)
 npm run check
 ```
 
@@ -79,14 +79,14 @@ npm run check
 | --------------------------- | ---------------------------------------------- |
 | `npm run dev`               | Start the Vite dev server                      |
 | `npm run build`             | Production build (vite)                        |
-| `npm test`                  | Full Vitest suite (1,197 files / 13,438 tests) |
+| `npm test`                  | Full Vitest suite (1,272 files / 14,495 tests) |
 | `npm run tsc`               | TypeScript strict check (`--noEmit`)           |
 | `npm run lint`              | ESLint (`--max-warnings 0`)                    |
 | `npm run format`            | Prettier write                                 |
-| `npm run money:adoption`    | Money-primitive ratchet (CI gate)              |
+| `npm run money:ast`         | AST money-safety ratchet (pre-push Gate 9b)    |
 | `npm run docs:verify`       | README/architecture claims audit               |
 | `npm run engines:verify`    | Engine manifest / reachability audit           |
-| `cd server && npm run test` | Server-side suite (107 tests)                  |
+| `cd server && npm run test` | Server-side suite (247 tests / 25 files)       |
 
 ---
 
@@ -96,9 +96,9 @@ The day-to-day workflow of a finance team on FinPlan Pro, from raw GL data to bo
 
 <div align="center">
 
-| 1️⃣ **Connect**                                             | 2️⃣ **Validate**                                                                                     | 3️⃣ **Plan & Model**                                                                 | 4️⃣ **Consolidate & Close**                                                         | 5️⃣ **Report & Decide**                                                    |
-| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| QuickBooks · NetSuite · Xero · Sage · Dynamics · Excel/CSV | Column mapping · blocking validation · duplicate detection · loud `InvalidMoneyError` on bad inputs | Budgets · forecasts · driver chains · scenarios · Monte-Carlo · 78 sector templates | ASC 810/830 consolidation · IC eliminations · NCI · FX · soft/hard close with RBAC | P&L/BS/CF · variance analysis · board packs · PDF export · AI copilot Q&A |
+| 1️⃣ **Connect**                                             | 2️⃣ **Validate**                                                                                     | 3️⃣ **Plan & Model**                                                                  | 4️⃣ **Consolidate & Close**                                                         | 5️⃣ **Report & Decide**                                                    |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| QuickBooks · NetSuite · Xero · Sage · Dynamics · Excel/CSV | Column mapping · blocking validation · duplicate detection · loud `InvalidMoneyError` on bad inputs | Budgets · forecasts · driver chains · scenarios · Monte-Carlo · 18 sector dashboards | ASC 810/830 consolidation · IC eliminations · NCI · FX · soft/hard close with RBAC | P&L/BS/CF · variance analysis · board packs · PDF export · AI copilot Q&A |
 
 </div>
 
@@ -120,11 +120,12 @@ The day-to-day workflow of a finance team on FinPlan Pro, from raw GL data to bo
 - **Variance Analysis** — decomposition, attribution, drill-through to transactions
 - **Intercompany Matching** — tolerance-based reconciliation, auto-matching, difference reports
 
-### Sector Packs (78 Verticals)
+### Sector Packs (18 Sector Dashboards)
 
-SaaS · Banking · Healthcare · Real Estate · Construction · Retail · Energy · Insurance · Manufacturing ·
-Government · Telecom · Logistics · Education · Non-profit · Bonds/Credit · Treasury · Workforce/HCM · and more —
-each with its own KPIs, dashboards, and template engine.
+Agriculture · Banking · Construction · Education · Emissions · Energy · Equipment · Government · Healthcare ·
+Hospitality · Insurance · Logistics · Manufacturing · Real Estate · Retail · Technology (SaaS) ·
+Telecommunications — plus the sector overview hub; each with its own KPI dashboard, and 14 planning
+templates in `src/templates/` covering the major modeling patterns.
 
 ### AI Copilot
 
@@ -143,7 +144,7 @@ QuickBooks · NetSuite · Xero · Sage Intacct · Microsoft Dynamics 365 · Sale
 | ------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | **Desktop**   | Tauri 2 + Rust backend             | Fully offline, local-first, data encrypted at rest.                                                   |
 | **Web build** | React 19 + Vite + Tailwind 4       | Frontend bundle for the Tauri shell; plain-browser rendering is intentionally blocked (desktop-only). |
-| **Server**    | Node + Express + SQLite (mockable) | Multi-user APIs, RBAC, period close, JWT auth; 107 integration tests.                                 |
+| **Server**    | Node + Express + SQLite (mockable) | Multi-user APIs, RBAC, period close, JWT auth; 247 integration tests.                                 |
 
 ---
 
@@ -166,9 +167,9 @@ scripts/            # CI ratchets, engine manifest, audit, SHA-pinning tooling
 > **Financial Engines (182 modules)**, **Zustand Stores (44 stores)**, **Web Workers (4 active)**.
 > Coverage thresholds in `vite.config.ts` are 50% (statements/branches/functions/lines) — this is a
 > floor, not a claim of production coverage; no full-suite coverage run completes inside CI.
-> **Measured adoption: 88 of 258 engine/store modules** route through the canonical money primitive
-> at the engine/store layer (with UI-layer adoption continuing in GAP-1; see the ratchet for total
-> financial-path counts).
+> **Measured adoption: 88 of 255 engine/store modules** route through the canonical money primitive
+> at the engine/store layer (with UI-layer adoption continuing in GAP-1; see the AST ratchet for
+> total financial-path safety).
 
 ### The Money Primitive (F-0006) — the "no rounding bugs" promise
 
@@ -185,12 +186,14 @@ const withTax = roundTo(addMoney(subtotal, percentOf(subtotal, 0.0825)));
 ```
 
 > [!NOTE]
-> **Adoption (measured, CI-gated):** **98 of 380** financial modules on the primitive across the ratcheted
-> directories (frontend), **2 of 23** server routes on `decimal.js`, **0** raw `.toFixed(n)` sites used
-> as financial truth. The `money:adoption` ratchet fails CI if adoption drops or raw `toFixed` sites
-> grow. The remaining surface is the UI-layer backlog (GAP-1) being migrated area-by-area — see
-> [`GAP_LEDGER.md`](./GAP_LEDGER.md). UI-layer migrations this cycle bring 21 additional component/
-> page modules onto the primitive (awaiting a display-helper pass before those dirs join the ratchet).
+> **Money safety (measured, gate-enforced):** the AST money-safety ratchet (`npm run money:ast`,
+> pre-push Gate 9b) parses every ratcheted financial path: **990** modules scanned, **896** handle
+> money, **896 are safe**, **0** unsafe operations, **100%** safety. Raw float arithmetic cannot
+> re-enter those paths without failing the gate. A companion fabrication ratchet (Gate 9c) holds at
+> **0** findings for hand-typed `$12.4M` / `24.3%` literals. The older import-proxy script
+> (`money-adoption.mjs`) is retired-pending: its residual exit-1 sites were adjudicated as
+> `roundMoney(...).toFixed()` display formatting (not financial truth). Server-side, the canonical
+> engine paths run on `decimal.js`.
 
 ### Precision Bugs Caught and Fixed (excerpt)
 
@@ -208,20 +211,20 @@ Every one of these is pinned by a `*.money.test.ts` that fails against the origi
 
 <div align="center">
 
-| Gate                            | Status                                 | Standard                                      |
-| ------------------------------- | -------------------------------------- | --------------------------------------------- |
-| **TypeScript** (`tsc --noEmit`) | ✅                                     | Strict mode, zero errors                      |
-| **ESLint** (`--max-warnings 0`) | ✅                                     | Zero warnings tolerated                       |
-| **Prettier**                    | ✅                                     | Enforced in CI                                |
-| **Vitest** — frontend           | ✅ **1,197 files / 13,438 tests**      | Full suite green                              |
-| **Vitest** — server             | ✅ **107 tests / 9 files**             | Supertest + mock DB                           |
-| **Money adoption ratchet**      | ✅ **98/380 + 2/23** · 0 raw `toFixed` | Never regresses                               |
-| **Engine reachability**         | ✅ **180/180 reachable, 0 orphans**    | Manifest + direct + lazy                      |
-| **README claims audit**         | ✅                                     | `npm run docs:verify`                         |
-| **Docs verification**           | ✅                                     | `npm run docs:verify`                         |
-| **Production dependency audit** | ✅ critical=0 high=0 moderate=0 low=0  | `scripts/check-dependency-audit.mjs`          |
-| **Bundle check**                | ⚠️ Warning-only                        | 2,036.85 KB gzip / 2,248 KB limit             |
-| **Build & Bundle Check** (CI)   | 🛑 Known blocker                       | Pre-existing 2048 KB workflow cap — see GAP-7 |
+| Gate                            | Status                                     | Standard                                      |
+| ------------------------------- | ------------------------------------------ | --------------------------------------------- |
+| **TypeScript** (`tsc --noEmit`) | ✅                                         | Strict mode, zero errors                      |
+| **ESLint** (`--max-warnings 0`) | ✅                                         | Zero warnings tolerated                       |
+| **Prettier**                    | ✅                                         | Enforced in CI                                |
+| **Vitest** — frontend           | ✅ **1,272 files / 14,495 tests**          | Full suite green                              |
+| **Vitest** — server             | ✅ **247 tests / 25 files** · native-DB 83 | Supertest + mock DB / better-sqlite3          |
+| **AST money-safety ratchet**    | ✅ **100% safe · 896/896 · 0 unsafe ops**  | `npm run money:ast` (Gate 9b)                 |
+| **Engine reachability**         | ✅ **180/180 reachable, 0 orphans**        | Manifest + direct + lazy                      |
+| **README claims audit**         | ✅                                         | `npm run docs:verify`                         |
+| **Docs verification**           | ✅                                         | `npm run docs:verify`                         |
+| **Production dependency audit** | ✅ critical=0 high=0 moderate=0 low=0      | `scripts/check-dependency-audit.mjs`          |
+| **Bundle check**                | ⚠️ Warning-only                            | 2,036.85 KB gzip / 2,248 KB limit             |
+| **Build & Bundle Check** (CI)   | 🛑 Known blocker                           | Pre-existing 2048 KB workflow cap — see GAP-7 |
 
 </div>
 
@@ -252,7 +255,7 @@ updated every session with literal command output. It is the single source of tr
 
 ### Release v1.0 Gates (all tracked in the ledger)
 
-- ✅ Full-suite certification (11,572 tests green)
+- ✅ Full-suite certification (14,495 tests green)
 - 🚧 Playwright E2E farm
 - 🚧 Performance benchmarks
 - 🚧 Accessibility (a11y) sweep
@@ -290,9 +293,9 @@ Three rules govern the codebase:
 2. Branch off `main`; this session works on `arena/*` branches.
 3. Run the full gate before pushing:
    ```bash
-   npm run tsc && npm run lint && npm run format:check && npm test && npm run money:adoption && npm run docs:verify
+   npm run tsc && npm run lint && npm run format:check && npm test && npm run money:ast && npm run fabrication:audit && npm run docs:verify
    ```
-4. If you touch currency math: use `@/utils/money`; add a `*.money.test.ts`; stash-falsify it; re-run `npm run money:adoption -- --update` to raise the floor (never lower it).
+4. If you touch currency math: use `@/utils/money`; add a `*.money.test.ts` with exact known answers; stash-falsify it against the old float code; then confirm `npm run money:ast` still reports 0 unsafe operations.
 5. Do not edit `.github/workflows/**` — those are reserved for GAP-7 and any commit touching them poisons the branch until the App has `workflows` permission.
 
 ---
@@ -306,8 +309,8 @@ MIT — see [`LICENSE`](./LICENSE).
 <div align="center">
 <sub>
 <b>Repository:</b> <code>Warzonesiddiki/fp-A-betterversion</code> ·
-<b>Base commit this README was verified against:</b> <code>729da51</code> (PR #30 merged) ·
-<b>Report date:</b> 4 August 2026 ·
+<b>Base commit this README was verified against:</b> <code>7c09eea9</code> (phase0/w02-tenancy) ·
+<b>Report date:</b> 22 August 2026 ·
 For board/investor detail see <a href="./reports/FinPlanPro-Executive-Investor-Report-2026-08-04.html">the full executive briefing</a>.
 </sub>
 </div>
