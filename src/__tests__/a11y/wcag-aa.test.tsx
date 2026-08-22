@@ -171,9 +171,12 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
     });
 
     it('DataTable has no detectable a11y violations', async () => {
+      // Real DataTableProps contract: `columns` + `data` (no rows/rowKey).
       const columns = [{ key: 'name', header: 'Name' }];
-      const rows = [{ name: 'Alpha' }, { name: 'Beta' }];
-      const { container } = render(<DataTable columns={columns} rows={rows} rowKey="name" />);
+      const data = [{ name: 'Alpha' }, { name: 'Beta' }];
+      const { container } = render(
+        <DataTable columns={columns} data={data} ariaLabel="Test table" />
+      );
       const results = await axe(container);
       expectNoCriticalOrSerious(results);
     });

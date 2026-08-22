@@ -113,9 +113,11 @@ describe('ForecastBuilderPage — W-K30-001 state coverage', () => {
     glState = { entries: [], isLoading: true, importError: null };
     const { container } = renderPage();
     expect(screen.getByTestId('forecast-builder-loading')).toBeInTheDocument();
-    // Every <Skeleton> renders its own role="status" wrapper + sr-only label.
-    expect(screen.getAllByRole('status').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Loading...').length).toBeGreaterThan(0);
+    // Skeletons are decorative (aria-hidden) — no live-region spam.
+    expect(
+      screen.getByTestId('forecast-builder-loading').querySelector('[aria-hidden="true"]')
+    ).toBeTruthy();
+    expect(screen.queryByRole('status')).toBeNull();
     expect(container.querySelector('[data-testid="forecast-kpis"]')).not.toBeInTheDocument();
     expect(container.querySelector('[data-testid="forecast-config"]')).not.toBeInTheDocument();
     // The h1 survives every branch (heading-order discipline).

@@ -137,9 +137,10 @@ describe('BudgetDetailPage — W-K30-001 state coverage', () => {
     budgetState = { budgets: [], activeBudgetId: null, lineItems: [], isLoading: true };
     const { container } = renderPage('/budgets/b1', '/budgets/:id');
     expect(screen.getByTestId('budget-detail-loading')).toBeInTheDocument();
-    // Every <Skeleton> renders its own role="status" wrapper + sr-only label.
-    expect(screen.getAllByRole('status').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Loading...').length).toBeGreaterThan(0);
+    // Skeletons are decorative (aria-hidden) — no live-region spam; the page
+    // owns the single announcement via its own status region if any.
+    expect(screen.getByTestId('budget-detail-loading').querySelector('[aria-hidden="true"]')).toBeTruthy();
+    expect(screen.queryByRole('status')).toBeNull();
     // The pre-existing "Budget Not Found" flash must NOT appear during load…
     expect(screen.queryByText(/Budget not found/i)).not.toBeInTheDocument();
     // …and no editor chrome renders yet.

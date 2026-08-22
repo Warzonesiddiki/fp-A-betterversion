@@ -224,19 +224,29 @@ export function CommandPalette({
           </kbd>
         </div>
         {/* Item List */}
-        <div
-          ref={listRef}
-          id="command-list"
-          role="listbox"
-          aria-label="Commands"
-          className="max-h-80 overflow-y-auto p-2"
-        >
-          {filteredItems.length === 0 ? (
+        {filteredItems.length === 0 ? (
+          // ARIA: an empty listbox must not keep role=listbox (it would demand
+          // option/group children). Announce the empty state as a status instead.
+          <div
+            ref={listRef}
+            id="command-list"
+            role="status"
+            aria-label={t('commands.notFound')}
+            className="max-h-80 overflow-y-auto p-2"
+          >
             <div className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
               <p className="text-sm">{t('commands.notFound')}</p>
             </div>
-          ) : (
-            Array.from(groupedItems.entries()).map(([category, categoryItems]) => (
+          </div>
+        ) : (
+          <div
+            ref={listRef}
+            id="command-list"
+            role="listbox"
+            aria-label="Commands"
+            className="max-h-80 overflow-y-auto p-2"
+          >
+            {Array.from(groupedItems.entries()).map(([category, categoryItems]) => (
               <div key={category} role="group" aria-label={category} className="mb-2">
                 <div
                   className="px-3 py-1 text-xs font-semibold uppercase tracking-wider"
@@ -286,9 +296,9 @@ export function CommandPalette({
                   );
                 })}
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
         {/* Footer */}
         <div
           className="flex items-center justify-between px-4 py-2 border-t text-xs"
