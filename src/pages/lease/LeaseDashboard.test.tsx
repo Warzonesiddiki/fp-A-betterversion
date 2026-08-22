@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
@@ -44,6 +44,20 @@ import { useLeaseStore } from '@/store/leaseStore';
 import { actAs } from '@/test/rbacFixtures';
 
 describe('LeaseDashboard (BATCH-011 — rewire to LeaseEngine)', () => {
+  // K17: the store no longer ships demo leases; each spec seeds its own.
+  const seedLease = {
+    id: 'L001',
+    property: 'HQ Office - Floor 12',
+    type: 'Finance',
+    payment: 45000,
+    commencementDate: '2026-01-01',
+    leaseTerm: 48,
+    discountRate: 0.06,
+  };
+  beforeEach(() => {
+    useLeaseStore.setState({ leases: [seedLease] });
+  });
+
   it('renders without crashing', () => {
     const { container } = render(
       <MemoryRouter>

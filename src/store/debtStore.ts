@@ -1,5 +1,5 @@
 /**
- * debtStore — Debt instrument persistence (GAP-NEW-A).
+ * debtStore â€” Debt instrument persistence (GAP-NEW-A).
  *
  * Typed, persisted store for debt instruments so the DebtSchedulePage reads
  * real user data (via useDebtStore) instead of a hardcoded module-level
@@ -39,86 +39,12 @@ interface DebtState {
   setInstruments: (instruments: DebtInstrumentInput[]) => void;
 }
 
-/** Seed portfolio (kept so existing DebtSchedulePage tests that assert
- * engine-computed schedules continue to pass). Users can clear/edit it. */
-const SEED_INSTRUMENTS: DebtInstrumentInput[] = [
-  {
-    id: 'DEBT-001',
-    name: 'Chase Term Loan',
-    lender: 'Chase Bank',
-    displayType: 'Term Loan',
-    status: 'current',
-    principal: 15000000,
-    rate: 0.0525,
-    termMonths: 60,
-    startDate: '2026-01-01',
-    type: 'term_loan',
-    paymentFrequency: 'monthly',
-    amortizationType: 'fully_amortizing',
-  },
-  {
-    id: 'DEBT-002',
-    name: 'Wells Revolver',
-    lender: 'Wells Fargo',
-    displayType: 'Revolving LOC',
-    status: 'current',
-    principal: 8000000,
-    rate: 0.0475,
-    termMonths: 36,
-    startDate: '2026-01-01',
-    type: 'revolver',
-    paymentFrequency: 'monthly',
-    amortizationType: 'interest_only',
-  },
-  {
-    id: 'DEBT-003',
-    name: 'Goldman Senior Notes',
-    lender: 'Goldman Sachs',
-    displayType: 'Senior Notes',
-    status: 'current',
-    principal: 25000000,
-    rate: 0.065,
-    termMonths: 120,
-    startDate: '2026-01-01',
-    type: 'bond',
-    paymentFrequency: 'monthly',
-    amortizationType: 'bullet',
-  },
-  {
-    id: 'DEBT-004',
-    name: 'BoA Equipment Finance',
-    lender: 'Bank of America',
-    displayType: 'Equipment Finance',
-    status: 'current',
-    principal: 2500000,
-    rate: 0.0725,
-    termMonths: 48,
-    startDate: '2026-01-01',
-    type: 'term_loan',
-    paymentFrequency: 'monthly',
-    amortizationType: 'fully_amortizing',
-  },
-  {
-    id: 'DEBT-005',
-    name: 'JPM Bridge Loan',
-    lender: 'JP Morgan',
-    displayType: 'Bridge Loan',
-    status: 'watch',
-    principal: 10000000,
-    rate: 0.08,
-    termMonths: 24,
-    startDate: '2026-01-01',
-    type: 'term_loan',
-    paymentFrequency: 'monthly',
-    amortizationType: 'bullet',
-  },
-];
-
 export const useDebtStore = create<DebtState>()(
   subscribeWithSelector(
     persist(
       immer((set) => ({
-        instruments: SEED_INSTRUMENTS,
+        // K17: no invented credit facilities ship as persisted defaults.
+        instruments: [],
 
         addInstrument: enforce(Permissions.BUDGET_CREATE, 'addInstrument', (instrument) =>
           set((state) => {
@@ -148,8 +74,19 @@ export const useDebtStore = create<DebtState>()(
       {
         name: 'debt-store',
         storage: masterStorage,
-        version: 1,
-        migrate: (state: unknown) => state,
+        // v2 (K17): drop the retired five-facility seed portfolio from any
+        // persisted v1 state; user-entered instruments are preserved.
+        version: 2,
+        migrate: (state) => {
+          const s = state as { instruments?: Array<Record<string, unknown>> };
+          const seeded = new Set(['DEBT-001', 'DEBT-002', 'DEBT-003', 'DEBT-004', 'DEBT-005']);
+          return {
+            ...s,
+            instruments: Array.isArray(s.instruments)
+              ? s.instruments.filter((i) => !seeded.has(String(i.id)))
+              : [],
+          };
+        },
       }
     )
   )
