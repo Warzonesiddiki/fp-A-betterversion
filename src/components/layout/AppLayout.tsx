@@ -122,9 +122,11 @@ export default function AppLayout() {
       dir={dir}
       style={{ background: 'var(--bg-root)' }}
     >
-      {/* Skip Navigation Links — WCAG 2.1 AA bypass blocks */}
+      {/* Single WCAG 2.1 AA bypass block (deduped): one Tab reveals it, and
+          the next stop is already the content landmark. The removed second
+          skip (#main-nav) added a pre-content tab stop without adding reach —
+          the nav sits immediately after it in DOM order. */}
       <SkipToContent targetId="main-content" />
-      <SkipToContent targetId="main-nav" />
       {/* Mobile sidebar overlay */}
       {mobileSidebarOpen && (
         <div

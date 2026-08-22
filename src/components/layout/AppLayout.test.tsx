@@ -80,10 +80,23 @@ describe('AppLayout', () => {
     expect(skipLinks.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('renders two skip navigation links', () => {
-    renderWithRouter(<AppLayout />);
+  it('renders exactly one skip link, first in tab order before content', () => {
+    const { container } = renderWithRouter(<AppLayout />);
     const skipLinks = screen.getAllByText('Skip to main content');
-    expect(skipLinks.length).toBe(2);
+    // Deduped (wave-3 R9): a second skip to #main-nav doubled the pre-content
+    // tab stops while the nav already follows immediately in DOM order.
+    expect(skipLinks).toHaveLength(1);
+    expect(skipLinks[0].getAttribute('href')).toBe('#main-content');
+    expect(container.querySelector('a[href="#main-nav"]')).toBeNull();
+    // It must be the very first focusable element of the layout, so keyboard
+    // users hit exactly one bypass block before the content landmark.
+    const focusable = container.querySelectorAll(
+      'a[href], button:not([disabled]), select, input, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    expect(focusable.length).toBeGreaterThan(0);
+    expect(focusable[0]).toBe(skipLinks[0]);
+    // ...and the nav landmark itself remains addressable without its own skip.
+    expect(container.querySelector('#main-nav')).toBeInTheDocument();
   });
 
   it('has a main content area with proper role', () => {
