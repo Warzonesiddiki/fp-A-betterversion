@@ -1,11 +1,11 @@
 {
-  "$schema_note": "Blueprint §24.2 Escape Ledger status file. Rows/canon live in scripts/escape-ledger-check.mjs (transcribed verbatim from .agent/blueprint-parts/12c-section-24.md). Every wave that ships or regresses a workflow updates its row and MUST cite evidence (route/engine/test that proves the status). Reclassifying a Hard row as legitimate requires a Blueprint amendment (§22.6 honesty clause).",
+  "$schema_note": "Blueprint Â§24.2 Escape Ledger status file. Rows/canon live in scripts/escape-ledger-check.mjs (transcribed verbatim from .agent/blueprint-parts/12c-section-24.md). Every wave that ships or regresses a workflow updates its row and MUST cite evidence (route/engine/test that proves the status). Reclassifying a Hard row as legitimate requires a Blueprint amendment (Â§22.6 honesty clause).",
   "updated_at": "2026-08-22",
   "rows": [
     {
       "id": 1,
       "status": "partial",
-      "evidence": "cube/model editors exist (F-CORE-001/011 partial per §3.8); no single operating-model surface"
+      "evidence": "cube/model editors exist (F-CORE-001/011 partial per Â§3.8); no single operating-model surface"
     },
     {
       "id": 2,
@@ -42,7 +42,11 @@
       "status": "built",
       "evidence": "/currency/fx-rates + MultiCurrencyEngine IAS 21 translation (verified money-safe)"
     },
-    { "id": 9, "status": "not-started", "evidence": "A.8 intercompany elimination — no engine" },
+    {
+      "id": 9,
+      "status": "not-started",
+      "evidence": "ELIMINATION ENGINES EXIST with money tests (ConsolidationEngine.eliminateIntercompany :566 exact -0.3; IntercompanyMatchingEngine; ICMatchingEngine.generateEliminations; consolidation.worker): workflow not assembled into a routed surface. Prior no-engine text was factually wrong (docs-truth audit 2026-08-22)"
+    },
     {
       "id": 10,
       "status": "partial",
@@ -116,7 +120,7 @@
     {
       "id": 24,
       "status": "not-started",
-      "evidence": "XBRL instance generation absent (§14.5 legitimate boundary)"
+      "evidence": "XBRL instance generation absent (Â§14.5 legitimate boundary)"
     },
     {
       "id": 25,
@@ -131,12 +135,12 @@
     {
       "id": 27,
       "status": "not-started",
-      "evidence": "AutoCommentaryEngine exists; MD&A authoring surface F-REPORT-013 not built"
+      "evidence": "AutoCommentaryEngine exists; MD\u0026A authoring surface F-REPORT-013 not built"
     },
     {
       "id": 28,
       "status": "partial",
-      "evidence": "import mapping UI exists; ETL-grade prep §8.3 partial"
+      "evidence": "import mapping UI exists; ETL-grade prep Â§8.3 partial"
     },
     {
       "id": 29,
