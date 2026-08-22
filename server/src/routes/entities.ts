@@ -326,8 +326,10 @@ router.post('/departments', requireRole('Admin'), (req: Request, res: Response) 
 router.get('/users/list', requireRole('Admin'), (req: Request, res: Response) => {
   try {
     const { role, entity_id, limit = '50', offset = '0' } = req.query;
-    const conditions: string[] = [];
-    const params: unknown[] = [];
+    // S0-2 red-team fix: this directory previously listed EVERY tenant's
+    // users (emails/names/roles) to any Admin. Tenant scope is mandatory.
+    const conditions: string[] = ['u.tenant_id = ?'];
+    const params: unknown[] = [resolveTenantId(req.user)];
 
     if (role && typeof role === 'string') {
       conditions.push('u.role = ?');
@@ -375,11 +377,18 @@ router.get('/users/list', requireRole('Admin'), (req: Request, res: Response) =>
 // GET /users/:id — get user
 router.get('/users/:id', (req: Request, res: Response) => {
   try {
-    // Users can view their own profile; Admins can view any
-    if (req.user!.id !== String(req.params.id) && req.user!.role !== 'Admin') {
+    // Users can view their own profile; Admins can view any profile WITHIN
+    // their own tenant (S0-2 red-team fix: this endpoint previously leaked
+    // cross-tenant PII to any authenticated caller).
+    const self = req.user!.id === String(req.params.id);
+    if (!self && req.user!.role !== 'Admin') {
       res.status(403).json({ error: 'Insufficient permissions' });
       return;
     }
+    const scoped = self ? 'WHERE u.id = ?' : 'WHERE u.id = ? AND u.tenant_id = ?';
+    const userParams = self
+      ? [String(req.params.id)]
+      : [String(req.params.id), resolveTenantId(req.user)];
 
     const user = db
       .prepare(
@@ -389,9 +398,9 @@ router.get('/users/:id', (req: Request, res: Response) => {
        FROM users u
        LEFT JOIN entities e ON e.id = u.entity_id
        LEFT JOIN departments d ON d.id = u.department_id
-       WHERE u.id = ?`
+       ${scoped}`
       )
-      .get(String(req.params.id));
+      .get(...userParams);
 
     if (!user) {
       res.status(404).json({ error: 'User not found' });

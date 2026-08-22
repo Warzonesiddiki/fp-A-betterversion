@@ -97,7 +97,12 @@ const BulkGLEntrySchema = z.object({
 const CreateAccountSchema = z.object({
   code: z.string().min(1, 'Account code is required').max(50),
   name: z.string().min(1, 'Account name is required').max(255),
-  type: z.enum(['Asset', 'Liability', 'Equity', 'Revenue', 'Expense']),
+  // H-2 red-team fix: the vocabulary MUST match the schema CHECK constraint
+  // ('Revenue','COGS','OpEx','CapEx','Asset','Liability','Equity') and the
+  // three-statement gate's closed set. The old enum contained a nonexistent
+  // 'Expense' (raw 500 on insert) and omitted COGS/OpEx/Capex entirely,
+  // making real expense accounts uncreatable through the API.
+  type: z.enum(['Asset', 'Liability', 'Equity', 'Revenue', 'COGS', 'OpEx', 'CapEx']),
   parent_id: z.string().uuid().optional(),
   entity_id: z.string().uuid().optional(),
   description: z.string().optional(),
@@ -234,12 +239,12 @@ router.post(
         department_id,
       } = parsed.data;
 
-      // Check if fiscal period is closed
+      // Check if fiscal period is closed (H-3: tenant-scoped)
       const closedPeriod = db
         .prepare(
-          `SELECT id, name FROM fiscal_periods WHERE is_closed = 1 AND ? BETWEEN start_date AND end_date`
+          `SELECT id, name FROM fiscal_periods WHERE is_closed = 1 AND tenant_id = ? AND ? BETWEEN start_date AND end_date`
         )
-        .get(post_date) as { id: string; name: string } | undefined;
+        .get(resolveTenantId(req.user), post_date) as { id: string; name: string } | undefined;
 
       if (closedPeriod) {
         res.status(403).json({
@@ -357,11 +362,13 @@ router.post(
       }
 
       for (const entry of parsed.data.entries) {
+        // H-3 red-team fix: another tenant's hard-close must never block
+        // posting into THIS tenant's open period.
         const closedPeriod = db
           .prepare(
-            `SELECT id, name FROM fiscal_periods WHERE is_closed = 1 AND ? BETWEEN start_date AND end_date`
+            `SELECT id, name FROM fiscal_periods WHERE is_closed = 1 AND tenant_id = ? AND ? BETWEEN start_date AND end_date`
           )
-          .get(entry.post_date) as { id: string; name: string } | undefined;
+          .get(tenantId, entry.post_date) as { id: string; name: string } | undefined;
 
         if (closedPeriod) {
           res.status(403).json({
@@ -498,8 +505,10 @@ router.delete(
 router.get('/accounts', (req: Request, res: Response) => {
   try {
     const { entity_id } = req.query;
-    const conditions: string[] = [];
-    const params: unknown[] = [];
+    // H-1 red-team fix: the chart of accounts is tenant data. Without this
+    // predicate any authenticated user could enumerate every tenant's COA.
+    const conditions: string[] = ['a.tenant_id = ?'];
+    const params: unknown[] = [resolveTenantId(req.user)];
 
     if (entity_id && typeof entity_id === 'string') {
       conditions.push('a.entity_id = ?');
@@ -555,9 +564,13 @@ router.post('/accounts', (req: Request, res: Response) => {
     }
 
     const { code, name, type, parent_id, entity_id, description, is_active } = parsed.data;
+    const tenantId = resolveTenantId(req.user);
 
-    // Check unique code
-    const duplicate = db.prepare('SELECT id FROM accounts WHERE code = ?').get(code);
+    // H-1 red-team fix: duplicate-code check scoped per tenant. The old
+    // global check let tenant A's code block tenant B (existence oracle).
+    const duplicate = db
+      .prepare('SELECT id FROM accounts WHERE code = ? AND tenant_id = ?')
+      .get(code, tenantId);
 
     if (duplicate) {
       res.status(400).json({ error: 'Account code already exists' });
@@ -567,10 +580,11 @@ router.post('/accounts', (req: Request, res: Response) => {
     const id = uuidv4();
 
     db.prepare(
-      `INSERT INTO accounts (id, code, name, type, parent_id, entity_id, description, is_active, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+      `INSERT INTO accounts (id, tenant_id, code, name, type, parent_id, entity_id, description, is_active, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
     ).run(
       id,
+      tenantId,
       code,
       name,
       type,
@@ -599,18 +613,28 @@ router.put('/accounts/:id', (req: Request, res: Response) => {
       return;
     }
 
-    const existing = db.prepare('SELECT id FROM accounts WHERE id = ?').get(String(req.params.id));
+    // H-1 red-team fix: account mutation is tenant-scoped AND admin-gated.
+    // Previously ANY authenticated user could rename/retype/deactivate ANY
+    // tenant's accounts; retyping flips gate identity sides retroactively.
+    if (req.user!.role !== 'Admin') {
+      res.status(403).json({ error: 'Insufficient permissions' });
+      return;
+    }
+    const tenantId = resolveTenantId(req.user);
+    const existing = db
+      .prepare('SELECT id FROM accounts WHERE id = ? AND tenant_id = ?')
+      .get(String(req.params.id), tenantId);
 
     if (!existing) {
       res.status(404).json({ error: 'Account not found' });
       return;
     }
 
-    // Check unique code if code is being changed
+    // Check unique code if code is being changed (tenant-scoped)
     if (parsed.data.code) {
       const duplicate = db
-        .prepare('SELECT id FROM accounts WHERE code = ? AND id != ?')
-        .get(parsed.data.code, String(req.params.id));
+        .prepare('SELECT id FROM accounts WHERE code = ? AND tenant_id = ? AND id != ?')
+        .get(parsed.data.code, tenantId, String(req.params.id));
 
       if (duplicate) {
         res.status(400).json({ error: 'Account code already exists' });
@@ -635,8 +659,11 @@ router.put('/accounts/:id', (req: Request, res: Response) => {
 
     fields.push("updated_at = datetime('now')");
     values.push(String(req.params.id));
+    values.push(tenantId);
 
-    db.prepare(`UPDATE accounts SET ${fields.join(', ')} WHERE id = ?`).run(...values);
+    db.prepare(`UPDATE accounts SET ${fields.join(', ')} WHERE id = ? AND tenant_id = ?`).run(
+      ...values
+    );
 
     audit(
       'UPDATE',

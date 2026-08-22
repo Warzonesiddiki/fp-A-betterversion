@@ -348,10 +348,18 @@ router.post('/pdf', (req: Request, res: Response) => {
           break;
         }
         case 'budget_vs_actual': {
-          // Tenant scope (W0.2c): budget side constrained even when the
-          // caller supplies no other filter.
-          const conditions: string[] = ['b.deleted_at IS NULL', 'b.tenant_id = ?'];
-          const params: unknown[] = [resolveTenantId(req.user)];
+          // Tenant scope (W0.2c) — S0-1 red-team fix: the gl_entries side of
+          // this JOIN previously carried ONLY date filters, so exported
+          // Actual Debit/Credit summed EVERY OTHER TENANT'S postings sharing
+          // the account. Both sides are now explicitly constrained.
+          const tenantId = resolveTenantId(req.user);
+          const conditions: string[] = [
+            'ge.tenant_id = ?',
+            'ge.deleted_at IS NULL',
+            'b.deleted_at IS NULL',
+            'b.tenant_id = ?',
+          ];
+          const params: unknown[] = [tenantId, tenantId];
           if (fiscal_year) {
             conditions.push('b.fiscal_year = ?');
             params.push(fiscal_year);
