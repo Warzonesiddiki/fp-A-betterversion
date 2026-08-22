@@ -61,4 +61,38 @@ describe('EmissionsTradingPage smoke test', () => {
     renderPage();
     expect(screen.getByText('Emissions Trading')).toBeTruthy();
   });
+
+  // =============================================================================
+  // Empty-branch honesty (K17/K18): real energyStore now ships [] defaults
+  // (post-1bea2f3a) and the GL mock is empty, so every KPI renders '—' with
+  // its disclosure, no chart mounts, and both the compliance card and the
+  // inventory section disclose instead of inventing positions.
+  // =============================================================================
+  it('empty store and GL render disclosures and mount no chart or table', () => {
+    renderPage();
+
+    // All four KPIs disclose absence.
+    expect(screen.getByRole('region', { name: 'Recorded Assets' })).toHaveTextContent('—');
+    expect(screen.getByRole('region', { name: 'Total Generation (window)' })).toHaveTextContent(
+      '—'
+    );
+    expect(screen.getAllByText(/no assets recorded/i).length).toBeGreaterThan(0);
+    // 'No generation on file' appears both as a KPI changeLabel and as the
+    // trend card description, hence getAllByText.
+    expect(screen.getAllByText(/no generation on file/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/no GL imported/i)).toBeInTheDocument();
+
+    // Generation chart: disclosure only — no ResponsiveContainer mount.
+    expect(screen.getByText(/No generation trend recorded yet\./i)).toBeInTheDocument();
+    expect(screen.queryByTestId('rc')).not.toBeInTheDocument();
+
+    // Compliance card discloses the missing feed.
+    expect(screen.getByText(/Allowance ledger and price feed required/i)).toBeInTheDocument();
+
+    // Inventory section: disclosure copy, no DataTable mount.
+    expect(
+      screen.getByText(/No carbon allowance positions are recorded in this workspace\./i)
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId('data-table')).not.toBeInTheDocument();
+  });
 });

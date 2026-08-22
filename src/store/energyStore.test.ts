@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useEnergyStore } from './energyStore';
 import { actAs } from '@/test/rbacFixtures';
 
@@ -17,6 +17,55 @@ describe('energyStore', () => {
     expect(state.assets).toEqual([]);
     expect(state.generationTrend).toEqual([]);
     expect(state.capacityMix).toEqual([]);
+  });
+
+  // =============================================================================
+  // K17 CONTRACT (regression lock for 1bea2f3a)
+  // -----------------------------------------------------------------------------
+  // Pre-1bea2f3a the factory shipped demo records as persisted defaults:
+  // five named facilities ("Mojave Solar I", "North Sea Wind", "Blue River
+  // Hydro", "Arizona Array", "Tesla Megapack Hub"), a seven-point Jan-2026
+  // generation trend and a five-slice capacity mix. Every tenant got them
+  // rendered as if they were recorded data. The factory defaults must stay
+  // EMPTY ARRAYS; users record their own. This spec re-imports the module so
+  // it observes the true factory state, not the beforeEach-reset state.
+  // =============================================================================
+  describe('K17: factory defaults ship no invented business records', () => {
+    async function freshFactoryState() {
+      vi.resetModules();
+      const fresh = await import('./energyStore');
+      return fresh.useEnergyStore.getState();
+    }
+
+    it('all three record slices default to empty arrays', async () => {
+      const s = await freshFactoryState();
+      expect(Array.isArray(s.assets)).toBe(true);
+      expect(Array.isArray(s.generationTrend)).toBe(true);
+      expect(Array.isArray(s.capacityMix)).toBe(true);
+      expect(s.assets).toEqual([]);
+      expect(s.generationTrend).toEqual([]);
+      expect(s.capacityMix).toEqual([]);
+    });
+
+    it('retired seed names and fixture totals never return as defaults', async () => {
+      const s = await freshFactoryState();
+      const raw = JSON.stringify({ ...s, setAssets: undefined });
+      for (const retired of [
+        'Mojave Solar I',
+        'North Sea Wind',
+        'Blue River Hydro',
+        'Arizona Array',
+        'Tesla Megapack Hub',
+        '"total":950',
+        '"total":1120',
+        'Onshore Wind',
+        'Battery Storage',
+      ]) {
+        expect(raw).not.toContain(retired);
+      }
+      expect(raw).not.toMatch(/"capacity":"\d+ MW"/);
+      expect(raw).not.toMatch(/"roi":"\d+(\.\d+)?%"/);
+    });
   });
 
   it('should set assets', () => {

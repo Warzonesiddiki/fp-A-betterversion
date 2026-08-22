@@ -91,4 +91,43 @@ describe('RenewableEnergyPage smoke test', () => {
     renderPage();
     expect(screen.getByRole('heading', { name: /Renewable Energy/i })).toBeTruthy();
   });
+
+  // =============================================================================
+  // Empty-branch honesty (K17/K18): with a fully empty store — the post-
+  // 1bea2f3a factory default — every KPI renders '—', no chart mounts and
+  // the asset table is replaced by disclosure copy. No seeded records may
+  // appear.
+  // =============================================================================
+  it('empty store renders disclosures and mounts no chart or table', () => {
+    renderPage();
+
+    // KPIs disclose absence instead of showing figures. The absence label
+    // repeats across all four cards and the capacity/table descriptions, so
+    // these are asserted with getAllByText.
+    expect(screen.getAllByText(/no generation on file/i).length).toBeGreaterThan(0);
+    const solarKpi = screen.getByRole('region', { name: /Solar \(latest period\)/i });
+    expect(solarKpi).toHaveTextContent('—');
+    expect(screen.getAllByText(/no assets recorded/i).length).toBeGreaterThan(0);
+
+    // Generation chart: disclosure text only, no LineChart mount.
+    expect(screen.getByText(/No generation trend recorded yet\./i)).toBeInTheDocument();
+    expect(screen.queryByTestId('line-chart')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('responsive-container')).not.toBeInTheDocument();
+
+    // Capacity card: disclosure only, no PieChart mount.
+    expect(screen.getByText(/No assets to chart\./i)).toBeInTheDocument();
+    expect(screen.queryByTestId('pie-chart')).not.toBeInTheDocument();
+
+    // Asset portfolio: disclosure paragraphs replace the DataTable.
+    expect(screen.getByText(/No renewable assets recorded yet\./i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Add assets in the energy store to populate this table\./i)
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId('data-table')).not.toBeInTheDocument();
+
+    // The REC / CO2 non-derivability disclosure stays visible.
+    expect(
+      screen.getByText(/Renewable Energy Credits \(RECs\) and CO2 offset are not derivable/i)
+    ).toBeInTheDocument();
+  });
 });
