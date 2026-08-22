@@ -397,3 +397,169 @@ describe('glStore boot hydrate — hydrateCommittedFromServer (W0.8.6 plan §5)'
     expect(useGLStore.getState().entryVersions).toEqual({ e1: 2 });
   });
 });
+
+type DeleteFn = ReturnType<GlCommitNamespace['deleteEntry']>;
+
+/** Mirror of fakeClient for the compensating-delete path (W0.8.6 §4). */
+function fakeDeleteClient(
+  impl: (input: { entryId: string; environmentId: string }) => Promise<GlCommitResult<void>>
+): GlCommitNamespace {
+  return {
+    deleteEntry: (input) =>
+      impl(input as { entryId: string; environmentId: string }) as Promise<DeleteFn>,
+  } as unknown as GlCommitNamespace;
+}
+
+describe('glStore server tombstones — undoLastImport/clearData (W0.8.6 §4)', () => {
+  beforeEach(() => {
+    actAs('Admin');
+    useGLStore.setState({
+      entries: [],
+      accounts: [],
+      trialBalance: [],
+      accountAnalysis: null,
+      dateFilter: null,
+      accountFilter: [],
+      isLoading: false,
+      importProgress: 0,
+      importStatus: 'idle',
+      importError: null,
+      lastImportResult: null,
+      importHistory: [],
+      lastImportEntryIds: [],
+      entrySyncState: {},
+      entryVersions: {},
+      environmentId: 'dev',
+    });
+  });
+
+  it('undo after commit issues deletes for exactly the committed rows of the batch', async () => {
+    const calls: { entryId: string; environmentId: string; entriesStillPresent: number }[] = [];
+    setGlCommitClient(
+      fakeDeleteClient((input) => {
+        calls.push({
+          entryId: input.entryId,
+          environmentId: input.environmentId,
+          // Witness that the server pass runs BEFORE the local undo.
+          entriesStillPresent: useGLStore.getState().entries.length,
+        });
+        return Promise.resolve({ status: 'committed', value: undefined });
+      })
+    );
+
+    const { addEntries } = useGLStore.getState();
+    addEntries([makeEntry('srv-c1'), makeEntry('srv-d2', { description: 'draft leg' })]);
+    useGLStore.setState({
+      entrySyncState: { 'srv-c1': 'committed' },
+      entryVersions: { 'srv-c1': 3 },
+      lastImportEntryIds: ['srv-c1', 'srv-d2'],
+    });
+
+    await useGLStore.getState().undoLastImport();
+
+    // Only the COMMITTED row is tombstoned, scoped to the active environment;
+    // drafts never reached the server and are not deleted there.
+    expect(calls).toEqual([{ entryId: 'srv-c1', environmentId: 'dev', entriesStillPresent: 2 }]);
+
+    // The existing local undo still removes the whole batch.
+    const state = useGLStore.getState();
+    expect(state.entries).toEqual([]);
+    expect(state.entrySyncState).toEqual({});
+    expect(state.lastImportEntryIds).toEqual([]);
+    expect(state.importError).toBeNull();
+  });
+
+  it('clearData tombstones every committed row before the local wipe', async () => {
+    const calls: { entryId: string }[] = [];
+    setGlCommitClient(
+      fakeDeleteClient((input) => {
+        calls.push({ entryId: input.entryId });
+        return Promise.resolve({ status: 'committed', value: undefined });
+      })
+    );
+
+    const { addEntries } = useGLStore.getState();
+    addEntries([makeEntry('k1'), makeEntry('k2'), makeEntry('k3'), makeEntry('k4')]);
+    useGLStore.setState({
+      entrySyncState: { k1: 'committed', k2: 'draft', k3: 'pending', k4: 'committed' },
+      entryVersions: { k1: 1, k4: 7 },
+    });
+
+    await useGLStore.getState().clearData();
+
+    expect(calls.map((c) => c.entryId)).toEqual(['k1', 'k4']);
+    const state = useGLStore.getState();
+    expect(state.entries).toEqual([]);
+    expect(state.trialBalance).toEqual([]);
+    expect(state.accountAnalysis).toBeNull();
+    expect(state.entrySyncState).toEqual({});
+    expect(state.importError).toBeNull();
+  });
+
+  it('already_deleted is tolerated as success (K25 tombstone replay)', async () => {
+    const deleteSpy = vi
+      .fn()
+      .mockReturnValue(Promise.resolve({ status: 'already_deleted' } as GlCommitResult<void>));
+    setGlCommitClient({ deleteEntry: deleteSpy } as unknown as GlCommitNamespace);
+
+    const { addEntries } = useGLStore.getState();
+    addEntries([makeEntry('gone-1')]);
+    useGLStore.setState({
+      entrySyncState: { 'gone-1': 'committed' },
+      entryVersions: { 'gone-1': 5 },
+      lastImportEntryIds: ['gone-1'],
+    });
+
+    await useGLStore.getState().undoLastImport();
+
+    expect(deleteSpy).toHaveBeenCalledTimes(1);
+    expect(deleteSpy.mock.calls[0]?.[0]).toEqual({ entryId: 'gone-1', environmentId: 'dev' });
+    const state = useGLStore.getState();
+    expect(state.entries).toEqual([]);
+    expect(state.importError).toBeNull();
+  });
+
+  it('delete failures land in importError but the local operation still completes', async () => {
+    setGlCommitClient(
+      fakeDeleteClient(({ entryId }) => {
+        if (entryId === 'f1') {
+          return Promise.resolve({ status: 'error', message: 'network down' });
+        }
+        return Promise.resolve({
+          status: 'conflict',
+          conflict: { code: 'FP-0400', message: 'revision moved' },
+        });
+      })
+    );
+
+    const { addEntries } = useGLStore.getState();
+    addEntries([makeEntry('f1'), makeEntry('f2'), makeEntry('f3-draft')]);
+    useGLStore.setState({
+      entrySyncState: { f1: 'committed', f2: 'committed', 'f3-draft': 'draft' },
+      entryVersions: { f1: 2, f2: 9 },
+      lastImportEntryIds: ['f1', 'f2', 'f3-draft'],
+    });
+
+    await useGLStore.getState().undoLastImport();
+
+    const state = useGLStore.getState();
+    // Local intent wins: the batch is gone regardless of server failures.
+    expect(state.entries).toEqual([]);
+    expect(state.entrySyncState).toEqual({});
+    expect(state.lastImportEntryIds).toEqual([]);
+    expect(state.importError).toContain('2 committed entr(ies) failed server tombstone');
+    expect(state.importError).toContain('f1 (network down)');
+    expect(state.importError).toContain('f2 (FP-0400: revision moved)');
+  });
+
+  it('undo with an empty batch issues no deletes at all', async () => {
+    const deleteSpy = vi.fn();
+    setGlCommitClient({ deleteEntry: deleteSpy } as unknown as GlCommitNamespace);
+
+    useGLStore.setState({ lastImportResult: null });
+    await useGLStore.getState().undoLastImport();
+
+    expect(deleteSpy).not.toHaveBeenCalled();
+    expect(useGLStore.getState().lastImportResult).toBeNull();
+  });
+});

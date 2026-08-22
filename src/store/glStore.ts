@@ -218,6 +218,47 @@ function listedToGLEntry(row: GlListedEntry): Partial<GLEntry> {
   };
 }
 
+/** One server-side compensating delete that did not succeed (W0.8.6 §4). */
+interface GlTombstoneFailure {
+  readonly id: string;
+  readonly message: string;
+}
+
+/**
+ * W0.8.6 §4 (plan): compensating server tombstones. Only COMMITTED rows ever
+ * reached the server, so draft/pending/failed ids are skipped entirely.
+ * `already_deleted` counts as success (K25 tombstone replay semantics). Never
+ * throws — failures come back as {id, message} so callers can summarize them
+ * into `importError` WITHOUT blocking the local intent (local wins; the
+ * server reconciles via tombstones-on-replay).
+ */
+async function tombstoneCommittedEntries(
+  ids: readonly string[],
+  entrySyncState: GLState['entrySyncState'],
+  environmentId: string
+): Promise<GlTombstoneFailure[]> {
+  const failures: GlTombstoneFailure[] = [];
+  for (const id of ids) {
+    if ((entrySyncState[id] ?? 'draft') !== 'committed') continue;
+    const result = await glCommitClient.deleteEntry({ entryId: id, environmentId });
+    if (result.status === 'committed' || result.status === 'already_deleted') continue;
+    const message =
+      result.status === 'conflict'
+        ? `${result.conflict.code}: ${result.conflict.message}`
+        : (result.message ?? 'unknown server delete failure');
+    failures.push({ id, message });
+  }
+  return failures;
+}
+
+function summarizeTombstoneFailures(failures: readonly GlTombstoneFailure[]): string {
+  return (
+    `${failures.length} committed entr(ies) failed server tombstone ` +
+    `(local removal applied; server reconciles via tombstones-on-replay): ` +
+    failures.map((f) => `${f.id} (${f.message})`).join('; ')
+  );
+}
+
 function normalizeGLEntry(
   entry: Partial<GLEntry>,
   index: number,
@@ -721,8 +762,21 @@ export const useGLStore = create<GLState>()(
           }
         ),
 
-        clearData: enforce(Permissions.IMPORT_DELETE, 'clearData', () => {
+        clearData: enforce(Permissions.IMPORT_DELETE, 'clearData', async () => {
           captureGLSnapshot(get);
+          // W0.8.6 §4: every COMMITTED row gets a compensating server
+          // tombstone before the local wipe; drafts never reached the server
+          // and simply vanish locally. A wipe with zero committed rows never
+          // awaits, so purely local clears stay synchronous.
+          const { entries, entrySyncState, environmentId } = get();
+          const committedIds = entries
+            .filter((e) => (entrySyncState[e.id] ?? 'draft') === 'committed')
+            .map((e) => e.id);
+          const failures =
+            committedIds.length > 0
+              ? await tombstoneCommittedEntries(committedIds, entrySyncState, environmentId)
+              : [];
+
           set({
             entries: [],
             trialBalance: [],
@@ -736,6 +790,12 @@ export const useGLStore = create<GLState>()(
             title: 'GL Data Cleared',
             message: 'General ledger data has been reset',
           });
+
+          // Local intent always wins: tombstone failures are surfaced for
+          // reconciliation, never thrown past the action.
+          if (failures.length > 0) {
+            set({ importError: summarizeTombstoneFailures(failures) });
+          }
         }),
 
         setImportProgress: enforce(Permissions.UI_UPDATE, 'setImportProgress', (progress) =>
@@ -772,7 +832,22 @@ export const useGLStore = create<GLState>()(
           })
         ),
 
-        undoLastImport: enforce(Permissions.IMPORT_DELETE, 'undoLastImport', () =>
+        undoLastImport: enforce(Permissions.IMPORT_DELETE, 'undoLastImport', async () => {
+          // W0.8.6 §4: compensating server tombstones FIRST — committed rows
+          // of the batch are deleted server-side (already_deleted tolerated),
+          // then the existing local undo runs. Drafts/pending/failed rows
+          // never reached the server and are skipped. A batch with zero
+          // committed ids never awaits, so purely local undos stay
+          // synchronous.
+          const { lastImportEntryIds, entrySyncState, environmentId } = get();
+          const committedIds = lastImportEntryIds.filter(
+            (id) => (entrySyncState[id] ?? 'draft') === 'committed'
+          );
+          const failures =
+            committedIds.length > 0
+              ? await tombstoneCommittedEntries(committedIds, entrySyncState, environmentId)
+              : [];
+
           set((state) => {
             const count = state.lastImportEntryIds.length;
             if (count === 0) {
@@ -797,8 +872,14 @@ export const useGLStore = create<GLState>()(
               title: 'Import Undone',
               message: `Successfully removed ${count} entries from the last import`,
             });
-          })
-        ),
+          });
+
+          // Local intent always wins: tombstone failures land in importError
+          // for reconciliation instead of blocking the undo.
+          if (failures.length > 0) {
+            set({ importError: summarizeTombstoneFailures(failures) });
+          }
+        }),
 
         checkDuplicates: (entries) => {
           const state = get();

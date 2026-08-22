@@ -842,12 +842,22 @@ export interface GLState {
   filterByAccount: (accountIds: string[]) => void;
   clearFilters: () => void;
   updateColumnMapping: (mapping: ColumnMapping[]) => void;
-  clearData: () => void;
+  /**
+   * W0.8.6 §4: clears local GL data AND tombstones every committed row on the
+   * server (compensating deletes; drafts vanish locally only). Tombstone
+   * failures are summarized into importError and never block the local clear.
+   */
+  clearData: () => Promise<void>;
   setImportProgress: (progress: number) => void;
   setImportStatus: (status: GLState['importStatus']) => void;
   setImportError: (error: string | null) => void;
   recordImport: (result: ImportResult) => void;
-  undoLastImport: () => void;
+  /**
+   * W0.8.6 §4: removes the last import locally AND tombstones its committed
+   * rows on the server (`already_deleted` tolerated as success). Failures
+   * land in importError; the local undo always proceeds.
+   */
+  undoLastImport: () => Promise<void>;
   checkDuplicates: (entries: GLEntry[]) => { duplicates: number; newEntries: GLEntry[] };
   validateEntries: (entries: Partial<GLEntry>[]) => {
     isValid: boolean;
