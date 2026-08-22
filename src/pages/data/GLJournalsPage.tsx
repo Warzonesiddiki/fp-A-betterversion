@@ -316,7 +316,14 @@ export default function GLJournalsPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className={`divide-y divide-slate-800 ${isPending ? 'opacity-60' : ''}`}>
+              {/* K30 a11y: the in-flight filter dimming is mirrored to AT via
+                  aria-busy so pending re-filtering is machine-readable, not
+                  just visual opacity. */}
+              <tbody
+                className={`divide-y divide-slate-800 ${isPending ? 'opacity-60' : ''}`}
+                aria-busy={isPending || undefined}
+                data-testid="journals-tbody"
+              >
                 {pageItems.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="text-center py-12 text-[var(--text-muted)]">

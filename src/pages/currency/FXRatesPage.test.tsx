@@ -13,6 +13,7 @@ import FXRatesPage from '@/pages/currency/FXRatesPage';
 import { actAs, signOut } from '@/test/rbacFixtures';
 import { useFxRateStore } from '@/store/fxRateStore';
 import { useGLStore } from '@/store/glStore';
+import { masterStorage } from '@/utils/masterStorage';
 import type { ExchangeRate, GLEntry } from '@/types';
 
 function makeEntry(overrides: Partial<GLEntry> & { id: string }): GLEntry {
@@ -175,5 +176,59 @@ describe('FXRatesPage', () => {
     });
     expect(useFxRateStore.getState().rates[0]?.toCurrency).toBe('GBP');
     expect(screen.queryByText('0.9200')).not.toBeInTheDocument();
+  });
+
+  it('persistence: an added rate lands in the fx-rate-store envelope and survives a cold rehydrate', async () => {
+    actAs('Admin');
+    useGLStore.setState({ entries: postedLedger() });
+    render(<FXRatesPage />);
+    fireEvent.click(screen.getByTestId('fx-add-rate'));
+    const dialog = screen.getByRole('dialog');
+    fireEvent.change(within(dialog).getByLabelText('From Currency'), {
+      target: { value: 'USD' },
+    });
+    fireEvent.change(within(dialog).getByLabelText('To Currency'), {
+      target: { value: 'JPY' },
+    });
+    fireEvent.change(within(dialog).getByLabelText('Rate'), { target: { value: '149.5' } });
+    fireEvent.change(within(dialog).getByLabelText('Effective Date'), {
+      target: { value: '2026-02-01' },
+    });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Add Rate' }));
+    await waitFor(() => {
+      expect(useFxRateStore.getState().rates).toHaveLength(1);
+    });
+
+    // masterStorage encrypts at rest (AES-GCM base64 via the chunked SQL
+    // backend), so raw localStorage holds ciphertext — JSON.parse on it is
+    // impossible by design. The persistence contract is read through the SAME
+    // reader a reload hydrates from, asserting the zustand persist envelope.
+    // Poll for OUR pair specifically so unrelated seed rows cannot satisfy
+    // the gate while the add's own write is still in flight.
+    let jpy: ExchangeRate | undefined;
+    let envelopeVersion: number | undefined;
+    await waitFor(async () => {
+      const stored = (await masterStorage.getItem('fx-rate-store')) as {
+        state?: { rates?: ExchangeRate[] };
+        version?: number;
+      } | null;
+      jpy = stored?.state?.rates?.find((r) => r.fromCurrency === 'USD' && r.toCurrency === 'JPY');
+      envelopeVersion = stored?.version;
+      expect(jpy?.rate).toBe(149.5);
+    });
+    expect(jpy).toMatchObject({
+      effectiveDate: '2026-02-01',
+      source: 'manual',
+    });
+    expect(envelopeVersion).toBe(1);
+
+    // Reload semantics: rehydrate through the standard boot path with NO
+    // intervening writes, proving the stored bytes restore the user's rate.
+    await useFxRateStore.persist.rehydrate();
+    const reloaded = useFxRateStore
+      .getState()
+      .rates.find((r) => r.fromCurrency === 'USD' && r.toCurrency === 'JPY');
+    expect(reloaded).toMatchObject({ rate: 149.5, effectiveDate: '2026-02-01' });
+    expect(screen.getByText('149.5000')).toBeInTheDocument();
   });
 });

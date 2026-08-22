@@ -8,6 +8,7 @@
 // =============================================================================
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { act } from '@testing-library/react';
 import { render, screen, fireEvent, waitFor } from '@/test/testUtils';
 import GLJournalsPage from '@/pages/data/GLJournalsPage';
 import { useGLStore } from '@/store/glStore';
@@ -130,5 +131,32 @@ describe('GLJournalsPage', () => {
     expect(screen.getByText('Invoice 42')).toBeInTheDocument();
     // The footer always says "entries", even for a single row.
     expect(screen.getByText(/total \(1 entr(?:y|ies)\)/i)).toBeInTheDocument();
+  });
+
+  it('K30 a11y: exposes aria-busy on the results body while the transition re-filters, clearing on settle', async () => {
+    useGLStore.setState({ entries: postedLedger() });
+    render(<GLJournalsPage />);
+    const input = screen.getByLabelText('Search') as HTMLInputElement;
+    const tbody = screen.getByTestId('journals-tbody');
+    expect(tbody).not.toHaveAttribute('aria-busy');
+
+    // Drive the change as a raw discrete DOM event so the transition's
+    // PENDING frame stays observable: React commits the isPending frame
+    // synchronously at event end and defers the settled frame to a
+    // macrotask (probed empirically on React 19.2 — RTL's act-wrapped
+    // fireEvent drains both frames wholesale, which would hide the pin).
+    const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!;
+    setValue.call(input, 'Invoice');
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    expect(tbody).toHaveAttribute('aria-busy', 'true');
+
+    // One real macrotask lets the deferred settled frame commit.
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(tbody).not.toHaveAttribute('aria-busy');
+    // The busy window covered the REAL re-filter, not a no-op render.
+    expect(screen.getByText('Invoice 42')).toBeInTheDocument();
+    expect(screen.queryByText('Receipt 42')).not.toBeInTheDocument();
   });
 });
