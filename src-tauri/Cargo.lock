@@ -1235,6 +1235,7 @@ name = "finplan-pro"
 version = "1.0.0"
 dependencies = [
  "base64 0.22.1",
+ "dirs",
  "keyring",
  "serde",
  "serde_json",

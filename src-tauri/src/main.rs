@@ -56,6 +56,9 @@ fn build_menu(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 fn main() {
     let builder = tauri::Builder::default()
         .setup(|app| {
+            // F-DESK-012: install the local-only panic reporter first so any
+            // later setup/event-loop panic still leaves a crash log on disk.
+            finplan_pro_lib::crash_reporter::init();
             build_menu(app).expect("Failed to build menu");
             Ok(())
         })
