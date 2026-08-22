@@ -120,4 +120,29 @@ describe('DurabilityBanner (W0.8.5 + W0.8.6 publish trigger)', () => {
     render(<DurabilityBanner />);
     expect(screen.queryByTestId('publish-gl-drafts')).not.toBeInTheDocument();
   });
+
+  it('W0.8.6 boot-hydrate: Pull server rows converges the replica without touching drafts', async () => {
+    setGlCommitClient({
+      listEntries: () =>
+        Promise.resolve({
+          status: 'listed',
+          entries: [{ id: 'srv-row-1', version: 3, date: '2026-01-31', debit: 100, credit: 0 }],
+        }),
+    } as unknown as GlCommitNamespace);
+    useGLStore.setState({ entries: [makeEntry('draft-keep')] });
+    render(<DurabilityBanner />);
+
+    fireEvent.click(screen.getByTestId('pull-server-rows'));
+    await waitFor(() => {
+      expect(screen.getByTestId('publish-outcome').textContent).toMatch(/1 pulled/i);
+    });
+    const state = useGLStore.getState();
+    // Server row adopted; local draft preserved untouched (K25/K27). Order
+    // is unspecified — hydrate appends adopted rows.
+    expect(state.entries).toHaveLength(2);
+    expect(state.entries.map((e) => e.id)).toContain('srv-row-1');
+    expect(state.entries.map((e) => e.id)).toContain('draft-keep');
+    expect(state.entryVersions['srv-row-1']).toBe(3);
+    expect(state.entrySyncState['draft-keep'] ?? 'draft').toBe('draft');
+  });
 });

@@ -24,6 +24,7 @@ function DurabilityBannerInner() {
   const entrySyncState = useGLStore((s) => s.entrySyncState);
   const user = useAuthStore((s) => s.user);
   const [publishing, setPublishing] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [outcome, setOutcome] = useState<string | null>(null);
 
   const draftCount = entries.filter((e) => (entrySyncState[e.id] ?? 'draft') === 'draft').length;
@@ -44,6 +45,21 @@ function DurabilityBannerInner() {
       setOutcome(error instanceof Error ? error.message : 'Publication failed');
     } finally {
       setPublishing(false);
+    }
+  };
+
+  // W0.8.6 boot-hydrate surface: converge the local replica with committed
+  // server rows on demand. Drafts are never touched by this direction.
+  const pullServerRows = async () => {
+    setSyncing(true);
+    setOutcome(null);
+    try {
+      const { hydrated } = await useGLStore.getState().hydrateCommittedFromServer();
+      setOutcome(`${hydrated} pulled from server`);
+    } catch (error) {
+      setOutcome(error instanceof Error ? error.message : 'Sync failed');
+    } finally {
+      setSyncing(false);
     }
   };
 
@@ -79,6 +95,19 @@ function DurabilityBannerInner() {
               {publishing
                 ? 'Publishing…'
                 : `Publish ${draftCount} GL draft${draftCount === 1 ? '' : 's'}`}
+            </Button>
+          </span>
+        )}
+        {canPublish && (
+          <span className="inline-flex items-center gap-2 align-baseline">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => void pullServerRows()}
+              disabled={syncing}
+              data-testid="pull-server-rows"
+            >
+              {syncing ? 'Syncing…' : 'Pull server rows'}
             </Button>
           </span>
         )}
