@@ -1,5 +1,11 @@
-use std::fs::{self, OpenOptions};
-use std::io::Write;
+//! Local crash reporter (BLUEPRINT F-DESK-012; wired by wave-3 lane R20,
+//! 2026-08-23). Writes panic reports to
+//! `%LOCALAPPDATA%\com.finplanpro.app\crash-logs\` and mirrors them to
+//! stderr. STRICTLY LOCAL BY DESIGN: nothing here transmits. BLUEPRINT
+//! §23.6/R-26 requires monetary values and PII to be scrubbed BEFORE any
+//! transmission; if an upload path is ever added, redaction must land
+//! first (§12.3 egress chokepoint extends to crash dumps).
+use std::fs;
 use std::panic;
 use std::path::PathBuf;
 use std::time::SystemTime;
