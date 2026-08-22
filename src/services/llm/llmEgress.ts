@@ -73,18 +73,29 @@ const EMPTY_BY_CATEGORY: Record<LlmRedactionCategory, number> = {
  * Pass order matters and is part of the contract:
  *  1. emails first — so a 7+ digit local part cannot leak the domain by
  *     breaking the email match before the digit-run pass fires;
- *  2. secret shapes, IBAN, GL accounts, grouped money, bare digit runs.
+ *  2. secret shapes → IBAN (compact + space-grouped, any case) → prefixed GL
+ *     accounts → currency-symbol amounts → segmented account codes (digit-sum
+ *     guarded) → grouped money → bare digit runs.
  * Later passes see earlier placeholders, which are digit-free and stable.
  */
 const EMAIL_PATTERN = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+/g;
 
 const SECRET_PATTERN = /\bsk-[A-Za-z0-9_-]{16,}\b|\bghp_[A-Za-z0-9]{16,}\b|\bAKIA[A-Z0-9]{12,}\b/g;
 
-/** Loose IBAN-ish shape: 2 letters + 2 check digits + 10–26 alphanumerics. */
-const IBAN_PATTERN = /\b[A-Z]{2}\d{2}[A-Z0-9]{10,26}\b/g;
+/** Compact IBAN-ish shape: 2 letters + 2 check digits + 10–26 alphanumerics. */
+const IBAN_COMPACT_PATTERN = /\b[A-Za-z]{2}\d{2}[A-Za-z0-9]{10,26}\b/g;
 
-/** Explicit GL / account references, e.g. "GL-40201", "GL:4020100". */
-const GL_ACCOUNT_PATTERN = /\b(?:GL|ACCT|A\/C)\s*[-:#]?\s*#?\d[\d.,-]*\d\b/gi;
+/** Space-grouped IBAN display form, e.g. "de89 3700 4404 4053 2013 00". */
+const IBAN_SPACED_PATTERN = /\b[A-Za-z]{2}\d{2}(?: [A-Za-z0-9]{2,4}){3,8}\b/g;
+
+/** Explicit GL / account references, e.g. "GL-40201", "GL.40201", "GL:4020100". */
+const GL_ACCOUNT_PATTERN = /\b(?:GL|ACCT|A\/C)\s*[-.:#]?\s*#?\d[\d.,-]*\d\b/gi;
+
+/** Currency-prefixed amounts incl. EU dot-grouping, e.g. "€1.234.567,00", "£5,000". */
+const CURRENCY_MONEY_PATTERN = /[€£$]\s?\d[\d.,]*/g;
+
+/** Segmented chart-account codes without a prefix, e.g. "4020-100", "4020.100". */
+const SEGMENTED_ACCOUNT_PATTERN = /\b\d{1,4}(?:[.-]\d{1,4}){1,3}\b/g;
 
 /** Thousands-grouped amounts (>= 7 digits total), e.g. "1,234,567". */
 const GROUPED_MONEY_PATTERN = /\d{1,3}(?:,\d{3}){2,}/g;
@@ -135,16 +146,38 @@ export function redactPromptText(
     return options.pseudonymizeEmails ? pseudonymizeEmail(match) : '[REDACTED:EMAIL]';
   });
 
-  // 2–6) Shape-based passes.
+  // 2–8) Shape-based passes.
   text = text.replace(SECRET_PATTERN, () => {
     byCategory.secret++;
     return PLACEHOLDERS.secret;
   });
-  text = text.replace(IBAN_PATTERN, () => {
+  text = text.replace(IBAN_COMPACT_PATTERN, () => {
+    byCategory.iban++;
+    return PLACEHOLDERS.iban;
+  });
+  text = text.replace(IBAN_SPACED_PATTERN, () => {
     byCategory.iban++;
     return PLACEHOLDERS.iban;
   });
   text = text.replace(GL_ACCOUNT_PATTERN, () => {
+    byCategory['gl-account']++;
+    return PLACEHOLDERS['gl-account'];
+  });
+  // Currency-symbol money runs BEFORE segmented codes so "€1.234.567,00" is
+  // consumed whole instead of being split into a code fragment plus ",00".
+  text = text.replace(CURRENCY_MONEY_PATTERN, (match) => {
+    byCategory['money-grouped']++;
+    // Do not swallow trailing sentence punctuation like "$100.".
+    const trimmed = match.replace(/[.,]+\s*$/, '');
+    return PLACEHOLDERS['money-grouped'] + match.slice(trimmed.length);
+  });
+  // Prefix-less segmented codes only count as sensitive when they carry >= 7
+  // digits total ("4020-100"); small dotted/dashed tokens ("20.0%", "v1.2.3",
+  // "1234.56") pass through untouched via this guard.
+  text = text.replace(SEGMENTED_ACCOUNT_PATTERN, (match) => {
+    if (match.replace(/\D/g, '').length < 7) {
+      return match;
+    }
     byCategory['gl-account']++;
     return PLACEHOLDERS['gl-account'];
   });

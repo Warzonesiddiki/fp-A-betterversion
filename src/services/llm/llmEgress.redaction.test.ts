@@ -92,6 +92,72 @@ const FIXTURES: readonly Fixture[] = [
       '[REDACTED:GL_ACCOUNT] total [REDACTED:MONEY] mail [REDACTED:EMAIL] key [REDACTED:SECRET] run [REDACTED:DIGITS]',
     count: 5,
   },
+  {
+    name: 'lowercase compact IBAN sequence',
+    input: 'wire de89370400440532013000 via sepa',
+    expected: 'wire [REDACTED:IBAN] via sepa',
+    count: 1,
+  },
+  {
+    name: 'lowercase space-grouped IBAN sequence',
+    input: 'de89 3700 4404 4053 2013 00 settled',
+    expected: '[REDACTED:IBAN] settled',
+    count: 1,
+  },
+  {
+    name: 'marked uppercase space-grouped IBAN',
+    input: 'IBAN: GB82 WEST 1234 5698 7654 32 confirmed',
+    expected: 'IBAN: [REDACTED:IBAN] confirmed',
+    count: 1,
+  },
+  {
+    name: 'dotted GL account reference',
+    input: 'acct GL.40201 cleared',
+    expected: 'acct [REDACTED:GL_ACCOUNT] cleared',
+    count: 1,
+  },
+  {
+    name: 'segmented dash account code (no prefix, >=7 digits)',
+    input: 'code 4020-100 approved',
+    expected: 'code [REDACTED:GL_ACCOUNT] approved',
+    count: 1,
+  },
+  {
+    name: 'segmented dot account code (no prefix, >=7 digits)',
+    input: 'code 4020.100 approved',
+    expected: 'code [REDACTED:GL_ACCOUNT] approved',
+    count: 1,
+  },
+  {
+    name: 'EU-format currency amount (dot-grouped, comma decimals)',
+    input: 'cost €1.234.567,00 total',
+    expected: 'cost [REDACTED:MONEY] total',
+    count: 1,
+  },
+  {
+    name: 'GBP currency amount with comma grouping',
+    input: 'budget £5,000 fee',
+    expected: 'budget [REDACTED:MONEY] fee',
+    count: 1,
+  },
+  {
+    name: 'USD decimal amount keeps trailing sentence period',
+    input: 'cost $1,234.56.',
+    expected: 'cost [REDACTED:MONEY].',
+    count: 1,
+  },
+  {
+    name: 'small dotted/dashed tokens survive (below digit-sum guard)',
+    input: 'versions 1.2.3 and 2026.1 ok',
+    expected: 'versions 1.2.3 and 2026.1 ok',
+    count: 0,
+  },
+  {
+    name: 'segmented dot groups >=7 digits fail closed (documented tradeoff)',
+    input: 'snapshot 2026.08.15 stored',
+    expected: 'snapshot [REDACTED:GL_ACCOUNT] stored',
+    count: 1,
+  },
 ];
 
 describe('llmEgress redactor — fixture table', () => {
@@ -171,5 +237,56 @@ describe('llmEgress redactor — message arrays', () => {
   it('is deterministic across repeated invocations', () => {
     const input = 'pay DE89370400440532013000 from acct GL-40201';
     expect(redactPromptText(input)).toEqual(redactPromptText(input));
+  });
+});
+
+describe('llmEgress redactor — overlapping-category precedence (R16)', () => {
+  it('email-local digits are consumed by the email pass, not the digit pass', () => {
+    const result = redactPromptText('contact invoice-1234567@corp.example today');
+    expect(result.text).toBe('contact [REDACTED:EMAIL] today');
+    expect(result.byCategory.email).toBe(1);
+    expect(result.byCategory.digits).toBe(0);
+    expect(result.redactions).toBe(1);
+  });
+
+  it('compact IBANs win over the bare digit-run pass', () => {
+    const result = redactPromptText('acct DE89370400440532013000 closed');
+    expect(result.text).toBe('acct [REDACTED:IBAN] closed');
+    expect(result.byCategory.iban).toBe(1);
+    expect(result.byCategory.digits).toBe(0);
+  });
+
+  it('currency-symbol amounts win over segmented-code matching', () => {
+    const result = redactPromptText('paid €1.234.567,00 today');
+    expect(result.text).toBe('paid [REDACTED:MONEY] today');
+    expect(result.byCategory['money-grouped']).toBe(1);
+    expect(result.byCategory['gl-account']).toBe(0);
+  });
+});
+
+describe('llmEgress redactor — performance sanity (R16)', () => {
+  it('redacts a 50k-char prompt in under 1s with exact counts', () => {
+    // Per snippet: 1 gl-account (GL-40201) + 1 email (a@b.io) + 1 digit run.
+    const snippet = 'acct GL-40201 mail a@b.io pay 12345678 ';
+    const reps = Math.ceil(50000 / snippet.length);
+    const input = snippet.repeat(reps);
+    expect(input.length).toBeGreaterThanOrEqual(50000);
+
+    const started = performance.now();
+    const result = redactPromptText(input);
+    const elapsed = performance.now() - started;
+
+    expect(elapsed).toBeLessThan(1000);
+    expect(result.redactions).toBe(reps * 3);
+    expect(result.byCategory).toEqual({
+      email: reps,
+      secret: 0,
+      iban: 0,
+      'gl-account': reps,
+      'money-grouped': 0,
+      digits: reps,
+    });
+    expect(result.text.includes('[REDACTED:EMAIL]')).toBe(true);
+    expect(/\d{7,}/.test(result.text)).toBe(false);
   });
 });
