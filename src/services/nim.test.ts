@@ -10,6 +10,10 @@ describe('nim service', () => {
     vi.stubEnv('VITE_NIM_BASE_URL', 'https://test-nim.api.com/v1');
     vi.stubEnv('VITE_NIM_API_KEY_1', 'key-aaa');
     vi.stubEnv('VITE_NIM_API_KEY_2', 'key-bbb');
+    // W0.9: NIM traffic now routes through the llmEgress chokepoint — tests
+    // must enable egress and allowlist the stubbed NIM host.
+    vi.stubEnv('VITE_LLM_EGRESS_ENABLED', 'true');
+    vi.stubEnv('VITE_LLM_EGRESS_ALLOWED_HOSTS', 'test-nim.api.com');
     mockFetch = vi.fn();
     vi.stubGlobal('fetch', mockFetch);
     vi.resetModules();

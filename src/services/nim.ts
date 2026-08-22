@@ -3,6 +3,8 @@
 // Provides AI-powered financial analysis via NVIDIA NIM API (OpenAI-compatible)
 // =============================================================================
 
+import { LlmEgressHttpError, llmEgress } from './llm/llmEgress';
+
 // SECURITY (Phase 7 audit finding, Hephaestus PATCH 2): NIM API keys MUST NOT
 // be embedded in production client bundles. In production builds, force the
 // use of a server-side proxy (e.g., /api/nim/*) — direct browser-to-NIM calls
@@ -91,27 +93,7 @@ export const NIM_MODELS = {
 
 export type NIMModelId = (typeof NIM_MODELS)[keyof typeof NIM_MODELS];
 
-// --- Core API ---
-
-async function nimFetch<T>(endpoint: string, body: unknown): Promise<T> {
-  const response = await fetch(`${NIM_BASE_URL}${endpoint}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${getApiKey()}`,
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text().catch(() => 'Unknown error');
-    throw new Error(`NIM API error ${response.status}: ${errorText}`);
-  }
-
-  return response.json() as Promise<T>;
-}
-
-// --- Chat Completion ---
+// --- Core API (all model traffic flows through the LLM egress chokepoint, W0.9) ---
 
 export async function nimChat(
   messages: NIMMessage[],
@@ -122,14 +104,22 @@ export async function nimChat(
     top_p?: number;
   } = {}
 ): Promise<NIMChatResponse> {
-  return nimFetch<NIMChatResponse>('/chat/completions', {
-    model: options.model || NIM_MODELS.DEFAULT,
-    messages,
-    temperature: options.temperature ?? 0.7,
-    max_tokens: options.max_tokens ?? 1024,
-    top_p: options.top_p ?? 0.9,
-    stream: false,
-  });
+  try {
+    return await llmEgress.complete<NIMChatResponse>(messages, {
+      endpoint: `${NIM_BASE_URL}/chat/completions`,
+      model: options.model || NIM_MODELS.DEFAULT,
+      temperature: options.temperature ?? 0.7,
+      maxTokens: options.max_tokens ?? 1024,
+      topP: options.top_p ?? 0.9,
+      headers: () => ({ Authorization: `Bearer ${getApiKey()}` }),
+    });
+  } catch (error) {
+    if (error instanceof LlmEgressHttpError) {
+      // Preserve the historical NIM error surface for existing consumers.
+      throw new Error(`NIM API error ${error.status}: ${error.bodyPreview}`);
+    }
+    throw error;
+  }
 }
 
 // --- Streaming Chat ---
@@ -142,19 +132,12 @@ export async function* nimChatStream(
     max_tokens?: number;
   } = {}
 ): AsyncGenerator<NIMStreamChunk, void, unknown> {
-  const response = await fetch(`${NIM_BASE_URL}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${getApiKey()}`,
-    },
-    body: JSON.stringify({
-      model: options.model || NIM_MODELS.DEFAULT,
-      messages,
-      temperature: options.temperature ?? 0.7,
-      max_tokens: options.max_tokens ?? 1024,
-      stream: true,
-    }),
+  const response = await llmEgress.openStream(messages, {
+    endpoint: `${NIM_BASE_URL}/chat/completions`,
+    model: options.model || NIM_MODELS.DEFAULT,
+    temperature: options.temperature ?? 0.7,
+    maxTokens: options.max_tokens ?? 1024,
+    headers: () => ({ Authorization: `Bearer ${getApiKey()}` }),
   });
 
   if (!response.ok) {
