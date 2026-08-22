@@ -1,7 +1,7 @@
 {
   "codex": "ULTIMA",
   "session_id": "sess_033",
-  "updated_at": "2026-08-22T04:40:00Z",
+  "updated_at": "2026-08-22T02:51:57Z",
   "capabilities": {
     "git": true,
     "gh": true,
@@ -30,7 +30,7 @@
     "lint_command": "npx eslint src --max-warnings 0"
   },
   "health": {
-    "notes": "Session 033: W0.2b route tenancy adoption DONE (budgets/scenarios/forecasts/reports/entities/periods + JWT tenant claims). W0.3 runtime three-statement gate DONE - and fixed a Severity-0 IN the gate before it could ship: open-ledger identity is A+Exp=L+E+Rev over the closed type vocabulary (Asset/CapEx/OpEx/COGS|Liability/Equity/Revenue), fail-closed FP-0303 on unknown types; the shipped draft had A-Exp=L+E+Rev (delta=-2*Exp on any ledger with expenses -> would false-block every legitimate write) and mapped a nonexistent 'Expense' type. W0.4 error registry DONE. W0.5 slice 1 DONE (PillarNav, /sectors/* collapse, ROUTE_MAP + drift gate). Money ratchet 100%/0 with proven-confined suppressions (HEAD detector cross-check: only ISO currency-code string equality remains, retired by type proof). Server 25 files/243 + native-db 83 green.",
+    "notes": "Session 033: W0.2b route tenancy adoption DONE (budgets/scenarios/forecasts/reports/entities/periods + JWT tenant claims). W0.3 runtime three-statement gate DONE - and fixed a Severity-0 IN the gate before it could ship: open-ledger identity is A+Exp=L+E+Rev over the closed type vocabulary (Asset/CapEx/OpEx/COGS|Liability/Equity/Revenue), fail-closed FP-0303 on unknown types; the shipped draft had A-Exp=L+E+Rev (delta=-2*Exp on any ledger with expenses -> would false-block every legitimate write) and mapped a nonexistent 'Expense' type. W0.4 error registry DONE. W0.5 slice 1 DONE (PillarNav, /sectors/* collapse, ROUTE_MAP + drift gate). Money ratchet 100%/0 with proven-confined suppressions (HEAD detector cross-check: only ISO currency-code string equality remains, retired by type proof). Server 25 files/243 + native-db 83 green. | sess_033 resumption: full battery green on this host - root tsc/eslint clean, focused subset 8/8 files+263 tests, server tsc+243+native-db83, cargo check Finished (R-24 proof), production build PWA OK; remaining red clusters repaired: masterStorage env-leak hardened (cross-thread MASTER_STORAGE_KEY pollution reproduced+guarded), theme contracts de-shell-outed to node:fs walker w/ Windows path normalization; honest contracts immediately caught 2 real defects: BudgetListPage text-slate-400 light-theme unreadable (fixed to --text-muted), text.date.test.ts TZ-sensitive serial helper (Date.UTC rewrite, impl untouched).",
     "money_ast": {
       "unsafeOperations": 0,
       "unsafeModules": 0,
@@ -66,6 +66,14 @@
     {
       "id": "W-FAB-002",
       "summary": "SectorDriverDashboard shared model (all sector branches): free-text accountCode+accountName regex bucketing, Math.abs magnitude aggregation absEntryAmount, invented bases assetBase/debtBase=exp*0.55/equityBase, DEFAULT_DRIVERS {8,92,86,5}, insurance x0.62 claims fallback + formula retention/solvency anchored to config target, value=target*growthFactor*efficiencyFactor fallback - audit every sector branch and de-fabricate or relabel as explicit scenario-simulator separated from actuals pages"
+    },
+    {
+      "id": "W-K30-001",
+      "summary": "four-state remediation per K30 audit (26 core routes audited): wire shared ErrorState + skeleton + empty-with-h1 beyond the 7 covered reports pages; error-with-retry exists on 5/26 today; fix order: ForecastBuilderPage, BudgetDetailPage, BudgetVAReport, PeriodClosePage, ScenarioBuilderPage, WhatIfPage, CashForecastPage, FXRatesPage, GLJournalsPage, BudgetListPage"
+    },
+    {
+      "id": "W-A11Y-001",
+      "summary": "nav/palette WCAG 2.2 AA fixes from audit: BLOCKERS CommandPalette aria-hidden-on-focused-overlay (L161) + missing focus trap (reuse ShortcutHelpModal L19-42 pattern); MAJORS option buttons tabIndex=-1 + listbox role=group structure + LiveRegion result count + PillarNav badge aria-label composition + badge contrast --action-fill + focus-ring token colors + scrim token pair + closed mobile sidebar inert/conditional-render; MINORS m1-m11 incl. skip-link tabIndex, scroll-behavior under prefers-reduced-motion; also fix phantom .claude/rules/finplan-accessibility.md reference in CLAUDE.md or create the rule file"
     }
   ],
   "blocked": [
@@ -87,7 +95,11 @@
     "money detector W0.1.6 type-aware upgrade; ratchet 25 -> 0 honest via old-vs-new detector cross-check (719e866f)",
     "W0.5 slice 1 PillarNav + route consolidation + ROUTE_MAP drift gate 9e; K30 state coverage; render-probe harness + 3 pilot specs (fa31c55f)",
     "ROUTE_MAP declared generated artifact, excluded from prettier - gate conflict resolved per K7 (50ba62f2)",
-    "ci-patches 0006/0007 delivered; session tool dirs ignored; import-audit utility (b10116ce)"
+    "ci-patches 0006/0007 delivered; session tool dirs ignored; import-audit utility (b10116ce)",
+    "sess_033 resumption II: failure-cluster triage complete - masterStorage cross-file env-pollution root-caused and hardened",
+    "theme contracts cluster fixed: lightContrast find->node:fs walker, buttonContrast Windows path normalization",
+    "product fixes surfaced by honest contracts: BudgetListPage muted-token contrast; text.date.test.ts UTC serial helper",
+    "verification battery executed: server 243+83, detectors 100%/0, ROUTE_MAP regenerated, cargo check, production build"
   ],
   "blueprint_status": "LOCKED",
   "blueprint_locked_at": "2026-08-17T00:00:00Z",
@@ -114,7 +126,7 @@
     "reaudited_at": "2026-08-17T00:00:00Z",
     "reaudit_session": "session_004",
     "reaudit_findings": 8,
-    "reaudit_record": ".agent/BLUEPRINT.md \u00a722.8",
+    "reaudit_record": ".agent/BLUEPRINT.md §22.8",
     "feature_counts": {
       "total": 113,
       "built": 33,
@@ -182,7 +194,7 @@
       "DEI": 95
     }
   },
-  "phase": "Phase 0 \u2014 Foundation (executing)",
+  "phase": "Phase 0 — Foundation (executing)",
   "phase0": {
     "W0.1.0": {
       "status": "DONE",
@@ -243,7 +255,7 @@
         "src/engines/DebtScheduleEngine.ts (5->0; effectiveRate / DSCR / breakEven in decimal)",
         "src/engines/ICMatchingEngine.ts (5->0; score & tolerance via decimal/comparMoney)",
         "src/components/ui/SankeyChart.tsx (6->0; @money-ast-allow documented suppression for page-geometry)",
-        "src/components/ui/ICReconciliationReport.tsx (1->0; \"0%\" replaced with \"\u2014\")"
+        "src/components/ui/ICReconciliationReport.tsx (1->0; \"0%\" replaced with \"—\")"
       ],
       "severity0FindingsFixed": [
         "Balance sheet, P&L splits and the entire budget column were fabricated from hardcoded ratios (cash = assets*0.15, budget = actual*0.95, variance% literal 5.3) while reading the real GL; exportable to PDF/Excel from /reports/templates.",
@@ -257,7 +269,7 @@
         "RetailDashboardPage shipped $12.4M / 6.8% / 24.2% and Flagship NYC store quotes with no GL. FinancialInstrumentsEngine still did calcPrice-price and equityValue+debtValue on floats despite claiming a full money migration.",
         "GoalSeekPage used IEEE-754 fixed/(cm/100) and invented a $1,000,000 Monte Carlo base on an empty GL. ProjectCostingPage shipped $58.2M / 92.4% / Downtown Plaza change orders with no ledger; constructionStore persisted the same quotes as tenant defaults.",
         "ScenarioBuilderPage fed a hardcoded $48M base into an otherwise money-safe simulator and did float Monte Carlo / save-path subtracts. UnderwritingPage shipped 96.4% adequacy and CA/FL/TX/NY filings with no ledger; insuranceStore persisted the same quotes.",
-        "CreditRiskPage invented interest as 5% of opex, years-in-business from the entity id, and EAD from currentRatio\u00d71e6\u00d7ROA\u00d710. ExecutiveSummary shipped $4.2M / +12% and a SaaS-bookings narrative with no GL.",
+        "CreditRiskPage invented interest as 5% of opex, years-in-business from the entity id, and EAD from currentRatio×1e6×ROA×10. ExecutiveSummary shipped $4.2M / +12% and a SaaS-bookings narrative with no GL.",
         "BalanceSheetPage asserted Assets = Liabilities + Equity while rolling up prefixes 1/2/3 only. Because total debits equal total credits, Assets - Liabilities - PostedEquity IS net income, so the page reported \"Off by <net income>\" on every balanced ledger that had traded and its \"Total Equity\" excluded current-period earnings. Also: a 0.01 tolerance window hid a real one-cent break; the as-of filter dropped ISO-timestamped same-day entries; entries outside the 1-8 class prefixes fell out of every total undisclosed. Fixed in session 026 (src/pages/reports/balanceSheetData.ts)."
       ],
       "processFinding": "mock-data:audit cannot see this class of defect - it looks for synthetic arrays, this was inline arithmetic on real data. Remaining worklist modules must be reviewed for fabricated values, not only unsafe arithmetic.",
@@ -320,13 +332,13 @@
     },
     "W0.8": {
       "status": "IN PROGRESS",
-      "W0.8.1": "DONE \u2014 PERSISTENCE_MAP.md + drift check, 41 stores",
-      "W0.8.2": "DONE \u2014 moneySerialize + 10k property test; masterStorage tags money keys",
-      "W0.8.3": "DONE \u2014 typed PERSISTED_STORES contract",
-      "W0.8.4": "DONE \u2014 schema-equality-check.mjs (35 SQL / 10 server / 1 shared)",
-      "W0.8.5": "DONE \u2014 DurabilityBanner local-only disclosure",
+      "W0.8.1": "DONE — PERSISTENCE_MAP.md + drift check, 41 stores",
+      "W0.8.2": "DONE — moneySerialize + 10k property test; masterStorage tags money keys",
+      "W0.8.3": "DONE — typed PERSISTED_STORES contract",
+      "W0.8.4": "DONE — schema-equality-check.mjs (35 SQL / 10 server / 1 shared)",
+      "W0.8.5": "DONE — DurabilityBanner local-only disclosure",
       "W0.8.6": "BLOCKED on W0.2 tenancy (glStore spike)"
     }
   },
-  "restored_note": "This file was 0 bytes on main from 082e70c (PR #65) through ec7a66a (PR #66) \u2014 two merges shipped with the Article XVIII boot state (B8 blueprint_status) destroyed. Restored in session 026 from 646bdf4 and brought forward. Do not let a truncated state.json reach main again: the Codex boot sequence reads blueprint_status from here."
+  "restored_note": "This file was 0 bytes on main from 082e70c (PR #65) through ec7a66a (PR #66) — two merges shipped with the Article XVIII boot state (B8 blueprint_status) destroyed. Restored in session 026 from 646bdf4 and brought forward. Do not let a truncated state.json reach main again: the Codex boot sequence reads blueprint_status from here."
 }

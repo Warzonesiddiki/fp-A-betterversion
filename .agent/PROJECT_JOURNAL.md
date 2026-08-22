@@ -1865,3 +1865,64 @@ convention; content already delivered as 0006/0007 for human application).
 W0.8.6 promotion (glStore entries through the server-authoritative boundary using
 the landed commit namespace/conflict types), then W0.5 slice 2 toward ≤40 routes,
 then W0.9 LLM egress chokepoint.
+
+## Session 033 (continued, later same day) — failure-cluster triage + full battery green
+
+Resumed the mid-wave tree per HANDOVER. The remaining red clusters from sessions
+031–032 were repaired (two via subagent fleet with disjoint file ownership), the
+full verification battery was executed end-to-end, and two latent defects the
+repairs exposed were fixed at the root.
+
+### 7. Failure-cluster triage (the "10 files / 21 tests" debt)
+
+- **Page-test cluster** (BudgetVsActual ×2 router-mock importOriginal pattern;
+  RefreshCw in deep-test enumerated lucide mock; Healthcare `$70K` Intl-compact
+  exact match): verified independently — 6 files / 76 tests green.
+- **Determinism cluster** (ReportSchedulerEngine injected reference date;
+  scenarioUtils zero-formatting; text.ts Excel-serial UTC fixes): scoped run
+  green; but see §9 — text.date.test.ts still carried a TZ-sensitive helper.
+- **masterStorage "encryption failure (key unavailable)"**: reproduced at last.
+  Root cause is cross-file `process.env.MASTER_STORAGE_KEY` leakage through the
+  shared worker-thread env (vitest threads pool: fresh module graph per FILE,
+  ONE process.env per THREAD). Fix: file-level beforeEach scrub + afterEach
+  restore of MASTER_STORAGE_KEY, plus defense-in-depth re-scrub inside the
+  encryption-failure test itself. Assertion strength unchanged (K5).
+- **Theme contracts**: lightContrast shelled out to Unix `find` (+ a `wc -l`
+  pipe); replaced with a pure node:fs walker preserving the exact file-set
+  semantics (`*.tsx`, minus `*.test.tsx`, minus `test/`+`__tests__/` dirs),
+  forward-slash normalized for Windows. buttonContrast's glob had the same
+  Windows defect in reverse: backslash paths silently broke its
+  forward-slash regex consumers (`components\/ui\/Empty…\.tsx$`,
+  `split('/src/')`) — normalization restored the intended file set and the
+  role="status" empty-list assertion now exercises real markup.
+
+### 8. Two product-side defects the honest contracts immediately caught
+
+- `BudgetListPage.tsx:290` delete-confirm modal used `text-slate-400` —
+  unreadable light-theme text on the app's default theme. Replaced with the
+  sibling idiom `text-[var(--text-muted)]`.
+- `text.date.test.ts` serial helper built LOCAL-midnight Dates while text.ts's
+  documented contract is pure-UTC Excel serial space. On this Windows/IST host
+  the pre-1900 LMT offset (+5:21) differs from modern +5:30, drifting the
+  helper exactly one day off the impl (45305 vs 45306). Helper rewritten with
+  Date.UTC anchors + Math.round; all 23 tests green; impl untouched.
+
+### 9. Environment acquisition recap (sess_033)
+
+rustup stable-msvc (cargo/rustc 1.98) → src-tauri verifiable (R-24 mitigation:
+tauri.conf schema-invalid keys removed, dead updater dep dropped, lib.rs
+command moved into `mod commands` for rustc ≥1.98 E0255 macro-namespace
+unification); gh CLI 2.98.0 user-scoped; Playwright chromium installed
+(E2E was dead on this machine before); Node 26.7.0 machine-wide per user
+directive, lockfile ops pinned to npm@10.9.8.
+
+### 10. Verification battery results (this resumption)
+
+Root tsc ✓ · eslint --max-warnings 0 ✓ · focused pre-push vitest subset
+8 files / 263 ✓ · server tsc + 243/243 + native-db 83/83 ✓ · money ratchet
+100%/0 ✓ · fabrication 0 ✓ · persistence-map 41/41 ✓ · schema-equality ✓ ·
+ROUTE_MAP regenerated after telecom redirect fix (2-line diff, gate ✓) ·
+docs:verify ✓ · engines:verify 182 ✓ · cargo check Finished ✓ · production
+build (tsc+eslint+vite, PWA 475 entries) ✓. Full root suite re-run after all
+repairs: final numbers recorded in action_log. `.github/workflows/*.yml`
+edits remain uncommitted by convention (content = ci-patches 0006/0007).
