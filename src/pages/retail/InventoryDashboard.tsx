@@ -1,4 +1,12 @@
-// @money-ast-allow Reason: Average-value display: stats.totalValue / Math.max(1, length) divides by store count for display
+// W-FAB remediation (phase0-exit amendment item 3):
+//   - the Excel export previously allocated the TOTAL inventory value to each
+//     store as totalValue / storeCount — an even-split invention presented as
+//     per-store values. The column is gone (per-store inventory valuation is
+//     not derivable from these postings).
+//   - with no store-tagged entities, the "By Store / Category" card rendered
+//     zero-value placeholder slices for Raw Materials / WIP / Finished Goods
+//     categories that exist in no store. It now shows a disclosure instead,
+//     and is titled for what it actually plots: COGS by store.
 import { useEffect, useMemo } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
@@ -66,19 +74,14 @@ export default function InventoryDashboard() {
     });
   }, [entries]);
 
-  const categoryBreakdown = useMemo(() => {
-    if (storeBreakdown.length === 0) {
-      return [
-        { name: 'Raw Materials', value: 0 },
-        { name: 'Work in Progress', value: 0 },
-        { name: 'Finished Goods', value: 0 },
-      ];
-    }
-    return storeBreakdown.slice(0, 5).map((store) => ({
-      name: store.name,
-      value: store.cogs,
-    }));
-  }, [storeBreakdown]);
+  const categoryBreakdown = useMemo(
+    () =>
+      storeBreakdown.slice(0, 5).map((store) => ({
+        name: store.name,
+        value: store.cogs,
+      })),
+    [storeBreakdown]
+  );
 
   const gmroi = useMemo(
     () =>
@@ -94,14 +97,8 @@ export default function InventoryDashboard() {
   const handleExport = () => {
     void ExportEngine.exportToExcel(
       {
-        headers: ['Store', 'Revenue', 'COGS', 'Gross Profit', 'Inventory Value'],
-        rows: storeBreakdown.map((s) => [
-          s.name,
-          s.revenue,
-          s.cogs,
-          s.grossProfit,
-          stats.totalValue / Math.max(1, storeBreakdown.length),
-        ]),
+        headers: ['Store', 'Revenue', 'COGS', 'Gross Profit'],
+        rows: storeBreakdown.map((s) => [s.name, s.revenue, s.cogs, s.grossProfit]),
       },
       { title: 'Inventory_Dashboard' }
     ).catch(reportExportFailure);
@@ -113,7 +110,7 @@ export default function InventoryDashboard() {
         <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
           <Package className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
-        <h2 className="text-xl font-semibold mb-2">No Inventory Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Inventory Data</h1>
         <p className="text-[var(--text-muted)] mb-6">
           Import your GL data with inventory accounts (121x) and COGS (50xx) to view inventory
           metrics.
@@ -233,48 +230,60 @@ export default function InventoryDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>By Store / Category</CardTitle>
+            <CardTitle>COGS by Store</CardTitle>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={categoryBreakdown}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={70}
-                  label
-                >
-                  {categoryBreakdown.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    background: '#1e293b',
-                    border: '1px solid #334155',
-                    borderRadius: 8,
-                  }}
-                  formatter={(v) => fmt.currency0(Number(v))}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="mt-4 space-y-2">
-              {categoryBreakdown.map((cat, i) => (
-                <div key={cat.name} className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: COLORS[i % COLORS.length] }}
+            {categoryBreakdown.length > 0 ? (
+              <>
+                <ResponsiveContainer width="100%" height={200}>
+                  <PieChart>
+                    <Pie
+                      data={categoryBreakdown}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={70}
+                      label
+                    >
+                      {categoryBreakdown.map((_, i) => (
+                        <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        background: '#1e293b',
+                        border: '1px solid #334155',
+                        borderRadius: 8,
+                      }}
+                      formatter={(v) => fmt.currency0(Number(v))}
                     />
-                    <span>{cat.name}</span>
-                  </div>
-                  <span className="font-medium">{fmt.currency0(cat.value)}</span>
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="mt-4 space-y-2">
+                  {categoryBreakdown.map((cat, i) => (
+                    <div key={cat.name} className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: COLORS[i % COLORS.length] }}
+                        />
+                        <span>{cat.name}</span>
+                      </div>
+                      <span className="font-medium">{fmt.currency0(cat.value)}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            ) : (
+              <p
+                className="text-sm text-[var(--text-muted)] py-8 text-center"
+                data-testid="inventory-no-store-breakdown"
+              >
+                No store-tagged entities in the posted GL, so there is nothing to break down.
+                Department/category tags do not exist in ledger postings and are not invented here.
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>

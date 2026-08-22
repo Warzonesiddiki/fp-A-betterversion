@@ -108,7 +108,7 @@ export default function RetailDashboardPage() {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
         <Store className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Retail Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Retail Data</h1>
         <p className="text-[var(--text-muted)] mb-6">
           Import General Ledger entries with store (entity) tags to view same-store revenue and
           margin. Comp growth, foot traffic and conversion are not invented.

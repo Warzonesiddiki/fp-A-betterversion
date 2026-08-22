@@ -127,4 +127,44 @@ describe('GrantDisbursementPage (Data-Driven)', () => {
     // Revenue Collection Gap: (1M - 900k) / 1M = 10%
     expect(screen.getByText(/10\.0%/)).toBeInTheDocument();
   });
+
+  it('shows blanks instead of invented constants when accounts are absent (W-FAB)', () => {
+    useGLStore.setState({
+      entries: [
+        {
+          id: 'm1',
+          accountId: '4000',
+          accountCode: '4000',
+          accountName: 'Unrelated Sales',
+          period: 'P01',
+          periodName: 'January',
+          debit: 0,
+          credit: 500,
+          netChange: -500,
+          date: '2026-01-15',
+          amount: 500,
+          description: 'Misc',
+          reference: 'm1',
+        },
+      ],
+    });
+    const { container } = render(
+      <MemoryRouter>
+        <GrantDisbursementPage />
+      </MemoryRouter>
+    );
+    const text = container.textContent ?? '';
+    // The previous invented budget picture is gone:
+    expect(text).not.toContain('10,000,000');
+    expect(text).not.toContain('9,500,000');
+    expect(text).not.toContain('2,000,000');
+    expect(text).not.toContain('1,800,000');
+    expect(text).not.toContain('1,250,000');
+    expect(text).not.toContain('8,200,000');
+    expect(text).not.toContain('9,000,000');
+    // Unposted quantities disclose instead of rendering fabricated KPIs:
+    expect(screen.getAllByText('—').length).toBeGreaterThan(0);
+    expect(text).toContain('no citizen-count account posted');
+    expect(text).toContain('no grant allocation/disbursement accounts posted');
+  });
 });

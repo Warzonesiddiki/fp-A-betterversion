@@ -147,7 +147,7 @@ export default function ChurnAnalysisPage() {
         <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
           <BarChart4 className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
-        <h2 className="text-xl font-semibold mb-2">No SaaS Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No SaaS Data</h1>
         <p className="text-[var(--text-muted)] mb-6">
           Import GL data with subscription revenue accounts (41xx) to analyze churn metrics.
         </p>

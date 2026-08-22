@@ -1,110 +1,94 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+// ---------------------------------------------------------------------------
+// W-FAB remediation pins. This page previously rendered three invented
+// datasets (MONTHLY_CHURN percentages, SEGMENT_CHURN with 'Enterprise' /
+// 'Mid-Market' rows, and AT_RISK customers including literal 'Acme Corp')
+// plus five KPIs computed from them, and exported the invented customers to
+// Excel. It now renders zero numbers: churn metrics need a customer-level
+// feed the GL cannot provide.
+// ---------------------------------------------------------------------------
+
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({
-    entries: [
-      {
-        id: '1',
-        account: '4000',
-        accountName: 'Revenue',
-        amount: 100000,
-        period: '2026-01',
-        department: 'Sales',
-        type: 'revenue',
-      },
-      {
-        id: '2',
-        account: '5000',
-        accountName: 'COGS',
-        amount: 30000,
-        period: '2026-01',
-        department: 'COGS',
-        type: 'expense',
-      },
-    ],
-  })),
-}));
-
-vi.mock('@/engines/ExportEngine', () => ({
-  ExportEngine: { exportToPDF: vi.fn() },
-}));
-
-vi.mock('recharts', () => ({
-  ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="responsive-container">{children}</div>
-  ),
-  LineChart: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="line-chart">{children}</div>
-  ),
-  Line: () => <div data-testid="line" />,
-  BarChart: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="bar-chart">{children}</div>
-  ),
-  Bar: () => <div data-testid="bar" />,
-  XAxis: () => <div data-testid="x-axis" />,
-  YAxis: () => <div data-testid="y-axis" />,
-  CartesianGrid: () => <div data-testid="cartesian-grid" />,
-  Tooltip: () => <div data-testid="tooltip" />,
-  Legend: () => <div data-testid="legend" />,
-}));
-
-vi.mock('lucide-react', () => ({
-  Download: ({ className }: { className?: string }) => (
-    <span data-testid="icon" className={className} />
-  ),
-  Users: ({ className }: { className?: string }) => (
-    <span data-testid="icon" className={className} />
-  ),
-  TrendingDown: ({ className }: { className?: string }) => (
-    <span data-testid="icon" className={className} />
-  ),
-  AlertTriangle: ({ className }: { className?: string }) => (
-    <span data-testid="icon" className={className} />
-  ),
-  RefreshCw: ({ className }: { className?: string }) => (
-    <span data-testid="icon" className={className} />
-  ),
+  useGLStore: vi.fn(() => ({ entries: [] })),
 }));
 
 import { render, screen } from '@/test/testUtils';
 import ChurnDashboard from '../ChurnDashboard';
+
+async function renderWithEntries(entries: unknown[]) {
+  const { useGLStore } = await import('@/store/glStore');
+  (useGLStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ entries });
+  return render(<ChurnDashboard />);
+}
+
+const glEntry = {
+  id: '1',
+  accountId: 'a1',
+  accountCode: '4100',
+  accountName: 'Subscription Revenue',
+  period: '2026-01',
+  periodName: 'Jan 2026',
+  debit: 0,
+  credit: 100000,
+  netChange: 100000,
+  date: '2026-01-05',
+  amount: 100000,
+  description: '',
+  reference: '',
+};
 
 describe('ChurnDashboard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders the page heading', () => {
-    render(<ChurnDashboard />);
-    expect(screen.getByText(/churn dashboard/i)).toBeDefined();
+  it('renders an honest empty state (h1 + disclosure) when the GL is empty', async () => {
+    await renderWithEntries([]);
+    expect(screen.getByRole('heading', { level: 1, name: /churn dashboard/i })).toBeInTheDocument();
+    expect(screen.getByText(/no saas data/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /import data/i })).toBeInTheDocument();
   });
 
-  it('renders customer churn KPI', () => {
-    render(<ChurnDashboard />);
-    expect(screen.getByText(/customer churn/i)).toBeDefined();
+  it('renders the page h1 when data is present', async () => {
+    await renderWithEntries([glEntry]);
+    expect(screen.getByRole('heading', { level: 1, name: /churn dashboard/i })).toBeInTheDocument();
   });
 
-  it('renders revenue churn KPI', () => {
-    render(<ChurnDashboard />);
-    expect(screen.getByText(/revenue churn/i)).toBeDefined();
+  it('never renders the removed fabricated customer records', async () => {
+    await renderWithEntries([glEntry]);
+    for (const invented of [
+      'Acme Corp',
+      'TechStart Inc',
+      'GlobalRetail',
+      'DataFlow Ltd',
+      'CloudFirst',
+    ]) {
+      expect(screen.queryByText(invented)).toBeNull();
+    }
+    // No at-risk data table (the disclosure list may explain what is missing,
+    // but no table column or record may render).
+    expect(screen.queryByRole('table')).toBeNull();
+    expect(screen.queryByRole('columnheader', { name: /risk score/i })).toBeNull();
+    expect(screen.queryByText(/14 days ago/i)).toBeNull();
   });
 
-  it('renders at risk section', () => {
-    render(<ChurnDashboard />);
-    // There are multiple "At-Risk" texts (KPI labels + section title)
-    expect(screen.getAllByText(/at[- ]risk/i).length).toBeGreaterThan(0);
+  it('never renders fabricated churn percentages or segments', async () => {
+    await renderWithEntries([glEntry]);
+    expect(screen.queryByText('2.4%')).toBeNull(); // MONTHLY_CHURN latest value
+    expect(screen.queryByText(/churn by segment/i)).toBeNull();
+    expect(screen.queryByText('Enterprise')).toBeNull();
+    expect(screen.queryByText('Mid-Market')).toBeNull();
   });
 
-  it('renders charts', () => {
-    render(<ChurnDashboard />);
-    expect(screen.getAllByTestId('responsive-container').length).toBeGreaterThan(0);
+  it('states what a churn feed must provide instead of showing numbers', async () => {
+    await renderWithEntries([glEntry]);
+    expect(screen.getByText(/what each churn metric requires/i)).toBeInTheDocument();
+    expect(screen.getByText(/subscription-management|support\/billing/i)).toBeTruthy();
   });
 
-  it('renders export button', () => {
-    const { container } = render(<ChurnDashboard />);
-    // Download icon + text on the button
-    const buttons = container.querySelectorAll('button');
-    const hasExport = Array.from(buttons).some((b) => /export/i.test(b.textContent || ''));
-    expect(hasExport).toBe(true);
+  it('routes to the one derivable signal (revenue-churn on ChurnAnalysisPage)', async () => {
+    await renderWithEntries([glEntry]);
+    expect(screen.getByRole('button', { name: /open revenue-churn signal/i })).toBeInTheDocument();
   });
 });

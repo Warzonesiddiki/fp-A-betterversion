@@ -81,6 +81,51 @@ describe('educationMetrics — known answers (GAP-1)', () => {
     expect(m.endowmentGrowthRatePct).toBe(0);
   });
 
+  // W-FAB lane N4: quantities the ledger never posted are `null` in and
+  // `null` out — the previous pages hard-coded a 12,000-student institution
+  // with a $100M endowment to keep every KPI populated.
+  it('returns null KPIs when their inputs were never posted (W-FAB)', () => {
+    const m = computeEducationMetrics({
+      totalStudents: null,
+      retainedStudents: null,
+      tuitionRevenue: null,
+      totalExpenses: null,
+      facultyCount: null,
+      researchGrantsWon: null,
+      researchGrantsApplied: null,
+      endowmentStart: null,
+      endowmentEnd: null,
+    });
+    expect(m.studentRetentionRatePct).toBeNull();
+    expect(m.revenuePerStudent).toBeNull();
+    expect(m.facultyToStudentRatio).toBeNull();
+    expect(m.researchGrantWinRatePct).toBeNull();
+    expect(m.endowmentGrowth).toBeNull();
+    expect(m.endowmentGrowthRatePct).toBeNull();
+    expect(m.netIncome).toBeNull();
+  });
+
+  it('keeps partial coverage honest (grants posted, students missing)', () => {
+    const m = computeEducationMetrics({
+      totalStudents: null,
+      retainedStudents: null,
+      tuitionRevenue: null,
+      totalExpenses: 900_000,
+      facultyCount: null,
+      researchGrantsWon: 50,
+      researchGrantsApplied: 200,
+      endowmentStart: 50_000_000,
+      endowmentEnd: 55_000_000,
+    });
+    expect(m.researchGrantWinRatePct).toBe(25);
+    expect(m.endowmentGrowth).toBe(5_000_000);
+    expect(m.endowmentGrowthRatePct).toBe(10);
+    expect(m.studentRetentionRatePct).toBeNull();
+    expect(m.revenuePerStudent).toBeNull();
+    expect(m.facultyToStudentRatio).toBeNull();
+    expect(m.netIncome).toBeNull(); // tuition missing → not derivable
+  });
+
   it('modelTuitionRevenue is exact', () => {
     expect(modelTuitionRevenue(12000, 2000)).toBe(24_000_000);
     expect(modelTuitionRevenue(0.1, 0.3)).toBe(0.03);

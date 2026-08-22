@@ -138,4 +138,43 @@ describe('ProcurementCyclePage (Data-Driven)', () => {
     // Negotiated Savings: 2M - 1.8M = 200,000
     expect(screen.getByText(/200,000/)).toBeInTheDocument();
   });
+
+  it('shows blanks instead of invented records when accounts are absent (W-FAB)', () => {
+    useGLStore.setState({
+      entries: [
+        {
+          id: 'm1',
+          accountId: '4000',
+          accountCode: '4000',
+          accountName: 'Unrelated Sales',
+          period: 'P01',
+          periodName: 'January',
+          debit: 0,
+          credit: 500,
+          netChange: -500,
+          date: '2026-01-15',
+          amount: 500,
+          description: 'Misc',
+          reference: 'm1',
+        },
+      ],
+    });
+    const { container } = render(
+      <MemoryRouter>
+        <ProcurementCyclePage />
+      </MemoryRouter>
+    );
+    const text = container.textContent ?? '';
+    // The previous invented procurement record is gone:
+    expect(text).not.toContain('5,000,000');
+    expect(text).not.toContain('4,250,000');
+    expect(text).not.toContain('$48'); // compliantAudits fallback
+    expect(text).not.toContain('1,350');
+    expect(text).not.toContain('6,000,000');
+    expect(text).not.toContain('5,700,000');
+    // Unposted quantities disclose instead:
+    expect(screen.getAllByText('—').length).toBeGreaterThan(0);
+    expect(text).toContain('no audit accounts posted');
+    expect(text).toContain('no cycle-time/contract-count accounts posted');
+  });
 });

@@ -24,69 +24,54 @@ import type { GLEntry } from '@/types';
 import { formatMoney, roundTo, sumMoney } from '@/utils/money';
 import { formatNumber } from '@/utils/formatters';
 import { formatPercent } from '@/utils/financialFormatting';
-import { computeEducationMetrics } from './educationMetrics';
+import { computeEducationMetrics, type EducationMetricsInput } from './educationMetrics';
 
-export interface EnrollmentInput {
-  totalStudents: number;
-  retainedStudents: number;
-  tuitionRevenue: number;
-  totalExpenses: number;
-  facultyCount: number;
-  researchGrantsWon: number;
-  researchGrantsApplied: number;
-  endowmentStart: number;
-  endowmentEnd: number;
+export type EnrollmentInput = EducationMetricsInput;
+
+/**
+ * Sum debit-side amounts of entries matching `pattern`, or `null` when no
+ * account name matches — the quantity was never posted, which must not be
+ * replaced with an assumed constant.
+ */
+function sumDebitIfPosted(entries: readonly GLEntry[], pattern: RegExp): number | null {
+  const matching = entries.filter((e) => pattern.test(e.accountName.toLowerCase()));
+  if (matching.length === 0) return null;
+  return roundTo(sumMoney(matching.map((e) => e.debit)), 2);
 }
 
 /** Derive enrollment inputs from GL entries (exact sums). */
 export function computeEnrollmentFromEntries(entries: readonly GLEntry[]): EnrollmentInput {
-  const totalStudents = roundTo(
-    sumMoney(
-      entries
-        .filter((e) => /total students|enrollment/.test(e.accountName.toLowerCase()))
-        .map((e) => e.debit)
-    ),
-    2
+  const tuitionMatches = entries.filter((e) =>
+    /tuition|fees|student.*revenue/.test(e.accountName.toLowerCase())
   );
-  const retainedStudents = roundTo(
-    sumMoney(
-      entries
-        .filter((e) => /retained|retention/.test(e.accountName.toLowerCase()))
-        .map((e) => e.debit)
-    ),
-    2
-  );
-  const tuitionRevenue = roundTo(
-    sumMoney(
-      entries
-        .filter((e) => /tuition|fees|student.*revenue/.test(e.accountName.toLowerCase()))
-        .map((e) => (e.credit > e.debit ? e.credit : e.netChange))
-    ),
-    2
-  );
+  const tuitionRevenue =
+    tuitionMatches.length === 0
+      ? null
+      : roundTo(
+          // Credit-normal only: debit-heavy rows with a tuition-ish name are
+          // not revenue.
+          sumMoney(tuitionMatches.filter((e) => e.credit > e.debit).map((e) => e.credit)),
+          2
+        );
   const totalExpenses = roundTo(
     sumMoney(entries.filter((e) => e.debit > e.credit).map((e) => e.debit)),
     2
   );
-  const facultyCount = roundTo(
-    sumMoney(
-      entries
-        .filter((e) => /faculty|staff.*count/.test(e.accountName.toLowerCase()))
-        .map((e) => e.debit)
-    ),
-    2
-  );
 
   return {
-    totalStudents: totalStudents > 0 ? totalStudents : 12000,
-    retainedStudents: retainedStudents > 0 ? retainedStudents : 11400,
-    tuitionRevenue: tuitionRevenue > 0 ? tuitionRevenue : 24_000_000,
-    totalExpenses: totalExpenses > 0 ? totalExpenses : 21_600_000,
-    facultyCount: facultyCount > 0 ? facultyCount : 800,
-    researchGrantsWon: 60,
-    researchGrantsApplied: 250,
-    endowmentStart: 100_000_000,
-    endowmentEnd: 108_000_000,
+    // `null` = no tagged account posts this quantity. The previous constants
+    // (12,000 students / 11,400 retained / $24M tuition / $21.6M expenses /
+    // 800 faculty / literal grants & endowment balances) fabricated an entire
+    // institution whenever the GL lacked these accounts.
+    totalStudents: sumDebitIfPosted(entries, /total students|enrollment/),
+    retainedStudents: sumDebitIfPosted(entries, /retained|retention/),
+    tuitionRevenue,
+    totalExpenses,
+    facultyCount: sumDebitIfPosted(entries, /faculty|staff.*count/),
+    researchGrantsWon: null,
+    researchGrantsApplied: null,
+    endowmentStart: null,
+    endowmentEnd: null,
   };
 }
 
@@ -132,22 +117,50 @@ export default function EnrollmentRetentionPage() {
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4" aria-label="Enrollment KPIs">
         <KPIValue
           label="Retention Rate"
-          value={formatPercent(metrics.studentRetentionRatePct, 1)}
+          value={
+            metrics.studentRetentionRatePct === null
+              ? '—'
+              : formatPercent(metrics.studentRetentionRatePct, 1)
+          }
+          changeLabel={
+            metrics.studentRetentionRatePct === null
+              ? 'no enrollment/retention counts posted'
+              : undefined
+          }
           icon={<UserCheck className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
           label="Revenue Per Student"
-          value={formatMoney(metrics.revenuePerStudent)}
+          value={metrics.revenuePerStudent === null ? '—' : formatMoney(metrics.revenuePerStudent)}
+          changeLabel={
+            metrics.revenuePerStudent === null
+              ? 'needs posted tuition and enrollment counts'
+              : 'posted tuition ÷ posted students'
+          }
           icon={<Banknote className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
           label="Faculty : Student"
-          value={formatNumber(metrics.facultyToStudentRatio)}
+          value={
+            metrics.facultyToStudentRatio === null
+              ? '—'
+              : formatNumber(metrics.facultyToStudentRatio)
+          }
+          changeLabel={
+            metrics.facultyToStudentRatio === null
+              ? 'no faculty/student counts posted'
+              : 'students per faculty FTE'
+          }
           icon={<Users className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
           label="Net Income"
-          value={formatMoney(metrics.netIncome)}
+          value={metrics.netIncome === null ? '—' : formatMoney(metrics.netIncome)}
+          changeLabel={
+            metrics.netIncome === null
+              ? 'needs posted tuition and expenses'
+              : 'tuition − posted expenses'
+          }
           icon={<GraduationCap className="h-4 w-4" aria-hidden="true" />}
         />
       </section>
@@ -159,16 +172,37 @@ export default function EnrollmentRetentionPage() {
         <CardContent className="space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-sm text-[var(--text-muted)]">Total Students</span>
-            <span className="font-mono">{formatNumber(input.totalStudents)}</span>
+            <span className="font-mono">
+              {input.totalStudents === null ? '— not posted' : formatNumber(input.totalStudents)}
+            </span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-[var(--text-muted)]">Retained Students</span>
+            <span className="font-mono">
+              {input.retainedStudents === null
+                ? '— not posted'
+                : formatNumber(input.retainedStudents)}
+            </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-sm text-[var(--text-muted)]">Tuition Revenue</span>
-            <span className="font-mono">{formatMoney(input.tuitionRevenue)}</span>
+            <span className="font-mono">
+              {input.tuitionRevenue === null
+                ? '— no tuition-classified accounts'
+                : formatMoney(input.tuitionRevenue)}
+            </span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-sm text-[var(--text-muted)]">Faculty Count</span>
-            <span className="font-mono">{formatNumber(input.facultyCount)}</span>
+            <span className="font-mono">
+              {input.facultyCount === null ? '— not posted' : formatNumber(input.facultyCount)}
+            </span>
           </div>
+          <p className="text-xs text-[var(--text-muted)] pt-2">
+            Figures come only from tagged GL accounts (enrollment, retention, tuition, faculty).
+            Quantities the ledger does not post are shown blank — they are never filled with assumed
+            institutional averages.
+          </p>
         </CardContent>
       </Card>
     </main>

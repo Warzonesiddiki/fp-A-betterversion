@@ -1,131 +1,110 @@
-// @money-ast-allow Reason: this file is the real-estate dashboard. The
-// flagged `.reduce((acc, p) => acc + p.currentVal, 0)` aggregates a
-// property's `currentVal` (fair value, a money amount) into a per-class
-// total. RealEstateEngine is the source of truth and exposes a cent-precise
-// sum; this dashboard-level grouping falls back to a fake divisor when the
-// engine returns an empty array (`|| 20000000 / (i + 1)` is a unitless
-// placeholder chart weight, not a real currency total). The chart only
-// requires a non-zero value; absolute correctness is owned by the engine.
+// W-FAB (fleet wave 2, lane N4) remediation: the previous version rendered
+// the engine's mocked 94.8% occupancy as a measured KPI (with a fabricated
+// "+1.2% leasable area stable" change and a hand-typed sparkline), typed
+// invented deltas onto every other tile ("+8.4% valuation update Q1",
+// "+12.1% OpEx reduction 5%", "−0.2% compression in prime"), drew a six-month
+// occupancy trend chart for three asset classes that exist nowhere in the GL,
+// filled an asset-allocation pie with `20000000/(i+1)` placeholder weights
+// under five asset classes the ledger cannot express, printed a fictional
+// geographic split (42/31/18/9), and showed a table whose NOI column read an
+// undefined field and whose occupancy/yield columns fell back to the engine's
+// mocked constants. Every figure now comes from posted accounts via
+// `deriveValuation`; anything else is disclosed as not derivable.
 
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
-
-import {
-  Building2,
-  TrendingUp,
-  MapPin,
-  Download,
-  Filter,
-  PieChart as PieChartIcon,
-} from 'lucide-react';
+import { Building2, TrendingUp, PieChart as PieChartIcon } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { PeriodPicker } from '@/components/ui/PeriodPicker';
 import { DataTable, Column } from '@/components/ui/DataTable';
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  PieChart,
-  Pie,
-  Cell,
-} from 'recharts';
-import type { FiscalPeriod } from '@/types';
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import { deriveValuation, type PropertyValuationRow } from '@/pages/realestate/valuationData';
 import { useGLStore } from '@/store/glStore';
-import { RealEstateEngine } from '@/engines/RealEstateEngine';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
-// Mock Data
-const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
+// Real periods from the fiscal-calendar engine (previously misnamed
+// `mockPeriods`; the data was never mock data).
+const fiscalPeriods = buildFiscalPeriods();
 
-const occupancyData = [
-  { month: 'Jan', residential: 94, commercial: 88, industrial: 98 },
-  { month: 'Feb', residential: 95, commercial: 89, industrial: 98 },
-  { month: 'Mar', residential: 94, commercial: 91, industrial: 97 },
-  { month: 'Apr', residential: 96, commercial: 90, industrial: 99 },
-  { month: 'May', residential: 97, commercial: 92, industrial: 99 },
-  { month: 'Jun', residential: 98, commercial: 93, industrial: 99 },
-];
+const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ec4899', '#14b8a6'];
 
 export default function RealEstateDashboardPage() {
   const fmtCurrency = useCurrencyFormatter();
+  const [periodId, setPeriodId] = useState('P01');
+
+  const { entries } = useGLStore();
+
+  // Single source of truth: the remediated valuation derivation.
+  const valuation = useMemo(() => deriveValuation(entries), [entries]);
+
+  /** Real fair-value allocation: one slice per posting entity. */
+  const allocationData = useMemo(
+    () =>
+      (valuation?.properties ?? [])
+        .slice()
+        .sort((a, b) => b.appraisedValue - a.appraisedValue)
+        .map((p) => ({ name: p.name, value: p.appraisedValue })),
+    [valuation]
+  );
+
+  const topRows = useMemo<readonly PropertyValuationRow[]>(
+    () => (valuation?.properties ?? []).slice().sort((a, b) => b.appraisedValue - a.appraisedValue),
+    [valuation]
+  );
 
   const columns = useMemo<Column[]>(
     () => [
-      { key: 'name', header: 'Property Name', sortable: true },
-      { key: 'status', header: 'Asset Class' },
+      { key: 'name', header: 'Property', sortable: true },
       {
-        key: 'currentVal',
-        header: 'Fair Value',
+        key: 'appraisedValue',
+        header: 'Appraised Value',
         align: 'right',
         render: (v) => fmtCurrency.custom({ maxDecimals: 0 })(v as number),
       },
       {
         key: 'noi',
-        header: 'NOI (Est)',
+        header: 'NOI',
         align: 'right',
-        render: (v) => fmtCurrency.custom({ maxDecimals: 0 })((v as number) || 0),
+        render: (v) => {
+          const num = v as number | null;
+          if (num === null) return <span className="text-[var(--text-muted)]">—</span>;
+          return fmtCurrency.custom({ maxDecimals: 0 })(num);
+        },
       },
       {
-        key: 'occupancy',
-        header: 'Occupancy',
+        key: 'capRatePercent',
+        header: 'Cap Rate (own NOI)',
         align: 'right',
-        render: (v) => (
-          <span
-            className={
-              parseFloat((v as string) || '95') > 95
-                ? 'text-green-600 font-bold'
-                : 'text-blue-600 font-bold'
-            }
-          >
-            {(v as string) || '94.8%'}
-          </span>
-        ),
+        render: (v) => {
+          const num = v as number | null;
+          if (num === null) return <span className="text-[var(--text-muted)]">—</span>;
+          return formatPercent(num, 2);
+        },
       },
       {
-        key: 'yield',
-        header: 'Cap Rate',
+        key: 'appreciationPercent',
+        header: 'Appreciation %',
         align: 'right',
-        render: (v) => `${v}%`,
+        render: (v) => {
+          const num = v as number | null;
+          if (num === null) return <span className="text-[var(--text-muted)]">—</span>;
+          return (
+            <span className={num >= 0 ? 'text-green-600' : 'text-red-600'}>
+              {num >= 0 ? '+' : ''}
+              {formatPercent(num, 1)}
+            </span>
+          );
+        },
       },
     ],
     [fmtCurrency]
   );
-  const { entries } = useGLStore();
-  const [periodId, setPeriodId] = useState('P01');
 
-  const stats = useMemo(() => {
-    return RealEstateEngine.calculateDashboardStats(entries);
-  }, [entries]);
-
-  const assetClassData = useMemo(() => {
-    const breakdown = RealEstateEngine.getPropertyBreakdown(entries);
-    const classes = ['Office', 'Residential', 'Industrial', 'Retail', 'Healthcare'];
-    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ec4899'];
-
-    return classes.map((name, i) => ({
-      name,
-      value:
-        breakdown
-          .filter((p) => p.status === (i === 0 ? 'Core' : 'Value-Add'))
-          .reduce((acc, p) => acc + p.currentVal, 0) || 20000000 / (i + 1),
-      color: colors[i]!,
-    }));
-  }, [entries]);
-
-  const topAssets = useMemo(() => {
-    return RealEstateEngine.getPropertyBreakdown(entries);
-  }, [entries]);
-
-  if (entries.length === 0) {
+  if (entries.length === 0 || !valuation) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
         <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
@@ -133,8 +112,9 @@ export default function RealEstateDashboardPage() {
         </div>
         <h2 className="text-xl font-semibold mb-2">No Real Estate Data</h2>
         <p className="text-[var(--text-muted)] mb-6">
-          Import your Real Estate General Ledger to view global portfolio analytics and occupancy
-          trends.
+          Import General Ledger activity that posts property cost (15xx) or appraised value (16xx)
+          by entity to view portfolio analytics. Occupancy and asset-class mix are not ledger facts
+          and are never estimated here.
         </p>
         <Button>Import Data</Button>
       </div>
@@ -142,55 +122,67 @@ export default function RealEstateDashboardPage() {
   }
 
   return (
-    <div className="p-6 space-y-6 animate-in fade-in duration-500">
+    <div
+      className="p-6 space-y-6 animate-in fade-in duration-500"
+      role="main"
+      aria-label="Real Estate Dashboard"
+    >
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <PageHeader
           title="Real Estate Dashboard"
-          purpose="Global portfolio analytics: Fair value tracking, NOI performance, and occupancy trends."
+          purpose="Portfolio analytics classified from your posted ledger: appraised value (16xx), rental income (40xx), operating expense (50xx) and debt (25xx). Occupancy, asset class and location are not ledger facts — they are disclosed, not estimated."
         />
-        <div className="flex items-center gap-3">
-          <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
-          <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Portfolio Report
-          </Button>
-        </div>
+        <PeriodPicker value={periodId} onChange={setPeriodId} periods={fiscalPeriods} />
       </div>
 
       {/* KPIs */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
           label="Portfolio Fair Value"
-          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(stats.fairValue)}
-          change={8.4}
-          changeLabel="valuation update Q1"
-          trend="up"
-          sparklineData={[110, 115, 118, 122, 125, 128, stats.fairValue / 1000000]}
+          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(
+            valuation.totalAppraisedValue
+          )}
+          changeLabel="posted 16xx balances"
         />
         <KPIValue
           label="Net Operating Income"
-          value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(stats.noi)}
-          change={12.1}
-          changeLabel="OpEx reduction 5%"
-          trend="up"
-          sparklineData={[6.8, 7.2, 7.1, 7.5, 7.8, 8.1, stats.noi / 1000000]}
+          value={
+            valuation.totalNoi === null
+              ? '—'
+              : fmtCurrency.custom({ maxDecimals: 1, compact: true })(valuation.totalNoi)
+          }
+          changeLabel={
+            valuation.totalNoi === null
+              ? 'no rental income (40xx) or property opex (50xx) posted'
+              : 'rental income less property opex'
+          }
         />
         <KPIValue
-          label="Portfolio Occupancy"
-          value={`${stats.occupancy}%`}
-          change={1.2}
-          changeLabel="leasable area stable"
-          trend="up"
-          sparklineData={[92.5, 93.0, 93.2, 93.8, 94.1, 94.5, stats.occupancy]}
+          label="Weighted Cap Rate"
+          value={
+            valuation.weightedCapRatePercent === null
+              ? '—'
+              : formatPercent(valuation.weightedCapRatePercent, 2)
+          }
+          changeLabel={
+            valuation.capRateCoverage > 0
+              ? `${valuation.capRateCoverage} of ${valuation.properties.length} properties`
+              : 'no property posts both income and value'
+          }
         />
         <KPIValue
-          label="Avg. Cap Rate"
-          value={`${formatPercent(stats.capRate, 2)}`}
-          change={-0.2}
-          changeLabel="compression in prime"
-          trend="up"
-          sparklineData={[7.15, 7.1, 7.05, 7.02, 6.98, 6.95, stats.capRate]}
+          label="Loan-to-Value"
+          value={
+            valuation.loanToValuePercent === null
+              ? '—'
+              : formatPercent(valuation.loanToValuePercent, 1)
+          }
+          changeLabel={
+            valuation.loanToValuePercent === null
+              ? 'no real-estate debt (25xx) posted'
+              : 'posted debt ÷ appraised value'
+          }
         />
       </div>
 
@@ -199,78 +191,27 @@ export default function RealEstateDashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-blue-600" />
-              <CardTitle>Occupancy Rate Trends</CardTitle>
-            </div>
-            <CardDescription>Historical performance across major asset classes</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[350px] w-full pt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={occupancyData}>
-                  <defs>
-                    <linearGradient id="colorRes" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="month" axisLine={false} tickLine={false} />
-                  <YAxis axisLine={false} tickLine={false} domain={[80, 100]} />
-                  <Tooltip />
-                  <Legend verticalAlign="top" align="right" />
-                  <Area
-                    type="monotone"
-                    dataKey="residential"
-                    name="Residential"
-                    stroke="#3b82f6"
-                    strokeWidth={3}
-                    fillOpacity={1}
-                    fill="url(#colorRes)"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="commercial"
-                    name="Commercial"
-                    stroke="#10b981"
-                    strokeWidth={2}
-                    fill="transparent"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="industrial"
-                    name="Industrial"
-                    stroke="#f59e0b"
-                    strokeWidth={2}
-                    fill="transparent"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
               <PieChartIcon className="h-5 w-5 text-indigo-500" />
-              <CardTitle>Asset Allocation</CardTitle>
+              <CardTitle>Fair Value Allocation</CardTitle>
             </div>
-            <CardDescription>By Fair Value (USD)</CardDescription>
+            <CardDescription>By posting entity (USD) — one slice per property</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full pt-4">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={assetClassData}
+                    data={allocationData}
                     innerRadius={60}
                     outerRadius={90}
                     paddingAngle={5}
                     dataKey="value"
                   >
-                    {assetClassData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    {allocationData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${entry.name}`}
+                        fill={PIE_COLORS[index % PIE_COLORS.length]}
+                      />
                     ))}
                   </Pie>
                   <Tooltip formatter={(v) => `$${formatCompact(Number(v))}`} />
@@ -278,48 +219,49 @@ export default function RealEstateDashboardPage() {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700">
-              <div className="flex items-center gap-2 text-slate-700 font-bold text-xs uppercase tracking-wider mb-2">
-                <MapPin className="h-3 w-3" />
-                Geographic Split
-              </div>
-              <div className="grid grid-cols-2 gap-2 text-[10px] font-medium">
-                <div className="flex justify-between">
-                  <span>North America</span> <span className="font-bold">42%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Europe</span> <span className="font-bold">31%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>APAC</span> <span className="font-bold">18%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Other</span> <span className="font-bold">9%</span>
-                </div>
-              </div>
+            <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700 text-xs text-[var(--text-muted)]">
+              Asset-class (office/retail/…) and geographic breakdowns need property metadata the
+              general ledger does not carry, so no such split is shown.
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-blue-600" />
+              <CardTitle>Not Derivable from the Ledger</CardTitle>
+            </div>
+            <CardDescription>Omitted rather than estimated</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 pt-4">
+            <ul className="space-y-2 text-sm">
+              {valuation.unavailable.map((u) => (
+                <li key={u.label}>
+                  <span className="font-semibold">{u.label}</span>
+                  <span className="text-[var(--text-muted)]"> — {u.reason}</span>
+                </li>
+              ))}
+            </ul>
           </CardContent>
         </Card>
       </div>
 
       {/* Asset Table */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Top Performing Assets</CardTitle>
-            <CardDescription>Property-level financial health and efficiency</CardDescription>
-          </div>
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Filter Assets
-          </Button>
+        <CardHeader>
+          <CardTitle>Assets by Appraised Value</CardTitle>
+          <CardDescription>
+            Per-property posted balances. Blank NOI/cap-rate cells mean the property posts no rental
+            income (40xx).
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable
             columns={columns}
-            data={topAssets}
-            caption="Top performing assets table"
-            ariaLabel="Top performing assets data table for real estate dashboard"
+            data={topRows as PropertyValuationRow[]}
+            caption="Assets by appraised value table"
+            ariaLabel="Real estate dashboard assets data table"
           />
         </CardContent>
       </Card>

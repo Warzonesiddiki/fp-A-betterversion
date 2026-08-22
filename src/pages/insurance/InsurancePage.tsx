@@ -144,8 +144,12 @@ export function InsurancePage() {
           icon={<Shield className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
-          label="Policies"
+          /* Truthfulness (wave 2): this counts loss-pick rows recorded in the
+             actuarial store — it was labelled "Policies", which no store in
+             this app can support. */
+          label="Loss Picks"
           value={formatNumber(lossPicks.length)}
+          changeLabel={lossPicks.length > 0 ? 'loss-pick rows on file' : 'no loss picks recorded'}
           icon={<Layers className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue

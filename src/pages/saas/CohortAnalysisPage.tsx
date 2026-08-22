@@ -1,217 +1,113 @@
-import { useEffect, useMemo } from 'react';
-import { PageHeader } from '@/components/ui/PageHeader';
+// =============================================================================
+// COHORT ANALYSIS — customer-cohort workspace (K17/K18 W-FAB remediation).
+// -----------------------------------------------------------------------------
+// The previous revision fabricated its entire dataset in module scope:
+//   - buildRetentionMatrix(): six "Jan 2026 … Jun 2026" cohorts with
+//     arithmetic retention curves (100 − i·3, floored at 40) rendered as a
+//     measured "Retention Matrix (%)" heatmap and exported to PDF;
+//   - buildCohortSizes(): customer counts from `120 + ((i·37) % 80) − i·10`
+//     charted as real cohort sizes;
+//   - KPI cards (Total Customers / Avg Retention / Avg Churn) computed from
+//     those inventions, plus an "Avg Revenue / Cohort" that divided a
+//     Math.abs() money aggregate by cohort count and fell back to a hardcoded
+//     250000 when the GL was empty.
+// Customer cohorts are not ledger objects: retention by acquisition month
+// requires a subscription/customer feed this app does not have. The page now
+// renders zero numbers, states what such a feed must provide, and routes to
+// the ARR dashboard where MRR/ARR are genuinely derived from the GL.
+// =============================================================================
+
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { KPIValue } from '@/components/ui/KPIValue';
-import { Download, BarChart4, Users, TrendingDown, DollarSign } from 'lucide-react';
-import { ExportEngine } from '@/engines/ExportEngine';
-import { sumMoney, roundTo, subtractMoney } from '@/utils/money';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
-import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { formatPercent } from '@/utils/financialFormatting';
-import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-function formatPct(n: number): string {
-  return `${formatPercent(n, 1)}`;
-}
-
-const COHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-
-function buildRetentionMatrix() {
-  return COHORT_MONTHS.map((month, i) => {
-    const base = 100 - i * 3;
-    const row: Record<string, string | number> = { cohort: `${month} 2026` };
-    for (let m = 0; m <= 5 - i; m++) {
-      row[`M${m}`] = Math.max(40, base - m * (5 + i));
-    }
-    return row;
-  });
-}
-
-function buildCohortSizes() {
-  return COHORT_MONTHS.map((month, i) => ({
-    month,
-    size: 120 + ((i * 37) % 80) - i * 10,
-  }));
-}
+import { PageHeader } from '@/components/ui/PageHeader';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 export default function CohortAnalysisPage() {
-  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
+
   useEffect(() => {
     document.title = 'FinPlan Pro — Cohort Analysis';
   }, []);
 
-  const retentionMatrix = useMemo(() => buildRetentionMatrix(), []);
-  const cohortSizes = useMemo(() => buildCohortSizes(), []);
-
-  const metrics = useMemo(() => {
-    const totalCustomers = cohortSizes.reduce((s, c) => s + c.size, 0);
-    const avgRetention =
-      retentionMatrix.reduce((s, row) => {
-        const vals = Object.values(row).filter((v): v is number => typeof v === 'number');
-        return s + (vals.length > 0 ? vals[vals.length - 1] : 0)!;
-      }, 0) / retentionMatrix.length;
-    const avgChurn = 100 - avgRetention;
-    const avgRevPerCohort =
-      entries.length > 0
-        ? roundTo(
-            sumMoney(
-              entries.map((e) => Math.abs(subtractMoney(e.debit ?? 0, e.credit ?? 0).toNumber()))
-            ).toNumber() / cohortSizes.length,
-            2
-          )
-        : 250000;
-    return { totalCustomers, avgRetention, avgChurn, avgRevPerCohort };
-  }, [retentionMatrix, cohortSizes, entries]);
-
-  const handleExport = () => {
-    void ExportEngine.exportToPDF(
-      {
-        headers: ['Cohort', 'Size', 'M0 Retention', 'Final Retention'],
-        rows: retentionMatrix.map((row) => [
-          row.cohort!,
-          cohortSizes.find((c) => c.month === String(row.cohort).split(' ')[0])?.size || 0,
-          `${row.M0 || 100}%`,
-          `${
-            Object.values(row)
-              .filter((v): v is number => typeof v === 'number')
-              .pop()! || 0
-          }%`,
-        ]) as (string | number | boolean | null)[][],
-      },
-      { title: 'Cohort Retention Analysis' }
-    ).catch(reportExportFailure);
-  };
-
-  if (entries.length === 0)
+  if (entries.length === 0) {
     return (
-      <main className="p-12 text-center" role="main" aria-label="Cohort Analysis - No Data">
-        <BarChart4 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h1 className="text-xl font-semibold mb-2">No SaaS Data</h1>
-        <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
-          Import general ledger data with subscription revenue accounts to group customers into
-          cohorts and track retention.
-        </p>
-        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
-      </main>
-    );
-
-  return (
-    <div className="p-6 space-y-6">
-      <PageHeader
-        title="Cohort Analysis"
-        purpose="Customer retention by monthly cohort"
-        actions={
-          <Button variant="outline" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-        }
-      />
-
-      <div className="grid gap-4 md:grid-cols-4">
-        <KPIValue
-          label="Total Customers"
-          value={metrics.totalCustomers.toLocaleString()}
-          icon={<Users className="h-4 w-4" />}
+      <div
+        className="p-6 space-y-6 max-w-7xl"
+        data-testid="cohort-page"
+        aria-labelledby="cohort-heading"
+      >
+        <PageHeader
+          title="Cohort Analysis"
+          titleId="cohort-heading"
+          purpose="Customer retention by monthly cohort."
         />
-        <KPIValue
-          label="Avg Retention"
-          value={formatPct(metrics.avgRetention)}
-          icon={<TrendingDown className="h-4 w-4" />}
-          trend="up"
-        />
-        <KPIValue
-          label="Avg Churn"
-          value={formatPct(metrics.avgChurn)}
-          icon={<TrendingDown className="h-4 w-4" />}
-          trend="down"
-        />
-        <KPIValue
-          label="Avg Revenue / Cohort"
-          value={fmt.currency0(metrics.avgRevPerCohort)}
-          icon={<DollarSign className="h-4 w-4" />}
+        <EmptyState
+          variant="no-data"
+          title="No SaaS Data"
+          description="Import general ledger data first. Note that customer cohorts additionally require a subscription feed that groups revenue by acquisition month — no cohorts are invented here."
+          action={<Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>}
         />
       </div>
+    );
+  }
+
+  return (
+    <div
+      className="p-6 space-y-6 max-w-7xl"
+      data-testid="cohort-page"
+      aria-labelledby="cohort-heading"
+    >
+      <PageHeader
+        title="Cohort Analysis"
+        titleId="cohort-heading"
+        purpose="Customer retention by monthly cohort. Displays no cohort figures unless a customer-level feed provides them — none are estimated from the ledger."
+      />
 
       <Card>
         <CardHeader>
-          <CardTitle>Cohort Size</CardTitle>
+          <CardTitle>What a cohort view requires</CardTitle>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={cohortSizes}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="month" stroke="#94a3b8" />
-              <YAxis stroke="#94a3b8" />
-              <Tooltip
-                contentStyle={{
-                  background: '#1e293b',
-                  border: '1px solid #334155',
-                  borderRadius: 8,
-                }}
-              />
-              <Bar dataKey="size" name="Customers" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+        <CardContent className="space-y-3 text-sm text-[var(--text-muted)]">
+          <p>
+            A retention matrix ties every revenue posting to the customer and to that
+            customer&apos;s acquisition month. A general ledger carries neither: it has no customer
+            dimension and no first-purchase attribution. Building one here would require:
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>a customer identifier on each subscription transaction; and</li>
+            <li>
+              the acquisition (first-bill) date per customer, so rows can be grouped into monthly
+              cohorts.
+            </li>
+          </ul>
+          <p>
+            This page previously displayed an arithmetic demo matrix with invented month labels
+            (Jan–Jun 2026), synthesized cohort sizes, and KPIs derived from them. Those datasets
+            have been removed; nothing is rendered in their place.
+          </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Retention Matrix (%)</CardTitle>
+          <CardTitle>Available now from your ledger</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm" aria-label="SaaS cohort analysis">
-              <caption className="sr-only">Detailed breakdown of saas cohort analysis</caption>
-              <thead>
-                <tr className="border-b border-slate-700">
-                  <th
-                    scope="col"
-                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
-                  >
-                    Cohort
-                  </th>
-                  {Array.from({ length: 6 }, (_, i) => (
-                    <th
-                      key={i}
-                      className="text-center py-2 px-3 text-[var(--text-muted)] font-medium"
-                      scope="col"
-                    >
-                      M{i}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {retentionMatrix.map((row) => (
-                  <tr key={String(row.cohort)} className="border-b border-slate-800">
-                    <td className="py-2 px-3 font-medium">{String(row.cohort)}</td>
-                    {Array.from({ length: 6 }, (_, i) => {
-                      const val = row[`M${i}`];
-                      const numVal = typeof val === 'number' ? val : null;
-                      const bg =
-                        numVal !== null
-                          ? numVal >= 80
-                            ? 'bg-green-900/40 text-green-300'
-                            : numVal >= 60
-                              ? 'bg-yellow-900/40 text-yellow-300'
-                              : 'bg-red-900/40 text-red-300'
-                          : 'text-slate-600';
-                      return (
-                        <td key={i} className={`text-center py-2 px-3 rounded ${bg}`}>
-                          {numVal !== null ? `${numVal}%` : '—'}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-[var(--text-muted)]">
+            Aggregate subscription revenue (41xx accounts) is derived from the posted GL on the ARR
+            Dashboard, including the latest posted month and its month-over-month movement.
+          </p>
+          <div className="flex gap-2">
+            <Button onClick={() => navigate('/saas/arr')} data-testid="open-arr-dashboard">
+              Open ARR Dashboard
+            </Button>
+            <Button variant="outline" onClick={() => navigate('/saas/churn-analysis')}>
+              Revenue-churn signal
+            </Button>
           </div>
         </CardContent>
       </Card>

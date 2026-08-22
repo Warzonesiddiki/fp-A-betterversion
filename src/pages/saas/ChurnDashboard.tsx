@@ -1,281 +1,126 @@
-import { useEffect, useMemo } from 'react';
-import { PageHeader } from '@/components/ui/PageHeader';
+// =============================================================================
+// CHURN DASHBOARD — customer-churn workspace (K17/K18 W-FAB remediation).
+// -----------------------------------------------------------------------------
+// The previous revision invented three datasets in module scope and rendered
+// them as measured business records:
+//   - MONTHLY_CHURN: six months of logo/revenue churn and save-rate
+//     percentages (3.2% / 2.8% / 42 …) plotted as a "Churn Trend";
+//   - SEGMENT_CHURN: "Enterprise / Mid-Market / SMB / Startup" with churn %,
+//     customer counts and MRR ($125,000 …) plotted as "Churn by Segment";
+//   - AT_RISK: five customers with invented names ("Acme Corp", "TechStart
+//     Inc", …), MRR amounts, risk scores [85, 72, 68, 91, 78] and "X days
+//     ago" login strings, rendered as a data table AND exported to Excel as
+//     if they were real accounts.
+// All five KPI cards were computed from those arrays. None of it is derivable
+// from this app's stores: a general ledger carries journal postings, not
+// per-customer subscription events, support saves or engagement telemetry.
+//
+// This page now renders zero numbers. It states exactly which feed each churn
+// metric requires and routes to the one churn-adjacent signal the GL does
+// support (period-over-period movement of 41xx subscription revenue on
+// ChurnAnalysisPage). Empty GL → shared EmptyState under the page h1, same
+// four-states idiom as ICEliminationPage.
+// =============================================================================
+
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { KPIValue } from '@/components/ui/KPIValue';
-import { Download, Users, TrendingDown, AlertTriangle, RefreshCw } from 'lucide-react';
-import { ExportEngine } from '@/engines/ExportEngine';
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from 'recharts';
-import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { formatPercent } from '@/utils/financialFormatting';
-import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-import { sumMoney } from '@/utils/money';
-function formatPct(n: number): string {
-  return `${formatPercent(n, 1)}`;
-}
-
-const MONTHLY_CHURN = [
-  { month: 'Jan', customerChurn: 3.2, revenueChurn: 2.8, saveRate: 42 },
-  { month: 'Feb', customerChurn: 3.5, revenueChurn: 3.1, saveRate: 38 },
-  { month: 'Mar', customerChurn: 2.9, revenueChurn: 2.5, saveRate: 45 },
-  { month: 'Apr', customerChurn: 3.1, revenueChurn: 2.7, saveRate: 40 },
-  { month: 'May', customerChurn: 2.7, revenueChurn: 2.3, saveRate: 48 },
-  { month: 'Jun', customerChurn: 2.4, revenueChurn: 2.0, saveRate: 52 },
-];
-
-const SEGMENT_CHURN = [
-  { segment: 'Enterprise', churn: 1.2, customers: 45, mrr: 125000 },
-  { segment: 'Mid-Market', churn: 2.8, customers: 120, mrr: 85000 },
-  { segment: 'SMB', churn: 4.5, customers: 380, mrr: 42000 },
-  { segment: 'Startup', churn: 6.1, customers: 210, mrr: 18000 },
-];
-
-const AT_RISK = [
-  { name: 'Acme Corp', segment: 'Enterprise', mrr: 25000, riskScore: 85, lastLogin: '14 days ago' },
-  {
-    name: 'TechStart Inc',
-    segment: 'Mid-Market',
-    mrr: 8500,
-    riskScore: 72,
-    lastLogin: '21 days ago',
-  },
-  {
-    name: 'GlobalRetail',
-    segment: 'Enterprise',
-    mrr: 18000,
-    riskScore: 68,
-    lastLogin: '7 days ago',
-  },
-  { name: 'DataFlow Ltd', segment: 'SMB', mrr: 3200, riskScore: 91, lastLogin: '30 days ago' },
-  { name: 'CloudFirst', segment: 'Mid-Market', mrr: 6800, riskScore: 78, lastLogin: '18 days ago' },
-];
+import { PageHeader } from '@/components/ui/PageHeader';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 export default function ChurnDashboard() {
-  const fmt = useCurrencyFormatter();
   const { entries } = useGLStore();
   const navigate = useNavigate();
+
   useEffect(() => {
     document.title = 'FinPlan Pro — Churn Dashboard';
   }, []);
 
-  const metrics = useMemo(() => {
-    const latest = MONTHLY_CHURN[MONTHLY_CHURN.length - 1];
-    const totalAtRiskMRR = sumMoney(AT_RISK.map((c) => c.mrr)).toNumber();
-    return {
-      customerChurn: latest!.customerChurn,
-      revenueChurn: latest!.revenueChurn,
-      saveRate: latest!.saveRate,
-      atRiskCount: AT_RISK.length,
-      totalAtRiskMRR,
-    };
-  }, []);
-
-  const handleExport = () => {
-    void ExportEngine.exportToExcel(
-      {
-        headers: ['Customer', 'Segment', 'MRR', 'Risk Score', 'Last Login'],
-        rows: AT_RISK.map((c) => [c.name, c.segment, c.mrr, c.riskScore, c.lastLogin]),
-      },
-      { title: 'Churn_At_Risk_Customers' }
-    ).catch(reportExportFailure);
-  };
-
-  if (entries.length === 0)
+  if (entries.length === 0) {
     return (
-      <main className="p-12 text-center" role="main" aria-label="Churn Dashboard - No Data">
-        <Users className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h1 className="text-xl font-semibold mb-2">No SaaS Data</h1>
-        <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
-          Import general ledger data with subscription revenue accounts to calculate churn,
-          retention and expansion.
-        </p>
-        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
-      </main>
+      <div className="p-6 space-y-6 max-w-7xl" aria-labelledby="churn-dashboard-heading">
+        <PageHeader
+          title="Churn Dashboard"
+          titleId="churn-dashboard-heading"
+          purpose="Customer retention and churn analysis workspace."
+        />
+        <EmptyState
+          variant="no-data"
+          title="No SaaS Data"
+          description="Import general ledger data first. Note that logo-level churn metrics additionally require a subscription-management feed — no churn figures are invented here."
+          action={<Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>}
+        />
+      </div>
     );
+  }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 max-w-7xl" aria-labelledby="churn-dashboard-heading">
       <PageHeader
         title="Churn Dashboard"
-        purpose="Customer retention and churn analysis"
-        actions={
-          <Button variant="outline" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-        }
+        titleId="churn-dashboard-heading"
+        purpose="Customer retention and churn analysis workspace. Displays no churn figures unless a customer-level feed provides them — none are estimated from the ledger."
       />
-
-      <div className="grid gap-4 md:grid-cols-5">
-        <KPIValue
-          label="Customer Churn"
-          value={formatPct(metrics.customerChurn)}
-          icon={<TrendingDown className="h-4 w-4" />}
-          trend="down"
-        />
-        <KPIValue
-          label="Revenue Churn"
-          value={formatPct(metrics.revenueChurn)}
-          icon={<TrendingDown className="h-4 w-4" />}
-          trend="down"
-        />
-        <KPIValue
-          label="Save Rate"
-          value={formatPct(metrics.saveRate)}
-          icon={<RefreshCw className="h-4 w-4" />}
-          trend="up"
-        />
-        <KPIValue
-          label="At-Risk Customers"
-          value={metrics.atRiskCount.toString()}
-          icon={<AlertTriangle className="h-4 w-4" />}
-        />
-        <KPIValue
-          label="At-Risk MRR"
-          value={fmt.currency0(metrics.totalAtRiskMRR)}
-          icon={<AlertTriangle className="h-4 w-4" />}
-          trend="down"
-        />
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Churn Trend</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={MONTHLY_CHURN}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="month" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `${v}%`} />
-                <Tooltip
-                  contentStyle={{
-                    background: '#1e293b',
-                    border: '1px solid #334155',
-                    borderRadius: 8,
-                  }}
-                  formatter={(v) => `${v}%`}
-                />
-                <Legend />
-                <Line
-                  dataKey="customerChurn"
-                  name="Customer Churn"
-                  stroke="#ef4444"
-                  strokeWidth={2}
-                />
-                <Line
-                  dataKey="revenueChurn"
-                  name="Revenue Churn"
-                  stroke="#f59e0b"
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Churn by Segment</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={SEGMENT_CHURN}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="segment" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `${v}%`} />
-                <Tooltip
-                  contentStyle={{
-                    background: '#1e293b',
-                    border: '1px solid #334155',
-                    borderRadius: 8,
-                  }}
-                  formatter={(v) => `${v}%`}
-                />
-                <Bar dataKey="churn" name="Churn %" fill="#ef4444" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>At-Risk Customers</CardTitle>
+          <CardTitle>What each churn metric requires</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm" aria-label="SaaS churn metrics by cohort">
-              <caption className="sr-only">
-                Churn metrics by cohort showing customer count, churned count, and churn rate
-              </caption>
-              <thead>
-                <tr className="border-b border-slate-700">
-                  <th
-                    scope="col"
-                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
-                  >
-                    Customer
-                  </th>
-                  <th
-                    scope="col"
-                    className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
-                  >
-                    Segment
-                  </th>
-                  <th
-                    scope="col"
-                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
-                  >
-                    MRR
-                  </th>
-                  <th
-                    scope="col"
-                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
-                  >
-                    Risk Score
-                  </th>
-                  <th
-                    scope="col"
-                    className="text-right py-2 px-3 text-[var(--text-muted)] font-medium"
-                  >
-                    Last Login
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {AT_RISK.map((c) => (
-                  <tr key={c.name} className="border-b border-slate-800">
-                    <td className="py-2 px-3 font-medium">{c.name}</td>
-                    <td className="py-2 px-3">{c.segment}</td>
-                    <td className="text-right py-2 px-3">{fmt.currency0(c.mrr)}</td>
-                    <td className="text-right py-2 px-3">
-                      <span
-                        className={`px-2 py-0.5 rounded text-xs ${c.riskScore >= 80 ? 'bg-red-900/50 text-red-300' : c.riskScore >= 60 ? 'bg-yellow-900/50 text-yellow-300' : 'bg-green-900/50 text-green-300'}`}
-                      >
-                        {c.riskScore}
-                      </span>
-                    </td>
-                    <td className="text-right py-2 px-3 text-[var(--text-muted)]">{c.lastLogin}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <CardContent className="space-y-3 text-sm text-[var(--text-muted)]">
+          <p>
+            A general ledger records journal postings; it does not know when a customer cancels,
+            downgrades, is saved by support, or stops signing in. The following therefore cannot be
+            computed here and are omitted rather than estimated:
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>
+              <span className="font-medium text-[var(--text-secondary)]">Logo churn</span> — needs
+              subscription start/end events per customer.
+            </li>
+            <li>
+              <span className="font-medium text-[var(--text-secondary)]">Revenue churn</span> —
+              needs contracted recurring amount per customer over time.
+            </li>
+            <li>
+              <span className="font-medium text-[var(--text-secondary)]">Save rate</span> — needs
+              cancellation-and-recovery outcomes from the support/billing system.
+            </li>
+            <li>
+              <span className="font-medium text-[var(--text-secondary)]">Segment churn mix</span> —
+              needs plan/tier assignment per customer.
+            </li>
+            <li>
+              <span className="font-medium text-[var(--text-secondary)]">
+                At-risk customers & risk scores
+              </span>{' '}
+              — needs engagement telemetry (logins, usage) plus a scoring model.
+            </li>
+          </ul>
+          <p>
+            This page previously filled all of the above with hardcoded demo values, including
+            invented customer names exported to Excel. Those datasets have been removed.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>The churn-adjacent signal the GL does support</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-[var(--text-muted)]">
+            Period-over-period movement of 41xx subscription revenue is derived from the posted
+            ledger on the Churn Analysis page — a revenue-churn <em>signal</em>, clearly not a
+            logo-churn measure.
+          </p>
+          <Button
+            onClick={() => navigate('/saas/churn-analysis')}
+            data-testid="open-churn-analysis"
+          >
+            Open revenue-churn signal
+          </Button>
         </CardContent>
       </Card>
     </div>

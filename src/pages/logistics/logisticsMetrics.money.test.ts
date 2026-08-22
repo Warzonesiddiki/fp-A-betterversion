@@ -65,6 +65,45 @@ describe('logisticsMetrics — known answers (GAP-1)', () => {
     expect(m.operatingMarginPct).toBe(25);
   });
 
+  // W-FAB lane N4: unposted fleet volumes are `null`, and every volume-derived
+  // ratio is `null` — never back-filled with assumed mileage or deliveries.
+  it('returns null volume ratios when volumes were never posted (W-FAB)', () => {
+    const m = computeLogisticsMetrics({
+      revenue: 1_200_000,
+      cogs: 600_000,
+      operatingExpenses: 300_000,
+      totalMiles: null,
+      loadedMiles: null,
+      onTimeDeliveries: null,
+      totalDeliveries: null,
+      fleetCapacityMiles: null,
+      warehouseCost: 144_000,
+    });
+    expect(m.totalExpenses).toBe(900_000); // money KPIs stay exact
+    expect(m.costPerMile).toBeNull();
+    expect(m.onTimeDeliveryPct).toBeNull();
+    expect(m.emptyMilesPct).toBeNull();
+    expect(m.fleetUtilizationPct).toBeNull();
+  });
+
+  it('keeps partial volume coverage honest (miles posted, capacity missing)', () => {
+    const m = computeLogisticsMetrics({
+      revenue: 100_000,
+      cogs: 20_000,
+      operatingExpenses: 10_000,
+      totalMiles: 50_000,
+      loadedMiles: 45_000,
+      onTimeDeliveries: null,
+      totalDeliveries: null,
+      fleetCapacityMiles: null,
+      warehouseCost: 5_000,
+    });
+    expect(m.costPerMile).toBe(0.6);
+    expect(m.emptyMilesPct).toBe(10);
+    expect(m.onTimeDeliveryPct).toBeNull();
+    expect(m.fleetUtilizationPct).toBeNull();
+  });
+
   it('handles expense-over-revenue (negative operating margin) exactly', () => {
     const m = computeLogisticsMetrics({
       revenue: 100_000,

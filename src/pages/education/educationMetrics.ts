@@ -15,35 +15,48 @@ import {
   toDecimal,
 } from '@/utils/money';
 
+// W-FAB (fleet wave 2, lane N4): inputs are `number | null` — `null` means the
+// quantity was never posted to the GL (no tagged account). The pages feeding
+// this model previously hard-coded an entire fictional institution (12,000
+// students, $24M tuition, 800 faculty, $100M→$108M endowment, 60-of-250
+// grants), which fabricated measured-looking KPIs. A KPI whose inputs were
+// never posted is now `null` — never estimated.
 export interface EducationMetricsInput {
-  /** Students at the start of the academic year. */
-  totalStudents: number;
-  /** Students retained into the following year. */
-  retainedStudents: number;
-  /** Tuition & fee revenue recognized. */
-  tuitionRevenue: number;
-  /** Total operating expense. */
-  totalExpenses: number;
-  /** Full-time-equivalent faculty count. */
-  facultyCount: number;
-  /** Research grants won. */
-  researchGrantsWon: number;
-  /** Research grants applied for. */
-  researchGrantsApplied: number;
-  /** Endowment value at period start. */
-  endowmentStart: number;
-  /** Endowment value at period end. */
-  endowmentEnd: number;
+  /** Students at the start of the academic year; `null` when not posted. */
+  totalStudents: number | null;
+  /** Students retained into the following year; `null` when not posted. */
+  retainedStudents: number | null;
+  /** Tuition & fee revenue recognized; `null` when not posted. */
+  tuitionRevenue: number | null;
+  /** Total operating expense; `null` when not posted. */
+  totalExpenses: number | null;
+  /** Full-time-equivalent faculty count; `null` when not posted. */
+  facultyCount: number | null;
+  /** Research grants won; `null` when not posted. */
+  researchGrantsWon: number | null;
+  /** Research grants applied for; `null` when not posted. */
+  researchGrantsApplied: number | null;
+  /** Endowment value at period start; `null` when not posted. */
+  endowmentStart: number | null;
+  /** Endowment value at period end; `null` when not posted. */
+  endowmentEnd: number | null;
 }
 
 export interface EducationMetrics {
-  studentRetentionRatePct: number;
-  revenuePerStudent: number;
-  facultyToStudentRatio: number;
-  researchGrantWinRatePct: number;
-  endowmentGrowthRatePct: number;
-  endowmentGrowth: number;
-  netIncome: number;
+  /** `null` unless retention and enrollment counts are both posted. */
+  studentRetentionRatePct: number | null;
+  /** `null` unless tuition revenue and enrollment are both posted. */
+  revenuePerStudent: number | null;
+  /** `null` unless enrollment and faculty counts are both posted. */
+  facultyToStudentRatio: number | null;
+  /** `null` unless won and applied grant counts are both posted. */
+  researchGrantWinRatePct: number | null;
+  /** End dollar growth; `null` unless both endowment balances are posted. */
+  endowmentGrowth: number | null;
+  /** `null` unless growth is derivable from a positive opening balance. */
+  endowmentGrowthRatePct: number | null;
+  /** Tuition − expenses; `null` unless both are posted. */
+  netIncome: number | null;
 }
 
 export function sumTuition(amounts: readonly number[]): number {
@@ -69,19 +82,44 @@ export function computeFacultyToStudentRatio(totalStudents: number, facultyCount
 }
 
 export function computeEducationMetrics(input: EducationMetricsInput): EducationMetrics {
-  const studentRetentionRatePct = computeRatioPct(input.retainedStudents, input.totalStudents);
-  const revenuePerStudent = computeRevenuePerStudent(input.tuitionRevenue, input.totalStudents);
-  const facultyToStudentRatio = computeFacultyToStudentRatio(
-    input.totalStudents,
-    input.facultyCount
-  );
-  const researchGrantWinRatePct = computeRatioPct(
-    input.researchGrantsWon,
-    input.researchGrantsApplied
-  );
-  const endowmentGrowth = roundTo(subtractMoney(input.endowmentEnd, input.endowmentStart), 2);
-  const endowmentGrowthRatePct = computeRatioPct(endowmentGrowth, input.endowmentStart);
-  const netIncome = roundTo(subtractMoney(input.tuitionRevenue, input.totalExpenses), 2);
+  const studentRetentionRatePct =
+    input.retainedStudents !== null &&
+    input.totalStudents !== null &&
+    toDecimal(input.totalStudents).gt(0)
+      ? computeRatioPct(input.retainedStudents, input.totalStudents)
+      : null;
+  const revenuePerStudent =
+    input.tuitionRevenue !== null &&
+    input.totalStudents !== null &&
+    toDecimal(input.totalStudents).gt(0)
+      ? computeRevenuePerStudent(input.tuitionRevenue, input.totalStudents)
+      : null;
+  const facultyToStudentRatio =
+    input.totalStudents !== null &&
+    input.facultyCount !== null &&
+    toDecimal(input.facultyCount).gt(0)
+      ? computeFacultyToStudentRatio(input.totalStudents, input.facultyCount)
+      : null;
+  const researchGrantWinRatePct =
+    input.researchGrantsWon !== null &&
+    input.researchGrantsApplied !== null &&
+    toDecimal(input.researchGrantsApplied).gt(0)
+      ? computeRatioPct(input.researchGrantsWon, input.researchGrantsApplied)
+      : null;
+  const endowmentGrowth =
+    input.endowmentEnd !== null && input.endowmentStart !== null
+      ? roundTo(subtractMoney(input.endowmentEnd, input.endowmentStart), 2)
+      : null;
+  const endowmentGrowthRatePct =
+    endowmentGrowth !== null &&
+    input.endowmentStart !== null &&
+    toDecimal(input.endowmentStart).gt(0)
+      ? computeRatioPct(endowmentGrowth, input.endowmentStart)
+      : null;
+  const netIncome =
+    input.tuitionRevenue !== null && input.totalExpenses !== null
+      ? roundTo(subtractMoney(input.tuitionRevenue, input.totalExpenses), 2)
+      : null;
 
   return {
     studentRetentionRatePct,

@@ -2,29 +2,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
-
-vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
-}));
-
-vi.mock('@/engines', () => ({
-  RealEstateEngine: {
-    calculateDashboardStats: vi.fn(() => ({
-      fairValue: 0,
-      noi: 0,
-      occupancy: 0,
-      capRate: 0,
-    })),
-    getPropertyBreakdown: vi.fn(() => []),
-  },
-}));
+import RealEstateDashboardPage from './RealEstateDashboardPage';
+import { useGLStore } from '@/store/glStore';
+import type { GLEntry } from '@/types';
 
 vi.mock('@/components/ui/PeriodPicker', () => ({
   PeriodPicker: () => <div data-testid="period-picker" />,
-}));
-
-vi.mock('@/components/ui/Sparkline', () => ({
-  Sparkline: () => <div data-testid="sparkline" />,
 }));
 
 vi.mock('@/components/ui/DataTable', () => ({
@@ -33,72 +16,103 @@ vi.mock('@/components/ui/DataTable', () => ({
   ),
 }));
 
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
-  return {
-    Building2: makeIcon(),
-    Home: makeIcon(),
-    DollarSign: makeIcon(),
-    TrendingUp: makeIcon(),
-    MapPin: makeIcon(),
-    Users: makeIcon(),
-    Download: makeIcon(),
-    Filter: makeIcon(),
-    ArrowUpRight: makeIcon(),
-    PieChart: makeIcon(),
-    ArrowDownRight: makeIcon(),
-    Minus: makeIcon(),
-    ChevronUp: makeIcon(),
-    ChevronDown: makeIcon(),
-    ChevronsUpDown: makeIcon(),
-  };
-});
-
 vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: { children?: React.ReactNode }) => (
     <div data-testid="responsive-container">{children}</div>
   ),
-  AreaChart: () => <div data-testid="area-chart" />,
-  Area: () => <div />,
   PieChart: () => <div data-testid="pie-chart" />,
   Pie: () => <div />,
   Cell: () => <div />,
-  XAxis: () => <div />,
-  YAxis: () => <div />,
-  CartesianGrid: () => <div />,
   Tooltip: () => <div />,
   Legend: () => <div />,
 }));
 
-import RealEstateDashboardPage from '@/pages/realestate/RealEstateDashboardPage';
-
-function renderPage() {
-  return render(
-    <MemoryRouter initialEntries={['/realestate']}>
-      <RealEstateDashboardPage />
-    </MemoryRouter>
-  );
+function gl(
+  id: string,
+  entityId: string,
+  accountCode: string,
+  accountName: string,
+  debit: number,
+  credit: number
+): GLEntry {
+  return {
+    id,
+    accountId: accountCode,
+    accountCode,
+    accountName,
+    period: 'P01',
+    periodName: 'January',
+    debit,
+    credit,
+    netChange: debit - credit,
+    date: '2026-01-15',
+    amount: Math.abs(debit - credit),
+    description: accountName,
+    reference: id,
+    entityId,
+    currency: 'USD',
+  };
 }
 
-describe('RealEstateDashboardPage smoke test', () => {
+const dashboardEntries: GLEntry[] = [
+  // Property A: cost 1M, appraised 1.2M, rental 80k, opex 30k → NOI 50k
+  gl('a-cost', 'prop-a', '1501', 'Warehouse Acquisition', 1_000_000, 0),
+  gl('a-value', 'prop-a', '1601', 'Warehouse Appraisal', 1_200_000, 0),
+  gl('a-rent', 'prop-a', '4001', 'Rental Income', 0, 80_000),
+  gl('a-opex', 'prop-a', '5001', 'Property Operating Expense', 30_000, 0),
+  // Property B: cost 2M only
+  gl('b-cost', 'prop-b', '1501', 'Tower Acquisition', 2_000_000, 0),
+];
+
+describe('RealEstateDashboardPage (real-store, vertical truthfulness)', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    useGLStore.setState({ entries: [] });
   });
-  it('renders without crashing', () => {
-    const { container } = renderPage();
-    expect(
-      container.querySelectorAll('*').length,
-      'rendered nothing: a truthy container does not prove the page mounted'
-    ).toBeGreaterThanOrEqual(2);
-  });
-  it('displays expected empty state', () => {
-    renderPage();
+
+  it('shows the honest empty state when nothing is posted', () => {
+    render(
+      <MemoryRouter>
+        <RealEstateDashboardPage />
+      </MemoryRouter>
+    );
     expect(screen.getByText(/No Real Estate Data/i)).toBeTruthy();
+  });
+
+  it('renders measured portfolio KPIs from the GL', () => {
+    useGLStore.setState({ entries: dashboardEntries });
+    render(
+      <MemoryRouter>
+        <RealEstateDashboardPage />
+      </MemoryRouter>
+    );
+
+    // Weighted cap rate = NOI 50k ÷ appraised 1.2M = 4.17%
+    expect(screen.getByText('4.17%')).toBeInTheDocument();
+    // NOI tile carries its derivation basis (rental income less property opex)
+    expect(screen.getByText('rental income less property opex')).toBeInTheDocument();
+    // One table row per posting property
+    expect(screen.getByTestId('data-table').textContent).toContain('2 rows');
+    // The occupancy KPI is gone entirely — occupancy is not a ledger fact.
+    expect(screen.queryByText(/Portfolio Occupancy/i)).toBeNull();
+  });
+
+  it('never renders the removed fabrications', () => {
+    useGLStore.setState({ entries: dashboardEntries });
+    const { container } = render(
+      <MemoryRouter>
+        <RealEstateDashboardPage />
+      </MemoryRouter>
+    );
+    const text = container.textContent ?? '';
+    // Mocked engine constant + fake deltas + sparklines removed:
+    expect(text).not.toContain('94.8');
+    expect(text).not.toContain('valuation update Q1');
+    expect(text).not.toContain('OpEx reduction');
+    expect(text).not.toContain('compression in prime');
+    // Invented charts removed:
+    expect(text).not.toContain('Occupancy Rate Trends');
+    expect(text).not.toContain('Geographic Split');
+    expect(text).not.toContain('North America');
+    expect(text).not.toContain('Office');
   });
 });

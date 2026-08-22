@@ -193,7 +193,7 @@ export default function PromoAnalysisPage() {
         <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
           <Tag className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
-        <h2 className="text-xl font-semibold mb-2">No Promotions Recorded</h2>
+        <h1 className="text-xl font-semibold mb-2">No Promotions Recorded</h1>
         <p className="text-[var(--text-muted)]">
           Record a campaign — spend, revenue in the promotion window and the baseline you would have
           expected — to see lift and return on spend. The general ledger records revenue by account

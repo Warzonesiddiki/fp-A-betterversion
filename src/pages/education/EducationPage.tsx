@@ -146,18 +146,22 @@ export default function EducationPage() {
           value={formatNumber(entries.length)}
           icon={<Users className="h-4 w-4" aria-hidden="true" />}
         />
+        {/* Truthful labeling (W-FAB lane N4): total credits is an
+            all-account figure, not a tuition classification. */}
         <KPIValue
-          label="Tuition Revenue"
+          label="Total Credits"
           value={formatCompactNumber(stats.totalCredit)}
+          changeLabel="sum of all posted credits"
           icon={<DollarSign className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
-          label="Programs"
+          label="Active Accounts"
           value={formatNumber(stats.uniqueAccounts)}
+          changeLabel="distinct account codes in the GL"
           icon={<BookOpen className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
-          label="Net Income"
+          label="Net Change"
           value={formatCompactNumber(stats.netChange)}
           icon={<GraduationCap className="h-4 w-4" aria-hidden="true" />}
         />

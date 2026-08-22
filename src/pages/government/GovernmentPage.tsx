@@ -154,23 +154,33 @@ export default function GovernmentPage() {
         aria-label="Government KPIs"
         aria-labelledby="gov-heading"
       >
+        {/* Truthful labeling (W-FAB lane N4): these are posted debit/credit
+            aggregates; the ledger does not mark a budget line, so the tiles
+            say what the numbers are instead of claiming budget semantics. */}
         <KPIValue
-          label="Budget Allocated"
+          label="Posted Debits"
           value={formatCompactNumber(stats.totalDebit)}
+          changeLabel="sum of all posted debits"
           icon={<DollarSign className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
-          label="Funds Utilized"
+          label="Credit-to-Debit Ratio"
           value={formatPercent(stats.utilization)}
+          changeLabel={stats.totalDebit > 0 ? 'credits ÷ debits' : 'no debits posted'}
           icon={<FileText className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
           label="Departments"
-          value={formatNumber(stats.uniqueDepartments || stats.uniqueAccounts)}
+          value={stats.uniqueDepartments > 0 ? formatNumber(stats.uniqueDepartments) : '—'}
+          changeLabel={
+            stats.uniqueDepartments > 0
+              ? 'distinct department tags in the GL'
+              : 'no department tags in the GL'
+          }
           icon={<Users className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
-          label="Net Position"
+          label="Net Position Change"
           value={formatCompactNumber(stats.netChange)}
           icon={<Landmark className="h-4 w-4" aria-hidden="true" />}
         />

@@ -144,6 +144,11 @@ vi.mock('lucide-react', () => {
   return {
     ChevronUp: makeIcon(),
     ChevronDown: makeIcon(),
+    // EmptyState (rendered by the remediated Churn/Cohort/ARR pages) needs these.
+    Inbox: makeIcon(),
+    Search: makeIcon(),
+    FileX: makeIcon(),
+    AlertCircle: makeIcon(),
     Download: makeIcon(),
     TrendingUp: makeIcon(),
     TrendingDown: makeIcon(),

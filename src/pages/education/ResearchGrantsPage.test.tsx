@@ -100,4 +100,24 @@ describe('ResearchGrantsPage (Data-Driven)', () => {
     // Total Endowment: 55M
     expect(screen.getByText(/55/)).toBeInTheDocument();
   });
+
+  it('never fabricates institutional constants when fields are untracked (W-FAB)', () => {
+    const { container } = render(
+      <MemoryRouter>
+        <ResearchGrantsPage />
+      </MemoryRouter>
+    );
+    const text = container.textContent ?? '';
+    // The previous literal institution is gone:
+    expect(text).not.toContain('12,000');
+    expect(text).not.toContain('11,400');
+    expect(text).not.toContain('24,000,000');
+    expect(text).not.toContain('21,600,000');
+    expect(text).not.toContain('100,000,000');
+    expect(text).not.toContain('108,000,000');
+    expect(text).not.toContain('250');
+    // Untracked quantities disclose:
+    expect(text).toContain('no tuition-classified accounts');
+    expect(text).toContain('projection');
+  });
 });
