@@ -1,0 +1,152 @@
+{
+  "$schema_note": "Blueprint §24.2 Escape Ledger status file. Rows/canon live in scripts/escape-ledger-check.mjs (transcribed verbatim from .agent/blueprint-parts/12c-section-24.md). Every wave that ships or regresses a workflow updates its row and MUST cite evidence (route/engine/test that proves the status). Reclassifying a Hard row as legitimate requires a Blueprint amendment (§22.6 honesty clause).",
+  "updated_at": "2026-08-22",
+  "rows": [
+    {
+      "id": 1,
+      "status": "partial",
+      "evidence": "cube/model editors exist (F-CORE-001/011 partial per §3.8); no single operating-model surface"
+    },
+    {
+      "id": 2,
+      "status": "partial",
+      "evidence": "/forecasts/rolling RollingForecastPage exists; driver-based reforecast chain incomplete"
+    },
+    {
+      "id": 3,
+      "status": "partial",
+      "evidence": "/budgets create+approval flows exist; submission workflow F-WORKFLOW-008 open"
+    },
+    {
+      "id": 4,
+      "status": "partial",
+      "evidence": "/data/gl-upload CSV import live; ERP connectors F-INTEGRATE-000/001 open"
+    },
+    {
+      "id": 5,
+      "status": "partial",
+      "evidence": "/variance + BudgetVsActualPage render real GL variances; commentary F-AI-004 partial"
+    },
+    {
+      "id": 6,
+      "status": "partial",
+      "evidence": "/reports/three-statement renders balanced statements; W0.3 runtime gate landed (server); model EDITING surface incomplete"
+    },
+    {
+      "id": 7,
+      "status": "partial",
+      "evidence": "/consolidation pages exist; IC elimination engine A.8 not started"
+    },
+    {
+      "id": 8,
+      "status": "built",
+      "evidence": "/currency/fx-rates + MultiCurrencyEngine IAS 21 translation (verified money-safe)"
+    },
+    { "id": 9, "status": "not-started", "evidence": "A.8 intercompany elimination — no engine" },
+    {
+      "id": 10,
+      "status": "partial",
+      "evidence": "/periods/close lifecycle states shipped; checklist completeness F-CLOSE-001 partial"
+    },
+    {
+      "id": 11,
+      "status": "partial",
+      "evidence": "GL entries POST/bulk/tombstone via /api/gl (W0.8.6); adjustments UI partial"
+    },
+    {
+      "id": 12,
+      "status": "partial",
+      "evidence": "trial balance surfaces exist; reconciliation workflow XIX-C/A.4 partial"
+    },
+    {
+      "id": 13,
+      "status": "partial",
+      "evidence": "/board-pack generator v0 renders from real data; PPTX export + signoff A.17 open"
+    },
+    {
+      "id": 14,
+      "status": "partial",
+      "evidence": "/reports templates + ReportsListPage; management pack composition partial"
+    },
+    {
+      "id": 15,
+      "status": "partial",
+      "evidence": "pivot/dashboard-builder pages exist; F-ANALYSIS-001 slice-and-dice over cube partial"
+    },
+    {
+      "id": 16,
+      "status": "built",
+      "evidence": "/dashboard KPI tiles + sector dashboards derive from real stores (post de-fabrication)"
+    },
+    {
+      "id": 17,
+      "status": "partial",
+      "evidence": "/scenarios builder + what-if; Monte Carlo workers present; sensitivity chain partial"
+    },
+    {
+      "id": 18,
+      "status": "partial",
+      "evidence": "/workforce/* pages exist; planning engine F-PLAN-003 partial"
+    },
+    {
+      "id": 19,
+      "status": "partial",
+      "evidence": "/cash/forecast + treasury pages; A.5 treasury depth partial"
+    },
+    {
+      "id": 20,
+      "status": "partial",
+      "evidence": "/capex pages + DepreciationPage; F-PLAN-005 project planning partial"
+    },
+    {
+      "id": 21,
+      "status": "not-started",
+      "evidence": "RevRecEngine exists money-safe but no product workflow (A.6 Phase 3)"
+    },
+    {
+      "id": 22,
+      "status": "not-started",
+      "evidence": "LeaseEngine money-safe; IFRS 16 workflow not assembled (A.7 Phase 3)"
+    },
+    {
+      "id": 23,
+      "status": "not-started",
+      "evidence": "TaxProvision derivation honest-but-partial; ASC 740 workflow Phase 3"
+    },
+    {
+      "id": 24,
+      "status": "not-started",
+      "evidence": "XBRL instance generation absent (§14.5 legitimate boundary)"
+    },
+    {
+      "id": 25,
+      "status": "partial",
+      "evidence": "audit trail + period close audit tables live; PBC package assembly F-WORKFLOW-007 open"
+    },
+    {
+      "id": 26,
+      "status": "not-started",
+      "evidence": "SOX page renders control catalog; ICFR testing workflow A.15 Phase 3"
+    },
+    {
+      "id": 27,
+      "status": "not-started",
+      "evidence": "AutoCommentaryEngine exists; MD&A authoring surface F-REPORT-013 not built"
+    },
+    {
+      "id": 28,
+      "status": "partial",
+      "evidence": "import mapping UI exists; ETL-grade prep §8.3 partial"
+    },
+    {
+      "id": 29,
+      "status": "not-started",
+      "evidence": "distribution/scheduling F-REPORT-007 not started"
+    },
+    {
+      "id": 30,
+      "status": "not-started",
+      "evidence": "model documentation export F-REPORT-014 not started"
+    }
+  ]
+}

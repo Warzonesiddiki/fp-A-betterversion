@@ -44,7 +44,8 @@
     "fabrication:list": "node scripts/fabrication-detector.mjs --list",
     "persistence:map": "node scripts/persistence-map-check.mjs",
     "schema:equality": "node scripts/schema-equality-check.mjs",
-    "routemap:check": "node scripts/generate-route-map.js --check"
+    "routemap:check": "node scripts/generate-route-map.js --check",
+    "escape:ledger": "node scripts/escape-ledger-check.mjs"
   },
   "dependencies": {
     "@json-render/core": "^0.19.0",

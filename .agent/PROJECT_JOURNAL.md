@@ -1926,3 +1926,43 @@ docs:verify ✓ · engines:verify 182 ✓ · cargo check Finished ✓ · product
 build (tsc+eslint+vite, PWA 475 entries) ✓. Full root suite re-run after all
 repairs: final numbers recorded in action_log. `.github/workflows/*.yml`
 edits remain uncommitted by convention (content = ci-patches 0006/0007).
+
+## Session 033, Part 3 (2026-08-22) - Blueprint<->Goal alignment audit + ADR-014
+
+The founder asked directly whether the blueprint/roadmap is perfectly inline with the
+goal. Formal audit verdict: structurally aligned (~85%), sequencing exact,
+instrumentation incomplete - and per the zero-compromise directive every gap was
+fixed as a runnable instrument rather than a note:
+
+1. GA gate was uncomputable. Section-24 "zero Core-20 hard escapes" had no executable
+   check - escape-ledger-check.mjs was specified (s027) and never written. BUILT now:
+   canon transcribed verbatim from blueprint-parts/12c section 24.2; status file
+   docs/product/escape-ledger.json evidence-cited per row; computes escape rate;
+   --phase p1|p2|ga enforces targets at declared phase-exit reviews; advisory as
+   pre-push gate 9g. First-ever scoreboard reading: escape rate 76.7%, Core-20 hard
+   offenders 16, built rows 7/30 (recorded in state.json escape_ledger_baseline).
+2. Vertical truthfulness debt invisible to feature counts -> W-FAB-002 widened into a
+   standing per-vertical gate (SectorDriver audit: 66/66 sector KPIs class-C).
+3. Desktop risks without workstream -> W-DESK-01 queued (cargo check already green;
+   clippy -> dev smoke -> MSI+NSIS next), closing the R-24 "risk without path" gap.
+4. Phase-0 exit ambiguity -> exit wording now names exactly what must be promoted
+   (glStore via /api/gl with tombstone+version semantics - server half DONE f6b34650)
+   vs. what legitimately waits (budgets/scenarios/forecasts stay draft-authoritative
+   into Phase 1, tracked in PERSISTENCE_MAP). Recorded in state.json
+   phase0_exit_amendments.
+5. K30/a11y instruments late-bound -> formalized as enforced Phase-0 exit blockers
+   (W-K30-001 / W-A11Y-001), not polish.
+
+Also landed in this part: W0.8.6-SERVER (f6b34650) - gl_entries tombstones +
+idempotent Idempotency-Key replay (FP-0401 on payload change) + version columns +
+entries:[{id,version}] responses; DELETE is tombstone-before-gate in one transaction;
+suite 247 + native-db 83 green. And W0.5-B0 (8fb44654) - drift-gate parser sees all
+200 route literals; RC1 pillar mapping fail-closed via longest-prefix + family defaults.
+
+ADR-014 - Blueprint alignment amendments.
+VERDICT: 4/4 ICPs ACCEPT (Carla OK discipline - amendments ride existing queue/gate
+machinery, no parallel process invented; Vera OK logic/evidence - every gap cited to
+audit output or a missing instrument, scoreboard measured before any remediation
+claim; Chris OK operational - all five fixes run today, advisory modes prevent
+false-blocking of routine pushes; Beth OK user/customer - the scoreboard measures
+exactly what a CFO buys: workflows completed without leaving the product).

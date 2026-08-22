@@ -49,7 +49,7 @@
   "queue": [
     {
       "id": "W0.8.6",
-      "summary": "promote glStore server-authoritative persistence (draft plumbing + commit namespace + typed conflicts landed in fa31c55f; entries still local-authoritative)"
+      "summary": "SERVER HALF DONE (f6b34650: tombstones, idempotent Idempotency-Key replay with FP-0401 payload conflicts, version columns, entries:[{id,version}] responses). REMAINS: client promotion - glStore commitDraftsToServer wired to product trigger + boot drain, applyCommitResult must persist server ids/versions for If-Match, undo/redo sync-state-aware, e2e seed migration (legacy rows hydrate as draft -> duplicate-posting hazard)"
     },
     {
       "id": "W0.5-slice2",
@@ -74,8 +74,35 @@
     {
       "id": "W-A11Y-001",
       "summary": "nav/palette WCAG 2.2 AA fixes from audit: BLOCKERS CommandPalette aria-hidden-on-focused-overlay (L161) + missing focus trap (reuse ShortcutHelpModal L19-42 pattern); MAJORS option buttons tabIndex=-1 + listbox role=group structure + LiveRegion result count + PillarNav badge aria-label composition + badge contrast --action-fill + focus-ring token colors + scrim token pair + closed mobile sidebar inert/conditional-render; MINORS m1-m11 incl. skip-link tabIndex, scroll-behavior under prefers-reduced-motion; also fix phantom .claude/rules/finplan-accessibility.md reference in CLAUDE.md or create the rule file"
+    },
+    {
+      "id": "W-DESK-01",
+      "summary": "desktop verification workstream, UNBLOCKED 2026-08-22 (cargo check green under rustc 1.98 after E0255 inner-module workaround): cargo clippy -> tauri dev smoke Win11 -> MSI+NSIS bundle build; Section 23 Tier-1, closes R-24/R-27 residual"
+    },
+    {
+      "id": "W0.10",
+      "summary": "escape-ledger maintenance: instrument + status file LANDED (scripts/escape-ledger-check.mjs + docs/product/escape-ledger.json, pre-push gate 9g advisory); baseline measured 76.7% escape rate / 16 Core-20 hard offenders; every wave updates affected rows with evidence; --phase gates enforced at declared phase-exit reviews only"
     }
   ],
+  "phase0_exit_amendments": {
+    "amended_at": "2026-08-22",
+    "adr": "ADR-014 in PROJECT_JOURNAL.md",
+    "reason": "Blueprint/goal alignment audit found five gaps between the locked blueprint and the constitution goal; amended here so the executable boot state carries the corrections",
+    "items": [
+      "ESCAPE-LEDGER INSTRUMENT REQUIRED: Phase 0 exit is not declarable unless scripts/escape-ledger-check.mjs runs clean on ledger integrity (it now does); §24 scoreboard must stay computable",
+      "SERVER-PROMOTION BREADTH CLARIFIED: 'local-to-server-authoritative persistence' at Phase 0 exit means glStore entries committed through /api/gl with tombstone+version semantics (W0.8.6 server half DONE f6b34650; client promotion = W0.8.6 remainder). budgets/scenarios/forecasts stores remain draft-authoritative into Phase 1 by design and are tracked in PERSISTENCE_MAP",
+      "VERTICAL TRUTHFULNESS GATE (widens W-FAB-002): no industry-pack feature may be counted 'built' while its derivation fabricates values; SectorDriverDashboard audit shows 66/66 sector KPIs class-C — remediation spec delivered and queued",
+      "K30 FOUR-STATES + WCAG KEYBOARD are enforced Phase 0 exit blockers via W-K30-001/W-A11Y-001 (instruments now exist), not deferred to polish",
+      "DESKTOP SCHEDULED: W-DESK-01 added to queue (was risk-only R-24/27 with no workstream)"
+    ]
+  },
+  "escape_ledger_baseline": {
+    "measured_at": "2026-08-22",
+    "escape_rate_pct": 76.7,
+    "core20_hard_offenders": 16,
+    "built_rows": 7,
+    "note": "First-ever computed §24.2 scoreboard; targets p1<=40% p2<=20% ga<=5% with zero Core-20 hard at GA"
+  },
   "blocked": [
     {
       "id": "CI-WORKFLOWS",

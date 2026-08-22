@@ -100,6 +100,13 @@ echo "→ docs truth + engine manifest"
 npm run docs:verify
 npm run engines:verify
 
+# Gate 9g: §24.2 escape-ledger scoreboard integrity (W0.10). Advisory by
+# design — it validates ledger structure/evidence and REPORTS the escape
+# rate; phase thresholds (--phase p1|p2|ga) are enforced only at declared
+# phase-exit reviews, never on routine pushes.
+echo "→ §24.2 escape ledger (advisory)"
+node scripts/escape-ledger-check.mjs
+
 # Gate 10 - CASCADE-HOLD-BUNDLE Auto-Detection (NEVER-AGAIN RULE #68
 # CATCH-NUMBERING-COLLISION PREVENTION). Atlas + Hephaestus joint DRI.
 # Spec: docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md (§2: BLOCKED push)
