@@ -287,7 +287,7 @@ export default function BudgetListPage() {
 
       {deleteConfirm !== null && (
         <Modal isOpen onClose={() => setDeleteConfirm(null)} title="Delete Budget">
-          <p className="text-sm text-slate-400 mb-4">
+          <p className="text-sm text-[var(--text-muted)] mb-4">
             Are you sure you want to delete this budget? This action cannot be undone.
           </p>
           <div className="flex justify-end gap-3">
