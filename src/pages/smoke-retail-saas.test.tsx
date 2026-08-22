@@ -133,44 +133,7 @@ vi.mock('recharts', () => {
 // Mock lucide-react
 // ---------------------------------------------------------------------------
 
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
-  return {
-    ChevronUp: makeIcon(),
-    ChevronDown: makeIcon(),
-    // EmptyState (rendered by the remediated Churn/Cohort/ARR pages) needs these.
-    Inbox: makeIcon(),
-    Search: makeIcon(),
-    FileX: makeIcon(),
-    AlertCircle: makeIcon(),
-    Download: makeIcon(),
-    TrendingUp: makeIcon(),
-    TrendingDown: makeIcon(),
-    DollarSign: makeIcon(),
-    Package: makeIcon(),
-    BarChart3: makeIcon(),
-    Truck: makeIcon(),
-    RefreshCw: makeIcon(),
-    Clock: makeIcon(),
-    AlertTriangle: makeIcon(),
-    Store: makeIcon(),
-    ArrowRight: makeIcon(),
-    ShoppingCart: makeIcon(),
-    Tag: makeIcon(),
-    Percent: makeIcon(),
-    BarChart4: makeIcon(),
-    FileText: makeIcon(),
-    Table: makeIcon(),
-    Users: makeIcon(),
-    RefreshCcw: makeIcon(),
-  };
-});
+vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
 
 // ---------------------------------------------------------------------------
 // Import pages AFTER mocks

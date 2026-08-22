@@ -20,20 +20,7 @@ vi.mock('@/store/scenarioStore', () => ({
   })),
 }));
 
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
-  return {
-    Plus: makeIcon(),
-    Eye: makeIcon(),
-    FlaskConical: makeIcon(),
-  };
-});
+vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
 
 import ScenarioListPage from '@/pages/scenarios/ScenarioListPage';
 

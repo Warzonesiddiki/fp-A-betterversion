@@ -184,41 +184,7 @@ vi.mock('@/components/ui/VersionDiffViewer', () => ({
 // Mock lucide-react icons
 // ---------------------------------------------------------------------------
 
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
-  return {
-    BookOpen: makeIcon(),
-    ChevronLeft: makeIcon(),
-    ChevronRight: makeIcon(),
-    Download: makeIcon(),
-    Search: makeIcon(),
-    FileText: makeIcon(),
-    Calendar: makeIcon(),
-    Filter: makeIcon(),
-    BarChart3: makeIcon(),
-    PieChart: makeIcon(),
-    Scale: makeIcon(),
-    RefreshCw: makeIcon(),
-    Upload: makeIcon(),
-    CheckCircle2: makeIcon(),
-    AlertCircle: makeIcon(),
-    Undo2: makeIcon(),
-    Database: makeIcon(),
-    GitBranch: makeIcon(),
-    GitCommit: makeIcon(),
-    ArrowLeftRight: makeIcon(),
-    AlertTriangle: makeIcon(),
-    // EmptyState defaults (imported via GLJournalsPage K30 four-states update)
-    Inbox: makeIcon(),
-    FileX: makeIcon(),
-  };
-});
+vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
 
 // ---------------------------------------------------------------------------
 // Import page components AFTER mocks

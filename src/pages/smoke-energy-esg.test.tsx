@@ -121,51 +121,7 @@ vi.mock('@/components/ui/Skeleton', () => ({
 // Mock lucide-react icons
 // ---------------------------------------------------------------------------
 
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
-  return {
-    // Shared EmptyState default-icon set (K30 empty branches pull these in).
-    Inbox: makeIcon(),
-    Search: makeIcon(),
-    FileX: makeIcon(),
-    AlertCircle: makeIcon(),
-    Layers: makeIcon(),
-    Info: makeIcon(),
-    ShieldAlert: makeIcon(),
-    TrendingDown: makeIcon(),
-    AlertTriangle: makeIcon(),
-    Activity: makeIcon(),
-    Lock: makeIcon(),
-    Unlock: makeIcon(),
-    Download: makeIcon(),
-    BarChart3: makeIcon(),
-    Flame: makeIcon(),
-    ArrowRightLeft: makeIcon(),
-    Zap: makeIcon(),
-    TrendingUp: makeIcon(),
-    Gauge: makeIcon(),
-    DollarSign: makeIcon(),
-    Sun: makeIcon(),
-    Wind: makeIcon(),
-    Droplets: makeIcon(),
-    Leaf: makeIcon(),
-    Battery: makeIcon(),
-    RefreshCw: makeIcon(),
-    LayoutGrid: makeIcon(),
-    FileText: makeIcon(),
-    Users: makeIcon(),
-    Shield: makeIcon(),
-    Target: makeIcon(),
-    Factory: makeIcon(),
-    Table: makeIcon(),
-  };
-});
+vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
 
 // ---------------------------------------------------------------------------
 // Mock react-router-dom navigate
@@ -332,7 +288,7 @@ describe('Page Smoke Tests — Energy & ESG Pages', () => {
     });
 
     it('renders the honest empty workspace when no assets are recorded', () => {
-      const { queryByTestId, getByRole, getByText } = renderPage(
+      const { queryByTestId, getByRole } = renderPage(
         RenewableEnergyPage,
         '/energy/renewable',
         '/energy/renewable'
