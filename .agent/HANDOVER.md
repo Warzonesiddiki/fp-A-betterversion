@@ -162,3 +162,53 @@ independently twice).
   cargo's own `Finished`/`error[` lines, not the wrapper's exit code.
 
 ## (end handover prompt)
+
+## SESSION 033 FINAL ADDENDUM (2026-08-22 late) - read after the refresh above
+
+Landed + PUSHED since that refresh (remote = local @ post-b3f5312d):
+
+- f6b34650 W0.8.6-SERVER: gl_entries journal_id/idempotency_key/idempotency_hash/
+  version/deleted_at; DELETE=tombstone-before-gate in-tx; bulk honors
+  Idempotency-Key (FP-0401 on payload change); responses entries:[{id,version}].
+- 4d9a62c5 SECURITY (red-team S0+H): export.ts BvA join now tenant-scoped BOTH
+  sides (was cross-tenant contamination); /users/list+/users/:id scoped; accounts
+  GET/POST/PUT tenanted+admin-gated+per-tenant code-uniqueness; zod account-type
+  enum = closed set (Revenue/COGS/OpEx/CapEx/Asset/Liability/Equity); closed-period
+  checks tenant-scoped. M-tier authz edges QUEUED as W0.2c-hardening.
+- 022daae6 W-FAB-001: sector insurance page -> buildInsuranceDashboardModel only;
+  fabricated tiles removed; pinning tests rewritten with trap-row proofs.
+- dba01d7f W-A11Y-001 pass1: palette aria-hidden/focus-trap/options-tabIndex/
+  groups/LiveRegion; PillarNav badge name+contrast+focus-ring tokens.
+- 8fb44654 + b3f5312d W0.5-B0+B2: drift gate sees ALL routes (RC1 fail-closed,
+  alias-inheritance pillar pass); 21 rescue redirects; routeShell pin 221.
+- a39e814d ADR-014 GOAL ALIGNMENT: scripts/escape-ledger-check.mjs +
+  docs/product/escape-ledger.json INSTRUMENT LIVE (pre-push 9g advisory;
+  --phase gates at reviews). BASELINE: escape rate 76.7%, Core-20 hard=16,
+  built 7/30. state.json phase0_exit_amendments records five blueprint-gap fixes.
+
+VERIFICATION STATE: full suite 1272 files / 14495 green; server tsc+247+83 on
+Node 26.7.0 default; cargo check green; all ratchets/gates green; remote=local.
+
+STILL OPEN (spec-complete, solo-ready):
+
+1. ScenarioBuilderPage four-states (bfec73a0 died pre-edit; PeriodClose half is
+   COMMITTED inside b3f5312d sweep - verified 16/16).
+2. BoardPackPage.probe.test.tsx never written (CashFlow probe landed untracked->committed).
+3. SectorDriver part-1 execution (a3868396 failed twice; its audit spec at
+   .agent/W-FAB-002-sectordriver-fabrication-audit.md).
+4. README stale claims (12e80ee1 audit): tests-count 13438/1197 stale (now 14495/1272),
+   server 107->255 census, money-adoption triple-contradiction (ADJUDICATED:
+   legacy metric retired-pending, 7 sites are roundMoney().toFixed() false positives),
+   '78 verticals' unsupported (real: 18 sector routes/14 templates), row-9 FIXED.
+5. glStore client promotion per e9c93c68 plan v2 (G6 UUID resolver = P0 blocker;
+   G1-G5,G7,G8 spec'd; updateEntry descoped - no server PUT).
+6. ci-patch 0008 spec ready (30544152): NODE_VERSION 22->26 safe (better-sqlite3 v13
+   bundles N-API prebuilds ABI-stable); needs human git apply like 0006/0007.
+7. W-A11Y-002 backlog (ea8c1ea6 pass-2 audit): DataTable dual-focus-model M2/M3,
+   skeleton live-region spam M5, Sidebar rail names M1, K34 sweep M7.
+8. K30 extension backlog (73d7397e): ICElimination mockPairs page worst.
+9. W0.2c-hardening M-tier: entityAuth allow-through, scenario apply entity-crossing,
+   entity_id reassignment, empty-entityFilter fallthrough, global code-uniques.
+
+USER DIRECTIVES ACTIVE: non-stop loop; SOLO mode (no subagents); latest Node;
+zero compromises; retry through provider errors.
