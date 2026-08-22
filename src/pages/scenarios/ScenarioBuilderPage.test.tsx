@@ -18,6 +18,10 @@ vi.mock('@/workers', () => ({
   runMonteCarlo: vi.fn(),
 }));
 
+// Shared lucide double (N-0001): trend-direction assertions query the stable
+// `data-icon` attribute instead of version-specific SVG internals.
+vi.mock('lucide-react', async () => (await import('@/test/lucideMock')).createLucideMock());
+
 const { runMonteCarlo } = await import('@/workers');
 const mcMock = vi.mocked(runMonteCarlo);
 
@@ -163,5 +167,46 @@ describe('ScenarioBuilderPage', () => {
       expect(useScenarioStore.getState().scenarios).toHaveLength(1);
     });
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('K18: impact trend arrows follow the derived sign, not hardcodes (positive config)', () => {
+    useGLStore.setState({ entries: postedBaseEntries() });
+    render(<ScenarioBuilderPage />);
+    const revenue = screen.getByRole('region', { name: 'Revenue Impact' });
+    // Defaults: growth 10% + pricing 5% → revenue variance positive.
+    expect(revenue.querySelector('[data-icon="ArrowUpRight"]')).not.toBeNull();
+    expect(revenue.querySelector('[data-icon="ArrowDownRight"]')).toBeNull();
+    // Badge shows the real derived percentage (variance vs posted base).
+    expect(revenue).toHaveTextContent('15.0%');
+
+    const cost = screen.getByRole('region', { name: 'Cost Impact' });
+    // Defaults: COGS −2%, no headcount cost → cost impact negative → down.
+    expect(cost.querySelector('[data-icon="ArrowDownRight"]')).not.toBeNull();
+    expect(cost.querySelector('[data-icon="ArrowUpRight"]')).toBeNull();
+  });
+
+  it('K18: negative-growth configuration renders Revenue Impact down and Cost Impact per its sign', () => {
+    useGLStore.setState({ entries: postedBaseEntries() });
+    render(<ScenarioBuilderPage />);
+    fireEvent.change(screen.getByTestId('slider-revenue-growth-rate'), {
+      target: { value: '-20' },
+    });
+    fireEvent.change(screen.getByTestId('slider-cogs-change'), {
+      target: { value: '10' },
+    });
+
+    const revenue = screen.getByRole('region', { name: 'Revenue Impact' });
+    // A negative revenue shock must not point up: variance = 100,000 ×
+    // (−20% + 5%) = −15,000.
+    expect(revenue.querySelector('[data-icon="ArrowDownRight"]')).not.toBeNull();
+    expect(revenue.querySelector('[data-icon="ArrowUpRight"]')).toBeNull();
+    expect(revenue).toHaveTextContent(/\(\$15,000\)/);
+
+    const cost = screen.getByRole('region', { name: 'Cost Impact' });
+    // Sign dictates up here: cogsImpact = 40,000 × 10% = +4,000 against a
+    // 70,000 posted cost base (~+5.7%).
+    expect(cost.querySelector('[data-icon="ArrowUpRight"]')).not.toBeNull();
+    expect(cost.querySelector('[data-icon="ArrowDownRight"]')).toBeNull();
+    expect(cost).toHaveTextContent('5.7%');
   });
 });

@@ -13,7 +13,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { FileText, Table as TableIcon, Save } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { addMoney, compareMoney, roundTo } from '@/utils/money';
+import { addMoney, compareMoney, divideMoney, multiplyMoney, roundTo } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -231,6 +231,14 @@ export default function ScenarioBuilderPage() {
   const costImpact = roundTo(
     addMoney(scenarioComparison.cogsImpact, scenarioComparison.opexImpact)
   );
+  // Share of the posted cost base (COGS + OpEx) that the scenario moves —
+  // feeds the Cost Impact card's change badge. Derived, never invented; zero
+  // posted costs leave no percentage to state.
+  const baseCosts = addMoney(base.cogs, base.opex);
+  const costImpactPct =
+    compareMoney(baseCosts, 0) === 0
+      ? 0
+      : roundTo(multiplyMoney(divideMoney(costImpact, baseCosts), 100));
 
   return (
     <main className="p-6 space-y-6" aria-labelledby="scenario-builder-heading">
@@ -290,12 +298,22 @@ export default function ScenarioBuilderPage() {
         aria-label="Scenario impact key performance indicators"
         data-testid="scenario-kpis"
       >
+        {/* K18: trend direction is computed from the sign of the derived
+            impact, never hardcoded — a negative revenue shock must not point
+            up. `change` carries the real derived percentage so the shared
+            KPIValue renders the directional badge at all. */}
         <KPIValue
           label="Revenue Impact"
           value={fmt.currency0(scenarioComparison.revenueVariance)}
-          trend="up"
+          change={scenarioComparison.variancePct}
+          trend={compareMoney(scenarioComparison.revenueVariance, 0) >= 0 ? 'up' : 'down'}
         />
-        <KPIValue label="Cost Impact" value={fmt.currency0(costImpact)} trend="down" />
+        <KPIValue
+          label="Cost Impact"
+          value={fmt.currency0(costImpact)}
+          change={costImpactPct}
+          trend={compareMoney(costImpact, 0) >= 0 ? 'up' : 'down'}
+        />
         <KPIValue
           label="Net Impact"
           value={fmt.currency0(scenarioComparison.netImpact)}
