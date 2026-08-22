@@ -3,10 +3,9 @@ import type { SectorConfig } from './index';
 export const hospitalityConfig: SectorConfig = {
   id: 'hospitality',
   name: 'Hospitality / Leisure',
-  description: 'Hotel metrics: RevPAR, ADR, Occupancy, GOPPAR',
+  description:
+    'Hospitality: posted margin and labor share from classified GL; room-night KPIs need a property-management system feed.',
   defaultKPIs: [
-    { id: 'revpar', label: 'Revenue Per Available Room', format: 'currency', target: 145 },
-    { id: 'adr', label: 'Average Daily Rate', format: 'currency', target: 180 },
     { id: 'occupancy', label: 'Room Occupancy Rate', format: 'percent', target: 82 },
     { id: 'goppar', label: 'GOP Per Available Room', format: 'currency', target: 65 },
     { id: 'f_and_b_margin', label: 'F&B Margin', format: 'percent', target: 30 },
