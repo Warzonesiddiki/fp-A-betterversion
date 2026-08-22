@@ -83,6 +83,11 @@ vi.mock('lucide-react', () => ({
   Link2: () => <svg />,
   ChevronDown: () => <svg />,
   ChevronUp: () => <svg />,
+  // Shared EmptyState statically imports its full default-icon set.
+  Inbox: () => <svg />,
+  Search: () => <svg />,
+  FileX: () => <svg />,
+  AlertCircle: () => <svg />,
   Clock: () => <svg />,
   RefreshCw: () => <svg />,
   History: () => <svg />,

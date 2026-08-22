@@ -139,7 +139,9 @@ describe('BudgetDetailPage — W-K30-001 state coverage', () => {
     expect(screen.getByTestId('budget-detail-loading')).toBeInTheDocument();
     // Skeletons are decorative (aria-hidden) — no live-region spam; the page
     // owns the single announcement via its own status region if any.
-    expect(screen.getByTestId('budget-detail-loading').querySelector('[aria-hidden="true"]')).toBeTruthy();
+    expect(
+      screen.getByTestId('budget-detail-loading').querySelector('[aria-hidden="true"]')
+    ).toBeTruthy();
     expect(screen.queryByRole('status')).toBeNull();
     // The pre-existing "Budget Not Found" flash must NOT appear during load…
     expect(screen.queryByText(/Budget not found/i)).not.toBeInTheDocument();
@@ -185,6 +187,34 @@ describe('BudgetDetailPage — W-K30-001 state coverage', () => {
     renderPage('/budgets/b1', '/budgets/:id');
     fireEvent.click(screen.getByText('Retry'));
     expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it('renders not found as a shared EmptyState under the mounted h1 and navigates back', () => {
+    renderPage('/budgets/nonexistent', '/budgets/:id');
+    // K30 (N8): heading discipline — PageHeader owns the h1, EmptyState's h3
+    // sits beneath it; the old bare-h2 branch had neither.
+    expect(screen.getByRole('heading', { level: 1, name: /Budget Detail/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 3, name: /Budget Not Found/i })
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Back to Budgets/i }));
+    expect(screen.getByText('Redirected')).toBeInTheDocument();
+  });
+
+  it('does not fabricate audit entries and shows an honest empty hint instead', () => {
+    budgetState = {
+      budgets: [DRAFT_BUDGET],
+      activeBudgetId: 'b1',
+      lineItems: [],
+      isLoading: false,
+    };
+    renderPage('/budgets/b1', '/budgets/:id');
+    fireEvent.click(screen.getByTestId('toggle-sidebar'));
+    fireEvent.click(screen.getByTestId('tab-audit'));
+    expect(screen.getByText(/No audit entries yet/i)).toBeInTheDocument();
+    // The old seeded "Budget created"/Admin entry was fabricated — it must
+    // not come back.
+    expect(screen.queryByText(/Budget created/i)).not.toBeInTheDocument();
   });
 
   it('upgrades the no-line-items cell to an EmptyState with a working CTA', () => {

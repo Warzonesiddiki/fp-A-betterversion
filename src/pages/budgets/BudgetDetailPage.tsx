@@ -128,9 +128,10 @@ export default function BudgetDetailPage() {
   const [snapshotName, setSnapshotName] = useState('');
   const [comments, setComments] = useState<CommentEntry[]>([]);
   const [newComment, setNewComment] = useState('');
-  const [auditLog, setAuditLog] = useState<AuditEntry[]>([
-    { id: 'a1', action: 'Budget created', user: 'Admin', timestamp: new Date().toISOString() },
-  ]);
+  // K30 four-states (N8): start empty — the previously seeded
+  // "Budget created"/Admin entry fabricated an audit event that never
+  // happened; real entries appear as the user acts on the budget.
+  const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
 
   const budgetLineItems = useMemo(() => {
     return lineItems.filter((li) => li.budgetId === id);
@@ -430,13 +431,19 @@ export default function BudgetDetailPage() {
   }
 
   if (!budget) {
+    // K30 four-states (N8): shared EmptyState under the mounted page h1 —
+    // this branch previously rendered a bare centered h2 with no heading
+    // hierarchy. The CTA returns to the list; no placeholder budget is
+    // invented for an unknown id.
     return (
-      <div className="p-12 text-center">
-        <h2 className="text-xl font-semibold mb-2">Budget Not Found</h2>
-        <p className="text-[var(--text-muted)] mb-4">
-          The budget you&apos;re looking for doesn&apos;t exist.
-        </p>
-        <Button onClick={() => navigate('/budgets')}>Back to Budgets</Button>
+      <div className="p-6 space-y-6">
+        <PageHeader title="Budget Detail" purpose="Budget line-item editor" />
+        <EmptyState
+          variant="no-data"
+          title="Budget Not Found"
+          description={"The budget you're looking for doesn't exist or was deleted."}
+          action={<Button onClick={() => navigate('/budgets')}>Back to Budgets</Button>}
+        />
       </div>
     );
   }
@@ -925,14 +932,20 @@ export default function BudgetDetailPage() {
               </div>
             ) : (
               <div className="space-y-2 max-h-96 overflow-y-auto" data-testid="audit-tab">
-                {auditLog.map((entry) => (
-                  <div key={entry.id} className="p-2 bg-slate-800 rounded text-xs">
-                    <div className="text-slate-300">{entry.action}</div>
-                    <div className="text-[var(--text-muted)] text-[10px]">
-                      {entry.user} · {new Date(entry.timestamp).toLocaleString()}
+                {/* K30 four-states (N8): honest empty state now that the
+                    fabricated "Budget created" seed entry is gone. */}
+                {auditLog.length === 0 ? (
+                  <p className="text-xs text-[var(--text-muted)]">No audit entries yet.</p>
+                ) : (
+                  auditLog.map((entry) => (
+                    <div key={entry.id} className="p-2 bg-slate-800 rounded text-xs">
+                      <div className="text-slate-300">{entry.action}</div>
+                      <div className="text-[var(--text-muted)] text-[10px]">
+                        {entry.user} · {new Date(entry.timestamp).toLocaleString()}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             )}
           </div>

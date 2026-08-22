@@ -10,6 +10,7 @@ import { WaterfallChart, WaterfallItem } from '@/components/ui/WaterfallChart';
 import { VarianceChart, VarianceDataPoint } from '@/components/charts/VarianceChart';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { Skeleton } from '@/components/ui/Skeleton';
 import {
   BarChart,
   Bar,
@@ -44,7 +45,9 @@ function formatPercent(n: number): string {
 export default function BudgetVAReport() {
   const fmt = useCurrencyFormatter();
   const navigate = useNavigate();
-  const { budgets, lineItems } = useBudgetStore();
+  // W-K30-001 (3) + N8: surface the GL error channel, the posted-actuals
+  // guard, and the hydration gate for the four-states model.
+  const { budgets, lineItems, isLoading: budgetsLoading } = useBudgetStore();
   // W-K30-001 (3): surface the GL error channel and the posted-actuals guard.
   const { entries, importError } = useGLStore();
   const [selectedBudgetId, setSelectedBudgetId] = useState<string>('');
@@ -91,8 +94,7 @@ export default function BudgetVAReport() {
           variancePct,
         };
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedBudget, entries]);
+  }, [selectedBudget, selectedBudgetId, lineItems, entries]);
 
   const totals = useMemo(() => {
     return {
@@ -212,6 +214,26 @@ export default function BudgetVAReport() {
     },
   ];
 
+  // K30 four-states (N8): gate guidance/zero-value flash while the persisted
+  // budget store hydrates — the approved-budgets dropdown would otherwise
+  // briefly present an empty list as if no budgets existed. Decorative bars;
+  // PageHeader keeps the h1 mounted.
+  if (budgetsLoading) {
+    return (
+      <div className="p-6 space-y-6">
+        <PageHeader
+          icon={<FileBarChart className="h-6 w-6 text-blue-400" />}
+          title="Budget vs. Actuals"
+          purpose="Analyze performance against approved plans."
+        />
+        <div data-testid="bva-report-loading" aria-busy="true" className="space-y-3">
+          <Skeleton count={1} height="36px" width="35%" />
+          <Skeleton count={4} variant="card" height="120px" />
+        </div>
+      </div>
+    );
+  }
+
   // W-K30-001 (3): a failed GL import leaves this report without actuals to
   // compare — surface it instead of silently rendering zero-variance rows.
   if (importError) {
@@ -263,13 +285,20 @@ export default function BudgetVAReport() {
       {!selectedBudgetId ? (
         <Card className="bg-[var(--bg-elevated)]/50 border-dashed border-[var(--border-default)]">
           <CardContent>
-            {/* W-K30-001 (3): was a bare h3 guidance card. PageHeader above
-                owns the page h1, so EmptyState's h3 keeps heading order. */}
+            {/* W-K30-001 (3) + N8: was a bare h3 guidance card. PageHeader
+                above owns the page h1, so EmptyState's h3 keeps heading order.
+                When no approved budget exists at all the old text pointed at
+                an empty dropdown — call out the approval prerequisite instead.
+                Title and CTA stay stable for both flavors. */}
             <EmptyState
               variant="no-data"
               icon={<FileBarChart className="h-8 w-8 text-[var(--text-muted)]" />}
               title="No Budget Selected"
-              description="Select an approved budget from the dropdown above to view the performance report."
+              description={
+                approvedBudgets.length === 0
+                  ? 'No approved budgets are available yet. Create or approve a budget to unlock this report.'
+                  : 'Select an approved budget from the dropdown above to view the performance report.'
+              }
               action={
                 <Button variant="outline" size="sm" onClick={() => navigate('/budgets')}>
                   Go to Budgets
@@ -290,6 +319,30 @@ export default function BudgetVAReport() {
               action={
                 <Button size="sm" onClick={() => navigate('/data/gl-upload')}>
                   Import Data
+                </Button>
+              }
+            />
+          </CardContent>
+        </Card>
+      ) : reportData.length === 0 ? (
+        // K30 four-states (N8): a budget is selected and actuals are posted,
+        // but the plan itself has no line items. Rendering the analysis chrome
+        // here would fabricate zero-variance rows out of nothing — show an
+        // empty state that routes back to the real editor instead.
+        <Card>
+          <CardContent>
+            <EmptyState
+              variant="no-data"
+              icon={<FileBarChart className="h-8 w-8 text-[var(--text-muted)]" />}
+              title="No plan lines to compare"
+              description="The selected approved budget has no line items. Add plan lines in the budget editor, then return to this report."
+              action={
+                <Button
+                  size="sm"
+                  onClick={() => navigate(`/budgets/${selectedBudgetId}`)}
+                  data-testid="bva-open-budget"
+                >
+                  Open Budget Editor
                 </Button>
               }
             />

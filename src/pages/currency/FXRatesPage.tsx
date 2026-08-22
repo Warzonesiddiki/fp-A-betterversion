@@ -1,19 +1,26 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
+import type { ReactNode } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
+import { useFxRateStore } from '@/store/fxRateStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Modal } from '@/components/ui/Modal';
-import { Plus, Trash2, AlertCircle } from 'lucide-react';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { Plus, Trash2 } from 'lucide-react';
 import { formatNumber } from '@/utils/financialFormatting';
-import type { ExchangeRate } from '@/types';
 
-const INITIAL_RATES: ExchangeRate[] = [
-  { id: '1', fromCurrency: 'USD', toCurrency: 'EUR', rate: 0.92, effectiveDate: '2026-01-01' },
-  { id: '2', fromCurrency: 'USD', toCurrency: 'GBP', rate: 0.79, effectiveDate: '2026-01-01' },
-  { id: '3', fromCurrency: 'USD', toCurrency: 'JPY', rate: 149.5, effectiveDate: '2026-01-01' },
-];
+// K30 four-states honesty notes:
+// - Rates are read from the persisted fxRateStore. This page previously seeded
+//   a hardcoded INITIAL_RATES table (USD→EUR 0.92 / USD→GBP 0.79 / USD→JPY
+//   149.5) into local state and rendered it as though the user had entered it —
+//   that fabrication is removed; an empty store now renders the shared
+//   EmptyState instead of invented quotes.
+// - Both stores are synchronous Zustand reads, so there is deliberately NO
+//   loading skeleton on this page: one would fake asynchrony that does not
+//   exist (same honesty test as ScenarioBuilderPage).
 
 const CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY', 'CHF', 'CAD', 'AUD', 'CNY', 'INR', 'BRL'];
 
@@ -31,83 +38,135 @@ const EMPTY_FORM: RateForm = {
   effectiveDate: '',
 };
 
+/** Which store call failed, so the ErrorState retry re-runs exactly that action. */
+type FailedAction = { kind: 'add' } | { kind: 'delete'; id: string };
+
 export default function FXRatesPage() {
   const { entries } = useGLStore();
   const navigate = useNavigate();
-  const [rates, setRates] = useState<ExchangeRate[]>(INITIAL_RATES);
+  const rates = useFxRateStore((s) => s.rates);
+  const addRate = useFxRateStore((s) => s.addRate);
+  const deleteRate = useFxRateStore((s) => s.deleteRate);
+
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<RateForm>(EMPTY_FORM);
   const [errors, setErrors] = useState<Partial<Record<keyof RateForm, string>>>({});
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [failedAction, setFailedAction] = useState<FailedAction | null>(null);
 
-  const validate = useCallback(
-    (f: RateForm): Partial<Record<keyof RateForm, string>> => {
-      const e: Partial<Record<keyof RateForm, string>> = {};
-      if (!f.rate || isNaN(Number(f.rate)) || Number(f.rate) <= 0)
-        e.rate = 'Rate must be a positive number';
-      if (f.fromCurrency === f.toCurrency) e.toCurrency = 'Currencies must differ';
-      if (rates.some((r) => r.fromCurrency === f.fromCurrency && r.toCurrency === f.toCurrency))
-        e.toCurrency = 'This currency pair already exists';
-      if (!f.effectiveDate) e.effectiveDate = 'Date is required';
-      return e;
-    },
-    [rates]
-  );
+  const openAddForm = () => {
+    setForm(EMPTY_FORM);
+    setErrors({});
+    setShowForm(true);
+  };
 
-  const handleAdd = useCallback(() => {
+  const validate = (f: RateForm): Partial<Record<keyof RateForm, string>> => {
+    const e: Partial<Record<keyof RateForm, string>> = {};
+    if (!f.rate || isNaN(Number(f.rate)) || Number(f.rate) <= 0)
+      e.rate = 'Rate must be a positive number';
+    if (f.fromCurrency === f.toCurrency) e.toCurrency = 'Currencies must differ';
+    if (rates.some((r) => r.fromCurrency === f.fromCurrency && r.toCurrency === f.toCurrency))
+      e.toCurrency = 'This currency pair already exists';
+    if (!f.effectiveDate) e.effectiveDate = 'Date is required';
+    return e;
+  };
+
+  const handleAdd = () => {
     const errs = validate(form);
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
-    const newRate: ExchangeRate = {
-      id: Date.now().toString(),
-      fromCurrency: form.fromCurrency,
-      toCurrency: form.toCurrency,
-      rate: Number(form.rate),
-      effectiveDate: form.effectiveDate,
-    };
-    setRates((prev) => [...prev, newRate]);
-    setForm(EMPTY_FORM);
-    setShowForm(false);
-  }, [form, validate]);
+    try {
+      addRate({
+        id: Date.now().toString(),
+        fromCurrency: form.fromCurrency,
+        toCurrency: form.toCurrency,
+        rate: Number(form.rate),
+        effectiveDate: form.effectiveDate,
+        source: 'manual',
+      });
+      setActionError(null);
+      setFailedAction(null);
+      setForm(EMPTY_FORM);
+      setShowForm(false);
+    } catch (err) {
+      // K30 four-states: store rejection (RBAC deny / persistence failure)
+      // surfaces as an ErrorState inside the form whose Retry re-runs this
+      // exact add against the same form values.
+      setActionError(err instanceof Error ? err.message : 'Failed to save the exchange rate');
+      setFailedAction({ kind: 'add' });
+    }
+  };
 
-  const handleDelete = useCallback((id: string) => {
-    setRates((prev) => prev.filter((r) => r.id !== id));
-    setDeleteId(null);
-  }, []);
+  const handleDelete = (id: string) => {
+    try {
+      deleteRate(id);
+      setActionError(null);
+      setFailedAction(null);
+      setDeleteId(null);
+    } catch (err) {
+      setDeleteId(null);
+      setActionError(err instanceof Error ? err.message : 'Failed to delete the exchange rate');
+      setFailedAction({ kind: 'delete', id });
+    }
+  };
 
-  if (entries.length === 0)
-    return (
-      <div className="p-12 text-center">
-        <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-[var(--text-muted)] mb-4">Import data to enable FX translation.</p>
-        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
-      </div>
-    );
+  // K30 four-states: the retry control re-runs exactly the failed store call.
+  const retryFailedAction = () => {
+    if (!failedAction) return;
+    if (failedAction.kind === 'add') handleAdd();
+    else handleDelete(failedAction.id);
+  };
 
-  return (
-    <div className="p-6 space-y-6">
-      <PageHeader
-        title="FX Rates"
-        purpose={
-          <>
-            {rates.length}rate{rates.length !== 1 ? 's' : ''}configured
-          </>
+  const purposeText = `${rates.length} rate${rates.length !== 1 ? 's' : ''} configured`;
+
+  const addAction = (
+    <Button size="sm" onClick={openAddForm} data-testid="fx-add-rate">
+      <Plus className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+      Add Rate
+    </Button>
+  );
+
+  let body: ReactNode;
+  let headerActions: ReactNode;
+  if (entries.length === 0) {
+    // K30 four-states — empty ledger: PageHeader stays mounted so the page h1
+    // never disappears; the shared EmptyState explains why translation is
+    // disabled and routes to the import flow. No demo ledger or rate table is
+    // invented here.
+    headerActions = null;
+    body = (
+      <EmptyState
+        variant="no-data"
+        title="No data to translate"
+        description="Import General Ledger entries to enable FX translation. Exchange rates apply to posted multi-currency amounts."
+        action={
+          <Button onClick={() => navigate('/data/gl-upload')} data-testid="fx-empty-import">
+            Import Data
+          </Button>
         }
-        actions={
-          <Button
-            size="sm"
-            onClick={() => {
-              setForm(EMPTY_FORM);
-              setErrors({});
-              setShowForm(true);
-            }}
-          >
-            <Plus className="h-3.5 w-3.5 mr-1.5" />
+      />
+    );
+  } else if (rates.length === 0) {
+    // K30 four-states — empty rate book: the real fxRateStore holds no rates,
+    // so the honest state is an explicit EmptyState whose CTA starts rate
+    // entry (this branch previously rendered three fabricated seed quotes).
+    headerActions = addAction;
+    body = (
+      <EmptyState
+        variant="no-data"
+        title="No exchange rates configured"
+        description="Add a currency pair rate to enable multi-currency translation of posted entries."
+        action={
+          <Button onClick={openAddForm} data-testid="fx-empty-add">
             Add Rate
           </Button>
         }
       />
-
+    );
+  } else {
+    headerActions = addAction;
+    body = (
       <Card>
         <CardContent className="p-0">
           <table className="w-full text-sm" aria-label="FX rates by currency pair">
@@ -132,39 +191,54 @@ export default function FXRatesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
-              {rates.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="text-center py-12 text-[var(--text-muted)]">
-                    <AlertCircle className="h-8 w-8 mx-auto mb-2 text-slate-600" />
-                    No exchange rates configured. Add rates to enable multi-currency translation.
+              {rates.map((r) => (
+                <tr key={r.id} className="hover:bg-slate-900/50">
+                  <td className="px-4 py-3 font-mono">{r.fromCurrency}</td>
+                  <td className="px-4 py-3 font-mono">{r.toCurrency}</td>
+                  <td className="px-4 py-3 text-right tabular-nums font-medium">
+                    {formatNumber(r.rate, 4)}
+                  </td>
+                  <td className="px-4 py-3 text-slate-400">{r.effectiveDate}</td>
+                  <td className="px-4 py-3 text-right">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setDeleteId(r.id)}
+                      aria-label={`Delete ${r.fromCurrency}/${r.toCurrency} rate`}
+                    >
+                      <Trash2 className="h-3.5 w-3.5 text-red-400" aria-hidden="true" />
+                    </Button>
                   </td>
                 </tr>
-              ) : (
-                rates.map((r) => (
-                  <tr key={r.id} className="hover:bg-slate-900/50">
-                    <td className="px-4 py-3 font-mono">{r.fromCurrency}</td>
-                    <td className="px-4 py-3 font-mono">{r.toCurrency}</td>
-                    <td className="px-4 py-3 text-right tabular-nums font-medium">
-                      {formatNumber(r.rate, 4)}
-                    </td>
-                    <td className="px-4 py-3 text-slate-400">{r.effectiveDate}</td>
-                    <td className="px-4 py-3 text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setDeleteId(r.id)}
-                        aria-label="Delete FX rate"
-                      >
-                        <Trash2 className="h-3.5 w-3.5 text-red-400" />
-                      </Button>
-                    </td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
         </CardContent>
       </Card>
+    );
+  }
+
+  return (
+    <div className="p-6 space-y-6" aria-labelledby="fx-rates-heading">
+      {/* Delete failures surface at page level; add failures render inside the
+          open form modal below so they stay visible over its overlay. */}
+      {actionError && failedAction?.kind === 'delete' && (
+        <ErrorState
+          title="Could not delete exchange rate"
+          message={actionError}
+          onRetry={retryFailedAction}
+          retryLabel="Retry delete"
+          className="py-8"
+        />
+      )}
+      <PageHeader
+        title="FX Rates"
+        titleId="fx-rates-heading"
+        purpose={purposeText}
+        actions={headerActions}
+      />
+
+      {body}
 
       {/* Add Rate Modal */}
       <Modal isOpen={showForm} onClose={() => setShowForm(false)}>
@@ -246,6 +320,15 @@ export default function FXRatesPage() {
               )}
             </div>
           </div>
+          {showForm && actionError && failedAction?.kind === 'add' && (
+            <ErrorState
+              title="Could not add exchange rate"
+              message={actionError}
+              onRetry={retryFailedAction}
+              retryLabel="Retry add"
+              className="py-4"
+            />
+          )}
           <div className="flex justify-end gap-2 pt-2">
             <Button variant="ghost" onClick={() => setShowForm(false)}>
               Cancel

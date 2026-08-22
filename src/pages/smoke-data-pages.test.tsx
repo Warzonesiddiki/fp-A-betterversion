@@ -214,6 +214,9 @@ vi.mock('lucide-react', () => {
     GitCommit: makeIcon(),
     ArrowLeftRight: makeIcon(),
     AlertTriangle: makeIcon(),
+    // EmptyState defaults (imported via GLJournalsPage K30 four-states update)
+    Inbox: makeIcon(),
+    FileX: makeIcon(),
   };
 });
 

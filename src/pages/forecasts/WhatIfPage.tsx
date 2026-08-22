@@ -14,6 +14,8 @@ import {
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { WhatIfSandboxEngine, type Sandbox } from '@/engines/WhatIfSandboxEngine';
 import { sumMoney, roundTo } from '@/utils/money';
 import { type SandboxComparison } from '@/engines/WhatIfSandboxEngine';
@@ -30,7 +32,9 @@ import {
 import { formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { PageHeader } from '@/components/ui/PageHeader';
-// Default assumptions for demo
+// Assumption starting points for newly created sandboxes. These are editable
+// input defaults, NOT figures derived from the user's ledger — the UI labels
+// them as such (K17/K18 honest labeling).
 const DEFAULT_ASSUMPTIONS = [
   {
     label: 'Revenue Growth',
@@ -87,6 +91,9 @@ export default function WhatIfPage() {
   const [activeSandboxId, setActiveSandboxId] = useState<string | null>(null);
   const [comparison, setComparison] = useState<SandboxComparison | null>(null);
   const [compareTargetId, setCompareTargetId] = useState<string | null>(null);
+  // K30 four-states: a failed comparison is surfaced through the shared
+  // ErrorState instead of being swallowed silently.
+  const [compareError, setCompareError] = useState<string | null>(null);
   const [assumptions, setAssumptions] = useState<Record<string, number>>(
     Object.fromEntries(DEFAULT_ASSUMPTIONS.map((a) => [a.key, a.default]))
   );
@@ -140,19 +147,33 @@ export default function WhatIfPage() {
         setActiveSandboxId(null);
         setComparison(null);
       }
+      // A deleted target can no longer be compared against — drop the stale
+      // selection instead of letting Compare fail against a missing snapshot.
+      if (compareTargetId === id) {
+        setCompareTargetId(null);
+        setCompareError(null);
+      }
     },
-    [engine, activeSandboxId]
+    [engine, activeSandboxId, compareTargetId]
   );
 
   const handleCompare = useCallback(() => {
     if (!activeSandboxId || !compareTargetId) return;
+    setCompareError(null);
     try {
-      const result = engine.compare(activeSandboxId, compareTargetId);
-      setComparison(result);
-    } catch {
+      setComparison(engine.compare(activeSandboxId, compareTargetId));
+    } catch (err) {
+      // K30: keep the failed action's identity — the ErrorState retry control
+      // re-runs exactly this handler against the current selections.
       setComparison(null);
+      setCompareError(err instanceof Error ? err.message : 'Scenario comparison failed');
     }
   }, [engine, activeSandboxId, compareTargetId]);
+
+  const handleSelectCompareTarget = useCallback((id: string | null) => {
+    setCompareTargetId(id);
+    setCompareError(null);
+  }, []);
 
   const handleReset = useCallback(() => {
     if (!activeSandboxId) return;
@@ -180,12 +201,40 @@ export default function WhatIfPage() {
     );
   }, [activeSandbox]);
 
+  if (sandboxes.length === 0) {
+    // K30 four-states: shared EmptyState under the page-level h1 (PageHeader
+    // stays mounted in this branch). The CTA creates a real sandbox; no preset
+    // scenarios are invented.
+    return (
+      <div className="p-6 space-y-6" aria-labelledby="what-if-heading">
+        <PageHeader
+          icon={<Sliders className="h-6 w-6" />}
+          title="What-If Sandbox"
+          titleId="what-if-heading"
+          purpose="Create scenarios, modify assumptions, compare results side-by-side"
+        />
+        <EmptyState
+          variant="no-data"
+          title="No what-if scenarios yet"
+          description="Create a scenario to adjust assumptions and compare outcomes side-by-side. Preset scenarios are not invented."
+          action={
+            <Button onClick={handleCreateSandbox} data-testid="whatif-empty-create">
+              <Plus className="h-4 w-4 mr-1" /> New Scenario
+            </Button>
+          }
+          className="py-8"
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6" aria-labelledby="what-if-heading">
       <PageHeader
         icon={<Sliders className="h-6 w-6" />}
         title="What-If Sandbox"
-        purpose="Create scenarios, modify assumptions, compare results side-by-side"
+        titleId="what-if-heading"
+        purpose="Create scenarios, modify assumptions, compare results side-by-side. Assumption values are editable starting points, not figures derived from your ledger."
         actions={
           <div className="flex gap-2">
             <Button onClick={handleCreateSandbox}>
@@ -344,31 +393,40 @@ export default function WhatIfPage() {
                 Select a scenario to modify assumptions.
               </p>
             ) : (
-              DEFAULT_ASSUMPTIONS.map((a) => (
-                <div key={a.key} className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium">{a.label}</label>
-                    <span className="text-sm text-muted-foreground">
-                      {a.unit === '$'
-                        ? fmt.currency0(assumptions[a.key]!)
-                        : `${assumptions[a.key]!}${a.unit}`}
-                    </span>
+              <>
+                <p className="text-xs text-[var(--text-muted)]" data-testid="whatif-defaults-note">
+                  Starting values are editable defaults supplied by the app — not figures derived
+                  from your ledger. Adjust them to model your own assumptions.
+                </p>
+                {DEFAULT_ASSUMPTIONS.map((a) => (
+                  <div key={a.key} className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <label htmlFor={`assumption-${a.key}`} className="text-sm font-medium">
+                        {a.label}
+                      </label>
+                      <span className="text-sm text-muted-foreground">
+                        {a.unit === '$'
+                          ? fmt.currency0(assumptions[a.key]!)
+                          : `${assumptions[a.key]!}${a.unit}`}
+                      </span>
+                    </div>
+                    <input
+                      id={`assumption-${a.key}`}
+                      type="range"
+                      min={a.min}
+                      max={a.max}
+                      step={a.step}
+                      value={assumptions[a.key]}
+                      onChange={(e) => handleAssumptionChange(a.key, parseFloat(e.target.value))}
+                      className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>{a.unit === '$' ? fmt.currency0(a.min) : `${a.min}${a.unit}`}</span>
+                      <span>{a.unit === '$' ? fmt.currency0(a.max) : `${a.max}${a.unit}`}</span>
+                    </div>
                   </div>
-                  <input
-                    type="range"
-                    min={a.min}
-                    max={a.max}
-                    step={a.step}
-                    value={assumptions[a.key]}
-                    onChange={(e) => handleAssumptionChange(a.key, parseFloat(e.target.value))}
-                    className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>{a.unit === '$' ? fmt.currency0(a.min) : `${a.min}${a.unit}`}</span>
-                    <span>{a.unit === '$' ? fmt.currency0(a.max) : `${a.max}${a.unit}`}</span>
-                  </div>
-                </div>
-              ))
+                ))}
+              </>
             )}
           </CardContent>
         </Card>
@@ -382,8 +440,9 @@ export default function WhatIfPage() {
                 <div className="flex gap-2 items-center">
                   <select
                     value={compareTargetId ?? ''}
-                    onChange={(e) => setCompareTargetId(e.target.value || null)}
+                    onChange={(e) => handleSelectCompareTarget(e.target.value || null)}
                     className="text-sm border rounded px-2 py-1 bg-background"
+                    aria-label="Comparison target scenario"
                   >
                     <option value="">Select target...</option>
                     {sandboxes
@@ -407,7 +466,17 @@ export default function WhatIfPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {!comparison ? (
+            {compareError ? (
+              // K30 four-states: shared ErrorState (role=alert) whose retry
+              // control re-runs exactly the failed comparison.
+              <ErrorState
+                title="Could not compare scenarios"
+                message={compareError}
+                onRetry={handleCompare}
+                retryLabel="Retry compare"
+                className="py-8"
+              />
+            ) : !comparison ? (
               <p className="text-sm text-muted-foreground text-center py-4">
                 {sandboxes.length < 2
                   ? 'Create at least 2 scenarios to compare.'

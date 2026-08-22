@@ -15,6 +15,7 @@ import {
   Flame,
 } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { EmptyState } from '@/components/ui/EmptyState';
 import {
   deriveCashPosition,
   type CashCategoryRow,
@@ -116,21 +117,35 @@ export default function CashForecastPage() {
 
   if (!data)
     return (
-      <div className="p-12 text-center">
-        <DollarSign className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Cash Activity</h2>
-        <p className="text-[var(--text-muted)] mb-6">
-          Import general-ledger data that posts to cash accounts (codes beginning 10 or 11) to see
-          your cash position.
-        </p>
-        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
+      // K30 four-states: the shared EmptyState renders under the page-level h1
+      // (PageHeader stays mounted in this branch). No zeroed cash statement is
+      // invented without postings, and there is deliberately no hydrate
+      // skeleton — the derivation is synchronous.
+      <div className="p-6 space-y-6" aria-labelledby="cash-position-heading">
+        <PageHeader
+          title="Cash Position"
+          titleId="cash-position-heading"
+          purpose="Cash position derived from posted general-ledger activity in cash accounts."
+        />
+        <EmptyState
+          variant="no-data"
+          title="No Cash Activity"
+          description="Import general-ledger data that posts to cash accounts (codes beginning 10 or 11) to see your cash position. A zeroed statement is not shown without postings."
+          action={
+            <Button onClick={() => navigate('/data/gl-upload')} data-testid="cash-empty-import">
+              Import Data
+            </Button>
+          }
+          className="py-8"
+        />
       </div>
     );
 
   return (
-    <div className="p-6 space-y-6 animate-fade-in">
+    <div className="p-6 space-y-6 animate-fade-in" aria-labelledby="cash-position-heading">
       <PageHeader
         title="Cash Position"
+        titleId="cash-position-heading"
         purpose={`Posted cash-account activity across ${data.periodCount} period${
           data.periodCount === 1 ? '' : 's'
         } · accounts ${data.cashAccountCodes.join(', ')}`}

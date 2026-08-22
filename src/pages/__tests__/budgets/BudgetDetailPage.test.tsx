@@ -95,6 +95,13 @@ vi.mock('lucide-react', () => {
     Send: make(),
     History: make(),
     CheckCircle: make(),
+    // K30 not-found branch renders shared EmptyState, whose default no-data
+    // icon is lucide's Inbox; EmptyState statically imports the full
+    // default-icons set, so every variant icon must exist on the mock.
+    Inbox: make(),
+    Search: make(),
+    FileX: make(),
+    AlertCircle: make(),
     XCircle: make(),
     Clock: make(),
     Download: make(),
@@ -127,8 +134,10 @@ describe('BudgetDetailPage', () => {
 
   it('shows Budget Not Found state when id does not match any budget', () => {
     render(<BudgetDetailPage />);
+    // K30 h1 discipline: PageHeader owns the h1; the shared EmptyState title
+    // renders as an h3 inside it.
     expect(
-      screen.getByRole('heading', { level: 2, name: /budget not found/i })
+      screen.getByRole('heading', { level: 3, name: /budget not found/i })
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /back to budgets/i })).toBeInTheDocument();
   });
