@@ -1,6 +1,6 @@
 # GLOSSARY.md v0.2
 
-> **Status:** v1.2 (cycle 8, 2026-06-13) — 39 terms, ~620L — **T-MN-011 CLOSED**
+> **Status:** v1.2 (cycle 8, 2026-06-13) — 39 terms, ~620L — **T-MN-011 CLOSED** · v1.3 drift-row resolution 2026-08-23 (fleet wave-3 lane R29)
 > **Owner:** Mnemosyne (T-MN-011)
 > **Upstream:** v0.1 baseline (cycle 7, T-MN-002, 2026-06-13) — 25 terms
 > **Change scope:** +14 new terms (4 math + 5 cross-Muse + 5 ICP-movement) + NRR cross-link enhancement + v0.4 Path A self-apply fixes (2 file-path + 2 line/anchor + 8 TASKBOARD.md path-drift) + v1.1 header polish + v1.2 header polish (cascade close per T-MN-008 precedent)
@@ -23,20 +23,42 @@
 
 **6 fixes applied (Path A self-apply, ~15 min):**
 
-| #   | Entry                                 | Fix type                      | Old                                                         | New                                                                                                                                                         |
-| --- | ------------------------------------- | ----------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Honest Labeling L271                  | NEEDS-FIX (file missing)      | docs/drafts/mnemosyne/jsdoc-v0.4-masterStorage.md [removed] | docs/drafts/athena/BOARD_SCAN_D001_D009_ERRATUM_2026-06-13.md [removed] (the erratum that codified the 9th Honest Labeling moment + 6th D-009 codification) |
-| 2   | pre-write L420                        | NEEDS-FIX (file missing)      | docs/drafts/mnemosyne/ONBOARDING-v0.1.md [removed]          | `docs/ONBOARDING.md` (T-MN-003 v0.1, 295L)                                                                                                                  |
-| 3   | founder-led motion L213-214           | MOSTLY OK (line drift)        | PERSONAS.md:317 [removed]                                   | PERSONAS.md:321 [removed] (the actual "Founder-Finance Fiona" line)                                                                                         |
-| 4   | PLG motion L404                       | MOSTLY OK (weak anchor)       | CHANNEL_MOTIONS_v0.md:435 [removed] (Referral Tier 1 bonus) | CHANNEL_MOTIONS_v0.md:439 [removed] (actual "ICP-3 as the PLG secondary" footer note)                                                                       |
-| 5   | PLG motion L409                       | MOSTLY OK (TENTATIVE missing) | `(empirical, cross-Muse triangulated)`                      | `(TENTATIVE per D-007 — 1 of 3 anchors is weak)`                                                                                                            |
-| 6   | All TASKBOARD.md citations (8 places) | PATH DRIFT (shorthand)        | docs/TASKBOARD.md [removed]                                 | docs/drafts/TASKBOARD.md [removed] (actual file location)                                                                                                   |
+| #   | Entry                                 | Fix type                      | Old                                                         | New                                                                                                                                                                                                                      |
+| --- | ------------------------------------- | ----------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Honest Labeling L271                  | RESOLVED (living home)        | docs/drafts/mnemosyne/jsdoc-v0.4-masterStorage.md [removed] | docs/drafts/athena/BOARD_SCAN_D001_D009_ERRATUM_2026-06-13.md [removed] (v0.4 fix target; retired with the drafts corpus). Living home now: `AGENTS.md` §D-007 — verified 2026-08-23                                     |
+| 2   | pre-write L420                        | RESOLVED (living home)        | docs/drafts/mnemosyne/ONBOARDING-v0.1.md [removed]          | `docs/ONBOARDING.md` (T-MN-003 v0.1; measured 259L on 2026-08-23 — the earlier 295L figure predates later edits to the living file)                                                                                      |
+| 3   | founder-led motion L213-214           | MOSTLY OK (line drift)        | PERSONAS.md:317 [removed]                                   | PERSONAS.md:321 [removed] (the actual "Founder-Finance Fiona" line)                                                                                                                                                      |
+| 4   | PLG motion L404                       | MOSTLY OK (weak anchor)       | CHANNEL_MOTIONS_v0.md:435 [removed] (Referral Tier 1 bonus) | CHANNEL_MOTIONS_v0.md:439 [removed] (actual "ICP-3 as the PLG secondary" footer note)                                                                                                                                    |
+| 5   | PLG motion L409                       | MOSTLY OK (TENTATIVE missing) | `(empirical, cross-Muse triangulated)`                      | `(TENTATIVE per D-007 — 1 of 3 anchors is weak)`                                                                                                                                                                         |
+| 6   | All TASKBOARD.md citations (8 places) | RESOLVED (target retired)     | docs/TASKBOARD.md [removed]                                 | docs/drafts/TASKBOARD.md [removed] (actual file location). TASKBOARD retired 2026-08-23: drafts corpus removed in the 2026-08-07 triage; discipline content canonized in `AGENTS.md` + `docs/STRATEGIC_DECISIONS_LOG.md` |
 
 **6th codification 1st real use:** Athena applied "D-009 violation can appear in your own audit claims" via Glob-verify on all 14 new entries. Caught 2 file-missing + 1 line-drift + 1 weak-anchor + 8 path-drift issues. All recoverable with 1-line edits.
 
 **Net effect:** 0 content-level changes, 6 metadata/architectural corrections. Per T-HEP-008a, this is Path A material (no re-validation needed for v0.4 → v1.1).
 
 **Path convention standardized:** All 14 new entries now use full path convention `docs/drafts/{author}/{file}.md` for drafts, `docs/{file}.md` for top-level docs. NRR cross-link and 25 v0.1 entries inherited as-is.
+
+## v1.3 Drift-row resolution (2026-08-23, fleet wave-3 lane R29)
+
+The three triage-flagged rows in the v0.4 table above (2× NEEDS-FIX, 1× PATH DRIFT)
+were resolved against living homes this pass; annotations dropped, historical
+claims kept verbatim:
+
+- **Honest Labeling (row 1)** — the v0.4 fix target (drafts erratum) is gone with
+  the corpus; the living definition is verified at `AGENTS.md` §D-007 (grep hit at
+  line 134). No src/ or docs/architecture/ home exists — it is a cohort discipline,
+  not product code.
+- **pre-write (row 2)** — `docs/ONBOARDING.md` confirmed present; its recorded size
+  was stale (295L) and is corrected to the measured 259L in both the table row and
+  the pre-write entry below.
+- **TASKBOARD.md (row 6)** — genuinely retired, marked as such rather than deleted:
+  the drafts corpus was removed in the 2026-08-07 docs triage and no living task
+  board exists. The discipline content it anchored (D-007/D-009/ICP-numbering) is
+  canonized in `AGENTS.md` (Disciplines section) and `docs/STRATEGIC_DECISIONS_LOG.md`
+  (D-002 row L75, D-009 row L205).
+
+Rows 3–5 (MOSTLY OK audit notes on founder-led motion / PLG motion) are historical
+v0.4 verdicts, not drift flags — left untouched.
 
 ## v0.1 → v0.2 Term Inventory
 
@@ -479,7 +501,7 @@
 **In our product (Three-Witnesses):**
 
 - Historical anchors (cycle 5-8 era; drafts corpus removed in the 2026-08-07 docs triage): docs/drafts/TASKBOARD.md (:262, 264, 290, 299, 302, 416, 417, 419-421 — D-007 pre-write pattern references; :545, 549-551, 565, 691 — D-007 applied across cycles)
-- `docs/ONBOARDING.md` — T-MN-003 v0.1 (cycle 7, 295L) followed pre-write pattern
+- `docs/ONBOARDING.md` — T-MN-003 v0.1 (cycle 7; measured 259L on 2026-08-23) followed pre-write pattern
 
 **Related terms:** D-009 framework, Honest Labeling, ICP-numbering
 **Honest Labeling:** (internal cohort discipline, not externally documented)
@@ -636,3 +658,4 @@
 - **v1.1 (2026-06-13)**: Path A self-apply polish (header bumps; 7th codification applied retroactively to v0.4 fixes — all 6 file paths Glob-verified)
 - **v1.2 (2026-06-13)**: Cascade close ceremony (header bumps only) — **T-MN-011 CLOSED**. 5-iteration discipline: v0.1 → v0.2 → v0.3 → v0.4 → v1.1 → v1.2. 0 net defects across 6 iterations × 30+ cumulative reviews. 14 NEW terms (4 math + 5 cross-Muse + 5 ICP-movement) + NRR cross-link + 6 D-009 codifications adopted (6th, 7th validated in real use).
 - **v0.3 cycle 12 (2026-06-13, T-MN-014 cycle 12 W2 turn 33+)**: 41 terms — +2 NEW post-CATCH #45 REDUX (4-tool triangulation [Codif 9 v0.2 EXT PROPOSAL] + self-referential spec paradox [live-counted snapshot principle]). Trigger: Athena T-AT-027 v0.1 size-disclosure fabrication (4348W claimed vs 4269W actual) + W4 4-tool evolution INTEGRATED per Athena dispatch + T-MN-014 v0.1 cite-bundle expansion request. T-MN-017 v0.1 cat 7 instance #5 (R-catch formalization) sub-instance update applied separately.
+- **v1.3 (2026-08-23, fleet wave-3 lane R29)**: drift-row cleanup — the 2 NEEDS-FIX + 1 PATH DRIFT annotations dropped from the v0.4 table; living-home citations verified this pass (`AGENTS.md` §D-007; `docs/ONBOARDING.md` re-measured at 259L; docs/drafts/TASKBOARD.md marked retired 2026-08-23, corpus having been removed in the 2026-08-07 triage). Strict docs-link gate re-run clean after the edit: 0 broken links / 0 broken citations across 420 scanned markdown files.
