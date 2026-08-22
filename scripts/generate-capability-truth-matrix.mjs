@@ -13,6 +13,13 @@ import { extname, join, relative, resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
 const output = join(root, 'docs', 'CAPABILITY_TRUTH_MATRIX.md');
 
+// Path cells and classification inputs must be platform-stable: on Windows,
+// node:path APIs yield backslash separators, which previously leaked absolute
+// backslash paths into the Module column and defeated every forward-slash
+// classification regex. Normalize to POSIX separators before any use.
+const toPosix = (value) => value.replaceAll('\\', '/');
+const basenameOf = (file) => file.split(/[\\/]/).at(-1);
+
 function walk(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const fullPath = join(directory, entry.name);
@@ -44,11 +51,15 @@ function hasTestFor(file) {
     `${basename}.spec.ts`,
     `${basename}.spec.tsx`,
   ];
-  return sameDirectory.some(existsSync) || allFiles.some((candidate) =>
-    candidate.endsWith(`/${name}.test.ts`) ||
-    candidate.endsWith(`/${name}.test.tsx`) ||
-    candidate.endsWith(`/${name}.spec.ts`) ||
-    candidate.endsWith(`/${name}.spec.tsx`)
+  return (
+    sameDirectory.some(existsSync) ||
+    allFiles.some(
+      (candidate) =>
+        candidate.endsWith(`/${name}.test.ts`) ||
+        candidate.endsWith(`/${name}.test.tsx`) ||
+        candidate.endsWith(`/${name}.spec.ts`) ||
+        candidate.endsWith(`/${name}.spec.tsx`)
+    )
   );
 }
 
@@ -57,7 +68,7 @@ function evidenceStatus(file) {
 }
 
 function moduleClassification(file, area) {
-  const path = relative(root, file).toLowerCase();
+  const path = toPosix(relative(root, file)).toLowerCase();
   const has = (pattern) => pattern.test(path);
 
   if (area === 'page') {
@@ -65,27 +76,54 @@ function moduleClassification(file, area) {
       return ['Modeling', 'MIGRATE — canonical modeling pattern', 'FP&A product owner'];
     if (has(/pages\/(consolidation|currency|cash|treasury|data|periods|accounting)/))
       return ['Close', 'MIGRATE — close / data-control pattern', 'Controller product owner'];
-    if (has(/pages\/reports/)) return ['Reporting', 'MIGRATE — report / board-pack pattern', 'Reporting product owner'];
-    if (has(/pages\/(sector|sectors|saas|retail|energy|healthcare|banking|manufacturing|realestate|insurance|logistics|government|education|construction|hospitality|telecom)/))
+    if (has(/pages\/reports/))
+      return ['Reporting', 'MIGRATE — report / board-pack pattern', 'Reporting product owner'];
+    if (
+      has(
+        /pages\/(sector|sectors|saas|retail|energy|healthcare|banking|manufacturing|realestate|insurance|logistics|government|education|construction|hospitality|telecom)/
+      )
+    )
       return ['Vertical', 'EXPERIMENTAL — certify or retire', 'Vertical portfolio owner'];
-    if (has(/pages\/(auth|settings|admin|plugins|docs|audit)/)) return ['Admin', 'MIGRATE — admin/evidence pattern', 'Platform product owner'];
-    if (has(/pages\/ai/)) return ['AI', 'EXPERIMENTAL — governed AI validation', 'AI governance owner'];
+    if (has(/pages\/(auth|settings|admin|plugins|docs|audit)/))
+      return ['Admin', 'MIGRATE — admin/evidence pattern', 'Platform product owner'];
+    if (has(/pages\/ai/))
+      return ['AI', 'EXPERIMENTAL — governed AI validation', 'AI governance owner'];
     return ['Workspace', 'MIGRATE — workspace/support pattern', 'Finance product owner'];
   }
 
   if (area === 'engine') {
-    if (has(/consolidation|currency|fx|intercompany|reconciliation|close/)) return ['Close calculation', 'RETAIN — characterize and govern', 'Controller domain owner'];
-    if (has(/formula|budget|forecast|scenario|planning|driver|allocation/)) return ['Planning calculation', 'RETAIN — characterize and govern', 'FP&A domain owner'];
-    if (has(/ai|copilot|nlq|anomaly/)) return ['AI calculation', 'EXPERIMENTAL — governed AI validation', 'AI governance owner'];
-    return ['Financial calculation', 'RETAIN — characterize and govern', 'Finance engineering owner'];
+    if (has(/consolidation|currency|fx|intercompany|reconciliation|close/))
+      return ['Close calculation', 'RETAIN — characterize and govern', 'Controller domain owner'];
+    if (has(/formula|budget|forecast|scenario|planning|driver|allocation/))
+      return ['Planning calculation', 'RETAIN — characterize and govern', 'FP&A domain owner'];
+    if (has(/ai|copilot|nlq|anomaly/))
+      return ['AI calculation', 'EXPERIMENTAL — governed AI validation', 'AI governance owner'];
+    return [
+      'Financial calculation',
+      'RETAIN — characterize and govern',
+      'Finance engineering owner',
+    ];
   }
 
-  if (area === 'store') return ['Client state', 'REVIEW — authority boundary required', 'Frontend platform owner'];
-  if (area === 'service') return ['Application service', 'REVIEW — authority and audit evidence required', 'Platform engineering owner'];
+  if (area === 'store')
+    return ['Client state', 'REVIEW — authority boundary required', 'Frontend platform owner'];
+  if (area === 'service')
+    return [
+      'Application service',
+      'REVIEW — authority and audit evidence required',
+      'Platform engineering owner',
+    ];
   if (area === 'component') {
-    if (has(/components\/(ui|layout|errors|system)/)) return ['Shared experience', 'RETAIN — Atlas certification required', 'Design system owner'];
-    if (has(/components\/(spreadsheet|budgets|scenarios|workflow|finance)/)) return ['Finance experience', 'MIGRATE — canonical workflow pattern', 'FP&A product owner'];
-    if (has(/components\/(audit|consolidation|currency|data)/)) return ['Control experience', 'MIGRATE — evidence/control pattern', 'Controller product owner'];
+    if (has(/components\/(ui|layout|errors|system)/))
+      return ['Shared experience', 'RETAIN — Atlas certification required', 'Design system owner'];
+    if (has(/components\/(spreadsheet|budgets|scenarios|workflow|finance)/))
+      return ['Finance experience', 'MIGRATE — canonical workflow pattern', 'FP&A product owner'];
+    if (has(/components\/(audit|consolidation|currency|data)/))
+      return [
+        'Control experience',
+        'MIGRATE — evidence/control pattern',
+        'Controller product owner',
+      ];
     return ['Domain experience', 'REVIEW — disposition required', 'Finance product owner'];
   }
   return ['Unclassified', 'REVIEW — disposition required', 'Unassigned'];
@@ -93,21 +131,39 @@ function moduleClassification(file, area) {
 
 function matrixRows(files, area) {
   return files.map((file) => {
-    const path = relative(root, file).replaceAll('|', '\\|');
+    const relativePosix = toPosix(relative(root, file));
+    const path = relativePosix.replaceAll('|', '\\|');
+    const displayName = basenameOf(file);
     const [category, disposition, owner] = moduleClassification(file, area);
-    return `| ${titleCase(file.split('/').at(-1).replace(extname(file), ''))} | ${category} | ${disposition} | ${owner} | \`${path}\` | ${evidenceStatus(file)} | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |`;
+    return `| ${titleCase(displayName.replace(extname(displayName), ''))} | ${category} | ${disposition} | ${owner} | \`${path}\` | ${evidenceStatus(file)} | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |`;
   });
 }
 
 function routeDisposition(route) {
-  if (['/', '/dashboard'].includes(route)) return ['Workspace', 'MIGRATE — Decision Workspace', 'CFO / FP&A product owner'];
-  if (/^\/(budgets|forecasts|scenarios|variance|analytics|ai|workforce|templates)/.test(route)) return ['Modeling', 'MIGRATE — canonical modeling pattern', 'FP&A product owner'];
-  if (/^\/(consolidation|currency|cash|treasury|data\/(gl|trial|journals|account)|periods)/.test(route)) return ['Close', 'MIGRATE — Close / treasury pattern', 'Controller product owner'];
-  if (/^\/(reports|charts)/.test(route)) return ['Reporting', 'MIGRATE — report / board-pack pattern', 'Reporting product owner'];
-  if (/^\/(settings|admin|plugins|docs|audit|profile)/.test(route)) return ['Admin', 'MIGRATE — admin/evidence pattern', 'Platform product owner'];
-  if (/^\/(sector|sectors|agriculture|banking|construction|education|energy|government|healthcare|hospitality|insurance|logistics|manufacturing|realestate|retail|saas|technology|telecom)/.test(route)) return ['Vertical', 'EXPERIMENTAL — certify or retire', 'Vertical portfolio owner'];
-  if (/^\/(login|register|forgot-password|onboarding)/.test(route)) return ['Identity', 'RETAIN — migrate to enterprise auth', 'Platform product owner'];
-  if (/^\/(collaboration|help|drill-down)/.test(route)) return ['Supporting', 'MIGRATE — supporting journey pattern', 'Platform product owner'];
+  if (['/', '/dashboard'].includes(route))
+    return ['Workspace', 'MIGRATE — Decision Workspace', 'CFO / FP&A product owner'];
+  if (/^\/(budgets|forecasts|scenarios|variance|analytics|ai|workforce|templates)/.test(route))
+    return ['Modeling', 'MIGRATE — canonical modeling pattern', 'FP&A product owner'];
+  if (
+    /^\/(consolidation|currency|cash|treasury|data\/(gl|trial|journals|account)|periods)/.test(
+      route
+    )
+  )
+    return ['Close', 'MIGRATE — Close / treasury pattern', 'Controller product owner'];
+  if (/^\/(reports|charts)/.test(route))
+    return ['Reporting', 'MIGRATE — report / board-pack pattern', 'Reporting product owner'];
+  if (/^\/(settings|admin|plugins|docs|audit|profile)/.test(route))
+    return ['Admin', 'MIGRATE — admin/evidence pattern', 'Platform product owner'];
+  if (
+    /^\/(sector|sectors|agriculture|banking|construction|education|energy|government|healthcare|hospitality|insurance|logistics|manufacturing|realestate|retail|saas|technology|telecom)/.test(
+      route
+    )
+  )
+    return ['Vertical', 'EXPERIMENTAL — certify or retire', 'Vertical portfolio owner'];
+  if (/^\/(login|register|forgot-password|onboarding)/.test(route))
+    return ['Identity', 'RETAIN — migrate to enterprise auth', 'Platform product owner'];
+  if (/^\/(collaboration|help|drill-down)/.test(route))
+    return ['Supporting', 'MIGRATE — supporting journey pattern', 'Platform product owner'];
   return ['Unclassified', 'REVIEW — disposition required', 'Unassigned'];
 }
 
@@ -129,13 +185,25 @@ function routeRows() {
     const component = componentMatches.at(-1)?.[1] ?? 'INLINE / WRAPPED';
     const importPath = imports.get(component);
     const candidates = importPath
-      ? ['.tsx', '.ts', '/index.tsx', '/index.ts'].map((suffix) => join(root, 'src', `${importPath.replace(/^\.\//, '')}${suffix}`))
+      ? ['.tsx', '.ts', '/index.tsx', '/index.ts'].map((suffix) =>
+          join(root, 'src', `${importPath.replace(/^\.\//, '')}${suffix}`)
+        )
       : [];
     const source = candidates.find(existsSync);
-    const sourceDisplay = source ? `\`${relative(root, source)}\`` : importPath ? `MISSING: \`src/${importPath}\`` : 'INLINE / WRAPPED';
-    const staticStatus = source ? evidenceStatus(source) : importPath ? 'MISSING' : 'BUILT — INLINE / WRAPPED';
+    const sourceDisplay = source
+      ? `\`${toPosix(relative(root, source))}\``
+      : importPath
+        ? `MISSING: \`src/${importPath}\``
+        : 'INLINE / WRAPPED';
+    const staticStatus = source
+      ? evidenceStatus(source)
+      : importPath
+        ? 'MISSING'
+        : 'BUILT — INLINE / WRAPPED';
     const [pillar, disposition, owner] = routeDisposition(route);
-    routes.push(`| \`${route}\` | ${pillar} | ${disposition} | ${owner} | ${component} | ${sourceDisplay} | ${staticStatus} | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |`);
+    routes.push(
+      `| \`${route}\` | ${pillar} | ${disposition} | ${owner} | ${component} | ${sourceDisplay} | ${staticStatus} | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |`
+    );
   }
   return routes;
 }
