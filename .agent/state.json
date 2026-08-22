@@ -21,17 +21,8 @@
     "constraint_mem": "20GB RAM: overlap root suite + server suites freely; serialize full-suite vs production build only"
   },
   "fingerprint": {
-    "languages": [
-      "TypeScript",
-      "Rust(tauri)"
-    ],
-    "frameworks": [
-      "React 19",
-      "Vite 8",
-      "Tailwind 4",
-      "Zustand",
-      "Express"
-    ],
+    "languages": ["TypeScript", "Rust(tauri)"],
+    "frameworks": ["React 19", "Vite 8", "Tailwind 4", "Zustand", "Express"],
     "monorepo": "root + server/ (independent lockfiles)",
     "pkg_manager": "npm",
     "test_command": "npm test (root) | cd server && npm test && npm run test:native-db",
@@ -206,10 +197,7 @@
       "R-28 WebView2 blank window (12)",
       "R-29 all-in-one claimed but users escape (20)"
     ],
-    "windows_tier1": [
-      "Windows 11 x64",
-      "Windows 10 22H2 x64"
-    ],
+    "windows_tier1": ["Windows 11 x64", "Windows 10 22H2 x64"],
     "ga_gate_zero_hard_escapes_core20": true,
     "desktop_verification_blocked_by": "K2: no cargo/rustc/Windows in sandbox (see BLUEPRINT.md 23.8)"
   },
