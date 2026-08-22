@@ -5,7 +5,7 @@
 // periodCloseStore drives the state machine, authStore (actAs) drives RBAC.
 // =============================================================================
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@/test/testUtils';
 import PeriodClosePage from '@/pages/periods/PeriodClosePage';
 import { actAs } from '@/test/rbacFixtures';
@@ -74,12 +74,18 @@ function unbalancedAugustEntries(): GLEntry[] {
   ];
 }
 
+/** Real store actions, captured once so per-test overrides are restorable. */
+const realInitialize = usePeriodCloseStore.getState().initialize;
+const realTransition = usePeriodCloseStore.getState().transition;
+
 function resetStores() {
   usePeriodCloseStore.setState({
     entries: {},
     checklists: {},
     chain: [],
     initialized: false,
+    initialize: realInitialize,
+    transition: realTransition,
   });
   useGLStore.setState({ entries: [], trialBalance: [] });
 }
@@ -268,5 +274,74 @@ describe('PeriodClosePage', () => {
     // The hard-close action may still legitimately be blocked — only the
     // reopen button's own gating (empty reason) was cleared.
     expect(reopen).not.toHaveAttribute('aria-describedby', 'period-close-block-reason');
+  });
+
+  // ── K30 four-states (items 4–5): skeleton / empty / error+retry ──────────
+
+  it('K30: shows the hydrate skeleton while the close workflow initializes', () => {
+    // Freeze initialization so the pre-hydration branch stays mounted.
+    usePeriodCloseStore.setState({ initialized: false, initialize: () => {} });
+    render(<PeriodClosePage />);
+    expect(screen.getByTestId('period-close-loading')).toBeInTheDocument();
+    // h1 discipline: the loading branch keeps a page-level heading.
+    expect(screen.getByRole('heading', { name: /period close/i, level: 1 })).toBeInTheDocument();
+  });
+
+  it('K30: empty state offers a CTA that re-enters the period-close flow', () => {
+    const initSpy = vi.fn();
+    usePeriodCloseStore.setState({ initialized: true, entries: {}, initialize: initSpy });
+    render(<PeriodClosePage />);
+    expect(screen.getByText(/No fiscal periods to close/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('period-close-init'));
+    expect(initSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('K30: shows an in-flight skeleton region while a transition runs', async () => {
+    useGLStore.setState({ entries: balancedAugustEntries() });
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    usePeriodCloseStore.setState({
+      transition: (async (...args: Parameters<typeof realTransition>) => {
+        await gate;
+        return realTransition(...args);
+      }) as typeof realTransition,
+    });
+    render(<PeriodClosePage />);
+    fireEvent.click(await screen.findByRole('button', { name: /Start soft close/i }));
+    expect(screen.getByTestId('period-close-transition-skeleton')).toBeInTheDocument();
+    release();
+    await waitFor(() => {
+      expect(usePeriodCloseStore.getState().entries['P08']?.state).toBe('soft-close');
+    });
+    expect(screen.queryByTestId('period-close-transition-skeleton')).not.toBeInTheDocument();
+  });
+
+  it('K30: failed transition renders ErrorState (role=alert) whose retry succeeds', async () => {
+    useGLStore.setState({ entries: balancedAugustEntries() });
+    let fail = true;
+    usePeriodCloseStore.setState({
+      transition: (async (...args: Parameters<typeof realTransition>) => {
+        if (fail) {
+          return {
+            success: false as const,
+            newState: 'open' as const,
+            error: 'Engine rejected the close',
+          };
+        }
+        return realTransition(...args);
+      }) as typeof realTransition,
+    });
+    render(<PeriodClosePage />);
+    fireEvent.click(await screen.findByRole('button', { name: /Start soft close/i }));
+    expect(await screen.findByRole('alert')).toHaveTextContent(/Engine rejected the close/i);
+    // Retry re-runs exactly the failed transition.
+    fail = false;
+    fireEvent.click(screen.getByRole('button', { name: /retry soft close/i }));
+    await waitFor(() => {
+      expect(usePeriodCloseStore.getState().entries['P08']?.state).toBe('soft-close');
+    });
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 });
