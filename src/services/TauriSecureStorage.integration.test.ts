@@ -270,7 +270,10 @@ describe('TauriSecureStorage ↔ secure_storage_* IPC integration (scripted Rust
 
   it('classifier discriminates: non-not-found backend failures stay backend-error', async () => {
     const breaking = createTauriSecureStorage({
-      invoke: async () => {
+      // Unlock must SUCCEED so retrieve reaches the IPC layer; only retrieve
+      // fails, isolating the classifier from the lock gate.
+      invoke: async (cmd: string) => {
+        if (cmd === 'secure_storage_unlock') return;
         throw commandError('backend-error', 'keychain daemon unreachable');
       },
     });
