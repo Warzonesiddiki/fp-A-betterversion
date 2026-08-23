@@ -87,7 +87,7 @@ export default function ProfitLossPage() {
     document.title = 'FinPlan Pro — Profit Loss';
   }, []);
 
-  const { entries, importError } = useGLStore();
+  const { entries, importError, isLoading } = useGLStore();
   const navigate = useNavigate();
   const [period, setPeriod] = useState(() => {
     const now = new Date();
@@ -98,6 +98,15 @@ export default function ProfitLossPage() {
     if (entries.length === 0) return null;
     return computeProfitLoss(entries, period);
   }, [entries, period]);
+
+  // K30 hydrate gate (W-A11Y-002 M5): one shared skeleton state, announced
+  // once via srLabel — shown while the GL store hydrates and, defensively,
+  // for a populated ledger whose report cannot be derived.
+  const loadingState = (
+    <div className="p-6">
+      <Skeleton count={8} height="32px" srLabel="Loading profit &amp; loss…" />
+    </div>
+  );
 
   const handleExportPDF = () => {
     if (!report) return;
@@ -144,6 +153,10 @@ export default function ProfitLossPage() {
     );
   }
 
+  if (isLoading) {
+    return loadingState;
+  }
+
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
@@ -158,11 +171,9 @@ export default function ProfitLossPage() {
   }
 
   if (!report) {
-    return (
-      <div className="p-6">
-        <Skeleton count={8} height="32px" srLabel="Loading profit &amp; loss…" />
-      </div>
-    );
+    // Defensive: populated ledger, underivable report — keep the skeleton
+    // rather than rendering a blank page. Also narrows report for TS below.
+    return loadingState;
   }
 
   return (
