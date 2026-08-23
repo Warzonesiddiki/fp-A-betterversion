@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
 import { ScenarioEngine } from './ScenarioEngine';
 import type { ScenarioMetrics } from '@/types';
 
@@ -439,6 +441,42 @@ describe('ScenarioEngine', () => {
       const result = ScenarioEngine.unlockScenario({ ...scn, isLocked: true });
       expect(result.isLocked).toBe(false);
       expect(result.updatedAt).not.toBe('old');
+    });
+  });
+
+  describe('calculateBaseMetrics', () => {
+    it('keeps the simulator base assumptions numerically intact (K33 labeling, not nullification)', () => {
+      // Pinned on an empty ledger so no GL sign convention leaks into the
+      // assertion: the defaults themselves must survive untouched.
+      const metrics = ScenarioEngine.calculateBaseMetrics([]);
+      expect(metrics.headcount).toBe(100); // user-editable driver base
+      expect(metrics.runway).toBe(18); // constant assumption
+      expect(metrics.cashFlow).toBe(0); // 0.8 × EBITDA 0
+      expect(metrics.burnRate).toBe(0); // opex / 12
+    });
+  });
+
+  describe('source basis labels (K17/K18 honest labeling)', () => {
+    // House precedent: CashForecastPage.money.test source guards — adapted
+    // for a LABELING contract, so this reads the RAW source (no comment
+    // stripping): the basis comments themselves are what must survive.
+    const source = fs.readFileSync(path.resolve(__dirname, 'ScenarioEngine.ts'), 'utf8');
+
+    it('no longer describes the seeded headcount as "Mocked"', () => {
+      expect(source).not.toMatch(/mocked/i);
+    });
+
+    it('labels headcount as a user-editable simulator base assumption, not a measured actual', () => {
+      expect(source).toMatch(/simulator base assumption \(user-editable\)/i);
+      expect(source).toMatch(/NOT a measured actual/);
+    });
+
+    it('labels runway, cashFlow and burnRate with their basis in the same return object', () => {
+      const assumptionLabels = source.match(/simulator base assumption/gi) ?? [];
+      expect(assumptionLabels.length).toBeGreaterThanOrEqual(4);
+      expect(source).toMatch(/constant 18 months/i); // runway
+      expect(source).toMatch(/simplified cash conversion/i); // cashFlow = EBITDA × 0.8
+      expect(source).toMatch(/monthly average of posted OpEx/i); // burnRate = opex ÷ 12
     });
   });
 });
