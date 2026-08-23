@@ -562,4 +562,49 @@ describe('glStore server tombstones — undoLastImport/clearData (W0.8.6 §4)', 
     expect(deleteSpy).not.toHaveBeenCalled();
     expect(useGLStore.getState().lastImportResult).toBeNull();
   });
+
+  it('undo after commit prunes the orphaned version entry (R42 hygiene)', async () => {
+    setGlCommitClient(
+      fakeDeleteClient(() => Promise.resolve({ status: 'committed', value: undefined }))
+    );
+
+    const { addEntries } = useGLStore.getState();
+    addEntries([makeEntry('v1'), makeEntry('keep-1')]);
+    useGLStore.setState({
+      entrySyncState: { v1: 'committed', 'keep-1': 'committed' },
+      entryVersions: { v1: 4, 'keep-1': 6 },
+      lastImportEntryIds: ['v1'], // only v1 is undone
+    });
+
+    await useGLStore.getState().undoLastImport();
+
+    // The undone row's If-Match version is dead fuel and must be pruned;
+    // the surviving committed row keeps its version untouched.
+    expect(useGLStore.getState().entryVersions).toEqual({ 'keep-1': 6 });
+    expect(useGLStore.getState().entrySyncState).toEqual({ 'keep-1': 'committed' });
+  });
+
+  it('prunes the version of a locally-vanished row even when its tombstone failed', async () => {
+    setGlCommitClient(
+      fakeDeleteClient(() => Promise.resolve({ status: 'error', message: 'network down' }))
+    );
+
+    const { addEntries } = useGLStore.getState();
+    addEntries([makeEntry('fail-v'), makeEntry('stay')]);
+    useGLStore.setState({
+      entrySyncState: { 'fail-v': 'committed', stay: 'committed' },
+      entryVersions: { 'fail-v': 9, stay: 2 },
+      lastImportEntryIds: ['fail-v'],
+    });
+
+    await useGLStore.getState().undoLastImport();
+
+    const state = useGLStore.getState();
+    // The row vanished LOCALLY despite the failed server tombstone, so its
+    // LOCAL version must go too; unrelated versions survive; the failure is
+    // still surfaced for reconciliation.
+    expect(state.entryVersions).toEqual({ stay: 2 });
+    expect(state.importError).toContain('fail-v (network down)');
+    expect(state.entries.find((e) => e.id === 'stay')).toBeDefined();
+  });
 });

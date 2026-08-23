@@ -860,6 +860,16 @@ export const useGLStore = create<GLState>()(
             const ids = new Set(state.lastImportEntryIds);
             state.entries = state.entries.filter((e) => !ids.has(e.id));
             for (const id of ids) delete state.entrySyncState[id];
+            // R42 hygiene: entryVersions is If-Match fuel keyed by row id —
+            // once the local row is gone the version is dead. Prune every
+            // version not referenced by a surviving entry, covering BOTH
+            // clean tombstones and FAILED ones whose row still exists on the
+            // server: the LOCAL replica dropped the row, so the LOCAL version
+            // must go (the server reconciles via tombstones-on-replay).
+            const survivingIds = new Set(state.entries.map((e) => e.id));
+            for (const vid of Object.keys(state.entryVersions)) {
+              if (!survivingIds.has(vid)) delete state.entryVersions[vid];
+            }
             state.lastImportEntryIds = [];
             state.lastImportResult = null;
             state.importStatus = 'idle';
