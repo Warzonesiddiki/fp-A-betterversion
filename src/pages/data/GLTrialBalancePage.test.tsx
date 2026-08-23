@@ -2,36 +2,43 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 
-const trialBalanceRows = [
-  {
-    accountId: 'a1',
-    accountCode: '4000',
-    accountName: 'Revenue',
-    accountType: 'Revenue',
-    beginningBalance: 0,
-    debit: 0,
-    credit: 100000,
-    netChange: 100000,
-    endingBalance: 100000,
+// Lane R5-c (W-A11Y-002 M5): hoisted-mutable store ref so specs can drive the
+// page into its loading branch without re-importing modules. The trial-balance
+// rows live inside the hoisted ref because the mocked hook consumes them.
+const glState = vi.hoisted(() => ({
+  value: {
+    entries: [{ id: '1' }] as unknown[],
+    trialBalance: [
+      {
+        accountId: 'a1',
+        accountCode: '4000',
+        accountName: 'Revenue',
+        accountType: 'Revenue',
+        beginningBalance: 0,
+        debit: 0,
+        credit: 100000,
+        netChange: 100000,
+        endingBalance: 100000,
+      },
+      {
+        accountId: 'a2',
+        accountCode: '1000',
+        accountName: 'Cash',
+        accountType: 'Asset',
+        beginningBalance: 0,
+        debit: 50000,
+        credit: 0,
+        netChange: 50000,
+        endingBalance: 50000,
+      },
+    ] as unknown[],
+    isLoading: false,
   },
-  {
-    accountId: 'a2',
-    accountCode: '1000',
-    accountName: 'Cash',
-    accountType: 'Asset',
-    beginningBalance: 0,
-    debit: 50000,
-    credit: 0,
-    netChange: 50000,
-    endingBalance: 50000,
-  },
-];
+}));
 
 vi.mock('@/store/glStore', () => ({
   useGLStore: vi.fn(() => ({
-    entries: [{ id: '1' }],
-    trialBalance: trialBalanceRows,
-    isLoading: false,
+    ...glState.value,
     generateTrialBalance: vi.fn(),
   })),
 }));
@@ -73,6 +80,7 @@ describe('GLTrialBalancePage smoke test', () => {
     vi.clearAllMocks();
     actAs('Admin');
     useGLTrialBalanceStore.getState().reset();
+    glState.value.isLoading = false;
   });
   it('renders without crashing', () => {
     const { container } = renderPage();
@@ -103,5 +111,32 @@ describe('GLTrialBalancePage smoke test', () => {
 
     const codeCellsAfter = screen.getAllByText(/^(4000|1000)$/);
     expect(codeCellsAfter[0]?.textContent).toBe('1000');
+  });
+});
+
+// W-A11Y-002 M5 announce-once (lane R5-c): the hoisted-mutable glStore ref
+// flips isLoading; the skeleton must own exactly ONE polite status
+// announcement with all bars aria-hidden.
+describe('GLTrialBalancePage — loading branch announce-once', () => {
+  beforeEach(() => {
+    glState.value.isLoading = true;
+  });
+
+  it('hydrate skeleton announces exactly once via srLabel, bars decorative', () => {
+    const { container } = renderPage();
+    const statuses = screen.getAllByRole('status');
+    expect(statuses).toHaveLength(1);
+    expect(statuses[0]).toHaveAttribute('aria-live', 'polite');
+    expect(statuses[0]).toHaveAttribute('aria-atomic', 'true');
+    expect(statuses[0]).toHaveTextContent('Loading trial balance…');
+    expect(statuses[0]).toHaveClass('sr-only');
+    expect(container.querySelectorAll('[aria-hidden="true"]').length).toBeGreaterThan(0);
+  });
+
+  it('non-loading render exposes no skeleton status region', () => {
+    glState.value.isLoading = false;
+    renderPage();
+    // The loaded page shows the real table; no loading announcement remains.
+    expect(screen.queryByText('Loading trial balance…')).not.toBeInTheDocument();
   });
 });
