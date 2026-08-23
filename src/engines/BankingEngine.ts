@@ -195,9 +195,12 @@ export class BankingEngine {
     return {
       interestIncome: roundTo(interestInc, CURRENCY_PLACES),
       interestExpense: roundTo(interestExp, CURRENCY_PLACES),
+      // Net Interest Margin: (Σ41xx − Σ61xx) × 12 ÷ Σ1xxx × 100 — GL-derived.
       netInterestMargin: ratioPct(netInterest.times(12), avgEarningAssets),
       earningAssets: roundTo(avgEarningAssets, CURRENCY_PLACES),
+      // Yield on assets: Σ41xx × 12 ÷ Σ1xxx × 100 — GL-derived.
       yieldOnAssets: ratioPct(interestInc.times(12), avgEarningAssets),
+      // Cost of funds: Σ61xx × 12 ÷ Σ2xxx × 100 — GL-derived.
       costOfFunds: ratioPct(interestExp.times(12), avgInterestLiabilities),
       // Null-with-contract: no period-end quarterly balance history exists
       // in a single GL snapshot.
