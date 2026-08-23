@@ -124,13 +124,14 @@ export default function NIMDashboardPage() {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Null-with-contract: the sparkline series needs period-end NIM
+            postings for each historical quarter, which one GL snapshot cannot
+            provide — no measured trend line is drawn. */}
         <KPICard
           title="Net Interest Margin"
           value={stats.netInterestMargin}
           format="percent"
-          trend="up"
-          change={0.06}
-          sparklineData={stats.trend}
+          sparklineData={stats.trend ?? undefined}
         />
         <KPICard
           title="Net Interest Income"
@@ -154,6 +155,12 @@ export default function NIMDashboardPage() {
           change={0.08}
         />
       </div>
+
+      <p className="text-xs text-[var(--text-muted)] mt-2">
+        NIM quarter-history requires period-end interest-bearing balance postings for each
+        historical quarter; a single general-ledger snapshot cannot reconstruct the series, so no
+        measured trend line is shown.
+      </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">

@@ -256,10 +256,12 @@ describe('BankingEngine', () => {
       expect(result.netInterestMargin).toBe(0);
     });
 
-    it('should include trend data', () => {
+    it('returns trend as null-unless-posted (needs quarterly period-end balances)', () => {
       const entries = [gl('4101', 500000)];
       const result = BankingEngine.calculateNIMStats(entries);
-      expect(result.trend).toEqual([3.12, 3.18, 3.25, 3.31]);
+      // A single GL snapshot cannot reconstruct quarter-end NIM history; the
+      // retired [3.12, 3.18, 3.25, 3.31] curve was invented.
+      expect(result.trend).toBeNull();
     });
 
     it('should handle empty entries', () => {

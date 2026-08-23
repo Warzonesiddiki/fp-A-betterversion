@@ -177,7 +177,12 @@ export class BankingEngine {
     earningAssets: number;
     yieldOnAssets: number;
     costOfFunds: number;
-    trend: number[];
+    /**
+     * NIM quarter-history needs period-end interest-bearing balance postings
+     * for each historical quarter. A single GL snapshot cannot reconstruct
+     * the series, so this is null rather than an invented curve.
+     */
+    trend: number[] | null;
   } {
     const interestInc = sumByPrefix(entries, '41');
     const interestExp = sumByPrefix(entries, '61').abs();
@@ -194,7 +199,9 @@ export class BankingEngine {
       earningAssets: roundTo(avgEarningAssets, CURRENCY_PLACES),
       yieldOnAssets: ratioPct(interestInc.times(12), avgEarningAssets),
       costOfFunds: ratioPct(interestExp.times(12), avgInterestLiabilities),
-      trend: [3.12, 3.18, 3.25, 3.31],
+      // Null-with-contract: no period-end quarterly balance history exists
+      // in a single GL snapshot.
+      trend: null,
     };
   }
 }
