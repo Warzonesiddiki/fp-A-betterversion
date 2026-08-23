@@ -39,10 +39,10 @@ import type {
 import { ApiError } from '../services/api-integration/types';
 
 import {
+  ApiNotConfiguredError,
   AuthConfig,
   ConnectorId,
   ConnectorOptions,
-  DEFAULT_BASE_URL,
   DEFAULT_RETRY_COUNT,
   DEFAULT_REALTIME_PATH,
   DEFAULT_TIMEOUT_MS,
@@ -54,6 +54,20 @@ import {
 } from './types';
 import { RealtimeChannel } from './realtime/RealtimeChannel';
 import { GlCommitNamespace } from './gl/GlCommitNamespace';
+
+// ─── Origin resolution (W6-P0-13 api-origin-truth) ──────────────────────────
+
+/**
+ * Resolve the REST origin from build-time env. Returns `''` when
+ * `VITE_API_URL` is unset or blank — the SDK then operates in "unconfigured"
+ * mode where every request rejects with `ApiNotConfiguredError` BEFORE any
+ * network attempt. Read lazily (not at module load) so tests can stub
+ * `import.meta.env` and so Vite injects the value per environment.
+ */
+export function resolveApiBaseUrl(): string {
+  const raw: string | undefined = import.meta.env.VITE_API_URL;
+  return typeof raw === 'string' ? raw.trim() : '';
+}
 
 // ─── Auth translation ────────────────────────────────────────────────────────
 
@@ -139,8 +153,33 @@ function extractWsToken(auth: AuthConfig): string {
   }
 }
 
+/**
+ * Resolve the realtime handshake credential. When a `tokenSource` is wired
+ * with bearer auth, the credential is pulled live (same laziness as REST
+ * requests); an empty result rejects with `ApiNotConfiguredError` unless the
+ * auth config explicitly allows anonymous access.
+ */
+function resolveWsToken(client: FpaClient): string {
+  if (client.tokenSource && client.auth.type === 'bearer') {
+    const allowAnonymous = client.auth.allowAnonymous === true;
+    const token = client.tokenSource();
+    if (token === '' && !allowAnonymous) {
+      throw new ApiNotConfiguredError(
+        'No bearer token available for the realtime handshake. ' +
+          'Ensure the user is authenticated (tokenSource must yield a non-empty token) ' +
+          'or set allowAnonymous: true on the bearer auth config.'
+      );
+    }
+    return token;
+  }
+  return extractWsToken(client.auth);
+}
+
 /** Convert any thrown value into the public `SdkError` shape. */
 function toSdkError(err: unknown): SdkError {
+  if (err instanceof ApiNotConfiguredError) {
+    return { code: err.code, message: err.message, cause: err };
+  }
   if (err instanceof ApiError) {
     return {
       code: `HTTP_${err.status}`,
@@ -339,11 +378,15 @@ export class RealtimeFactory {
   /**
    * Open a realtime channel. If a channel is already open for this client,
    * the existing instance is returned (idempotent).
+   *
+   * @throws {@link ApiNotConfiguredError} when the REST origin is unconfigured
+   * (no `baseUrl` / `VITE_API_URL`) — no connection is attempted.
    */
   public connect(): RealtimeChannel {
     if (this.client.activeChannel) return this.client.activeChannel;
+    if (this.client.baseUrl === '') throw new ApiNotConfiguredError();
     const url = toRealtimeUrl(this.client.baseUrl, this.client.realtimeUrl);
-    const token = extractWsToken(this.client.auth);
+    const token = resolveWsToken(this.client);
     const channel = new RealtimeChannel({ url, token });
     this.client.activeChannel = channel;
     channel.connect();
@@ -377,8 +420,15 @@ export class FpaClient {
   /** SDK semver — set at construction, immutable. */
   public readonly version: SdkVersion = SDK_VERSION;
 
-  /** Effective REST base URL after defaults. */
+  /** Effective REST base URL after defaults ('' = unconfigured). */
   public readonly baseUrl: string;
+
+  /**
+   * Lazy per-request bearer credential source, when wired. Lives on the
+   * instance (not private) so the realtime factory in this module can reuse
+   * it without widening FpaClient's API surface further.
+   */
+  public readonly tokenSource: (() => string) | undefined;
 
   /** Effective WebSocket URL. */
   public readonly realtimeUrl: string | undefined;
@@ -400,8 +450,13 @@ export class FpaClient {
   public activeChannel: RealtimeChannel | null = null;
 
   public constructor(config: FpaClientConfig) {
-    this.baseUrl = config.baseUrl ?? DEFAULT_BASE_URL;
+    // W6-P0-13 api-origin-truth: explicit baseUrl wins; otherwise resolve
+    // from VITE_API_URL. '' means UNCONFIGURED — every operation then rejects
+    // with ApiNotConfiguredError before touching the network. The SDK never
+    // invents a default host.
+    this.baseUrl = config.baseUrl ?? resolveApiBaseUrl();
     this.auth = config.auth;
+    this.tokenSource = config.tokenSource;
     this.realtimeUrl = config.realtimeUrl;
     this.staticHeaders = config.headers ?? {};
     this.onAuthRefresh = config.onAuthRefresh;
@@ -425,18 +480,64 @@ export class FpaClient {
     this.realtime = new RealtimeFactory(this);
   }
 
+  // ── Origin + credential guards ──────────────────────────────────────────
+
+  /**
+   * Reject unconfigured clients BEFORE any transport delegation. This is the
+   * single gate that keeps the SDK from ever guessing a host.
+   */
+  private requireConfiguredOrigin(): void {
+    if (this.baseUrl === '') throw new ApiNotConfiguredError();
+  }
+
+  /**
+   * Build per-request auth headers from a wired `tokenSource` (bearer only).
+   * Returns `{}` when no live source applies — static credentials stay on the
+   * underlying `RestApiClient`. An empty live token rejects with
+   * `ApiNotConfiguredError` unless `auth.allowAnonymous === true`.
+   */
+  private resolveLiveAuthHeaders(): Record<string, string> {
+    if (!this.tokenSource || this.auth.type !== 'bearer') return {};
+    const allowAnonymous = this.auth.allowAnonymous === true;
+    const token = this.tokenSource();
+    if (token === '' && !allowAnonymous) {
+      throw new ApiNotConfiguredError(
+        'No bearer token available for the FinPlan Pro API. ' +
+          'Ensure the user is authenticated (tokenSource must yield a non-empty token) ' +
+          'or set allowAnonymous: true on the bearer auth config.'
+      );
+    }
+    return token === '' ? {} : { Authorization: `Bearer ${token}` };
+  }
+
   // ── Generic request escape hatch ────────────────────────────────────────
 
   /**
    * Raw request — escape hatch for endpoints not covered by the namespaces.
    * Returns the full `ApiResponse<T>` (status, headers, data). Most callers
    * should use the namespace methods which unwrap `.data` automatically.
+   *
+   * Every REST operation funnels through here: origin + live-token guards run
+   * before any transport delegation, and live bearer headers are merged under
+   * caller-supplied ones.
+   *
+   * @throws {@link ApiNotConfiguredError} when the origin or credential is unconfigured.
    */
   public async request<T = unknown>(config: ApiRequestConfig): Promise<ApiResponse<T>> {
-    return this.rest.request<T>(config);
+    this.requireConfiguredOrigin();
+    const liveHeaders = this.resolveLiveAuthHeaders();
+    const hasLiveHeaders = Object.keys(liveHeaders).length > 0;
+    const effective: ApiRequestConfig = hasLiveHeaders
+      ? { ...config, headers: { ...liveHeaders, ...(config.headers ?? {}) } }
+      : config;
+    return this.rest.request<T>(effective);
   }
 
   // ── Result-style helpers (never throw) ─────────────────────────────────
+
+  // All helpers below route through `request()`, so the origin/credential
+  // guards apply uniformly; an unconfigured client surfaces
+  // `{ ok: false, error: { code: 'API_NOT_CONFIGURED', … } }` instead of throwing.
 
   /** Wrap a thunk so its thrown value becomes a `SdkError`. */
   private async wrap<T>(fn: () => Promise<T>): Promise<SdkResult<T>> {
@@ -453,29 +554,27 @@ export class FpaClient {
     path: string,
     params?: Readonly<Record<string, string | number | boolean>>
   ): Promise<SdkResult<T>> {
-    return this.wrap<T>(() =>
-      this.rest.get<T>(path, params ? { ...params } : undefined).then((r) => r.data)
-    );
+    return this.wrap<T>(() => this.get<T>(path, params));
   }
 
   /** `POST` that never throws. */
   public postResult<T = unknown>(path: string, body: unknown): Promise<SdkResult<T>> {
-    return this.wrap<T>(() => this.rest.post<T>(path, body).then((r) => r.data));
+    return this.wrap<T>(() => this.post<T>(path, body));
   }
 
   /** `PUT` that never throws. */
   public putResult<T = unknown>(path: string, body: unknown): Promise<SdkResult<T>> {
-    return this.wrap<T>(() => this.rest.put<T>(path, body).then((r) => r.data));
+    return this.wrap<T>(() => this.put<T>(path, body));
   }
 
   /** `PATCH` that never throws. */
   public patchResult<T = unknown>(path: string, body: unknown): Promise<SdkResult<T>> {
-    return this.wrap<T>(() => this.rest.patch<T>(path, body).then((r) => r.data));
+    return this.wrap<T>(() => this.patch<T>(path, body));
   }
 
   /** `DELETE` that never throws. */
   public deleteResult<T = void>(path: string): Promise<SdkResult<T>> {
-    return this.wrap<T>(() => this.rest.delete<T>(path).then((r) => r.data));
+    return this.wrap<T>(() => this.delete<T>(path));
   }
 
   // ── Throwing helpers (unwrap `.data` and re-throw on error) ─────────────
@@ -485,31 +584,35 @@ export class FpaClient {
     path: string,
     params?: Readonly<Record<string, string | number | boolean>>
   ): Promise<T> {
-    const r = await this.rest.get<T>(path, params ? { ...params } : undefined);
+    const r = await this.request<T>({
+      method: 'GET',
+      url: path,
+      ...(params ? { params: { ...params } } : {}),
+    });
     return r.data;
   }
 
   /** Throwing `POST`. */
   public async post<T = unknown>(path: string, body: unknown): Promise<T> {
-    const r = await this.rest.post<T>(path, body);
+    const r = await this.request<T>({ method: 'POST', url: path, data: body });
     return r.data;
   }
 
   /** Throwing `PUT`. */
   public async put<T = unknown>(path: string, body: unknown): Promise<T> {
-    const r = await this.rest.put<T>(path, body);
+    const r = await this.request<T>({ method: 'PUT', url: path, data: body });
     return r.data;
   }
 
   /** Throwing `PATCH`. */
   public async patch<T = unknown>(path: string, body: unknown): Promise<T> {
-    const r = await this.rest.patch<T>(path, body);
+    const r = await this.request<T>({ method: 'PATCH', url: path, data: body });
     return r.data;
   }
 
   /** Throwing `DELETE`. */
   public async delete<T = void>(path: string): Promise<T> {
-    const r = await this.rest.delete<T>(path);
+    const r = await this.request<T>({ method: 'DELETE', url: path });
     return r.data;
   }
 

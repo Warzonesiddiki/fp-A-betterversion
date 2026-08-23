@@ -28,6 +28,7 @@ import { GlCommitNamespace } from '@/sdk/gl/GlCommitNamespace';
 import type { GlJournalBatch, GlCommitResult, GlListedEntry } from '@/sdk/gl/GlCommitNamespace';
 import { useCubeStore } from './cubeStore';
 import { useUIStore } from './uiStore';
+import { useAuthStore } from './authStore';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 function extractTimeCode(dateStr: string): string {
@@ -74,10 +75,18 @@ interface MonthGroupAccum {
 const undoEngine = new UndoRedoEngine<GLSnapshot>(100);
 
 // ── W0.8.6: server commit channel (K25) ─────────────────────────────────────
-// Injectable for tests; defaults to a client over the default base URL.
-// The namespace never mutates the store — outcomes are applied explicitly.
+// Injectable for tests. Default wiring (W6-P0-13 api-origin-truth): the REST
+// origin resolves from VITE_API_URL at request time (in Vite dev the /api
+// proxy forwards to the real Express server on :3001), and the bearer
+// credential is pulled LIVE from authStore via a getState() accessor — no
+// token captured at construction, no sdk→store import cycle. An unconfigured
+// origin or missing session fails fast as ApiNotConfiguredError, which the
+// GlCommitNamespace maps to {status:'error'} — never a silent POST to a host.
 let glCommitClient: GlCommitNamespace = new GlCommitNamespace(
-  new FpaClient({ auth: { type: 'bearer', token: '' } })
+  new FpaClient({
+    auth: { type: 'bearer', token: '' },
+    tokenSource: () => useAuthStore.getState().accessToken ?? '',
+  })
 );
 
 /** Test/infra hook: replace the server-commit transport. */

@@ -181,6 +181,16 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
+    // W6-P0-13 api-origin-truth: local dev reaches the REAL Express backend
+    // (server/, port 3001) via same-origin /api instead of a fictional host.
+    // The SDK resolves its origin from VITE_API_URL; leaving it unset in dev
+    // keeps requests same-origin so this proxy carries them to Express.
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+    },
     // Dev-only host allow-list. The production desktop shell (Tauri) never uses
     // this server; it exists so sandboxed/remote development previews (which
     // proxy the dev server under a generated hostname) are not rejected by

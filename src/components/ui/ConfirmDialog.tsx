@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { AlertTriangle } from 'lucide-react';
 import { useEffect, useRef } from 'react';
+import { isTopDialogLayer, popDialogLayer, pushDialogLayer } from './dialogLayers';
 
 interface ConfirmOptions {
   title: string;
@@ -13,36 +14,40 @@ interface ConfirmOptions {
   details?: string[];
 }
 
+/**
+ * W6-P0-08: pending confirms live in a FIFO queue of {options, resolve}.
+ * `open()` appends; `close()` settles and pops the FRONT entry. Concurrent
+ * callers therefore all settle (front first) instead of the old single-slot
+ * store where a second open() overwrote — and permanently hung — the first
+ * caller's promise. Only the front entry is ever displayed.
+ */
+interface PendingConfirm {
+  options: ConfirmOptions;
+  resolve: (value: boolean) => void;
+}
+
 interface ConfirmState {
-  isOpen: boolean;
-  options: ConfirmOptions | null;
-  resolve: ((value: boolean) => void) | null;
+  queue: PendingConfirm[];
   open: (options: ConfirmOptions) => Promise<boolean>;
   close: (result: boolean) => void;
 }
 
 export const useConfirmStore = create<ConfirmState>()(
   immer((set, get) => ({
-    isOpen: false,
-    options: null,
-    resolve: null,
-    open: (options) => {
-      return new Promise<boolean>((resolve) => {
+    queue: [],
+    open: (options) =>
+      new Promise<boolean>((resolve) => {
         set((state) => {
-          state.isOpen = true;
-          state.options = options;
-          state.resolve = resolve;
+          state.queue.push({ options, resolve });
         });
-      });
-    },
+      }),
     close: (result) => {
-      const resolve = get().resolve;
+      const front = get().queue[0];
+      if (!front) return;
       set((state) => {
-        state.isOpen = false;
-        state.options = null;
-        state.resolve = null;
+        state.queue.shift();
       });
-      resolve?.(result);
+      front.resolve(result);
     },
   }))
 );
@@ -50,17 +55,24 @@ export const useConfirmStore = create<ConfirmState>()(
 const FOCUSABLE = 'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export function ConfirmDialog() {
-  const { isOpen, options, close } = useConfirmStore();
+  const hasPending = useConfirmStore((s) => s.queue.length > 0);
+  const options = useConfirmStore((s) => s.queue[0]?.options ?? null);
+  const close = useConfirmStore((s) => s.close);
   const dialogRef = useRef<HTMLDivElement>(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!hasPending) return;
     previousFocusRef.current = document.activeElement as HTMLElement;
+    // W6-P0-08 stacked-Escape truth: this host registers one layer for the
+    // whole queue drain; Escape is honored only while it is the topmost
+    // dialog layer (e.g. a Modal opened afterwards must close first).
+    const layerId = pushDialogLayer();
     cancelRef.current?.focus();
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
+        if (!isTopDialogLayer(layerId)) return;
         close(false);
         return;
       }
@@ -79,12 +91,13 @@ export function ConfirmDialog() {
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => {
+      popDialogLayer(layerId);
       document.removeEventListener('keydown', handleKeyDown);
       previousFocusRef.current?.focus();
     };
-  }, [isOpen, close]);
+  }, [hasPending, close]);
 
-  if (!isOpen || !options) return null;
+  if (!hasPending || !options) return null;
 
   const variantColors = {
     danger: 'border-red-500 bg-red-50 dark:bg-red-950',

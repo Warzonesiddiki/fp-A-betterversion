@@ -10,6 +10,8 @@ import {
 } from './components/errors/RouteGroupErrorBoundary';
 import { useFirstRun } from './hooks/useFirstRun';
 import { StorageFailureBanner } from './components/system/StorageFailureBanner';
+import { TauriMenuBridge } from './components/tauri/TauriMenuBridge';
+import { ConfirmDialog } from './components/ui/ConfirmDialog';
 import { isTauriRuntime } from './utils/tauriRuntime';
 
 // Core (not route-dependent)
@@ -329,6 +331,11 @@ export default function App() {
       <ThemeProvider>
         {/* N-0002: storage durability failures must be visible, not silent. */}
         <StorageFailureBanner />
+        {/* W6-P0-07: native menu events -> command map (needs Router context). */}
+        <TauriMenuBridge />
+        {/* W6-P0-08: global confirm host - without this mount the confirm.*
+             API deadlocks on first use. FIFO queue drains front-first. */}
+        <ConfirmDialog />
         <Suspense fallback={<LoadingScreen />}>
           <Routes>
             <Route

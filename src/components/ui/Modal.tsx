@@ -1,6 +1,7 @@
 import { forwardRef, HTMLAttributes, useCallback, useEffect, useId, useRef } from 'react';
 import { cn } from '../../utils/cn';
 import { X } from 'lucide-react';
+import { isTopDialogLayer, popDialogLayer, pushDialogLayer } from './dialogLayers';
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -18,10 +19,17 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
     const dialogRef = useRef<HTMLDivElement>(null);
     const previousFocusRef = useRef<HTMLElement | null>(null);
     const titleId = useId();
+    // W6-P0-08: this Modal's position in the shared dialog-layer stack; read
+    // at event time so Escape only fires onClose while this Modal is the
+    // TOPMOST layer (e.g. a confirm dialog opened above must close first).
+    const layerIdRef = useRef<number | null>(null);
 
     const handleKeyDown = useCallback(
       (e: KeyboardEvent) => {
-        if (e.key === 'Escape') onClose();
+        if (e.key !== 'Escape') return;
+        const layerId = layerIdRef.current;
+        if (layerId === null || !isTopDialogLayer(layerId)) return;
+        onClose();
       },
       [onClose]
     );
@@ -30,6 +38,8 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
       if (!isOpen) return;
 
       previousFocusRef.current = document.activeElement as HTMLElement;
+      const layerId = pushDialogLayer();
+      layerIdRef.current = layerId;
       document.addEventListener('keydown', handleKeyDown);
 
       requestAnimationFrame(() => {
@@ -37,6 +47,8 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
       });
 
       return () => {
+        popDialogLayer(layerId);
+        layerIdRef.current = null;
         document.removeEventListener('keydown', handleKeyDown);
         previousFocusRef.current?.focus();
       };
