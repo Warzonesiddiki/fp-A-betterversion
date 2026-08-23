@@ -137,22 +137,16 @@ export default function NIMDashboardPage() {
           title="Net Interest Income"
           value={stats.netInterestMargin}
           format="currency"
-          trend="up"
-          change={4.2}
         />
         <KPICard
           title="Yield on Earning Assets"
           value={stats.yieldOnAssets}
           format="percent"
-          trend="up"
-          change={0.12}
         />
         <KPICard
           title="Cost of Interest Funds"
           value={stats.costOfFunds}
           format="percent"
-          trend="up"
-          change={0.08}
         />
       </div>
 

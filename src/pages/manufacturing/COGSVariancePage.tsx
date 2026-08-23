@@ -9,7 +9,7 @@ import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { COGSVarianceEngine } from '@/engines/COGSVarianceEngine';
 import { HelpPanel } from '@/components/ui/HelpPanel';
 import { PAGE_HELP } from '../_docs';
-import { Activity, Factory, Package, AlertCircle } from 'lucide-react';
+import { Activity, Factory, Package } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -209,47 +209,16 @@ export default function COGSVariancePage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-yellow-400" />
-                Material Alerts
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                <div className="text-xs font-bold text-red-400">Steel Scrapped: +12%</div>
-                <p className="text-[10px] text-slate-400 mt-1">
-                  Abnormal waste detected in Production Line 3.
-                </p>
-              </div>
-              <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-                <div className="text-xs font-bold text-yellow-400">Copper Price: +8%</div>
-                <p className="text-[10px] text-slate-400 mt-1">
-                  Market price index trending above standard.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-bold flex items-center gap-2">
                 <Package className="h-4 w-4 text-blue-400" />
                 Inventory Impact
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between text-xs">
-                <span className="text-[var(--text-muted)]">Revaluation Reserve</span>
-                <span className="font-bold">$124,500</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-[var(--text-muted)]">Obsolescence Risk</span>
-                <span className="font-bold text-red-400">$42,000</span>
-              </div>
-              <div className="pt-2">
-                <Button variant="ghost" size="sm" className="w-full text-blue-400">
-                  Adjust Inventory
-                </Button>
-              </div>
+            <CardContent>
+              <p className="text-sm text-[var(--text-muted)]" role="note">
+                No inventory impact figures are shown: revaluation reserve and obsolescence risk are
+                not derivable from the general ledger alone, and this workspace has no inventory
+                valuation subledger feed. Figures appear here once valuation postings exist.
+              </p>
             </CardContent>
           </Card>
         </div>

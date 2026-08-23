@@ -144,4 +144,35 @@ describe('COGSVariancePage smoke test', () => {
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
     expect(screen.queryByText(/Standard-cost layer required/i)).not.toBeInTheDocument();
   });
+
+  it('discloses instead of fabricating material alerts and inventory impacts', () => {
+    useGLStore.mockReturnValue({ entries: [{ id: 'e1' }] });
+    calculateGLVariances.mockReturnValue({
+      actualCOGS: 1000,
+      standardCOGS: null,
+      variance: null,
+      variancePercent: null,
+      totalVariance: null,
+      breakdown: null,
+    });
+    renderPage();
+    // The pre-remediation page invented these alerts and dollar figures
+    // outright; every one of them must stay gone.
+    for (const literal of [
+      'Material Alerts',
+      'Steel Scrapped',
+      'Copper Price',
+      'Abnormal waste detected in Production Line 3.',
+      'Revaluation Reserve',
+      'Obsolescence Risk',
+      '$124,500',
+      '$42,000',
+      'Adjust Inventory',
+    ]) {
+      expect(screen.queryByText(literal)).not.toBeInTheDocument();
+    }
+    // The honest replacement names the feed that would make the figures real.
+    expect(screen.getByText('Inventory Impact')).toBeInTheDocument();
+    expect(screen.getByText(/no inventory valuation subledger feed/i)).toBeInTheDocument();
+  });
 });
