@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinPlan Pro — CEO Briefing · Zero-Compromise FP&A</title>
+    <style>
+      :root {
+        --bg: #0b1220;
+        --bg2: #101a2e;
+        --panel: #141f35;
+        --line: #22304c;
+        --ink: #e8eef9;
+        --mut: #93a3bf;
+        --acc: #16a34a;
+        --acc2: #22c55e;
+        --bad: #dc2626;
+        --warn: #f59e0b;
+        --blue: #3b82f6;
+        --mono: 'Cascadia Code', Consolas, monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Segoe UI', Inter, system-ui, sans-serif;
+        overflow: hidden;
+      }
+      .deck {
+        position: relative;
+        height: 100vh;
+        width: 100vw;
+      }
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        padding: 56px 72px 64px;
+        animation: fade 0.45s ease;
+      }
+      .slide.active {
+        display: flex;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      h1 {
+        font-size: 52px;
+        line-height: 1.08;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+      }
+      h2 {
+        font-size: 34px;
+        font-weight: 750;
+        margin-bottom: 6px;
+        letter-spacing: -0.3px;
+      }
+      h2 .tag {
+        font-size: 14px;
+        color: var(--acc2);
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 10px;
+      }
+      p.lead {
+        color: var(--mut);
+        font-size: 18px;
+        margin-top: 14px;
+        max-width: 900px;
+      }
+      .grid {
+        display: grid;
+        gap: 18px;
+        margin-top: 26px;
+      }
+      .g2 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .g3 {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+      .g4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px 22px;
+      }
+      .card h4 {
+        font-size: 15px;
+        color: var(--mut);
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        margin-bottom: 8px;
+        font-weight: 650;
+      }
+      .big {
+        font-size: 44px;
+        font-weight: 800;
+        color: var(--acc2);
+      }
+      .mid {
+        font-size: 24px;
+        font-weight: 700;
+      }
+      ul.clean {
+        list-style: none;
+        margin-top: 14px;
+      }
+      ul.clean li {
+        padding: 9px 0 9px 30px;
+        position: relative;
+        border-bottom: 1px dashed var(--line);
+        font-size: 17px;
+      }
+      ul.clean li:before {
+        content: '▸';
+        color: var(--acc2);
+        position: absolute;
+        left: 8px;
+      }
+      ul.clean li b {
+        color: #fff;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-size: 16.5px;
+      }
+      th {
+        text-align: left;
+        color: var(--mut);
+        font-weight: 650;
+        text-transform: uppercase;
+        font-size: 12.5px;
+        letter-spacing: 1.2px;
+        padding: 10px 12px;
+        border-bottom: 2px solid var(--line);
+      }
+      td {
+        padding: 11px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+      .pill {
+        display: inline-block;
+        padding: 3px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .ok {
+        background: rgba(22, 163, 74, 0.16);
+        color: var(--acc2);
+        border: 1px solid rgba(34, 197, 94, 0.4);
+      }
+      .risk {
+        background: rgba(220, 38, 38, 0.14);
+        color: #fca5a5;
+        border: 1px solid rgba(220, 38, 38, 0.4);
+      }
+      .warnp {
+        background: rgba(245, 158, 11, 0.14);
+        color: #fcd34d;
+        border: 1px solid rgba(245, 158, 11, 0.4);
+      }
+      .neut {
+        background: rgba(147, 163, 191, 0.12);
+        color: var(--mut);
+        border: 1px solid var(--line);
+      }
+      code,
+      .mono {
+        font-family: var(--mono);
+        font-size: 0.92em;
+        color: #9fd8b4;
+        background: rgba(34, 197, 94, 0.07);
+        padding: 1px 6px;
+        border-radius: 6px;
+      }
+      .foot {
+        position: absolute;
+        bottom: 22px;
+        left: 72px;
+        right: 72px;
+        display: flex;
+        justify-content: space-between;
+        color: #5b6b88;
+        font-size: 13px;
+      }
+      #bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--acc), var(--acc2));
+        z-index: 99;
+        transition: width 0.3s;
+      }
+      #num {
+        position: fixed;
+        top: 16px;
+        right: 28px;
+        color: #5b6b88;
+        font-family: var(--mono);
+        font-size: 14px;
+        z-index: 99;
+      }
+      .kbd {
+        position: fixed;
+        bottom: 22px;
+        right: 28px;
+        color: #44536f;
+        font-size: 12px;
+        z-index: 99;
+      }
+      /* blueprint diagram */
+      .bp {
+        display: grid;
+        grid-template-columns: 210px 1fr 230px;
+        gap: 14px;
+        margin-top: 24px;
+      }
+      .layer {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px 16px;
+      }
+      .layer h5 {
+        font-size: 12px;
+        letter-spacing: 1.5px;
+        color: var(--mut);
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      .chip {
+        display: inline-block;
+        background: var(--bg2);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 13.5px;
+        margin: 3px 4px 3px 0;
+      }
+      .core {
+        background: linear-gradient(180deg, rgba(22, 163, 74, 0.1), rgba(22, 163, 74, 0.03));
+        border-color: rgba(34, 197, 94, 0.45);
+      }
+      .arrow {
+        align-self: center;
+        color: var(--acc2);
+        font-size: 22px;
+        text-align: center;
+      }
+      /* timeline */
+      .tl {
+        display: flex;
+        gap: 14px;
+        margin-top: 30px;
+      }
+      .ph {
+        flex: 1;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px;
+        position: relative;
+      }
+      .ph:before {
+        content: '';
+        position: absolute;
+        top: -9px;
+        left: 18px;
+        width: 46px;
+        height: 5px;
+        border-radius: 3px;
+        background: var(--acc);
+      }
+      .ph h5 {
+        font-size: 13px;
+        color: var(--acc2);
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+      }
+      .ph .t {
+        font-size: 19px;
+        font-weight: 750;
+        margin: 6px 0 8px;
+      }
+      .ph ul {
+        margin-left: 16px;
+        font-size: 14.5px;
+        color: var(--ink);
+      }
+      .ph li {
+        margin: 5px 0;
+        color: var(--mut);
+      }
+      .ph li b {
+        color: var(--ink);
+      }
+      /* demo screens */
+      .stage {
+        position: relative;
+        height: 430px;
+        margin-top: 22px;
+        background: var(--bg2);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        overflow: hidden;
+      }
+      .screen {
+        position: absolute;
+        inset: 0;
+        padding: 34px 44px;
+        opacity: 0;
+        transition: opacity 0.7s;
+        display: flex;
+        flex-direction: column;
+      }
+      .screen.on {
+        opacity: 1;
+      }
+      .winbar {
+        height: 34px;
+        background: #0a1122;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 14px;
+        margin-bottom: 18px;
+      }
+      .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+      }
+      .mock-row {
+        display: flex;
+        gap: 16px;
+        margin-top: 12px;
+      }
+      .kpibox {
+        flex: 1;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+      }
+      .kpibox .l {
+        font-size: 12px;
+        color: var(--mut);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .kpibox .v {
+        font-size: 26px;
+        font-weight: 800;
+        margin-top: 4px;
+      }
+      .bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        height: 150px;
+        margin-top: auto;
+        padding: 10px 6px 0;
+      }
+      .bars i {
+        flex: 1;
+        background: linear-gradient(180deg, var(--acc2), var(--acc));
+        border-radius: 6px 6px 0 0;
+        opacity: 0.85;
+        transform-origin: bottom;
+        animation: grow 1s ease both;
+      }
+      @keyframes grow {
+        from {
+          transform: scaleY(0);
+        }
+        to {
+          transform: scaleY(1);
+        }
+      }
+      .caption {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 16px 44px;
+        background: linear-gradient(0deg, rgba(6, 10, 20, 0.95), transparent);
+        font-size: 17px;
+      }
+      .caption b {
+        color: var(--acc2);
+      }
+      /* decision cards */
+      .dec {
+        border-left: 4px solid var(--warn);
+      }
+      .dec .rec {
+        margin-top: 10px;
+        font-size: 14.5px;
+        color: var(--mut);
+      }
+      .dec .rec b {
+        color: var(--acc2);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="bar"></div>
+    <div id="num"></div>
+    <div class="kbd">← → navigate · P print/PDF</div>
+    <div class="deck" id="deck">
+      <!-- 1 TITLE -->
+      <section class="slide active">
+        <div style="margin: auto; text-align: center">
+          <div class="pill ok" style="font-size: 14px; padding: 6px 18px">
+            CEO BRIEFING · 2026-08-24
+          </div>
+          <h1 style="font-size: 66px; margin-top: 26px">FinPlan Pro</h1>
+          <h1 style="font-size: 30px; color: var(--mut); font-weight: 500; margin-top: 10px">
+            One platform. Every industry. <span style="color: var(--acc2)">Zero compromises.</span>
+          </h1>
+          <p class="lead" style="margin: 26px auto 0; text-align: center">
+            Roadmap · Engineering Blueprint · Expected Results<br />
+            <span style="font-size: 14px"
+              >All figures in this deck are measured in-repo and gate-enforced — sources: README
+              claim gate (11/11), BMAD reasoning ledger #37–#42.</span
+            >
+          </p>
+        </div>
+      </section>
+
+      <!-- 2 MISSION -->
+      <section class="slide">
+        <h2><span class="tag">Mission</span>The one-stop FP&A platform for every industry</h2>
+        <p class="lead">
+          Finance teams today stitch together 4–6 tools for budgeting, forecasting, consolidation,
+          close and reporting. FinPlan Pro replaces the stack with one offline-first desktop suite —
+          fast, private, audit-grade.
+        </p>
+        <div class="grid g3">
+          <div class="card">
+            <h4>All-industry depth</h4>
+            <p style="font-size: 16px">
+              Sector configs & templates across manufacturing, banking, retail, SaaS, healthcare,
+              energy, government, construction, real-estate, telecom, logistics, education —
+              expansion queue is costed, not guessed.
+            </p>
+          </div>
+          <div class="card">
+            <h4>Audit-grade math</h4>
+            <p style="font-size: 16px">
+              Every covered currency path routes through one exact-decimal primitive
+              (<code>money.ts</code>: ROUND_HALF_UP, divide-by-zero throws) — enforced by a README
+              claim gate that fails the build if docs drift from code.
+            </p>
+          </div>
+          <div class="card">
+            <h4>Local-first trust</h4>
+            <p style="font-size: 16px">
+              Data stays on-device by default. Optional self-hosted backend (Express + SQLite, RBAC,
+              JWT rotation) — never a cloud requirement.
+            </p>
+          </div>
+        </div>
+        <table>
+          <tr>
+            <th>Proof point</th>
+            <th>Measured today</th>
+            <th>Enforcement</th>
+          </tr>
+          <tr>
+            <td>Financial engine modules</td>
+            <td><b>182</b> canonical engines</td>
+            <td><span class="pill ok">claim gate</span></td>
+          </tr>
+          <tr>
+            <td>App surface</td>
+            <td>
+              <b>45</b> stores · <b>51</b> route domains · <b>122</b> UI primitives ·
+              <b>4</b> workers
+            </td>
+            <td><span class="pill ok">claim gate</span></td>
+          </tr>
+          <tr>
+            <td>Server integration coverage</td>
+            <td><b>323</b> HTTP-level tests (auth rotation, RBAC close lifecycle)</td>
+            <td><span class="pill neut">server suite</span></td>
+          </tr>
+        </table>
+      </section>
+
+      <!-- 3 ZERO-FLAW PROGRAM -->
+      <section class="slide">
+        <h2>
+          <span class="tag">Quality system</span>“Zero compromises” is enforced machinery, not a
+          slogan
+        </h2>
+        <div class="grid g4">
+          <div class="card">
+            <h4>Wave-6 full-surface audit</h4>
+            <div class="big">
+              30<span style="font-size: 20px; color: var(--mut)">/30 lanes</span>
+            </div>
+            <p style="color: var(--mut); font-size: 14.5px; margin-top: 6px">
+              Independent read-only agents audited every layer; every finding carries file:line
+              evidence.
+            </p>
+          </div>
+          <div class="card">
+            <h4>Defects registered</h4>
+            <div class="big" style="color: #fca5a5">
+              16<span style="font-size: 20px; color: var(--mut)"> P0</span>
+            </div>
+            <p style="color: var(--mut); font-size: 14.5px; margin-top: 6px">
+              + 99 P1 gaps and 62 polish items — all ranked, all actionable, all tracked.
+            </p>
+          </div>
+          <div class="card">
+            <h4>P0 closed since audit</h4>
+            <div class="big">15<span style="font-size: 20px; color: var(--mut)">/16</span></div>
+            <p style="color: var(--mut); font-size: 14.5px; margin-top: 6px">
+              Three fix waves in one day. The last one is an owner product decision (key-recovery
+              UX).
+            </p>
+          </div>
+          <div class="card">
+            <h4>Gates at every merge</h4>
+            <div class="mid" style="margin-top: 8px">tsc · eslint · vitest · build</div>
+            <p style="color: var(--mut); font-size: 14.5px; margin-top: 8px">
+              Plus pre-commit secret scan, prettier, README-truth gate, docs-link graph, cargo
+              clippy for the Rust shell.
+            </p>
+          </div>
+        </div>
+        <ul class="clean" style="max-width: 1050px">
+          <li>
+            <b>Wrong-number killers shipped:</b> silent formula zeroing under CSP, garbage IRR/XIRR
+            on edge inputs, negative-metrics-render-green, comma-amount truncation on import — each
+            dead behind a regression test that was red first.
+          </li>
+          <li>
+            <b>Security class closed:</b> plugin-sandbox escape vector rejected at the AST layer;
+            loader actually sandboxed now; storage failures surface typed errors instead of
+            vanishing; RBAC guards on ~70 store mutations with a completeness scan preventing
+            regression.
+          </li>
+          <li>
+            <b>Honesty enforcement:</b> docs cannot out-run code — the claim gate failed my own
+            draft this week and forced the truthful wording. That is the culture working as
+            designed.
+          </li>
+        </ul>
+      </section>
+
+      <!-- 4 BLUEPRINT -->
+      <section class="slide">
+        <h2><span class="tag">Blueprint</span>One runtime, five clean layers</h2>
+        <div class="bp">
+          <div>
+            <div class="layer" style="height: 100%">
+              <h5>Desktop Shell</h5>
+              <span class="chip">Tauri (Rust)</span
+              ><span class="chip">Native menu ↔ command map</span
+              ><span class="chip">Crash reporter (10 tests)</span
+              ><span class="chip">Keyring-ready secure storage</span>
+              <p style="color: var(--mut); font-size: 13px; margin-top: 10px">
+                Small binary, OS webview, no Chromium bundle.
+              </p>
+            </div>
+          </div>
+          <div>
+            <div class="layer core">
+              <h5 style="color: var(--acc2)">Application Core — React 19 + TypeScript strict</h5>
+              <span class="chip">51 route domains (lazy)</span
+              ><span class="chip">45 Zustand stores (RBAC-guarded)</span
+              ><span class="chip">122 UI primitives</span><span class="chip">i18n ×8 locales</span
+              ><span class="chip">Confirm/Dialog stack</span>
+            </div>
+            <div style="text-align: center; color: var(--acc2); font-size: 18px; margin: 4px 0">
+              ▼ &nbsp; ▲
+            </div>
+            <div class="layer core">
+              <h5 style="color: var(--acc2)">Engines & Money Core — pure, side-effect-free</h5>
+              <span class="chip">182 financial engines</span
+              ><span class="chip">money.ts exact decimals</span
+              ><span class="chip">SafeMathParser (no eval)</span
+              ><span class="chip">Driver-cascade templates</span
+              ><span class="chip">Monte-Carlo / consolidation workers</span>
+            </div>
+          </div>
+          <div>
+            <div class="layer" style="height: 100%">
+              <h5>Data & Services</h5>
+              <span class="chip">sql.js local DB</span><span class="chip">Typed storage errors</span
+              ><span class="chip">SDK → Express origin (env-only)</span
+              ><span class="chip">Plugin sandbox (AST-gated)</span
+              ><span class="chip">PWA precache (471 entries)</span>
+            </div>
+          </div>
+        </div>
+        <ul class="clean" style="max-width: 1100px">
+          <li>
+            <b>Every boundary validates:</b> workers validate payloads before math; the SDK refuses
+            to phone home without configuration; imports reject malformed dates/amounts loudly.
+          </li>
+          <li>
+            <b>Every claim is checkable:</b> README numbers are computed from the filesystem at gate
+            time — documentation cannot lie.
+          </li>
+        </ul>
+      </section>
+
+      <!-- 5 DEMO SIM -->
+      <section class="slide">
+        <h2>
+          <span class="tag">Expected result · live simulation</span>What the CFO sees in minute one
+        </h2>
+        <div class="stage" id="stage">
+          <div class="screen on">
+            <div class="winbar">
+              <span class="dot" style="background: #ef4444"></span
+              ><span class="dot" style="background: #f59e0b"></span
+              ><span class="dot" style="background: #22c55e"></span
+              ><span style="color: var(--mut); font-size: 12.5px; margin-left: 8px"
+                >FinPlan Pro — Budget · FY2027</span
+              >
+            </div>
+            <div class="mock-row">
+              <div class="kpibox">
+                <div class="l">Annual Budget</div>
+                <div class="v">$48.2M</div>
+              </div>
+              <div class="kpibox">
+                <div class="l">vs Actual YTD</div>
+                <div class="v" style="color: var(--acc2)">+2.1%</div>
+              </div>
+              <div class="kpibox">
+                <div class="l">Open variances</div>
+                <div class="v">7</div>
+              </div>
+            </div>
+            <div class="bars">
+              <i style="height: 40%"></i><i style="height: 55%"></i><i style="height: 48%"></i
+              ><i style="height: 70%"></i><i style="height: 62%"></i><i style="height: 84%"></i
+              ><i style="height: 76%"></i
+              ><i style="height: 92%; outline: 2px solid var(--acc2)"></i>
+            </div>
+            <div class="caption">
+              <b>Budget build:</b> driver-based lines cascade instantly — change “headcount growth
+              4%→6%” and 182 downstream engines recompute off exact decimals.
+            </div>
+          </div>
+          <div class="screen">
+            <div class="winbar">
+              <span class="dot" style="background: #ef4444"></span
+              ><span class="dot" style="background: #f59e0b"></span
+              ><span class="dot" style="background: #22c55e"></span
+              ><span style="color: var(--mut); font-size: 12.5px; margin-left: 8px"
+                >FinPlan Pro — Forecast · Monte Carlo</span
+              >
+            </div>
+            <div class="mock-row">
+              <div class="kpibox">
+                <div class="l">P50 revenue</div>
+                <div class="v">$51.7M</div>
+              </div>
+              <div class="kpibox">
+                <div class="l">P90 downside</div>
+                <div class="v" style="color: #fcd34d">$46.3M</div>
+              </div>
+              <div class="kpibox">
+                <div class="l">Simulations</div>
+                <div class="v">
+                  100k <span style="font-size: 13px; color: var(--mut)">(off-thread)</span>
+                </div>
+              </div>
+            </div>
+            <div class="bars">
+              <i style="height: 30%"></i><i style="height: 52%"></i><i style="height: 78%"></i
+              ><i style="height: 96%"></i><i style="height: 74%"></i><i style="height: 50%"></i
+              ><i style="height: 32%"></i><i style="height: 18%"></i>
+            </div>
+            <div class="caption">
+              <b>Forecast & scenarios:</b> seeded Monte Carlo runs in a worker; scenario locks stop
+              two people editing the same period — undo can’t bypass a hard close.
+            </div>
+          </div>
+          <div class="screen">
+            <div class="winbar">
+              <span class="dot" style="background: #ef4444"></span
+              ><span class="dot" style="background: #f59e0b"></span
+              ><span class="dot" style="background: #22c55e"></span
+              ><span style="color: var(--mut); font-size: 12.5px; margin-left: 8px"
+                >FinPlan Pro — Board Pack · Close M07</span
+              >
+            </div>
+            <div class="mock-row">
+              <div class="kpibox">
+                <div class="l">Close state</div>
+                <div class="v" style="color: var(--acc2)">Hard-locked ✓</div>
+              </div>
+              <div class="kpibox">
+                <div class="l">IC eliminations applied</div>
+                <div class="v">14 / 14</div>
+              </div>
+              <div class="kpibox">
+                <div class="l">Export</div>
+                <div class="v">PDF · XLSX</div>
+              </div>
+            </div>
+            <div class="bars">
+              <i style="height: 60%"></i><i style="height: 60%"></i><i style="height: 75%"></i
+              ><i style="height: 75%"></i><i style="height: 90%"></i><i style="height: 90%"></i
+              ><i style="height: 100%"></i>
+            </div>
+            <div class="caption">
+              <b>Close & reporting:</b> consolidation applies what it counts, period lock freezes
+              edits (undo included), board pack exports in one click.
+            </div>
+          </div>
+          <div
+            class="caption"
+            style="bottom: 52px; background: none; font-size: 12.5px; color: #5b6b88"
+          >
+            Interactive prototype simulation of shipped flows · real desktop recording runbook →
+            appendix slide
+          </div>
+        </div>
+      </section>
+
+      <!-- 6 ROADMAP -->
+      <section class="slide">
+        <h2><span class="tag">Roadmap</span>From proven core to pilot-certified platform</h2>
+        <div class="tl">
+          <div class="ph">
+            <h5>Done · this week</h5>
+            <div class="t">Foundation hardened</div>
+            <ul>
+              <li><b>30-lane audit</b> → register</li>
+              <li><b>15/16 P0 closed</b> (3 fix waves)</li>
+              <li>Sandbox, RBAC, storage truth, IRR contract, 28 dead template formulas revived</li>
+              <li>Ledger #37–#42, gates green</li>
+            </ul>
+          </div>
+          <div class="ph">
+            <h5>Next · 30 days</h5>
+            <div class="t">Decision + polish wave</div>
+            <ul>
+              <li><b>5 owner decisions</b> unblocked (this deck)</li>
+              <li>Perf sweep: selector-less store subscriptions</li>
+              <li>Marketplace install integrity + router override alignment</li>
+              <li>a11y cluster fixes</li>
+            </ul>
+          </div>
+          <div class="ph">
+            <h5>60 days</h5>
+            <div class="t">Integration truth completed</div>
+            <ul>
+              <li>Frontend auth client ↔ Express (post-ruling)</li>
+              <li>ERP/GL connector adapters behind evidence gate</li>
+              <li>
+                Verticals: wire stranded Insurance model; nonprofit fund-accounting & job-costing
+                engines
+              </li>
+              <li>e2e journeys for top-10 CFO tasks</li>
+            </ul>
+          </div>
+          <div class="ph">
+            <h5>90 days+</h5>
+            <div class="t">Pilot certification</div>
+            <ul>
+              <li>CAPABILITY_TRUTH_MATRIX-driven beta</li>
+              <li>Solo-dev Tier-2/4 validation evidence per path-lock</li>
+              <li>Sector starter kits (hospitality, logistics, agriculture)</li>
+              <li>v1 certification review</li>
+            </ul>
+          </div>
+        </div>
+        <p class="lead" style="font-size: 15.5px">
+          Sequencing follows the locked BMAD delivery path: no pivot, no connector commitment ahead
+          of evidence — engineering only where it cannot pre-decide market choices.
+        </p>
+      </section>
+
+      <!-- 7 EXPECTED RESULTS -->
+      <section class="slide">
+        <h2><span class="tag">Expected results</span>What success looks like, measurably</h2>
+        <table>
+          <tr>
+            <th>KPI</th>
+            <th>Baseline (measured today)</th>
+            <th>Target · 90 days</th>
+            <th>How verified</th>
+          </tr>
+          <tr>
+            <td>Open P0 defects</td>
+            <td><span class="pill warnp">1 (owner-gated)</span> from 16</td>
+            <td><span class="pill ok">0 sustained</span></td>
+            <td>Wave audits re-run monthly; ledger public-in-repo</td>
+          </tr>
+          <tr>
+            <td>Gate streak</td>
+            <td>tsc·lint·vitest·build green on every wave</td>
+            <td>100% merges gated</td>
+            <td>Pre-commit + CI order enforced</td>
+          </tr>
+          <tr>
+            <td>Industry verticals live</td>
+            <td>15 sector configs live · 14+ template models</td>
+            <td>+insurance wired, +nonprofit & job-cost engines, +3 sector kits</td>
+            <td>Template contract test (all formulas evaluate)</td>
+          </tr>
+          <tr>
+            <td>Core-journey e2e coverage</td>
+            <td>Specs exist; phantom-doc debt being purged</td>
+            <td>Top-10 CFO journeys green nightly</td>
+            <td>Playwright suite vs USER_JOURNEY manifest</td>
+          </tr>
+          <tr>
+            <td>Docs truth</td>
+            <td>Claim gate 11/11 after rewrite</td>
+            <td>Zero unverifiable hero claims</td>
+            <td>scripts/check-readme-claims.mjs in CI</td>
+          </tr>
+          <tr>
+            <td>Beta readiness</td>
+            <td>Truth matrix maintained per capability</td>
+            <td>Pilot cohort onboarding pack v1</td>
+            <td>Certification review per path-lock Phase 5</td>
+          </tr>
+        </table>
+        <p class="lead" style="font-size: 15px">
+          Financial-outcome targets (seats, revenue) are deliberately excluded until Tier-2
+          validation evidence lands — the same honesty rule the code enforces.
+        </p>
+      </section>
+
+      <!-- 8 DECISIONS -->
+      <section class="slide">
+        <h2><span class="tag">Decisions I need today</span>Five rulings unlock the last mile</h2>
+        <div class="grid g2" style="margin-top: 22px">
+          <div class="card dec">
+            <h4>1 · Encryption-key recovery UX</h4>
+            <p style="font-size: 15.5px">
+              Today a device wipe destroys encrypted history (key lives beside data).
+            </p>
+            <div class="rec">
+              Recommended: <b>optional passphrase escrow</b>, opt-in at onboarding; default
+              unchanged for offline-first purists.
+            </div>
+          </div>
+          <div class="card dec">
+            <h4>2 · Plugin marketplace posture</h4>
+            <p style="font-size: 15.5px">
+              Sandbox is now real; install-path integrity checks are still stubbed.
+            </p>
+            <div class="rec">
+              Recommended: <b>keep marketplace disabled</b> until signed-manifest evidence exists
+              (path-lock compliant).
+            </div>
+          </div>
+          <div class="card dec">
+            <h4>3 · Server integration scope</h4>
+            <p style="font-size: 15.5px">
+              SDK now targets env-configured origin only; auth client unwritten.
+            </p>
+            <div class="rec">
+              Recommended: <b>green-light auth client</b> (mock fallback preserved) — unlocks
+              multi-user story.
+            </div>
+          </div>
+          <div class="card dec">
+            <h4>4 · Browser vs PWA story</h4>
+            <p style="font-size: 15.5px">
+              App hard-blocks browsers while shipping an installable PWA manifest.
+            </p>
+            <div class="rec">
+              Recommended: <b>desktop-only positioning stands</b>; retire the PWA surface until a
+              web tier is a funded decision.
+            </div>
+          </div>
+          <div class="card dec" style="grid-column: 1/-1">
+            <h4>5 · Desktop updater channel</h4>
+            <p style="font-size: 15.5px">
+              No updater configured while lib.rs claimed one — false claim already flagged; a
+              finance desktop app needs a patch channel before beta.
+            </p>
+            <div class="rec">
+              Recommended: <b>self-hosted updater</b> (static JSON + signed artifacts on existing
+              infra) — cheapest secure option, no vendor lock.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9 CLOSE -->
+      <section class="slide">
+        <div style="margin: auto; text-align: center">
+          <div class="pill ok" style="font-size: 13px; padding: 5px 16px">
+            STATUS · GATES GREEN · LEDGER PUBLIC
+          </div>
+          <h1 style="font-size: 46px; margin-top: 24px">
+            The floor is engineered.<br /><span style="color: var(--acc2)"
+              >The roadmap is de-risked.</span
+            >
+          </h1>
+          <p class="lead" style="margin: 22px auto 0; text-align: center; max-width: 820px">
+            We audited everything, fixed what could be fixed, and refused to fake the rest. Five
+            rulings today convert the remaining register into scheduled work — and FinPlan Pro walks
+            into pilot certification with receipts, not promises.
+          </p>
+          <p style="margin-top: 34px; color: var(--mut); font-size: 15px">
+            Evidence pack: <code>docs/audit/WAVE6_ZERO_FLAW_AUDIT_2026-08-24.md</code> ·
+            <code>_bmad/reasoning-ledger.md #37–#42</code> · commits <code>3ebf4344</code>
+            <code>5c83551b</code> <code>585ca55f</code>
+          </p>
+        </div>
+      </section>
+
+      <!-- 10 APPENDIX: RECORDING RUNBOOK -->
+      <section class="slide">
+        <h2><span class="tag">Appendix</span>Recording the real demo video (runbook)</h2>
+        <ul class="clean" style="max-width: 1080px">
+          <li>
+            <b>Why not a browser recording today:</b> plain browsers are blocked by the Tauri-only
+            gate (a shipped honesty feature) — the authentic demo must run in the desktop shell.
+          </li>
+          <li>
+            <b>Setup:</b> <code>npm run tauri:dev</code> → window opens · OBS Studio, 1920×1080,
+            capture window, 60fps · seed the demo dataset via the mock-data generator (<code
+              >npm run mock-data:*</code
+            >
+            family).
+          </li>
+          <li>
+            <b>Shot list (≈90s):</b> import GL → fix-free date/amount handling · budget driver edit
+            cascading live · Monte Carlo forecast with progress + cancel · scenario compare ·
+            hard-close a period, attempt edit, watch the typed lock error · board-pack export.
+          </li>
+          <li>
+            <b>Expected-result callouts:</b> reuse this deck’s simulation captions verbatim so video
+            and deck tell one story.
+          </li>
+          <li>
+            <b>Fallback:</b> present the simulation slide (previous) — it animates the identical
+            flow without a machine-dependent recording.
+          </li>
+        </ul>
+      </section>
+    </div>
+    <script>
+      const slides = [...document.querySelectorAll('.slide')];
+      let i = 0;
+      function show(n) {
+        i = Math.max(0, Math.min(slides.length - 1, n));
+        slides.forEach((s, k) => s.classList.toggle('active', k === i));
+        document.getElementById('bar').style.width = ((i + 1) / slides.length) * 100 + '%';
+        document.getElementById('num').textContent = i + 1 + ' / ' + slides.length;
+      }
+      addEventListener('keydown', (e) => {
+        if (['ArrowRight', 'PageDown', ' '].includes(e.key)) {
+          e.preventDefault();
+          show(i + 1);
+        }
+        if (['ArrowLeft', 'PageUp'].includes(e.key)) {
+          e.preventDefault();
+          show(i - 1);
+        }
+        if (e.key === 'Home') show(0);
+        if (e.key === 'End') show(slides.length - 1);
+      });
+      addEventListener('click', (e) => {
+        if (e.target.closest('a')) return;
+        e.clientX > innerWidth * 0.7 ? show(i + 1) : e.clientX < innerWidth * 0.3 && show(i - 1);
+      });
+      show(0);
+      // demo screen rotator
+      const scr = [...document.querySelectorAll('.screen')];
+      let si = 0;
+      function cycle() {
+        scr.forEach((s, k) => s.classList.toggle('on', k === si));
+        scr[si].querySelectorAll('.bars i').forEach((b) => {
+          b.style.animation = 'none';
+          void b.offsetWidth;
+          b.style.animation = '';
+        });
+        si = (si + 1) % scr.length;
+      }
+      setInterval(() => {
+        const st = document.getElementById('stage');
+        const r = st.getBoundingClientRect();
+        if (r.width > 0 && r.top < innerHeight && r.bottom > 0) cycle();
+      }, 3400);
+      setInterval(cycle, 3400);
+    </script>
+  </body>
+</html>
