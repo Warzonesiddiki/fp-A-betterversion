@@ -51,6 +51,10 @@ import { immer } from 'zustand/middleware/immer';
 import type { GLAccount, ImportJob, DataState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { safeJSONStorage } from '../utils/storage/safeJSONStorage';
+// W6-P0-14: GL account & import-job mutations are permission-guarded.
+// Ledger destruction is expressed as import:delete per the RBAC catalogue
+// (gl:delete deliberately does not exist). Selection stays unguarded.
+import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 export const useDataStore = create<DataState>()(
   subscribeWithSelector(
@@ -61,14 +65,17 @@ export const useDataStore = create<DataState>()(
         selectedAccountId: null,
         lastImportDate: null,
 
-        setAccounts: (accounts) => set({ accounts }),
+        setAccounts: enforce(Permissions.IMPORT_UPDATE, 'setAccounts', (accounts) =>
+          set({ accounts })
+        ),
 
-        addAccount: (account) =>
+        addAccount: enforce(Permissions.IMPORT_CREATE, 'addAccount', (account) =>
           set((state) => ({
             accounts: [...state.accounts, { ...account, id: `acct-${Date.now()}`, children: [] }],
-          })),
+          }))
+        ),
 
-        updateAccount: (id, updates) =>
+        updateAccount: enforce(Permissions.IMPORT_UPDATE, 'updateAccount', (id, updates) =>
           set((state) => {
             const updateRecursive = (list: GLAccount[]): GLAccount[] =>
               list.map((a) => {
@@ -77,9 +84,10 @@ export const useDataStore = create<DataState>()(
                 return a;
               });
             return { accounts: updateRecursive(state.accounts) };
-          }),
+          })
+        ),
 
-        deleteAccount: (id) => {
+        deleteAccount: enforce(Permissions.IMPORT_DELETE, 'deleteAccount', (id) => {
           set((state) => {
             const removeRecursive = (list: GLAccount[]): GLAccount[] =>
               list
@@ -93,9 +101,9 @@ export const useDataStore = create<DataState>()(
               selectedAccountId: state.selectedAccountId === id ? null : state.selectedAccountId,
             };
           });
-        },
+        }),
 
-        toggleAccountActive: (id) => {
+        toggleAccountActive: enforce(Permissions.IMPORT_UPDATE, 'toggleAccountActive', (id) => {
           set((state) => {
             const toggleRecursive = (list: GLAccount[]): GLAccount[] =>
               list.map((a) => {
@@ -105,9 +113,9 @@ export const useDataStore = create<DataState>()(
               });
             return { accounts: toggleRecursive(state.accounts) };
           });
-        },
+        }),
 
-        addImportJob: (job) => {
+        addImportJob: enforce(Permissions.IMPORT_CREATE, 'addImportJob', (job) => {
           const id = `import-${Date.now()}`;
           const now = new Date().toISOString();
           set((state) => ({
@@ -117,29 +125,34 @@ export const useDataStore = create<DataState>()(
             ],
           }));
           return id;
-        },
+        }),
 
-        updateImportStatus: (id, status, error) => {
-          set((state) => {
-            const isCompleted = status === 'Completed';
-            const newJobs = state.importJobs.map((j) => {
-              if (j.id === id) {
-                return {
-                  ...j,
-                  status,
-                  ...(isCompleted ? { completedAt: new Date().toISOString() } : {}),
-                  ...(error ? { error } : {}),
-                };
-              }
-              return j;
+        updateImportStatus: enforce(
+          Permissions.IMPORT_UPDATE,
+          'updateImportStatus',
+          (id, status, error) => {
+            set((state) => {
+              const isCompleted = status === 'Completed';
+              const newJobs = state.importJobs.map((j) => {
+                if (j.id === id) {
+                  return {
+                    ...j,
+                    status,
+                    ...(isCompleted ? { completedAt: new Date().toISOString() } : {}),
+                    ...(error ? { error } : {}),
+                  };
+                }
+                return j;
+              });
+              return {
+                importJobs: newJobs,
+                ...(isCompleted ? { lastImportDate: new Date().toISOString() } : {}),
+              };
             });
-            return {
-              importJobs: newJobs,
-              ...(isCompleted ? { lastImportDate: new Date().toISOString() } : {}),
-            };
-          });
-        },
+          }
+        ),
 
+        // Read-only/selective: current account selection is view state.
         setSelectedAccount: (id) => set({ selectedAccountId: id }),
       })),
       {

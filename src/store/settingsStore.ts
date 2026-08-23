@@ -4,6 +4,10 @@ import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { UserProfile, SettingsState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
+// W6-P0-14: organization config, user records and role definitions are
+// admin-grade settings; updatePreferences is a local UI preference (density /
+// active sector) guarded by ui:update, which every role holds.
+import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 export const useSettingsStore = create<SettingsState>()(
   subscribeWithSelector(
@@ -34,39 +38,50 @@ export const useSettingsStore = create<SettingsState>()(
         clearError: () => set({ error: null }),
         setLoading: (loading) => set({ isLoading: loading }),
 
-        updateOrganization: (updates) =>
+        updateOrganization: enforce(Permissions.SETTINGS_UPDATE, 'updateOrganization', (updates) =>
           set((state) => ({
             organization: { ...state.organization, ...updates },
-          })),
+          }))
+        ),
 
-        setUsers: (users) => set({ users }),
+        setUsers: enforce(Permissions.USER_UPDATE, 'setUsers', (users) => set({ users })),
 
-        addUser: (user) =>
+        addUser: enforce(Permissions.USER_CREATE, 'addUser', (user) =>
           set((state) => ({
             users: [...state.users, { ...user, id: `usr-${Date.now()}` } as UserProfile],
-          })),
+          }))
+        ),
 
-        updateUser: (id, updates) =>
+        updateUser: enforce(Permissions.USER_UPDATE, 'updateUser', (id, updates) =>
           set((state) => ({
             users: state.users.map((u) => (u.id === id ? { ...u, ...updates } : u)),
-          })),
+          }))
+        ),
 
-        deleteUser: (id) =>
+        deleteUser: enforce(Permissions.USER_DELETE, 'deleteUser', (id) =>
           set((state) => ({
             users: state.users.filter((u) => u.id !== id),
-          })),
+          }))
+        ),
 
-        setRoles: (roles) => set({ roles }),
+        setRoles: enforce(Permissions.USER_ASSIGN_ROLE, 'setRoles', (roles) => set({ roles })),
 
-        updateRolePermissions: (roleId, permissions) =>
-          set((state) => ({
-            roles: state.roles.map((r) => (r.id === roleId ? { ...r, permissions } : r)),
-          })),
+        updateRolePermissions: enforce(
+          Permissions.USER_ASSIGN_ROLE,
+          'updateRolePermissions',
+          (roleId, permissions) =>
+            set((state) => ({
+              roles: state.roles.map((r) => (r.id === roleId ? { ...r, permissions } : r)),
+            }))
+        ),
 
-        updatePreferences: (updates) =>
+        // Local UI preference (density / active sector) — ui:update is held by
+        // every role by design ("UI preference, not data", per ROLE_PERMISSIONS).
+        updatePreferences: enforce(Permissions.UI_UPDATE, 'updatePreferences', (updates) =>
           set((state) => ({
             preferences: { ...state.preferences, ...updates },
-          })),
+          }))
+        ),
       })),
       {
         name: 'settings-store',

@@ -4,6 +4,10 @@ import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
 import { CubeEngine } from '@/engines/CubeEngine';
 import { withCache, invalidateStoreCache } from '@/utils/storeCache';
+// W6-P0-14: cube cell writes/deletes, snapshots, undo/redo and schema
+// (dimension/cube/member) registration are permission-guarded. Reads
+// (query/aggregate/readCell) and bootstrap initialize() stay unguarded.
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 import type {
   CubeCell,
   CubeQuery,
@@ -235,13 +239,17 @@ export const useCubeStore = create<CubeState>()(
             refreshFromEngine();
           },
 
-          writeCell: (cube, coords, measure, value, dataType = 'input', comment) => {
-            pushUndo();
-            const engine = get().engine;
-            engine.writeCell(cube, { coords, measure, value, dataType, comment });
-            invalidateStoreCache('cube');
-            refreshFromEngine();
-          },
+          writeCell: enforce(
+            Permissions.CUBE_WRITE,
+            'writeCell',
+            (cube, coords, measure, value, dataType = 'input', comment) => {
+              pushUndo();
+              const engine = get().engine;
+              engine.writeCell(cube, { coords, measure, value, dataType, comment });
+              invalidateStoreCache('cube');
+              refreshFromEngine();
+            }
+          ),
 
           readCell: (cube, coords, measure) => {
             return get().engine.readCell(cube, coords, measure);
@@ -251,13 +259,13 @@ export const useCubeStore = create<CubeState>()(
             return get().engine.getCellValue(cube, coords, measure);
           },
 
-          deleteCell: (cube, coords, measure) => {
+          deleteCell: enforce(Permissions.CUBE_DELETE, 'deleteCell', (cube, coords, measure) => {
             pushUndo();
             const result = get().engine.deleteCell(cube, coords, measure);
             invalidateStoreCache('cube');
             refreshFromEngine();
             return result;
-          },
+          }),
 
           query: (query) => {
             const key = `cube:query:${JSON.stringify(query)}`;
@@ -269,11 +277,15 @@ export const useCubeStore = create<CubeState>()(
             return withCache(key, () => get().engine.aggregate(cube, coords, measure, aggregation));
           },
 
-          createSnapshot: (name, description) => {
-            const snapshot = get().engine.createSnapshot(name, description);
-            refreshFromEngine();
-            return snapshot;
-          },
+          createSnapshot: enforce(
+            Permissions.CUBE_SNAPSHOT,
+            'createSnapshot',
+            (name, description) => {
+              const snapshot = get().engine.createSnapshot(name, description);
+              refreshFromEngine();
+              return snapshot;
+            }
+          ),
 
           compareSnapshots: (snapshotAId, snapshotBId) => {
             return get().engine.compareSnapshots(snapshotAId, snapshotBId);
@@ -283,7 +295,7 @@ export const useCubeStore = create<CubeState>()(
             return get().engine.listSnapshots();
           },
 
-          undo: () => {
+          undo: enforce(Permissions.CUBE_UNDO, 'undo', () => {
             if (undoStack.length === 0) return false;
             const engine = get().engine;
             const current = captureEngineState(engine);
@@ -292,9 +304,9 @@ export const useCubeStore = create<CubeState>()(
             restoreEngineState(engine, previous);
             refreshFromEngine();
             return true;
-          },
+          }),
 
-          redo: () => {
+          redo: enforce(Permissions.CUBE_UNDO, 'redo', () => {
             if (redoStack.length === 0) return false;
             const engine = get().engine;
             const current = captureEngineState(engine);
@@ -303,28 +315,38 @@ export const useCubeStore = create<CubeState>()(
             restoreEngineState(engine, next);
             refreshFromEngine();
             return true;
-          },
+          }),
 
           canUndo: () => undoStack.length > 0,
           canRedo: () => redoStack.length > 0,
 
-          registerDimension: (name, hierarchies = [], attributes = []) => {
-            get().engine.registerDimension(name, 'user', hierarchies, attributes);
-          },
+          // Cube schema changes (dimensions, cubes, members) are admin-grade
+          // structure operations — cube:admin is Admin-only by design.
+          registerDimension: enforce(
+            Permissions.CUBE_ADMIN,
+            'registerDimension',
+            (name, hierarchies = [], attributes = []) => {
+              get().engine.registerDimension(name, 'user', hierarchies, attributes);
+            }
+          ),
 
-          registerCube: (name, dimensions, measures) => {
-            get().engine.registerCube(name, dimensions, measures);
-          },
+          registerCube: enforce(
+            Permissions.CUBE_ADMIN,
+            'registerCube',
+            (name, dimensions, measures) => {
+              get().engine.registerCube(name, dimensions, measures);
+            }
+          ),
 
-          addMember: (dimension, member) => {
+          addMember: enforce(Permissions.CUBE_ADMIN, 'addMember', (dimension, member) => {
             return get().engine.addMember(dimension, member);
-          },
+          }),
 
           getMembers: (dimension) => {
             return get().engine.getMembers(dimension);
           },
 
-          bulkWriteCells: (cells) => {
+          bulkWriteCells: enforce(Permissions.CUBE_WRITE, 'bulkWriteCells', (cells) => {
             if (cells.length === 0) return;
             pushUndo();
             const engine = get().engine;
@@ -333,15 +355,15 @@ export const useCubeStore = create<CubeState>()(
             }
             invalidateStoreCache('cube');
             refreshFromEngine();
-          },
+          }),
 
-          clearAll: () => {
+          clearAll: enforce(Permissions.CUBE_DELETE, 'clearAll', () => {
             get().engine.clearAll();
             invalidateStoreCache('cube');
             undoStack.length = 0;
             redoStack.length = 0;
             set({ isInitialized: false, cellCount: 0, historyCount: 0, snapshots: [] });
-          },
+          }),
 
           refreshCounts: () => {
             refreshFromEngine();

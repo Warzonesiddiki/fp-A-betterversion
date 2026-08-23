@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, beforeAll } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { renderHook, act } from '@testing-library/react';
@@ -12,10 +12,35 @@ import {
   DENSITY_LABELS,
 } from './useDensity';
 import { useSettingsStore } from '@/store/settingsStore';
+import { useAuthStore } from '@/store/authStore';
 import { designTokens } from '@/config/designTokens';
 import type { DensityMode } from '@/types';
 
 const CSS = readFileSync(resolve(process.cwd(), 'src/index.css'), 'utf8');
+
+// W6-P0-14: settingsStore.updatePreferences now enforces ui:update. Density is
+// a local UI preference every authenticated role may change, so this suite
+// authenticates a user holding exactly that permission.
+beforeAll(() => {
+  useAuthStore.setState({
+    user: {
+      id: 'density-test-user',
+      email: 'density-test@finplan.local',
+      firstName: 'Density',
+      lastName: 'Tester',
+      avatarUrl: null,
+      role: 'Viewer',
+      departmentId: 'finance',
+      departmentName: 'Finance',
+      entityId: 'entity-001',
+      status: 'Active',
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+      permissions: ['ui:read', 'ui:update'],
+    },
+    isAuthenticated: true,
+  });
+});
 
 /** Pull the `[data-density='x']` block out of index.css and parse its vars. */
 function cssDensityBlock(mode: DensityMode): Record<string, string> {

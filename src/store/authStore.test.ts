@@ -7,6 +7,7 @@ import {
   isRole,
   isManagerOrAbove,
   canApprove,
+  ROLE_PERMISSIONS,
 } from './authStore';
 import type { User } from '../types';
 
@@ -97,9 +98,12 @@ describe('authStore', () => {
     expect(state.lockedUntil).toBeNull();
   });
 
-  it('should set user', () => {
+  it('should set user and derive permissions from the role matrix', () => {
     useAuthStore.getState().setUser(mockAdmin);
-    expect(useAuthStore.getState().user).toEqual(mockAdmin);
+    expect(useAuthStore.getState().user).toEqual({
+      ...mockAdmin,
+      permissions: [...ROLE_PERMISSIONS.Admin],
+    });
   });
 
   it('should switch entity', () => {
@@ -167,6 +171,42 @@ describe('authStore', () => {
   it('should set loading', () => {
     useAuthStore.getState().setLoading(true);
     expect(useAuthStore.getState().isLoading).toBe(true);
+  });
+});
+
+describe('setUser permission derivation (P1 security)', () => {
+  it('ignores client-injected admin permissions on a Viewer role', () => {
+    const escalated: User = { ...mockViewer, permissions: [...ROLE_PERMISSIONS.Admin] };
+    useAuthStore.getState().setUser(escalated);
+
+    const stored = useAuthStore.getState().user;
+    expect(stored).not.toBeNull();
+    expect(stored!.role).toBe('Viewer');
+    // Effective permissions MUST equal the Viewer row of ROLE_PERMISSIONS,
+    // never the client-supplied array.
+    expect(stored!.permissions).toEqual([...ROLE_PERMISSIONS.Viewer]);
+    expect(hasPermission(stored, 'user:delete')).toBe(false);
+    expect(hasPermission(stored, 'budget:create')).toBe(false);
+  });
+
+  it('derives the full Admin catalogue for an Admin user', () => {
+    const tampered: User = { ...mockAdmin, permissions: ['budget:read'] };
+    useAuthStore.getState().setUser(tampered);
+
+    const stored = useAuthStore.getState().user;
+    expect(stored!.permissions).toEqual([...ROLE_PERMISSIONS.Admin]);
+    expect(hasPermission(stored, 'user:delete')).toBe(true);
+    expect(hasPermission(stored, 'cube:admin')).toBe(true);
+  });
+
+  it('mock demo login keeps the role-derived permission snapshot unchanged', async () => {
+    await useAuthStore.getState().loginMock('analyst@finplan.com', 'demo');
+
+    const stored = useAuthStore.getState().user;
+    expect(stored!.role).toBe('Analyst');
+    expect(stored!.permissions).toEqual([...ROLE_PERMISSIONS.Analyst]);
+    expect(hasPermission(stored, 'forecast:update')).toBe(true);
+    expect(hasPermission(stored, 'budget:approve')).toBe(false);
   });
 });
 

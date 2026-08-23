@@ -44,7 +44,13 @@ vi.mock('./chunkedStorage', () => ({
   wrapChunkedStorage: <T>(storage: T) => storage,
 }));
 
-import { masterStorage } from './masterStorage';
+import {
+  masterStorage,
+  StorageReadError,
+  StorageWriteError,
+  subscribeStorageErrors,
+  type StorageErrorEvent,
+} from './masterStorage';
 
 describe('masterStorage', () => {
   beforeEach(() => {
@@ -138,6 +144,82 @@ describe('masterStorage', () => {
       mockTauriSqlGetItem.mockRejectedValue(new Error('Storage error'));
 
       await expect(masterStorage.getItem('store')).rejects.toThrow('Storage error');
+    });
+  });
+
+  // W6-P0-04 contract locks: once the RAW backends stop swallowing errors
+  // (typed StorageBackendError), masterStorage's designed fail-closed read
+  // path, quota-exceeded handling, and error-event surfacing must execute.
+  describe('fail-closed error surfacing (W6-P0-04)', () => {
+    const collect = (): { events: StorageErrorEvent[]; unsubscribe: () => void } => {
+      const events: StorageErrorEvent[] = [];
+      const unsubscribe = subscribeStorageErrors((event) => events.push(event));
+      return { events, unsubscribe };
+    };
+
+    it('read failure rejects with typed StorageReadError(kind=backend) and emits a read event — never null', async () => {
+      const { events, unsubscribe } = collect();
+      try {
+        mockTauriSqlGetItem.mockRejectedValue(new Error('disk read failure'));
+
+        const promise = masterStorage.getItem('budget-store');
+        await expect(promise).rejects.toBeInstanceOf(StorageReadError);
+        const err = (await promise.catch((e: unknown) => e)) as StorageReadError;
+        expect(err.kind).toBe('backend');
+        expect(err.storeKey).toBe('budget-store');
+        expect(err.cause).toBeInstanceOf(Error);
+
+        expect(events).toHaveLength(1);
+        expect(events[0]!.operation).toBe('read');
+        expect(events[0]!.storeKey).toBe('budget-store');
+        expect(events[0]!.error).toBe(err);
+      } finally {
+        unsubscribe();
+        mockTauriSqlGetItem.mockResolvedValue(null);
+      }
+    });
+
+    it('write/quota failure rejects with typed StorageWriteError(kind=backend) and emits a write event', async () => {
+      const { events, unsubscribe } = collect();
+      try {
+        mockTauriSqlSetItem.mockRejectedValue(
+          Object.assign(new Error('database or disk is full'), { name: 'QuotaExceededError' })
+        );
+
+        const value = { state: { data: 'test' }, version: 1 };
+        await expect(masterStorage.setItem('quota-store', value)).rejects.toBeInstanceOf(
+          StorageWriteError
+        );
+        const err = (await masterStorage
+          .setItem('quota-store', value)
+          .catch((e: unknown) => e)) as StorageWriteError;
+        expect(err.kind).toBe('backend');
+        expect(err.storeKey).toBe('quota-store');
+        expect((err.cause as Error)?.name).toBe('QuotaExceededError');
+
+        expect(events.length).toBeGreaterThanOrEqual(2);
+        expect(events.every((e) => e.operation === 'write')).toBe(true);
+        expect((events[0]!.error as StorageWriteError).kind).toBe('backend');
+      } finally {
+        unsubscribe();
+        mockTauriSqlSetItem.mockResolvedValue(undefined);
+      }
+    });
+
+    it('remove failure rethrows and emits a remove event', async () => {
+      const { events, unsubscribe } = collect();
+      try {
+        mockTauriSqlRemoveItem.mockRejectedValue(new Error('delete failed'));
+
+        await expect(masterStorage.removeItem('gone-store')).rejects.toThrow('delete failed');
+
+        expect(events).toHaveLength(1);
+        expect(events[0]!.operation).toBe('remove');
+        expect(events[0]!.storeKey).toBe('gone-store');
+      } finally {
+        unsubscribe();
+        mockTauriSqlRemoveItem.mockResolvedValue(undefined);
+      }
     });
   });
 });

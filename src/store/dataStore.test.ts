@@ -1,10 +1,15 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useDataStore } from './dataStore';
+import { useAuthStore } from './authStore';
+import { PermissionError } from '@/utils/rbacEnforcer';
 import type { GLAccount, ImportJob, ImportStatus } from '@/types';
 import type { AccountType } from '@/types';
 
 describe('dataStore', () => {
   beforeEach(() => {
+    // W6-P0-14: mutating actions are permission-guarded; happy paths run as an
+    // Admin-scope user holding exactly the store's enforced permissions.
+    authenticateDataUser(['import:create', 'import:update', 'import:delete']);
     useDataStore.setState({
       accounts: [],
       importJobs: [],
@@ -345,5 +350,133 @@ describe('dataStore', () => {
     useDataStore.setState({ selectedAccountId: 'acct-1' });
     useDataStore.getState().setSelectedAccount(null);
     expect(useDataStore.getState().selectedAccountId).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// W6-P0-14 — RBAC enforcement on GL account mutations.
+// The existing happy-path tests above run as an authenticated Admin-scope
+// user (fixture below); this block proves the negative half: without the
+// matching permission, every mutating action throws PermissionError and
+// leaves state untouched.
+// ---------------------------------------------------------------------------
+
+function authenticateDataUser(permissions: readonly string[]): void {
+  useAuthStore.setState({
+    user: {
+      id: 'data-test-user',
+      email: 'data-test@finplan.local',
+      firstName: 'Data',
+      lastName: 'Tester',
+      avatarUrl: null,
+      role: 'Admin',
+      departmentId: 'finance',
+      departmentName: 'Finance',
+      entityId: 'entity-001',
+      status: 'Active',
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+      permissions: [...permissions],
+    },
+    isAuthenticated: true,
+  });
+}
+
+describe('dataStore RBAC (W6-P0-14)', () => {
+  const account = (id: string, overrides: Partial<GLAccount> = {}): GLAccount => ({
+    id,
+    code: '1010',
+    name: 'Cash',
+    type: 'Asset' as AccountType,
+    category: 'Current Assets',
+    subCategory: 'Cash',
+    parentId: null,
+    level: 1,
+    sortOrder: 1,
+    isActive: true,
+    entityId: 'ent-1',
+    departmentId: null,
+    isCalculated: false,
+    formula: null,
+    children: [],
+    ...overrides,
+  });
+
+  beforeEach(() => {
+    useAuthStore.setState({ user: null, isAuthenticated: false });
+    useDataStore.setState({
+      accounts: [account('a1')],
+      importJobs: [],
+      selectedAccountId: null,
+      lastImportDate: null,
+    });
+  });
+
+  it('deleting a GL account without permission throws PermissionError (no user)', () => {
+    expect(() => useDataStore.getState().deleteAccount('a1')).toThrow(PermissionError);
+    // State untouched by the denied call:
+    expect(useDataStore.getState().accounts).toHaveLength(1);
+  });
+
+  it('Viewer role cannot toggle accounts (import:update not held)', () => {
+    authenticateDataUser(['gl:read', 'import:read']);
+    expect(() => useDataStore.getState().toggleAccountActive('a1')).toThrow(PermissionError);
+    expect(useDataStore.getState().accounts[0]!.isActive).toBe(true);
+  });
+
+  it('addAccount/updateAccount/setAccounts require import permissions', () => {
+    authenticateDataUser(['budget:create']);
+    expect(() =>
+      useDataStore.getState().addAccount({
+        code: '3000',
+        name: 'Equity',
+        type: 'Equity',
+        category: 'Equity',
+        subCategory: 'Common Stock',
+        parentId: null,
+        level: 1,
+        sortOrder: 3,
+        isActive: true,
+        entityId: 'ent-1',
+        departmentId: null,
+        isCalculated: false,
+        formula: null,
+      })
+    ).toThrow(PermissionError);
+    expect(() => useDataStore.getState().updateAccount('a1', { name: 'X' })).toThrow(
+      PermissionError
+    );
+    expect(() => useDataStore.getState().setAccounts([])).toThrow(PermissionError);
+    expect(() => useDataStore.getState().addImportJob({} as ImportJob)).toThrow(PermissionError);
+  });
+
+  it('granted import permissions allow the full mutation set', () => {
+    authenticateDataUser(['import:create', 'import:update', 'import:delete']);
+    const s = useDataStore.getState();
+    s.addImportJob({
+      filename: 't.csv',
+      fileType: 'csv',
+      rowCount: 1,
+      successCount: 0,
+      errorCount: 0,
+      completedAt: null,
+      startedBy: 'u',
+      startedByName: 'U',
+    });
+    expect(() => s.setAccounts([account('a2')])).not.toThrow();
+    expect(() => s.addAccount(account('a3'))).not.toThrow();
+    expect(() => s.updateAccount('a2', { name: 'Renamed' })).not.toThrow();
+    expect(() => s.toggleAccountActive('a2')).not.toThrow();
+    expect(() => s.deleteAccount('a2')).not.toThrow();
+    // addAccount assigns its own acct-* id:
+    const ids = useDataStore.getState().accounts.map((a) => a.id);
+    expect(ids).toHaveLength(1);
+    expect(ids[0]).toMatch(/^acct-/);
+  });
+
+  it('selection stays unguarded (read-only/selective action)', () => {
+    useAuthStore.setState({ user: null, isAuthenticated: false });
+    expect(() => useDataStore.getState().setSelectedAccount('a1')).not.toThrow();
+    expect(useDataStore.getState().selectedAccountId).toBe('a1');
   });
 });

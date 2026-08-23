@@ -138,6 +138,13 @@ export interface SandboxOptions {
   timeoutMs?: number;
   /** Memory limit — max objects created (default: 10000) */
   objectLimit?: number;
+  /**
+   * W6-P0-03 (2026-08-24): host-provided values bound as extra wrapper
+   * parameters (e.g. a plugin factory trampoline). Names must be plain
+   * identifiers and must not collide with `globals` / `finplan`. Bound names
+   * are admitted by the identifier walker ONLY for the same call.
+   */
+  bindings?: Record<string, unknown>;
 }
 
 interface SandboxResult<T = unknown> {
@@ -291,7 +298,9 @@ export function instrumentLoopBodies(code: string): string {
 
 /** Discriminator for the (code, api, options?) vs (code, options) overloads. */
 const isOptionsBag = (v: unknown): v is SandboxOptions =>
-  !!v && typeof v === 'object' && ('timeoutMs' in v || 'timeout' in v || 'objectLimit' in v);
+  !!v &&
+  typeof v === 'object' &&
+  ('timeoutMs' in v || 'timeout' in v || 'objectLimit' in v || 'bindings' in v);
 
 export function executeSandboxed<T = unknown>(
   code: string,
@@ -304,6 +313,19 @@ export function executeSandboxed<T = unknown>(
   const options: SandboxOptions = isOptionsBag(apiOrOptions) ? apiOrOptions : maybeOptions;
   const timeoutMs = options.timeoutMs ?? options.timeout ?? 100;
   const { objectLimit = 10000 } = options;
+
+  // W6-P0-03: optional host-bound wrapper parameters (factory trampolines).
+  // Names must be plain identifiers and must not collide with the fixed
+  // 'globals'/'finplan' parameters — duplicates are a SyntaxError under the
+  // strict-mode Function constructor.
+  const bindings = options.bindings ?? {};
+  const bindingNames = Object.keys(bindings);
+  for (const bName of bindingNames) {
+    if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(bName) || bName === 'globals' || bName === 'finplan') {
+      return { success: false, error: `Invalid sandbox binding name '${bName}'` };
+    }
+  }
+  const bindingValues = bindingNames.map((bName) => bindings[bName]);
 
   // Reject obviously dangerous patterns
   const dangerousPatterns = [
@@ -368,7 +390,7 @@ export function executeSandboxed<T = unknown>(
   // dangerous property access), and checks that every identifier resolves to
   // either a top-level binding or the allow-listed globals. This is the
   // security boundary that gates the Function constructor below.
-  const astGate = validatePluginCode(code);
+  const astGate = validatePluginCode(code, new Set<string>(bindingNames));
   if (!astGate.safe) {
     return { success: false, error: `AST validation failed: ${astGate.reason}` };
   }
@@ -442,6 +464,7 @@ export function executeSandboxed<T = unknown>(
     const sandboxFn = new Function(
       'globals',
       'finplan',
+      ...bindingNames,
       `
       "use strict";
       // F-0018: deadline is a literal baked into this one-shot wrapper.
@@ -474,7 +497,7 @@ export function executeSandboxed<T = unknown>(
     );
 
     const startTime = Date.now();
-    const result = sandboxFn(trackedProxy, finplanApi);
+    const result = sandboxFn(trackedProxy, finplanApi, ...bindingValues);
 
     // Post-hoc budget check retained for non-loop slow code (magic-number of
     // iterations below the heartbeat granularity, heavy builtin work, etc.).
@@ -503,7 +526,10 @@ export function executeSandboxed<T = unknown>(
  * references, and passes the static bounds (constant-true loops rejected —
  * F-0018 layer 1; oversized literals; over-cap literal recursion seeds).
  */
-export function validatePluginCode(code: string): {
+export function validatePluginCode(
+  code: string,
+  allowedBindings?: ReadonlySet<string>
+): {
   safe: boolean;
   valid: boolean;
   reason?: string;
@@ -565,7 +591,7 @@ export function validatePluginCode(code: string): {
   //   - the allow-listed globals (Math, Date, JSON, …)
   //   - a property of `globals` (trackedProxy) — these are dynamic,
   //     validated at call time
-  const refReason = checkIdentifierReferences(ast, new Set<string>());
+  const refReason = checkIdentifierReferences(ast, new Set<string>(), allowedBindings);
   if (refReason) return reject(refReason);
 
   // Static resource bounds (F-0018 layer 1 / memory pre-checks).
@@ -779,19 +805,40 @@ function walkForForbidden(node: unknown, seen: Set<unknown>): string | null {
       // the call site itself is a legitimate CallExpression.
       const prop = n.property as { type?: string; name?: string; value?: unknown } | undefined;
       const propName = prop?.type === 'Identifier' ? prop.name : null;
-      const propLiteral =
-        prop?.type === 'Literal' && typeof prop.value === 'string' ? prop.value : null;
-      const checkName = (propName ?? propLiteral) as string | null;
-      if (checkName && FORBIDDEN_PROPERTIES.has(checkName)) {
-        return `member access on forbidden property '.${checkName}' is not allowed`;
+
+      // W6-P0-02 FIX (2026-08-24): the previous check only inspected
+      // Identifier / string-Literal keys, so a key BUILT AT RUNTIME
+      // (`obj[String.fromCharCode(99,...)]`) produced a property node of
+      // type CallExpression, left `checkName` null, and sailed through —
+      // reaching the real Function constructor at execution time. Every
+      // consumption point of a dynamic property name is a computed
+      // MemberExpression, so rejecting any computed key that is not a
+      // static literal closes the entire class: reflection builtins
+      // feeding property access (String.fromCharCode/fromCodePoint/raw,
+      // concatenation, template literals, aliasing variables) die here
+      // because their expression node IS the key.
+      if ((n as { computed?: boolean }).computed === true) {
+        const literalKey = prop?.type === 'Literal' ? prop.value : undefined;
+        if (typeof literalKey === 'string') {
+          if (FORBIDDEN_PROPERTIES.has(literalKey)) {
+            return `member access on forbidden property '.${literalKey}' is not allowed`;
+          }
+          break; // static safe string key
+        }
+        if (typeof literalKey !== 'number') {
+          return 'computed member access requires a static string or numeric literal key (runtime-computed keys are not allowed)';
+        }
+        break; // static numeric index
+      }
+
+      if (propName && FORBIDDEN_PROPERTIES.has(propName)) {
+        return `member access on forbidden property '.${propName}' is not allowed`;
       }
       // Reject AsyncFunction / GeneratorFunction / AsyncGeneratorFunction
       // as new-expression targets (the Identifier-name check above only
       // covers the unqualified 'Function' name).
-      if (n.property && (n as { computed?: boolean }).computed === false) {
-        if (propName && FORBIDDEN_CONSTRUCTORS.has(propName)) {
-          return `new <obj>.${propName}(...) is not allowed`;
-        }
+      if (propName && FORBIDDEN_CONSTRUCTORS.has(propName)) {
+        return `new <obj>.${propName}(...) is not allowed`;
       }
       break;
     }
@@ -822,7 +869,11 @@ function walkForForbidden(node: unknown, seen: Set<unknown>): string | null {
  * must be either a top-level declaration, an allow-listed global, or
  * a property name on a MemberExpression (those are dynamic).
  */
-function checkIdentifierReferences(node: unknown, declared: Set<string>): string | null {
+function checkIdentifierReferences(
+  node: unknown,
+  declared: Set<string>,
+  allowedBindings?: ReadonlySet<string>
+): string | null {
   if (!node || typeof node !== 'object') return null;
   const n = node as { type?: string; name?: string; value?: unknown; computed?: boolean };
 
@@ -862,11 +913,31 @@ function checkIdentifierReferences(node: unknown, declared: Set<string>): string
       // expression and must still be visited.
       const m = n as { object?: unknown; property?: unknown; computed?: boolean };
       if (m.object) {
-        const r = checkIdentifierReferences(m.object, declared);
+        const r = checkIdentifierReferences(m.object, declared, allowedBindings);
         if (r) return r;
       }
       if (m.computed === true && m.property) {
-        const r = checkIdentifierReferences(m.property, declared);
+        const r = checkIdentifierReferences(m.property, declared, allowedBindings);
+        if (r) return r;
+      }
+      return null;
+    }
+    case 'Property': {
+      // W6-P0-03 enabler (2026-08-24): a non-computed Property key in an
+      // object literal (`{ total: 5 }`, `{ init() {} }`) is a NAME, not a
+      // free reference — identical class to the BUG-RPT-002 MemberExpression
+      // fix. Without this, every natural plugin object literal was rejected
+      // as "undeclared identifier", making the wired sandboxed loader path
+      // unusable. Shorthand `{ x }` still visits its value (same node).
+      // Computed keys (`{ [k]: v }`) ARE runtime expressions and remain
+      // visited.
+      const p = n as { key?: unknown; value?: unknown; computed?: boolean };
+      if (p.value) {
+        const r = checkIdentifierReferences(p.value, declared, allowedBindings);
+        if (r) return r;
+      }
+      if (p.computed === true && p.key) {
+        const r = checkIdentifierReferences(p.key, declared, allowedBindings);
         if (r) return r;
       }
       return null;
@@ -878,7 +949,8 @@ function checkIdentifierReferences(node: unknown, declared: Set<string>): string
         !declared.has(name) &&
         !ALLOWED_GLOBALS.has(name) &&
         !BLOCKED_GLOBALS.has(name) && // BLOCKED_GLOBALS are explicitly set to undefined
-        !SANDBOX_BINDINGS.has(name) // wrapper-bound names (globals, finplan, api, console, etc.)
+        !SANDBOX_BINDINGS.has(name) && // wrapper-bound names (globals, finplan, api, console, etc.)
+        !(allowedBindings && allowedBindings.has(name)) // W6-P0-03 host-bound wrapper parameters
       ) {
         return `reference to undeclared identifier '${name}' is not allowed`;
       }
@@ -894,11 +966,11 @@ function checkIdentifierReferences(node: unknown, declared: Set<string>): string
     const child = (node as Record<string, unknown>)[key];
     if (Array.isArray(child)) {
       for (const c of child) {
-        const r = checkIdentifierReferences(c, declared);
+        const r = checkIdentifierReferences(c, declared, allowedBindings);
         if (r) return r;
       }
     } else if (child && typeof child === 'object') {
-      const r = checkIdentifierReferences(child, declared);
+      const r = checkIdentifierReferences(child, declared, allowedBindings);
       if (r) return r;
     }
   }

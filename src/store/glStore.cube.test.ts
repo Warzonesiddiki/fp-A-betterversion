@@ -28,6 +28,8 @@ function authenticateCubeUser() {
         'ui:update',
         'cube:write',
         'cube:read',
+        'cube:delete',
+        'cube:admin',
       ],
     },
     isAuthenticated: true,

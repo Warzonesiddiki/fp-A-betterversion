@@ -1,8 +1,43 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useSettingsStore } from './settingsStore';
+import { useAuthStore } from './authStore';
+import { PermissionError } from '@/utils/rbacEnforcer';
+
+// W6-P0-14: RBAC-aware fixture — grants exactly the permissions this store's
+// guarded actions enforce (mirrors glUploadStore.test.ts).
+function authenticateSettingsUser() {
+  useAuthStore.setState({
+    user: {
+      id: 'settings-test-user',
+      email: 'settings-test@finplan.local',
+      firstName: 'Settings',
+      lastName: 'Tester',
+      avatarUrl: null,
+      role: 'Admin',
+      departmentId: 'finance',
+      departmentName: 'Finance',
+      entityId: 'entity-001',
+      status: 'Active',
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+      permissions: [
+        'settings:read',
+        'settings:update',
+        'user:create',
+        'user:read',
+        'user:update',
+        'user:delete',
+        'user:assign-role',
+        'ui:update',
+      ],
+    },
+    isAuthenticated: true,
+  });
+}
 
 describe('settingsStore', () => {
   beforeEach(() => {
+    authenticateSettingsUser();
     useSettingsStore.setState({
       organization: {
         name: '',
@@ -87,5 +122,76 @@ describe('settingsStore', () => {
   it('should update preferences', () => {
     useSettingsStore.getState().updatePreferences({ activeSector: 'healthcare' });
     expect(useSettingsStore.getState().preferences.activeSector).toBe('healthcare');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// W6-P0-14 — negative RBAC: org/user/role administration is admin-grade;
+// a Viewer (read + ui:update only) is denied, and state stays untouched.
+// ---------------------------------------------------------------------------
+
+describe('settingsStore RBAC (W6-P0-14)', () => {
+  const authenticateViewer = () => {
+    useAuthStore.setState({
+      user: {
+        id: 'settings-viewer',
+        email: 'viewer@finplan.local',
+        firstName: 'Vera',
+        lastName: 'Viewer',
+        avatarUrl: null,
+        role: 'Viewer',
+        departmentId: 'finance',
+        departmentName: 'Finance',
+        entityId: 'entity-001',
+        status: 'Active',
+        lastLoginAt: new Date().toISOString(),
+        mfaEnabled: false,
+        permissions: ['settings:read', 'ui:update'],
+      },
+      isAuthenticated: true,
+    });
+  };
+
+  beforeEach(() => {
+    useAuthStore.setState({ user: null, isAuthenticated: false });
+    useSettingsStore.setState({
+      organization: { name: '', fiscalYear: 2024 } as never,
+      users: [],
+      roles: [],
+      preferences: { activeSector: 'technology' },
+      isLoading: false,
+    });
+  });
+
+  it('viewer cannot update organization', () => {
+    authenticateViewer();
+    expect(() => useSettingsStore.getState().updateOrganization({ name: 'Evil Corp' })).toThrow(
+      PermissionError
+    );
+    expect(useSettingsStore.getState().organization.name).toBe('');
+  });
+
+  it('unauthenticated caller cannot manage users', () => {
+    expect(() =>
+      useSettingsStore.getState().addUser({ name: 'X', email: 'x@t.co', role: 'analyst' } as never)
+    ).toThrow(PermissionError);
+    expect(useSettingsStore.getState().users).toHaveLength(0);
+  });
+
+  it('viewer cannot rewrite role permissions', () => {
+    authenticateViewer();
+    useSettingsStore.setState({ roles: [{ id: 'r1', name: 'Admin', permissions: [] }] as never });
+    expect(() => useSettingsStore.getState().updateRolePermissions('r1', ['user:delete'])).toThrow(
+      PermissionError
+    );
+    expect(useSettingsStore.getState().roles[0]!.permissions).toEqual([]);
+  });
+
+  it('local UI preference updates remain available to Viewer (ui:update)', () => {
+    authenticateViewer();
+    expect(() =>
+      useSettingsStore.getState().updatePreferences({ activeSector: 'retail' })
+    ).not.toThrow();
+    expect(useSettingsStore.getState().preferences.activeSector).toBe('retail');
   });
 });

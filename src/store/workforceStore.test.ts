@@ -1,9 +1,34 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useWorkforceStore } from './workforceStore';
 import type { Employee, Department, PayrollPeriod } from './workforceStore';
+import { useAuthStore } from './authStore';
+
+// W6-P0-14: RBAC-aware fixture — grants exactly the permissions this store's
+// guarded actions enforce (mirrors glUploadStore.test.ts).
+function authenticateWorkforceUser() {
+  useAuthStore.setState({
+    user: {
+      id: 'workforce-test-user',
+      email: 'workforce-test@finplan.local',
+      firstName: 'Workforce',
+      lastName: 'Tester',
+      avatarUrl: null,
+      role: 'Admin',
+      departmentId: 'finance',
+      departmentName: 'Finance',
+      entityId: 'entity-001',
+      status: 'Active',
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+      permissions: ['entity:create', 'entity:update', 'entity:delete', 'budget:update'],
+    },
+    isAuthenticated: true,
+  });
+}
 
 describe('workforceStore', () => {
   beforeEach(() => {
+    authenticateWorkforceUser();
     useWorkforceStore.setState({
       employees: [],
       departments: [],

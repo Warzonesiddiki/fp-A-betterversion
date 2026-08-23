@@ -1,4 +1,5 @@
 import type { RawStorage } from './chunkedStorage';
+import { StorageBackendError } from './storageErrors';
 import { createLogger } from '@/utils/logger';
 
 type SqlDatabase = import('@tauri-apps/plugin-sql').default;
@@ -38,10 +39,13 @@ export const tauriSqlStorage: RawStorage = {
       );
       return result.length > 0 ? JSON.parse(result![0]!.value) : null;
     } catch (err) {
+      // W6-P0-04: a failed read is NOT "no data" — propagate typed so
+      // masterStorage's fail-closed read path executes instead of hydrating
+      // an empty store from a broken desktop database.
       tauriSqlStorageLogger.error('getItem error', {
         error: err instanceof Error ? err.message : String(err),
       });
-      return null;
+      throw new StorageBackendError('get', name, err);
     }
   },
   setItem: async (name, value) => {
@@ -57,9 +61,12 @@ export const tauriSqlStorage: RawStorage = {
         [name, stringValue]
       );
     } catch (err) {
+      // W6-P0-04: failed writes surface as typed errors so quota/SQL failures
+      // are never mistaken for a completed persist.
       tauriSqlStorageLogger.error('setItem error', {
         error: err instanceof Error ? err.message : String(err),
       });
+      throw new StorageBackendError('set', name, err);
     }
   },
   removeItem: async (name) => {
@@ -71,6 +78,7 @@ export const tauriSqlStorage: RawStorage = {
       tauriSqlStorageLogger.error('removeItem error', {
         error: err instanceof Error ? err.message : String(err),
       });
+      throw new StorageBackendError('remove', name, err);
     }
   },
 };

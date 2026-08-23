@@ -724,8 +724,13 @@ export const useAuthStore = create<AuthState>()(
                 'Use the authenticated login flow instead.'
             );
           }
+          // SECURITY (Wave-7B): effective permissions are ALWAYS derived from
+          // ROLE_PERMISSIONS[user.role]. Client-supplied permissions arrays are
+          // ignored entirely, so a forged payload can never grant a Viewer the
+          // Admin catalogue. Unknown roles fail closed to an empty set.
+          const derivedPermissions = ROLE_PERMISSIONS[user.role] ?? [];
           set((s) => {
-            s.user = user as typeof s.user;
+            s.user = { ...user, permissions: derivedPermissions } as typeof s.user;
           });
         },
 

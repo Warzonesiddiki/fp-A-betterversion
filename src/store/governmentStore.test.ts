@@ -1,8 +1,33 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useGovernmentStore } from './governmentStore';
+import { useAuthStore } from './authStore';
+
+// W6-P0-14: RBAC-aware fixture — grants exactly the permissions this store's
+// guarded actions enforce (mirrors glUploadStore.test.ts).
+function authenticateGovernmentUser() {
+  useAuthStore.setState({
+    user: {
+      id: 'gov-test-user',
+      email: 'gov-test@finplan.local',
+      firstName: 'Gov',
+      lastName: 'Tester',
+      avatarUrl: null,
+      role: 'Admin',
+      departmentId: 'finance',
+      departmentName: 'Finance',
+      entityId: 'entity-001',
+      status: 'Active',
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+      permissions: ['budget:create', 'budget:update', 'budget:delete'],
+    },
+    isAuthenticated: true,
+  });
+}
 
 describe('governmentStore', () => {
   beforeEach(() => {
+    authenticateGovernmentUser();
     useGovernmentStore.setState({
       funds: [],
       compliance: [],

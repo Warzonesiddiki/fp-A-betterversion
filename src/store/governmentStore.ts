@@ -4,6 +4,11 @@ import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
 import { sumMoney } from '@/utils/money';
+// W6-P0-14: public-fund allocations, compliance items and budget lines are
+// planning data — BUDGET_* family per sector-store precedent
+// (healthcareStore programs / insuranceStore rate filings). Loading/error
+// flags stay unguarded.
+import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 export interface FundAllocation {
   id: string;
@@ -56,31 +61,37 @@ export const useGovernmentStore = create<GovernmentState>()(
         budgetLines: [],
         isLoading: false,
         error: null,
-        setFunds: (funds) =>
+        setFunds: enforce(Permissions.BUDGET_UPDATE, 'setFunds', (funds) =>
           set((s) => {
             s.funds = funds;
-          }),
-        addFund: (fund) =>
+          })
+        ),
+        addFund: enforce(Permissions.BUDGET_CREATE, 'addFund', (fund) =>
           set((s) => {
             s.funds.push(fund);
-          }),
-        updateFund: (id, updates) =>
+          })
+        ),
+        updateFund: enforce(Permissions.BUDGET_UPDATE, 'updateFund', (id, updates) =>
           set((s) => {
             const i = s.funds.findIndex((f) => f.id === id);
             if (i !== -1) Object.assign(s.funds[i]!, updates);
-          }),
-        removeFund: (id) =>
+          })
+        ),
+        removeFund: enforce(Permissions.BUDGET_DELETE, 'removeFund', (id) =>
           set((s) => {
             s.funds = s.funds.filter((f) => f.id !== id);
-          }),
-        setCompliance: (items) =>
+          })
+        ),
+        setCompliance: enforce(Permissions.BUDGET_UPDATE, 'setCompliance', (items) =>
           set((s) => {
             s.compliance = items;
-          }),
-        setBudgetLines: (lines) =>
+          })
+        ),
+        setBudgetLines: enforce(Permissions.BUDGET_UPDATE, 'setBudgetLines', (lines) =>
           set((s) => {
             s.budgetLines = lines;
-          }),
+          })
+        ),
         setLoading: (isLoading) =>
           set((s) => {
             s.isLoading = isLoading;
@@ -89,14 +100,15 @@ export const useGovernmentStore = create<GovernmentState>()(
           set((s) => {
             s.error = error;
           }),
-        clearAll: () =>
+        clearAll: enforce(Permissions.BUDGET_DELETE, 'clearAll', () =>
           set((s) => {
             s.funds = [];
             s.compliance = [];
             s.budgetLines = [];
             s.isLoading = false;
             s.error = null;
-          }),
+          })
+        ),
         getTotalUtilization: () => {
           const { funds } = get();
           // Sum the money amounts exactly, then compute the utilization ratio.

@@ -22,6 +22,12 @@ import { useGLStore } from '@/store/glStore';
 import type { BaseConnector } from '@/services/api-integration/BaseConnector';
 import type { ConnectorStatus, ExternalTransaction } from '@/services/api-integration/types';
 import { randomId } from '@/utils/cryptoId';
+// W6-P0-14: connector lifecycle is permission-guarded. Creating a connection
+// stores provider credentials and opens an import channel (import:create);
+// test/sync/disconnect mutate persisted connection state (import:update);
+// importToLedger writes GL rows (import:create, matching glStore.importGLData).
+// getConnection is a read.
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 export interface IntegrationConnection {
   provider: string;
@@ -95,7 +101,7 @@ export const useIntegrationStore = create<IntegrationState>()(
         connections: {},
         busy: {},
 
-        connect: async (provider, credentials) => {
+        connect: enforce(Permissions.IMPORT_CREATE, 'connect', async (provider, credentials) => {
           const def = getIntegrationDefinition(provider);
           if (!def) return false;
 
@@ -146,16 +152,16 @@ export const useIntegrationStore = create<IntegrationState>()(
             });
             return false;
           }
-        },
+        }),
 
-        disconnect: (provider) => {
+        disconnect: enforce(Permissions.IMPORT_UPDATE, 'disconnect', (provider) => {
           set((state) => {
             delete state.connections[provider];
             delete state.busy[provider];
           });
-        },
+        }),
 
-        test: async (provider) => {
+        test: enforce(Permissions.IMPORT_UPDATE, 'test', async (provider) => {
           const connection = get().connections[provider];
           if (!connection) return false;
           const connector = buildConnector(connection);
@@ -192,9 +198,9 @@ export const useIntegrationStore = create<IntegrationState>()(
             });
             return false;
           }
-        },
+        }),
 
-        sync: async (provider) => {
+        sync: enforce(Permissions.IMPORT_UPDATE, 'sync', async (provider) => {
           const connection = get().connections[provider];
           if (!connection) return false;
           const connector = buildConnector(connection);
@@ -233,9 +239,9 @@ export const useIntegrationStore = create<IntegrationState>()(
             });
             return false;
           }
-        },
+        }),
 
-        importToLedger: async (provider) => {
+        importToLedger: enforce(Permissions.IMPORT_CREATE, 'importToLedger', async (provider) => {
           const connection = get().connections[provider];
           if (!connection) {
             return {
@@ -335,8 +341,9 @@ export const useIntegrationStore = create<IntegrationState>()(
               message: errorMessage(error, 'Ledger import failed'),
             };
           }
-        },
+        }),
 
+        // Read-only accessor.
         getConnection: (provider) => get().connections[provider],
       })),
       {

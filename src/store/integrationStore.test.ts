@@ -1,6 +1,30 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { BaseConnector } from '@/services/api-integration/BaseConnector';
 import { useIntegrationStore } from './integrationStore';
+import { useAuthStore } from './authStore';
+
+// W6-P0-14: RBAC-aware fixture — grants exactly the permissions this store's
+// guarded actions enforce (mirrors glUploadStore.test.ts).
+function authenticateIntegrationUser() {
+  useAuthStore.setState({
+    user: {
+      id: 'integration-test-user',
+      email: 'integration-test@finplan.local',
+      firstName: 'Integration',
+      lastName: 'Tester',
+      avatarUrl: null,
+      role: 'Admin',
+      departmentId: 'finance',
+      departmentName: 'Finance',
+      entityId: 'entity-001',
+      status: 'Active',
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+      permissions: ['import:create', 'import:update', 'import:delete'],
+    },
+    isAuthenticated: true,
+  });
+}
 
 const { stripeDef, slackDef, mocks } = vi.hoisted(() => {
   const mocks = {
@@ -73,6 +97,7 @@ const txPage = {
 
 describe('integrationStore', () => {
   beforeEach(() => {
+    authenticateIntegrationUser();
     useIntegrationStore.setState(initialState);
     vi.clearAllMocks();
     mocks.connectMock.mockResolvedValue(true);
