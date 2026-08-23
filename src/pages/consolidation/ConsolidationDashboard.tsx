@@ -187,7 +187,7 @@ export default function ConsolidationDashboard() {
   if (isLoading)
     return (
       <div className="p-6 space-y-4">
-        <Skeleton className="h-10 w-48" />
+        <Skeleton className="h-10 w-48" srLabel="Loading consolidation dashboard…" />
         <Skeleton className="h-64 w-full" />
       </div>
     );

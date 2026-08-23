@@ -175,7 +175,7 @@ export default function DashboardPage() {
   if (!kpis) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <Skeleton variant="rectangular" height="200px" />
+        <Skeleton variant="rectangular" height="200px" srLabel="Loading dashboard…" />
       </div>
     );
   }

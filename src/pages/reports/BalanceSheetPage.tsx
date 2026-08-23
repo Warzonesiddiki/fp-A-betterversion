@@ -101,7 +101,7 @@ export default function BalanceSheetPage() {
   if (!report) {
     return (
       <div className="p-6">
-        <Skeleton count={6} height="32px" />
+        <Skeleton count={6} height="32px" srLabel="Loading balance sheet…" />
       </div>
     );
   }

@@ -343,7 +343,13 @@ export default function GLUploadPage() {
   if (importStatus === 'parsing' || importStatus === 'validating') {
     return (
       <div className="p-12 text-center">
-        <Skeleton variant="rectangular" width="60%" height="2rem" className="mx-auto mb-6" />
+        <Skeleton
+          variant="rectangular"
+          width="60%"
+          height="2rem"
+          className="mx-auto mb-6"
+          srLabel="Loading GL upload…"
+        />
         <Skeleton variant="rectangular" width="80%" height="16rem" className="mx-auto mb-4" />
         <p className="text-sm text-[var(--text-muted)] mt-4">
           {importStatus === 'parsing' ? 'Reading file contents...' : 'Validating data structure...'}

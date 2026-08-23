@@ -118,7 +118,7 @@ export default function ThreeStatementDashboardPage() {
   }
 
   if (!incomeStatement || !balanceSheet || !cashFlow || !totals) {
-    return <Skeleton className="h-96 m-6" />;
+    return <Skeleton className="h-96 m-6" srLabel="Loading three-statement model…" />;
   }
 
   return (

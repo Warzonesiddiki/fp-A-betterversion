@@ -160,7 +160,7 @@ export default function ProfitLossPage() {
   if (!report) {
     return (
       <div className="p-6">
-        <Skeleton count={8} height="32px" />
+        <Skeleton count={8} height="32px" srLabel="Loading profit &amp; loss…" />
       </div>
     );
   }

@@ -257,7 +257,9 @@ export default function GoalSeekPage() {
             <Button onClick={runMonteCarlo} disabled={loading}>
               {loading ? 'Running...' : 'Run Simulation'}
             </Button>
-            {loading && <Skeleton variant="rectangular" height="100px" />}
+            {loading && (
+              <Skeleton variant="rectangular" height="100px" srLabel="Running simulation…" />
+            )}
             {monteCarloResults && !loading && (
               <div className="space-y-2 text-sm pt-4 border-t border-slate-800">
                 <div className="flex justify-between">

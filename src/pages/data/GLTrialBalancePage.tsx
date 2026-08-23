@@ -144,7 +144,12 @@ export default function GLTrialBalancePage() {
   if (isLoading) {
     return (
       <div className="p-6 space-y-4">
-        <Skeleton variant="rectangular" height="32px" className="w-60" />
+        <Skeleton
+          variant="rectangular"
+          height="32px"
+          className="w-60"
+          srLabel="Loading trial balance…"
+        />
         <Skeleton variant="rectangular" height="48px" />
         <Skeleton variant="rectangular" height="400px" />
       </div>

@@ -98,13 +98,19 @@ describe('CapexTracker (deep tests)', () => {
   it('renders loading skeleton when GL or CapEx store is loading', () => {
     useCapExStore.setState({ isLoading: true });
 
-    render(
+    const { container } = render(
       <BrowserRouter>
         <CapexTracker />
       </BrowserRouter>
     );
 
     expect(screen.queryByText('CapEx Tracker')).not.toBeInTheDocument();
+    // W-A11Y-002 M5 announce-once: bars stay decorative (aria-hidden) and the
+    // whole loading branch owns exactly ONE polite status announcement.
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+    expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite');
+    expect(screen.getByRole('status')).toHaveTextContent(/loading/i);
+    expect(container.querySelector('.bg-gray-200')).toHaveAttribute('aria-hidden', 'true');
   });
 
   it('renders empty state when no GL entries exist and handles upload navigation', async () => {

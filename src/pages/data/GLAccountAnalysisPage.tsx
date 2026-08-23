@@ -157,7 +157,7 @@ export default function GLAccountAnalysisPage() {
 
       {isLoading && selectedAccountId && (
         <div className="space-y-4">
-          <Skeleton variant="rectangular" height="100px" />
+          <Skeleton variant="rectangular" height="100px" srLabel="Loading account analysis…" />
           <Skeleton variant="rectangular" height="200px" />
         </div>
       )}
