@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { ScenarioEngine } from './ScenarioEngine';
-import type { ScenarioMetrics } from '@/types';
+import type { GLEntry, ScenarioMetrics } from '@/types';
 
 describe('ScenarioEngine', () => {
   describe('monteCarlo', () => {
@@ -445,6 +445,54 @@ describe('ScenarioEngine', () => {
   });
 
   describe('calculateBaseMetrics', () => {
+    function makeEntry(overrides: Partial<GLEntry> & { id: string }): GLEntry {
+      return {
+        accountId: 'acct-1',
+        accountCode: '1000',
+        accountName: 'Cash',
+        period: '2026-08',
+        periodName: 'August 2026',
+        debit: 0,
+        credit: 0,
+        netChange: 0,
+        date: '2026-08-15',
+        amount: 0,
+        description: '',
+        reference: '',
+        ...overrides,
+      };
+    }
+
+    it('K18 known answer: conventionally posted ledger yields POSITIVE EBITDA and margins', () => {
+      // Revenue 1,000 (4xxx credit) · COGS 400 (5xxx debit) · OpEx 300
+      // (6xxx debit): grossProfit 600, EBITDA 300. The pre-fix signed
+      // aggregation produced EBITDA −1,700 on exactly these postings.
+      const metrics = ScenarioEngine.calculateBaseMetrics([
+        makeEntry({ id: 'r1', accountCode: '4000', credit: 1000 }),
+        makeEntry({ id: 'c1', accountCode: '5000', debit: 400 }),
+        makeEntry({ id: 'o1', accountCode: '6000', debit: 300 }),
+      ]);
+      expect(metrics.revenue).toBe(1000);
+      expect(metrics.ebitda).toBe(300);
+      expect(metrics.netIncome).toBe(300); // = EBITDA by simplification
+      expect(metrics.grossMargin).toBe(60); // proves grossProfit = 600
+      expect(metrics.ebitdaMargin).toBe(30);
+      expect(metrics.cashFlow).toBe(240); // 0.8 × EBITDA
+      expect(metrics.burnRate).toBe(25); // opex 300 / 12
+    });
+
+    it('nets a revenue debit memo within the credit-normal prefix instead of flipping signs', () => {
+      const metrics = ScenarioEngine.calculateBaseMetrics([
+        makeEntry({ id: 'r1', accountCode: '4000', credit: 1000 }),
+        makeEntry({ id: 'r2', accountCode: '4000', debit: 200 }), // credit memo
+        makeEntry({ id: 'c1', accountCode: '5000', debit: 400 }),
+        makeEntry({ id: 'o1', accountCode: '6000', debit: 300 }),
+      ]);
+      expect(metrics.revenue).toBe(800);
+      expect(metrics.ebitda).toBe(100);
+      expect(metrics.ebitdaMargin).toBe(12.5);
+    });
+
     it('keeps the simulator base assumptions numerically intact (K33 labeling, not nullification)', () => {
       // Pinned on an empty ledger so no GL sign convention leaks into the
       // assertion: the defaults themselves must survive untouched.
