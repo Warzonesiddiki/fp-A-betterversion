@@ -20,6 +20,55 @@ import { roundTo, sumMoney, subtractMoney, multiplyMoney, divideMoney } from '..
 const CURRENCY_PLACES = 2;
 const RATIO_PLACES = 10;
 
+/**
+ * Posted standard-cost inputs for the same scope/period as the 5xxx actuals.
+ * Every field is optional because the general ledger does not carry a
+ * standard-cost layer; each figure must be posted by the user before the
+ * corresponding variance can exist.
+ */
+export interface GLStandardCostInputs {
+  /** Posted standard cost total for the period/scope of the 5xxx postings. */
+  standardCost?: number;
+  /** Posted purchase-price variance (needs posted standard prices × actual quantities). */
+  priceVariance?: number;
+  /** Posted material/labour usage variance. */
+  usageVariance?: number;
+  /** Posted efficiency variance. */
+  efficiencyVariance?: number;
+  /** Posted production-volume (overhead absorption) variance. */
+  volumeVariance?: number;
+}
+
+export interface GLCOGSVarianceResult {
+  /** Measured from the ledger: absolute signed sum of 5xxx postings. Always present. */
+  actualCOGS: number;
+  /**
+   * The posted standard cost, echoed back at cent precision. `null` means no
+   * standard-cost layer is posted for this scope — the GL alone cannot
+   * produce a baseline, and inventing one (e.g. actual × 0.95) is prohibited.
+   */
+  standardCOGS: number | null;
+  /**
+   * Total variance = standardCOGS − actualCOGS. `null` when no standard cost
+   * is posted.
+   */
+  variance: number | null;
+  /**
+   * variance ÷ standardCOGS × 100. `null` when no standard cost is posted or
+   * when the posted standard is ≤ 0 (a percentage against a non-positive
+   * baseline is meaningless, not zero).
+   */
+  variancePercent: number | null;
+  /** Alias of {@link variance} kept for existing callers. `null` likewise. */
+  totalVariance: number | null;
+  /**
+   * Price / Usage / Efficiency / Volume decomposition, cent-rounded, built
+   * exclusively from posted component variances. `null` unless all four are
+   * posted — the previous balancing-figure derivation fabricated the mix.
+   */
+  breakdown: Array<{ name: string; value: number }> | null;
+}
+
 export class COGSVarianceEngine {
   static computePurchasePriceVariance(
     standardPrice: number,
@@ -92,47 +141,62 @@ export class COGSVarianceEngine {
   }
 
   /**
-   * Calculates Manufacturing variances from GL entries
-   * Assumption:
-   * - 5xxx: Actual COGS
-   * - Standards are mocked based on 95% efficiency for now
+   * Sums actual COGS from GL 5xxx postings and settles it against POSTED
+   * standard costs when the caller supplies them.
+   *
+   * Standards are never inferred: the ledger has no standard-cost layer, so an
+   * absent posting yields `null` variance outputs (disclosed downstream as
+   * "standard-cost layer required"), never an estimate such as
+   * actual × 0.95 with an invented −2%/−1.5%/+0.5% decomposition.
    */
-  static calculateGLVariances(entries: GLEntry[]): {
-    actualCOGS: number;
-    standardCOGS: number;
-    variance: number;
-    variancePercent: number;
-    totalVariance: number;
-    breakdown: Array<{ name: string; value: number }>;
-  } {
+  static calculateGLVariances(
+    entries: GLEntry[],
+    standards?: GLStandardCostInputs
+  ): GLCOGSVarianceResult {
     const actualCOGS = sumMoney(
       entries.filter((e) => e.accountCode.startsWith('5')).map((e) => e.amount)
     ).abs();
-    const standardCOGS = multiplyMoney(actualCOGS, '0.95'); // Assuming 5% unfavorable variance default
+    const roundedActual = roundTo(actualCOGS, CURRENCY_PLACES);
 
-    // Decompose mock variances for UI. Volume is the balancing figure, so it is
-    // derived from the exact decimals — that keeps the four components summing
-    // back to the total variance instead of leaving a float residue.
-    const priceVar = multiplyMoney(actualCOGS, '-0.02');
-    const usageVar = multiplyMoney(actualCOGS, '-0.015');
-    const efficiencyVar = multiplyMoney(actualCOGS, '0.005');
-    const variance = standardCOGS.minus(actualCOGS);
-    const volumeVar = variance.minus(sumMoney([priceVar, usageVar, efficiencyVar]));
+    const standardCost = standards?.standardCost;
+    if (standardCost === undefined || standardCost === null) {
+      return {
+        actualCOGS: roundedActual,
+        standardCOGS: null,
+        variance: null,
+        variancePercent: null,
+        totalVariance: null,
+        breakdown: null,
+      };
+    }
+
+    const standardCOGS = roundTo(standardCost, CURRENCY_PLACES);
+    const variance = roundTo(subtractMoney(standardCOGS, roundedActual), CURRENCY_PLACES);
+    const variancePercent =
+      standardCOGS <= 0
+        ? null
+        : roundTo(divideMoney(variance, standardCOGS).times(100), RATIO_PLACES);
+
+    const components: Array<{ name: string; value: number | undefined }> = [
+      { name: 'Price', value: standards?.priceVariance },
+      { name: 'Usage', value: standards?.usageVariance },
+      { name: 'Efficiency', value: standards?.efficiencyVariance },
+      { name: 'Volume', value: standards?.volumeVariance },
+    ];
+    const allPosted = components.every(
+      (c): c is { name: string; value: number } => typeof c.value === 'number'
+    );
+    const breakdown = allPosted
+      ? components.map((c) => ({ name: c.name, value: roundTo(c.value, CURRENCY_PLACES) }))
+      : null;
 
     return {
-      actualCOGS: roundTo(actualCOGS, CURRENCY_PLACES),
-      standardCOGS: roundTo(standardCOGS, CURRENCY_PLACES),
-      variance: roundTo(variance, CURRENCY_PLACES),
-      variancePercent: standardCOGS.lte(0)
-        ? 0
-        : roundTo(divideMoney(variance, standardCOGS).times(100), RATIO_PLACES),
-      totalVariance: roundTo(variance, CURRENCY_PLACES),
-      breakdown: [
-        { name: 'Price', value: roundTo(priceVar, CURRENCY_PLACES) },
-        { name: 'Usage', value: roundTo(usageVar, CURRENCY_PLACES) },
-        { name: 'Efficiency', value: roundTo(efficiencyVar, CURRENCY_PLACES) },
-        { name: 'Volume', value: roundTo(volumeVar, CURRENCY_PLACES) },
-      ],
+      actualCOGS: roundedActual,
+      standardCOGS,
+      variance,
+      variancePercent,
+      totalVariance: variance,
+      breakdown,
     };
   }
 }
