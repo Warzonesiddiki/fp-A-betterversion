@@ -8,10 +8,13 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   timeout: 60000,
+  expect: { timeout: 15_000 },
   use: {
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
-    navigationTimeout: 30000,
+    // Cold-start Vite on-demand compilation of the entry graph can exceed
+    // 30s on the very first document of a fresh dev server.
+    navigationTimeout: 60_000,
   },
   projects: [
     {
@@ -59,5 +62,9 @@ export default defineConfig({
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
+    // Mirror dev/staging auth behavior for E2E (same rationale as vitest's
+    // env block in vite.config.ts): without it login() routes to
+    // loginReal(), which throws "Real authentication is not configured".
+    env: { VITE_USE_MOCK_AUTH: 'true' },
   },
 });
