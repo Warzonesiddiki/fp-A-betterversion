@@ -4,6 +4,7 @@
 // =============================================================================
 
 import { LlmEgressHttpError, llmEgress } from './llm/llmEgress';
+import { formatMoney } from '../utils/money';
 
 // SECURITY (Phase 7 audit finding, Hephaestus PATCH 2): NIM API keys MUST NOT
 // be embedded in production client bundles. In production builds, force the
@@ -209,6 +210,72 @@ export async function analyzeVariance(params: {
   );
 
   return response.choices[0]?.message?.content || 'No analysis generated.';
+}
+
+/** Result of the enhanced variance pass — which path produced the text. */
+export interface VarianceAnalysisResult {
+  text: string;
+  /** 'llm' = gated+redacted chokepoint call succeeded; 'local' = deterministic fallback. */
+  source: 'llm' | 'local';
+}
+
+/** Deterministic local fallback — mirrors variancePrompt's arithmetic contract. */
+function localVarianceSentence(params: {
+  metric: string;
+  actual: number;
+  budget: number;
+  period: string;
+}): string {
+  const variance = params.actual - params.budget;
+  const variancePct = params.budget !== 0 ? (variance / params.budget) * 100 : 0;
+  const direction = variance >= 0 ? 'above' : 'below';
+  return (
+    `${params.metric} for ${params.period}: actual ${params.actual.toLocaleString()} vs ` +
+    `budget ${params.budget.toLocaleString()} — ${Math.abs(variance).toLocaleString()} ` +
+    `(${formatMoney(Math.abs(variancePct), { places: 1 })}%) ${direction} budget.`
+  );
+}
+
+/**
+ * W0.9 (lane R37): fail-closed variance analysis — the chokepoint-routed
+ * sibling of {@link analyzeVariance}, mirroring the AutoCommentaryEngine R19
+ * wiring.
+ *
+ * Contract:
+ *  - egress disabled or NIM unconfigured → deterministic local sentence; the
+ *    transport is never touched and no audit event is emitted;
+ *  - enabled + allowed → facts-only variancePrompt via nimChat (kill-switch
+ *    gated, host-allowlisted, redacted, audited inside the chokepoint),
+ *    conservative temperature 0.2;
+ *  - ANY failure (blocked/denied host, HTTP error, empty model content)
+ *    degrades to the same local sentence — this never throws into the UI.
+ */
+export async function analyzeVarianceEnhanced(params: {
+  metric: string;
+  actual: number;
+  budget: number;
+  period: string;
+}): Promise<VarianceAnalysisResult> {
+  const prompt = variancePrompt(params);
+  const localText = localVarianceSentence(params);
+  if (!llmEgress.isEgressEnabled() || !isNimConfigured()) {
+    return { text: localText, source: 'local' };
+  }
+  try {
+    const response = await nimChat(
+      [
+        { role: 'system', content: prompt.system },
+        { role: 'user', content: prompt.user },
+      ],
+      { temperature: 0.2, max_tokens: 512 }
+    );
+    const llmText = response.choices[0]?.message?.content?.trim();
+    return llmText ? { text: llmText, source: 'llm' } : { text: localText, source: 'local' };
+  } catch {
+    // Fail-closed: LlmEgressBlockedError, HTTP errors, network failures all
+    // degrade to the deterministic local sentence.
+    return { text: localText, source: 'local' };
+  }
 }
 
 export async function generateForecastInsight(params: {
