@@ -13,7 +13,7 @@
  *   - DO NOT mock lucide-react with a Proxy — the setup.ts global mock
  *     already provides it (use the enumerated pattern from other deep tests).
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
@@ -634,5 +634,87 @@ describe('BudgetVsActualPage (data-driven)', () => {
     } as Partial<GLStub & BudgetStub>);
     // Both should be Expense (no decomposition)
     expect(screen.queryByText(/Revenue Variance Decomposition/i)).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// R9-c: JS smooth-scroll compliance with prefers-reduced-motion.
+// The "Top 5 Most Unfavorable" rows scroll their table row into view on
+// click/Enter. The real useReducedMotion hook reads window.matchMedia, so
+// mocking matchMedia proves the page end-to-end (hook → scrollIntoView args).
+// The BudgetVsActualTable is mocked, so a stand-in #row-<code> anchor is
+// appended to the document for getElementById to find.
+// ---------------------------------------------------------------------------
+const originalMatchMedia = window.matchMedia;
+
+function mockMatchMedia(prefersReducedMotion: boolean) {
+  window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+    matches: query === '(prefers-reduced-motion: reduce)' ? prefersReducedMotion : false,
+    media: query,
+    onchange: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }));
+}
+
+// Default for every test in this file (incl. the data-driven describe
+// above): motion allowed. R9-c tests override via mockMatchMedia(true).
+beforeEach(() => {
+  mockMatchMedia(false);
+});
+
+describe('BudgetVsActualPage reduced-motion scrolling (R9-c)', () => {
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia;
+    vi.restoreAllMocks();
+    document.getElementById('row-5000')?.remove();
+  });
+
+  /** Renders the page with one unfavorable row and a stand-in scroll target. */
+  function mountPageWithUnfavorableRow() {
+    makePage({
+      entries: [
+        { id: '1', accountCode: '5000', accountName: 'Expense', debit: 200, credit: 0, period: nowPeriod() },
+      ],
+      budgets: [{ id: 'b1', name: 'FY24', fiscalYear: 2024, status: 'Approved' }],
+      lineItems: [
+        { id: 'li1', budgetId: 'b1', accountCode: '5000', accountName: 'Expense', amount: 100 },
+      ],
+    } as Partial<GLStub & BudgetStub>);
+    const anchor = document.createElement('div');
+    anchor.id = 'row-5000';
+    document.body.appendChild(anchor);
+  }
+
+  function unfavorableRow(): Element {
+    const text = screen.getByText('Expense', { selector: 'p' });
+    const row = text.closest('div[role="button"]');
+    expect(row).not.toBeNull();
+    return row!;
+  }
+
+  it("scrolls with behavior 'auto' when reduced motion is preferred (click)", () => {
+    mockMatchMedia(true);
+    mountPageWithUnfavorableRow();
+    const scrollSpy = vi.spyOn(Element.prototype, 'scrollIntoView').mockImplementation(() => {});
+    fireEvent.click(unfavorableRow());
+    expect(scrollSpy).toHaveBeenCalledWith({ behavior: 'auto', block: 'center' });
+  });
+
+  it("scrolls with behavior 'auto' when reduced motion is preferred (keyboard)", () => {
+    mockMatchMedia(true);
+    mountPageWithUnfavorableRow();
+    const scrollSpy = vi.spyOn(Element.prototype, 'scrollIntoView').mockImplementation(() => {});
+    fireEvent.keyDown(unfavorableRow(), { key: 'Enter' });
+    expect(scrollSpy).toHaveBeenCalledWith({ behavior: 'auto', block: 'center' });
+  });
+
+  it("keeps smooth scrolling when motion is allowed", () => {
+    mockMatchMedia(false);
+    mountPageWithUnfavorableRow();
+    const scrollSpy = vi.spyOn(Element.prototype, 'scrollIntoView').mockImplementation(() => {});
+    fireEvent.click(unfavorableRow());
+    expect(scrollSpy).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
   });
 });

@@ -32,6 +32,7 @@ import {
   toDecimal,
 } from '@/utils/money';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { currencyFormatter, formatPercent } from '@/utils/financialFormatting';;
 
 const MATERIAL_THRESHOLD = 10;
@@ -95,6 +96,9 @@ interface VarianceRow {
 
 export default function BudgetVsActualPage() {
   const fmt = useCurrencyFormatter();
+  // R9-c: honor prefers-reduced-motion — instant jumps instead of animated
+  // scrolling for vestibular-safe users (WCAG 2.3.3 Animation from Interactions).
+  const prefersReducedMotion = useReducedMotion();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [helpOpen, setHelpOpen] = useState(false);
@@ -397,7 +401,13 @@ export default function BudgetVsActualPage() {
   if (isLoading) {
     return (
       <div className="space-y-4 p-6">
-        <Skeleton count={1} height="40px" width="30%" className="mb-4" />
+        <Skeleton
+          count={1}
+          height="40px"
+          width="30%"
+          className="mb-4"
+          srLabel="Loading budget vs actual…"
+        />
         <Skeleton count={8} variant="rectangular" height="24px" />
       </div>
     );
@@ -650,12 +660,18 @@ export default function BudgetVsActualPage() {
                       className="flex items-center justify-between p-2.5 bg-red-900/10 border border-red-800/20 rounded-lg hover:bg-red-900/20 transition-colors cursor-pointer"
                       onClick={() => {
                         const el = document.getElementById(`row-${row.accountCode}`);
-                        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        el?.scrollIntoView({
+                          behavior: prefersReducedMotion ? 'auto' : 'smooth',
+                          block: 'center',
+                        });
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                           const el = document.getElementById(`row-${row.accountCode}`);
-                          el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          el?.scrollIntoView({
+                            behavior: prefersReducedMotion ? 'auto' : 'smooth',
+                            block: 'center',
+                          });
                         }
                       }}
                       role="button"

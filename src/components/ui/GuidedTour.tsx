@@ -8,6 +8,7 @@
 import React, { memo, useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 export interface TourStep {
   title: string;
@@ -31,6 +32,9 @@ export const GuidedTour = memo(function GuidedTour({
 }: GuidedTourProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+  // R9-c: honor prefers-reduced-motion — instant jumps instead of animated
+  // scrolling for vestibular-safe users (WCAG 2.3.3 Animation from Interactions).
+  const prefersReducedMotion = useReducedMotion();
 
   const step = steps[currentStep];
 
@@ -39,14 +43,17 @@ export const GuidedTour = memo(function GuidedTour({
       const element = document.querySelector(step.target);
       if (element) {
         setTargetRect(element.getBoundingClientRect());
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        element.scrollIntoView({
+          behavior: prefersReducedMotion ? 'auto' : 'smooth',
+          block: 'center',
+        });
       } else {
         setTargetRect(null);
       }
     } else {
       setTargetRect(null);
     }
-  }, [isOpen, step, currentStep]);
+  }, [isOpen, step, currentStep, prefersReducedMotion]);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
