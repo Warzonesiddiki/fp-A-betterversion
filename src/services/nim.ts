@@ -4,7 +4,7 @@
 // =============================================================================
 
 import { LlmEgressHttpError, llmEgress } from './llm/llmEgress';
-import { formatMoney } from '../utils/money';
+import { formatMoney, subtractMoney, variancePct as variancePctOf } from '../utils/money';
 
 // SECURITY (Phase 7 audit finding, Hephaestus PATCH 2): NIM API keys MUST NOT
 // be embedded in production client bundles. In production builds, force the
@@ -226,8 +226,9 @@ function localVarianceSentence(params: {
   budget: number;
   period: string;
 }): string {
-  const variance = params.actual - params.budget;
-  const variancePct = params.budget !== 0 ? (variance / params.budget) * 100 : 0;
+  const variance = subtractMoney(params.actual, params.budget);
+  // (actual − base) / base × 100; variancePct returns 0 for 0/0 by definition.
+  const variancePct = params.budget !== 0 ? variancePctOf(params.actual, params.budget) : 0;
   const direction = variance >= 0 ? 'above' : 'below';
   return (
     `${params.metric} for ${params.period}: actual ${params.actual.toLocaleString()} vs ` +
