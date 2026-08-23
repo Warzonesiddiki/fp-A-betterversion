@@ -80,10 +80,12 @@ describe('BankingEngine', () => {
       expect(result.coverageRatio).toBe(0);
     });
 
-    it('should return netChargeOffs as 0 (placeholder)', () => {
+    it('returns netChargeOffs as null-unless-posted (needs a loan-loss feed)', () => {
       const entries = [gl('1301', 100000000)];
       const result = BankingEngine.calculateLoanLossStats(entries);
-      expect(result.netChargeOffs).toBe(0);
+      // Charge-off/recovery events are not identifiable from GL prefixes,
+      // so the engine reports null rather than a placeholder zero.
+      expect(result.netChargeOffs).toBeNull();
     });
 
     it('should handle empty entries', () => {
@@ -93,7 +95,7 @@ describe('BankingEngine', () => {
       expect(result.nplBalance).toBe(0);
       expect(result.nplRatio).toBe(0);
       expect(result.coverageRatio).toBe(0);
-      expect(result.netChargeOffs).toBe(0);
+      expect(result.netChargeOffs).toBeNull();
       expect(result.provisionExpense).toBe(0);
     });
   });

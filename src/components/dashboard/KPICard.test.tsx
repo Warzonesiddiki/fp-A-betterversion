@@ -191,6 +191,18 @@ describe('KPICard', () => {
     });
   });
 
+  describe('Null value disclosure', () => {
+    it('renders an em-dash when the measured value is null', () => {
+      render(<KPICard title="Net Charge-Offs" value={null} format="currency" />);
+      expect(screen.getByText('—')).toBeInTheDocument();
+    });
+
+    it('renders an em-dash when the value is omitted', () => {
+      render(<KPICard title="Net Charge-Offs" />);
+      expect(screen.getByText('—')).toBeInTheDocument();
+    });
+  });
+
   describe('Click Behavior', () => {
     it('calls onClick when card is clicked', () => {
       const onClick = vi.fn();

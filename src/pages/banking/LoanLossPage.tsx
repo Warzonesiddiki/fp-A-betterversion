@@ -180,14 +180,17 @@ export default function LoanLossPage() {
           sparklineData={[]}
         />
         <KPICard title="Reserve Coverage" value={stats.coverageRatio} format="percent" />
-        <KPICard
-          title="Net Charge-Offs (YTD)"
-          value={stats.netChargeOffs}
-          format="currency"
-          trend="down"
-          change={-1.2}
-        />
+        {/* Null-with-contract: charge-offs need a loan-loss transaction feed
+            the GL cannot provide, so this renders an em-dash rather than a
+            fabricated zero. The former hardcoded trend/change rows were also
+            invented and removed with it. */}
+        <KPICard title="Net Charge-Offs (YTD)" value={stats.netChargeOffs} format="currency" />
       </div>
+
+      <p className="text-xs text-[var(--text-muted)] mt-2">
+        Net Charge-Offs require a loan-loss transaction feed (charge-off and recovery events); the
+        general ledger cannot identify them, so no measured figure is shown yet.
+      </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">

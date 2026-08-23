@@ -50,7 +50,13 @@ export interface BankingStats {
   nplBalance: number;
   nplRatio: number;
   coverageRatio: number;
-  netChargeOffs: number;
+  /**
+   * Net charge-offs need charge-off and recovery events identified per
+   * transaction. GL prefix classification cannot isolate them, so this stays
+   * null until a loan-loss transaction feed is integrated: null means "not
+   * measurable from the ledger", never a zero.
+   */
+  netChargeOffs: number | null;
   provisionExpense: number;
 }
 
@@ -86,7 +92,8 @@ export class BankingEngine {
       nplBalance: roundTo(nplBalance, CURRENCY_PLACES),
       nplRatio: ratioPct(nplBalance, grossLoans),
       coverageRatio: ratioPct(reserveBalance, nplBalance),
-      netChargeOffs: 0, // Needs specific transaction type detection
+      // Null-with-contract: charge-off events are not GL-classified.
+      netChargeOffs: null,
       provisionExpense: roundTo(provisionExpense, CURRENCY_PLACES),
     };
   }

@@ -43,7 +43,12 @@ export type KPICardVarianceType = 'favorable' | 'unfavorable' | 'neutral';
 
 export interface KPICardProps {
   title: string;
-  value: number;
+  /**
+   * Measured KPI value. `null`/`undefined` means "not measurable from the
+   * posted data" — the card renders an em-dash (—) instead of inventing a
+   * figure. Numeric values keep the existing currency/percent/number formats.
+   */
+  value?: number | null;
   format?: 'currency' | 'percent' | 'number';
   change?: number;
   trend?: 'up' | 'down' | 'neutral';
@@ -106,11 +111,13 @@ export const KPICard = memo(function KPICard({
   }
 
   const formatted =
-    format === 'currency'
-      ? fmtCurrency.custom({ decimals: 0 })(value)
-      : format === 'percent'
-        ? formatPercent(value, 1)
-        : value.toLocaleString();
+    value === null || value === undefined
+      ? '—'
+      : format === 'currency'
+        ? fmtCurrency.custom({ decimals: 0 })(value)
+        : format === 'percent'
+          ? formatPercent(value, 1)
+          : value.toLocaleString();
 
   const trendColor =
     trend === 'up'
