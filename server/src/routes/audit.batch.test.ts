@@ -98,7 +98,9 @@ describe('R43 POST /api/audit/batch ingestion', () => {
     const noBatchId = await request(app)
       .post('/api/audit/batch')
       .set(auth)
-      .send({ entries: [{ action: 'a', entityType: 'b', entityId: 'c', ts: '2026-08-20T10:00:00Z' }] });
+      .send({
+        entries: [{ action: 'a', entityType: 'b', entityId: 'c', ts: '2026-08-20T10:00:00Z' }],
+      });
     expect(noBatchId.status).toBe(400);
 
     const emptyBatch = await request(app)
@@ -151,9 +153,10 @@ describe('R43 POST /api/audit/batch ingestion', () => {
     const ids = (res.body as { ids: string[] }).ids;
     expect(ids).toHaveLength(2);
 
-    const first = db
-      .prepare('SELECT * FROM audit_log WHERE id = ?')
-      .get(ids[0]) as Record<string, unknown>;
+    const first = db.prepare('SELECT * FROM audit_log WHERE id = ?').get(ids[0]) as Record<
+      string,
+      unknown
+    >;
 
     // Tenant + actor stamps come from the JWT.
     expect(first.tenant_id).toBe(TENANT_A);
@@ -178,7 +181,16 @@ describe('R43 POST /api/audit/batch ingestion', () => {
             oldValue: null,
             newValue: null,
           },
-          ['action', 'category', 'id', 'newValue', 'oldValue', 'resourceId', 'timestamp', 'userId'].sort()
+          [
+            'action',
+            'category',
+            'id',
+            'newValue',
+            'oldValue',
+            'resourceId',
+            'timestamp',
+            'userId',
+          ].sort()
         )
       )
       .digest('hex')
@@ -186,15 +198,17 @@ describe('R43 POST /api/audit/batch ingestion', () => {
     expect(first.checksum).toBe(expectedChecksum);
 
     // Canonicalization of the offset form on entry #2.
-    const second = db
-      .prepare('SELECT timestamp FROM audit_log WHERE id = ?')
-      .get(ids[1]) as { timestamp: string };
+    const second = db.prepare('SELECT timestamp FROM audit_log WHERE id = ?').get(ids[1]) as {
+      timestamp: string;
+    };
     expect(second.timestamp).toBe(new Date('2026-08-20T11:30:00+05:30').toISOString());
 
     // Read-back through the UNTOUCHED list route (same tenant).
     const list = await request(app).get('/api/audit').set('Authorization', `Bearer ${adminA}`);
     expect(list.status).toBe(200);
-    const listedIds = new Set((list.body as { entries: { id: string }[] }).entries.map((e) => e.id));
+    const listedIds = new Set(
+      (list.body as { entries: { id: string }[] }).entries.map((e) => e.id)
+    );
     expect(listedIds.has(String(ids[0]))).toBe(true);
     expect(listedIds.has(String(ids[1]))).toBe(true);
   });
@@ -279,5 +293,102 @@ describe('R43 POST /api/audit/batch ingestion', () => {
       JSON.stringify(e.metadata ?? {}).includes(batchId)
     );
     expect(leaked).toHaveLength(0);
+  });
+
+  // ---------------------------------------------------------------------
+  // Wave-5: interplay with POST /api/audit/prune.
+  //
+  // Prune semantics (read from AuditService.prune, unchanged): cutoff =
+  // now - auditLogDays, executed as `DELETE FROM audit_log WHERE
+  // timestamp < ?` — i.e. it filters on the CLIENT EVENT TIME column our
+  // ingestion writes (canonicalized ts), not on ingestion wall-clock, and
+  // it is a PHYSICAL delete with no tenant predicate (retention tooling).
+  // ---------------------------------------------------------------------
+
+  function rowsForBatch(batchId: string): number {
+    return (
+      db
+        .prepare(`SELECT COUNT(*) AS count FROM audit_log WHERE metadata LIKE ? AND tenant_id = ?`)
+        .get(`%${batchId}%`, TENANT_A) as { count: number }
+    ).count;
+  }
+
+  it('prune with a cutoff AFTER the batch timestamps deletes entries but keeps the fresh commit marker', async () => {
+    const batchId = `r43-prune-old-${Date.now()}`;
+    const seeded = await request(app)
+      .post('/api/audit/batch')
+      .set('Authorization', `Bearer ${adminA}`)
+      .send(batchPayload(batchId)); // entries ts = 2026-08-20 (fixed fixture)
+    expect(seeded.status).toBe(201);
+    expect(rowsForBatch(batchId)).toBe(3); // 2 entries + 1 commit marker
+
+    // Cutoff ≈ now - 2d is AFTER the 2026-08-20 entry stamps → retention-
+    // expired. The MARKER, however, was inserted at request time (today), so
+    // a 2-day cutoff does not reach it: replay protection outlives data.
+    const pruned = await request(app)
+      .post('/api/audit/prune')
+      .set('Authorization', `Bearer ${adminA}`)
+      .send({ auditLogDays: 2 });
+    expect(pruned.status).toBe(200);
+    expect(typeof (pruned.body as { pruned: number }).pruned).toBe('number');
+    expect((pruned.body as { pruned: number }).pruned).toBeGreaterThanOrEqual(2);
+
+    // Exact semantics: entry rows go; the marker stays until IT ages out.
+    expect(rowsForBatch(batchId)).toBe(1);
+    const markerAlive = db
+      .prepare('SELECT COUNT(*) AS count FROM audit_log WHERE id = ?')
+      .get(`audit-batch-${TENANT_A}-${batchId}`) as { count: number };
+    expect(markerAlive.count).toBe(1);
+  });
+
+  it('prune with a cutoff BEFORE the batch timestamps keeps the whole batch intact', async () => {
+    const batchId = `r43-prune-keep-${Date.now()}`;
+    const seeded = await request(app)
+      .post('/api/audit/batch')
+      .set('Authorization', `Bearer ${adminA}`)
+      .send(batchPayload(batchId));
+    expect(seeded.status).toBe(201);
+
+    // Cutoff ≈ now - 30d is BEFORE 2026-08-20 → nothing of ours expires.
+    const pruned = await request(app)
+      .post('/api/audit/prune')
+      .set('Authorization', `Bearer ${adminA}`)
+      .send({ auditLogDays: 30 });
+    expect(pruned.status).toBe(200);
+    expect(rowsForBatch(batchId)).toBe(3);
+  });
+
+  it('PINNED: replay AFTER prune stays deduped — the fresh commit marker outlives the pruned entries', async () => {
+    const batchId = `r43-prune-replay-${Date.now()}`;
+
+    const first = await request(app)
+      .post('/api/audit/batch')
+      .set('Authorization', `Bearer ${adminA}`)
+      .send(batchPayload(batchId));
+    expect(first.status).toBe(201);
+    const originalIds = (first.body as { ids: string[] }).ids;
+
+    // Retention pass deletes the 2026-08-20-stamped ENTRY rows; the commit
+    // marker was inserted today, so a 2-day cutoff leaves it standing.
+    await request(app)
+      .post('/api/audit/prune')
+      .set('Authorization', `Bearer ${adminA}`)
+      .send({ auditLogDays: 2 });
+    // 2 entries + marker: only the entries are gone.
+    expect(rowsForBatch(batchId)).toBe(1);
+
+    // SOX-safe consequence: dedupe memory OUTLIVES data retention while the
+    // marker is younger than the horizon — the replay is still recognized
+    // ({replayed:true} carries only batchId/committedAt) and rejects without
+    // a single new insert.
+    const replay = await request(app)
+      .post('/api/audit/batch')
+      .set('Authorization', `Bearer ${adminA}`)
+      .send(batchPayload(batchId));
+    expect(replay.status).toBe(200);
+    expect((replay.body as { replayed: boolean }).replayed).toBe(true);
+    // Row count unchanged by the rejected replay: marker only (entries were
+    // pruned; the deduped replay inserted nothing).
+    expect(rowsForBatch(batchId)).toBe(1);
   });
 });
