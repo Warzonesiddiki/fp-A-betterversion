@@ -22,6 +22,7 @@
 //  16. listAccounts() filters reserved
 //  17. audit event shape
 //  18. Cross-service — store session, retrieve, verify
+//  19. IPC contract — wire shape vs registered Rust commands (R38)
 
 import { describe, test, expect, beforeEach, afterAll } from 'vitest';
 import {
@@ -36,47 +37,55 @@ class MockTauri {
   private store = new Map<string, string>();
   private lockoutCount = 0;
 
-  invoke = async <T>(cmd: string, args?: Record<string, unknown>): Promise<T> => {
-    if (cmd === 'plugin:stronghold|unlock') {
-      const pw = args?.password as string;
+  /**
+   * Mirrors the registered Rust commands (src-tauri/src/secure_storage.rs):
+   * every call is invoke('secure_storage_<name>', { args }) where `args` is
+   * the command's single struct parameter, and rejections carry the
+   * serialized CommandError fields ({ code, message }). Deliberately
+   * stricter than the real backend in one spot: unlock rejects on 'wrong'
+   * so client-side lockout logic stays testable (the real command currently
+   * only rejects empty passwords — documented Rust-side gap).
+   */
+  invoke = async <T>(cmd: string, raw?: Record<string, unknown>): Promise<T> => {
+    const args = (raw?.args ?? {}) as Record<string, unknown>;
+    if (cmd === 'secure_storage_unlock') {
+      const pw = args.password as string;
       if (pw === 'wrong') {
         throw new Error('invalid-password');
       }
       return null as unknown as T;
     }
-    if (cmd === 'plugin:stronghold|lock') {
+    if (cmd === 'secure_storage_lock') {
       return null as unknown as T;
     }
-    if (cmd === 'plugin:stronghold|store') {
-      const key = `${args?.service}:${args?.account}`;
-      this.store.set(key, args?.secret as string);
+    if (cmd === 'secure_storage_store') {
+      const key = `${args.service}:${args.account}`;
+      this.store.set(key, args.secret as string);
       return null as unknown as T;
     }
-    if (cmd === 'plugin:stronghold|retrieve') {
-      const key = `${args?.service}:${args?.account}`;
+    if (cmd === 'secure_storage_retrieve') {
+      const key = `${args.service}:${args.account}`;
       const v = this.store.get(key);
-      if (!v) {
-        const e: Error & { code?: string } = new Error('not-found');
-        e.code = 'NOT_FOUND';
-        throw e;
+      if (v === undefined) {
+        throw Object.assign(new Error('No matching entry found in secure storage'), {
+          code: 'not-found',
+        });
       }
       return v as unknown as T;
     }
-    if (cmd === 'plugin:stronghold|delete') {
-      const key = `${args?.service}:${args?.account}`;
+    if (cmd === 'secure_storage_delete') {
+      const key = `${args.service}:${args.account}`;
       if (!this.store.has(key)) {
-        const e: Error & { code?: string } = new Error('not-found');
-        e.code = 'NOT_FOUND';
-        throw e;
+        throw Object.assign(new Error('no such entry'), { code: 'not-found' });
       }
       this.store.delete(key);
       return null as unknown as T;
     }
-    if (cmd === 'plugin:stronghold|exists') {
-      const key = `${args?.service}:${args?.account}`;
+    if (cmd === 'secure_storage_exists') {
+      const key = `${args.service}:${args.account}`;
       return this.store.has(key) as unknown as T;
     }
-    if (cmd === 'plugin:stronghold|list') {
+    if (cmd === 'secure_storage_list_accounts') {
       return Array.from(this.store.keys()).map((k) => k.split(':')[1]) as unknown as T;
     }
     throw new Error(`Mock: unknown command ${cmd}`);
@@ -451,5 +460,91 @@ describe('18. cross-service integration', () => {
     const r = await storage.retrieve('integration.token');
     expect(r.ok).toBe(true);
     expect(new TextDecoder().decode(r.value)).toBe('value');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 19. IPC contract — wire shape vs registered Rust commands (R38)
+//
+// These tests pin the exact invoke wire format against
+// src-tauri/src/secure_storage.rs so TS and Rust cannot drift silently:
+// command names are `secure_storage_*`, every payload is a single
+// `{ args }` struct, and lock() sends no payload at all.
+// ---------------------------------------------------------------------------
+
+function recordingSpy(): {
+  spy: TauriInvoke;
+  calls: Array<{ cmd: string; raw?: Record<string, unknown> }>;
+} {
+  const calls: Array<{ cmd: string; raw?: Record<string, unknown> }> = [];
+  const spy: TauriInvoke = {
+    invoke: async <T>(cmd: string, raw?: Record<string, unknown>) => {
+      calls.push({ cmd, raw });
+      return null as unknown as T;
+    },
+  };
+  return { spy, calls };
+}
+
+describe('19. IPC contract vs src-tauri secure_storage commands', () => {
+  test('19.1 store() sends exact registered command with single args struct', async () => {
+    const { spy, calls } = recordingSpy();
+    const fresh = createTauriSecureStorage(spy, clock);
+    await fresh.initialize();
+    await fresh.unlock('p');
+    calls.length = 0;
+    const r = await fresh.store('contract.acc', 'value');
+    expect(r.ok).toBe(true);
+    expect(calls).toEqual([
+      {
+        cmd: 'secure_storage_store',
+        raw: {
+          args: {
+            service: TAURI_SECURE_STORAGE_CONSTANTS.SERVICE_NAME,
+            account: 'contract.acc',
+            secret: btoa('value'),
+          },
+        },
+      },
+    ]);
+  });
+
+  test('19.2 lock() invokes secure_storage_lock with NO args payload', async () => {
+    const { spy, calls } = recordingSpy();
+    const fresh = createTauriSecureStorage(spy, clock);
+    await fresh.initialize();
+    const r = await fresh.lock();
+    expect(r.ok).toBe(true);
+    expect(calls).toEqual([{ cmd: 'secure_storage_lock', raw: undefined }]);
+  });
+
+  test('19.3 unlock() wraps password in args struct', async () => {
+    const { spy, calls } = recordingSpy();
+    const fresh = createTauriSecureStorage(spy, clock);
+    await fresh.initialize();
+    await fresh.unlock('p');
+    expect(calls[calls.length - 1]).toEqual({
+      cmd: 'secure_storage_unlock',
+      raw: { args: { password: 'p' } },
+    });
+  });
+
+  test('19.4 every outgoing command is a registered secure_storage_* name', async () => {
+    const { spy, calls } = recordingSpy();
+    const fresh = createTauriSecureStorage(spy, clock);
+    await fresh.initialize();
+    await fresh.unlock('p');
+    await fresh.store('c.a', 'v');
+    await fresh.retrieve('c.a');
+    await fresh.exists('c.a');
+    await fresh.listAccounts();
+    await fresh.delete('c.a');
+    await fresh.lock();
+    expect(calls).toHaveLength(7);
+    for (const { cmd } of calls) {
+      expect(cmd.startsWith('secure_storage_')).toBe(true);
+      expect(cmd.includes('|')).toBe(false);
+      expect(cmd.includes(':')).toBe(false);
+    }
   });
 });
