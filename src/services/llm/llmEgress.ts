@@ -418,7 +418,15 @@ export async function complete<T = unknown>(
   return parseResponseBody<T>(response);
 }
 
-export type LlmOpenStreamOptions = LlmCompleteOptions;
+export interface LlmOpenStreamOptions extends LlmCompleteOptions {
+  /**
+   * When true, a non-OK stream response is surfaced as {@link LlmEgressHttpError}
+   * instead of returning the raw Response. Default false keeps the legacy
+   * passthrough contract consumed by nimChatStream (which maps the status to
+   * its own historical error message).
+   */
+  strict?: boolean;
+}
 
 /**
  * Streaming sibling of {@link complete} living in the same chokepoint module:
@@ -442,7 +450,7 @@ export async function openStream(
     redactions,
   });
 
-  return fetch(endpoint, {
+  const response = await fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(options.headers?.() ?? {}) },
     body: JSON.stringify({
@@ -454,6 +462,11 @@ export async function openStream(
     }),
     signal: options.signal,
   });
+
+  if (options.strict && !response.ok) {
+    throw new LlmEgressHttpError(response.status, await readErrorBody(response));
+  }
+  return response;
 }
 
 /** Namespaced facade — the canonical import surface for call sites. */

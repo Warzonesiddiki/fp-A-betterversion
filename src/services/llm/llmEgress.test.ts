@@ -284,4 +284,164 @@ describe('llmEgress chokepoint', () => {
       expect(typeof llmEgress.isEgressEnabled).toBe('function');
     });
   });
+
+  describe('openStream streaming contract (wave-5)', () => {
+    /**
+     * Scripted SSE response double shaped exactly like the one nimChatStream
+     * consumes: response.body.getReader() -> reader.read() yielding encoded
+     * `data: {...}\n\n` frames until a `data: [DONE]` frame, then done.
+     */
+    function scriptSseResponse(frames: string[]): {
+      response: Response;
+      releaseLock: ReturnType<typeof vi.fn>;
+    } {
+      const encoder = new TextEncoder();
+      const chunks = frames.map((frame) => encoder.encode(frame));
+      let chunkIndex = 0;
+      const releaseLock = vi.fn();
+      const reader = {
+        read: vi.fn().mockImplementation(() => {
+          if (chunkIndex < chunks.length) {
+            return Promise.resolve({ done: false, value: chunks[chunkIndex++] });
+          }
+          return Promise.resolve({ done: true, value: undefined });
+        }),
+        releaseLock,
+      };
+      const response = {
+        ok: true,
+        status: 200,
+        body: { getReader: () => reader },
+      } as unknown as Response;
+      return { response, releaseLock };
+    }
+
+    /** Consumption loop mirroring nimChatStream's reader/SSE handling. */
+    async function consumeSse(response: Response): Promise<string[]> {
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      const deltas: string[] = [];
+      try {
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith('data: ')) continue;
+            const data = trimmed.slice(6);
+            if (data === '[DONE]') return deltas;
+            deltas.push(
+              (JSON.parse(data) as { choices: [{ delta: { content?: string } }] }).choices[0].delta
+                .content ?? ''
+            );
+          }
+        }
+      } finally {
+        reader.releaseLock();
+      }
+      return deltas;
+    }
+
+    it('kill switch blocks openStream before any transport work', async () => {
+      // VITE_LLM_EGRESS_ENABLED intentionally left unset.
+      const events: LlmEgressAuditEvent[] = [];
+      setLlmEgressAuditSink({ append: (event) => events.push(event) });
+
+      await expect(openStream('hello', { endpoint: NIM_LIKE_ENDPOINT })).rejects.toMatchObject({
+        code: LLM_EGRESS_BLOCKED_CODE,
+        reason: 'egress-disabled',
+      });
+
+      expect(mockFetch).not.toHaveBeenCalled();
+      expect(events).toHaveLength(0);
+    });
+
+    it('enabled + allowed host sends redacted messages upstream and audits exactly once per open', async () => {
+      enableEgress('test-nim.api.com');
+      const { response } = scriptSseResponse([
+        'data: {"id":"s1","choices":[{"index":0,"delta":{"content":"Hi"},"finish_reason":null}]}\n\n',
+        'data: {"id":"s1","choices":[{"index":0,"delta":{"content":" there"},"finish_reason":null}]}\n\n',
+        'data: [DONE]\n\n',
+      ]);
+      mockFetch.mockResolvedValue(response);
+      const events: LlmEgressAuditEvent[] = [];
+      setLlmEgressAuditSink({ append: (event) => events.push(event) });
+
+      const opened = await openStream(
+        [{ role: 'user', content: 'summarize key sk-abcdefghijklmnopqrst run 7777777' }],
+        {
+          endpoint: NIM_LIKE_ENDPOINT,
+          model: 'stream-model',
+          headers: () => ({ Authorization: 'Bearer stream-key' }),
+        }
+      );
+
+      expect(opened).toBe(response);
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [url, init] = mockFetch.mock.calls[0]!;
+      expect(url).toBe(NIM_LIKE_ENDPOINT);
+      expect(init.headers.Authorization).toBe('Bearer stream-key');
+      const body = JSON.parse(init.body);
+      expect(body.stream).toBe(true);
+      expect(body.model).toBe('stream-model');
+      expect(body.messages[0].content).toBe(
+        'summarize key [REDACTED:SECRET] run [REDACTED:DIGITS]'
+      );
+
+      // One audit event per stream OPEN — not per consumed chunk.
+      expect(events).toHaveLength(1);
+      expect(events[0]!.endpoint).toBe(NIM_LIKE_ENDPOINT);
+      expect(events[0]!.promptBytes).toBeGreaterThan(0);
+      expect(events[0]!.redactions).toBe(2);
+    });
+
+    it('delivers an SSE body consumable via the nimChatStream reader pattern', async () => {
+      enableEgress('test-nim.api.com');
+      const { response, releaseLock } = scriptSseResponse([
+        'data: {"id":"s1","choices":[{"index":0,"delta":{"content":"Hello"},"finish_reason":null}]}\n\n',
+        'data: {"id":"s1","choices":[{"index":0,"delta":{"content":" world"},"finish_reason":null}]}\n\n',
+        'data: [DONE]\n\n',
+      ]);
+      mockFetch.mockResolvedValue(response);
+
+      const opened = await openStream('hi', { endpoint: NIM_LIKE_ENDPOINT });
+      const deltas = await consumeSse(opened);
+
+      expect(deltas).toEqual(['Hello', ' world']);
+      expect(releaseLock).toHaveBeenCalledTimes(1);
+    });
+
+    it('surfaces LlmEgressHttpError on non-OK responses in strict mode', async () => {
+      enableEgress('test-nim.api.com');
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 502,
+        text: () => Promise.resolve('bad gateway'),
+      });
+
+      const error = await openStream('hi', { endpoint: NIM_LIKE_ENDPOINT, strict: true }).catch(
+        (caught: unknown) => caught
+      );
+
+      expect(error).toBeInstanceOf(LlmEgressHttpError);
+      expect((error as LlmEgressHttpError).status).toBe(502);
+      expect((error as LlmEgressHttpError).bodyPreview).toBe('bad gateway');
+      expect((error as LlmEgressHttpError).message).toBe('LLM egress HTTP 502: bad gateway');
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('default (non-strict) mode preserves the legacy raw-Response passthrough on non-OK', async () => {
+      enableEgress('test-nim.api.com');
+      const rawFailure = { ok: false, status: 503 } as unknown as Response;
+      mockFetch.mockResolvedValue(rawFailure);
+
+      const opened = await openStream('hi', { endpoint: NIM_LIKE_ENDPOINT });
+      expect(opened).toBe(rawFailure);
+      expect(opened.ok).toBe(false);
+    });
+  });
 });
