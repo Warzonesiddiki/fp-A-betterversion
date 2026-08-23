@@ -5,6 +5,7 @@
 
 import { LlmEgressHttpError, llmEgress } from './llm/llmEgress';
 import { formatMoney, subtractMoney, variancePct as variancePctOf } from '../utils/money';
+import Decimal from 'decimal.js';
 
 // SECURITY (Phase 7 audit finding, Hephaestus PATCH 2): NIM API keys MUST NOT
 // be embedded in production client bundles. In production builds, force the
@@ -227,13 +228,14 @@ function localVarianceSentence(params: {
   period: string;
 }): string {
   const variance = subtractMoney(params.actual, params.budget);
-  // (actual − base) / base × 100; variancePct returns 0 for 0/0 by definition.
-  const variancePct = params.budget !== 0 ? variancePctOf(params.actual, params.budget) : 0;
-  const direction = variance >= 0 ? 'above' : 'below';
+  // (actual − base) / base × 100; variancePct returns Decimal (0 for 0/0).
+  const variancePctDecimal =
+    params.budget !== 0 ? variancePctOf(params.actual, params.budget) : new Decimal(0);
+  const direction = variance.gte(0) ? 'above' : 'below';
   return (
     `${params.metric} for ${params.period}: actual ${params.actual.toLocaleString()} vs ` +
-    `budget ${params.budget.toLocaleString()} — ${Math.abs(variance).toLocaleString()} ` +
-    `(${formatMoney(Math.abs(variancePct), { places: 1 })}%) ${direction} budget.`
+    `budget ${params.budget.toLocaleString()} — ${variance.abs().toNumber().toLocaleString()} ` +
+    `(${formatMoney(Math.abs(variancePctDecimal.toNumber()), { places: 1 })}%) ${direction} budget.`
   );
 }
 
