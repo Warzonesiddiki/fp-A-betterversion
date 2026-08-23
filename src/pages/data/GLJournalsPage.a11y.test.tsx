@@ -99,4 +99,18 @@ describe('GLJournalsPage a11y (axe-core, posted ledger)', () => {
     expectRenderedRealContent(container, 60);
     expectNoCriticalOrSerious(await axe(container));
   });
+
+  it('renders no critical or serious violations in the honest-empty state', async () => {
+    // K30 empty branch: PageHeader h1 stays mounted above the shared
+    // EmptyState with its import CTA — assert both before the scan.
+    useGLStore.setState({ entries: [] });
+    const { container } = render(<GLJournalsPage />);
+
+    expect(screen.getByRole('heading', { name: /general journal/i, level: 1 })).toBeInTheDocument();
+    expect(screen.getByText(/no journal entries/i)).toBeInTheDocument();
+    expect(screen.getByTestId('journals-empty-import')).toBeInTheDocument();
+    expectRenderedRealContent(container, 12);
+
+    expectNoCriticalOrSerious(await axe(container));
+  });
 });

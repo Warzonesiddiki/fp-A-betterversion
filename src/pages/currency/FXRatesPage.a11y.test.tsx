@@ -91,4 +91,35 @@ describe('FXRatesPage a11y (axe-core, entered rates)', () => {
     expectRenderedRealContent(container, 30);
     expectNoCriticalOrSerious(await axe(container));
   });
+
+  it('renders no critical or serious violations with a ledger but an empty rate book', async () => {
+    // K30 empty-rates branch: h1 stays mounted above the shared EmptyState
+    // whose CTA opens the add-rate form — assert both before the scan.
+    useGLStore.setState({
+      entries: [makeEntry({ id: 'gl-1', accountCode: '4000', credit: 1500 })],
+    });
+    useFxRateStore.setState({ rates: [] });
+    const { container } = render(<FXRatesPage />);
+
+    expect(screen.getByRole('heading', { name: /fx rates/i, level: 1 })).toBeInTheDocument();
+    expect(screen.getByText(/no exchange rates configured/i)).toBeInTheDocument();
+    expect(screen.getByTestId('fx-empty-add')).toBeInTheDocument();
+    expectRenderedRealContent(container, 12);
+
+    expectNoCriticalOrSerious(await axe(container));
+  });
+
+  it('renders no critical or serious violations in the no-ledger translate gate', async () => {
+    // K30 no-data branch: h1 mounted above EmptyState with the import CTA.
+    useGLStore.setState({ entries: [] });
+    useFxRateStore.setState({ rates: [] });
+    const { container } = render(<FXRatesPage />);
+
+    expect(screen.getByRole('heading', { name: /fx rates/i, level: 1 })).toBeInTheDocument();
+    expect(screen.getByText(/no data to translate/i)).toBeInTheDocument();
+    expect(screen.getByTestId('fx-empty-import')).toBeInTheDocument();
+    expectRenderedRealContent(container, 12);
+
+    expectNoCriticalOrSerious(await axe(container));
+  });
 });
