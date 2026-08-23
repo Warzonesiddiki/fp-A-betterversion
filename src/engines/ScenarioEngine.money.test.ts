@@ -47,8 +47,9 @@ const metrics = (over: Partial<ScenarioMetrics> = {}): ScenarioMetrics => ({
 describe('ScenarioEngine — money primitive known answers (GAP-1 / F-0006)', () => {
   describe('calculateBaseMetrics', () => {
     it('computes cashFlow as exactly 80% of EBITDA (float gave 799.9200000000001)', () => {
-      // revenue 1000.10, cogs 0.20, opex 0 -> ebitda 999.90 -> cashFlow 799.92
-      const entries = [glEntry('4000', 1000.1, 0, 'rev-1'), glEntry('5000', 0.2, 0, 'cogs-1')];
+      // Conventionally posted: revenue CREDIT 1000.10, cogs DEBIT 0.20
+      // -> ebitda 999.90 -> cashFlow 799.92
+      const entries = [glEntry('4000', 0, 1000.1, 'rev-1'), glEntry('5000', 0.2, 0, 'cogs-1')];
       const result = ScenarioEngine.calculateBaseMetrics(entries);
 
       expect(result.revenue).toBe(1000.1);
@@ -59,11 +60,12 @@ describe('ScenarioEngine — money primitive known answers (GAP-1 / F-0006)', ()
     });
 
     it('nets debit against credit exactly across many small entries', () => {
-      // 0.10 x 3 = 0.30 exactly; float 0.1+0.1+0.1 === 0.30000000000000004
+      // Credit-normal revenue: three credit entries of 0.10 sum to 0.30
+      // exactly; float 0.1+0.1+0.1 === 0.30000000000000004 under debit-normal.
       const entries = [
-        glEntry('4000', 0.1, 0, 'r1'),
-        glEntry('4000', 0.1, 0, 'r2'),
-        glEntry('4000', 0.1, 0, 'r3'),
+        glEntry('4000', 0, 0.1, 'r1'),
+        glEntry('4000', 0, 0.1, 'r2'),
+        glEntry('4000', 0, 0.1, 'r3'),
       ];
       expect(ScenarioEngine.calculateBaseMetrics(entries).revenue).toBe(0.3);
     });
@@ -83,8 +85,9 @@ describe('ScenarioEngine — money primitive known answers (GAP-1 / F-0006)', ()
     });
 
     it('computes gross margin percentage from exact decimals', () => {
-      // revenue 2.10, cogs 0.70 -> grossProfit 1.40 -> 66.666666...%
-      const entries = [glEntry('4000', 2.1, 0, 'r1'), glEntry('5000', 0.7, 0, 'c1')];
+      // Conventionally posted: revenue CREDIT 2.10, cogs DEBIT 0.70
+      // -> grossProfit 1.40 -> 66.666666...%
+      const entries = [glEntry('4000', 0, 2.1, 'r1'), glEntry('5000', 0.7, 0, 'c1')];
       const result = ScenarioEngine.calculateBaseMetrics(entries);
       expect(result.grossMargin).toBe(66.6666666667);
     });
