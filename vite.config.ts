@@ -228,6 +228,19 @@ export default defineConfig({
         },
         manualChunks(id: string) {
           if (id.includes('@huggingface/transformers')) return 'ai-vendor';
+          // R27 vendor-chunk audit: react-dom (~83KB gz by module-sum, ~50%
+          // of the entry artefact) rode inside the entry chunk, pushing the
+          // gate-selected main `index-*.js` to 165.7KB gzip — over the 150KB
+          // G3 limit. Extracting React into its own named group is purely
+          // organizational: react-vendor stays in the eager preload set (every
+          // page needs it), so no loading behavior changes and the critical
+          // path keeps the same bytes. This restores the react-vendor group
+          // documented in AGENTS.md §Architecture but missing from this
+          // config. Segment-suffixed patterns keep lookalikes (lucide-react,
+          // react-i18next, react-router, plugin-react) in their own homes.
+          if (id.includes('node_modules/react-dom')) return 'react-vendor';
+          if (id.includes('node_modules/scheduler')) return 'react-vendor';
+          if (id.includes('node_modules/react/')) return 'react-vendor';
           // Rolldown injects its dynamic-import preload helper
           // (`\0vite/preload-helper.js`) and lets it settle into whichever
           // chunk it likes. It had settled in pdf-vendor — so the entry chunk,
