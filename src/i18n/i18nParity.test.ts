@@ -90,6 +90,15 @@ function extractUsedKeys(): string[] {
   return [...used];
 }
 
+// i18next interpolation tokens: {{name}} / {{ min }} etc., compared as SETS
+// (word order legitimately differs between languages; the variables may not).
+const TOKEN_PATTERN = /\{\{\s*([^{}]+?)\s*\}\}/g;
+
+function extractInterpolationTokens(value: unknown): string[] {
+  if (typeof value !== 'string') return [];
+  return [...new Set([...value.matchAll(TOKEN_PATTERN)].map((m) => m[1]))].sort();
+}
+
 describe('i18n parity release gate', () => {
   it('every statically referenced t() key resolves in the en resource', () => {
     const usedKeys = extractUsedKeys();
@@ -144,5 +153,52 @@ describe('i18n parity release gate', () => {
       const localeKeys = [...flattenLeaves(RESOURCES[locale])].sort();
       expect(localeKeys).toEqual(enKeys);
     }
+  });
+
+  // ── Wave-4 interpolation audit ────────────────────────────────────────────
+  describe('interpolation audit', () => {
+    const enKeys = [...flattenLeaves(en)];
+    // Every en leaf that carries {{placeholder}} tokens.
+    const interpolated = enKeys.filter(
+      (key) => extractInterpolationTokens(resolveKey(en, key)).length > 0
+    );
+
+    it('audit exercises a real population of interpolated keys (scanner guard)', () => {
+      // Known interpolated en values: forms.minLength, forms.maxLength,
+      // errors.fileTooLarge, errors.invalidFormat, dashboard.welcome.
+      expect(interpolated.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it.each(Object.keys(RESOURCES).filter((locale) => locale !== 'en'))(
+      '%s keeps the identical placeholder set for every en {{token}} value',
+      (locale: string) => {
+        const violations: string[] = [];
+        for (const key of interpolated) {
+          const expected = extractInterpolationTokens(resolveKey(en, key));
+          const actual = extractInterpolationTokens(resolveKey(RESOURCES[locale], key));
+          if (actual.join('|') !== expected.join('|')) {
+            violations.push(
+              `${key} (en=[${expected.join(', ')}] ${locale}=[${actual.join(', ')}])`
+            );
+          }
+        }
+        expect(violations).toEqual([]);
+      }
+    );
+
+    it('no locale references placeholders that the en value does not define', () => {
+      const violations: string[] = [];
+      for (const locale of Object.keys(RESOURCES).filter((name) => name !== 'en')) {
+        for (const key of flattenLeaves(RESOURCES[locale])) {
+          const enTokens = new Set(extractInterpolationTokens(resolveKey(en, key)));
+          for (const token of extractInterpolationTokens(resolveKey(RESOURCES[locale], key))) {
+            if (!enTokens.has(token)) {
+              violations.push(`${locale}:${key} references undefined {{${token}}}`);
+            }
+          }
+        }
+      }
+      expect(violations).toEqual([]);
+    });
   });
 });
