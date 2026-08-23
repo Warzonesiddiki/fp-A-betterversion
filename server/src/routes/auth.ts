@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, type Request, type Response } from 'express';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
@@ -96,6 +96,84 @@ function generateRefreshToken(): string {
   return uuidv4();
 }
 
+// ---------------------------------------------------------------------------
+// Per-identifier (email) fixed-window brute-force limiter (wave 3, lane R41)
+//
+// Complements the IP-level authLimiter mounted in index.ts: an attacker
+// rotating IPs still burns a per-account budget. Fixed window, in-memory
+// (Phase 0 single-process deployment), keyed on the lowercased email.
+//
+// Ordering contract:
+//   - login: the limiter fires BEFORE checkAccountLockout/password
+//     verification, so a flooded account reveals neither lockout state nor
+//     credential validity.
+//   - refresh: the limiter sits AFTER the revoked/expired checks and BEFORE
+//     rotation/issuance. Deliberate: replaying a REVOKED token must always
+//     reach SEC-2 reuse detection (family revocation) and must never be
+//     masked by a 429.
+//   - Only a SUCCESSFUL login resets the identifier's budget; failed
+//     attempts (and refreshes) merely consume slots.
+// ---------------------------------------------------------------------------
+
+const IDENTIFIER_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+const DEFAULT_IDENTIFIER_RATE_LIMIT = 10;
+
+interface IdentifierBucket {
+  count: number;
+  windowStart: number;
+}
+
+const identifierBuckets = new Map<string, IdentifierBucket>();
+
+/** Test hook: clears every identifier bucket between suites. */
+export function resetAuthRateLimiter(): void {
+  identifierBuckets.clear();
+}
+
+function resolveIdentifierRateLimitMax(): number {
+  const raw = Number(process.env.AUTH_RATE_LIMIT_MAX);
+  if (Number.isFinite(raw) && raw > 0) return Math.floor(raw);
+  return DEFAULT_IDENTIFIER_RATE_LIMIT;
+}
+
+function normalizeIdentifier(raw: unknown): string {
+  return typeof raw === 'string' ? raw.trim().toLowerCase() : '';
+}
+
+/** Consume one slot for the identifier; false = over this window's limit. */
+function consumeIdentifierSlot(identifier: string): boolean {
+  const max = resolveIdentifierRateLimitMax();
+  const now = Date.now();
+  let bucket = identifierBuckets.get(identifier);
+  if (!bucket || now - bucket.windowStart >= IDENTIFIER_WINDOW_MS) {
+    bucket = { count: 0, windowStart: now };
+    identifierBuckets.set(identifier, bucket);
+  }
+  bucket.count++;
+  return bucket.count <= max;
+}
+
+function identifierRetryAfterSeconds(identifier: string): number {
+  const bucket = identifierBuckets.get(identifier);
+  if (!bucket) return Math.ceil(IDENTIFIER_WINDOW_MS / 1000);
+  const remainingMs = bucket.windowStart + IDENTIFIER_WINDOW_MS - Date.now();
+  return Math.max(1, Math.ceil(remainingMs / 1000));
+}
+
+/** Clear the identifier's budget (successful login only). */
+function resetIdentifier(identifier: string): void {
+  identifierBuckets.delete(identifier);
+}
+
+function identifierRateLimited(req: Request, res: Response, identifier: string): boolean {
+  if (consumeIdentifierSlot(identifier)) return false;
+  res.status(429).json({
+    error: 'Too many authentication attempts for this account. Try again later.',
+    retryAfterSeconds: identifierRetryAfterSeconds(identifier),
+  });
+  return true;
+}
+
 function sanitizeUser(row: UserRow) {
   return {
     id: row.id,
@@ -171,6 +249,14 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     const { email, password } = req.validated as z.infer<typeof loginSchema>;
     const ipAddress = req.ip ?? req.socket.remoteAddress ?? null;
 
+    // Lane R41: per-identifier brute-force gate — runs BEFORE the account
+    // lockout check and password verification so a flooded identifier
+    // reveals neither its lockout state nor credential validity.
+    const identifier = normalizeIdentifier(email);
+    if (identifierRateLimited(req, res, identifier)) {
+      return;
+    }
+
     // Check if account is locked due to too many failed attempts
     const lockoutStatus = checkAccountLockout(email, ipAddress);
     if (lockoutStatus.locked) {
@@ -222,6 +308,11 @@ router.post('/login', validate(loginSchema), async (req, res) => {
 
     // Record successful login and clear failed attempts
     recordLoginAttempt(email, ipAddress, true);
+
+    // Lane R41: a successful login resets the identifier's brute-force
+    // budget — the legitimate owner should never inherit an attacker's
+    // consumed slots.
+    resetIdentifier(identifier);
 
     // Generate tokens
     const accessToken = generateAccessToken({
@@ -292,6 +383,15 @@ router.post('/refresh', validate(refreshSchema), (req, res) => {
       | undefined;
     if (!user || !user.is_active) {
       res.status(401).json({ error: 'User not found or deactivated' });
+      return;
+    }
+
+    // Lane R41: per-identifier brute-force gate on refresh. Placed AFTER the
+    // revoked/expired checks so SEC-2 reuse detection can never be masked by
+    // a 429, and BEFORE rotation/issuance so a flooded identifier cannot mint
+    // additional token pairs.
+    const refreshIdentifier = normalizeIdentifier(user.email);
+    if (identifierRateLimited(req, res, refreshIdentifier)) {
       return;
     }
 
