@@ -1,9 +1,12 @@
 import { Router } from 'express';
+import crypto from 'node:crypto';
 import { z } from 'zod';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
 import { filterByEntityAccess } from '../middleware/entityAuth.js';
 import { auditService } from '../services/AuditService.js';
+import { db } from '../db/connection.js';
 import { resolveTenantId } from '../db/tenancy.js';
+import { AUDIT_HMAC_SECRET } from '../config/env.js';
 import type { AuditCategory, AuditSeverity, AuditAction } from '../services/AuditService.js';
 
 const router = Router();
@@ -276,6 +279,198 @@ router.get('/retention', (req, res) => {
     res.json(status);
   } catch (err) {
     console.error('[audit] Retention status error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /batch — Client audit-trail ingestion (PERSISTENCE_MAP R43)
+// ---------------------------------------------------------------------------
+
+const BatchEntrySchema = z.object({
+  action: z.string().min(1).max(120),
+  entityType: z.string().min(1).max(120),
+  entityId: z.string().min(1).max(255),
+  /** ISO-8601 timestamp; canonicalized to UTC before storage/checksum. */
+  ts: z.string().datetime({ offset: true }),
+  /** Optional free-form payload (object or string) stored in details. */
+  details: z.union([z.record(z.unknown()), z.string()]).optional(),
+});
+
+const BatchSchema = z.object({
+  batchId: z.string().min(1).max(200),
+  entries: z.array(BatchEntrySchema).min(1).max(500),
+});
+
+router.post('/batch', (req, res) => {
+  try {
+    const parsed = BatchSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten() });
+      return;
+    }
+
+    const { batchId } = parsed.data;
+    // JWT-scoped: actor and tenant ALWAYS come from the token, never the body.
+    const tenantId = resolveTenantId(req.user);
+    const userId = req.user!.id;
+    const userName = req.user!.email;
+    const userRole = req.user!.role;
+
+    // Deterministic marker id embeds the tenant so identical client-supplied
+    // batchIds in different tenants can never collide (audit_log.id PK is the
+    // uniqueness enforcement; claim-check happens INSIDE the transaction,
+    // mirroring the gl_entries K27 idempotency pattern).
+    const markerId = `audit-batch-${tenantId}-${batchId}`;
+
+    const result = db.transaction(() => {
+      const existing = db
+        .prepare('SELECT id, timestamp FROM audit_log WHERE id = ?')
+        .get(markerId) as { id: string; timestamp: string } | undefined;
+
+      if (existing) {
+        return { replayed: true as const, committedAt: existing.timestamp };
+      }
+
+      const ids: string[] = [];
+      const insertStmt = db.prepare(
+        `INSERT INTO audit_log (
+          id, tenant_id, timestamp, category, action, severity,
+          user_id, user_name, user_role,
+          resource_type, resource_id,
+          details, metadata, checksum
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      );
+
+      for (const item of parsed.data.entries) {
+        const id = `audit-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+        // Canonicalize to UTC ISO so equal logical timestamps yield equal
+        // stored values AND equal checksums across retries.
+        const timestamp = new Date(item.ts).toISOString();
+        const detailsStr =
+          item.details === undefined
+            ? null
+            : typeof item.details === 'string'
+              ? item.details
+              : JSON.stringify(item.details);
+        const metadataStr = JSON.stringify({ batchId, source: 'client-batch' });
+
+        // Same integrity semantics as AuditService.log(): HMAC-SHA256 over
+        // the sorted-key field set, sliced to 16 hex chars. No new columns —
+        // the existing NOT NULL checksum column carries the chain.
+        const checksumPayload = JSON.stringify(
+          {
+            id,
+            timestamp,
+            category: 'user_action',
+            action: item.action,
+            userId,
+            resourceId: item.entityId,
+            oldValue: null,
+            newValue: null,
+          },
+          Object.keys({
+            id: 0,
+            timestamp: 0,
+            category: 0,
+            action: 0,
+            userId: 0,
+            resourceId: 0,
+            oldValue: 0,
+            newValue: 0,
+          }).sort()
+        );
+        const checksum = crypto
+          .createHmac('sha256', AUDIT_HMAC_SECRET)
+          .update(checksumPayload)
+          .digest('hex')
+          .slice(0, 16);
+
+        insertStmt.run(
+          id,
+          tenantId,
+          timestamp,
+          'user_action',
+          item.action,
+          'info',
+          userId,
+          userName,
+          userRole,
+          item.entityType,
+          item.entityId,
+          detailsStr,
+          metadataStr,
+          checksum
+        );
+        ids.push(id);
+      }
+
+      // Commit marker doubles as the SOX-visible ingestion record.
+      const committedAt = new Date().toISOString();
+      const markerChecksum = crypto
+        .createHmac('sha256', AUDIT_HMAC_SECRET)
+        .update(
+          JSON.stringify(
+            {
+              action: 'audit_batch_commit',
+              category: 'system_event',
+              id: markerId,
+              newValue: null,
+              oldValue: null,
+              resourceId: batchId,
+              timestamp: committedAt,
+              userId,
+            },
+            ['action', 'category', 'id', 'newValue', 'oldValue', 'resourceId', 'timestamp', 'userId'].sort()
+          )
+        )
+        .digest('hex')
+        .slice(0, 16);
+
+      db.prepare(
+        `INSERT INTO audit_log (
+          id, tenant_id, timestamp, category, action, severity,
+          user_id, user_name, user_role,
+          resource_type, resource_id,
+          details, metadata, checksum
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).run(
+        markerId,
+        tenantId,
+        committedAt,
+        'system_event',
+        'audit_batch_commit',
+        'info',
+        userId,
+        userName,
+        userRole,
+        'audit_batch',
+        batchId,
+        JSON.stringify({ batchId, count: ids.length }),
+        JSON.stringify({ batchId, source: 'client-batch' }),
+        markerChecksum
+      );
+
+      return { replayed: false as const, ids, count: ids.length, committedAt };
+    })();
+
+    if (result.replayed) {
+      res.status(200).json({
+        replayed: true,
+        batchId,
+        committedAt: result.committedAt,
+      });
+      return;
+    }
+
+    res.status(201).json({
+      inserted: result.count,
+      ids: result.ids,
+      batchId,
+      replayed: false,
+    });
+  } catch (err) {
+    console.error('[audit] Batch ingestion error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
