@@ -87,6 +87,15 @@ describe('RollingForecastPage — posted actuals are labelled as posted', () => 
     const { container } = renderPage();
     expect(container.textContent).not.toContain('$464,100');
   });
+
+  it('renders the page title and period selector windows', () => {
+    // Absorbed from the retired __tests__/forecasts mirror.
+    const text = renderPage().container.textContent ?? '';
+    expect(text).toContain('Rolling Forecast');
+    expect(text).toContain('3M');
+    expect(text).toContain('6M');
+    expect(text).toContain('12M');
+  });
 });
 
 describe('RollingForecastPage — source guard', () => {

@@ -49,6 +49,9 @@ describe('ConsolidationDashboard smoke test', () => {
   });
   it('displays Legal Entity Consolidation heading', () => {
     renderPage();
-    expect(screen.getByText('Legal Entity Consolidation')).toBeTruthy();
+    // Absorbed from the retired __tests__ mirror: the title is the page's
+    // single level-1 heading, not just loose text.
+    expect(screen.getByRole('heading', { level: 1, name: /consolidation/i })).toBeInTheDocument();
+    expect(screen.getByText('Legal Entity Consolidation')).toBeInTheDocument();
   });
 });

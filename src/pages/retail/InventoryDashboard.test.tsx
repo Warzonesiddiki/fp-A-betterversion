@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter, useNavigate } from 'react-router-dom';
 import React from 'react';
+import { axe, toHaveNoViolations } from 'jest-axe';
+
+expect.extend(toHaveNoViolations);
 
 // ---------------------------------------------------------------------------
 // W-FAB remediation pins. This dashboard previously exported a per-store
@@ -15,6 +18,16 @@ import React from 'react';
 vi.mock('@/store/glStore', () => ({
   useGLStore: vi.fn(() => ({ entries: [] })),
 }));
+
+// Navigation is mocked so the empty-state / header CTAs can be pinned to
+// their routes (absorbed from the retired __tests__ mirror).
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router-dom')>();
+  return {
+    ...actual,
+    useNavigate: vi.fn(),
+  };
+});
 
 vi.mock('@/engines/ExportEngine', () => ({
   ExportEngine: {
@@ -82,5 +95,44 @@ describe('InventoryDashboard honesty pins', () => {
     };
     expect(call.headers).not.toContain('Inventory Value');
     expect(call.headers).toEqual(['Store', 'Revenue', 'COGS', 'Gross Profit']);
+  });
+});
+
+// The suites below are absorbed from the retired __tests__/retail mirror —
+// its only coverage beyond what this honesty-pins spec already had.
+describe('InventoryDashboard navigation (absorbed)', () => {
+  const navigateMock = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(useNavigate).mockReturnValue(navigateMock);
+  });
+
+  it('navigates to GL upload when the empty-state import button is clicked', async () => {
+    await renderWith([]);
+    fireEvent.click(await screen.findByRole('button', { name: /Import GL Data/i }));
+    expect(navigateMock).toHaveBeenCalledWith('/data/gl-upload');
+  });
+
+  it('navigates to inventory planning when the planning button is clicked', async () => {
+    await renderWith([entryNoEntity]);
+    fireEvent.click(await screen.findByRole('button', { name: /Planning/i }));
+    expect(navigateMock).toHaveBeenCalledWith('/retail/inventory-planning');
+  });
+});
+
+describe('InventoryDashboard accessibility (absorbed)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('has no accessibility violations in loaded state', async () => {
+    const { container } = await renderWith([entryNoEntity]);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it('has no accessibility violations in empty state', async () => {
+    const { container } = await renderWith([]);
+    expect(await axe(container)).toHaveNoViolations();
   });
 });

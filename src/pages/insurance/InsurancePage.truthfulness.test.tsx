@@ -65,4 +65,18 @@ describe('InsurancePage (truthfulness lock)', () => {
     );
     expect(screen.getByText('no loss picks recorded')).toBeInTheDocument();
   });
+
+  it('renders the honest no-data empty state when the ledger is empty', () => {
+    // Absorbed from the retired __tests__/insurance mirror: with zero GL
+    // entries the page must show its explicit empty state, not a shell.
+    useGLStore.setState({ entries: [] });
+    useInsuranceStore.setState({ lossPicks: [] });
+    render(
+      <MemoryRouter>
+        <InsurancePage />
+      </MemoryRouter>
+    );
+    expect(screen.getByRole('main')).toBeInTheDocument();
+    expect(screen.getByText('No Insurance Data')).toBeInTheDocument();
+  });
 });
