@@ -493,6 +493,9 @@ describe('glStore server tombstones — undoLastImport/clearData (W0.8.6 §4)', 
     expect(state.trialBalance).toEqual([]);
     expect(state.accountAnalysis).toBeNull();
     expect(state.entrySyncState).toEqual({});
+    // Wave-4 hygiene: wiped rows' If-Match versions are orphans — the whole
+    // map is cleared even though k1/k4 were committed with versions 1/7.
+    expect(state.entryVersions).toEqual({});
     expect(state.importError).toBeNull();
   });
 

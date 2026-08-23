@@ -784,6 +784,10 @@ export const useGLStore = create<GLState>()(
             dateFilter: null,
             accountFilter: [],
             entrySyncState: {},
+            // Wipe hygiene (wave-4): every wiped row's If-Match version is an
+            // orphan once its row is gone — clear the whole map, tombstone
+            // outcome irrelevant (the server reconciles via replay).
+            entryVersions: {},
           });
           useUIStore.getState().addToast({
             type: 'info',

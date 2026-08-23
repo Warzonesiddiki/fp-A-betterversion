@@ -20,7 +20,7 @@
 
 |                                                                                               <!-- -->                                                                                                |                                                                                               <!-- -->                                                                                               |                                                                                            <!-- -->                                                                                            |                                                                                                  <!-- -->                                                                                                   |
 | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">182</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines Shipped</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">18</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Sector Dashboards Shipped</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">14,495</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Automated Tests</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">182</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines (182 modules)</div></div> |
+| <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">182</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines Shipped</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">18</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Sector Dashboards Shipped</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">14,803</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Automated Tests</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">182</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines (182 modules)</div></div> |
 
 <br/>
 
@@ -69,7 +69,7 @@ npm install
 # 2. Run the dev server (web UI on http://localhost:5173)
 npm run dev
 
-# 3. Run the full quality gate (TypeScript · ESLint · Prettier · 14,495 tests)
+# 3. Run the full quality gate (TypeScript · ESLint · Prettier · 14,803 tests)
 npm run check
 ```
 
@@ -79,14 +79,14 @@ npm run check
 | --------------------------- | ---------------------------------------------- |
 | `npm run dev`               | Start the Vite dev server                      |
 | `npm run build`             | Production build (vite)                        |
-| `npm test`                  | Full Vitest suite (1,272 files / 14,495 tests) |
+| `npm test`                  | Full Vitest suite (1,284 files / 14,803 tests) |
 | `npm run tsc`               | TypeScript strict check (`--noEmit`)           |
 | `npm run lint`              | ESLint (`--max-warnings 0`)                    |
 | `npm run format`            | Prettier write                                 |
 | `npm run money:ast`         | AST money-safety ratchet (pre-push Gate 9b)    |
 | `npm run docs:verify`       | README/architecture claims audit               |
 | `npm run engines:verify`    | Engine manifest / reachability audit           |
-| `cd server && npm run test` | Server-side suite (247 tests / 25 files)       |
+| `cd server && npm run test` | Server-side suite (323 tests / 32 files)       |
 
 ---
 
@@ -144,7 +144,7 @@ QuickBooks · NetSuite · Xero · Sage Intacct · Microsoft Dynamics 365 · Sale
 | ------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | **Desktop**   | Tauri 2 + Rust backend             | Fully offline, local-first, data encrypted at rest.                                                   |
 | **Web build** | React 19 + Vite + Tailwind 4       | Frontend bundle for the Tauri shell; plain-browser rendering is intentionally blocked (desktop-only). |
-| **Server**    | Node + Express + SQLite (mockable) | Multi-user APIs, RBAC, period close, JWT auth; 247 integration tests.                                 |
+| **Server**    | Node + Express + SQLite (mockable) | Multi-user APIs, RBAC, period close, JWT auth; 323 integration tests.                                 |
 
 ---
 
@@ -211,20 +211,21 @@ Every one of these is pinned by a `*.money.test.ts` that fails against the origi
 
 <div align="center">
 
-| Gate                            | Status                                     | Standard                                      |
-| ------------------------------- | ------------------------------------------ | --------------------------------------------- |
-| **TypeScript** (`tsc --noEmit`) | ✅                                         | Strict mode, zero errors                      |
-| **ESLint** (`--max-warnings 0`) | ✅                                         | Zero warnings tolerated                       |
-| **Prettier**                    | ✅                                         | Enforced in CI                                |
-| **Vitest** — frontend           | ✅ **1,272 files / 14,495 tests**          | Full suite green                              |
-| **Vitest** — server             | ✅ **247 tests / 25 files** · native-DB 83 | Supertest + mock DB / better-sqlite3          |
-| **AST money-safety ratchet**    | ✅ **100% safe · 896/896 · 0 unsafe ops**  | `npm run money:ast` (Gate 9b)                 |
-| **Engine reachability**         | ✅ **180/180 reachable, 0 orphans**        | Manifest + direct + lazy                      |
-| **README claims audit**         | ✅                                         | `npm run docs:verify`                         |
-| **Docs verification**           | ✅                                         | `npm run docs:verify`                         |
-| **Production dependency audit** | ✅ critical=0 high=0 moderate=0 low=0      | `scripts/check-dependency-audit.mjs`          |
-| **Bundle check**                | ⚠️ Warning-only                            | 2,036.85 KB gzip / 2,248 KB limit             |
-| **Build & Bundle Check** (CI)   | 🛑 Known blocker                           | Pre-existing 2048 KB workflow cap — see GAP-7 |
+| Gate                             | Status                                                                        | Standard                                                                                     |
+| -------------------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **TypeScript** (`tsc --noEmit`)  | ✅                                                                            | Strict mode, zero errors                                                                     |
+| **ESLint** (`--max-warnings 0`)  | ✅                                                                            | Zero warnings tolerated                                                                      |
+| **Prettier**                     | ✅                                                                            | Enforced in CI                                                                               |
+| **Vitest** — frontend            | ✅ **1,284 files · 14,803 passed / 0 failed** (+1 skipped · 14,804 collected) | Full suite green (fullsuite6)                                                                |
+| **Vitest** — server              | ✅ **323 tests / 32 files** · native-DB 83                                    | Supertest + mock DB / better-sqlite3                                                         |
+| **LLM egress chokepoint (W0.9)** | ✅ Enforced                                                                   | Build-time kill switch · host allowlist · prompt redaction (`src/services/llm/llmEgress.ts`) |
+| **AST money-safety ratchet**     | ✅ **100% safe · 896/896 · 0 unsafe ops**                                     | `npm run money:ast` (Gate 9b)                                                                |
+| **Engine reachability**          | ✅ **180/180 reachable, 0 orphans**                                           | Manifest + direct + lazy                                                                     |
+| **README claims audit**          | ✅                                                                            | `npm run docs:verify`                                                                        |
+| **Docs verification**            | ✅                                                                            | `npm run docs:verify`                                                                        |
+| **Production dependency audit**  | ✅ critical=0 high=0 moderate=0 low=0                                         | `scripts/check-dependency-audit.mjs`                                                         |
+| **Bundle check**                 | ⚠️ Warning-only                                                               | 2,036.85 KB gzip / 2,248 KB limit                                                            |
+| **Build & Bundle Check** (CI)    | 🛑 Known blocker                                                              | Pre-existing 2048 KB workflow cap — see GAP-7                                                |
 
 </div>
 
@@ -255,8 +256,8 @@ updated every session with literal command output. It is the single source of tr
 
 ### Release v1.0 Gates (all tracked in the ledger)
 
-- ✅ Full-suite certification (14,495 tests green)
-- 🚧 Playwright E2E farm
+- ✅ Full-suite certification (14,803 tests green)
+- 🚧 Playwright E2E farm — journey spine + GL-journal fixture landing under `tests/e2e/spine`
 - 🚧 Performance benchmarks
 - 🚧 Accessibility (a11y) sweep
 - 🚧 Vendor chunk splitting
