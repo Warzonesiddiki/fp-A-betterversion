@@ -136,7 +136,11 @@ export default function AppLayout() {
         />
       )}
       {/* Sidebar: hidden on mobile, shown as overlay when toggled */}
-      <nav id="main-nav" aria-label="Main navigation">
+      {/* R9-d: plain positioning wrapper, NOT a <nav>. Nesting the Sidebar's
+          <aside> (complementary landmark) inside a nav failed axe's
+          landmark-complementary-is-top-level rule; the rail already carries
+          its own <nav aria-label="Primary"> landmark inside the aside. */}
+      <div id="main-nav" aria-label="Main navigation">
         <div
           className={`
             fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 md:relative md:translate-x-0
@@ -145,7 +149,7 @@ export default function AppLayout() {
         >
           <Sidebar />
         </div>
-      </nav>
+      </div>
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <Navbar />
