@@ -24,7 +24,6 @@ import { axe, toHaveNoViolations } from 'jest-axe';
 import { ThemeProvider } from '@/context/ThemeContext';
 import AppLayout from './AppLayout';
 import { useUIStore } from '@/store/uiStore';
-import { useAuthStore } from '@/store/authStore';
 import { useFinancialContextStore } from '@/store/financialContextStore';
 import { DEFAULT_FINANCIAL_CONTEXT } from '@/types/financialContext';
 import { actAs, signOut } from '@/test/rbacFixtures';
