@@ -50,7 +50,7 @@ import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';
 import { useRetailStore, type RetailProduct } from '@/store/retailStore';
 import { InventoryEngine } from '@/engines/InventoryEngine';
-import { addMoney, multiplyMoney, roundTo } from '@/utils/money';
+import { addMoney, compareMoney, multiplyMoney, roundTo } from '@/utils/money';
 import { formatNumber } from '@/utils/financialFormatting';
 
 const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
@@ -143,7 +143,7 @@ export default function InventoryPlanningPage() {
     }
     return Array.from(map.entries())
       .map(([name, v]) => ({ name, ...v }))
-      .sort((a, b) => b.valueAtCost - a.valueAtCost);
+      .sort((a, b) => compareMoney(b.valueAtCost, a.valueAtCost));
   }, [products]);
 
   const productRows = useMemo(() => toProductRows(products), [products]);
