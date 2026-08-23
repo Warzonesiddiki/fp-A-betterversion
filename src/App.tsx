@@ -512,13 +512,20 @@ export default function App() {
                 <Route path="/consolidation" element={<ConsolidationDashboard />} />
                 <Route path="/consolidation/ic-eliminations" element={<ICEliminationPage />} />
                 <Route path="/consolidation/ownership" element={<OwnershipTreePage />} />
+                {/* W0.5 slice 3 (RC3): namespace hub roots declared as shell
+                    targets but never routed now resolve to their canonical
+                    child instead of the 404 catch-all (/revenue is exercised
+                    by src/pages/smoke2.test.tsx at this URL). */}
+                <Route path="/currency" element={<Navigate to="/currency/fx-rates" replace />} />
                 <Route path="/currency/fx-rates" element={<FXRatesPage />} />
                 <Route path="/currency/translation" element={<TranslationResultPage />} />
                 <Route path="/currency/hedging" element={<HedgeManagementPage />} />
+                <Route path="/revenue" element={<Navigate to="/revenue/rev-rec" replace />} />
                 <Route path="/revenue/rev-rec" element={<RevRecDashboard />} />
                 <Route path="/revenue/deferred" element={<DeferredSchedulePage />} />
                 <Route path="/lease" element={<LeaseDashboard />} />
                 <Route path="/lease/:id" element={<LeaseDetailPage />} />
+                <Route path="/tax" element={<Navigate to="/tax/provision" replace />} />
                 <Route path="/tax/provision" element={<TaxProvisionPage />} />
                 <Route path="/tax/transfer-pricing" element={<TransferPricingPage />} />
                 <Route path="/capex" element={<CapExDashboard />} />
@@ -530,6 +537,8 @@ export default function App() {
                 <Route path="/cash/forecast" element={<CashForecastPage />} />
                 <Route path="/cash/debt" element={<DebtSchedulePage />} />
                 <Route path="/cash/working-capital" element={<WorkingCapitalPage />} />
+                {/* W0.5 slice 3 (RC3): treasury hub root → first canonical child. */}
+                <Route path="/treasury" element={<Navigate to="/treasury/investments" replace />} />
                 <Route path="/treasury/investments" element={<InvestmentPage />} />
                 <Route path="/treasury/fx-exposure" element={<FXExposurePage />} />
                 <Route path="/treasury/loan-amortization" element={<LoanAmortizationPage />} />
@@ -549,6 +558,8 @@ export default function App() {
 
               {/* Industry-Specific & Workforce Group */}
               <Route element={<RouteGroupWrapper domain="industry" />}>
+                {/* W0.5 slice 3 (RC3): workforce hub root → first canonical child. */}
+                <Route path="/workforce" element={<Navigate to="/workforce/headcount" replace />} />
                 <Route path="/workforce/headcount" element={<HeadcountPlanPage />} />
                 <Route path="/workforce/compensation" element={<CompModelingPage />} />
                 <Route path="/workforce/payroll" element={<PayrollForecastPage />} />
@@ -577,7 +588,15 @@ export default function App() {
 
               {/* Utility & Collaboration Group */}
               <Route element={<RouteGroupWrapper domain="utility" />}>
+                {/* W0.5 slice 3 (RC3): admin/accounting hub roots → canonical
+                    children (/admin is navigated by tests/e2e/workflows/
+                    12-admin.spec.ts). */}
+                <Route path="/admin" element={<Navigate to="/admin/debug" replace />} />
                 <Route path="/admin/debug" element={<DebugPage />} />
+                <Route
+                  path="/accounting"
+                  element={<Navigate to="/accounting/depreciation" replace />}
+                />
                 <Route path="/accounting/depreciation" element={<DepreciationPage />} />
                 <Route path="/accounting/multi-book" element={<MultiBookPage />} />
                 <Route path="/audit/fair-value" element={<FairValuePage />} />

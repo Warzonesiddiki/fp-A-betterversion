@@ -82,7 +82,12 @@ describe('route shell contract (UI-03)', () => {
     // consolidation converted "/" from a second DashboardPage mount into an
     // in-place <Navigate to="/dashboard"> alias — an element swap that adds
     // and removes no <Route> declaration, so the inventory count is unchanged.
-    expect(all).toHaveLength(221);
+    //
+    // Pin delta in W0.5 slice-3 hub fold: 221 → 228 (Δ+7). The seven declared
+    // shell-target roots that never had a route (/workforce /treasury /currency
+    // /revenue /tax /accounting /admin) gained Navigate aliases to their
+    // canonical first children instead of falling through to the 404 catch-all.
+    expect(all).toHaveLength(228);
     // Aliases to the same page are allowed; identical path strings are not.
     expect(new Set(all).size).toBe(all.length);
   });
@@ -94,6 +99,26 @@ describe('route shell contract (UI-03)', () => {
     // An alias pointing at a path no route declares is a silent 404 loop:
     // the redirect fires and lands on the catch-all instead of the surface.
     expect(broken.map(([from]) => from)).toEqual([]);
+  });
+
+  it('keeps every namespace hub root pointed at its canonical child', () => {
+    // W0.5 slice 3: the seven declared shell-target roots that never had a
+    // route now resolve instead of 404-ing. Targets are the generator's
+    // classify()-blessed canonical children (first declared child for
+    // /workforce and /treasury).
+    const targets = navigateTargets(APP_SOURCE);
+    const hubAliases: ReadonlyArray<readonly [string, string]> = [
+      ['/workforce', '/workforce/headcount'],
+      ['/treasury', '/treasury/investments'],
+      ['/currency', '/currency/fx-rates'],
+      ['/revenue', '/revenue/rev-rec'],
+      ['/tax', '/tax/provision'],
+      ['/accounting', '/accounting/depreciation'],
+      ['/admin', '/admin/debug'],
+    ];
+    for (const [from, to] of hubAliases) {
+      expect(targets.get(from), from).toBe(to);
+    }
   });
 
   it('keeps "/" as a pure alias of the /dashboard hub', () => {

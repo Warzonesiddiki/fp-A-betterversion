@@ -149,6 +149,8 @@ export const NAV_SECTIONS: readonly NavSection[] = [
       {
         label: 'Workforce',
         items: [
+          // W0.5 slice 3: hub root redirects to /workforce/headcount.
+          { path: '/workforce', label: 'Workforce', hidden: true },
           { path: '/workforce/headcount', label: 'Headcount Plan', permission: 'budget:read' },
           {
             path: '/workforce/compensation',
@@ -272,6 +274,8 @@ export const NAV_SECTIONS: readonly NavSection[] = [
       {
         label: 'Data Management',
         items: [
+          // W0.5 slice 3: hub root redirects to /accounting/depreciation.
+          { path: '/accounting', label: 'Accounting', hidden: true },
           { path: '/data', label: 'Data Import', permission: 'import:read' },
           { path: '/data/migration', label: 'Data Migration', permission: 'import:read' },
           { path: '/data/data-flow', label: 'Data Flow', permission: 'import:read' },
@@ -343,6 +347,8 @@ export const NAV_SECTIONS: readonly NavSection[] = [
       {
         label: 'Revenue & Leases',
         items: [
+          // W0.5 slice 3: hub root redirects to /revenue/rev-rec.
+          { path: '/revenue', label: 'Revenue', hidden: true },
           { path: '/lease/accounting', label: 'Lease Accounting' },
           { path: '/revenue/rev-rec', label: 'Revenue Recognition (ASC 606)' },
           { path: '/revenue/deferred', label: 'Deferred Revenue Schedule' },
@@ -352,6 +358,8 @@ export const NAV_SECTIONS: readonly NavSection[] = [
       {
         label: 'Tax',
         items: [
+          // W0.5 slice 3: hub root redirects to /tax/provision.
+          { path: '/tax', label: 'Tax', hidden: true },
           { path: '/tax/provision', label: 'Tax Provision (ASC 740)' },
           { path: '/tax/transfer-pricing', label: 'Transfer Pricing' },
         ],
@@ -379,6 +387,8 @@ export const NAV_SECTIONS: readonly NavSection[] = [
       {
         label: 'Currency',
         items: [
+          // W0.5 slice 3: hub root redirects to /currency/fx-rates.
+          { path: '/currency', label: 'Currency', hidden: true },
           { path: '/currency/fx-rates', label: 'Exchange Rates' },
           { path: '/currency/translation', label: 'Translation Results' },
           { path: '/currency/hedging', label: 'Hedge Management' },
@@ -392,6 +402,8 @@ export const NAV_SECTIONS: readonly NavSection[] = [
       {
         label: 'Investments',
         items: [
+          // W0.5 slice 3: hub root redirects to /treasury/investments.
+          { path: '/treasury', label: 'Treasury', hidden: true },
           { path: '/bonds/portfolio', label: 'Bond Portfolio' },
           { path: '/bonds/yield-curve', label: 'Yield Curve' },
           { path: '/credit/risk', label: 'Credit Risk' },
@@ -638,6 +650,9 @@ export const NAV_SECTIONS: readonly NavSection[] = [
       {
         label: 'Platform',
         items: [
+          // W0.5 slice 3: hub root redirects to /admin/debug (journey spec
+          // tests/e2e/workflows/12-admin.spec.ts navigates /admin directly).
+          { path: '/admin', label: 'Admin', hidden: true },
           { path: '/visual/atlas', label: 'Atlas Visual Baseline (Developer Harness)' },
           { path: '/admin/benchmarks', label: 'Benchmarks' },
           { path: '/admin/engines', label: 'Engine Catalog' },

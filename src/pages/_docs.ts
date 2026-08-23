@@ -1868,4 +1868,78 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
       },
     ],
   },
+
+  // ── W0.5 slice 3 namespace hub aliases (RC3) ───────────────────────────────
+  // Declared shell-target roots that never had a route now redirect to their
+  // canonical child instead of the 404 catch-all.
+  '/workforce': {
+    title: 'Workforce',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A hub alias that redirects to the Headcount Plan (/workforce/headcount), the workforce planning entry point.',
+      },
+    ],
+  },
+  '/treasury': {
+    title: 'Treasury',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A hub alias that redirects to Treasury Investments (/treasury/investments), the treasury namespace entry point.',
+      },
+    ],
+  },
+  '/currency': {
+    title: 'Currency',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A hub alias that redirects to Exchange Rates (/currency/fx-rates), the FX & translation namespace entry point.',
+      },
+    ],
+  },
+  '/revenue': {
+    title: 'Revenue',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A hub alias that redirects to Revenue Recognition (/revenue/rev-rec, ASC 606), the revenue namespace entry point.',
+      },
+    ],
+  },
+  '/tax': {
+    title: 'Tax',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A hub alias that redirects to Tax Provision (/tax/provision, ASC 740), the tax namespace entry point.',
+      },
+    ],
+  },
+  '/accounting': {
+    title: 'Accounting',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A hub alias that redirects to the Depreciation Schedule (/accounting/depreciation), the multi-book accounting namespace entry point.',
+      },
+    ],
+  },
+  '/admin': {
+    title: 'Admin',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'A hub alias that redirects to the Debug Console (/admin/debug); benchmarks and the engine catalog live alongside it.',
+      },
+    ],
+  },
 };
