@@ -7,7 +7,12 @@ import { auditService } from '../services/AuditService.js';
 import { db } from '../db/connection.js';
 import { resolveTenantId } from '../db/tenancy.js';
 import { AUDIT_HMAC_SECRET } from '../config/env.js';
-import type { AuditCategory, AuditSeverity, AuditAction } from '../services/AuditService.js';
+import type {
+  AuditCategory,
+  AuditSeverity,
+  AuditAction,
+  RetentionConfig,
+} from '../services/AuditService.js';
 
 const router = Router();
 
@@ -527,11 +532,24 @@ router.post('/prune', requireRole('Admin'), (req, res) => {
       dataChangesDays?: number;
     };
 
-    const pruned = auditService.prune({
+    // Wave-5 fix: only forward fields the caller actually supplied (and only
+    // as finite numbers). The previous unconditional spread passed explicit
+    // `undefined` for omitted keys, which OVERRODE AuditService's retention
+    // defaults and made `setDate(NaN)` produce an invalid cutoff date —
+    // every partial-body (or empty-body) prune crashed with
+    // "RangeError: Invalid time value" → 500.
+    const config: Partial<RetentionConfig> = {};
+    for (const [key, value] of Object.entries({
       auditLogDays,
       loginAttemptsDays,
       dataChangesDays,
-    });
+    })) {
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        config[key as keyof RetentionConfig] = value;
+      }
+    }
+
+    const pruned = auditService.prune(config);
 
     // Log the prune action itself
     auditService.log({

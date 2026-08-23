@@ -93,4 +93,18 @@ describe('ARRDashboard a11y (axe-core, posted ledger)', () => {
     expectRenderedRealContent(container, 60);
     expectNoCriticalOrSerious(await axe(container));
   });
+
+  it('renders no critical or serious violations in the honest-empty branch', async () => {
+    // Factory-default store: no GL postings at all. The page must show its
+    // disclosure empty state (h1 + EmptyState + import CTA), not a skeleton.
+    const { container } = render(<ARRDashboard />);
+
+    expect(screen.getByRole('heading', { name: /arr dashboard/i, level: 1 })).toBeInTheDocument();
+    expect(screen.getByText(/no saas data found/i)).toBeInTheDocument();
+    expect(screen.getByText(/subscription revenue/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /import gl data/i })).toBeInTheDocument();
+    // Measured mount size of this branch: h1 header block + EmptyState + CTA.
+    expectRenderedRealContent(container, 10);
+    expectNoCriticalOrSerious(await axe(container));
+  });
 });
