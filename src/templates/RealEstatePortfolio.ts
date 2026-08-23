@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // REAL ESTATE PORTFOLIO TEMPLATE
 // Multi-property portfolio with NOI, cap rate valuation, debt service,
 // and investor returns. Mixed-use portfolio (office + multifamily + retail).
@@ -349,7 +349,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'multiplicative',
     weight: 1,
-    formula: 'x * office_rent_psf * office_occupancy / 100',
+    formula: 'x * rep_office_rent_psf * rep_office_occupancy / 100',
     description: 'Office units drive revenue',
   },
   {
@@ -359,7 +359,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'multiplicative',
     weight: 1,
-    formula: 'x * mf_rent * 12 * mf_occupancy / 100',
+    formula: 'x * rep_mf_rent * 12 * rep_mf_occupancy / 100',
     description: 'MF units drive revenue',
   },
   {
@@ -369,7 +369,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'multiplicative',
     weight: 1,
-    formula: 'x * retail_rent_psf',
+    formula: 'x * rep_retail_rent_psf',
     description: 'Retail SF drives revenue',
   },
   {

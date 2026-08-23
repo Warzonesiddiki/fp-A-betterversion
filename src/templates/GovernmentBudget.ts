@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // GOVERNMENT BUDGET TEMPLATE
 // Municipal/government budget with fund accounting, department appropriations,
 // revenue sources, and budget-to-actual tracking. Mid-size city ($500M budget).
@@ -376,7 +376,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'assessed_valuation * x / 1000',
+    formula: 'gov_assessed_valuation * x / 1000',
     description: 'Tax rate * valuation drives property tax',
   },
   {
@@ -386,7 +386,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'sales_base * x / 100',
+    formula: 'gov_sales_tax_base * x / 100',
     description: 'Sales tax rate * base drives sales tax',
   },
   {

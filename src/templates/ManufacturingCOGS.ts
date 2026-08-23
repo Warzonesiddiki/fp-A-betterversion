@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // MANUFACTURING COGS TEMPLATE
 // Standard cost model with BOM, labor routing, overhead allocation,
 // yield analysis, and variance decomposition. Discrete manufacturer.
@@ -405,7 +405,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'x * labor_rate',
+    formula: 'x * mct_labor_rate',
     description: 'Hours * rate = standard labor',
   },
   {
@@ -433,7 +433,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'production_volume * x / 100',
+    formula: 'mct_production_volume * x / 100',
     description: 'Yield drives good units',
   },
   {
@@ -443,7 +443,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'actual_material * x / 100',
+    formula: 'mct_material_cost_bom * x / 100',
     description: 'Price variance % drives dollar variance',
   },
   {
@@ -453,7 +453,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'actual_material * x / 100',
+    formula: 'mct_material_cost_bom * x / 100',
     description: 'Usage variance % drives dollar variance',
   },
   {
@@ -472,7 +472,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'actual_material * x / 100',
+    formula: 'mct_material_cost_bom * x / 100',
     description: 'Scrap rate drives scrap cost',
   },
 ];

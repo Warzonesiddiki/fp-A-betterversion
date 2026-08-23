@@ -107,78 +107,144 @@ function translateForeignEntities(
 
 // --- Intercompany elimination ---
 
-function eliminateIntercompany(
+/**
+ * One resolved IC elimination: a matched magnitude per currency plus the
+ * signed per-leg adjustments that remove exactly that amount.
+ */
+interface ResolvedElimination {
+  readonly fromEntityId: string;
+  readonly fromAccountCode: string;
+  readonly toEntityId: string;
+  readonly toAccountCode: string;
+  readonly currency: string;
+  /** Matched magnitude min(|legA|, |legB|); always > 0. */
+  readonly amount: number;
+  /** Signed adjustment applied to the from-leg entry amount. */
+  readonly fromDelta: number;
+  /** Signed adjustment applied to the to-leg entry amount. */
+  readonly toDelta: number;
+}
+
+const ELIMINATION_EPS = '0.001';
+
+/**
+ * Resolves every applicable intercompany elimination into one concrete list:
+ * explicit icPairs first (declaration order), then auto-detected matches
+ * between accounts whose code starts with '9'. Matching happens per currency;
+ * each match eliminates only min(|legA|, |legB|), leaving any unmatched
+ * residual gross and visible. Leg remainders are consumed as pairs resolve,
+ * so no balance is ever eliminated twice — explicit/auto overlap included
+ * (this replaces the old processedPairs key dedup).
+ */
+function resolveEliminations(
   allEntries: ConsolidationGLEntry[],
-  icPairs: ConsolidationICPair[],
-  _ownerships: ConsolidationOwnership[]
-): { eliminatedAmount: number; count: number } {
-  let totalEliminated = toDecimal(0);
-  let count = 0;
-  const processedPairs = new Set<string>();
+  icPairs: ConsolidationICPair[]
+): ResolvedElimination[] {
+  type Remainder = ReturnType<typeof toDecimal>;
+  const zero = () => toDecimal(0);
+  const bucketKey = (entityId: string, accountCode: string, currency: string): string =>
+    `${entityId}:${accountCode}:${currency}`;
 
-  for (const pair of icPairs) {
-    const pairKey = `${pair.fromEntityId}:${pair.toEntityId}:${pair.accountCode}`;
-    if (processedPairs.has(pairKey)) continue;
-    processedPairs.add(pairKey);
+  // Remaining (not yet eliminated) balance per entity/account/currency,
+  // plus the currencies seen per entity/account bucket for explicit pairs.
+  const remainders = new Map<string, Remainder>();
+  const currenciesOfBucket = new Map<string, Set<string>>();
+  // Auto-detect groups: 9-prefix accounts keyed by account:currency, in
+  // first-seen entity order.
+  const autoGroups = new Map<
+    string,
+    { entityId: string; accountCode: string; currency: string }[]
+  >();
 
-    const fromEntries = allEntries.filter(
-      (e) => e.entityId === pair.fromEntityId && e.accountCode === pair.accountCode
-    );
-    const fromAmount = sumMoney(fromEntries.map((e) => e.amount));
+  for (const entry of allEntries) {
+    const key = bucketKey(entry.entityId, entry.accountCode, entry.currency);
+    remainders.set(key, (remainders.get(key) ?? zero()).plus(entry.amount));
+    const bucketKeyNoCur = `${entry.entityId}:${entry.accountCode}`;
+    const currencies = currenciesOfBucket.get(bucketKeyNoCur) ?? new Set<string>();
+    currencies.add(entry.currency);
+    currenciesOfBucket.set(bucketKeyNoCur, currencies);
 
-    const toAccountCode = pair.toAccountCode ?? pair.accountCode;
-    const toEntries = allEntries.filter(
-      (e) => e.entityId === pair.toEntityId && e.accountCode === toAccountCode
-    );
-    const toAmount = sumMoney(toEntries.map((e) => e.amount));
-
-    if (!fromAmount.isZero() || !toAmount.isZero()) {
-      const matchedAmount =
-        compareMoney(fromAmount.abs(), toAmount.abs()) <= 0 ? fromAmount.abs() : toAmount.abs();
-      totalEliminated = totalEliminated.plus(matchedAmount);
-      count++;
+    if (entry.accountCode.startsWith('9')) {
+      const groupKey = `${entry.accountCode}:${entry.currency}`;
+      const members = autoGroups.get(groupKey) ?? [];
+      if (!members.some((m) => m.entityId === entry.entityId)) {
+        members.push({
+          entityId: entry.entityId,
+          accountCode: entry.accountCode,
+          currency: entry.currency,
+        });
+      }
+      autoGroups.set(groupKey, members);
     }
   }
 
-  // Auto-detect IC accounts (prefix '9')
-  const icAccounts = new Set(
-    allEntries.filter((e) => e.accountCode.startsWith('9')).map((e) => e.accountCode)
-  );
+  const resolved: ResolvedElimination[] = [];
 
-  for (const accountCode of icAccounts) {
-    const accountEntries = allEntries.filter((e) => e.accountCode === accountCode);
-    const entityBalances = new Map<string, ReturnType<typeof toDecimal>>();
+  // Emits one match of min(|from|, |to|) in `currency`, consuming both
+  // remainders toward zero by exactly that magnitude.
+  const tryMatch = (
+    fromEntityId: string,
+    fromAccountCode: string,
+    toEntityId: string,
+    toAccountCode: string,
+    currency: string
+  ): void => {
+    const fromKey = bucketKey(fromEntityId, fromAccountCode, currency);
+    const toKey = bucketKey(toEntityId, toAccountCode, currency);
+    const from = remainders.get(fromKey) ?? zero();
+    const to = remainders.get(toKey) ?? zero();
+    const fromAbs = from.abs();
+    const toAbs = to.abs();
+    if (fromAbs.lte(ELIMINATION_EPS) || toAbs.lte(ELIMINATION_EPS)) return;
 
-    for (const entry of accountEntries) {
-      entityBalances.set(
-        entry.entityId,
-        (entityBalances.get(entry.entityId) ?? toDecimal(0)).plus(entry.amount)
-      );
+    const matched = compareMoney(fromAbs, toAbs) <= 0 ? fromAbs : toAbs;
+    // Reduce each leg toward zero by the matched magnitude only; any excess
+    // stays visible as a residual.
+    const fromDelta = compareMoney(from, zero()) < 0 ? matched : matched.negated();
+    const toDelta = compareMoney(to, zero()) < 0 ? matched : matched.negated();
+    remainders.set(fromKey, from.plus(fromDelta));
+    remainders.set(toKey, to.plus(toDelta));
+    resolved.push({
+      fromEntityId,
+      fromAccountCode,
+      toEntityId,
+      toAccountCode,
+      currency,
+      amount: roundTo(matched),
+      fromDelta: roundTo(fromDelta),
+      toDelta: roundTo(toDelta),
+    });
+  };
+
+  // Phase 1: explicit pairs — match each declared pair per shared currency.
+  for (const pair of icPairs) {
+    const toAccountCode = pair.toAccountCode ?? pair.accountCode;
+    const currencies = new Set([
+      ...(currenciesOfBucket.get(`${pair.fromEntityId}:${pair.accountCode}`) ?? []),
+      ...(currenciesOfBucket.get(`${pair.toEntityId}:${toAccountCode}`) ?? []),
+    ]);
+    for (const currency of currencies) {
+      tryMatch(pair.fromEntityId, pair.accountCode, pair.toEntityId, toAccountCode, currency);
     }
+  }
 
-    const entityIds = Array.from(entityBalances.keys());
-    for (let i = 0; i < entityIds.length; i++) {
-      for (let j = i + 1; j < entityIds.length; j++) {
-        const fromBalance = entityBalances.get(entityIds[i]!) ?? toDecimal(0);
-        const toBalance = entityBalances.get(entityIds[j]!) ?? toDecimal(0);
-
-        if (!fromBalance.isZero() && !toBalance.isZero()) {
-          const autoKey = `${entityIds[i]}:${entityIds[j]}:${accountCode}`;
-          if (!processedPairs.has(autoKey)) {
-            processedPairs.add(autoKey);
-            totalEliminated = totalEliminated.plus(
-              compareMoney(fromBalance.abs(), toBalance.abs()) <= 0
-                ? fromBalance.abs()
-                : toBalance.abs()
-            );
-            count++;
-          }
-        }
+  // Phase 2: auto-detect — pairwise matches between entities holding the
+  // same 9-prefix account in the same currency, on what remains.
+  for (const members of autoGroups.values()) {
+    for (let i = 0; i < members.length; i++) {
+      for (let j = i + 1; j < members.length; j++) {
+        tryMatch(
+          members[i]!.entityId,
+          members[i]!.accountCode,
+          members[j]!.entityId,
+          members[j]!.accountCode,
+          members[i]!.currency
+        );
       }
     }
   }
 
-  return { eliminatedAmount: roundTo(totalEliminated), count };
+  return resolved;
 }
 
 // --- Minority interest calculation ---
@@ -222,34 +288,23 @@ function calculateMinorityInterest(
 
 function applyEliminationsAndAdjustments(
   allEntries: ConsolidationGLEntry[],
-  icPairs: ConsolidationICPair[],
+  eliminations: readonly ResolvedElimination[],
   adjustments: ConsolidationAdjustment[]
 ): ConsolidationGLEntry[] {
-  const adjustmentMap = new Map<string, ReturnType<typeof toDecimal>>();
+  // Elimination deltas are keyed WITH currency, so a matched amount only
+  // ever touches entries denominated in the matched currency. Manual
+  // adjustments keep their legacy currency-less keying.
+  const elimMap = new Map<string, ReturnType<typeof toDecimal>>();
 
-  // Process IC pairs into adjustments
-  for (const pair of icPairs) {
-    const fromEntries = allEntries.filter(
-      (e) => e.entityId === pair.fromEntityId && e.accountCode === pair.accountCode
-    );
-    const fromAmount = sumMoney(fromEntries.map((e) => e.amount));
+  for (const elim of eliminations) {
+    const keyFrom = `${elim.fromEntityId}:${elim.fromAccountCode}:${elim.currency}`;
+    elimMap.set(keyFrom, (elimMap.get(keyFrom) ?? toDecimal(0)).plus(elim.fromDelta));
 
-    if (!fromAmount.isZero()) {
-      const keyFrom = `${pair.fromEntityId}:${pair.accountCode}`;
-      adjustmentMap.set(keyFrom, (adjustmentMap.get(keyFrom) ?? toDecimal(0)).minus(fromAmount));
-    }
-
-    const toAccountCode = pair.toAccountCode ?? pair.accountCode;
-    const toEntries = allEntries.filter(
-      (e) => e.entityId === pair.toEntityId && e.accountCode === toAccountCode
-    );
-    const toAmount = sumMoney(toEntries.map((e) => e.amount));
-
-    if (!toAmount.isZero()) {
-      const keyTo = `${pair.toEntityId}:${toAccountCode}`;
-      adjustmentMap.set(keyTo, (adjustmentMap.get(keyTo) ?? toDecimal(0)).minus(toAmount));
-    }
+    const keyTo = `${elim.toEntityId}:${elim.toAccountCode}:${elim.currency}`;
+    elimMap.set(keyTo, (elimMap.get(keyTo) ?? toDecimal(0)).plus(elim.toDelta));
   }
+
+  const adjustmentMap = new Map<string, ReturnType<typeof toDecimal>>();
 
   // Process manual adjustments
   for (const adj of adjustments) {
@@ -263,14 +318,17 @@ function applyEliminationsAndAdjustments(
   const processedKeys = new Set<string>();
 
   for (const entry of allEntries) {
-    const key = `${entry.entityId}:${entry.accountCode}`;
-    const adj = adjustmentMap.get(key) ?? toDecimal(0);
+    const manualKey = `${entry.entityId}:${entry.accountCode}`;
+    const adj = addMoney(
+      elimMap.get(`${manualKey}:${entry.currency}`) ?? toDecimal(0),
+      adjustmentMap.get(manualKey) ?? toDecimal(0)
+    );
     const newAmount = addMoney(entry.amount, adj);
 
     if (newAmount.abs().gt('0.001')) {
       result.push({ ...entry, amount: roundTo(newAmount) });
     }
-    processedKeys.add(key);
+    processedKeys.add(manualKey);
   }
 
   // Add adjustment-only entries (e.g., goodwill)
@@ -338,8 +396,10 @@ function runConsolidation(request: ConsolidationRequest): ConsolidationResponse 
 
   postProgress(2, 5);
 
-  // Step 3: Eliminate intercompany
-  const eliminationResult = eliminateIntercompany(allEntries, icPairs, ownerships);
+  // Step 3: Resolve intercompany eliminations (explicit pairs + auto-detected
+  // 9-prefix matches). This same list is applied in step 5, so counted
+  // eliminations and applied eliminations can never diverge.
+  const eliminations = resolveEliminations(allEntries, icPairs);
 
   postProgress(3, 5);
 
@@ -348,8 +408,12 @@ function runConsolidation(request: ConsolidationRequest): ConsolidationResponse 
 
   postProgress(4, 5);
 
-  // Step 5: Apply eliminations and adjustments
-  const consolidatedEntries = applyEliminationsAndAdjustments(allEntries, icPairs, adjustments);
+  // Step 5: Apply the resolved eliminations and manual adjustments
+  const consolidatedEntries = applyEliminationsAndAdjustments(
+    allEntries,
+    eliminations,
+    adjustments
+  );
 
   // Calculate totals at full decimal precision; cent-round at the boundary.
   const totalAssetsDec = sumByCategory(consolidatedEntries, 'asset');
@@ -379,7 +443,7 @@ function runConsolidation(request: ConsolidationRequest): ConsolidationResponse 
     netIncome: roundTo(netIncomeDec),
     isBalanced,
     imbalanceAmount: roundTo(balanceCheck),
-    eliminationCount: eliminationResult.count,
+    eliminationCount: eliminations.length,
     minorityInterest: roundTo(minorityInterest),
   };
 }

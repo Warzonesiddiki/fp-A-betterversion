@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // HEALTHCARE REVENUE CYCLE TEMPLATE
 // Hospital/health system revenue cycle with payer mix, CPT coding,
 // denial management, and AR days tracking. 400-bed community hospital.
@@ -414,7 +414,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'patient_days * x',
+    formula: 'hrc_patient_days * x',
     description: 'Cost per day drives total expense',
   },
   {

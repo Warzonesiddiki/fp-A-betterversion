@@ -130,18 +130,168 @@ const LINE_ITEMS: readonly BudgetLineItem[] = [
   budgetLine('li4', '6000', 'Operating Expenses', 2, 24000),
 ];
 
+// E-02 fixtures — shapes follow src/types/index.ts (Forecast @100, Scenario @157).
+const FORECASTS = [
+  {
+    id: 'fc-1',
+    name: 'FY2026 Rolling Forecast',
+    description: 'Rolling 12-month forecast off the operating plan',
+    type: 'Rolling',
+    baseBudgetId: BUDGET.id,
+    baseBudgetName: BUDGET.name,
+    status: 'InProgress' as const,
+    rollingWindowMonths: 12,
+    confidenceLevel: 'Medium' as const,
+    createdBy: 'u1',
+    createdByName: 'Planner',
+    lastUpdated: '2026-03-01T00:00:00.000Z',
+    createdAt: '2026-01-15T00:00:00.000Z',
+  },
+];
+
+const SCENARIOS = [
+  {
+    id: 'scn-1',
+    name: 'Base Case',
+    description: 'Approved baseline assumptions',
+    baseBudgetId: BUDGET.id,
+    baseBudgetName: BUDGET.name,
+    type: 'Base' as const,
+    probability: 1,
+    isActive: true,
+    isLocked: true,
+    assumptions: [],
+    calculatedMetrics: {
+      revenue: 1200000,
+      ebitda: 240000,
+      netIncome: 150000,
+      cashFlow: 180000,
+      headcount: 100,
+      burnRate: 40000,
+      runway: 18,
+      grossMargin: 62,
+      ebitdaMargin: 20,
+    },
+    createdBy: 'u1',
+    createdByName: 'Planner',
+    createdAt: '2026-01-10T00:00:00.000Z',
+    updatedAt: '2026-02-01T00:00:00.000Z',
+  },
+];
+
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: POPULATED_ENTRIES, accounts: ACCOUNTS })),
+  // E-02: extended with the fields GLTrialBalancePage destructures at render
+  // (it calls generateTrialBalance() inside a mount effect, so it must be a
+  // stub; the page renders `trialBalance` rows when the sort-store is empty).
+  // Additive — existing consumers are unaffected.
+  useGLStore: vi.fn(() => ({
+    entries: POPULATED_ENTRIES,
+    accounts: ACCOUNTS,
+    trialBalance: TB_ROWS,
+    isLoading: false,
+    generateTrialBalance: vi.fn(),
+  })),
 }));
 
+// Trial-balance row shape mirrors computeTrialBalanceTotals' input contract
+// (GLTrialBalancePage.tsx:36-50): per-account beginning/net/ending + period debits/credits.
+const TB_ROWS = [
+  {
+    accountId: '1000',
+    accountCode: '1000',
+    accountName: 'Cash — Operating',
+    beginningBalance: 50000,
+    netChange: 12500,
+    endingBalance: 62500,
+    debit: 32500,
+    credit: 20000,
+  },
+  {
+    accountId: '4000',
+    accountCode: '4000',
+    accountName: 'Revenue — Services',
+    beginningBalance: 0,
+    netChange: -80000,
+    endingBalance: -80000,
+    debit: 0,
+    credit: 80000,
+  },
+];
+
 vi.mock('@/store/budgetStore', () => ({
-  useBudgetStore: vi.fn(() => ({ budgets: [BUDGET], lineItems: LINE_ITEMS })),
+  // E-02: action stubs added for BudgetListPage's destructure (invoked only
+  // from row menus; never during render).
+  useBudgetStore: vi.fn(() => ({
+    budgets: [BUDGET],
+    lineItems: LINE_ITEMS,
+    isLoading: false,
+    submitBudget: vi.fn(),
+    approveBudget: vi.fn(),
+    rejectBudget: vi.fn(),
+    deleteBudget: vi.fn(),
+    duplicateBudget: vi.fn(),
+  })),
+}));
+
+// E-02 populated sweeps: forecast + scenario stores (destructure-style
+// consumption; selector calls receive the whole state object, which is safe —
+// the selected actions are only invoked from event handlers).
+vi.mock('@/store/forecastStore', () => ({
+  // Selector-aware: some consumers destructure, others select
+  // (e.g. CompetitiveGapsToolbar-style children call useScenarioStore((s)=>…)).
+  useForecastStore: vi.fn((sel?: (s: { forecasts: typeof FORECASTS }) => unknown) => {
+    const state = { forecasts: FORECASTS };
+    return sel ? sel(state) : state;
+  }),
+}));
+
+vi.mock('@/store/scenarioStore', () => ({
+  useScenarioStore: vi.fn(
+    (
+      sel?: (s: {
+        scenarios: typeof SCENARIOS;
+        setSelectedScenario: ReturnType<typeof vi.fn>;
+        lockScenario: ReturnType<typeof vi.fn>;
+        unlockScenario: ReturnType<typeof vi.fn>;
+      }) => unknown
+    ) => {
+      const state = {
+        scenarios: SCENARIOS,
+        setSelectedScenario: vi.fn(),
+        lockScenario: vi.fn(),
+        unlockScenario: vi.fn(),
+      };
+      return sel ? sel(state) : state;
+    }
+  ),
+}));
+
+vi.mock('@/store/glTrialBalanceStore', () => ({
+  useGLTrialBalanceStore: vi.fn(
+    (
+      sel?: (s: {
+        setRows: ReturnType<typeof vi.fn>;
+        sortConfig: null;
+        filteredRows: typeof TB_ROWS;
+        setSort: ReturnType<typeof vi.fn>;
+      }) => unknown
+    ) => {
+      const state = { setRows: vi.fn(), sortConfig: null, filteredRows: TB_ROWS, setSort: vi.fn() };
+      return sel ? sel(state) : state;
+    }
+  ),
 }));
 
 import ProfitLossPage from '../../pages/reports/ProfitLossPage';
 import CashFlowPage from '../../pages/reports/CashFlowPage';
 import BudgetVsActualPage from '../../pages/reports/BudgetVsActualPage';
 import { ChartOfAccountsPage } from '../../pages/charts/ChartOfAccountsPage';
+
+// E-02 populated sweeps (top-20 route additions).
+import BudgetListPage from '../../pages/budgets/BudgetListPage';
+import GLTrialBalancePage from '../../pages/data/GLTrialBalancePage';
+import ForecastListPage from '../../pages/forecasts/ForecastListPage';
+import ScenarioListPage from '../../pages/scenarios/ScenarioListPage';
 
 const withRouter = (ui: React.ReactElement) => (
   <MemoryRouter initialEntries={['/']}>{ui}</MemoryRouter>
@@ -195,6 +345,34 @@ describe('WCAG 2.1 AA — populated-state axe-core regression suite', () => {
 
     expectRenderedRealContent(container, 30);
     expectNoCriticalOrSerious(await axe(container));
+  });
+
+  // E-02 populated sweeps for the top-20 route additions. Same bar: rendered
+  // real content + 0 critical / 0 serious axe violations.
+  describe('E-02 route additions (populated)', () => {
+    it('/budgets (BudgetListPage) renders populated budgets with no critical/serious violations', async () => {
+      const { container } = render(withRouter(<BudgetListPage />));
+      expectRenderedRealContent(container, 30);
+      expectNoCriticalOrSerious(await axe(container));
+    });
+
+    it('/data/gl-trial-balance (GLTrialBalancePage) renders entries with no critical/serious violations', async () => {
+      const { container } = render(withRouter(<GLTrialBalancePage />));
+      expectRenderedRealContent(container, 30);
+      expectNoCriticalOrSerious(await axe(container));
+    });
+
+    it('/forecasts (ForecastListPage) renders forecasts with no critical/serious violations', async () => {
+      const { container } = render(withRouter(<ForecastListPage />));
+      expectRenderedRealContent(container, 20);
+      expectNoCriticalOrSerious(await axe(container));
+    });
+
+    it('/scenarios (ScenarioListPage) renders scenarios with no critical/serious violations', async () => {
+      const { container } = render(withRouter(<ScenarioListPage />));
+      expectRenderedRealContent(container, 20);
+      expectNoCriticalOrSerious(await axe(container));
+    });
   });
 
   /**

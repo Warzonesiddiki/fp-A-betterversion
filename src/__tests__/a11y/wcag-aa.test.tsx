@@ -1,14 +1,14 @@
-/**
+﻿/**
  * Automated accessibility (a11y) regression tests for FinPlan Pro.
  *
  * WCAG coverage: 2.1 Level AA (axe-core's default rule set). `vitest-axe` is
- * installed and this suite is live — an earlier version of this header said it
+ * installed and this suite is live â€” an earlier version of this header said it
  * was inert pending that install, which has since happened.
  *
  * Scope note: these cases render each page against the *default* stores, so the
  * data-backed routes are audited in their EMPTY state (a report page here is
  * ~6 DOM elements: an icon, a heading, a sentence and an "Import Data" button).
- * That is deliberate — empty states ship too — but it is thin coverage on its
+ * That is deliberate â€” empty states ship too â€” but it is thin coverage on its
  * own. The populated state of those pages is audited separately in
  * `wcag-aa-populated.test.tsx`, which mocks the GL and budget stores; keep new
  * data-dependent pages covered in both.
@@ -34,6 +34,22 @@ import BudgetVsActualPage from '../../pages/reports/BudgetVsActualPage';
 import ProfitLossPage from '../../pages/reports/ProfitLossPage';
 import CashFlowPage from '../../pages/reports/CashFlowPage';
 
+// E-02 a11y sweep additions (top-20 user-critical routes) â€” empty/default state.
+import BudgetListPage from '../../pages/budgets/BudgetListPage';
+import BudgetCreatePage from '../../pages/budgets/BudgetCreatePage';
+import ForecastListPage from '../../pages/forecasts/ForecastListPage';
+import ScenarioListPage from '../../pages/scenarios/ScenarioListPage';
+import VarianceDashboardPage from '../../pages/variance/VarianceDashboardPage';
+import ConsolidationDashboard from '../../pages/consolidation/ConsolidationDashboard';
+import CashForecastPage from '../../pages/cash/CashForecastPage';
+import InvestmentPage from '../../pages/treasury/InvestmentPage';
+import BoardPackPage from '../../pages/reports/BoardPackPage';
+import PeriodClosePage from '../../pages/periods/PeriodClosePage';
+import ReconciliationPage from '../../pages/data/ReconciliationPage';
+import GLTrialBalancePage from '../../pages/data/GLTrialBalancePage';
+import IntegrationSettingsPage from '../../pages/settings/IntegrationSettingsPage';
+import ReportsListPage from '../../pages/reports/ReportsListPage';
+
 import { Button } from '../../components/ui/Button';
 import { Modal } from '../../components/ui/Modal';
 import { Input } from '../../components/ui/Input';
@@ -57,7 +73,7 @@ const withAllProviders = (ui: React.ReactNode) => (
   </I18nextProvider>
 );
 
-// Orchestrator PICK #23 DRI #1 item #3 directive: "axe-core scan — 0 critical,
+// Orchestrator PICK #23 DRI #1 item #3 directive: "axe-core scan â€” 0 critical,
 // 0 serious violations". This helper filters out moderate/minor impact violations
 // to align the assertion with the directive (landmark-unique at moderate level
 // is allowed, per Orchestrator).
@@ -68,7 +84,7 @@ const expectNoCriticalOrSerious = (results: { violations: Array<{ impact?: strin
   expect(blocking).toEqual([]);
 };
 
-describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
+describe('WCAG 2.1 AA â€” automated axe-core regression suite', () => {
   describe('Authentication pages', () => {
     it('LoginPage has no detectable a11y violations', async () => {
       const { container } = render(withRouter(<LoginPage />));
@@ -124,6 +140,37 @@ describe('WCAG 2.1 AA — automated axe-core regression suite', () => {
 
     it('CashFlowPage has no detectable a11y violations', async () => {
       const { container } = render(withRouter(<CashFlowPage />));
+      const results = await axe(container);
+      expectNoCriticalOrSerious(results);
+    });
+  });
+
+  // E-02 a11y sweep: extends the audited surface to the top-20 user-critical
+  // routes (budgets, forecasts, scenarios, variance, consolidation, cash,
+  // treasury, reports hub + board pack, period close, reconciliation, GL trial
+  // balance, integrations). Same bar as the suites above: 0 critical, 0
+  // serious. Populated-state scans for the data-backed ones live in
+  // `wcag-aa-populated.test.tsx`.
+  describe('E-02 top-20 route sweep additions', () => {
+    const sweepCases: Array<[string, React.ReactElement]> = [
+      ['/budgets', <BudgetListPage key="/budgets" />],
+      ['/budgets/create', <BudgetCreatePage key="/budgets/create" />],
+      ['/forecasts', <ForecastListPage key="/forecasts" />],
+      ['/scenarios', <ScenarioListPage key="/scenarios" />],
+      ['/variance', <VarianceDashboardPage key="/variance" />],
+      ['/consolidation', <ConsolidationDashboard key="/consolidation" />],
+      ['/cash/forecast', <CashForecastPage key="/cash/forecast" />],
+      ['/treasury/investments', <InvestmentPage key="/treasury/investments" />],
+      ['/board-pack', <BoardPackPage key="/board-pack" />],
+      ['/periods/close', <PeriodClosePage key="/periods/close" />],
+      ['/data/reconciliation', <ReconciliationPage key="/data/reconciliation" />],
+      ['/data/gl-trial-balance', <GLTrialBalancePage key="/data/gl-trial-balance" />],
+      ['/settings/integrations', <IntegrationSettingsPage key="/settings/integrations" />],
+      ['/reports', <ReportsListPage key="/reports" />],
+    ];
+
+    it.each(sweepCases)('%s has no detectable a11y violations (E-02)', async (_route, ui) => {
+      const { container } = render(withRouter(ui));
       const results = await axe(container);
       expectNoCriticalOrSerious(results);
     });

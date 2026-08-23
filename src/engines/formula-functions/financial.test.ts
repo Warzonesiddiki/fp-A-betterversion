@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect } from 'vitest';
-import { PMT, FV, PV, NPV, IRR, SLN, DB } from './financial';
+import { PMT, FV, PV, NPV, IRR, XIRR, SLN, DB } from './financial';
 
 describe('Financial Functions', () => {
   describe('PMT (Payment)', () => {
@@ -75,5 +75,35 @@ describe('Financial Functions', () => {
       expect(result).toBeGreaterThan(0);
       expect(result).toBeLessThan(10000);
     });
+  });
+});
+
+describe('IRR / XIRR degenerate-input contract (W6-P0-16)', () => {
+  it('IRR returns NaN for empty cash flows', () => {
+    expect(IRR([])).toBeNaN();
+  });
+
+  it('IRR returns NaN when flows have no sign change', () => {
+    expect(IRR([100, 200])).toBeNaN();
+  });
+
+  it('IRR returns NaN for a single cash flow', () => {
+    expect(IRR([-100])).toBeNaN();
+  });
+
+  it('converges for standard flows: IRR([-100, 60, 60]) near the analytic root', () => {
+    // Root of -100 + 60/(1+r) + 60/(1+r)^2 = 0 is r = 1/((-3+sqrt(69))/6) - 1 ≈ 0.13066.
+    expect(IRR([-100, 60, 60])).toBeCloseTo(0.13066, 4);
+  });
+
+  it('falls back to bisection when Newton yields zero derivative / non-finite candidate', () => {
+    // guess = -1 makes the first Newton candidate non-finite; the true root is 20%.
+    expect(IRR([-100, 120], -1)).toBeCloseTo(0.2, 6);
+  });
+
+  it('XIRR returns NaN for degenerate inputs', () => {
+    expect(XIRR([], [])).toBeNaN();
+    expect(XIRR([100, 200], [0, 365])).toBeNaN(); // no sign change
+    expect(XIRR([-100, 50], [0])).toBeNaN(); // flow/date count mismatch
   });
 });

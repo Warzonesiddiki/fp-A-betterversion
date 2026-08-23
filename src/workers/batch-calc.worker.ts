@@ -13,6 +13,7 @@ import type {
   BatchCellIdentifier,
   BatchCalcDependency,
 } from './types';
+import { evaluateExpression, SafeExpressionError } from './safeExpression';
 
 // --- Cell key helpers ---
 
@@ -169,17 +170,10 @@ function evaluateFormula(formula: string, values: Record<string, number>): numbe
     return parts.length > 0 ? String(Math.min(...parts)) : '0';
   });
 
-  // Safely evaluate arithmetic
-  try {
-    // Only allow safe characters: numbers, operators, parentheses, dots, spaces
-    if (/^[0-9+\-*/().%\s]+$/.test(expr)) {
-      const result = Function(`"use strict"; return (${expr})`)();
-      return typeof result === 'number' && isFinite(result) ? result : 0;
-    }
-    return parseFloat(expr) || 0;
-  } catch {
-    return 0;
-  }
+  // CSP-safe evaluation (W6-P0-01): tokenizer + shunting-yard — NO eval(),
+  // NO new Function() (blocked by the shipped Tauri CSP). Failures THROW and
+  // the caller records the cell key instead of silently zeroing it.
+  return evaluateExpression(expr);
 }
 
 // --- Core batch calculation ---
@@ -201,6 +195,7 @@ function runBatchCalc(request: BatchCalcRequest): BatchCalcResponse {
       affectedCells: [],
       iterationCount: 0,
       converged: true,
+      errors: [],
     };
   }
 
@@ -237,6 +232,7 @@ function runBatchCalc(request: BatchCalcRequest): BatchCalcResponse {
   // Topological sort
   const sortedCells = topologicalSort(expandedKeys, graph);
   const values = { ...initialValues };
+  const formulaErrors: string[] = [];
   let iterationCount = 0;
   let converged = false;
 
@@ -250,7 +246,15 @@ function runBatchCalc(request: BatchCalcRequest): BatchCalcResponse {
       if (!formula) continue;
 
       const oldValue = values[key] ?? 0;
-      const newValue = evaluateFormula(formula, values);
+      let newValue: number;
+      try {
+        newValue = evaluateFormula(formula, values);
+      } catch (error) {
+        // W6-P0-01: record the failing cell loudly instead of silently zeroing.
+        if (!(error instanceof SafeExpressionError)) throw error;
+        formulaErrors.push(key);
+        continue;
+      }
       const change = Math.abs(newValue - oldValue);
 
       if (change > maxChange) {
@@ -286,6 +290,7 @@ function runBatchCalc(request: BatchCalcRequest): BatchCalcResponse {
     affectedCells: sortedCells,
     iterationCount,
     converged,
+    errors: formulaErrors,
   };
 }
 

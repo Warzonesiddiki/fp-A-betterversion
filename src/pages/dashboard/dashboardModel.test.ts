@@ -196,4 +196,59 @@ describe('deriveSectorKpis', () => {
     expect(deriveSectorKpis(LEDGER, undefined)).toEqual([]);
     expect(deriveSectorKpis([], [{ id: 'a', label: 'A', accountCodes: ['4000'] }])).toEqual([]);
   });
+
+  it('emits null (never a false $0) when the sector pack maps no account codes', () => {
+    // Every shipped sector config looks like this today: no accountCodes at
+    // all. The tile must disclose "cannot compute", not render a zero.
+    const kpis = deriveSectorKpis(LEDGER, [
+      { id: 'arr', label: 'Annual Recurring Revenue', format: 'currency' },
+    ]);
+    expect(kpis).toEqual([
+      { key: 'arr', label: 'Annual Recurring Revenue', value: null, format: 'currency' },
+    ]);
+  });
+
+  it('emits null when the mapped codes exist in the pack but not in the posted ledger', () => {
+    const kpis = deriveSectorKpis(LEDGER, [
+      { id: 'gwp', label: 'Gross Written Premium', format: 'currency', accountCodes: ['9100'] },
+    ]);
+    expect(kpis[0]!.value).toBeNull();
+    expect(kpis[0]!.key).toBe('gwp');
+  });
+
+  it('never dresses a dollar sum up as a percent or a bare number', () => {
+    // Codes ARE mapped and DO match, but the declared unit is percent: a flat
+    // account-code sum has no numerator/denominator semantics, so computing
+    // one would fabricate "145000%".
+    const kpis = deriveSectorKpis(LEDGER, [
+      {
+        id: 'gross_margin',
+        label: 'Gross Margin',
+        format: 'percent',
+        accountCodes: ['4000', '5000'],
+      },
+      { id: 'ltv_cac', label: 'LTV/CAC Ratio', format: 'number', accountCodes: ['4000'] },
+    ]);
+    expect(kpis[0]).toEqual({
+      key: 'gross_margin',
+      label: 'Gross Margin',
+      value: null,
+      format: 'percent',
+    });
+    expect(kpis[1]).toEqual({
+      key: 'ltv_cac',
+      label: 'LTV/CAC Ratio',
+      value: null,
+      format: 'number',
+    });
+  });
+
+  it('carries the declared unit through and still computes currency KPIs', () => {
+    const kpis = deriveSectorKpis(LEDGER, [
+      { id: 'rev', label: 'Revenue', format: 'currency', accountCodes: ['4000'] },
+      { id: 'churn', label: 'Logo Churn Rate', format: 'percent' },
+    ]);
+    expect(kpis.map((k) => k.format)).toEqual(['currency', 'percent']);
+    expect(kpis[0]!.value).toBe(95000);
+  });
 });

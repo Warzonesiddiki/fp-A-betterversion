@@ -182,6 +182,164 @@ describe('consolidation.worker', () => {
       expect(result?.eliminationCount).toBeGreaterThanOrEqual(1);
     });
   });
+  describe('W6-P1: counted eliminations must actually be applied', () => {
+    function icEntry(id: string, entityId: string, amount: number, currency = 'USD') {
+      return {
+        id,
+        accountCode: '9001',
+        accountName: 'IC Balance',
+        amount,
+        currency,
+        date: '2026-01-01',
+        entityId,
+      };
+    }
+
+    function amountsOn9001(result: ConsolidationResponse | undefined): number[] {
+      return (result?.consolidatedEntries ?? [])
+        .filter((e) => e.accountCode === '9001')
+        .map((e) => e.amount)
+        .sort((a, b) => a - b);
+    }
+
+    it('applies auto-detected 9-prefix eliminations exactly once without explicit icPairs', () => {
+      const result = runConsolidation({
+        entities: [
+          {
+            entityId: 'A',
+            entityName: 'A',
+            currency: 'USD',
+            isForeign: false,
+            entries: [icEntry('a9', 'A', 500)],
+          },
+          {
+            entityId: 'B',
+            entityName: 'B',
+            currency: 'USD',
+            isForeign: false,
+            entries: [icEntry('b9', 'B', -300)],
+          },
+        ],
+        ownerships: [],
+      });
+      expect(result?.eliminationCount).toBe(1);
+      // Matched 300 (min(500,300)) removed from both legs; A keeps a +200
+      // residual visible, B nets to 0 and drops out.
+      expect(amountsOn9001(result)).toEqual([200]);
+    });
+
+    it('keeps an unmatched IC balance fully gross', () => {
+      const result = runConsolidation({
+        entities: [
+          {
+            entityId: 'A',
+            entityName: 'A',
+            currency: 'USD',
+            isForeign: false,
+            entries: [icEntry('a9', 'A', 400)],
+          },
+          { entityId: 'B', entityName: 'B', currency: 'USD', isForeign: false, entries: [] },
+        ],
+        ownerships: [],
+      });
+      expect(result?.eliminationCount).toBe(0);
+      expect(amountsOn9001(result)).toEqual([400]);
+    });
+
+    it('eliminates an explicitly paired balanced IC position exactly once', () => {
+      const result = runConsolidation({
+        entities: [
+          {
+            entityId: 'A',
+            entityName: 'A',
+            currency: 'USD',
+            isForeign: false,
+            entries: [icEntry('a9', 'A', 1000)],
+          },
+          {
+            entityId: 'B',
+            entityName: 'B',
+            currency: 'USD',
+            isForeign: false,
+            entries: [icEntry('b9', 'B', -1000)],
+          },
+        ],
+        ownerships: [],
+        icPairs: [
+          {
+            fromEntityId: 'A',
+            toEntityId: 'B',
+            accountCode: '9001',
+            amount: 1000,
+            type: 'receivable',
+          },
+        ],
+      });
+      expect(result?.eliminationCount).toBe(1);
+      expect(amountsOn9001(result)).toEqual([]);
+    });
+
+    it('eliminates only the matched amount of a partial IC pair, leaving the residual gross', () => {
+      const result = runConsolidation({
+        entities: [
+          {
+            entityId: 'A',
+            entityName: 'A',
+            currency: 'USD',
+            isForeign: false,
+            entries: [icEntry('a9', 'A', 100)],
+          },
+          {
+            entityId: 'B',
+            entityName: 'B',
+            currency: 'USD',
+            isForeign: false,
+            entries: [icEntry('b9', 'B', -60)],
+          },
+        ],
+        ownerships: [],
+        icPairs: [
+          {
+            fromEntityId: 'A',
+            toEntityId: 'B',
+            accountCode: '9001',
+            amount: 60,
+            type: 'receivable',
+          },
+        ],
+      });
+      expect(result?.eliminationCount).toBe(1);
+      // Old behaviour subtracted both legs in full (nothing left); the fix
+      // removes only the matched 60, keeping A's +40 excess visible.
+      expect(amountsOn9001(result)).toEqual([40]);
+    });
+
+    it('matches auto-detected IC balances per currency only', () => {
+      const result = runConsolidation({
+        entities: [
+          {
+            entityId: 'A',
+            entityName: 'A',
+            currency: 'USD',
+            isForeign: false,
+            entries: [icEntry('a9u', 'A', 100), icEntry('a9e', 'A', 80, 'EUR')],
+          },
+          {
+            entityId: 'B',
+            entityName: 'B',
+            currency: 'USD',
+            isForeign: false,
+            entries: [icEntry('b9u', 'B', -70)],
+          },
+        ],
+        ownerships: [],
+      });
+      // Only the USD legs match (min(100,70)=70); the EUR leg has no EUR
+      // counterparty and stays gross.
+      expect(result?.eliminationCount).toBe(1);
+      expect(amountsOn9001(result)).toEqual([30, 80]);
+    });
+  });
 
   describe('minority interest', () => {
     it('calculates minority interest for 80% ownership', () => {

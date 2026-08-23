@@ -32,7 +32,9 @@ import {
   deriveDashboardKpis,
   deriveMonthlyTrend,
   deriveSectorKpis,
+  type DashboardSectorKpi,
 } from '@/pages/dashboard/dashboardModel';
+import type { CurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import {
   AreaChart,
   Area,
@@ -43,6 +45,25 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+
+/**
+ * Unit-aware display formatting for sector KPI tiles (W6-P0-06). Percent
+ * values follow the dashboard-model convention — already ×100 points, e.g.
+ * 47.37 → "47.4%" — exactly like grossMargin/netMargin elsewhere on this
+ * page. A `null` value marks an uncomputable tile; the renderer shows the
+ * mapping hint instead of a number, so a missing account mapping can never
+ * masquerade as $0.
+ */
+export function formatSectorKpiValue(
+  kpi: Pick<DashboardSectorKpi, 'value' | 'format'>,
+  fmt: Pick<CurrencyFormatter, 'currency0' | 'number'>
+): string {
+  if (kpi.value === null) return '—';
+  if (kpi.format === 'percent') return formatPercent(kpi.value);
+  if (kpi.format === 'number') return fmt.number(kpi.value);
+  return fmt.currency0(kpi.value);
+}
+
 export default function DashboardPage() {
   const fmt = useCurrencyFormatter();
   const { pathname } = useLocation();
@@ -543,7 +564,18 @@ export default function DashboardPage() {
                   className="text-center p-3 bg-slate-900 rounded-lg border border-slate-800"
                 >
                   <div className="text-xs text-slate-400 mb-1">{kpi.label}</div>
-                  <div className="text-lg font-bold tabular-nums">{fmt.currency0(kpi.value)}</div>
+                  {kpi.value === null ? (
+                    <div
+                      className="text-lg font-bold tabular-nums text-[var(--text-muted)]"
+                      title="Map accounts in sector settings"
+                    >
+                      —<span className="sr-only">Not available</span>
+                    </div>
+                  ) : (
+                    <div className="text-lg font-bold tabular-nums">
+                      {formatSectorKpiValue(kpi, fmt)}
+                    </div>
+                  )}
                   <div className="mt-2 flex justify-center">
                     <SparklineChart
                       data={monthlyTrend.map((m) => m.revenue)}

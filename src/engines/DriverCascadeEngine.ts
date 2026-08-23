@@ -75,6 +75,8 @@ export interface CascadeResult {
   oldValue: number;
   newValue: number;
   affectedCells: AffectedCell[];
+  /** Rules whose formula failed (unknown identifier / parse error / non-finite). They leave their cell untouched. */
+  formulaErrors: number;
   totalImpact: number;
   duration: number;
 }
@@ -312,6 +314,18 @@ export class DriverCascadeEngine {
     const rules = this.rules.get(driverId) ?? [];
     const affectedCells: AffectedCell[] = [];
 
+    // Formula identifiers resolve against every registered driver, under both
+    // its raw id and its hyphen->underscore form (template formulas use snake_case).
+    const driverVars: Record<string, number> = {};
+    for (const d of this.drivers.values()) {
+      driverVars[d.id] = d.currentValue;
+      const snake = d.id.replace(/-/g, '_');
+      if (!(snake in driverVars)) {
+        driverVars[snake] = d.currentValue;
+      }
+    }
+    let formulaErrors = 0;
+
     for (const rule of rules) {
       const currentCellValue =
         readCell(rule.targetCube, rule.targetCoords, rule.targetMeasure) ?? 0;
@@ -360,17 +374,29 @@ export class DriverCascadeEngine {
         }
 
         case 'formula': {
-          // Formula-based cascade: evaluate formula with driver value as input
-          // Formula uses 'x' as the driver value variable
+          // Formula-based cascade. Unknown identifiers / parse failures are
+          // counted in result.formulaErrors and leave the cell untouched —
+          // never silently frozen at the current value (W6-P0-15).
           if (rule.formula) {
             try {
               newCellValue = evaluateSimpleFormula(
                 rule.formula,
                 newValue,
                 oldValue,
-                currentCellValue
+                currentCellValue,
+                driverVars,
+                (identifier) => {
+                  const accountId = identifier.replace(/_/g, '-');
+                  const v = readCell(
+                    rule.targetCube,
+                    { ...rule.targetCoords, account: accountId },
+                    rule.targetMeasure
+                  );
+                  return typeof v === 'number' ? v : undefined;
+                }
               );
             } catch {
+              formulaErrors += 1;
               newCellValue = currentCellValue;
             }
           } else {
@@ -405,6 +431,7 @@ export class DriverCascadeEngine {
       oldValue,
       newValue,
       affectedCells,
+      formulaErrors,
       totalImpact: sumMoney(affectedCells.map((c) => c.delta)).toNumber(),
       duration,
     };
@@ -607,23 +634,63 @@ export class DriverCascadeEngine {
 import { randomId } from '@/utils/cryptoId';
 import { safeMathParser } from './SafeMathParser';
 
-function evaluateSimpleFormula(formula: string, x: number, oldX: number, current: number): number {
-  // Replace variables in formula
-  const expr = formula
-    .replace(/\bx\b/g, String(x))
-    .replace(/\bold_x\b/g, String(oldX))
-    .replace(/\bcurrent\b/g, String(current));
-
-  // Safe evaluation using SafeMathParser (no code injection possible)
-  try {
-    const result = safeMathParser.evaluate(expr);
-    if (typeof result === 'number' && isFinite(result)) {
-      return result;
-    }
-    return current;
-  } catch {
-    return current;
+/** Thrown when a cascade formula references an unknown identifier, fails to parse, or yields a non-finite value. */
+export class CascadeFormulaError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'CascadeFormulaError';
   }
+}
+
+/**
+ * Resolves identifiers against the cascade context, then evaluates via SafeMathParser.
+ *
+ * Identifier contract (W6-P0-15):
+ * - `x`       -> proposed driver value
+ * - `old_x` / `prev` (alias) -> previous driver value
+ * - `current` -> target cell's current value
+ * - any other identifier -> looked up in `vars` (engine drivers keyed by raw id
+ *   and hyphen->underscore form); an unknown lookup THROWS — it is never
+ *   silently frozen at the current value.
+ * Uppercase SafeMathParser function names followed by "(" pass through untouched.
+ */
+function evaluateSimpleFormula(
+  formula: string,
+  x: number,
+  oldX: number,
+  current: number,
+  vars: Record<string, number>,
+  resolveIdentifier?: (identifier: string) => number | undefined
+): number {
+  const substituted = formula.replace(/\b([A-Za-z_][A-Za-z0-9_]*)\b(?!\s*\()/g, (identifier) => {
+    if (identifier === 'x') return String(x);
+    if (identifier === 'old_x' || identifier === 'prev') return String(oldX);
+    if (identifier === 'current') return String(current);
+    if (Object.prototype.hasOwnProperty.call(vars, identifier)) {
+      return String(vars[identifier]!);
+    }
+    // Sibling-account fallback: templates may reference other accounts
+    // (e.g. net_revenue, noi). The caller resolves them via its readCell;
+    // anything unresolvable THROWS — never silently frozen.
+    const resolved = resolveIdentifier?.(identifier);
+    if (resolved !== undefined && Number.isFinite(resolved)) {
+      return String(resolved);
+    }
+    throw new CascadeFormulaError(`Unknown identifier "${identifier}" in cascade formula`);
+  });
+
+  let result: unknown;
+  try {
+    result = safeMathParser.evaluate(substituted);
+  } catch (error) {
+    throw new CascadeFormulaError(
+      `Failed to evaluate cascade formula: ${error instanceof Error ? error.message : 'parse error'}`
+    );
+  }
+  if (typeof result !== 'number' || !Number.isFinite(result)) {
+    throw new CascadeFormulaError('Cascade formula did not evaluate to a finite number');
+  }
+  return result;
 }
 
 // ---------------------------------------------------------------------------

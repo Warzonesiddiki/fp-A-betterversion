@@ -18,6 +18,67 @@ import {
 // FINANCIAL FUNCTIONS
 // =============================================================================
 
+// --- Rate-solver numerics shared by IRR / XIRR ------------------------------
+
+/** True when vals has at least 2 flows containing both a negative and a positive amount. */
+function hasIrrShape(vals: number[]): boolean {
+  if (vals.length < 2) return false;
+  let neg = false;
+  let pos = false;
+  for (const v of vals) {
+    if (v < 0) neg = true;
+    else if (v > 0) pos = true;
+    if (neg && pos) return true;
+  }
+  return false;
+}
+
+const BISECT_LO = -0.9999;
+const BISECT_HI = 10;
+const BISECT_TOL = 1e-10;
+const BISECT_MAX_ITER = 200;
+const BISECT_GRID_STEPS = 200;
+
+/**
+ * Bisection fallback for rate solvers when Newton-Raphson breaks down.
+ * Scans a uniform bracket grid over rate in [BISECT_LO, BISECT_HI]; bisects
+ * the first sign-changing interval to BISECT_TOL within BISECT_MAX_ITER
+ * iterations. Returns NaN when no bracket exists in range.
+ */
+function bisectRate(f: (rate: number) => number): number {
+  let prevX = BISECT_LO;
+  let prevF = f(prevX);
+  const step = (BISECT_HI - BISECT_LO) / BISECT_GRID_STEPS;
+  for (let i = 1; i <= BISECT_GRID_STEPS; i++) {
+    const x = i === BISECT_GRID_STEPS ? BISECT_HI : BISECT_LO + step * i;
+    const fx = f(x);
+    if (Number.isFinite(prevF) && Number.isFinite(fx)) {
+      if (prevF === 0) return prevX;
+      if (prevF * fx < 0) {
+        let a = prevX;
+        let b = x;
+        let fa = prevF;
+        for (let k = 0; k < BISECT_MAX_ITER && b - a > BISECT_TOL; k++) {
+          const mid = (a + b) / 2;
+          const fMid = f(mid);
+          if (!Number.isFinite(fMid)) break;
+          if (fMid === 0) return mid;
+          if (fa * fMid < 0) {
+            b = mid;
+          } else {
+            a = mid;
+            fa = fMid;
+          }
+        }
+        return (a + b) / 2;
+      }
+    }
+    prevX = x;
+    prevF = fx;
+  }
+  return NaN;
+}
+
 export function EBITDA(r: number, c: number, o: number): number {
   return roundTo(subtractMoney(subtractMoney(r, c), o));
 }
@@ -44,24 +105,42 @@ export function NPV(rate: number, cf: number): number {
     npv = addMoney(npv, divideMoney(cfs[i], Math.pow(1 + rate, i)));
   return roundTo(npv);
 }
-export function IRR(cf: number, guess = 0.1): number {
+/**
+ * Internal rate of return (periodic) via Newton-Raphson with bisection fallback.
+ *
+ * NaN contract: returns NaN unless the series contains at least 2 cash flows
+ * with a sign change (at least one negative and one positive amount) — such
+ * series have no meaningful IRR. When Newton's derivative is 0, its candidate
+ * is non-finite, or it fails to converge within 100 iterations, the solver
+ * falls back to bracketed bisection over rate ∈ [-0.9999, 10] and returns NaN
+ * if no root is found there. It never returns an unconverged iterate.
+ */
+export function IRR(cf: number | number[], guess = 0.1): number {
   const cfs = Array.isArray(cf) ? cf : [cf];
+  if (!hasIrrShape(cfs)) return NaN;
+  const npvOf = (rate: number): number => {
+    let npv = 0;
+    for (let j = 0; j < cfs.length; j++) npv += cfs[j]! / Math.pow(1 + rate, j);
+    return npv;
+  };
   let rate = guess;
   for (let i = 0; i < 100; i++) {
     let npv = 0,
       dnpv = 0;
     for (let j = 0; j < cfs.length; j++) {
-      const pv = cfs[j] / Math.pow(1 + rate, j);
+      const pv = cfs[j]! / Math.pow(1 + rate, j);
       npv += pv;
       if (j > 0) dnpv -= (j * pv) / (1 + rate);
     }
-    if (dnpv === 0) return rate;
+    // Breakdown: zero derivative or non-finite candidate ⇒ bisect, never
+    // return the current iterate.
+    if (dnpv === 0 || !Number.isFinite(npv / dnpv)) return bisectRate(npvOf);
     const nr = rate - npv / dnpv;
-    if (!isFinite(nr) || isNaN(nr)) return rate;
     if (Math.abs(nr - rate) < 1e-10) return nr;
     rate = nr;
   }
-  return rate;
+  // Newton exhausted: fall back to bisection rather than emit garbage.
+  return bisectRate(npvOf);
 }
 export function PV(r: number, n: number, pmt: number, fv = 0): number {
   if (r === 0) return roundTo(addMoney(fv, multiplyMoney(pmt, n)).negated());
@@ -103,27 +182,47 @@ export function DSI(inv: number, c: number, d = 365): number {
 export function DSO(r: number, ar: number, d = 365): number {
   return r === 0 ? 0 : divideMoney(ar, r).times(d).toNumber();
 }
-export function XIRR(cfs: number, dates: number, guess = 0.1): number {
+/**
+ * Internal rate of return for irregularly dated cash flows, via Newton-Raphson
+ * with bisection fallback.
+ *
+ * NaN contract: returns NaN unless there are at least 2 flows with a sign
+ * change (at least one negative and one positive amount) AND one date per
+ * flow. When Newton's derivative is 0, its candidate is non-finite, or it
+ * fails to converge within 100 iterations, the solver falls back to bracketed
+ * bisection over rate ∈ [-0.9999, 10] and returns NaN if no root is found
+ * there. It never returns an unconverged iterate.
+ */
+export function XIRR(cfs: number | number[], dates: number | number[], guess = 0.1): number {
   const flows = Array.isArray(cfs) ? cfs : [cfs];
   const dts = Array.isArray(dates) ? dates : [dates];
-  const d0 = dts[0];
+  if (!hasIrrShape(flows) || flows.length !== dts.length) return NaN;
+  const d0 = dts[0]!;
+  const npvOf = (rate: number): number => {
+    let npv = 0;
+    for (let j = 0; j < flows.length; j++)
+      npv += flows[j]! / Math.pow(1 + rate, (dts[j]! - d0) / 365.25);
+    return npv;
+  };
   let rate = guess;
   for (let i = 0; i < 100; i++) {
     let npv = 0,
       dnpv = 0;
     for (let j = 0; j < flows.length; j++) {
-      const years = (dts[j] - d0) / 365.25;
-      const pv = flows[j] / Math.pow(1 + rate, years);
+      const years = (dts[j]! - d0) / 365.25;
+      const pv = flows[j]! / Math.pow(1 + rate, years);
       npv += pv;
       dnpv -= (years * pv) / (1 + rate);
     }
-    if (dnpv === 0) return rate;
+    // Breakdown: zero derivative or non-finite candidate ⇒ bisect, never
+    // return the current iterate.
+    if (dnpv === 0 || !Number.isFinite(npv / dnpv)) return bisectRate(npvOf);
     const nr = rate - npv / dnpv;
-    if (!isFinite(nr) || isNaN(nr)) return rate;
     if (Math.abs(nr - rate) < 1e-10) return nr;
     rate = nr;
   }
-  return rate;
+  // Newton exhausted: fall back to bisection rather than emit garbage.
+  return bisectRate(npvOf);
 }
 export function XNPV(rate: number, cfs: number, dates: number): number {
   const flows = Array.isArray(cfs) ? cfs : [cfs];

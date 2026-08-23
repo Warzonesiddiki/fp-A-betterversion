@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "cards": [
+    {
+      "id": "card-494333e7-75f3-4ec3-b409-5bcdb758b622",
+      "title": "always use all 30 subagents dont let any subagents be idel",
+      "status": "todo",
+      "tags": [],
+      "createdAt": 1787493702556,
+      "updatedAt": 1787493702556
+    },
+    {
+      "id": "card-39bff29b-2da0-4dc9-aff1-535d74f6fb4e",
+      "title": "Wave-6: 30-lane all-domain zero-flaw audit",
+      "description": "User directive: one-stop all-in-one FP&A for ALL industries, zero compromises/flaws. Fan out 30 read-only audit subagents across every layer (engines/stores/pages/UI/workers/services/plugins/security/Tauri/server/i18n/a11y/perf/e2e/build/docs/product-gap). Output: severity-ranked findings with file:line evidence, synthesized report + P0 fix queue.",
+      "sourceSessionId": "session-c8113c06-35c2-4af8-8e7e-677a6016389a",
+      "status": "done",
+      "tags": [
+        "wave-6",
+        "audit",
+        "zero-compromise",
+        "done"
+      ],
+      "createdAt": 1787507461466,
+      "updatedAt": 1787516704669,
+      "summary": "DONE 2026-08-24: 30/30 lanes reported across three orchestration passes. Registered 16 unique P0 / 99 P1 / 62 P2 findings with file:line witnesses. Deliverables: docs/audit/WAVE6_ZERO_FLAW_AUDIT_2026-08-24.md (P0 register + P1 clusters + sound-foundations list), reports/WAVE6_WORKFLOW_RAW_2026-08-24.txt (raw archive), reasoning-ledger Entry #38, Wave-7 fix card queued. Honest label: docs-truth lane detail lost to spill truncation; solo re-run subagent dispatched (a4274afd). 5 owner decisions flagged in report §OWNER-DECISIONS.",
+      "rationale": "Owner directive demanded zero-compromise verification; read-only fan-out maximizes evidence throughput inside the locked BMAD path without touching code."
+    },
+    {
+      "id": "card-1fa926d4-6c10-4b9e-a0ce-50484ee72875",
+      "title": "Acquire useful DSH plugin-market plugins (bulk curated install)",
+      "description": "Sweep awesome-dsh-plugin.com catalog (2016 entries → 1814 unique root-repo candidates), classify with 30 parallel subagents over .market-acquire/slice-*.txt, bulk-install KEEP plugins into profile web via dsh plugin add. Pilot validated (dsh-project-memory). Full KEEP manifest persisted even if install set is capped for stability.",
+      "sourceSessionId": "session-ab9e86d7-1c2c-4780-82f1-859542753e7c",
+      "status": "in_progress",
+      "tags": [
+        "plugins",
+        "dsh-market",
+        "acquisition"
+      ],
+      "createdAt": 1787515651776,
+      "updatedAt": 1787515651776
+    },
+    {
+      "id": "card-64f77d32-3bf8-407d-ac72-e514666fb21b",
+      "title": "Wave-7: P0 fix program (16 defects, 4 batches)",
+      "description": "Execute the four fix batches from docs/audit/WAVE6_ZERO_FLAW_AUDIT_2026-08-24.md: 7A wrong-numbers (P0-01,06,09,10,11,12,15,16), 7B security (P0-02,03,04,14 + RBAC/vault/router), 7C integration-truth (P0-13 + storage errors), 7D product-surface (P0-05,07,08 + KPI units). Each batch gated on tsc/lint/test/build green with failing-test-first regressions. 5 owner decisions flagged in report §OWNER-DECISIONS (escrow UX, sandbox wire-vs-deadvertise, server truth, browser/PWA story, updater).",
+      "sourceSessionId": "session-c8113c06-35c2-4af8-8e7e-677a6016389a",
+      "status": "in_progress",
+      "tags": [
+        "wave-7",
+        "p0-fixes",
+        "zero-compromise"
+      ],
+      "createdAt": 1787516637836,
+      "updatedAt": 1787516926208
+    }
+  ]
+}

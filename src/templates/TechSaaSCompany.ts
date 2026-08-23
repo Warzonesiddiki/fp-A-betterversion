@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // TECHNOLOGY / SaaS COMPANY TEMPLATE
 // Full SaaS company model with ARR waterfall, cohort analysis, unit economics,
 // Rule of 40, and path-to-profitability. Growth-stage company ($30M ARR).
@@ -394,7 +394,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'beginning_arr * x / 100',
+    formula: 'tsa_beginning_arr * x / 100',
     description: 'New ARR rate drives new ARR',
   },
   {
@@ -404,7 +404,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'beginning_arr * x / 100',
+    formula: 'tsa_beginning_arr * x / 100',
     description: 'Churn drives lost ARR',
   },
   {
@@ -414,7 +414,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'beginning_arr * x / 100',
+    formula: 'tsa_beginning_arr * x / 100',
     description: 'Expansion rate drives expansion ARR',
   },
   {

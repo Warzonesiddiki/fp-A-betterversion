@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // RETAIL STORE PERFORMANCE TEMPLATE
 // Multi-unit retail with same-store sales, traffic/conversion funnel,
 // inventory management, and store-level P&L. 150-store specialty retailer.
@@ -446,7 +446,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'store_count * avg_sqft * x',
+    formula: 'rsp_store_count * rsp_avg_sqft * x',
     description: 'Rent PSF drives occupancy',
   },
   {
