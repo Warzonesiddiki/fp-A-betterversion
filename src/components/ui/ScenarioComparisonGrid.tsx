@@ -63,14 +63,18 @@ export function ScenarioComparisonGrid({
   className,
 }: ScenarioComparisonGridProps) {
   const fmt = useCurrencyFormatter();
+  // K33/K17 basis labeling: the engine seeds these fields as simulator base
+  // assumptions (see ScenarioEngine.calculateBaseMetrics BASIS OF
+  // PREPARATION) — on-screen AND exported rows must not read as measured
+  // actuals.
   const metricRows: { key: keyof ScenarioMetrics; label: string; isPercent: boolean }[] = [
     { key: 'revenue', label: 'Revenue', isPercent: false },
     { key: 'ebitda', label: 'EBITDA', isPercent: false },
     { key: 'netIncome', label: 'Net Income', isPercent: false },
-    { key: 'cashFlow', label: 'Cash Flow', isPercent: false },
-    { key: 'headcount', label: 'Headcount', isPercent: false },
-    { key: 'burnRate', label: 'Burn Rate', isPercent: false },
-    { key: 'runway', label: 'Runway (months)', isPercent: false },
+    { key: 'cashFlow', label: 'Cash Flow (base assumption)', isPercent: false },
+    { key: 'headcount', label: 'Headcount (base assumption)', isPercent: false },
+    { key: 'burnRate', label: 'Burn Rate (base assumption)', isPercent: false },
+    { key: 'runway', label: 'Runway (months, base assumption)', isPercent: false },
     { key: 'grossMargin', label: 'Gross Margin', isPercent: true },
     { key: 'ebitdaMargin', label: 'EBITDA Margin', isPercent: true },
   ];

@@ -126,4 +126,12 @@ describe('WhatIfSandbox', () => {
     const revenueLabels = screen.getAllByText('Revenue');
     expect(revenueLabels.length).toBeGreaterThanOrEqual(1);
   });
+
+  it('K33 basis hint: cash flow is labeled as a base assumption at every display point', () => {
+    render(<WhatIfSandbox baseMetrics={baseMetrics} />);
+    // Base Case card + both default scenario panels carry the basis suffix.
+    expect(screen.getAllByText('Cash Flow (base assumption)').length).toBeGreaterThanOrEqual(3);
+    // The bare, unlabeled form must be gone so nothing reads as measured.
+    expect(screen.queryByText('Cash Flow')).not.toBeInTheDocument();
+  });
 });
