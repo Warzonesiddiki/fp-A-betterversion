@@ -79,7 +79,7 @@ describe('EnergyDashboardPage smoke test', () => {
   // disclosure copy. No seeded records may appear.
   // =============================================================================
   it('empty store and GL render disclosures and mount no chart or table', () => {
-    renderPage();
+    const { container } = renderPage();
 
     const gridProduction = screen.getByRole('region', { name: 'Grid Production (window)' });
     expect(gridProduction).toHaveTextContent('—');
@@ -97,7 +97,8 @@ describe('EnergyDashboardPage smoke test', () => {
     expect(screen.queryByTestId('area-chart')).not.toBeInTheDocument();
 
     // Production by Source + asset table: disclosures only — no BarChart,
-    // no ResponsiveContainer, no DataTable.
+    // no ResponsiveContainer, no DataTable (the real DataTable renders a
+    // <table>; the empty branch must mount none).
     expect(
       screen.getByText(/Record renewable assets to populate this chart\./i)
     ).toBeInTheDocument();
@@ -106,5 +107,22 @@ describe('EnergyDashboardPage smoke test', () => {
     ).toBeInTheDocument();
     expect(screen.queryByTestId('bar-chart')).not.toBeInTheDocument();
     expect(screen.queryByTestId('responsive-container')).not.toBeInTheDocument();
+    expect(container.querySelector('table')).toBeNull();
+
+    // Retired seed regression (K17, 1bea2f3a): the pre-wave factory shipped
+    // demo records ("Mojave Solar I" …, generation-point totals 950/1120 …).
+    // On an empty store none of their names or fixture totals may surface
+    // through any render path.
+    for (const retired of [
+      'Mojave Solar I',
+      'North Sea Wind',
+      'Blue River Hydro',
+      'Tesla Megapack Hub',
+    ]) {
+      expect(screen.queryByText(retired)).not.toBeInTheDocument();
+    }
+    expect(screen.queryByText('950')).not.toBeInTheDocument();
+    expect(screen.queryByText('1,120')).not.toBeInTheDocument();
+    expect(screen.queryByText('1120')).not.toBeInTheDocument();
   });
 });

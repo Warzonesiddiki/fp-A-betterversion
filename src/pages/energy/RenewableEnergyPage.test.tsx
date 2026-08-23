@@ -129,5 +129,21 @@ describe('RenewableEnergyPage smoke test', () => {
     expect(
       screen.getByText(/Renewable Energy Credits \(RECs\) and CO2 offset are not derivable/i)
     ).toBeInTheDocument();
+
+    // Retired seed regression (K17, 1bea2f3a): the pre-wave factory shipped
+    // demo records ("Mojave Solar I" …, generation-point totals 950/1120 …).
+    // On an empty store none of their names or fixture totals may surface
+    // through any render path.
+    for (const retired of [
+      'Mojave Solar I',
+      'North Sea Wind',
+      'Blue River Hydro',
+      'Tesla Megapack Hub',
+    ]) {
+      expect(screen.queryByText(retired)).not.toBeInTheDocument();
+    }
+    expect(screen.queryByText('950')).not.toBeInTheDocument();
+    expect(screen.queryByText('1,120')).not.toBeInTheDocument();
+    expect(screen.queryByText('1120')).not.toBeInTheDocument();
   });
 });
