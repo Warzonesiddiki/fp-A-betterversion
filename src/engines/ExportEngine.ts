@@ -46,7 +46,7 @@ interface JsPDFConstructor {
 
 export class ExportEngine {
   static async exportToPDF(data: ExportData, config: ExportConfig): Promise<void> {
-    const jsPDF = (await loadJsPDF()) as unknown as JsPDFConstructor;
+    const jsPDF = (await loadJsPDF()) as JsPDFConstructor;
 
     const doc = new jsPDF({
       orientation: config.orientation || 'portrait',
@@ -85,7 +85,7 @@ export class ExportEngine {
     } else {
       // Add header/footer to each page
       // jsPDF eachPage is not a standard method, we use hooks in autoTable instead
-      (doc as unknown as JsPDFInstance).autoTable({
+      doc.autoTable({
         head: [data.headers],
         body: data.rows,
         startY: 20,
@@ -128,7 +128,7 @@ export class ExportEngine {
     sections: Array<{ title: string; data: ExportData }>,
     config: ExportConfig
   ): Promise<void> {
-    const jsPDF = (await loadJsPDF()) as unknown as JsPDFConstructor;
+    const jsPDF = (await loadJsPDF()) as JsPDFConstructor;
 
     const doc = new jsPDF({
       orientation: config.orientation || 'portrait',
@@ -177,7 +177,7 @@ export class ExportEngine {
         doc.setTextColor(30);
         doc.text(section.title, 14, 20);
 
-        (doc as unknown as JsPDFInstance).autoTable({
+        doc.autoTable({
           head: [section.data.headers],
           body: section.data.rows,
           startY: 28,

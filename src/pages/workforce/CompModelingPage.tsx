@@ -39,7 +39,7 @@ const LEVELS = [
 
 export default function CompModelingPage() {
   const fmt = useCurrencyFormatter();
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const navigate = useNavigate();
   const [meritPct, setMeritPct] = useState(3.5);
   useEffect(() => {

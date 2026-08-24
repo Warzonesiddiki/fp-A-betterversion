@@ -114,7 +114,7 @@ function computeStatistics(values: number[]): MonteCarloResponse['statistics'] {
 
 // --- Core simulation ---
 
-function runMonteCarlo(request: MonteCarloRequest): MonteCarloResponse {
+function runMonteCarlo(request: MonteCarloRequest, taskId: string): MonteCarloResponse {
   const { assumptions, iterations, seed } = request;
 
   if (iterations <= 0 || assumptions.length === 0) {
@@ -152,10 +152,12 @@ function runMonteCarlo(request: MonteCarloRequest): MonteCarloResponse {
     results.push({ iteration: i + 1, values, output });
     outputValues.push(output);
 
-    // Report progress every 1%
+    // Report progress every 1%. W7D: echo the incoming task id so the pool's
+    // `response.id !== task.id` filter lets onProgress fire (a constant id
+    // here was silently dropped by the pool).
     if ((i + 1) % progressInterval === 0 || i === iterations - 1) {
       const progressResponse: WorkerResponse = {
-        id: 'monte-carlo',
+        id: taskId,
         type: 'progress',
         progress: {
           processed: i + 1,
@@ -179,7 +181,7 @@ self.onmessage = (e: MessageEvent<WorkerMessage<MonteCarloRequest>>) => {
   const { id, payload } = e.data;
 
   try {
-    const result = runMonteCarlo(payload);
+    const result = runMonteCarlo(payload, id);
     const response: WorkerResponse<MonteCarloResponse> = {
       id,
       type: 'result',

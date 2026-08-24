@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useGLStore } from '@/store/glStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -44,7 +45,13 @@ const HELP_SECTIONS = [
 export default function RollingForecastPage() {
   const fmt = useCurrencyFormatter();
   const [helpOpen, setHelpOpen] = useState(false);
-  const { entries, isLoading, importError } = useGLStore();
+  const { entries, isLoading, importError } = useGLStore(
+    useShallow((s) => ({
+      entries: s.entries,
+      isLoading: s.isLoading,
+      importError: s.importError,
+    }))
+  );
   const [period, setPeriod] = useState<'3m' | '6m' | '12m'>('12m');
 
   useEffect(() => {

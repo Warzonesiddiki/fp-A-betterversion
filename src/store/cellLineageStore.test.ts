@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { enableMapSet } from 'immer';
 import { useCellLineageStore, cellLineageSelectors } from './cellLineageStore';
+import { useAuthStore } from './authStore';
+import { PermissionError } from '@/utils/rbacEnforcer';
 
 enableMapSet();
 
@@ -15,8 +17,32 @@ vi.mock('@/utils/masterStorage', () => ({
   },
 }));
 
+// W6-P0-14: recordChange appends to the immutable provenance chain — requires
+// audit:create. Reads (getChain/rewindTo/verifyIntegrity) stay open.
+function authenticateLineageUser() {
+  useAuthStore.setState({
+    user: {
+      id: 'lineage-test-user',
+      email: 'lineage-test@finplan.local',
+      firstName: 'Lineage',
+      lastName: 'Tester',
+      avatarUrl: null,
+      role: 'Admin',
+      departmentId: 'finance',
+      departmentName: 'Finance',
+      entityId: 'entity-001',
+      status: 'Active',
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+      permissions: ['audit:create', 'audit:read'],
+    },
+    isAuthenticated: true,
+  });
+}
+
 describe('cellLineageStore', () => {
   beforeEach(() => {
+    authenticateLineageUser();
     useCellLineageStore.setState({
       chains: new Map(),
       pendingEntries: [],
@@ -121,5 +147,42 @@ describe('cellLineageStore', () => {
     expect(cellLineageSelectors.totalEntries(s2)).toBe(2);
     const status = cellLineageSelectors.integrityStatus(s2);
     expect(status.verified).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// W6-P0-14 — negative RBAC on the provenance chain.
+// ---------------------------------------------------------------------------
+
+describe('cellLineageStore RBAC (W6-P0-14)', () => {
+  const snapshot = (v: unknown) => ({ value: v, dataType: 'number' as const });
+  const actor = { id: 'u1', role: 'user' as const, name: 'Test' };
+  const reason = 'manual-edit' as const;
+  const origin = 'user' as const;
+
+  beforeEach(() => {
+    useAuthStore.setState({ user: null, isAuthenticated: false });
+    useCellLineageStore.setState({
+      chains: new Map(),
+      pendingEntries: [],
+      integrityVerified: false,
+      lastIntegrityCheck: null,
+    });
+  });
+
+  it('recordChange without a user throws PermissionError and appends nothing', () => {
+    // enforce() throws synchronously before the async body starts, so the
+    // call itself (not a rejected promise) carries the PermissionError.
+    expect(() =>
+      useCellLineageStore
+        .getState()
+        .recordChange('c1', snapshot(null), snapshot(1), actor, reason, origin)
+    ).toThrow(PermissionError);
+    expect(useCellLineageStore.getState().chains.size).toBe(0);
+  });
+
+  it('reads stay open to unauthenticated callers (rewindTo / getChain)', async () => {
+    expect(useCellLineageStore.getState().getChain('missing')).toBeNull();
+    expect(useCellLineageStore.getState().rewindTo('missing', 'entry-missing')).toBeNull();
   });
 });

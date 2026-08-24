@@ -49,7 +49,7 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 export default function InventoryDashboard() {
   const fmt = useCurrencyFormatter();
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const navigate = useNavigate();
 
   useEffect(() => {

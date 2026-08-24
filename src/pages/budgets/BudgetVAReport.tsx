@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useNavigate } from 'react-router-dom';
 import { useBudgetStore } from '@/store/budgetStore';
 import { useGLStore } from '@/store/glStore';
@@ -47,9 +48,21 @@ export default function BudgetVAReport() {
   const navigate = useNavigate();
   // W-K30-001 (3) + N8: surface the GL error channel, the posted-actuals
   // guard, and the hydration gate for the four-states model.
-  const { budgets, lineItems, isLoading: budgetsLoading } = useBudgetStore();
+  const {
+    budgets,
+    lineItems,
+    isLoading: budgetsLoading,
+  } = useBudgetStore(
+    useShallow((s) => ({
+      budgets: s.budgets,
+      lineItems: s.lineItems,
+      isLoading: s.isLoading,
+    }))
+  );
   // W-K30-001 (3): surface the GL error channel and the posted-actuals guard.
-  const { entries, importError } = useGLStore();
+  const { entries, importError } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, importError: s.importError }))
+  );
   const [selectedBudgetId, setSelectedBudgetId] = useState<string>('');
 
   const approvedBudgets = useMemo(() => budgets.filter((b) => b.status === 'Approved'), [budgets]);

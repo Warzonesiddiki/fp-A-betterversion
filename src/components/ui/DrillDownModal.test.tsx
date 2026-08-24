@@ -38,7 +38,7 @@ const mockUseGLStore = vi.mocked(useGLStore);
 describe('DrillDownModal', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseGLStore.mockReturnValue({ entries: [] });
+    mockUseGLStore.mockImplementation((selector) => selector({ entries: [] }));
   });
 
   it('renders without crashing when open', () => {

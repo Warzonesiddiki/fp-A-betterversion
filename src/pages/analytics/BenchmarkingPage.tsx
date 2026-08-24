@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart3, Upload } from 'lucide-react';
 import { useGLStore } from '@/store/glStore';
+import { useShallow } from 'zustand/react/shallow';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -79,7 +80,7 @@ const RATIOS: RatioSpec[] = [
 ];
 
 export default function BenchmarkingPage() {
-  const { entries } = useGLStore();
+  const { entries } = useGLStore(useShallow((s) => ({ entries: s.entries })));
   const navigate = useNavigate();
 
   const derivation = useMemo(() => deriveBenchmarkRatios(entries), [entries]);

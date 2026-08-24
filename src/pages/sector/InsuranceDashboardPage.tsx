@@ -25,6 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { Shield } from 'lucide-react';
 import { useGLStore } from '@/store/glStore';
+import { useShallow } from 'zustand/react/shallow';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { formatPercent } from '@/utils/financialFormatting';
 import { buildInsuranceDashboardModel } from '@/pages/insurance/insuranceDashboardData';
@@ -35,7 +36,7 @@ function ratio(value: number | null): string {
 }
 
 export default function InsuranceDashboardPage() {
-  const { entries } = useGLStore();
+  const { entries } = useGLStore(useShallow((s) => ({ entries: s.entries })));
   const navigate = useNavigate();
   const fmt = useCurrencyFormatter();
 

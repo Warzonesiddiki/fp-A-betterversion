@@ -61,8 +61,8 @@ const columns: Column[] = [
 ];
 
 export function HealthcarePage() {
-  const { entries } = useGLStore();
-  const { programs } = useHealthcareStore();
+  const entries = useGLStore((s) => s.entries);
+  const programs = useHealthcareStore((s) => s.programs);
   const navigate = useNavigate();
 
   useEffect(() => {

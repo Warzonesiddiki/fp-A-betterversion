@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -63,7 +64,9 @@ const reports = [
 ];
 
 export default function ReportsListPage() {
-  const { entries, importError } = useGLStore();
+  const { entries, importError } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, importError: s.importError }))
+  );
   // K30 loading-state review: no async skeleton here by design — `entries`
   // is a synchronous read from the persisted Zustand GL store and the report
   // catalog above is static, so there is no pending state to represent.

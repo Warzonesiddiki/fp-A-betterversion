@@ -39,7 +39,7 @@ function toSectorEntries(entries: readonly GLEntry[]): GLEntry[] {
 
 export default function RetailDashboard() {
   const fmt = useCurrencyFormatter();
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -178,7 +178,7 @@ function evaluateFormula(formula: string, values: Record<string, number>): numbe
 
 // --- Core batch calculation ---
 
-function runBatchCalc(request: BatchCalcRequest): BatchCalcResponse {
+function runBatchCalc(request: BatchCalcRequest, taskId: string): BatchCalcResponse {
   const {
     cells,
     dependencies,
@@ -266,9 +266,10 @@ function runBatchCalc(request: BatchCalcRequest): BatchCalcResponse {
       }
     }
 
-    // Report progress
+    // Report progress. W7D: echo the incoming task id so the pool's
+    // `response.id !== task.id` filter lets onProgress fire.
     const progressResponse: WorkerResponse = {
-      id: 'batch-calc',
+      id: taskId,
       type: 'progress',
       progress: {
         processed: iteration + 1,
@@ -300,7 +301,7 @@ self.onmessage = (e: MessageEvent<WorkerMessage<BatchCalcRequest>>) => {
   const { id, payload } = e.data;
 
   try {
-    const result = runBatchCalc(payload);
+    const result = runBatchCalc(payload, id);
     const response: WorkerResponse<BatchCalcResponse> = {
       id,
       type: 'result',

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -50,7 +51,9 @@ export default function CashFlowPage() {
     document.title = 'FinPlan Pro — Cash Flow Statement';
   }, []);
 
-  const { entries, importError } = useGLStore();
+  const { entries, importError } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, importError: s.importError }))
+  );
   const navigate = useNavigate();
   const [period, setPeriod] = useState(() => {
     const now = new Date();

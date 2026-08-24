@@ -31,21 +31,26 @@ vi.mock('recharts', () => ({
   RadialBar: () => <div data-testid="radial-bar" />,
 }));
 
+// Selector-aware mock: the page subscribes via useGLStore((s) => s.entries),
+// so the mock must apply a selector when one is passed.
 vi.mock('@/store/glStore', () => ({
-  useGLStore: () => ({
-    entries: [
-      {
-        id: '1',
-        accountCode: '5000',
-        accountName: 'Salaries',
-        debit: 100000,
-        credit: 0,
-        amount: 100000,
-        period: '2026-01',
-        department: 'Engineering',
-      },
-    ],
-  }),
+  useGLStore: (selector?: (s: { entries: unknown[] }) => unknown) => {
+    const state = {
+      entries: [
+        {
+          id: '1',
+          accountCode: '5000',
+          accountName: 'Salaries',
+          debit: 100000,
+          credit: 0,
+          amount: 100000,
+          period: '2026-01',
+          department: 'Engineering',
+        },
+      ],
+    };
+    return selector ? selector(state) : state;
+  },
 }));
 
 import { render, screen } from '@/test/testUtils';

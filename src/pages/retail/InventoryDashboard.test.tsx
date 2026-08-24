@@ -15,8 +15,13 @@ expect.extend(toHaveNoViolations);
 // no store. Both are now disclosures instead of invented figures.
 // ---------------------------------------------------------------------------
 
+// Selector-aware mock: the page subscribes via useGLStore((s) => s.entries),
+// so the mock must apply a selector when one is passed.
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+  useGLStore: vi.fn((selector?: (s: { entries: unknown[] }) => unknown) => {
+    const state = { entries: [] as unknown[] };
+    return selector ? selector(state) : state;
+  }),
 }));
 
 // Navigation is mocked so the empty-state / header CTAs can be pinned to
@@ -59,7 +64,12 @@ const entryNoEntity = {
 
 async function renderWith(entries: unknown[]) {
   const { useGLStore } = await import('@/store/glStore');
-  (useGLStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ entries });
+  (useGLStore as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+    (selector?: (s: { entries: unknown[] }) => unknown) => {
+      const state = { entries };
+      return selector ? selector(state) : state;
+    }
+  );
   return render(
     <MemoryRouter>
       <InventoryDashboard />

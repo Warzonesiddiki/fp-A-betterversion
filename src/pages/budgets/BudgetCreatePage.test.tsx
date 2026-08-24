@@ -1,53 +1,62 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
+// Selector-aware mocks: the page subscribes via useBudgetStore((s) => s.createBudget)
+// and useGLStore((s) => s.accounts), so each mock must apply a selector when one
+// is passed.
 vi.mock('@/store/budgetStore', () => ({
-  useBudgetStore: vi.fn(() => ({
-    budgets: [],
-    activeBudgetId: null,
-    lineItems: [],
-    isLoading: false,
-    isSubmitting: false,
-    lastChange: null,
-    history: [[]],
-    historyIndex: 0,
-    selectedCellId: null,
-    createBudget: vi.fn(),
-    submitBudget: vi.fn(),
-    approveBudget: vi.fn(),
-    rejectBudget: vi.fn(),
-    deleteBudget: vi.fn(),
-    duplicateBudget: vi.fn(),
-    setActiveBudget: vi.fn(),
-    setBudgets: vi.fn(),
-    setLineItems: vi.fn(),
-    updateLineItem: vi.fn(),
-    addLineItem: vi.fn(),
-    removeLineItem: vi.fn(),
-    undo: vi.fn(),
-    redo: vi.fn(),
-    selectCell: vi.fn(),
-  })),
+  useBudgetStore: vi.fn((selector?: (s: Record<string, unknown>) => unknown) => {
+    const state = {
+      budgets: [],
+      activeBudgetId: null,
+      lineItems: [],
+      isLoading: false,
+      isSubmitting: false,
+      lastChange: null,
+      history: [[]],
+      historyIndex: 0,
+      selectedCellId: null,
+      createBudget: vi.fn(),
+      submitBudget: vi.fn(),
+      approveBudget: vi.fn(),
+      rejectBudget: vi.fn(),
+      deleteBudget: vi.fn(),
+      duplicateBudget: vi.fn(),
+      setActiveBudget: vi.fn(),
+      setBudgets: vi.fn(),
+      setLineItems: vi.fn(),
+      updateLineItem: vi.fn(),
+      addLineItem: vi.fn(),
+      removeLineItem: vi.fn(),
+      undo: vi.fn(),
+      redo: vi.fn(),
+      selectCell: vi.fn(),
+    };
+    return selector ? selector(state) : state;
+  }),
 }));
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({
-    entries: [],
-    accounts: [],
-    trialBalance: [],
-    accountAnalysis: null,
-    columnMappings: [],
-    isLoading: false,
-    importResult: null,
-    setEntries: vi.fn(),
-    setAccounts: vi.fn(),
-    addEntries: vi.fn(),
-    clearEntries: vi.fn(),
-    setColumnMappings: vi.fn(),
-    importData: vi.fn(),
-    undo: vi.fn(),
-    redo: vi.fn(),
-  })),
+  useGLStore: vi.fn((selector?: (s: Record<string, unknown>) => unknown) => {
+    const state = {
+      entries: [],
+      accounts: [],
+      trialBalance: [],
+      accountAnalysis: null,
+      columnMappings: [],
+      isLoading: false,
+      importResult: null,
+      setEntries: vi.fn(),
+      setAccounts: vi.fn(),
+      addEntries: vi.fn(),
+      clearEntries: vi.fn(),
+      setColumnMappings: vi.fn(),
+      importData: vi.fn(),
+      undo: vi.fn(),
+      redo: vi.fn(),
+    };
+    return selector ? selector(state) : state;
+  }),
 }));
 
 vi.mock('@/components/ui/ProgressStepper', () => ({

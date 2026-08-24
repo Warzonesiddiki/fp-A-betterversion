@@ -15,8 +15,10 @@ import React from 'react';
  *      render through the percent formatter, never through the currency one.
  */
 
-vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({
+vi.mock('@/store/glStore', () => {
+  // W7D: the page also reads lazy snapshots via useGLStore.getState(), which
+  // every real zustand store exposes — mirror that on the mock.
+  const state = {
     entries: [
       { accountCode: '4000', debit: 0, credit: 100000, period: '2026-01' },
       { accountCode: '6000', debit: 20000, credit: 0, period: '2026-01' },
@@ -35,11 +37,20 @@ vi.mock('@/store/glStore', () => ({
     importData: vi.fn(),
     undo: vi.fn(),
     redo: vi.fn(),
-  })),
-}));
+  };
+  return {
+    // W7D: the page subscribes via field selectors — honor a selector arg,
+    // return full state otherwise (like the real zustand hook), and expose
+    // getState() for the lazy snapshot reads.
+    useGLStore: Object.assign(
+      vi.fn((selector?: (s: typeof state) => unknown) => (selector ? selector(state) : state)),
+      { getState: () => state }
+    ),
+  };
+});
 
-vi.mock('@/store/budgetStore', () => ({
-  useBudgetStore: vi.fn(() => ({
+vi.mock('@/store/budgetStore', () => {
+  const state = {
     budgets: [],
     activeBudgetId: null,
     lineItems: [],
@@ -60,8 +71,14 @@ vi.mock('@/store/budgetStore', () => ({
     removeLineItem: vi.fn(),
     undo: vi.fn(),
     redo: vi.fn(),
-  })),
-}));
+  };
+  return {
+    useBudgetStore: Object.assign(
+      vi.fn((selector?: (s: typeof state) => unknown) => (selector ? selector(state) : state)),
+      { getState: () => state }
+    ),
+  };
+});
 
 vi.mock('@/hooks/useSector', () => ({
   useSector: vi.fn(() => ({

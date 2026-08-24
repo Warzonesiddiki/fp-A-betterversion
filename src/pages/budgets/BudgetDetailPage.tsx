@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { PageHeader } from '@/components/ui/PageHeader';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useBudgetStore } from '@/store/budgetStore';
 import { useGLStore } from '@/store/glStore';
 import { useAuthStore } from '@/store/authStore';
@@ -77,7 +78,7 @@ interface AuditEntry {
 export default function BudgetDetailPage() {
   const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
-  const { user } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Budget Detail';
@@ -102,11 +103,30 @@ export default function BudgetDetailPage() {
     rejectBudget,
     // W-K30-001 (2): gate the not-found flash while the store hydrates.
     isLoading: budgetLoading,
-  } = useBudgetStore();
+  } = useBudgetStore(
+    useShallow((s) => ({
+      budgets: s.budgets,
+      lineItems: s.lineItems,
+      activeBudgetId: s.activeBudgetId,
+      setActiveBudget: s.setActiveBudget,
+      updateLineItem: s.updateLineItem,
+      updateBudget: s.updateBudget,
+      undo: s.undo,
+      redo: s.redo,
+      historyIndex: s.historyIndex,
+      history: s.history,
+      submitBudget: s.submitBudget,
+      approveBudget: s.approveBudget,
+      rejectBudget: s.rejectBudget,
+      isLoading: s.isLoading,
+    }))
+  );
   // W-K30-001 (2): the only error channel exposed by the underlying stores is
   // the GL import error (budgetStore persists no error field); a failed GL
   // import strips account names/codes from this workspace, so it is surfaced.
-  const { accounts, importError } = useGLStore();
+  const { accounts, importError } = useGLStore(
+    useShallow((s) => ({ accounts: s.accounts, importError: s.importError }))
+  );
 
   const budget = budgets.find((b) => b.id === id);
 

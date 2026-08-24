@@ -1,4 +1,5 @@
 import { useMemo, useState, useTransition } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { BarChart3, Database, Download, Search } from 'lucide-react';
@@ -93,7 +94,9 @@ export function computeAccountSummaries(
 
 export default function GLExplorerPage() {
   const fmt = useCurrencyFormatter();
-  const { entries, accounts } = useGLStore();
+  const { entries, accounts } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, accounts: s.accounts }))
+  );
   const navigate = useNavigate();
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState('');

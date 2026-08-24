@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { activateOnKey } from '@/utils/a11yActivate';
 import { PageHeader } from '@/components/ui/PageHeader';
 
@@ -38,7 +39,17 @@ export default function BudgetListPage() {
     rejectBudget,
     deleteBudget,
     duplicateBudget,
-  } = useBudgetStore();
+  } = useBudgetStore(
+    useShallow((s) => ({
+      budgets: s.budgets,
+      isLoading: s.isLoading,
+      submitBudget: s.submitBudget,
+      approveBudget: s.approveBudget,
+      rejectBudget: s.rejectBudget,
+      deleteBudget: s.deleteBudget,
+      duplicateBudget: s.duplicateBudget,
+    }))
+  );
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [statusFilter, setStatusFilter] = useState('all');

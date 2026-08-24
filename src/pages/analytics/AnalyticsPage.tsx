@@ -11,6 +11,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
+import { useShallow } from 'zustand/react/shallow';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 
@@ -24,7 +25,9 @@ export default function AnalyticsPage() {
     document.title = 'FinPlan Pro — Analytics';
   }, []);
 
-  const { entries, accounts } = useGLStore();
+  const { entries, accounts } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, accounts: s.accounts }))
+  );
   const navigate = useNavigate();
 
   const stats = useMemo(() => {

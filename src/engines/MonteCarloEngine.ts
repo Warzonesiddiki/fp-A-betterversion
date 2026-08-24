@@ -1,6 +1,6 @@
-// @money-ast-allow Reason: EBITDA margin ratio: (metrics.ebitda / metrics.revenue) * 100 is a dimensionless percentage, not money
+﻿// @money-ast-allow Reason: EBITDA margin ratio: (metrics.ebitda / metrics.revenue) * 100 is a dimensionless percentage, not money
 // =============================================================================
-// MONTE CARLO SIMULATION ENGINE — Full-featured probabilistic analysis
+// MONTE CARLO SIMULATION ENGINE â€” Full-featured probabilistic analysis
 // Integrates with ScenarioEngine for financial scenario generation
 // Pure TypeScript, deterministic with seeded PRNG, testable
 // =============================================================================
@@ -81,7 +81,7 @@ export interface MonteCarloResult {
   readonly confidenceInterval: ConfidenceInterval;
   readonly histogram: HistogramBin[];
   readonly values: readonly number[];
-  readonly rawSamples: ReadonlyArray<Record<string, number>>;
+  readonly drawsByIteration: ReadonlyArray<Record<string, number>>;
 }
 
 export interface MonteCarloDriver {
@@ -373,7 +373,7 @@ export class MonteCarloEngine {
 
     // --- Run simulation ---
     const values: number[] = [];
-    const rawSamples: Record<string, number>[] = [];
+    const drawsByIteration: Record<string, number>[] = [];
 
     for (let i = 0; i < config.iterations; i++) {
       const samples: Record<string, number> = {};
@@ -385,13 +385,13 @@ export class MonteCarloEngine {
         throw new Error(`Model returned non-finite value at iteration ${i + 1}: ${output}`);
       }
       values.push(output);
-      rawSamples.push(samples);
+      drawsByIteration.push(samples);
     }
 
     // --- Compute statistics ---
     return MonteCarloEngine.computeStatistics(
       values,
-      rawSamples,
+      drawsByIteration,
       config.iterations,
       config.confidenceLevel
     );
@@ -701,7 +701,7 @@ export class MonteCarloEngine {
   /** Compute full statistics from a values array */
   static computeStatistics(
     values: number[],
-    rawSamples: Record<string, number>[],
+    drawsByIteration: Record<string, number>[],
     iterations: number,
     confidenceLevel: number
   ): MonteCarloResult {
@@ -747,7 +747,7 @@ export class MonteCarloEngine {
       confidenceInterval,
       histogram,
       values,
-      rawSamples,
+      drawsByIteration,
     };
   }
 }

@@ -7,6 +7,7 @@
 // flagged expression.
 
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate } from 'react-router-dom';
@@ -46,14 +47,18 @@ export default function BoardPackPage() {
     document.title = 'FinPlan Pro — Board Pack';
   }, []);
 
-  const { entries, importError } = useGLStore();
+  const { entries, importError } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, importError: s.importError }))
+  );
   // K30 loading-state review: no async skeleton here by design — `entries`
   // and `budgets` are synchronous reads from persisted Zustand stores
   // (masterStorage rehydration), so there is no pending state to represent.
   // A skeleton would be a fake loading indicator; the empty-state branch
   // below covers the only "no data yet" case.
-  const { budgets } = useBudgetStore();
-  const { reports, createReport } = useReportStore();
+  const budgets = useBudgetStore((s) => s.budgets);
+  const { reports, createReport } = useReportStore(
+    useShallow((s) => ({ reports: s.reports, createReport: s.createReport }))
+  );
   const navigate = useNavigate();
 
   const [commentary, setCommentary] = useState('');

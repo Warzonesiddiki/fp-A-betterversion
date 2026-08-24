@@ -11,14 +11,17 @@ import React from 'react';
 // ---------------------------------------------------------------------------
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({
-    entries: [],
-    accounts: [],
-    isLoading: false,
-    setEntries: vi.fn(),
-    addEntries: vi.fn(),
-    clearEntries: vi.fn(),
-  })),
+  useGLStore: vi.fn((sel?: unknown) => {
+    const s = {
+      entries: [] as unknown[],
+      accounts: [],
+      isLoading: false,
+      setEntries: vi.fn(),
+      addEntries: vi.fn(),
+      clearEntries: vi.fn(),
+    };
+    return typeof sel === 'function' ? (sel as (st: typeof s) => unknown)(s) : s;
+  }),
 }));
 
 vi.mock('@/store/reportStore', () => ({

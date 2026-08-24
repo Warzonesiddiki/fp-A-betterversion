@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
+import { useShallow } from 'zustand/react/shallow';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -34,7 +35,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
  */
 
 export function TelecomDashboardPage() {
-  const { entries } = useGLStore();
+  const { entries } = useGLStore(useShallow((s) => ({ entries: s.entries })));
   const navigate = useNavigate();
 
   useEffect(() => {

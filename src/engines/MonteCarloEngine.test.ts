@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+﻿import { describe, it, expect } from 'vitest';
 import { MonteCarloEngine } from './MonteCarloEngine';
 import type {
   MonteCarloConfig,
@@ -314,7 +314,7 @@ describe('MonteCarloEngine', () => {
           model: sumModel,
           seed: 42,
         });
-        // Mean of exponential(3) = 1/3 ≈ 0.333
+        // Mean of exponential(3) = 1/3 â‰ˆ 0.333
         expect(result.mean).toBeGreaterThan(0.28);
         expect(result.mean).toBeLessThan(0.4);
       });
@@ -412,7 +412,7 @@ describe('MonteCarloEngine', () => {
         expect(Math.abs(result.skewness)).toBeLessThan(0.2);
       });
 
-      it('should include rawSamples', () => {
+      it('should include drawsByIteration', () => {
         const result = MonteCarloEngine.simulate({
           iterations: 5,
           confidenceLevel: 0.95,
@@ -423,9 +423,9 @@ describe('MonteCarloEngine', () => {
           model: sumModel,
           seed: 42,
         });
-        expect(result.rawSamples).toHaveLength(5);
-        expect(result.rawSamples[0]!).toHaveProperty('a');
-        expect(result.rawSamples[0]!).toHaveProperty('b');
+        expect(result.drawsByIteration).toHaveLength(5);
+        expect(result.drawsByIteration[0]!).toHaveProperty('a');
+        expect(result.drawsByIteration[0]!).toHaveProperty('b');
       });
     });
 

@@ -42,7 +42,7 @@ interface DeptRow {
 
 export default function HeadcountPlanPage() {
   const fmt = useCurrencyFormatter();
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const navigate = useNavigate();
 
   useEffect(() => {

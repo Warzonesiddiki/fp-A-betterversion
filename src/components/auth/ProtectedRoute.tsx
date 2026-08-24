@@ -1,4 +1,5 @@
 import { Navigate, useLocation } from 'react-router-dom';
+import { useShallow } from 'zustand/react/shallow';
 import { useAuthStore, hasPermission, isRole } from '@/store/authStore';
 import type { Role, User } from '@/types';
 
@@ -36,7 +37,9 @@ export function ProtectedRoute({
   roles,
   requireAuth = true,
 }: ProtectedRouteProps) {
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore(
+    useShallow((s) => ({ user: s.user, isAuthenticated: s.isAuthenticated }))
+  );
   const location = useLocation();
 
   // Not authenticated — redirect to login

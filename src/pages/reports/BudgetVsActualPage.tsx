@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -103,8 +104,16 @@ export default function BudgetVsActualPage() {
   const navigate = useNavigate();
   const [helpOpen, setHelpOpen] = useState(false);
 
-  const { entries, isLoading, importError } = useGLStore();
-  const { budgets, lineItems } = useBudgetStore();
+  const { entries, isLoading, importError } = useGLStore(
+    useShallow((s) => ({
+      entries: s.entries,
+      isLoading: s.isLoading,
+      importError: s.importError,
+    }))
+  );
+  const { budgets, lineItems } = useBudgetStore(
+    useShallow((s) => ({ budgets: s.budgets, lineItems: s.lineItems }))
+  );
 
   const [selectedBudgetId, setSelectedBudgetId] = useState('');
   const [period, setPeriod] = useState(() => {

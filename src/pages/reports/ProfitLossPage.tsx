@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate } from 'react-router-dom';
@@ -87,7 +88,13 @@ export default function ProfitLossPage() {
     document.title = 'FinPlan Pro — Profit Loss';
   }, []);
 
-  const { entries, importError, isLoading } = useGLStore();
+  const { entries, importError, isLoading } = useGLStore(
+    useShallow((s) => ({
+      entries: s.entries,
+      importError: s.importError,
+      isLoading: s.isLoading,
+    }))
+  );
   const navigate = useNavigate();
   const [period, setPeriod] = useState(() => {
     const now = new Date();

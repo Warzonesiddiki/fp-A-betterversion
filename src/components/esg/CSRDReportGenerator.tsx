@@ -114,7 +114,7 @@ interface CSRDReportGeneratorProps {
 }
 
 export function CSRDReportGenerator({ className }: CSRDReportGeneratorProps) {
-  const { metrics } = useESGStore();
+  const metrics = useESGStore((s) => s.metrics);
   const [activeSection, setActiveSection] = useState<CSRDSection>('environmental');
   const [reportStatus, setReportStatus] = useState<ReportStatus>('draft');
 

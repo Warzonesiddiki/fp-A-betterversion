@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { currencyFormatter } from '@/utils/financialFormatting';
@@ -30,7 +31,9 @@ function fmt(n: number | { toNumber(): number }): string {
 
 export default function ThreeStatementDashboardPage() {
   const navigate = useNavigate();
-  const { entries, importError } = useGLStore();
+  const { entries, importError } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, importError: s.importError }))
+  );
   const [period, setPeriod] = useState(() => {
     const now = new Date();
     return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');

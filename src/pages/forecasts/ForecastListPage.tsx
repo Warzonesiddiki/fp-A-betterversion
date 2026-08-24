@@ -27,7 +27,7 @@ export default function ForecastListPage() {
     document.title = 'FinPlan Pro — Forecast List';
   }, []);
 
-  const { forecasts } = useForecastStore();
+  const forecasts = useForecastStore((s) => s.forecasts);
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [search, _setSearch] = useState('');

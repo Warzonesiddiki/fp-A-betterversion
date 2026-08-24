@@ -22,7 +22,7 @@ interface RecResult {
 }
 
 export default function ReconciliationPage() {
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const [recFile, setRecFile] = useState<File | null>(null);
   const [recData, setRecData] = useState<Record<string, string>[]>([]);
   const [recKeyCol, setRecKeyCol] = useState('');

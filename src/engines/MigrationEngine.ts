@@ -345,8 +345,7 @@ function assessReadiness(
       });
 
       // Check for merged cells
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const merges = (worksheet as any)._merges as Record<string, unknown> | undefined;
+      const merges = (worksheet as { _merges?: Record<string, unknown> })._merges;
       if (merges && Object.keys(merges).length > 0) hasMergedCells = true;
 
       // Check for hidden rows

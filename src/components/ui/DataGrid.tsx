@@ -2,8 +2,15 @@ import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react'
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { AgGridReact } from 'ag-grid-react';
 import {
-  AllCommunityModule,
+  ClientSideRowModelModule,
+  CsvExportModule,
+  DateFilterModule,
   ModuleRegistry,
+  NumberFilterModule,
+  RowSelectionModule,
+  RowStyleModule,
+  TextFilterModule,
+  ValidationModule,
   type ColDef,
   type GridOptions,
   type CellValueChangedEvent,
@@ -17,7 +24,21 @@ import { useColumnVisibility } from '@/hooks/useColumnVisibility';
 import { useDataGridExport } from '@/hooks/useDataGridExport';
 import { useDensity, densityMetrics } from '@/hooks/useDensity';
 
-ModuleRegistry.registerModules([AllCommunityModule]);
+// Modular registration (P-02-I): register only the modules these grids use
+// (client-side rows, basic text/number/date filters, built-in CSV export via
+// FinPlanGrid + hand-rolled Blob export here). Capability witnesses:
+// _bmad/p02-bundle-remediation-proposal.md §1.2.
+ModuleRegistry.registerModules([
+  ClientSideRowModelModule,
+  TextFilterModule,
+  NumberFilterModule,
+  DateFilterModule,
+  RowSelectionModule,
+  RowStyleModule,
+  CsvExportModule,
+  // Dev-time module-misconfiguration warnings; excluded from prod bundles.
+  ...(import.meta.env.DEV ? [ValidationModule] : []),
+]);
 
 export interface DataGridColumn {
   field: string;
@@ -44,7 +65,6 @@ export interface DataGridProps {
   enableFindReplace?: boolean;
   enableExport?: boolean;
   enableColumnHiding?: boolean;
-  enableRowGrouping?: boolean;
 }
 
 export const DataGrid: React.FC<DataGridProps> = ({
@@ -60,7 +80,6 @@ export const DataGrid: React.FC<DataGridProps> = ({
   enableFindReplace = false,
   enableExport = false,
   enableColumnHiding = false,
-  enableRowGrouping = false,
 }) => {
   const fmtCurrency = useCurrencyFormatter();
   const gridRef = useRef<AgGridReact>(null);
@@ -161,15 +180,8 @@ export const DataGrid: React.FC<DataGridProps> = ({
     });
   }, [columns, fmtCurrency]);
 
-  const {
-    hiddenColumns,
-    showColumnMenu,
-    setShowColumnMenu,
-    groupColumn,
-    toggleColumn,
-    handleGroupBy,
-    visibleColumnDefs,
-  } = useColumnVisibility(columnDefs);
+  const { hiddenColumns, showColumnMenu, setShowColumnMenu, toggleColumn, visibleColumnDefs } =
+    useColumnVisibility(columnDefs);
   const { handleExport } = useDataGridExport(columns, rows, hiddenColumns);
 
   const handleSelectionChanged = useCallback(
@@ -338,7 +350,7 @@ export const DataGrid: React.FC<DataGridProps> = ({
       aria-busy={loading}
     >
       {/* Toolbar */}
-      {(enableFindReplace || enableExport || enableColumnHiding || enableRowGrouping) && (
+      {(enableFindReplace || enableExport || enableColumnHiding) && (
         <div className="flex items-center gap-2 px-2 py-1 bg-[var(--bg-muted)] border-b border-[var(--border-subtle)] text-xs">
           {enableFindReplace && (
             <button
@@ -391,48 +403,6 @@ export const DataGrid: React.FC<DataGridProps> = ({
                       />
                       <span>{col.headerName}</span>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-          {enableRowGrouping && (
-            <div className="relative">
-              <button
-                onClick={() => setShowColumnMenu(!showColumnMenu)}
-                className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 px-2 py-1 rounded hover:bg-[var(--bg-surface)] transition-colors"
-                aria-label="Group rows by column"
-                title="Row Grouping"
-              >
-                Group {groupColumn ? `(${groupColumn})` : ''}
-              </button>
-              {showColumnMenu && (
-                <div
-                  className="absolute top-full left-0 z-50 mt-1 w-48 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-md shadow-lg"
-                  role="menu"
-                >
-                  <button
-                    onClick={() => {
-                      handleGroupBy(null);
-                      setShowColumnMenu(false);
-                    }}
-                    className="block w-full text-left px-3 py-1.5 hover:bg-[var(--bg-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-                    role="menuitem"
-                  >
-                    No Grouping
-                  </button>
-                  {columns.map((col) => (
-                    <button
-                      key={col.field}
-                      onClick={() => {
-                        handleGroupBy(col.field);
-                        setShowColumnMenu(false);
-                      }}
-                      className="block w-full text-left px-3 py-1.5 hover:bg-[var(--bg-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-                      role="menuitem"
-                    >
-                      Group by {col.headerName}
-                    </button>
                   ))}
                 </div>
               )}

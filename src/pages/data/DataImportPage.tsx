@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useNavigate } from 'react-router-dom';
@@ -117,8 +118,20 @@ export default function DataImportPage() {
     document.title = 'FinPlan Pro — Data Import';
   }, []);
 
-  const { entries, accounts, importHistory } = useGLStore();
-  const { importJobs, addImportJob, updateImportStatus } = useDataStore();
+  const { entries, accounts, importHistory } = useGLStore(
+    useShallow((s) => ({
+      entries: s.entries,
+      accounts: s.accounts,
+      importHistory: s.importHistory,
+    }))
+  );
+  const { importJobs, addImportJob, updateImportStatus } = useDataStore(
+    useShallow((s) => ({
+      importJobs: s.importJobs,
+      addImportJob: s.addImportJob,
+      updateImportStatus: s.updateImportStatus,
+    }))
+  );
   const navigate = useNavigate();
 
   // Migration wizard state

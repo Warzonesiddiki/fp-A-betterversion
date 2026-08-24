@@ -215,10 +215,12 @@ function wrapText(pdf: JsPDFDoc, text: string, maxWidth: number, fontSize: numbe
 export class ProfessionalExportEngine {
   private pdf!: JsPDFDoc;
   private branding: BrandingConfig;
-  private pageW: number;
-  private pageH: number;
+  // Page geometry is plain derived data — public since E-01-I so module-scope
+  // render helpers can access it without private-field escape casts.
+  pageW: number;
+  pageH: number;
   private margin: typeof TOKENS.page.margin;
-  private contentW: number;
+  contentW: number;
   private y: number = 0;
   private tocEntries: Array<{ title: string; page: number; level: number }> = [];
 
@@ -244,9 +246,7 @@ export class ProfessionalExportEngine {
   // =========================================================================
 
   async generateBoardPack(data: BoardPackData, options: BoardPackOptions = {}): Promise<void> {
-    const jsPDFCtor = (await loadJsPDF()) as unknown as new (
-      o: Record<string, unknown>
-    ) => JsPDFDoc;
+    const jsPDFCtor = (await loadJsPDF()) as new (o: Record<string, unknown>) => JsPDFDoc;
 
     this.pdf = new jsPDFCtor({ orientation: 'portrait', unit: 'mm', format: 'a4' });
     this.tocEntries = [];
@@ -358,9 +358,7 @@ export class ProfessionalExportEngine {
   // =========================================================================
 
   async generateFromExportData(data: ExportData, config: ExportConfig): Promise<void> {
-    const jsPDFCtor = (await loadJsPDF()) as unknown as new (
-      o: Record<string, unknown>
-    ) => JsPDFDoc;
+    const jsPDFCtor = (await loadJsPDF()) as new (o: Record<string, unknown>) => JsPDFDoc;
 
     this.pdf = new jsPDFCtor({
       orientation:
@@ -370,10 +368,9 @@ export class ProfessionalExportEngine {
     });
 
     if (config.orientation === 'l' || config.orientation === 'landscape') {
-      (this as unknown as { pageW: number }).pageW = 297;
-      (this as unknown as { pageH: number }).pageH = 210;
-      (this as unknown as { contentW: number }).contentW =
-        297 - this.margin.left - this.margin.right;
+      this.pageW = 297;
+      this.pageH = 210;
+      this.contentW = 297 - this.margin.left - this.margin.right;
     }
 
     this.renderPageHeader(
@@ -1095,9 +1092,7 @@ export class ProfessionalExportEngine {
     branding?: Partial<BrandingConfig>
   ): Promise<void> {
     const engine = new ProfessionalExportEngine(branding);
-    const jsPDFCtor = (await loadJsPDF()) as unknown as new (
-      o: Record<string, unknown>
-    ) => JsPDFDoc;
+    const jsPDFCtor = (await loadJsPDF()) as new (o: Record<string, unknown>) => JsPDFDoc;
 
     engine.pdf = new jsPDFCtor({
       orientation:
@@ -1107,10 +1102,9 @@ export class ProfessionalExportEngine {
     });
 
     if (config.orientation === 'l' || config.orientation === 'landscape') {
-      (engine as unknown as { pageW: number }).pageW = 297;
-      (engine as unknown as { pageH: number }).pageH = 210;
-      (engine as unknown as { contentW: number }).contentW =
-        297 - engine.margin.left - engine.margin.right;
+      engine.pageW = 297;
+      engine.pageH = 210;
+      engine.contentW = 297 - engine.margin.left - engine.margin.right;
     }
 
     sections.forEach((section, idx) => {

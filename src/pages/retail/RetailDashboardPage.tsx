@@ -40,7 +40,7 @@ function toSectorEntries(entries: readonly GLEntry[]): GLEntry[] {
 export default function RetailDashboardPage() {
   const fmt = useCurrencyFormatter();
   const navigate = useNavigate();
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const [periodId, setPeriodId] = useState('P01');
 
   const sectorEntries = useMemo(() => toSectorEntries(entries), [entries]);

@@ -208,6 +208,14 @@ vi.mock('ag-grid-react', () => ({
 vi.mock('ag-grid-community', () => ({
   ModuleRegistry: { registerModules: vi.fn() },
   AllCommunityModule: {},
+  ClientSideRowModelModule: {},
+  TextFilterModule: {},
+  NumberFilterModule: {},
+  DateFilterModule: {},
+  RowSelectionModule: {},
+  RowStyleModule: {},
+  CsvExportModule: {},
+  ValidationModule: {},
 }));
 
 beforeEach(() => {

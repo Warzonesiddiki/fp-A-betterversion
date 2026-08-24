@@ -5,6 +5,7 @@
 // asynchrony that does not exist (same honesty test as ScenarioBuilderPage).
 // In-flight filtering feedback stays on the real useTransition pending state.
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -48,7 +49,9 @@ export default function GLJournalsPage() {
     document.title = 'FinPlan Pro — G L Journals';
   }, []);
 
-  const { entries, accounts } = useGLStore();
+  const { entries, accounts } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, accounts: s.accounts }))
+  );
   const navigate = useNavigate();
   const location = useLocation();
   const [startDate, setStartDate] = useState('');

@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/Button';
@@ -89,7 +90,13 @@ export default function ForecastBuilderPage() {
 
   // W-K30-001 (1): the builder has zero states when the GL store is hydrating
   // or a GL import failed — it used to render KPIs of $0 and an empty chart.
-  const { entries, isLoading, importError } = useGLStore();
+  const { entries, isLoading, importError } = useGLStore(
+    useShallow((s) => ({
+      entries: s.entries,
+      isLoading: s.isLoading,
+      importError: s.importError,
+    }))
+  );
 
   const historical = useMemo(() => deriveMonthlyRevenue(entries), [entries]);
   const historicalValues = useMemo(() => historical.map((h) => h.value), [historical]);

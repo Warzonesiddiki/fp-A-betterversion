@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { GaugeChart } from '@/components/ui/GaugeChart';
+import { useShallow } from 'zustand/react/shallow';
 import { useESGStore } from '@/store/esgStore';
 import { ESGEngine } from '@/engines/ESGEngine';
 import {
@@ -30,7 +31,14 @@ interface CategoryScore {
 }
 
 export function ESGMetricsDashboard({ className }: ESGMetricsDashboardProps) {
-  const { metrics, initiatives, getOverallScore, getMetricsByCategory } = useESGStore();
+  const { metrics, initiatives, getOverallScore, getMetricsByCategory } = useESGStore(
+    useShallow((s) => ({
+      metrics: s.metrics,
+      initiatives: s.initiatives,
+      getOverallScore: s.getOverallScore,
+      getMetricsByCategory: s.getMetricsByCategory,
+    }))
+  );
 
   const overallScore = useMemo(() => getOverallScore(), [getOverallScore]);
 

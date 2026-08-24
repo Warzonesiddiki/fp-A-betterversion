@@ -10,10 +10,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // ---------------------------------------------------------------------------
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+  useGLStore: vi.fn((sel?: unknown) => {
+    const s = { entries: [] as unknown[] };
+    return typeof sel === 'function' ? (sel as (st: typeof s) => unknown)(s) : s;
+  }),
 }));
 vi.mock('@/store/retailStore', () => ({
-  useRetailStore: vi.fn(() => ({ stores: [], inventory: [], products: [] })),
+  useRetailStore: vi.fn((sel?: unknown) => {
+    const s = { stores: [], inventory: [], products: [] };
+    return typeof sel === 'function' ? (sel as (st: typeof s) => unknown)(s) : s;
+  }),
 }));
 vi.mock('@/engines/InventoryEngine', () => ({
   InventoryEngine: {
@@ -86,14 +92,18 @@ describe('InventoryPlanningPage', () => {
 
   it('renders dashboard heading when entries exist', async () => {
     const { useGLStore } = await import('@/store/glStore');
-    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ entries: [glEntry] });
+    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+      (selector?: (s: { entries: unknown[] }) => unknown) => selector?.({ entries: [glEntry] })
+    );
     render(<InventoryPlanningPage />);
     expect(screen.getByRole('heading', { name: /Inventory Planning/i })).toBeInTheDocument();
   });
 
   it('never renders the removed invented SKUs or department economics', async () => {
     const { useGLStore } = await import('@/store/glStore');
-    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ entries: [glEntry] });
+    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+      (selector?: (s: { entries: unknown[] }) => unknown) => selector?.({ entries: [glEntry] })
+    );
     render(<InventoryPlanningPage />);
     for (const invented of ['Denim Jacket', 'Wireless Earbuds', 'SKU-4401', 'SKU-2180']) {
       expect(screen.queryByText(invented)).toBeNull();
@@ -108,7 +118,9 @@ describe('InventoryPlanningPage', () => {
 
   it('discloses stockout incidents instead of showing the engine mock value', async () => {
     const { useGLStore } = await import('@/store/glStore');
-    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ entries: [glEntry] });
+    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+      (selector?: (s: { entries: unknown[] }) => unknown) => selector?.({ entries: [glEntry] })
+    );
     const { getByTestId, getByText } = render(<InventoryPlanningPage />);
     expect(getByText(/needs an operations\/incident feed/i)).toBeInTheDocument();
     // The three GL-derived KPIs render; the fourth cell is the disclosure.
@@ -144,7 +156,9 @@ describe('InventoryPlanningPage', () => {
         })
     );
     const { useGLStore } = await import('@/store/glStore');
-    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ entries: [glEntry] });
+    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+      (selector?: (s: { entries: unknown[] }) => unknown) => selector?.({ entries: [glEntry] })
+    );
     render(<InventoryPlanningPage />);
     // User-recorded product renders with its derived below-reorder status…
     expect(screen.getByText('Recorded Widget')).toBeInTheDocument();

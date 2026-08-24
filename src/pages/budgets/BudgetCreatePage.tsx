@@ -32,8 +32,8 @@ export default function BudgetCreatePage() {
   }, []);
 
   const navigate = useNavigate();
-  const { createBudget } = useBudgetStore();
-  const { accounts } = useGLStore();
+  const createBudget = useBudgetStore((s) => s.createBudget);
+  const accounts = useGLStore((s) => s.accounts);
   const [step, setStep] = useState(0);
   const [form, setForm] = useState({
     name: '',

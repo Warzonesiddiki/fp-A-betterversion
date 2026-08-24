@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useReportStore } from '@/store/reportStore';
@@ -45,7 +46,13 @@ const SORT_OPTIONS: Array<{ value: `${SortField}:${SortDir}`; label: string }> =
 
 export default function ReportTemplateLibraryPage() {
   const navigate = useNavigate();
-  const { reports, createReport, deleteReport } = useReportStore();
+  const { reports, createReport, deleteReport } = useReportStore(
+    useShallow((s) => ({
+      reports: s.reports,
+      createReport: s.createReport,
+      deleteReport: s.deleteReport,
+    }))
+  );
 
   useEffect(() => {
     document.title = 'FinPlan Pro - Report Templates';

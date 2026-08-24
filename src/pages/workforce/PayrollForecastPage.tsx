@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -76,8 +77,10 @@ const headcountTrend = [
 
 export default function PayrollForecastPage() {
   const fmt = useCurrencyFormatter();
-  const { entries } = useGLStore();
-  const workforceState = useWorkforceStore();
+  const entries = useGLStore((s) => s.entries);
+  const workforceState = useWorkforceStore(
+    useShallow((s) => ({ departments: s.departments, employees: s.employees }))
+  );
   const storeDepartments = workforceState.departments ?? [];
   const storeEmployees = workforceState.employees ?? [];
 

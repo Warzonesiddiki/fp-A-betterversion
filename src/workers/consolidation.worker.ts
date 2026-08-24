@@ -363,7 +363,7 @@ function sumByCategory(
 
 // --- Core consolidation ---
 
-function runConsolidation(request: ConsolidationRequest): ConsolidationResponse {
+function runConsolidation(request: ConsolidationRequest, taskId: string): ConsolidationResponse {
   const { entities, ownerships, icPairs = [], fxRates = [], adjustments = [] } = request;
 
   if (entities.length === 0) {
@@ -383,7 +383,7 @@ function runConsolidation(request: ConsolidationRequest): ConsolidationResponse 
   }
 
   // Report progress: FX translation
-  postProgress(1, 5);
+  postProgress(taskId, 1, 5);
 
   // Step 1: Translate foreign subsidiaries
   const translatedEntities = translateForeignEntities(entities, fxRates);
@@ -394,19 +394,19 @@ function runConsolidation(request: ConsolidationRequest): ConsolidationResponse 
     allEntries.push(...entity.entries);
   }
 
-  postProgress(2, 5);
+  postProgress(taskId, 2, 5);
 
   // Step 3: Resolve intercompany eliminations (explicit pairs + auto-detected
   // 9-prefix matches). This same list is applied in step 5, so counted
   // eliminations and applied eliminations can never diverge.
   const eliminations = resolveEliminations(allEntries, icPairs);
 
-  postProgress(3, 5);
+  postProgress(taskId, 3, 5);
 
   // Step 4: Calculate minority interest
   const minorityInterest = calculateMinorityInterest(translatedEntities, ownerships);
 
-  postProgress(4, 5);
+  postProgress(taskId, 4, 5);
 
   // Step 5: Apply the resolved eliminations and manual adjustments
   const consolidatedEntries = applyEliminationsAndAdjustments(
@@ -431,7 +431,7 @@ function runConsolidation(request: ConsolidationRequest): ConsolidationResponse 
   ]);
   const isBalanced = balanceCheck.abs().lt('0.01');
 
-  postProgress(5, 5);
+  postProgress(taskId, 5, 5);
 
   return {
     consolidatedEntries,
@@ -448,9 +448,10 @@ function runConsolidation(request: ConsolidationRequest): ConsolidationResponse 
   };
 }
 
-function postProgress(processed: number, total: number): void {
+/** W7D: echo the incoming task id so the pool's id filter lets onProgress fire. */
+function postProgress(taskId: string, processed: number, total: number): void {
   const response: WorkerResponse = {
-    id: 'consolidation',
+    id: taskId,
     type: 'progress',
     progress: {
       processed,
@@ -467,7 +468,7 @@ self.onmessage = (e: MessageEvent<WorkerMessage<ConsolidationRequest>>) => {
   const { id, payload } = e.data;
 
   try {
-    const result = runConsolidation(payload);
+    const result = runConsolidation(payload, id);
     const response: WorkerResponse<ConsolidationResponse> = {
       id,
       type: 'result',

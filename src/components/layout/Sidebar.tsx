@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronLeft, ChevronRight, HelpCircle, Search, X } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '@/store/uiStore';
 import { useTheme } from '@/context/ThemeContext';
 import { useAppNavigation } from '@/hooks/useAppNavigation';
@@ -84,8 +85,14 @@ function SidebarSection({
 
 export const Sidebar = memo(function Sidebar() {
   const { t } = useTranslation();
-  const { sidebarCollapsed, toggleSidebar, closeMobileSidebar, toggleCommandPalette } =
-    useUIStore();
+  const { sidebarCollapsed, toggleSidebar, closeMobileSidebar, toggleCommandPalette } = useUIStore(
+    useShallow((s) => ({
+      sidebarCollapsed: s.sidebarCollapsed,
+      toggleSidebar: s.toggleSidebar,
+      closeMobileSidebar: s.closeMobileSidebar,
+      toggleCommandPalette: s.toggleCommandPalette,
+    }))
+  );
   const { theme, toggleTheme } = useTheme();
   const { sections, activeSectionId } = useAppNavigation();
 

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate } from 'react-router-dom';
@@ -65,7 +66,19 @@ export default function GLUploadPage() {
     setImportStatus,
     setImportError,
     undoLastImport,
-  } = useGLStore();
+  } = useGLStore(
+    useShallow((s) => ({
+      entries: s.entries,
+      importProgress: s.importProgress,
+      importStatus: s.importStatus,
+      importError: s.importError,
+      importHistory: s.importHistory,
+      setImportProgress: s.setImportProgress,
+      setImportStatus: s.setImportStatus,
+      setImportError: s.setImportError,
+      undoLastImport: s.undoLastImport,
+    }))
+  );
 
   const navigate = useNavigate();
   const [step, setStep] = useState(0);

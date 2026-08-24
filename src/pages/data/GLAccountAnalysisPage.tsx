@@ -1,5 +1,6 @@
 // @money-ast-allow Reason: Bar-width percentage: (Math.abs(m.net) / accountStats.maxNet) * 100 is chart geometry, not money
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -20,7 +21,14 @@ export default function GLAccountAnalysisPage() {
     document.title = 'FinPlan Pro — G L Account Analysis';
   }, []);
 
-  const { entries, accounts, isLoading, analyzeAccount } = useGLStore();
+  const { entries, accounts, isLoading, analyzeAccount } = useGLStore(
+    useShallow((s) => ({
+      entries: s.entries,
+      accounts: s.accounts,
+      isLoading: s.isLoading,
+      analyzeAccount: s.analyzeAccount,
+    }))
+  );
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedAccountId, setSelectedAccountId] = useState('');

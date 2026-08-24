@@ -11,24 +11,29 @@ import React from 'react';
 // measured KPIs. Only GL-derived averages remain as numbers now.
 // ---------------------------------------------------------------------------
 
+// Selector-aware mock: the page subscribes via useGLStore((s) => s.entries),
+// so the mock must apply a selector when one is passed.
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({
-    entries: [],
-    accounts: [],
-    trialBalance: [],
-    accountAnalysis: null,
-    columnMappings: [],
-    isLoading: false,
-    importResult: null,
-    setEntries: vi.fn(),
-    setAccounts: vi.fn(),
-    addEntries: vi.fn(),
-    clearEntries: vi.fn(),
-    setColumnMappings: vi.fn(),
-    importData: vi.fn(),
-    undo: vi.fn(),
-    redo: vi.fn(),
-  })),
+  useGLStore: vi.fn((selector?: (s: { entries: unknown[] }) => unknown) => {
+    const state = {
+      entries: [] as unknown[],
+      accounts: [],
+      trialBalance: [],
+      accountAnalysis: null,
+      columnMappings: [],
+      isLoading: false,
+      importResult: null,
+      setEntries: vi.fn(),
+      setAccounts: vi.fn(),
+      addEntries: vi.fn(),
+      clearEntries: vi.fn(),
+      setColumnMappings: vi.fn(),
+      importData: vi.fn(),
+      undo: vi.fn(),
+      redo: vi.fn(),
+    };
+    return selector ? selector(state) : state;
+  }),
 }));
 
 vi.mock('@/engines/RetailEngine', () => ({
@@ -130,26 +135,31 @@ describe('StorePerformancePage', () => {
 
   it('never displays the removed fabricated Region column or its literal', async () => {
     const { useGLStore } = await import('@/store/glStore');
-    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
-      entries: [
-        {
-          id: '1',
-          accountId: 'a1',
-          accountCode: '4000',
-          accountName: 'Revenue',
-          period: '2026-01',
-          periodName: 'P01',
-          debit: 0,
-          credit: 100000,
-          netChange: 100000,
-          date: '2026-01-05',
-          amount: 100000,
-          description: '',
-          reference: '',
-          entityId: 'S-01',
-        },
-      ],
-    });
+    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+      (selector?: (s: { entries: unknown[] }) => unknown) => {
+        const state = {
+          entries: [
+            {
+              id: '1',
+              accountId: 'a1',
+              accountCode: '4000',
+              accountName: 'Revenue',
+              period: '2026-01',
+              periodName: 'P01',
+              debit: 0,
+              credit: 100000,
+              netChange: 100000,
+              date: '2026-01-05',
+              amount: 100000,
+              description: '',
+              reference: '',
+              entityId: 'S-01',
+            },
+          ],
+        };
+        return selector ? selector(state) : state;
+      }
+    );
     const { queryByText, getByTestId } = renderPage();
     expect(queryByText('North')).toBeNull();
     expect(queryByText('Region')).toBeNull();

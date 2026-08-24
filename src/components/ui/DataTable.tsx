@@ -40,6 +40,28 @@ export interface DataTableProps<T extends object = Record<string, unknown>> {
 const VIRTUAL_THRESHOLD = 100;
 const ROW_HEIGHT = 40;
 
+/**
+ * UI-HF numeric-sort hotfix: type-aware cell comparison.
+ *
+ * The previous comparator coerced every cell through String(), which sorted
+ * numbers lexically ("100" < "20" < "3") across 63 consumer pages — a
+ * data-trust defect in a financial app. Repo convention stores financial
+ * values as raw `number`s, so:
+ *  - number ⊕ number        → arithmetic difference;
+ *  - Date ⊕ Date            → epoch difference;
+ *  - anything else          → locale-aware string compare (text columns keep
+ *                             natural collation instead of ASCII/codepoint
+ *                             ordering);
+ *  - null/undefined/''      → handled by the caller: always last, regardless
+ *                             of direction.
+ */
+const compareCellValues = (a: unknown, b: unknown): number => {
+  if (a instanceof Date && b instanceof Date) return a.getTime() - b.getTime();
+  if (typeof a === 'number' && typeof b === 'number') return a - b;
+  if (typeof a === 'bigint' && typeof b === 'bigint') return a < b ? -1 : a > b ? 1 : 0;
+  return String(a).localeCompare(String(b));
+};
+
 export const DataTable = memo(function <T extends object = Record<string, unknown>>({
   columns: _columns,
   data: rawData,
@@ -72,21 +94,22 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
   const [focusedCell, setFocusedCell] = useState<{ row: number; col: number } | null>(null);
   const cellRefs = useRef(new Map<string, HTMLTableCellElement>());
 
-  // Handle sorting
+  // Handle sorting (UI-HF: type-aware comparator — see compareCellValues).
+  // Nullish/empty cells sort last deterministically in BOTH directions;
+  // non-empty cells flip with direction.
   const sortedData = useMemo(() => {
     const items = [...(data ?? [])];
     if (sortConfig !== null) {
+      const dirFactor = sortConfig.direction === 'asc' ? 1 : -1;
       items.sort((a, b) => {
-        const aValue = String(a[sortConfig.key] ?? '');
-        const bValue = String(b[sortConfig.key] ?? '');
-
-        if (aValue < bValue) {
-          return sortConfig.direction === 'asc' ? -1 : 1;
-        }
-        if (aValue > bValue) {
-          return sortConfig.direction === 'asc' ? 1 : -1;
-        }
-        return 0;
+        const aValue = a[sortConfig.key];
+        const bValue = b[sortConfig.key];
+        const aEmpty = aValue === null || aValue === undefined || aValue === '';
+        const bEmpty = bValue === null || bValue === undefined || bValue === '';
+        if (aEmpty && bEmpty) return 0;
+        if (aEmpty) return 1;
+        if (bEmpty) return -1;
+        return dirFactor * compareCellValues(aValue, bValue);
       });
     }
     return items;

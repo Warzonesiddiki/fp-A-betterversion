@@ -45,6 +45,8 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { useShallow } from 'zustand/react/shallow';
+import type { GLState, BudgetState } from '@/types';
 
 /**
  * Unit-aware display formatting for sector KPI tiles (W6-P0-06). Percent
@@ -138,9 +140,17 @@ export default function DashboardPage() {
     ]);
   };
 
-  const glStore = useGLStore();
+  // W7D perf sweep: reactively pick only what this page renders plus the
+  // fields the copilot consumers read (FinanceCopilotEngine.answer reads
+  // gl.entries and budget.budgets/lineItems only), replacing the previous
+  // whole-store subscriptions.
+  const glStore = useGLStore(
+    useShallow((s) => ({ entries: s.entries, accounts: s.accounts }))
+  ) as unknown as GLState;
   const { entries, accounts } = glStore;
-  const budgetStore = useBudgetStore();
+  const budgetStore = useBudgetStore(
+    useShallow((s) => ({ budgets: s.budgets, lineItems: s.lineItems }))
+  ) as unknown as BudgetState;
   const { budgets } = budgetStore;
   const { sectorConfig } = useSector();
   const navigate = useNavigate();
@@ -155,6 +165,20 @@ export default function DashboardPage() {
   const sectorKPIs = useMemo(
     () => deriveSectorKpis(entries, sectorConfig?.defaultKPIs),
     [sectorConfig, entries]
+  );
+
+  // FinanceCopilotEngine quick analysis (W7D perf): this O(n) aggregation over
+  // the full ledger used to re-run on EVERY render while its result stayed
+  // unused. Memoize keyed on the exact inputs — the two store snapshots, whose
+  // identities only change when GL/budget state actually changes. Kept above
+  // the early returns so hook order is unconditional.
+  const _copilotAnswer = useMemo(
+    () =>
+      FinanceCopilotEngine.answer('what is total revenue', {
+        gl: glStore,
+        budget: budgetStore,
+      }),
+    [glStore, budgetStore]
   );
 
   if (entries.length === 0 && budgets.length === 0) {
@@ -200,12 +224,6 @@ export default function DashboardPage() {
       </div>
     );
   }
-
-  // FinanceCopilotEngine: generate quick analysis
-  const _copilotAnswer = FinanceCopilotEngine.answer('what is total revenue', {
-    gl: glStore,
-    budget: budgetStore,
-  });
 
   return (
     <div className="fp-page space-y-6">

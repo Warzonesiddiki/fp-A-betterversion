@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { useGLStore } from '@/store/glStore';
+import { useShallow } from 'zustand/react/shallow';
 import { getSectorConfig, type SectorConfig, type SectorKPI } from '@/config/sectors';
 import { divideMoney, formatMoney, roundTo, subtractMoney, toDecimal } from '@/utils/money';
 import { formatNumber } from '@/utils/formatters';
@@ -823,7 +824,7 @@ function formatMetricValue(metric: { format: SectorKPI['format']; value: number 
 }
 
 export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }) {
-  const glState = useGLStore();
+  const glState = useGLStore(useShallow((s) => ({ entries: s.entries })));
   const entries = useMemo(
     () => (Array.isArray(glState.entries) ? glState.entries : []),
     [glState.entries]

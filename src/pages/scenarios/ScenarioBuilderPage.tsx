@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScenarioStore } from '@/store/scenarioStore';
 import { useGLStore } from '@/store/glStore';
+import { useShallow } from 'zustand/react/shallow';
 import { runMonteCarlo } from '@/workers';
 
 import { Button } from '@/components/ui/Button';
@@ -34,8 +35,10 @@ export type { ScenarioComparisonInput, ScenarioComparisonResult } from './scenar
 export default function ScenarioBuilderPage() {
   const fmt = useCurrencyFormatter();
   const navigate = useNavigate();
-  const { entries } = useGLStore();
-  const { scenarios, createScenario } = useScenarioStore();
+  const { entries } = useGLStore(useShallow((s) => ({ entries: s.entries })));
+  const { scenarios, createScenario } = useScenarioStore(
+    useShallow((s) => ({ scenarios: s.scenarios, createScenario: s.createScenario }))
+  );
 
   const [growthRate, setGrowthRate] = useState(10);
   const [headcountChange, setHeadcountChange] = useState(0);

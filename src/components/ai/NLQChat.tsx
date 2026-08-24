@@ -51,7 +51,7 @@ const nextId = () => `nlq-${Date.now()}-${++msgCounter}`;
 
 export function NLQChat({ className, maxHeight = '400px' }: NLQChatProps) {
   const fmt = useCurrencyFormatter();
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const { pathname } = useLocation();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');

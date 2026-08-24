@@ -250,4 +250,110 @@ describe('DataTable', () => {
       vi.useRealTimers();
     });
   });
+
+  // UI-HF numeric-sort hotfix: String() coercion sorted numbers lexically
+  // ("100" < "20" < "3"). Numbers must compare numerically; empties sort
+  // last in both directions; Dates by epoch; text keeps locale collation.
+  describe('UI-HF type-aware sorting', () => {
+    const amountCols: Column[] = [
+      { key: 'label', header: 'Label' },
+      { key: 'amount', header: 'Amount', sortable: true },
+    ];
+    // Label lives in the FIRST td; reading it directly avoids textContent
+    // concatenating the numeric amount cell after it.
+    const rowOrder = () =>
+      screen
+        .getAllByRole('row')
+        .slice(1) // drop header row
+        .map((r) => r.querySelector('td')?.textContent ?? '');
+
+    it('sorts numbers numerically ascending (100 > 20 > 3 — was "100" < "20" < "3")', () => {
+      render(
+        <DataTable
+          columns={amountCols}
+          data={[
+            { label: 'row-100', amount: 100 },
+            { label: 'row-20', amount: 20 },
+            { label: 'row-3', amount: 3 },
+          ]}
+        />
+      );
+      fireEvent.click(screen.getByText('Amount'));
+      expect(rowOrder()).toEqual(['row-3', 'row-20', 'row-100']);
+    });
+
+    it('sorts numbers numerically descending on second click', () => {
+      render(
+        <DataTable
+          columns={amountCols}
+          data={[
+            { label: 'row-100', amount: 100 },
+            { label: 'row-20', amount: 20 },
+            { label: 'row-3', amount: 3 },
+          ]}
+        />
+      );
+      const header = screen.getByText('Amount');
+      fireEvent.click(header);
+      fireEvent.click(header);
+      expect(rowOrder()).toEqual(['row-100', 'row-20', 'row-3']);
+    });
+
+    it('null/undefined/empty cells sort last in BOTH directions, values keep numeric order', () => {
+      render(
+        <DataTable
+          columns={amountCols}
+          data={[
+            { label: 'gap-null', amount: null },
+            { label: 'val-5', amount: 5 },
+            { label: 'gap-undef' },
+            { label: 'val-50', amount: 50 },
+            { label: 'gap-empty', amount: '' },
+          ]}
+        />
+      );
+      const header = screen.getByText('Amount');
+      fireEvent.click(header); // asc
+      let labels = rowOrder();
+      expect(labels.slice(0, 2)).toEqual(['val-5', 'val-50']);
+      expect(labels.slice(2)).toEqual(['gap-null', 'gap-undef', 'gap-empty']);
+      fireEvent.click(header); // desc
+      labels = rowOrder();
+      expect(labels.slice(0, 2)).toEqual(['val-50', 'val-5']);
+      expect(labels.slice(2)).toEqual(['gap-null', 'gap-undef', 'gap-empty']);
+    });
+
+    it('Date cells sort chronologically (epoch order)', () => {
+      render(
+        <DataTable
+          columns={[
+            { key: 'label', header: 'Label' },
+            { key: 'when', header: 'When', sortable: true },
+          ]}
+          data={[
+            { label: 'late', when: new Date('2026-03-01T00:00:00Z') },
+            { label: 'early', when: new Date('2025-01-15T00:00:00Z') },
+            { label: 'mid', when: new Date('2025-09-09T00:00:00Z') },
+          ]}
+        />
+      );
+      fireEvent.click(screen.getByText('When'));
+      expect(rowOrder()).toEqual(['early', 'mid', 'late']);
+    });
+
+    it('text columns keep locale-aware collation (not ASCII codepoint order)', () => {
+      // ASCII would put 'X9' before 'x1' ('X'=88 < 'x'=120); locale collation
+      // is case-insensitive at primary strength → '1' < '9' decides.
+      render(
+        <DataTable
+          columns={[{ key: 'name', header: 'Name', sortable: true }]}
+          data={[{ name: 'X9' }, { name: 'x1' }]}
+        />
+      );
+      fireEvent.click(screen.getByText('Name'));
+      const names = rowOrder();
+      expect(names[0]).toBe('x1');
+      expect(names[1]).toBe('X9');
+    });
+  });
 });

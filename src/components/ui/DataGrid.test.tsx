@@ -313,11 +313,6 @@ describe('DataGrid', () => {
       expect(screen.getByLabelText('Show or hide columns')).toBeInTheDocument();
     });
 
-    it('renders Group button when enableRowGrouping is true', () => {
-      render(<DataGrid rows={mockRows} columns={mockColumns} enableRowGrouping />);
-      expect(screen.getByLabelText('Group rows by column')).toBeInTheDocument();
-    });
-
     it('does not render toolbar when no features enabled', () => {
       render(<DataGrid rows={mockRows} columns={mockColumns} />);
       expect(screen.queryByLabelText('Find and Replace')).not.toBeInTheDocument();
@@ -406,21 +401,6 @@ describe('DataGrid', () => {
     });
   });
 
-  describe('row grouping', () => {
-    it('shows grouping options when Group button clicked', () => {
-      render(<DataGrid rows={mockRows} columns={mockColumns} enableRowGrouping />);
-      fireEvent.click(screen.getByLabelText('Group rows by column'));
-      expect(screen.getByText('No Grouping')).toBeInTheDocument();
-    });
-
-    it('shows all columns as grouping options', () => {
-      render(<DataGrid rows={mockRows} columns={mockColumns} enableRowGrouping />);
-      fireEvent.click(screen.getByLabelText('Group rows by column'));
-      expect(screen.getByText('Group by Name')).toBeInTheDocument();
-      expect(screen.getByText('Group by Amount')).toBeInTheDocument();
-    });
-  });
-
   describe('callbacks', () => {
     it('accepts onCellValueChanged callback', () => {
       const onCellValueChanged = vi.fn();
@@ -498,13 +478,11 @@ describe('DataGrid', () => {
           enableFindReplace
           enableExport
           enableColumnHiding
-          enableRowGrouping
         />
       );
       expect(screen.getByLabelText('Find and Replace')).toBeInTheDocument();
       expect(screen.getByLabelText('Export to CSV')).toBeInTheDocument();
       expect(screen.getByLabelText('Show or hide columns')).toBeInTheDocument();
-      expect(screen.getByLabelText('Group rows by column')).toBeInTheDocument();
     });
 
     it('handles rows with null/undefined values', () => {

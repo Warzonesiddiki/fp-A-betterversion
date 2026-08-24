@@ -92,7 +92,10 @@ describe('CompetitiveGapsToolbar', () => {
     expect(screen.getByRole('button', { name: 'Lock' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /context menu/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /auto-sum/i })).toBeDisabled(); // no range
-    expect(screen.getByRole('tablist')).toBeInTheDocument();
+    // E-02 a11y: fake div-tabs (role=tablist/tab nesting interactive buttons)
+    // were replaced by real buttons in a labeled group — see the component's
+    // section (6) comment for the axe rules this resolves.
+    expect(screen.getByRole('group', { name: 'Workbook sheets' })).toBeInTheDocument();
     expect(screen.getByText('Sheet1')).toBeInTheDocument();
   });
 

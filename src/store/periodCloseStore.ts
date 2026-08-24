@@ -21,7 +21,9 @@
 // =============================================================================
 
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, subscribeWithSelector } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
+import type { WritableDraft } from 'immer';
 import { masterStorage } from '../utils/masterStorage';
 import { randomId } from '@/utils/cryptoId';
 import { enforce, Permissions, getCurrentUser } from '../utils/rbacEnforcer';
@@ -219,196 +221,198 @@ const initialState = {
 };
 
 export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
-  persist(
-    (set, get) => ({
-      ...initialState,
+  subscribeWithSelector(
+    persist(
+      immer((set, get) => ({
+        ...initialState,
 
-      initialize: (periods, jurisdiction, entityId = 'entity-001') => {
-        set((state) => {
-          const entries = { ...state.entries };
-          const checklists = { ...state.checklists };
-          for (const p of periods) {
-            if (!entries[p.id]) {
-              entries[p.id] = PeriodCloseStateMachine.createEntry(p.id, entityId);
+        initialize: (periods, jurisdiction, entityId = 'entity-001') => {
+          set((state) => {
+            for (const p of periods) {
+              if (!state.entries[p.id]) {
+                state.entries[p.id] = PeriodCloseStateMachine.createEntry(p.id, entityId);
+              }
+              if (!state.checklists[p.id]) {
+                // Immer's draft strips readonly (plan.tasks is a readonly
+                // array) — same cast convention as budgetStore.push.
+                state.checklists[p.id] = buildChecklist(
+                  p,
+                  jurisdiction
+                ) as WritableDraft<PeriodChecklist>;
+              }
             }
-            if (!checklists[p.id]) {
-              checklists[p.id] = buildChecklist(p, jurisdiction);
-            }
-          }
-          return { entries, checklists, initialized: true };
-        });
-      },
-
-      transition: enforce(
-        Permissions.PERIOD_CLOSE,
-        'periodClose.transition',
-        async (
-          periodId: string,
-          transition: PeriodCloseTransition,
-          reason?: string,
-          trialBalance?: readonly TrialBalanceLine[],
-          approvalId?: string
-        ): Promise<PeriodCloseActionResult> => {
-          const state = get();
-          const entry = state.entries[periodId];
-          if (!entry) {
-            return { success: false, newState: 'open', error: `Unknown period: ${periodId}` };
-          }
-          const actor = actorContext();
-
-          // Reopen paths need the higher bar. Clean error (not a throw) so the
-          // UI can surface "reopen requires Admin" as a readable reason.
-          if (transition === 'reopen' || transition === 'force-reopen') {
-            if (!actorRoleAllowsReopen(actor.role)) {
-              return {
-                success: false,
-                newState: entry.state,
-                error: `Insufficient permissions: '${Permissions.PERIOD_REOPEN}' required for ${transition} (Admin only).`,
-              };
-            }
-            if (!approvalId) approvalId = randomId('reopen-approval');
-          }
-
-          const result = PeriodCloseStateMachine.transition(entry, transition, actor.id, {
-            reason,
-            approvalId,
-            actorRole: actor.role,
-            trialBalance,
+            state.initialized = true;
           });
+        },
 
-          if (!result.success || !result.auditEvent) {
-            return { success: false, newState: entry.state, error: result.error };
-          }
-
-          const newEntry: PeriodCloseEntry = {
-            ...entry,
-            state: result.newState,
-            auditEvents: [...entry.auditEvents, result.auditEvent],
-            ...(result.newState !== 'open'
-              ? { closedAt: new Date().toISOString(), closedBy: actor.id }
-              : {
-                  reopenedAt: new Date().toISOString(),
-                  reopenedBy: actor.id,
-                  reopenReason: reason,
-                  reopenApprovalId: approvalId,
-                }),
-          };
-
-          // Persist the event immediately; append the chain link once hashed.
-          set((s) => ({ entries: { ...s.entries, [periodId]: newEntry } }));
-
-          // Optional server-side sync when desktop server is present (graceful degradation offline)
-          try {
-            if (typeof fetch === 'function') {
-              fetch(`/api/periods/${encodeURIComponent(periodId)}/transition`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  targetState: result.newState,
-                  reason: reason ?? `Period transition to ${result.newState}`,
-                  approvalId,
-                }),
-              }).catch(() => {
-                // Offline fallback: client state machine is the local source of truth
-              });
+        transition: enforce(
+          Permissions.PERIOD_CLOSE,
+          'periodClose.transition',
+          async (
+            periodId: string,
+            transition: PeriodCloseTransition,
+            reason?: string,
+            trialBalance?: readonly TrialBalanceLine[],
+            approvalId?: string
+          ): Promise<PeriodCloseActionResult> => {
+            const state = get();
+            const entry = state.entries[periodId];
+            if (!entry) {
+              return { success: false, newState: 'open', error: `Unknown period: ${periodId}` };
             }
-          } catch {
-            // Graceful degradation when network/fetch is unavailable
+            const actor = actorContext();
+
+            // Reopen paths need the higher bar. Clean error (not a throw) so the
+            // UI can surface "reopen requires Admin" as a readable reason.
+            if (transition === 'reopen' || transition === 'force-reopen') {
+              if (!actorRoleAllowsReopen(actor.role)) {
+                return {
+                  success: false,
+                  newState: entry.state,
+                  error: `Insufficient permissions: '${Permissions.PERIOD_REOPEN}' required for ${transition} (Admin only).`,
+                };
+              }
+              if (!approvalId) approvalId = randomId('reopen-approval');
+            }
+
+            const result = PeriodCloseStateMachine.transition(entry, transition, actor.id, {
+              reason,
+              approvalId,
+              actorRole: actor.role,
+              trialBalance,
+            });
+
+            if (!result.success || !result.auditEvent) {
+              return { success: false, newState: entry.state, error: result.error };
+            }
+
+            const newEntry: PeriodCloseEntry = {
+              ...entry,
+              state: result.newState,
+              auditEvents: [...entry.auditEvents, result.auditEvent],
+              ...(result.newState !== 'open'
+                ? { closedAt: new Date().toISOString(), closedBy: actor.id }
+                : {
+                    reopenedAt: new Date().toISOString(),
+                    reopenedBy: actor.id,
+                    reopenReason: reason,
+                    reopenApprovalId: approvalId,
+                  }),
+            };
+
+            // Persist the event immediately; append the chain link once hashed.
+            set((s) => {
+              s.entries[periodId] = newEntry;
+            });
+
+            // Optional server-side sync when desktop server is present (graceful degradation offline)
+            try {
+              if (typeof fetch === 'function') {
+                fetch(`/api/periods/${encodeURIComponent(periodId)}/transition`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    targetState: result.newState,
+                    reason: reason ?? `Period transition to ${result.newState}`,
+                    approvalId,
+                  }),
+                }).catch(() => {
+                  // Offline fallback: client state machine is the local source of truth
+                });
+              }
+            } catch {
+              // Graceful degradation when network/fetch is unavailable
+            }
+
+            const prevHash =
+              state.chain.filter((c) => c.periodId === periodId).at(-1)?.entryHash ?? EMPTY_HASH;
+            const entryHash = await hashCloseEvent(result.auditEvent, prevHash);
+            const chainEntry: CloseChainEntry = {
+              id: result.auditEvent.id,
+              periodId,
+              event: result.auditEvent,
+              prevHash,
+              entryHash,
+            };
+            set((s) => {
+              s.chain.push(chainEntry);
+            });
+
+            // Lock propagation (C-2): a hard lock freezes the period's budget
+            // line items and the fiscal year's scenarios. Reported for the UI.
+            if (result.newState === 'locked') {
+              return propagateLock(periodId);
+            }
+
+            return { success: true, newState: result.newState };
           }
+        ),
 
-          const prevHash =
-            state.chain.filter((c) => c.periodId === periodId).at(-1)?.entryHash ?? EMPTY_HASH;
-          const entryHash = await hashCloseEvent(result.auditEvent, prevHash);
-          const chainEntry: CloseChainEntry = {
-            id: result.auditEvent.id,
-            periodId,
-            event: result.auditEvent,
-            prevHash,
-            entryHash,
-          };
-          set((s) => ({ chain: [...s.chain, chainEntry] }));
-
-          // Lock propagation (C-2): a hard lock freezes the period's budget
-          // line items and the fiscal year's scenarios. Reported for the UI.
-          if (result.newState === 'locked') {
-            return propagateLock(periodId);
+        updateTaskStatus: enforce(
+          Permissions.PERIOD_CLOSE,
+          'periodClose.updateTaskStatus',
+          (periodId: string, taskId: string, status: CloseTaskStatus): boolean => {
+            const checklist = get().checklists[periodId];
+            if (!checklist?.instances.some((i) => i.taskId === taskId)) return false;
+            set((s) => {
+              const target = s.checklists[periodId];
+              if (!target) return;
+              target.instances = target.instances.map((i) =>
+                i.taskId === taskId ? { ...i, status } : i
+              );
+            });
+            return true;
           }
+        ),
 
-          return { success: true, newState: result.newState };
-        }
-      ),
+        assignTask: enforce(
+          Permissions.PERIOD_CLOSE,
+          'periodClose.assignTask',
+          (periodId: string, taskId: string, assignee: string): boolean => {
+            const checklist = get().checklists[periodId];
+            if (!checklist?.instances.some((i) => i.taskId === taskId)) return false;
+            set((s) => {
+              const target = s.checklists[periodId];
+              if (!target) return;
+              target.instances = target.instances.map((i) =>
+                i.taskId === taskId ? FinancialCloseEngine.assignApprover(i, assignee) : i
+              );
+            });
+            return true;
+          }
+        ),
 
-      updateTaskStatus: enforce(
-        Permissions.PERIOD_CLOSE,
-        'periodClose.updateTaskStatus',
-        (periodId: string, taskId: string, status: CloseTaskStatus): boolean => {
-          const checklist = get().checklists[periodId];
-          if (!checklist) return false;
-          const instance = checklist.instances.find((i) => i.taskId === taskId);
-          if (!instance) return false;
-          const updated = checklist.instances.map((i) =>
-            i.taskId === taskId ? { ...i, status } : i
-          );
-          set((s) => ({
-            checklists: {
-              ...s.checklists,
-              [periodId]: { ...checklist, instances: updated },
-            },
-          }));
-          return true;
-        }
-      ),
+        resetPeriod: enforce(
+          Permissions.PERIOD_CLOSE,
+          'periodClose.resetPeriod',
+          (periodId: string) => {
+            const entry = get().entries[periodId];
+            if (!entry) return;
+            set((s) => {
+              s.entries[periodId] = { ...entry, state: 'open' };
+            });
+          }
+        ),
 
-      assignTask: enforce(
-        Permissions.PERIOD_CLOSE,
-        'periodClose.assignTask',
-        (periodId: string, taskId: string, assignee: string): boolean => {
-          const checklist = get().checklists[periodId];
-          if (!checklist) return false;
-          const instance = checklist.instances.find((i) => i.taskId === taskId);
-          if (!instance) return false;
-          const updated = checklist.instances.map((i) =>
-            i.taskId === taskId ? FinancialCloseEngine.assignApprover(i, assignee) : i
-          );
-          set((s) => ({
-            checklists: {
-              ...s.checklists,
-              [periodId]: { ...checklist, instances: updated },
-            },
-          }));
-          return true;
-        }
-      ),
-
-      resetPeriod: enforce(
-        Permissions.PERIOD_CLOSE,
-        'periodClose.resetPeriod',
-        (periodId: string) => {
-          const entry = get().entries[periodId];
-          if (!entry) return;
-          set((s) => {
-            const fresh: PeriodCloseEntry = { ...entry, state: 'open' };
-            return { entries: { ...s.entries, [periodId]: fresh } };
-          });
-        }
-      ),
-
-      verifyChain: async (periodId?: string) => {
-        const entries = periodId ? get().chain.filter((c) => c.periodId === periodId) : get().chain;
-        return verifyCloseChain(entries);
-      },
-    }),
-    {
-      name: 'period-close-store',
-      storage: masterStorage,
-      version: 1,
-      partialize: (state) => ({
-        entries: state.entries,
-        checklists: state.checklists,
-        chain: state.chain,
-        initialized: state.initialized,
-      }),
-    }
+        verifyChain: async (periodId?: string) => {
+          const entries = periodId
+            ? get().chain.filter((c) => c.periodId === periodId)
+            : get().chain;
+          return verifyCloseChain(entries);
+        },
+      })),
+      {
+        name: 'period-close-store',
+        storage: masterStorage,
+        version: 1,
+        partialize: (state) => ({
+          entries: state.entries,
+          checklists: state.checklists,
+          chain: state.chain,
+          initialized: state.initialized,
+        }),
+      }
+    )
   )
 );
 

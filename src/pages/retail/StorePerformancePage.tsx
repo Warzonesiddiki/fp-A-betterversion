@@ -97,7 +97,7 @@ export default function StorePerformancePage() {
     ],
     [fmtCurrency]
   );
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const [periodId, setPeriodId] = useState('P01');
 
   const stats = useMemo(() => {

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
+import { useShallow } from 'zustand/react/shallow';
 import { useDriverStore } from '@/store/driverStore';
 import type { Driver, ImpactAnalysis } from '@/engines/DriverCascadeEngine';
 import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
@@ -22,7 +23,13 @@ interface DriverPanelProps {
 }
 export function DriverPanel({ readCell, writeCell, onClose }: DriverPanelProps) {
   const { t } = useTranslation();
-  const { engine, isRecalculating, lastCascadeResult } = useDriverStore();
+  const { engine, isRecalculating, lastCascadeResult } = useDriverStore(
+    useShallow((s) => ({
+      engine: s.engine,
+      isRecalculating: s.isRecalculating,
+      lastCascadeResult: s.lastCascadeResult,
+    }))
+  );
   const drivers = useMemo(() => engine.listDrivers(), [engine]);
   const [expandedDriver, setExpandedDriver] = useState<string | null>(null);
   const [pendingValues, setPendingValues] = useState<Record<string, number>>({});

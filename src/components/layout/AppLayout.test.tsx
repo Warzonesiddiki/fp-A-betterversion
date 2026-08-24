@@ -5,6 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import AppLayout from './AppLayout';
+import { confirm, useConfirmStore } from '@/components/ui/ConfirmDialog';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -53,6 +54,7 @@ describe('AppLayout', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockMobileSidebarOpen = false;
+    useConfirmStore.setState({ queue: [] });
   });
 
   it('renders without crashing', () => {
@@ -72,6 +74,21 @@ describe('AppLayout', () => {
   it('renders the toast container', () => {
     renderWithRouter(<AppLayout />);
     expect(screen.getByTestId('toast-container')).toBeInTheDocument();
+  });
+
+  // W6-P0-08: the global confirm.* API was exported but <ConfirmDialog /> was
+  // mounted nowhere, so every confirm promise deadlocked on first use. The
+  // host must live beside the other global portals (ToastContainer et al).
+  it('hosts the global ConfirmDialog so exported confirm.* settles', async () => {
+    renderWithRouter(<AppLayout />);
+    const pending = confirm.custom({
+      title: 'Wave7 host probe',
+      message: 'integration truth',
+    });
+    expect(await screen.findByText('Wave7 host probe')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    await expect(pending).resolves.toBe(false);
+    expect(useConfirmStore.getState().queue).toHaveLength(0);
   });
 
   it('renders skip to main content link', () => {

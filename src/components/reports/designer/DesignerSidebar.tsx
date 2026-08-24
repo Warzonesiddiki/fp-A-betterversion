@@ -31,7 +31,7 @@ function DimensionIcon({ name, className }: { name: string; className?: string }
 }
 
 export function DesignerSidebar({ onDragStart }: DesignerSidebarProps) {
-  const { engine } = useCubeStore();
+  const engine = useCubeStore((s) => s.engine);
   const [activeTab, setActiveTab] = useState<SidebarTab>('data');
 
   const dimensions = engine.listDimensions();

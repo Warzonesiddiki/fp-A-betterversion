@@ -14,6 +14,7 @@ import {
   Upload,
   Menu,
 } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
 import { useAuthStore } from '@/store/authStore';
 import { useNotificationStore } from '@/store/notificationStore';
 import { useUIStore } from '@/store/uiStore';
@@ -26,9 +27,17 @@ const entities = [
 
 export const Navbar = memo(function Navbar() {
   const navigate = useNavigate();
-  const { user, activeEntityId, switchEntity } = useAuthStore();
-  const { notifications, unreadCount } = useNotificationStore();
-  const { openMobileSidebar } = useUIStore();
+  const { user, activeEntityId, switchEntity } = useAuthStore(
+    useShallow((s) => ({
+      user: s.user,
+      activeEntityId: s.activeEntityId,
+      switchEntity: s.switchEntity,
+    }))
+  );
+  const { notifications, unreadCount } = useNotificationStore(
+    useShallow((s) => ({ notifications: s.notifications, unreadCount: s.unreadCount }))
+  );
+  const openMobileSidebar = useUIStore((s) => s.openMobileSidebar);
   const [showEntityMenu, setShowEntityMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showCreateMenu, setShowCreateMenu] = useState(false);

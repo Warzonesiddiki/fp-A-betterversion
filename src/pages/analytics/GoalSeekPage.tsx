@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
+import { useShallow } from 'zustand/react/shallow';
 import { runMonteCarlo as executeMonteCarlo } from '@/workers';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -24,7 +25,7 @@ import {
 
 export default function GoalSeekPage() {
   const fmt = useCurrencyFormatter();
-  const { entries } = useGLStore();
+  const { entries } = useGLStore(useShallow((s) => ({ entries: s.entries })));
   const navigate = useNavigate();
   const [mode, setMode] = useState<'goalseek' | 'montecarlo' | 'breakeven'>('breakeven');
   const [targetProfit, setTargetProfit] = useState(1000000);

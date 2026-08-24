@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useReportStore } from '@/store/reportStore';
@@ -34,14 +35,24 @@ export default function ReportSchedulerPage() {
     document.title = 'FinPlan Pro — Report Scheduler';
   }, []);
 
-  const { entries, isLoading } = useGLStore();
+  const { entries, isLoading } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, isLoading: s.isLoading }))
+  );
   const {
     reports,
     scheduledReports,
     addScheduledReport,
     deleteScheduledReport,
     toggleScheduledReport,
-  } = useReportStore();
+  } = useReportStore(
+    useShallow((s) => ({
+      reports: s.reports,
+      scheduledReports: s.scheduledReports,
+      addScheduledReport: s.addScheduledReport,
+      deleteScheduledReport: s.deleteScheduledReport,
+      toggleScheduledReport: s.toggleScheduledReport,
+    }))
+  );
   const navigate = useNavigate();
 
   const availableReports = reports.map((r) => ({ id: r.id, name: r.name }));

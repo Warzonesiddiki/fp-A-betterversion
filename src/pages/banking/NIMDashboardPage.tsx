@@ -133,21 +133,9 @@ export default function NIMDashboardPage() {
           format="percent"
           sparklineData={stats.trend ?? undefined}
         />
-        <KPICard
-          title="Net Interest Income"
-          value={stats.netInterestMargin}
-          format="currency"
-        />
-        <KPICard
-          title="Yield on Earning Assets"
-          value={stats.yieldOnAssets}
-          format="percent"
-        />
-        <KPICard
-          title="Cost of Interest Funds"
-          value={stats.costOfFunds}
-          format="percent"
-        />
+        <KPICard title="Net Interest Income" value={stats.netInterestMargin} format="currency" />
+        <KPICard title="Yield on Earning Assets" value={stats.yieldOnAssets} format="percent" />
+        <KPICard title="Cost of Interest Funds" value={stats.costOfFunds} format="percent" />
       </div>
 
       <p className="text-xs text-[var(--text-muted)] mt-2">

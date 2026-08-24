@@ -1,4 +1,5 @@
 import { Outlet, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '@/store/uiStore';
 import { Sidebar } from './Sidebar';
 import { Navbar } from './Navbar';
@@ -7,6 +8,7 @@ import { PillarNav } from './PillarNav';
 import { DurabilityBanner } from './DurabilityBanner';
 import { HelpPanel } from './HelpPanel';
 import { ToastContainer } from '@/components/ui/ToastContainer';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { CommandPalette } from '@/components/ui/CommandPalette';
 import { SkipToContent } from '@/components/ui/SkipToContent';
 import { useFocusManagement } from '@/hooks/useFocusManagement';
@@ -39,7 +41,16 @@ export default function AppLayout() {
     toggleCommandPalette,
     helpPanelOpen,
     toggleHelpPanel,
-  } = useUIStore();
+  } = useUIStore(
+    useShallow((s) => ({
+      mobileSidebarOpen: s.mobileSidebarOpen,
+      closeMobileSidebar: s.closeMobileSidebar,
+      commandPaletteOpen: s.commandPaletteOpen,
+      toggleCommandPalette: s.toggleCommandPalette,
+      helpPanelOpen: s.helpPanelOpen,
+      toggleHelpPanel: s.toggleHelpPanel,
+    }))
+  );
   // UI-04: mirror the density preference onto <html data-density> so both
   // AG Grid and .fp-table resolve their row metrics from one source.
   useApplyDensity();
@@ -53,7 +64,9 @@ export default function AppLayout() {
 
   // F-03: hydrate the financial context from the URL once; then keep the URL
   // in sync with store changes (deterministic canonical serialization).
-  const { context, setContext } = useFinancialContextStore();
+  const { context, setContext } = useFinancialContextStore(
+    useShallow((s) => ({ context: s.context, setContext: s.setContext }))
+  );
   const activeRole = useAuthStore((s) => s.user?.role ?? 'Viewer');
 
   useEffect(() => {
@@ -177,6 +190,10 @@ export default function AppLayout() {
         </main>
       </div>
       <ToastContainer />
+      {/* W6-P0-08: single global host for the exported confirm.* API. Without
+          this mount every confirm promise deadlocked on first use; the store
+          queues concurrent callers and settles them front-first. */}
+      <ConfirmDialog />
       <HelpPanel
         pathname={location.pathname}
         isOpen={!!helpPanelOpen}

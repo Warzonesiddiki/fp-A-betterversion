@@ -103,7 +103,7 @@ const productColumns: Column<ProductRow>[] = [
 export default function InventoryPlanningPage() {
   const fmtCurrency = useCurrencyFormatter();
   const navigate = useNavigate();
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const [periodId, setPeriodId] = useState('P01');
 
   // Array.isArray guard keeps this honest under partial store hydration too

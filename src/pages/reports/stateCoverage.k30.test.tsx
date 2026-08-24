@@ -16,8 +16,13 @@ vi.mock('@/store/glStore', () => ({
   useGLStore: vi.fn(() => glState),
 }));
 
+// Selector-aware mock: report pages subscribe via useBudgetStore((s) => s.budgets)
+// (and similar single-field selectors), so the mock must apply a selector.
 vi.mock('@/store/budgetStore', () => ({
-  useBudgetStore: vi.fn(() => ({ budgets: [], lineItems: [] })),
+  useBudgetStore: vi.fn((selector?: (s: Record<string, unknown>) => unknown) => {
+    const state = { budgets: [], lineItems: [] };
+    return selector ? selector(state) : state;
+  }),
 }));
 
 vi.mock('@/engines/VarianceDecompositionEngine', () => ({

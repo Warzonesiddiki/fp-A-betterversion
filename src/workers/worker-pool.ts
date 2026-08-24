@@ -216,6 +216,9 @@ export class WorkerPool {
       // Clean up
       this.clearTimeout(managed!);
       managed!.worker.removeEventListener('message', messageHandler);
+      // W7D: also drop the error listener. Leaving it attached let a stale
+      // handler fire after this task settled and requeue/reject it again.
+      managed!.worker.removeEventListener('error', errorHandler);
       managed!.busy = false;
       managed!.currentTaskId = null;
 
