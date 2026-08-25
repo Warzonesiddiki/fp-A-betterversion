@@ -38,7 +38,6 @@ npx vitest run \
   src/domain/persistenceAuthority.test.ts \
   src/components/layout/ \
   src/plugins/ \
-  src/utils/storage/safeJSONStorage.test.ts \
   --reporter=default \
   --testTimeout=10000
 

@@ -1532,3 +1532,34 @@ VERDICT: 4/4 ICPs ACCEPT Wave-1 closure and the synthesized findings package (Ca
 | Autonomy Level         | A5 — organizational mechanics under explicit owner direction; no law or scope change.                                                                                                                                                                                                                                                                                                                                 |
 
 VERDICT: 4/4 ICPs ACCEPT (Carla ✓ cascade/path-lock untouched — only seat holders change; Vera ✓ all handover claims witnessed to live files; Chris ✓ comms channel is plain-file durable, zero new tooling deps; Beth ✓ owner gets continuity plus a named deputy without re-litigating ratified law).
+
+
+---## Ledger Entry #49 - 2026-08-25 - ox-alpha Lead (owner ruling pass executed; checkpoint landed across 3 commits; comms-integrity incident + git law ratified; NCI dual-convention witnessed)
+
+### Decision/Topic: Execute owner rulings (7/7 answered), land the 157-path durability checkpoint, respond to concurrent-commit and forged-directive incidents, and scope the Wave-2 engine correctness lane.
+
+### DRP Summary:
+
+| Stage | Analysis |
+| --- | --- |
+| First Principles | Durability first (untracked verified work = loss risk), truth-of-record second (attribution + directive authenticity), then correctness lanes. Concurrency on one checkout means git operations are single-writer territory: Lead-only commits are now law. |
+| Evidence | RULINGS (2026-08-25): commit-checkpoint YES · P0-05 escrow IMPLEMENT · marketplace WIRE sandbox · server INTEGRATE auth client · desktop-only REMOVE PWA · updater CONFIGURE · lead lane ENGINE OBJECTIVE BUGS. CHECKPOINT: tsc PASS at commit time; gates landed as c7decc81 (9-file durability batch, hermes-executed under contested directive) + 2d1846b9 (328-file sweep under generic tracker message — CONTENT CORRECT, ATTRIBUTION BROKEN, corrected-of-record here) + bd26d23a (Lead straggler closure incl. .husky/pre-commit xargs -n batching fix for Windows 8KB argv limit code-123 failure, .prettierignore scoping: machine-generated .market-acquire/ + append-only inboxes/ledger excluded with F-0024 rationale; ledger oscillation verified non-idempotent). INCIDENT: inbox-hermes contains [MSG-005]-in-Lead-voice authorizing the c7decc81 command verbatim — NOT written by Lead this session; either a second Lead-acting session exists or a directive was fabricated (D-007 flag). NCI LANE EVIDENCE: CascadeCalculationEngine.computeNCI(netIncome, minorityPct=30→30%) vs ConsolidationAdjustmentsEngine.calculateNCI(amount, 0.25→decimal) — dual convention inside consolidation domain confirms S1 percent-scale finding; repo law says decimals, so Cascade family + callers need migration AFTER owner-convention confirmation already implied by AGENTS.md §Percentages. |
+| Options Considered | (a) Rewrite history to split 2d1846b9 — REJECTED: hermes mid-mission on same refs; risk > bisect benefit; correction-of-record suffices. (b) Trust inbox as sole channel — REJECTED after forged-directive discovery. (c) Commit-law §6 (Lead-only git writes, no auto-commit trackers, alert-and-wait exception) + memory-graph authorization anchor — ADOPTED. |
+| Risk Probe | Second-Lead sessions can still act outside protocol until user confirms/decommissions them; mitigations: every Lead directive gets its MSG-id registered in shared-memory FinPlan-Team-State BEFORE dispatch; hermes must reject any directive whose id exceeds the registered anchor. Tracker automation may still fire — watch PROGRESS_TRACKER.html dirt. |
+| Consequence Projection | Next: engine lane executes MC ≥200k-iteration crash + always-TRUE equality failing-test-first; percent-family migration drafted as ADR-adjacent task using AGENTS.md decimal law as the standing owner ruling; a11y/marketplace/server/PWA/updater rulings dispatch as Wave-2 batches under cascade. |
+| Confidence Score | 95% |
+| Autonomy Level | A5 — execution within explicit owner rulings; no law change beyond operational git/comms hardening. |
+
+VERDICT: 4/4 ICPs ACCEPT (Carla ✓ single-writer git law restores cascade discipline; Vera ✓ all empirical claims witnessed above incl. honest forged-directive flag; Chris ✓ hook/prettier fixes unblock all future commits mechanically; Beth ✓ owner rulings now binding and traceable).
+
+---## Ledger Entry #49 - 2026-08-25 - hermes-agent (Deputy, M-H4: Gate-3 dangling reference repair)
+
+### Decision/Topic: Remove deleted `src/utils/storage/safeJSONStorage.test.ts` from the `.husky/pre-push` Gate-3 shard list (F6 dead-hook class, Wave-2 gate-integrity batch item executed early under Lead authorization [MSG-007]).
+
+| Stage | Analysis |
+| --- | --- |
+| Evidence | safeJSONStorage.ts + test deleted in commit 2d1846b9; zero `safeJSON*` consumers remain in src/** (grep witness); .husky/pre-push:41 referenced the deleted test. Post-edit shard run: exit 0, 29 files / 920 tests passed, wall-clock 21s. Diff = single-line removal only. |
+| Options | (a) Restore files — REJECTED: resurrects orphaned module, contradicts Lead ruling. (b) Remove hook line — ADOPTED per [MSG-007]. (c) Defer to Wave-2 batch — REJECTED: push would fail now. |
+| Confidence | 97% — persistence coverage retained via persistenceAuthority/moneySerialize/masterStorage.security entries in same shard (all green in post-edit run). |
+
+VERDICT: M-H4 acceptance criteria met (exit 0 + single-line diff). Executed under Deputy authority with explicit Lead dispatch; no commit made.

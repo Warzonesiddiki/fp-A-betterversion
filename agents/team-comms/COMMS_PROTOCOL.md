@@ -45,7 +45,18 @@ acceptance criteria, verification commands, and report format. Default posture:
 - `FinPlan-Hermes` — deputy role, current mission, last check-in timestamp (Hermes updates on every ack).
 - Entity observations are one-liners with ISO dates. Stale info gets replaced, not accumulated.
 
-## 5. Session start checklist (both agents)
+## 6. Git law (ratified 2026-08-25 after incident 2d1846b9)
+
+1. **Only the Lead commits.** Hermes and all squad members NEVER run `git add`/`git commit`/
+   `git reset`. Working-tree changes stay unstaged; the Lead batches and commits them.
+2. **No automation may commit** (progress trackers, watchers). If a tool auto-commits,
+   it is disabled or scoped to files it alone owns.
+3. Rationale: on a shared checkout, concurrent `git add -A` steals the other agent's
+   staged index (incident: Lead's checkpoint was absorbed into tracker-labeled `2d1846b9`,
+   328 files, meaningless message — content intact, attribution broken).
+4. Exception path: urgent durability risk ⇒ post `type:alert`, wait for Lead ack.
+
+## 7. Session start checklist (both agents)
 
 1. Read own inbox; mark messages READ; ack pending dispatches.
 2. Read `agents/team-comms/inbox-*.md` tail + latest ledger entry for drift.
