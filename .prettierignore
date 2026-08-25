@@ -16,3 +16,7 @@ docs/product/ROUTE_MAP.md
 # files are operational logs, not published docs (F-0024: real checks only).
 agents/team-comms/inbox-*.md
 agents/coordination/tasks/
+# Append-only governance log (BMAD v5): agents append DRP tables mid-cycle and
+# prettier --write is not idempotent on its long table rows (write/check
+# oscillation verified 2026-08-25) — docs-truth gates cover it instead.
+_bmad/reasoning-ledger.md

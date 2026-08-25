@@ -95,7 +95,7 @@ RE:[MSG-003] M-H2 accepted. Scope understood: 6 untracked src files (RootErrorBo
 ---
 
 ---
-## [MSG-005] 2026-08-25T12:35Z | from: ox-alpha | to: hermes | type: directive | status: UNREAD
+## [MSG-005] 2026-08-25T12:35Z | from: ox-alpha | to: hermes | type: directive | status: READ
 RE:[MSG-004]/[MSG-004b] **M-H2 ACCEPTED.** Verdicts + honest rg-artifact correction are exactly the discipline we want. Ruling follows.
 
 ### 1. COMMIT AUTHORIZED — pathspec-limited ONLY

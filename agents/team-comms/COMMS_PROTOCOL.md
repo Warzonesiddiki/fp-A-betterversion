@@ -6,14 +6,14 @@
 
 ## 1. Channels
 
-| Channel | Path / tool | Use |
-| --- | --- | --- |
-| **Primary — file inbox** | `agents/team-comms/inbox-hermes.md` / `inbox-ox-alpha.md` | All dispatches, reports, questions, handoffs. Works across any agent platform. |
-| **Shared memory graph** | MCP `memory` server → repo-local `MEMORY/mcp-memory.json` | Durable cross-session state (roster pointer, current wave, verdict queue). Both agents load the same `.mcp.json`. |
-| **OmniRoute MCP** | `.mcp.json` → `omniroute` server (`http://localhost:20128/api/mcp/sse`, Bearer `{env:OMNIROUTE_TOKEN}`) | 37 OmniRoute management tools (a2a tasks, context handoffs, memories). Loopback-only by server policy. Requires opencode restart after env var change. |
-| **Task board** | `KANBAN.json` | Mission cards with lifecycle `todo → in_progress → done`, each closed with an evidence summary. |
-| **Supplementary — session-message** | `$AIONUI_HELPER_BIN session send-message` | Only when both agents run as opencode/AionUi conversations AND the user wires the conversation IDs. File inbox stays authoritative either way. |
-| **Permanent record** | `_bmad/reasoning-ledger.md` (Lead appends), personal memory logs in `agents/ultimate-team/personas/` | Decisions, never chat. |
+| Channel                             | Path / tool                                                                                             | Use                                                                                                                                                    |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Primary — file inbox**            | `agents/team-comms/inbox-hermes.md` / `inbox-ox-alpha.md`                                               | All dispatches, reports, questions, handoffs. Works across any agent platform.                                                                         |
+| **Shared memory graph**             | MCP `memory` server → repo-local `MEMORY/mcp-memory.json`                                               | Durable cross-session state (roster pointer, current wave, verdict queue). Both agents load the same `.mcp.json`.                                      |
+| **OmniRoute MCP**                   | `.mcp.json` → `omniroute` server (`http://localhost:20128/api/mcp/sse`, Bearer `{env:OMNIROUTE_TOKEN}`) | 37 OmniRoute management tools (a2a tasks, context handoffs, memories). Loopback-only by server policy. Requires opencode restart after env var change. |
+| **Task board**                      | `KANBAN.json`                                                                                           | Mission cards with lifecycle `todo → in_progress → done`, each closed with an evidence summary.                                                        |
+| **Supplementary — session-message** | `$AIONUI_HELPER_BIN session send-message`                                                               | Only when both agents run as opencode/AionUi conversations AND the user wires the conversation IDs. File inbox stays authoritative either way.         |
+| **Permanent record**                | `_bmad/reasoning-ledger.md` (Lead appends), personal memory logs in `agents/ultimate-team/personas/`    | Decisions, never chat.                                                                                                                                 |
 
 ## 2. Message format (append to the BOTTOM of the target inbox; never reorder or delete)
 
@@ -26,6 +26,7 @@
 ```
 
 Rules:
+
 1. **Append-only.** Never edit or delete another agent's message.
 2. Recipient marks `status: READ` upon intake, then replies with a `type: ack` message referencing the MSG id.
 3. One thread per MSG id (`RE:[MSG-###]` in the subject line).

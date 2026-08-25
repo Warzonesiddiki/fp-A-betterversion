@@ -18,7 +18,7 @@
 - **Governed:** policy/audit/tenant/lifecycle evidence.
 - **Enterprise-ready:** governed plus performance, accessibility, operations, and customer-workflow proof.
 
-**Matrix rule** (CAPABILITY_TRUTH_MATRIX.md L18): _"A blank or `UNVERIFIED` value is not a failure; it is a prohibition on claiming that maturity."_
+**Matrix rule** (CAPABILITY*TRUTH_MATRIX.md L18): *"A blank or `UNVERIFIED` value is not a failure; it is a prohibition on claiming that maturity."\_
 
 ## 2. Method
 
