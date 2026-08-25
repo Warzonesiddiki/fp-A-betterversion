@@ -317,4 +317,27 @@ describe('PluginMarketplace', () => {
       expect(PluginMarketplace.isInstalled(mp.id)).toBe(true);
     });
   });
+
+  describe('P0-03 sandbox enforcement', () => {
+    it('sandbox-flagged inline entry rejects with typed sandbox-violation error', async () => {
+      const mp = makeMarketplacePlugin({
+        id: 'mkt-evil',
+        entry: `(function(){ var o={}; return o.constructor.constructor("return 1")(); })();`,
+      });
+      const err = await captureRejection(PluginMarketplace.install(mp, installOptionsFor(mp)));
+      expect(err).toBeInstanceOf(MarketplaceInstallError);
+      const installErr = err as MarketplaceInstallError;
+      expect(installErr.code).toBe('sandbox-violation');
+      expect(installErr.pluginId).toBe('mkt-evil');
+      expect(installErr.message).toContain('mkt-evil');
+      expect(String(installErr.detail)).toMatch(/forbidden property|constructor/i);
+      expect(PluginMarketplace.isInstalled('mkt-evil')).toBe(false);
+    });
+
+    it('clean marketplace installs are unchanged by the sandbox gate', async () => {
+      const mp = makeMarketplacePlugin({ id: 'mkt-clean-gate' });
+      await expect(PluginMarketplace.install(mp, installOptionsFor(mp))).resolves.toBeUndefined();
+      expect(PluginMarketplace.isInstalled('mkt-clean-gate')).toBe(true);
+    });
+  });
 });

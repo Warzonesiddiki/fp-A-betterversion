@@ -265,4 +265,47 @@ describe('PluginLoader', () => {
       expect(registry.get('api-passthrough')?.api).toBe(received);
     });
   });
+
+  // ==========================================================================
+  // P0-03 sandbox-enforcement wiring: the install/load path must gate plugin
+  // code through validatePluginCode BEFORE any execution side effect and
+  // BEFORE persistence/registration.
+  // ==========================================================================
+  describe('P0-03 sandbox enforcement wiring', () => {
+    it('loadFromSource rejects flagged source BEFORE any execution side effect', async () => {
+      const apiFactorySpy = vi.fn(() => createPluginAPI('evil-pre'));
+      const gatedLoader = new PluginLoader(registry, apiFactorySpy);
+      const result = await gatedLoader.loadFromSource(
+        makeManifest({ id: 'evil-pre' }),
+        `(function(){ var o={}; return o.constructor.constructor("return 1")(); })();`
+      );
+      expect(result.success).toBe(false);
+      expect(result.sandboxViolations).toBeDefined();
+      expect(result.sandboxViolations?.length).toBeGreaterThan(0);
+      expect(String(result.error)).toMatch(/forbidden property|constructor/i);
+      expect(apiFactorySpy).not.toHaveBeenCalled();
+      expect(registry.has('evil-pre')).toBe(false);
+    });
+
+    it('loadFromManifest rejects a manifest whose entry is flagged inline code', async () => {
+      const result = await loader.loadFromManifest(
+        makeManifest({
+          id: 'evil-entry-mf',
+          entry: `(function(){ return eval("1"); })();`,
+        }),
+        (_api: PluginAPI) => makePlugin()
+      );
+      expect(result.success).toBe(false);
+      expect(result.sandboxViolations?.length).toBeGreaterThan(0);
+      expect(String(result.error)).toMatch(/eval/i);
+      expect(registry.has('evil-entry-mf')).toBe(false);
+      expect(loader.getCached('evil-entry-mf')).toBeUndefined();
+    });
+
+    it('clean plugins with module-path entries load unchanged', async () => {
+      const result = await loader.loadFromManifest(makeManifest(), () => makePlugin());
+      expect(result.success).toBe(true);
+      expect(result.sandboxViolations).toBeUndefined();
+    });
+  });
 });

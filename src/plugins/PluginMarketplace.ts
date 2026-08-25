@@ -21,7 +21,8 @@ export type MarketplaceInstallErrorCode =
   | 'incompatible-version'
   | 'missing-dependency'
   | 'permission-consent-required'
-  | 'load-failed';
+  | 'load-failed'
+  | 'sandbox-violation';
 
 /**
  * Typed install failure. Callers/UI must branch on `code` instead of parsing
@@ -178,6 +179,14 @@ export class PluginMarketplace {
     }
     const result = await loader.loadFromManifest(manifest, options.factory);
     if (!result.success) {
+      if (result.sandboxViolations && result.sandboxViolations.length > 0) {
+        throw new MarketplaceInstallError(
+          'sandbox-violation',
+          manifest.id,
+          `Plugin "${manifest.id}" rejected by the plugin sandbox`,
+          result.error
+        );
+      }
       // Previously swallowed: the LoadResult was ignored and the plugin was
       // registered anyway. The loader's validation/load error now surfaces.
       throw new MarketplaceInstallError(

@@ -11,6 +11,7 @@ import type {
   PluginType,
   PluginAPI,
 } from './types';
+import { findEntryCodeViolations, PluginSandboxViolationError } from './PluginSandbox';
 
 export type PluginEventType = 'install' | 'activate' | 'deactivate' | 'uninstall' | 'error';
 
@@ -34,6 +35,11 @@ export class PluginRegistry {
   register(manifest: PluginManifest, plugin: Plugin | null = null): PluginRegistryEntry {
     if (this.entries.has(manifest.id)) {
       throw new Error(`Plugin "${manifest.id}" is already registered`);
+    }
+
+    const entryViolations = findEntryCodeViolations(manifest.entry);
+    if (entryViolations) {
+      throw new PluginSandboxViolationError(manifest.id, entryViolations);
     }
 
     const entry: PluginRegistryEntry = {

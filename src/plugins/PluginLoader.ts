@@ -4,7 +4,7 @@
 
 import type { PluginManifest, Plugin, PluginAPI } from './types';
 import { PluginRegistry } from './PluginRegistry';
-import { executeSandboxed } from './PluginSandbox';
+import { executeSandboxed, findEntryCodeViolations, validatePluginCode } from './PluginSandbox';
 
 export interface PluginManifestFile {
   manifest: PluginManifest;
@@ -15,6 +15,7 @@ export interface LoadResult {
   success: boolean;
   pluginId: string;
   error?: string;
+  sandboxViolations?: readonly string[];
 }
 
 export interface ValidationResult {
@@ -145,6 +146,17 @@ export class PluginLoader {
   // Loading
   // ---------------------------------------------------------------------------
 
+  private gateEntryCode(manifest: PluginManifest): LoadResult | null {
+    const violations = findEntryCodeViolations(manifest.entry);
+    if (!violations) return null;
+    return {
+      success: false,
+      pluginId: manifest.id,
+      error: `Sandbox scan rejected plugin entry: ${violations.join('; ')}`,
+      sandboxViolations: violations,
+    };
+  }
+
   /**
    * Load plugin from a manifest + module factory function.
    * The factory receives the PluginAPI and must return a Plugin object.
@@ -161,6 +173,9 @@ export class PluginLoader {
     if (!validation.valid) {
       return { success: false, pluginId: manifest.id, error: validation.errors.join('; ') };
     }
+
+    const entryGate = this.gateEntryCode(manifest);
+    if (entryGate) return entryGate;
 
     try {
       const api = this.apiFactory(manifest.id);
@@ -212,6 +227,20 @@ export class PluginLoader {
     const validation = this.validate(manifest);
     if (!validation.valid) {
       return { success: false, pluginId: manifest.id, error: validation.errors.join('; ') };
+    }
+
+    const entryGate = this.gateEntryCode(manifest);
+    if (entryGate) return entryGate;
+
+    const sourceVerdict = validatePluginCode(source);
+    if (!sourceVerdict.safe) {
+      const violations = [sourceVerdict.reason ?? 'plugin source failed the sandbox scan'];
+      return {
+        success: false,
+        pluginId: manifest.id,
+        error: `Sandbox scan rejected plugin source: ${violations.join('; ')}`,
+        sandboxViolations: violations,
+      };
     }
 
     try {

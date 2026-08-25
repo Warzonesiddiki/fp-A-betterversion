@@ -976,3 +976,33 @@ function checkIdentifierReferences(
   }
   return null;
 }
+
+// ---------------------------------------------------------------------------
+// P0-03 install/load enforcement helpers
+// ---------------------------------------------------------------------------
+
+export class PluginSandboxViolationError extends Error {
+  readonly pluginId: string;
+  readonly violations: readonly string[];
+
+  constructor(pluginId: string, violations: readonly string[]) {
+    super(`Plugin "${pluginId}" rejected by sandbox scan: ${violations.join('; ')}`);
+    this.name = 'PluginSandboxViolationError';
+    this.pluginId = pluginId;
+    this.violations = [...violations];
+  }
+}
+
+const MODULE_PATH_SPECIFIER = /^[A-Za-z0-9_@./\\-]+$/;
+
+export function isModulePathSpecifier(entry: unknown): boolean {
+  return typeof entry === 'string' && entry.length > 0 && MODULE_PATH_SPECIFIER.test(entry);
+}
+
+export function findEntryCodeViolations(entry: unknown): string[] | null {
+  if (typeof entry !== 'string') return null;
+  if (entry.trim().length === 0 || isModulePathSpecifier(entry)) return null;
+  const verdict = validatePluginCode(entry);
+  if (verdict.safe) return null;
+  return [verdict.reason ?? 'plugin entry failed the sandbox scan'];
+}
