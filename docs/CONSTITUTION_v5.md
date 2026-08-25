@@ -100,7 +100,7 @@ Owner directive → board dispatch (dormancy protocol, timeout-safe sequencing) 
 | routes           | `scripts/generate-route-map.js --check` output                                                                           | **228 routes / 32 top-level targets**; ROUTE_MAP.md regenerated, `--check` exit 0 "up to date" @2026-08-25 UTC                                                                                                                                                                           |
 | LOC              | pinned scope (src vs src+server/src) + blank-line convention                                                             | **PRIMARY blank-inclusive 481,848** @2026-08-25 UTC post-fix, scope `src/**/*.ts`+`*.tsx` frontend-only (pre-fix witness 481,835; Δ+13 = prettier reflow in 4 files); SECONDARY strict non-whitespace **437,772** (loose-definition alias 437,780); witnessed PS .NET + Node dual-engine |
 
-Stamp note (Part-6 Signal Panel context, W2-A·4): bundle from FRESH dist @2026-08-25 — main chunk 118.72KB gzip (limit 150 PASS); total JS 2007.92KB gzip = 98.0% of 2048KB budget (WARN ≥90%); vitest P0 shard post-fix 29 files / 920 tests GREEN.
+Stamp note (Part-6 Signal Panel context, W2-A·4): bundle from FRESH dist @2026-08-26 UTC (dist mtime 2026-08-26 04:18:32 +0330, HEAD ab6345b4) — main chunk 118.97KB gzip (limit 150 PASS); total JS 2016.81KB gzip = 98.5% of 2048KB budget (WARN ≥90%, under limit); vitest P0 shard 29 files / 932 tests GREEN.
 
 Rule: numbers in prose are FORBIDDEN; reference this table. Regenerated every wave close (extends verify-readme-stats pattern to the constitution).
 

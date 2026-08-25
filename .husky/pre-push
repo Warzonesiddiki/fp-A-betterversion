@@ -41,7 +41,7 @@ npx vitest run \
   --reporter=default \
   --testTimeout=10000
 
-# Gate 4: Production build (includes tsc + eslint + vite + PWA).
+# Gate 4: Production build (includes tsc + eslint + vite).
 echo "→ npm run build"
 npm run build
 

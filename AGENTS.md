@@ -116,7 +116,7 @@ Husky pre-push (`.husky/pre-push` — canon for this section, rewritten per F-00
 
 1. **Gate 1** — TypeScript: `tsc --noEmit`
 2. **Gate 2** — ESLint zero-warnings: `eslint src --max-warnings 0`
-3. **Gate 3** — Vitest P0 financial/security shard (`--testTimeout=10000`): FXEngine, ConsolidationEngine, SafeMathParser, glValidation, glStore.smoke, spreadsheetSanitize, masterStorage.security, moneySerialize, persistenceAuthority, components/layout/, plugins/, safeJSONStorage (full suite runs in CI)
+3. **Gate 3** — Vitest P0 financial/security shard (`--testTimeout=10000`): FXEngine, ConsolidationEngine, SafeMathParser, glValidation, glStore.smoke, spreadsheetSanitize, masterStorage.security, moneySerialize, persistenceAuthority, components/layout/, plugins/ (full suite runs in CI)
 4. **Gate 4** — Production build: `npm run build` (includes tsc + eslint + vite)
 5. **Gate 5** — Bundle budget: `scripts/bundle-check.js`
 6. **Gate 6** — Version consistency: package.json / Cargo.toml / tauri.conf.json / lib.rs
