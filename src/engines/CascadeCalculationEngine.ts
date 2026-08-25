@@ -46,6 +46,12 @@
  * primitive (src/utils/money.ts, decimal.js, ROUND_HALF_UP). Amounts round to
  * cents; ownership % and rates use higher precision via multiplyMoney/divideMoney.
  * No raw + - * / on currency values remains.
+ *
+ * PERCENTAGE CONVENTION (ledger #47 S1): computeNCI takes minorityShare as a
+ * DECIMAL in [0,1] per AGENTS.md (0.15 = 15%), matching
+ * ConsolidationAdjustmentsEngine.calculateNCI(nciPercentage). Out-of-range or
+ * percent-scale inputs throw InvalidOwnershipShareError (100x guard).
+ * OwnershipNode.ownershipPct / CascadeStep fields remain 0-100 percent scale.
  */
 import {
   addMoney,
@@ -55,6 +61,28 @@ import {
   sumMoney,
   roundTo,
 } from '../utils/money';
+
+// --- Errors ---
+
+/**
+ * Thrown when an ownership/minority share is non-finite or outside [0,1].
+ * A value >1 almost always means a percent-scale input (30 for 30%) was
+ * passed where a decimal share (0.30) is required — i.e. a 100x error.
+ * Error pattern follows FXEngine.InvalidFinancialInputError.
+ */
+export class InvalidOwnershipShareError extends Error {
+  readonly field: string;
+  readonly value: unknown;
+
+  constructor(field: string, value: unknown) {
+    super(
+      `Invalid ${field} (must be a finite decimal share in [0,1], e.g. 0.25 = 25%): ${String(value)}`
+    );
+    this.name = 'InvalidOwnershipShareError';
+    this.field = field;
+    this.value = value;
+  }
+}
 
 // --- Type Definitions ---
 
@@ -232,9 +260,15 @@ export class CascadeCalculationEngine {
   }
 
   // 9. Compute NCI (Non-Controlling Interest) for one entity
-  static computeNCI(netIncome: number, minorityPct: number): number {
-    const frac = divideMoney(minorityPct, 100);
-    return roundTo(multiplyMoney(netIncome, frac));
+  // CONVENTION (AGENTS.md DECIMALS): minorityShare is a decimal in [0,1]
+  // (0.25 = 25%). Percent-scale inputs (>1, e.g. 30 for 30%) throw
+  // InvalidOwnershipShareError so a percent/decimal mix-up fails loudly
+  // instead of producing a silent 100x error.
+  static computeNCI(netIncome: number, minorityShare: number): number {
+    if (!Number.isFinite(minorityShare) || minorityShare < 0 || minorityShare > 1) {
+      throw new InvalidOwnershipShareError('minorityShare', minorityShare);
+    }
+    return roundTo(multiplyMoney(netIncome, minorityShare));
   }
 
   // 10. Compute FX impact per ASC 830 (current-rate for monetary items)
@@ -283,7 +317,10 @@ export class CascadeCalculationEngine {
       const icElim = icElimList.length > 0 ? roundTo(sumMoney(icElimList)) : 0;
       const ni = netIncomeByEntity.get(entity.entityId) ?? 0;
       const nciPct = 100 - cumOwnership;
-      const nci = CascadeCalculationEngine.computeNCI(ni, nciPct);
+      // DECIMALS convention: convert percent-scale NCI % to a [0,1] share.
+      // nciPct carries ≤4dp (cumulative ownership rounds to 4) ⇒ /100 ≤6dp,
+      // so roundTo(…, 6) is lossless before the validated computeNCI call.
+      const nci = CascadeCalculationEngine.computeNCI(ni, roundTo(divideMoney(nciPct, 100), 6));
       let fxImpact = 0;
       if (entity.currency !== entity.functionalCurrency) {
         const rate = fxRates.find(
