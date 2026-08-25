@@ -31,4 +31,11 @@ describe('BackupRestorePage', () => {
     render(<BackupRestorePage />);
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
   });
+
+  it('renders the recovery-code status/enroll card', async () => {
+    const { default: BackupRestorePage } = await import('./BackupRestorePage');
+    render(<BackupRestorePage />);
+    expect(screen.getByTestId('recovery-code-card')).toBeInTheDocument();
+    expect(screen.getAllByText(/Account Recovery Code/i).length).toBeGreaterThan(0);
+  });
 });
