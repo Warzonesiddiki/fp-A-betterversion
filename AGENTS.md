@@ -99,7 +99,7 @@ Import `masterStorage` from `@/utils/masterStorage` for persistence. Store namin
 
 - Vite 8 manual chunks: vite.config.ts defines 10 chunk rules — ai-vendor (@huggingface/transformers optional peer; no chunk emitted while uninstalled), react-vendor, icon-vendor, grid-react-vendor, grid-community-vendor, chart-vendor, excel-vendor + excel-core-vendor (exceljs split; the dist-entry rule can emit no separate file), pdf-vendor, db-vendor. No form-vendor or state-vendor chunks exist; per-build sizes are gated by scripts/bundle-check.js budgets.
 - Tailwind CSS 4 via `@tailwindcss/vite` plugin (not PostCSS)
-- PWA via vite-plugin-pwa (workbox, autoUpdate)
+- Tauri desktop only — no PWA/web-manifest surface (owner ruling 2026-08-25: vite-plugin-pwa uninstalled)
 - Tauri desktop: `npm run tauri:dev` / `npm run tauri:build`
 - CI: Node 22, `npm ci`
 - Bundle limits: main chunk 150KB gzip, total JS 2MB gzip (`scripts/bundle-check.js`)
@@ -117,7 +117,7 @@ Husky pre-push (`.husky/pre-push` — canon for this section, rewritten per F-00
 1. **Gate 1** — TypeScript: `tsc --noEmit`
 2. **Gate 2** — ESLint zero-warnings: `eslint src --max-warnings 0`
 3. **Gate 3** — Vitest P0 financial/security shard (`--testTimeout=10000`): FXEngine, ConsolidationEngine, SafeMathParser, glValidation, glStore.smoke, spreadsheetSanitize, masterStorage.security, moneySerialize, persistenceAuthority, components/layout/, plugins/, safeJSONStorage (full suite runs in CI)
-4. **Gate 4** — Production build: `npm run build` (includes tsc + eslint + vite + PWA)
+4. **Gate 4** — Production build: `npm run build` (includes tsc + eslint + vite)
 5. **Gate 5** — Bundle budget: `scripts/bundle-check.js`
 6. **Gate 6** — Version consistency: package.json / Cargo.toml / tauri.conf.json / lib.rs
 7. **Gate 7** — README claim check (F-0034)

@@ -100,7 +100,7 @@ Import `masterStorage` from `@/utils/masterStorage` for persistence. Store namin
 
 - Vite 7 with manual chunks: react-vendor, chart-vendor, grid-vendor, form-vendor, state-vendor, ai-vendor
 - Tailwind CSS 4 via `@tailwindcss/vite` plugin (not PostCSS)
-- PWA via vite-plugin-pwa (workbox, autoUpdate)
+- Desktop-only (no PWA — vite-plugin-pwa removed per owner ruling 2026-08-25)
 - Tauri desktop: `npm run tauri:dev` / `npm run tauri:build`
 - CI: Node 22, `npm ci`
 

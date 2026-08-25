@@ -2,7 +2,7 @@
 
 > **Purpose:** This document is SO detailed that someone could replicate the entire project from it.
 > **Generated:** 2026-05-20
-> **Build Status:** PASS (Vite + PWA)
+> **Build Status:** PASS (Vite)
 > **Test Status:** 5990+ tests pass
 
 ---
@@ -606,8 +606,6 @@ export class SomeEngine {
 
 ### vite.config.ts
 
-- PWA via vite-plugin-pwa
-- Workbox for service worker
 - Path alias: @/ → src/
 - Test config: threads pool, 4 workers
 
