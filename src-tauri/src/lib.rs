@@ -59,10 +59,14 @@ pub fn run_with_builder(builder: tauri::Builder<tauri::Wry>) {
         // State<'_, SecureStorageState> panics at invoke-time unless this
         // state is managed before the event loop runs.
         .manage(secure_storage::initial_state())
-        // F-0007 fix: updater plugin is registered but disabled in tauri.conf.json.
-        // The stale startup check (handle.updater().check().await) has been removed.
-        // Re-enable the updater check only when controlled update infrastructure
-        // (endpoints + signing key + tests) is in place (F-0020).
+        // F-0007 fix / audit resolution (CONFIGURE): the updater plugin is now
+        // genuinely registered AND statically configured in tauri.conf.json
+        // (plugins.updater) with a placeholder .invalid endpoint and placeholder
+        // pubkey. It is dormant: no update check runs at startup and the webview
+        // cannot invoke it until an operator completes docs/security/UPDATER_SETUP.md
+        // (real signing keys + controlled endpoint). The stale startup
+        // updater().check() call remains removed (F-0020).
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             commands::get_app_info,
             secure_storage::secure_storage_store,

@@ -31,6 +31,14 @@
       "tooltip": "FinPlan Pro"
     }
   },
+  "plugins": {
+    "updater": {
+      "pubkey": "REPLACE_WITH_REAL_PUBKEY_FROM-tauri-signer-generate-SEE-docs/security/UPDATER_SETUP.md",
+      "endpoints": [
+        "https://updates.example.invalid/{{target}}/{{current_version}}"
+      ]
+    }
+  },
   "bundle": {
     "active": true,
     "targets": "all",
@@ -52,6 +60,7 @@
     "longDescription": "FinPlan Pro is an enterprise-grade FP&A platform for budgeting, forecasting, consolidation, and financial reporting.",
     "copyright": "Copyright 2026 FinPlan Pro. All rights reserved.",
     "licenseFile": "",
+    "createUpdaterArtifacts": true,
     "fileAssociations": [
       {
         "ext": [
