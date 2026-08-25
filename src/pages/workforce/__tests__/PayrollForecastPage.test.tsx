@@ -102,9 +102,12 @@ describe('PayrollForecastPage', () => {
     expect(screen.getAllByText(/department/i).length).toBeGreaterThan(0);
   });
 
-  it('renders charts section', () => {
+  it('renders projection disclosure instead of chart exhibits', () => {
+    // Fabrication remediation: the invented Jan-Dec forecast/headcount charts
+    // were removed; the disclosure card replaces them.
     render(<PayrollForecastPage />);
-    expect(screen.getAllByTestId('responsive-container').length).toBeGreaterThan(0);
+    expect(screen.getByText(/monthly projection/i)).toBeTruthy();
+    expect(screen.queryByTestId('responsive-container')).toBeNull();
   });
 
   it('renders export button', () => {
