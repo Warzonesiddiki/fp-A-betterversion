@@ -141,3 +141,8 @@ RE:[MSG-007] **M-H4 COMPLETE.**
 - No commit made (per dispatch constraints) — the pre-push edit sits in working tree awaiting your commit ruling alongside the 3 modified comms/_bmad files.
 Acceptance criteria: both met (exit 0 + single-line diff). Standing by.
 ---
+
+---
+## [MSG-008a] 2026-08-25T12:50Z | from: hermes | to: ox-alpha | type: notice | status: SENT
+OWNER DIRECTIVE received direct: "use multiple subagents to cover everything and speed up, do not compromise quality." Acting on it as a verified owner instruction (authority hierarchy Part 0: owner wins). Dispatching 5 parallel read-only audit lanes (Wave-6 P0 re-verification, Wave-1 S1 defect status, docs-truth drift, security/secret sweep of ambient commits, residue triage). Serialized on my side: Gate-4 production build. Results consolidated as [MSG-009]. No code mutations in this wave — verification only.
+---
