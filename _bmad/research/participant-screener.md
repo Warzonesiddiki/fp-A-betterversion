@@ -4,13 +4,13 @@
 
 ## Required sample
 
-| Cohort | Target interviews | Must have done recently | Exclude if |
-|---|---:|---|---|
-| CFO / VP Finance | 4–5 | approved budget, reforecast, board review, or finance-system spend | no influence on process/tooling decision |
-| Controller / consolidation lead | 4–5 | month-end close, reconciliation, certification, audit support | only theoretical/consulting knowledge |
-| FP&A lead / analyst | 4–5 | forecast/model update and variance narrative | no hands-on planning workflow |
-| IT / security / enterprise architect | 3–4 | reviewed finance-data SaaS or endpoint/deployment architecture | cannot discuss policy at a useful level |
-| Implementation partner / finance transformation lead | 2–3 | deployed or replaced a planning/close platform | vendor-only sales role without delivery experience |
+| Cohort                                               | Target interviews | Must have done recently                                            | Exclude if                                         |
+| ---------------------------------------------------- | ----------------: | ------------------------------------------------------------------ | -------------------------------------------------- |
+| CFO / VP Finance                                     |               4–5 | approved budget, reforecast, board review, or finance-system spend | no influence on process/tooling decision           |
+| Controller / consolidation lead                      |               4–5 | month-end close, reconciliation, certification, audit support      | only theoretical/consulting knowledge              |
+| FP&A lead / analyst                                  |               4–5 | forecast/model update and variance narrative                       | no hands-on planning workflow                      |
+| IT / security / enterprise architect                 |               3–4 | reviewed finance-data SaaS or endpoint/deployment architecture     | cannot discuss policy at a useful level            |
+| Implementation partner / finance transformation lead |               2–3 | deployed or replaced a planning/close platform                     | vendor-only sales role without delivery experience |
 
 ## Segment quotas
 

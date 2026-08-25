@@ -26,10 +26,38 @@ describe('isTauri', () => {
   });
 
   it('should return false in jsdom (no Tauri runtime)', async () => {
-    // In a jsdom test environment, neither __TAURI_INTERNALS nor __TAURI__
-    // are present on the window object, so isTauri() returns false.
+    // In a jsdom test environment, __TAURI_INTERNALS__ is not present on the
+    // window object, so isTauri() returns false.
     const result = await isTauri();
     expect(result).toBe(false);
+  });
+
+  // Tauri v2 contract: the real internals key is `__TAURI_INTERNALS__`.
+  it('returns true when only __TAURI_INTERNALS__ is present', async () => {
+    const w = window as unknown as Record<string, unknown>;
+    w.__TAURI_INTERNALS__ = {};
+    try {
+      expect(await isTauri()).toBe(true);
+    } finally {
+      delete w.__TAURI_INTERNALS__;
+    }
+  });
+
+  // Regression (lane B11 P0): the legacy `__TAURI__` key requires
+  // withGlobalTauri:true, which tauri.conf.json does not set. It must NOT
+  // enable Tauri mode — otherwise packaged desktop builds silently fall
+  // back to the sql.js/localStorage backend.
+  it('does NOT treat legacy __TAURI__ alone as a Tauri runtime', async () => {
+    const w = window as unknown as Record<string, unknown>;
+    delete w.__TAURI_INTERNALS__;
+    w.__TAURI__ = true;
+    try {
+      expect(await isTauri()).toBe(false);
+      expect(mockLoad).not.toHaveBeenCalled();
+      expect(await tauriSqlStorage.getItem('ui-store')).toBeNull();
+    } finally {
+      delete w.__TAURI__;
+    }
   });
 
   it('should not throw when called', async () => {
@@ -74,9 +102,9 @@ describe('tauriSqlStorage', () => {
     // resetAllMocks (not clearAllMocks): stale mockRejectedValue
     // implementations now propagate as typed errors after W6-P0-04.
     vi.resetAllMocks();
-    // The Tauri runtime flag makes getDb() take the lazy @tauri-apps/plugin-sql
-    // path (mocked above), mirroring the desktop runtime.
-    (window as unknown as Record<string, unknown>).__TAURI__ = true;
+    // Tauri v2 internals key (see isTauriRuntime) — the legacy `__TAURI__`
+    // key must never enable Tauri mode.
+    (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__ = {};
     mockLoad.mockResolvedValue({
       select: mockSelect,
       execute: mockExecute,

@@ -2,6 +2,7 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, vi } from 'vitest';
+import { useState } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Modal } from './Modal';
 
@@ -144,5 +145,80 @@ describe('Modal', () => {
       expect(titleEl).toBeTruthy();
       expect(titleEl?.textContent).toContain('Accessible Title');
     }
+  });
+});
+
+describe('Modal focus management (Wave-7E a11y-modal-grid)', () => {
+  interface HarnessProps {
+    isOpen: boolean;
+    onClose: () => void;
+  }
+  function Harness({ isOpen, onClose }: HarnessProps) {
+    return (
+      <>
+        <button type="button" onClick={onClose}>
+          Open Settings
+        </button>
+        <Modal isOpen={isOpen} onClose={onClose} title="Settings">
+          <button type="button">Alpha</button>
+          <button type="button">Beta</button>
+        </Modal>
+      </>
+    );
+  }
+
+  it('restores focus to the exact trigger element on close (WCAG 2.4.3)', () => {
+    const onClose = vi.fn();
+    const { rerender } = render(<Harness isOpen={false} onClose={onClose} />);
+    const trigger = screen.getByRole('button', { name: 'Open Settings' });
+    trigger.focus();
+    rerender(<Harness isOpen={true} onClose={onClose} />);
+    rerender(<Harness isOpen={false} onClose={onClose} />);
+    expect(document.activeElement).toBe(trigger);
+  });
+
+  it('keeps mid-dialog focus when the parent re-renders with a fresh onClose identity', () => {
+    const { rerender } = render(<Harness isOpen={false} onClose={() => undefined} />);
+    screen.getByRole('button', { name: 'Open Settings' }).focus();
+    // Open, then simulate a parent re-render passing a NEW inline closure while open.
+    rerender(<Harness isOpen={true} onClose={() => undefined} />);
+    const beta = screen.getByRole('button', { name: 'Beta' });
+    beta.focus();
+    expect(document.activeElement).toBe(beta);
+    rerender(<Harness isOpen={true} onClose={() => undefined} />);
+    // The open-effect must not tear down: focus stays exactly where the user was.
+    expect(document.activeElement).toBe(beta);
+  });
+
+  it('Escape closes only the topmost of stacked modals despite parent re-renders', () => {
+    function StackHarness() {
+      const [aOpen, setAOpen] = useState(true);
+      const [bOpen, setBOpen] = useState(false);
+      return (
+        <>
+          <Modal isOpen={aOpen} onClose={() => setAOpen(false)} title="Outer">
+            <button type="button" onClick={() => setBOpen(true)}>
+              Open Inner
+            </button>
+          </Modal>
+          <Modal isOpen={bOpen} onClose={() => setBOpen(false)} title="Inner">
+            <button type="button">InnerBtn</button>
+          </Modal>
+        </>
+      );
+    }
+    const { rerender } = render(<StackHarness />);
+    // Open Inner OVER Outer through the real UI path.
+    fireEvent.click(screen.getByRole('button', { name: 'Open Inner' }));
+    expect(screen.getByRole('dialog', { name: 'Inner' })).toBeInTheDocument();
+    // Churn: parent re-render passing fresh inline closures while both are open.
+    rerender(<StackHarness />);
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog', { name: 'Inner' })).not.toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'Outer' })).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

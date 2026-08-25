@@ -9,29 +9,29 @@
 
 ## 1. Architecture outcomes traced to requirements
 
-| Requirement | Architecture response |
-|---|---|
-| PRD E1 global context and trust states | Typed `FinancialContext`, server-authorized scope resolution, shared lifecycle/event vocabulary, URL/saved-view serialization. |
-| PRD E2 tenant/policy/evidence | Identity gateway, policy enforcement point in API, PostgreSQL RLS, append-only audit/evidence service, immutable artifact sink. |
-| PRD E3 actuals/master data | Canonical master-data and ingestion bounded contexts, staging/quarantine pipeline, mapping versions, idempotent commands. |
-| PRD E4 close/consolidation | Asynchronous, reproducible domain runs with frozen input/rule/FX versions and workflow gates. |
-| PRD E5 analyst modeling/offline | Local workspace cache + command outbox + authoritative command API + revision/conflict policy. |
-| PRD E6 decision workspace | Read/query projections serving materiality/action/evidence views; no direct client database access. |
-| PRD E7 reporting | Semantic metric catalog, report definition/version, immutable snapshot artifact workflow. |
-| PRD E8 resilience/operations | SLO telemetry, durable jobs/outbox, backups/PITR, restore drills, runbooks, controlled deployment. |
-| UX §9 architecture flags | Context, evidence, grid conflict, snapshots, and responsive capabilities are contracts, not presentation-only work. |
+| Requirement                            | Architecture response                                                                                                           |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| PRD E1 global context and trust states | Typed `FinancialContext`, server-authorized scope resolution, shared lifecycle/event vocabulary, URL/saved-view serialization.  |
+| PRD E2 tenant/policy/evidence          | Identity gateway, policy enforcement point in API, PostgreSQL RLS, append-only audit/evidence service, immutable artifact sink. |
+| PRD E3 actuals/master data             | Canonical master-data and ingestion bounded contexts, staging/quarantine pipeline, mapping versions, idempotent commands.       |
+| PRD E4 close/consolidation             | Asynchronous, reproducible domain runs with frozen input/rule/FX versions and workflow gates.                                   |
+| PRD E5 analyst modeling/offline        | Local workspace cache + command outbox + authoritative command API + revision/conflict policy.                                  |
+| PRD E6 decision workspace              | Read/query projections serving materiality/action/evidence views; no direct client database access.                             |
+| PRD E7 reporting                       | Semantic metric catalog, report definition/version, immutable snapshot artifact workflow.                                       |
+| PRD E8 resilience/operations           | SLO telemetry, durable jobs/outbox, backups/PITR, restore drills, runbooks, controlled deployment.                              |
+| UX §9 architecture flags               | Context, evidence, grid conflict, snapshots, and responsive capabilities are contracts, not presentation-only work.             |
 
 ## 1.1 Research and hypothesis traceability
 
-| Architecture decision | PRD / UX requirement | Research basis | Validation boundary |
-|---|---|---|---|
-| Incremental Control Plane | E2, E3, E4, E5, global context/evidence UX | R-03, R-05; A-02 | Hybrid deployment/security acceptance remains unvalidated |
-| PostgreSQL + RLS + immutable evidence | E2, E3, E4, E7 | R-03; identity/security and lineage contracts | scale, residency, retention and customer control requirements remain open |
-| Workspace draft/cache boundary | E5 and offline UX | A-02, A-04; sync contract | Local-first value and conflict tolerance require user/IT validation |
-| Materiality/DecisionCase read model | E6 and Decision Workspace | R-04, A-03; materiality contract | CFO behavior and threshold policy require prototype study |
-| Immutable report snapshots | E7 and board-pack UX | R-03; reporting/lineage contracts | reporting/certification policy requires customer validation |
-| Cited supervised AI | E9 and AI UX | R-02/R-03; AI governance contract | provider, use case, evaluation and privacy policy remain open |
-| No big-bang rewrite | all | R-05; brownfield audit | migration effort must be validated in a technical spike |
+| Architecture decision                 | PRD / UX requirement                       | Research basis                                | Validation boundary                                                       |
+| ------------------------------------- | ------------------------------------------ | --------------------------------------------- | ------------------------------------------------------------------------- |
+| Incremental Control Plane             | E2, E3, E4, E5, global context/evidence UX | R-03, R-05; A-02                              | Hybrid deployment/security acceptance remains unvalidated                 |
+| PostgreSQL + RLS + immutable evidence | E2, E3, E4, E7                             | R-03; identity/security and lineage contracts | scale, residency, retention and customer control requirements remain open |
+| Workspace draft/cache boundary        | E5 and offline UX                          | A-02, A-04; sync contract                     | Local-first value and conflict tolerance require user/IT validation       |
+| Materiality/DecisionCase read model   | E6 and Decision Workspace                  | R-04, A-03; materiality contract              | CFO behavior and threshold policy require prototype study                 |
+| Immutable report snapshots            | E7 and board-pack UX                       | R-03; reporting/lineage contracts             | reporting/certification policy requires customer validation               |
+| Cited supervised AI                   | E9 and AI UX                               | R-02/R-03; AI governance contract             | provider, use case, evaluation and privacy policy remain open             |
+| No big-bang rewrite                   | all                                        | R-05; brownfield audit                        | migration effort must be validated in a technical spike                   |
 
 Every architecture decision below is an approved-hypothesis decision, not a claim that the corresponding production control already exists. Primary evidence or technical spike results may amend the ADR before implementation.
 
@@ -82,17 +82,17 @@ The Workspace may calculate and persist local drafts for offline productivity. I
 
 ## 4. Bounded contexts and ownership
 
-| Context | Owns | Commands | Read models |
-|---|---|---|---|
-| Identity & Policy | membership, roles, attributes, sessions, access review | grant/revoke/role change | permitted scopes, effective permissions |
-| Master Data | entity, hierarchy, COA, dimensions, calendar, currency | create/effective-date/retire | context picker/tree/valid dimensions |
-| Actuals & Ingestion | source, mapping, batch, staging, journal/balance | import/validate/correct/retry | source health, trial balance, reconciliation |
-| Planning | plan, version, driver, assumption, cell change | create version/edit/submit/approve/lock | grid, comparison, forecast coverage |
-| Close & Consolidation | close task, reconciliation, certification, run, exception | reconcile/certify/lock/run/approve exception | cockpit, exception queue, run history |
-| Reporting | metric definition, report definition, snapshot, distribution | define/run/publish/export/share | report viewer, board pack |
-| Workflow | task, assignment, approval, escalation | assign/approve/reject/delegate/escalate | My Work, timelines |
-| Audit & Evidence | immutable event/evidence reference/retention | append only | evidence drawer, audit export |
-| Integration & Operations | connection reference, mapping, job, health | test/sync/pause/resume | connection health, job telemetry |
+| Context                  | Owns                                                         | Commands                                     | Read models                                  |
+| ------------------------ | ------------------------------------------------------------ | -------------------------------------------- | -------------------------------------------- |
+| Identity & Policy        | membership, roles, attributes, sessions, access review       | grant/revoke/role change                     | permitted scopes, effective permissions      |
+| Master Data              | entity, hierarchy, COA, dimensions, calendar, currency       | create/effective-date/retire                 | context picker/tree/valid dimensions         |
+| Actuals & Ingestion      | source, mapping, batch, staging, journal/balance             | import/validate/correct/retry                | source health, trial balance, reconciliation |
+| Planning                 | plan, version, driver, assumption, cell change               | create version/edit/submit/approve/lock      | grid, comparison, forecast coverage          |
+| Close & Consolidation    | close task, reconciliation, certification, run, exception    | reconcile/certify/lock/run/approve exception | cockpit, exception queue, run history        |
+| Reporting                | metric definition, report definition, snapshot, distribution | define/run/publish/export/share              | report viewer, board pack                    |
+| Workflow                 | task, assignment, approval, escalation                       | assign/approve/reject/delegate/escalate      | My Work, timelines                           |
+| Audit & Evidence         | immutable event/evidence reference/retention                 | append only                                  | evidence drawer, audit export                |
+| Integration & Operations | connection reference, mapping, job, health                   | test/sync/pause/resume                       | connection health, job telemetry             |
 
 No context reads another context's tables directly; it uses a transactionally published event, contract, or query projection.
 
@@ -146,9 +146,9 @@ Use versioned REST/JSON for commands and predictable query endpoints first. The 
 
 ```ts
 interface CommandEnvelope<T> {
-  commandId: string;          // UUID; idempotency key
-  correlationId: string;      // end-to-end trace/audit ID
-  baseRevision?: number;      // required for mutable aggregates
+  commandId: string; // UUID; idempotency key
+  correlationId: string; // end-to-end trace/audit ID
+  baseRevision?: number; // required for mutable aggregates
   financialContext: {
     entityScope: string[];
     periodIds: string[];
@@ -173,17 +173,17 @@ Actor/tenant/effective permissions are derived from session/token, never supplie
 
 ### 6.3 Initial endpoint families
 
-| Family | Examples | Control requirement |
-|---|---|---|
-| Context/query | `GET /v1/context`, `/views`, `/workspace/decisions` | resolve scope server-side; cache key tenant/scope/version aware |
-| Master data | `/entities`, `/accounts`, `/periods`, `/dimensions` | effective-date validation, policy, audit |
-| Ingestion | `/imports`, `/imports/{id}/validate`, `/retry` | idempotency, quarantine, hash/mapping/control totals |
-| Planning | `/plans`, `/versions`, `/cells:batch`, `/submit`, `/approve` | revision conflict, lifecycle/SoD, audit |
-| Close | `/close-cycles`, `/reconciliations`, `/certifications`, `/locks` | control gate/exception policy, immutable evidence |
-| Consolidation | `/consolidation-runs` | async job/frozen inputs/validation result |
-| Reports | `/metrics`, `/reports`, `/snapshots`, `/exports` | definition/snapshot version, policy, export audit |
-| Workflow | `/tasks`, `/approvals`, `/delegations` | actor/role/deadline/escalation audit |
-| Evidence | `/evidence/{object}`, `/audit-export` | scoped, redacted, retention-aware |
+| Family        | Examples                                                         | Control requirement                                             |
+| ------------- | ---------------------------------------------------------------- | --------------------------------------------------------------- |
+| Context/query | `GET /v1/context`, `/views`, `/workspace/decisions`              | resolve scope server-side; cache key tenant/scope/version aware |
+| Master data   | `/entities`, `/accounts`, `/periods`, `/dimensions`              | effective-date validation, policy, audit                        |
+| Ingestion     | `/imports`, `/imports/{id}/validate`, `/retry`                   | idempotency, quarantine, hash/mapping/control totals            |
+| Planning      | `/plans`, `/versions`, `/cells:batch`, `/submit`, `/approve`     | revision conflict, lifecycle/SoD, audit                         |
+| Close         | `/close-cycles`, `/reconciliations`, `/certifications`, `/locks` | control gate/exception policy, immutable evidence               |
+| Consolidation | `/consolidation-runs`                                            | async job/frozen inputs/validation result                       |
+| Reports       | `/metrics`, `/reports`, `/snapshots`, `/exports`                 | definition/snapshot version, policy, export audit               |
+| Workflow      | `/tasks`, `/approvals`, `/delegations`                           | actor/role/deadline/escalation audit                            |
+| Evidence      | `/evidence/{object}`, `/audit-export`                            | scoped, redacted, retention-aware                               |
 
 ## 7. Sync, offline, and collaboration contract
 
@@ -195,16 +195,16 @@ Actor/tenant/effective permissions are derived from session/token, never supplie
 
 ## 8. Security architecture
 
-| Layer | Control |
-|---|---|
-| Authentication | Enterprise OIDC/SAML; MFA/session policy; SCIM considered by tenant tier; production mock auth prohibited. |
-| Authorization | RBAC + ABAC with tenant/entity/cost center/classification/lifecycle context; deny by default. |
-| Data | TLS 1.3; envelope encryption/KMS; secrets manager; tenant-scoped object/cache/queue keys; PII classification. |
-| Database | PostgreSQL RLS; least-privilege roles; migrations reviewed; PITR backups encrypted. |
-| Application | schema validation, output encoding, CSRF strategy for cookie flows, CSP, rate limits, idempotency, secure headers. |
-| Supply chain | SHA-pinned CI actions, dependency/secret/license scan, SBOM, signed artifacts/provenance. |
-| Audit | append-only service/store plus protected immutable export; correlation IDs; legal hold/retention. |
-| AI | provider allowlist, tenant opt-in/policy, minimized scoped retrieval, citations, no autonomous official writes. |
+| Layer          | Control                                                                                                            |
+| -------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Authentication | Enterprise OIDC/SAML; MFA/session policy; SCIM considered by tenant tier; production mock auth prohibited.         |
+| Authorization  | RBAC + ABAC with tenant/entity/cost center/classification/lifecycle context; deny by default.                      |
+| Data           | TLS 1.3; envelope encryption/KMS; secrets manager; tenant-scoped object/cache/queue keys; PII classification.      |
+| Database       | PostgreSQL RLS; least-privilege roles; migrations reviewed; PITR backups encrypted.                                |
+| Application    | schema validation, output encoding, CSRF strategy for cookie flows, CSP, rate limits, idempotency, secure headers. |
+| Supply chain   | SHA-pinned CI actions, dependency/secret/license scan, SBOM, signed artifacts/provenance.                          |
+| Audit          | append-only service/store plus protected immutable export; correlation IDs; legal hold/retention.                  |
+| AI             | provider allowlist, tenant opt-in/policy, minimized scoped retrieval, citations, no autonomous official writes.    |
 
 ## 9. Jobs, events, and integration architecture
 
@@ -236,16 +236,16 @@ Connector credentials live only in a vault/secrets manager reference, never in c
 
 ## 11. ADR register
 
-| ADR | Decision | Rationale / rejected alternative |
-|---|---|---|
-| ADR-E01 | Incremental strangler migration | Preserves validated engines/UI while adding authority; reject big-bang framework rewrite. |
-| ADR-E02 | PostgreSQL as first authoritative store | Transactional/RLS/operable; reject immediate multi-database estate without workload proof. |
-| ADR-E03 | REST command/query API first | Clear audit and typed contracts; reject premature GraphQL/microservice proliferation. |
-| ADR-E04 | Local workspace is cache/draft, not authority | Supports offline value without policy bypass; reject client-only official numbers. |
-| ADR-E05 | Transactional outbox + durable jobs | Prevents lost cross-domain events; reject best-effort in-process background work. |
-| ADR-E06 | Immutable snapshots for publication | Reproducibility and audit; reject mutable report results. |
-| ADR-E07 | RLS plus application authorization | Defense in depth; reject UI-only tenant filtering. |
-| ADR-E08 | AI is supervised/cited | Finance risk control; reject autonomous posting/publishing. |
+| ADR     | Decision                                      | Rationale / rejected alternative                                                           |
+| ------- | --------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| ADR-E01 | Incremental strangler migration               | Preserves validated engines/UI while adding authority; reject big-bang framework rewrite.  |
+| ADR-E02 | PostgreSQL as first authoritative store       | Transactional/RLS/operable; reject immediate multi-database estate without workload proof. |
+| ADR-E03 | REST command/query API first                  | Clear audit and typed contracts; reject premature GraphQL/microservice proliferation.      |
+| ADR-E04 | Local workspace is cache/draft, not authority | Supports offline value without policy bypass; reject client-only official numbers.         |
+| ADR-E05 | Transactional outbox + durable jobs           | Prevents lost cross-domain events; reject best-effort in-process background work.          |
+| ADR-E06 | Immutable snapshots for publication           | Reproducibility and audit; reject mutable report results.                                  |
+| ADR-E07 | RLS plus application authorization            | Defense in depth; reject UI-only tenant filtering.                                         |
+| ADR-E08 | AI is supervised/cited                        | Finance risk control; reject autonomous posting/publishing.                                |
 
 Each ADR must become a separately numbered file under `docs/adr/` before implementation of its decision.
 
@@ -269,14 +269,14 @@ Each ADR must become a separately numbered file under `docs/adr/` before impleme
 
 ## 12. Key risks and required decisions
 
-| Risk/decision | Impact | Required owner decision before story planning |
-|---|---|---|
-| Deployment model/data residency | determines tenancy, KMS, region, operations | commercial + security owner |
-| First design partner/connector | determines canonical mapping/workflow priority | product owner |
-| Primary buyer conflict | changes default workspace and permissions | executive sponsor |
-| Browser/PWA support | current source is Tauri-only gated | product + architecture owner |
-| Offline collaboration scope | affects sync/event/conflict architecture | product + finance owner |
-| Regulatory target | drives controls/evidence/compliance scope | legal/security owner |
+| Risk/decision                   | Impact                                         | Required owner decision before story planning |
+| ------------------------------- | ---------------------------------------------- | --------------------------------------------- |
+| Deployment model/data residency | determines tenancy, KMS, region, operations    | commercial + security owner                   |
+| First design partner/connector  | determines canonical mapping/workflow priority | product owner                                 |
+| Primary buyer conflict          | changes default workspace and permissions      | executive sponsor                             |
+| Browser/PWA support             | current source is Tauri-only gated             | product + architecture owner                  |
+| Offline collaboration scope     | affects sync/event/conflict architecture       | product + finance owner                       |
+| Regulatory target               | drives controls/evidence/compliance scope      | legal/security owner                          |
 
 ## 13. Gate G4 decision
 

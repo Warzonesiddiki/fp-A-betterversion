@@ -13,11 +13,12 @@
 1. **Merged delivery verified.** PR #53 (`feat: establish research-driven finance UX foundations`) is merged at `f3834e2` on `main`. All merged artifacts confirmed present (BMAD charter, capability matrix, Atlas UI foundation, Dashboard adoption).
 2. **Technical verification evidence added (non-market).** On merged `main` and the session branch (`4d6d402`): full unit suite **1,179 files / 13,315 tests passed** (1 skipped), root `tsc --noEmit` 0 errors, full-src ESLint 0 warnings, production build passed, capability inventory deterministic, docs-truth passed, production audit 0 vulnerabilities. Two stale tests asserting the pre-merge Dashboard empty state were reconciled (verified pre-existing on clean merged main).
 3. **Real accessibility defect found and fixed.** The populated-Dashboard interim baseline surfaced a genuine heading-order violation (h1 → h3). Fixed page-scoped (section headings now h2; `ChartWrapper` gained backward-compatible `headingLevel` prop). Safe-foundation evidence, not market validation.
-4. **GitHub Actions CI is blocked by account billing, not code.** Every workflow job on every recent commit fails before starting, with GitHub's annotation: *"recent account payments have failed or your spending limit needs to be increased."* Repo-wide and pre-existing (affects commits from 2026-08-09); no code regression. Owner action required in Billing & plans.
+4. **GitHub Actions CI is blocked by account billing, not code.** Every workflow job on every recent commit fails before starting, with GitHub's annotation: _"recent account payments have failed or your spending limit needs to be increased."_ Repo-wide and pre-existing (affects commits from 2026-08-09); no code regression. Owner action required in Billing & plans.
 5. **F-02 pixel baseline remains blocked.** Playwright Chromium download still fails with TLS `ECONNRESET` in this environment. Structural DOM baselines (empty + populated Dashboard) and `jest-axe` pass; pixels/fonts/theme/responsive remain unverified.
 6. **No primary market evidence added.** R-01 remains externally blocked; nothing fabricated. All market/user/economic assumptions stay `UNVALIDATED`.
 
 **Unchanged strategic hypothesis (owner-directed, unvalidated):**
+
 > FinPlan Pro should prove a controlled **close → decision → board-pack** operating loop, backed by an analyst-grade workspace and an authoritative enterprise Control Plane.
 
 ---
@@ -40,13 +41,13 @@ The apparent problem (“UI feels generic”) is a symptom. The root problem is 
 
 ### Jobs-to-be-done map
 
-| Job | Current workaround / failure | Required outcome |
-|---|---|---|
+| Job                        | Current workaround / failure                                             | Required outcome                                            |
+| -------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------- |
 | Controller closes a period | spreadsheets, messaging, manual checklists, disconnected reconciliations | visible controls, evidence, exceptions, certification, lock |
-| Analyst reforecasts | local grids, exports, unclear version/owner status | governed model/version/assumption/approval loop |
-| CFO decides | generic KPIs, presentation exports, difficult lineage | materiality-ranked decision and accountable next action |
-| Admin ingests data | files/mappings/retries without authoritative quality evidence | staged, idempotent, reconciled import with recovery |
-| Auditor verifies | mutable/fragmented trail | scoped, immutable, exportable evidence |
+| Analyst reforecasts        | local grids, exports, unclear version/owner status                       | governed model/version/assumption/approval loop             |
+| CFO decides                | generic KPIs, presentation exports, difficult lineage                    | materiality-ranked decision and accountable next action     |
+| Admin ingests data         | files/mappings/retries without authoritative quality evidence            | staged, idempotent, reconciled import with recovery         |
+| Auditor verifies           | mutable/fragmented trail                                                 | scoped, immutable, exportable evidence                      |
 
 ### Current-solution failures
 
@@ -82,12 +83,12 @@ These are [ASSUMPTIONS] pending discovery interviews.
 
 ## 4. Competitive intelligence
 
-| Competitor signal | Strength | Risk to FinPlan | Strategic response |
-|---|---|---|---|
-| Anaplan | connected planning, large multidimensional models, cross-functional scale | feature/scale parity trap | focus initial proof on controlled finance loop; benchmark scale honestly |
-| OneStream | close/consolidation/governance positioning | credibility gap for close/audit | prioritize reconciliation, certification, immutable reports |
-| Pigment | modern collaborative modeling, visual UX, governed AI positioning | generic UI rejection / AI hype gap | Atlas decision workspace; cited, supervised AI |
-| Excel-native tools | adoption/familiarity | power users export if grid is slow | keyboard-first grid and safe import/export, not anti-Excel rhetoric |
+| Competitor signal  | Strength                                                                  | Risk to FinPlan                    | Strategic response                                                       |
+| ------------------ | ------------------------------------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------ |
+| Anaplan            | connected planning, large multidimensional models, cross-functional scale | feature/scale parity trap          | focus initial proof on controlled finance loop; benchmark scale honestly |
+| OneStream          | close/consolidation/governance positioning                                | credibility gap for close/audit    | prioritize reconciliation, certification, immutable reports              |
+| Pigment            | modern collaborative modeling, visual UX, governed AI positioning         | generic UI rejection / AI hype gap | Atlas decision workspace; cited, supervised AI                           |
+| Excel-native tools | adoption/familiarity                                                      | power users export if grid is slow | keyboard-first grid and safe import/export, not anti-Excel rhetoric      |
 
 ### Whitespace hypothesis
 
@@ -112,13 +113,13 @@ Build the finance-specific domain/control experience. Buy or manage commodity ca
 
 ## 6. Strategic-risk assessment
 
-| Risk | Likelihood | Impact | Evidence-led mitigation |
-|---|---:|---:|---|
-| Feature breadth overwhelms core workflow quality | High | Critical | certify only five core jobs and selected verticals |
-| $500k positioning lacks segment/WTP proof | High | Critical | design-partner interviews, LOIs, pricing/implementation research |
-| Local-first conflicts with IT/security policy | Medium | Critical | customer security discovery and hybrid deployment spike |
-| AI overpromises reduce finance trust | High | High | citations, approval, evaluation, no autonomous write |
-| Generic UX blocks adoption before depth is seen | High | High | research-tested canonical workspaces before broad restyling |
+| Risk                                             | Likelihood |   Impact | Evidence-led mitigation                                          |
+| ------------------------------------------------ | ---------: | -------: | ---------------------------------------------------------------- |
+| Feature breadth overwhelms core workflow quality |       High | Critical | certify only five core jobs and selected verticals               |
+| $500k positioning lacks segment/WTP proof        |       High | Critical | design-partner interviews, LOIs, pricing/implementation research |
+| Local-first conflicts with IT/security policy    |     Medium | Critical | customer security discovery and hybrid deployment spike          |
+| AI overpromises reduce finance trust             |       High |     High | citations, approval, evaluation, no autonomous write             |
+| Generic UX blocks adoption before depth is seen  |       High |     High | research-tested canonical workspaces before broad restyling      |
 
 ## Assumption registry summary
 

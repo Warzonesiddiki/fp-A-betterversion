@@ -1,4 +1,105 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "permission": "allow"
+  "permission": "allow",
+  "mcp": {
+    "playwright": {
+      "type": "local",
+      "command": ["npx", "-y", "@playwright/mcp@latest"],
+      "enabled": true,
+      "environment": {},
+      "timeout": 60000
+    },
+    "github": {
+      "type": "remote",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "enabled": true,
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer {env:GITHUB_TOKEN}"
+      },
+      "timeout": 30000
+    },
+    "filesystem": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:/Users/Tahir/Documents/GitHub/fp-A-betterversion"
+      ],
+      "enabled": true,
+      "environment": {},
+      "timeout": 30000
+    },
+    "git": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "mcp-server-git",
+        "--repository",
+        "C:/Users/Tahir/Documents/GitHub/fp-A-betterversion"
+      ],
+      "enabled": true,
+      "environment": {},
+      "timeout": 60000
+    },
+    "excel": {
+      "type": "local",
+      "command": ["npx", "-y", "@negokaz/excel-mcp-server"],
+      "enabled": true,
+      "environment": {
+        "EXCEL_MCP_PAGING_CELLS_LIMIT": "4000"
+      },
+      "timeout": 30000
+    },
+    "excel-pro": {
+      "type": "local",
+      "command": ["uvx", "excel-mcp-server", "stdio"],
+      "enabled": true,
+      "environment": {},
+      "timeout": 60000
+    },
+    "tauri": {
+      "type": "local",
+      "command": ["npx", "-y", "@hypothesi/tauri-mcp-server"],
+      "enabled": false,
+      "environment": {},
+      "timeout": 30000
+    },
+    "browsertools": {
+      "type": "local",
+      "command": ["npx", "-y", "@agentdeskai/browser-tools-mcp@latest"],
+      "enabled": false,
+      "environment": {},
+      "timeout": 30000
+    },
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "enabled": true,
+      "timeout": 30000
+    },
+    "sequential-thinking": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "enabled": true,
+      "environment": {},
+      "timeout": 30000
+    },
+    "memory": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-memory"],
+      "enabled": true,
+      "environment": {
+        "MEMORY_FILE_PATH": "C:/Users/Tahir/Documents/GitHub/fp-A-betterversion/MEMORY/mcp-memory.json"
+      },
+      "timeout": 30000
+    },
+    "sentry": {
+      "type": "remote",
+      "url": "https://mcp.sentry.dev/mcp",
+      "enabled": false,
+      "timeout": 30000
+    }
+  }
 }

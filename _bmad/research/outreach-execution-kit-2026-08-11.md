@@ -6,6 +6,7 @@
 ## A. Per-channel message variants (use with the base template)
 
 ### A1. Conference / summit contact (CFO, Controller, FP&A cohorts)
+
 **Subject:** Research conversation: finance close, planning, and board reporting workflow
 
 > Hello [Name],
@@ -13,6 +14,7 @@
 > Would you be open to that, or to pointing us to a colleague who fits? We will not request confidential financial values or materials.
 
 ### A2. Professional community post (r/FPandA + Discord/Slack, FP&A cohort)
+
 **Subject (r/FPandA):** Research participants wanted: FP&A workflow study (anonymized, no sales)
 
 > We are researchers building a public evidence base on how FP&A teams handle forecasting, variance, and reporting — not selling anything. We're recruiting working FP&A leads/analysts at multi-entity companies for one anonymized 60-minute session about your last real forecast/close cycle.
@@ -20,6 +22,7 @@
 > [Mod-approved; no compensation beyond transparency; no product pitch.]
 
 ### A3. Association / council ask (Controllers Council, AFP, ISACA)
+
 **Subject:** Member research study: close, consolidation, and finance-systems workflow
 
 > Hello [Chapter/Council contact],
@@ -27,6 +30,7 @@
 > Deliverable: anonymized aggregate findings shared back with the community.
 
 ### A4. Implementation partner ask (EPM consultancies, Big-4 alumni)
+
 **Subject:** Practitioner research: EPM implementation and close transformation
 
 > Hello [Name],
@@ -43,18 +47,19 @@
 
 ## C. Screener quick-reference (full: participant-screener.md)
 
-| Check | Pass |
-|---|---|
-| Role fits cohort + decision/hands-on authority | yes |
-| Multi-entity, Excel-heavy, incumbent EPM, or regulated context (≥1 of 4) | yes |
-| Can describe a recent real workflow (last 90 days) | yes |
-| No conflict: not paid to endorse a competitor/solution | yes |
-| Consent for anonymized capture | yes (outside repo) |
-| Vertical cap ≤40% of sample | yes |
+| Check                                                                    | Pass               |
+| ------------------------------------------------------------------------ | ------------------ |
+| Role fits cohort + decision/hands-on authority                           | yes                |
+| Multi-entity, Excel-heavy, incumbent EPM, or regulated context (≥1 of 4) | yes                |
+| Can describe a recent real workflow (last 90 days)                       | yes                |
+| No conflict: not paid to endorse a competitor/solution                   | yes                |
+| Consent for anonymized capture                                           | yes (outside repo) |
+| Vertical cap ≤40% of sample                                              | yes                |
 
 ## D. Tracker update protocol (owner returns outcomes)
 
 For each outcome, update `participant-outreach-tracker.md`:
+
 - Identified/Contacted/Screened/Scheduled/Completed counts per cohort
 - Ledger row with anonymized ID (P-001…), cohort, segment, incumbent stack, screener status, consent, session status, evidence-log ID, bias declaration
 - On ≥60% of cohort targets met → flag R-02 start; on shortfall → record justified shortfall per R-01 completion checklist

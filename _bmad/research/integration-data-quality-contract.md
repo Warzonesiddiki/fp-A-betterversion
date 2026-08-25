@@ -14,15 +14,15 @@ Each connection has tenant-scoped identity, credential-vault reference, source p
 
 `Discover → Authenticate/Test → Extract → Stage → Profile → Map → Validate → Quarantine/Correct → Post → Reconcile → Monitor`
 
-| Stage | Required evidence |
-|---|---|
-| Extract | source/cursor/range, time, hash, job, retry/idempotency key |
-| Stage/Profile | schema, row count, sensitive fields, quality profile |
-| Map | mapping version, source-to-canonical fields, transformation rules, owner/approval |
-| Validate | required dimensions, period, currency, balance, duplicate, reference, policy failures |
-| Quarantine | row-level reason, correction path, source preservation, no silent coercion |
-| Post | accepted/rejected counts, authoritative IDs, audit/outbox |
-| Reconcile | source/control total vs posted total, difference/tolerance, sign-off |
+| Stage         | Required evidence                                                                     |
+| ------------- | ------------------------------------------------------------------------------------- |
+| Extract       | source/cursor/range, time, hash, job, retry/idempotency key                           |
+| Stage/Profile | schema, row count, sensitive fields, quality profile                                  |
+| Map           | mapping version, source-to-canonical fields, transformation rules, owner/approval     |
+| Validate      | required dimensions, period, currency, balance, duplicate, reference, policy failures |
+| Quarantine    | row-level reason, correction path, source preservation, no silent coercion            |
+| Post          | accepted/rejected counts, authoritative IDs, audit/outbox                             |
+| Reconcile     | source/control total vs posted total, difference/tolerance, sign-off                  |
 
 ## Data-quality dimensions
 

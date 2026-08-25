@@ -1,6 +1,6 @@
 # Owner Direction Record — 2026-08-12 (All-in-one FP&A platform + ZohoBooks-grade UX)
 
-> **Recorded by:** System (BMAD v5.0 ULTRA-YOLO) · **Date:** 2026-08-12 · **Status:** RECORDED — supersedes the narrow-wedge-only framing for *scope direction*, does **NOT** change any assumption validation status
+> **Recorded by:** System (BMAD v5.0 ULTRA-YOLO) · **Date:** 2026-08-12 · **Status:** RECORDED — supersedes the narrow-wedge-only framing for _scope direction_, does **NOT** change any assumption validation status
 
 ## Owner direction (verbatim intent)
 
@@ -11,19 +11,19 @@
 
 ## What this changes
 
-| Item | Before | After (owner direction) |
-|---|---|---|
-| Scope framing | Controlled close→decision→board-pack wedge (A-03 hypothesis) | Wedge remains the strategic anchor, but the **product ambition** is all-in-one FP&A breadth: users should not need a second tool |
-| UI/UX bar | Bloomberg-terminal-inspired dark design system | ZohoBooks-grade polish: density, hierarchy, clarity, professional finance SaaS feel (theme direction itself stays a design-system decision to be worked, not silently flipped) |
-| Optimization | Bundle/perf gates exist (main <150KB gzip, total <2MB gzip) | Raise the bar: cold-start, render performance, virtualization, memory, and interaction latency become explicit acceptance criteria |
-| Industry coverage | Five-certified-vertical hypothesis (A-09) | All-industry breadth is the target; vertical certification depth remains an evidence question, not a claim |
-| Autonomy | A3–A5 per risk | Owner grants maximum autonomy within BMAD discipline: evidence sovereignty, honesty labels, ledger/context updates still mandatory |
+| Item              | Before                                                       | After (owner direction)                                                                                                                                                        |
+| ----------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Scope framing     | Controlled close→decision→board-pack wedge (A-03 hypothesis) | Wedge remains the strategic anchor, but the **product ambition** is all-in-one FP&A breadth: users should not need a second tool                                               |
+| UI/UX bar         | Bloomberg-terminal-inspired dark design system               | ZohoBooks-grade polish: density, hierarchy, clarity, professional finance SaaS feel (theme direction itself stays a design-system decision to be worked, not silently flipped) |
+| Optimization      | Bundle/perf gates exist (main <150KB gzip, total <2MB gzip)  | Raise the bar: cold-start, render performance, virtualization, memory, and interaction latency become explicit acceptance criteria                                             |
+| Industry coverage | Five-certified-vertical hypothesis (A-09)                    | All-industry breadth is the target; vertical certification depth remains an evidence question, not a claim                                                                     |
+| Autonomy          | A3–A5 per risk                                               | Owner grants maximum autonomy within BMAD discipline: evidence sovereignty, honesty labels, ledger/context updates still mandatory                                             |
 
 ## What this does NOT change (honesty locks — non-negotiable)
 
-- **Every assumption stays UNVALIDATED** (A-01…A-14). This direction is *scope intent*, not market evidence (Tier 1 required for validation).
-- **A-03** (five-job wedge vs broad parity) remains UNVALIDATED — the owner has chosen breadth as the *goal*; whether breadth wins commercially is still unproven and must be tracked.
-- **A-09** (five certified vertical packs vs shallow breadth) remains UNVALIDATED — building all-industry pages is breadth; claiming they are *certified vertical depth* requires evidence.
+- **Every assumption stays UNVALIDATED** (A-01…A-14). This direction is _scope intent_, not market evidence (Tier 1 required for validation).
+- **A-03** (five-job wedge vs broad parity) remains UNVALIDATED — the owner has chosen breadth as the _goal_; whether breadth wins commercially is still unproven and must be tracked.
+- **A-09** (five certified vertical packs vs shallow breadth) remains UNVALIDATED — building all-industry pages is breadth; claiming they are _certified vertical depth_ requires evidence.
 - **A-12** (browser/PWA required) remains UNVALIDATED with no active channel (desktop-only product, E-017). The all-in-one ambition does not reopen the browser channel without owner direction.
 - **Capability Truth Matrix** maturity columns (`Connected` / `Governed` / `Enterprise-ready`) stay `UNVERIFIED` without evidence.
 - No fabricated users, testimonials, or usage numbers. Waitlist/usage evidence must be real (Tier 2 BETA-USAGE labels).

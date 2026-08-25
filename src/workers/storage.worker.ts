@@ -5,6 +5,13 @@
  */
 
 import type { WorkerMessage, WorkerResponse } from './types';
+import {
+  WorkerRequestError,
+  expectFiniteNumber,
+  expectStringEnum,
+  readMessageId,
+  readMessagePayload,
+} from './validateRequest';
 
 export interface StorageRequest {
   type: 'stringify' | 'parse';
@@ -19,10 +26,31 @@ export interface StorageResult {
 }
 
 self.onmessage = (e: MessageEvent<WorkerMessage<StorageRequest>>) => {
-  const { id, payload: request } = e.data;
-  const { type, payload, chunkSize = 1024 * 1024 } = request;
+  // W7E/W6-P1: destructuring moved INSIDE try — a null/garbage message used
+  // to throw before the catch block and crash the worker uncaught with no
+  // reply. The request type is enum-validated (unknown types previously fell
+  // through as silent no-ops) and chunkSize must be >= 1 (chunkSize 0 made
+  // the chunker loop forever on `i += 0`).
+  const envelope: unknown = e.data;
+  const id = readMessageId(envelope);
 
   try {
+    const rawRequest = readMessagePayload(envelope);
+    if (rawRequest === null || typeof rawRequest !== 'object') {
+      throw new WorkerRequestError('request must be an object');
+    }
+    const request = rawRequest as Record<string, unknown>;
+    const type = expectStringEnum(request.type, 'type', ['stringify', 'parse']);
+
+    let chunkSize = 1024 * 1024;
+    if (request.chunkSize !== undefined) {
+      chunkSize = expectFiniteNumber(request.chunkSize, 'chunkSize');
+      if (chunkSize < 1) {
+        throw new WorkerRequestError('chunkSize must be >= 1');
+      }
+    }
+
+    const payload = request.payload;
     if (type === 'stringify') {
       const json = JSON.stringify(payload);
 

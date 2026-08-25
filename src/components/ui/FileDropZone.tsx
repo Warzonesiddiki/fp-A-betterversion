@@ -127,6 +127,15 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
         aria-label={ariaLabel ?? 'Upload file'}
         tabIndex={-1}
       />
+      {/* Wave-7E a11y: validation errors used to render only as a visual pill
+          inside the dropzone, so screen readers never announced them (audit:
+          "FileDropZone SR-invisible errors"). This region is PERSISTENT —
+          mounted for every non-error state with empty text — and swaps its
+          text on failure, which politely announces the message. It doubles as
+          the aria-describedby target of the dropzone below. */}
+      <div id="file-drop-status" role="status" aria-live="polite" className="sr-only">
+        {error ?? ''}
+      </div>
       {/* E-02-F (Lead UX ruling): once a file is selected the dropzone becomes
           a NON-INTERACTIVE display — role/tabIndex/click handlers are dropped
           and Remove/Replace actions render as sibling buttons below it. This
@@ -138,6 +147,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
+        aria-describedby={error ? 'file-drop-status' : undefined}
         className={cn(
           'relative flex flex-col items-center justify-center min-h-[240px] p-10 border-2 rounded-xl transition-all group',
           !currentFile && 'cursor-pointer'
@@ -253,7 +263,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
             type="button"
             onClick={removeFile}
             aria-label={`Remove ${currentFile.name}`}
-            className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold text-red-400 hover:bg-red-50 transition-colors focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-1"
+            className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold text-[var(--text-negative)] hover:bg-[var(--negative-subtle)] transition-colors focus-visible:ring-2 focus-visible:ring-[var(--danger-fill)] focus-visible:ring-offset-1"
           >
             <X className="h-3.5 w-3.5" />
             Remove

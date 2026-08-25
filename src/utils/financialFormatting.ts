@@ -142,6 +142,14 @@ export function formatCompact(value: number | null | undefined, currency = 'USD'
   return formatCurrency(value, { currency });
 }
 
+/**
+ * Formats a value already expressed in percent-points (15.5 → "15.5%").
+ *
+ * Input convention is percent-points — NOT the repo-stored decimal
+ * convention (0.155 = 15.5%); callers holding decimals must `× 100` first.
+ * Shares this convention with `formatPercent` in `./formatters` (which also
+ * drops the sign) and `localeFormatting.formatPercent`.
+ */
 export function formatPercent(value: number | null | undefined, decimals = 1): string {
   if (value == null) return '—';
   return `${formatMoney(value, { places: decimals })}%`;

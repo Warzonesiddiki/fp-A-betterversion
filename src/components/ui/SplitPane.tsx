@@ -59,15 +59,10 @@ export function SplitPane({ left, right, defaultSplit = 50, minSize = 200 }: Spl
       ref={containerRef}
       className={cn('flex flex-col md:flex-row w-full h-full overflow-hidden select-none')}
     >
-      <div className="h-full overflow-auto" style={{ width: `var(--split-width, ${split}%)` }}>
-        <style>{`
-          @media (min-width: 768px) {
-            .h-full { --split-width: ${split}%; }
-          }
-          @media (max-width: 767px) {
-            .h-full { width: 100%; height: 50%; }
-          }
-        `}</style>
+      <div
+        className="h-full w-full max-md:h-1/2 overflow-auto md:w-[calc(var(--split-width)*1%)]"
+        style={{ '--split-width': split } as React.CSSProperties}
+      >
         {left}
       </div>
 

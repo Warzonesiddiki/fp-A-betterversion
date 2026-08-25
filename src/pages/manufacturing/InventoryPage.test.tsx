@@ -4,7 +4,13 @@ import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+  useGLStore: Object.assign(
+    vi.fn((sel?: (s: unknown) => unknown) => {
+      const state = { entries: [] };
+      return sel ? sel(state) : state;
+    }),
+    { getState: () => ({ entries: [] }) }
+  ),
 }));
 
 vi.mock('@/engines/ExportEngine', () => ({

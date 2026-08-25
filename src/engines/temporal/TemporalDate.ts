@@ -211,9 +211,12 @@ export function addMonths(ms: number, months: number): number {
   }
   const d = new Date(ms);
   const targetMonth = d.getUTCMonth() + months;
-  const targetYear = d.getUTCFullYear() + Math.floor(targetMonth / 12) + (targetMonth < 0 ? -1 : 0);
+  // Math.floor rounds toward -inf, so this decomposition is exact for negative
+  // targetMonth too: targetMonth === 12*yearDelta + normalizedMonth always holds.
+  const targetYear = d.getUTCFullYear() + Math.floor(targetMonth / 12);
   const normalizedMonth = ((targetMonth % 12) + 12) % 12;
-  // Clamp day to last day of target month.
+  // Clamp day to last day of target month (works in both directions:
+  // Mar 31 - 1mo -> Feb 28/29, Jan 31 - 1mo -> Dec 31).
   const lastDayOfTarget = new Date(Date.UTC(targetYear, normalizedMonth + 1, 0)).getUTCDate();
   const day = Math.min(d.getUTCDate(), lastDayOfTarget);
   return Date.UTC(

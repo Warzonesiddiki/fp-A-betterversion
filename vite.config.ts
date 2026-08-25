@@ -175,6 +175,11 @@ export default defineConfig({
         __dirname,
         'src/test/__mocks__/tauri-shortcut.ts'
       ),
+      // Bundle-gate fix: jspdf's optional canvg dependency (only used by its
+      // SVG-to-PDF path, which no app code reaches) dragged in canvg@3 +
+      // core-js as a ~47 KB gz eager chunk. Alias it to an explicit stub so
+      // the bytes never bundle; see src/test/__mocks__/canvg-stub.ts.
+      canvg: path.resolve(__dirname, 'src/test/__mocks__/canvg-stub.ts'),
     },
   },
   clearScreen: false,

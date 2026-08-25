@@ -6,14 +6,18 @@
  *
  * Gates enforced:
  *   G3  - main entry chunk <= 150 KB gzip
- *   G3  - total JS      <= 2  MB  gzip
+ *   G3  - total JS      <= 2048 KB gzip (ENFORCED via TOTAL_JS_LIMIT_KB below);
+ *         plan-literal target <= 2048 KB MET — 2005.11 KB measured 2026-08-23
+ *         after AG Grid modular registration (P-02-I); gate tightened from the
+ *         interim 2248 KB ratchet in the same change set as the proof build.
  *   G19 - lazy vendors  <= 300 KB gzip each (grid-vendor, excel-vendor,
  *          grid-react-vendor). These must stay loadable on demand without
  *          blowing past the user's effective budget.
  *
  * Early warning thresholds (90% of limit, yellow status, exit 0):
  *   G3  - main entry chunk > 135 KB gzip
- *   G3  - total JS      > 1843.2 KB gzip (1.8 MB)
+ *   G3  - total JS      > 1843.2 KB gzip (= 90% of enforced 2048; legacy docs said
+ *         2023.2 KB when the cap was still the interim 2248 ratchet)
  *   G19 - lazy vendors  > 270 KB gzip each
  *
  * CAVEMAN PERSIST (NEVER-AGAIN RULE #49):
@@ -33,12 +37,12 @@ import { gzip } from 'node:zlib';
 const gzipAsync = promisify(gzip);
 
 const MAIN_CHUNK_LIMIT_KB = 150; // KB gzip (G3)
-const TOTAL_JS_LIMIT_KB = 2248; // KB gzip (G3)
+const TOTAL_JS_LIMIT_KB = 2048; // KB gzip (G3) — plan-literal; tightened from interim 2248 ratchet by P-02-I with measured proof (2005.11 KB)
 const LAZY_VENDOR_LIMIT_KB = 300; // KB gzip (G19) - grid-vendor, excel-vendor must be lazy and small
 
 // 90% early warning thresholds (yellow status, exit 0; fail only at 100%)
 const MAIN_CHUNK_WARN_KB = Math.floor(MAIN_CHUNK_LIMIT_KB * 0.9 * 100) / 100; // 135 KB
-const TOTAL_JS_WARN_KB = Math.floor(TOTAL_JS_LIMIT_KB * 0.9 * 100) / 100; // 1843.2 KB (1.8 MB)
+const TOTAL_JS_WARN_KB = Math.floor(TOTAL_JS_LIMIT_KB * 0.9 * 100) / 100; // 1843.2 KB (90% of enforced 2048)
 const LAZY_VENDOR_WARN_KB = Math.floor(LAZY_VENDOR_LIMIT_KB * 0.9 * 100) / 100; // 270 KB
 const WARN_THRESHOLD_PCT = 90;
 
@@ -146,6 +150,13 @@ async function findMainJsFile(dir) {
 }
 
 async function main() {
+  // Gate accumulators MUST be declared before any branch can touch them.
+  // The critical-path and lazy-vendor checks below run earlier in the function
+  // than the main-chunk/total-JS sections where these were previously declared
+  // (a TDZ ReferenceError that main().catch swallowed into a false exit 1).
+  let fail = 0;
+  let warnings = 0;
+
   const distAssetsDir = path.resolve('dist/assets');
   if (!fs.existsSync(distAssetsDir)) {
     console.error('dist/assets not found. Run `npm run build` first.');
@@ -230,9 +241,6 @@ async function main() {
   }
   const mainFilePath = path.join(distAssetsDir, mainFileName);
 
-  let fail = 0;
-  let warnings = 0;
-
   const mainGzip = await getGzipSize(mainFilePath);
   const mainKB = formatKB(mainGzip);
   console.log(`Main chunk: ${mainFileName}`);
@@ -286,7 +294,7 @@ async function main() {
       `\n::warning::Total JS ${totalGzipKB}KB gzip at ${pct}% of ${TOTAL_JS_LIMIT_KB}KB limit (>= ${WARN_THRESHOLD_PCT}%)`
     );
     console.log(
-      `\n:warning: **WARN:** Total JS at ${pct}% of limit (warns at ${TOTAL_JS_WARN_KB}KB / 1.8MB)`
+      `\n:warning: **WARN:** Total JS at ${pct}% of limit (warns at ${TOTAL_JS_WARN_KB}KB / ${(TOTAL_JS_LIMIT_KB / 1024).toFixed(1)}MB)`
     );
     warnings++;
   } else {
@@ -325,40 +333,9 @@ async function main() {
     }
   }
 
-  // Per-Muse draft whitelist
-  const MUSE_DRAFT_WHITELIST = new Set([
-    'apollo',
-    'athena',
-    'atlas',
-    'hephaestus',
-    'prometheus',
-    'hera',
-    'hermes',
-    'mnemosyne',
-    'sentinel',
-    'vulcan',
-    'strategos',
-    'orchestrator',
-    'themis',
-    'tyche',
-    'vesta',
-    'chronos',
-    'iris',
-    'calliope',
-    'artemis',
-  ]);
-  function classifyFile(file) {
-    for (const { muse, paths } of MUSE_DOMAINS) {
-      if (paths.some((p) => file.startsWith(p))) return muse;
-    }
-    if (file.startsWith('docs/drafts/')) {
-      const seg = file.split('/')[2];
-      if (seg && MUSE_DRAFT_WHITELIST.has(seg.toLowerCase())) {
-        return seg.charAt(0).toUpperCase() + seg.slice(1).toLowerCase();
-      }
-    }
-    return null;
-  }
+  // Per-Muse draft classification lives at module scope (MUSE_DRAFT_WHITELIST /
+  // classifyFile). Do not re-declare copies here — shadowed block-scoped names
+  // would TDZ-crash any caller that runs before the inner declarations execute.
   for (const vendor of lazyVendors) {
     const match = chunkStats.find((c) => c.file.startsWith(vendor + '-'));
     if (!match) {

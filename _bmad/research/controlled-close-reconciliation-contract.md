@@ -9,16 +9,16 @@ A period is not “closed” because a user clicks a button or a dashboard is gr
 
 ## 2. Close-cycle contract
 
-| Object | Required fields | Control rule |
-|---|---|---|
-| Close Cycle | tenant, calendar/version, period/scope, owner, status, due dates, policy version | created from approved calendar/policy; no hidden status transitions |
-| Close Task | control type, dependency, owner/backup, SLA, evidence requirements, state | state derived from evidence/control result where possible |
-| Reconciliation | source/target definitions, scope, tolerance, difference, match status, owner | cannot be marked complete without documented result/evidence |
-| Adjustment | reason, origin, amount/currency, journal/input link, approver, reversal relation | adjustment is distinct traceable fact, not overwrite |
-| Exception | breached control, risk, rationale, compensating control, approver, expiry | cannot permanently bypass a required control |
-| Certification | scope, attester role, evidence set, policy version, timestamp | attester must have required permission and no prohibited SoD conflict |
-| Lock | scoped period/entity/version, lock policy, actor/time | authoritative service rejects non-permitted mutation/replay |
-| Close Snapshot | frozen close/control/reconciliation/consolidation status | used by report publication and audit evidence |
+| Object         | Required fields                                                                  | Control rule                                                          |
+| -------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Close Cycle    | tenant, calendar/version, period/scope, owner, status, due dates, policy version | created from approved calendar/policy; no hidden status transitions   |
+| Close Task     | control type, dependency, owner/backup, SLA, evidence requirements, state        | state derived from evidence/control result where possible             |
+| Reconciliation | source/target definitions, scope, tolerance, difference, match status, owner     | cannot be marked complete without documented result/evidence          |
+| Adjustment     | reason, origin, amount/currency, journal/input link, approver, reversal relation | adjustment is distinct traceable fact, not overwrite                  |
+| Exception      | breached control, risk, rationale, compensating control, approver, expiry        | cannot permanently bypass a required control                          |
+| Certification  | scope, attester role, evidence set, policy version, timestamp                    | attester must have required permission and no prohibited SoD conflict |
+| Lock           | scoped period/entity/version, lock policy, actor/time                            | authoritative service rejects non-permitted mutation/replay           |
+| Close Snapshot | frozen close/control/reconciliation/consolidation status                         | used by report publication and audit evidence                         |
 
 ## 3. Close-control domains
 
@@ -45,18 +45,18 @@ Not Ready → Ready → In Progress → Awaiting Evidence / Awaiting Approval
           → Overdue → Escalated
 ```
 
-| State | Meaning | Required UI/evidence |
-|---|---|---|
-| Not Ready | dependency/control prerequisite not satisfied | dependency and owner visible |
-| Ready | user can begin valid work | instructions/evidence requirement visible |
-| In Progress | work started but not verified | owner, age, next action |
-| Awaiting Evidence | required proof missing | exact missing artifact/control listed |
-| Awaiting Approval | action complete pending authorized review | approver/SLA/escalation shown |
-| Complete | required control/evidence validated | completion source, actor/time, evidence link |
-| Blocked | cannot proceed due to failure/dependency | blocker, impact, owner, recovery path |
-| Exception Requested | breach requires risk acceptance | rationale/compensating control/expiry |
-| Exception Approved | temporary governed bypass | approver, expiry, review path; not “green” |
-| Overdue/Escalated | SLA breach | escalation chain, notifications, impact |
+| State               | Meaning                                       | Required UI/evidence                         |
+| ------------------- | --------------------------------------------- | -------------------------------------------- |
+| Not Ready           | dependency/control prerequisite not satisfied | dependency and owner visible                 |
+| Ready               | user can begin valid work                     | instructions/evidence requirement visible    |
+| In Progress         | work started but not verified                 | owner, age, next action                      |
+| Awaiting Evidence   | required proof missing                        | exact missing artifact/control listed        |
+| Awaiting Approval   | action complete pending authorized review     | approver/SLA/escalation shown                |
+| Complete            | required control/evidence validated           | completion source, actor/time, evidence link |
+| Blocked             | cannot proceed due to failure/dependency      | blocker, impact, owner, recovery path        |
+| Exception Requested | breach requires risk acceptance               | rationale/compensating control/expiry        |
+| Exception Approved  | temporary governed bypass                     | approver, expiry, review path; not “green”   |
+| Overdue/Escalated   | SLA breach                                    | escalation chain, notifications, impact      |
 
 ## 5. Reconciliation contract
 
@@ -66,15 +66,15 @@ A reconciliation must declare source, target, scope, period/as-of time, matching
 
 ### Required outputs
 
-| Output | Meaning |
-|---|---|
-| Source total / target total | exact values plus display rounding/currency |
-| Difference | exact and display delta with favorable semantics only where meaningful |
-| Matched / unmatched population | count and amount, with authorized drill-through |
-| Tolerance | policy/version and comparison result |
-| Freshness | source-run timestamp and status |
-| Evidence | mapping/import/calculation/adjustment references |
-| Resolution | owner, rationale, action, approval/exception if needed |
+| Output                         | Meaning                                                                |
+| ------------------------------ | ---------------------------------------------------------------------- |
+| Source total / target total    | exact values plus display rounding/currency                            |
+| Difference                     | exact and display delta with favorable semantics only where meaningful |
+| Matched / unmatched population | count and amount, with authorized drill-through                        |
+| Tolerance                      | policy/version and comparison result                                   |
+| Freshness                      | source-run timestamp and status                                        |
+| Evidence                       | mapping/import/calculation/adjustment references                       |
+| Resolution                     | owner, rationale, action, approval/exception if needed                 |
 
 Auto-match must preserve its matching rule/version and confidence is never a substitute for review policy. Unmatched items cannot disappear through UI filtering.
 
@@ -95,13 +95,13 @@ Auto-match must preserve its matching rule/version and confidence is never a sub
 
 ## 7. Certification, SoD, and locking
 
-| Action | Required checks |
-|---|---|
-| Certify reconciliation | attester has scope/role; evidence complete; no configured SoD conflict; policy version recorded |
-| Approve exception | authorized risk owner; rationale, compensating control and expiry supplied; cannot self-approve when policy forbids |
-| Lock period | all blocking controls complete/exception-approved; impact summary; lock scope explicit |
-| Post-lock adjustment | allowed adjustment policy, reason, approval, reversal/lineage, audit; may trigger reopen/re-certification by policy |
-| Publish report | close snapshot/report policy approved; report shows certification/as-of state |
+| Action                 | Required checks                                                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Certify reconciliation | attester has scope/role; evidence complete; no configured SoD conflict; policy version recorded                     |
+| Approve exception      | authorized risk owner; rationale, compensating control and expiry supplied; cannot self-approve when policy forbids |
+| Lock period            | all blocking controls complete/exception-approved; impact summary; lock scope explicit                              |
+| Post-lock adjustment   | allowed adjustment policy, reason, approval, reversal/lineage, audit; may trigger reopen/re-certification by policy |
+| Publish report         | close snapshot/report policy approved; report shows certification/as-of state                                       |
 
 A lock is enforced by the authoritative service across UI, API, imports, integrations, workers, and offline queue replay.
 

@@ -55,3 +55,63 @@ describe('WaterfallBridge', () => {
     expect(screen.getByText('$50')).toBeInTheDocument();
   });
 });
+
+describe('WaterfallBridge hook stability (regression: hooks must run unconditionally)', () => {
+  it('survives null → data transition without hook-count mismatch', () => {
+    const { rerender } = render(
+      // @ts-expect-error testing null input
+      <WaterfallBridge items={null} />
+    );
+    expect(screen.queryByText('Revenue')).toBeNull();
+
+    rerender(<WaterfallBridge items={sampleItems} />);
+
+    expect(screen.getByText('Revenue')).toBeInTheDocument();
+  });
+
+  it('survives empty → data transition without hook-count mismatch', () => {
+    const { rerender } = render(<WaterfallBridge items={[]} />);
+    expect(screen.getByText('No data')).toBeInTheDocument();
+
+    rerender(<WaterfallBridge items={sampleItems} />);
+
+    expect(screen.getByText('End')).toBeInTheDocument();
+  });
+
+  it('survives data → empty transition without hook-count mismatch', () => {
+    const { rerender } = render(<WaterfallBridge items={sampleItems} />);
+    rerender(<WaterfallBridge items={[]} />);
+    expect(screen.getByText('No data')).toBeInTheDocument();
+  });
+});
+
+describe('WaterfallBridge semantic tone tokens (regression: no hardcoded hex variance colors)', () => {
+  it('derives bar fills from semantic tokens, not hex literals', () => {
+    const { container } = render(<WaterfallBridge items={sampleItems} />);
+    const bars = container.querySelectorAll<HTMLDivElement>('.absolute.rounded');
+    expect(bars).toHaveLength(sampleItems.length);
+
+    // Order: total, increase, decrease, total
+    expect(bars[0]!.getAttribute('style')).toContain('var(--info)');
+    expect(bars[1]!.getAttribute('style')).toContain('var(--positive)');
+    expect(bars[2]!.getAttribute('style')).toContain('var(--negative)');
+    expect(bars[3]!.getAttribute('style')).toContain('var(--info)');
+  });
+
+  it('emits no legacy hex literals in rendered markup', () => {
+    const { container } = render(<WaterfallBridge items={sampleItems} />);
+    expect(container.innerHTML).not.toContain('#10b981');
+    expect(container.innerHTML).not.toContain('#ef4444');
+    expect(container.innerHTML).not.toContain('#3b82f6');
+  });
+
+  it('still honors explicit per-item color overrides', () => {
+    const { container } = render(
+      <WaterfallBridge
+        items={[{ label: 'Custom', value: 10, type: 'increase', color: '#abc123' }]}
+      />
+    );
+    const bar = container.querySelector<HTMLDivElement>('.absolute.rounded');
+    expect(bar!.getAttribute('style')).toContain('rgb(171, 193, 35)');
+  });
+});

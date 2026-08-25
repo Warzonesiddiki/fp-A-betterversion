@@ -14,6 +14,7 @@ import type {
   BatchCalcDependency,
 } from './types';
 import { evaluateExpression, SafeExpressionError } from './safeExpression';
+import { readMessageId, readMessagePayload, validateBatchCalcRequest } from './validateRequest';
 
 // --- Cell key helpers ---
 
@@ -298,10 +299,16 @@ function runBatchCalc(request: BatchCalcRequest, taskId: string): BatchCalcRespo
 // --- Worker message handler ---
 
 self.onmessage = (e: MessageEvent<WorkerMessage<BatchCalcRequest>>) => {
-  const { id, payload } = e.data;
+  // W7E/W6-P1: envelope access is guarded and payloads are validated BEFORE
+  // any math runs — malformed messages get a structured {type:'error'} reply
+  // through the existing protocol instead of crashing uncaught or silently
+  // evaluating with NaN values.
+  const envelope: unknown = e.data;
+  const id = readMessageId(envelope);
 
   try {
-    const result = runBatchCalc(payload, id);
+    const request = validateBatchCalcRequest(readMessagePayload(envelope));
+    const result = runBatchCalc(request, id);
     const response: WorkerResponse<BatchCalcResponse> = {
       id,
       type: 'result',

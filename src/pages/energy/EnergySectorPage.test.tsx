@@ -4,7 +4,10 @@ import { render, screen } from '@testing-library/react';
 
 vi.mock('react-router-dom', () => ({ useNavigate: () => vi.fn() }));
 vi.mock('@/store/glStore', () => ({
-  useGLStore: () => ({ entries: [], isLoading: false, error: null }),
+  useGLStore: (sel?: (s: any) => any) =>
+    sel
+      ? sel({ entries: [], isLoading: false, error: null })
+      : { entries: [], isLoading: false, error: null },
 }));
 vi.mock('@/store/energyStore', () => ({
   useEnergyStore: () => ({

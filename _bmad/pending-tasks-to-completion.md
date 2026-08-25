@@ -606,7 +606,7 @@ tracker claimed this item done while the pending ledger said open, which is
 an unverified claim, not a resolution. This slice measured and then guarded
 both axes.
 
-The *width* axis cannot be measured in jsdom (`scrollWidth`/`clientWidth`
+The _width_ axis cannot be measured in jsdom (`scrollWidth`/`clientWidth`
 are both 0, so an overflowing element is invisible to it). The source-level
 ratchet `src/theme/viewport.contract.test.ts` therefore bans the
 unambiguous case: a hardcoded width ≥ 900px (Tailwind `w-[…px]`, inline
@@ -618,7 +618,7 @@ sources, so a regex that matches nothing reads as failure rather than
 success. Mutation-verified: 899px passes (threshold precision), while 900px,
 `minWidth: 905px` and CSS `width: 950px` each fail with the file and line.
 
-The *height* axis is pinned structurally by
+The _height_ axis is pinned structurally by
 `src/components/layout/AppLayout.viewport-contract.test.tsx`: the root is
 `flex h-screen` and the single scrolling surface is `<main
 class="overflow-y-auto">`, so content taller than 600px scrolls there rather

@@ -4,14 +4,14 @@
 
 ## SLO baseline
 
-| Capability | Target at approved reference workload | Evidence |
-|---|---:|---|
-| Interactive context/page change | p95 ≤2s | RUM trace |
-| Financial grid usable state | p95 ≤3s | browser performance trace |
-| Simple/complex report | p95 ≤5s / ≤30s | job telemetry |
-| API read excluding async work | p95 ≤200ms | service metrics |
-| Availability post-GA | ≥99.9% control plane | SLO/error budget |
-| Recovery | RPO ≤15 min, RTO ≤4h initially | quarterly restore drill |
+| Capability                      | Target at approved reference workload | Evidence                  |
+| ------------------------------- | ------------------------------------: | ------------------------- |
+| Interactive context/page change |                               p95 ≤2s | RUM trace                 |
+| Financial grid usable state     |                               p95 ≤3s | browser performance trace |
+| Simple/complex report           |                        p95 ≤5s / ≤30s | job telemetry             |
+| API read excluding async work   |                            p95 ≤200ms | service metrics           |
+| Availability post-GA            |                  ≥99.9% control plane | SLO/error budget          |
+| Recovery                        |        RPO ≤15 min, RTO ≤4h initially | quarterly restore drill   |
 
 Targets are hypotheses until a design-partner workload profile replaces the reference workload.
 

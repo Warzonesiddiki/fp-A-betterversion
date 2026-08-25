@@ -34,6 +34,7 @@ import type {
   ConsolidationFXRate,
   ConsolidationAdjustment,
 } from './types';
+import { readMessageId, readMessagePayload, validateConsolidationRequest } from './validateRequest';
 
 // --- Account category mapping ---
 
@@ -57,44 +58,52 @@ function getAccountCategory(accountCode: string): AccountCategory {
 
 // --- FX Translation (ASC 830) ---
 
+/**
+ * F-0001: a missing rate must never degrade to identity (1) — that leaves
+ * amounts silently un-translated inside USD-denominated totals.
+ */
+class MissingFXRateError extends Error {
+  constructor(from: string, to: string, rateType: string) {
+    super(`Missing FX rate for ${from}\u2192${to} (${rateType})`);
+    this.name = 'MissingFXRateError';
+  }
+}
+
 function translateForeignEntities(
   entities: ConsolidationEntityData[],
   fxRates: ConsolidationFXRate[]
 ): ConsolidationEntityData[] {
-  if (fxRates.length === 0) return entities;
-
   const rateMap = new Map<string, ConsolidationFXRate>();
   for (const rate of fxRates) {
     rateMap.set(`${rate.fromCurrency}:${rate.toCurrency}:${rate.rateType}`, rate);
   }
 
+  const requireRate = (
+    fromCurrency: string,
+    rateType: 'spot' | 'average' | 'historical'
+  ): number => {
+    const rate = rateMap.get(`${fromCurrency}:USD:${rateType}`);
+    if (!rate) throw new MissingFXRateError(fromCurrency, 'USD', rateType);
+    return rate.rate;
+  };
+
   return entities.map((entity) => {
     if (!entity.isForeign || entity.currency === 'USD') return entity;
 
-    const closingRate = rateMap.get(`${entity.currency}:USD:spot`);
-    const averageRate = rateMap.get(`${entity.currency}:USD:average`);
-    const historicalRate = rateMap.get(`${entity.currency}:USD:historical`);
-
-    if (!closingRate && !averageRate && !historicalRate) return entity;
-
     const translatedEntries = entity.entries.map((entry) => {
-      const category = getAccountCategory(entry.accountCode);
       let rate: number;
 
-      switch (category) {
+      switch (getAccountCategory(entry.accountCode)) {
         case 'asset':
         case 'liability':
-          rate = closingRate?.rate ?? 1;
+          rate = requireRate(entity.currency, 'spot');
           break;
         case 'revenue':
         case 'expense':
-          rate = averageRate?.rate ?? 1;
-          break;
-        case 'equity':
-          rate = historicalRate?.rate ?? 1;
+          rate = requireRate(entity.currency, 'average');
           break;
         default:
-          rate = closingRate?.rate ?? 1;
+          rate = requireRate(entity.currency, 'historical');
       }
 
       // Currency × FX rate is an exact decimal product, cent-rounded.
@@ -465,10 +474,16 @@ function postProgress(taskId: string, processed: number, total: number): void {
 // --- Worker message handler ---
 
 self.onmessage = (e: MessageEvent<WorkerMessage<ConsolidationRequest>>) => {
-  const { id, payload } = e.data;
+  // W7E/W6-P1: envelope access is guarded and payloads are validated BEFORE
+  // any math runs — malformed messages get a structured {type:'error'} reply
+  // through the existing protocol instead of crashing uncaught or silently
+  // propagating NaN amounts into the Decimal money layer.
+  const envelope: unknown = e.data;
+  const id = readMessageId(envelope);
 
   try {
-    const result = runConsolidation(payload, id);
+    const request = validateConsolidationRequest(readMessagePayload(envelope));
+    const result = runConsolidation(request, id);
     const response: WorkerResponse<ConsolidationResponse> = {
       id,
       type: 'result',

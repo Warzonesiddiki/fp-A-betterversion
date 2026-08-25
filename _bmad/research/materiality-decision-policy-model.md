@@ -7,18 +7,18 @@
 
 A variance is not inherently important because it is large. It is material when its **amount, rate, trend, forecast impact, cash/control risk, and decision consequence** exceed a policy configured for the organization and context.
 
-The system must show *why* an item is ranked, never only that it is red or high priority.
+The system must show _why_ an item is ranked, never only that it is red or high priority.
 
 ## 2. Policy objects
 
-| Object | Owner | Versioned fields | Why it exists |
-|---|---|---|---|
-| Materiality Policy | CFO / VP Finance | scope, metric class, thresholds, effective dates, escalation rules | turns organization-specific judgment into governed configuration |
-| Threshold Rule | FP&A / Controller | absolute amount, percentage, trend, forecast/cash impact, exclusions | determines signal qualification |
-| Severity Rule | CFO | critical/high/medium logic, response SLA, required approver | prevents every variance becoming urgent |
-| Action Policy | FP&A / Controller | task required, owner-selection method, due date, approval/exception path | defines accountable response |
-| Evidence Policy | Controller / Audit | source, calculation, context, audit, attachment requirements | makes a decision independently reconstructible |
-| Suppression Rule | CFO | known/planned events, approved exceptions, expiry/review date | reduces noise without hiding risk |
+| Object             | Owner              | Versioned fields                                                         | Why it exists                                                    |
+| ------------------ | ------------------ | ------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| Materiality Policy | CFO / VP Finance   | scope, metric class, thresholds, effective dates, escalation rules       | turns organization-specific judgment into governed configuration |
+| Threshold Rule     | FP&A / Controller  | absolute amount, percentage, trend, forecast/cash impact, exclusions     | determines signal qualification                                  |
+| Severity Rule      | CFO                | critical/high/medium logic, response SLA, required approver              | prevents every variance becoming urgent                          |
+| Action Policy      | FP&A / Controller  | task required, owner-selection method, due date, approval/exception path | defines accountable response                                     |
+| Evidence Policy    | Controller / Audit | source, calculation, context, audit, attachment requirements             | makes a decision independently reconstructible                   |
+| Suppression Rule   | CFO                | known/planned events, approved exceptions, expiry/review date            | reduces noise without hiding risk                                |
 
 Policies are tenant scoped, effective dated, versioned, approval-controlled, and auditable. A published decision retains the policy version used to rank it.
 
@@ -26,24 +26,24 @@ Policies are tenant scoped, effective dated, versioned, approval-controlled, and
 
 A signal may qualify through one or more rule types. It is not a client-side score; the authoritative service evaluates the policy using frozen context.
 
-| Rule type | Example | Required explanation |
-|---|---|---|
-| Absolute variance | Expense is $250k above approved monthly plan | amount, baseline, currency, period, rounding |
-| Relative variance | Gross margin is 4pp below plan | actual, baseline, delta, denominator, sign semantics |
-| Trend break | Three-month deterioration exceeds configured slope | range, trend method, historical values |
-| Forecast impact | Forecast EBITDA misses plan by 8% | forecast/model version, period, key drivers |
-| Cash/liquidity | Forecast cash falls below minimum covenant buffer | cash forecast version, covenant/policy source |
-| Control / close risk | Reconciliation exceeds tolerance or certification overdue | control, tolerance, owner, due date, evidence gap |
-| Concentration | One entity/customer/cost centre drives configured share | dimension, contribution, total, scope |
+| Rule type            | Example                                                   | Required explanation                                 |
+| -------------------- | --------------------------------------------------------- | ---------------------------------------------------- |
+| Absolute variance    | Expense is $250k above approved monthly plan              | amount, baseline, currency, period, rounding         |
+| Relative variance    | Gross margin is 4pp below plan                            | actual, baseline, delta, denominator, sign semantics |
+| Trend break          | Three-month deterioration exceeds configured slope        | range, trend method, historical values               |
+| Forecast impact      | Forecast EBITDA misses plan by 8%                         | forecast/model version, period, key drivers          |
+| Cash/liquidity       | Forecast cash falls below minimum covenant buffer         | cash forecast version, covenant/policy source        |
+| Control / close risk | Reconciliation exceeds tolerance or certification overdue | control, tolerance, owner, due date, evidence gap    |
+| Concentration        | One entity/customer/cost centre drives configured share   | dimension, contribution, total, scope                |
 
 ## 4. Severity and action matrix
 
-| Severity | Qualification | Default response | SLA hypothesis | Required evidence |
-|---|---|---|---|---|
-| Critical | Material financial/cash/control risk; policy breach; close blocker | task + escalation + approval/exception path | 1 business day | source, calculation, policy, owner, response, audit |
-| High | Material plan/forecast variance with executive decision consequence | task + variance explanation + decision | 3 business days | source, driver, comparison, owner, action |
-| Medium | Significant operating variance requiring monitoring | analyst review or task at owner discretion | next operating review | baseline, trend, rationale |
-| Informational | below threshold or explained/approved event | visible in analysis, no automatic task | none | context and suppression reason if used |
+| Severity      | Qualification                                                       | Default response                            | SLA hypothesis        | Required evidence                                   |
+| ------------- | ------------------------------------------------------------------- | ------------------------------------------- | --------------------- | --------------------------------------------------- |
+| Critical      | Material financial/cash/control risk; policy breach; close blocker  | task + escalation + approval/exception path | 1 business day        | source, calculation, policy, owner, response, audit |
+| High          | Material plan/forecast variance with executive decision consequence | task + variance explanation + decision      | 3 business days       | source, driver, comparison, owner, action           |
+| Medium        | Significant operating variance requiring monitoring                 | analyst review or task at owner discretion  | next operating review | baseline, trend, rationale                          |
+| Informational | below threshold or explained/approved event                         | visible in analysis, no automatic task      | none                  | context and suppression reason if used              |
 
 **[ASSUMPTION]** SLA values are placeholders; the organization must configure/approve them. No default threshold or SLA may be marketed as universally correct.
 
@@ -55,16 +55,16 @@ Detected → Qualified → Triaged → Assigned → Investigating
                                       ↘ Reopened when new evidence or threshold breach occurs
 ```
 
-| State | Actor allowed | Mandatory record | Exit condition |
-|---|---|---|---|
-| Detected | system | source query, context, policy version, evaluation time | policy evaluation complete |
-| Qualified | system/FP&A | qualification reasons and severity | not suppressed / not duplicate |
-| Triaged | FP&A/controller | validate/reject/suppress rationale | owner and response path selected |
-| Assigned | policy/user | owner, due date, task/workflow link | owner accepts or escalation starts |
-| Investigating | owner/team | evidence, notes, driver analysis | proposed decision or exception |
-| Decision proposed | owner/approver | action, forecast/plan impact, alternatives | policy approver review |
-| Approved | authorized approver | decision, approver, time, policy/SoD result | implementation/monitoring begins |
-| Closed | owner/controller | outcome, evidence, learning, final status | required evidence complete |
+| State             | Actor allowed       | Mandatory record                                       | Exit condition                     |
+| ----------------- | ------------------- | ------------------------------------------------------ | ---------------------------------- |
+| Detected          | system              | source query, context, policy version, evaluation time | policy evaluation complete         |
+| Qualified         | system/FP&A         | qualification reasons and severity                     | not suppressed / not duplicate     |
+| Triaged           | FP&A/controller     | validate/reject/suppress rationale                     | owner and response path selected   |
+| Assigned          | policy/user         | owner, due date, task/workflow link                    | owner accepts or escalation starts |
+| Investigating     | owner/team          | evidence, notes, driver analysis                       | proposed decision or exception     |
+| Decision proposed | owner/approver      | action, forecast/plan impact, alternatives             | policy approver review             |
+| Approved          | authorized approver | decision, approver, time, policy/SoD result            | implementation/monitoring begins   |
+| Closed            | owner/controller    | outcome, evidence, learning, final status              | required evidence complete         |
 
 ## 6. Mandatory evidence drawer
 

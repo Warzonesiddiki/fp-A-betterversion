@@ -102,9 +102,16 @@ describe('consolidation.worker', () => {
     return result?.payload as ConsolidationResponse | undefined;
   }
 
-  function _getLastError(): string | undefined {
-    const errorMsg = postMessages.find((m) => m.type === 'error');
-    return errorMsg?.error;
+  function dispatch(req: ConsolidationRequest): void {
+    self.onmessage?.(
+      new MessageEvent('message', {
+        data: { id: 'consolidation', type: 'compute', payload: req },
+      })
+    );
+  }
+
+  function lastError(): string | undefined {
+    return postMessages.find((m) => m.type === 'error')?.error;
   }
 
   describe('basic consolidation', () => {
@@ -418,7 +425,7 @@ describe('consolidation.worker', () => {
       expect(result?.totalAssets).toBeGreaterThan(5000);
     });
 
-    it('returns untranslated when no FX rates provided', () => {
+    it('errors when a foreign entity has no FX rates at all', () => {
       const foreignEntity = {
         entityId: 'F1',
         entityName: 'Foreign Sub',
@@ -436,12 +443,113 @@ describe('consolidation.worker', () => {
           },
         ],
       };
-      const result = runConsolidation({
+      dispatch({
         entities: [parentEntity, foreignEntity],
         ownerships: [{ parentId: 'P', childId: 'F1', ownershipPct: 100, method: 'full' }],
         fxRates: [],
       });
-      expect(result?.totalAssets).toBe(5000 + 1000);
+      // F-0001: no rates must never mean rate 1 — the worker replies with a
+      // structured error instead of mixing untranslated EUR into USD totals.
+      expect(postMessages.find((m) => m.type === 'result')).toBeUndefined();
+      expect(lastError()).toBe('Missing FX rate for EUR\u2192USD (spot)');
+    });
+
+    it('errors instead of falling back to rate 1 when only some rate types exist', () => {
+      const foreignEntity = {
+        entityId: 'F1',
+        entityName: 'Foreign Sub',
+        currency: 'EUR',
+        isForeign: true,
+        entries: [
+          {
+            id: 'f1',
+            accountCode: '1000',
+            accountName: 'Cash',
+            amount: 1000,
+            currency: 'EUR',
+            date: '2026-01-01',
+            entityId: 'F1',
+          },
+          {
+            id: 'f2',
+            accountCode: '4000',
+            accountName: 'Revenue',
+            amount: 500,
+            currency: 'EUR',
+            date: '2026-01-01',
+            entityId: 'F1',
+          },
+        ],
+      };
+      dispatch({
+        entities: [parentEntity, foreignEntity],
+        ownerships: [],
+        fxRates: [
+          {
+            fromCurrency: 'EUR',
+            toCurrency: 'USD',
+            rate: 1.1,
+            rateType: 'spot',
+            date: '2026-01-01',
+          },
+        ],
+      });
+      // Spot covers assets, but revenue needs the average rate. Pre-fix this
+      // silently translated revenue at 1.0.
+      expect(postMessages.find((m) => m.type === 'result')).toBeUndefined();
+      expect(lastError()).toBe('Missing FX rate for EUR\u2192USD (average)');
+    });
+
+    it('errors naming the historical type when equity lacks its rate', () => {
+      const foreignEntity = {
+        entityId: 'F1',
+        entityName: 'Foreign Sub',
+        currency: 'EUR',
+        isForeign: true,
+        entries: [
+          {
+            id: 'f1',
+            accountCode: '3000',
+            accountName: 'Common Stock',
+            amount: 800,
+            currency: 'EUR',
+            date: '2026-01-01',
+            entityId: 'F1',
+          },
+        ],
+      };
+      dispatch({
+        entities: [parentEntity, foreignEntity],
+        ownerships: [],
+        fxRates: [
+          {
+            fromCurrency: 'EUR',
+            toCurrency: 'USD',
+            rate: 1.1,
+            rateType: 'spot',
+            date: '2026-01-01',
+          },
+          {
+            fromCurrency: 'EUR',
+            toCurrency: 'USD',
+            rate: 1.08,
+            rateType: 'average',
+            date: '2026-01-01',
+          },
+        ],
+      });
+      expect(postMessages.find((m) => m.type === 'result')).toBeUndefined();
+      expect(lastError()).toBe('Missing FX rate for EUR\u2192USD (historical)');
+    });
+
+    it('does not translate domestic entities and does not require FX rates for them', () => {
+      const result = runConsolidation({
+        entities: [parentEntity],
+        ownerships: [],
+        fxRates: [],
+      });
+      expect(result?.totalAssets).toBe(5000);
+      expect(lastError()).toBeUndefined();
     });
   });
 
@@ -474,6 +582,90 @@ describe('consolidation.worker', () => {
         })
       );
       expect(postMessages.find((m) => m.type === 'error')).toBeTruthy();
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // W7E / W6-P1: request validation before math
+  // ---------------------------------------------------------------------------
+  describe('W7E/W6-P1 request validation', () => {
+    function singleEntityWith(amount: number): ConsolidationRequest {
+      return {
+        entities: [
+          {
+            entityId: 'A',
+            entityName: 'A',
+            currency: 'USD',
+            isForeign: false,
+            entries: [
+              {
+                id: 'a1',
+                accountCode: '1000',
+                accountName: 'Cash',
+                amount,
+                currency: 'USD',
+                date: '2026-01-01',
+                entityId: 'A',
+              },
+            ],
+          },
+        ],
+        ownerships: [],
+      };
+    }
+
+    function dispatch(req: unknown): void {
+      self.onmessage?.(
+        new MessageEvent('message', { data: { id: 'w7e', type: 'compute', payload: req } })
+      );
+    }
+
+    it('rejects entity entries with NaN amounts instead of returning NaN totals', () => {
+      // Pre-fix: NaN flowed into the Decimal money layer and poisoned every
+      // total silently; the worker replied with a "successful" result.
+      dispatch(singleEntityWith(Number.NaN));
+      const error = postMessages.find((m) => m.type === 'error');
+      expect(error?.error).toMatch(/amount/i);
+    });
+
+    it('rejects icPairs with non-finite amounts', () => {
+      dispatch({
+        ...singleEntityWith(100),
+        icPairs: [
+          {
+            fromEntityId: 'A',
+            toEntityId: 'A',
+            accountCode: '9001',
+            amount: Number.POSITIVE_INFINITY,
+            type: 'receivable',
+          },
+        ],
+      });
+      const error = postMessages.find((m) => m.type === 'error');
+      expect(error?.error).toMatch(/icPairs/i);
+    });
+
+    it('rejects fx rates that are not finite numbers', () => {
+      dispatch({
+        ...singleEntityWith(100),
+        fxRates: [
+          {
+            fromCurrency: 'EUR',
+            toCurrency: 'USD',
+            rate: Number.NaN,
+            rateType: 'spot',
+            date: '2026-01-01',
+          },
+        ],
+      });
+      const error = postMessages.find((m) => m.type === 'error');
+      expect(error?.error).toMatch(/fxRates/i);
+    });
+
+    it('null envelope data produces exactly one error reply, no crash', () => {
+      expect(() => self.onmessage?.(new MessageEvent('message', { data: null }))).not.toThrow();
+      const errors = postMessages.filter((m) => m.type === 'error');
+      expect(errors.length).toBe(1);
     });
   });
 });

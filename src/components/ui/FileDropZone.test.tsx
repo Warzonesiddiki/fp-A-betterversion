@@ -137,4 +137,56 @@ describe('FileDropZone', () => {
       expect(await axe(container)).toHaveNoViolations();
     });
   });
+
+  // Wave-7E a11y-announcements lane: validation errors were rendered as a
+  // purely visual pill (no live region, no describedby association), so
+  // screen-reader users never learned a rejected upload failed — and the
+  // Remove action used text-red-400 (2.77:1), failing WCAG 1.4.3.
+  describe('Wave-7E a11y announcements', () => {
+    const EXE_FILE = new File(['not-a-financial-file'], 'invoice.exe', {
+      type: 'application/x-msdownload',
+    });
+
+    function selectRawFile(file: File) {
+      const input = document.getElementById('file-input') as HTMLInputElement;
+      fireEvent.change(input, { target: { files: [file] } });
+    }
+
+    it('renders a persistent polite status region even before any interaction', () => {
+      render(<FileDropZone onFile={vi.fn()} />);
+      const status = screen.getByRole('status');
+      expect(status).toBeInTheDocument();
+      expect(status).toHaveAttribute('aria-live', 'polite');
+    });
+
+    it('announces validation errors through the status region (polite)', () => {
+      render(<FileDropZone onFile={vi.fn()} />);
+      selectRawFile(EXE_FILE);
+      expect(screen.getByRole('status')).toHaveTextContent('Invalid file type');
+    });
+
+    it('associates the active error with the dropzone via aria-describedby', () => {
+      render(<FileDropZone onFile={vi.fn()} />);
+      expect(screen.getByRole('button')).not.toHaveAttribute('aria-describedby');
+
+      selectRawFile(EXE_FILE);
+      const describedBy = screen.getByRole('button').getAttribute('aria-describedby');
+      expect(describedBy).toBeTruthy();
+      expect(document.getElementById(describedBy!)).toHaveTextContent('Invalid file type');
+    });
+
+    it('Remove button uses the AA contrast token contract (no text-red-400)', () => {
+      render(<FileDropZone onFile={vi.fn()} />);
+      selectCsvFile();
+      const removeBtn = screen.getByRole('button', { name: 'Remove transactions.csv' });
+      expect(removeBtn.className).not.toContain('text-red-400');
+      expect(removeBtn.className).toContain('text-[var(--text-negative)]');
+    });
+
+    it('validation-error state has no axe violations', async () => {
+      const { container } = render(<FileDropZone onFile={vi.fn()} />);
+      selectRawFile(EXE_FILE);
+      expect(await axe(container)).toHaveNoViolations();
+    });
+  });
 });

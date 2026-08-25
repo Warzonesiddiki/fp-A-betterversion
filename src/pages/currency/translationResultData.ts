@@ -19,7 +19,6 @@ export interface TranslationEntry {
   readonly accountName: string;
   readonly originalAmount: number;
   readonly translatedAmount: number;
-  readonly gainLoss: number;
 }
 
 /** Signed net amount of one GL entry: debit − credit, exact. */
@@ -43,15 +42,11 @@ export function buildTranslationEntries(
     }
   }
   return Array.from(accountMap.entries())
-    .map(([code, { name, total }]) => {
-      const translated = total.times(rate);
-      return {
-        accountCode: code,
-        accountName: name,
-        originalAmount: total.toNumber(),
-        translatedAmount: translated.toNumber(),
-        gainLoss: translated.minus(total).toNumber(),
-      };
-    })
+    .map(([code, { name, total }]) => ({
+      accountCode: code,
+      accountName: name,
+      originalAmount: total.toNumber(),
+      translatedAmount: total.times(rate).toNumber(),
+    }))
     .sort((a, b) => a.accountCode.localeCompare(b.accountCode));
 }

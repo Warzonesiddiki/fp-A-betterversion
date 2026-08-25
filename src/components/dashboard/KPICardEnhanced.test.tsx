@@ -1,9 +1,10 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { KPICardEnhanced, type KPICardEnhancedProps } from './KPICardEnhanced';
+import { useFinancialContextStore } from '@/store/financialContextStore';
 
 // Mock Sparkline component
 vi.mock('@/components/ui/Sparkline', () => ({
@@ -27,6 +28,10 @@ const defaultProps: KPICardEnhancedProps = {
 };
 
 describe('KPICardEnhanced', () => {
+  afterEach(() => {
+    useFinancialContextStore.getState().resetContext();
+  });
+
   it('renders without crashing', () => {
     render(<KPICardEnhanced {...defaultProps} />);
     expect(screen.getByText('Total Revenue')).toBeInTheDocument();
@@ -84,6 +89,19 @@ describe('KPICardEnhanced', () => {
     it('formats thousands in compact mode', () => {
       render(<KPICardEnhanced title="Revenue" value={1500} format="compact" />);
       expect(screen.getByText('$2K')).toBeInTheDocument();
+    });
+
+    it('follows the reporting currency in compact mode', () => {
+      useFinancialContextStore.getState().setContext({ currency: { code: 'EUR' } });
+      render(<KPICardEnhanced title="Revenue" value={2500000000} format="compact" />);
+      expect(screen.getByText('€2.5B')).toBeInTheDocument();
+      expect(screen.queryByText('$2.5B')).not.toBeInTheDocument();
+    });
+
+    it('follows the reporting currency in currency mode', () => {
+      useFinancialContextStore.getState().setContext({ currency: { code: 'GBP' } });
+      render(<KPICardEnhanced title="Revenue" value={1500000} format="currency" />);
+      expect(screen.getByText('£1,500,000')).toBeInTheDocument();
     });
   });
 

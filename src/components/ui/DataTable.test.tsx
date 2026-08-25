@@ -356,4 +356,47 @@ describe('DataTable', () => {
       expect(names[1]).toBe('X9');
     });
   });
+
+  // Wave-7E a11y-announcements: the results live region used to be rendered
+  // ONLY when filteredData.length > pageSize, so filters that shrank (or
+  // emptied) the result set went completely unannounced. The region must be
+  // persistent — mounted for every non-error state — with only its text
+  // swapped. It deliberately uses bare aria-live (no role) so page-level
+  // getByRole('status') queries in other suites keep resolving to their own
+  // components.
+  describe('Wave-7E filter/empty announcements', () => {
+    const getLiveRegion = (container: HTMLElement): HTMLElement | null =>
+      container.querySelector<HTMLElement>('[aria-live="polite"]');
+
+    it('renders the results live region persistently when rows fit one page', () => {
+      const { container } = render(<DataTable columns={columns} data={data} />);
+      expect(getLiveRegion(container)).toHaveTextContent('Showing all 3 entries');
+    });
+
+    it('announces filtered counts below one page instead of going silent', () => {
+      const { container } = render(<DataTable columns={columns} data={data} filterable />);
+      fireEvent.change(screen.getAllByPlaceholderText('Filter...')[0]!, {
+        target: { value: 'Bob' },
+      });
+      expect(getLiveRegion(container)).toHaveTextContent('Showing all 1 entries');
+    });
+
+    it('announces zero-match filters', () => {
+      const { container } = render(<DataTable columns={columns} data={data} filterable />);
+      fireEvent.change(screen.getAllByPlaceholderText('Filter...')[0]!, {
+        target: { value: 'zzz-no-match' },
+      });
+      expect(screen.getByText('No data available')).toBeInTheDocument();
+      expect(getLiveRegion(container)).toHaveTextContent(
+        /showing 0 entries for the current filters/i
+      );
+    });
+
+    it('announces pagination ranges by swapping text in the same persistent region', () => {
+      const { container } = render(<DataTable columns={columns} data={data} pageSize={2} />);
+      expect(getLiveRegion(container)).toHaveTextContent('Showing 1 to 2 of 3 entries');
+      fireEvent.click(screen.getByLabelText('Next page'));
+      expect(getLiveRegion(container)).toHaveTextContent('Showing 3 to 3 of 3 entries');
+    });
+  });
 });

@@ -6,23 +6,23 @@
 
 ## Acceptance criteria verification (story AC1–AC6)
 
-| AC | Result | Evidence |
-|---|---|---|
-| AC1 — Tauri runtime renders as today | PASS | `betaMode.app.test.tsx` Tauri-path test: renders with no beta flag, no beta marker; smoke test uses real `<App />`; full root suite (default mode) 1,188 files / 13,372 tests green. |
-| AC2 — browser without `VITE_BETA_WEB` keeps the explicit block | PASS | Smoke test: `alert` called, container empty, no `data-beta-web` marker. |
-| AC3 — browser WITH `VITE_BETA_WEB=true` renders + honest marker | PASS | Smoke test: no alert, `document.documentElement.dataset.betaWeb === 'true'`, real app shell mounts (`Dashboard` nav). |
-| AC4 — gate extracted to pure tested module | PASS | `src/utils/betaMode.ts` 5/5 tests (existing). |
-| AC5 — no supported-runtime claim; A-12 stays UNVALIDATED | PASS | Marker + console note; `.env.example` documents the flag as not-a-claim; no README/claim changes. |
-| AC6 — typecheck, lint, tests | PASS | Root tsc 0 errors; changed-file ESLint 0 warnings; server tsc 0 errors; targeted suites green. |
+| AC                                                              | Result | Evidence                                                                                                                                                                             |
+| --------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| AC1 — Tauri runtime renders as today                            | PASS   | `betaMode.app.test.tsx` Tauri-path test: renders with no beta flag, no beta marker; smoke test uses real `<App />`; full root suite (default mode) 1,188 files / 13,372 tests green. |
+| AC2 — browser without `VITE_BETA_WEB` keeps the explicit block  | PASS   | Smoke test: `alert` called, container empty, no `data-beta-web` marker.                                                                                                              |
+| AC3 — browser WITH `VITE_BETA_WEB=true` renders + honest marker | PASS   | Smoke test: no alert, `document.documentElement.dataset.betaWeb === 'true'`, real app shell mounts (`Dashboard` nav).                                                                |
+| AC4 — gate extracted to pure tested module                      | PASS   | `src/utils/betaMode.ts` 5/5 tests (existing).                                                                                                                                        |
+| AC5 — no supported-runtime claim; A-12 stays UNVALIDATED        | PASS   | Marker + console note; `.env.example` documents the flag as not-a-claim; no README/claim changes.                                                                                    |
+| AC6 — typecheck, lint, tests                                    | PASS   | Root tsc 0 errors; changed-file ESLint 0 warnings; server tsc 0 errors; targeted suites green.                                                                                       |
 
 ## Remaining-work verification (T-01..T-04)
 
-| Item | Result | Evidence |
-|---|---|---|
-| T-01 audit of 14 `@tauri-apps` import sites | PASS | 7 runtime sites; 7 test/mock/type sites. Import-time probe: all packages import-safe outside Tauri; calls throw (verified in Node + guarded in code). |
-| T-02 no-op/stub fallbacks | PASS | `tauriSqlStorage` (lazy import + Tauri gate, non-Tauri no-op — 24 storage tests incl. new no-op contract), `uiStore` (lazy notification import), `useTauriGlobalShortcuts` (lazy plugin import), `DashboardPage` (lazy WebviewWindow), `DependencyGraph` (`.catch` on dynamic import), `CubeEnginePersistence` (in-memory backend fallback, 8 new tests: round-trips cells/dimensions/cubes/history/snapshots + open-failure fallback). |
-| T-03 beta smoke test | PASS | `src/utils/betaMode.app.test.tsx` 4/4: blocked / beta render + marker / first-run onboarding / Tauri-without-flag. Also fixed a real marker bug (marker was set on the blocked path; runtime check now per-render). |
-| T-04 full suite in beta mode | PASS | `VITE_BETA_WEB=true` full root run: **1,188 files / 13,373 tests, 0 failures** (1 skipped). |
+| Item                                        | Result | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ------------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| T-01 audit of 14 `@tauri-apps` import sites | PASS   | 7 runtime sites; 7 test/mock/type sites. Import-time probe: all packages import-safe outside Tauri; calls throw (verified in Node + guarded in code).                                                                                                                                                                                                                                                                                   |
+| T-02 no-op/stub fallbacks                   | PASS   | `tauriSqlStorage` (lazy import + Tauri gate, non-Tauri no-op — 24 storage tests incl. new no-op contract), `uiStore` (lazy notification import), `useTauriGlobalShortcuts` (lazy plugin import), `DashboardPage` (lazy WebviewWindow), `DependencyGraph` (`.catch` on dynamic import), `CubeEnginePersistence` (in-memory backend fallback, 8 new tests: round-trips cells/dimensions/cubes/history/snapshots + open-failure fallback). |
+| T-03 beta smoke test                        | PASS   | `src/utils/betaMode.app.test.tsx` 4/4: blocked / beta render + marker / first-run onboarding / Tauri-without-flag. Also fixed a real marker bug (marker was set on the blocked path; runtime check now per-render).                                                                                                                                                                                                                     |
+| T-04 full suite in beta mode                | PASS   | `VITE_BETA_WEB=true` full root run: **1,188 files / 13,373 tests, 0 failures** (1 skipped).                                                                                                                                                                                                                                                                                                                                             |
 
 ## Regression assessment
 

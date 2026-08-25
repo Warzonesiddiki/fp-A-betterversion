@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react';
+import React, { useMemo, useRef, useCallback, useState, useEffect, useId } from 'react';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { AgGridReact } from 'ag-grid-react';
 import {
@@ -183,6 +183,62 @@ export const DataGrid: React.FC<DataGridProps> = ({
   const { hiddenColumns, showColumnMenu, setShowColumnMenu, toggleColumn, visibleColumnDefs } =
     useColumnVisibility(columnDefs);
   const { handleExport } = useDataGridExport(columns, rows, hiddenColumns);
+
+  // ===== Wave-7E a11y-modal-grid: column-visibility menu keyboard support ===
+  // WAI-ARIA menu pattern for role="menu" + menuitemcheckbox: roving tabindex,
+  // Arrow/Home/End navigation with wraparound, Escape closes without toggling
+  // and returns focus to the trigger. Items are real <button>s (previously
+  // unfocusable divs — keyboard users could not reach the menu at all).
+  const [columnMenuFocusIndex, setColumnMenuFocusIndex] = useState(0);
+  const columnMenuTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const columnMenuItemRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const columnMenuId = useId();
+
+  // Opening the menu moves focus to the first item (menu-button pattern).
+  useEffect(() => {
+    if (!showColumnMenu) return;
+    setColumnMenuFocusIndex(0);
+    columnMenuItemRefs.current[0]?.focus();
+  }, [showColumnMenu]);
+
+  const closeColumnMenu = useCallback(() => {
+    setShowColumnMenu(false);
+    columnMenuTriggerRef.current?.focus();
+  }, [setShowColumnMenu]);
+
+  const handleColumnMenuKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      const count = columns.length;
+      switch (e.key) {
+        case 'ArrowDown':
+        case 'ArrowUp':
+        case 'Home':
+        case 'End': {
+          if (count === 0) return;
+          e.preventDefault();
+          let next: number;
+          if (e.key === 'Home') next = 0;
+          else if (e.key === 'End') next = count - 1;
+          else if (e.key === 'ArrowDown') next = (columnMenuFocusIndex + 1) % count;
+          else next = (columnMenuFocusIndex - 1 + count) % count;
+          setColumnMenuFocusIndex(next);
+          columnMenuItemRefs.current[next]?.focus();
+          return;
+        }
+        case 'Escape':
+          // The menu owns Escape while focus is inside it; stop propagation so
+          // the grid-level handler does not also consume it.
+          e.preventDefault();
+          e.stopPropagation();
+          closeColumnMenu();
+          return;
+        default:
+          return;
+      }
+    },
+    [columns.length, columnMenuFocusIndex, closeColumnMenu]
+  );
+  // ==========================================================================
 
   const handleSelectionChanged = useCallback(
     (event: SelectionChangedEvent) => {
@@ -375,35 +431,51 @@ export const DataGrid: React.FC<DataGridProps> = ({
           {enableColumnHiding && (
             <div className="relative">
               <button
+                ref={columnMenuTriggerRef}
                 onClick={() => setShowColumnMenu(!showColumnMenu)}
                 className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 px-2 py-1 rounded hover:bg-[var(--bg-surface)] transition-colors"
                 aria-label="Show or hide columns"
                 aria-expanded={showColumnMenu}
+                aria-haspopup="menu"
+                aria-controls={showColumnMenu ? columnMenuId : undefined}
                 title="Column Visibility"
               >
                 Columns
               </button>
               {showColumnMenu && (
                 <div
+                  ref={(node) => {
+                    if (node === null) columnMenuItemRefs.current = [];
+                  }}
+                  id={columnMenuId}
+                  tabIndex={-1}
                   className="absolute top-full left-0 z-50 mt-1 w-48 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-md shadow-lg"
                   role="menu"
+                  aria-label="Column visibility"
+                  onKeyDown={handleColumnMenuKeyDown}
                 >
-                  {columns.map((col) => (
-                    <div
-                      key={col.field}
-                      className="flex items-center gap-2 px-3 py-1.5 hover:bg-[var(--bg-muted)] cursor-pointer"
-                      role="menuitemcheckbox"
-                      aria-checked={!hiddenColumns.has(col.field)}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={!hiddenColumns.has(col.field)}
-                        onChange={() => toggleColumn(col.field)}
-                        className="rounded"
-                      />
-                      <span>{col.headerName}</span>
-                    </div>
-                  ))}
+                  {columns.map((col, index) => {
+                    const visible = !hiddenColumns.has(col.field);
+                    return (
+                      <button
+                        key={col.field}
+                        ref={(node) => {
+                          columnMenuItemRefs.current[index] = node;
+                        }}
+                        type="button"
+                        role="menuitemcheckbox"
+                        aria-checked={visible}
+                        tabIndex={index === columnMenuFocusIndex ? 0 : -1}
+                        onClick={() => toggleColumn(col.field)}
+                        className="flex w-full items-center gap-2 px-3 py-1.5 text-left hover:bg-[var(--bg-muted)] cursor-pointer focus-visible:outline-none focus-visible:bg-[var(--bg-muted)]"
+                      >
+                        <span aria-hidden="true" className="w-3 flex-shrink-0">
+                          {visible ? '✓' : ''}
+                        </span>
+                        <span>{col.headerName}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>

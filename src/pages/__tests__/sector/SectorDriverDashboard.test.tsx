@@ -26,10 +26,10 @@ vi.mock('recharts', () => ({
 }));
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: () => ({
-    entries: [],
-    filters: {},
-  }),
+  useGLStore: (sel?: (s: any) => any) => {
+    const state = { entries: [], filters: {} };
+    return sel ? sel(state) : state;
+  },
 }));
 
 vi.mock('@/store/settingsStore', () => ({

@@ -4,19 +4,19 @@
 
 ## 1. Partner and scope
 
-| Field | Entry |
-|---|---|
-| Partner / participant ID |  |
-| Executive sponsor |  |
-| Finance owner |  |
-| Controller owner |  |
-| FP&A owner |  |
-| IT/security owner |  |
-| Procurement/legal owner |  |
-| Target workflow | Close / Forecast / Report / Connected loop |
-| Entity / currency / period scope |  |
-| Source systems / first connector |  |
-| Deployment posture | Hybrid / managed / customer-managed |
+| Field                            | Entry                                      |
+| -------------------------------- | ------------------------------------------ |
+| Partner / participant ID         |                                            |
+| Executive sponsor                |                                            |
+| Finance owner                    |                                            |
+| Controller owner                 |                                            |
+| FP&A owner                       |                                            |
+| IT/security owner                |                                            |
+| Procurement/legal owner          |                                            |
+| Target workflow                  | Close / Forecast / Report / Connected loop |
+| Entity / currency / period scope |                                            |
+| Source systems / first connector |                                            |
+| Deployment posture               | Hybrid / managed / customer-managed        |
 
 ## 2. Baseline and problem statement
 
@@ -28,14 +28,14 @@
 
 ## 3. Hypotheses to test
 
-| Hypothesis | Baseline | Pilot measure | Success threshold | Owner |
-|---|---|---|---|---|
-| Close control quality |  |  |  |  |
-| Forecast/model productivity |  |  |  |  |
-| Decision/evidence retrieval |  |  |  |  |
-| Reporting/board-pack readiness |  |  |  |  |
-| Hybrid security/operability fit |  |  |  |  |
-| Economic value / WTP |  |  |  |  |
+| Hypothesis                      | Baseline | Pilot measure | Success threshold | Owner |
+| ------------------------------- | -------- | ------------- | ----------------- | ----- |
+| Close control quality           |          |               |                   |       |
+| Forecast/model productivity     |          |               |                   |       |
+| Decision/evidence retrieval     |          |               |                   |       |
+| Reporting/board-pack readiness  |          |               |                   |       |
+| Hybrid security/operability fit |          |               |                   |       |
+| Economic value / WTP            |          |               |                   |       |
 
 ## 4. In-scope minimum workflow
 
@@ -70,9 +70,9 @@ Anything beyond this flow requires a written change decision. A pilot is not an 
 
 ## 7. Go / no-go decision
 
-| Outcome | Evidence | Decision maker | Date |
-|---|---|---|---|
-| Expand |  |  |  |
-| Remediate and repeat |  |  |  |
-| Pivot |  |  |  |
-| Stop |  |  |  |
+| Outcome              | Evidence | Decision maker | Date |
+| -------------------- | -------- | -------------- | ---- |
+| Expand               |          |                |      |
+| Remediate and repeat |          |                |      |
+| Pivot                |          |                |      |
+| Stop                 |          |                |      |

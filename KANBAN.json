@@ -3,11 +3,12 @@
   "cards": [
     {
       "id": "card-494333e7-75f3-4ec3-b409-5bcdb758b622",
-      "title": "always use all 30 subagents dont let any subagents be idel",
+      "title": "Always use all 30 audit subagents — none idle",
       "status": "todo",
       "tags": [],
       "createdAt": 1787493702556,
-      "updatedAt": 1787493702556
+      "updatedAt": 1787576775626,
+      "rationale": "Owner standing instruction: every audit wave fans out all 30 lanes so no domain layer escapes review and no lane sits idle while others run — maximizes defect discovery throughput per audit pass."
     },
     {
       "id": "card-39bff29b-2da0-4dc9-aff1-535d74f6fb4e",
@@ -15,16 +16,12 @@
       "description": "User directive: one-stop all-in-one FP&A for ALL industries, zero compromises/flaws. Fan out 30 read-only audit subagents across every layer (engines/stores/pages/UI/workers/services/plugins/security/Tauri/server/i18n/a11y/perf/e2e/build/docs/product-gap). Output: severity-ranked findings with file:line evidence, synthesized report + P0 fix queue.",
       "sourceSessionId": "session-c8113c06-35c2-4af8-8e7e-677a6016389a",
       "status": "done",
-      "tags": [
-        "wave-6",
-        "audit",
-        "zero-compromise",
-        "done"
-      ],
+      "tags": ["wave-6", "audit", "zero-compromise", "done"],
       "createdAt": 1787507461466,
-      "updatedAt": 1787516704669,
+      "updatedAt": 1787576814470,
       "summary": "DONE 2026-08-24: 30/30 lanes reported across three orchestration passes. Registered 16 unique P0 / 99 P1 / 62 P2 findings with file:line witnesses. Deliverables: docs/audit/WAVE6_ZERO_FLAW_AUDIT_2026-08-24.md (P0 register + P1 clusters + sound-foundations list), reports/WAVE6_WORKFLOW_RAW_2026-08-24.txt (raw archive), reasoning-ledger Entry #38, Wave-7 fix card queued. Honest label: docs-truth lane detail lost to spill truncation; solo re-run subagent dispatched (a4274afd). 5 owner decisions flagged in report §OWNER-DECISIONS.",
-      "rationale": "Owner directive demanded zero-compromise verification; read-only fan-out maximizes evidence throughput inside the locked BMAD path without touching code."
+      "rationale": "Owner directive demanded zero-compromise verification; read-only fan-out maximizes evidence throughput inside the locked BMAD path without touching code.",
+      "rejected": "Single-pass orchestration was tried and lost: schema-structured output failed on 11/30 agents concentrated in large-inventory lanes (engines 530 files, ui 252 files). Fixed by three-pass fan-out (19 main + 5 retry + 6 recovery) with narrowed scopes and plain-text JSON-parse fallback, recovering 30/30 lanes."
     },
     {
       "id": "card-1fa926d4-6c10-4b9e-a0ce-50484ee72875",
@@ -32,27 +29,23 @@
       "description": "Sweep awesome-dsh-plugin.com catalog (2016 entries → 1814 unique root-repo candidates), classify with 30 parallel subagents over .market-acquire/slice-*.txt, bulk-install KEEP plugins into profile web via dsh plugin add. Pilot validated (dsh-project-memory). Full KEEP manifest persisted even if install set is capped for stability.",
       "sourceSessionId": "session-ab9e86d7-1c2c-4780-82f1-859542753e7c",
       "status": "in_progress",
-      "tags": [
-        "plugins",
-        "dsh-market",
-        "acquisition"
-      ],
+      "tags": ["plugins", "dsh-market", "acquisition"],
       "createdAt": 1787515651776,
-      "updatedAt": 1787515651776
+      "updatedAt": 1787576775702,
+      "rationale": "Owner earlier directed bulk-curated acquisition of DSH plugin-market tools to extend harness capability; pilot validated (dsh-project-memory), KEEP manifest persisted. Deprioritized behind the FinPlan Pro completion mission whenever shell time is contended."
     },
     {
       "id": "card-64f77d32-3bf8-407d-ac72-e514666fb21b",
       "title": "Wave-7: P0 fix program (16 defects, 4 batches)",
-      "description": "Execute the four fix batches from docs/audit/WAVE6_ZERO_FLAW_AUDIT_2026-08-24.md: 7A wrong-numbers (P0-01,06,09,10,11,12,15,16), 7B security (P0-02,03,04,14 + RBAC/vault/router), 7C integration-truth (P0-13 + storage errors), 7D product-surface (P0-05,07,08 + KPI units). Each batch gated on tsc/lint/test/build green with failing-test-first regressions. 5 owner decisions flagged in report §OWNER-DECISIONS (escrow UX, sandbox wire-vs-deadvertise, server truth, browser/PWA story, updater).",
+      "description": "Four-batch P0 program COMPLETE + P1 perf tier closed. 7A 3ebf4344 / 7B 5c83551b / 7C 585ca55f / 7D 74c5adfd (128 files, ~99 selector rewrites, worker progress revived, periodClose canonicalized; FULL suite 1298 files/15053 tests executed - all failures repaired to green; ledger #42). Docs batch 993713da (claims gate 11/11). REMAINING: owner-gated bucket only (5 rulings incl P0-05 escrow) + next actionable P1 tiers: a11y cluster (~10), marketplace install integrity, worker plugin isolation.",
       "sourceSessionId": "session-c8113c06-35c2-4af8-8e7e-677a6016389a",
-      "status": "in_progress",
-      "tags": [
-        "wave-7",
-        "p0-fixes",
-        "zero-compromise"
-      ],
+      "status": "done",
+      "tags": ["wave-7", "p0-fixes", "zero-compromise"],
       "createdAt": 1787516637836,
-      "updatedAt": 1787516926208
+      "updatedAt": 1787576775745,
+      "summary": "All four batches closed failing-test-first with gates green: 7A wrong-numbers ×8 (3ebf4344), 7B security ×4+P1s (5c83551b), 7C integration-truth/menu/confirm (585ca55f), 7D perf sweep ~200 selector-less subscriptions + worker progress revived + periodClose canonicalized (74c5adfd), docs claims gate 11/11 (993713da). Full suite milestone: 1298 files / 15053 tests executed, all failures triaged & repaired; final gates tsc 0 / eslint 0 / build 0. Ledger Entries #39–#42.",
+      "rationale": "Wave-6 register held 16 unique P0 defects that made the product unshippable against the zero-compromise mandate; batching by risk class (wrong-numbers → security → integration-truth → product-surface/perf) let each commit land verifiable green gates instead of one untestable mega-change.",
+      "rejected": "One mega-fix commit rejected — unreviewable and gate-blind. Auto-fixing without failing-test-first rejected — no regression proof. Leaving owner-gated items (key escrow, vault model, server-auth scope, browser-vs-PWA, updater channel) undecided was NOT accepted: they move to the Wave-8 program with documented zero-compromise rulings."
     }
   ]
 }

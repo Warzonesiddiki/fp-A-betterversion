@@ -1,12 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@/test/testUtils';
+import { render, screen, fireEvent, waitFor } from '@/test/testUtils';
 
 vi.mock('@/store/settingsStore', () => ({
   useSettingsStore: vi.fn(() => ({ organization: {} })),
 }));
 
+const addToastMock = vi.hoisted(() => vi.fn());
+
+vi.mock('@/store/uiStore', () => ({
+  useUIStore: { getState: () => ({ addToast: addToastMock }) },
+}));
+
+const exportBackupMock = vi.hoisted(() => vi.fn());
+
 vi.mock('@/utils/backupRestore', () => ({
-  BackupRestore: { exportBackup: vi.fn() },
+  BackupRestore: { exportBackup: exportBackupMock },
 }));
 
 vi.mock('@/engines/FinPlanFileEngine', () => ({
@@ -45,5 +53,22 @@ describe('BackupRestorePage', () => {
   it('renders heading', () => {
     render(<BackupRestorePage />);
     expect(screen.getAllByText(/backup/i).length).toBeGreaterThan(0);
+  });
+
+  it('surfaces an error toast when the export fails instead of failing silently', async () => {
+    exportBackupMock.mockRejectedValue(new Error('QuotaExceededError'));
+    render(<BackupRestorePage />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Download backup file' }));
+
+    await waitFor(() => {
+      expect(addToastMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'error',
+          title: 'Backup export failed',
+          message: 'QuotaExceededError',
+        })
+      );
+    });
   });
 });

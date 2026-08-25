@@ -7,7 +7,69 @@
 
 import { PluginRegistry } from './PluginRegistry';
 import { PluginLoader } from './PluginLoader';
-import type { PluginManifest, PluginPermission } from './types';
+import { semverSatisfies } from './pluginSemver';
+import type { Plugin, PluginAPI, PluginManifest, PluginPermission } from './types';
+
+/**
+ * Wave-7E marketplace-integrity: the plugin-API surface version this app build
+ * exposes. Marketplace engine compatibility is checked against this constant.
+ */
+export const APP_PLUGIN_API_VERSION = '1.0.0';
+
+/** Machine-readable failure reasons surfaced by {@link MarketplaceInstallError}. */
+export type MarketplaceInstallErrorCode =
+  | 'incompatible-version'
+  | 'missing-dependency'
+  | 'permission-consent-required'
+  | 'load-failed';
+
+/**
+ * Typed install failure. Callers/UI must branch on `code` instead of parsing
+ * message strings; `detail` carries the loader's validation/load error text
+ * that was previously swallowed.
+ */
+export class MarketplaceInstallError extends Error {
+  readonly code: MarketplaceInstallErrorCode;
+  readonly pluginId: string;
+  readonly detail?: string;
+
+  constructor(
+    code: MarketplaceInstallErrorCode,
+    pluginId: string,
+    message: string,
+    detail?: string
+  ) {
+    super(message);
+    this.name = 'MarketplaceInstallError';
+    this.code = code;
+    this.pluginId = pluginId;
+    this.detail = detail;
+  }
+}
+
+/** Explicit user approval covering a plugin's declared permissions (default-deny). */
+export interface MarketplaceConsentRecord {
+  /** Must match the manifest id — consent cannot be reused across plugins. */
+  pluginId: string;
+  /** Permission set the user explicitly granted. */
+  permissions: readonly PluginPermission[];
+  /** ISO timestamp of the explicit approval. */
+  grantedAt: string;
+}
+
+export interface MarketplaceInstallOptions {
+  /**
+   * Module factory producing the live plugin instance for the loader/sandbox.
+   * Required for a successful install: catalog entries ship manifests only,
+   * so without a factory the load step fails and nothing is registered.
+   */
+  factory?: (api: PluginAPI) => Plugin;
+  /**
+   * Consent record granting the manifest's declared permissions. Absent or
+   * non-covering consent = default-deny rejection.
+   */
+  consent?: MarketplaceConsentRecord;
+}
 
 // Module-level singleton instances
 const registry = new PluginRegistry();
@@ -24,6 +86,11 @@ export interface MarketplacePlugin extends PluginManifest {
   verified: boolean;
   screenshots?: string[];
   minAppVersion?: string;
+  /**
+   * Semver range of the app plugin-API surface this plugin runs against
+   * (e.g. "^1.0.0", ">=1.0.0 <2.0.0"). Checked against APP_PLUGIN_API_VERSION.
+   */
+  engineVersion?: string;
 }
 
 export interface InstalledPlugin extends MarketplacePlugin {
@@ -72,27 +139,67 @@ export class PluginMarketplace {
     return filtered;
   }
 
-  static async install(manifest: MarketplacePlugin): Promise<void> {
-    if (!this.isCompatible(manifest.minAppVersion ?? '')) {
-      throw new Error(`Plugin requires FinPlan Pro ${manifest.minAppVersion} or later`);
+  static async install(
+    manifest: MarketplacePlugin,
+    options: MarketplaceInstallOptions = {}
+  ): Promise<void> {
+    // Gate 1 — engine compatibility (real semver range vs app plugin API).
+    const compatibilityError = this.getCompatibilityError(manifest);
+    if (compatibilityError) {
+      throw new MarketplaceInstallError('incompatible-version', manifest.id, compatibilityError);
     }
 
+    // Gate 2 — declared dependencies must already be installed.
     if (manifest.dependencies) {
       for (const dep of manifest.dependencies) {
-        const installed = registry.get(dep);
-        if (!installed) {
-          throw new Error(`Plugin depends on "${dep}" which is not installed`);
+        if (!registry.get(dep)) {
+          throw new MarketplaceInstallError(
+            'missing-dependency',
+            manifest.id,
+            `Plugin depends on "${dep}" which is not installed`
+          );
         }
       }
     }
 
-    const approved = await this.requestPermissions(manifest.permissions);
-    if (!approved) {
-      throw new Error('Plugin permissions not approved');
+    // Gate 3 — explicit permission consent; default-deny without a record.
+    const grantedPermissions = this.resolveGrantedPermissions(manifest, options.consent);
+
+    // Gate 4 — actually load through the sandboxed loader and honor its result.
+    // Catalog entries ship manifests only, so a module factory is required for
+    // a successful load; without one nothing is registered.
+    if (!options.factory) {
+      throw new MarketplaceInstallError(
+        'load-failed',
+        manifest.id,
+        `Plugin "${manifest.id}" failed to load`,
+        'No module factory provided: pass the plugin module factory via MarketplaceInstallOptions.factory.'
+      );
+    }
+    const result = await loader.loadFromManifest(manifest, options.factory);
+    if (!result.success) {
+      // Previously swallowed: the LoadResult was ignored and the plugin was
+      // registered anyway. The loader's validation/load error now surfaces.
+      throw new MarketplaceInstallError(
+        'load-failed',
+        manifest.id,
+        `Plugin "${manifest.id}" failed to load`,
+        result.error
+      );
     }
 
-    await loader.loadFromManifest(manifest, () => ({}) as never);
-    registry.register(manifest);
+    // The loader already registered manifest + instance in the shared registry
+    // (a second register() here would throw "already registered"). Restrict
+    // registry permission grants to the explicitly consented subset.
+    const entry = registry.get(manifest.id);
+    if (entry) {
+      const declared: readonly PluginPermission[] = Array.isArray(manifest.permissions)
+        ? manifest.permissions
+        : [];
+      for (const permission of declared) {
+        entry.permissions.set(permission, grantedPermissions.has(permission));
+      }
+    }
 
     const installed: InstalledPlugin = {
       ...manifest,
@@ -135,12 +242,56 @@ export class PluginMarketplace {
     return SEED_CATALOG;
   }
 
-  private static isCompatible(_minVersion: string): boolean {
-    return true;
+  /**
+   * Wave-7E: real compatibility gate (was an always-true stub). Checks the
+   * minAppVersion floor and the engineVersion semver range against
+   * APP_PLUGIN_API_VERSION. Returns a human-readable rejection reason or null.
+   */
+  private static getCompatibilityError(manifest: MarketplacePlugin): string | null {
+    const { minAppVersion, engineVersion } = manifest;
+    if (minAppVersion && !semverSatisfies(APP_PLUGIN_API_VERSION, `>=${minAppVersion}`)) {
+      return `Plugin requires FinPlan Pro ${minAppVersion} or later (app plugin API version: ${APP_PLUGIN_API_VERSION})`;
+    }
+    if (engineVersion && !semverSatisfies(APP_PLUGIN_API_VERSION, engineVersion)) {
+      return `Plugin engine requirement "${engineVersion}" is not satisfied by app plugin API version ${APP_PLUGIN_API_VERSION}`;
+    }
+    return null;
   }
 
-  private static async requestPermissions(_permissions: PluginPermission[]): Promise<boolean> {
-    return true;
+  /**
+   * Wave-7E: explicit consent gate (was an always-approve stub). Default-deny:
+   * every declared permission must be covered by a consent record bound to
+   * this plugin id. Returns the granted subset of declared permissions.
+   */
+  private static resolveGrantedPermissions(
+    manifest: MarketplacePlugin,
+    consent?: MarketplaceConsentRecord
+  ): Set<PluginPermission> {
+    const declared: readonly PluginPermission[] = Array.isArray(manifest.permissions)
+      ? manifest.permissions
+      : [];
+    if (declared.length === 0) return new Set();
+
+    let detail: string;
+    if (!consent) {
+      detail = 'No consent record provided (default-deny)';
+    } else if (consent.pluginId !== manifest.id) {
+      detail = `Consent record belongs to plugin "${consent.pluginId}", not "${manifest.id}"`;
+    } else if (typeof consent.grantedAt !== 'string' || consent.grantedAt.length === 0) {
+      detail = 'Consent record is missing grantedAt';
+    } else {
+      const granted = new Set<PluginPermission>(consent.permissions);
+      const missing = declared.filter((p) => !granted.has(p));
+      if (missing.length === 0) return granted;
+      detail = `Missing grants: ${missing.join(', ')}`;
+    }
+
+    throw new MarketplaceInstallError(
+      'permission-consent-required',
+      manifest.id,
+      `Plugin "${manifest.id}" requires explicit user consent for permissions: ${declared.join(', ')}`,
+      detail
+    );
   }
 }
 

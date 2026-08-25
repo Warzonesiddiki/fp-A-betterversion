@@ -7,7 +7,7 @@ vi.mock('react-router-dom', () => ({
 }));
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: () => ({ entries: [] }),
+  useGLStore: (sel?: (s: any) => any) => (sel ? sel({ entries: [] }) : { entries: [] }),
 }));
 
 vi.mock('lucide-react', () => ({

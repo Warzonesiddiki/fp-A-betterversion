@@ -27,13 +27,21 @@ export const CHROMELESS_ROUTES: ReadonlySet<string> = new Set([
   '*',
 ]);
 
-const LAYOUT_OPEN = '<Route element={<AppLayout />}>';
+/**
+ * The layout route's opening tag. Tolerant of whitespace/newlines between the
+ * JSX tokens (Prettier wraps `element={…}` across lines), so reformatting
+ * App.tsx cannot silently break the scanner.
+ */
+const LAYOUT_OPEN_RE =
+  /<Route\s+element=\{\s*<ProtectedRoute>\s*<AppLayout\s*\/>\s*<\/ProtectedRoute>\s*\}\s*>/;
 
-/** Index of the `<Route element={<AppLayout />}>` opening tag. */
+/** Index of the `<Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>` opening tag. */
 export function layoutStart(source: string = APP_SOURCE): number {
-  const idx = source.indexOf(LAYOUT_OPEN);
-  if (idx === -1) throw new Error('AppLayout route wrapper not found in App.tsx');
-  return idx;
+  const m = source.match(LAYOUT_OPEN_RE);
+  if (!m || m.index === undefined) {
+    throw new Error('ProtectedRoute<AppLayout> route wrapper not found in App.tsx');
+  }
+  return m.index;
 }
 
 /**

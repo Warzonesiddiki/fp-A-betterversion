@@ -13,6 +13,7 @@ import type {
   MonteCarloResultItem,
   MonteCarloDistribution,
 } from './types';
+import { readMessageId, readMessagePayload, validateMonteCarloRequest } from './validateRequest';
 
 // --- Seeded PRNG (xoshiro128**) for reproducible simulations ---
 
@@ -178,10 +179,16 @@ function runMonteCarlo(request: MonteCarloRequest, taskId: string): MonteCarloRe
 // --- Worker message handler ---
 
 self.onmessage = (e: MessageEvent<WorkerMessage<MonteCarloRequest>>) => {
-  const { id, payload } = e.data;
+  // W7E/W6-P1: envelope access is guarded and payloads are validated BEFORE
+  // any math runs — malformed messages get a structured {type:'error'} reply
+  // through the existing protocol instead of crashing uncaught or silently
+  // returning zeroed statistics (NaN iterations used to do exactly that).
+  const envelope: unknown = e.data;
+  const id = readMessageId(envelope);
 
   try {
-    const result = runMonteCarlo(payload, id);
+    const request = validateMonteCarloRequest(readMessagePayload(envelope));
+    const result = runMonteCarlo(request, id);
     const response: WorkerResponse<MonteCarloResponse> = {
       id,
       type: 'result',

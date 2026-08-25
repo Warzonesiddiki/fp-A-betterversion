@@ -143,6 +143,27 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
     return filteredData.slice(startIndex, startIndex + pageSize);
   }, [filteredData, currentPage, pageSize, useVirtual]);
 
+  // Wave-7E a11y: single-source results announcer. The old live span lived
+  // inside the `filteredData.length > pageSize` footer, so filters that
+  // shrank the table to one page — or emptied it — went unannounced. This
+  // text feeds a PERSISTENT polite region below; only its content swaps.
+  const hasActiveFilters = Object.values(filters).some((value) => value.trim() !== '');
+  const resultsAnnouncement = (() => {
+    if (loading) return '';
+    const total = filteredData.length;
+    // Count-phrasing (not the visible emptyMessage) so the announcement never
+    // duplicates the empty-state copy rendered inside the table body.
+    if (total === 0) {
+      return hasActiveFilters ? 'Showing 0 entries for the current filters' : 'Showing 0 entries';
+    }
+    if (!useVirtual && total > pageSize) {
+      const start = (currentPage - 1) * pageSize + 1;
+      const end = Math.min(total, currentPage * pageSize);
+      return `Showing ${start} to ${end} of ${total} entries`;
+    }
+    return `Showing all ${total.toLocaleString()} entries`;
+  })();
+
   const requestSort = (key: string) => {
     let direction: 'asc' | 'desc' = 'asc';
     if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -459,6 +480,15 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
         </table>
       </div>
 
+      {/* Wave-7E a11y: persistent polite results region — mounted for every
+          non-error state, only its text swaps (see resultsAnnouncement).
+          Deliberately bare aria-live without role="status": DataTable is used
+          by 60+ pages, and an extra status role would hijack page-level
+          getByRole('status') queries aimed at those pages' own regions. */}
+      <p aria-live="polite" aria-atomic="true" className="sr-only">
+        {resultsAnnouncement}
+      </p>
+
       {useVirtual && !loading && (
         <div className="mt-2 text-xs text-[var(--text-secondary)] text-center">
           Showing all {filteredData.length.toLocaleString()} rows (virtual scrolling)
@@ -467,7 +497,9 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
 
       {!loading && !useVirtual && filteredData.length > pageSize && (
         <div className="mt-4 flex items-center justify-between text-xs text-[var(--text-secondary)]">
-          <span aria-live="polite" aria-atomic="true">
+          {/* Announcement duty moved to the persistent region above; this
+              visible span stays plain text to avoid double announcements. */}
+          <span>
             Showing {Math.min(filteredData.length, (currentPage - 1) * pageSize + 1)} to{' '}
             {Math.min(filteredData.length, currentPage * pageSize)} of {filteredData.length} entries
           </span>

@@ -29,7 +29,7 @@ function formatValue(value: number, format: string): string {
     case 'percent':
       return `${formatPercent(value, 1)}`;
     case 'compact':
-      return formatCompact(value);
+      return formatCompact(value, reportingCurrency());
     default:
       return value.toLocaleString();
   }

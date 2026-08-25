@@ -10,7 +10,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // ---------------------------------------------------------------------------
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+  useGLStore: Object.assign(
+    vi.fn((sel?: (s: unknown) => unknown) => {
+      const state = { entries: [] };
+      return sel ? sel(state) : state;
+    }),
+    { getState: () => ({ entries: [] }) }
+  ),
 }));
 
 vi.mock('@/engines/ExportEngine', () => ({
@@ -127,14 +133,20 @@ describe('StoreDashboardPage', () => {
 
   it('renders the dashboard heading when entries exist', async () => {
     const { useGLStore } = await import('@/store/glStore');
-    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ entries: glEntries });
+    (useGLStore as unknown as { mockImplementation: (fn: unknown) => void }).mockImplementation(
+      (sel?: (s: unknown) => unknown) =>
+        sel ? sel({ entries: glEntries }) : { entries: glEntries }
+    );
     render(<StoreDashboardPage />);
     expect(screen.getByRole('heading', { level: 1, name: /store dashboard/i })).toBeInTheDocument();
   });
 
   it('never renders the removed invented store names or growth column', async () => {
     const { useGLStore } = await import('@/store/glStore');
-    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ entries: glEntries });
+    (useGLStore as unknown as { mockImplementation: (fn: unknown) => void }).mockImplementation(
+      (sel?: (s: unknown) => unknown) =>
+        sel ? sel({ entries: glEntries }) : { entries: glEntries }
+    );
     render(<StoreDashboardPage />);
     for (const invented of ['Downtown', 'Mall', 'Airport', 'Online', 'Suburban']) {
       expect(screen.queryByText(invented)).toBeNull();
@@ -148,7 +160,10 @@ describe('StoreDashboardPage', () => {
 
   it('sums COGS signed (a credit reversal reduces cost instead of inflating it)', async () => {
     const { useGLStore } = await import('@/store/glStore');
-    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ entries: glEntries });
+    (useGLStore as unknown as { mockImplementation: (fn: unknown) => void }).mockImplementation(
+      (sel?: (s: unknown) => unknown) =>
+        sel ? sel({ entries: glEntries }) : { entries: glEntries }
+    );
     const { getByTestId } = render(<StoreDashboardPage />);
     const kpis = getByTestId('store-dashboard-kpis');
     // Total COGS = 0 − 2000 = −2000 → accounting-negative "($2,000)", not +2,000.
@@ -159,7 +174,10 @@ describe('StoreDashboardPage', () => {
 
   it('discloses that transactions, basket and YoY need POS feeds', async () => {
     const { useGLStore } = await import('@/store/glStore');
-    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({ entries: glEntries });
+    (useGLStore as unknown as { mockImplementation: (fn: unknown) => void }).mockImplementation(
+      (sel?: (s: unknown) => unknown) =>
+        sel ? sel({ entries: glEntries }) : { entries: glEntries }
+    );
     render(<StoreDashboardPage />);
     expect(screen.getByText(/require POS transaction history/i)).toBeInTheDocument();
   });

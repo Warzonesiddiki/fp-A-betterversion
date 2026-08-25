@@ -23,16 +23,26 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
     // at event time so Escape only fires onClose while this Modal is the
     // TOPMOST layer (e.g. a confirm dialog opened above must close first).
     const layerIdRef = useRef<number | null>(null);
+    // Wave-7E a11y-modal-grid: the Escape handler reads the latest onClose
+    // through a ref so its identity never changes across renders. Previously
+    // it was useCallback([onClose]), and because the open-effect below listed
+    // handleKeyDown as a dep, ANY parent re-render passing a fresh inline
+    // closure tore the effect down mid-dialog: cleanup restored focus to the
+    // trigger, re-captured activeElement as the new "previous focus", and
+    // pushed/popped dialog layers — corrupting both mid-dialog focus position
+    // and stacked-Escape ordering. Stable handler ⇒ effect deps reduce to
+    // [isOpen] and none of that churn can happen.
+    const onCloseRef = useRef(onClose);
+    useEffect(() => {
+      onCloseRef.current = onClose;
+    });
 
-    const handleKeyDown = useCallback(
-      (e: KeyboardEvent) => {
-        if (e.key !== 'Escape') return;
-        const layerId = layerIdRef.current;
-        if (layerId === null || !isTopDialogLayer(layerId)) return;
-        onClose();
-      },
-      [onClose]
-    );
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      const layerId = layerIdRef.current;
+      if (layerId === null || !isTopDialogLayer(layerId)) return;
+      onCloseRef.current();
+    }, []);
 
     useEffect(() => {
       if (!isOpen) return;
@@ -42,6 +52,9 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
       layerIdRef.current = layerId;
       document.addEventListener('keydown', handleKeyDown);
 
+      // Focus the first focusable on the next frame (Q5.2 focus-restore
+      // budget <50ms; the rAF shape is a structural contract pinned by
+      // src/__tests__/a11y/wcag-aa.test.tsx Q5.2).
       requestAnimationFrame(() => {
         dialogRef.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
       });

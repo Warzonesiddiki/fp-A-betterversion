@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-
 import { lazy, Suspense } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import AppLayout from './components/layout/AppLayout';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import LoadingScreen from './components/ui/LoadingScreen';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import {
@@ -320,9 +321,11 @@ export default function App() {
 
   if (isFirstRun) {
     return (
-      <Suspense fallback={<LoadingScreen />}>
-        <OnboardingWizard onComplete={completeSetup} />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingScreen />}>
+          <OnboardingWizard onComplete={completeSetup} />
+        </Suspense>
+      </ErrorBoundary>
     );
   }
 
@@ -379,7 +382,13 @@ export default function App() {
               }
             />
 
-            <Route element={<AppLayout />}>
+            <Route
+              element={
+                <ProtectedRoute>
+                  <AppLayout />
+                </ProtectedRoute>
+              }
+            >
               {/* W0.5 slice 2 (RC3): "/" was a pure alias of "/dashboard" — both
                   mounted the identical DashboardPage element. One canonical hub
                   now renders it ("/dashboard", the PillarNav PLAN hub); legacy

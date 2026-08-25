@@ -9,13 +9,13 @@ This file is the durable operational interpretation of the owner-provided BMAD v
 
 ## Phase state
 
-| Phase | Required artifacts | Current status |
-|---|---|---|
-| 0 — Intelligence | `_bmad/research/research-report.md`, `_bmad/research/assumption-registry.md`, relevant Blaze sessions | Gate G0 approved hypothesis baseline; primary validation remains open |
-| 1 — Discovery | research validation plan, evidence log, research-informed product brief | Gate G1 approved hypothesis brief; no primary participant evidence entered yet |
-| 2 — Planning | research-traceable PRD and UX specification | Gates G2/G3 approved hypothesis artifacts; assumptions remain open |
-| 3 — Solutioning | research-traceable architecture and ADRs | Gate G4 approved hypothesis architecture; primary validation remains open |
-| 4 — Delivery | aligned sprint plan, self-contained research-contextual stories, QA evidence | Gate G5 approved hypothesis plan; R-01 evidence-track recruitment is active |
+| Phase            | Required artifacts                                                                                    | Current status                                                                 |
+| ---------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| 0 — Intelligence | `_bmad/research/research-report.md`, `_bmad/research/assumption-registry.md`, relevant Blaze sessions | Gate G0 approved hypothesis baseline; primary validation remains open          |
+| 1 — Discovery    | research validation plan, evidence log, research-informed product brief                               | Gate G1 approved hypothesis brief; no primary participant evidence entered yet |
+| 2 — Planning     | research-traceable PRD and UX specification                                                           | Gates G2/G3 approved hypothesis artifacts; assumptions remain open             |
+| 3 — Solutioning  | research-traceable architecture and ADRs                                                              | Gate G4 approved hypothesis architecture; primary validation remains open      |
+| 4 — Delivery     | aligned sprint plan, self-contained research-contextual stories, QA evidence                          | Gate G5 approved hypothesis plan; R-01 evidence-track recruitment is active    |
 
 ## Execution semantics
 

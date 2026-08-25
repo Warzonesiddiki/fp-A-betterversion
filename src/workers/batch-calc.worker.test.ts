@@ -252,4 +252,46 @@ describe('batch-calc.worker', () => {
       expect(getLastError()).toBeTruthy();
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // W7E / W6-P1: request validation before math
+  // ---------------------------------------------------------------------------
+  describe('W7E/W6-P1 request validation', () => {
+    function dispatch(payload: unknown): void {
+      self.onmessage?.(
+        new MessageEvent('message', { data: { id: 'w7e-batch', type: 'compute', payload } })
+      );
+    }
+
+    const validPayload = () => ({
+      cells: [{ sheet: 'S', col: 'A', row: 1 }],
+      dependencies: [{ cell: { sheet: 'S', col: 'A', row: 1 }, dependsOn: [] }],
+      formulas: { 'S!A1': 'S!B1*2' },
+      values: { 'S!A1': 0, 'S!B1': 21 },
+    });
+
+    it('rejects values records holding NaN instead of evaluating with NaN', () => {
+      // Pre-fix: String(NaN) was substituted into the expression, the safe
+      // evaluator threw per-cell, and the worker returned a "successful"
+      // result with the cell silently recorded in errors[].
+      dispatch({ ...validPayload(), values: { 'S!A1': 0, 'S!B1': Number.NaN } });
+      const error = postMessages.find((m) => m.type === 'error');
+      expect(error?.error).toMatch(/values/i);
+    });
+
+    it('rejects formulas records holding non-string formulas', () => {
+      dispatch({
+        ...validPayload(),
+        formulas: { 'S!A1': 42 },
+      });
+      const error = postMessages.find((m) => m.type === 'error');
+      expect(error?.error).toMatch(/formulas/i);
+    });
+
+    it('null envelope data produces exactly one error reply, no crash', () => {
+      expect(() => self.onmessage?.(new MessageEvent('message', { data: null }))).not.toThrow();
+      const errors = postMessages.filter((m) => m.type === 'error');
+      expect(errors.length).toBe(1);
+    });
+  });
 });

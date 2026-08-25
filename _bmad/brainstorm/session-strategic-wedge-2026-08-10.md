@@ -42,26 +42,26 @@ First-principles decomposition, Crazy 8s, impact/effort scoring, and pre-mortem.
 
 Validated pain potential (30%), differentiation (20%), time-to-pilot proof (20%), enterprise credibility (20%), implementation risk (10%). Scores are hypothesis scores, not market data.
 
-| Option | Pain | Differentiation | Pilot | Credibility | Risk | Total / 5 |
-|---|---:|---:|---:|---:|---:|---:|
-| Sector breadth | 2 | 2 | 1 | 2 | 1 | 1.7 |
-| Excel replacement | 3 | 2 | 3 | 2 | 3 | 2.6 |
-| Decision Workspace | 4 | 4 | 4 | 3 | 4 | 3.8 |
-| Close Cockpit | 5 | 3 | 3 | 5 | 3 | 3.9 |
-| Local-first governed planning | 3 | 4 | 3 | 3 | 2 | 3.1 |
-| AI analyst first | 3 | 2 | 4 | 1 | 3 | 2.5 |
-| Board-pack evidence | 4 | 4 | 4 | 4 | 4 | 4.0 |
-| Import/reconciliation control plane | 5 | 3 | 3 | 5 | 3 | 3.9 |
-| Implementation accelerator | 4 | 3 | 4 | 4 | 4 | 3.9 |
+| Option                              | Pain | Differentiation | Pilot | Credibility | Risk | Total / 5 |
+| ----------------------------------- | ---: | --------------: | ----: | ----------: | ---: | --------: |
+| Sector breadth                      |    2 |               2 |     1 |           2 |    1 |       1.7 |
+| Excel replacement                   |    3 |               2 |     3 |           2 |    3 |       2.6 |
+| Decision Workspace                  |    4 |               4 |     4 |           3 |    4 |       3.8 |
+| Close Cockpit                       |    5 |               3 |     3 |           5 |    3 |       3.9 |
+| Local-first governed planning       |    3 |               4 |     3 |           3 |    2 |       3.1 |
+| AI analyst first                    |    3 |               2 |     4 |           1 |    3 |       2.5 |
+| Board-pack evidence                 |    4 |               4 |     4 |           4 |    4 |       4.0 |
+| Import/reconciliation control plane |    5 |               3 |     3 |           5 |    3 |       3.9 |
+| Implementation accelerator          |    4 |               3 |     4 |           4 |    4 |       3.9 |
 
 ### Pre-mortem — recommended combination
 
-| Failure mode | Early signal | Countermeasure |
-|---|---|---|
-| Close scope becomes endless | pilot asks for every ERP/GAAP/FX case | define one ICP and controlled pilot data contract |
-| Decision Workspace is another dashboard | users still export to slides | require evidence/action completion usability test |
-| Governance slows analysts | analysts bypass system for Excel | keyboard/paste/model speed benchmarks and guided migration |
-| Local-first blocks IT | security review rejects device/cache model | security questionnaire before architecture commitment |
+| Failure mode                            | Early signal                               | Countermeasure                                             |
+| --------------------------------------- | ------------------------------------------ | ---------------------------------------------------------- |
+| Close scope becomes endless             | pilot asks for every ERP/GAAP/FX case      | define one ICP and controlled pilot data contract          |
+| Decision Workspace is another dashboard | users still export to slides               | require evidence/action completion usability test          |
+| Governance slows analysts               | analysts bypass system for Excel           | keyboard/paste/model speed benchmarks and guided migration |
+| Local-first blocks IT                   | security review rejects device/cache model | security questionnaire before architecture commitment      |
 
 ## Ranked shortlist
 

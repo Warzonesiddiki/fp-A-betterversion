@@ -1,7 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { FinancialTable } from './FinancialTable';
 import type { FinancialTableColumn } from './FinancialTable';
+import { useFinancialContextStore } from '@/store/financialContextStore';
 
 const columns: FinancialTableColumn[] = [
   { key: 'name', header: 'Account', type: 'string' },
@@ -11,11 +12,15 @@ const columns: FinancialTableColumn[] = [
 ];
 
 const rows = [
-  { id: '1', name: 'Product Sales', revenue: 500000, margin: 0.25, count: 1200 },
-  { id: '2', name: 'Services', revenue: -50000, margin: -0.05, count: 300 },
+  { id: '1', name: 'Product Sales', revenue: 500000, margin: 12.5, count: 1200 },
+  { id: '2', name: 'Services', revenue: -50000, margin: -5, count: 300 },
 ];
 
 describe('FinancialTable', () => {
+  afterEach(() => {
+    useFinancialContextStore.getState().resetContext();
+  });
+
   it('renders column headers', () => {
     render(<FinancialTable columns={columns} rows={[]} />);
     expect(screen.getByText('Account')).toBeInTheDocument();
@@ -33,6 +38,18 @@ describe('FinancialTable', () => {
   it('formats numbers as currency when type is currency', () => {
     render(<FinancialTable columns={columns} rows={[rows[0]]} />);
     expect(screen.getByText('$500,000')).toBeInTheDocument();
+  });
+
+  it('formats percent cells as percent-points', () => {
+    render(<FinancialTable columns={columns} rows={[rows[0]]} />);
+    expect(screen.getByText('12.5%')).toBeInTheDocument();
+  });
+
+  it('currency cells follow the reporting-currency selector', () => {
+    useFinancialContextStore.getState().setContext({ currency: { code: 'EUR' } });
+    render(<FinancialTable columns={columns} rows={[rows[0]]} />);
+    expect(screen.getByText('€500,000')).toBeInTheDocument();
+    expect(screen.queryByText('$500,000')).not.toBeInTheDocument();
   });
 
   it('shows empty state when no rows', () => {

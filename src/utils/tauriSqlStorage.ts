@@ -1,6 +1,7 @@
 import type { RawStorage } from './chunkedStorage';
 import { StorageBackendError } from './storageErrors';
 import { createLogger } from '@/utils/logger';
+import { isTauriRuntime } from './tauriRuntime';
 
 type SqlDatabase = import('@tauri-apps/plugin-sql').default;
 
@@ -84,9 +85,10 @@ export const tauriSqlStorage: RawStorage = {
 };
 
 export async function isTauri(): Promise<boolean> {
-  // Guard `window`: masterStorage (which calls this) also runs inside Web
-  // Workers and in Node-based test/bench environments, where dereferencing
-  // `window` throws a ReferenceError instead of simply reporting "not Tauri".
-  if (typeof window === 'undefined') return false;
-  return '__TAURI_INTERNALS' in window || '__TAURI__' in window;
+  // Single source of truth: tauriRuntime.isTauriRuntime checks the Tauri v2
+  // `__TAURI_INTERNALS__` key. The legacy `__TAURI__` key requires
+  // withGlobalTauri:true (not set in tauri.conf.json) and must not enable
+  // Tauri mode. The window guard (Web Workers / Node test envs) lives inside
+  // isTauriRuntime.
+  return isTauriRuntime();
 }

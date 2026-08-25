@@ -50,7 +50,6 @@ import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { GLAccount, ImportJob, DataState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
-import { safeJSONStorage } from '../utils/storage/safeJSONStorage';
 // W6-P0-14: GL account & import-job mutations are permission-guarded.
 // Ledger destruction is expressed as import:delete per the RBAC catalogue
 // (gl:delete deliberately does not exist). Selection stays unguarded.
@@ -157,7 +156,11 @@ export const useDataStore = create<DataState>()(
       })),
       {
         name: 'data-store',
-        storage: safeJSONStorage(masterStorage),
+        // Plain masterStorage (fail-closed: absent -> null, corrupt/failed ->
+        // typed error + subscribeStorageErrors event). Never wrap with an
+        // error-swallowing adapter again — that silently hydrated an empty
+        // GL/import-jobs store and swallowed failed writes.
+        storage: masterStorage,
         version: 1,
         migrate: (state: unknown) => state,
       }

@@ -148,10 +148,38 @@ describe('usePersistence', () => {
       // Act
       const { result } = renderHook(() => usePersistence(migrationOptions));
 
-      // Assert
+      // Assert — the migrated payload must be loaded, not the pre-migration one.
       await waitFor(() => {
         expect(migrate).toHaveBeenCalledTimes(1);
-        expect(result.current.data).toEqual({ old: 'format' });
+        expect(result.current.data).toEqual({ new: 'format' });
+      });
+    });
+
+    it('should load migrated _data from a legacy v0 record without a _version field', async () => {
+      // Arrange — pre-versioning record: no _version at all (treated as v0).
+      const legacyRecord = { _data: { format: 'v0' } };
+      localStorageMock.setItem('test-key', JSON.stringify(legacyRecord));
+
+      const migrate = vi.fn((old: unknown, oldVersion: number) => {
+        expect(old).toEqual(legacyRecord);
+        expect(oldVersion).toBe(0);
+        return { _data: { format: 'v1-migrated' }, _version: 1 };
+      });
+
+      const migrationOptions = {
+        key: 'test-key',
+        storage: 'localstorage' as const,
+        version: 1,
+        migrate,
+      };
+
+      // Act
+      const { result } = renderHook(() => usePersistence(migrationOptions));
+
+      // Assert — post-migration _data is what loads (P1 regression: the
+      // stored-record alias was never reassigned after migrate()).
+      await waitFor(() => {
+        expect(result.current.data).toEqual({ format: 'v1-migrated' });
       });
     });
 

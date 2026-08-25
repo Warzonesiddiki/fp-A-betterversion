@@ -23,35 +23,35 @@ Every action passes through DRP before execution:
 
 ## Autonomy levels
 
-| Level | Meaning | When |
-|---|---|---|
-| A5 FULL YOLO | Execute autonomously, document reasoning | Confidence ≥85% (any criticality) |
-| A4 STEALTH | Execute + parallel self-verification | Confidence ≥85% high-criticality, or 60–84% low |
-| A3 CONSULT | Share DRP summary, proceed unless objection | 60–84% medium |
-| A2 PAUSE | Present reasoning + options, wait | 60–84% high |
-| A1 CRITICAL STOP | Stop all work, escalate | Confidence <60%, or security/irreversibility |
+| Level            | Meaning                                     | When                                            |
+| ---------------- | ------------------------------------------- | ----------------------------------------------- |
+| A5 FULL YOLO     | Execute autonomously, document reasoning    | Confidence ≥85% (any criticality)               |
+| A4 STEALTH       | Execute + parallel self-verification        | Confidence ≥85% high-criticality, or 60–84% low |
+| A3 CONSULT       | Share DRP summary, proceed unless objection | 60–84% medium                                   |
+| A2 PAUSE         | Present reasoning + options, wait           | 60–84% high                                     |
+| A1 CRITICAL STOP | Stop all work, escalate                     | Confidence <60%, or security/irreversibility    |
 
 **Repo-specific escalation triggers (mapped to reality):**
 
-| Situation | Level | Action |
-|---|---|---|
-| CI/workflow changes that cannot be pushed (missing `workflows` permission) | A2/A3 | Preserve changes in worktree, document caveat, flag owner — never silently drop |
-| GitHub Actions billing block (E-005) | A3 | Continue local verification; never treat red CI as code evidence |
-| R-01 participants unavailable | A2 (external) | Do not fabricate evidence; continue only safe foundations |
-| F-02 browser pixel baseline unavailable | A2 (external) | Keep strengthening interim structural evidence; never claim pixels verified |
-| Sandbox recycle (git refs reset to shallow clone) | A5 | Reconcile via verified fast-forward + index refresh; never reset/restore/clean |
-| Critical security issue in review | A1 | Block merge, escalate with impact assessment |
-| Story ambiguity during implementation | A1 | Stop, document exact ambiguity, never guess |
+| Situation                                                                  | Level         | Action                                                                          |
+| -------------------------------------------------------------------------- | ------------- | ------------------------------------------------------------------------------- |
+| CI/workflow changes that cannot be pushed (missing `workflows` permission) | A2/A3         | Preserve changes in worktree, document caveat, flag owner — never silently drop |
+| GitHub Actions billing block (E-005)                                       | A3            | Continue local verification; never treat red CI as code evidence                |
+| R-01 participants unavailable                                              | A2 (external) | Do not fabricate evidence; continue only safe foundations                       |
+| F-02 browser pixel baseline unavailable                                    | A2 (external) | Keep strengthening interim structural evidence; never claim pixels verified     |
+| Sandbox recycle (git refs reset to shallow clone)                          | A5            | Reconcile via verified fast-forward + index refresh; never reset/restore/clean  |
+| Critical security issue in review                                          | A1            | Block merge, escalate with impact assessment                                    |
+| Story ambiguity during implementation                                      | A1            | Stop, document exact ambiguity, never guess                                     |
 
 ## Phase state (unchanged gates — hypothesis-approved, primary validation open)
 
-| Phase | Required artifacts | Current status |
-|---|---|---|
-| 0 — Intelligence | `_bmad/research/research-report.md`, `_bmad/research/assumption-registry.md`, Blaze sessions | Gate G0 approved hypothesis baseline; primary validation open |
-| 1 — Discovery | validation plan, evidence log, product brief | Gate G1 approved hypothesis brief; no primary participant evidence |
-| 2 — Planning | research-traceable PRD and UX specification | Gates G2/G3 approved hypothesis artifacts |
-| 3 — Solutioning | research-traceable architecture and ADRs | Gate G4 approved hypothesis architecture |
-| 4 — Delivery | sprint plan, self-contained stories, QA evidence | Gate G5 approved; F-01/F-03/F-04 DONE/QA-APPROVED; R-01 active; F-02 in progress |
+| Phase            | Required artifacts                                                                           | Current status                                                                   |
+| ---------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| 0 — Intelligence | `_bmad/research/research-report.md`, `_bmad/research/assumption-registry.md`, Blaze sessions | Gate G0 approved hypothesis baseline; primary validation open                    |
+| 1 — Discovery    | validation plan, evidence log, product brief                                                 | Gate G1 approved hypothesis brief; no primary participant evidence               |
+| 2 — Planning     | research-traceable PRD and UX specification                                                  | Gates G2/G3 approved hypothesis artifacts                                        |
+| 3 — Solutioning  | research-traceable architecture and ADRs                                                     | Gate G4 approved hypothesis architecture                                         |
+| 4 — Delivery     | sprint plan, self-contained stories, QA evidence                                             | Gate G5 approved; F-01/F-03/F-04 DONE/QA-APPROVED; R-01 active; F-02 in progress |
 
 ## Execution semantics
 

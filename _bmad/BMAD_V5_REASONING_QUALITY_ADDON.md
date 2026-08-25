@@ -34,13 +34,13 @@ CONFIDENCE: {85-100%}
 
 ### 1.2 Reasoning Depth Score (RDS) — self-assessment for every artifact
 
-| Score | Meaning |
-|---|---|
-| 10 | Unassailable — every claim traced, every alternative steelmanned, every risk mitigated, zero logical gaps |
-| 9 | Excellent — extremely strong reasoning, minor stylistic issues only |
-| 8 | Strong — good reasoning, but at least one assumption not fully validated or one alternative not fully explored |
-| 7 | Adequate — some reasoning gaps, but acceptable for low-risk decisions |
-| ≤6 | Unacceptable for significant work — must be improved before submission |
+| Score | Meaning                                                                                                        |
+| ----- | -------------------------------------------------------------------------------------------------------------- |
+| 10    | Unassailable — every claim traced, every alternative steelmanned, every risk mitigated, zero logical gaps      |
+| 9     | Excellent — extremely strong reasoning, minor stylistic issues only                                            |
+| 8     | Strong — good reasoning, but at least one assumption not fully validated or one alternative not fully explored |
+| 7     | Adequate — some reasoning gaps, but acceptable for low-risk decisions                                          |
+| ≤6    | Unacceptable for significant work — must be improved before submission                                         |
 
 **Escalation Rule:** any artifact with RDS < 8 must be revised and re-scored before handoff. If revision cannot raise it to ≥8, escalate with a clear explanation of the reasoning barrier.
 
@@ -75,16 +75,16 @@ Do not present a solution that has not climbed all five levels.
 
 ### 2.2 Artifact-specific gates
 
-| Artifact | Mandatory gates (in addition to universal) |
-|---|---|
+| Artifact        | Mandatory gates (in addition to universal)                                                                                |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | Research Report | evidence sources cited; disconfirming evidence sought; top-3 dangerous assumptions validated; direction supported by data |
-| Product Brief | six dimensions covered; assumptions tagged; success metrics quantified; scope boundaries explicit |
-| PRD | every story has testable ACs; NFRs have thresholds; MVP defined with rationale; risk register with mitigations |
-| UX Spec | flows mapped to personas; accessibility standards stated; arch flags resolved; design tokens consistent |
-| Architecture | ADRs for every key decision; NFR traceability complete; rejected alternatives documented; failure modes analyzed |
-| Story | self-contained; zero external lookups; edge cases in implementation notes; out-of-scope section present |
-| Code | tests cover all new paths; no dead code; no debug artifacts; complexity maintainable; secure defaults |
-| QA Report | every AC explicitly verified; edge-case list tested; regression results reported; verdict justified with evidence |
+| Product Brief   | six dimensions covered; assumptions tagged; success metrics quantified; scope boundaries explicit                         |
+| PRD             | every story has testable ACs; NFRs have thresholds; MVP defined with rationale; risk register with mitigations            |
+| UX Spec         | flows mapped to personas; accessibility standards stated; arch flags resolved; design tokens consistent                   |
+| Architecture    | ADRs for every key decision; NFR traceability complete; rejected alternatives documented; failure modes analyzed          |
+| Story           | self-contained; zero external lookups; edge cases in implementation notes; out-of-scope section present                   |
+| Code            | tests cover all new paths; no dead code; no debug artifacts; complexity maintainable; secure defaults                     |
+| QA Report       | every AC explicitly verified; edge-case list tested; regression results reported; verdict justified with evidence         |
 
 ---
 
@@ -108,7 +108,7 @@ If you cannot refute the alternative with hard reasoning, you have not truly dec
 
 ## 4. The Pre-Mortem Quality Loop
 
-Immediately after completing any artifact: *"It is 6 months from now. This artifact is the direct cause of a major project failure. How did that happen?"* List the top 3 failure modes; for each, verify it is addressed/mitigated — if not, fix the artifact now. Do not release an artifact with an unaddressed pre-mortem failure mode.
+Immediately after completing any artifact: _"It is 6 months from now. This artifact is the direct cause of a major project failure. How did that happen?"_ List the top 3 failure modes; for each, verify it is addressed/mitigated — if not, fix the artifact now. Do not release an artifact with an unaddressed pre-mortem failure mode.
 
 ---
 
@@ -150,4 +150,4 @@ If any answer is "no" → **STOP. Fix. Then submit.**
 
 ---
 
-*Reasoning is the highest form of work. Quality is its visible proof. This addon applies to every subsequent action.*
+_Reasoning is the highest form of work. Quality is its visible proof. This addon applies to every subsequent action._

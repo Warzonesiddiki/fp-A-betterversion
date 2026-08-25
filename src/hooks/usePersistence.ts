@@ -26,10 +26,15 @@ export function usePersistence<T>(options: PersistenceOptions) {
         stored = (await masterStorage.getItem(options.key)) ?? null;
       }
 
-      const storedRecord = stored as Record<string, unknown> | null;
+      // Mutable so the migrated payload replaces the pre-migration record;
+      // reading _data below must see the post-migration wrapper.
+      let storedRecord = stored as Record<string, unknown> | null;
       if (storedRecord && options.version && storedRecord._version !== options.version) {
         if (options.migrate) {
-          stored = options.migrate(storedRecord, (storedRecord._version as number) || 0);
+          storedRecord = options.migrate(
+            storedRecord,
+            (storedRecord._version as number) || 0
+          ) as Record<string, unknown>;
         }
       }
 

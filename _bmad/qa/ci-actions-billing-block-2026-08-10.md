@@ -20,12 +20,12 @@ All GitHub Actions workflow runs on this repository fail **before any job step e
 
 ## Classification
 
-| Question | Answer |
-|---|---|
-| Workflow/bootstrap/environment failure? | **YES** — GitHub account billing / spending-limit block at the org/account level |
-| Code regression from PR #53? | **NO** — no job ever started; identical failure predates the merge on other commits |
-| Stale CI configuration? | No evidence — workflows use standard checkout / setup-node / npm-ci steps |
-| Dependency/install issue? | No evidence — install steps never ran in CI |
+| Question                                | Answer                                                                              |
+| --------------------------------------- | ----------------------------------------------------------------------------------- |
+| Workflow/bootstrap/environment failure? | **YES** — GitHub account billing / spending-limit block at the org/account level    |
+| Code regression from PR #53?            | **NO** — no job ever started; identical failure predates the merge on other commits |
+| Stale CI configuration?                 | No evidence — workflows use standard checkout / setup-node / npm-ci steps           |
+| Dependency/install issue?               | No evidence — install steps never ran in CI                                         |
 
 ## Local verification of merged main (commit `f3834e2`)
 
