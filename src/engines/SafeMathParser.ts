@@ -136,9 +136,10 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     return new Decimal(ev).div(bv).pow(new Decimal(1).div(n)).minus(1).toNumber();
   },
   IRR: (args) => {
-    // Newton-Raphson IRR with Decimal arithmetic for financial truth
+    // Newton-Raphson IRR with Decimal arithmetic for financial truth.
+    // Fewer than 2 flows ⇒ NaN (Excel #NUM! semantics), never 0.
     const cashflows = args;
-    if (cashflows.length < 2) return 0;
+    if (cashflows.length < 2) return NaN;
     let guess = new Decimal('0.1');
     for (let iter = 0; iter < 100; iter++) {
       let npv = new Decimal(0);
@@ -636,24 +637,27 @@ const FUNCTIONS: Record<string, FuncImpl> = {
   // FINANCIAL (50+)
   // =========================================================================
   MIRR: (args) => {
-    // Decimal-based MIRR: eliminates float drift in modified IRR
+    // Excel-compatible MIRR: negative flows are discounted BACK to t0 at the
+    // finance rate; positive flows are compounded FORWARD to t(n-1) at the
+    // reinvest rate; the result is the annualized growth between them over
+    // n-1 periods. NaN mirrors Excel #NUM! (no sign pair or n < 2).
     const values = args.slice(0, -2);
     const financeRate = args[args.length - 2]!;
     const reinvestRate = args[args.length - 1]!;
     const n = values.length;
-    let negNpv = new Decimal(0);
-    let posNpv = new Decimal(0);
+    if (n < 2) return NaN;
+    let negPv = new Decimal(0);
+    let posFv = new Decimal(0);
     const financeRateD = new Decimal(financeRate);
     const reinvestRateD = new Decimal(reinvestRate);
     for (let i = 0; i < n; i++) {
       const val = new Decimal(values[i]!);
-      if (values[i]! < 0) negNpv = negNpv.plus(val.dividedBy(financeRateD.plus(1).pow(i)));
-      else posNpv = posNpv.plus(val.dividedBy(reinvestRateD.plus(1).pow(i)));
+      if (values[i]! < 0) negPv = negPv.plus(val.dividedBy(financeRateD.plus(1).pow(i)));
+      else posFv = posFv.plus(val.times(reinvestRateD.plus(1).pow(n - 1 - i)));
     }
-    if (negNpv.isZero() || posNpv.isZero()) return 0;
-    return posNpv
-      .negated()
-      .dividedBy(negNpv)
+    if (negPv.isZero() || posFv.isZero()) return NaN;
+    return posFv
+      .dividedBy(negPv.negated())
       .pow(new Decimal(1).div(n - 1))
       .minus(1)
       .toNumber();

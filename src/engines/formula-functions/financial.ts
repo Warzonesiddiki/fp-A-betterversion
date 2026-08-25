@@ -101,8 +101,10 @@ export function NPV(rate: number, cf: number): number {
   const cfs = Array.isArray(cf) ? cf : [cf];
   let npv = toDecimal(0);
   // Cash flows are money; discount factors are ratios (float preserved).
+  // Excel end-of-period convention: flow i discounts by (1+rate)^(i+1),
+  // i.e. the first flow is NOT at t0 (ledger #51 canonical decision).
   for (let i = 0; i < cfs.length; i++)
-    npv = addMoney(npv, divideMoney(cfs[i], Math.pow(1 + rate, i)));
+    npv = addMoney(npv, divideMoney(cfs[i], Math.pow(1 + rate, i + 1)));
   return roundTo(npv);
 }
 /**
@@ -201,7 +203,7 @@ export function XIRR(cfs: number | number[], dates: number | number[], guess = 0
   const npvOf = (rate: number): number => {
     let npv = 0;
     for (let j = 0; j < flows.length; j++)
-      npv += flows[j]! / Math.pow(1 + rate, (dts[j]! - d0) / 365.25);
+      npv += flows[j]! / Math.pow(1 + rate, (dts[j]! - d0) / 365);
     return npv;
   };
   let rate = guess;
@@ -209,7 +211,7 @@ export function XIRR(cfs: number | number[], dates: number | number[], guess = 0
     let npv = 0,
       dnpv = 0;
     for (let j = 0; j < flows.length; j++) {
-      const years = (dts[j]! - d0) / 365.25;
+      const years = (dts[j]! - d0) / 365;
       const pv = flows[j]! / Math.pow(1 + rate, years);
       npv += pv;
       dnpv -= (years * pv) / (1 + rate);
@@ -230,8 +232,31 @@ export function XNPV(rate: number, cfs: number, dates: number): number {
   const d0 = dts[0];
   let total = toDecimal(0);
   for (let i = 0; i < flows.length; i++)
-    total = addMoney(total, divideMoney(flows[i], Math.pow(1 + rate, (dts[i]! - d0) / 365.25)));
+    total = addMoney(total, divideMoney(flows[i], Math.pow(1 + rate, (dts[i]! - d0) / 365)));
   return roundTo(total);
+}
+/**
+ * Modified internal rate of return (Excel-compatible).
+ *
+ * Negative flows are discounted BACK to t0 at the finance rate; positive flows
+ * are compounded FORWARD to t(n-1) at the reinvest rate; MIRR is the annualized
+ * growth rate between the two over n-1 periods. Returns NaN when there are
+ * fewer than 2 flows, no negative flow, or no positive flow (Excel #NUM!
+ * semantics).
+ */
+export function MIRR(cfs: number | number[], financeRate: number, reinvestRate: number): number {
+  const flows = Array.isArray(cfs) ? cfs : [cfs];
+  const n = flows.length;
+  if (n < 2) return NaN;
+  let negPv = toDecimal(0);
+  let posFv = toDecimal(0);
+  for (let i = 0; i < n; i++) {
+    const flow = flows[i]!;
+    if (flow < 0) negPv = addMoney(negPv, divideMoney(flow, Math.pow(1 + financeRate, i)));
+    else posFv = addMoney(posFv, multiplyMoney(flow, Math.pow(1 + reinvestRate, n - 1 - i)));
+  }
+  if (negPv.isZero() || posFv.isZero()) return NaN;
+  return Math.pow(posFv.div(negPv.negated()).toNumber(), 1 / (n - 1)) - 1;
 }
 export function IPMT(r: number, per: number, n: number, pv: number, fv = 0): number {
   const pmt = PMT(r, n, pv, fv);
@@ -679,6 +704,14 @@ export function registerFinancialFunctions(r: (fn: FormulaFunction) => void): vo
     minArgs: 2,
     maxArgs: 3,
     impl: impl(DSO),
+  });
+  r({
+    name: 'MIRR',
+    category: 'financial',
+    description: 'Modified internal rate of return',
+    minArgs: 3,
+    maxArgs: 3,
+    impl: impl(MIRR),
   });
   r({
     name: 'XIRR',

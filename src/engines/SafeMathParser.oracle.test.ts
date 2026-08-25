@@ -12,7 +12,7 @@ describe('SafeMathParser Comprehensive Oracles (MISSION E)', () => {
       expect(parser.evaluate('NPV(0.1, 100, 200, 300)')).toBeCloseTo(481.592787, 4);
       expect(parser.evaluate('CAGR(200, 100, 3)')).toBeCloseTo(0.259921, 4);
       expect(parser.evaluate('IRR(-100, 60, 60)')).toBeCloseTo(0.130662, 4);
-      expect(parser.evaluate('IRR(-100)')).toBe(0); // less than 2 cashflows
+      expect(parser.evaluate('IRR(-100)')).toBeNaN(); // less than 2 cashflows ⇒ #NUM!
       expect(parser.evaluate('CAGR(0, 0, 0)')).toBe(0);
     });
 
@@ -44,10 +44,13 @@ describe('SafeMathParser Comprehensive Oracles (MISSION E)', () => {
     });
 
     it('evaluates MIRR, XNPV, XIRR', () => {
-      // MIRR(values..., financeRate, reinvestRate)
-      const mirr = parser.evaluate('MIRR(-1000, 300, 400, 400, 300, 0.1, 0.12)');
-      expect(mirr).toBeGreaterThan(0);
-      expect(parser.evaluate('MIRR(100, 200, 0.1, 0.12)')).toBe(0); // no negative cashflow
+      // MIRR(values..., financeRate, reinvestRate) — Excel convention:
+      // negatives discount back to t0 at the finance rate, positives compound
+      // forward to t(n-1) at the reinvest rate.
+      expect(parser.evaluate('MIRR(-1000, 300, 400, 400, 300, 0.1, 0.12)')).toBeCloseTo(0.13697, 4);
+      expect(parser.evaluate('MIRR(100, 200, 0.1, 0.12)')).toBeNaN(); // no negative cashflow
+      expect(parser.evaluate('MIRR(-100, -50, 0.1, 0.12)')).toBeNaN(); // no positive cashflow
+      expect(parser.evaluate('MIRR(-100, 0.1, 0.12)')).toBeNaN(); // fewer than 2 flows
 
       // XNPV(rate, v1, v2, d1, d2)
       const d1 = new Date('2026-01-01').getTime();

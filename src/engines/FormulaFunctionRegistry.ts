@@ -80,6 +80,7 @@ export class FormulaFunctionRegistry {
   static DSO = Financial.DSO;
   static XIRR = Financial.XIRR;
   static XNPV = Financial.XNPV;
+  static MIRR = Financial.MIRR;
   static IPMT = Financial.IPMT;
   static PPMT = Financial.PPMT;
   static NPER = Financial.NPER;

@@ -29,6 +29,7 @@ import {
   IPMT,
   IRR,
   MDURATION,
+  MIRR,
   MOM,
   MOVING_AVERAGE,
   NOMINAL,
@@ -73,10 +74,10 @@ describe('valuation building blocks', () => {
 });
 
 describe('time value of money', () => {
-  it('NPV discounts cash flows', () => {
-    expect(NPV(0.1, [-1000, 500, 400, 300])).toBeCloseTo(10.52, 1);
+  it('NPV discounts cash flows (Excel end-of-period: flow i discounts by (1+r)^(i+1))', () => {
+    expect(NPV(0.1, [-1000, 500, 400, 300])).toBeCloseTo(9.56, 1);
     expect(NPV(0.1, [])).toBe(0);
-    expect(NPV(0.1, [1000])).toBe(1000);
+    expect(NPV(0.1, [1000])).toBe(909.09);
   });
   it('IRR converges to the discount rate that zeroes NPV', () => {
     expect(IRR([-1000, 300, 400, 500])).toBeCloseTo(0.08896, 4);
@@ -159,14 +160,25 @@ describe('growth & working-capital metrics', () => {
 });
 
 describe('XIRR / XNPV with actual dates', () => {
-  it('XNPV discounts on 365.25-day years', () => {
-    expect(XNPV(0.1, [-1000, 500, 400, 300], [0, 365, 730, 1095])).toBeCloseTo(10.64, 1);
+  it('XNPV discounts on ACT/365-day years', () => {
+    expect(XNPV(0.1, [-1000, 500, 400, 300], [0, 365, 730, 1095])).toBeCloseTo(10.52, 1);
   });
   it('XIRR matches IRR for annual cash flows', () => {
     expect(XIRR([-1000, 300, 400, 500], [0, 365, 730, 1095])).toBeCloseTo(
       IRR([-1000, 300, 400, 500]),
       3
     );
+  });
+});
+
+describe('MIRR (Excel-compatible)', () => {
+  it('matches the published fixture MIRR(-1000,300,400,400,300,0.1,0.12) ≈ 0.13697', () => {
+    expect(MIRR([-1000, 300, 400, 400, 300], 0.1, 0.12)).toBeCloseTo(0.13697, 4);
+  });
+  it('returns NaN without a negative or a positive flow, or with fewer than 2 flows (#NUM!)', () => {
+    expect(MIRR([100, 200, 300], 0.1, 0.12)).toBeNaN();
+    expect(MIRR([-100, -50], 0.1, 0.12)).toBeNaN();
+    expect(MIRR([-100], 0.1, 0.12)).toBeNaN();
   });
 });
 

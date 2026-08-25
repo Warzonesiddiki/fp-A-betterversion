@@ -63,8 +63,8 @@ describe('formula financial functions — money known answers (GAP-1 / F-0006)',
   });
 
   describe('time value of money', () => {
-    it('NPV rounds to cents (float gave 281.8181818181818)', () => {
-      expect(NPV(0.1, [100, 200])).toBe(281.82);
+    it('NPV rounds to cents (Excel end-of-period; the old t0-included math gave 281.8181818181818)', () => {
+      expect(NPV(0.1, [100, 200])).toBe(256.2);
     });
 
     it('PV recovers the exact principal (float gave -10000.002291262748)', () => {
@@ -83,8 +83,8 @@ describe('formula financial functions — money known answers (GAP-1 / F-0006)',
       expect(PMT(0, 12, 12000)).toBe(-1000);
     });
 
-    it('XNPV rounds to cents (float gave 281.8181818181818)', () => {
-      expect(XNPV(0.1, [100, 200], [0, 365.25])).toBe(281.82);
+    it('XNPV rounds to cents on ACT/365 (the old ACT/365.25 basis gave 281.8181818181818)', () => {
+      expect(XNPV(0.1, [100, 200], [0, 365.25])).toBe(281.81);
     });
 
     it('CUMIPMT sums per-period interest in cents (Excel: -353.89; broken impl gave +303.89)', () => {
