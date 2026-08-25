@@ -147,6 +147,15 @@ export const PERSISTED_STORES = [
     notes: 'Debt facilities and schedules.',
   },
   {
+    persistKey: 'document-store',
+    module: 'src/store/documentStore.ts',
+    classification: 'user-preference',
+    authority: 'local',
+    serverRoute: null,
+    notes:
+      'Document library metadata (uploads, tags, entity links). Not financial truth; content lives outside masterStorage.',
+  },
+  {
     persistKey: 'driver-store',
     module: 'src/store/driverStore.ts',
     classification: 'financial-truth',

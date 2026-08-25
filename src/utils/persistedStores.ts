@@ -31,6 +31,7 @@ export const PERSISTED_STORE_KEYS: readonly string[] = [
   'dashboard-store',
   'data-store',
   'debt-store',
+  'document-store',
   'driver-store',
   'education-store',
   'energy-store',

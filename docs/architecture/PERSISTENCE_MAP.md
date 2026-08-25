@@ -4,12 +4,12 @@
 > Source of truth: `src/domain/persistenceAuthority.ts`.
 > Drift against `persist()` keys in `src/store` fails CI (`npm run persistence:map`).
 
-**Measured 2026-08-22.** 41 persisted Zustand stores.
+**Measured 2026-08-25.** 42 persisted Zustand stores.
 
 | Classification  | Count | Authority rule                                              |
 | --------------- | ----- | ----------------------------------------------------------- |
 | financial-truth | 30    | Server must be SoR. Today **30 local-draft**, **0 server**. |
-| user-preference | 7     | Local is legitimate.                                        |
+| user-preference | 8     | Local is legitimate.                                        |
 | derived-cache   | 3     | Rebuildable; never the system of record (ST2).              |
 | session         | 1     | Tokens; not financial truth.                                |
 
@@ -63,15 +63,16 @@ after tenancy (W0.2).
 
 ## user-preference
 
-| persistKey            | module                            | authority | server route | notes                                                 |
-| --------------------- | --------------------------------- | --------- | ------------ | ----------------------------------------------------- |
-| `collaboration-store` | `src/store/collaborationStore.ts` | **local** | —            | Presence/comments cache. Not financial truth.         |
-| `dashboard-store`     | `src/store/dashboardStore.ts`     | **local** | —            | Dashboard layout/widgets. Preference, not ledger.     |
-| `integration-store`   | `src/store/integrationStore.ts`   | **local** | —            | Connector configuration (no credentials). Not ledger. |
-| `notification-store`  | `src/store/notificationStore.ts`  | **local** | —            | In-app notification inbox. Preference/UX, not ledger. |
-| `settings-store`      | `src/store/settingsStore.ts`      | **local** | —            | User/tenant display settings. Local is legitimate.    |
-| `tour-store`          | `src/store/tourStore.ts`          | **local** | —            | Onboarding tour progress.                             |
-| `ui-store`            | `src/store/uiStore.ts`            | **local** | —            | Sidebar, density, toasts. Not financial truth.        |
+| persistKey            | module                            | authority | server route | notes                                                                                                              |
+| --------------------- | --------------------------------- | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `collaboration-store` | `src/store/collaborationStore.ts` | **local** | —            | Presence/comments cache. Not financial truth.                                                                      |
+| `dashboard-store`     | `src/store/dashboardStore.ts`     | **local** | —            | Dashboard layout/widgets. Preference, not ledger.                                                                  |
+| `document-store`      | `src/store/documentStore.ts`      | **local** | —            | Document library metadata (uploads, tags, entity links). Not financial truth; content lives outside masterStorage. |
+| `integration-store`   | `src/store/integrationStore.ts`   | **local** | —            | Connector configuration (no credentials). Not ledger.                                                              |
+| `notification-store`  | `src/store/notificationStore.ts`  | **local** | —            | In-app notification inbox. Preference/UX, not ledger.                                                              |
+| `settings-store`      | `src/store/settingsStore.ts`      | **local** | —            | User/tenant display settings. Local is legitimate.                                                                 |
+| `tour-store`          | `src/store/tourStore.ts`          | **local** | —            | Onboarding tour progress.                                                                                          |
+| `ui-store`            | `src/store/uiStore.ts`            | **local** | —            | Sidebar, density, toasts. Not financial truth.                                                                     |
 
 ## session
 
