@@ -57,6 +57,11 @@ export class AuditLogEngine {
     this.retentionDays = config?.retentionDays ?? 2555; // 7 years for SOX
   }
 
+  /** Configured retention window in days (consumed by SOX retention checks). */
+  getRetentionDays(): number {
+    return this.retentionDays;
+  }
+
   log(entry: Omit<AuditEntry, 'id' | 'timestamp'>): AuditEntry {
     const auditEntry: AuditEntry = {
       ...entry,
