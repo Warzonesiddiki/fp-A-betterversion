@@ -1563,3 +1563,41 @@ VERDICT: 4/4 ICPs ACCEPT (Carla ✓ single-writer git law restores cascade disci
 | Confidence | 97% — persistence coverage retained via persistenceAuthority/moneySerialize/masterStorage.security entries in same shard (all green in post-edit run). |
 
 VERDICT: M-H4 acceptance criteria met (exit 0 + single-line diff). Executed under Deputy authority with explicit Lead dispatch; no commit made.
+
+
+---## Ledger Entry #50 - 2026-08-25 - ox-alpha Lead (hermes-agent departed; owner directive SOLO YOLO execution)
+
+### Decision/Topic: Record deputy departure and the standing owner directive: multi-subagent parallel execution, audit-loop until zero-flaw completion of the all-in-one FP&A mission.
+
+### DRP Summary:
+
+| Stage | Analysis |
+| --- | --- |
+| First Principles | Single-writer continuity: Lead absorbs Deputy duties; git law SS6 unchanged (Lead remains sole committer). Parallel speed now comes from disposable subagent lanes with disjoint file domains instead of a second persistent agent. |
+| Evidence | Owner notice this session (hermes left). M-H1 completed pre-departure (MSG-002); M-H2 superseded by subagent waves. ROSTER updated. Standing directives recorded verbatim from owner: always use multiple subagents; do not stop until zero flaws; when complete-feeling arrives, re-audit. |
+| Options Considered | (a) Recruit replacement deputy — REJECTED: no platform guarantee; subagents suffice. (b) Continue without record — REJECTED: silent state change. |
+| Risk Probe | Solo = no peer review inside session; mitigation: every wave passes full gate battery + adversarial re-audit lanes before commit. |
+| Consequence Projection | Wave-B (6 lanes) executes under this model; results in Entry #51. |
+| Confidence Score | 97% |
+| Autonomy Level | A5 |
+
+VERDICT: 4/4 ICPs ACCEPT (Carla ✓ chain-of-command simplified not broken; Vera ✓ departure witnessed; Chris ✓ throughput preserved via fan-out; Beth ✓ mission continuity intact).
+
+
+---## Ledger Entry #51 - 2026-08-25 - ox-alpha Lead (Wave-B six-lane parallel execution COMPLETE: MC crash fix, auth Phase 1, key escrow scheme-a, NCI decimal migration, NPV/MIRR standardization packet, all-in-one gap report; all gates green on merged tree)
+
+### Decision/Topic: Intake and verify six parallel subagent lanes; adopt Excel-compatible canonical NPV/X-family convention per product promises; persist gap report as the Wave-C backlog source.
+
+### DRP Summary:
+
+| Stage | Analysis |
+| --- | --- |
+| First Principles | Wrong-numbers outrank everything (Rule #1): MC crash and NCI convention close numeric-trust gaps; auth+escrow close trust/security pillars; gap report converts breadth claim into an auditable distance measure. |
+| Evidence | MERGED-TREE VERIFICATION BY LEAD: tsc 0 · eslint src 0 · targeted suites 256+21+25 PASS (MonteCarlo/worker 85 incl. new large-N anchors; Cascade+ConsolidationAdjustments 45; authClient/authStore/tokenRotation/api 130; keyEscrow family 40+) · masterStorage P0 shard green · financial oracles 25/25. LANES: (1) MC crash root cause spread-argument Math.min/max stack overflow at MonteCarloEngine.ts:301 — linear-scan min/max, semantics bit-identical, determinism preserved, worker untouched-green; (2) auth Phase 1: services/authClient.ts NEW, loginReal live, dual-token rotation fixes (api.ts interceptor dropped rotated refreshToken — SEC-2 trip vector closed; tokenRotation base64url parse), persist v2 migrate strips stale session truth; (3) key escrow scheme-a shipped: PBKDF2-600k wrap of device key, Base32 code, lockout 5/15min, backup v3 embed, masterStorage silent-regeneration hazard gated behind escrow-recovery-available typed error; boot-gate UI honestly deferred; (4) NCI decimal migration: computeNCI(netIncome, minorityShare∈[0,1]) with InvalidOwnershipShareError; 100× defect PROVEN ABSENT in live callers (single internal caller, correctly scaled); percent-scale fields documented deliberate; (5) NPV/MIRR packet: contradiction table (textbook vs Excel pins both passing), canonical = EXCEL-compatible (docs/architecture/ENGINES.md:9 promise; majority already Excel-side; oracle-file consistency), test-flip list enumerated, MIRR spec with registration points; implementation queued Wave-C; (6) gap report persisted docs/audit/ALL_IN_ONE_GAP_REPORT_2026-08-25.md — verdict BUILT-wide CONNECTED-thin; 19 template clones; ranked 15-package backlog. |
+| Options Considered | (a) Land lanes piecemeal unverified — REJECTED: concurrent agents require Lead merge-gate. (b) Defer auth/escrow until after audits — REJECTED: owner rulings were binding. (c) Adopt textbook NPV — REJECTED against repo Excel-compat promises + intra-oracle-file consistency. |
+| Risk Probe | Boot-gate UI for escrow absent (settings/wizard enrollment only) — recovery path functional via store API but no dedicated screen; tracked open item. consolidation.worker percent-scale duplication noted report-only. Bundle headroom 98.1% warn persists — vendor-diet lane advisable within two dependency bumps. |
+| Consequence Projection | Wave-C dispatches: NPV/MIRR canonicalization (packet in hand), payroll de-contamination + first reskin purge batch, DocumentEngine wiring, fabrication-ratchet extension to engines. |
+| Confidence Score | 96% |
+| Autonomy Level | A5 — within standing rulings; no scope/law change. |
+
+VERDICT: 4/4 ICPs ACCEPT Wave-B intake (Carla ✓ disjoint-domain discipline held, zero overlaps; Vera ✓ every lane independently verified post-merge; Chris ✓ five commits land scoped and gate-clean; Beth ✓ wrong-numbers and data-loss exposure reduced same-day).
