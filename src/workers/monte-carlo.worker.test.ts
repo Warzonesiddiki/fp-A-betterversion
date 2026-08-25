@@ -235,4 +235,29 @@ describe('monte-carlo.worker', () => {
       expect(errors.length).toBe(1);
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // Large-N regression (Wave-1 S1 audit ledger #47: MC crash >=200k iterations)
+  // ---------------------------------------------------------------------------
+
+  describe('large iteration counts', () => {
+    it('completes 250k iterations with correct statistics and bounded progress messages', () => {
+      const result = runMC({
+        assumptions: [{ name: 'x', type: 'uniform', min: 0, max: 100 }],
+        iterations: 250_000,
+        seed: 42,
+      });
+      expect(result?.results.length).toBe(250_000);
+      const stats = result?.statistics;
+      expect(stats?.min).toBeGreaterThanOrEqual(0);
+      expect(stats?.max).toBeLessThanOrEqual(100);
+      expect(stats?.mean).toBeGreaterThan(45);
+      expect(stats?.mean).toBeLessThan(55);
+      expect(stats?.p50).toBeGreaterThan(45);
+      expect(stats?.p50).toBeLessThan(55);
+      // ~1% cadence: floor(250000/100) = one message per 2500 iterations + final
+      const progressMsgs = postMessages.filter((m) => m.type === 'progress');
+      expect(progressMsgs.length).toBeLessThanOrEqual(101);
+    }, 15_000);
+  });
 });

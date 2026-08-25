@@ -298,8 +298,16 @@ function computeKurtosis(values: readonly number[], mean: number, stdDev: number
 function computeHistogram(values: readonly number[], bins: number = 30): HistogramBin[] {
   if (values.length === 0) return [];
 
-  const min = Math.min(...values);
-  const max = Math.max(...values);
+  // Linear scan for min/max — Math.min(...values)/Math.max(...values) spread the
+  // whole array as call arguments and overflow the stack beyond ~125k elements
+  // (ledger #47). Selection via comparison is bit-identical to the spread form.
+  let min = values[0]!;
+  let max = values[0]!;
+  for (let i = 1; i < values.length; i++) {
+    const v = values[i]!;
+    if (v < min) min = v;
+    if (v > max) max = v;
+  }
   if (min === max) {
     return [{ lower: min, upper: max, count: values.length, density: 1 }];
   }
@@ -499,7 +507,6 @@ export class MonteCarloEngine {
     // --- Compute per-metric statistics ---
     const metricResults = {} as Record<keyof ScenarioMetrics, MonteCarloResult>;
     for (const key of validMetrics) {
-      const _sorted = [...metricValues[key]].sort((a, b) => a - b);
       metricResults[key] = MonteCarloEngine.computeStatistics(
         metricValues[key]!,
         [],
