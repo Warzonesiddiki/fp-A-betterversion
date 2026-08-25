@@ -1601,3 +1601,22 @@ VERDICT: 4/4 ICPs ACCEPT (Carla ✓ chain-of-command simplified not broken; Vera
 | Autonomy Level | A5 — within standing rulings; no scope/law change. |
 
 VERDICT: 4/4 ICPs ACCEPT Wave-B intake (Carla ✓ disjoint-domain discipline held, zero overlaps; Vera ✓ every lane independently verified post-merge; Chris ✓ five commits land scoped and gate-clean; Beth ✓ wrong-numbers and data-loss exposure reduced same-day).
+
+
+---## Ledger Entry #52 - 2026-08-25 - ox-alpha Lead (Wave-C five-lane execution COMPLETE: NPV/MIRR Excel-canonicalization + MIRR shipped; payroll decontamination; manufacturing+healthcare verticals deepened; DocumentEngine wired via store/page; fabrication gate extended to engines)
+
+### Decision/Topic: Execute gap-report backlog items 1(partial)/2/4/9 plus the ledger #51 standardization packet; adopt ACT/365 for X-family; land all under Lead merge-gate.
+
+### DRP Summary:
+
+| Stage | Analysis |
+| --- | --- |
+| First Principles | Wrong-numbers first: NPV dual-convention meant identical inputs returned different values per surface — closed by cross-surface consistency test pinning all four implementations to machine-probed Excel truth (9.5621883751109). Fabrication second: ratchet now catches entity-name literals in engines, not just financial figures. |
+| Evidence | LEAD MERGE BATTERY on combined tree: tsc 0 · eslint 0 · fabrication 0 findings/815 modules · targeted suites 690(NPV family incl. new consistency)+143(workforce/manufacturing/healthcare/documents) · statement oracles 25/25 · build success · bundle-check PASS (2016.81KB gzip = 98.5% warn, pre-existing). LANE EVIDENCE: C1 flipped financial.ts ^i→^(i+1), X-family /365.25→/365, CapEx pow(i+1)+IRR convergence guards, SafeMathParser IRR NaN + MIRR Excel rewrite (fixture 0.13697 vs broken 0.01518), MIRR registered through registry chain; deviations honestly flagged (packet pin slips corrected by probe). C2 removed 72 fabricated literals + 3 chart exhibits from PayrollForecastPage (path correction: workforce/, not payroll/) with RED-first lock test; page back under 300-line cap. C3 wired ManufacturingEngine.calculateStats + HealthcareEngine patient-revenue/payer-mix into formerly-cloned overview pages + ExportEngine PDF/Excel; denial-rate stays null-by-contract with disclosure. C4 documentStore (canonical middleware order, RBAC enforce, persistence registry trio green 42/42) + DocumentsPage built; ROUTE DEFERRED — no documents route exists in nav manifest; wiring App.tsx/nav is an owner-gated IA change per route-map drift discipline. C5 detector premise-corrected (engines were already scanned; heuristic missed entity literals) — added hardcoded-entity-label + demo-entity-literal kinds; ManufacturingEngine demo lines + sin-hash RNG deleted, getProductionLines/getMonthlyTrend now measured-data contracts; synthetic-regression proof: detector exit 1 on injected literal, exit 0 after revert. |
+| Options Considered | (a) Ship DocumentsPage route immediately — REJECTED: route-map drift gate requires manifest+App.tsx+regen as one atomic owner-visible change. (b) Baseline-seed pre-existing engine literals — REJECTED: census found zero beyond the exemplar; seeding debt would itself fabricate. (c) Defer MIRR until UI metadata pass — REJECTED: parser math was actively wrong (~12pp understatement); metadata follow-up queued. |
+| Risk Probe | Bundle headroom now 31KB (98.5%) — vendor-diet lane REQUIRED before next dependency add. Remaining sin-hash fabricators census: ConstructionEngine.ts:163, EnergyEngine.ts:142, InsuranceEngine.ts:25 (next wave). Bond date-functions still /365.25 (separate standardization decision). Escrow boot-gate screen still deferred. |
+| Consequence Projection | Wave-D: remaining engine fabricator purge (3 known), reskin batch 2 (saas/energy/esg hubs), route consolidation proposal for /documents + 228→40 program, vendor-diet lane. |
+| Confidence Score | 96% |
+| Autonomy Level | A5 — backlog items within ratified rulings; no law changes. |
+
+VERDICT: 4/4 ICPs ACCEPT Wave-C intake (Carla ✓ route-deferral honored drift discipline; Vera ✓ probe-derived constants beat hand math, deviations disclosed; Chris ✓ gates all green on merge; Beth ✓ fabricated numbers removed from a shipped PLAN page same-day).
