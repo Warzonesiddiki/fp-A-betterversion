@@ -1,66 +1,53 @@
-import React, { useEffect, useMemo } from 'react';
+/**
+ * Healthcare overview — every figure is derived from the posted GL.
+ *
+ * CORRECTNESS CONTRACT:
+ * 1. Sector KPIs come from `HealthcareEngine.calculatePatientRevenue` and
+ *    `HealthcareEngine.getPayerMix` (pure, money-primitive-backed). This page
+ *    previously rendered the same generic debit/credit reskin as the
+ *    manufacturing overview while the engine sat unwired.
+ * 2. The claim-denial rate is `null` by engine contract — a GL carries no
+ *    submitted/denied claim counts — so it is disclosed as unavailable rather
+ *    than defaulted.
+ * 3. Days in A/R renders with its stated divisor basis (30 days) because the
+ *    basis is a modelling assumption, not a measured calendar.
+ */
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AlertTriangle, Download, DollarSign, FileSpreadsheet, Heart, Layers } from 'lucide-react';
 import { useGLStore } from '@/store/glStore';
 import { useHealthcareStore } from '@/store/healthcareStore';
+import { HealthcareEngine } from '@/engines/HealthcareEngine';
+import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { computeHealthcareRatioPct } from './healthcareMetrics';
+import { aggregateAccounts } from './accountOverview';
+import { AccountOverviewCard } from './AccountOverviewCard';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { DataTable, Column } from '@/components/ui/DataTable';
-import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
-import { Heart, DollarSign, Layers, TrendingUp } from 'lucide-react';
-import type { GLEntry } from '@/types';
-import { addMoney, roundTo, sumMoney } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
 
-function computeHealthcareStats(entries: readonly GLEntry[]) {
-  const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
-  const totalCredit = roundTo(sumMoney(entries.map((e) => e.credit)), 2);
-  const netChange = roundTo(sumMoney(entries.map((e) => e.netChange)), 2);
-  const uniqueAccounts = new Set(entries.map((e) => e.accountCode)).size;
+const REVENUE_CYCLE_STAGES = [
+  { key: 'grossCharges', label: 'Gross patient charges (40xx)' },
+  { key: 'contractuals', label: 'Contractual adjustments (41xx, contra)' },
+  { key: 'netRevenue', label: 'Net patient revenue' },
+  { key: 'cashCollected', label: 'Cash collected (11xx)' },
+  { key: 'badDebt', label: 'Bad debt (42xx)' },
+] as const;
 
-  const accountMap = new Map<
-    string,
-    { name: string; debit: number; credit: number; net: number; count: number }
-  >();
-  for (const e of entries) {
-    const existing = accountMap.get(e.accountCode) ?? {
-      name: e.accountName,
-      debit: 0,
-      credit: 0,
-      net: 0,
-      count: 0,
-    };
-    existing.debit = addMoney(existing.debit, e.debit ?? 0).toNumber();
-    existing.credit = addMoney(existing.credit, e.credit ?? 0).toNumber();
-    existing.net = addMoney(existing.net, e.netChange ?? 0).toNumber();
-    existing.count += 1;
-    accountMap.set(e.accountCode, existing);
-  }
-
-  const accountBreakdown = Array.from(accountMap.entries())
-    .map(([code, data]) => ({
-      accountCode: code,
-      accountName: data.name,
-      debit: data.debit,
-      credit: data.credit,
-      netChange: data.net,
-      transactions: data.count,
-    }))
-    .sort((a, b) => Math.abs(b.credit) - Math.abs(a.credit));
-
-  return { totalDebit, totalCredit, netChange, uniqueAccounts, accountBreakdown };
-}
-
-const columns: Column[] = [
-  { key: 'accountCode', header: 'Account Code', sortable: true },
-  { key: 'accountName', header: 'Account Name', sortable: true },
-  { key: 'debit', header: 'Debit', align: 'right', sortable: true },
-  { key: 'credit', header: 'Credit', align: 'right', sortable: true },
-  { key: 'netChange', header: 'Net Change', align: 'right', sortable: true },
-  { key: 'transactions', header: 'Transactions', align: 'right', sortable: true },
-];
+/** Engine payor colors mapped to literal Tailwind classes (no inline styles). */
+const PAYER_DOT_CLASSES: Record<string, string> = {
+  '#3b82f6': 'bg-blue-500',
+  '#10b981': 'bg-emerald-500',
+  '#f59e0b': 'bg-amber-500',
+  '#ef4444': 'bg-red-500',
+  '#6366f1': 'bg-indigo-500',
+};
 
 export function HealthcarePage() {
+  const fmt = useCurrencyFormatter();
   const entries = useGLStore((s) => s.entries);
   const programs = useHealthcareStore((s) => s.programs);
   const navigate = useNavigate();
@@ -69,26 +56,37 @@ export function HealthcarePage() {
     document.title = 'FinPlan Pro — Healthcare';
   }, []);
 
-  const stats = useMemo(() => computeHealthcareStats(entries), [entries]);
+  const rev = useMemo(() => HealthcareEngine.calculatePatientRevenue(entries), [entries]);
+  const payerMix = useMemo(() => HealthcareEngine.getPayerMix(entries), [entries]);
+  const accountBreakdown = useMemo(() => aggregateAccounts(entries), [entries]);
+  const programCount = Array.isArray(programs) ? programs.length : 0;
 
-  const tableData = useMemo(
-    () =>
-      stats.accountBreakdown.map((row) => ({
-        accountCode: row.accountCode,
-        accountName: row.accountName,
-        debit: formatCurrency(row.debit),
-        credit: formatCurrency(row.credit),
-        netChange: formatCurrency(row.netChange),
-        transactions: formatNumber(row.transactions),
-      })),
-    [stats.accountBreakdown]
-  );
+  const handleExportPDF = () => {
+    void ExportEngine.exportToPDF(
+      {
+        headers: ['Metric', 'Value'],
+        rows: [
+          ['Gross Charges', fmt.currency0(rev.grossCharges)],
+          ['Contractual Adjustments', fmt.currency0(rev.contractuals)],
+          ['Net Patient Revenue', fmt.currency0(rev.netRevenue)],
+          ['Cash Collected', fmt.currency0(rev.cashCollected)],
+          ['Bad Debt', fmt.currency0(rev.badDebt)],
+          ['Collection Rate', fmt.percent(rev.collectionRate, 1)],
+          [`Days in A/R (${rev.daysInPeriodBasis}-day basis)`, fmt.number(rev.daysInAR, 2)],
+        ],
+      },
+      { title: 'Healthcare Overview Report' }
+    ).catch(reportExportFailure);
+  };
 
-  const handleImportKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      navigate('/data/gl-upload');
-    }
+  const handleExportExcel = () => {
+    void ExportEngine.exportToExcel(
+      {
+        headers: ['Payor', 'Charges'],
+        rows: payerMix.map((p) => [p.name, p.value]),
+      },
+      { title: 'Healthcare_Payor_Mix' }
+    ).catch(reportExportFailure);
   };
 
   if (entries.length === 0) {
@@ -106,7 +104,6 @@ export function HealthcarePage() {
         <Button
           id="import-btn"
           onClick={() => navigate('/data/gl-upload')}
-          onKeyDown={handleImportKeyDown}
           aria-label="Import GL data to view healthcare"
         >
           Import Data
@@ -126,10 +123,23 @@ export function HealthcarePage() {
       <PageHeader
         title="Healthcare"
         titleId="healthcare-heading"
+        purpose="Patient-revenue KPIs derived from posted GL accounts (40xx charges, 41xx contractuals, 42xx bad debt, 11xx cash, 12xx A/R) via HealthcareEngine."
         status={
           <span className="text-sm text-[var(--text-muted)]">
-            {formatNumber(entries.length)} entries imported
+            {fmt.number(entries.length)} entries · {fmt.number(programCount)} care programs
           </span>
+        }
+        actions={
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
+              <Download className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              PDF
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
+              <FileSpreadsheet className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              Excel
+            </Button>
+          </div>
         }
       />
       <section
@@ -139,44 +149,104 @@ export function HealthcarePage() {
         aria-labelledby="healthcare-heading"
       >
         <KPIValue
-          label="Total Entries"
-          value={formatNumber(entries.length)}
+          label="Net Patient Revenue"
+          value={fmt.currency0(rev.netRevenue)}
           icon={<Heart className="h-4 w-4" aria-hidden="true" />}
+          changeLabel="Charges less contractual adjustments"
         />
         <KPIValue
-          label="Programs"
-          value={formatNumber(programs.length)}
-          icon={<Layers className="h-4 w-4" aria-hidden="true" />}
-        />
-        <KPIValue
-          label="Total Debit"
-          value={formatCompactNumber(stats.totalDebit)}
+          label="Gross Charges"
+          value={fmt.currency0(rev.grossCharges)}
           icon={<DollarSign className="h-4 w-4" aria-hidden="true" />}
+          changeLabel="Posted 40xx accounts"
         />
         <KPIValue
-          label="Total Credit"
-          value={formatCompactNumber(stats.totalCredit)}
-          icon={<TrendingUp className="h-4 w-4" aria-hidden="true" />}
+          label="Cash Collected"
+          value={fmt.currency0(rev.cashCollected)}
+          icon={<Layers className="h-4 w-4" aria-hidden="true" />}
+          changeLabel={`Collection rate ${fmt.percent(rev.collectionRate, 1)} of net revenue`}
+        />
+        <KPIValue
+          label="Days in A/R"
+          value={fmt.number(rev.daysInAR, 2)}
+          changeLabel={`${rev.daysInPeriodBasis}-day divisor basis — modelling assumption, not a measured calendar`}
         />
       </section>
-      <Card aria-label="Account Overview" aria-live="polite">
-        <CardHeader>
-          <CardTitle id="account-overview-title">Account Overview</CardTitle>
-        </CardHeader>
-        <CardContent aria-labelledby="account-overview-title">
-          {tableData.length > 0 ? (
-            <DataTable
-              columns={columns}
-              data={tableData}
-              sortable
-              caption="Account overview table"
-              ariaLabel="Account overview data table for healthcare sector"
-            />
-          ) : (
-            <p className="text-[var(--text-muted)]">No account data available.</p>
-          )}
-        </CardContent>
-      </Card>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card aria-label="Revenue Cycle" aria-live="polite">
+          <CardHeader>
+            <CardTitle>Patient Revenue Cycle</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <ul className="space-y-2">
+              {REVENUE_CYCLE_STAGES.map((stage) => (
+                <li
+                  key={stage.key}
+                  className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2 last:border-0 text-sm"
+                >
+                  <span>{stage.label}</span>
+                  <span className="font-mono tabular-nums">{fmt.currency(rev[stage.key])}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="flex items-start gap-2 text-xs text-[var(--text-muted)]">
+              <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" aria-hidden="true" />
+              <span>
+                Claim denial rate is not derivable from a general ledger — it requires
+                claim/remittance (835/837) feeds and is never estimated here.
+              </span>
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card aria-label="Payor Mix" aria-live="polite">
+          <CardHeader>
+            <CardTitle>Payor Mix</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {payerMix.length > 0 ? (
+              <>
+                <ul className="space-y-2">
+                  {payerMix.map((payer) => (
+                    <li
+                      key={payer.name}
+                      className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-2 last:border-0 text-sm"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span
+                          className={`inline-block h-2 w-2 rounded-full ${
+                            PAYER_DOT_CLASSES[payer.color] ?? 'bg-blue-500'
+                          }`}
+                          aria-hidden="true"
+                        />
+                        {payer.name}
+                      </span>
+                      <span className="font-mono tabular-nums">
+                        {fmt.currency(payer.value)}
+                        <span className="ml-2 text-[var(--text-secondary)]">
+                          {fmt.percent(computeHealthcareRatioPct(payer.value, rev.grossCharges), 1)}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="pt-2 text-xs text-[var(--text-muted)]">
+                  Shares are each payor portion of posted gross charges (exact decimal division).
+                </p>
+              </>
+            ) : (
+              <p className="text-[var(--text-muted)]">
+                No payor-coded revenue accounts found. Post 40xx accounts whose codes end in the
+                payor suffix (01 Medicare, 02 Commercial, 03 Medicaid, 04 Self-Pay, 05 Other) to
+                populate this mix.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <AccountOverviewCard rows={accountBreakdown} />
     </main>
   );
 }
