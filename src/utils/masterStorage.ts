@@ -3,6 +3,7 @@ import { sqlJsStorage } from './sqlJsStorage';
 import { tauriSqlStorage, isTauri } from './tauriSqlStorage';
 import { wrapChunkedStorage } from './chunkedStorage';
 import { decodeMoneyGraph, encodeMoneyGraph } from './moneySerialize';
+import { hasValidEscrowRecord } from './keyEscrow';
 
 let _isTauriCache: boolean | null = null;
 
@@ -138,7 +139,9 @@ function emitStorageError(event: StorageErrorEvent): void {
 // StorageDecryptionError and the documented recovery path (restore from
 // backup or reset), rather than silently serving ciphertext as state.
 
-const DEVICE_KEY_ITEM = 'finplan.storage-key.v1';
+// Exported so keyEscrow.ts can target the same item WITHOUT importing this
+// module back (keyEscrow is imported here; a reverse import would be a cycle).
+export const DEVICE_KEY_ITEM = 'finplan.storage-key.v1';
 
 function resolveKeyMaterial(): Uint8Array {
   if (typeof process !== 'undefined' && process.env?.MASTER_STORAGE_KEY) {
@@ -150,8 +153,19 @@ function resolveKeyMaterial(): Uint8Array {
       try {
         return base64ToBytes(existing);
       } catch {
-        // Corrupted key item: rotate to a fresh device key below.
+        // Corrupted key item: rotate to a fresh device key below — UNLESS a
+        // recovery escrow record exists, in which case the old ciphertext on
+        // disk is still recoverable and silently rotating would orphan it.
+        // Fail closed instead and let the recovery UI unlock the device key.
+        if (hasValidEscrowRecord()) {
+          throw new StorageKeyUnavailableError('escrow-recovery-available');
+        }
       }
+    } else if (hasValidEscrowRecord()) {
+      // Key item missing entirely with an enrolled escrow record: same rule —
+      // the data behind K_root is recoverable via the recovery code, so we
+      // must NOT mint a fresh key that would permanently seal it off.
+      throw new StorageKeyUnavailableError('escrow-recovery-available');
     }
     if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
       const fresh = crypto.getRandomValues(new Uint8Array(32));
@@ -232,6 +246,10 @@ async function decryptStorageValue(encrypted: string, storeKey: string): Promise
     const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
     return new TextDecoder().decode(decrypted);
   } catch (cause) {
+    // Escrow gating (scheme a): a deliberately unavailable root key because
+    // recovery is pending must surface AS ITSELF — not masquerade as data
+    // corruption, which would tell the user to restore a backup.
+    if (cause instanceof StorageKeyUnavailableError) throw cause;
     // F-0012: fail closed. Never hand ciphertext or a corrupt blob back as
     // if it were application state.
     throw new StorageDecryptionError(storeKey, cause);
@@ -312,6 +330,15 @@ export const masterStorage: MasterStorage = {
       // foreign-key ciphertext must never become application state, and must
       // never be downgraded to "no data" — that silently discards the user's
       // real (recoverable) data and starts them on an empty store.
+      if (cause instanceof StorageKeyUnavailableError) {
+        emitStorageError({
+          operation: 'decrypt',
+          storeKey: name,
+          message: cause.message,
+          error: cause,
+        });
+        throw cause;
+      }
       const error =
         cause instanceof StorageDecryptionError ? cause : new StorageDecryptionError(name, cause);
       emitStorageError({ operation: 'decrypt', storeKey: name, message: error.message, error });

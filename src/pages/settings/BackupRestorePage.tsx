@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useUIStore } from '@/store/uiStore';
 import { BackupRestore } from '@/utils/backupRestore';
+import { RecoveryCodeCard } from '@/components/settings/RecoveryCodeCard';
 import {
   Download,
   Upload,
@@ -211,6 +212,9 @@ export default function BackupRestorePage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Recovery code (key escrow) — status + enrollment */}
+      <RecoveryCodeCard />
 
       {/* Section 011: Desktop Migration Card */}
       {storageBackend === 'desktop-tauri-sqlite' && !migrationCompleted && (

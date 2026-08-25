@@ -21,9 +21,20 @@
 import { masterStorage } from './masterStorage';
 import { BACKUP_STORE_KEYS, BACKUP_EXCLUDED_KEYS, PERSISTED_STORE_KEYS } from './persistedStores';
 import { isTauri, tauriSqlStorage } from './tauriSqlStorage';
+import { readEscrowRecord, type EscrowRecordV1 } from './keyEscrow';
 
-/** Bump when the on-disk backup shape changes incompatibly. */
-export const BACKUP_FORMAT_VERSION = 2;
+/**
+ * Bump when the on-disk backup shape changes incompatibly.
+ *
+ * v3 (2026-08-25): metadata optionally carries the key-escrow record
+ * (scheme a — recovery code wrapping K_root) so an exported backup documents
+ * which root key encrypted its payload and keeps the wrapped key available
+ * off-device. v2 files remain fully readable (escrow field is simply absent).
+ */
+export const BACKUP_FORMAT_VERSION = 3;
+
+/** Backup format versions this build reads without a version warning. */
+const SUPPORTED_BACKUP_FORMAT_VERSIONS = [2, 3];
 
 export interface EmergencyDumpEntry {
   key: string;
@@ -52,6 +63,12 @@ export interface BackupMetadata {
   storeSizes: Record<string, number>;
   /** SHA-256 over the canonical JSON of `data`. */
   checksum: string;
+  /**
+   * v3: the enrolled key-escrow record (wrapped root storage key), if any.
+   * Read from the RAW escrow store, never decrypted through masterStorage.
+   * Restore does NOT auto-install it — it is archival/audit data.
+   */
+  escrow?: EscrowRecordV1 | null;
 }
 
 export interface BackupData {
@@ -160,6 +177,7 @@ export class BackupRestore {
         exportedAt: new Date().toISOString(),
         storeSizes,
         checksum,
+        escrow: readEscrowRecord(),
       },
       data,
     };
@@ -221,10 +239,25 @@ export class BackupRestore {
 
     const backup = parsed;
 
-    if (backup.metadata.formatVersion !== BACKUP_FORMAT_VERSION) {
+    if (!SUPPORTED_BACKUP_FORMAT_VERSIONS.includes(backup.metadata.formatVersion)) {
       warnings.push(
         `Backup format version ${backup.metadata.formatVersion ?? 'unknown'} differs from the ` +
           `current version ${BACKUP_FORMAT_VERSION}. Restoring on a best-effort basis.`
+      );
+    } else if (backup.metadata.formatVersion < BACKUP_FORMAT_VERSION && backup.metadata.escrow) {
+      // Defensive: v2 files cannot legitimately carry escrow metadata.
+      warnings.push(
+        'Backup declares a pre-v3 format but contains key-escrow metadata; ' +
+          'the escrow record was ignored.'
+      );
+    }
+
+    if (backup.metadata.escrow && backup.metadata.formatVersion === BACKUP_FORMAT_VERSION) {
+      // Informational only: restore never auto-installs escrow records, so a
+      // hostile backup cannot silently rebind this device's recovery target.
+      warnings.push(
+        `Backup contains a key-escrow record (keyId ${backup.metadata.escrow.keyId}). ` +
+          'It is archived with the file; recovery enrollment on THIS device is unchanged.'
       );
     }
 

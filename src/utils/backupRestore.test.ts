@@ -393,7 +393,9 @@ describe('F-0010 backup/restore', () => {
 
     it('falls back to collected errors for the desktop SQLite backend while keeping raw entries', async () => {
       localStorage.setItem('finplan.storage-key.v1', 'ZGV2aWNla2V5');
-      (window as unknown as Record<string, unknown>).__TAURI_INTERNALS = {};
+      // Tauri v2 contract key (see isTauriRuntime) — the stale legacy
+      // '__TAURI_INTERNALS' spelling silently stopped enabling Tauri mode.
+      (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__ = {};
 
       try {
         const dump = await createRawEmergencyBackup();
@@ -404,7 +406,7 @@ describe('F-0010 backup/restore', () => {
         // Best-effort: the localStorage side of the dump still completed.
         expect(dump.entries.map((e) => e.key)).toContain('finplan.storage-key.v1');
       } finally {
-        delete (window as unknown as Record<string, unknown>).__TAURI_INTERNALS;
+        delete (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__;
         localStorage.removeItem('finplan.storage-key.v1');
       }
     });
