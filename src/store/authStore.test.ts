@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   useAuthStore,
   hasPermission,
@@ -9,7 +9,57 @@ import {
   canApprove,
   ROLE_PERMISSIONS,
 } from './authStore';
+import { stopRotation } from '../utils/tokenRotation';
+import { AuthRequestError } from '@/services/authClient';
 import type { User } from '../types';
+
+// ── Hoisted authClient mock ─────────────────────────────────────────────────
+// The class lives in the hoisted scope so `instanceof` checks inside
+// authStore.loginReal see the SAME constructor this file imports.
+const authClientMock = vi.hoisted(() => {
+  class TestAuthRequestError extends Error {
+    readonly status: number;
+    readonly code: string;
+    readonly retryAfterSeconds?: number;
+    readonly attemptsRemaining?: number;
+    readonly lockedUntil?: string;
+    constructor(
+      status: number,
+      code: string,
+      message: string,
+      extra: {
+        retryAfterSeconds?: number;
+        attemptsRemaining?: number;
+        lockedUntil?: string;
+      } = {}
+    ) {
+      super(message);
+      this.name = 'AuthRequestError';
+      this.status = status;
+      this.code = code;
+      if (extra.retryAfterSeconds !== undefined) this.retryAfterSeconds = extra.retryAfterSeconds;
+      if (extra.attemptsRemaining !== undefined) this.attemptsRemaining = extra.attemptsRemaining;
+      if (extra.lockedUntil !== undefined) this.lockedUntil = extra.lockedUntil;
+    }
+  }
+  return {
+    AuthRequestError: TestAuthRequestError,
+    login: vi.fn(),
+    logout: vi.fn(),
+    me: vi.fn(),
+    refresh: vi.fn(),
+  };
+});
+
+vi.mock('@/services/authClient', () => ({
+  authClient: {
+    login: authClientMock.login,
+    logout: authClientMock.logout,
+    me: authClientMock.me,
+    refresh: authClientMock.refresh,
+  },
+  AuthRequestError: authClientMock.AuthRequestError,
+}));
 
 const mockAdmin: User = {
   id: 'user-admin-001',
@@ -261,6 +311,229 @@ describe('RBAC helpers', () => {
   });
 
   it('canApprove returns false for Viewer', () => {
+    expect(canApprove(mockAdmin)).toBe(true);
     expect(canApprove(mockViewer)).toBe(false);
+  });
+});
+
+// ── Real-auth path (server integration, W02 tenancy) ───────────────────────
+
+function makeJwt(expSeconds: number): string {
+  const encode = (o: object): string => btoa(JSON.stringify(o)).replace(/=+$/, '');
+  return `${encode({ alg: 'HS256', typ: 'JWT' })}.${encode({ sub: 'user-admin-001', exp: expSeconds })}.sig`;
+}
+
+const EXP_LATE = Math.floor(Date.now() / 1000) + 30 * 60;
+
+describe('authStore real-auth path (VITE_USE_MOCK_AUTH=false)', () => {
+  const serverUser = {
+    id: 'srv-user-001',
+    email: 'ada@finplan.com',
+    firstName: 'Ada',
+    lastName: 'Admin',
+    role: 'Admin',
+    entityId: 'entity-001',
+    isActive: true,
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-08-01T00:00:00.000Z',
+  };
+
+  beforeEach(() => {
+    vi.stubEnv('VITE_USE_MOCK_AUTH', 'false');
+    authClientMock.login.mockReset();
+    authClientMock.logout.mockReset();
+    authClientMock.me.mockReset();
+    authClientMock.refresh.mockReset();
+    useAuthStore.setState({
+      user: null,
+      accessToken: null,
+      refreshToken: null,
+      isAuthenticated: false,
+      isLoading: false,
+      mfaRequired: false,
+      activeEntityId: '',
+      error: null,
+      loginAttempts: 0,
+      lockedUntil: null,
+      tokenExpiry: null,
+    });
+  });
+
+  afterEach(() => {
+    stopRotation();
+    vi.unstubAllEnvs();
+  });
+
+  it('login stores user + BOTH tokens + parsed expiry on success', async () => {
+    authClientMock.login.mockResolvedValue({
+      user: serverUser,
+      accessToken: makeJwt(EXP_LATE),
+      refreshToken: 'rt-1',
+    });
+
+    await useAuthStore.getState().login('ada@finplan.com', 'secret');
+
+    expect(authClientMock.login).toHaveBeenCalledWith('ada@finplan.com', 'secret');
+    const state = useAuthStore.getState();
+    expect(state.isAuthenticated).toBe(true);
+    expect(state.isLoading).toBe(false);
+    expect(state.error).toBeNull();
+    // Server DTO mapped onto the store User shape with role-derived permissions.
+    expect(state.user).toMatchObject({
+      id: 'srv-user-001',
+      email: 'ada@finplan.com',
+      role: 'Admin',
+      status: 'Active',
+      entityId: 'entity-001',
+    });
+    expect(state.user!.permissions).toEqual([...ROLE_PERMISSIONS.Admin]);
+    // BOTH tokens persisted in state...
+    expect(state.accessToken).toBe(makeJwt(EXP_LATE));
+    expect(state.refreshToken).toBe('rt-1');
+    // ...plus expiry parsed from the access token payload.
+    expect(state.tokenExpiry).toBe(EXP_LATE * 1000);
+    expect(state.loginAttempts).toBe(0);
+    expect(state.lockedUntil).toBeNull();
+  });
+
+  it('maps a 401 attemptsRemaining error into store state and stays logged out', async () => {
+    authClientMock.login.mockRejectedValue(
+      new AuthRequestError(401, 'UNAUTHORIZED', 'Invalid email or password', {
+        attemptsRemaining: 2,
+      })
+    );
+
+    await expect(useAuthStore.getState().login('ada@finplan.com', 'wrong')).rejects.toBeInstanceOf(
+      AuthRequestError
+    );
+
+    const state = useAuthStore.getState();
+    expect(state.isAuthenticated).toBe(false);
+    expect(state.user).toBeNull();
+    expect(state.error).toBe('Invalid email or password');
+    expect(state.loginAttempts).toBe(2);
+    expect(state.isLoading).toBe(false);
+  });
+
+  it('seeds lockedUntil from a 423 lockout response', async () => {
+    const lockedUntil = '2026-08-25T12:15:00.000Z';
+    authClientMock.login.mockRejectedValue(
+      new AuthRequestError(423, 'LOCKED', 'Account is locked. Try again in 15 minutes.', {
+        lockedUntil,
+      })
+    );
+
+    await expect(useAuthStore.getState().login('ada@finplan.com', 'pw')).rejects.toBeInstanceOf(
+      AuthRequestError
+    );
+
+    expect(useAuthStore.getState().lockedUntil).toBe(lockedUntil);
+  });
+
+  it('refresh saves BOTH rotated tokens; two consecutive refreshes always send the latest token', async () => {
+    // Seed an authenticated session holding rt-1.
+    useAuthStore.setState({
+      user: mockAdmin,
+      accessToken: makeJwt(EXP_LATE),
+      refreshToken: 'rt-1',
+      isAuthenticated: true,
+      tokenExpiry: EXP_LATE * 1000,
+    });
+
+    authClientMock.refresh.mockResolvedValueOnce({
+      accessToken: makeJwt(EXP_LATE + 60),
+      refreshToken: 'rt-2',
+    });
+    await useAuthStore.getState().refreshAccessToken();
+
+    // First refresh presented rt-1 and stored the FULL rotated pair.
+    expect(authClientMock.refresh).toHaveBeenLastCalledWith('rt-1');
+    let state = useAuthStore.getState();
+    expect(state.accessToken).toBe(makeJwt(EXP_LATE + 60));
+    expect(state.refreshToken).toBe('rt-2');
+
+    // Second refresh MUST present rt-2 — replaying rt-1 would trip the
+    // server's SEC-2 reuse detection and revoke the whole token family.
+    authClientMock.refresh.mockResolvedValueOnce({
+      accessToken: makeJwt(EXP_LATE + 120),
+      refreshToken: 'rt-3',
+    });
+    await useAuthStore.getState().refreshAccessToken();
+
+    expect(authClientMock.refresh).toHaveBeenLastCalledWith('rt-2');
+    state = useAuthStore.getState();
+    expect(state.accessToken).toBe(makeJwt(EXP_LATE + 120));
+    expect(state.refreshToken).toBe('rt-3');
+    expect(state.tokenExpiry).toBe((EXP_LATE + 120) * 1000);
+    expect(state.isAuthenticated).toBe(true);
+  });
+
+  it('logout fires best-effort revocation then clears local state', async () => {
+    authClientMock.logout.mockResolvedValue(undefined);
+    useAuthStore.setState({
+      user: mockAdmin,
+      accessToken: 'at-live',
+      refreshToken: 'rt-live',
+      isAuthenticated: true,
+      activeEntityId: 'entity-001',
+    });
+
+    useAuthStore.getState().logout();
+
+    expect(authClientMock.logout).toHaveBeenCalledWith('rt-live');
+    const state = useAuthStore.getState();
+    expect(state.isAuthenticated).toBe(false);
+    expect(state.accessToken).toBeNull();
+    expect(state.refreshToken).toBeNull();
+    expect(state.user).toBeNull();
+  });
+
+  it('mock-mode logout does not call the server', async () => {
+    vi.stubEnv('VITE_USE_MOCK_AUTH', 'true');
+    useAuthStore.setState({ refreshToken: 'rt-mock', isAuthenticated: true });
+
+    useAuthStore.getState().logout();
+
+    expect(authClientMock.logout).not.toHaveBeenCalled();
+    expect(useAuthStore.getState().refreshToken).toBeNull();
+  });
+
+  it('persist contract: v1 blobs lose session truth; partialize never persists it', () => {
+    const options = useAuthStore.persist.getOptions();
+    expect(options.version).toBe(2);
+
+    // A stale v1 blob claiming an authenticated session migrates to a blob
+    // with NO auth truth — rehydration therefore lands unauthenticated.
+    const migrated = options.migrate?.(
+      {
+        user: { id: 'u1', role: 'Admin' },
+        isAuthenticated: true,
+        activeEntityId: 'entity-001',
+        loginAttempts: 0,
+        lockedUntil: null,
+        version: 1,
+      },
+      1
+    ) as Record<string, unknown>;
+    expect(migrated.isAuthenticated).toBeUndefined();
+    expect(migrated.user).toBeUndefined();
+    expect(migrated.activeEntityId).toBe('entity-001');
+    expect(migrated.version).toBe(2);
+
+    // And the live partialize output never carries session truth either.
+    useAuthStore.setState({
+      user: mockAdmin,
+      accessToken: 'at-x',
+      refreshToken: 'rt-x',
+      isAuthenticated: true,
+      tokenExpiry: 123,
+      activeEntityId: 'entity-001',
+    });
+    const persisted = options.partialize?.(useAuthStore.getState()) as Record<string, unknown>;
+    expect(Object.keys(persisted).sort()).toEqual([
+      'activeEntityId',
+      'lockedUntil',
+      'loginAttempts',
+    ]);
   });
 });

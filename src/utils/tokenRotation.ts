@@ -22,12 +22,27 @@ let isRefreshing = false;
 
 // ─── Token Parsing ────────────────────────────────────────────────────────────
 
-function parseTokenExpiry(token: string): number | null {
+/**
+ * Decodes a JWT segment in environments that only expose atob.
+ * JWTs are base64URL-encoded ('-'/'_', no padding) while atob speaks
+ * base64 — both must be normalized or every token containing those
+ * characters (or lacking '=' padding) throws and reads as "no expiry".
+ */
+function decodeBase64UrlSegment(segment: string): string {
+  const normalized = segment.replace(/-/g, '+').replace(/_/g, '/');
+  const padding = (4 - (normalized.length % 4)) % 4;
+  return atob(normalized.padEnd(normalized.length + padding, '='));
+}
+
+/** Parses the `exp` claim (epoch seconds) from a JWT; null when absent/invalid. */
+export function parseTokenExpiry(token: string): number | null {
   try {
     const parts = token.split('.');
     if (parts.length !== 3) return null;
-    const payload = JSON.parse(atob(parts[1]!));
-    return payload.exp ? payload.exp * 1000 : null;
+    const payload: unknown = JSON.parse(decodeBase64UrlSegment(parts[1]!));
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return null;
+    const exp = (payload as Record<string, unknown>).exp;
+    return typeof exp === 'number' && Number.isFinite(exp) ? exp * 1000 : null;
   } catch {
     return null;
   }
