@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +15,8 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { ExcelImportEngine } from '@/engines/ExcelImportEngine';
 import { hasDuplicateHeaders, parseCSV } from '@/utils/csv';
+import { parseFinancialAmount } from '@/utils/parseFinancialAmount';
+import { parseImportDate } from '@/utils/parseImportDate';
 import type { GLEntry } from '@/types';
 import {
   CheckCircle2,
@@ -63,7 +66,19 @@ export default function GLUploadPage() {
     setImportStatus,
     setImportError,
     undoLastImport,
-  } = useGLStore();
+  } = useGLStore(
+    useShallow((s) => ({
+      entries: s.entries,
+      importProgress: s.importProgress,
+      importStatus: s.importStatus,
+      importError: s.importError,
+      importHistory: s.importHistory,
+      setImportProgress: s.setImportProgress,
+      setImportStatus: s.setImportStatus,
+      setImportError: s.setImportError,
+      undoLastImport: s.undoLastImport,
+    }))
+  );
 
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
@@ -263,41 +278,75 @@ export default function GLUploadPage() {
     setImportStatus('importing');
     setImportProgress(0);
 
-    const mappedData = rawData.map((row) => {
+    // W6-P0-09/P0-10: strict per-row coercion. Amounts go through
+    // parseFinancialAmount (bare parseFloat truncated "1,234.56" to 1) and
+    // dates through parseImportDate (raw cells produced garbage periods).
+    // Broken rows are excluded from the import and reported via the existing
+    // importError channel — never silently stored.
+    const rowErrors: string[] = [];
+    const parsedEntries: Partial<GLEntry>[] = [];
+
+    rawData.forEach((row, idx) => {
+      const rowNum = idx + 2; // header occupies row 1 of the source file
       const getVal = (field: string) => row[mappings[field]!];
-      return {
+
+      const accountCode = getVal('accountCode') || '';
+      if (!accountCode) rowErrors.push(`Row ${rowNum}: missing accountCode`);
+
+      const rawDate = String(getVal('postDate') ?? '').trim();
+      const postDate = parseImportDate(rawDate);
+      if (!postDate) {
+        rowErrors.push(`Row ${rowNum}: unparseable posting date "${rawDate}"`);
+      }
+
+      const parseCellAmount = (field: string): number => {
+        if (!mappings[field]) return 0;
+        const cell = String(getVal(field) ?? '').trim();
+        if (cell === '') return 0;
+        const value = parseFinancialAmount(cell);
+        if (Number.isNaN(value)) {
+          rowErrors.push(`Row ${rowNum}: unparseable ${field} amount "${cell}"`);
+          return Number.NaN;
+        }
+        return value;
+      };
+      const debit = parseCellAmount('debit');
+      const credit = parseCellAmount('credit');
+
+      if (!accountCode || !postDate || Number.isNaN(debit) || Number.isNaN(credit)) return;
+
+      const period = postDate.slice(0, 7); // canonical YYYY-MM
+      parsedEntries.push({
         id: '',
-        accountId: getVal('accountCode') || '',
-        accountCode: getVal('accountCode') || '',
-        accountName: getVal('accountCode') || '',
-        period: (getVal('postDate') || '').slice(0, 7),
-        periodName: (getVal('postDate') || '').slice(0, 7),
-        debit: parseFloat(String(getVal('debit') || '0')) || 0,
-        credit: parseFloat(String(getVal('credit') || '0')) || 0,
+        accountId: accountCode,
+        accountCode,
+        accountName: accountCode,
+        period,
+        periodName: period,
+        debit,
+        credit,
         netChange: 0,
         amount: 0,
-        date: getVal('postDate') || '',
-        postDate: getVal('postDate') || '',
+        date: postDate,
+        postDate,
         description: getVal('description') || '',
         reference: getVal('reference') || '',
         entityId: getVal('entityId') || '',
         departmentId: getVal('departmentId') || '',
-      };
+      });
     });
 
-    const validRows = mappedData.filter((r) => r.accountCode && r.date);
-    if (validRows.length === 0) {
+    if (parsedEntries.length === 0) {
       setImportError(
-        'No valid rows found. All rows are missing required fields (accountCode + date).'
+        rowErrors.length > 0
+          ? `No valid rows found. ${rowErrors.slice(0, 5).join('; ')}`
+          : 'No valid rows found. All rows are missing required fields (accountCode + date).'
       );
-      setImportStatus('idle');
       return;
     }
 
     // Use the new robust high-level import action
-    const result = useGLStore
-      .getState()
-      .importGLData(validRows satisfies Partial<GLEntry>[], currentFile?.name);
+    const result = useGLStore.getState().importGLData(parsedEntries, currentFile?.name);
 
     if (!result.success) {
       setImportError(
@@ -315,9 +364,14 @@ export default function GLUploadPage() {
       if (progress >= 100) {
         clearInterval(interval);
         setImportedRowCount(result.imported || 0);
-        setImportedErrorCount(result.errors || 0);
+        setImportedErrorCount((result.errors || 0) + rowErrors.length);
         setImportStatus('complete');
         setStep(4);
+        // Surface coercion errors only after the final status transition:
+        // the store's setImportStatus('complete') clears importError.
+        if (rowErrors.length > 0) {
+          setImportError(rowErrors.slice(0, 5).join('; '));
+        }
       }
     }, 40);
   }, [rawData, mappings, currentFile, setImportStatus, setImportProgress, setImportError]);
@@ -343,7 +397,13 @@ export default function GLUploadPage() {
   if (importStatus === 'parsing' || importStatus === 'validating') {
     return (
       <div className="p-12 text-center">
-        <Skeleton variant="rectangular" width="60%" height="2rem" className="mx-auto mb-6" />
+        <Skeleton
+          variant="rectangular"
+          width="60%"
+          height="2rem"
+          className="mx-auto mb-6"
+          srLabel="Loading GL upload…"
+        />
         <Skeleton variant="rectangular" width="80%" height="16rem" className="mx-auto mb-4" />
         <p className="text-sm text-[var(--text-muted)] mt-4">
           {importStatus === 'parsing' ? 'Reading file contents...' : 'Validating data structure...'}

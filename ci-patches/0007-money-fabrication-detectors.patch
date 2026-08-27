@@ -1,0 +1,59 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -406,10 +406,37 @@ jobs:
+       - name: Verify engine manifest is current
+         run: npm run engines:verify
+ 
++  money-integrity:
++    # Blueprint W0.1.0 / W0.1.7: the AST money-safety ratchet and the
++    # fabrication ratchet previously ran only in .husky/pre-push, so any
++    # push made with hooks bypassed left unsafe monetary arithmetic or
++    # hand-typed fabricated figures invisible to CI. Both detectors are
++    # fail-closed: ANY finding exits non-zero.
++    name: Money & Fabrication Integrity
++    runs-on: ubuntu-latest
++    timeout-minutes: 10
++    steps:
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
++
++      - name: Setup Node.js
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
++        with:
++          node-version: ${{ env.NODE_VERSION }}
++          cache: npm
++
++      - name: Install dependencies
++        run: npm ci
++
++      - name: AST money-safety ratchet (fail on increase)
++        run: node scripts/money-ast-detector.mjs
++
++      - name: Fabrication ratchet (fail on any finding)
++        run: node scripts/fabrication-detector.mjs
++
+   summary:
+     name: CI Summary
+     if: always()
+-    needs: [typecheck, lint, test, test-merge, build, server, audit, docs, e2e, a11y]
++    needs: [typecheck, lint, test, test-merge, build, server, audit, docs, money-integrity, e2e, a11y]
+     runs-on: ubuntu-latest
+     steps:
+       - name: Check results
+@@ -426,6 +453,7 @@ jobs:
+           echo "| Server (tsc + tests) | ${{ needs.server.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| Dependency Audit | ${{ needs.audit.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| Docs & Engine Manifest | ${{ needs.docs.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
++          echo "| Money & Fabrication | ${{ needs.money-integrity.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| E2E Tests | ${{ needs.e2e.result == 'success' && ':white_check_mark: Pass' || (needs.e2e.result == 'skipped' && ':fast_forward: Skipped' || ':x: Fail') }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| A11Y | ${{ needs.a11y.result == 'success' && ':white_check_mark: Pass' || (needs.a11y.result == 'skipped' && ':fast_forward: Skipped' || ':x: A11Y violations (see a11y-report artifact)') }} |" >> $GITHUB_STEP_SUMMARY
+ 
+@@ -437,6 +465,7 @@ jobs:
+              [ "${{ needs.server.result }}" != "success" ] || \
+              [ "${{ needs.audit.result }}" != "success" ] || \
+              [ "${{ needs.docs.result }}" != "success" ] || \
++             [ "${{ needs.money-integrity.result }}" != "success" ] || \
+              [ "${{ needs.build.result }}" != "success" ]; then
+             echo ""
+             echo ":x: **CI FAILED** - One or more required checks did not pass."

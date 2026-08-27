@@ -1,3 +1,7 @@
+// W-FAB remediation (phase0-exit amendment item 3): the "Sales/Labor Hour"
+// card rendered RetailEngine.calculateDashboardStats().salesPerLaborHour,
+// which is hardcoded to 254 in that engine ("Needs operational data"). It is
+// not derivable from the GL and is now a disclosure card instead of a number.
 import { useEffect, useMemo } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
@@ -8,15 +12,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, type Column } from '@/components/ui/DataTable';
-import {
-  Download,
-  Store,
-  ArrowRight,
-  DollarSign,
-  TrendingUp,
-  Users,
-  BarChart3,
-} from 'lucide-react';
+import { Download, Store, ArrowRight, DollarSign, TrendingUp, Users } from 'lucide-react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -43,7 +39,7 @@ function toSectorEntries(entries: readonly GLEntry[]): GLEntry[] {
 
 export default function RetailDashboard() {
   const fmt = useCurrencyFormatter();
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -184,11 +180,19 @@ export default function RetailDashboard() {
           value={formatPercent(dashboardStats.avgNetMargin)}
           icon={<TrendingUp className="h-4 w-4" />}
         />
-        <KPIValue
-          label="Sales/Labor Hour"
-          value={`$${dashboardStats.salesPerLaborHour}`}
-          icon={<BarChart3 className="h-4 w-4" />}
-        />
+        {/* Not derivable from the GL: disclosed instead of rendering the
+            engine's hardcoded salesPerLaborHour placeholder (254). */}
+        <Card className="border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+          <CardContent className="p-4">
+            <div className="text-xs text-[var(--text-secondary)] flex items-center gap-2">
+              Sales per Labor Hour
+            </div>
+            <p className="mt-1 text-xs text-[var(--text-muted)]">
+              Needs hours worked from a payroll/time-clock feed. Previously shown as a fixed
+              placeholder value (254) — omitted rather than estimated.
+            </p>
+          </CardContent>
+        </Card>
         <KPIValue
           label="Active Stores"
           value={String(storeStats.length)}

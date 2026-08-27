@@ -1,5 +1,5 @@
 /**
- * leaseStore — Lease portfolio persistence (GAP-NEW-A).
+ * leaseStore â€” Lease portfolio persistence (GAP-NEW-A).
  *
  * Provides a typed, persisted store for lease inputs. The LeaseDashboard and
  * LeaseDetailPage read from this store (via useLeaseStore) instead of a
@@ -35,70 +35,12 @@ interface LeaseState {
   setLeases: (leases: LeaseInput[]) => void;
 }
 
-/** Seed portfolio (kept so existing dashboard tests that assert engine-computed
- * liability on the real PV path continue to pass). Users can clear/edit it. */
-const SEED_LEASES: LeaseInput[] = [
-  {
-    id: 'L001',
-    property: 'HQ Office - Floor 12',
-    type: 'Finance',
-    payment: 45000,
-    commencementDate: '2026-01-01',
-    leaseTerm: 48,
-    discountRate: 0.06,
-  },
-  {
-    id: 'L002',
-    property: 'Warehouse - East',
-    type: 'Operating',
-    payment: 28000,
-    commencementDate: '2026-01-01',
-    leaseTerm: 36,
-    discountRate: 0.05,
-  },
-  {
-    id: 'L003',
-    property: 'Data Center - North',
-    type: 'Finance',
-    payment: 62000,
-    commencementDate: '2026-01-01',
-    leaseTerm: 60,
-    discountRate: 0.06,
-  },
-  {
-    id: 'L004',
-    property: 'Retail - Downtown',
-    type: 'Operating',
-    payment: 18000,
-    commencementDate: '2026-01-01',
-    leaseTerm: 24,
-    discountRate: 0.05,
-  },
-  {
-    id: 'L005',
-    property: 'Office - West Wing',
-    type: 'Finance',
-    payment: 35000,
-    commencementDate: '2024-01-01',
-    leaseTerm: 24,
-    discountRate: 0.06,
-  },
-  {
-    id: 'L006',
-    property: 'Lab Space - South',
-    type: 'Operating',
-    payment: 52000,
-    commencementDate: '2025-07-01',
-    leaseTerm: 12,
-    discountRate: 0.05,
-  },
-];
-
 export const useLeaseStore = create<LeaseState>()(
   subscribeWithSelector(
     persist(
       immer((set) => ({
-        leases: SEED_LEASES,
+        // K17: no invented leases ship as persisted defaults.
+        leases: [],
 
         addLease: enforce(Permissions.BUDGET_CREATE, 'addLease', (lease: LeaseInput) =>
           set((state) => {
@@ -128,8 +70,19 @@ export const useLeaseStore = create<LeaseState>()(
       {
         name: 'lease-store',
         storage: masterStorage,
-        version: 1,
-        migrate: (state: unknown) => state,
+        // v2 (K17): drop the retired six-lease seed portfolio from any
+        // persisted v1 state; user-entered leases are preserved.
+        version: 2,
+        migrate: (state) => {
+          const s = state as { leases?: Array<Record<string, unknown>> };
+          const seeded = new Set(['L001', 'L002', 'L003', 'L004', 'L005', 'L006']);
+          return {
+            ...s,
+            leases: Array.isArray(s.leases)
+              ? s.leases.filter((l) => !seeded.has(String(l.id)))
+              : [],
+          };
+        },
       }
     )
   )

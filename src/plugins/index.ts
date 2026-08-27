@@ -10,7 +10,7 @@ export type { LoadResult, ValidationResult } from './PluginLoader';
 
 export { createPluginAPI } from './PluginAPI';
 
-export { executeSandboxed } from './PluginSandbox';
+export { executeSandboxed, PluginSandboxViolationError } from './PluginSandbox';
 export type { SandboxOptions } from './PluginSandbox';
 
 export { PluginManager } from './PluginManager';

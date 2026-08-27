@@ -89,10 +89,10 @@ describe('SafeMathParser financial function branch coverage', () => {
   });
 
   describe('IRR (cf1, cf2, …)', () => {
-    it('IRR of a single cashflow is 0 (not enough data)', () => {
-      // cashflows.length < 2 → return 0
+    it('IRR of a single cashflow is NaN (Excel #NUM!: not enough data)', () => {
+      // cashflows.length < 2 → NaN
       const irr = parser.evaluate('IRR(-100)');
-      expect(irr).toBe(0);
+      expect(irr).toBeNaN();
     });
 
     it('IRR of a simple two-cashflow investment is the discount that makes NPV=0', () => {

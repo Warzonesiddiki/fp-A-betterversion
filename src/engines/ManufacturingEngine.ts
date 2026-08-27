@@ -11,9 +11,14 @@
  * MONEY MIGRATION (2026-08-03): revenue, COGS, material/labor/overhead cost
  * and the gross-margin derivation flow through the canonical money primitive
  * (src/utils/money.ts, decimal.js, ROUND_HALF_UP). Amounts round to cents;
- * grossMargin is a percentage rounded to 10 places. OEE and the
- * production-line/trend mocks are operational metrics, not currency. No raw
- * + - * / on currency values remains.
+ * grossMargin is a percentage rounded to 10 places. OEE is a dimensionless
+ * operational metric (0–100). No raw + - * / on currency values remains.
+ *
+ * FABRICATION FIX (2026-08-25, gate-9c wave): the hardcoded production-line
+ * names, sin-hash efficiency/downtime figures and the invented Jan–Jun
+ * output/defect trend were removed. Line identity is now caller-owned
+ * configuration; per-line figures are an even allocation of MEASURED
+ * production cost; the monthly trend is bucketed from GL posting dates.
  */
 import type { GLEntry } from '@/types';
 
@@ -32,18 +37,27 @@ export interface ManufacturingStats {
   oee: number;
 }
 
-export interface ProductionLine {
-  line: string;
-  status: 'Running' | 'Idle' | 'Maintenance';
-  output: number;
-  efficiency: number;
-  downtime: number;
+/** Production line identity supplied by config/master data — never invented here. */
+export interface ProductionLineConfig {
+  readonly name: string;
 }
 
-export interface OutputTrend {
-  month: string;
-  output: number;
-  defects: number;
+/**
+ * Per-line view derived from GL. `costShare` is an even allocation of the
+ * measured production-cost pool across configured lines (a disclosed
+ * modeling assumption). Unit output, efficiency, downtime and status are
+ * NOT derivable from GL and are deliberately absent rather than fabricated.
+ */
+export interface ProductionLine {
+  readonly line: string;
+  readonly costShare: number;
+}
+
+/** One month of measured revenue and production cost, bucketed by posting date. */
+export interface MonthlyProductionPoint {
+  readonly month: string;
+  readonly revenue: number;
+  readonly productionCost: number;
 }
 
 export class ManufacturingEngine {
@@ -131,75 +145,61 @@ export class ManufacturingEngine {
   }
 
   /**
-   * Returns production line statuses derived from GL data.
+   * Returns per-line cost allocation for caller-configured production lines.
+   * With no configured lines this returns an honest empty state — callers
+   * must disclose the absence instead of rendering invented rows.
    */
-  static getProductionLines(entries: GLEntry[]): ProductionLine[] {
+  static getProductionLines(
+    entries: GLEntry[],
+    configs: readonly ProductionLineConfig[] = []
+  ): ProductionLine[] {
+    if (configs.length === 0) return [];
+
     const getAmount = (e: GLEntry): number =>
       e.amount ?? roundTo(subtractMoney(e.debit ?? 0, e.credit ?? 0));
 
-    const totalCost = sumMoney(
-      entries.filter((e) => e.accountCode.startsWith('5')).map((e) => Math.abs(getAmount(e)))
+    const totalCostDec = sumMoney(
+      entries
+        .filter((e) => e.accountCode.startsWith('5') || e.accountCode.startsWith('6'))
+        .map((e) => Math.abs(getAmount(e)))
     );
 
-    const sr = (s: number) => {
-      const x = Math.sin(s * 9301 + 49297) * 49297;
-      return x - Math.floor(x);
-    };
-
-    // Derive line statuses from cost distribution
-    const baseOutput = totalCost.greaterThan(0) ? Math.round(totalCost.div(500).toNumber()) : 10000;
-    return [
-      {
-        line: 'Line A - Assembly',
-        status: 'Running' as const,
-        output: Math.round(baseOutput * 1.2),
-        efficiency: 90 + sr(1) * 8,
-        downtime: 1 + sr(2) * 3,
-      },
-      {
-        line: 'Line B - Packaging',
-        status: 'Running' as const,
-        output: Math.round(baseOutput * 0.9),
-        efficiency: 85 + sr(3) * 10,
-        downtime: 2 + sr(4) * 5,
-      },
-      {
-        line: 'Line C - Welding',
-        status: 'Maintenance' as const,
-        output: 0,
-        efficiency: 0,
-        downtime: 100,
-      },
-      {
-        line: 'Line D - Painting',
-        status: 'Running' as const,
-        output: Math.round(baseOutput * 0.7),
-        efficiency: 88 + sr(5) * 8,
-        downtime: 1 + sr(6) * 4,
-      },
-      {
-        line: 'Line E - QC',
-        status: 'Idle' as const,
-        output: 0,
-        efficiency: 0,
-        downtime: 100,
-      },
-    ];
+    const perLine = roundTo(divideMoney(totalCostDec, configs.length), CURRENCY_PLACES);
+    return configs.map((config) => ({ line: config.name.trim(), costShare: perLine }));
   }
 
   /**
-   * Builds output trend from monthly entries.
+   * Buckets measured revenue and production cost by posting month (YYYY-MM).
+   * Returns an empty trend when no dated entries exist.
    */
-  static getOutputTrend(_entries: GLEntry[]): OutputTrend[] {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    const sr = (s: number) => {
-      const x = Math.sin(s * 9301 + 49297) * 49297;
-      return x - Math.floor(x);
-    };
-    return months.map((m, i) => ({
-      month: m,
-      output: Math.round(25000 + sr(i * 2) * 10000),
-      defects: Math.round(100 + sr(i * 2 + 1) * 80),
-    }));
+  static getMonthlyTrend(entries: GLEntry[]): MonthlyProductionPoint[] {
+    const getAmount = (e: GLEntry): number =>
+      e.amount ?? roundTo(subtractMoney(e.debit ?? 0, e.credit ?? 0));
+
+    const buckets = new Map<string, GLEntry[]>();
+    for (const e of entries) {
+      const month = typeof e.date === 'string' ? e.date.slice(0, 7) : '';
+      if (!month) continue;
+      const bucket = buckets.get(month);
+      if (bucket) bucket.push(e);
+      else buckets.set(month, [e]);
+    }
+
+    return [...buckets.keys()].sort().map((month) => {
+      const monthEntries = buckets.get(month)!;
+      const revenue = sumMoney(
+        monthEntries.filter((e) => e.accountCode.startsWith('4')).map((e) => Math.abs(getAmount(e)))
+      );
+      const productionCost = sumMoney(
+        monthEntries
+          .filter((e) => e.accountCode.startsWith('5') || e.accountCode.startsWith('6'))
+          .map((e) => Math.abs(getAmount(e)))
+      );
+      return {
+        month,
+        revenue: roundTo(revenue, CURRENCY_PLACES),
+        productionCost: roundTo(productionCost, CURRENCY_PLACES),
+      };
+    });
   }
 }

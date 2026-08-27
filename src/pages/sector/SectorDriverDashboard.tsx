@@ -1,10 +1,21 @@
-// @money-ast-allow Reason: this file is the sector-driver dashboard. The
-// flagged `>` comparisons (`(entry.credit ?? 0) > (entry.debit ?? 0)` and
-// `(entry.debit ?? 0) > (entry.credit ?? 0)`) are entry-direction FILTERS
-// used to choose whether a GL entry is revenue (credit-side) or expense
-// (debit-side). They are not money arithmetic; they select which entries
-// flow into the downstream `sumMoney(...)` aggregation in the canonical
-// money primitive. Net amounts are summed exactly.
+// W-FAB-002 part-1 remediation: this model classifies GL entries by account-code
+// prefix first (4 revenue / 5 COGS / 6 OpEx / 1 assets / 2 liabilities / 3 equity)
+// and falls back to account-name keywords — always with SIGNED debit-normal or
+// credit-normal sums. The previous version bucketed by regex over
+// `${code} ${name}` text and aggregated Math.abs magnitudes (absEntryAmount),
+// which counted sales returns and reversed postings as positive activity, and
+// back-filled missing bases with invented constants
+// (assetBase = revenue×2, debtBase = expenses×0.55, productionBase = revenue÷100).
+// Every fabricated constant, the target×factor `filledMetrics` filler, and the
+// regulatory-ratio inventions (CET1, Solvency II 180%) are gone. Ratios whose
+// denominator account class is absent from the ledger are now null-with-
+// disclosure, never estimated. Driver-arithmetic KPIs are returned separately
+// (`simulator`) so the UI can label them as projections instead of measured KPIs.
+
+// @money-ast-allow Reason: the flagged `>` comparisons are entry-direction
+// FILTERS that choose which side of a GL entry flows into a signed
+// `sumMoney(...)` aggregation (credit-normal vs debit-normal classification).
+// They are not money arithmetic; all net amounts are summed exactly.
 
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -13,18 +24,9 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { useGLStore } from '@/store/glStore';
+import { useShallow } from 'zustand/react/shallow';
 import { getSectorConfig, type SectorConfig, type SectorKPI } from '@/config/sectors';
-import {
-  divideMoney,
-  formatMoney,
-  multiplyMoney,
-  percentOf,
-  roundTo,
-  subtractMoney,
-  sumMoney,
-  toDecimal,
-  variancePct,
-} from '@/utils/money';
+import { divideMoney, formatMoney, roundTo, subtractMoney, toDecimal } from '@/utils/money';
 import { formatNumber } from '@/utils/formatters';
 import { formatPercent } from '@/utils/financialFormatting';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -64,9 +66,21 @@ export interface SectorMetricResult {
   label: string;
   format: SectorKPI['format'];
   target: number;
-  value: number;
-  varianceToTargetPct: number;
+  /** null = not derivable from the posted ledger; `note` carries the reason. */
+  value: number | null;
+  note?: string;
+  varianceToTargetPct: number | null;
   lowerIsBetter?: boolean;
+}
+
+/** Driver-slider output. Explicitly a projection, never a measured KPI. */
+export interface SimulatorMetric {
+  id: string;
+  label: string;
+  format: SectorKPI['format'];
+  value: number;
+  /** Declares exactly which driver inputs produce the number. */
+  basis: string;
 }
 
 export interface SectorDriverModelResult {
@@ -76,9 +90,9 @@ export interface SectorDriverModelResult {
   totalExpenses: number;
   grossProfit: number;
   ebitda: number;
-  assetBase: number;
   driverNetImpact: number;
   metrics: SectorMetricResult[];
+  simulator: SimulatorMetric[];
   accountSignals: Array<{ label: string; value: number; format: SectorKPI['format'] }>;
 }
 
@@ -111,84 +125,213 @@ const LEGACY_SECTOR_COPY: Record<SectorDriverId, { title: string; labels: string
 };
 
 function textOf(entry: SectorLedgerEntry): string {
-  return `${entry.accountCode ?? ''} ${entry.accountName ?? ''}`.toLowerCase();
+  return `${entry.accountName ?? ''}`.toLowerCase();
 }
 
-function absEntryAmount(entry: SectorLedgerEntry): Decimal {
-  const debit = toDecimal(entry.debit ?? 0);
-  const credit = toDecimal(entry.credit ?? 0);
-  const netChange =
-    entry.netChange === undefined ? debit.minus(credit) : toDecimal(entry.netChange);
-  const debitCreditMagnitude = debit.minus(credit).abs();
-  return Decimal.max(debitCreditMagnitude, netChange.abs());
+/** Signed credit-normal delta (credit − debit); negative when debited. */
+function creditNormal(entry: SectorLedgerEntry): Decimal {
+  const credit = entry.credit ?? 0;
+  const debit = entry.debit ?? 0;
+  return toDecimal(credit).minus(toDecimal(debit));
 }
 
-function sumBy(
-  entries: readonly SectorLedgerEntry[],
-  matcher: (entry: SectorLedgerEntry) => boolean
-) {
-  return sumMoney(entries.filter(matcher).map(absEntryAmount));
+/** Signed debit-normal delta (debit − credit); negative when credited. */
+function debitNormal(entry: SectorLedgerEntry): Decimal {
+  return creditNormal(entry).negated();
 }
 
-function positiveCredit(entries: readonly SectorLedgerEntry[]) {
-  return sumMoney(
-    entries.filter((entry) => (entry.credit ?? 0) > (entry.debit ?? 0)).map((e) => e.credit ?? 0)
-  );
+interface ClassifiedTotals {
+  revenue: Decimal;
+  cogs: Decimal;
+  opex: Decimal;
+  interestIncome: Decimal;
+  interestExpense: Decimal;
+  premiums: Decimal;
+  claims: Decimal;
+  assets: Decimal | null;
+  liabilities: Decimal | null;
+  equity: Decimal | null;
 }
 
-function positiveDebit(entries: readonly SectorLedgerEntry[]) {
-  return sumMoney(
-    entries.filter((entry) => (entry.debit ?? 0) > (entry.credit ?? 0)).map((e) => e.debit ?? 0)
-  );
-}
+/**
+ * Prefix-first classification (4/5/6 P&L, 1/2/3 balance sheet) with a signed
+ * account-name fallback for rows outside those classes. Entries matching
+ * nothing are counted nowhere — never guessed into a bucket.
+ */
+function classifyEntries(entries: readonly SectorLedgerEntry[]): ClassifiedTotals {
+  let revenue = new Decimal(0);
+  let cogs = new Decimal(0);
+  let opex = new Decimal(0);
+  let interestIncome = new Decimal(0);
+  let interestExpense = new Decimal(0);
+  let premiums = new Decimal(0);
+  let claims = new Decimal(0);
+  let assets = new Decimal(0);
+  let liabilities = new Decimal(0);
+  let equity = new Decimal(0);
+  let sawAsset = false;
+  let sawLiability = false;
+  let sawEquity = false;
 
-function clampDecimal(value: Decimal, min: number, max: number): Decimal {
-  return Decimal.min(max, Decimal.max(min, value));
+  for (const entry of entries) {
+    const code = entry.accountCode ?? '';
+    const firstChar = code.charAt(0);
+    switch (firstChar) {
+      case '4':
+        revenue = revenue.plus(creditNormal(entry));
+        if (/premium|policy/.test(textOf(entry))) premiums = premiums.plus(creditNormal(entry));
+        if (/interest income/.test(textOf(entry)))
+          interestIncome = interestIncome.plus(creditNormal(entry));
+        continue;
+      case '5': {
+        const debit = debitNormal(entry);
+        cogs = cogs.plus(debit);
+        // Insurers post incurred claims in COGS-class accounts; keep a
+        // claims-specific view for the insurance ratios. Claims stay inside
+        // COGS/totalExpenses (they ARE insurer cost of goods) — the ratio
+        // math below never adds them twice.
+        if (/claim|benefit paid|incurred loss/.test(textOf(entry))) {
+          claims = claims.plus(debit);
+        }
+        continue;
+      }
+      case '6':
+        opex = opex.plus(debitNormal(entry));
+        if (/interest expense|cost of funds/.test(textOf(entry)))
+          interestExpense = interestExpense.plus(debitNormal(entry));
+        continue;
+      case '1':
+        assets = assets.plus(debitNormal(entry));
+        sawAsset = true;
+        continue;
+      case '2':
+        liabilities = liabilities.plus(creditNormal(entry));
+        sawLiability = true;
+        continue;
+      case '3':
+        equity = equity.plus(creditNormal(entry));
+        sawEquity = true;
+        continue;
+      default:
+        break;
+    }
+
+    // Name-keyword fallback (still signed) for unclassed rows.
+    const name = textOf(entry);
+    if (/premium|written premium|gwp/.test(name)) {
+      premiums = premiums.plus(creditNormal(entry));
+      continue;
+    }
+    if (/claim|benefit paid|incurred loss/.test(name)) {
+      claims = claims.plus(debitNormal(entry));
+      continue;
+    }
+    if (/interest income|loan income|yield on/.test(name)) {
+      interestIncome = interestIncome.plus(creditNormal(entry));
+      continue;
+    }
+    if (/interest expense|cost of funds|deposit cost/.test(name)) {
+      interestExpense = interestExpense.plus(debitNormal(entry));
+      continue;
+    }
+    if (/revenue|sales|subscription|tuition|grant|rent|lease income/.test(name)) {
+      revenue = revenue.plus(creditNormal(entry));
+      continue;
+    }
+    if (/cogs|cost of goods|cost of sales/.test(name)) {
+      cogs = cogs.plus(debitNormal(entry));
+      continue;
+    }
+    if (/expense|payroll|salary|opex|maintenance|depreciation/.test(name)) {
+      opex = opex.plus(debitNormal(entry));
+    }
+  }
+
+  return {
+    revenue,
+    cogs,
+    opex,
+    interestIncome,
+    interestExpense,
+    premiums,
+    claims,
+    assets: sawAsset ? assets : null,
+    liabilities: sawLiability ? liabilities : null,
+    equity: sawEquity ? equity : null,
+  };
 }
 
 function ratioPct(
   numerator: Decimal | number | string,
-  denominator: Decimal | number | string,
-  fallback = 0
+  denominator: Decimal | number | string
 ): Decimal {
-  const d = toDecimal(denominator);
-  if (d.isZero()) return toDecimal(fallback);
-  return divideMoney(numerator, d).times(100);
+  return divideMoney(numerator, toDecimal(denominator)).times(100);
 }
 
 function ratio(
   numerator: Decimal | number | string,
-  denominator: Decimal | number | string,
-  fallback = 0
+  denominator: Decimal | number | string
 ): Decimal {
-  const d = toDecimal(denominator);
-  if (d.isZero()) return toDecimal(fallback);
-  return divideMoney(numerator, d);
+  return divideMoney(numerator, toDecimal(denominator));
 }
 
 function targetVariance(value: Decimal, target: number, lowerIsBetter?: boolean): number {
   if (target === 0) return 0;
-  const variance = roundTo(variancePct(value, Math.abs(target)), 2);
-  return lowerIsBetter ? -variance : variance;
+  const magnitude = target < 0 ? -target : target;
+  const variancePctValue = ratioPct(value, magnitude).toNumber();
+  const rounded = roundTo(variancePctValue, 2);
+  return lowerIsBetter ? -rounded : rounded;
 }
 
-function pushMetric(
+function pushDerived(
   metrics: SectorMetricResult[],
   config: SectorConfig,
   id: string,
-  value: Decimal,
-  fallback?: { label: string; format: SectorKPI['format']; target: number; lowerIsBetter?: boolean }
+  value: Decimal | null,
+  options?: {
+    label?: string;
+    note?: string;
+    format?: SectorKPI['format'];
+    target?: number;
+    lowerIsBetter?: boolean;
+  }
 ) {
-  const kpi = config.defaultKPIs.find((item) => item.id === id) ?? fallback;
-  if (!kpi) return;
+  const kpi = config.defaultKPIs.find((item) => item.id === id);
+  const label = options?.label ?? kpi?.label ?? id;
+  const format = options?.format ?? kpi?.format ?? 'number';
+  const target = options?.target ?? kpi?.target ?? 0;
+  const lowerIsBetter = options?.lowerIsBetter ?? kpi?.lowerIsBetter;
+  const resolved = value === null ? null : roundTo(value, 2);
   metrics.push({
     id,
-    label: kpi.label,
-    format: kpi.format,
-    target: kpi.target,
-    value: roundTo(value, kpi.format === 'currency' ? 2 : 2),
-    varianceToTargetPct: targetVariance(value, kpi.target, kpi.lowerIsBetter),
-    lowerIsBetter: kpi.lowerIsBetter,
+    label,
+    format,
+    target,
+    value: resolved,
+    note:
+      options?.note ?? (resolved === null ? 'Not derivable from the posted ledger.' : undefined),
+    varianceToTargetPct:
+      resolved === null || target === 0
+        ? null
+        : targetVariance(toDecimal(resolved), target, lowerIsBetter),
+    lowerIsBetter,
+  });
+}
+
+function pushSimulator(
+  simulator: SimulatorMetric[],
+  id: string,
+  label: string,
+  value: Decimal | number,
+  format: SectorKPI['format'],
+  basis: string
+) {
+  simulator.push({
+    id,
+    label,
+    format,
+    value: roundTo(value instanceof Decimal ? value : toDecimal(value), 2),
+    basis,
   });
 }
 
@@ -200,40 +343,15 @@ export function computeSectorDriverModel(params: {
 }): SectorDriverModelResult {
   const { sectorId, config, entries } = params;
   const drivers = { ...DEFAULT_DRIVERS, ...params.drivers };
-  const revenueTagged = sumBy(entries, (entry) =>
-    /revenue|sales|subscription|tuition|grant|rent|lease|interest income|premium/.test(
-      textOf(entry)
-    )
-  );
-  const expenseTagged = sumBy(entries, (entry) =>
-    /expense|cost|cogs|payroll|salary|opex|fuel|claims|maintenance|depreciation|interest expense/.test(
-      textOf(entry)
-    )
-  );
-  const assetTagged = sumBy(entries, (entry) =>
-    /asset|cash|inventory|property|equipment|loan|receivable|plant|reserve/.test(textOf(entry))
-  );
-  const debtTagged = sumBy(entries, (entry) =>
-    /debt|liabil|deposit|payable|borrowing|loan payable/.test(textOf(entry))
-  );
-  const equityTagged = sumBy(entries, (entry) => /equity|capital|retained/.test(textOf(entry)));
-  const productionTagged = sumBy(entries, (entry) =>
-    /production|throughput|shipment|patient|student|citizen|mile|bed|store|unit/.test(textOf(entry))
-  );
+  const cls = classifyEntries(entries);
 
-  const totalRevenue = revenueTagged.isZero() ? positiveCredit(entries) : revenueTagged;
-  const totalExpenses = expenseTagged.isZero() ? positiveDebit(entries) : expenseTagged;
-  const assetBase = assetTagged.isZero()
-    ? Decimal.max(totalRevenue.times(2), totalExpenses)
-    : assetTagged;
-  const debtBase = debtTagged.isZero() ? totalExpenses.times(0.55) : debtTagged;
-  const equityBase = equityTagged.isZero()
-    ? Decimal.max(assetBase.minus(debtBase), totalRevenue.times(0.35))
-    : equityTagged;
-  const productionBase = productionTagged.isZero()
-    ? Decimal.max(totalRevenue.div(100), 1)
-    : productionTagged;
+  const totalRevenue = cls.revenue;
+  const totalExpenses = cls.cogs.plus(cls.opex);
+  const actualGrossProfit = totalRevenue.minus(cls.cogs);
+  const actualOperatingProfit = totalRevenue.minus(totalExpenses);
 
+  // Simulator aggregates (projections driven by user sliders — labeled as such
+  // everywhere they render). They never feed a "measured" KPI.
   const growthFactor = toDecimal(1).plus(toDecimal(drivers.growthPct).div(100));
   const efficiencyFactor = toDecimal(drivers.efficiencyPct).div(100);
   const capacityFactor = toDecimal(drivers.capacityPct).div(100);
@@ -242,348 +360,463 @@ export function computeSectorDriverModel(params: {
   const modeledExpenses = totalExpenses
     .times(toDecimal(2).minus(efficiencyFactor))
     .times(toDecimal(1).plus(riskFactor.div(2)));
-  const grossProfit = modeledRevenue.minus(modelledCogs(totalExpenses, efficiencyFactor));
-  const ebitda = modeledRevenue.minus(modeledExpenses);
-  const driverNetImpact = subtractMoney(ebitda, subtractMoney(totalRevenue, totalExpenses));
+  const modeledEbitda = modeledRevenue.minus(modeledExpenses);
+  const driverNetImpact = subtractMoney(modeledEbitda, subtractMoney(totalRevenue, totalExpenses));
+
   const metrics: SectorMetricResult[] = [];
+  const simulator: SimulatorMetric[] = [];
+
+  // Shared derived metric: gross margin % (needs a posted COGS class).
+  const grossMarginPct =
+    totalRevenue.isZero() || cls.cogs.isZero() ? null : ratioPct(actualGrossProfit, totalRevenue);
 
   switch (sectorId) {
     case 'technology': {
-      const arr = modeledRevenue.times(12);
-      const nrr = clampDecimal(
-        toDecimal(100)
-          .plus(drivers.growthPct)
-          .minus(drivers.riskPct / 2),
-        0,
-        200
+      pushDerived(metrics, config, 'gross_margin', grossMarginPct, {
+        note: cls.cogs.isZero() ? 'No COGS-class accounts (prefix 5) posted.' : undefined,
+      });
+      pushSimulator(
+        simulator,
+        'nrr',
+        'Net Revenue Retention',
+        clampDecimal(
+          toDecimal(100)
+            .plus(drivers.growthPct)
+            .minus(drivers.riskPct / 2),
+          0,
+          200
+        ),
+        'percent',
+        '100% + growth − risk ÷ 2'
       );
-      const churn = clampDecimal(
-        toDecimal(drivers.riskPct)
-          .times(0.72)
-          .plus(toDecimal(100).minus(drivers.efficiencyPct).times(0.08)),
-        0,
-        100
+      pushSimulator(
+        simulator,
+        'churn',
+        'Logo Churn Rate',
+        clampDecimal(
+          toDecimal(drivers.riskPct)
+            .times(0.72)
+            .plus(toDecimal(100).minus(drivers.efficiencyPct).times(0.08)),
+          0,
+          100
+        ),
+        'percent',
+        '0.72×risk + 0.08×(100 − efficiency)'
       );
-      const grossMargin = ratioPct(grossProfit, modeledRevenue);
-      const quickRatio = ratio(
-        growthFactor.plus(efficiencyFactor),
-        Decimal.max(riskFactor.times(4), 0.01)
-      );
-      pushMetric(metrics, config, 'arr', arr);
-      pushMetric(metrics, config, 'nrr', nrr);
-      pushMetric(metrics, config, 'churn', churn);
-      pushMetric(metrics, config, 'quick_ratio', quickRatio);
-      pushMetric(metrics, config, 'gross_margin', grossMargin);
       break;
     }
     case 'manufacturing': {
-      const availability = capacityFactor.times(100);
-      const performance = efficiencyFactor.times(100);
+      const inventoryTurnover =
+        cls.assets === null || cls.assets.isZero() ? null : ratio(cls.cogs, cls.assets);
+      pushDerived(metrics, config, 'inventory_turnover', inventoryTurnover, {
+        note:
+          inventoryTurnover === null
+            ? 'Needs inventory balances in asset-class accounts (prefix 1).'
+            : undefined,
+      });
+      pushDerived(metrics, config, 'gross_margin', grossMarginPct, {
+        note: cls.cogs.isZero() ? 'No COGS-class accounts (prefix 5) posted.' : undefined,
+      });
       const quality = toDecimal(100).minus(riskFactor.times(100).times(0.6));
-      const oee = availability.times(performance).times(quality).div(10000);
-      pushMetric(metrics, config, 'oee', oee);
-      pushMetric(metrics, config, 'scrap_rate', riskFactor.times(100).times(0.6));
-      pushMetric(
-        metrics,
-        config,
-        'inventory_turnover',
-        ratio(modeledExpenses, Decimal.max(assetBase.times(0.22), 1))
+      pushSimulator(
+        simulator,
+        'oee',
+        'Overall Equipment Effectiveness',
+        capacityFactor.times(efficiencyFactor).times(quality).div(100),
+        'percent',
+        'availability × performance × quality (driver sliders)'
       );
-      pushMetric(metrics, config, 'unit_cost', ratio(modeledExpenses, productionBase));
-      pushMetric(metrics, config, 'yield_rate', quality);
+      pushSimulator(
+        simulator,
+        'scrap_rate',
+        'Scrap Rate',
+        riskFactor.times(100).times(0.6),
+        'percent',
+        '0.6×risk'
+      );
+      pushSimulator(simulator, 'yield_rate', 'Yield Rate', quality, 'percent', '100% − 0.6×risk');
       break;
     }
     case 'banking': {
-      const interestIncome = sumBy(entries, (entry) =>
-        /interest income|loan income|yield/.test(textOf(entry))
-      );
-      const interestExpense = sumBy(entries, (entry) =>
-        /interest expense|deposit cost|cost of funds/.test(textOf(entry))
-      );
-      const netInterest = (
-        interestIncome.isZero() ? totalRevenue.times(0.62) : interestIncome
-      ).minus(interestExpense);
-      pushMetric(metrics, config, 'nim', ratioPct(netInterest, Decimal.max(assetBase, 1)));
-      pushMetric(
-        metrics,
-        config,
-        'cet1',
-        ratioPct(equityBase.times(efficiencyFactor), Decimal.max(assetBase.times(0.72), 1))
-      );
-      pushMetric(metrics, config, 'npl_ratio', riskFactor.times(100).times(0.4));
-      pushMetric(
-        metrics,
-        config,
-        'efficiency_ratio',
-        ratioPct(modeledExpenses, Decimal.max(modeledRevenue, 1))
-      );
-      pushMetric(
-        metrics,
-        config,
-        'loan_deposit_ratio',
-        ratioPct(assetBase.times(0.68), Decimal.max(debtBase, 1))
-      );
+      const nim =
+        cls.assets === null ||
+        cls.assets.isZero() ||
+        (cls.interestIncome.isZero() && cls.interestExpense.isZero())
+          ? null
+          : ratioPct(cls.interestIncome.minus(cls.interestExpense), cls.assets);
+      pushDerived(metrics, config, 'nim', nim, {
+        note:
+          nim === null
+            ? 'Needs interest income/expense accounts and asset-class balances.'
+            : undefined,
+      });
+      const efficiencyRatio = totalRevenue.isZero() ? null : ratioPct(totalExpenses, totalRevenue);
+      pushDerived(metrics, config, 'efficiency_ratio', efficiencyRatio, {
+        note: efficiencyRatio === null ? 'No revenue-class accounts (prefix 4) posted.' : undefined,
+        lowerIsBetter: true,
+      });
+      // Removed as fabrications (W-FAB-002): cet1 (equity×eff)/(assets×0.72),
+      // npl_ratio = risk×40, loan_deposit_ratio = assets×0.68/debt — none has
+      // an accounting identity on this ledger.
       break;
     }
     case 'retail': {
-      const transactions = Decimal.max(productionBase, 1);
-      pushMetric(metrics, config, 'sss', toDecimal(drivers.growthPct).times(capacityFactor));
-      pushMetric(
-        metrics,
-        config,
+      const inventoryTurnover =
+        cls.assets === null || cls.assets.isZero() ? null : ratio(cls.cogs, cls.assets);
+      pushDerived(metrics, config, 'inventory_turnover', inventoryTurnover, {
+        note:
+          inventoryTurnover === null
+            ? 'Needs inventory balances in asset-class accounts (prefix 1).'
+            : undefined,
+      });
+      pushDerived(metrics, config, 'gross_margin', grossMarginPct, {
+        note: cls.cogs.isZero() ? 'No COGS-class accounts (prefix 5) posted.' : undefined,
+      });
+      pushSimulator(
+        simulator,
+        'sss',
+        'Same-Store Sales Growth',
+        toDecimal(drivers.growthPct).times(capacityFactor),
+        'percent',
+        'growth × capacity'
+      );
+      pushSimulator(
+        simulator,
         'conversion_rate',
-        clampDecimal(efficiencyFactor.times(4.2).minus(riskFactor.times(2)), 0, 100)
-      );
-      pushMetric(metrics, config, 'atv', ratio(modeledRevenue, transactions));
-      pushMetric(
-        metrics,
-        config,
-        'gmroi',
-        ratio(grossProfit, Decimal.max(assetBase.times(0.28), 1))
-      );
-      pushMetric(
-        metrics,
-        config,
-        'inventory_turnover',
-        ratio(modeledExpenses, Decimal.max(assetBase.times(0.32), 1))
+        'Conversion Rate',
+        clampDecimal(efficiencyFactor.times(4.2).minus(riskFactor.times(2)), 0, 100),
+        'percent',
+        '4.2×efficiency − 2×risk'
       );
       break;
     }
     case 'energy': {
-      const productionVolume = productionBase.times(capacityFactor);
-      pushMetric(metrics, config, 'production_volume', productionVolume);
-      pushMetric(metrics, config, 'boe_per_day', productionVolume);
-      pushMetric(
-        metrics,
-        config,
-        'lifting_cost',
-        ratio(modeledExpenses, Decimal.max(productionVolume, 1))
+      pushDerived(metrics, config, 'gross_margin', grossMarginPct, {
+        note: cls.cogs.isZero() ? 'No COGS-class accounts (prefix 5) posted.' : undefined,
+      });
+      pushSimulator(
+        simulator,
+        'availability_factor',
+        'Availability Factor',
+        capacityFactor.times(100),
+        'percent',
+        'capacity slider passthrough'
       );
-      pushMetric(
-        metrics,
-        config,
-        'carbon_intensity',
-        riskFactor.times(240).plus(toDecimal(100).minus(drivers.efficiencyPct).times(0.35))
+      pushSimulator(
+        simulator,
+        'renewable_mix',
+        'Renewable Energy Mix',
+        efficiencyFactor.times(45),
+        'percent',
+        '45×efficiency'
       );
-      pushMetric(metrics, config, 'availability_factor', capacityFactor.times(100));
-      pushMetric(metrics, config, 'renewable_mix', efficiencyFactor.times(45));
+      // Removed as fabrications: production_volume / boe_per_day (revenue÷100
+      // invented base), lifting_cost (needs production counts), carbon_intensity
+      // (240/0.35 constants).
       break;
     }
     case 'construction': {
-      const backlog = modeledRevenue.times(toDecimal(1).plus(riskFactor));
-      pushMetric(metrics, config, 'backlog', backlog);
-      pushMetric(metrics, config, 'completion_percent', capacityFactor.times(100));
-      pushMetric(
-        metrics,
-        config,
-        'gross_margin_per_project',
-        ratioPct(grossProfit, modeledRevenue)
+      pushDerived(metrics, config, 'gross_margin', grossMarginPct, {
+        label: 'Gross Margin (all projects)',
+        note: cls.cogs.isZero() ? 'No COGS-class accounts (prefix 5) posted.' : undefined,
+      });
+      pushSimulator(
+        simulator,
+        'completion_percent',
+        'Avg Project Completion',
+        capacityFactor.times(100),
+        'percent',
+        'capacity slider passthrough'
       );
-      pushMetric(metrics, config, 'change_order_ratio', riskFactor.times(100).times(1.4));
-      pushMetric(metrics, config, 'utilization', efficiencyFactor.times(100));
-      pushMetric(
-        metrics,
-        config,
-        'wip',
-        percentOf(backlog, toDecimal(100).minus(drivers.capacityPct))
+      pushSimulator(
+        simulator,
+        'change_order_ratio',
+        'Change Order Ratio',
+        riskFactor.times(100).times(1.4),
+        'percent',
+        '1.4×risk'
       );
+      pushSimulator(
+        simulator,
+        'utilization',
+        'Equipment Utilization',
+        efficiencyFactor.times(100),
+        'percent',
+        'efficiency slider passthrough'
+      );
+      // Removed as fabrications: backlog (revenue×(1+risk)), wip
+      // (backlog×unallocated-capacity) — no project dimension exists in GL.
       break;
     }
     case 'logistics': {
-      const miles = Decimal.max(productionBase, 1);
-      pushMetric(metrics, config, 'cost_per_mile', ratio(modeledExpenses, miles));
-      pushMetric(
-        metrics,
-        config,
+      pushDerived(metrics, config, 'gross_margin', grossMarginPct, {
+        note: cls.cogs.isZero() ? 'No COGS-class accounts (prefix 5) posted.' : undefined,
+      });
+      pushSimulator(
+        simulator,
         'on_time_delivery',
-        clampDecimal(efficiencyFactor.times(100).minus(riskFactor.times(100).times(0.5)), 0, 100)
+        'On-Time Delivery Rate',
+        clampDecimal(efficiencyFactor.times(100).minus(riskFactor.times(50)), 0, 100),
+        'percent',
+        'efficiency − risk ÷ 2'
       );
-      pushMetric(metrics, config, 'fleet_utilization', capacityFactor.times(100));
-      pushMetric(
-        metrics,
-        config,
-        'warehousing_cost_pct',
-        ratioPct(modeledExpenses.times(0.22), modeledRevenue)
+      pushSimulator(
+        simulator,
+        'fleet_utilization',
+        'Fleet Utilization Rate',
+        capacityFactor.times(100),
+        'percent',
+        'capacity slider passthrough'
       );
-      pushMetric(
-        metrics,
-        config,
+      pushSimulator(
+        simulator,
         'empty_miles_pct',
-        toDecimal(100).minus(drivers.capacityPct).times(0.55)
+        'Empty Miles',
+        toDecimal(100).minus(drivers.capacityPct).times(0.55),
+        'percent',
+        '(100 − capacity) × 0.55'
       );
+      // Removed as fabrications: cost_per_mile ("miles" = revenue÷100),
+      // warehousing_cost_pct (expenses×0.22 slice).
       break;
     }
     case 'healthcare': {
-      const patientVolume = Decimal.max(productionBase, 1);
-      pushMetric(metrics, config, 'occupancy', capacityFactor.times(100));
-      pushMetric(metrics, config, 'denial_rate', riskFactor.times(100).times(0.55));
-      pushMetric(
-        metrics,
-        config,
-        'ar_days',
-        toDecimal(45).times(toDecimal(2).minus(efficiencyFactor))
+      const operatingMargin = totalRevenue.isZero()
+        ? null
+        : ratioPct(actualOperatingProfit, totalRevenue);
+      pushDerived(metrics, config, 'ebitdar', operatingMargin, {
+        label: 'Operating Margin (EBITDA)',
+        note:
+          operatingMargin === null
+            ? 'No revenue-class accounts (prefix 4) posted.'
+            : 'Rent addback is not derivable; reported as EBITDA margin, not EBITDAR.',
+      });
+      pushSimulator(
+        simulator,
+        'occupancy',
+        'Bed Occupancy Rate',
+        capacityFactor.times(100),
+        'percent',
+        'capacity slider passthrough'
       );
-      pushMetric(metrics, config, 'ebitdar', ratioPct(ebitda, modeledRevenue));
-      pushMetric(metrics, config, 'readmission_rate', riskFactor.times(100).times(1.2));
-      pushMetric(
-        metrics,
-        config,
-        'case_mix_index',
-        ratio(modeledRevenue, patientVolume.times(10000), 1)
+      pushSimulator(
+        simulator,
+        'denial_rate',
+        'Claim Denial Rate',
+        riskFactor.times(100).times(0.55),
+        'percent',
+        '0.55×risk'
       );
+      pushSimulator(
+        simulator,
+        'readmission_rate',
+        'Readmission Rate',
+        riskFactor.times(100).times(1.2),
+        'percent',
+        '1.2×risk'
+      );
+      // Removed as fabrications: ar_days (45-day constant anchor),
+      // case_mix_index (revenue÷patients÷10000 magic normalizer).
       break;
     }
     case 'government': {
-      pushMetric(metrics, config, 'budget_utilization', capacityFactor.times(100));
-      pushMetric(metrics, config, 'service_efficiency', efficiencyFactor.times(10));
-      pushMetric(
-        metrics,
-        config,
+      pushDerived(metrics, config, 'gross_margin', grossMarginPct, {
+        label: 'Operating Margin',
+        note:
+          cls.cogs.isZero() && cls.opex.isZero() ? 'No expense-class accounts posted.' : undefined,
+      });
+      pushSimulator(
+        simulator,
+        'budget_utilization',
+        'Budget Utilization',
+        capacityFactor.times(100),
+        'percent',
+        'capacity slider passthrough'
+      );
+      pushSimulator(
+        simulator,
+        'service_efficiency',
+        'Service Efficiency Score',
+        efficiencyFactor.times(10),
+        'number',
+        '10×efficiency'
+      );
+      pushSimulator(
+        simulator,
         'grant_disbursement_rate',
-        growthFactor.times(capacityFactor).times(82)
+        'Grant Disbursement Rate',
+        growthFactor.times(capacityFactor).times(82),
+        'percent',
+        '82×growth×capacity'
       );
-      pushMetric(
-        metrics,
-        config,
+      pushSimulator(
+        simulator,
         'compliance_audit_score',
-        toDecimal(100).minus(riskFactor.times(100).times(0.4))
+        'Compliance Audit Score',
+        toDecimal(100).minus(riskFactor.times(40)),
+        'percent',
+        '100% − 0.4×risk'
       );
-      pushMetric(
-        metrics,
-        config,
-        'cost_per_citizen',
-        ratio(modeledExpenses, Decimal.max(productionBase, 1))
-      );
-      pushMetric(metrics, config, 'revenue_collection_gap', riskFactor.times(100).times(0.5));
+      // Removed as fabrications: cost_per_citizen (citizens = revenue÷100),
+      // revenue_collection_gap (risk×50).
       break;
     }
     case 'education': {
-      const students = Decimal.max(productionBase, 1);
-      pushMetric(
-        metrics,
-        config,
+      pushDerived(metrics, config, 'gross_margin', grossMarginPct, {
+        label: 'Operating Margin',
+        note:
+          cls.cogs.isZero() && cls.opex.isZero() ? 'No expense-class accounts posted.' : undefined,
+      });
+      pushSimulator(
+        simulator,
         'student_retention_rate',
-        clampDecimal(efficiencyFactor.times(100).minus(riskFactor.times(25)), 0, 100)
+        'Student Retention Rate',
+        clampDecimal(efficiencyFactor.times(100).minus(riskFactor.times(25)), 0, 100),
+        'percent',
+        'efficiency − 25×risk'
       );
-      pushMetric(metrics, config, 'revenue_per_student', ratio(modeledRevenue, students));
-      pushMetric(
-        metrics,
-        config,
-        'faculty_to_student_ratio',
-        ratio(students, Decimal.max(modeledExpenses.div(90000), 1))
-      );
-      pushMetric(
-        metrics,
-        config,
+      pushSimulator(
+        simulator,
         'research_grant_win_rate',
-        growthFactor.times(efficiencyFactor).times(24)
+        'Research Grant Win Rate',
+        growthFactor.times(efficiencyFactor).times(24),
+        'percent',
+        '24×growth×efficiency'
       );
-      pushMetric(
-        metrics,
-        config,
+      pushSimulator(
+        simulator,
         'endowment_growth_rate',
-        toDecimal(drivers.growthPct).times(0.85)
+        'Endowment Growth Rate',
+        toDecimal(drivers.growthPct).times(0.85),
+        'percent',
+        '0.85×growth'
       );
+      // Removed as fabrications: revenue_per_student (students = revenue÷100,
+      // ≈100 by construction), faculty_to_student_ratio (salary = 90000 guess).
       break;
     }
     case 'insurance': {
-      // GL-driven premium / claims / expense signals with exact money.
-      const grossPremiums = sumBy(entries, (entry) =>
-        /premium|gwp|written premium|revenue|policy/.test(textOf(entry))
-      );
-      const claimsIncurred = sumBy(entries, (entry) =>
-        /claim|loss|benefit paid|reserve/.test(textOf(entry))
-      );
-      const premiumBase = grossPremiums.isZero() ? totalRevenue : grossPremiums;
-      const claimsBase = claimsIncurred.isZero()
-        ? modeledExpenses.times(0.62)
-        : claimsIncurred.times(toDecimal(1).plus(riskFactor));
-      const expenseBase = modeledExpenses.minus(claimsBase);
-      const lossRatio = ratioPct(claimsBase, Decimal.max(premiumBase, 1));
-      const expenseRatio = ratioPct(expenseBase, Decimal.max(premiumBase, 1));
-      const combinedRatio = lossRatio.plus(expenseRatio);
-      pushMetric(metrics, config, 'combined_ratio', combinedRatio);
-      pushMetric(metrics, config, 'loss_ratio', lossRatio);
-      pushMetric(metrics, config, 'expense_ratio', expenseRatio);
-      pushMetric(
+      const premiumBase = cls.premiums;
+      const claimsBase = cls.claims;
+      const lossRatio =
+        premiumBase.isZero() || claimsBase.isZero() ? null : ratioPct(claimsBase, premiumBase);
+      const expenseRatio =
+        premiumBase.isZero() || cls.opex.isZero() ? null : ratioPct(cls.opex, premiumBase);
+      pushDerived(metrics, config, 'loss_ratio', lossRatio, {
+        note:
+          lossRatio === null
+            ? 'Needs premium-class and claim-class accounts (or prefix 5 claim rows).'
+            : undefined,
+        lowerIsBetter: true,
+      });
+      pushDerived(metrics, config, 'expense_ratio', expenseRatio, {
+        note:
+          expenseRatio === null
+            ? 'Needs premium-class accounts (prefix 4) and OpEx (prefix 6).'
+            : undefined,
+        lowerIsBetter: true,
+      });
+      pushDerived(
         metrics,
         config,
-        'gwp',
-        modeledRevenue.plus(multiplyMoney(modeledRevenue, riskFactor.times(0.1)))
+        'combined_ratio',
+        lossRatio !== null && expenseRatio !== null ? lossRatio.plus(expenseRatio) : null,
+        { lowerIsBetter: true }
       );
-      pushMetric(
-        metrics,
-        config,
-        'retention_ratio',
-        clampDecimal(toDecimal(100).minus(riskFactor.times(100).times(0.3)), 0, 100)
-      );
-      pushMetric(
-        metrics,
-        config,
-        'solvency_ratio',
-        toDecimal(180).times(toDecimal(2).minus(efficiencyFactor).plus(riskFactor))
-      );
+      pushDerived(metrics, config, 'gwp', premiumBase.isZero() ? null : premiumBase, {
+        note: premiumBase.isZero()
+          ? 'No premium-class accounts (prefix 4 or name match) posted.'
+          : undefined,
+      });
+      // Removed as fabrications: retention_ratio (100−risk×30), solvency_ratio
+      // (constant 180 anchor), and the claims = expenses×0.62 fallback.
       break;
     }
     case 'realestate':
     default: {
-      const noi = modeledRevenue.minus(modeledExpenses.times(0.72));
-      const portfolioValue = Decimal.max(assetBase, noi.times(16));
-      pushMetric(metrics, config, 'noi', noi);
-      pushMetric(metrics, config, 'cap_rate', ratioPct(noi, portfolioValue));
-      pushMetric(metrics, config, 'occupancy', capacityFactor.times(100));
-      pushMetric(metrics, config, 'ltv', ratioPct(debtBase, portfolioValue));
-      pushMetric(metrics, config, 'ffo', noi.minus(modeledExpenses.times(0.08)));
-      pushMetric(metrics, config, 'dscr', ratio(noi, Decimal.max(debtBase.times(0.08), 1)));
+      const noi = totalRevenue.isZero() ? null : actualOperatingProfit;
+      pushDerived(metrics, config, 'noi', noi, {
+        label: 'Net Operating Income (posted)',
+        note: noi === null ? 'No revenue-class accounts (prefix 4) posted.' : undefined,
+      });
+      const capRate =
+        noi === null || cls.assets === null || cls.assets.isZero()
+          ? null
+          : ratioPct(noi, cls.assets);
+      pushDerived(metrics, config, 'cap_rate', capRate, {
+        note:
+          capRate === null
+            ? 'Needs NOI and asset-class balances (prefix 1); portfolio value is not invented.'
+            : undefined,
+      });
+      const ltv =
+        cls.liabilities === null || cls.assets === null || cls.assets.isZero()
+          ? null
+          : ratioPct(cls.liabilities, cls.assets);
+      pushDerived(metrics, config, 'ltv', ltv, {
+        label: 'Loan to Value (book basis)',
+        note:
+          ltv === null ? 'Needs liability (prefix 2) and asset (prefix 1) balances.' : undefined,
+        lowerIsBetter: true,
+      });
+      pushSimulator(
+        simulator,
+        'occupancy',
+        'Portfolio Occupancy',
+        capacityFactor.times(100),
+        'percent',
+        'capacity slider passthrough'
+      );
+      // Removed as fabrications: ffo (NOI − expenses×0.08), dscr
+      // (NOI ÷ debt×0.08), circular cap rate (NOI×16 portfolio).
       break;
     }
   }
 
-  const filledMetrics =
-    metrics.length >= 5
-      ? metrics
-      : config.defaultKPIs.slice(0, 5).map((kpi) => ({
-          id: kpi.id,
-          label: kpi.label,
-          format: kpi.format,
-          target: kpi.target,
-          value: roundTo(multiplyMoney(kpi.target, growthFactor).times(efficiencyFactor), 2),
-          varianceToTargetPct: targetVariance(
-            multiplyMoney(kpi.target, growthFactor).times(efficiencyFactor),
-            kpi.target,
-            kpi.lowerIsBetter
-          ),
-          lowerIsBetter: kpi.lowerIsBetter,
-        }));
+  const accountSignals: Array<{ label: string; value: number; format: SectorKPI['format'] }> = [
+    { label: 'Revenue (classified)', value: roundTo(totalRevenue, 2), format: 'currency' },
+    { label: 'COGS (classified)', value: roundTo(cls.cogs, 2), format: 'currency' },
+    { label: 'Operating expenses (classified)', value: roundTo(cls.opex, 2), format: 'currency' },
+  ];
+  if (cls.assets !== null)
+    accountSignals.push({
+      label: 'Assets (classified)',
+      value: roundTo(cls.assets, 2),
+      format: 'currency',
+    });
+  if (cls.liabilities !== null)
+    accountSignals.push({
+      label: 'Liabilities (classified)',
+      value: roundTo(cls.liabilities, 2),
+      format: 'currency',
+    });
+  if (cls.equity !== null)
+    accountSignals.push({
+      label: 'Equity (classified)',
+      value: roundTo(cls.equity, 2),
+      format: 'currency',
+    });
 
   return {
     sectorId,
     totalRevenue: roundTo(totalRevenue, 2),
     modeledRevenue: roundTo(modeledRevenue, 2),
     totalExpenses: roundTo(totalExpenses, 2),
-    grossProfit: roundTo(grossProfit, 2),
-    ebitda: roundTo(ebitda, 2),
-    assetBase: roundTo(assetBase, 2),
+    grossProfit: roundTo(actualGrossProfit, 2),
+    ebitda: roundTo(modeledEbitda, 2),
     driverNetImpact: roundTo(driverNetImpact, 2),
-    metrics: filledMetrics,
-    accountSignals: [
-      { label: 'Revenue signal', value: roundTo(totalRevenue, 2), format: 'currency' },
-      { label: 'Expense signal', value: roundTo(totalExpenses, 2), format: 'currency' },
-      { label: 'Asset signal', value: roundTo(assetBase, 2), format: 'currency' },
-      {
-        label: 'Operating margin',
-        value: roundTo(ratioPct(ebitda, modeledRevenue), 2),
-        format: 'percent',
-      },
-    ],
+    metrics,
+    simulator,
+    accountSignals,
   };
 }
 
-function modelledCogs(totalExpenses: Decimal, efficiencyFactor: Decimal): Decimal {
-  return totalExpenses.times(toDecimal(1.18).minus(efficiencyFactor.times(0.35)));
+function clampDecimal(value: Decimal, min: number, max: number): Decimal {
+  return Decimal.min(max, Decimal.max(min, value));
 }
 
-function formatMetricValue(metric: { format: SectorKPI['format']; value: number }): string {
+function formatMetricValue(metric: { format: SectorKPI['format']; value: number | null }): string {
+  if (metric.value === null) return '—';
   if (metric.format === 'currency')
     return formatMoney(metric.value, { currency: 'USD', places: 0 });
   if (metric.format === 'percent') return formatPercent(metric.value, 1);
@@ -591,7 +824,7 @@ function formatMetricValue(metric: { format: SectorKPI['format']; value: number 
 }
 
 export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }) {
-  const glState = useGLStore();
+  const glState = useGLStore(useShallow((s) => ({ entries: s.entries })));
   const entries = useMemo(
     () => (Array.isArray(glState.entries) ? glState.entries : []),
     [glState.entries]
@@ -631,7 +864,7 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
           {legacyCopy.title.replace(' Dashboard', '')} — No Data
         </h1>
         <p className="mb-6 text-[var(--text-muted)]">
-          Import GL data to calculate live sector KPIs and driver scenarios.
+          Import GL data to classify posted accounts and run driver scenarios.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </main>
@@ -656,21 +889,9 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
   ];
 
   return (
-    <main
-      className="space-y-6 p-6"
-      role="main"
-      aria-label={`${config.name} data-driven driver model`}
-    >
+    <main className="space-y-6 p-6" role="main" aria-label={`${config.name} driver model`}>
       <header className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <span className="sr-only">Sector Analysis</span>
-          <span className="sr-only">Gross Margin</span>
-          <span className="sr-only">{legacyCopy.title}</span>
-          {legacyCopy.labels.map((label) => (
-            <span key={label} className="sr-only">
-              {label}
-            </span>
-          ))}
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-blue-500">
             Phase 3 Sector Depth
           </p>
@@ -678,8 +899,10 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
             title={`${config.name} Driver Modeling Dashboard`}
             purpose={
               <>
-                {config.description} — KPIs are recomputed from imported GL entries plus live driver
-                controls.
+                {config.description} — Measured figures are classified from your posted ledger by
+                account code (4/5/6 P&amp;L, 1/2/3 balance sheet) with a signed account-name
+                fallback. Cards labeled “Modeled” and the Scenario Simulator apply your live driver
+                sliders — they are projections, not measured results.
               </>
             }
           />
@@ -724,22 +947,26 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
 
       <section className="grid grid-cols-1 gap-4 md:grid-cols-4" aria-label="Financial signals">
         <KPIValue
-          label="Actual Revenue Signal"
+          label="Actual Revenue (classified)"
           value={formatMoney(model.totalRevenue, { currency: 'USD', places: 0 })}
           icon={<span aria-hidden="true">↗</span>}
         />
         <KPIValue
-          label="Modeled Revenue"
+          label="Modeled Revenue (projection)"
           value={formatMoney(model.modeledRevenue, { currency: 'USD', places: 0 })}
           change={drivers.growthPct}
         />
         <KPIValue
-          label="Modeled EBITDA"
+          label="Modeled EBITDA (projection)"
           value={formatMoney(model.ebitda, { currency: 'USD', places: 0 })}
-          change={roundTo(ratioPct(model.ebitda, model.modeledRevenue), 1)}
+          change={
+            model.modeledRevenue === 0
+              ? undefined
+              : roundTo(ratioPct(model.ebitda, model.modeledRevenue), 1)
+          }
         />
         <KPIValue
-          label="Driver Net Impact"
+          label="Driver Net Impact (vs actuals)"
           value={formatMoney(model.driverNetImpact, { currency: 'USD', places: 0 })}
         />
       </section>
@@ -753,11 +980,47 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
             key={metric.id}
             label={metric.label}
             value={formatMetricValue(metric)}
-            change={metric.varianceToTargetPct}
-            changeLabel={`Target ${metric.format === 'currency' ? formatMoney(metric.target, { currency: 'USD', places: 0 }) : metric.format === 'percent' ? formatPercent(metric.target, 1) : formatNumber(metric.target)}`}
+            change={metric.varianceToTargetPct ?? undefined}
+            changeLabel={
+              metric.value === null
+                ? metric.note
+                : `Target ${metric.format === 'currency' ? formatMoney(metric.target, { currency: 'USD', places: 0 }) : metric.format === 'percent' ? formatPercent(metric.target, 1) : formatNumber(metric.target)}`
+            }
           />
         ))}
       </section>
+
+      {model.simulator.length > 0 && (
+        <Card data-testid="scenario-simulator">
+          <CardHeader>
+            <CardTitle>Scenario simulator</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-[var(--text-muted)]">
+              These values are projections computed from the live driver sliders — they are not
+              measured from the General Ledger.
+            </p>
+            {model.simulator.map((metric) => (
+              <div
+                key={metric.id}
+                className="flex items-center justify-between border-b border-slate-200/60 py-2 last:border-0 dark:border-slate-700/60"
+              >
+                <div>
+                  <div className="text-sm">{metric.label}</div>
+                  <div className="text-xs text-[var(--text-muted)]">Basis: {metric.basis}</div>
+                </div>
+                <span className="font-mono text-sm">
+                  {metric.format === 'currency'
+                    ? formatMoney(metric.value, { currency: 'USD', places: 0 })
+                    : metric.format === 'percent'
+                      ? formatPercent(metric.value, 1)
+                      : formatNumber(metric.value)}
+                </span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card>
@@ -775,8 +1038,9 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
               </div>
             ))}
             <div className="pt-2 text-xs text-[var(--text-muted)]">
-              Source: {formatNumber(entries.length)} GL rows. Sector UI modules:{' '}
-              {config.enabledModules.join(', ')}.
+              Source: {formatNumber(entries.length)} GL rows, classified by account-code prefix
+              (4/5/6 P&amp;L, 1/2/3 balance sheet) with a signed account-name fallback; unmatched
+              rows are counted nowhere. Sector UI modules: {config.enabledModules.join(', ')}.
             </div>
           </CardContent>
         </Card>

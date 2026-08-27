@@ -9,18 +9,18 @@
 
 **ALIGNED WITH EXPLICIT DECISIONS REQUIRED BEFORE IMPLEMENTATION.** No PRD epic lacks an architectural owner. No architectural decision adds an unapproved product capability. The issues below are decision dependencies, not permission to improvise.
 
-| PRD / UX requirement | Architecture coverage | Alignment | Required action |
-|---|---|---|---|
-| E1 global context, five-pillar shell, trust states | Architecture §§2, 3, 6, 7; UX §§3–4 | Aligned | Establish typed FinancialContext contract before UI migration. |
-| E2 identity, tenancy, audit evidence | Architecture §§4–5, 8 | Aligned | Decide IdP/deployment/residency before production implementation. |
-| E3 master data/import | Architecture §§4–6, 9 | Aligned | Select first connector/design partner before connector story. |
-| E4 close/consolidation | Architecture §§4–5, 9 | Aligned | Define pilot consolidation scope, ownership and FX policies. |
-| E5 planning/grid/offline | Architecture §§3, 6–7 | Aligned | Agree conflict policy and official server-calculation boundary. |
-| E6 decision workspace | Architecture §§2, 4, 6 | Aligned | Define materiality configuration ownership. |
-| E7 reports/snapshots | Architecture §§4–6 | Aligned | Define report certification/distribution policy. |
-| E8 operations/recovery | Architecture §§9–10 | Aligned | Fund SRE/operations responsibility and RPO/RTO commitment. |
-| UX desktop/tablet/mobile boundary | Architecture §7 and §10 | Aligned | Approve browser/PWA vs desktop-first support matrix. |
-| Controlled AI / vertical packs | Architecture §§8–9, ADR-E08 | Aligned | Deferred post-Release 1; no implementation in Pack A. |
+| PRD / UX requirement                               | Architecture coverage               | Alignment | Required action                                                   |
+| -------------------------------------------------- | ----------------------------------- | --------- | ----------------------------------------------------------------- |
+| E1 global context, five-pillar shell, trust states | Architecture §§2, 3, 6, 7; UX §§3–4 | Aligned   | Establish typed FinancialContext contract before UI migration.    |
+| E2 identity, tenancy, audit evidence               | Architecture §§4–5, 8               | Aligned   | Decide IdP/deployment/residency before production implementation. |
+| E3 master data/import                              | Architecture §§4–6, 9               | Aligned   | Select first connector/design partner before connector story.     |
+| E4 close/consolidation                             | Architecture §§4–5, 9               | Aligned   | Define pilot consolidation scope, ownership and FX policies.      |
+| E5 planning/grid/offline                           | Architecture §§3, 6–7               | Aligned   | Agree conflict policy and official server-calculation boundary.   |
+| E6 decision workspace                              | Architecture §§2, 4, 6              | Aligned   | Define materiality configuration ownership.                       |
+| E7 reports/snapshots                               | Architecture §§4–6                  | Aligned   | Define report certification/distribution policy.                  |
+| E8 operations/recovery                             | Architecture §§9–10                 | Aligned   | Fund SRE/operations responsibility and RPO/RTO commitment.        |
+| UX desktop/tablet/mobile boundary                  | Architecture §7 and §10             | Aligned   | Approve browser/PWA vs desktop-first support matrix.              |
+| Controlled AI / vertical packs                     | Architecture §§8–9, ADR-E08         | Aligned   | Deferred post-Release 1; no implementation in Pack A.             |
 
 ## Conflicts resolved
 

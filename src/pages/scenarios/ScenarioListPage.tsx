@@ -3,6 +3,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate } from 'react-router-dom';
 import { useScenarioStore } from '@/store/scenarioStore';
+import { useShallow } from 'zustand/react/shallow';
 import { CompetitiveGapsToolbar } from '@/components/competitive/CompetitiveGapsToolbar';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -18,7 +19,7 @@ export default function ScenarioListPage() {
     document.title = 'FinPlan Pro — Scenario List';
   }, []);
 
-  const { scenarios } = useScenarioStore();
+  const { scenarios } = useScenarioStore(useShallow((s) => ({ scenarios: s.scenarios })));
   const setSelectedScenario = useScenarioStore((s) => s.setSelectedScenario);
   const lockScenario = useScenarioStore((s) => s.lockScenario);
   const unlockScenario = useScenarioStore((s) => s.unlockScenario);
@@ -100,7 +101,7 @@ export default function ScenarioListPage() {
       {treemapData.length > 0 && (
         <Card>
           <CardContent className="p-4">
-            <h3 className="text-sm font-medium mb-2">Scenario Probability Distribution</h3>
+            <h2 className="text-sm font-medium mb-2">Scenario Probability Distribution</h2>
             <TreemapChart
               data={treemapData}
               height={200}

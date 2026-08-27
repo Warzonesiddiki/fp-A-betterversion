@@ -3,8 +3,9 @@ import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { User, AuthState, Role } from '../types';
 import { masterStorage } from '../utils/masterStorage';
-import { startRotation, stopRotation } from '../utils/tokenRotation';
+import { parseTokenExpiry, startRotation, stopRotation } from '../utils/tokenRotation';
 import { randomId } from '@/utils/cryptoId';
+import { AuthRequestError, authClient, type AuthUserDto } from '@/services/authClient';
 
 // --- Mock-Auth build-time gate ---
 // SECURITY FIX (C-01): Mock auth tokens are unsigned and forgeable.
@@ -409,6 +410,32 @@ const MOCK_USERS: Record<string, User> = {
   },
 };
 
+/**
+ * Maps the server's sanitized user row (server/src/routes/auth.ts sanitizeUser)
+ * onto the store's User shape. Unknown roles fail closed to Viewer (least
+ * privilege); effective permissions are ALWAYS derived from ROLE_PERMISSIONS —
+ * never trusted from the wire (Wave-7B rule).
+ */
+function toStoreUser(dto: AuthUserDto): User {
+  const role = (ALL_ROLES as readonly string[]).includes(dto.role) ? (dto.role as Role) : 'Viewer';
+  return {
+    id: dto.id,
+    email: dto.email,
+    firstName: dto.firstName,
+    lastName: dto.lastName,
+    name: `${dto.firstName} ${dto.lastName}`.trim(),
+    avatarUrl: null,
+    role,
+    departmentId: '',
+    departmentName: '',
+    entityId: dto.entityId ?? '',
+    status: dto.isActive ? 'Active' : 'Inactive',
+    lastLoginAt: new Date().toISOString(),
+    mfaEnabled: false,
+    permissions: ROLE_PERMISSIONS[role] ?? [],
+  };
+}
+
 function generateMockToken(userId: string, role: Role): string {
   // SECURITY FIX (C-01): Mock tokens are unsigned and forgeable.
   // In production, this function must never be called; the real
@@ -577,34 +604,73 @@ export const useAuthStore = create<AuthState>()(
         },
 
         /**
-         * Real-auth path. Calls the configured auth backend.
-         * Throws if the build is configured for mock auth (mock-auth
-         * builds are offline / demo only and have no real backend).
-         *
-         * The real-auth implementation in this codebase is a stub that
-         * rejects until the backend is wired up; the function is
-         * present so the call sites can compile and so the branching
-         * can be unit-tested.
+         * Real-auth path. Calls the Express auth backend (server/, port 3001)
+         * through the typed authClient transport:
+         *   POST /api/auth/login → { user, accessToken, refreshToken }
+         * Stores the user AND BOTH tokens (the refresh token is ROTATED on
+         * every /auth/refresh response — dropping it would trip server-side
+         * family revocation on the next attempt), plus the parsed access-token
+         * expiry. 423 lockouts seed lockedUntil; 401s surface
+         * attemptsRemaining via loginAttempts.
          */
-        loginReal: async (_email: string, _password: string) => {
+        loginReal: async (email: string, password: string) => {
           if (isMockAuthEnabled()) {
             throw new Error(
               'loginReal() called but mock auth is enabled. Unset VITE_USE_MOCK_AUTH ' +
                 'and configure the auth backend (see src/services/auth/).'
             );
           }
-          // No real backend is wired in this codebase yet. When it is,
-          // replace this with a fetch('/api/auth/login', { method: 'POST',
-          // body: JSON.stringify({ email, password }) }) and store the
-          // returned access/refresh tokens via set(...).
-          throw new Error(
-            'Real authentication is not configured. Implement src/services/auth/ ' +
-              'and replace this stub with a fetch to the auth backend.'
-          );
+
+          set((s) => {
+            s.isLoading = true;
+            s.error = null;
+          });
+
+          try {
+            const res = await authClient.login(email, password);
+            const user = toStoreUser(res.user);
+            const tokenExpiry = parseTokenExpiry(res.accessToken);
+
+            set((s) => {
+              s.user = user as typeof s.user;
+              s.accessToken = res.accessToken;
+              s.refreshToken = res.refreshToken;
+              s.isAuthenticated = true;
+              s.isLoading = false;
+              s.activeEntityId = res.user.entityId ?? '';
+              s.loginAttempts = 0;
+              s.lockedUntil = null;
+              s.error = null;
+              s.tokenExpiry = tokenExpiry;
+            });
+
+            startRotation();
+          } catch (error) {
+            set((s) => {
+              s.isLoading = false;
+              if (error instanceof AuthRequestError) {
+                if (typeof error.attemptsRemaining === 'number') {
+                  s.loginAttempts = error.attemptsRemaining;
+                }
+                if (error.lockedUntil !== undefined) {
+                  s.lockedUntil = error.lockedUntil;
+                }
+              }
+              s.error = error instanceof Error ? error.message : 'Login failed.';
+            });
+            throw error;
+          }
         },
 
         logout: () => {
           stopRotation();
+          // Fire-and-forget best-effort server revocation of the refresh
+          // token BEFORE local state is cleared (idempotent endpoint; a
+          // network failure must never block logout).
+          const refreshToken = get().refreshToken;
+          if (refreshToken && !isMockAuthEnabled()) {
+            void authClient.logout(refreshToken).catch(() => undefined);
+          }
           set((s) => {
             s.user = null;
             s.accessToken = null;
@@ -700,11 +766,26 @@ export const useAuthStore = create<AuthState>()(
             throw new Error('No refresh token available.');
           }
           try {
-            const newAccessToken = generateMockToken(state.user.id, state.user.role);
-            const expMatch = newAccessToken.match(/"exp":(\d+)/);
-            const tokenExpiry = expMatch ? parseInt(expMatch[1]!) * 1000 : null;
+            if (isMockAuthEnabled()) {
+              const newAccessToken = generateMockToken(state.user.id, state.user.role);
+              const expMatch = newAccessToken.match(/"exp":(\d+)/);
+              const tokenExpiry = expMatch ? parseInt(expMatch[1]!) * 1000 : null;
+              set((s) => {
+                s.accessToken = newAccessToken;
+                s.tokenExpiry = tokenExpiry;
+              });
+              return;
+            }
+
+            // Real path: rotating refresh. The server revokes the presented
+            // refresh token and issues a replacement pair; BOTH must be saved
+            // or the next attempt replays a revoked token and trips family
+            // revocation (SEC-2), logging the user out.
+            const res = await authClient.refresh(state.refreshToken);
+            const tokenExpiry = parseTokenExpiry(res.accessToken);
             set((s) => {
-              s.accessToken = newAccessToken;
+              s.accessToken = res.accessToken;
+              s.refreshToken = res.refreshToken;
               s.tokenExpiry = tokenExpiry;
             });
           } catch {
@@ -724,8 +805,13 @@ export const useAuthStore = create<AuthState>()(
                 'Use the authenticated login flow instead.'
             );
           }
+          // SECURITY (Wave-7B): effective permissions are ALWAYS derived from
+          // ROLE_PERMISSIONS[user.role]. Client-supplied permissions arrays are
+          // ignored entirely, so a forged payload can never grant a Viewer the
+          // Admin catalogue. Unknown roles fail closed to an empty set.
+          const derivedPermissions = ROLE_PERMISSIONS[user.role] ?? [];
           set((s) => {
-            s.user = user as typeof s.user;
+            s.user = { ...user, permissions: derivedPermissions } as typeof s.user;
           });
         },
 
@@ -756,26 +842,28 @@ export const useAuthStore = create<AuthState>()(
       {
         name: 'auth-store',
         storage: masterStorage,
-        version: 1,
+        version: 2,
         migrate: (state: unknown) => {
           // SECURITY FIX (H-01): Migration must not be a no-op. Verify schema
           // version and apply transformations when code updates change the
           // store shape. This prevents stale persisted state from crashing
           // the runtime after a deployment.
-          const s = state as Partial<AuthState>;
-          if (!s || typeof s !== 'object') return state;
-          // If a new version is detected, apply migration rules here.
-          // Example: migrate v0 → v1, add missing fields with defaults.
-          return { ...s, version: 1 } as unknown;
+          if (!state || typeof state !== 'object') return {} as unknown;
+          // v1 → v2: session truth no longer persists. Old blobs carried
+          // isAuthenticated:true + a user row; dropping both keys forces a
+          // rehydrated store to land unauthenticated (tokens were never
+          // persisted, so no live session can be reconstructed anyway).
+          const next: Record<string, unknown> = { ...(state as Record<string, unknown>) };
+          delete next.isAuthenticated;
+          delete next.user;
+          return { ...next, version: 2 } as unknown;
         },
         partialize: (state) => ({
-          // Only persist non-sensitive fields
-          user: state.user,
-          isAuthenticated: state.isAuthenticated,
+          // Only persist non-sensitive, non-auth-truth fields. Session truth
+          // (user / isAuthenticated / tokens / expiry) NEVER persists.
           activeEntityId: state.activeEntityId,
           loginAttempts: state.loginAttempts,
           lockedUntil: state.lockedUntil,
-          // Note: tokenExpiry, accessToken, refreshToken are NOT persisted
         }),
       }
     )

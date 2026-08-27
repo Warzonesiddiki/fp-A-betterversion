@@ -3,7 +3,9 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useSettingsStore } from '@/store/settingsStore';
+import { useUIStore } from '@/store/uiStore';
 import { BackupRestore } from '@/utils/backupRestore';
+import { RecoveryCodeCard } from '@/components/settings/RecoveryCodeCard';
 import {
   Download,
   Upload,
@@ -90,6 +92,14 @@ export default function BackupRestorePage() {
     try {
       await BackupRestore.exportBackup();
       setLastBackupDate(new Date().toISOString());
+    } catch (cause) {
+      // F-B4-2: an export failure was a silent unhandled rejection — the user
+      // believed they had a backup they do not have. Make it visible.
+      useUIStore.getState().addToast({
+        type: 'error',
+        title: 'Backup export failed',
+        message: cause instanceof Error ? cause.message : String(cause),
+      });
     } finally {
       setIsExporting(false);
     }
@@ -202,6 +212,9 @@ export default function BackupRestorePage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Recovery code (key escrow) — status + enrollment */}
+      <RecoveryCodeCard />
 
       {/* Section 011: Desktop Migration Card */}
       {storageBackend === 'desktop-tauri-sqlite' && !migrationCompleted && (

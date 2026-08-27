@@ -20,7 +20,7 @@ export function ReconciliationResults({ result }: ReconciliationResultsProps) {
   const currencySignFmt = fmtCurrency.custom({ minDecimals: 0, signDisplay: 'exceptZero' });
   return (
     <div className="p-4">
-      <h3 className="font-semibold mb-3">Reconciliation Results</h3>
+      <h2 className="font-semibold mb-3">Reconciliation Results</h2>
       <div className="grid grid-cols-3 gap-4 mb-4" role="group" aria-label="Reconciliation summary">
         <div className="p-3 bg-green-900/20 rounded-lg border border-green-800/30 text-center">
           <CheckCircle2 className="h-5 w-5 text-green-400 mx-auto mb-1" aria-hidden="true" />

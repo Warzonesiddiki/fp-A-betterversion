@@ -3,6 +3,10 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
+// W6-P0-14: shipments are operational records (INVENTORY_* family per
+// retailStore precedent); carrier/route analytics datasets follow the sector
+// metric precedent (DASHBOARD_UPDATE). Loading/error flags stay unguarded.
+import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 export interface Shipment {
   id: string;
@@ -55,31 +59,40 @@ export const useLogisticsStore = create<LogisticsState>()(
         routeCosts: [],
         isLoading: false,
         error: null,
-        setShipments: (shipments) =>
+        setShipments: enforce(Permissions.INVENTORY_UPDATE, 'setShipments', (shipments) =>
           set((s) => {
             s.shipments = shipments;
-          }),
-        addShipment: (shipment) =>
+          })
+        ),
+        addShipment: enforce(Permissions.INVENTORY_CREATE, 'addShipment', (shipment) =>
           set((s) => {
             s.shipments.push(shipment);
-          }),
-        updateShipment: (id, updates) =>
+          })
+        ),
+        updateShipment: enforce(Permissions.INVENTORY_UPDATE, 'updateShipment', (id, updates) =>
           set((s) => {
             const i = s.shipments.findIndex((x) => x.id === id);
             if (i !== -1) Object.assign(s.shipments[i]!, updates);
-          }),
-        removeShipment: (id) =>
+          })
+        ),
+        removeShipment: enforce(Permissions.INVENTORY_DELETE, 'removeShipment', (id) =>
           set((s) => {
             s.shipments = s.shipments.filter((x) => x.id !== id);
-          }),
-        setCarrierPerformance: (data) =>
-          set((s) => {
-            s.carrierPerformance = data;
-          }),
-        setRouteCosts: (data) =>
+          })
+        ),
+        setCarrierPerformance: enforce(
+          Permissions.DASHBOARD_UPDATE,
+          'setCarrierPerformance',
+          (data) =>
+            set((s) => {
+              s.carrierPerformance = data;
+            })
+        ),
+        setRouteCosts: enforce(Permissions.DASHBOARD_UPDATE, 'setRouteCosts', (data) =>
           set((s) => {
             s.routeCosts = data;
-          }),
+          })
+        ),
         setLoading: (isLoading) =>
           set((s) => {
             s.isLoading = isLoading;
@@ -88,14 +101,15 @@ export const useLogisticsStore = create<LogisticsState>()(
           set((s) => {
             s.error = error;
           }),
-        clearAll: () =>
+        clearAll: enforce(Permissions.INVENTORY_DELETE, 'clearAll', () =>
           set((s) => {
             s.shipments = [];
             s.carrierPerformance = [];
             s.routeCosts = [];
             s.isLoading = false;
             s.error = null;
-          }),
+          })
+        ),
         getActiveShipmentCount: () =>
           get().shipments.filter((s) => s.status === 'In Transit').length,
         getOnTimeRate: () => {

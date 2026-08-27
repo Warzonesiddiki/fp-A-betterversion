@@ -2,8 +2,13 @@ import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
+// Selector-aware mock: the page subscribes via useGLStore((s) => s.entries),
+// so the mock must apply a selector when one is passed.
 vi.mock('@/store/glStore', () => ({
-  useGLStore: () => ({ entries: [] }),
+  useGLStore: (selector?: (s: { entries: unknown[] }) => unknown) => {
+    const state = { entries: [] as unknown[] };
+    return selector ? selector(state) : state;
+  },
 }));
 vi.mock('file-saver', () => ({ saveAs: vi.fn() }));
 vi.mock('./ReconciliationPanel', () => ({

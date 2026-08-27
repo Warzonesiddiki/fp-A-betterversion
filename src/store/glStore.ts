@@ -23,8 +23,12 @@ import {
   toDecimal,
 } from '../utils/money';
 import { UndoRedoEngine } from '@/engines/UndoRedoEngine';
+import { FpaClient } from '@/sdk/FpaClient';
+import { GlCommitNamespace } from '@/sdk/gl/GlCommitNamespace';
+import type { GlJournalBatch, GlCommitResult, GlListedEntry } from '@/sdk/gl/GlCommitNamespace';
 import { useCubeStore } from './cubeStore';
 import { useUIStore } from './uiStore';
+import { useAuthStore } from './authStore';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 function extractTimeCode(dateStr: string): string {
@@ -40,6 +44,12 @@ interface GLSnapshot {
   accounts: GLAccount[];
   trialBalance: TrialBalanceRow[];
   accountAnalysis: AccountAnalysis | null;
+  /** W0.8.6: sync identity travels with the rows — an undo past a server
+   * commit must restore the exact id→syncState/version mapping, or a
+   * committed row would come back looking like a draft under its old
+   * client-side id (identity corruption on financial records). */
+  entrySyncState: GLState['entrySyncState'];
+  entryVersions: GLState['entryVersions'];
 }
 
 /** Trial-balance accumulator holding Decimal currency values (F-0006). */
@@ -64,8 +74,198 @@ interface MonthGroupAccum {
 
 const undoEngine = new UndoRedoEngine<GLSnapshot>(100);
 
+// ── W0.8.6: server commit channel (K25) ─────────────────────────────────────
+// Injectable for tests. Default wiring (W6-P0-13 api-origin-truth): the REST
+// origin resolves from VITE_API_URL at request time (in Vite dev the /api
+// proxy forwards to the real Express server on :3001), and the bearer
+// credential is pulled LIVE from authStore via a getState() accessor — no
+// token captured at construction, no sdk→store import cycle. An unconfigured
+// origin or missing session fails fast as ApiNotConfiguredError, which the
+// GlCommitNamespace maps to {status:'error'} — never a silent POST to a host.
+let glCommitClient: GlCommitNamespace = new GlCommitNamespace(
+  new FpaClient({
+    auth: { type: 'bearer', token: '' },
+    tokenSource: () => useAuthStore.getState().accessToken ?? '',
+  })
+);
+
+/** Test/infra hook: replace the server-commit transport. */
+export function setGlCommitClient(client: GlCommitNamespace): void {
+  glCommitClient = client;
+}
+
+function toJournalBatch(entries: GLEntry[], environmentId: string): GlJournalBatch {
+  const journalId =
+    entries.find((e) => e.journalId)?.journalId ??
+    `batch-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+  return {
+    journalId,
+    environmentId,
+    lines: entries.map((e) => ({
+      accountId: e.accountId || e.accountCode,
+      entityId: e.entityId,
+      postDate: e.postDate || e.date,
+      debit: e.debit,
+      credit: e.credit,
+      description: e.description,
+      reference: e.reference,
+    })),
+  };
+}
+
+async function applyCommitResult(
+  result: GlCommitResult<readonly { id: string; version: number }[]> | GlCommitResult<void>,
+  drafts: readonly GLEntry[],
+  set: (fn: (state: GLState) => void) => void
+): Promise<{ committed: boolean; conflictCode?: string; message?: string }> {
+  const markFailed = () => {
+    set((state) => {
+      for (const e of drafts) state.entrySyncState[e.id] = 'failed';
+    });
+  };
+  if (result.status === 'committed') {
+    // Discriminated union over two generics: only the entries-typed member
+    // carries a usable value array.
+    const serverEntries: readonly { id: string; version: number }[] = Array.isArray(
+      (result as { value?: unknown }).value
+    )
+      ? (result as { value: readonly { id: string; version: number }[] }).value
+      : [];
+    // G6 UUID resolver (P0): the server is the identity authority. Its bulk
+    // response lists {id, version} in request-line order (fresh insert loop
+    // and idempotent replay alike), so a same-arity response resolves each
+    // draft to its authoritative row. Client-generated ids (`gl-*`,
+    // `draft:*`) are replaced by server UUIDs and versions are captured for
+    // If-Match. A different arity means we CANNOT know the mapping — fail
+    // closed rather than guess identities on financial records.
+    if (serverEntries.length !== drafts.length) {
+      markFailed();
+      return {
+        committed: false,
+        message: `commit result arity mismatch: sent ${drafts.length}, server acknowledged ${serverEntries.length}`,
+      };
+    }
+    const idRemap = new Map<string, string>();
+    set((state) => {
+      for (let i = 0; i < drafts.length; i++) {
+        const draft = drafts[i];
+        const committedRow = serverEntries[i];
+        if (!draft || !committedRow) continue;
+        const oldId = draft.id;
+        const entry = state.entries.find((e) => e.id === oldId);
+        if (!entry) continue;
+        delete state.entrySyncState[oldId];
+        delete state.entryVersions[oldId];
+        // Immer draft: runtime re-key of a readonly-tagged identity field.
+        (entry as { id: string }).id = committedRow.id;
+        idRemap.set(oldId, committedRow.id);
+        state.entrySyncState[committedRow.id] = 'committed';
+        state.entryVersions[committedRow.id] = committedRow.version;
+      }
+      state.lastImportEntryIds = state.lastImportEntryIds.map((id) => idRemap.get(id) ?? id);
+    });
+    return { committed: true };
+  }
+  if (result.status === 'conflict') {
+    markFailed();
+    return {
+      committed: false,
+      conflictCode: result.conflict.code,
+      message: result.conflict.message,
+    };
+  }
+  markFailed();
+  return { committed: false, message: result.status === 'error' ? result.message : undefined };
+}
+
 function toFiniteNumber(value: unknown, fallback = 0): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+}
+
+/**
+ * W0.8.6 boot hydrate: overlay one server-listed row onto a committed local
+ * entry. Server-provided fields win; fields the listing does not carry keep
+ * their local values (accountName, journalId, entityId, …). period/periodName
+ * are re-derived from the merged date so the row stays internally consistent
+ * after normalizeGLEntry recomputes netChange/amount.
+ */
+function mergeListedEntry(local: GLEntry, row: GlListedEntry): Partial<GLEntry> {
+  const date = row.postDate ?? row.date ?? local.postDate ?? local.date;
+  const month = date ? date.slice(0, 7) : '';
+  return {
+    ...local,
+    id: row.id,
+    accountId: row.accountId ?? local.accountId,
+    accountCode: row.accountCode ?? local.accountCode,
+    postDate: date,
+    date,
+    debit: row.debit,
+    credit: row.credit,
+    period: month,
+    periodName: month,
+    ...(row.description !== undefined ? { description: row.description } : {}),
+    ...(row.reference !== undefined ? { reference: row.reference } : {}),
+  };
+}
+
+/** W0.8.6 boot hydrate: shape a locally-absent server row for adoption. */
+function listedToGLEntry(row: GlListedEntry): Partial<GLEntry> {
+  const date = row.postDate ?? row.date ?? '';
+  const month = date ? date.slice(0, 7) : '';
+  return {
+    id: row.id,
+    accountId: row.accountId ?? '',
+    accountCode: row.accountCode ?? row.accountId ?? '',
+    postDate: date,
+    date,
+    debit: row.debit,
+    credit: row.credit,
+    period: month,
+    periodName: month,
+    description: row.description ?? '',
+    reference: row.reference ?? '',
+  };
+}
+
+/** One server-side compensating delete that did not succeed (W0.8.6 §4). */
+interface GlTombstoneFailure {
+  readonly id: string;
+  readonly message: string;
+}
+
+/**
+ * W0.8.6 §4 (plan): compensating server tombstones. Only COMMITTED rows ever
+ * reached the server, so draft/pending/failed ids are skipped entirely.
+ * `already_deleted` counts as success (K25 tombstone replay semantics). Never
+ * throws — failures come back as {id, message} so callers can summarize them
+ * into `importError` WITHOUT blocking the local intent (local wins; the
+ * server reconciles via tombstones-on-replay).
+ */
+async function tombstoneCommittedEntries(
+  ids: readonly string[],
+  entrySyncState: GLState['entrySyncState'],
+  environmentId: string
+): Promise<GlTombstoneFailure[]> {
+  const failures: GlTombstoneFailure[] = [];
+  for (const id of ids) {
+    if ((entrySyncState[id] ?? 'draft') !== 'committed') continue;
+    const result = await glCommitClient.deleteEntry({ entryId: id, environmentId });
+    if (result.status === 'committed' || result.status === 'already_deleted') continue;
+    const message =
+      result.status === 'conflict'
+        ? `${result.conflict.code}: ${result.conflict.message}`
+        : (result.message ?? 'unknown server delete failure');
+    failures.push({ id, message });
+  }
+  return failures;
+}
+
+function summarizeTombstoneFailures(failures: readonly GlTombstoneFailure[]): string {
+  return (
+    `${failures.length} committed entr(ies) failed server tombstone ` +
+    `(local removal applied; server reconciles via tombstones-on-replay): ` +
+    failures.map((f) => `${f.id} (${f.message})`).join('; ')
+  );
 }
 
 function normalizeGLEntry(
@@ -116,6 +316,8 @@ function captureGLSnapshot(get: () => ReturnType<typeof useGLStore.getState>) {
     accounts: state.accounts,
     trialBalance: state.trialBalance,
     accountAnalysis: state.accountAnalysis,
+    entrySyncState: state.entrySyncState,
+    entryVersions: state.entryVersions,
   });
 }
 
@@ -144,6 +346,142 @@ export const useGLStore = create<GLState>()(
         lastImportResult: null,
         importHistory: [],
         lastImportEntryIds: [],
+        entrySyncState: {},
+        entryVersions: {},
+        environmentId: 'dev',
+
+        // --- W0.8.6 server-authoritative commit path (K25) ---
+        setEnvironmentId: enforce(Permissions.UI_UPDATE, 'setEnvironmentId', (environmentId) =>
+          set({ environmentId })
+        ),
+
+        commitDraftsToServer: enforce(
+          Permissions.IMPORT_CREATE,
+          'commitDraftsToServer',
+          async () => {
+            const { entries, entrySyncState, environmentId, validateEntries } = get();
+            const drafts = entries.filter((e) => (entrySyncState[e.id] ?? 'draft') === 'draft');
+            const conflicts: { code: string; message: string }[] = [];
+            let committed = 0;
+            let failed = 0;
+
+            if (drafts.length === 0) return { committed, failed, conflicts };
+
+            set((state) => {
+              for (const e of drafts) state.entrySyncState[e.id] = 'pending';
+            });
+
+            // Group drafts by journal so each balanced journal commits atomically.
+            const groups = new Map<string, GLEntry[]>();
+            for (const entry of drafts) {
+              const key = entry.journalId ?? '__import_batch__';
+              const group = groups.get(key);
+              if (group) group.push(entry);
+              else groups.set(key, [entry]);
+            }
+
+            for (const group of groups.values()) {
+              const validation = validateEntries(group);
+              if (!validation.isValid) {
+                failed += group.length;
+                await applyCommitResult(
+                  { status: 'error', message: validation.errors[0] ?? 'validation failed' },
+                  group,
+                  set
+                );
+                conflicts.push({
+                  code: 'FP-0002',
+                  message: validation.errors.slice(0, 3).join('; '),
+                });
+                continue;
+              }
+
+              const result = await glCommitClient.createJournalBatch({
+                batch: toJournalBatch(group, environmentId),
+                idempotencyKey: `gl-${environmentId}-${group[0]?.journalId ?? Date.now()}`,
+              });
+              const outcome = await applyCommitResult(result, group, set);
+              if (outcome.committed) {
+                committed += group.length;
+              } else {
+                failed += group.length;
+                if (outcome.conflictCode) {
+                  conflicts.push({ code: outcome.conflictCode, message: outcome.message ?? '' });
+                }
+              }
+            }
+
+            if (failed > 0) {
+              set({ importError: `${failed} draft entr(ies) failed server commit` });
+            }
+            return { committed, failed, conflicts };
+          }
+        ),
+
+        // --- W0.8.6 boot hydrate (plan §5): converge the replica ---
+        hydrateCommittedFromServer: enforce(
+          Permissions.IMPORT_CREATE,
+          'hydrateCommittedFromServer',
+          async () => {
+            const { environmentId } = get();
+            const result = await glCommitClient.listEntries({ environmentId });
+            if (result.status !== 'listed') return { hydrated: 0 };
+
+            // Classify BEFORE mutating (K25/K27): decide every row's fate
+            // against a stable pre-image, then apply in one pass. A server row
+            // wins only over an ALREADY-COMMITTED local or a locally-absent
+            // id; draft/pending/failed locals are skipped entirely — retention
+            // beats erasure and nothing is silently lost. Missing syncState on
+            // an existing row defaults to 'draft' (the same default
+            // commitDraftsToServer uses), so legacy untracked rows are
+            // protected too.
+            const before = get();
+            const updates: { index: number; next: GLEntry; version?: number }[] = [];
+            const inserts: { entry: GLEntry; version?: number }[] = [];
+            const seen = new Set<string>();
+            for (const row of result.entries) {
+              if (seen.has(row.id)) continue;
+              seen.add(row.id);
+              const index = before.entries.findIndex((e) => e.id === row.id);
+              if (index >= 0) {
+                if ((before.entrySyncState[row.id] ?? 'draft') !== 'committed') continue;
+                const local = before.entries[index];
+                if (!local) continue;
+                updates.push({
+                  index,
+                  next: normalizeGLEntry(mergeListedEntry(local, row), index, 'gl-srv'),
+                  version: row.version,
+                });
+              } else {
+                inserts.push({
+                  entry: normalizeGLEntry(listedToGLEntry(row), 0, 'gl-srv'),
+                  version: row.version,
+                });
+              }
+            }
+
+            if (updates.length === 0 && inserts.length === 0) return { hydrated: 0 };
+
+            set((state) => {
+              for (const u of updates) {
+                state.entries[u.index] = u.next;
+                state.entrySyncState[u.next.id] = 'committed';
+                // Version capture only when the listing provided one — never
+                // invent or overwrite a version we were not given.
+                if (u.version !== undefined) state.entryVersions[u.next.id] = u.version;
+              }
+              for (const i of inserts) {
+                state.entries.push(i.entry);
+                state.entrySyncState[i.entry.id] = 'committed';
+                if (i.version !== undefined) state.entryVersions[i.entry.id] = i.version;
+              }
+              // Derived aggregates no longer reflect the converged rows.
+              state.trialBalance = [];
+              state.accountAnalysis = null;
+            });
+            return { hydrated: updates.length + inserts.length };
+          }
+        ),
 
         // --- Undo/Redo Actions ---
         undo: enforce(Permissions.UI_UPDATE, 'undo', () => {
@@ -154,6 +492,8 @@ export const useGLStore = create<GLState>()(
               accounts: snapshot.accounts,
               trialBalance: snapshot.trialBalance,
               accountAnalysis: snapshot.accountAnalysis,
+              entrySyncState: snapshot.entrySyncState,
+              entryVersions: snapshot.entryVersions,
             });
           }
         }),
@@ -166,6 +506,8 @@ export const useGLStore = create<GLState>()(
               accounts: snapshot.accounts,
               trialBalance: snapshot.trialBalance,
               accountAnalysis: snapshot.accountAnalysis,
+              entrySyncState: snapshot.entrySyncState,
+              entryVersions: snapshot.entryVersions,
             });
           }
         }),
@@ -429,20 +771,44 @@ export const useGLStore = create<GLState>()(
           }
         ),
 
-        clearData: enforce(Permissions.IMPORT_DELETE, 'clearData', () => {
+        clearData: enforce(Permissions.IMPORT_DELETE, 'clearData', async () => {
           captureGLSnapshot(get);
+          // W0.8.6 §4: every COMMITTED row gets a compensating server
+          // tombstone before the local wipe; drafts never reached the server
+          // and simply vanish locally. A wipe with zero committed rows never
+          // awaits, so purely local clears stay synchronous.
+          const { entries, entrySyncState, environmentId } = get();
+          const committedIds = entries
+            .filter((e) => (entrySyncState[e.id] ?? 'draft') === 'committed')
+            .map((e) => e.id);
+          const failures =
+            committedIds.length > 0
+              ? await tombstoneCommittedEntries(committedIds, entrySyncState, environmentId)
+              : [];
+
           set({
             entries: [],
             trialBalance: [],
             accountAnalysis: null,
             dateFilter: null,
             accountFilter: [],
+            entrySyncState: {},
+            // Wipe hygiene (wave-4): every wiped row's If-Match version is an
+            // orphan once its row is gone — clear the whole map, tombstone
+            // outcome irrelevant (the server reconciles via replay).
+            entryVersions: {},
           });
           useUIStore.getState().addToast({
             type: 'info',
             title: 'GL Data Cleared',
             message: 'General ledger data has been reset',
           });
+
+          // Local intent always wins: tombstone failures are surfaced for
+          // reconciliation, never thrown past the action.
+          if (failures.length > 0) {
+            set({ importError: summarizeTombstoneFailures(failures) });
+          }
         }),
 
         setImportProgress: enforce(Permissions.UI_UPDATE, 'setImportProgress', (progress) =>
@@ -479,7 +845,22 @@ export const useGLStore = create<GLState>()(
           })
         ),
 
-        undoLastImport: enforce(Permissions.IMPORT_DELETE, 'undoLastImport', () =>
+        undoLastImport: enforce(Permissions.IMPORT_DELETE, 'undoLastImport', async () => {
+          // W0.8.6 §4: compensating server tombstones FIRST — committed rows
+          // of the batch are deleted server-side (already_deleted tolerated),
+          // then the existing local undo runs. Drafts/pending/failed rows
+          // never reached the server and are skipped. A batch with zero
+          // committed ids never awaits, so purely local undos stay
+          // synchronous.
+          const { lastImportEntryIds, entrySyncState, environmentId } = get();
+          const committedIds = lastImportEntryIds.filter(
+            (id) => (entrySyncState[id] ?? 'draft') === 'committed'
+          );
+          const failures =
+            committedIds.length > 0
+              ? await tombstoneCommittedEntries(committedIds, entrySyncState, environmentId)
+              : [];
+
           set((state) => {
             const count = state.lastImportEntryIds.length;
             if (count === 0) {
@@ -491,6 +872,17 @@ export const useGLStore = create<GLState>()(
 
             const ids = new Set(state.lastImportEntryIds);
             state.entries = state.entries.filter((e) => !ids.has(e.id));
+            for (const id of ids) delete state.entrySyncState[id];
+            // R42 hygiene: entryVersions is If-Match fuel keyed by row id —
+            // once the local row is gone the version is dead. Prune every
+            // version not referenced by a surviving entry, covering BOTH
+            // clean tombstones and FAILED ones whose row still exists on the
+            // server: the LOCAL replica dropped the row, so the LOCAL version
+            // must go (the server reconciles via tombstones-on-replay).
+            const survivingIds = new Set(state.entries.map((e) => e.id));
+            for (const vid of Object.keys(state.entryVersions)) {
+              if (!survivingIds.has(vid)) delete state.entryVersions[vid];
+            }
             state.lastImportEntryIds = [];
             state.lastImportResult = null;
             state.importStatus = 'idle';
@@ -503,8 +895,14 @@ export const useGLStore = create<GLState>()(
               title: 'Import Undone',
               message: `Successfully removed ${count} entries from the last import`,
             });
-          })
-        ),
+          });
+
+          // Local intent always wins: tombstone failures land in importError
+          // for reconciliation instead of blocking the undo.
+          if (failures.length > 0) {
+            set({ importError: summarizeTombstoneFailures(failures) });
+          }
+        }),
 
         checkDuplicates: (entries) => {
           const state = get();
@@ -766,6 +1164,9 @@ export const useGLStore = create<GLState>()(
           entries: state.entries,
           importHistory: state.importHistory,
           columnMapping: state.columnMapping,
+          entrySyncState: state.entrySyncState,
+          entryVersions: state.entryVersions,
+          environmentId: state.environmentId,
         }),
       }
     )

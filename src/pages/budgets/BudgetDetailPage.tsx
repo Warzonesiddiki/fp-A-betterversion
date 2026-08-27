@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { PageHeader } from '@/components/ui/PageHeader';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useBudgetStore } from '@/store/budgetStore';
 import { useGLStore } from '@/store/glStore';
 import { useAuthStore } from '@/store/authStore';
@@ -8,6 +9,9 @@ import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent } from '@/components/ui/Card';
 import { FinPlanGrid } from '@/components/ui/FinPlanGrid';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 import {
   ArrowLeft,
   Undo2,
@@ -74,7 +78,7 @@ interface AuditEntry {
 export default function BudgetDetailPage() {
   const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
-  const { user } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Budget Detail';
@@ -97,8 +101,32 @@ export default function BudgetDetailPage() {
     submitBudget,
     approveBudget,
     rejectBudget,
-  } = useBudgetStore();
-  const { accounts } = useGLStore();
+    // W-K30-001 (2): gate the not-found flash while the store hydrates.
+    isLoading: budgetLoading,
+  } = useBudgetStore(
+    useShallow((s) => ({
+      budgets: s.budgets,
+      lineItems: s.lineItems,
+      activeBudgetId: s.activeBudgetId,
+      setActiveBudget: s.setActiveBudget,
+      updateLineItem: s.updateLineItem,
+      updateBudget: s.updateBudget,
+      undo: s.undo,
+      redo: s.redo,
+      historyIndex: s.historyIndex,
+      history: s.history,
+      submitBudget: s.submitBudget,
+      approveBudget: s.approveBudget,
+      rejectBudget: s.rejectBudget,
+      isLoading: s.isLoading,
+    }))
+  );
+  // W-K30-001 (2): the only error channel exposed by the underlying stores is
+  // the GL import error (budgetStore persists no error field); a failed GL
+  // import strips account names/codes from this workspace, so it is surfaced.
+  const { accounts, importError } = useGLStore(
+    useShallow((s) => ({ accounts: s.accounts, importError: s.importError }))
+  );
 
   const budget = budgets.find((b) => b.id === id);
 
@@ -120,9 +148,10 @@ export default function BudgetDetailPage() {
   const [snapshotName, setSnapshotName] = useState('');
   const [comments, setComments] = useState<CommentEntry[]>([]);
   const [newComment, setNewComment] = useState('');
-  const [auditLog, setAuditLog] = useState<AuditEntry[]>([
-    { id: 'a1', action: 'Budget created', user: 'Admin', timestamp: new Date().toISOString() },
-  ]);
+  // K30 four-states (N8): start empty — the previously seeded
+  // "Budget created"/Admin entry fabricated an audit event that never
+  // happened; real entries appear as the user acts on the budget.
+  const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
 
   const budgetLineItems = useMemo(() => {
     return lineItems.filter((li) => li.budgetId === id);
@@ -389,14 +418,53 @@ export default function BudgetDetailPage() {
     );
   }
 
-  if (!budget) {
+  if (budgetLoading) {
+    // W-K30-001 (2): skeleton while the budget store hydrates, so a cold
+    // start does not flash "Budget Not Found" for an existing id. The static
+    // PageHeader keeps an h1 in the document during this branch.
     return (
-      <div className="p-12 text-center">
-        <h2 className="text-xl font-semibold mb-2">Budget Not Found</h2>
-        <p className="text-[var(--text-muted)] mb-4">
-          The budget you&apos;re looking for doesn&apos;t exist.
-        </p>
-        <Button onClick={() => navigate('/budgets')}>Back to Budgets</Button>
+      <div className="p-6 space-y-6">
+        <PageHeader title="Budget Detail" purpose="Budget line-item editor" />
+        <div data-testid="budget-detail-loading" className="space-y-4">
+          {/* W-A11Y-002 M5: one polite announcement for the whole hydrate branch. */}
+          <Skeleton count={1} height="40px" width="40%" srLabel="Loading budget detail…" />
+          <Skeleton count={1} variant="card" height="160px" />
+          <Skeleton count={4} variant="text" height="24px" />
+        </div>
+      </div>
+    );
+  }
+
+  if (importError) {
+    return (
+      <div className="p-6 space-y-6">
+        <PageHeader title="Budget Detail" purpose="Budget line-item editor" />
+        <ErrorState
+          title="Failed to load budget workspace"
+          message={importError}
+          errorCode="GL-IMPORT-ERROR"
+          onRetry={() => window.location.reload()}
+          retryLabel="Retry"
+          secondaryAction={{ label: 'Back to Budgets', onClick: () => navigate('/budgets') }}
+        />
+      </div>
+    );
+  }
+
+  if (!budget) {
+    // K30 four-states (N8): shared EmptyState under the mounted page h1 —
+    // this branch previously rendered a bare centered h2 with no heading
+    // hierarchy. The CTA returns to the list; no placeholder budget is
+    // invented for an unknown id.
+    return (
+      <div className="p-6 space-y-6">
+        <PageHeader title="Budget Detail" purpose="Budget line-item editor" />
+        <EmptyState
+          variant="no-data"
+          title="Budget Not Found"
+          description={"The budget you're looking for doesn't exist or was deleted."}
+          action={<Button onClick={() => navigate('/budgets')}>Back to Budgets</Button>}
+        />
       </div>
     );
   }
@@ -643,8 +711,24 @@ export default function BudgetDetailPage() {
                   <tbody className="divide-y divide-slate-800">
                     {groupedByAccount.length === 0 ? (
                       <tr>
-                        <td colSpan={14} className="text-center py-8 text-[var(--text-muted)]">
-                          No line items in this budget yet.
+                        <td colSpan={14}>
+                          {/* W-K30-001 (2): was a bare "No line items…" cell.
+                              The page h1 comes from PageHeader above, so the
+                              EmptyState h3 keeps heading order intact. */}
+                          <EmptyState
+                            variant="no-data"
+                            title="No line items yet"
+                            description="This budget has no line items yet. Open the grid editor to add your first row."
+                            action={
+                              <Button
+                                size="sm"
+                                onClick={() => setViewMode('grid')}
+                                data-testid="add-first-line-item"
+                              >
+                                Add first line item
+                              </Button>
+                            }
+                          />
                         </td>
                       </tr>
                     ) : (
@@ -676,7 +760,7 @@ export default function BudgetDetailPage() {
                                 {isEditing ? (
                                   <input
                                     type="number"
-                                    className="w-full bg-blue-900/30 border border-blue-500 rounded px-2 py-1 text-right text-sm tabular-nums focus:outline-none"
+                                    className="w-full bg-blue-900/30 border border-blue-500 rounded px-2 py-1 text-right text-sm tabular-nums focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
                                     value={editValue}
                                     onChange={(e) => setEditValue(e.target.value)}
                                     onBlur={handleCellSave}
@@ -869,14 +953,20 @@ export default function BudgetDetailPage() {
               </div>
             ) : (
               <div className="space-y-2 max-h-96 overflow-y-auto" data-testid="audit-tab">
-                {auditLog.map((entry) => (
-                  <div key={entry.id} className="p-2 bg-slate-800 rounded text-xs">
-                    <div className="text-slate-300">{entry.action}</div>
-                    <div className="text-[var(--text-muted)] text-[10px]">
-                      {entry.user} · {new Date(entry.timestamp).toLocaleString()}
+                {/* K30 four-states (N8): honest empty state now that the
+                    fabricated "Budget created" seed entry is gone. */}
+                {auditLog.length === 0 ? (
+                  <p className="text-xs text-[var(--text-muted)]">No audit entries yet.</p>
+                ) : (
+                  auditLog.map((entry) => (
+                    <div key={entry.id} className="p-2 bg-slate-800 rounded text-xs">
+                      <div className="text-slate-300">{entry.action}</div>
+                      <div className="text-[var(--text-muted)] text-[10px]">
+                        {entry.user} · {new Date(entry.timestamp).toLocaleString()}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             )}
           </div>

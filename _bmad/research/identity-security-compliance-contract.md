@@ -8,18 +8,18 @@ A hidden menu item is not authorization. Every official command and every eviden
 
 ## Control domains
 
-| Domain | Required control |
-|---|---|
-| Identity | OIDC/SAML, MFA/session controls, SCIM consideration, production mock-auth prohibition |
-| Authorization | RBAC + ABAC, server enforcement, PostgreSQL RLS, least privilege, periodic access review |
-| Segregation of duties | configurable incompatible roles/actions; approval/certification/exception checks |
-| Data protection | TLS, encryption at rest/envelope KMS, secrets manager, key rotation, classification/masking |
-| Tenant isolation | tenant-scoped database/cache/queue/object paths; negative tests for every boundary |
-| Application security | schema validation, output encoding, CSRF strategy, CSP, rate limits, secure headers, idempotency |
-| Audit/evidence | append-only records, protected immutable sink, correlation IDs, retention/legal hold, export audit |
-| Supply chain | pinned actions, SBOM, secret/dependency/license/container scan, signed provenance |
-| Privacy | minimization, retention, DSR process, data residency decision, provider controls |
-| AI | tenant policy, provider allowlist, scoped retrieval, citations, no autonomous official write |
+| Domain                | Required control                                                                                   |
+| --------------------- | -------------------------------------------------------------------------------------------------- |
+| Identity              | OIDC/SAML, MFA/session controls, SCIM consideration, production mock-auth prohibition              |
+| Authorization         | RBAC + ABAC, server enforcement, PostgreSQL RLS, least privilege, periodic access review           |
+| Segregation of duties | configurable incompatible roles/actions; approval/certification/exception checks                   |
+| Data protection       | TLS, encryption at rest/envelope KMS, secrets manager, key rotation, classification/masking        |
+| Tenant isolation      | tenant-scoped database/cache/queue/object paths; negative tests for every boundary                 |
+| Application security  | schema validation, output encoding, CSRF strategy, CSP, rate limits, secure headers, idempotency   |
+| Audit/evidence        | append-only records, protected immutable sink, correlation IDs, retention/legal hold, export audit |
+| Supply chain          | pinned actions, SBOM, secret/dependency/license/container scan, signed provenance                  |
+| Privacy               | minimization, retention, DSR process, data residency decision, provider controls                   |
+| AI                    | tenant policy, provider allowlist, scoped retrieval, citations, no autonomous official write       |
 
 ## Compliance claim policy
 

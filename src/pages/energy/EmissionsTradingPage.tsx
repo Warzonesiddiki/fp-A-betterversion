@@ -22,7 +22,7 @@ import { roundTo, sumMoney } from '@/utils/money';
 import { useGLStore } from '@/store/glStore';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
-const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
+const fiscalPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
 interface AllowanceHolding {
   id: string;
@@ -102,7 +102,7 @@ export default function EmissionsTradingPage() {
       key: 'gainPct',
       header: 'Unrealised Gain/Loss',
       align: 'right',
-      render: (v) => (v == null ? '—' : `${(v as number).toFixed(1)}%`),
+      render: (v) => (v == null ? '—' : `${formatNumber(v as number, 1)}%`),
     },
   ];
 
@@ -115,7 +115,7 @@ export default function EmissionsTradingPage() {
           purpose="Carbon allowance management, credit portfolio valuation, and net-zero compliance tracking."
         />
         <div className="flex items-center gap-3">
-          <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
+          <PeriodPicker value={periodId} onChange={setPeriodId} periods={fiscalPeriods} />
           <Button variant="outline" size="sm" disabled>
             <Download className="h-4 w-4 mr-2" />
             Export for Audit

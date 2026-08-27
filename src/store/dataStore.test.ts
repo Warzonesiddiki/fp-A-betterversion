@@ -1,10 +1,50 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useDataStore } from './dataStore';
+import { useAuthStore } from './authStore';
+import { PermissionError } from '@/utils/rbacEnforcer';
 import type { GLAccount, ImportJob, ImportStatus } from '@/types';
 import type { AccountType } from '@/types';
 
+// ---------------------------------------------------------------------------
+// N-0002 fail-closed regression harness. dataStore must be wired to plain
+// `masterStorage`; the low-level backends are mocked so the REAL
+// masterStorage pipeline (encrypt/decrypt/error-channel) runs under test,
+// exactly like src/utils/__tests__/masterStorage.failClosed.test.ts.
+// ---------------------------------------------------------------------------
+const { mockSqlGet, mockSqlSet, mockSqlRemove, mockTauriGet, mockIsTauri } = vi.hoisted(() => ({
+  mockSqlGet: vi.fn(),
+  mockSqlSet: vi.fn(),
+  mockSqlRemove: vi.fn(),
+  mockTauriGet: vi.fn(),
+  mockIsTauri: vi.fn(),
+}));
+
+vi.mock('../utils/sqlJsStorage', () => ({
+  sqlJsStorage: { getItem: mockSqlGet, setItem: mockSqlSet, removeItem: mockSqlRemove },
+}));
+
+vi.mock('../utils/tauriSqlStorage', () => ({
+  tauriSqlStorage: { getItem: mockTauriGet, setItem: vi.fn(), removeItem: vi.fn() },
+  isTauri: mockIsTauri,
+}));
+
+vi.mock('../utils/chunkedStorage', () => ({
+  wrapChunkedStorage: (s: unknown) => s,
+  __resetWorkerAvailabilityForTests: vi.fn(),
+}));
+
+import {
+  masterStorage,
+  subscribeStorageErrors,
+  StorageDecryptionError,
+  StorageWriteError,
+} from '../utils/masterStorage';
+
 describe('dataStore', () => {
   beforeEach(() => {
+    // W6-P0-14: mutating actions are permission-guarded; happy paths run as an
+    // Admin-scope user holding exactly the store's enforced permissions.
+    authenticateDataUser(['import:create', 'import:update', 'import:delete']);
     useDataStore.setState({
       accounts: [],
       importJobs: [],
@@ -345,5 +385,242 @@ describe('dataStore', () => {
     useDataStore.setState({ selectedAccountId: 'acct-1' });
     useDataStore.getState().setSelectedAccount(null);
     expect(useDataStore.getState().selectedAccountId).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// W6-P0-14 — RBAC enforcement on GL account mutations.
+// The existing happy-path tests above run as an authenticated Admin-scope
+// user (fixture below); this block proves the negative half: without the
+// matching permission, every mutating action throws PermissionError and
+// leaves state untouched.
+// ---------------------------------------------------------------------------
+
+function authenticateDataUser(permissions: readonly string[]): void {
+  useAuthStore.setState({
+    user: {
+      id: 'data-test-user',
+      email: 'data-test@finplan.local',
+      firstName: 'Data',
+      lastName: 'Tester',
+      avatarUrl: null,
+      role: 'Admin',
+      departmentId: 'finance',
+      departmentName: 'Finance',
+      entityId: 'entity-001',
+      status: 'Active',
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+      permissions: [...permissions],
+    },
+    isAuthenticated: true,
+  });
+}
+
+describe('dataStore RBAC (W6-P0-14)', () => {
+  const account = (id: string, overrides: Partial<GLAccount> = {}): GLAccount => ({
+    id,
+    code: '1010',
+    name: 'Cash',
+    type: 'Asset' as AccountType,
+    category: 'Current Assets',
+    subCategory: 'Cash',
+    parentId: null,
+    level: 1,
+    sortOrder: 1,
+    isActive: true,
+    entityId: 'ent-1',
+    departmentId: null,
+    isCalculated: false,
+    formula: null,
+    children: [],
+    ...overrides,
+  });
+
+  beforeEach(() => {
+    useAuthStore.setState({ user: null, isAuthenticated: false });
+    useDataStore.setState({
+      accounts: [account('a1')],
+      importJobs: [],
+      selectedAccountId: null,
+      lastImportDate: null,
+    });
+  });
+
+  it('deleting a GL account without permission throws PermissionError (no user)', () => {
+    expect(() => useDataStore.getState().deleteAccount('a1')).toThrow(PermissionError);
+    // State untouched by the denied call:
+    expect(useDataStore.getState().accounts).toHaveLength(1);
+  });
+
+  it('Viewer role cannot toggle accounts (import:update not held)', () => {
+    authenticateDataUser(['gl:read', 'import:read']);
+    expect(() => useDataStore.getState().toggleAccountActive('a1')).toThrow(PermissionError);
+    expect(useDataStore.getState().accounts[0]!.isActive).toBe(true);
+  });
+
+  it('addAccount/updateAccount/setAccounts require import permissions', () => {
+    authenticateDataUser(['budget:create']);
+    expect(() =>
+      useDataStore.getState().addAccount({
+        code: '3000',
+        name: 'Equity',
+        type: 'Equity',
+        category: 'Equity',
+        subCategory: 'Common Stock',
+        parentId: null,
+        level: 1,
+        sortOrder: 3,
+        isActive: true,
+        entityId: 'ent-1',
+        departmentId: null,
+        isCalculated: false,
+        formula: null,
+      })
+    ).toThrow(PermissionError);
+    expect(() => useDataStore.getState().updateAccount('a1', { name: 'X' })).toThrow(
+      PermissionError
+    );
+    expect(() => useDataStore.getState().setAccounts([])).toThrow(PermissionError);
+    expect(() => useDataStore.getState().addImportJob({} as ImportJob)).toThrow(PermissionError);
+  });
+
+  it('granted import permissions allow the full mutation set', () => {
+    authenticateDataUser(['import:create', 'import:update', 'import:delete']);
+    const s = useDataStore.getState();
+    s.addImportJob({
+      filename: 't.csv',
+      fileType: 'csv',
+      rowCount: 1,
+      successCount: 0,
+      errorCount: 0,
+      completedAt: null,
+      startedBy: 'u',
+      startedByName: 'U',
+    });
+    expect(() => s.setAccounts([account('a2')])).not.toThrow();
+    expect(() => s.addAccount(account('a3'))).not.toThrow();
+    expect(() => s.updateAccount('a2', { name: 'Renamed' })).not.toThrow();
+    expect(() => s.toggleAccountActive('a2')).not.toThrow();
+    expect(() => s.deleteAccount('a2')).not.toThrow();
+    // addAccount assigns its own acct-* id:
+    const ids = useDataStore.getState().accounts.map((a) => a.id);
+    expect(ids).toHaveLength(1);
+    expect(ids[0]).toMatch(/^acct-/);
+  });
+
+  it('selection stays unguarded (read-only/selective action)', () => {
+    useAuthStore.setState({ user: null, isAuthenticated: false });
+    expect(() => useDataStore.getState().setSelectedAccount('a1')).not.toThrow();
+    expect(useDataStore.getState().selectedAccountId).toBe('a1');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// N-0002 / lane-A1 P0 regression — dataStore persistence must FAIL LOUDLY.
+//
+// The store previously wrapped masterStorage in an error-swallowing adapter:
+// a corrupt or failed read returned null (silent EMPTY hydrate of the GL /
+// import-jobs data) and failed writes were dropped (silent financial data
+// loss). With plain `masterStorage`, corruption surfaces as a typed error on
+// the subscribeStorageErrors channel (StorageFailureBanner) and write errors
+// propagate — a failed read is never indistinguishable from an empty store.
+// ---------------------------------------------------------------------------
+
+describe('dataStore persistence fail-closed (N-0002 regression)', () => {
+  beforeEach(async () => {
+    mockSqlGet.mockReset();
+    mockSqlSet.mockReset();
+    mockSqlRemove.mockReset();
+    mockTauriGet.mockReset();
+    mockIsTauri.mockResolvedValue(false);
+    masterStorage.__resetCache?.();
+    localStorage.clear();
+    // Drain the persist write pipeline: masterStorage crosses a real
+    // WebCrypto task boundary, so without awaiting, this reset write would
+    // still be in flight and could consume a mockRejectedValueOnce meant
+    // for the test body (and surface as an unhandled rejection).
+    await (useDataStore.setState({
+      accounts: [],
+      importJobs: [],
+      selectedAccountId: null,
+      lastImportDate: null,
+    }) as unknown as Promise<void>);
+  });
+
+  it('corrupt persisted payload emits a loud decrypt/read failure for "data-store", never a silent empty hydrate', async () => {
+    // Non-empty, undecryptable ciphertext (same fixture class as the
+    // masterStorage.failClosed suite): must fail closed, not hydrate null.
+    const CORRUPT = 'QUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVo=';
+    mockSqlGet.mockResolvedValue(CORRUPT);
+
+    const events: { operation: string; storeKey: string; error: Error }[] = [];
+    const unsub = subscribeStorageErrors((e) => events.push(e));
+    try {
+      await useDataStore.persist.rehydrate();
+
+      expect(events).toHaveLength(1);
+      expect(events[0]).toMatchObject({ operation: 'decrypt', storeKey: 'data-store' });
+      expect(events[0]!.error).toBeInstanceOf(StorageDecryptionError);
+      // Hydration did NOT complete, and the corrupt payload never became state.
+      expect(useDataStore.persist.hasHydrated()).toBe(false);
+      expect(useDataStore.getState().accounts).toEqual([]);
+      // The ciphertext itself is never handed back as application state.
+      expect(JSON.stringify(useDataStore.getState())).not.toContain('QUJDREVGR0g');
+    } finally {
+      unsub();
+    }
+  });
+
+  it('failed backend read is loud too — StorageReadError event, distinct from absent data', async () => {
+    mockSqlGet.mockRejectedValue(new Error('SQLITE_CORRUPT: database disk image is malformed'));
+
+    const events: { operation: string; storeKey: string }[] = [];
+    const unsub = subscribeStorageErrors((e) => events.push(e));
+    try {
+      await useDataStore.persist.rehydrate();
+
+      expect(events).toHaveLength(1);
+      expect(events[0]).toMatchObject({ operation: 'read', storeKey: 'data-store' });
+      expect(useDataStore.getState().importJobs).toEqual([]);
+    } finally {
+      unsub();
+    }
+
+    // Absent data remains legitimate and silent (no event):
+    const events2: unknown[] = [];
+    const unsub2 = subscribeStorageErrors((e) => events2.push(e));
+    try {
+      mockSqlGet.mockResolvedValue(null);
+      await useDataStore.persist.rehydrate();
+      expect(events2).toHaveLength(0);
+      expect(useDataStore.persist.hasHydrated()).toBe(true);
+    } finally {
+      unsub2();
+    }
+  });
+
+  it('write failures propagate instead of being swallowed into silent loss', async () => {
+    mockSqlSet.mockRejectedValueOnce(new DOMException('quota exceeded', 'QuotaExceededError'));
+
+    const events: { operation: string; storeKey: string; error: Error }[] = [];
+    const unsub = subscribeStorageErrors((e) => events.push(e));
+    try {
+      // api.setState returns the persist write promise (zustand v5), so the
+      // rejection is observable and cannot escape as an unhandled rejection.
+      const write = useDataStore.setState({ selectedAccountId: 'acct-1' });
+      await expect(write).rejects.toBeInstanceOf(StorageWriteError);
+
+      expect(events.some((e) => e.operation === 'write' && e.storeKey === 'data-store')).toBe(true);
+    } finally {
+      unsub();
+    }
+
+    // The in-memory state change still applied; only persistence failed loudly.
+    expect(useDataStore.getState().selectedAccountId).toBe('acct-1');
+
+    // Next write succeeds once the backend recovers.
+    await expect(useDataStore.setState({ selectedAccountId: 'acct-2' })).resolves.toBeUndefined();
+    expect(useDataStore.getState().selectedAccountId).toBe('acct-2');
   });
 });

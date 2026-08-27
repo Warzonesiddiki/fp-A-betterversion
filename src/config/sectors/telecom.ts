@@ -3,24 +3,16 @@ import type { SectorConfig } from './index';
 export const telecomConfig: SectorConfig = {
   id: 'telecom',
   name: 'Telecommunications',
-  description: 'Telecom metrics: ARPU, Churn, SAC, Network CapEx',
+  description:
+    'Telecom: posted revenue, CAPEX/revenue ratio and operating surplus from classified GL; ARPU and churn need billing feeds.',
   defaultKPIs: [
     { id: 'arpu', label: 'Average Revenue Per User', format: 'currency', target: 45 },
     {
-      id: 'subscriber_churn',
-      label: 'Subscriber Churn Rate',
+      id: 'network_availability',
+      label: 'Network Availability',
       format: 'percent',
-      target: 1.5,
-      lowerIsBetter: true,
+      target: 99.99,
     },
-    {
-      id: 'sac',
-      label: 'Subscriber Acquisition Cost',
-      format: 'currency',
-      target: 200,
-      lowerIsBetter: true,
-    },
-    { id: 'network_availability', label: 'Network Availability', format: 'percent', target: 99.99 },
     {
       id: 'capex_to_revenue',
       label: 'CapEx/Revenue Ratio',

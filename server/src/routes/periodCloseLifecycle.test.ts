@@ -51,6 +51,31 @@ const glEntryPayload = (description: string, postDate: string) => ({
   description,
 });
 
+/** Balanced Dr(asset)/Cr(equity) batch — the W0.3 gate rejects one-sided posts. */
+const EQUITY_UUID = '11111111-1111-4111-8111-111111111112';
+const balancedPairPayload = (description: string, postDate: string, amount = 100) => ({
+  entries: [
+    {
+      account_id: ACCOUNT_UUID,
+      entity_id: ENTITY_UUID,
+      post_date: postDate,
+      amount,
+      debit: amount,
+      credit: 0,
+      description,
+    },
+    {
+      account_id: EQUITY_UUID,
+      entity_id: ENTITY_UUID,
+      post_date: postDate,
+      amount,
+      debit: 0,
+      credit: amount,
+      description,
+    },
+  ],
+});
+
 const token = (role: string, id = `${role.toLowerCase()}-id`) =>
   jwt.sign({ id, email: `${id}@finplan.test`, role }, JWT_SECRET, { expiresIn: '15m' });
 
@@ -66,9 +91,24 @@ const SEED_ACTORS: ReadonlyArray<readonly [string, string, string]> = [
 for (const [id, email, role] of SEED_ACTORS) {
   db.prepare(
     `INSERT OR REPLACE INTO users (id, email, password_hash, first_name, last_name, role, is_active)
-     VALUES (?, ?, ?, ?, ?, ?, 1)`
-  ).run(id, email, 'not-a-real-hash', 'Seed', 'User', role);
+     VALUES (?, ?, 'not-a-real-hash', 'Seed', 'User', ?, 1)`
+  ).run(id, email, role);
 }
+
+// Real-SQLite FK enforcement: gl_entries.account_id/entity_id reference
+// accounts/entities. The balanced-pair GL posts below need both legs seeded.
+db.prepare(
+  `INSERT OR REPLACE INTO accounts (id, name, code, type, is_active)
+   VALUES (?, 'Close Lifecycle Asset', 'CL-ASSET', 'Asset', 1)`
+).run(ACCOUNT_UUID);
+db.prepare(
+  `INSERT OR REPLACE INTO accounts (id, name, code, type, is_active)
+   VALUES (?, 'Close Lifecycle Equity', 'CL-EQ', 'Equity', 1)`
+).run(EQUITY_UUID);
+db.prepare(
+  `INSERT OR REPLACE INTO entities (id, name, code, is_active)
+   VALUES (?, 'Close Lifecycle Entity', 'CL-ENT', 1)`
+).run(ENTITY_UUID);
 
 describe('GAP-4: period close full lifecycle (UI contract -> server -> durable state -> audit)', () => {
   let admin: string;
@@ -414,11 +454,12 @@ describe('GAP-4: period close full lifecycle (UI contract -> server -> durable s
       expect(state.body.isClosed).toBe(false);
 
       // Adjusting entry to a soft-closed period is ALLOWED under the policy.
+      // Balanced pair — the W0.3 three-statement gate rejects one-sided posts.
       const post = await request(app)
-        .post('/api/gl/entries')
+        .post('/api/gl/entries/bulk')
         .set('Authorization', `Bearer ${admin}`)
-        .send(glEntryPayload('Soft-close adjusting entry', postDate));
-      expect(post.status).not.toBe(403);
+        .send(balancedPairPayload('Soft-close adjusting entry', postDate));
+      expect(post.status).toBe(201);
     });
 
     it('hard-close still blocks GL posting (is_closed = 1)', async () => {
@@ -441,10 +482,10 @@ describe('GAP-4: period close full lifecycle (UI contract -> server -> durable s
         .send({ reason: 'Adjusting entry needed' });
 
       const res = await request(app)
-        .post('/api/gl/entries')
+        .post('/api/gl/entries/bulk')
         .set('Authorization', `Bearer ${admin}`)
-        .send(glEntryPayload('Post-reopen entry', postDate));
-      expect(res.status).not.toBe(403);
+        .send(balancedPairPayload('Post-reopen entry', postDate));
+      expect(res.status).toBe(201);
     });
   });
 });

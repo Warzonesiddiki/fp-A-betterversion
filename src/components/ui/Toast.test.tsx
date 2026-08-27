@@ -70,4 +70,17 @@ describe('Toast', () => {
     render(<Toast toast={createToast({ message: undefined })} onDismiss={vi.fn()} />);
     expect(screen.getByText('Success!')).toBeInTheDocument();
   });
+
+  // Wave-7E a11y: the card used to carry role="alert" + aria-live="assertive"
+  // while nested inside the container's polite status region — every toast
+  // interrupted. Politeness is now owned exclusively by the container's
+  // sibling regions; the card itself must stay live-region-neutral.
+  it('carries no own live-region semantics for any severity', () => {
+    const { container } = render(
+      <Toast toast={createToast({ type: 'error', title: 'Error!' })} onDismiss={vi.fn()} />
+    );
+    const card = container.firstElementChild as HTMLElement;
+    expect(card).not.toHaveAttribute('role');
+    expect(card).not.toHaveAttribute('aria-live');
+  });
 });

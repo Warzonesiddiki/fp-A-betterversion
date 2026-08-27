@@ -1,88 +1,101 @@
-import React, { useEffect, useMemo } from 'react';
+/**
+ * Energy sector overview — every metric is derived from the posted GL and EnergyEngine.
+ *
+ * CORRECTNESS CONTRACT:
+ * 1. Sector KPIs come from `EnergyEngine.calculateStats` and `EnergyEngine.getProductionBySource`
+ *    (pure, money-primitive-backed). This page previously rendered a generic debit/credit reskin
+ *    while the engine and store sat unwired.
+ * 2. Energy assets and operational generation metrics reflect recorded data in `useEnergyStore`.
+ * 3. Revenue is derived from posted energy generation and utility accounts (4xxx), and operating
+ *    costs from posted power plant O&M / fuel accounts (5xxx/6xxx).
+ */
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  AlertTriangle,
+  CheckCircle,
+  Download,
+  DollarSign,
+  FileSpreadsheet,
+  Layers,
+  TrendingUp,
+  Zap,
+} from 'lucide-react';
 import { useGLStore } from '@/store/glStore';
 import { useEnergyStore } from '@/store/energyStore';
+import { EnergyEngine } from '@/engines/EnergyEngine';
+import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { aggregateAccounts } from './accountOverview';
+import { AccountOverviewCard } from './AccountOverviewCard';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { DataTable, Column } from '@/components/ui/DataTable';
-import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
-import { Zap, DollarSign, Layers, TrendingUp } from 'lucide-react';
-import type { GLEntry } from '@/types';
-import { addMoney, roundTo, sumMoney } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
 
-function computeEnergyStats(entries: readonly GLEntry[]) {
-  const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
-  const totalCredit = roundTo(sumMoney(entries.map((e) => e.credit)), 2);
-  const netChange = roundTo(sumMoney(entries.map((e) => e.netChange)), 2);
-  const uniqueAccounts = new Set(entries.map((e) => e.accountCode)).size;
-
-  const accountMap = new Map<
-    string,
-    { name: string; debit: number; credit: number; net: number; count: number }
-  >();
-  for (const e of entries) {
-    const existing = accountMap.get(e.accountCode) ?? {
-      name: e.accountName,
-      debit: 0,
-      credit: 0,
-      net: 0,
-      count: 0,
-    };
-    existing.debit = addMoney(existing.debit, e.debit ?? 0).toNumber();
-    existing.credit = addMoney(existing.credit, e.credit ?? 0).toNumber();
-    existing.net = addMoney(existing.net, e.netChange ?? 0).toNumber();
-    existing.count += 1;
-    accountMap.set(e.accountCode, existing);
-  }
-
-  const accountBreakdown = Array.from(accountMap.entries())
-    .map(([code, data]) => ({
-      accountCode: code,
-      accountName: data.name,
-      debit: data.debit,
-      credit: data.credit,
-      netChange: data.net,
-      transactions: data.count,
-    }))
-    .sort((a, b) => Math.abs(b.credit) - Math.abs(a.credit));
-
-  return { totalDebit, totalCredit, netChange, uniqueAccounts, accountBreakdown };
-}
-
-const columns: Column[] = [
-  { key: 'accountCode', header: 'Account Code', sortable: true },
-  { key: 'accountName', header: 'Account Name', sortable: true },
-  { key: 'debit', header: 'Debit', align: 'right', sortable: true },
-  { key: 'credit', header: 'Credit', align: 'right', sortable: true },
-  { key: 'netChange', header: 'Net Change', align: 'right', sortable: true },
-  { key: 'transactions', header: 'Transactions', align: 'right', sortable: true },
-];
-
 export function EnergySectorPage() {
-  const { entries } = useGLStore();
-  const { assets } = useEnergyStore();
+  const fmt = useCurrencyFormatter();
+  const entries = useGLStore((s) => s.entries);
+  const assets = useEnergyStore((s) => s.assets);
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Energy Sector';
   }, []);
 
-  const stats = useMemo(() => computeEnergyStats(entries), [entries]);
+  const stats = useMemo(() => EnergyEngine.calculateStats(entries), [entries]);
+  const sourceProduction = useMemo(() => EnergyEngine.getProductionBySource(entries), [entries]);
+  const accountBreakdown = useMemo(() => aggregateAccounts(entries), [entries]);
 
-  const tableData = useMemo(
-    () =>
-      stats.accountBreakdown.map((row) => ({
-        accountCode: row.accountCode,
-        accountName: row.accountName,
-        debit: formatCurrency(row.debit),
-        credit: formatCurrency(row.credit),
-        netChange: formatCurrency(row.netChange),
-        transactions: formatNumber(row.transactions),
-      })),
-    [stats.accountBreakdown]
-  );
+  const handleExportPDF = () => {
+    void ExportEngine.exportToPDF(
+      {
+        headers: ['Metric', 'Value', 'Basis'],
+        rows: [
+          ['Total Revenue', fmt.currency0(stats.totalRevenue), 'Posted 4xxx energy accounts'],
+          [
+            'Operating Cost',
+            fmt.currency0(stats.operatingCost),
+            'Posted 5xxx/6xxx generation costs',
+          ],
+          ['Net Operating Income', fmt.currency0(stats.netIncome), 'Revenue − Operating Cost'],
+          [
+            'Production Volume',
+            `${fmt.number(stats.productionVolume)} MWh`,
+            'GL revenue ÷ estimated market price',
+          ],
+          ['Avg Realized Price', fmt.currency(stats.avgMarketPrice), 'Revenue ÷ MWh'],
+          [
+            'Carbon Intensity',
+            `${fmt.number(stats.carbonIntensity)} gCO2/kWh`,
+            'Estimated fleet emission rate',
+          ],
+          [
+            'Registered Renewable Assets',
+            fmt.number(assets.length),
+            'Assets recorded in energyStore',
+          ],
+        ],
+      },
+      { title: 'Energy_Sector_Overview_Report' }
+    ).catch(reportExportFailure);
+  };
+
+  const handleExportExcel = () => {
+    void ExportEngine.exportToExcel(
+      {
+        headers: ['Source / Metric', 'Value', 'Unit'],
+        rows: [
+          ['Revenue', stats.totalRevenue, 'USD'],
+          ['Operating Cost', stats.operatingCost, 'USD'],
+          ['Net Income', stats.netIncome, 'USD'],
+          ...sourceProduction.map((sp) => [sp.name, sp.value, 'MWh']),
+        ],
+      },
+      { title: 'Energy_Production_Financials' }
+    ).catch(reportExportFailure);
+  };
 
   const handleImportKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -130,10 +143,23 @@ export function EnergySectorPage() {
       <PageHeader
         title="Energy Sector"
         titleId="energy-heading"
+        purpose="Sector KPIs derived from posted GL accounts (4xxx energy revenue, 5xxx/6xxx generation costs) via EnergyEngine."
         status={
           <span className="text-sm text-[var(--text-muted)]">
-            {formatNumber(entries.length)} entries imported
+            {fmt.number(entries.length)} entries imported · {assets.length} renewable assets
           </span>
+        }
+        actions={
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
+              <Download className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              PDF
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
+              <FileSpreadsheet className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              Excel
+            </Button>
+          </div>
         }
       />
       <section
@@ -143,42 +169,84 @@ export function EnergySectorPage() {
         aria-labelledby="energy-heading"
       >
         <KPIValue
-          label="Total Entries"
-          value={formatNumber(entries.length)}
+          label="Total Revenue"
+          value={fmt.currency0(stats.totalRevenue)}
           icon={<Zap className="h-4 w-4" aria-hidden="true" />}
+          changeLabel="Posted 4xxx energy revenue accounts"
         />
         <KPIValue
-          label="Energy Data Points"
-          value={formatNumber(assets.length)}
-          icon={<Layers className="h-4 w-4" aria-hidden="true" />}
-        />
-        <KPIValue
-          label="Total Debit"
-          value={formatCompactNumber(stats.totalDebit)}
+          label="Operating Cost"
+          value={fmt.currency0(stats.operatingCost)}
           icon={<DollarSign className="h-4 w-4" aria-hidden="true" />}
+          changeLabel="Posted 5xxx/6xxx generation costs"
         />
         <KPIValue
-          label="Total Credit"
-          value={formatCompactNumber(stats.totalCredit)}
+          label="Net Operating Income"
+          value={fmt.currency0(stats.netIncome)}
           icon={<TrendingUp className="h-4 w-4" aria-hidden="true" />}
+          changeLabel="Revenue − Operating Cost"
+        />
+        <KPIValue
+          label="Renewable Assets"
+          value={fmt.number(assets.length)}
+          icon={<Layers className="h-4 w-4" aria-hidden="true" />}
+          changeLabel="Assets tracked in energy store"
         />
       </section>
-      <Card aria-label="Account Overview" aria-live="polite">
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card aria-label="Generation by Energy Source" aria-live="polite">
+          <CardHeader>
+            <CardTitle>Generation by Energy Source</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {sourceProduction.length === 0 ? (
+              <p className="text-[var(--text-muted)]">
+                No generation-source accounts (41xx Solar, 42xx Wind, 43xx Hydro, 44xx Thermal, 45xx
+                Nuclear) found.
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {sourceProduction.map((sp) => (
+                  <li key={sp.name} className="flex items-baseline justify-between text-sm">
+                    <span className="flex items-center gap-2">
+                      <span
+                        className="inline-block w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: sp.color }}
+                        aria-hidden="true"
+                      />
+                      {sp.name}
+                    </span>
+                    <span className="font-mono tabular-nums">{fmt.number(sp.value)} MWh</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+
+        <AccountOverviewCard rows={accountBreakdown} />
+      </div>
+
+      <Card>
         <CardHeader>
-          <CardTitle id="account-overview-title">Account Overview</CardTitle>
+          <CardTitle>Data Lineage & Grid Integration</CardTitle>
         </CardHeader>
-        <CardContent aria-labelledby="account-overview-title">
-          {tableData.length > 0 ? (
-            <DataTable
-              columns={columns}
-              data={tableData}
-              sortable
-              caption="Energy sector accounts table"
-              ariaLabel="Energy sector accounts"
-            />
-          ) : (
-            <p className="text-[var(--text-muted)]">No account data available.</p>
-          )}
+        <CardContent className="space-y-2 text-xs text-[var(--text-muted)]">
+          <p className="flex items-start gap-2">
+            <CheckCircle className="h-4 w-4 shrink-0 mt-0.5 text-[#16A34A]" aria-hidden="true" />
+            <span>
+              Revenue, operating cost, and production metrics are derived via
+              EnergyEngine.calculateStats over {fmt.number(entries.length)} posted ledger rows.
+            </span>
+          </p>
+          <p className="flex items-start gap-2">
+            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-[#DC2626]" aria-hidden="true" />
+            <span>
+              Real-time SCADA telemetry, turbine availability, and grid interconnect frequency
+              require operational IoT feeds; non-ledger facts are not estimated.
+            </span>
+          </p>
         </CardContent>
       </Card>
     </main>

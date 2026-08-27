@@ -258,3 +258,68 @@ describe('money AST detector — must NOT flag safe or non-monetary code', () =>
     expect(count).toBeGreaterThan(0);
   });
 });
+
+describe('money AST detector — type-aware checks (W0.1.6)', () => {
+  it('ignores === between string-typed ISO-4217 currency codes (FXPositionGrid regression)', () => {
+    // The checker proves both operands are strings: identity comparison of
+    // currency codes has no rounding or precision semantics. This retires the
+    // whole currency-comparison @money-ast-allow class.
+    const { count } = analyse(`
+      export const same = (
+        fromCurrency: string,
+        toCurrency: string,
+        r: { fromCurrency: string; toCurrency: string }
+      ) => fromCurrency === toCurrency || r.fromCurrency !== r.toCurrency;
+    `);
+    expect(count).toBe(0);
+  });
+
+  it('ignores === between branded CurrencyCode strings', () => {
+    const { count } = analyse(`
+      type CurrencyCode = string & { readonly __brand: 'CurrencyCode' };
+      export const same = (a: CurrencyCode, b: CurrencyCode) => a === b;
+    `);
+    expect(count).toBe(0);
+  });
+
+  it('ignores bigint / PreciseAmount arithmetic — exact integers cannot drift', () => {
+    const { count } = analyse(`
+      type PreciseAmount = bigint;
+      export interface PreciseFinancialValue {
+        readonly amount: PreciseAmount;
+        readonly scale: number;
+      }
+      export const net = (a: { amount: bigint }, b: { amount: bigint }) => a.amount - b.amount;
+    `);
+    expect(count).toBe(0);
+  });
+
+  it('flags arithmetic on an innocuously-named variable with a monetary TYPE (shadowed name)', () => {
+    // Renaming `invoiceTotal` to `x` used to launder float arithmetic past
+    // the gate. The checker reads the declared type name instead.
+    const { count } = analyse(`
+      type InvoiceAmount = number;
+      export function add(x: InvoiceAmount, y: InvoiceAmount) {
+        return x + y;
+      }
+    `);
+    expect(count).toBeGreaterThan(0);
+  });
+
+  it('does NOT flag innocuously-named plain-number variables with neutral types', () => {
+    const { count } = analyse(`
+      type Pixel = number;
+      export function offset(x: Pixel, w: Pixel) {
+        return x + w * 2;
+      }
+    `);
+    expect(count).toBe(0);
+  });
+
+  it('still flags string-typed operands ONLY for non-arithmetic misuse — string concat stays safe', () => {
+    const { count } = analyse(`
+      export const label = (code: string) => 'Currency: ' + code;
+    `);
+    expect(count).toBe(0);
+  });
+});

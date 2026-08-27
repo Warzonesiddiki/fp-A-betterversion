@@ -104,4 +104,15 @@ describe('ScenarioComparisonGrid', () => {
     render(<ScenarioComparisonGrid baseMetrics={baseMetrics} scenarios={scenarios} />);
     expect(screen.getByText('Base')).toBeInTheDocument();
   });
+
+  it('K33 basis hints: headcount/runway/cashFlow/burnRate rows are labeled as base assumptions, not measured', () => {
+    render(<ScenarioComparisonGrid baseMetrics={baseMetrics} scenarios={scenarios} />);
+    expect(screen.getByText('Headcount (base assumption)')).toBeInTheDocument();
+    expect(screen.getByText('Runway (months, base assumption)')).toBeInTheDocument();
+    expect(screen.getByText('Cash Flow (base assumption)')).toBeInTheDocument();
+    expect(screen.getByText('Burn Rate (base assumption)')).toBeInTheDocument();
+    // The bare, unlabeled forms must be gone so nothing reads as measured.
+    expect(screen.queryByText('Headcount')).not.toBeInTheDocument();
+    expect(screen.queryByText('Burn Rate')).not.toBeInTheDocument();
+  });
 });

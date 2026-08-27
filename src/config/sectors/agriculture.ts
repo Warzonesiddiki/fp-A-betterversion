@@ -3,10 +3,9 @@ import type { SectorConfig } from './index';
 export const agricultureConfig: SectorConfig = {
   id: 'agriculture',
   name: 'Agriculture',
-  description: 'Agriculture industry — crop production, livestock, and agribusiness',
+  description:
+    'Agriculture: posted revenue, costs, margin and labor share from classified GL; agronomy and equipment KPI targets await operational feeds.',
   defaultKPIs: [
-    { id: 'crop-yield', label: 'Crop Yield (ton/ha)', format: 'number', target: 10 },
-    { id: 'revenue-per-acre', label: 'Revenue per Acre', format: 'currency', target: 5000 },
     {
       id: 'cost-per-unit',
       label: 'Cost per Unit',

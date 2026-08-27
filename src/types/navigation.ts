@@ -70,6 +70,11 @@ export const NAV_SECTIONS: readonly NavSection[] = [
           { path: '/', label: 'Dashboard', hidden: true },
           { path: '/dashboard', label: 'Dashboard' },
           { path: '/board-pack', label: 'Board Pack' },
+          {
+            path: '/reports/board-pack/new',
+            label: 'Board Pack (legacy path)',
+            hidden: true,
+          },
           { path: '/profile', label: 'My Profile' },
           { path: '/help', label: 'Help Center' },
           { path: '/docs/api', label: 'API Reference' },
@@ -144,6 +149,8 @@ export const NAV_SECTIONS: readonly NavSection[] = [
       {
         label: 'Workforce',
         items: [
+          // W0.5 slice 3: hub root redirects to /workforce/headcount.
+          { path: '/workforce', label: 'Workforce', hidden: true },
           { path: '/workforce/headcount', label: 'Headcount Plan', permission: 'budget:read' },
           {
             path: '/workforce/compensation',
@@ -164,6 +171,11 @@ export const NAV_SECTIONS: readonly NavSection[] = [
         label: null,
         items: [
           { path: '/variance', label: 'Variance Analysis', permission: 'variance:read' },
+          {
+            path: '/reports/variance',
+            label: 'Variance Analysis (legacy path)',
+            hidden: true,
+          },
           { path: '/analytics', label: 'Advanced Analytics', permission: 'analytics:read' },
           { path: '/analytics/benchmarking', label: 'Benchmarking', permission: 'analytics:read' },
           { path: '/analytics/goal-seek', label: 'Goal Seek', permission: 'analytics:read' },
@@ -249,11 +261,21 @@ export const NAV_SECTIONS: readonly NavSection[] = [
           { path: '/audit/sox', label: 'SOX Audit', permission: 'audit:read' },
           { path: '/audit/fair-value', label: 'Fair Value (ASC 820)', permission: 'audit:read' },
           { path: '/audit/impairment', label: 'Impairment (ASC 360)', permission: 'audit:read' },
+          { path: '/audit', label: 'Audit Trail (legacy path)', hidden: true },
+          { path: '/audit-trail', label: 'Audit Trail (legacy path)', hidden: true },
+          { path: '/sox', label: 'SOX Audit (legacy path)', hidden: true },
+          {
+            path: '/compliance/sox',
+            label: 'SOX Audit (legacy path)',
+            hidden: true,
+          },
         ],
       },
       {
         label: 'Data Management',
         items: [
+          // W0.5 slice 3: hub root redirects to /accounting/depreciation.
+          { path: '/accounting', label: 'Accounting', hidden: true },
           { path: '/data', label: 'Data Import', permission: 'import:read' },
           { path: '/data/migration', label: 'Data Migration', permission: 'import:read' },
           { path: '/data/data-flow', label: 'Data Flow', permission: 'import:read' },
@@ -263,6 +285,11 @@ export const NAV_SECTIONS: readonly NavSection[] = [
             permission: 'gl:reconcile',
           },
           { path: '/data/version-diff', label: 'Version Diff', permission: 'import:read' },
+          {
+            path: '/reconciliation',
+            label: 'Data Reconciliation (legacy path)',
+            hidden: true,
+          },
           { path: '/accounting/depreciation', label: 'Depreciation Schedule' },
           { path: '/accounting/multi-book', label: 'Multi-Book Accounting' },
         ],
@@ -281,15 +308,47 @@ export const NAV_SECTIONS: readonly NavSection[] = [
             permission: 'import:read',
           },
           { path: '/data/gl-reporting', label: 'GL Reporting', permission: 'import:read' },
+          {
+            path: '/reports/trial-balance',
+            label: 'Trial Balance (legacy path)',
+            hidden: true,
+          },
         ],
       },
       {
         label: 'Period Close',
-        items: [{ path: '/periods/close', label: 'Period Close', permission: 'period:read' }],
+        items: [
+          { path: '/periods/close', label: 'Period Close', permission: 'period:read' },
+          { path: '/periods', label: 'Period Close (legacy path)', hidden: true },
+          { path: '/period-close', label: 'Period Close (legacy path)', hidden: true },
+          {
+            path: '/period-close/trial-balance',
+            label: 'Period Close (legacy path)',
+            hidden: true,
+          },
+          {
+            path: '/period-close/consolidation',
+            label: 'Period Close (legacy path)',
+            hidden: true,
+          },
+          { path: '/period-close/lock', label: 'Period Close (legacy path)', hidden: true },
+          {
+            path: '/period-close/checklist',
+            label: 'Period Close (legacy path)',
+            hidden: true,
+          },
+          {
+            path: '/period-close/signoff',
+            label: 'Period Close (legacy path)',
+            hidden: true,
+          },
+        ],
       },
       {
         label: 'Revenue & Leases',
         items: [
+          // W0.5 slice 3: hub root redirects to /revenue/rev-rec.
+          { path: '/revenue', label: 'Revenue', hidden: true },
           { path: '/lease/accounting', label: 'Lease Accounting' },
           { path: '/revenue/rev-rec', label: 'Revenue Recognition (ASC 606)' },
           { path: '/revenue/deferred', label: 'Deferred Revenue Schedule' },
@@ -299,6 +358,8 @@ export const NAV_SECTIONS: readonly NavSection[] = [
       {
         label: 'Tax',
         items: [
+          // W0.5 slice 3: hub root redirects to /tax/provision.
+          { path: '/tax', label: 'Tax', hidden: true },
           { path: '/tax/provision', label: 'Tax Provision (ASC 740)' },
           { path: '/tax/transfer-pricing', label: 'Transfer Pricing' },
         ],
@@ -316,19 +377,33 @@ export const NAV_SECTIONS: readonly NavSection[] = [
           { path: '/cash/forecast', label: 'Cash Forecast' },
           { path: '/cash/debt', label: 'Debt Schedule' },
           { path: '/cash/working-capital', label: 'Working Capital' },
+          {
+            path: '/cash-forecast',
+            label: 'Cash Forecast (legacy path)',
+            hidden: true,
+          },
         ],
       },
       {
         label: 'Currency',
         items: [
+          // W0.5 slice 3: hub root redirects to /currency/fx-rates.
+          { path: '/currency', label: 'Currency', hidden: true },
           { path: '/currency/fx-rates', label: 'Exchange Rates' },
           { path: '/currency/translation', label: 'Translation Results' },
           { path: '/currency/hedging', label: 'Hedge Management' },
+          {
+            path: '/fx-rates',
+            label: 'Exchange Rates (legacy path)',
+            hidden: true,
+          },
         ],
       },
       {
         label: 'Investments',
         items: [
+          // W0.5 slice 3: hub root redirects to /treasury/investments.
+          { path: '/treasury', label: 'Treasury', hidden: true },
           { path: '/bonds/portfolio', label: 'Bond Portfolio' },
           { path: '/bonds/yield-curve', label: 'Yield Curve' },
           { path: '/credit/risk', label: 'Credit Risk' },
@@ -363,6 +438,16 @@ export const NAV_SECTIONS: readonly NavSection[] = [
             permission: 'entity:read',
           },
           { path: '/consolidation/ownership', label: 'Ownership Tree', permission: 'entity:read' },
+          {
+            path: '/ic-elimination',
+            label: 'Intercompany Eliminations (legacy path)',
+            hidden: true,
+          },
+          {
+            path: '/intercompany/*',
+            label: 'Intercompany Eliminations (legacy path)',
+            hidden: true,
+          },
         ],
       },
     ],
@@ -558,11 +643,16 @@ export const NAV_SECTIONS: readonly NavSection[] = [
           { path: '/settings/integrations', label: 'Integrations', permission: 'settings:read' },
           { path: '/settings/security', label: 'Security', permission: 'settings:read' },
           { path: '/settings', label: 'System Settings', permission: 'settings:read' },
+          { path: '/backup', label: 'Backup (legacy path)', hidden: true },
+          { path: '/backup/restore', label: 'Backup (legacy path)', hidden: true },
         ],
       },
       {
         label: 'Platform',
         items: [
+          // W0.5 slice 3: hub root redirects to /admin/debug (journey spec
+          // tests/e2e/workflows/12-admin.spec.ts navigates /admin directly).
+          { path: '/admin', label: 'Admin', hidden: true },
           { path: '/visual/atlas', label: 'Atlas Visual Baseline (Developer Harness)' },
           { path: '/admin/benchmarks', label: 'Benchmarks' },
           { path: '/admin/engines', label: 'Engine Catalog' },

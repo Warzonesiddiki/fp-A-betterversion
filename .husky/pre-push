@@ -38,11 +38,10 @@ npx vitest run \
   src/domain/persistenceAuthority.test.ts \
   src/components/layout/ \
   src/plugins/ \
-  src/utils/storage/safeJSONStorage.test.ts \
   --reporter=default \
   --testTimeout=10000
 
-# Gate 4: Production build (includes tsc + eslint + vite + PWA).
+# Gate 4: Production build (includes tsc + eslint + vite).
 echo "→ npm run build"
 npm run build
 
@@ -83,10 +82,33 @@ node scripts/money-ast-detector.mjs
 echo "→ fabrication ratchet"
 node scripts/fabrication-detector.mjs
 
+# Gate 9c2: Financial statement oracles (D-03).
+echo "→ financial statement oracles"
+npm run financial:oracles
+
 # Gate 9d: persistence-map drift (W0.8.1) and schema-home equality (W0.8.4).
 echo "→ persistence map + schema equality"
 node scripts/persistence-map-check.mjs
 node scripts/schema-equality-check.mjs
+
+# Gate 9e: route-map drift (W0.5, Blueprint RC1–RC4). src/App.tsx routes must
+# match the five-pillar mapping in docs/product/ROUTE_MAP.md.
+echo "→ route-map drift check"
+node scripts/generate-route-map.js --check
+
+# Gate 9f: docs-truth + engine-manifest currency (N-0013/N-0014, audit
+# ZCFA-2026-07-29-002). Same gates become blocking CI jobs in ci.yml; this
+# keeps local enforcement ahead of a CI pipeline that has never run.
+echo "→ docs truth + engine manifest"
+npm run docs:verify
+npm run engines:verify
+
+# Gate 9g: §24.2 escape-ledger scoreboard integrity (W0.10). Advisory by
+# design — it validates ledger structure/evidence and REPORTS the escape
+# rate; phase thresholds (--phase p1|p2|ga) are enforced only at declared
+# phase-exit reviews, never on routine pushes.
+echo "→ §24.2 escape ledger (advisory)"
+node scripts/escape-ledger-check.mjs
 
 # Gate 10 - CASCADE-HOLD-BUNDLE Auto-Detection (NEVER-AGAIN RULE #68
 # CATCH-NUMBERING-COLLISION PREVENTION). Atlas + Hephaestus joint DRI.

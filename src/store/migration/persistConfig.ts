@@ -19,7 +19,7 @@
 //
 //   persist(
 //     immer((set, get) => ({...})),
-//     persistConfig('data-store', { storage: safeJSONStorage<DataState>(masterStorage) })
+//     persistConfig('data-store', { partialize: (s) => ({...}) }) // with partialize
 //   )
 // =============================================================================
 
@@ -43,8 +43,8 @@ export interface PersistConfigOptions<T> extends Omit<
   initialState?: T;
   /**
    * Override the storage adapter.  Defaults to `masterStorage`.
-   * Most stores use `masterStorage` directly; `dataStore` uses
-   * `safeJSONStorage<T>(masterStorage)` for binary safety.
+   * All stores — including `dataStore` — use `masterStorage` directly;
+   * it is fail-closed (absent -> null, corrupt/failed -> typed error).
    */
   storage?: PersistStorage<T, unknown>;
   /**

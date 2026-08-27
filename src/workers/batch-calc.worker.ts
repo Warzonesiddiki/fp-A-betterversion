@@ -13,6 +13,8 @@ import type {
   BatchCellIdentifier,
   BatchCalcDependency,
 } from './types';
+import { evaluateExpression, SafeExpressionError } from './safeExpression';
+import { readMessageId, readMessagePayload, validateBatchCalcRequest } from './validateRequest';
 
 // --- Cell key helpers ---
 
@@ -169,22 +171,15 @@ function evaluateFormula(formula: string, values: Record<string, number>): numbe
     return parts.length > 0 ? String(Math.min(...parts)) : '0';
   });
 
-  // Safely evaluate arithmetic
-  try {
-    // Only allow safe characters: numbers, operators, parentheses, dots, spaces
-    if (/^[0-9+\-*/().%\s]+$/.test(expr)) {
-      const result = Function(`"use strict"; return (${expr})`)();
-      return typeof result === 'number' && isFinite(result) ? result : 0;
-    }
-    return parseFloat(expr) || 0;
-  } catch {
-    return 0;
-  }
+  // CSP-safe evaluation (W6-P0-01): tokenizer + shunting-yard — NO eval(),
+  // NO new Function() (blocked by the shipped Tauri CSP). Failures THROW and
+  // the caller records the cell key instead of silently zeroing it.
+  return evaluateExpression(expr);
 }
 
 // --- Core batch calculation ---
 
-function runBatchCalc(request: BatchCalcRequest): BatchCalcResponse {
+function runBatchCalc(request: BatchCalcRequest, taskId: string): BatchCalcResponse {
   const {
     cells,
     dependencies,
@@ -201,6 +196,7 @@ function runBatchCalc(request: BatchCalcRequest): BatchCalcResponse {
       affectedCells: [],
       iterationCount: 0,
       converged: true,
+      errors: [],
     };
   }
 
@@ -237,6 +233,7 @@ function runBatchCalc(request: BatchCalcRequest): BatchCalcResponse {
   // Topological sort
   const sortedCells = topologicalSort(expandedKeys, graph);
   const values = { ...initialValues };
+  const formulaErrors: string[] = [];
   let iterationCount = 0;
   let converged = false;
 
@@ -250,7 +247,15 @@ function runBatchCalc(request: BatchCalcRequest): BatchCalcResponse {
       if (!formula) continue;
 
       const oldValue = values[key] ?? 0;
-      const newValue = evaluateFormula(formula, values);
+      let newValue: number;
+      try {
+        newValue = evaluateFormula(formula, values);
+      } catch (error) {
+        // W6-P0-01: record the failing cell loudly instead of silently zeroing.
+        if (!(error instanceof SafeExpressionError)) throw error;
+        formulaErrors.push(key);
+        continue;
+      }
       const change = Math.abs(newValue - oldValue);
 
       if (change > maxChange) {
@@ -262,9 +267,10 @@ function runBatchCalc(request: BatchCalcRequest): BatchCalcResponse {
       }
     }
 
-    // Report progress
+    // Report progress. W7D: echo the incoming task id so the pool's
+    // `response.id !== task.id` filter lets onProgress fire.
     const progressResponse: WorkerResponse = {
-      id: 'batch-calc',
+      id: taskId,
       type: 'progress',
       progress: {
         processed: iteration + 1,
@@ -286,16 +292,23 @@ function runBatchCalc(request: BatchCalcRequest): BatchCalcResponse {
     affectedCells: sortedCells,
     iterationCount,
     converged,
+    errors: formulaErrors,
   };
 }
 
 // --- Worker message handler ---
 
 self.onmessage = (e: MessageEvent<WorkerMessage<BatchCalcRequest>>) => {
-  const { id, payload } = e.data;
+  // W7E/W6-P1: envelope access is guarded and payloads are validated BEFORE
+  // any math runs — malformed messages get a structured {type:'error'} reply
+  // through the existing protocol instead of crashing uncaught or silently
+  // evaluating with NaN values.
+  const envelope: unknown = e.data;
+  const id = readMessageId(envelope);
 
   try {
-    const result = runBatchCalc(payload);
+    const request = validateBatchCalcRequest(readMessagePayload(envelope));
+    const result = runBatchCalc(request, id);
     const response: WorkerResponse<BatchCalcResponse> = {
       id,
       type: 'result',

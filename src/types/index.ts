@@ -802,6 +802,36 @@ export interface GLState {
   lastImportResult: ImportResult | null;
   importHistory: ImportHistoryEntry[];
   lastImportEntryIds: string[];
+  /** W0.8.6 (K25): per-entry server sync status; drafts are client-only until committed. */
+  entrySyncState: Record<string, 'draft' | 'pending' | 'committed' | 'failed'>;
+  /**
+   * W0.8.6 (K27): optimistic-concurrency versions for committed rows, keyed by
+   * SERVER id. Captured at commit time from the server response; consumed as
+   * If-Match on any future conditional write.
+   */
+  entryVersions: Record<string, number>;
+  /** W0.8.6: active environment context for server commits (W0.2 environments). */
+  environmentId: string;
+  setEnvironmentId: (environmentId: string) => void;
+  /**
+   * W0.8.6 spike: commit draft entries to the server via GlCommitNamespace
+   * (K25 — official numbers only through server persistence). Returns a
+   * per-batch outcome summary.
+   */
+  commitDraftsToServer: () => Promise<{
+    committed: number;
+    failed: number;
+    conflicts: { code: string; message: string }[];
+  }>;
+  /**
+   * W0.8.6 boot hydrate (plan §5): pull the active environment's committed
+   * entries from the server and merge them into the local replica so it
+   * converges after a fresh boot. Merge discipline (K25/K27): server values
+   * overwrite ONLY locals whose entrySyncState is 'committed' or whose id is
+   * absent locally; draft/pending/failed rows are never overwritten or
+   * dropped, and versions are captured whenever the listing provides them.
+   */
+  hydrateCommittedFromServer: () => Promise<{ hydrated: number }>;
   setEntries: (entries: GLEntry[]) => void;
   addEntries: (entries: GLEntry[]) => void;
   addEntry: (entry: GLEntry | GLEntry[]) => void;
@@ -812,12 +842,22 @@ export interface GLState {
   filterByAccount: (accountIds: string[]) => void;
   clearFilters: () => void;
   updateColumnMapping: (mapping: ColumnMapping[]) => void;
-  clearData: () => void;
+  /**
+   * W0.8.6 §4: clears local GL data AND tombstones every committed row on the
+   * server (compensating deletes; drafts vanish locally only). Tombstone
+   * failures are summarized into importError and never block the local clear.
+   */
+  clearData: () => Promise<void>;
   setImportProgress: (progress: number) => void;
   setImportStatus: (status: GLState['importStatus']) => void;
   setImportError: (error: string | null) => void;
   recordImport: (result: ImportResult) => void;
-  undoLastImport: () => void;
+  /**
+   * W0.8.6 §4: removes the last import locally AND tombstones its committed
+   * rows on the server (`already_deleted` tolerated as success). Failures
+   * land in importError; the local undo always proceeds.
+   */
+  undoLastImport: () => Promise<void>;
   checkDuplicates: (entries: GLEntry[]) => { duplicates: number; newEntries: GLEntry[] };
   validateEntries: (entries: Partial<GLEntry>[]) => {
     isValid: boolean;

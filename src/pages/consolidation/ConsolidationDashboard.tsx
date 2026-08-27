@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 
 import { Skeleton } from '@/components/ui/Skeleton';
+import { useGLStore } from '@/store/glStore';
 import { ConsolidationEngine, EntityData, OwnershipStructure } from '@/engines/ConsolidationEngine';
 
 import { Plus, Trash2, Edit2 } from 'lucide-react';
@@ -26,7 +27,10 @@ export default function ConsolidationDashboard() {
   const [entities, setEntities] = useState<Entity[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEntity, setEditingEntity] = useState<Entity | null>(null);
-  const [isLoading, _setIsLoading] = useState(false);
+  // W-A11Y-002 M5 (lane R34): the loading gate was a dead local useState whose
+  // setter was never called; it is now wired to GL-store hydration like the
+  // sibling report pages, so the skeleton branch is real and testable.
+  const { isLoading } = useGLStore();
   const [error, setError] = useState<string | null>(null);
 
   // Form State
@@ -187,7 +191,7 @@ export default function ConsolidationDashboard() {
   if (isLoading)
     return (
       <div className="p-6 space-y-4">
-        <Skeleton className="h-10 w-48" />
+        <Skeleton className="h-10 w-48" srLabel="Loading consolidation dashboard…" />
         <Skeleton className="h-64 w-full" />
       </div>
     );

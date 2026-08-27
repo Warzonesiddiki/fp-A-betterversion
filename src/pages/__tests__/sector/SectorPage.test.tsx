@@ -1,7 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+  useGLStore: Object.assign(
+    vi.fn((sel?: (s: unknown) => unknown) => {
+      const state = { entries: [] };
+      return sel ? sel(state) : state;
+    }),
+    { getState: () => ({ entries: [] }) }
+  ),
 }));
 vi.mock('@/hooks/useSector', () => ({
   useSector: vi.fn(() => ({ sectorConfig: null })),
@@ -69,7 +75,20 @@ describe('SectorPage', () => {
       },
     });
     render(<SectorPage />);
-    expect(screen.getByText(/Sector Analysis/i)).toBeInTheDocument();
-    expect(screen.getByText(/Gross Margin/i)).toBeInTheDocument();
+    // 'Banking' config routes SectorPage to the banking driver dashboard;
+    // assert the real PageHeader title, not the retired invisible legacy copy.
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Banking / Financial Services Driver Modeling Dashboard',
+      })
+    ).toBeInTheDocument();
+    // The assets-only ledger classifies into the Data lineage card; it yields
+    // NO invented gross-margin/NIM numbers — NIM discloses why it is not
+    // derivable.
+    expect(screen.getByText('Assets (classified)')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Needs interest income\/expense accounts and asset-class balances/i)
+    ).toBeInTheDocument();
   });
 });

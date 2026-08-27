@@ -17,12 +17,13 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import * as sdkTypes from './types';
 import {
   SDK_VERSION,
-  DEFAULT_BASE_URL,
   DEFAULT_REALTIME_PATH,
   DEFAULT_TIMEOUT_MS,
   DEFAULT_RETRY_COUNT,
+  ApiNotConfiguredError,
   type AuthConfig,
   type FpaClientConfig,
   type ConnectorOptions,
@@ -45,8 +46,24 @@ describe('SDK_VERSION', () => {
 });
 
 describe('defaults', () => {
-  it('DEFAULT_BASE_URL points to finplanpro.dev', () => {
-    expect(DEFAULT_BASE_URL).toBe('https://api.finplanpro.dev/v1');
+  it('exports NO fictional default base URL — the module namespace must not reference finplanpro.dev', () => {
+    // W6-P0-13 api-origin-truth: the SDK used to ship a hardcoded
+    // `https://api.finplanpro.dev/v1` DEFAULT_BASE_URL. That host does not
+    // exist; the constant (and every string export) must stay free of it.
+    for (const value of Object.values(sdkTypes)) {
+      if (typeof value === 'string') {
+        expect(value).not.toContain('finplanpro.dev');
+      }
+    }
+    expect('DEFAULT_BASE_URL' in sdkTypes).toBe(false);
+  });
+
+  it('ApiNotConfiguredError is exported, is an Error, and explains VITE_API_URL configuration', () => {
+    expect(typeof ApiNotConfiguredError).toBe('function');
+    const err = new ApiNotConfiguredError();
+    expect(err).toBeInstanceOf(Error);
+    expect(err.name).toBe('ApiNotConfiguredError');
+    expect(err.message).toContain('VITE_API_URL');
   });
 
   it('DEFAULT_REALTIME_PATH is /realtime', () => {

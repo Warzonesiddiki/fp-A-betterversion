@@ -1,11 +1,45 @@
 // =============================================================================
-// Tauri Menu Hook — Listen for native menu events and dispatch actions
+// Tauri Menu Hook — bind native menu events to REAL frontend actions
 // =============================================================================
+//
+// W6-P0-07 (2026-08-24): the native File/View/Tools menu shipped inert
+// end-to-end. Binding is now an exhaustive command map over the shared id
+// manifest in @/config/tauriMenuEvents — every id emitted by the Rust menu
+// (src-tauri/src/main.rs) has exactly one real action, enforced by
+// useTauriMenu.test.ts. The previous decorative dispatches of `app:*`
+// CustomEvents that no component ever consumed were removed, together with
+// the broken duplicate `useGlobalShortcuts` registration that lived in this
+// file (superseded by ./useTauriGlobalShortcuts).
 
 import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { NavigateFunction } from 'react-router-dom';
+
+import { createLogger } from '@/utils/logger';
+import { TAURI_MENU_EVENT_IDS } from '@/config/tauriMenuEvents';
+import type { TauriMenuEventId } from '@/config/tauriMenuEvents';
+
+const tauriMenuLogger = createLogger('TauriMenu');
 
 type MenuAction = (id: string) => void;
+type MenuCommand = () => void;
+
+export type TauriMenuCommands = Record<TauriMenuEventId, MenuCommand>;
+
+/** One honest action per native menu id; keys are compile-time-exhaustive. */
+export function createMenuCommands(navigate: NavigateFunction): TauriMenuCommands {
+  return {
+    open_file: () => navigate('/data'),
+    industry_dashboards: () => navigate('/sector/sector'),
+    benchmarks: () => navigate('/admin/benchmarks'),
+    debug: () => navigate('/admin/debug'),
+  };
+}
+
+function lookupCommand(commands: TauriMenuCommands, id: string): MenuCommand | undefined {
+  if (!(TAURI_MENU_EVENT_IDS as readonly string[]).includes(id)) return undefined;
+  return commands[id as TauriMenuEventId];
+}
 
 export function useTauriMenu(onAction?: MenuAction) {
   const navigate = useNavigate();
@@ -13,130 +47,48 @@ export function useTauriMenu(onAction?: MenuAction) {
   const handleMenuEvent = useCallback(
     (event: { payload: string }) => {
       const id = event.payload;
-
-      // Default actions
-      switch (id) {
-        case 'new_file':
-          window.dispatchEvent(new CustomEvent('app:new-file'));
-          break;
-        case 'open_file':
-          window.dispatchEvent(new CustomEvent('app:open-file'));
-          break;
-        case 'save_file':
-          window.dispatchEvent(new CustomEvent('app:save-file'));
-          break;
-        case 'save_as':
-          window.dispatchEvent(new CustomEvent('app:save-as'));
-          break;
-        case 'import_data':
-          window.dispatchEvent(new CustomEvent('app:import'));
-          break;
-        case 'export_data':
-          window.dispatchEvent(new CustomEvent('app:export'));
-          break;
-        case 'print':
-          window.print();
-          break;
-        case 'quit':
-          window.dispatchEvent(new CustomEvent('app:quit'));
-          break;
-        case 'undo':
-          window.dispatchEvent(new CustomEvent('app:undo'));
-          break;
-        case 'redo':
-          window.dispatchEvent(new CustomEvent('app:redo'));
-          break;
-        case 'toggle_sidebar':
-          window.dispatchEvent(new CustomEvent('app:toggle-sidebar'));
-          break;
-        case 'toggle_formula_bar':
-          window.dispatchEvent(new CustomEvent('app:toggle-formula-bar'));
-          break;
-        case 'toggle_status_bar':
-          window.dispatchEvent(new CustomEvent('app:toggle-status-bar'));
-          break;
-        case 'consolidate':
-          navigate('/consolidation');
-          break;
-        case 'scenarios':
-          navigate('/scenarios');
-          break;
-        case 'reports':
-          navigate('/reports');
-          break;
-        case 'validate_data':
-          window.dispatchEvent(new CustomEvent('app:validate-data'));
-          break;
-        case 'options':
-          navigate('/settings');
-          break;
-        case 'documentation':
-          navigate('/help');
-          break;
-        case 'keyboard_shortcuts':
-          window.dispatchEvent(new CustomEvent('app:show-shortcuts'));
-          break;
-        case 'about':
-          window.dispatchEvent(new CustomEvent('app:show-about'));
-          break;
-        default:
-          break;
+      const command = lookupCommand(createMenuCommands(navigate), id);
+      if (command) {
+        command();
+      } else {
+        // A Rust-side item without a frontend binding must surface loudly in
+        // dev logs, never silently no-op (that was the W6-P0-07 failure mode).
+        tauriMenuLogger.warn('Unhandled native menu event', { id });
       }
 
-      // Forward to custom handler
+      // Extension point for callers needing to observe raw menu ids.
       onAction?.(id);
     },
     [navigate, onAction]
   );
 
   useEffect(() => {
-    // Dynamic import to avoid breaking web builds
+    // Dynamic import keeps non-Tauri builds free of static @tauri-apps imports.
+    // Cleanup mirrors useTauriGlobalShortcuts: a `cancelled` flag closes the
+    // mount/unmount-before-resolve race where the original implementation
+    // leaked the subscription forever.
+    let cancelled = false;
     let unlisten: (() => void) | undefined;
 
     const setup = async () => {
       try {
         const { listen } = await import('@tauri-apps/api/event');
-        unlisten = await listen<string>('menu-event', handleMenuEvent);
+        const dispose = await listen<string>('menu-event', handleMenuEvent);
+        if (cancelled) {
+          dispose();
+          return;
+        }
+        unlisten = dispose;
       } catch {
-        // Not running in Tauri — ignore
+        // Not running in Tauri — ignore.
       }
     };
 
-    setup();
+    void setup();
 
     return () => {
+      cancelled = true;
       unlisten?.();
     };
   }, [handleMenuEvent]);
-}
-
-// =============================================================================
-// Global Shortcuts Hook — System-wide keyboard shortcuts
-// =============================================================================
-
-export function useGlobalShortcuts() {
-  useEffect(() => {
-    let unlisten: (() => void) | undefined;
-
-    const setup = async () => {
-      try {
-        const { register } = await import('@tauri-apps/plugin-global-shortcut');
-        // Register global shortcuts
-        await register('CommandOrControl+Shift+F', () => {
-          window.dispatchEvent(new CustomEvent('app:quick-add'));
-        });
-        await register('CommandOrControl+Shift+B', () => {
-          window.dispatchEvent(new CustomEvent('app:toggle-window'));
-        });
-      } catch {
-        // Not running in Tauri or plugin not available
-      }
-    };
-
-    setup();
-
-    return () => {
-      unlisten?.();
-    };
-  }, []);
 }

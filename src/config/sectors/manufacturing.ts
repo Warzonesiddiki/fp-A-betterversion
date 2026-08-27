@@ -22,13 +22,6 @@ export const manufacturingConfig: SectorConfig = {
       target: 5,
       lowerIsBetter: true,
     },
-    {
-      id: 'unit_cost',
-      label: 'Cost per Unit',
-      format: 'currency',
-      target: 450,
-      lowerIsBetter: true,
-    },
     { id: 'throughput', label: 'Throughput (Units/Hr)', format: 'number', target: 120 },
     { id: 'yield_rate', label: 'Yield Rate', format: 'percent', target: 95 },
     { id: 'capacity_utilization', label: 'Capacity Utilization', format: 'percent', target: 80 },

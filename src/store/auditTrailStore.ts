@@ -17,6 +17,14 @@ export type { ExtendedAuditEntry, AuditSource, AuditOperation };
 import { sanitizeSpreadsheetText } from '@/utils/spreadsheetSanitize';
 import { sha256Hex } from '@/utils/sha256';
 import { randomId } from '@/utils/cryptoId';
+// W6-P0-14: seedDemoData writes 50 chained entries into the PERSISTED
+// compliance trail — admin-grade (audit:create). The record* family stays
+// unguarded BY DESIGN: it is append-only instrumentation invoked cross-store
+// by the GDPR bridge (auditTrailGdprEvents.recordGdprEntry) on behalf of any
+// acting user; tampering paths are covered by revertToState's role gate and
+// the F-0015 hash chain. setCurrentUserRole is ephemeral view state
+// (excluded from persistence via partialize).
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 // ---------------------------------------------------------------------------
 // Types (re-exported from canonical location)
@@ -320,6 +328,10 @@ const defaultFilters: AuditFilters = {
 // ---------------------------------------------------------------------------
 
 const SEED_COUNT = 50;
+// demo defaults — opt-in seed fixtures for seedDemoData() ONLY. No production
+// UI invokes that action and the store's initial state ships empty, so these
+// never reach real users unless demo seeding is explicitly requested.
+// (E-09-F: registered as 'disclosed' in scripts/mock-data-audit.mjs.)
 const DEMO_USERS = ['alice@finplan.io', 'bob@finplan.io', 'carol@finplan.io'];
 const DEMO_OPERATIONS: AuditOperation[] = ['write', 'update', 'delete', 'bulk'];
 const DEMO_SECTORS = ['revenue', 'cogs', 'opex', 'tax', 'cash', 'ar', 'ap'];
@@ -346,7 +358,7 @@ export const useAuditTrailStore = create<State & Actions>()(
         // F-0015: empty trail starts at the genesis hash
         chainHead: AUDIT_CHAIN_GENESIS_HASH,
 
-        seedDemoData: () => {
+        seedDemoData: enforce(Permissions.AUDIT_CREATE, 'seedDemoData', () => {
           const unsigned: UnsignedAuditEntry[] = [];
           for (let i = 0; i < SEED_COUNT; i++) {
             unsigned.push({
@@ -383,7 +395,7 @@ export const useAuditTrailStore = create<State & Actions>()(
             // F-0015: seeded demo entries are chained like any other entry
             for (const entry of unsigned) appendChained(state, entry);
           });
-        },
+        }),
 
         recordWrite: (input) => {
           const entry = makeEntry('write', input);

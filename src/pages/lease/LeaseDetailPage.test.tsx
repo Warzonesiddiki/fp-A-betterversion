@@ -53,6 +53,7 @@ vi.mock('lucide-react', () => {
 });
 
 import LeaseDetailPage from '@/pages/lease/LeaseDetailPage';
+import { useLeaseStore } from '@/store/leaseStore';
 
 describe('LeaseDetailPage (BATCH-012 — rewire to LeaseEngine)', () => {
   it('renders without crashing', () => {
@@ -68,6 +69,20 @@ describe('LeaseDetailPage (BATCH-012 — rewire to LeaseEngine)', () => {
   });
 
   it('renders real schedules computed by LeaseEngine (not mock data)', () => {
+    // K17: seed the store with a user-side lease (factory ships none).
+    useLeaseStore.setState({
+      leases: [
+        {
+          id: 'L-seed',
+          property: 'HQ Office - Floor 12',
+          type: 'Finance',
+          payment: 45000,
+          commencementDate: '2026-01-01',
+          leaseTerm: 48,
+          discountRate: 0.06,
+        },
+      ],
+    });
     const { getByText } = render(
       <MemoryRouter>
         <LeaseDetailPage />

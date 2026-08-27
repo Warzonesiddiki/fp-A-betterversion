@@ -37,6 +37,12 @@ async function hashEntry(data: string): Promise<string> {
 
 // ─── Store ─────────────────────────────────────────────────────────────────
 
+// W6-P0-14: recordChange appends an immutable provenance entry to the hash
+// chain — audit-grade write (audit:create). rewindTo/verifyIntegrity/
+// queryEntries/getChain/getCurrentValue/getValueAtTime are reads or derived
+// status only and stay unguarded.
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
+
 interface CellLineageActions {
   /** Record a new lineage entry for a cell */
   recordChange: (
@@ -73,75 +79,71 @@ export const useCellLineageStore = create<CellLineageStoreState>()(
         integrityVerified: false,
         lastIntegrityCheck: null,
 
-        recordChange: async (
-          cellId,
-          oldValue,
-          newValue,
-          actor,
-          reason,
-          dataOrigin,
-          engineVersion
-        ) => {
-          const state = get();
-          const chain = state.chains.get(cellId);
-          const previousHash =
-            chain?.entries[chain.entries.length - 1]?.entryHash ?? '0'.repeat(64);
+        recordChange: enforce(
+          Permissions.AUDIT_CREATE,
+          'recordChange',
+          async (cellId, oldValue, newValue, actor, reason, dataOrigin, engineVersion) => {
+            const state = get();
+            const chain = state.chains.get(cellId);
+            const previousHash =
+              chain?.entries[chain.entries.length - 1]?.entryHash ?? '0'.repeat(64);
 
-          const entryId = randomId('lin');
-          const timestamp = new Date().toISOString();
+            const entryId = randomId('lin');
+            const timestamp = new Date().toISOString();
 
-          const entryData = JSON.stringify({
-            id: entryId,
-            cellId,
-            oldValue,
-            newValue,
-            actor,
-            timestamp,
-            reason,
-            dataOrigin,
-            engineVersion: engineVersion ?? null,
-            previousHash,
-          });
+            const entryData = JSON.stringify({
+              id: entryId,
+              cellId,
+              oldValue,
+              newValue,
+              actor,
+              timestamp,
+              reason,
+              dataOrigin,
+              engineVersion: engineVersion ?? null,
+              previousHash,
+            });
 
-          const entryHash = await hashEntry(entryData);
+            const entryHash = await hashEntry(entryData);
 
-          const entry: CellLineageEntry = {
-            id: entryId,
-            cellId,
-            oldValue,
-            newValue,
-            actor,
-            timestamp,
-            reason,
-            engineVersion: engineVersion ?? null,
-            dataOrigin,
-            previousHash,
-            entryHash,
-            metadata: {},
-          };
+            const entry: CellLineageEntry = {
+              id: entryId,
+              cellId,
+              oldValue,
+              newValue,
+              actor,
+              timestamp,
+              reason,
+              engineVersion: engineVersion ?? null,
+              dataOrigin,
+              previousHash,
+              entryHash,
+              metadata: {},
+            };
 
-          set((state) => {
-            const existing = state.chains.get(cellId);
-            if (existing) {
-              (existing.entries as CellLineageEntry[]).push(entry as CellLineageEntry);
-              (existing as { currentValue: CellValueSnapshot }).currentValue = newValue;
-              existing.changeCount++;
-            } else {
-              state.chains.set(cellId, {
-                cellId,
-                entries: [entry as CellLineageEntry],
-                currentValue: newValue as unknown as CellValueSnapshot,
-                createdAt: timestamp,
-                changeCount: 1,
-                uniqueActors: 1,
-                integrityValid: true,
-              } as unknown as Parameters<typeof state.chains.set>[1]);
-            }
-            (state.pendingEntries as CellLineageEntry[]).push(entry as CellLineageEntry);
-          });
+            set((state) => {
+              const existing = state.chains.get(cellId);
+              if (existing) {
+                (existing.entries as CellLineageEntry[]).push(entry as CellLineageEntry);
+                (existing as { currentValue: CellValueSnapshot }).currentValue = newValue;
+                existing.changeCount++;
+              } else {
+                state.chains.set(cellId, {
+                  cellId,
+                  entries: [entry as CellLineageEntry],
+                  currentValue: newValue as unknown as CellValueSnapshot,
+                  createdAt: timestamp,
+                  changeCount: 1,
+                  uniqueActors: 1,
+                  integrityValid: true,
+                } as unknown as Parameters<typeof state.chains.set>[1]);
+              }
+              (state.pendingEntries as CellLineageEntry[]).push(entry as CellLineageEntry);
+            });
 
-          return entryId;
-        },
+            return entryId;
+          }
+        ),
 
         getChain: (cellId) => {
           return get().chains.get(cellId) ?? null;

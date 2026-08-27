@@ -5,6 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import AppLayout from './AppLayout';
+import { confirm, useConfirmStore } from '@/components/ui/ConfirmDialog';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -53,6 +54,7 @@ describe('AppLayout', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockMobileSidebarOpen = false;
+    useConfirmStore.setState({ queue: [] });
   });
 
   it('renders without crashing', () => {
@@ -74,16 +76,44 @@ describe('AppLayout', () => {
     expect(screen.getByTestId('toast-container')).toBeInTheDocument();
   });
 
+  // W6-P0-08: the global confirm.* API was exported but <ConfirmDialog /> was
+  // mounted nowhere, so every confirm promise deadlocked on first use. The
+  // host must live beside the other global portals (ToastContainer et al).
+  it('hosts the global ConfirmDialog so exported confirm.* settles', async () => {
+    renderWithRouter(<AppLayout />);
+    const pending = confirm.custom({
+      title: 'Wave7 host probe',
+      message: 'integration truth',
+    });
+    expect(await screen.findByText('Wave7 host probe')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    await expect(pending).resolves.toBe(false);
+    expect(useConfirmStore.getState().queue).toHaveLength(0);
+  });
+
   it('renders skip to main content link', () => {
     renderWithRouter(<AppLayout />);
     const skipLinks = screen.getAllByText('Skip to main content');
     expect(skipLinks.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('renders two skip navigation links', () => {
-    renderWithRouter(<AppLayout />);
+  it('renders exactly one skip link, first in tab order before content', () => {
+    const { container } = renderWithRouter(<AppLayout />);
     const skipLinks = screen.getAllByText('Skip to main content');
-    expect(skipLinks.length).toBe(2);
+    // Deduped (wave-3 R9): a second skip to #main-nav doubled the pre-content
+    // tab stops while the nav already follows immediately in DOM order.
+    expect(skipLinks).toHaveLength(1);
+    expect(skipLinks[0].getAttribute('href')).toBe('#main-content');
+    expect(container.querySelector('a[href="#main-nav"]')).toBeNull();
+    // It must be the very first focusable element of the layout, so keyboard
+    // users hit exactly one bypass block before the content landmark.
+    const focusable = container.querySelectorAll(
+      'a[href], button:not([disabled]), select, input, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    expect(focusable.length).toBeGreaterThan(0);
+    expect(focusable[0]).toBe(skipLinks[0]);
+    // ...and the nav landmark itself remains addressable without its own skip.
+    expect(container.querySelector('#main-nav')).toBeInTheDocument();
   });
 
   it('has a main content area with proper role', () => {

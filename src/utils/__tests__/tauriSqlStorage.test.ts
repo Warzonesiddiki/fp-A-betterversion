@@ -16,7 +16,7 @@ vi.mock('@tauri-apps/plugin-sql', () => ({
 const WINDOW_ANY = window as unknown as Record<string, unknown>;
 
 function enableTauriRuntime(): void {
-  WINDOW_ANY.__TAURI__ = true;
+  WINDOW_ANY.__TAURI_INTERNALS__ = {};
 }
 
 function disableTauriRuntime(): void {
@@ -35,9 +35,21 @@ describe('isTauri', () => {
     expect(await isTauri()).toBe(false);
   });
 
-  it('returns true when __TAURI__ is present', async () => {
+  it('returns true when __TAURI_INTERNALS__ is present (Tauri v2)', async () => {
     enableTauriRuntime();
     expect(await isTauri()).toBe(true);
+  });
+
+  // Regression (lane B11 P0): pins the literal Tauri v2 contract. The legacy
+  // `__TAURI__` key only exists with withGlobalTauri:true, which
+  // tauri.conf.json does not set — it must NOT enable Tauri mode, otherwise
+  // packaged desktop builds route stores to localStorage instead of SQLite.
+  it('does NOT treat legacy __TAURI__ alone as a Tauri runtime', async () => {
+    disableTauriRuntime();
+    WINDOW_ANY.__TAURI__ = true;
+    expect(await isTauri()).toBe(false);
+    await expect(tauriSqlStorage.getItem('test-key')).resolves.toBeNull();
+    expect(mockDb.select).not.toHaveBeenCalled();
   });
 });
 

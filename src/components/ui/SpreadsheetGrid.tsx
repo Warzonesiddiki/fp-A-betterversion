@@ -3,8 +3,15 @@ import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { formatPercent } from '@/utils/financialFormatting';
 import { AgGridReact } from 'ag-grid-react';
 import {
-  AllCommunityModule,
+  ClientSideRowModelModule,
+  CsvExportModule,
+  DateFilterModule,
   ModuleRegistry,
+  NumberFilterModule,
+  RowSelectionModule,
+  RowStyleModule,
+  TextFilterModule,
+  ValidationModule,
   type ColDef,
   type CellValueChangedEvent,
   type CellClickedEvent,
@@ -15,7 +22,20 @@ import { FormulaBar } from './FormulaBar';
 import { SheetTabs } from './SheetTabs';
 import { ContextMenu, type ContextMenuAction } from './ContextMenu';
 
-ModuleRegistry.registerModules([AllCommunityModule]);
+// Modular registration (P-02-I): register only the modules these grids use
+// (client-side rows, basic text/number/date filters, hand-rolled + built-in CSV
+// export). Capability witnesses: _bmad/p02-bundle-remediation-proposal.md §1.2.
+ModuleRegistry.registerModules([
+  ClientSideRowModelModule,
+  TextFilterModule,
+  NumberFilterModule,
+  DateFilterModule,
+  RowSelectionModule,
+  RowStyleModule,
+  CsvExportModule,
+  // Dev-time module-misconfiguration warnings; excluded from prod bundles.
+  ...(import.meta.env.DEV ? [ValidationModule] : []),
+]);
 
 // Constants extracted to avoid inline object creation on every render
 const NOOP = () => {};

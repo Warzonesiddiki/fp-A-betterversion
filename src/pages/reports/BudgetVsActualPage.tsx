@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { reportingCurrency } from '@/store/financialContextStore';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  AlertCircle,
   Database,
   TrendingDown,
   AlertTriangle,
@@ -10,6 +10,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { HelpPanel } from '@/components/ui/HelpPanel';
 import { WaterfallChart, type WaterfallItem } from '@/components/ui/WaterfallChart';
@@ -32,6 +33,7 @@ import {
   toDecimal,
 } from '@/utils/money';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { currencyFormatter, formatPercent } from '@/utils/financialFormatting';;
 
 const MATERIAL_THRESHOLD = 10;
@@ -95,11 +97,23 @@ interface VarianceRow {
 
 export default function BudgetVsActualPage() {
   const fmt = useCurrencyFormatter();
+  // R9-c: honor prefers-reduced-motion — instant jumps instead of animated
+  // scrolling for vestibular-safe users (WCAG 2.3.3 Animation from Interactions).
+  const prefersReducedMotion = useReducedMotion();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [helpOpen, setHelpOpen] = useState(false);
 
-  const { entries, isLoading, importError } = useGLStore();
-  const { budgets, lineItems } = useBudgetStore();
+  const { entries, isLoading, importError } = useGLStore(
+    useShallow((s) => ({
+      entries: s.entries,
+      isLoading: s.isLoading,
+      importError: s.importError,
+    }))
+  );
+  const { budgets, lineItems } = useBudgetStore(
+    useShallow((s) => ({ budgets: s.budgets, lineItems: s.lineItems }))
+  );
 
   const [selectedBudgetId, setSelectedBudgetId] = useState('');
   const [period, setPeriod] = useState(() => {
@@ -396,7 +410,13 @@ export default function BudgetVsActualPage() {
   if (isLoading) {
     return (
       <div className="space-y-4 p-6">
-        <Skeleton count={1} height="40px" width="30%" className="mb-4" />
+        <Skeleton
+          count={1}
+          height="40px"
+          width="30%"
+          className="mb-4"
+          srLabel="Loading budget vs actual…"
+        />
         <Skeleton count={8} variant="rectangular" height="24px" />
       </div>
     );
@@ -404,17 +424,14 @@ export default function BudgetVsActualPage() {
 
   if (importError) {
     return (
-      <div className="p-12 text-center">
-        <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-400" />
-        <h2 className="text-xl font-bold mb-2">Failed to load data</h2>
-        <p className="text-[var(--text-muted)] mb-6">{importError}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-        >
-          Retry
-        </button>
-      </div>
+      <ErrorState
+        title="Failed to load data"
+        message={importError}
+        errorCode="GL-IMPORT-ERROR"
+        onRetry={() => window.location.reload()}
+        retryLabel="Retry"
+        secondaryAction={{ label: 'Go to Data Import', onClick: () => navigate('/data') }}
+      />
     );
   }
 
@@ -652,12 +669,18 @@ export default function BudgetVsActualPage() {
                       className="flex items-center justify-between p-2.5 bg-red-900/10 border border-red-800/20 rounded-lg hover:bg-red-900/20 transition-colors cursor-pointer"
                       onClick={() => {
                         const el = document.getElementById(`row-${row.accountCode}`);
-                        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        el?.scrollIntoView({
+                          behavior: prefersReducedMotion ? 'auto' : 'smooth',
+                          block: 'center',
+                        });
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                           const el = document.getElementById(`row-${row.accountCode}`);
-                          el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          el?.scrollIntoView({
+                            behavior: prefersReducedMotion ? 'auto' : 'smooth',
+                            block: 'center',
+                          });
                         }
                       }}
                       role="button"

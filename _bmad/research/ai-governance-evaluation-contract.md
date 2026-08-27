@@ -8,16 +8,16 @@ AI may retrieve permitted context, explain, summarize, draft, classify, forecast
 
 ## Required controls
 
-| Area | Contract |
-|---|---|
-| Consent/policy | tenant-level enablement, approved provider/model list, data classes permitted, retention/residency rules |
-| Retrieval | server-side entitlement filter before retrieval; least data; no cross-tenant/vector leakage |
-| Citations | every factual answer/narrative links to permitted source, metric/snapshot/context/version; unsupported claim is labelled hypothesis |
-| Tools/actions | allowlisted typed commands; preview impact/context; explicit human confirmation; server policy/workflow still applies |
-| Prompt/data safety | injection-resistant context boundaries, input/output filtering, secret/PII minimization, no general log of prompt/financial payload |
-| Audit | actor, policy, model/provider/version, retrieval references, prompt classification/hash policy, response/action/citation and review outcome |
-| Evaluation | curated finance tasks, citation precision, numerical consistency, permission-leak tests, harmful-action tests, human usefulness rating |
-| Monitoring | quality/drift/cost/latency/refusal/citation failure and feedback telemetry |
+| Area               | Contract                                                                                                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Consent/policy     | tenant-level enablement, approved provider/model list, data classes permitted, retention/residency rules                                    |
+| Retrieval          | server-side entitlement filter before retrieval; least data; no cross-tenant/vector leakage                                                 |
+| Citations          | every factual answer/narrative links to permitted source, metric/snapshot/context/version; unsupported claim is labelled hypothesis         |
+| Tools/actions      | allowlisted typed commands; preview impact/context; explicit human confirmation; server policy/workflow still applies                       |
+| Prompt/data safety | injection-resistant context boundaries, input/output filtering, secret/PII minimization, no general log of prompt/financial payload         |
+| Audit              | actor, policy, model/provider/version, retrieval references, prompt classification/hash policy, response/action/citation and review outcome |
+| Evaluation         | curated finance tasks, citation precision, numerical consistency, permission-leak tests, harmful-action tests, human usefulness rating      |
+| Monitoring         | quality/drift/cost/latency/refusal/citation failure and feedback telemetry                                                                  |
 
 ## UX rules
 

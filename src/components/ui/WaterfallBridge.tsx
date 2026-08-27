@@ -14,12 +14,37 @@ export interface WaterfallBridgeProps {
   className?: string;
 }
 
+interface ProcessedBridgeItem extends WaterfallItem {
+  start: number;
+  end: number;
+}
+
+const TONE_TOKENS: Record<WaterfallItem['type'], string> = {
+  increase: 'var(--positive)',
+  decrease: 'var(--negative)',
+  total: 'var(--info)',
+};
+
 export const WaterfallBridge: React.FC<WaterfallBridgeProps> = ({
   items,
   format = (v) => v.toLocaleString(),
   className,
 }) => {
-  if (!items || items.length === 0)
+  // Hooks must run unconditionally: compute before any early return so the
+  // hook order is stable across empty/data/null state flips.
+  const processedItems = useMemo<ProcessedBridgeItem[]>(
+    () =>
+      (items ?? []).reduce<ProcessedBridgeItem[]>((acc, item) => {
+        const prevEnd = acc.length > 0 ? (acc[acc.length - 1]?.end ?? 0) : 0;
+        const start = item.type === 'total' ? 0 : prevEnd;
+        const end = item.type === 'total' ? item.value : start + item.value;
+        acc.push({ ...item, start, end });
+        return acc;
+      }, []),
+    [items]
+  );
+
+  if (processedItems.length === 0)
     return (
       <div
         className="flex items-center justify-center h-48 text-slate-400 dark:text-slate-300"
@@ -30,26 +55,6 @@ export const WaterfallBridge: React.FC<WaterfallBridgeProps> = ({
       </div>
     );
 
-  const colors = {
-    increase: '#10b981',
-    decrease: '#ef4444',
-    total: '#3b82f6',
-  };
-
-  // Calculate running totals
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const processedItems = useMemo(() => {
-    let runningTotal = 0;
-    return items.map((item) => {
-      const start = item.type === 'total' ? 0 : runningTotal;
-      const end = item.type === 'total' ? item.value : start + item.value;
-      // eslint-disable-next-line react-hooks/immutability
-      runningTotal = end;
-
-      return { ...item, start, end };
-    });
-  }, [items]);
-
   const allValues = processedItems.flatMap((i) => [i.start, i.end]);
   const minVal = Math.min(...allValues);
   const maxVal = Math.max(...allValues);
@@ -59,7 +64,7 @@ export const WaterfallBridge: React.FC<WaterfallBridgeProps> = ({
     <div className={cn('w-full', className)}>
       <div className="flex items-end gap-2 h-48">
         {processedItems.map((item, i) => {
-          const color = item.color ?? colors[item.type];
+          const color = item.color ?? TONE_TOKENS[item.type];
           const bottom = ((Math.min(item.start, item.end) - minVal) / range) * 100;
           const height = (Math.abs(item.end - item.start) / range) * 100;
 

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Plus, Trash2, ArrowRight, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { useShallow } from 'zustand/react/shallow';
 import { useDriverStore } from '@/store/driverStore';
 import type { Driver, CascadeRule, CascadeType, ImpactType } from '@/engines/DriverCascadeEngine';
 import { formatPercent } from '@/utils/financialFormatting';
@@ -46,7 +47,13 @@ export function CascadeRuleBuilder({
   onRuleAdded,
   onRuleRemoved,
 }: CascadeRuleBuilderProps) {
-  const { addRule, removeRule, getRulesForDriver } = useDriverStore();
+  const { addRule, removeRule, getRulesForDriver } = useDriverStore(
+    useShallow((s) => ({
+      addRule: s.addRule,
+      removeRule: s.removeRule,
+      getRulesForDriver: s.getRulesForDriver,
+    }))
+  );
   const rules = useMemo(() => getRulesForDriver(driver.id), [driver.id, getRulesForDriver]);
 
   const [isAdding, setIsAdding] = useState(false);

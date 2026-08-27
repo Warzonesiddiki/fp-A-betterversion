@@ -79,13 +79,21 @@ export interface DashboardTrendPoint {
 export interface DashboardSectorKpi {
   readonly key: string;
   readonly label: string;
-  readonly value: number;
-  readonly format: 'currency';
+  /**
+   * `null` = this tile cannot be honestly computed from the posted ledger:
+   * the sector pack maps no account codes for it, none of the mapped codes
+   * is posted, or the declared unit is not derivable by a flat money sum.
+   * The UI must render an explicit empty state — never a fabricated $0.
+   */
+  readonly value: number | null;
+  /** Display unit declared by the sector KPI spec (`'currency'` if omitted). */
+  readonly format: 'currency' | 'percent' | 'number';
 }
 
 interface SectorKpiSpec {
   readonly id: string;
   readonly label: string;
+  readonly format?: 'currency' | 'percent' | 'number';
   readonly accountCodes?: readonly string[];
 }
 
@@ -247,6 +255,14 @@ export function deriveMonthlyTrend(
  * The previous implementation summed `debit − credit` for every code and then
  * `Math.abs`-ed the result, so a revenue KPI displayed the right magnitude by
  * accident and a genuinely negative balance displayed positive.
+ *
+ * HONESTY GATES (W6-P0-06): every shipped sector pack declares `defaultKPIs`
+ * without `accountCodes`, so most tiles are simply not computable. Each such
+ * KPI is emitted with `value: null` — the UI renders an explicit empty state,
+ * never a false $0. Percent- and number-unit specs stay uncomputed even when
+ * codes ARE mapped: a flat account-code sum is a money magnitude, and dressing
+ * it up as "42%" or a bare ratio would be fabrication; those units need
+ * numerator/denominator (or count) semantics the SectorKPI spec does not carry.
  */
 export function deriveSectorKpis(
   entries: readonly DashboardGLEntry[],
@@ -255,8 +271,17 @@ export function deriveSectorKpis(
   if (!kpis || entries.length === 0) return [];
 
   return kpis.map((kpi) => {
-    const matching = entries.filter((e) => kpi.accountCodes?.includes(code(e)));
+    const format = kpi.format ?? 'currency';
+    const unmapped = !kpi.accountCodes || kpi.accountCodes.length === 0;
+    if (unmapped || format !== 'currency') {
+      return { key: kpi.id, label: kpi.label, value: null, format };
+    }
+    const mapped = kpi.accountCodes;
+    const matching = entries.filter((e) => mapped.includes(code(e)));
+    if (matching.length === 0) {
+      return { key: kpi.id, label: kpi.label, value: null, format };
+    }
     const value = sumMoney(matching.map((e) => (isRevenue(e) ? creditNormal(e) : debitNormal(e))));
-    return { key: kpi.id, label: kpi.label, value: cash(value), format: 'currency' as const };
+    return { key: kpi.id, label: kpi.label, value: cash(value), format };
   });
 }

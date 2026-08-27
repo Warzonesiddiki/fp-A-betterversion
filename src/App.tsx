@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-
 import { lazy, Suspense } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import AppLayout from './components/layout/AppLayout';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import LoadingScreen from './components/ui/LoadingScreen';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import {
@@ -10,6 +11,8 @@ import {
 } from './components/errors/RouteGroupErrorBoundary';
 import { useFirstRun } from './hooks/useFirstRun';
 import { StorageFailureBanner } from './components/system/StorageFailureBanner';
+import { TauriMenuBridge } from './components/tauri/TauriMenuBridge';
+import { ConfirmDialog } from './components/ui/ConfirmDialog';
 import { isTauriRuntime } from './utils/tauriRuntime';
 
 // Core (not route-dependent)
@@ -220,8 +223,6 @@ const ValueBasedCarePage = lazy(() => import('./pages/healthcare/ValueBasedCareP
 const EnergySectorPage = lazy(() => import('./pages/energy/EnergySectorPage'));
 const ESGPage = lazy(() => import('./pages/esg/ESGPage'));
 const ManufacturingPage = lazy(() => import('./pages/manufacturing/ManufacturingPage'));
-const RetailDashboard = lazy(() => import('./pages/retail/RetailDashboard'));
-const RetailDashboardPage = lazy(() => import('./pages/retail/RetailDashboardPage'));
 const InventoryDashboard = lazy(() => import('./pages/retail/InventoryDashboard'));
 const InventoryPlanningPage = lazy(() => import('./pages/retail/InventoryPlanningPage'));
 const StorePerformancePage = lazy(() => import('./pages/retail/StorePerformancePage'));
@@ -236,7 +237,6 @@ const FinancialStatementTemplates = lazy(
 const TemplatePreviewPage = lazy(() => import('./pages/templates/TemplatePreviewPage'));
 const ChartShowcasePage = lazy(() => import('./pages/charts/ChartShowcasePage'));
 const AtlasVisualBaselinePage = lazy(() => import('./pages/visual/AtlasVisualBaselinePage'));
-const ChartOfAccountsPageCharts = lazy(() => import('./pages/charts/ChartOfAccountsPage'));
 const ActivityFeed = lazy(() => import('./pages/collaboration/ActivityFeed'));
 const SharedReports = lazy(() => import('./pages/collaboration/SharedReports'));
 const TeamWorkspace = lazy(() => import('./pages/collaboration/TeamWorkspace'));
@@ -267,16 +267,7 @@ const SectorRetailDashboardPage = lazy(() => import('./pages/sector/RetailDashbo
 const SectorDashboardPage = lazy(() => import('./pages/sector/SectorPage'));
 const TechnologyDashboardPage = lazy(() => import('./pages/sector/TechnologyDashboardPage'));
 const TelecommunicationsDashboardPage = lazy(() => import('./pages/sector/TelecomDashboardPage'));
-const SectorsEducationDashboardPage = lazy(() => import('./pages/sectors/EducationDashboardPage'));
-const SectorsGovernmentDashboardPage = lazy(
-  () => import('./pages/sectors/GovernmentDashboardPage')
-);
-const SectorsLogisticsDashboardPage = lazy(() => import('./pages/sectors/LogisticsDashboardPage'));
-const SectorsTelecomDashboardPage = lazy(() => import('./pages/sectors/TelecomDashboardPage'));
-const EducationPage = lazy(() => import('./pages/sector/EducationDashboardPage'));
-const GovernmentPage = lazy(() => import('./pages/sector/GovernmentDashboardPage'));
-const LogisticsPage = lazy(() => import('./pages/sector/LogisticsDashboardPage'));
-const TelecomPage = lazy(() => import('./pages/sector/TelecomDashboardPage'));
+// W0.5 slice 1: /sectors/* duplicates removed — /sectors/* now redirects to /sector/* (RC3).
 
 // Wave 9 Phase 3 — sector-depth specialized pages
 const FleetCostDashboardPage = lazy(() => import('./pages/logistics/FleetCostDashboardPage'));
@@ -330,9 +321,11 @@ export default function App() {
 
   if (isFirstRun) {
     return (
-      <Suspense fallback={<LoadingScreen />}>
-        <OnboardingWizard onComplete={completeSetup} />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingScreen />}>
+          <OnboardingWizard onComplete={completeSetup} />
+        </Suspense>
+      </ErrorBoundary>
     );
   }
 
@@ -341,6 +334,11 @@ export default function App() {
       <ThemeProvider>
         {/* N-0002: storage durability failures must be visible, not silent. */}
         <StorageFailureBanner />
+        {/* W6-P0-07: native menu events -> command map (needs Router context). */}
+        <TauriMenuBridge />
+        {/* W6-P0-08: global confirm host - without this mount the confirm.*
+             API deadlocks on first use. FIFO queue drains front-first. */}
+        <ConfirmDialog />
         <Suspense fallback={<LoadingScreen />}>
           <Routes>
             <Route
@@ -384,15 +382,19 @@ export default function App() {
               }
             />
 
-            <Route element={<AppLayout />}>
-              <Route
-                path="/"
-                element={
-                  <ErrorBoundary>
-                    <DashboardPage />
-                  </ErrorBoundary>
-                }
-              />
+            <Route
+              element={
+                <ProtectedRoute>
+                  <AppLayout />
+                </ProtectedRoute>
+              }
+            >
+              {/* W0.5 slice 2 (RC3): "/" was a pure alias of "/dashboard" — both
+                  mounted the identical DashboardPage element. One canonical hub
+                  now renders it ("/dashboard", the PillarNav PLAN hub); legacy
+                  root links (error fallbacks, Ctrl+1, NotFound "Go Home") keep
+                  working through this in-shell replace redirect. */}
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route
                 path="/dashboard"
                 element={
@@ -487,10 +489,13 @@ export default function App() {
                 <Route path="/energy/sector" element={<EnergySectorPage />} />
                 <Route path="/esg/overview" element={<ESGPage />} />
                 <Route path="/manufacturing/overview" element={<ManufacturingPage />} />
-                <Route path="/retail/dashboard" element={<RetailDashboardPage />} />
+                <Route path="/retail/retail" element={<Navigate to="/retail/stores" replace />} />
+                <Route
+                  path="/retail/dashboard"
+                  element={<Navigate to="/retail/stores" replace />}
+                />
                 <Route path="/retail/inventory" element={<InventoryDashboard />} />
                 <Route path="/retail/inventory-planning" element={<InventoryPlanningPage />} />
-                <Route path="/retail/retail" element={<RetailDashboard />} />
                 <Route path="/retail/performance" element={<StorePerformancePage />} />
                 <Route path="/saas/churn-analysis" element={<ChurnAnalysisPage />} />
                 <Route path="/saas/overview" element={<SaaSPage />} />
@@ -506,7 +511,10 @@ export default function App() {
                 <Route path="/settings/integrations" element={<IntegrationSettingsPage />} />
                 <Route path="/settings/security" element={<SecuritySettingsPage />} />
                 <Route path="/templates/preview" element={<TemplatePreviewPage />} />
-                <Route path="/charts/chart-of-accounts" element={<ChartOfAccountsPageCharts />} />
+                <Route
+                  path="/charts/chart-of-accounts"
+                  element={<Navigate to="/data/chart-of-accounts" replace />}
+                />
                 <Route path="/charts/showcase" element={<ChartShowcasePage />} />
                 <Route path="/reports/designer" element={<ReportDesignerPage />} />
                 <Route path="/reports/scheduler" element={<ReportScheduler />} />
@@ -520,13 +528,20 @@ export default function App() {
                 <Route path="/consolidation" element={<ConsolidationDashboard />} />
                 <Route path="/consolidation/ic-eliminations" element={<ICEliminationPage />} />
                 <Route path="/consolidation/ownership" element={<OwnershipTreePage />} />
+                {/* W0.5 slice 3 (RC3): namespace hub roots declared as shell
+                    targets but never routed now resolve to their canonical
+                    child instead of the 404 catch-all (/revenue is exercised
+                    by src/pages/smoke2.test.tsx at this URL). */}
+                <Route path="/currency" element={<Navigate to="/currency/fx-rates" replace />} />
                 <Route path="/currency/fx-rates" element={<FXRatesPage />} />
                 <Route path="/currency/translation" element={<TranslationResultPage />} />
                 <Route path="/currency/hedging" element={<HedgeManagementPage />} />
+                <Route path="/revenue" element={<Navigate to="/revenue/rev-rec" replace />} />
                 <Route path="/revenue/rev-rec" element={<RevRecDashboard />} />
                 <Route path="/revenue/deferred" element={<DeferredSchedulePage />} />
                 <Route path="/lease" element={<LeaseDashboard />} />
                 <Route path="/lease/:id" element={<LeaseDetailPage />} />
+                <Route path="/tax" element={<Navigate to="/tax/provision" replace />} />
                 <Route path="/tax/provision" element={<TaxProvisionPage />} />
                 <Route path="/tax/transfer-pricing" element={<TransferPricingPage />} />
                 <Route path="/capex" element={<CapExDashboard />} />
@@ -538,6 +553,8 @@ export default function App() {
                 <Route path="/cash/forecast" element={<CashForecastPage />} />
                 <Route path="/cash/debt" element={<DebtSchedulePage />} />
                 <Route path="/cash/working-capital" element={<WorkingCapitalPage />} />
+                {/* W0.5 slice 3 (RC3): treasury hub root → first canonical child. */}
+                <Route path="/treasury" element={<Navigate to="/treasury/investments" replace />} />
                 <Route path="/treasury/investments" element={<InvestmentPage />} />
                 <Route path="/treasury/fx-exposure" element={<FXExposurePage />} />
                 <Route path="/treasury/loan-amortization" element={<LoanAmortizationPage />} />
@@ -557,6 +574,8 @@ export default function App() {
 
               {/* Industry-Specific & Workforce Group */}
               <Route element={<RouteGroupWrapper domain="industry" />}>
+                {/* W0.5 slice 3 (RC3): workforce hub root → first canonical child. */}
+                <Route path="/workforce" element={<Navigate to="/workforce/headcount" replace />} />
                 <Route path="/workforce/headcount" element={<HeadcountPlanPage />} />
                 <Route path="/workforce/compensation" element={<CompModelingPage />} />
                 <Route path="/workforce/payroll" element={<PayrollForecastPage />} />
@@ -585,7 +604,15 @@ export default function App() {
 
               {/* Utility & Collaboration Group */}
               <Route element={<RouteGroupWrapper domain="utility" />}>
+                {/* W0.5 slice 3 (RC3): admin/accounting hub roots → canonical
+                    children (/admin is navigated by tests/e2e/workflows/
+                    12-admin.spec.ts). */}
+                <Route path="/admin" element={<Navigate to="/admin/debug" replace />} />
                 <Route path="/admin/debug" element={<DebugPage />} />
+                <Route
+                  path="/accounting"
+                  element={<Navigate to="/accounting/depreciation" replace />}
+                />
                 <Route path="/accounting/depreciation" element={<DepreciationPage />} />
                 <Route path="/accounting/multi-book" element={<MultiBookPage />} />
                 <Route path="/audit/fair-value" element={<FairValuePage />} />
@@ -633,24 +660,119 @@ export default function App() {
                   path="/sector/telecommunications"
                   element={<TelecommunicationsDashboardPage />}
                 />
-                <Route path="/sectors/education" element={<SectorsEducationDashboardPage />} />
-                <Route path="/sectors/government" element={<SectorsGovernmentDashboardPage />} />
-                <Route path="/sectors/logistics" element={<SectorsLogisticsDashboardPage />} />
-                <Route path="/sectors/telecom" element={<SectorsTelecomDashboardPage />} />
-                <Route path="/education" element={<EducationPage />} />
+                <Route
+                  path="/sectors/education"
+                  element={<Navigate to="/sector/education" replace />}
+                />
+                <Route
+                  path="/sectors/government"
+                  element={<Navigate to="/sector/government" replace />}
+                />
+                <Route
+                  path="/sectors/logistics"
+                  element={<Navigate to="/sector/logistics" replace />}
+                />
+                <Route
+                  path="/sectors/telecom"
+                  element={<Navigate to="/sector/telecommunications" replace />}
+                />
+                {/* W0.5 slice 1 (RC3): alias roots redirect to canonical sector pages. */}
+                <Route path="/education" element={<Navigate to="/sector/education" replace />} />
                 <Route path="/education/enrollment" element={<EnrollmentRetentionPage />} />
                 <Route path="/education/research-grants" element={<ResearchGrantsPage />} />
-                <Route path="/government" element={<GovernmentPage />} />
+                <Route path="/government" element={<Navigate to="/sector/government" replace />} />
                 <Route path="/government/grants" element={<GrantDisbursementPage />} />
                 <Route path="/government/procurement" element={<ProcurementCyclePage />} />
-                <Route path="/logistics" element={<LogisticsPage />} />
+                <Route path="/logistics" element={<Navigate to="/sector/logistics" replace />} />
                 <Route path="/logistics/fleet-cost" element={<FleetCostDashboardPage />} />
                 <Route path="/logistics/warehouse-cost" element={<WarehouseCostDashboardPage />} />
-                <Route path="/telecom" element={<TelecomPage />} />
-                <Route path="/forecasts/compare" element={<ScenarioComparisonPage />} />
-                <Route path="/forecasts/auto-update" element={<RollingForecastPage />} />
-                <Route path="/scenarios/merge" element={<ScenarioComparisonPage />} />
-                <Route path="/scenarios/lock" element={<ScenarioComparisonPage />} />
+                <Route
+                  path="/telecom"
+                  element={<Navigate to="/sector/telecommunications" replace />}
+                />
+                <Route path="/forecasts/compare" element={<Navigate to="/scenarios" replace />} />
+                <Route
+                  path="/forecasts/auto-update"
+                  element={<Navigate to="/forecasts" replace />}
+                />
+                <Route path="/scenarios/merge" element={<Navigate to="/scenarios" replace />} />
+                <Route path="/scenarios/lock" element={<Navigate to="/scenarios" replace />} />
+              </Route>
+
+              {/* W0.5 slice 2 (RC3): rescue aliases for deep links that were never
+                  declared routes — journey specs (tests/e2e/journeys/*), stale
+                  bookmarks and old menu entries now land on the real surface
+                  instead of the 404 catch-all. Navigate-only: no chrome needed,
+                  but they live inside the shell so the UI-03 route-shell contract
+                  sees them as ordinary in-shell paths. */}
+              <Route element={<RouteGroupWrapper domain="utility" />}>
+                {/* Audit family */}
+                <Route path="/audit" element={<Navigate to="/audit/trail" replace />} />
+                <Route path="/audit-trail" element={<Navigate to="/audit/trail" replace />} />
+                <Route path="/sox" element={<Navigate to="/audit/sox" replace />} />
+                <Route path="/compliance/sox" element={<Navigate to="/audit/sox" replace />} />
+
+                {/* Period close family */}
+                <Route path="/periods" element={<Navigate to="/periods/close" replace />} />
+                <Route path="/period-close" element={<Navigate to="/periods/close" replace />} />
+                <Route
+                  path="/period-close/trial-balance"
+                  element={<Navigate to="/periods/close" replace />}
+                />
+                <Route
+                  path="/period-close/consolidation"
+                  element={<Navigate to="/periods/close" replace />}
+                />
+                <Route
+                  path="/period-close/lock"
+                  element={<Navigate to="/periods/close" replace />}
+                />
+                <Route
+                  path="/period-close/checklist"
+                  element={<Navigate to="/periods/close" replace />}
+                />
+                <Route
+                  path="/period-close/signoff"
+                  element={<Navigate to="/periods/close" replace />}
+                />
+
+                {/* Cash & treasury */}
+                <Route path="/cash-forecast" element={<Navigate to="/cash/forecast" replace />} />
+                <Route path="/fx-rates" element={<Navigate to="/currency/fx-rates" replace />} />
+
+                {/* Data & GL */}
+                <Route
+                  path="/reconciliation"
+                  element={<Navigate to="/data/reconciliation" replace />}
+                />
+                <Route
+                  path="/reports/trial-balance"
+                  element={<Navigate to="/data/gl-trial-balance" replace />}
+                />
+
+                {/* Settings */}
+                <Route path="/backup" element={<Navigate to="/settings/backup" replace />} />
+                <Route
+                  path="/backup/restore"
+                  element={<Navigate to="/settings/backup" replace />}
+                />
+
+                {/* Reporting */}
+                <Route path="/reports/variance" element={<Navigate to="/variance" replace />} />
+                <Route
+                  path="/reports/board-pack/new"
+                  element={<Navigate to="/board-pack" replace />}
+                />
+
+                {/* Consolidation */}
+                <Route
+                  path="/ic-elimination"
+                  element={<Navigate to="/consolidation/ic-eliminations" replace />}
+                />
+                <Route
+                  path="/intercompany/*"
+                  element={<Navigate to="/consolidation/ic-eliminations" replace />}
+                />
               </Route>
             </Route>
 

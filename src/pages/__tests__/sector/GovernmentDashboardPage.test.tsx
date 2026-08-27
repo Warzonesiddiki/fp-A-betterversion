@@ -1,7 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+  useGLStore: Object.assign(
+    vi.fn((sel?: (s: unknown) => unknown) => {
+      const state = { entries: [] };
+      return sel ? sel(state) : state;
+    }),
+    { getState: () => ({ entries: [] }) }
+  ),
 }));
 vi.mock('lucide-react', () => ({
   Building2: () => <span data-testid="mock-icon" />,
@@ -46,9 +52,23 @@ describe('GovernmentDashboardPage', () => {
       ],
     });
     render(<GovernmentDashboardPage />);
-    expect(screen.getByText(/Government Dashboard/i)).toBeInTheDocument();
-    expect(screen.getByText(/Fund Balance/i)).toBeInTheDocument();
-    expect(screen.getByText(/Total Revenue/i)).toBeInTheDocument();
-    expect(screen.getByText(/Total Expenses/i)).toBeInTheDocument();
+    // Real header surface: canonical PageHeader title from the sector config.
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Public Sector / Government Driver Modeling Dashboard',
+      })
+    ).toBeInTheDocument();
+    // Scenario simulator renders driver-driven projections, each with its
+    // computation basis — labeled as projections, not measured KPIs.
+    expect(screen.getByText('Budget Utilization')).toBeInTheDocument();
+    expect(screen.getByText(/Basis: capacity slider passthrough/)).toBeInTheDocument();
+    // Measured strip and Data lineage card reflect what the ledger actually
+    // contains (a single 1xxx entry): revenue class absent → $0 actuals,
+    // assets classified, no invented fund-balance or expense totals.
+    expect(screen.getByText('Actual Revenue (classified)')).toBeInTheDocument();
+    expect(screen.getByText('Assets (classified)')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: 'Operating Margin' })).toBeInTheDocument();
+    expect(screen.getByText(/No expense-class accounts posted/i)).toBeInTheDocument();
   });
 });

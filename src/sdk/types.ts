@@ -117,13 +117,37 @@ export type AuthConfig =
       readonly tokens: OAuth2TokenState;
     }
   | { readonly type: 'apiKey'; readonly apiKey: string; readonly headerName?: string }
-  | { readonly type: 'bearer'; readonly token: string }
+  | {
+      readonly type: 'bearer';
+      readonly token: string;
+      /**
+       * Explicitly allow requests without a credential (public endpoints).
+       * When a `tokenSource` yields an empty token, the client rejects with
+       * `ApiNotConfiguredError` unless this flag is `true`.
+       */
+      readonly allowAnonymous?: boolean;
+    }
   | { readonly type: 'basic'; readonly username: string; readonly password: string };
 
 // ─── Client config ───────────────────────────────────────────────────────────
 
-/** Default REST base URL of the FinPlan Pro backend. */
-export const DEFAULT_BASE_URL = 'https://api.finplanpro.dev/v1' as const;
+/**
+ * Thrown (or surfaced as `{ok:false}` / typed namespace errors) when the SDK
+ * has no REST origin to talk to: neither an explicit `baseUrl` nor a build
+ * time `VITE_API_URL` was configured. Deliberately fails BEFORE any network
+ * attempt so the client can never send traffic to a guessed host.
+ */
+export class ApiNotConfiguredError extends Error {
+  /** Stable machine-readable code (mirrored onto `SdkError.code`). */
+  public readonly code = 'API_NOT_CONFIGURED' as const;
+
+  public constructor(
+    message = 'FinPlan Pro API origin is not configured. Set VITE_API_URL at build time to the FinPlan Pro server origin (e.g. http://localhost:3001 for the local Express server; in Vite dev the /api proxy reaches it same-origin), or pass baseUrl to new FpaClient().'
+  ) {
+    super(message);
+    this.name = 'ApiNotConfiguredError';
+  }
+}
 
 /** Default WebSocket base URL (derived from `baseUrl` when omitted). */
 export const DEFAULT_REALTIME_PATH = '/realtime' as const;
@@ -140,13 +164,13 @@ export const DEFAULT_RETRY_COUNT = 3 as const;
  * @example
  * ```ts
  * const client = new FpaClient({
- *   baseUrl: 'https://api.finplanpro.dev/v1',
+ *   // Origin comes from VITE_API_URL when omitted:
  *   auth: { type: 'bearer', token: process.env.FPA_TOKEN! },
  *   timeoutMs: 15_000,
  *   retryCount: 3,
  *   connector: 'qbo',
  *   headers: { 'X-Org-Id': 'org-42' },
- *   realtimeUrl: 'wss://ws.finplanpro.dev/realtime',
+ *   realtimeUrl: 'wss://api.example.com/realtime',
  *   onAuthRefresh: async (auth) => {
  *     await persistTokens(auth);
  *     return auth;
@@ -155,10 +179,22 @@ export const DEFAULT_RETRY_COUNT = 3 as const;
  * ```
  */
 export interface FpaClientConfig {
-  /** REST base URL. Defaults to `DEFAULT_BASE_URL`. */
+  /**
+   * REST base URL. When omitted, resolves from `import.meta.env.VITE_API_URL`.
+   * When BOTH are unset/blank, every client operation rejects immediately with
+   * `ApiNotConfiguredError` — the SDK never invents a default host.
+   */
   readonly baseUrl?: string;
   /** Auth credentials. Mutated to refresh OAuth2 tokens in place. */
   readonly auth: AuthConfig;
+  /**
+   * Lazily resolve the bearer credential at REQUEST time (e.g.
+   * `() => useAuthStore.getState().accessToken ?? ''`). Use together with
+   * `auth: { type: 'bearer', token: '' }` so tokens issued after client
+   * construction are picked up per request. An empty result rejects with
+   * `ApiNotConfiguredError` unless the auth config sets `allowAnonymous: true`.
+   */
+  readonly tokenSource?: () => string;
   /** Default request timeout (ms). */
   readonly timeoutMs?: number;
   /** Default retry count for idempotent requests on 5xx/429. */

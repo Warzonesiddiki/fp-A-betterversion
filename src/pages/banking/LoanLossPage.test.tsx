@@ -145,6 +145,7 @@ vi.mock('@/components/ui/Card', () => ({
 // ---------------------------------------------------------------------------
 
 import LoanLossPage from '@/pages/banking/LoanLossPage';
+import { useGLStore } from '@/store/glStore';
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -174,5 +175,52 @@ describe('LoanLossPage smoke test', () => {
       </MemoryRouter>
     );
     expect(getByText(/No Loan Data/i)).toBeInTheDocument();
+  });
+
+  it('renders the charge-off feed disclosure when entries are posted', () => {
+    // Real BankingEngine runs (only @/engines barrel is mocked): with a posted
+    // loan the page must show the em-dash disclosure for netChargeOffs —
+    // never a fabricated charge-off figure.
+    vi.mocked(useGLStore).mockReturnValue({
+      entries: [
+        {
+          id: 'gl-1',
+          accountId: 'acct-1',
+          accountCode: '1301',
+          accountName: 'Gross Loans',
+          period: '2026-01',
+          periodName: 'Jan 2026',
+          debit: 100000,
+          credit: 0,
+          netChange: 100000,
+          date: '2026-01-15',
+          amount: 100000,
+          description: '',
+          reference: 'ref-1',
+          entityId: 'bank-1',
+          currency: 'USD',
+        },
+      ],
+      accounts: [],
+      trialBalance: [],
+      accountAnalysis: null,
+      columnMappings: [],
+      isLoading: false,
+      importResult: null,
+      setEntries: vi.fn(),
+      setAccounts: vi.fn(),
+      addEntries: vi.fn(),
+      clearEntries: vi.fn(),
+      setColumnMappings: vi.fn(),
+      importData: vi.fn(),
+      undo: vi.fn(),
+      redo: vi.fn(),
+    } as never);
+    const { getByText } = render(
+      <MemoryRouter>
+        <LoanLossPage />
+      </MemoryRouter>
+    );
+    expect(getByText(/loan-loss transaction feed/i)).toBeInTheDocument();
   });
 });

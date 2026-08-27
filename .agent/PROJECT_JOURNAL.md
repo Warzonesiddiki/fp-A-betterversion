@@ -1706,7 +1706,7 @@ appears without a registry row. 41/41 match.
 `masterStorage.setItem` encodes objects; `getItem` revives tags. Property test: 10,000
 deterministic cent-precision Decimals round-trip bit-identically, plus non-cent literals
 (`1.005`). INV-009 now has an executor. Honest concession: in-memory hydrate is still a
-JS number so existing stores type-check; the *at-rest* form is the string. SQLite REAL
+JS number so existing stores type-check; the _at-rest_ form is the string. SQLite REAL
 columns are M003, not this gate.
 
 ### W0.8.3 Authority rule
@@ -1732,3 +1732,589 @@ W0.8.6 glStore spike waits on W0.2 tenancy (blueprint intra-phase order). Next s
 
 tsc clean. eslint on touched files clean. money-AST 0 on moneySerialize. fabrication 0.
 Targeted tests 55/55 then 39/39 after the import fix. Persistence map + schema equality green.
+
+## Session 032 (2026-08-22) — W0.2 Tenancy (Phase 0)
+
+**Resumption:** sess_031 state verified against reality before mutation (K0/D-002):
+money-AST detector re-run → 99.66% / 25 unsafe ops / 3 modules, ratchet holds;
+fabrication detector → 0 findings. Sandbox had been recycled: node_modules absent
+(root+server reinstalled via `npx npm@10.9.8 ci` — npm 12 rejects the lockfile),
+and node v26 (ABI 147) has no better-sqlite3 prebuilt → restored Node 22.18
+toolchain copy under %TEMP%\opencode\node22 and fetched the ABI-127 binding with
+prebuild-install. Server suites require this (mock fallback cannot run bootSchema).
+
+**W0.2 shipped (branch `phase0/w02-tenancy`):**
+
+- `tenant_id TEXT NOT NULL DEFAULT 'default'` on all 35 SQL-home tables + users/
+  refresh*tokens/user_entity_access/period_close_audit/audit_log/audit_permission*
+  changes/audit_data_changes (42 registry entries in server/src/db/tenancy.ts).
+- `environment_id TEXT NOT NULL DEFAULT 'dev'` on 13 governed surfaces.
+- `tenants` root table, seeded 'default'; ensureTenancy(db) idempotent reconciliation
+  wired into ensureSchema() AND runMigrations(); legacy DBs ALTERed + backfilled
+  (test proves DROP COLUMN → restore → backfill).
+- Ratchet: any table not registered or exempt fails tenancy.test.ts (exempt =
+  login_attempts + audit_login_attempts, global security telemetry by design).
+- Leak tests: per-table two-tenant seed → scoped select returns exactly own row
+  (anti-vacuous count guard); route-level GL suite proves write stamping from JWT
+  claim, read/delete/trial-balance scoping, bulk inheritance, legacy-token fallback.
+- gl_entries routes are the first enforcement site (GET/POST/bulk/DELETE +
+  trial-balance join); resolveTenantId never trusts client input.
+
+**Verification:** server tsc clean; W0.8.4 schema-equality gate green (shared
+audit_trail mirrored); default server suite 15 files / **183 passed**; native-db
+suites **77 passed**. Pre-existing EADDRINUSE unhandled noise reproduced on
+untouched suites (periods+commands) — not introduced here; backlog hygiene item:
+per-worker PORT or lazy listen in index.ts.
+
+**Honest limits (not done):** budgets/scenarios/forecasts/reports/entities/periods
+routes still unscoped (W0.2b); login flow does not yet sign tenantId claims
+(W0.2b); no RLS yet (SQLite Phase-0 posture; Postgres S2). Client untouched → root
+suite/build not re-run (no diff surface); money gates unaffected and re-verified.
+
+**Next:** W0.2b adoption sweep, then W0.3 runtime three-statement gate.
+
+## Session 033 (2026-08-22) — Resumption: the in-flight wave verified, fixed, and landed
+
+**Branch:** `phase0/w02-tenancy` (continued; sess_032's commits already on it)
+
+Resumed per Part VIII. Found a **72-file uncommitted wave** spanning four workstreams
+(W0.2b route tenancy, W0.3 gate, W0.4 registry, W0.5 slice 1 + K30 + probe harness +
+W0.8.6 draft) — a K9 half-mutated tree left by an interrupted session. Verified every
+plane before committing anything (K0), then fixed what verification exposed.
+
+### 1. The red gate test that was really two defects (W0.3, Severity-0 class)
+
+Server suite: 240/241, failing `computeEntityLedgerTotals`. Chasing it exposed:
+
+- **Stale fixture**: the function had been refactored to integer-cent rows
+  (`net_cents`) but the unit test still fed `net_debit` — everything silently
+  defaulted to zero.
+- **The real bug underneath**: `assertEntityLedgerIntegrity` asserted
+  `A − Exp = L + E + Rev`, which is wrong algebra (`⇔ A = L+E+Rev+Exp`) and would
+  have reported `delta = −2·Exp` on any balanced ledger carrying expense activity —
+  **false-blocking every legitimate GL write once OpEx existed**. Correct open-ledger
+  identity: `A + Exp = L + E + Rev ⇔ A = L + E + NI`.
+- **A second silent-drop**: aggregation keyed a nonexistent `'Expense'` type while
+  the schema CHECK constrains accounts to `Revenue/COGS/OpEx/CapEx/Asset/Liability/
+Equity` — real expense accounts (`OpEx`, `COGS`) would never have entered the
+  identity at all. Same class as session 026's balance-sheet prefix drop.
+- Fix: closed-vocabulary mapping (debit-normal `Asset/CapEx/OpEx/COGS`; credit-normal
+  `Liability/Equity/Revenue`), **fail-closed FP-0303** on unknown types (registered
+  additively in the W0.4 registry), stale docblocks corrected, and a runtime
+  regression test: a balanced Asset/Revenue/OpEx batch must be ACCEPTED.
+- **Teeth proven** per HANDOVER rule: temporarily reverting `.plus`→`.minus` fails
+  exactly that new test; restore returns green.
+
+The garbled scratch comment in the failing test (`650 must equal 750?? No…`) shows
+the interrupted session had smelled this and pinned the mapping instead of chasing
+it. Lesson recorded: **a comment that argues with its own fixture is a defect report,
+not noise.**
+
+### 2. Money ratchet 25 → 0: honest, with receipts
+
+Baseline moved to 100% alongside a +227-line detector change (W0.1.6 type-aware
+detection). Per D-002/HANDOVER ("prove suppressions are confined") I re-ran the HEAD
+detector against the current tree: it still reports **11 float-equality findings,
+every one an ISO-4217 currency-code string comparison** (`fromCurrency === toCurrency`
+etc.) — the documented false-positive class retired by type proof. The prior 25 real
+arithmetic ops are genuinely gone from product code. Both facts recorded so nobody
+has to trust the header comment.
+
+### 3. Render-probe bring-up
+
+Three pilot probes failed; triage:
+
+- `ProfitLossPage.probe` / `WorkingCapitalPage.probe`: missing
+  `import { screen } from '@testing-library/react'` — they hit an empty global, so
+  `screen.getByText is not a function` after all figure assertions had passed. A
+  debug `console.log('SCREENTYPE', …)` was left in one of them.
+- `BalanceSheetPage.probe`: exact-match query didn't account for the page's
+  legitimate directional clause ("— assets exceed liabilities + equity"); now
+  asserts the full message verbatim.
+- `WorkingCapitalPage.probe`: CCC appears twice (KPI card + table) → `getAllByText`.
+
+No page-side divergence found by the pilots yet — the harness works and stays.
+
+### 4. Two gates disagreed about a generated file (K7)
+
+Pre-commit prettier reformatted `docs/product/ROUTE_MAP.md` (padded the markdown
+table) while pre-push gate 9e compares generator output verbatim → permanent
+staleness. Resolution per K7: the generator solely owns the artifact; canonical
+table regenerated, path added to `.prettierignore`. Both gates green.
+
+### 5. Hygiene debt the hooks caught
+
+The interrupted session's files had never met the gates: 305 auto-fixable
+prettier/eslint errors across server sources plus 4 unused imports
+(`requireRole`, `bcrypt`, `beforeAll/afterAll`, unused `db`). All fixed properly;
+server suite re-run green afterwards (25 files / 243 tests; native-db 83).
+
+### 6. Commits (branch `phase0/w02-tenancy`)
+
+- `719e866f` money(W0.1.6): type-aware detector; ratchet 100% honest
+- `424d164e` server(W0.2b+W0.3+W0.4): tenancy adoption, three-statement gate (+S0 fix), error registry
+- `fa31c55f` web(W0.5 slice 1 + K30 + W0.8.6 draft): PillarNav, route consolidation, probes
+- `50ba62f2` fix(W0.5): ROUTE_MAP generated-artifact status, prettier excluded
+- `b10116ce` chore(ci+hygiene): ci-patches 0006/0007 delivered, tool dirs ignored
+
+Deliberately NOT committed: local `.github/workflows/*.yml` edits (patch-only
+convention; content already delivered as 0006/0007 for human application).
+
+### Next
+
+W0.8.6 promotion (glStore entries through the server-authoritative boundary using
+the landed commit namespace/conflict types), then W0.5 slice 2 toward ≤40 routes,
+then W0.9 LLM egress chokepoint.
+
+## Session 033 (continued, later same day) — failure-cluster triage + full battery green
+
+Resumed the mid-wave tree per HANDOVER. The remaining red clusters from sessions
+031–032 were repaired (two via subagent fleet with disjoint file ownership), the
+full verification battery was executed end-to-end, and two latent defects the
+repairs exposed were fixed at the root.
+
+### 7. Failure-cluster triage (the "10 files / 21 tests" debt)
+
+- **Page-test cluster** (BudgetVsActual ×2 router-mock importOriginal pattern;
+  RefreshCw in deep-test enumerated lucide mock; Healthcare `$70K` Intl-compact
+  exact match): verified independently — 6 files / 76 tests green.
+- **Determinism cluster** (ReportSchedulerEngine injected reference date;
+  scenarioUtils zero-formatting; text.ts Excel-serial UTC fixes): scoped run
+  green; but see §9 — text.date.test.ts still carried a TZ-sensitive helper.
+- **masterStorage "encryption failure (key unavailable)"**: reproduced at last.
+  Root cause is cross-file `process.env.MASTER_STORAGE_KEY` leakage through the
+  shared worker-thread env (vitest threads pool: fresh module graph per FILE,
+  ONE process.env per THREAD). Fix: file-level beforeEach scrub + afterEach
+  restore of MASTER_STORAGE_KEY, plus defense-in-depth re-scrub inside the
+  encryption-failure test itself. Assertion strength unchanged (K5).
+- **Theme contracts**: lightContrast shelled out to Unix `find` (+ a `wc -l`
+  pipe); replaced with a pure node:fs walker preserving the exact file-set
+  semantics (`*.tsx`, minus `*.test.tsx`, minus `test/`+`__tests__/` dirs),
+  forward-slash normalized for Windows. buttonContrast's glob had the same
+  Windows defect in reverse: backslash paths silently broke its
+  forward-slash regex consumers (`components\/ui\/Empty…\.tsx$`,
+  `split('/src/')`) — normalization restored the intended file set and the
+  role="status" empty-list assertion now exercises real markup.
+
+### 8. Two product-side defects the honest contracts immediately caught
+
+- `BudgetListPage.tsx:290` delete-confirm modal used `text-slate-400` —
+  unreadable light-theme text on the app's default theme. Replaced with the
+  sibling idiom `text-[var(--text-muted)]`.
+- `text.date.test.ts` serial helper built LOCAL-midnight Dates while text.ts's
+  documented contract is pure-UTC Excel serial space. On this Windows/IST host
+  the pre-1900 LMT offset (+5:21) differs from modern +5:30, drifting the
+  helper exactly one day off the impl (45305 vs 45306). Helper rewritten with
+  Date.UTC anchors + Math.round; all 23 tests green; impl untouched.
+
+### 9. Environment acquisition recap (sess_033)
+
+rustup stable-msvc (cargo/rustc 1.98) → src-tauri verifiable (R-24 mitigation:
+tauri.conf schema-invalid keys removed, dead updater dep dropped, lib.rs
+command moved into `mod commands` for rustc ≥1.98 E0255 macro-namespace
+unification); gh CLI 2.98.0 user-scoped; Playwright chromium installed
+(E2E was dead on this machine before); Node 26.7.0 machine-wide per user
+directive, lockfile ops pinned to npm@10.9.8.
+
+### 10. Verification battery results (this resumption)
+
+Root tsc ✓ · eslint --max-warnings 0 ✓ · focused pre-push vitest subset
+8 files / 263 ✓ · server tsc + 243/243 + native-db 83/83 ✓ · money ratchet
+100%/0 ✓ · fabrication 0 ✓ · persistence-map 41/41 ✓ · schema-equality ✓ ·
+ROUTE_MAP regenerated after telecom redirect fix (2-line diff, gate ✓) ·
+docs:verify ✓ · engines:verify 182 ✓ · cargo check Finished ✓ · production
+build (tsc+eslint+vite, PWA 475 entries) ✓. Full root suite re-run after all
+repairs: final numbers recorded in action_log. `.github/workflows/*.yml`
+edits remain uncommitted by convention (content = ci-patches 0006/0007).
+
+## Session 033, Part 3 (2026-08-22) - Blueprint<->Goal alignment audit + ADR-014
+
+The founder asked directly whether the blueprint/roadmap is perfectly inline with the
+goal. Formal audit verdict: structurally aligned (~85%), sequencing exact,
+instrumentation incomplete - and per the zero-compromise directive every gap was
+fixed as a runnable instrument rather than a note:
+
+1. GA gate was uncomputable. Section-24 "zero Core-20 hard escapes" had no executable
+   check - escape-ledger-check.mjs was specified (s027) and never written. BUILT now:
+   canon transcribed verbatim from blueprint-parts/12c section 24.2; status file
+   docs/product/escape-ledger.json evidence-cited per row; computes escape rate;
+   --phase p1|p2|ga enforces targets at declared phase-exit reviews; advisory as
+   pre-push gate 9g. First-ever scoreboard reading: escape rate 76.7%, Core-20 hard
+   offenders 16, built rows 7/30 (recorded in state.json escape_ledger_baseline).
+2. Vertical truthfulness debt invisible to feature counts -> W-FAB-002 widened into a
+   standing per-vertical gate (SectorDriver audit: 66/66 sector KPIs class-C).
+3. Desktop risks without workstream -> W-DESK-01 queued (cargo check already green;
+   clippy -> dev smoke -> MSI+NSIS next), closing the R-24 "risk without path" gap.
+4. Phase-0 exit ambiguity -> exit wording now names exactly what must be promoted
+   (glStore via /api/gl with tombstone+version semantics - server half DONE f6b34650)
+   vs. what legitimately waits (budgets/scenarios/forecasts stay draft-authoritative
+   into Phase 1, tracked in PERSISTENCE_MAP). Recorded in state.json
+   phase0_exit_amendments.
+5. K30/a11y instruments late-bound -> formalized as enforced Phase-0 exit blockers
+   (W-K30-001 / W-A11Y-001), not polish.
+
+Also landed in this part: W0.8.6-SERVER (f6b34650) - gl_entries tombstones +
+idempotent Idempotency-Key replay (FP-0401 on payload change) + version columns +
+entries:[{id,version}] responses; DELETE is tombstone-before-gate in one transaction;
+suite 247 + native-db 83 green. And W0.5-B0 (8fb44654) - drift-gate parser sees all
+200 route literals; RC1 pillar mapping fail-closed via longest-prefix + family defaults.
+
+ADR-014 - Blueprint alignment amendments.
+VERDICT: 4/4 ICPs ACCEPT (Carla OK discipline - amendments ride existing queue/gate
+machinery, no parallel process invented; Vera OK logic/evidence - every gap cited to
+audit output or a missing instrument, scoreboard measured before any remediation
+claim; Chris OK operational - all five fixes run today, advisory modes prevent
+false-blocking of routine pushes; Beth OK user/customer - the scoreboard measures
+exactly what a CFO buys: workflows completed without leaving the product).
+
+## Session 033, Part 4 (2026-08-22→23) — past-midnight continuation wave: K30 orphans, README truth pass, four-states, W-FAB-002 p1, BoardPack probe, G6 UUID resolver
+
+**Branch:** `phase0/w02-tenancy`. Eight work commits landed between 2026-08-22 20:01
+(`ada953e6`) and 2026-08-23 01:01 (`85439664`) local — verified via
+`git log --date=format-local:'%Y-%m-%d %H:%M'`; tracker auto-updates interleave between
+work commits throughout. At writing time origin sits at push point `bc3d44b7` with HEAD
+ahead 4 (`git status`: d5f6fea6, 350437f7, 6fc332be, 85439664 unpushed).
+
+### 11. Orphaned PeriodClose K30 specs landed first (ada953e6)
+
+The surviving test-half of died wave bfec73a0: hydrate skeleton (`period-close-loading`),
+empty-state CTA re-entry (`period-close-init`), in-flight transition skeleton, ErrorState
+role=alert retry path. Page-half had already shipped inside b3f5312d. Commit body records
+16/16 green against HEAD; diff is +76 in PeriodClosePage.test.tsx and nothing else
+(`git show --stat`).
+
+### 12. README truth pass: five audited clusters replaced with live measurements (661dd9ab)
+
+Remediation of the 12e80ee1 audit, every replacement value measured live, per commit body:
+tests 13,438/1,197 → **14,495/1,272** (badge, getting-started, scripts and quality-gates
+tables, release gate); server census 107 → **247 tests / 25 files** plus native-db 83
+measured live; the money triple-contradiction resolved onto the canonical money:ast
+ratchet — '98 of 380' / '2 of 23' / '98/380+2/23' variants removed, now **990 scanned /
+896 safe / 0 unsafe / 100%** via money:ast Gate 9b + fabrication Gate 9c = 0, legacy
+import-proxy marked retired-pending per the adjudication (action_log 2026-08-22T19:05Z:
+all 7 raw toFixed sites are roundMoney().toFixed() round-then-format); adoption
+denominator 258→**255** (208 engines + 47 store non-test modules), importer numerator
+re-measured at 88; unsupported '78 verticals' → measured **18 `/sector/*` dashboard
+routes** (ROUTE_MAP rows 164-181) + **14 templates** in src/templates, sector pack list
+rewritten to the real routes; footer re-verification stamp base commit 7c09eea9, report
+date 2026-08-22. Gates after edit per commit body: check-readme-claims **11/11 PASS**
+(Gate 7), verify-readme-stats PASS, prettier clean. Diff 47+/44−.
+
+The prettier gate earned its keep in-wave here: pre-commit Gate 3 runs
+`prettier --check` on staged markdown (.husky/pre-commit:30-36) and rejected the first
+staging's hand-built tables — what landed is the gate-formatted layout (padded `:---`
+separator rows are visible in the 661dd9ab diff). Single-squash landing means no
+intermediate commit exists to cite for the rejection itself.
+
+### 13. ScenarioBuilderPage four-states — and an honesty note about skeletons (d39602c7)
+
+Empty branch now renders the shared EmptyState under a mounted PageHeader (h1 discipline
+restored; was an h2-only early return) with a testid'd Import Data CTA; Monte Carlo
+in-flight shows a real skeleton region (`scenario-mc-skeleton`, aria-busy) beside the
+disabled run control; save failure and simulation failure use the shared ErrorState
+role=alert whose retry re-runs exactly the failed action (replacing ad-hoc red alert
+boxes). The load-bearing honesty note: **no fake page-hydrate skeleton**, because base
+derivation is synchronous from persisted stores — the only honest in-flight surface is
+the worker call. New 167-line spec file (real stores, PeriodClose idiom); cluster tsc 0 /
+eslint 0 / prettier clean, 32/32 across page/money/model.
+
+### 14. W-FAB-002 part 1: SectorDriverDashboard rebuilt on signed classification (da8eac31)
+
+Audit baseline (.agent/W-FAB-002-sectordriver-fabrication-audit.md): 66/66 sector KPIs
+were class-C fabricated. The rebuild kills the systemic plumbing, not just the numbers:
+the absEntryAmount max(|d−c|,|net|) magnitude trick is replaced by signed creditNormal /
+debitNormal sums everywhere; regex-over-'code name' textOf bucketing is demoted to a
+name-only fallback while account-code prefixes classify first (4/5/6 P&L, 1/2/3 balance
+sheet); invented bases (assetBase=rev×2, debtBase=exp×0.55, productionBase=rev÷100) and
+the filledMetrics target×growthFactor×efficiencyFactor filler are deleted; the insurance
+x0.62 claims fallback and the cross-sector regulatory fabrications (banking
+cet1/npl_ratio/loan_deposit_ratio, technology arr/quick_ratio, retail atv/gmroi, energy
+production/boe/lifting/carbon, construction backlog/wip, healthcare
+ar_days/case_mix_index, government cost_per_citizen/revenue_collection_gap, education
+revenue_per_student/faculty_ratio, insurance retention/solvency-180) are removed outright.
+Derived metrics are null-with-disclosure when a denominator class is absent
+(gross_margin, inventory_turnover=cogs/inventory, banking nim+efficiency, insurance
+gwp/loss/expense/combined from real premiums+claims+opex, realestate noi/cap_rate/ltv).
+Driver-arithmetic KPIs move into a labeled 'Scenario simulator' card declaring each basis
+string, never merged into measured KPIs; header copy now states the measured-vs-projection
+split. Tests rewritten per K5: 23 specs pin exact identities (insurance identity 60/25/85),
+sign sensitivity (a debited revenue row REDUCES revenue), disclosure-not-number nulls, and
+filler absence; sector cluster 75/75.
+
+And the wave's own honest fixture caught a real classifier defect: prefix-5 claim rows
+never reached the claims bucket — found mid-wave and fixed in-wave (recorded in
+HANDOVER.md by 55c19467; no separate commit exists since the fix predates the landing).
+
+### 15. BoardPackPage render-probe #4: ledger arithmetic held against the DOM (d5f6fea6)
+
+Fourth probe in the W0.5 harness series re-derives every pack figure from a balanced
+double-entry ledger independently of boardPackData/computeBalanceSheet, then holds the DOM
+to them figure-for-figure: expenses include interest+tax classes (7xxx/8xxx), equity
+includes current-period earnings (100k posted + 7k = 107k), the A = L + E identity, budget
+utilization from real budget totals — plus divergence-class negatives (cost-only margin
+14%, earnings-less equity, flipped net income, revenue+COGS conflation) and both K30
+states. New 166-line probe file.
+
+### 16. Push point bc3d44b7: full pre-push battery green
+
+Mid-wave, 55c19467 recorded this exact wave into .agent/HANDOVER.md (+43) and state.json
+(+9/−2) — the record several citations above lean on. bc3d44b7 is a tracker auto-update
+(PROGRESS_TRACKER.html, 1 insertion) serving as the push-point marker: origin sits exactly
+there while HEAD is ahead 4 (git status + log decoration, run this session). The hook at
+.husky/pre-push gates every push with set -e over: tsc --noEmit; eslint --max-warnings 0;
+vitest P0 shard (FXEngine, ConsolidationEngine, SafeMathParser, glValidation,
+glStore.smoke, spreadsheetSanitize, masterStorage.security, moneySerialize,
+persistenceAuthority, components/layout/, plugins/, safeJSONStorage); npm run build;
+bundle-check; version consistency; readme claim check (Gate 7); dependency audit;
+tautological scan; money AST ratchet (9b); fabrication ratchet (9c); persistence-map +
+schema-equality (9d); route-map drift (9e); docs-truth + engine manifest (9f);
+escape-ledger advisory (9g); cascade-hold ledger check (Gate 10). Honest labeling: this
+lane verified the gate list by reading the hook and verified the push landed via refs;
+individual gate executions were not re-run here — under set -e, a landed push implies
+every gate exited 0, which is also what HANDOVER promised ("Full-suite + build re-run at
+next pre-push").
+
+### 17. W0.8.6-G6 UUID resolver: server identity lands on client rows (6fc332be)
+
+P0 blocker from plan v2: applyCommitResult discarded the server's entries:[{id,version}]
+payload, so committed rows kept client-generated ids and no version was ever captured for
+If-Match. Committed responses now resolve positionally (server returns request-line order
+on both the fresh-insert and idempotent-replay paths): entry ids are re-keyed to server
+UUIDs, entryVersions[serverId] = version recorded, syncState re-keyed, and the
+lastImportEntryIds batch token is remapped so undoLastImport targets server rows. Arity
+mismatch (sent N, acknowledged M) fails closed — nothing marked committed, nothing
+remapped; identity on financial records is never guessed. GLState gains persisted
+entryVersions; specs rewritten per K5 (G6 remap + retry-cannot-double-post, fail-closed
+arity, conflict path unchanged). glStore cluster 19/19; tsc 0; eslint 0. Diff spans
+glStore.ts, glStore.server.test.ts, types/index.ts (115+/28−).
+
+The first G6 attempt failed tsc on exactly the two hazards this design invites:
+readonly-typed entry payloads meeting Immer mutation, and narrowing over GlCommitResult
+union shapes. Both were fixed in-wave before the single squashed landing — the committed
+code carries the witnesses (`GlCommitResult<readonly { id: string; version: number }[]>`,
+`readonly GLEntry[]`, and the '// Immer draft: runtime re-key of a readonly-tagged
+identity field' comment). No intermediate commit exists to cite; the final state compiles
+clean per the commit body.
+
+### In-wave honesty ledger (this part)
+
+- Three repairs happened mid-wave and are invisible to history as separate commits
+  (single-squash landings): the G6 tsc readonly/narrowing fixes (→ 6fc332be), the
+  prefix-5 claims-bucket defect caught BY the new honest fixtures (→ da8eac31; recorded
+  at HANDOVER.md:243-244), and the README table rewrite forced by the pre-commit prettier
+  gate (→ 661dd9ab).
+- Every measurement above traces to a named SHA's commit body/diff or a file read this
+  session; nothing is claimed from memory alone.
+
+### Open items
+
+- **W-FAB-002 part-2 (in flight):** sectors/\*.ts config copy still advertises removed
+  KPIs; LEGACY_SECTOR_COPY sr-only sweep; per-sector render-probes; industry-pack
+  vertical-truthfulness sweep (HANDOVER.md via 55c19467).
+- **glStore promotion remainder:** product trigger + boot drain still owed (plan v2
+  G1-G5/G7/G8 remain; updateEntry descoped — no server PUT).
+- **W0.2c-hardening M-tier and W-A11Y lanes in flight** (HANDOVER.md items 7/9).
+- Four commits unpushed at writing time (d5f6fea6, 350437f7, 6fc332be, 85439664): the
+  next push re-runs the full battery over them.
+
+## Session 033, Part 5 (2026-08-23) — fleet wave 2: K30 completion, vertical de-fabrication sweep, W0.9 chokepoint, GL promotion waves, W0.2c hardening, docs-links truth
+
+**Branch:** `phase0/w02-tenancy`. Wave 2 landed 19 work commits between 01:20
+(`7447c1f7`) and 04:10 (`1bea2f3a`) local, interleaved with tracker auto-updates
+(`git log --date=format-local` verified). This part was composed ~04:20 at HEAD
+`e635e731` while wave 3 was still landing (HEAD advanced twice during writing;
+origin remains at `bc3d44b7`, so both waves await one battery-bearing push).
+
+### 18. K30 completion batch — twin SHAs, honest provenance (bc6249d1 + a1d2ad01)
+
+Same subject one minute apart, deliberately different payloads: bc6249d1 carried ONLY the
+mirror retirements (−213: `__tests__/forecasts/ForecastBuilderPage.test.tsx`,
+`__tests__/scenarios/ScenarioBuilderPage.test.tsx`); a1d2ad01 landed the full build-out,
+20 files +1537/−562. Contents per commit bodies:
+
+- **WhatIfPage**: the silent-catch fix — swallowed compare failures now surface as
+  ErrorState role=alert retrying exactly the failed action; EmptyState under mounted h1
+  with New Scenario CTA; demo-default assumptions honestly labeled; stale compare-target
+  reset; legacy mocked `__tests__` mirror retired for the colocated real-engine spec
+  (7 tests incl. a no-fake-skeleton honesty pin).
+- **FXRatesPage**: hardcoded INITIAL_RATES quotes removed (they rendered as user data);
+  wired to real fxRateStore manual-source writes; dual empty states; RBAC-denied
+  mutations get ErrorState exact-action retry; '3ratesconfigured' whitespace bug fixed.
+- **GLJournalsPage**: K30 empty state under h1; CSV export failure ErrorState; latent
+  Radix Select empty-value crash fixed; dead Help control removed.
+- **Budgets trio (N8)**: ListPage loading skeleton + shared EmptyState + RBAC-throw
+  ErrorState across five actions; VAReport loading branch, honest no-approved-budget
+  copy, zero-plan-lines disclosure replacing fabricated zero-variance chrome, memo deps
+  fixed; Detail not-found upgraded to shared EmptyState under h1; seeded fake audit
+  entry removed.
+- **Mirror reconciliation**: ForecastBuilder aspirational mirror retired (colocated
+  10/10 covers it); PeriodClose/BudgetDetail lucide mocks extended for the EmptyState
+  icon set; heading assertions moved to h1-discipline structure.
+
+### 19. Vertical sweep: ~150 fabricated value-sites removed (7dad753d)
+
+Four sweep lanes audited every page in 12 industry dirs (saas, retail, telecom,
+healthcare, energy, construction, realestate, logistics, government, education,
+insurance, sector). Per-dir highlights from the commit body: retail invented stores +
+SKU-4401; energy SOURCES MWh/$ literals; healthcare patientVolume fixture; government
+appropriations; education 12,000-student institution; realestate 'Metro Plaza' record;
+sector dashboards' target×factor tiles; plus the systemic kills — Math.abs COGS
+sign-trick, debit-revenue netChange fallbacks in four metric builders, fake sparkline
+histories/tile deltas, zero-for-absence '0%' renderings. Replacements are honest by
+construction: GL/store-derived KPIs with disclosed bases, null-with-disclosure
+('—' plus what a real feed requires), labeled simulator-style defaults, exports emitting
+only recorded rows. Regression locks: 31+ new colocated tests including fs source guards
+against target×factor / change={-N} patterns and not-contains guards naming every
+removed constant ('Acme Corp', 'Metro Plaza', '94.8', '400,000'); per-dir vitest green
+(139 + 105 + 117 + 79 across lanes).
+
+Companions closing W-FAB-002 p2: `7ee5c3cc` pruned 24 fabricated config KPI ids
+(consumer-grepped; arr/gmroi retained with reasons; every sector keeps ≥5 defaultKPIs;
+src/config 21/21, SectorDriver money suite 23/23); `730b2dea` deleted the invisible
+LEGACY_SECTOR_COPY header block (screen-reader noise advertising removed metrics like
+'NPL Ratio'; block lives on only for empty-state titles; 5 page specs re-pinned, cluster
+75 tests); `1163e012` replaced ICEliminationPage's 4 invented useState IC pairs
+(50k/50k/25k/24.8k) with real IntercompanyMatchingEngine reads + autoMatch + batched
+createEliminations(period, authed-user), 6 real-engine tests incl. a mock-amount guard.
+
+### 20. W0.9 LLM egress chokepoint, fail-closed by design (71b27b57)
+
+Single egress surface llmEgress.complete/openStream; both nim.ts transports rewired
+(nimFetch deleted, legacy error surfaces preserved). Fail-closed gates:
+VITE_LLM_EGRESS_ENABLED kill switch, host allow/denylists (defaults: NVIDIA +
+loopback), typed LlmEgressBlockedError. The redactor strips secrets/IBAN/GL-accounts/
+money/digit-runs/emails BEFORE bytes leave, backed by an exact-answer fixture table
+with pseudonymization immune to the digit pass; audit sink {ts, endpoint, promptBytes,
+redactions}. +931 lines across module and tests; 39 new tests, nim 21/21,
+components/ai canary 36/36.
+
+### 21. GL client promotion waves 1–2 completed (7447c1f7, 6f4f1b49, 83a2a683)
+
+- `7447c1f7`: DurabilityBanner gains the product Publish trigger (drafts exist +
+  import:create → commitDraftsToServer with typed inline outcome: published / failed /
+  conflict codes); copy states GL publishes to server while budgets/forecasts stay
+  local drafts. undo/redo snapshots now carry entrySyncState + entryVersions so an undo
+  past a server commit restores the exact id→state/version mapping instead of
+  corrupting identity. persistenceAuthority records G6 reality; PERSISTENCE_MAP
+  regenerated 41=41. Banner suite 5/5 incl. F-0004 pre-flight via the real store path.
+- `6f4f1b49`: symmetric Pull hydration — hydrateCommittedFromServer converges the
+  replica with committed rows only (drafts/failed never touched), import:create-gated;
+  spec proves K25/K27 semantics through real UI (server row adopted WITH version
+  captured, local draft preserved).
+- `83a2a683`: boot-hydrate store action + SDK GlCommitNamespace.listEntries
+  (GET /api/gl/entries?environment_id via the real handler; defensive mapper drops
+  id-less rows and surfaces version? WITHOUT inventing it); classify-before-mutate
+  merge in a single immer pass; trial balance invalidated only on change; transport
+  errors are a no-op {hydrated: 0}; +8 specs (cluster 24/24). escape-ledger.json rows
+  7/9/11/16/17 got fleet-wave evidence; scoreboard honestly unchanged at 76.7% — no
+  escape vector closed yet.
+
+### 22. Server W0.2c batches (8b617858 + 85ad8466)
+
+M-tier authz (`8b617858`, +1303/−39): all 8 scenario routes reject cross-entity
+apply/read/write 403 FP-0201; NULL-entity scenarios fail closed; absent entityFilter no
+longer falls through to an unfiltered tenant query; apply asserts base AND target
+budget/forecast entity scope BEFORE any write or disclosure (zero rows written on
+rejection, test-verified). Accounts/entities: `entity_id` re-binding rejected 409 FP-0410
+(binding immutable post-create); listings scoped by JWT-resolved access — query param
+narrows, never widens, zero grants → []; duplicate account codes typed 409 FP-0402.
+Additive drift repairs: `accounts.description` and
+`budget/forecast_line_items.department_id` columns existed in routes but never in schema — every such write 500'd against real
+SQLite. Leftovers trio (`85ad8466`): departments POST named nonexistent updated_at
+(every create 500'd); entity code-uniqueness tenant-scoped on POST/PUT (was DB-global:
+existence oracle + cross-tenant false blocks); POST /gl/accounts Admin-gated like PUT.
+Server suite 28 files / 286 tests green; tsc exit 0.
+
+### 23. Routes slice-2 opens (2a94a3f4)
+
+'/' aliased to /dashboard; phantom /chart-of-accounts target dropped; top-level targets
+33 → 32 toward RC2 ≤40. In-place element swap keeps the declaration pin at 221 (delta
+explained in test comment); the generator now derives App line count dynamically. New
+drift specs: every Navigate alias must resolve to a declared route; exactly one
+DashboardPage mount survives. routeShell 6/6; navigation.contract + App.runtime 15/15.
+
+### 24. docs-links policy evolution: gate restored, corpora made genuinely true
+
+Two-step resolution recorded across `ca9b16bd` + `9ba83dba`:
+
+- Historical corpora fixed WITHOUT falsification (ca9b16bd): GLOSSARY +
+  STRATEGIC_DECISIONS_LOG citations rewritten as living-successor redirects or explicit
+  [removed] markers — claims and line numbers kept verbatim, no live-link pretense for
+  the deleted drafts corpus; skill-creator copies stripped of dead example links only
+  (SHA-identical otherwise). Then the allowlist exemptions were removed upstream so the
+  strict gate genuinely covers both files. The [removed]/living-successor marker style
+  is the accepted, recorded deviation from literal dead links.
+- Override enforcement, evidenced: the mid-wave shortcut — exempting paths in the gate
+  script — was withdrawn before anything landed. History shows NO wave-2 commit touched
+  scripts/docs-link-check.mjs (previous touch b5195816, 2026-08-08; next 9ba83dba), and
+  this lane's own git-status snapshots watched the pending docs-link-check.mjs staging
+  vanish between the 04:14 and 04:17 checks. Restore order held: script byte-exact
+  first, files made to truly pass second.
+- Completion (9ba83dba, 04:18): one normalize() on rel-paths so allowlist keys and the
+  reports/ prefix match on Windows too (Linux byte-identical); 27 count-asserted
+  `MEMORY/**` shorthand citations re-pointed to canonical paths or de-backticked as
+  illustrative placeholders, archive prose untouched. Strict gate: 0 broken links /
+  0 broken citations repo-wide.
+
+### 25. Cross-lane integration surface (db9902b5, 1bea2f3a, 5fc21e95)
+
+- `db9902b5` (a11y M1–M5): Skeleton announces once per group (a Period Close load used
+  to spawn five concurrent live regions); DataTable becomes an ARIA 1.1 interactive grid
+  with roving tabindex, arrow-key nav with clamping + virtual-scroll sync, cell-level
+  activation, and the zero-tab-stop fix for page 2 / virtual windows; Sidebar collapsed
+  rail keeps one accessible name via the sr-only carrier swap; skip link moves to
+  focus-scoped token classes with JSDoc on the deliberate no-tabIndex decision (WCAG
+  2.4.1); smooth-scroll gated under prefers-reduced-motion. Provenance note: this
+  commit's stat also carries `.agent/PROJECT_JOURNAL.md +150` — Part 4 of this journal
+  rode along inside the a11y lane's territory commit.
+- `1bea2f3a`: energyStore shipped 5 invented assets / 7 trend points / a capacity mix
+  as PERSISTED defaults that pages rendered as user data on first run (K17 violation);
+  the store now honors its own contract test's empty defaults. DataTable row-level
+  onClick moved to cells for mouse parity with the new keyboard model; smoke mirrors
+  updated to honest surfaces.
+- `5fc21e95`: the probes caught spec rot, not page bugs — the CashFlowPage probe
+  fixture had unbalanced rows (120k bill vs 50k revenue), an ending-cash figure
+  contradicting its own walk (76k vs 100+6k), and a wrong debt-repayment constant
+  (−50k vs −10k); rebuilt as balanced double-entry pairs under the page's real COA
+  prefixes (cash=11xx). Page math verified correct throughout; view untouched. Also:
+  CommandPalette empty set no longer keeps a childless role=listbox (axe
+  aria-required-children).
+
+### Fleet operations — how wave 2 ran
+
+- SOLO mode was revoked by founder directive; a 15-subagent fleet ran on disjoint
+  edit-only territories with the orchestrator serializing every commit; all 15 lanes
+  reported (HANDOVER.md fleet-wave section via 1ced5ee8; state.json session log records
+  the wave summary incl. "journal Part 4" and docs-truth battery 9/10 with docs:links
+  pre-existing debt the only red).
+- **Override 1 — allowlist restore order**: a lane's gate-script exemption edit was
+  ordered withdrawn; restore byte-exact first, then make historical files genuinely
+  pass. Evidence chain in §24.
+- **Override 2 — arity-mismatch fail-closed**: a lenient partial-commit handling was
+  rejected; G6 semantics held across the whole promotion arc — sent N / acknowledged M
+  marks nothing committed and remaps nothing (6fc332be body; pinned at state.json
+  W0.8.6 queue summary; extended to hydration by 83a2a683's classify-before-mutate).
+- **Invalid-suite-run diagnosis**: one mid-wave suite run reported failures that were
+  traced to lanes editing files WHILE vitest executed — a mid-edit race, not a product
+  regression; the run was discarded and re-run after serialization. Honest label: this
+  diagnosis comes from the fleet-ops record supplied with the wave brief; no disk
+  artifact captures it (action_log.jsonl's last entry predates the fleet at
+  2026-08-22T19:05Z; state.json/tracker carry no race entry) — recorded here so it
+  survives the wave.
+
+### Open items (end of wave 2)
+
+- **Route slice-2 continuation**: 32 top-level targets after 2a94a3f4; RC2 ≤40; pillar
+  mapping enforcement continues via the drift gate (state.json W0.5-slice2 entry).
+- **Engine placeholders lane in flight at composition**: uncommitted edits to
+  InventoryEngine/RetailEngine (+tests) and retail/insurance/realestate/energy pages
+  visible in git status — wave-3 work, not yet judged here.
+- **MEMORY citations**: 27 re-pointed by 9ba83dba with the strict gate reporting fully
+  green — confirm the repair holds at wave wrap before striking the item.
+- **environment_id filter lane in flight**: server/src/routes/gl.ts modified + new
+  server/src/routes/gl.entries.env.test.ts uncommitted at composition time.
+- **README refresh pending final counts**: README still carries the 661dd9ab numbers
+  (14,495/1,272 tests; 247 server); wave 2 alone added hundreds — refresh once the
+  wave sequence settles and counts are measured live again.
+- **Push debt**: origin sits at bc3d44b7 with both waves local; the next push runs the
+  full pre-push battery over all of it.

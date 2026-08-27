@@ -50,7 +50,13 @@ export interface BankingStats {
   nplBalance: number;
   nplRatio: number;
   coverageRatio: number;
-  netChargeOffs: number;
+  /**
+   * Net charge-offs need charge-off and recovery events identified per
+   * transaction. GL prefix classification cannot isolate them, so this stays
+   * null until a loan-loss transaction feed is integrated: null means "not
+   * measurable from the ledger", never a zero.
+   */
+  netChargeOffs: number | null;
   provisionExpense: number;
 }
 
@@ -86,7 +92,8 @@ export class BankingEngine {
       nplBalance: roundTo(nplBalance, CURRENCY_PLACES),
       nplRatio: ratioPct(nplBalance, grossLoans),
       coverageRatio: ratioPct(reserveBalance, nplBalance),
-      netChargeOffs: 0, // Needs specific transaction type detection
+      // Null-with-contract: charge-off events are not GL-classified.
+      netChargeOffs: null,
       provisionExpense: roundTo(provisionExpense, CURRENCY_PLACES),
     };
   }
@@ -170,7 +177,12 @@ export class BankingEngine {
     earningAssets: number;
     yieldOnAssets: number;
     costOfFunds: number;
-    trend: number[];
+    /**
+     * NIM quarter-history needs period-end interest-bearing balance postings
+     * for each historical quarter. A single GL snapshot cannot reconstruct
+     * the series, so this is null rather than an invented curve.
+     */
+    trend: number[] | null;
   } {
     const interestInc = sumByPrefix(entries, '41');
     const interestExp = sumByPrefix(entries, '61').abs();
@@ -183,11 +195,16 @@ export class BankingEngine {
     return {
       interestIncome: roundTo(interestInc, CURRENCY_PLACES),
       interestExpense: roundTo(interestExp, CURRENCY_PLACES),
+      // Net Interest Margin: (Σ41xx − Σ61xx) × 12 ÷ Σ1xxx × 100 — GL-derived.
       netInterestMargin: ratioPct(netInterest.times(12), avgEarningAssets),
       earningAssets: roundTo(avgEarningAssets, CURRENCY_PLACES),
+      // Yield on assets: Σ41xx × 12 ÷ Σ1xxx × 100 — GL-derived.
       yieldOnAssets: ratioPct(interestInc.times(12), avgEarningAssets),
+      // Cost of funds: Σ61xx × 12 ÷ Σ2xxx × 100 — GL-derived.
       costOfFunds: ratioPct(interestExp.times(12), avgInterestLiabilities),
-      trend: [3.12, 3.18, 3.25, 3.31],
+      // Null-with-contract: no period-end quarterly balance history exists
+      // in a single GL snapshot.
+      trend: null,
     };
   }
 }

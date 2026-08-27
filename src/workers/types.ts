@@ -189,4 +189,6 @@ export interface BatchCalcResponse {
   readonly affectedCells: string[];
   readonly iterationCount: number;
   readonly converged: boolean;
+  /** Cell keys whose formula failed to evaluate (W6-P0-01). Their prior value is preserved. */
+  readonly errors?: string[];
 }

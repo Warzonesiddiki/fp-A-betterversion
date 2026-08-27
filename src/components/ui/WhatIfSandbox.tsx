@@ -218,7 +218,10 @@ export function WhatIfSandbox({ baseMetrics, onScenarioChange, className }: What
     revenue: 'Revenue',
     ebitda: 'EBITDA',
     netIncome: 'Net Income',
-    cashFlow: 'Cash Flow',
+    // K33/K17 basis label: cashFlow is the engine's 80%-of-EBITDA conversion
+    // assumption, not measured cash movement (headcount/runway/burnRate are
+    // not rendered by this component).
+    cashFlow: 'Cash Flow (base assumption)',
     grossMargin: 'Gross Margin',
     ebitdaMargin: 'EBITDA Margin',
   };

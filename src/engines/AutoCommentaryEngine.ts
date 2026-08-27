@@ -21,12 +21,26 @@
 import { formatMoney, subtractMoney, sumMoney, toDecimal, type MoneyInput } from '../utils/money';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { currencyFormatter } from '@/utils/financialFormatting';
+// W0.9 lane R19: the narrative-generation workflow is the highest-value real
+// consumer of outbound model traffic. The LLM path below routes exclusively
+// through the NVIDIA NIM service, whose transport is the llmEgress chokepoint
+// (kill switch + host allowlist + redaction + audit). All existing static
+// methods remain pure and synchronous.
+import { isNimConfigured, nimChat } from '@/services/nim';
+import { isEgressEnabled } from '@/services/llm/llmEgress';
 
-interface LineItem {
+export interface LineItem {
   name: string;
   actual: number;
   budget: number;
   priorYear?: number;
+}
+
+/** Result of the enhanced narrative pass — which path produced the text. */
+export interface NarrativeResult {
+  text: string;
+  /** 'llm' = gated+redacted chokepoint call succeeded; 'local' = deterministic fallback. */
+  source: 'llm' | 'local';
 }
 
 interface CommentaryTemplate {
@@ -43,6 +57,17 @@ interface VarianceContext {
 }
 
 const MONEY_INTERPOLATION_KEYS = new Set(['amount', 'budget', 'start', 'end']);
+
+/** System contract for the LLM narrative pass — facts in, prose out, nothing invented. */
+const NARRATIVE_SYSTEM_PROMPT =
+  'You are an FP&A management-commentary editor. Rewrite the provided variance facts as one ' +
+  'concise paragraph of at most 120 words. Use ONLY the numbers provided — never invent or ' +
+  'recompute figures. Never label a variance favorable or unfavorable.';
+
+/** Locale-independent thousands grouping for prompt facts (deterministic across hosts). */
+function groupThousands(value: number): string {
+  return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
 
 function fmtCurrency(value: MoneyInput): string {
   return currencyFormatter(reportingCurrency(), { maxDecimals: 0 })(toDecimal(value).toNumber());
@@ -120,9 +145,61 @@ export class AutoCommentaryEngine {
     return parts.join(' ');
   }
 
+  /**
+   * W0.9 (lane R19): LLM-polished section narrative — the production workflow
+   * routed through the llmEgress chokepoint.
+   *
+   * Contract:
+   *  - egress disabled or NIM unconfigured → deterministic local text; the
+   *    transport is never touched and no audit event is emitted;
+   *  - enabled + allowed → facts-only prompt via nimChat (kill-switch gated,
+   *    host-allowlisted, redacted, audited inside the chokepoint);
+   *  - ANY failure (blocked/denied host, HTTP error, empty model content)
+   *    degrades to the same local text — this never throws into the UI.
+   */
+  static async generateSectionNarrativeEnhanced(
+    section: string,
+    lineItems: LineItem[],
+    period: string
+  ): Promise<NarrativeResult> {
+    const localText = this.generateSectionNarrative(section, lineItems, period);
+    if (!isEgressEnabled() || !isNimConfigured()) {
+      return { text: localText, source: 'local' };
+    }
+    try {
+      const itemFacts = lineItems
+        .map(
+          (item) =>
+            `${item.name}: actual=${groupThousands(item.actual)}, budget=${groupThousands(item.budget)}`
+        )
+        .join('\n');
+      const response = await nimChat(
+        [
+          { role: 'system', content: NARRATIVE_SYSTEM_PROMPT },
+          {
+            role: 'user',
+            content:
+              `Write management commentary for section "${section}", period "${period}".\n` +
+              `Total actual: ${groupThousands(sumMoney(lineItems.map((i) => i.actual)).toNumber())}\n` +
+              `Total budget: ${groupThousands(sumMoney(lineItems.map((i) => i.budget)).toNumber())}\n` +
+              `Line items:\n${itemFacts}\n` +
+              `Draft commentary to polish:\n${localText}`,
+          },
+        ],
+        { temperature: 0.3, max_tokens: 400 }
+      );
+      const llmText = response.choices[0]?.message?.content?.trim();
+      if (!llmText) return { text: localText, source: 'local' };
+      return { text: llmText, source: 'llm' };
+    } catch {
+      // Fail-closed: LlmEgressBlockedError, HTTP errors, network failures all
+      // degrade to the deterministic local commentary.
+      return { text: localText, source: 'local' };
+    }
+  }
+
   static generateSectionNarrative(section: string, lineItems: LineItem[], period: string): string {
     if (lineItems.length === 0) return `No data available for ${section} in ${period}.`;
-
     const totalActual = sumMoney(lineItems.map((item) => item.actual));
     const totalBudget = sumMoney(lineItems.map((item) => item.budget));
     const totalVariance = subtractMoney(totalActual, totalBudget);

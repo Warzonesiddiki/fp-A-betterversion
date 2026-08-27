@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { activateOnKey } from '@/utils/a11yActivate';
 import { PageHeader } from '@/components/ui/PageHeader';
 
@@ -6,6 +7,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useBudgetStore } from '@/store/budgetStore';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 import { Card, CardContent } from '@/components/ui/Card';
 import { Plus, Search, Copy, Trash2, Eye, Send, CheckCircle, XCircle } from 'lucide-react';
@@ -14,6 +18,7 @@ import { AICopilotPanel } from '@/components/ai/AICopilotPanel';
 // canonical import. Uses 30-day cap (matches old behavior), "Just now" cap.
 import { formatRelativeTimeBudget as formatRelativeTime } from '@/engines/temporal';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { Modal } from '@/components/ui/Modal';
 
 export default function BudgetListPage() {
   const fmt = useCurrencyFormatter();
@@ -23,13 +28,55 @@ export default function BudgetListPage() {
     document.title = 'FinPlan Pro — Budget List';
   }, []);
 
-  const { budgets, submitBudget, approveBudget, rejectBudget, deleteBudget, duplicateBudget } =
-    useBudgetStore();
+  // K30 four-states (N8): isLoading gates the empty-state flash while the
+  // persisted budget store hydrates (same legitimacy argument as the detail
+  // page's skeleton branch).
+  const {
+    budgets,
+    isLoading,
+    submitBudget,
+    approveBudget,
+    rejectBudget,
+    deleteBudget,
+    duplicateBudget,
+  } = useBudgetStore(
+    useShallow((s) => ({
+      budgets: s.budgets,
+      isLoading: s.isLoading,
+      submitBudget: s.submitBudget,
+      approveBudget: s.approveBudget,
+      rejectBudget: s.rejectBudget,
+      deleteBudget: s.deleteBudget,
+      duplicateBudget: s.duplicateBudget,
+    }))
+  );
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [statusFilter, setStatusFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  // K30 four-states (N8): budgetStore exposes no load-error field — its write
+  // actions are RBAC-enforced and THROW synchronously on permission denial
+  // (rbacEnforcer PermissionError). The failure is captured here so it can
+  // render as an ErrorState whose Retry re-runs exactly the failed action.
+  const [actionError, setActionError] = useState<{
+    label: string;
+    message: string;
+    retry: () => void;
+  } | null>(null);
+
+  const runBudgetAction = (label: string, action: () => void) => {
+    setActionError(null);
+    try {
+      action();
+    } catch (err) {
+      setActionError({
+        label,
+        message: err instanceof Error ? err.message : `${label} failed`,
+        retry: () => runBudgetAction(label, action),
+      });
+    }
+  };
 
   const filtered = useMemo(() => {
     let list = budgets;
@@ -38,7 +85,10 @@ export default function BudgetListPage() {
       const q = search.toLowerCase();
       list = list.filter((b) => b.name.toLowerCase().includes(q));
     }
-    return list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    // R18: copy before sort — budgets comes from the immer store, which
+    // freezes its arrays after every action; the in-place sort crashed the
+    // page as soon as more than one budget needed reordering.
+    return [...list].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }, [budgets, statusFilter, search]);
 
   const statusBadgeVariant = (status: string) => {
@@ -56,23 +106,63 @@ export default function BudgetListPage() {
     }
   };
 
-  if (budgets.length === 0) {
+  if (isLoading) {
+    // K30 four-states (N8): skeleton while the budget store hydrates, so a
+    // cold start does not flash "No Budgets Yet" for a store that is about to
+    // populate. PageHeader keeps an h1 in the document; the bars stay
+    // decorative (aria-hidden) like every other K30 page.
     return (
-      <div className="p-12 text-center max-w-md mx-auto">
-        <h2 className="text-xl font-semibold mb-2">No Budgets Yet</h2>
-        <p className="text-[var(--text-muted)] mb-6">
-          Create your first budget to start planning and tracking financial performance.
-        </p>
-        <Button onClick={() => navigate('/budgets/create')} aria-label="Create new budget">
-          <Plus className="h-4 w-4 mr-2" />
-          Create Budget
-        </Button>
+      <div className="p-6 space-y-6">
+        <PageHeader title="Budgets" purpose="Create, review and track planning budgets." />
+        <div data-testid="budget-list-loading" aria-busy="true" className="space-y-3">
+          <Skeleton count={1} height="36px" width="30%" />
+          <Skeleton count={1} variant="rectangular" height="40px" />
+          <Skeleton count={5} variant="text" height="24px" />
+        </div>
+      </div>
+    );
+  }
+
+  if (budgets.length === 0) {
+    // K30 four-states (N8): shared EmptyState under the mounted page h1 (the
+    // previous early return dropped the h1 entirely). The CTA enters the real
+    // creation flow; no demo budgets are invented while the store is empty.
+    return (
+      <div className="p-6 space-y-6">
+        <PageHeader title="Budgets" purpose="Create, review and track planning budgets." />
+        <EmptyState
+          variant="no-data"
+          title="No Budgets Yet"
+          description="Create your first budget to start planning and tracking financial performance."
+          action={
+            <Button
+              onClick={() => navigate('/budgets/create')}
+              aria-label="Create new budget"
+              data-testid="budget-empty-create"
+            >
+              <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
+              Create Budget
+            </Button>
+          }
+        />
       </div>
     );
   }
 
   return (
     <div className="p-6 space-y-6">
+      {actionError && (
+        // K30 four-states (N8): shared ErrorState (role=alert) whose retry
+        // re-runs exactly the action that failed — same store call, same id.
+        <ErrorState
+          title={`Could not ${actionError.label.toLowerCase()}`}
+          message={actionError.message}
+          onRetry={actionError.retry}
+          retryLabel="Retry"
+          secondaryAction={{ label: 'Dismiss', onClick: () => setActionError(null) }}
+          className="py-8"
+        />
+      )}
       <div className="flex items-center justify-between">
         <div>
           <PageHeader
@@ -229,7 +319,7 @@ export default function BudgetListPage() {
                             <button
                               onClick={() => {
                                 if (window.confirm('Submit this budget for approval?'))
-                                  submitBudget(b.id);
+                                  runBudgetAction('Submit for approval', () => submitBudget(b.id));
                               }}
                               className="p-1.5 rounded hover:bg-blue-700/30 text-slate-400 hover:text-blue-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
                               aria-label="Submit budget for approval"
@@ -241,7 +331,8 @@ export default function BudgetListPage() {
                             <>
                               <button
                                 onClick={() => {
-                                  if (window.confirm('Approve this budget?')) approveBudget(b.id);
+                                  if (window.confirm('Approve this budget?'))
+                                    runBudgetAction('Approve budget', () => approveBudget(b.id));
                                 }}
                                 className="p-1.5 rounded hover:bg-green-700/30 text-slate-400 hover:text-green-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
                                 aria-label="Approve budget"
@@ -250,7 +341,8 @@ export default function BudgetListPage() {
                               </button>
                               <button
                                 onClick={() => {
-                                  if (window.confirm('Reject this budget?')) rejectBudget(b.id);
+                                  if (window.confirm('Reject this budget?'))
+                                    runBudgetAction('Reject budget', () => rejectBudget(b.id));
                                 }}
                                 className="p-1.5 rounded hover:bg-red-700/30 text-slate-400 hover:text-red-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
                                 aria-label="Reject budget"
@@ -260,7 +352,9 @@ export default function BudgetListPage() {
                             </>
                           )}
                           <button
-                            onClick={() => duplicateBudget(b.id)}
+                            onClick={() =>
+                              runBudgetAction('Duplicate budget', () => duplicateBudget(b.id))
+                            }
                             className="p-1.5 rounded hover:bg-slate-700 text-slate-400 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none"
                             aria-label="Duplicate budget"
                           >
@@ -284,39 +378,29 @@ export default function BudgetListPage() {
         </CardContent>
       </Card>
 
-      {deleteConfirm && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="delete-dialog-title"
-        >
-          <div className="bg-slate-900 rounded-lg p-6 max-w-sm mx-4 border border-slate-700 shadow-xl">
-            <h3 className="font-semibold mb-2" id="delete-dialog-title">
-              Delete Budget
-            </h3>
-            <p className="text-sm text-slate-400 mb-4">
-              Are you sure you want to delete this budget? This action cannot be undone.
-            </p>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                className="px-4 py-2 text-sm rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  deleteBudget(deleteConfirm);
-                  setDeleteConfirm(null);
-                }}
-                className="px-4 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors"
-              >
-                Delete
-              </button>
-            </div>
+      {deleteConfirm !== null && (
+        <Modal isOpen onClose={() => setDeleteConfirm(null)} title="Delete Budget">
+          <p className="text-sm text-[var(--text-muted)] mb-4">
+            Are you sure you want to delete this budget? This action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={() => setDeleteConfirm(null)}
+              className="px-4 py-2 text-sm rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                runBudgetAction('Delete budget', () => deleteBudget(deleteConfirm));
+                setDeleteConfirm(null);
+              }}
+              className="px-4 py-2 text-sm rounded-lg bg-red-600 text-white hover:bg-red-500 transition-colors"
+            >
+              Delete
+            </button>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

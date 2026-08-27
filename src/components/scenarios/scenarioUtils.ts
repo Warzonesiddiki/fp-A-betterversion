@@ -120,7 +120,14 @@ export const TYPE_BADGE: Record<string, string> = {
 
 export function fmtValue(value: number, format: MetricDef['format']): string {
   if (format === 'currency') {
-    return currencyFormatter(reportingCurrency(), { maxDecimals: 1, compact: true })(value);
+    // Fixed one-decimal compact notation: min=max=1 keeps zero rendered as
+    // `$0.0` (never a bare `$0`) and round magnitudes padded as `-$1.0M` /
+    // `$1.0B`, matching the padded style of formatPercent('0.0%') below.
+    return currencyFormatter(reportingCurrency(), {
+      minDecimals: 1,
+      maxDecimals: 1,
+      compact: true,
+    })(value);
   }
   if (format === 'percent') {
     return formatPercent(value, 1);

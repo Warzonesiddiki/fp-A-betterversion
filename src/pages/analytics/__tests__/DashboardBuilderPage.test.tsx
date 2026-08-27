@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@/test/testUtils';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { useAuthStore } from '@/store/authStore';
 
 vi.mock('@/store/glStore', () => ({
   useGLStore: vi.fn(() => ({
@@ -50,10 +51,35 @@ function resetDashboardStore() {
 }
 
 describe('DashboardBuilderPage', () => {
+  // W6-P0-14: dashboardStore write actions are RBAC-enforced; the bootstrap
+  // effect calls addDashboard, so seed an Admin user carrying
+  // dashboard:create (same idiom as src/pages/data/ChartOfAccountsPage.deep.test.tsx).
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
     resetDashboardStore();
+    useAuthStore.setState({
+      user: {
+        id: 'dash-builder-test-user',
+        email: 'dash-builder@finplan.local',
+        firstName: 'Dash',
+        lastName: 'Tester',
+        avatarUrl: null,
+        role: 'Admin',
+        departmentId: 'finance',
+        departmentName: 'Finance',
+        entityId: 'entity-001',
+        status: 'Active' as const,
+        lastLoginAt: new Date().toISOString(),
+        mfaEnabled: false,
+        permissions: ['dashboard:create', 'dashboard:read', 'dashboard:update', 'dashboard:delete'],
+      },
+      isAuthenticated: true,
+    });
+  });
+
+  afterEach(() => {
+    useAuthStore.setState({ user: null, isAuthenticated: false });
   });
 
   it('renders heading and seeds a default dashboard from dashboardStore on first visit', () => {

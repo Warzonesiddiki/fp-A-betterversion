@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -6,6 +6,7 @@ import { MemoryRouter } from 'react-router-dom';
 import ChartOfAccountsPage from '@/pages/data/ChartOfAccountsPage';
 import { useDataStore } from '@/store/dataStore';
 import { useGLStore } from '@/store/glStore';
+import { useAuthStore } from '@/store/authStore';
 
 // Lightweight UI mocks (Modal is a radix wrapper; Badge/Input/Select are styled)
 vi.mock('@/components/ui/Modal', () => ({
@@ -132,6 +133,34 @@ const renderPage = () =>
   );
 
 describe('ChartOfAccountsPage (data-driven)', () => {
+  // W6-P0-14: dataStore write actions are RBAC-enforced; the modal flows below
+  // drive addAccount/toggleAccountActive/deleteAccount, so seed an Admin user
+  // carrying those permissions (same idiom as src/store/dataStore.test.ts).
+  beforeEach(() => {
+    useAuthStore.setState({
+      user: {
+        id: 'coa-deep-test-user',
+        email: 'coa-deep-test@finplan.local',
+        firstName: 'Coa',
+        lastName: 'Tester',
+        avatarUrl: null,
+        role: 'Admin',
+        departmentId: 'finance',
+        departmentName: 'Finance',
+        entityId: 'entity-001',
+        status: 'Active' as const,
+        lastLoginAt: new Date().toISOString(),
+        mfaEnabled: false,
+        permissions: ['import:create', 'import:update', 'import:delete'],
+      },
+      isAuthenticated: true,
+    });
+  });
+
+  afterEach(() => {
+    useAuthStore.setState({ user: null, isAuthenticated: false });
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     useDataStore.setState({ accounts: [] });

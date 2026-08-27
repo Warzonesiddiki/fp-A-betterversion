@@ -77,6 +77,16 @@ describe('RealEstateEngine', () => {
       expect(result.unrealizedGain).toBe(0);
       expect(result.ltv).toBe(0);
       expect(result.totalProperties).toBe(0);
+      expect(result.avgHoldingPeriod).toBeNull();
+    });
+
+    it('reports avgHoldingPeriod as null rather than a mocked holding period', () => {
+      const result = RealEstateEngine.calculatePortfolioStats([
+        gl('1501', 10000000),
+        gl('1601', 12000000),
+      ]);
+      // Null-unless-posted: acquisition dates are not GL-classified.
+      expect(result.avgHoldingPeriod).toBeNull();
     });
 
     it('should handle negative unrealized gain (market below cost)', () => {
@@ -123,6 +133,16 @@ describe('RealEstateEngine', () => {
       expect(result.fairValue).toBe(0);
       expect(result.noi).toBe(0);
       expect(result.capRate).toBe(0);
+      expect(result.occupancy).toBeNull();
+    });
+
+    it('reports occupancy as null rather than a mocked percentage', () => {
+      const result = RealEstateEngine.calculateDashboardStats([
+        gl('4001', 1200000),
+        gl('5001', 400000),
+      ]);
+      // Null-unless-posted: leased vs rentable area is not in the GL.
+      expect(result.occupancy).toBeNull();
     });
   });
 
@@ -237,6 +257,16 @@ describe('RealEstateEngine', () => {
       const entries = [gl('1501', 10000000, { entityId: 'prop-1', accountName: 'Skyline Tower' })];
       const result = RealEstateEngine.getPropertyBreakdown(entries);
       expect(result![0]!.name).toBe('Skyline Tower');
+    });
+
+    it('reports location/yield/renovation as null instead of stand-in values', () => {
+      const entries = [gl('1501', 10000000, { entityId: 'prop-1', accountName: 'Tower A' })];
+      const result = RealEstateEngine.getPropertyBreakdown(entries);
+      // Null-unless-posted: location/renovation metadata and per-property
+      // income attribution are not carried by GL prefix classification.
+      expect(result![0]!.location).toBeNull();
+      expect(result![0]!.yield).toBeNull();
+      expect(result![0]!.renovation).toBeNull();
     });
   });
 });

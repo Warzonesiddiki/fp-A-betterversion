@@ -22,6 +22,7 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { SOXComplianceEngine } from './SOXComplianceEngine';
+import { AuditLogEngine } from './AuditLogEngine';
 import type { Role } from '@/types/rbac';
 
 describe('SOXComplianceEngine', () => {
@@ -297,6 +298,23 @@ describe('SOXComplianceEngine', () => {
       expect(result).toHaveProperty('retentionCompliant');
       expect(result).toHaveProperty('gapsDetected');
       expect(result).toHaveProperty('status');
+    });
+
+    it('verifyAuditTrailCompliance() reports retention compliance when engine retention covers the requirement', () => {
+      engine.logSOXAction('u1', 'Alice', 'create', 'journal_entry', 'je-1', 'Test');
+      const result = engine.verifyAuditTrailCompliance('journal_entry');
+      // Default engine retains 2555 days; journal_entry requirement is 2555.
+      expect(result.retentionCompliant).toBe(true);
+    });
+
+    it('verifyAuditTrailCompliance() flags retentionNonCompliance when engine retention is shorter than required', () => {
+      // An audit engine configured to prune after 30 days destroys evidence the
+      // 2555-day journal_entry requirement mandates — this must NOT report as
+      // retention compliant (the old `|| true` guard could never fail).
+      const shortRetention = new SOXComplianceEngine(new AuditLogEngine({ retentionDays: 30 }));
+      shortRetention.logSOXAction('u1', 'Alice', 'create', 'journal_entry', 'je-1', 'Test');
+      const result = shortRetention.verifyAuditTrailCompliance('journal_entry');
+      expect(result.retentionCompliant).toBe(false);
     });
 
     it('getAuditEngine() returns the AuditLogEngine instance', () => {

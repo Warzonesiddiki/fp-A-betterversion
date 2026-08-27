@@ -15,16 +15,37 @@
  * Exit 0 = production tree has no unaccepted HIGH/CRITICAL vulnerabilities.
  */
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 
 const ROOT = process.cwd();
 const BLOCKING = new Set(['high', 'critical']);
 
+/**
+ * Spawn npm reliably on every dev machine. On Windows there is no `npm`
+ * executable — only `npm.cmd`, which Node refuses to spawn without a shell
+ * (ENOENT under execFileSync). The real CLI always ships beside Node at
+ * `<node>/node_modules/npm/bin/npm-cli.js`; prefer that, fall back to bare
+ * `npm` where spawning it works (POSIX CI).
+ */
+function runNpm(args, options) {
+  const localCli = join(
+    dirname(process.execPath),
+    'node_modules',
+    'npm',
+    'bin',
+    'npm-cli.js'
+  );
+  if (existsSync(localCli)) {
+    return execFileSync(process.execPath, [localCli, ...args], options);
+  }
+  return execFileSync('npm', args, options);
+}
+
 function runAudit() {
   try {
     // `npm audit` exits non-zero when it finds anything; capture output regardless.
-    const out = execFileSync('npm', ['audit', '--omit=dev', '--json'], {
+    const out = runNpm(['audit', '--omit=dev', '--json'], {
       cwd: ROOT,
       encoding: 'utf8',
       maxBuffer: 64 * 1024 * 1024,

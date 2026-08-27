@@ -55,7 +55,7 @@ import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFor
 
 export default function PatientRevenuePage() {
   const fmtCurrency = useCurrencyFormatter();
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const [periodId, setPeriodId] = useState('P01');
   // WIRED (C-3): real fiscal periods from FiscalCalendar + org settings.
   const fiscalPeriods: FiscalPeriod[] = buildFiscalPeriods();

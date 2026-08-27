@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate } from 'react-router-dom';
@@ -58,9 +59,16 @@ export default function ChartOfAccountsPage() {
     document.title = 'FinPlan Pro — Chart Of Accounts';
   }, []);
 
-  const { accounts, addAccount, updateAccount, deleteAccount, toggleAccountActive } =
-    useDataStore();
-  const { entries } = useGLStore(); // to check usage for soft-delete warning
+  const { accounts, addAccount, updateAccount, deleteAccount, toggleAccountActive } = useDataStore(
+    useShallow((s) => ({
+      accounts: s.accounts,
+      addAccount: s.addAccount,
+      updateAccount: s.updateAccount,
+      deleteAccount: s.deleteAccount,
+      toggleAccountActive: s.toggleAccountActive,
+    }))
+  );
+  const entries = useGLStore((s) => s.entries); // to check usage for soft-delete warning
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);

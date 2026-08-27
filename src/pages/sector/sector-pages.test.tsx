@@ -1,12 +1,13 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi, type Mock } from 'vitest';
+import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import type { GLEntry } from '@/types';
+import { useGLStore } from '@/store/glStore';
 
-// Mock entries — enough to bypass the empty-state early return. Typed as
-// GLEntry so the compiler rejects any fixture that omits the required
-// `amount` field (the $NaN class of defect — FIX-8).
-const mockEntries: GLEntry[] = [
+// Generic entries — enough for the non-insurance pages to bypass empty-state
+// early returns. Typed as GLEntry so the compiler rejects any fixture that
+// omits the required `amount` field (the $NaN class of defect — FIX-8).
+const genericEntries: GLEntry[] = [
   {
     id: '1',
     accountId: 'a1',
@@ -68,6 +69,76 @@ const mockEntries: GLEntry[] = [
     reference: 'REF-004',
   },
 ];
+
+// W-FAB-001: the insurance dashboard gates on insurance account prefixes
+// (41/42/43/44/51/52/53), so the shared fixture carries insurance-coded rows
+// and this page exercises its populated branch. Hand-checked book:
+//   written 900,000 · earned 700,000 · loss 315,000 · commission 72,000
+//   → loss 45.00% · expense 8.00% · combined 53.00%.
+const insuranceEntries: GLEntry[] = [
+  {
+    id: '5',
+    accountId: 'a5',
+    accountCode: '4101',
+    accountName: 'Written premium',
+    period: '2026-01',
+    periodName: 'Jan 2026',
+    debit: 0,
+    credit: 900000,
+    netChange: -900000,
+    amount: -900000,
+    date: '2026-01-15',
+    description: 'Written premium',
+    reference: 'REF-005',
+  },
+  {
+    id: '6',
+    accountId: 'a6',
+    accountCode: '4201',
+    accountName: 'Earned premium',
+    period: '2026-01',
+    periodName: 'Jan 2026',
+    debit: 0,
+    credit: 700000,
+    netChange: -700000,
+    amount: -700000,
+    date: '2026-01-15',
+    description: 'Earned premium',
+    reference: 'REF-006',
+  },
+  {
+    id: '7',
+    accountId: 'a7',
+    accountCode: '5100',
+    accountName: 'Loss and LAE',
+    period: '2026-01',
+    periodName: 'Jan 2026',
+    debit: 315000,
+    credit: 0,
+    netChange: 315000,
+    amount: 315000,
+    date: '2026-01-15',
+    description: 'Loss and LAE',
+    reference: 'REF-007',
+  },
+  {
+    id: '8',
+    accountId: 'a8',
+    accountCode: '5200',
+    accountName: 'Commission expense',
+    period: '2026-01',
+    periodName: 'Jan 2026',
+    debit: 72000,
+    credit: 0,
+    netChange: 72000,
+    amount: 72000,
+    date: '2026-01-15',
+    description: 'Commission expense',
+    reference: 'REF-008',
+  },
+];
+
+const mockEntries: GLEntry[] = [...genericEntries, ...insuranceEntries];
 
 vi.mock('@/store/glStore', () => ({
   useGLStore: vi.fn(() => ({
@@ -151,6 +222,61 @@ describe('Sector Dashboard Pages', () => {
   it('InsuranceDashboardPage displays KPI section', () => {
     renderPage(InsuranceDashboardPage);
     expect(screen.getByRole('main')).toBeInTheDocument();
+  });
+
+  it('InsuranceDashboardPage renders engine-derived ratios from coded fixtures', () => {
+    renderPage(InsuranceDashboardPage);
+    // loss 315,000 / earned 700,000 · expense 72,000 / written 900,000.
+    expect(
+      within(screen.getByRole('region', { name: 'Loss Ratio' })).getByText('45.00%')
+    ).toBeInTheDocument();
+    expect(
+      within(screen.getByRole('region', { name: 'Combined Ratio' })).getByText('53.00%')
+    ).toBeInTheDocument();
+  });
+
+  it('InsuranceDashboardPage renders no tile the ledger cannot derive', () => {
+    renderPage(InsuranceDashboardPage);
+    for (const tile of ['Retention Rate', 'Solvency II Ratio', 'Avg Claim Size', 'Policy Count']) {
+      expect(screen.queryByRole('region', { name: tile })).not.toBeInTheDocument();
+    }
+    expect(screen.getByText(/Not derivable from this ledger/i)).toBeInTheDocument();
+  });
+
+  it('InsuranceDashboardPage shows the honest empty state for a non-insurance ledger', () => {
+    (useGLStore as unknown as Mock).mockReturnValueOnce({ entries: genericEntries });
+    renderPage(InsuranceDashboardPage);
+    expect(screen.getByText(/No underwriting activity is posted/i)).toBeInTheDocument();
+    expect(screen.getByText(/Expected account prefixes/i)).toBeInTheDocument();
+  });
+
+  it('InsuranceDashboardPage renders — not 0% when no premium is posted', () => {
+    (useGLStore as unknown as Mock).mockReturnValueOnce({
+      entries: [
+        {
+          id: '9',
+          accountId: 'a9',
+          accountCode: '5100',
+          accountName: 'Loss and LAE',
+          period: '2026-01',
+          periodName: 'Jan 2026',
+          debit: 25000,
+          credit: 0,
+          netChange: 25000,
+          amount: 25000,
+          date: '2026-01-15',
+          description: 'Loss and LAE',
+          reference: 'REF-009',
+        },
+      ],
+    });
+    renderPage(InsuranceDashboardPage);
+    expect(
+      within(screen.getByRole('region', { name: 'Loss Ratio' })).getByText('—')
+    ).toBeInTheDocument();
+    expect(
+      within(screen.getByRole('region', { name: 'Combined Ratio' })).getByText('—')
+    ).toBeInTheDocument();
   });
 
   it('RealEstateDashboardPage renders without crashing', () => {

@@ -1,17 +1,35 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPICard } from '@/components/dashboard/KPICard';
 import { ChartWrapper } from '@/components/analytics/ChartWrapper';
-import { WaterfallChart } from '@/components/ui/WaterfallChart';
 import { SaaSMetricsEngine } from '@/engines/SaaSMetricsEngine';
 import { HelpPanel } from '@/components/ui/HelpPanel';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { PAGE_HELP } from '../_docs';
-import { BarChart4, TrendingUp, Users, RefreshCcw } from 'lucide-react';
-import { subtractMoney, sumMoney, roundTo } from '@/utils/money';
+import { TrendingUp } from 'lucide-react';
+import {
+  addMoney,
+  divideMoney,
+  multiplyMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+} from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
+
+// W-FAB remediation (phase0-exit amendment item 3). The previous revision:
+//   - rendered hardcoded trend deltas (`change={12.4}` / `change={2.1}`,
+//     displayed by KPICard as "+12.4% vs prior") with no prior period anywhere;
+//   - rendered Net Revenue Retention and Quick Ratio as `metrics.nrr ?? 0` /
+//     `metrics.quickRatio ?? 0`, i.e. presented a not-derivable metric as a
+//     measured 0.
+// Now the month-over-month delta is derived from real monthly buckets of the
+// 41xx subscription accounts and only shown when a prior month exists; NRR and
+// Quick Ratio are disclosure cards (they need cohort/billing feeds the GL does
+// not carry), never fabricated numbers.
 
 export default function ARRDashboard() {
   const { pathname } = useLocation();
@@ -27,43 +45,64 @@ export default function ARRDashboard() {
   const metrics = useMemo(() => {
     if (entries.length === 0) return null;
 
-    // Filter for subscription revenue accounts (41xx in this chart of
-    // accounts). MRR is the credit-minus-debit of those entries; ARR is MRR
-    // × 12 (a documented, not measured, conversion).
+    // Subscription revenue accounts (41xx in this chart of accounts).
     const subscriptionRevenue = entries.filter((e) => e.accountCode?.startsWith('41'));
-    const currentMRR = roundTo(
-      sumMoney(subscriptionRevenue.map((e) => subtractMoney(e.credit, e.debit))),
-      2
-    );
+
+    // Monthly buckets of credit-minus-debit give an honest period basis: the
+    // latest posted month is the current MRR, the prior month grounds the
+    // delta. ARR stays the documented MRR × 12 conversion — labeled as such.
+    const byMonth = new Map<string, number>();
+    for (const e of subscriptionRevenue) {
+      const month = e.period || e.date.slice(0, 7);
+      if (!month) continue;
+      byMonth.set(
+        month,
+        roundTo(addMoney(byMonth.get(month) ?? 0, subtractMoney(e.credit, e.debit)), 2)
+      );
+    }
+    const months = Array.from(byMonth.entries()).sort(([a], [b]) => a.localeCompare(b));
+    const currentMRR =
+      months.length > 0
+        ? months[months.length - 1]![1]
+        : roundTo(sumMoney(subscriptionRevenue.map((e) => subtractMoney(e.credit, e.debit))), 2);
     const arr = SaaSMetricsEngine.calculateARR(currentMRR);
 
-    // NRR, Quick Ratio, and the per-period MRR waterfall require cohort and
-    // churn data that a general ledger does not carry. They are disclosed as
-    // not derivable rather than estimated. Only ARR and MRR are reported.
-    return {
-      arr,
-      mrr: currentMRR,
-      nrr: null as number | null,
-      quickRatio: null as number | null,
-      waterfall: [] as Array<{ label: string; value: number; isTotal?: boolean }>,
-    };
+    let momChangePct: number | undefined;
+    if (months.length >= 2) {
+      const prior = months[months.length - 2]![1];
+      if (prior > 0) {
+        momChangePct = roundTo(
+          multiplyMoney(divideMoney(subtractMoney(currentMRR, prior), prior), 100),
+          1
+        );
+      }
+    }
+
+    return { arr, mrr: currentMRR, momChangePct };
   }, [entries]);
 
   if (!metrics) {
+    // K30 four-states: honest empty state under the page-level h1. No demo
+    // ARR figures are invented here.
     return (
-      <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
-          <BarChart4 className="h-10 w-10 text-[var(--text-muted)]" />
-        </div>
-        <h2 className="text-xl font-semibold mb-2">No SaaS Data Found</h2>
-        <p className="text-[var(--text-muted)] mb-6">
-          We couldn&apos;t find any subscription revenue in your GL. Import data with account codes
-          starting with 41xx.
-        </p>
-        <Button onClick={() => navigate('/data/gl-upload')}>Import GL Data</Button>
+      <div className="p-6 space-y-6 max-w-7xl" aria-labelledby="arr-heading">
+        <PageHeader
+          title="ARR Dashboard"
+          titleId="arr-heading"
+          purpose="SaaS recurring revenue and growth efficiency."
+        />
+        <EmptyState
+          variant="no-data"
+          title="No SaaS Data Found"
+          description="We couldn't find any subscription revenue in your GL. Import data with account codes starting with 41xx."
+          action={<Button onClick={() => navigate('/data/gl-upload')}>Import GL Data</Button>}
+        />
       </div>
     );
   }
+
+  const trend =
+    metrics.momChangePct === undefined ? undefined : metrics.momChangePct >= 0 ? 'up' : 'down';
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
@@ -71,7 +110,7 @@ export default function ARRDashboard() {
         <PageHeader
           icon={<TrendingUp className="h-6 w-6 text-emerald-400" />}
           title="ARR Dashboard"
-          purpose="SaaS Recurring Revenue & Growth Efficiency"
+          purpose="SaaS recurring revenue & growth efficiency. MRR is the latest posted month of 41xx subscription revenue; ARR applies the documented MRR × 12 conversion."
           actions={
             <button
               onClick={() => setHelpOpen(true)}
@@ -99,35 +138,44 @@ export default function ARRDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" data-testid="arr-kpis">
         <KPICard
-          title="Annual Recurring Revenue"
+          title="Annual Recurring Revenue (MRR × 12)"
           value={metrics.arr}
           format="currency"
-          trend="up"
-          change={12.4}
+          trend={trend}
+          change={metrics.momChangePct}
         />
         <KPICard
-          title="Monthly Recurring Revenue"
+          title="Monthly Recurring Revenue (latest posted month)"
           value={metrics.mrr}
           format="currency"
-          trend="up"
-          change={2.1}
+          trend={trend}
+          change={metrics.momChangePct}
         />
-        <KPICard
-          title="Net Revenue Retention"
-          value={metrics.nrr ?? 0}
-          format="percent"
-          trend="neutral"
-          change={0}
-        />
-        <KPICard
-          title="Quick Ratio"
-          value={metrics.quickRatio ?? 0}
-          format="number"
-          trend="neutral"
-          change={0}
-        />
+        {/* Not derivable from the GL: disclosed instead of rendered as 0. */}
+        <Card className="border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-bold">Net Revenue Retention</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-[var(--text-muted)]">
+              Needs expansion and contraction by customer cohort — data a general ledger does not
+              carry. Disclosed as unavailable rather than shown as a measured 0%.
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-bold">Quick Ratio</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-[var(--text-muted)]">
+              Needs new plus recovered MRR versus churned and contracted MRR per period. It is not
+              derivable from journal postings and is disclosed rather than estimated.
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -137,15 +185,7 @@ export default function ARRDashboard() {
             subtitle="Movement from opening to closing MRR for current period"
             height={400}
           >
-            {metrics.waterfall.length > 0 ? (
-              <WaterfallChart data={metrics.waterfall} height={350} />
-            ) : (
-              <div className="text-sm text-[var(--text-muted)] text-center py-8">
-                Per-period MRR movement (opening → new → expansion → contraction → churn → closing)
-                requires a subscription / cohort feed that a general ledger does not carry. The
-                aggregate ARR and MRR are reported above from the real GL.
-              </div>
-            )}
+            <WaterfallDisclosure />
           </ChartWrapper>
         </div>
 
@@ -153,7 +193,6 @@ export default function ARRDashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <Users className="h-4 w-4 text-blue-400" />
                 Growth Efficiency
               </CardTitle>
             </CardHeader>
@@ -169,7 +208,6 @@ export default function ARRDashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <RefreshCcw className="h-4 w-4 text-purple-400" />
                 Retention Health
               </CardTitle>
             </CardHeader>
@@ -189,6 +227,17 @@ export default function ARRDashboard() {
         isOpen={helpOpen}
         onClose={() => setHelpOpen(false)}
       />
+    </div>
+  );
+}
+
+/** The waterfall needs cohort movements no GL carries; say so instead of plotting nothing-as-data. */
+function WaterfallDisclosure() {
+  return (
+    <div className="text-sm text-[var(--text-muted)] text-center py-8">
+      Per-period MRR movement (opening → new → expansion → contraction → churn → closing) requires a
+      subscription / cohort feed that a general ledger does not carry. The aggregate ARR and MRR are
+      reported above from the real GL.
     </div>
   );
 }

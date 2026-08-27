@@ -8,7 +8,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 export default function DrillDownWindowPage() {
   const fmt = useCurrencyFormatter();
   const [searchParams] = useSearchParams();
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
 
   const title = searchParams.get('title') || 'Transactions';
   const accountPrefix = searchParams.get('accountPrefix') || '';

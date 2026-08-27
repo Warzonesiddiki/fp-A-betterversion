@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
+import { useShallow } from 'zustand/react/shallow';
 import { runMonteCarlo as executeMonteCarlo } from '@/workers';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -24,7 +25,7 @@ import {
 
 export default function GoalSeekPage() {
   const fmt = useCurrencyFormatter();
-  const { entries } = useGLStore();
+  const { entries } = useGLStore(useShallow((s) => ({ entries: s.entries })));
   const navigate = useNavigate();
   const [mode, setMode] = useState<'goalseek' | 'montecarlo' | 'breakeven'>('breakeven');
   const [targetProfit, setTargetProfit] = useState(1000000);
@@ -257,7 +258,9 @@ export default function GoalSeekPage() {
             <Button onClick={runMonteCarlo} disabled={loading}>
               {loading ? 'Running...' : 'Run Simulation'}
             </Button>
-            {loading && <Skeleton variant="rectangular" height="100px" />}
+            {loading && (
+              <Skeleton variant="rectangular" height="100px" srLabel="Running simulation…" />
+            )}
             {monteCarloResults && !loading && (
               <div className="space-y-2 text-sm pt-4 border-t border-slate-800">
                 <div className="flex justify-between">

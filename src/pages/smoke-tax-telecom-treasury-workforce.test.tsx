@@ -11,14 +11,28 @@ import React from 'react';
 // ---------------------------------------------------------------------------
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({
-    entries: [],
-    accounts: [],
-    isLoading: false,
-    setEntries: vi.fn(),
-    addEntries: vi.fn(),
-    clearEntries: vi.fn(),
-  })),
+  useGLStore: Object.assign(
+    vi.fn((sel?: (s: unknown) => unknown) =>
+      sel
+        ? sel({
+            entries: [],
+            accounts: [],
+            isLoading: false,
+            setEntries: vi.fn(),
+            addEntries: vi.fn(),
+            clearEntries: vi.fn(),
+          })
+        : {
+            entries: [],
+            accounts: [],
+            isLoading: false,
+            setEntries: vi.fn(),
+            addEntries: vi.fn(),
+            clearEntries: vi.fn(),
+          }
+    ),
+    { getState: () => ({ entries: [], accounts: [] }) }
+  ),
 }));
 
 vi.mock('@/store/budgetStore', () => ({

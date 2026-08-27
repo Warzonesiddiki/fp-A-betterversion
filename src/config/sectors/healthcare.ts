@@ -3,7 +3,7 @@ import type { SectorConfig } from './index';
 export const healthcareConfig: SectorConfig = {
   id: 'healthcare',
   name: 'Healthcare / Life Sciences',
-  description: 'Clinical metrics: LOS, Occupancy, Yield',
+  description: 'Clinical metrics: LOS, Bed Occupancy, Claim Denials',
   defaultKPIs: [
     {
       id: 'los',
@@ -20,7 +20,6 @@ export const healthcareConfig: SectorConfig = {
       target: 3,
       lowerIsBetter: true,
     },
-    { id: 'ar_days', label: 'Days in A/R', format: 'number', target: 35, lowerIsBetter: true },
     { id: 'ebitdar', label: 'EBITDAR Margin', format: 'percent', target: 18 },
     { id: 'patient_sat', label: 'Patient Satisfaction', format: 'number', target: 92 },
     { id: 'staff_ratio', label: 'Nurse-to-Patient Ratio', format: 'number', target: 0.2 },
@@ -31,7 +30,6 @@ export const healthcareConfig: SectorConfig = {
       target: 10,
       lowerIsBetter: true,
     },
-    { id: 'case_mix_index', label: 'Case Mix Index', format: 'number', target: 1.4 },
   ],
   enabledModules: ['healthcare', 'workforce', 'revenue', 'compliance'],
   sidebarOrder: [

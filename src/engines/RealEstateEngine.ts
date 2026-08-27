@@ -31,18 +31,26 @@ export interface PropertyStats {
   unrealizedGain: number;
   ltv: number;
   totalProperties: number;
-  avgHoldingPeriod: number;
+  /**
+   * Average holding period needs an acquisition date per property. The GL
+   * carries cost/value prefixes only, so this engine cannot derive it: null
+   * means "not measurable from the ledger", never a placeholder estimate.
+   */
+  avgHoldingPeriod: number | null;
 }
 
 export interface PropertyItem {
   id: string;
   name: string;
-  location: string;
+  /** Location is property metadata; the GL carries none. */
+  location: string | null;
   status: string;
   purchasePrice: number;
   currentVal: number;
-  yield: number;
-  renovation: string;
+  /** Yield needs per-property income attribution this breakdown does not carry. */
+  yield: number | null;
+  /** Renovation history is operational metadata; the GL carries none. */
+  renovation: string | null;
 }
 
 export interface REITStats {
@@ -64,7 +72,12 @@ export interface REITStats {
 export interface RealEstateDashboardStats {
   fairValue: number;
   noi: number;
-  occupancy: number;
+  /**
+   * Occupancy is leasing/operational data (leased vs rentable area). The GL
+   * carries no account class for it, so this stays null rather than a
+   * mocked percentage.
+   */
+  occupancy: number | null;
   capRate: number;
 }
 
@@ -92,7 +105,8 @@ export class RealEstateEngine {
         ? 0
         : roundTo(multiplyMoney(divideMoney(totalDebt, marketValue), 100), RATIO_PLACES),
       totalProperties,
-      avgHoldingPeriod: 4.2, // Mocked for now
+      // Null-with-contract: no acquisition dates exist in the GL.
+      avgHoldingPeriod: null,
     };
   }
 
@@ -103,7 +117,8 @@ export class RealEstateEngine {
     return {
       fairValue: portfolio.marketValue,
       noi: roundTo(noi, CURRENCY_PLACES),
-      occupancy: 94.8, // Mocked
+      // Null-with-contract: occupancy is not GL-classified.
+      occupancy: null,
       capRate:
         portfolio.marketValue > 0
           ? roundTo(multiplyMoney(divideMoney(noi, portfolio.marketValue), 100), RATIO_PLACES)
@@ -173,12 +188,15 @@ export class RealEstateEngine {
         return {
           id,
           name,
-          location: 'TBD', // Needs metadata
+          // Null-with-contract: the GL carries no property-location or
+          // renovation metadata and no per-property income attribution, so
+          // these stay null instead of stand-in values.
+          location: null,
           status: cost > 10000000 ? 'Core' : 'Value-Add',
           purchasePrice: cost,
           currentVal: market,
-          yield: 6.2, // Mocked
-          renovation: 'None',
+          yield: null,
+          renovation: null,
         };
       })
       .filter((p) => p.purchasePrice > 0);

@@ -1,8 +1,40 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useCubeStore, getEngine, resetEngine, cubeSelectors } from './cubeStore';
+import { useAuthStore } from './authStore';
+
+// W6-P0-14: RBAC-aware fixture — grants exactly the permissions this store's
+// guarded actions enforce (mirrors glUploadStore.test.ts).
+function authenticateCubeUser() {
+  useAuthStore.setState({
+    user: {
+      id: 'cube-test-user',
+      email: 'cube-test@finplan.local',
+      firstName: 'Cube',
+      lastName: 'Tester',
+      avatarUrl: null,
+      role: 'Admin',
+      departmentId: 'finance',
+      departmentName: 'Finance',
+      entityId: 'entity-001',
+      status: 'Active',
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+      permissions: [
+        'cube:read',
+        'cube:write',
+        'cube:delete',
+        'cube:snapshot',
+        'cube:undo',
+        'cube:admin',
+      ],
+    },
+    isAuthenticated: true,
+  });
+}
 
 describe('cubeStore', () => {
   beforeEach(() => {
+    authenticateCubeUser();
     resetEngine();
     useCubeStore.setState({
       engine: getEngine(),

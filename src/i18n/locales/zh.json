@@ -6,14 +6,38 @@
   "nav": {
     "dashboard": "仪表板",
     "budgets": "预算",
+    "bva": "Budget vs. Actuals",
     "forecasts": "预测",
-    "scenarios": "情景",
     "reports": "报告",
-    "data": "数据",
-    "consolidation": "合并",
     "analytics": "分析",
+    "variance": "Variance",
+    "scenarios": "情景",
+    "aiAnalyst": "AI Analyst",
+    "saas": "SaaS",
+    "manufacturing": "Manufacturing",
+    "retail": "Retail",
+    "banking": "Banking",
+    "healthcare": "Healthcare",
+    "energy": "Energy",
+    "esg": "ESG",
+    "data": "数据",
+    "dataManagement": "Data Management",
+    "collaboration": "Collaboration",
+    "approvals": "Approvals",
     "settings": "设置",
     "help": "帮助"
+  },
+  "sidebar": {
+    "sections": {
+      "main": "Main",
+      "analysis": "Analysis",
+      "industries": "Industries",
+      "management": "Management"
+    },
+    "quickSearch": "Quick search...",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode",
+    "collapse": "Collapse"
   },
   "buttons": {
     "save": "保存",
@@ -33,12 +57,57 @@
     "close": "关闭",
     "back": "返回",
     "next": "下一步",
+    "continue": "Continue",
     "finish": "完成",
     "undo": "撤销",
     "redo": "重做",
     "copy": "复制",
     "paste": "粘贴",
     "cut": "剪切"
+  },
+  "onboarding": {
+    "steps": {
+      "welcome": "Welcome",
+      "company": "Company",
+      "data": "Data",
+      "review": "Review",
+      "done": "Done"
+    },
+    "welcome": {
+      "title": "Welcome to FinPlan Pro",
+      "description": "This app helps you manage budgets, forecasts, and financial reports — all in one place, completely offline. No cloud, no subscriptions, no data leaving your computer.",
+      "start": "Let's Start"
+    },
+    "setup": {
+      "title": "Company Setup",
+      "companyName": "Company Name",
+      "companyNamePlaceholder": "Enter company name",
+      "industry": "Industry/Sector",
+      "fiscalYear": "Fiscal Year",
+      "fiscalYearStart": "Fiscal Year Start",
+      "baseCurrency": "Base Currency",
+      "sector": "行业"
+    },
+    "import": {
+      "title": "Import Your Data",
+      "description": "Upload your General Ledger (GL) data in CSV or Excel format to populate your dashboard.",
+      "skip": "Skip for now"
+    },
+    "review": {
+      "title": "Review Data",
+      "empty": "You can import your data later from the Data Management section."
+    },
+    "finish": {
+      "title": "All Set!",
+      "description": "Your workspace is ready. Here's what you can do next:",
+      "nextSteps": {
+        "viewDashboard": "View your Dashboard",
+        "createBudget": "Create your first Budget",
+        "generateReports": "Generate Financial Reports"
+      },
+      "confirm": "Confirm & Finish",
+      "goDashboard": "Go to Dashboard"
+    }
   },
   "forms": {
     "required": "此字段为必填项",
@@ -49,12 +118,28 @@
     "passwordMismatch": "密码不匹配",
     "entityName": "实体名称",
     "accountName": "科目名称",
+    "account": "Account",
     "period": "期间",
     "amount": "金额",
     "currency": "货币",
     "description": "描述",
     "category": "类别",
-    "status": "状态"
+    "status": "状态",
+    "date": "Date"
+  },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
   },
   "status": {
     "loading": "加载中...",
@@ -65,7 +150,11 @@
     "empty": "未找到结果",
     "success": "操作成功完成",
     "confirm": "确定吗？",
-    "unsavedChanges": "您有未保存的更改"
+    "unsavedChanges": "您有未保存的更改",
+    "overdue": "Overdue",
+    "pending": "Pending",
+    "inProgress": "In Progress",
+    "selectMin": "Select at least 2 items"
   },
   "financial": {
     "revenue": "收入",
@@ -95,8 +184,23 @@
     "taxProvision": "税项准备",
     "deferredTax": "递延税项"
   },
+  "common": {
+    "search": "Search...",
+    "noResults": "No results",
+    "loading": "Loading...",
+    "retry": "Retry",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "showMore": "Show More",
+    "showLess": "Show Less",
+    "viewAll": "View All",
+    "total": "Total",
+    "average": "Average",
+    "count": "Count"
+  },
   "errors": {
     "generic": "出了点问题。请重试。",
+    "somethingWentWrong": "Something went wrong",
     "network": "网络错误。请检查您的连接。",
     "unauthorized": "您无权执行此操作。",
     "notFound": "未找到请求的资源。",
@@ -111,7 +215,13 @@
     "recentActivity": "最近活动",
     "kpiSummary": "KPI摘要",
     "quickActions": "快速操作",
-    "notifications": "通知"
+    "notifications": "通知",
+    "noPendingRequests": "No pending requests",
+    "noSlaBreaches": "No SLA breaches",
+    "noResults": "No results",
+    "charts": "Charts",
+    "recentReports": "Recent Reports",
+    "recentBudgets": "Recent Budgets"
   },
   "time": {
     "today": "今天",
@@ -200,7 +310,60 @@
     "comparison": "情景比较",
     "merge": "合并情景",
     "lock": "锁定情景",
-    "unlock": "解锁情景"
+    "unlock": "解锁情景",
+    "selectMin": "Select at least 2 scenarios to compare",
+    "selectMinMerge": "Select at least 2 scenarios to merge",
+    "noScenarios": "No scenarios found"
+  },
+  "export": {
+    "format": "Export Format",
+    "pdf": "PDF",
+    "excel": "Excel",
+    "csv": "CSV",
+    "exporting": "Exporting...",
+    "exportSuccess": "Export complete",
+    "exportFailed": "Export failed"
+  },
+  "accounts": {
+    "notFound": "No accounts found",
+    "tree": "Account Tree",
+    "code": "Account Code",
+    "name": "Account Name",
+    "type": "Account Type",
+    "parent": "Parent Account"
+  },
+  "drivers": {
+    "notConfigured": "No drivers configured",
+    "addDriver": "Add Driver",
+    "driverName": "Driver Name",
+    "driverType": "Driver Type"
+  },
+  "commands": {
+    "notFound": "No commands found",
+    "palette": "Command Palette",
+    "recent": "Recent Commands"
+  },
+  "formula": {
+    "insertReference": "Insert Reference",
+    "availableFunctions": "Available Functions",
+    "syntax": "Syntax",
+    "result": "Result",
+    "error": "Formula Error"
+  },
+  "ai": {
+    "analyzing": "Analyzing your query...",
+    "noResults": "No AI results",
+    "askQuestion": "Ask a question...",
+    "insights": "Insights",
+    "suggestions": "Suggestions"
+  },
+  "operators": {
+    "greaterThan": "Greater than",
+    "lessThan": "Less than",
+    "equals": "Equals",
+    "notEquals": "Not equals",
+    "contains": "Contains",
+    "between": "Between"
   },
   "consolidation": {
     "entity": "实体",
@@ -227,10 +390,5 @@
     "collapse": "收起",
     "previous": "上一步",
     "nextPage": "下一页"
-  },
-  "onboarding": {
-    "setup": {
-      "sector": "行业"
-    }
   }
 }

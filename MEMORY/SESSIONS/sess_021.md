@@ -14,7 +14,7 @@ T-021: money-AST `PromoAnalysisPage` (10) → 0 and fabrication `ForecastBuilder
 
 ## Read
 
-`MEMORY/INDEX.md` → `STATE.json` → `TRUTH.md` → `TASKS/NOW.md`, then
+`MEMORY/INDEX.md` → `STATE.json` → `MEMORY/TRUTH.md` → `MEMORY/TASKS/NOW.md`, then
 `src/pages/retail/PromoAnalysisPage.tsx`, `src/store/retailStore.ts`,
 `src/pages/forecasts/ForecastBuilderPage.tsx` and its money test.
 

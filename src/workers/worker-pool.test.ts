@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { WorkerPool } from './worker-pool';
-import type { WorkerResponse } from './types';
+import type { WorkerMessage, WorkerProgress, WorkerResponse } from './types';
 
 // =============================================================================
 // MOCK WORKER
@@ -223,6 +223,37 @@ describe('WorkerPool', () => {
 
       pool.terminate();
     });
+
+    // W7D integration contract: real compute workers echo the incoming task id
+    // on every response (progress included) after the W7D fix. This mock
+    // mirrors exactly that behavior — postMessage replies with progress and
+    // result carrying the SAME id the pool sent — and proves onProgress fires.
+    it('delivers worker progress when the worker echoes the task id back', async () => {
+      const instances: MockWorkerInstance[] = [];
+      const factory = () => {
+        const mock = createMockWorker();
+        mock.postMessage.mockImplementation((raw: WorkerMessage) => {
+          const msg = raw as unknown as WorkerMessage;
+          mock.simulateResponse({
+            id: msg.id,
+            type: 'progress',
+            progress: { processed: 1, total: 2, percent: 50 },
+          });
+          mock.simulateResponse({ id: msg.id, type: 'result', payload: 'done' });
+        });
+        instances.push(mock);
+        return mock as unknown as Worker;
+      };
+      const pool = new WorkerPool(factory, { maxWorkers: 1 });
+
+      const progressCalls: WorkerProgress[] = [];
+      const result = await pool.run<string>({ n: 1 }, (progress) => progressCalls.push(progress));
+
+      expect(result).toBe('done');
+      expect(progressCalls).toEqual([{ processed: 1, total: 2, percent: 50 }]);
+
+      pool.terminate();
+    });
   });
 
   describe('worker lifecycle', () => {
@@ -383,6 +414,29 @@ describe('WorkerPool', () => {
 
       pool.terminate();
       vi.useRealTimers();
+    });
+  });
+
+  describe('listener hygiene (W7D)', () => {
+    it('removes the error listener when a task settles so stale errors cannot requeue it', async () => {
+      const { factory, instances } = createMockWorkerFactory();
+      const pool = new WorkerPool(factory, { maxWorkers: 1, maxRetries: 1 });
+
+      const promise = pool.run({ data: 't' });
+      await new Promise((r) => setTimeout(r, 0));
+
+      // Task settles successfully via the message channel.
+      const msg = instances![0]!.postMessage.mock.calls[0]![0];
+      instances![0]!.simulateResponse({ id: msg.id, type: 'result', payload: 'ok' });
+      await expect(promise).resolves.toBe('ok');
+
+      // A late error event fires on the SAME worker after settlement. With the
+      // leaked listener the stale handler would decrement retries, requeue and
+      // redispatch → a second postMessage for an already-settled task.
+      instances![0]!.simulateError('late failure');
+
+      expect(instances![0]!.postMessage).toHaveBeenCalledTimes(1);
+      pool.terminate();
     });
   });
 });

@@ -4,12 +4,12 @@
 
 ## Automated checks
 
-| Check | Result | Evidence |
-|---|---|---|
-| Capability inventory generation | PASS | `npm run capability:inventory` generated 1,138-line matrix |
-| Route source mapping | PASS | 0 unresolved route source mappings after multiline lazy-import parser correction |
-| Type-check | PASS | root `tsc --noEmit` |
-| Diff hygiene | PASS | `git diff --check` |
+| Check                           | Result | Evidence                                                                         |
+| ------------------------------- | ------ | -------------------------------------------------------------------------------- |
+| Capability inventory generation | PASS   | `npm run capability:inventory` generated 1,138-line matrix                       |
+| Route source mapping            | PASS   | 0 unresolved route source mappings after multiline lazy-import parser correction |
+| Type-check                      | PASS   | root `tsc --noEmit`                                                              |
+| Diff hygiene                    | PASS   | `git diff --check`                                                               |
 
 ## Acceptance criteria verification
 

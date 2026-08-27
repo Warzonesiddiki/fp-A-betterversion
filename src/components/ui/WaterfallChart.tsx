@@ -40,6 +40,36 @@ export const WaterfallChart: React.FC<WaterfallChartProps> = ({
   onClick,
 }) => {
   const fmtCurrency = useCurrencyFormatter();
+
+  // Hooks must run unconditionally: compute before any early return so the
+  // hook order is stable across loading/error/data state flips.
+  const chartData = useMemo(() => {
+    if (!data || data.length === 0) return [];
+    const result: Array<Record<string, unknown>> = [];
+    let cumulative = 0;
+    data.forEach((item: WaterfallItem) => {
+      const start = cumulative;
+      if (item.isTotal) {
+        cumulative = item.value as number;
+        result.push({
+          ...item,
+          displayValue: item.value,
+          base: 0,
+          raw: item.value,
+        });
+      } else {
+        cumulative += item.value as number;
+        result.push({
+          ...item,
+          displayValue: Math.abs(item.value as number),
+          base: (item.value as number) > 0 ? start : cumulative,
+          raw: item.value,
+        });
+      }
+    });
+    return result;
+  }, [data]);
+
   if (loading) {
     return (
       <div
@@ -67,33 +97,6 @@ export const WaterfallChart: React.FC<WaterfallChartProps> = ({
       </div>
     );
   }
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const chartData = useMemo(() => {
-    if (!data || data.length === 0) return [];
-    const result: Array<Record<string, unknown>> = [];
-    let cumulative = 0;
-    data.forEach((item: WaterfallItem) => {
-      const start = cumulative;
-      if (item.isTotal) {
-        cumulative = item.value as number;
-        result.push({
-          ...item,
-          displayValue: item.value,
-          base: 0,
-          raw: item.value,
-        });
-      } else {
-        cumulative += item.value as number;
-        result.push({
-          ...item,
-          displayValue: Math.abs(item.value as number),
-          base: (item.value as number) > 0 ? start : cumulative,
-          raw: item.value,
-        });
-      }
-    });
-    return result;
-  }, [data]);
 
   if (chartData.length === 0)
     return (

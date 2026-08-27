@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { ProgressStepper } from '@/components/ui/ProgressStepper';
 import { Database, BookOpen, Coins, Building2, Globe, Calendar, Settings } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { RecoveryCodeCard } from '@/components/settings/RecoveryCodeCard';
 
 type OrgForm = {
   companyName: string;
@@ -57,7 +58,8 @@ export default function SetupWizardPage() {
     { label: 'Organization', status: getStepStatus(1) },
     { label: 'Preferences', status: getStepStatus(2) },
     { label: 'Data', status: getStepStatus(3) },
-    { label: 'Done', status: getStepStatus(4) },
+    { label: 'Recovery Code', status: getStepStatus(4) },
+    { label: 'Done', status: getStepStatus(5) },
   ];
 
   const handleOrgSave = () => {
@@ -297,6 +299,19 @@ export default function SetupWizardPage() {
       )}
 
       {step === 4 && (
+        <Card>
+          <CardContent className="p-6 space-y-4">
+            <h2 className="font-semibold text-lg">Protect Your Data</h2>
+            <p className="text-sm text-[var(--text-muted)]">
+              Before you finish, secure a recovery code for your encrypted workspace. You can skip
+              this now and enroll later from Backup &amp; Restore settings.
+            </p>
+            <RecoveryCodeCard allowSkip onComplete={() => setStep(5)} onSkip={() => setStep(5)} />
+          </CardContent>
+        </Card>
+      )}
+
+      {step === 5 && (
         <Card>
           <CardContent className="p-6 text-center space-y-4">
             <Coins className="h-12 w-12 text-green-400 mx-auto" />

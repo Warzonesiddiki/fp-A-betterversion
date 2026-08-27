@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -86,6 +86,34 @@ describe('RollingForecastPage — posted actuals are labelled as posted', () => 
     useGLStore.setState({ entries: [] } as never);
     const { container } = renderPage();
     expect(container.textContent).not.toContain('$464,100');
+  });
+
+  it('renders the page title and period selector windows', () => {
+    // Absorbed from the retired __tests__/forecasts mirror.
+    const text = renderPage().container.textContent ?? '';
+    expect(text).toContain('Rolling Forecast');
+    expect(text).toContain('3M');
+    expect(text).toContain('6M');
+    expect(text).toContain('12M');
+  });
+});
+
+// W-A11Y-002 M5 announce-once (lane R34): the suite drives the REAL glStore
+// (setState is its mutable ref) into the hydrate branch; the skeleton must own
+// exactly ONE polite status announcement with all bars aria-hidden.
+describe('RollingForecastPage — loading branch announce-once', () => {
+  it('hydrate skeleton announces exactly once via srLabel, bars decorative', () => {
+    useGLStore.setState({ entries: [], isLoading: true, importError: null } as never);
+    const { container } = renderPage();
+    const statuses = screen.getAllByRole('status');
+    expect(statuses).toHaveLength(1);
+    expect(statuses[0]).toHaveAttribute('aria-live', 'polite');
+    expect(statuses[0]).toHaveAttribute('aria-atomic', 'true');
+    expect(statuses[0]).toHaveTextContent('Loading rolling forecast…');
+    expect(statuses[0]).toHaveClass('sr-only');
+    expect(container.querySelectorAll('[aria-hidden="true"]').length).toBeGreaterThan(0);
+    // restore for any sibling assertions in this file
+    useGLStore.setState({ isLoading: false } as never);
   });
 });
 

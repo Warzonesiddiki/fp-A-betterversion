@@ -1,7 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+  useGLStore: Object.assign(
+    vi.fn((sel?: (s: unknown) => unknown) => {
+      const state = { entries: [] };
+      return sel ? sel(state) : state;
+    }),
+    { getState: () => ({ entries: [] }) }
+  ),
 }));
 vi.mock('lucide-react', () => ({
   Landmark: () => <span data-testid="mock-icon" />,
@@ -56,11 +62,25 @@ describe('BankingDashboardPage', () => {
       ],
     });
     render(<BankingDashboardPage />);
-    expect(screen.getByText('Banking Dashboard')).toBeInTheDocument();
-    expect(screen.getByText(/Total Assets/i)).toBeInTheDocument();
-    expect(screen.getByText(/Total Liabilities/i)).toBeInTheDocument();
-    expect(screen.getByText(/Interest Income/i)).toBeInTheDocument();
-    expect(screen.getByText(/Capital.*Risk/i)).toBeInTheDocument();
-    expect(screen.getByText(/NPL Ratio/i)).toBeInTheDocument();
+    // Real header surface: canonical PageHeader title built from the sector
+    // config (not the retired invisible LEGACY_SECTOR_COPY spans).
+    expect(
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Banking / Financial Services Driver Modeling Dashboard',
+      })
+    ).toBeInTheDocument();
+    // Measured-vs-projection KPI strip renders from the classified ledger.
+    expect(screen.getByText('Actual Revenue (classified)')).toBeInTheDocument();
+    // Data lineage card exposes only account classes actually posted
+    // (1xxx assets, 2xxx liabilities) — no invented balance-sheet totals.
+    expect(screen.getByText('Assets (classified)')).toBeInTheDocument();
+    expect(screen.getByText('Liabilities (classified)')).toBeInTheDocument();
+    // The assets-only ledger yields NO invented NIM number — the Net Interest
+    // Margin card discloses why it is not derivable instead.
+    expect(screen.getByRole('region', { name: 'Net Interest Margin' })).toBeInTheDocument();
+    expect(
+      screen.getByText(/Needs interest income\/expense accounts and asset-class balances/i)
+    ).toBeInTheDocument();
   });
 });

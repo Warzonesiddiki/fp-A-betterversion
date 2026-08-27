@@ -26,10 +26,10 @@ vi.mock('recharts', () => ({
 }));
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: () => ({
-    entries: [],
-    filters: {},
-  }),
+  useGLStore: (sel?: (s: any) => any) => {
+    const state = { entries: [], filters: {} };
+    return sel ? sel(state) : state;
+  },
 }));
 
 vi.mock('@/store/settingsStore', () => ({
@@ -59,7 +59,7 @@ describe('SectorDriverDashboard', () => {
   });
 
   it('renders without crashing for the technology sector', () => {
-    render(<SectorDriverDashboard />);
+    render(<SectorDriverDashboard sectorId="technology" />);
     // sector heading or content rendered
     expect(screen.getByRole('main')).toBeInTheDocument();
   });

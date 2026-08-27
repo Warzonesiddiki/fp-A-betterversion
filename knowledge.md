@@ -16,7 +16,6 @@ Enterprise FP&A platform. Offline-first desktop + web app that replaces spreadsh
 - **Desktop**: Tauri 2 (Rust shell in `src-tauri/`)
 - **Testing**: Vitest 4 + @testing-library/react (jsdom), Playwright (E2E), jest-axe (a11y)
 - **Lint/Format**: ESLint 9 (flat config) + Prettier 3 + typescript-eslint
-- **PWA**: vite-plugin-pwa (workbox, autoUpdate)
 
 ## Commands
 

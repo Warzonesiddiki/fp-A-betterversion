@@ -21,7 +21,7 @@ A FP&A platform is "100× better" than the average competitor if it wins on **at
 | 1   | **Time to first value**     | 2-6 weeks (Anaplan)                | **30 minutes** (P0 onboarding)                                      |
 | 2   | **Cost**                    | $50K-$100K+/yr (Anaplan/OneStream) | **$0 self-host** or **$20-50/user/mo** cloud                        |
 | 3   | **Vertical depth**          | 5 sectors (Anaplan)                | **17 sector-tuned** + AI models per sector                          |
-| 4   | **Offline capability**      | None (cloud-only)                  | **Full PWA + Tauri desktop** with .fpa file format                  |
+| 4   | **Offline capability**      | None (cloud-only)                  | **Tauri desktop** with .fpa file format                             |
 | 5   | **AI capability**           | Basic forecasting                  | **Conversational FP&A Copilot** with sector-tuned models            |
 | 6   | **Real-time collaboration** | None (Anaplan)                     | **Figma-style multi-user editing**                                  |
 | 7   | **Integration breadth**     | 200 (Anaplan)                      | **50 curated + unlimited via SDK**                                  |

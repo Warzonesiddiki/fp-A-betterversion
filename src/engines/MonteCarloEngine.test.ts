@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+﻿import { describe, it, expect } from 'vitest';
 import { MonteCarloEngine } from './MonteCarloEngine';
 import type {
   MonteCarloConfig,
@@ -314,7 +314,7 @@ describe('MonteCarloEngine', () => {
           model: sumModel,
           seed: 42,
         });
-        // Mean of exponential(3) = 1/3 ≈ 0.333
+        // Mean of exponential(3) = 1/3 â‰ˆ 0.333
         expect(result.mean).toBeGreaterThan(0.28);
         expect(result.mean).toBeLessThan(0.4);
       });
@@ -412,7 +412,7 @@ describe('MonteCarloEngine', () => {
         expect(Math.abs(result.skewness)).toBeLessThan(0.2);
       });
 
-      it('should include rawSamples', () => {
+      it('should include drawsByIteration', () => {
         const result = MonteCarloEngine.simulate({
           iterations: 5,
           confidenceLevel: 0.95,
@@ -423,9 +423,9 @@ describe('MonteCarloEngine', () => {
           model: sumModel,
           seed: 42,
         });
-        expect(result.rawSamples).toHaveLength(5);
-        expect(result.rawSamples[0]!).toHaveProperty('a');
-        expect(result.rawSamples[0]!).toHaveProperty('b');
+        expect(result.drawsByIteration).toHaveLength(5);
+        expect(result.drawsByIteration[0]!).toHaveProperty('a');
+        expect(result.drawsByIteration[0]!).toHaveProperty('b');
       });
     });
 
@@ -1082,5 +1082,50 @@ describe('MonteCarloEngine', () => {
       expect(result.iterations).toBe(100);
       expect(result.values).toHaveLength(100);
     });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Large-N regression (Wave-1 S1 audit ledger #47: crash at >=200k iterations)
+  // Root cause pre-fix: Math.min(...values)/Math.max(...values) spread calls in
+  // computeHistogram overflowed the call stack for large arrays (RangeError).
+  // ---------------------------------------------------------------------------
+
+  describe('large iteration counts', () => {
+    it('simulates 500k iterations without RangeError from spread-argument min/max', () => {
+      const result = MonteCarloEngine.simulate({
+        iterations: 500_000,
+        confidenceLevel: 0.95,
+        assumptions: [{ name: 'x', type: 'uniform', min: 0, max: 100 }],
+        model: sumModel,
+        seed: 42,
+      });
+      expect(result.values).toHaveLength(500_000);
+      expect(result.min).toBeGreaterThanOrEqual(0);
+      expect(result.max).toBeLessThanOrEqual(100);
+      expect(result.mean).toBeGreaterThan(45);
+      expect(result.mean).toBeLessThan(55);
+      const totalCount = result.histogram.reduce((s, b) => s + b.count, 0);
+      expect(totalCount).toBe(500_000);
+    }, 10_000);
+
+    it('runs simulateScenario at 250k iterations without RangeError', () => {
+      const result = MonteCarloEngine.simulateScenario({
+        baseMetrics,
+        drivers: [
+          {
+            name: 'growth',
+            distribution: { name: 'growth', type: 'uniform', min: -10, max: 10 },
+            targetMetric: 'revenue',
+            impactType: 'percentage',
+          },
+        ],
+        iterations: 250_000,
+        confidenceLevel: 0.95,
+        seed: 42,
+      });
+      expect(result.metrics.revenue.min).toBeGreaterThan(850_000);
+      expect(result.metrics.revenue.max).toBeLessThan(1_150_000);
+      expect(Number.isFinite(result.probabilityOfProfit)).toBe(true);
+    }, 10_000);
   });
 });

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { currencyFormatter } from '@/utils/financialFormatting';
@@ -7,6 +8,7 @@ import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { ThreeStatementEngine } from '@/engines/ThreeStatementEngine';
 import { ExportEngine } from '@/engines/ExportEngine';
@@ -29,7 +31,9 @@ function fmt(n: number | { toNumber(): number }): string {
 
 export default function ThreeStatementDashboardPage() {
   const navigate = useNavigate();
-  const { entries } = useGLStore();
+  const { entries, importError } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, importError: s.importError }))
+  );
   const [period, setPeriod] = useState(() => {
     const now = new Date();
     return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
@@ -91,6 +95,18 @@ export default function ThreeStatementDashboardPage() {
     }).catch(reportExportFailure);
   };
 
+  if (importError) {
+    return (
+      <ErrorState
+        title="Failed to load data"
+        message={importError}
+        errorCode="GL-IMPORT-ERROR"
+        onRetry={() => window.location.reload()}
+        secondaryAction={{ label: 'Go to Data Import', onClick: () => navigate('/data') }}
+      />
+    );
+  }
+
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
@@ -105,7 +121,7 @@ export default function ThreeStatementDashboardPage() {
   }
 
   if (!incomeStatement || !balanceSheet || !cashFlow || !totals) {
-    return <Skeleton className="h-96 m-6" />;
+    return <Skeleton className="h-96 m-6" srLabel="Loading three-statement model…" />;
   }
 
   return (

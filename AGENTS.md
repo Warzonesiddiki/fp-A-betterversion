@@ -85,7 +85,7 @@ Import `masterStorage` from `@/utils/masterStorage` for persistence. Store namin
 
 ## Testing
 
-- **Unit**: Vitest + @testing-library/react (jsdom, forks pool, 4 max workers)
+- **Unit**: Vitest + @testing-library/react (jsdom, threads pool, 4 max workers)
 - **E2E**: Playwright in `tests/` dir, chromium only, 60s timeout, auto-starts dev server
 - **Test files**: colocated with source (`Foo.tsx` → `Foo.test.tsx`)
 - **Setup**: `src/test/setup.ts` (auto-cleanup via `@testing-library/jest-dom/vitest`)
@@ -97,9 +97,9 @@ Import `masterStorage` from `@/utils/masterStorage` for persistence. Store namin
 
 ## Build & Deploy
 
-- Vite 8 with manual chunks: react-vendor, chart-vendor, grid-vendor, form-vendor, state-vendor, ai-vendor
+- Vite 8 manual chunks: vite.config.ts defines 10 chunk rules — ai-vendor (@huggingface/transformers optional peer; no chunk emitted while uninstalled), react-vendor, icon-vendor, grid-react-vendor, grid-community-vendor, chart-vendor, excel-vendor + excel-core-vendor (exceljs split; the dist-entry rule can emit no separate file), pdf-vendor, db-vendor. No form-vendor or state-vendor chunks exist; per-build sizes are gated by scripts/bundle-check.js budgets.
 - Tailwind CSS 4 via `@tailwindcss/vite` plugin (not PostCSS)
-- PWA via vite-plugin-pwa (workbox, autoUpdate)
+- Tauri desktop only — no PWA/web-manifest surface (owner ruling 2026-08-25: vite-plugin-pwa uninstalled)
 - Tauri desktop: `npm run tauri:dev` / `npm run tauri:build`
 - CI: Node 22, `npm ci`
 - Bundle limits: main chunk 150KB gzip, total JS 2MB gzip (`scripts/bundle-check.js`)
@@ -112,12 +112,19 @@ Import `masterStorage` from `@/utils/masterStorage` for persistence. Store namin
 
 ## Pre-push Hooks
 
-Husky pre-push runs 4 gates (each with 240s timeout):
+Husky pre-push (`.husky/pre-push` — canon for this section, rewritten per F-0024) runs a fail-fast (`set -e`) gate chain:
 
-1. `tsc --noEmit`
-2. `eslint src --max-warnings 0`
-3. Focused vitest subset (plugins, authStore, dataStore, ScenarioLocking, safeJSONStorage, CopilotSidebar)
-4. `npm run build`
+1. **Gate 1** — TypeScript: `tsc --noEmit`
+2. **Gate 2** — ESLint zero-warnings: `eslint src --max-warnings 0`
+3. **Gate 3** — Vitest P0 financial/security shard (`--testTimeout=10000`): FXEngine, ConsolidationEngine, SafeMathParser, glValidation, glStore.smoke, spreadsheetSanitize, masterStorage.security, moneySerialize, persistenceAuthority, components/layout/, plugins/ (full suite runs in CI)
+4. **Gate 4** — Production build: `npm run build` (includes tsc + eslint + vite)
+5. **Gate 5** — Bundle budget: `scripts/bundle-check.js`
+6. **Gate 6** — Version consistency: package.json / Cargo.toml / tauri.conf.json / lib.rs
+7. **Gate 7** — README claim check (F-0034)
+8. **Gate 8** — Production dependency audit (F-0021): HIGH/CRITICAL blocks unless allowlisted in `security/audit-allowlist.json` with expiry
+9. **Gate 9** — Tautological-assertion scan (F-0027)
+10. **Gates 9b–9g** — ratchets & drift checks: AST money-safety ratchet, fabrication ratchet, persistence-map + schema equality, route-map drift (`generate-route-map.js --check`), docs truth + engine manifest (`docs:verify`, `engines:verify`), §24.2 escape-ledger check (advisory)
+11. **Gate 10** — CASCADE-HOLD-BUNDLE auto-detection (spec: `docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md`, CI mirror `.github/workflows/cascade-hold-check.yml`): blocks multi-T-ID / multi-Co-Authored-By / cross-Muse commits without a CHB entry in `docs/security/CASCADE_HOLD_LEDGER.md`
 
 ## Other
 

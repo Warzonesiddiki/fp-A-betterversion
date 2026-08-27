@@ -114,7 +114,43 @@ describe('ensureServerColumns (real SQLite)', () => {
     expect(tableColumns(db, 'scenarios')).toEqual(
       expect.arrayContaining(['entity_id', 'budget_id'])
     );
-    expect(tableColumns(db, 'gl_entries')).toContain('created_by');
+    expect(tableColumns(db, 'gl_entries')).toEqual(
+      expect.arrayContaining([
+        'created_by',
+        'journal_id',
+        'idempotency_key',
+        'idempotency_hash',
+        'version',
+        'deleted_at',
+      ])
+    );
+  });
+
+  it('W0.8.6: pre-existing gl_entries rows read as alive-and-v1 after reconciliation', () => {
+    // Legacy databases carry postings created before the commit protocol
+    // existed. After ensureServerColumns adds version/deleted_at, every
+    // pre-existing row must present exactly the alive-and-v1 semantics the
+    // gate and listing predicates assume — never a hidden tombstone, never a
+    // stale revision.
+    const db = new Database(':memory:');
+    db.exec(`
+      CREATE TABLE gl_entries (id TEXT PRIMARY KEY);
+      INSERT INTO gl_entries (id) VALUES ('legacy-row-1');
+      INSERT INTO gl_entries (id) VALUES ('legacy-row-2');
+    `);
+
+    ensureServerColumns(ddl(db));
+
+    const rows = db.prepare('SELECT id, version, deleted_at FROM gl_entries ORDER BY id').all() as {
+      id: string;
+      version: number;
+      deleted_at: string | null;
+    }[];
+    expect(rows).toHaveLength(2);
+    for (const row of rows) {
+      expect(row.version).toBe(1);
+      expect(row.deleted_at).toBeNull();
+    }
   });
 
   it('is idempotent (re-running does not duplicate or fail)', () => {

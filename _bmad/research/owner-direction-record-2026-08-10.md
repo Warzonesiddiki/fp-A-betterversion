@@ -5,12 +5,12 @@
 
 ## Decisions communicated
 
-| Topic | Owner direction | Consequence |
-|---|---|---|
-| Economic buyer | “All” | Treat purchase as a multi-stakeholder buying committee: CFO/finance leadership, controller/CAO, FP&A, IT/security, and procurement. Do not simplify to one persona. |
-| First urgent workflow | All | Product must retain the connected close, planning/forecast, and reporting loop. Release sequencing still needs a first implementation slice. |
-| Deployment | Hybrid | Preserve Workspace + Enterprise Control Plane hypothesis; validate customer security/operations acceptance. |
-| Target segment | Enterprise | Prioritize enterprise/multi-entity research participants and enterprise-grade controls; do not claim price/fit without evidence. |
+| Topic                 | Owner direction | Consequence                                                                                                                                                         |
+| --------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Economic buyer        | “All”           | Treat purchase as a multi-stakeholder buying committee: CFO/finance leadership, controller/CAO, FP&A, IT/security, and procurement. Do not simplify to one persona. |
+| First urgent workflow | All             | Product must retain the connected close, planning/forecast, and reporting loop. Release sequencing still needs a first implementation slice.                        |
+| Deployment            | Hybrid          | Preserve Workspace + Enterprise Control Plane hypothesis; validate customer security/operations acceptance.                                                         |
+| Target segment        | Enterprise      | Prioritize enterprise/multi-entity research participants and enterprise-grade controls; do not claim price/fit without evidence.                                    |
 
 ## Assumption impact
 

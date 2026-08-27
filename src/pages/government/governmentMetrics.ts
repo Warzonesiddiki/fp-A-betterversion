@@ -15,32 +15,41 @@ import {
   toDecimal,
 } from '@/utils/money';
 
+// W-FAB (fleet wave 2, lane N4): inputs are `number | null` — `null` means the
+// quantity was never posted to the GL (no tagged account). The pages that feed
+// this model previously back-filled missing budgets/citizens with invented
+// constants ($10,000,000 budget, 1,250,000 citizens…), which fabricated
+// measured-looking KPIs. A KPI whose input was never posted is now `null`.
 export interface GovernmentMetricsInput {
-  /** Total appropriated budget for the period. */
-  budgetAppropriated: number;
-  /** Actual spend executed against the budget. */
-  actualSpend: number;
-  /** Total grant funding allocated. */
-  grantAllocated: number;
-  /** Grant funding actually disbursed. */
-  grantDisbursed: number;
-  /** Number of citizens served. */
-  citizensServed: number;
-  /** Total operating / service delivery expense. */
-  totalExpenses: number;
-  /** Revenue actually collected. */
-  revenueCollected: number;
-  /** Forecast/expected revenue for the period. */
-  revenueForecast: number;
+  /** Total appropriated budget for the period; `null` when not posted. */
+  budgetAppropriated: number | null;
+  /** Actual spend executed against the budget; `null` when not posted. */
+  actualSpend: number | null;
+  /** Total grant funding allocated; `null` when not posted. */
+  grantAllocated: number | null;
+  /** Grant funding actually disbursed; `null` when not posted. */
+  grantDisbursed: number | null;
+  /** Number of citizens served; `null` when not posted. */
+  citizensServed: number | null;
+  /** Total operating / service delivery expense; `null` when not posted. */
+  totalExpenses: number | null;
+  /** Revenue actually collected; `null` when not posted. */
+  revenueCollected: number | null;
+  /** Forecast/expected revenue for the period; `null` when not posted. */
+  revenueForecast: number | null;
 }
 
 export interface GovernmentMetrics {
-  budgetUtilizationPct: number;
-  grantDisbursementRatePct: number;
-  costPerCitizen: number;
-  revenueCollectionGapPct: number;
-  /** Unutilized budget (appropriated − spend), signed exactly. */
-  unutilizedBudget: number;
+  /** `null` unless appropriation and spend are both posted. */
+  budgetUtilizationPct: number | null;
+  /** `null` unless allocation and disbursement are both posted. */
+  grantDisbursementRatePct: number | null;
+  /** `null` unless expense and citizen counts are both posted. */
+  costPerCitizen: number | null;
+  /** `null` unless forecast and collected revenue are both posted. */
+  revenueCollectionGapPct: number | null;
+  /** Appropriated − spend; `null` unless both are posted. */
+  unutilizedBudget: number | null;
 }
 
 export function sumDisbursements(amounts: readonly number[]): number {
@@ -60,14 +69,37 @@ export function computeRatioPct(numerator: number, denominator: number): number 
 }
 
 export function computeGovernmentMetrics(input: GovernmentMetricsInput): GovernmentMetrics {
-  const budgetUtilizationPct = computeRatioPct(input.actualSpend, input.budgetAppropriated);
-  const grantDisbursementRatePct = computeRatioPct(input.grantDisbursed, input.grantAllocated);
-  const costPerCitizen = computeCostPerCitizen(input.totalExpenses, input.citizensServed);
-  const revenueCollectionGapPct = computeRatioPct(
-    roundTo(subtractMoney(input.revenueForecast, input.revenueCollected), 2),
-    input.revenueForecast
-  );
-  const unutilizedBudget = roundTo(subtractMoney(input.budgetAppropriated, input.actualSpend), 2);
+  const budgetUtilizationPct =
+    input.actualSpend !== null &&
+    input.budgetAppropriated !== null &&
+    toDecimal(input.budgetAppropriated).gt(0)
+      ? computeRatioPct(input.actualSpend, input.budgetAppropriated)
+      : null;
+  const grantDisbursementRatePct =
+    input.grantDisbursed !== null &&
+    input.grantAllocated !== null &&
+    toDecimal(input.grantAllocated).gt(0)
+      ? computeRatioPct(input.grantDisbursed, input.grantAllocated)
+      : null;
+  const costPerCitizen =
+    input.totalExpenses !== null &&
+    input.citizensServed !== null &&
+    toDecimal(input.citizensServed).gt(0)
+      ? computeCostPerCitizen(input.totalExpenses, input.citizensServed)
+      : null;
+  const revenueCollectionGapPct =
+    input.revenueForecast !== null &&
+    toDecimal(input.revenueForecast).gt(0) &&
+    input.revenueCollected !== null
+      ? computeRatioPct(
+          roundTo(subtractMoney(input.revenueForecast, input.revenueCollected), 2),
+          input.revenueForecast
+        )
+      : null;
+  const unutilizedBudget =
+    input.budgetAppropriated !== null && input.actualSpend !== null
+      ? roundTo(subtractMoney(input.budgetAppropriated, input.actualSpend), 2)
+      : null;
 
   return {
     budgetUtilizationPct,
@@ -89,28 +121,35 @@ export function scaleByDriver(base: number, pct: number): number {
 }
 
 export interface ProcurementMetricsInput {
-  /** Total value of contracts awarded in the period. */
-  contractValue: number;
-  /** Value of contracts awarded through competitive tender. */
-  competitivelyTenderedValue: number;
-  /** Count of compliant/clean audits against total audits. */
-  compliantAudits: number;
-  totalAudits: number;
-  /** Sum of procurement cycle times (days) across contracts. */
-  cycleDaysSum: number;
-  contractCount: number;
-  /** Baseline spend before negotiated savings. */
-  baselineSpend: number;
-  /** Spend value after negotiated savings. */
-  realizedSpend: number;
+  /** Total value of contracts awarded in the period; `null` when not posted. */
+  contractValue: number | null;
+  /** Value awarded through competitive tender; `null` when not posted. */
+  competitivelyTenderedValue: number | null;
+  /** Count of compliant/clean audits; `null` when not posted. */
+  compliantAudits: number | null;
+  /** Total audits; `null` when not posted. */
+  totalAudits: number | null;
+  /** Sum of procurement cycle times (days); `null` when not posted. */
+  cycleDaysSum: number | null;
+  /** Contract count; `null` when not posted. */
+  contractCount: number | null;
+  /** Baseline spend before negotiated savings; `null` when not posted. */
+  baselineSpend: number | null;
+  /** Spend value after negotiated savings; `null` when not posted. */
+  realizedSpend: number | null;
 }
 
 export interface ProcurementMetrics {
-  competitiveTenderPct: number;
-  complianceScorePct: number;
-  avgCycleDays: number;
-  negotiatedSavings: number;
-  savingsRatePct: number;
+  /** `null` unless tendered and total contract values are both posted. */
+  competitiveTenderPct: number | null;
+  /** `null` unless compliant and total audit counts are both posted. */
+  complianceScorePct: number | null;
+  /** `null` unless cycle days and contract count are both posted. */
+  avgCycleDays: number | null;
+  /** Baseline − realized spend; `null` unless both are posted. */
+  negotiatedSavings: number | null;
+  /** `null` unless savings are derivable from a positive baseline. */
+  savingsRatePct: number | null;
 }
 
 /** Average procurement cycle days; 0 when no contracts. */
@@ -120,14 +159,34 @@ export function computeAvgCycleDays(cycleDaysSum: number, contractCount: number)
 }
 
 export function computeProcurementMetrics(input: ProcurementMetricsInput): ProcurementMetrics {
-  const competitiveTenderPct = computeRatioPct(
-    input.competitivelyTenderedValue,
-    input.contractValue
-  );
-  const complianceScorePct = computeRatioPct(input.compliantAudits, input.totalAudits);
-  const avgCycleDays = computeAvgCycleDays(input.cycleDaysSum, input.contractCount);
-  const negotiatedSavings = roundTo(subtractMoney(input.baselineSpend, input.realizedSpend), 2);
-  const savingsRatePct = computeRatioPct(negotiatedSavings, input.baselineSpend);
+  const competitiveTenderPct =
+    input.competitivelyTenderedValue !== null &&
+    input.contractValue !== null &&
+    toDecimal(input.contractValue).gt(0)
+      ? computeRatioPct(input.competitivelyTenderedValue, input.contractValue)
+      : null;
+  const complianceScorePct =
+    input.compliantAudits !== null &&
+    input.totalAudits !== null &&
+    toDecimal(input.totalAudits).gt(0)
+      ? computeRatioPct(input.compliantAudits, input.totalAudits)
+      : null;
+  const avgCycleDays =
+    input.cycleDaysSum !== null &&
+    input.contractCount !== null &&
+    toDecimal(input.contractCount).gt(0)
+      ? computeAvgCycleDays(input.cycleDaysSum, input.contractCount)
+      : null;
+  const negotiatedSavings =
+    input.baselineSpend !== null && input.realizedSpend !== null
+      ? roundTo(subtractMoney(input.baselineSpend, input.realizedSpend), 2)
+      : null;
+  const savingsRatePct =
+    negotiatedSavings !== null &&
+    input.baselineSpend !== null &&
+    toDecimal(input.baselineSpend).gt(0)
+      ? computeRatioPct(negotiatedSavings, input.baselineSpend)
+      : null;
   return {
     competitiveTenderPct,
     complianceScorePct,

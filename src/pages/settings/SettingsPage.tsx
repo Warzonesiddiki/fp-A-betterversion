@@ -129,7 +129,7 @@ export default function SettingsPage() {
                       type="text"
                       value={organization.name}
                       onChange={(e) => updateOrganization({ name: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
                       placeholder="Enter company name..."
                     />
                   </div>
@@ -145,7 +145,7 @@ export default function SettingsPage() {
                       aria-describedby="settings-base-currency-help"
                       value={organization.baseCurrency}
                       onChange={(e) => updateOrganization({ baseCurrency: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
                     >
                       <option value="USD">USD - US Dollar</option>
                       <option value="EUR">EUR - Euro</option>
@@ -175,7 +175,7 @@ export default function SettingsPage() {
                           fiscalYearStart: `2026-${e.target.value}-01`,
                         })
                       }
-                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
                     >
                       <option value="01">January</option>
                       <option value="04">April</option>
@@ -208,7 +208,7 @@ export default function SettingsPage() {
                             | '13-Period',
                         })
                       }
-                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
                     >
                       <option value="Standard">Standard (Monthly)</option>
                       <option value="4-4-5">4-4-5 Retail Calendar</option>
@@ -244,7 +244,7 @@ export default function SettingsPage() {
                       onChange={(e) =>
                         updateOrganization({ decimalPlaces: parseInt(e.target.value) })
                       }
-                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
                       min="0"
                       max="4"
                     />
@@ -261,7 +261,7 @@ export default function SettingsPage() {
                       aria-describedby="settings-date-format-help"
                       value={organization.dateFormat}
                       onChange={(e) => updateOrganization({ dateFormat: e.target.value })}
-                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none"
+                      className="w-full bg-slate-900 border border-slate-800 rounded px-3 py-2 text-white focus:border-blue-500 outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
                     >
                       <option value="MM/DD/YYYY">MM/DD/YYYY</option>
                       <option value="DD/MM/YYYY">DD/MM/YYYY</option>

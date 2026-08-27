@@ -4,6 +4,7 @@
 -- 1. Entities
 CREATE TABLE IF NOT EXISTS entities (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     name TEXT NOT NULL,
     code TEXT UNIQUE NOT NULL,
     currency TEXT NOT NULL DEFAULT 'USD',
@@ -19,6 +20,7 @@ CREATE TABLE IF NOT EXISTS entities (
 -- 2. Departments
 CREATE TABLE IF NOT EXISTS departments (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     name TEXT NOT NULL,
     code TEXT UNIQUE NOT NULL,
     head_id TEXT,
@@ -29,6 +31,7 @@ CREATE TABLE IF NOT EXISTS departments (
 -- 3. Chart of Accounts
 CREATE TABLE IF NOT EXISTS accounts (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     code TEXT UNIQUE NOT NULL,
     name TEXT NOT NULL,
     type TEXT NOT NULL CHECK (type IN ('Revenue', 'COGS', 'OpEx', 'CapEx', 'Asset', 'Liability', 'Equity')),
@@ -52,6 +55,8 @@ CREATE TABLE IF NOT EXISTS accounts (
 -- 4. GL Entries (Actuals)
 CREATE TABLE IF NOT EXISTS gl_entries (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
+    environment_id TEXT NOT NULL DEFAULT 'dev',
     account_id TEXT NOT NULL,
     entity_id TEXT NOT NULL,
     department_id TEXT,
@@ -64,6 +69,11 @@ CREATE TABLE IF NOT EXISTS gl_entries (
     batch_id TEXT,
     created_by TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    journal_id TEXT,
+    idempotency_key TEXT,
+    idempotency_hash TEXT,
+    version INTEGER NOT NULL DEFAULT 1,
+    deleted_at TEXT,
     FOREIGN KEY (account_id) REFERENCES accounts(id),
     FOREIGN KEY (entity_id) REFERENCES entities(id),
     FOREIGN KEY (department_id) REFERENCES departments(id)
@@ -72,6 +82,8 @@ CREATE TABLE IF NOT EXISTS gl_entries (
 -- 5. Budgets
 CREATE TABLE IF NOT EXISTS budgets (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
+    environment_id TEXT NOT NULL DEFAULT 'dev',
     name TEXT NOT NULL,
     description TEXT,
     fiscal_year INTEGER NOT NULL,
@@ -92,6 +104,8 @@ CREATE TABLE IF NOT EXISTS budgets (
 -- 6. Budget Line Items
 CREATE TABLE IF NOT EXISTS budget_line_items (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
+    environment_id TEXT NOT NULL DEFAULT 'dev',
     budget_id TEXT NOT NULL,
     account_id TEXT NOT NULL,
     period_id TEXT,
@@ -116,6 +130,7 @@ CREATE TABLE IF NOT EXISTS budget_line_items (
 -- that still carry the earlier resource_type/resource_id shape.
 CREATE TABLE IF NOT EXISTS audit_trail (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     user_id TEXT,
     action TEXT NOT NULL,
     entity_type TEXT,
@@ -127,6 +142,7 @@ CREATE TABLE IF NOT EXISTS audit_trail (
 -- 8. Key-Value Store (For Zustand Persistence)
 CREATE TABLE IF NOT EXISTS kv_store (
     key TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     value TEXT NOT NULL,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -134,6 +150,8 @@ CREATE TABLE IF NOT EXISTS kv_store (
 -- 9. Scenarios
 CREATE TABLE IF NOT EXISTS scenarios (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
+    environment_id TEXT NOT NULL DEFAULT 'dev',
     name TEXT NOT NULL,
     description TEXT,
     scenario_type TEXT NOT NULL DEFAULT 'custom' CHECK (scenario_type IN ('base', 'optimistic', 'pessimistic', 'custom', 'stress_test')),
@@ -151,6 +169,8 @@ CREATE TABLE IF NOT EXISTS scenarios (
 -- 10. Scenario Line Items
 CREATE TABLE IF NOT EXISTS scenario_line_items (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
+    environment_id TEXT NOT NULL DEFAULT 'dev',
     scenario_id TEXT NOT NULL,
     account_id TEXT NOT NULL,
     period_id TEXT,
@@ -168,6 +188,8 @@ CREATE TABLE IF NOT EXISTS scenario_line_items (
 -- 11. Forecasts
 CREATE TABLE IF NOT EXISTS forecasts (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
+    environment_id TEXT NOT NULL DEFAULT 'dev',
     name TEXT NOT NULL,
     description TEXT,
     forecast_type TEXT NOT NULL DEFAULT 'Rolling' CHECK (forecast_type IN ('Rolling', 'Quarterly', 'Annual', 'Custom')),
@@ -185,6 +207,8 @@ CREATE TABLE IF NOT EXISTS forecasts (
 -- 12. Forecast Periods
 CREATE TABLE IF NOT EXISTS forecast_periods (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
+    environment_id TEXT NOT NULL DEFAULT 'dev',
     forecast_id TEXT NOT NULL,
     period_id TEXT NOT NULL,
     period_name TEXT NOT NULL,
@@ -199,6 +223,8 @@ CREATE TABLE IF NOT EXISTS forecast_periods (
 -- 13. Forecast Line Items
 CREATE TABLE IF NOT EXISTS forecast_line_items (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
+    environment_id TEXT NOT NULL DEFAULT 'dev',
     forecast_id TEXT NOT NULL,
     account_id TEXT NOT NULL,
     period_id TEXT NOT NULL,
@@ -215,6 +241,8 @@ CREATE TABLE IF NOT EXISTS forecast_line_items (
 -- 14. Reports
 CREATE TABLE IF NOT EXISTS reports (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
+    environment_id TEXT NOT NULL DEFAULT 'dev',
     name TEXT NOT NULL,
     description TEXT,
     report_type TEXT NOT NULL DEFAULT 'custom' CHECK (report_type IN ('income_statement', 'balance_sheet', 'cash_flow', 'trial_balance', 'variance', 'custom')),
@@ -233,6 +261,7 @@ CREATE TABLE IF NOT EXISTS reports (
 -- 15. Report Templates
 CREATE TABLE IF NOT EXISTS report_templates (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     name TEXT NOT NULL,
     description TEXT,
     template_type TEXT NOT NULL DEFAULT 'custom',
@@ -247,6 +276,7 @@ CREATE TABLE IF NOT EXISTS report_templates (
 -- 16. Notifications
 CREATE TABLE IF NOT EXISTS notifications (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     user_id TEXT NOT NULL,
     title TEXT NOT NULL,
     message TEXT NOT NULL,
@@ -264,6 +294,7 @@ CREATE TABLE IF NOT EXISTS notifications (
 -- 17. Collaboration Comments
 CREATE TABLE IF NOT EXISTS collaboration_comments (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     resource_type TEXT NOT NULL,
     resource_id TEXT NOT NULL,
     user_id TEXT NOT NULL,
@@ -281,6 +312,7 @@ CREATE TABLE IF NOT EXISTS collaboration_comments (
 -- 18. Collaboration Tasks
 CREATE TABLE IF NOT EXISTS collaboration_tasks (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     title TEXT NOT NULL,
     description TEXT,
     status TEXT NOT NULL DEFAULT 'Todo' CHECK (status IN ('Todo', 'InProgress', 'Done', 'Cancelled')),
@@ -299,6 +331,7 @@ CREATE TABLE IF NOT EXISTS collaboration_tasks (
 -- 19. Documents
 CREATE TABLE IF NOT EXISTS documents (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     name TEXT NOT NULL,
     file_path TEXT NOT NULL,
     file_type TEXT NOT NULL,
@@ -318,6 +351,7 @@ CREATE TABLE IF NOT EXISTS documents (
 -- 20. ESG Data
 CREATE TABLE IF NOT EXISTS esg_data (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     metric_name TEXT NOT NULL,
     metric_category TEXT NOT NULL CHECK (metric_category IN ('environmental', 'social', 'governance')),
     metric_type TEXT NOT NULL,
@@ -338,6 +372,7 @@ CREATE TABLE IF NOT EXISTS esg_data (
 -- 21. Custom Fields
 CREATE TABLE IF NOT EXISTS custom_fields (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     name TEXT NOT NULL,
     field_type TEXT NOT NULL CHECK (field_type IN ('text', 'number', 'date', 'boolean', 'select', 'multi_select', 'currency', 'percentage')),
     resource_type TEXT NOT NULL,
@@ -355,6 +390,7 @@ CREATE TABLE IF NOT EXISTS custom_fields (
 -- 22. Custom Field Values
 CREATE TABLE IF NOT EXISTS custom_field_values (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     field_id TEXT NOT NULL,
     resource_type TEXT NOT NULL,
     resource_id TEXT NOT NULL,
@@ -367,6 +403,7 @@ CREATE TABLE IF NOT EXISTS custom_field_values (
 -- 23. Currency Rates
 CREATE TABLE IF NOT EXISTS currency_rates (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     base_currency TEXT NOT NULL,
     target_currency TEXT NOT NULL,
     rate REAL NOT NULL,
@@ -380,6 +417,7 @@ CREATE TABLE IF NOT EXISTS currency_rates (
 -- 24. Fiscal Periods
 CREATE TABLE IF NOT EXISTS fiscal_periods (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     year INTEGER NOT NULL,
     period_number INTEGER NOT NULL,
     name TEXT NOT NULL,
@@ -397,6 +435,7 @@ CREATE TABLE IF NOT EXISTS fiscal_periods (
 -- 25. Workflows
 CREATE TABLE IF NOT EXISTS workflows (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     name TEXT NOT NULL,
     description TEXT,
     workflow_type TEXT NOT NULL DEFAULT 'approval' CHECK (workflow_type IN ('approval', 'review', 'sign_off', 'custom')),
@@ -415,6 +454,7 @@ CREATE TABLE IF NOT EXISTS workflows (
 -- 26. Workflow Steps
 CREATE TABLE IF NOT EXISTS workflow_steps (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     workflow_id TEXT NOT NULL,
     step_number INTEGER NOT NULL,
     step_name TEXT NOT NULL,
@@ -433,6 +473,7 @@ CREATE TABLE IF NOT EXISTS workflow_steps (
 -- 27. User Preferences
 CREATE TABLE IF NOT EXISTS user_preferences (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     user_id TEXT NOT NULL,
     preference_key TEXT NOT NULL,
     preference_value TEXT NOT NULL,
@@ -444,6 +485,7 @@ CREATE TABLE IF NOT EXISTS user_preferences (
 -- 28. Recent Activity
 CREATE TABLE IF NOT EXISTS recent_activity (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     user_id TEXT,
     action TEXT NOT NULL,
     resource_type TEXT NOT NULL,
@@ -458,6 +500,7 @@ CREATE TABLE IF NOT EXISTS recent_activity (
 -- 29. Stores (For Zustand Persistence)
 CREATE TABLE IF NOT EXISTS stores (
     id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL DEFAULT 'default',
     value TEXT NOT NULL,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -467,6 +510,16 @@ CREATE INDEX IF NOT EXISTS idx_gl_entries_date ON gl_entries(post_date);
 CREATE INDEX IF NOT EXISTS idx_gl_entries_account ON gl_entries(account_id);
 CREATE INDEX IF NOT EXISTS idx_gl_entries_entity ON gl_entries(entity_id);
 CREATE INDEX IF NOT EXISTS idx_gl_entries_batch ON gl_entries(batch_id);
+-- W0.8.6 (K27): idempotent journal replay lookup. The KEY identifies a
+-- BATCH (journal), so multiple rows legitimately share it — uniqueness is
+-- enforced transactionally in the route (claim-check inside the insert
+-- transaction; better-sqlite3 is synchronous/single-threaded). Scoped by
+-- tenant_id so one tenant's keys never interact with another's; deleted
+-- rows keep their key so a replay finds the tombstone instead of minting
+-- duplicates. Postgres S2 note: replace with UNIQUE(tenant_id,
+-- idempotency_key, journal_line).
+CREATE INDEX IF NOT EXISTS idx_gl_entries_tenant_idem
+    ON gl_entries(tenant_id, idempotency_key);
 CREATE INDEX IF NOT EXISTS idx_budget_items_lookup ON budget_line_items(budget_id, account_id);
 CREATE INDEX IF NOT EXISTS idx_budget_items_period ON budget_line_items(period_id);
 CREATE INDEX IF NOT EXISTS idx_audit_trail_entity ON audit_trail(entity_type, entity_id);
@@ -509,3 +562,12 @@ CREATE INDEX IF NOT EXISTS idx_accounts_parent ON accounts(parent_id);
 CREATE INDEX IF NOT EXISTS idx_entities_parent ON entities(parent_id);
 CREATE INDEX IF NOT EXISTS idx_budgets_year ON budgets(fiscal_year);
 CREATE INDEX IF NOT EXISTS idx_budgets_status ON budgets(status);
+
+-- Tenancy (W0.2): tenant-scoped access indexes on high-volume surfaces
+CREATE INDEX IF NOT EXISTS idx_gl_entries_tenant ON gl_entries(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_budget_line_items_tenant ON budget_line_items(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_scenario_line_items_tenant ON scenario_line_items(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_forecast_line_items_tenant ON forecast_line_items(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_forecast_periods_tenant ON forecast_periods(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_audit_trail_tenant ON audit_trail(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_tenant ON notifications(tenant_id);

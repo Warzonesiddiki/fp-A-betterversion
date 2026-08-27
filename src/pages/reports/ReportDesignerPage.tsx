@@ -3,7 +3,8 @@ import { ReportDesigner } from '@/components/reports/designer/ReportDesigner';
 import { useCubeStore } from '@/store/cubeStore';
 
 export default function ReportDesignerPage() {
-  const { initialize, isInitialized } = useCubeStore();
+  const initialize = useCubeStore((s) => s.initialize);
+  const isInitialized = useCubeStore((s) => s.isInitialized);
   const [initError, setInitError] = useState<string | null>(null);
 
   useEffect(() => {

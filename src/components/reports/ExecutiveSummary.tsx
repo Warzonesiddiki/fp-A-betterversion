@@ -6,7 +6,7 @@ import { deriveExecutiveSummary } from './executiveSummaryData';
 
 export function ExecutiveSummary() {
   const fmt = useCurrencyFormatter();
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const derivation = useMemo(() => deriveExecutiveSummary(entries), [entries]);
 
   const kpis = [

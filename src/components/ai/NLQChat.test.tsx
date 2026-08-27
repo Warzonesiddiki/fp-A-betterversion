@@ -16,10 +16,16 @@ vi.mock('@/engines/NLQEngine', () => ({
   },
 }));
 
+// Selector-aware mock adapter: NLQChat subscribes via useGLStore((s) => s.entries).
+const mockGLState = (state: { entries: unknown[] }) =>
+  (useGLStore as any).mockImplementation((selector: (s: typeof state) => unknown) =>
+    selector(state)
+  );
+
 describe('NLQChat', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useGLStore as any).mockReturnValue({ entries: [] });
+    mockGLState({ entries: [] });
   });
 
   const renderComponent = (initialEntries = ['/dashboard']) => {
@@ -40,13 +46,13 @@ describe('NLQChat', () => {
   });
 
   it('renders correctly with data', () => {
-    (useGLStore as any).mockReturnValue({ entries: [{ id: '1' }] });
+    mockGLState({ entries: [{ id: '1' }] });
     renderComponent();
     expect(screen.getByText('1 entries')).toBeInTheDocument();
   });
 
   it('handles clicking a suggestion', async () => {
-    (useGLStore as any).mockReturnValue({ entries: [{ id: '1' }] });
+    mockGLState({ entries: [{ id: '1' }] });
     (NLQEngine.parseQuery as any).mockReturnValue({
       intent: 'test',
       confidence: 0.9,
@@ -78,7 +84,7 @@ describe('NLQChat', () => {
   });
 
   it('handles form submit query with low confidence', async () => {
-    (useGLStore as any).mockReturnValue({ entries: [{ id: '1' }] });
+    mockGLState({ entries: [{ id: '1' }] });
     (NLQEngine.parseQuery as any).mockReturnValue({
       intent: 'test',
       confidence: 0.5,
@@ -112,7 +118,7 @@ describe('NLQChat', () => {
   });
 
   it('handles enter key press', async () => {
-    (useGLStore as any).mockReturnValue({ entries: [{ id: '1' }] });
+    mockGLState({ entries: [{ id: '1' }] });
     (NLQEngine.parseQuery as any).mockReturnValue({
       intent: 'test',
       confidence: 0.9,
@@ -145,7 +151,7 @@ describe('NLQChat', () => {
   });
 
   it('handles query error', async () => {
-    (useGLStore as any).mockReturnValue({ entries: [{ id: '1' }] });
+    mockGLState({ entries: [{ id: '1' }] });
     (NLQEngine.parseQuery as any).mockImplementation(() => {
       throw new Error('Parse error');
     });
@@ -163,7 +169,7 @@ describe('NLQChat', () => {
   });
 
   it('displays more items logic', async () => {
-    (useGLStore as any).mockReturnValue({ entries: [{ id: '1' }] });
+    mockGLState({ entries: [{ id: '1' }] });
     (NLQEngine.parseQuery as any).mockReturnValue({
       intent: 'test',
       confidence: 0.9,

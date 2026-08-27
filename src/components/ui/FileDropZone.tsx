@@ -17,6 +17,12 @@ export interface FileDropZoneProps {
   accept?: string;
   multiple?: boolean;
   maxSize?: number;
+  /**
+   * E-02 a11y: accessible name forwarded to the hidden file input.
+   * Previously callers passed `aria-label` but it silently dropped,
+   * leaving the input unlabeled (axe rule `label`, WCAG 4.1.2).
+   */
+  'aria-label'?: string;
 }
 
 export const FileDropZone: React.FC<FileDropZoneProps> = ({
@@ -24,6 +30,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
   accept = '.csv,.xlsx,.xls',
   multiple = false,
   maxSize: _maxSize = 50 * 1024 * 1024, // 50MB
+  'aria-label': ariaLabel,
 }) => {
   const [isDragActive, setIsDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -92,42 +99,73 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
     }
   };
 
-  const removeFile = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  // E-02 a11y: ref-based activation replaces getElementById('file-input').
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const openPicker = useCallback(() => inputRef.current?.click(), []);
+
+  // E-02-F: no longer needs stopPropagation — Remove lives OUTSIDE the
+  // dropzone as a sibling action, never inside an interactive control.
+  const removeFile = () => {
     setCurrentFile(null);
     setError(null);
   };
 
   return (
     <div className="w-full">
+      {/* E-02 a11y fix (axe `nested-interactive`, WCAG 4.1.2): the hidden file
+          input is now a SIBLING of the role="button" dropzone instead of a
+          descendant — interactive controls must not contain focusable
+          elements. Activation flows through inputRef below. */}
+      <input
+        id="file-input"
+        ref={inputRef}
+        type="file"
+        className="hidden"
+        accept={accept}
+        multiple={multiple}
+        onChange={handleFileInput}
+        aria-label={ariaLabel ?? 'Upload file'}
+        tabIndex={-1}
+      />
+      {/* Wave-7E a11y: validation errors used to render only as a visual pill
+          inside the dropzone, so screen readers never announced them (audit:
+          "FileDropZone SR-invisible errors"). This region is PERSISTENT —
+          mounted for every non-error state with empty text — and swaps its
+          text on failure, which politely announces the message. It doubles as
+          the aria-describedby target of the dropzone below. */}
+      <div id="file-drop-status" role="status" aria-live="polite" className="sr-only">
+        {error ?? ''}
+      </div>
+      {/* E-02-F (Lead UX ruling): once a file is selected the dropzone becomes
+          a NON-INTERACTIVE display — role/tabIndex/click handlers are dropped
+          and Remove/Replace actions render as sibling buttons below it. This
+          removes the last nested-interactive violation (Remove button used to
+          live inside the role="button" dropzone). Drag-to-replace is kept. */}
       <div
-        role="button"
-        tabIndex={0}
+        role={currentFile ? undefined : 'button'}
+        tabIndex={currentFile ? undefined : 0}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
+        aria-describedby={error ? 'file-drop-status' : undefined}
         className={cn(
-          'relative flex flex-col items-center justify-center min-h-[240px] p-10 border-2 rounded-xl transition-all cursor-pointer group'
+          'relative flex flex-col items-center justify-center min-h-[240px] p-10 border-2 rounded-xl transition-all group',
+          !currentFile && 'cursor-pointer'
         )}
         style={{
           border: `2px dashed ${isDragActive ? 'var(--accent-primary)' : 'var(--border-default)'}`,
           background: isDragActive ? 'var(--accent-subtle)' : 'transparent',
           transform: isDragActive ? 'scale(1.01)' : 'none',
         }}
-        onClick={() => document.getElementById('file-input')?.click()}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') document.getElementById('file-input')?.click();
-        }}
+        onClick={currentFile ? undefined : openPicker}
+        onKeyDown={
+          currentFile
+            ? undefined
+            : (e) => {
+                if (e.key === 'Enter' || e.key === ' ') openPicker();
+              }
+        }
       >
-        <input
-          id="file-input"
-          type="file"
-          className="hidden"
-          accept={accept}
-          multiple={multiple}
-          onChange={handleFileInput}
-        />
-
         {currentFile ? (
           <div className="flex flex-col items-center animate-in zoom-in-95 duration-200">
             <div className="p-4 bg-green-50 rounded-full mb-4 ring-8 ring-green-50/50">
@@ -147,16 +185,11 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
                   {formatNumber(currentFile.size / 1024, 1)} KB
                 </span>
               </div>
-              <button
-                onClick={removeFile}
-                aria-label="Remove file"
-                className="p-1 hover:bg-red-50 rounded-md transition-colors text-red-400 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-              >
-                <X className="h-4 w-4" />
-              </button>
+              {/* E-02-F: the inline Remove button moved to the action row
+                  below the dropzone (sibling, keyboard-reachable). */}
             </div>
             <p className="mt-6 text-xs text-[var(--text-secondary)] font-semibold uppercase tracking-widest">
-              Click or drag another file to replace
+              Drag another file here to replace
             </p>
           </div>
         ) : (
@@ -209,6 +242,34 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
           </div>
         )}
       </div>
+
+      {/* E-02-F: file actions live OUTSIDE the dropzone as real, tab-reachable
+          buttons (axe `nested-interactive` fix; Lead-approved layout). */}
+      {currentFile && (
+        <div className="mt-3 flex items-center justify-end gap-2">
+          <span className="mr-auto text-xs text-[var(--text-secondary)] truncate max-w-[60%]">
+            {currentFile.name}
+          </span>
+          <button
+            type="button"
+            onClick={openPicker}
+            aria-label={`Replace ${currentFile.name}`}
+            className="inline-flex items-center gap-1 rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-2.5 py-1 text-xs font-semibold text-[var(--text-primary)] hover:bg-blue-50 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+          >
+            <UploadIcon className="h-3.5 w-3.5" />
+            Replace
+          </button>
+          <button
+            type="button"
+            onClick={removeFile}
+            aria-label={`Remove ${currentFile.name}`}
+            className="inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold text-[var(--text-negative)] hover:bg-[var(--negative-subtle)] transition-colors focus-visible:ring-2 focus-visible:ring-[var(--danger-fill)] focus-visible:ring-offset-1"
+          >
+            <X className="h-3.5 w-3.5" />
+            Remove
+          </button>
+        </div>
+      )}
 
       <div className="mt-4 p-4 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] border-dashed">
         <div className="flex items-start space-x-3">

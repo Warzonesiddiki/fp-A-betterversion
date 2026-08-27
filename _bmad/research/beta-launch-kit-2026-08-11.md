@@ -10,14 +10,15 @@
 
 ## 1. Why a beta (and what it can and cannot prove)
 
-| Claim | Status | Beta can… | Beta CANNOT… |
-|---|---|---|---|
-| Browser/PWA is a supported capability (A-12) | UNVALIDATED | collect usage signals | validate the assumption (Tier 1 only) |
-| $500k+ willingness to pay (A-01) | UNVALIDATED | surface unsolicited "I'd pay" signals (partial signal only) | quantify WTP |
-| Wedge (close→decision→board-pack) is wanted | UNVALIDATED | show workflow completion/retention | prove market size |
-| First segment selection (R-04) | PENDING | inform segment scoring | decide it alone |
+| Claim                                        | Status      | Beta can…                                                   | Beta CANNOT…                          |
+| -------------------------------------------- | ----------- | ----------------------------------------------------------- | ------------------------------------- |
+| Browser/PWA is a supported capability (A-12) | UNVALIDATED | collect usage signals                                       | validate the assumption (Tier 1 only) |
+| $500k+ willingness to pay (A-01)             | UNVALIDATED | surface unsolicited "I'd pay" signals (partial signal only) | quantify WTP                          |
+| Wedge (close→decision→board-pack) is wanted  | UNVALIDATED | show workflow completion/retention                          | prove market size                     |
+| First segment selection (R-04)               | PENDING     | inform segment scoring                                      | decide it alone                       |
 
 **Honest labeling rules (non-negotiable):**
+
 - Beta web mode is explicitly NOT a supported runtime claim (the app shows the `data-beta-web` marker + console note).
 - All workspace data is local/draft/cache — never presented as official numbers. Keep the "Draft — Local workspace data" truth label everywhere.
 - No fabricated participants, testimonials, or usage numbers. Waitlist counters are real counters.
@@ -28,11 +29,13 @@
 **Objective:** ≥30 qualified signups, then ≥10 weekly active users, then ≥5 completed close→decision→board-pack loops, then ≥3 unsolicited "I'd pay for this" signals (T-07 thresholds).
 
 **Qualified signup definition (suggested, owner-adjustable):**
+
 - Works in finance/FP&A/accounting OR operates a finance function for a business; AND
 - Completes onboarding (company name + role) in the beta; AND
 - Opts into the beta mailing list.
 
 **Landing page contents (single page, no marketing overclaim):**
+
 1. One-line value: "FinPlan Pro — analyst-grade financial workspace: import actuals, reconcile/close, plan, and publish an evidence-backed board pack."
 2. Honest status: "Early beta — desktop app in active development; this browser build is a beta channel to shape the product. Local data only; nothing leaves your browser."
 3. Waitlist form: name, email, role, company stage, what pains you'd want solved (free text).
@@ -82,6 +85,7 @@
 ## 5. Metrics & evidence capture (Tier 2 BETA-USAGE)
 
 Recorded in `_bmad/research/evidence-log.md` with label **BETA-USAGE**, never as validation:
+
 - Waitlist signups (count, role mix — no PII in repo).
 - Weekly active users (app-boot events, opt-in only, aggregated).
 - Workflow completions: import → reconcile/close → board-pack (feature-level events, opt-in).

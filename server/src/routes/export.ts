@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { Decimal } from 'decimal.js';
 import { db } from '../db/connection.js';
+import { resolveTenantId } from '../db/tenancy.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { filterByEntityAccess } from '../middleware/entityAuth.js';
 
@@ -132,12 +133,21 @@ function audit(
   entityType: string,
   entityId: string,
   userId: string,
+  tenantId?: string,
   details?: Record<string, unknown>
 ) {
   db.prepare(
-    `INSERT INTO audit_trail (id, action, entity_type, entity_id, user_id, details, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`
-  ).run(uuidv4(), action, entityType, entityId, userId, JSON.stringify(details ?? {}));
+    `INSERT INTO audit_trail (id, tenant_id, action, entity_type, entity_id, user_id, details, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+  ).run(
+    uuidv4(),
+    tenantId ?? 'default',
+    action,
+    entityType,
+    entityId,
+    userId,
+    JSON.stringify(details ?? {})
+  );
 }
 
 function escapeCsvField(value: unknown): string {
@@ -296,8 +306,10 @@ router.post('/pdf', (req: Request, res: Response) => {
     if (!data || data.length === 0) {
       switch (report_type) {
         case 'trial_balance': {
-          const conditions: string[] = [];
-          const params: unknown[] = [];
+          // Tenant scope (W0.2c): the aggregate joins gl_entries — constrain
+          // the fact side so a tenant only ever exports its own postings.
+          const conditions: string[] = ['ge.tenant_id = ?', 'ge.deleted_at IS NULL'];
+          const params: unknown[] = [resolveTenantId(req.user)];
           if (entity_id) {
             conditions.push('ge.entity_id = ?');
             params.push(entity_id);
@@ -336,8 +348,18 @@ router.post('/pdf', (req: Request, res: Response) => {
           break;
         }
         case 'budget_vs_actual': {
-          const conditions: string[] = ['b.deleted_at IS NULL'];
-          const params: unknown[] = [];
+          // Tenant scope (W0.2c) — S0-1 red-team fix: the gl_entries side of
+          // this JOIN previously carried ONLY date filters, so exported
+          // Actual Debit/Credit summed EVERY OTHER TENANT'S postings sharing
+          // the account. Both sides are now explicitly constrained.
+          const tenantId = resolveTenantId(req.user);
+          const conditions: string[] = [
+            'ge.tenant_id = ?',
+            'ge.deleted_at IS NULL',
+            'b.deleted_at IS NULL',
+            'b.tenant_id = ?',
+          ];
+          const params: unknown[] = [tenantId, tenantId];
           if (fiscal_year) {
             conditions.push('b.fiscal_year = ?');
             params.push(fiscal_year);
@@ -360,6 +382,7 @@ router.post('/pdf', (req: Request, res: Response) => {
                JOIN budgets b ON b.id = bli.budget_id
                JOIN accounts a ON a.id = bli.account_id
                LEFT JOIN gl_entries ge ON ge.account_id = bli.account_id
+                 AND ge.deleted_at IS NULL
                  AND ge.post_date >= date(b.fiscal_year || '-01-01')
                  AND ge.post_date <= date(b.fiscal_year || '-12-31')
                ${whereCond}
@@ -398,7 +421,7 @@ router.post('/pdf', (req: Request, res: Response) => {
     );
 
     const exportId = uuidv4();
-    audit('EXPORT_PDF', 'report', exportId, req.user!.id, {
+    audit('EXPORT_PDF', 'report', exportId, req.user!.id, resolveTenantId(req.user), {
       report_type,
       title: reportTitle,
       rows: reportData.length,
@@ -433,7 +456,7 @@ router.post('/excel', (req: Request, res: Response) => {
     const xml = generateExcelXml(reportTitle, sheetName, headers, data, column_widths);
 
     const exportId = uuidv4();
-    audit('EXPORT_EXCEL', 'report', exportId, req.user!.id, {
+    audit('EXPORT_EXCEL', 'report', exportId, req.user!.id, resolveTenantId(req.user), {
       title: reportTitle,
       rows: data.length,
     });
@@ -478,7 +501,10 @@ router.post('/csv', (req: Request, res: Response) => {
     const csv = lines.join('\n');
 
     const exportId = uuidv4();
-    audit('EXPORT_CSV', 'report', exportId, req.user!.id, { rows: data.length, delimiter: sep });
+    audit('EXPORT_CSV', 'report', exportId, req.user!.id, resolveTenantId(req.user), {
+      rows: data.length,
+      delimiter: sep,
+    });
 
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename="export.csv"');

@@ -1,15 +1,22 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
-import { resolve, join } from 'node:path';
+import { resolve, join, sep } from 'node:path';
 
-/** All non-test .tsx sources under a directory, for repo-wide token audits. */
+/**
+ * All non-test .tsx sources under a directory, for repo-wide token audits.
+ * Paths are normalised to forward slashes: on Windows `readdirSync` yields
+ * backslash separators, and every consumer of this list matches against
+ * forward-slash patterns (`components\/ui\/Empty…\.tsx$`, `split('/src/')`)
+ * or reports file:line labels — raw backslash paths silently break all three.
+ */
 function globSources(dir: string): string[] {
   const out: string[] = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (entry.name === 'node_modules' || entry.name.startsWith('.')) continue;
     const full = join(dir, entry.name);
     if (entry.isDirectory()) out.push(...globSources(full));
-    else if (entry.name.endsWith('.tsx') && !/\.(test|spec)\.tsx$/.test(entry.name)) out.push(full);
+    else if (entry.name.endsWith('.tsx') && !/\.(test|spec)\.tsx$/.test(entry.name))
+      out.push(full.split(sep).join('/'));
   }
   return out;
 }

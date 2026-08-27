@@ -1,7 +1,21 @@
+// =============================================================================
+// HealthcareDashboardPage tests — K18/K30 truthfulness
+// -----------------------------------------------------------------------------
+// Real store idiom: `useGLStore` is seeded via setState (no store-module
+// mock); figures must come out of the HealthcareEngine pipeline. The page's
+// removed fabrications — the hand-typed patientVolumeData fixture, the
+// revenue÷$5,000 "Estimated Admissions" KPI, the mislabelled "Avg. Length
+// of Stay", invented deltas with narrative causes and appended-live-value
+// sparkline histories — must stay gone; regression guards below pin those
+// labels and fixture literals out of the DOM.
+//
+// Loading skeleton honesty: every engine read here is synchronous, so there
+// is deliberately no hydrate skeleton (same honesty test as
+// ScenarioBuilderPage).
+// =============================================================================
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { render, screen, fireEvent } from '@/test/testUtils';
 import HealthcareDashboardPage from './HealthcareDashboardPage';
 import { useGLStore } from '@/store/glStore';
 import { type GLEntry } from '@/types';
@@ -17,30 +31,6 @@ vi.mock('@/components/ui/DataTable', () => ({
     </div>
   ),
 }));
-
-vi.mock('recharts', async () => {
-  const OriginalRecharts = await vi.importActual<typeof import('recharts')>('recharts');
-  return {
-    ...OriginalRecharts,
-    ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
-    AreaChart: ({ children, data }: any) => (
-      <div data-testid="area-chart">
-        {data?.map((d: any, i: number) => (
-          <div key={i} data-testid={`area-data-${i}`}>
-            {JSON.stringify(d)}
-          </div>
-        ))}
-        {children}
-      </div>
-    ),
-    Area: () => null,
-    XAxis: () => null,
-    YAxis: () => null,
-    CartesianGrid: () => null,
-    Tooltip: () => null,
-    Legend: () => null,
-  };
-});
 
 const mockEntries: GLEntry[] = [
   // Gross Charges for Cardiology (ends in '01')
@@ -88,24 +78,22 @@ describe('HealthcareDashboardPage (Data-Driven)', () => {
   });
 
   it('renders KPI values computed from GL entries', () => {
-    render(
-      <MemoryRouter>
-        <HealthcareDashboardPage />
-      </MemoryRouter>
-    );
+    render(<HealthcareDashboardPage />);
 
-    // Gross Charges = $80,000
-    // Net Patient Revenue = 80k - 10k(contractuals) = $70,000
-    // Let's check Net Patient Revenue is rendered as compact
-    expect(screen.getByText(/\$70\.0K/)).toBeInTheDocument();
+    // Gross Charges = $80,000; Net Patient Revenue = 80k − 10k(contractuals)
+    // = $70,000. Rendered through the real pipeline: HealthcareEngine ->
+    // useCurrencyFormatter.custom({ maxDecimals: 1, compact: true }) ->
+    // Intl.NumberFormat(notation: 'compact'), whose en-US output drops the
+    // trailing ".0" ($70K, not the legacy '$70.0K'). Pinned on the named KPI
+    // region so only that card can satisfy it.
+    expect(screen.getByRole('region', { name: 'Net Patient Revenue' })).toHaveTextContent(
+      /\$70(?:\.0)?K/
+    );
+    expect(screen.getByRole('region', { name: 'Gross Charges' })).toHaveTextContent('$80,000');
   });
 
   it('renders data table rows with department performance', () => {
-    render(
-      <MemoryRouter>
-        <HealthcareDashboardPage />
-      </MemoryRouter>
-    );
+    render(<HealthcareDashboardPage />);
 
     // Cardiology revenue = $50,000 (derived from the real GL).
     expect(screen.getByText(/Cardiology/)).toBeInTheDocument();
@@ -123,19 +111,68 @@ describe('HealthcareDashboardPage (Data-Driven)', () => {
     // fabrication: it renders a different number for every department and
     // is not backed by a general ledger. The page must now render those
     // columns as '—' (not derivable from a GL).
-    render(
-      <MemoryRouter>
-        <HealthcareDashboardPage />
-      </MemoryRouter>
-    );
+    render(<HealthcareDashboardPage />);
     const table = screen.getByTestId('data-table');
     // Cardiology's first char 'C' (charCode 67). Pre-fix margin would be
     // 15 + (67*3 % 15) = 15 + 6 = 21; pre-fix efficiency would be
-    // 85 + (67*2 % 12) = 85 + 2 = 87. Neither literal must appear.
+    // 85 + (67*2 % 12) = 85 + 2 = 87. Neither literal may appear.
     expect(table.textContent).not.toMatch(/\b21\.0\s*%/);
     expect(table.textContent).not.toMatch(/\b87\s*%/);
     // Same check for Neurology ('N' = 78).
     expect(table.textContent).not.toMatch(/\b15\.4\s*%/);
     expect(table.textContent).not.toMatch(/\b89\s*%/);
+    // The suffix→department convention is disclosed on the card itself.
+    expect(
+      screen.getByText(/posted 40xx accounts whose code ends in the department/i)
+    ).toBeInTheDocument();
+  });
+
+  it('does not fabricate patient volumes, LOS, admissions estimates or deltas', () => {
+    render(<HealthcareDashboardPage />);
+
+    // Removed chart + its hand-typed six-month fixture.
+    expect(screen.queryByTestId('area-chart')).not.toBeInTheDocument();
+    expect(screen.queryByText(/patient volume trend/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('850')).not.toBeInTheDocument();
+    expect(screen.queryByText('2,100')).not.toBeInTheDocument();
+
+    // Removed KPIs: the ÷$5,000 admissions estimate and the days-in-A/R
+    // masquerading as length of stay.
+    expect(screen.queryByRole('region', { name: /estimated admissions/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('region', { name: /avg\.? length of stay/i })
+    ).not.toBeInTheDocument();
+
+    // Removed invented deltas with narrative causes.
+    expect(screen.queryByText(/inpatient up 5%/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/efficiency improved/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/reimbursements up/i)).not.toBeInTheDocument();
+
+    // The honest replacement keeps its divisor basis disclosed.
+    expect(screen.getByRole('region', { name: 'Days in A/R' })).toHaveTextContent(/day basis/i);
+  });
+
+  it('discloses clinical-fact gaps instead of estimating them', () => {
+    render(<HealthcareDashboardPage />);
+    expect(screen.getByText(/admission-discharge-transfer \(ADT\) systems/i)).toBeInTheDocument();
+    expect(screen.getByText(/bed-management feed/i)).toBeInTheDocument();
+    expect(screen.getByText(/workforce roster/i)).toBeInTheDocument();
+  });
+
+  it('K30: GL-empty branch keeps the page h1 mounted and offers the real import CTA', () => {
+    useGLStore.setState({ entries: [] });
+    render(<HealthcareDashboardPage />);
+
+    // h1 discipline: PageHeader stays mounted in the empty branch.
+    expect(
+      screen.getByRole('heading', { name: /healthcare dashboard/i, level: 1 })
+    ).toBeInTheDocument();
+    expect(screen.getByText(/no healthcare data/i)).toBeInTheDocument();
+
+    // The CTA drives the real import flow instead of being decorative.
+    const importBtn = screen.getByTestId('healthcare-empty-import');
+    expect(importBtn).toBeEnabled();
+    expect(() => fireEvent.click(importBtn)).not.toThrow();
+    expect(screen.getByText(/no healthcare data/i)).toBeInTheDocument();
   });
 });

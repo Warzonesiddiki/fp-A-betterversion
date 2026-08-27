@@ -33,9 +33,14 @@ export type {
   SdkVersion,
 } from './types';
 
+// ─── Errors ──────────────────────────────────────────────────────────────────
+export { ApiNotConfiguredError } from './types';
+
 // ─── Constants ───────────────────────────────────────────────────────────────
+// NOTE (W6-P0-13 api-origin-truth): no DEFAULT_BASE_URL is exported — the REST
+// origin resolves from VITE_API_URL and unset environments fail fast with
+// ApiNotConfiguredError instead of defaulting to a host.
 export {
-  DEFAULT_BASE_URL,
   DEFAULT_REALTIME_PATH,
   DEFAULT_RETRY_COUNT,
   DEFAULT_TIMEOUT_MS,

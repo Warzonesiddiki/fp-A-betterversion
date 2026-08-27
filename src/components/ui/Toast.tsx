@@ -4,6 +4,12 @@ import { cn } from '@/utils/cn';
 
 import type { ToastMessage } from '@/types';
 
+// Wave-7E a11y: this card deliberately carries NO role/aria-live attributes.
+// Politeness is owned exclusively by ToastContainer's two SIBLING regions
+// (polite status for success/info/warning, assertive alert for error). The
+// previous role="alert" + aria-live="assertive" here — nested inside the
+// container's polite region — made EVERY toast an interrupting announcement.
+
 export interface ToastProps {
   toast: ToastMessage;
   onDismiss: (id: string) => void;
@@ -44,9 +50,6 @@ export const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
 
   return (
     <div
-      role="alert"
-      aria-live="assertive"
-      aria-atomic="true"
       className={cn(
         'flex w-full max-w-sm overflow-hidden rounded-lg border shadow-lg transition-all duration-300 animate-slide-up',
         bg,

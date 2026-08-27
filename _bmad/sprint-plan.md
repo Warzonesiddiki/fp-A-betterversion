@@ -4,22 +4,35 @@
 > **Inputs:** G0–G4 approved hypothesis artifacts, traceability matrix, assumption registry, capability truth matrix
 > **Rule:** No implementation story may turn an unvalidated market/user/deployment assumption into an irreversible product commitment.
 
-## Current execution status (2026-08-12, v2.3)
+## Current execution status (2026-08-23, v2.4)
 
 > **Owner direction 2026-08-12 (ledger #34, E-019):** all-in-one FP&A platform for all industries + ZohoBooks-grade UI/UX + extreme optimization. Master task inventory: `_bmad/project-completion-plan.md` (6 tracks × 40+ tasks with acceptance gates); multi-agent assignments: `agents/A1-A5-multi-agent-roadmap.md`. Scope intent only — assumptions stay UNVALIDATED; breadth ≠ certified vertical depth.
+>
+> **v2.4 refresh 2026-08-23 (Bob, witnesses ledger #34–#36):** all five roadmap Phase-2 engineering gates COMPLETE; hotfixes E-02-F + UI-HF landed; structural follow-ups P-02-I / E-09-F in flight; Phase-3 Track-UI specs authoring. Namespace warning: **Track P/E rows below = completion-plan performance/engineering gates**, distinct from the legacy **Pack-P pilot stories** (last table row — still blocked by R-04 per D-11, owner direction does not unblock).
 
-| Track | Item | Status | Evidence / blocker |
-|---|---|---|---|
-| R | R-01 Enterprise sample (as specified) | REDIRECTED (2026-08-11) | Owner direction: unavailable (solo development); replaced by solo-dev evidence strategy (validation-plan v2.2); interview track revivable |
-| R | R-02–R-04 (re-baselined) | READY on solo-achievable evidence | Execute via validation-plan v2.2 Tier 2–4 evidence (beta signals, artifacts, secondary); P-track re-scopes to public-beta segment selection |
-| F | F-01 Capability evidence governance | DONE / QA APPROVED | 0 unresolved route source mappings; QA report filed |
-| F | F-02 Atlas foundation | **DONE / QA APPROVED (2026-08-12)** | Pixel baseline executed in real browser — `tests/e2e/atlas-visual.spec.ts` 5/5, 11 committed PNGs (byte-stable); surfaced + fixed P0 storage hydration defect (ledger #32); QA flipped to APPROVED (ledger #33, evidence E-018) |
-| F | F-03 Context/trust-state shell | DONE / QA APPROVED | `_bmad/stories/story-f03-financial-context-shell.md`; QA report in `_bmad/qa/` |
-| F | F-04 Control-plane contract spike | DONE / QA APPROVED (spike only) | `_bmad/stories/story-f04-control-plane-contract-spike.md`; QA report in `_bmad/qa/` |
-| P | P-01…P-07 | BLOCKED | Require R-04 pilot slice selection |
+| Track         | Item                                                            | Status                                   | Evidence / blocker                                                                                                                                                                                                                                            |
+| ------------- | --------------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P (eng.)      | P-01 Full-suite verification run                                | **COMPLETE (2026-08-23)**                | Canonical measured counts **1,287 files / 14,835 tests · 0 fail** (+1 by-design skip, `q5-2-focus-restore`); replaces stale derived baseline 13,438/1,195 (ledger #35/#36)                                                                                    |
+| P (eng.)      | P-02 Bundle budget audit                                        | **COMPLETE — GREEN w/ adjudicated debt** | bundle-check GREEN vs ENFORCED `TOTAL_JS_LIMIT_KB=2248` ("passed with 2 warnings"); PLAN-LITERAL <2MB not met: measured 2083.33 KB gzip = **+35.33 KB honest debt**, dual-truth recorded (ledger #35); remediation designed in P-02-R → implemented by P-02-I |
+| E             | E-01 Type-safety ratchet (+ E-01-I impl)                        | **COMPLETE**                             | Ratchet escapes **116 → 45** (−71 vs 2026-07-30 baseline; trajectory 116→98→69→58→45 across SafeMathParser registry-split steps); zero `as any` in financial paths; `tsc --noEmit` 0 errors at every checkpoint (ledger #35/#36)                              |
+| E             | E-02 A11y sweep — WCAG 2.1 AA                                   | **COMPLETE**                             | **0 critical / 0 serious axe-clean across 23 routes**; 6 violations found → all fixed; `wcag-aa{,-populated}` suites 14 files / 488 passed + 1 by-design skip (ledger #35)                                                                                    |
+| E             | E-09 Mock-data honesty audit                                    | **COMPLETE**                             | `mock-data:audit` gate met; SOX fabricated-fallback finding fixed + disclosure banners as defense-in-depth; structural follow-ups split into E-09-F (ledger #35/#36)                                                                                          |
+| E             | E-02-F FileDropZone de-nesting hotfix                           | **DONE**                                 | Remove button rendered outside the role="button" dropzone in FILE-SELECTED state per Lead UX ruling; component-level axe coverage added                                                                                                                       |
+| UI            | UI-HF DataTable numeric-sort hotfix                             | **DONE**                                 | Lexical numeric ordering (100<20<3) fixed via type-aware comparator (`compareCellValues`, empties-last); defect contained to the DataTable comparator                                                                                                         |
+| P (eng.)      | P-02-I AG Grid modular registration + gate tightening 2248→2048 | IN FLIGHT                                | Amelia implementing accepted remediation proposal; enforced limit tightens to plan-literal 2048 KB only AFTER a proven build shows ≤2048                                                                                                                      |
+| E             | E-09-F Mock-data structural follow-ups                          | IN FLIGHT                                | Quinn: audit-script scope extension (stores/, engines/, demo datasets), SOX connect-GL empty state, closedPeriods store derivation                                                                                                                            |
+| UI            | UI-SPEC-A/B/C Phase-3 specs                                     | IN FLIGHT (Wave 0)                       | Read-only spec authoring: Atlas `_bmad/ui-spec-typography-density-tables.md` · Vega `_bmad/ui-spec-forms.md` · Uxie `_bmad/ui-spec-navigation.md` — **specs land before any Track-UI implementation**                                                         |
+| R             | R-01 Desktop-channel Tier-2 evidence kit                        | IN PROGRESS                              | Drafts ready; **Tier-2 execution owner-blocked** (T-06/T-07); interview-recruitment variant REDIRECTED 2026-08-11, revivable                                                                                                                                  |
+| R             | R-02 Waitlist/landing mechanism decision                        | OWNER-BLOCKED                            | Channel choice sits with owner; honest signup flow required                                                                                                                                                                                                   |
+| R             | R-03 Community engagement drafts                                | IN PROGRESS                              | Drafts ready (desktop-first variant); owner posts when ready — execution owner-gated                                                                                                                                                                          |
+| R             | R-04 Unsolicited demand tracking (≥3 pay signals)               | PENDING                                  | Tracker live; real signals only                                                                                                                                                                                                                               |
+| R             | R-05 R-04 pilot-selection framework executed                    | PENDING                                  | Runs once Tier-2 evidence exists                                                                                                                                                                                                                              |
+| R             | R-06 Assumption-registry weekly refresh                         | **DONE (2026-08-23, Rex)**               | Registry refreshed today with evidence links; assumption statuses stay UNVALIDATED; completion-plan R-06 row flip pending Mnemosyne consolidation (that file not edited here)                                                                                 |
+| Legacy Pack P | Pilot stories P-01…P-07                                         | BLOCKED (unchanged)                      | Require R-04 pilot slice selection (completion-plan D-11); owner direction does not unblock                                                                                                                                                                   |
+| Legacy Pack F | F-01/F-03/F-04 + F-02 Atlas foundation                          | DONE / QA APPROVED                       | Unchanged from v2.3; F-02 approved 2026-08-12 — 5/5 e2e atlas, 11 committed byte-stable PNGs (ledger #32/#33)                                                                                                                                                 |
 
-| — | Local verification | PASS | 1,195 files / 13,438 tests (derived — exact count pending full-suite run, P-01); tsc/lint green; e2e atlas 5/5 (E-018) |
-| — | CI on GitHub | RED — **billing block only** | The 9 hardened workflow files LANDED via platform commit b23e41a (T-13 closed 2026-08-12); owner must resolve GitHub billing (E-005); not a code regression |
+| — | Local verification | PASS | Measured full-suite truth: 1,287 files / 14,835 tests, 0 failures (P-01); tsc/lint green; e2e atlas 5/5 (E-018) |
+| — | CI on GitHub | RED — **billing block only** | The 9 hardened workflow files landed via platform commit b23e41a (T-13 closed 2026-08-12); owner must resolve GitHub billing (E-005); not a code regression |
 
 ## Delivery strategy
 
@@ -32,33 +45,33 @@ A pilot vertical slice begins only when the Evidence Track selects its first wor
 
 ## Pack R — Research evidence and decision readiness
 
-| Order | Story | Why / research trace | Prerequisite | Completion evidence |
-|---:|---|---|---|---|
-| R-01 | Recruit enterprise buying-committee sample | A-01, A-02, A-03, A-13, A-14 | G5 | participant quota and consent evidence |
-| R-02 | Run role-based workflow sessions | validation plan, usability plan | R-01 | anonymized notes + Evidence Log entries |
-| R-03 | Synthesize evidence and update assumptions | Q1/Q3 traceability rule | R-02 | validation/invalidations, contradictions, decision memo |
-| R-04 | Select pilot workflow, vertical, connector, and deployment constraints | A-02/A-03/A-07/A-13 | R-03 | owner-approved pilot charter populated from evidence |
+| Order | Story                                                                  | Why / research trace            | Prerequisite | Completion evidence                                     |
+| ----: | ---------------------------------------------------------------------- | ------------------------------- | ------------ | ------------------------------------------------------- |
+|  R-01 | Recruit enterprise buying-committee sample                             | A-01, A-02, A-03, A-13, A-14    | G5           | participant quota and consent evidence                  |
+|  R-02 | Run role-based workflow sessions                                       | validation plan, usability plan | R-01         | anonymized notes + Evidence Log entries                 |
+|  R-03 | Synthesize evidence and update assumptions                             | Q1/Q3 traceability rule         | R-02         | validation/invalidations, contradictions, decision memo |
+|  R-04 | Select pilot workflow, vertical, connector, and deployment constraints | A-02/A-03/A-07/A-13             | R-03         | owner-approved pilot charter populated from evidence    |
 
 ## Pack F — Safe foundations (may run only when they do not pre-decide R-04)
 
-| Order | Story | Why / research trace | Existing artifact / code | Completion evidence |
-|---:|---|---|---|---|
-| F-01 | Capability truth disposition and evidence governance | R-05; Capability Truth Matrix | `docs/CAPABILITY_TRUTH_MATRIX.md` | route/module dispositions and evidence owner map |
-| F-02 | Atlas foundations | R-04; Atlas contract | `src/index.css`, shared UI | accessible tokens, shared patterns, visual/a11y test baseline |
-| F-03 | Context and trust-state shell | R-03/R-04; UX contract | layout/UI stores | global scope/freshness/lifecycle contract, no false authority state |
-| F-04 | Control-plane contract spike | R-03/R-05; A-02/A-04 | `server/`, architecture | typed command/evidence/authorization feasibility evidence, no production migration claim |
+| Order | Story                                                | Why / research trace          | Existing artifact / code          | Completion evidence                                                                      |
+| ----: | ---------------------------------------------------- | ----------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------- |
+|  F-01 | Capability truth disposition and evidence governance | R-05; Capability Truth Matrix | `docs/CAPABILITY_TRUTH_MATRIX.md` | route/module dispositions and evidence owner map                                         |
+|  F-02 | Atlas foundations                                    | R-04; Atlas contract          | `src/index.css`, shared UI        | accessible tokens, shared patterns, visual/a11y test baseline                            |
+|  F-03 | Context and trust-state shell                        | R-03/R-04; UX contract        | layout/UI stores                  | global scope/freshness/lifecycle contract, no false authority state                      |
+|  F-04 | Control-plane contract spike                         | R-03/R-05; A-02/A-04          | `server/`, architecture           | typed command/evidence/authorization feasibility evidence, no production migration claim |
 
 ## Pack P — Pilot vertical slice (blocked by R-04)
 
-| Order | Story | Primary acceptance outcome |
-|---:|---|---|
-| P-01 | Authoritative master data and fiscal period | scoped/effective-dated data with policy/audit evidence |
-| P-02 | Controlled import + reconciliation | source-to-posted evidence and quarantine/retry |
-| P-03 | Close controls + certification + lock | controller completes agreed close control path |
-| P-04 | Plan version + analyst workspace | analyst completes observed forecast workflow safely |
-| P-05 | Materiality decision workspace | CFO identifies, verifies, assigns a material decision |
-| P-06 | Report snapshot + board pack | published result reproduces and drills to permitted evidence |
-| P-07 | Pilot operations/security certification | SLO/DR/authz/a11y/performance/pilot evidence pack |
+| Order | Story                                       | Primary acceptance outcome                                   |
+| ----: | ------------------------------------------- | ------------------------------------------------------------ |
+|  P-01 | Authoritative master data and fiscal period | scoped/effective-dated data with policy/audit evidence       |
+|  P-02 | Controlled import + reconciliation          | source-to-posted evidence and quarantine/retry               |
+|  P-03 | Close controls + certification + lock       | controller completes agreed close control path               |
+|  P-04 | Plan version + analyst workspace            | analyst completes observed forecast workflow safely          |
+|  P-05 | Materiality decision workspace              | CFO identifies, verifies, assigns a material decision        |
+|  P-06 | Report snapshot + board pack                | published result reproduces and drills to permitted evidence |
+|  P-07 | Pilot operations/security certification     | SLO/DR/authz/a11y/performance/pilot evidence pack            |
 
 ## Existing implementation work
 
@@ -67,3 +80,24 @@ The prior Story 01 truth-inventory work and Atlas components are retained as **s
 ## Gate G5 decision
 
 Approve, request changes, or reject this research-informed delivery plan and its Pack R/F/P sequencing. Approval authorizes execution of **R-01** and only safe foundations that have a self-contained approved story.
+
+## Phase-3 wave plan — Track UI (PROPOSED 2026-08-23 by Bob; pending Lead authorization)
+
+Sequencing honors the completion-plan Phase-3 order **UI-01 ✅ → UI-02 → UI-04 → UI-05 → UI-06 → UI-07** (UI-03 navigation polish runs as its own spec track; UI-08+ follows later). Standing rule: **specs before code** — no implementation task opens until its `ui-spec-*` file lands on disk and the Lead gates it. All waves keep hypothesis-artifact discipline: closing UI gaps serves ZohoBooks-bar polish; no market-assumption status changes (R-track stays UNVALIDATED).
+
+|    Wave | Content                                                                                                                                                                                                                                                         | Owner(s)                                     | Blocked by                                                                                                                         | Exit evidence                                                                                                      |
+| ------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+|      W0 | Specs land: `_bmad/ui-spec-typography-density-tables.md` (UI-SPEC-A), `_bmad/ui-spec-forms.md` (UI-SPEC-B), `_bmad/ui-spec-navigation.md` (UI-SPEC-C)                                                                                                           | Atlas · Vega · Uxie                          | — (in progress now)                                                                                                                | Files exist; Lead review + gate to implementation                                                                  |
+|      W1 | **UI-02** typography/density tokens: type-scale bridge `index.css` (:1386–1408) → Tailwind `@theme` utilities; fix text-sm 14px vs --font-size-sm 13px mismatch; enforce ≥11px floor (kills `text-[10px]`)                                                      | Atlas                                        | W0 spec-A landed                                                                                                                   | Token utilities adopted in shared primitives; tsc/lint green; pixel baselines untouched                            |
+|      W2 | **UI-04** tables: AG Grid density defaults vs ZohoBooks benchmark (row height, cell padding, header treatment); DataTable ROW_HEIGHT=40 retrofit; `.fp-table` adoption path for raw `<table>` pages                                                             | Atlas                                        | W1 — density tokens must land first                                                                                                | Density defaults centralized in grid defaults + DataTable; sort/filter/pagination regression suites green          |
+|      W3 | **UI-05** form system: FormField/Textarea/Checkbox/Radio primitives (none exist today), consistent label/validation/error/save states, double-submit guard (shared hook + Button loading prop), migration waves over 52 input / 36 select / 33 hand-label pages | Vega                                         | W2 per completion-plan order (UI-02→04→05); W0 spec-B landed                                                                       | Primitives barrel-exported from components/ui; first migration wave done; axe clean on migrated routes             |
+|      W4 | **UI-06** empty-states sweep across prioritized list/detail pages (honest empty/loading/error patterns from UI-01 audit gap coverage)                                                                                                                           | Nova                                         | W3 slot in sequence; UI-01 audit inventory                                                                                         | Sweep complete on prioritized pages; single reusable honest-empty-state pattern                                    |
+|      W5 | **UI-07** light-theme professional pass: ~300 hardcoded dark surfaces across ~80 files; ~150 raw `text-red-*` sites bypassing the --negative token                                                                                                              | Amelia (joins post-P-02-I) with Nova support | W1–W4 tokens/primitives in place; Blaze codemod-strategy brainstorm (`_bmad/brainstorm/ui-codemod-strategy.md`) delivered; Lead go | Light-first theme renders cleanly repo-wide; color-token discipline enforced; codemod class-diff manifest reviewed |
+| V-spine | Verification between EVERY wave: `tsc --noEmit`, lint, targeted suites, `npm run build` + bundle-check, route-level axe, pixel-baseline discipline (regen requires Lead sign-off); regressions bounce back to wave owner                                        | Quinn                                        | each wave's implementation                                                                                                         | Gate battery green per wave; no baseline drift                                                                     |
+
+Notes:
+
+- **Amelia** is committed to P-02-I (AG Grid modular registration + enforced-limit tightening to 2048 KB) first; her Wave-5 start is contingent on that landing. If P-02-I closes early she may pull forward to support W3/W4 — availability, not assignment.
+- **Uxie** remains UX spec owner: W0 deliverable carries sections contingent on Archie's IA decision memo; navigation (UI-03) implementation sequencing is decided only after both land.
+- **Quinn** owns the continuous verification spine rather than a single wave — matches the QA role and keeps every wave independently revertable.
+- Wave boundaries are also rollback boundaries: each wave's exit evidence is its revert checkpoint (per E-01-I step-discipline precedent).

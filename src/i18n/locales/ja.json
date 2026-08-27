@@ -6,14 +6,38 @@
   "nav": {
     "dashboard": "ダッシュボード",
     "budgets": "予算",
+    "bva": "Budget vs. Actuals",
     "forecasts": "予測",
-    "scenarios": "シナリオ",
     "reports": "レポート",
-    "data": "データ",
-    "consolidation": "連結",
     "analytics": "分析",
+    "variance": "Variance",
+    "scenarios": "シナリオ",
+    "aiAnalyst": "AI Analyst",
+    "saas": "SaaS",
+    "manufacturing": "Manufacturing",
+    "retail": "Retail",
+    "banking": "Banking",
+    "healthcare": "Healthcare",
+    "energy": "Energy",
+    "esg": "ESG",
+    "data": "データ",
+    "dataManagement": "Data Management",
+    "collaboration": "Collaboration",
+    "approvals": "Approvals",
     "settings": "設定",
     "help": "ヘルプ"
+  },
+  "sidebar": {
+    "sections": {
+      "main": "Main",
+      "analysis": "Analysis",
+      "industries": "Industries",
+      "management": "Management"
+    },
+    "quickSearch": "Quick search...",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode",
+    "collapse": "Collapse"
   },
   "buttons": {
     "save": "保存",
@@ -33,12 +57,57 @@
     "close": "閉じる",
     "back": "戻る",
     "next": "次へ",
+    "continue": "Continue",
     "finish": "完了",
     "undo": "元に戻す",
     "redo": "やり直し",
     "copy": "コピー",
     "paste": "貼り付け",
     "cut": "切り取り"
+  },
+  "onboarding": {
+    "steps": {
+      "welcome": "Welcome",
+      "company": "Company",
+      "data": "Data",
+      "review": "Review",
+      "done": "Done"
+    },
+    "welcome": {
+      "title": "Welcome to FinPlan Pro",
+      "description": "This app helps you manage budgets, forecasts, and financial reports — all in one place, completely offline. No cloud, no subscriptions, no data leaving your computer.",
+      "start": "Let's Start"
+    },
+    "setup": {
+      "title": "Company Setup",
+      "companyName": "Company Name",
+      "companyNamePlaceholder": "Enter company name",
+      "industry": "Industry/Sector",
+      "fiscalYear": "Fiscal Year",
+      "fiscalYearStart": "Fiscal Year Start",
+      "baseCurrency": "Base Currency",
+      "sector": "セクター"
+    },
+    "import": {
+      "title": "Import Your Data",
+      "description": "Upload your General Ledger (GL) data in CSV or Excel format to populate your dashboard.",
+      "skip": "Skip for now"
+    },
+    "review": {
+      "title": "Review Data",
+      "empty": "You can import your data later from the Data Management section."
+    },
+    "finish": {
+      "title": "All Set!",
+      "description": "Your workspace is ready. Here's what you can do next:",
+      "nextSteps": {
+        "viewDashboard": "View your Dashboard",
+        "createBudget": "Create your first Budget",
+        "generateReports": "Generate Financial Reports"
+      },
+      "confirm": "Confirm & Finish",
+      "goDashboard": "Go to Dashboard"
+    }
   },
   "forms": {
     "required": "この項目は必須です",
@@ -49,12 +118,28 @@
     "passwordMismatch": "パスワードが一致しません",
     "entityName": "エンティティ名",
     "accountName": "勘定科目名",
+    "account": "Account",
     "period": "期間",
     "amount": "金額",
     "currency": "通貨",
     "description": "説明",
     "category": "カテゴリ",
-    "status": "ステータス"
+    "status": "ステータス",
+    "date": "Date"
+  },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
   },
   "status": {
     "loading": "読み込み中...",
@@ -65,7 +150,11 @@
     "empty": "結果が見つかりません",
     "success": "操作が完了しました",
     "confirm": "よろしいですか？",
-    "unsavedChanges": "未保存の変更があります"
+    "unsavedChanges": "未保存の変更があります",
+    "overdue": "Overdue",
+    "pending": "Pending",
+    "inProgress": "In Progress",
+    "selectMin": "Select at least 2 items"
   },
   "financial": {
     "revenue": "収益",
@@ -95,8 +184,23 @@
     "taxProvision": "税金引当金",
     "deferredTax": "繰延税金"
   },
+  "common": {
+    "search": "Search...",
+    "noResults": "No results",
+    "loading": "Loading...",
+    "retry": "Retry",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "showMore": "Show More",
+    "showLess": "Show Less",
+    "viewAll": "View All",
+    "total": "Total",
+    "average": "Average",
+    "count": "Count"
+  },
   "errors": {
     "generic": "問題が発生しました。もう一度お試しください。",
+    "somethingWentWrong": "Something went wrong",
     "network": "ネットワークエラー。接続を確認してください。",
     "unauthorized": "この操作を行う権限がありません。",
     "notFound": "要求されたリソースが見つかりません。",
@@ -111,7 +215,13 @@
     "recentActivity": "最近のアクティビティ",
     "kpiSummary": "KPIサマリー",
     "quickActions": "クイックアクション",
-    "notifications": "通知"
+    "notifications": "通知",
+    "noPendingRequests": "No pending requests",
+    "noSlaBreaches": "No SLA breaches",
+    "noResults": "No results",
+    "charts": "Charts",
+    "recentReports": "Recent Reports",
+    "recentBudgets": "Recent Budgets"
   },
   "time": {
     "today": "今日",
@@ -200,7 +310,60 @@
     "comparison": "シナリオ比較",
     "merge": "シナリオのマージ",
     "lock": "シナリオをロック",
-    "unlock": "シナリオのロック解除"
+    "unlock": "シナリオのロック解除",
+    "selectMin": "Select at least 2 scenarios to compare",
+    "selectMinMerge": "Select at least 2 scenarios to merge",
+    "noScenarios": "No scenarios found"
+  },
+  "export": {
+    "format": "Export Format",
+    "pdf": "PDF",
+    "excel": "Excel",
+    "csv": "CSV",
+    "exporting": "Exporting...",
+    "exportSuccess": "Export complete",
+    "exportFailed": "Export failed"
+  },
+  "accounts": {
+    "notFound": "No accounts found",
+    "tree": "Account Tree",
+    "code": "Account Code",
+    "name": "Account Name",
+    "type": "Account Type",
+    "parent": "Parent Account"
+  },
+  "drivers": {
+    "notConfigured": "No drivers configured",
+    "addDriver": "Add Driver",
+    "driverName": "Driver Name",
+    "driverType": "Driver Type"
+  },
+  "commands": {
+    "notFound": "No commands found",
+    "palette": "Command Palette",
+    "recent": "Recent Commands"
+  },
+  "formula": {
+    "insertReference": "Insert Reference",
+    "availableFunctions": "Available Functions",
+    "syntax": "Syntax",
+    "result": "Result",
+    "error": "Formula Error"
+  },
+  "ai": {
+    "analyzing": "Analyzing your query...",
+    "noResults": "No AI results",
+    "askQuestion": "Ask a question...",
+    "insights": "Insights",
+    "suggestions": "Suggestions"
+  },
+  "operators": {
+    "greaterThan": "Greater than",
+    "lessThan": "Less than",
+    "equals": "Equals",
+    "notEquals": "Not equals",
+    "contains": "Contains",
+    "between": "Between"
   },
   "consolidation": {
     "entity": "エンティティ",
@@ -227,10 +390,5 @@
     "collapse": "折りたたむ",
     "previous": "前へ",
     "nextPage": "次のページ"
-  },
-  "onboarding": {
-    "setup": {
-      "sector": "セクター"
-    }
   }
 }

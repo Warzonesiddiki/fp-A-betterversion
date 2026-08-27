@@ -7,6 +7,7 @@ import {
   getAuthHeader,
   installFetchInterceptor,
   uninstallFetchInterceptor,
+  parseTokenExpiry,
 } from './tokenRotation';
 import { useAuthStore } from '@/store/authStore';
 import type { User } from '@/types';
@@ -159,6 +160,49 @@ describe('tokenRotation', () => {
       installFetchInterceptor();
       installFetchInterceptor();
       uninstallFetchInterceptor();
+    });
+  });
+
+  describe('parseTokenExpiry', () => {
+    const makeToken = (segment: string): string => `hdr.${segment}.sig`;
+
+    it('parses exp from a standard base64 payload', () => {
+      const expSec = 1893456000;
+      const token = makeToken(btoa(JSON.stringify({ sub: 'u1', exp: expSec })));
+      expect(parseTokenExpiry(token)).toBe(expSec * 1000);
+    });
+
+    it('decodes base64url segments (-/_, unpadded) that plain atob rejects', () => {
+      // '?' (0x3F) runs deterministically yield '/' sextets in standard
+      // base64, so the converted base64url segment genuinely carries '_' and
+      // exercises both normalization branches of the decoder.
+      const json = JSON.stringify({ exp: 1700000000, q: '???' });
+      const std = btoa(json);
+      expect(std).toContain('/');
+
+      const b64url = std.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      expect(b64url).toMatch(/[-_]/);
+      expect(b64url).not.toContain('=');
+      expect(() => atob(b64url)).toThrow(); // plain atob cannot read it
+      expect(parseTokenExpiry(makeToken(b64url))).toBe(1700000000 * 1000);
+    });
+
+    it('accepts unpadded segments on the standard alphabet', () => {
+      const padded = btoa(JSON.stringify({ exp: 1600000000, u: 11 }));
+      expect(padded).toContain('=');
+      expect(parseTokenExpiry(makeToken(padded.replace(/=+$/, '')))).toBe(1600000000 * 1000);
+    });
+
+    it('returns null for malformed tokens', () => {
+      expect(parseTokenExpiry('not-a-jwt')).toBeNull();
+      expect(parseTokenExpiry('only.two')).toBeNull();
+      expect(parseTokenExpiry(makeToken(btoa('{broken')))).toBeNull();
+      expect(parseTokenExpiry(makeToken('!@#$%^'))).toBeNull();
+    });
+
+    it('returns null when exp is missing or not a finite number', () => {
+      expect(parseTokenExpiry(makeToken(btoa(JSON.stringify({ sub: 'u1' }))))).toBeNull();
+      expect(parseTokenExpiry(makeToken(btoa(JSON.stringify({ exp: 'soon' }))))).toBeNull();
     });
   });
 });

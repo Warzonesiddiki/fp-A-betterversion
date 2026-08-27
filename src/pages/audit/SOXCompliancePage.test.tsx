@@ -86,10 +86,17 @@ vi.mock('lucide-react', () => {
     FileText: makeIcon(),
     BarChart3: makeIcon(),
     CalendarCheck: makeIcon(),
+    // E-09-F: icons used by the ui/EmptyState component rendered by the
+    // connect-GL empty state.
+    Inbox: makeIcon(),
+    Search: makeIcon(),
+    FileX: makeIcon(),
+    AlertCircle: makeIcon(),
   };
 });
 
 import SOXCompliancePage from '@/pages/audit/SOXCompliancePage';
+import { useGLStore } from '@/store/glStore';
 
 function renderPage() {
   return render(
@@ -120,9 +127,46 @@ describe('SOXCompliancePage smoke test', () => {
     expect(screen.getByText(/SOX Compliance/i)).toBeInTheDocument();
   });
 
-  it('displays the compliance score', () => {
+  // E-09-F: the fabricated fallback balance sheet is GONE. With no GL data the
+  // page must show a connect-GL empty state — never a score derived from
+  // invented figures.
+  it('renders the connect-GL empty state (no fabricated score) when no GL data exists', () => {
+    renderPage();
+    expect(screen.getByText('No general-ledger data yet')).toBeInTheDocument();
+    expect(screen.queryByText('85')).toBeNull();
+  });
+
+  it('renders the report from real GL data when the store is populated', () => {
+    useGLStore.setState({
+      trialBalance: [
+        {
+          accountId: '1000',
+          accountCode: '1000',
+          accountName: 'Cash — Operating',
+          accountType: 'Asset',
+          beginningBalance: 0,
+          debit: 1200,
+          credit: 200,
+          endingBalance: 1000,
+        },
+        {
+          accountId: '2000',
+          accountCode: '2000',
+          accountName: 'Accounts Payable',
+          accountType: 'Liability',
+          beginningBalance: 0,
+          debit: 0,
+          credit: 1000,
+          endingBalance: -1000,
+        },
+      ],
+      entries: [],
+    });
     renderPage();
     expect(screen.getByText('85')).toBeInTheDocument();
+    // Real data → no sample-data banner.
+    expect(screen.queryByTestId('sox-sample-data-notice')).toBeNull();
+    useGLStore.setState({ trialBalance: [], entries: [] });
   });
 
   it('displays the refresh button', () => {

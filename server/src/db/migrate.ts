@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { db } from './connection.js';
 import { ensureEntityAccessTable } from '../middleware/entityAuth.js';
 import { createAuditTables } from './auditSchema.js';
+import { ensureTenancy } from './tenancy.js';
 import type { SqliteDdl } from './schema.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -68,6 +69,7 @@ export function createAuthTables(db: SqliteDdl): void {
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
+      tenant_id TEXT NOT NULL DEFAULT 'default',
       email TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
       first_name TEXT NOT NULL,
@@ -84,6 +86,7 @@ export function createAuthTables(db: SqliteDdl): void {
 
     CREATE TABLE IF NOT EXISTS refresh_tokens (
       id TEXT PRIMARY KEY,
+      tenant_id TEXT NOT NULL DEFAULT 'default',
       user_id TEXT NOT NULL,
       token TEXT UNIQUE NOT NULL,
       expires_at DATETIME NOT NULL,
@@ -133,6 +136,7 @@ export function ensureCanonicalAuditTrail(db: SqliteDdl): void {
     ALTER TABLE audit_trail RENAME TO audit_trail_legacy;
     CREATE TABLE audit_trail (
       id TEXT PRIMARY KEY,
+      tenant_id TEXT NOT NULL DEFAULT 'default',
       user_id TEXT,
       action TEXT NOT NULL,
       entity_type TEXT,
@@ -163,10 +167,63 @@ export function ensureServerColumns(db: SqliteDdl): void {
     ['budgets', 'entity_id', 'TEXT'],
     ['budgets', 'deleted_at', 'TEXT'],
     ['forecasts', 'entity_id', 'TEXT'],
+    // W0.2b: route/schema drift surfaced by the new tenancy leak tests —
+    // these routes were already broken against real SQLite (INSERTs named
+    // columns absent from 001_initial_schema.sql). Additive-only alignment;
+    // the .sql files remain the table-creation authority.
+    ['forecasts', 'budget_id', 'TEXT'],
+    ['forecasts', 'method', 'TEXT'],
     ['reports', 'entity_id', 'TEXT'],
+    // SEC-2: rotation keeps old refresh-token rows (revoked) instead of
+    // deleting them, so a replayed token can be detected and all of the
+    // user's sessions revoked. NULL = active; timestamp = revoked.
+    ['refresh_tokens', 'revoked_at', 'TEXT'],
+    ['reports', 'fiscal_year', 'INTEGER'],
+    ['reports', 'period', 'TEXT'],
+    ['report_templates', 'report_type', 'TEXT'],
+    ['report_templates', 'template_config', 'TEXT'],
+    ['report_templates', 'is_default', 'INTEGER'],
+    ['entities', 'type', 'TEXT'],
+    ['entities', 'base_currency', 'TEXT'],
+    ['entities', 'fiscal_year_start', 'INTEGER'],
+    ['entities', 'description', 'TEXT'],
+    ['departments', 'entity_id', 'TEXT'],
+    ['departments', 'parent_id', 'TEXT'],
+    ['departments', 'manager_id', 'TEXT'],
+    ['departments', 'description', 'TEXT'],
+    // W0.2c (lane S10): the /gl/accounts routes write accounts.description
+    // (CreateAccountSchema) but 001_initial_schema.sql never had that column,
+    // so every POST/PUT carrying a description failed with SQLITE_ERROR.
+    // Same additive route/schema-drift alignment as the W0.2b entries above;
+    // the .sql files remain the table-creation authority.
+    ['accounts', 'description', 'TEXT'],
     ['scenarios', 'entity_id', 'TEXT'],
     ['scenarios', 'budget_id', 'TEXT'],
+    ['scenarios', 'type', 'TEXT'],
+    ['scenario_line_items', 'base_amount', 'REAL'],
+    ['scenario_line_items', 'adjusted_amount', 'REAL'],
+    ['scenario_line_items', 'department_id', 'TEXT'],
+    // W0.2c (lane S9): scenarios.apply and the budgets/forecasts line-item
+    // writers name budget_line_items / forecast_line_items.department_id,
+    // which 001_initial_schema.sql never carried — every such INSERT failed
+    // against real SQLite ("no column named department_id"). Same additive
+    // route/schema-drift alignment as the entries above; no index or
+    // constraint changes, the .sql files remain the table-creation authority.
+    ['budget_line_items', 'department_id', 'TEXT'],
+    ['forecast_line_items', 'department_id', 'TEXT'],
+    ['forecast_periods', 'period_number', 'INTEGER'],
+    ['forecast_periods', 'start_date', 'TEXT'],
+    ['forecast_periods', 'end_date', 'TEXT'],
+    ['forecast_periods', 'label', 'TEXT'],
     ['gl_entries', 'created_by', 'TEXT'],
+    // W0.8.6 server-authoritative commit protocol (K25/K27). Legacy
+    // databases gain these via ALTER; pre-existing rows read version=1 and
+    // deleted_at=NULL, which are exactly the alive-and-v1 semantics.
+    ['gl_entries', 'journal_id', 'TEXT'],
+    ['gl_entries', 'idempotency_key', 'TEXT'],
+    ['gl_entries', 'idempotency_hash', 'TEXT'],
+    ['gl_entries', 'version', 'INTEGER NOT NULL DEFAULT 1'],
+    ['gl_entries', 'deleted_at', 'TEXT'],
   ];
   for (const [table, column, type] of serverColumns) {
     const columns = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
@@ -182,6 +239,30 @@ export function ensureServerColumns(db: SqliteDdl): void {
       console.log(`[migrate] Added ${table}.${column} ${type}`);
     }
   }
+}
+
+/**
+ * W0.3-fix (MEDIUM): the three-statement gate aggregates gl_entries by
+ * (tenant_id, entity_id) on EVERY write path. Without a covering composite
+ * index each gate evaluation is a full-table scan, degrading linearly with
+ * ledger size. Idempotent; safe for fresh and legacy databases alike.
+ */
+export function ensureGateIndexes(db: SqliteDdl): void {
+  const columns = db.prepare('PRAGMA table_info(gl_entries)').all() as { name: string }[];
+  if (columns.length === 0) {
+    console.warn('[migrate] Skipping gl_entries composite index: table not present');
+    return;
+  }
+  db.exec(
+    'CREATE INDEX IF NOT EXISTS idx_gl_entries_tenant_entity ON gl_entries(tenant_id, entity_id)'
+  );
+  // W0.8.6: mirror of idx_gl_entries_tenant_idem in 001_initial_schema.sql
+  // for legacy databases created before the column existed. Idempotent.
+  // Batch-scoped claim uniqueness lives in the route transaction (see the
+  // .sql header note for the Postgres S2 form).
+  db.exec(
+    'CREATE INDEX IF NOT EXISTS idx_gl_entries_tenant_idem ON gl_entries(tenant_id, idempotency_key)'
+  );
 }
 
 export function runMigrations(): void {
@@ -206,6 +287,10 @@ export function runMigrations(): void {
   // Add server-route columns missing from the base schema.
   ensureServerColumns(db);
 
+  // W0.3-fix: gate-supporting indexes (idempotent).
+  console.log('[migrate] Ensuring three-statement gate indexes...');
+  ensureGateIndexes(db);
+
   // Create auth-specific tables
   console.log('[migrate] Creating auth tables...');
   createAuthTables(db);
@@ -222,6 +307,10 @@ export function runMigrations(): void {
   // Migration: is_closed (boolean) → close_state (enum: open/soft-close/hard-close/locked)
   console.log('[migrate] Applying period close state machine migration...');
   createPeriodCloseStateTable(db);
+
+  // W0.2: tenancy reconciliation — tenants table + tenant_id/environment_id
+  console.log('[migrate] Applying tenancy reconciliation...');
+  ensureTenancy(db);
 
   console.log('[migrate] All migrations complete.');
 }

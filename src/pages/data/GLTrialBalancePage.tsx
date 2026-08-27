@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { activateOnKey } from '@/utils/a11yActivate';
 import { PageHeader } from '@/components/ui/PageHeader';
 
@@ -67,7 +68,14 @@ export default function GLTrialBalancePage() {
     document.title = 'FinPlan Pro — G L Trial Balance';
   }, []);
 
-  const { entries, trialBalance, isLoading, generateTrialBalance } = useGLStore();
+  const { entries, trialBalance, isLoading, generateTrialBalance } = useGLStore(
+    useShallow((s) => ({
+      entries: s.entries,
+      trialBalance: s.trialBalance,
+      isLoading: s.isLoading,
+      generateTrialBalance: s.generateTrialBalance,
+    }))
+  );
   const navigate = useNavigate();
 
   // Sorting is delegated to glTrialBalanceStore, which already implements
@@ -144,7 +152,12 @@ export default function GLTrialBalancePage() {
   if (isLoading) {
     return (
       <div className="p-6 space-y-4">
-        <Skeleton variant="rectangular" height="32px" className="w-60" />
+        <Skeleton
+          variant="rectangular"
+          height="32px"
+          className="w-60"
+          srLabel="Loading trial balance…"
+        />
         <Skeleton variant="rectangular" height="48px" />
         <Skeleton variant="rectangular" height="400px" />
       </div>

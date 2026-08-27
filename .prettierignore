@@ -5,3 +5,18 @@ src-tauri
 .tauri
 AUDIT_LOGS
 reports
+# Generated artifact (scripts/generate-route-map.js owns it; K7). The drift
+# check compares generator output verbatim, so prettier must not reformat it.
+docs/product/ROUTE_MAP.md
+# Machine-generated DSH plugin-market acquisition artifacts (bulk JSON verdicts).
+.market-acquire/
+.market-catalog.json
+# Append-only multi-agent comms inboxes — messages are appended verbatim by
+# agents mid-cycle; reformatting them after every append is unworkable and the
+# files are operational logs, not published docs (F-0024: real checks only).
+agents/team-comms/inbox-*.md
+agents/coordination/tasks/
+# Append-only governance log (BMAD v5): agents append DRP tables mid-cycle and
+# prettier --write is not idempotent on its long table rows (write/check
+# oscillation verified 2026-08-25) — docs-truth gates cover it instead.
+_bmad/reasoning-ledger.md

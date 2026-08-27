@@ -5,6 +5,7 @@
 // =============================================================================
 
 import { useCallback, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import {
   Sliders,
   Plus,
@@ -100,7 +101,22 @@ export default function DriverPlanningPage() {
     calculateCascade: _calculateCascade,
     analyzeImpact,
     reset,
-  } = useDriverStore();
+  } = useDriverStore(
+    useShallow((s) => ({
+      engine: s.engine,
+      addDriver: s.addDriver,
+      removeDriver: s.removeDriver,
+      updateDriver: s.updateDriver,
+      selectedDriverId: s.selectedDriverId,
+      selectDriver: s.selectDriver,
+      isRecalculating: s.isRecalculating,
+      lastCascadeResult: s.lastCascadeResult,
+      getRulesForDriver: s.getRulesForDriver,
+      calculateCascade: s.calculateCascade,
+      analyzeImpact: s.analyzeImpact,
+      reset: s.reset,
+    }))
+  );
 
   const drivers = useMemo(() => engine.listDrivers(), [engine]);
   const allRules = useMemo(() => engine.getAllRules(), [engine]);

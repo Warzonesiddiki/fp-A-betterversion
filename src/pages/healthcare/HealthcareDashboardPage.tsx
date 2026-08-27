@@ -1,45 +1,55 @@
+/**
+ * Healthcare dashboard — every figure is derived from the posted GL.
+ *
+ * CORRECTNESS CONTRACT (K18):
+ *
+ * 1. NEVER render a figure the ledger cannot support. Removed in this pass:
+ *    - the "Patient Volume Trend" area chart fed by a hand-typed six-month
+ *      fixture (`patientVolumeData`: emergency/inpatient/outpatient counts,
+ *      Jan–Jun) that no store carried;
+ *    - the "Estimated Admissions" KPI — net revenue divided by an invented
+ *      $5,000 per-admission divisor — together with its hand-typed sparkline
+ *      history (1100 … 1230 with the live value appended);
+ *    - "Avg. Length of Stay", which mislabelled the ledger's days-in-A/R as
+ *      a clinical length of stay and appended an invented 4.8 → 4.2 history;
+ *    - invented KPI deltas with narrative causes (+4.2 "inpatient up 5%",
+ *      −1.5 "efficiency improved", +12.1 "reimbursements up", +1.2
+ *      "target: 95%") and the remaining two sparkline "histories".
+ * 2. The four KPIs shown are exactly the posted-ledger outputs of
+ *    `HealthcareEngine.calculatePatientRevenue`, each labelled with its
+ *    derivation basis (same contract as PatientRevenuePage).
+ * 3. Patient encounters, bed occupancy and staffing are clinical/roster
+ *    facts, not ledger facts. Those cards disclose what is missing instead
+ *    of estimating. The departmental table sums posted 40xx revenue by the
+ *    account-suffix convention and renders every non-derivable column as
+ *    '—' with that basis disclosed.
+ */
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { Activity, Stethoscope, Building2, Download, Share2, MoreHorizontal } from 'lucide-react';
+import { Stethoscope, Building2, Download, Share2, MoreHorizontal } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { PeriodPicker } from '@/components/ui/PeriodPicker';
 import { DataTable, Column } from '@/components/ui/DataTable';
-import { divideMoney, roundTo, sumMoney } from '@/utils/money';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { roundTo, sumMoney } from '@/utils/money';
 
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from 'recharts';
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';
 import { HealthcareEngine } from '@/engines/HealthcareEngine';
 import { formatNumber, formatPercent } from '@/utils/financialFormatting';
 
-// Mock Data
-const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
-
-const patientVolumeData = [
-  { month: 'Jan', emergency: 850, inpatient: 420, outpatient: 2100 },
-  { month: 'Feb', emergency: 780, inpatient: 390, outpatient: 1950 },
-  { month: 'Mar', emergency: 920, inpatient: 450, outpatient: 2300 },
-  { month: 'Apr', emergency: 890, inpatient: 440, outpatient: 2200 },
-  { month: 'May', emergency: 950, inpatient: 480, outpatient: 2450 },
-  { month: 'Jun', emergency: 1100, inpatient: 520, outpatient: 2800 },
-];
+// Real fiscal periods from FiscalCalendar + org settings (see fiscalPeriods.ts).
+const fiscalPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
 export default function HealthcareDashboardPage() {
   const fmtCurrency = useCurrencyFormatter();
+  const navigate = useNavigate();
 
   const columns = useMemo<Column[]>(
     () => [
@@ -87,7 +97,7 @@ export default function HealthcareDashboardPage() {
     ],
     [fmtCurrency]
   );
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const [periodId, setPeriodId] = useState('P01');
 
   const stats = useMemo(() => {
@@ -130,31 +140,47 @@ export default function HealthcareDashboardPage() {
   }, [entries]);
 
   if (entries.length === 0) {
+    // K30 four-states: shared EmptyState under the page-level h1 (PageHeader
+    // stays mounted in this branch). Nothing is invented while the ledger is
+    // empty, and the CTA drives the real import flow.
     return (
-      <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
-          <Activity className="h-10 w-10 text-[var(--text-muted)]" />
-        </div>
-        <h2 className="text-xl font-semibold mb-2">No Healthcare Data</h2>
-        <p className="text-[var(--text-muted)] mb-6">
-          Import your Patient Revenue GL data (40xx accounts) to view hospital performance
-          analytics.
-        </p>
-        <Button>Import Data</Button>
+      <div className="p-6 space-y-6 max-w-7xl" aria-labelledby="healthcare-dashboard-heading">
+        <PageHeader
+          title="Healthcare Dashboard"
+          titleId="healthcare-dashboard-heading"
+          purpose="Hospital performance analytics derived from posted General Ledger entries."
+        />
+        <EmptyState
+          variant="no-data"
+          title="No healthcare data"
+          description="Import your General Ledger data with patient-revenue accounts (40xx charges, 41xx contractuals, 11xx cash, 12xx receivables) to view hospital performance analytics. Encounters, occupancy and staffing are never inferred from the ledger."
+          action={
+            <Button
+              onClick={() => navigate('/data/gl-upload')}
+              data-testid="healthcare-empty-import"
+            >
+              Import Data
+            </Button>
+          }
+        />
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6 animate-in fade-in duration-500">
+    <div
+      className="p-6 space-y-6 animate-in fade-in duration-500"
+      aria-labelledby="healthcare-dashboard-heading"
+    >
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <PageHeader
           title="Healthcare Dashboard"
-          purpose="Enterprise hospital management: Patient volume, revenue cycles, and departmental efficiency."
+          titleId="healthcare-dashboard-heading"
+          purpose="Hospital performance analytics derived from posted General Ledger entries."
         />
         <div className="flex items-center gap-3">
-          <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
+          <PeriodPicker value={periodId} onChange={setPeriodId} periods={fiscalPeriods} />
           <Button variant="outline" size="sm">
             <Download className="h-4 w-4 mr-2" />
             PDF Report
@@ -165,113 +191,51 @@ export default function HealthcareDashboardPage() {
         </div>
       </div>
 
-      {/* KPIs */}
+      {/* KPIs — all four are posted-ledger outputs with their basis disclosed */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPIValue
-          label="Estimated Admissions"
-          // Admission estimate = net revenue / $5,000 average revenue per admission.
-          // Disclosed modelling basis, not a measured encounter count.
-          value={Math.floor(roundTo(divideMoney(stats.netRevenue, 5000), 0)).toLocaleString()}
-          change={4.2}
-          changeLabel="inpatient up 5%"
-          trend="up"
-          sparklineData={[
-            1100,
-            1150,
-            1120,
-            1180,
-            1210,
-            1230,
-            roundTo(divideMoney(stats.netRevenue, 5000), 0),
-          ]}
-        />
-        <KPIValue
-          label="Avg. Length of Stay"
-          value={`${formatNumber(stats.daysInAR, 1)} Days`}
-          change={-1.5}
-          changeLabel="efficiency improved"
-          trend="up" // Up is good for efficiency
-          sparklineData={[4.8, 4.6, 4.5, 4.4, 4.3, 4.2, stats.daysInAR]}
+          label="Gross Charges"
+          value={fmtCurrency.custom()(stats.grossCharges)}
+          changeLabel="posted to 40xx"
         />
         <KPIValue
           label="Net Patient Revenue"
           value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(stats.netRevenue)}
-          change={12.1}
-          changeLabel="reimbursements up"
-          trend="up"
-          // Sparkline is millions of dollars — convert on decimal, round to 1 dp.
-          sparklineData={[
-            7.2,
-            7.5,
-            7.4,
-            7.8,
-            8.1,
-            8.3,
-            roundTo(divideMoney(stats.netRevenue, 1_000_000), 1),
-          ]}
+          changeLabel="gross charges less 41xx contractuals"
         />
         <KPIValue
           label="Collection Rate"
-          value={`${formatPercent(stats.collectionRate, 1)}`}
-          change={1.2}
-          changeLabel="target: 95%"
-          trend="up"
-          sparklineData={[92, 92.5, 93.1, 93.8, 94.2, 94.5, stats.collectionRate]}
+          value={formatPercent(stats.collectionRate, 1)}
+          changeLabel="11xx cash against net revenue"
+        />
+        <KPIValue
+          label="Days in A/R"
+          value={formatNumber(stats.daysInAR, 1)}
+          changeLabel={`12xx balance on a ${stats.daysInPeriodBasis}-day basis`}
         />
       </div>
 
-      {/* Main Charts */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+      {/* Clinical-facts cards — disclosed gaps, not estimates */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
               <Stethoscope className="h-5 w-5 text-blue-600" />
-              <CardTitle>Patient Volume Trend</CardTitle>
+              <CardTitle>Patient Volume</CardTitle>
             </div>
-            <CardDescription>Monthly admissions by department category</CardDescription>
+            <CardDescription>Encounters are clinical facts, not ledger facts</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[350px] w-full pt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={patientVolumeData}>
-                  <defs>
-                    <linearGradient id="colorOutpatient" x1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="month" axisLine={false} tickLine={false} />
-                  <YAxis axisLine={false} tickLine={false} />
-                  <Tooltip />
-                  <Legend verticalAlign="top" align="right" />
-                  <Area
-                    type="monotone"
-                    dataKey="outpatient"
-                    name="Outpatient"
-                    stroke="#3b82f6"
-                    strokeWidth={3}
-                    fillOpacity={1}
-                    fill="url(#colorOutpatient)"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="emergency"
-                    name="ER / Trauma"
-                    stroke="#ef4444"
-                    strokeWidth={2}
-                    fill="transparent"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="inpatient"
-                    name="Inpatient"
-                    stroke="#10b981"
-                    strokeWidth={2}
-                    fill="transparent"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+            <div className="space-y-3 text-sm">
+              <p className="text-[var(--text-muted)]">
+                Emergency, inpatient and outpatient encounter counts come from
+                admission-discharge-transfer (ADT) systems, not from journal entries. Estimating
+                admissions by dividing net revenue by an assumed average revenue per admission is
+                modelling, not measurement, so no such estimate is rendered either.
+              </p>
+              <p className="text-[var(--text-muted)]">
+                Connect an ADT/EHR feed to populate volume trends.
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -314,7 +278,9 @@ export default function HealthcareDashboardPage() {
           <div>
             <CardTitle>Departmental Performance Analysis</CardTitle>
             <CardDescription>
-              Profitability and efficiency metrics across specialized clinical units
+              Net revenue summed from posted 40xx accounts whose code ends in the department&apos;s
+              number convention. Operating margin, efficiency and patient counts are not derivable
+              from the ledger.
             </CardDescription>
           </div>
           <Button variant="outline" size="sm">

@@ -8,7 +8,13 @@ import { AIIntelligencePage } from '@/pages/ai/AIIntelligencePage';
 import * as AIIntelligencePageMod from '@/pages/ai/AIIntelligencePage';
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+  useGLStore: Object.assign(
+    vi.fn((sel?: (s: unknown) => unknown) => {
+      const state = { entries: [] };
+      return sel ? sel(state) : state;
+    }),
+    { getState: () => ({ entries: [] }) }
+  ),
 }));
 
 vi.mock('@/engines/AIEngine', () => ({

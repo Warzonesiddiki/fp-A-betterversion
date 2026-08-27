@@ -147,6 +147,15 @@ export const PERSISTED_STORES = [
     notes: 'Debt facilities and schedules.',
   },
   {
+    persistKey: 'document-store',
+    module: 'src/store/documentStore.ts',
+    classification: 'user-preference',
+    authority: 'local',
+    serverRoute: null,
+    notes:
+      'Document library metadata (uploads, tags, entity links). Not financial truth; content lives outside masterStorage.',
+  },
+  {
     persistKey: 'driver-store',
     module: 'src/store/driverStore.ts',
     classification: 'financial-truth',
@@ -209,7 +218,7 @@ export const PERSISTED_STORES = [
     authority: 'local-draft',
     serverRoute: '/api/gl',
     notes:
-      'THE ledger. W0.8.6 spike target. Server /gl exists; client persist is still the copy users see.',
+      'THE ledger. W0.8.6-G6 landed: entries carry server UUIDs after publish (entryVersions persisted for If-Match); drafts drain via commitDraftsToServer. Budgets/forecasts remain local-draft.',
   },
   {
     persistKey: 'gl-trialbalance-store',

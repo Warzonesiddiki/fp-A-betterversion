@@ -32,7 +32,9 @@ import {
   deriveDashboardKpis,
   deriveMonthlyTrend,
   deriveSectorKpis,
+  type DashboardSectorKpi,
 } from '@/pages/dashboard/dashboardModel';
+import type { CurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import {
   AreaChart,
   Area,
@@ -43,6 +45,27 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { useShallow } from 'zustand/react/shallow';
+import type { GLState, BudgetState } from '@/types';
+
+/**
+ * Unit-aware display formatting for sector KPI tiles (W6-P0-06). Percent
+ * values follow the dashboard-model convention — already ×100 points, e.g.
+ * 47.37 → "47.4%" — exactly like grossMargin/netMargin elsewhere on this
+ * page. A `null` value marks an uncomputable tile; the renderer shows the
+ * mapping hint instead of a number, so a missing account mapping can never
+ * masquerade as $0.
+ */
+export function formatSectorKpiValue(
+  kpi: Pick<DashboardSectorKpi, 'value' | 'format'>,
+  fmt: Pick<CurrencyFormatter, 'currency0' | 'number'>
+): string {
+  if (kpi.value === null) return '—';
+  if (kpi.format === 'percent') return formatPercent(kpi.value);
+  if (kpi.format === 'number') return fmt.number(kpi.value);
+  return fmt.currency0(kpi.value);
+}
+
 export default function DashboardPage() {
   const fmt = useCurrencyFormatter();
   const { pathname } = useLocation();
@@ -117,9 +140,17 @@ export default function DashboardPage() {
     ]);
   };
 
-  const glStore = useGLStore();
+  // W7D perf sweep: reactively pick only what this page renders plus the
+  // fields the copilot consumers read (FinanceCopilotEngine.answer reads
+  // gl.entries and budget.budgets/lineItems only), replacing the previous
+  // whole-store subscriptions.
+  const glStore = useGLStore(
+    useShallow((s) => ({ entries: s.entries, accounts: s.accounts }))
+  ) as unknown as GLState;
   const { entries, accounts } = glStore;
-  const budgetStore = useBudgetStore();
+  const budgetStore = useBudgetStore(
+    useShallow((s) => ({ budgets: s.budgets, lineItems: s.lineItems }))
+  ) as unknown as BudgetState;
   const { budgets } = budgetStore;
   const { sectorConfig } = useSector();
   const navigate = useNavigate();
@@ -134,6 +165,20 @@ export default function DashboardPage() {
   const sectorKPIs = useMemo(
     () => deriveSectorKpis(entries, sectorConfig?.defaultKPIs),
     [sectorConfig, entries]
+  );
+
+  // FinanceCopilotEngine quick analysis (W7D perf): this O(n) aggregation over
+  // the full ledger used to re-run on EVERY render while its result stayed
+  // unused. Memoize keyed on the exact inputs — the two store snapshots, whose
+  // identities only change when GL/budget state actually changes. Kept above
+  // the early returns so hook order is unconditional.
+  const _copilotAnswer = useMemo(
+    () =>
+      FinanceCopilotEngine.answer('what is total revenue', {
+        gl: glStore,
+        budget: budgetStore,
+      }),
+    [glStore, budgetStore]
   );
 
   if (entries.length === 0 && budgets.length === 0) {
@@ -175,16 +220,10 @@ export default function DashboardPage() {
   if (!kpis) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
-        <Skeleton variant="rectangular" height="200px" />
+        <Skeleton variant="rectangular" height="200px" srLabel="Loading dashboard…" />
       </div>
     );
   }
-
-  // FinanceCopilotEngine: generate quick analysis
-  const _copilotAnswer = FinanceCopilotEngine.answer('what is total revenue', {
-    gl: glStore,
-    budget: budgetStore,
-  });
 
   return (
     <div className="fp-page space-y-6">
@@ -543,7 +582,18 @@ export default function DashboardPage() {
                   className="text-center p-3 bg-slate-900 rounded-lg border border-slate-800"
                 >
                   <div className="text-xs text-slate-400 mb-1">{kpi.label}</div>
-                  <div className="text-lg font-bold tabular-nums">{fmt.currency0(kpi.value)}</div>
+                  {kpi.value === null ? (
+                    <div
+                      className="text-lg font-bold tabular-nums text-[var(--text-muted)]"
+                      title="Map accounts in sector settings"
+                    >
+                      —<span className="sr-only">Not available</span>
+                    </div>
+                  ) : (
+                    <div className="text-lg font-bold tabular-nums">
+                      {formatSectorKpiValue(kpi, fmt)}
+                    </div>
+                  )}
                   <div className="mt-2 flex justify-center">
                     <SparklineChart
                       data={monthlyTrend.map((m) => m.revenue)}

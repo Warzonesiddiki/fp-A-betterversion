@@ -99,11 +99,13 @@ describe('FormulaFunctionRegistry', () => {
 
     it('NPV: net present value', () => {
       const npv = FormulaFunctionRegistry.NPV(0.1, [-1000, 300, 420, 680] as any);
-      expect(npv).toBeCloseTo(130.73);
+      // Excel end-of-period: -1000/1.1 + 300/1.21 + 420/1.331 + 680/1.4641
+      // = 118.8440 (rounded to cents); the packet's draft pin said 118.85.
+      expect(npv).toBeCloseTo(118.84);
     });
 
     it('NPV: single cashflow at time 1', () => {
-      expect(FormulaFunctionRegistry.NPV(0.05, [0, 1050] as any)).toBeCloseTo(1000);
+      expect(FormulaFunctionRegistry.NPV(0.05, [0, 1050] as any)).toBeCloseTo(952.38);
     });
 
     it('IRR: internal rate of return', () => {
@@ -114,6 +116,17 @@ describe('FormulaFunctionRegistry', () => {
     it('IRR: simple two-period', () => {
       const irr = FormulaFunctionRegistry.IRR([-100, 110] as any);
       expect(irr).toBeCloseTo(0.1);
+    });
+
+    it('MIRR: modified internal rate of return (Excel convention)', () => {
+      const mirr = [-1000, 300, 400, 400, 300];
+      expect(FormulaFunctionRegistry.has('MIRR')).toBe(true);
+      expect(FormulaFunctionRegistry.MIRR(mirr, 0.1, 0.12)).toBeCloseTo(0.13697, 4);
+      const entry = FormulaFunctionRegistry.get('MIRR');
+      expect(entry).toBeDefined();
+      expect(entry!.category).toBe('financial');
+      expect(entry!.impl(mirr, 0.1, 0.12)).toBeCloseTo(0.13697, 4);
+      expect(FormulaFunctionRegistry.MIRR([100, 200], 0.1, 0.12)).toBeNaN();
     });
 
     it('PV: present value', () => {

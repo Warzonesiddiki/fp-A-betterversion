@@ -84,7 +84,7 @@ const columns: Column[] = [
 ];
 
 export function BudgetApproval() {
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const navigate = useNavigate();
 
   useEffect(() => {

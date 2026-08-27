@@ -27,7 +27,7 @@
 - 40 stores: ✅ DONE
 - 125 pages: ✅ DONE
 - Tauri integration: ✅ DONE
-- PWA support: ✅ DONE
+- PWA support: REMOVED 2026-08-25 (owner ruling — desktop-only; vite-plugin-pwa uninstalled)
 
 ## Part 3: Competitive Intelligence & Feature Universe
 

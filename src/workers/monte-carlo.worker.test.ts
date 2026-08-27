@@ -191,4 +191,73 @@ describe('monte-carlo.worker', () => {
       expect(getLastError()).toBeTruthy();
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // W7E / W6-P1: request validation before math
+  // ---------------------------------------------------------------------------
+  describe('W7E/W6-P1 request validation', () => {
+    it('rejects NaN iterations with an error reply instead of returning empty stats', () => {
+      // Pre-fix: NaN <= 0 is false, the loop never runs, and the worker
+      // silently returned zeroed statistics.
+      runMC({
+        assumptions: [{ name: 'x', type: 'uniform', min: 0, max: 1 }],
+        iterations: Number.NaN,
+      });
+      expect(getLastError()).toMatch(/iterations/i);
+    });
+
+    it('clamps iterations above the header contract to exactly 1_000_000', () => {
+      // Header: "Supports up to 1,000,000 iterations" — 1e9 must clamp, not
+      // hang the worker (pre-fix this looped a billion times).
+      const result = runMC({
+        assumptions: [{ name: 'x', type: 'uniform', min: 0, max: 1 }],
+        iterations: 1_000_000_000,
+        seed: 42,
+      });
+      expect(result?.results.length).toBe(1_000_000);
+      const progress = postMessages.find((m) => m.type === 'progress');
+      expect(progress?.progress?.total).toBe(1_000_000);
+    }, 30_000);
+
+    it('rejects assumptions holding non-finite numbers', () => {
+      runMC({
+        assumptions: [{ name: 'x', type: 'normal', mean: Number.NaN }],
+        iterations: 10,
+      });
+      expect(getLastError()).toMatch(/mean/);
+    });
+
+    it('null envelope data produces exactly one error reply, no crash', () => {
+      // Pre-fix `const { id, payload } = e.data` threw synchronously outside
+      // the try block for null message data.
+      expect(() => self.onmessage?.(new MessageEvent('message', { data: null }))).not.toThrow();
+      const errors = postMessages.filter((m) => m.type === 'error');
+      expect(errors.length).toBe(1);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
+  // Large-N regression (Wave-1 S1 audit ledger #47: MC crash >=200k iterations)
+  // ---------------------------------------------------------------------------
+
+  describe('large iteration counts', () => {
+    it('completes 250k iterations with correct statistics and bounded progress messages', () => {
+      const result = runMC({
+        assumptions: [{ name: 'x', type: 'uniform', min: 0, max: 100 }],
+        iterations: 250_000,
+        seed: 42,
+      });
+      expect(result?.results.length).toBe(250_000);
+      const stats = result?.statistics;
+      expect(stats?.min).toBeGreaterThanOrEqual(0);
+      expect(stats?.max).toBeLessThanOrEqual(100);
+      expect(stats?.mean).toBeGreaterThan(45);
+      expect(stats?.mean).toBeLessThan(55);
+      expect(stats?.p50).toBeGreaterThan(45);
+      expect(stats?.p50).toBeLessThan(55);
+      // ~1% cadence: floor(250000/100) = one message per 2500 iterations + final
+      const progressMsgs = postMessages.filter((m) => m.type === 'progress');
+      expect(progressMsgs.length).toBeLessThanOrEqual(101);
+    }, 15_000);
+  });
 });

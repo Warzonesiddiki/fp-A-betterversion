@@ -74,10 +74,12 @@ export class CapExEngine {
   }
 
   static calculateNPV(cashFlows: number[], discountRate: number): number {
-    // Discount each cash flow with decimal-exact present-value computation and
-    // sum them exactly; avoids float drift on accumulated discounted value.
+    // Excel end-of-period convention (ledger #51): flow i discounts by
+    // (1+r)^(i+1); identical inputs must agree with financial.ts NPV,
+    // SafeMathParser NPV and FormulaEngine NPV (cross-surface pinned by
+    // src/engines/__tests__/npvCrossSurfaceConsistency.test.ts).
     return sumMoney(
-      cashFlows.map((cf, i) => toDecimal(cf).div(toDecimal(1 + discountRate).pow(i)))
+      cashFlows.map((cf, i) => toDecimal(cf).div(toDecimal(1 + discountRate).pow(i + 1)))
     ).toNumber();
   }
 
@@ -90,14 +92,22 @@ export class CapExEngine {
       const npv = this.calculateNPV(cashFlows, irr);
       if (Math.abs(npv) < precision) return irr;
 
-      const dNpv = cashFlows.reduce((acc, cf, t) => acc - (t * cf) / Math.pow(1 + irr, t + 1), 0);
-      const nextIrr = irr - npv / dNpv;
+      // Derivative of Σ cf_t·(1+r)^-(t+1): -(t+1)·cf_t·(1+r)^-(t+2).
+      const dNpv = cashFlows.reduce(
+        (acc, cf, t) => acc - ((t + 1) * cf) / Math.pow(1 + irr, t + 2),
+        0
+      );
+      // Convergence guards: never divide by a zero derivative and never emit
+      // an unconverged iterate (NaN mirrors Excel #NUM!).
+      if (dNpv === 0 || !Number.isFinite(dNpv)) return NaN;
 
+      const nextIrr = irr - npv / dNpv;
+      if (!Number.isFinite(nextIrr)) return NaN;
       if (Math.abs(nextIrr - irr) < precision) return nextIrr;
       irr = nextIrr;
     }
 
-    return irr;
+    return NaN;
   }
 
   static calculatePaybackPeriod(cashFlows: number[]): number {

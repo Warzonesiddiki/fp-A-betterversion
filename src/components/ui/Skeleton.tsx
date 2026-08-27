@@ -8,6 +8,22 @@ export interface SkeletonProps {
   count?: number;
   className?: string;
   animation?: 'pulse' | 'shimmer' | 'none';
+  /**
+   * Opt-in assistive-tech announcement for this loading region (W-A11Y-002 M5).
+   *
+   * By default Skeleton is fully decorative: bars are `aria-hidden="true"` and
+   * nothing is announced, so pages rendering many skeletons no longer flood
+   * screen readers with one "Loading…" live region per skeleton instance.
+   *
+   * When a non-empty `srLabel` is passed, exactly ONE visually-hidden polite
+   * status region (`role="status"` + `aria-live="polite"`) is rendered for the
+   * whole group — announced once on mount, not once per pulse or per bar:
+   *
+   * @example
+   * // Whole-region announcement, once:
+   * <Skeleton count={6} variant="rectangular" height="40px" srLabel="Loading report…" />
+   */
+  srLabel?: string;
 }
 
 export const Skeleton: React.FC<SkeletonProps> = ({
@@ -17,7 +33,9 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   count = 1,
   className,
   animation = 'shimmer',
+  srLabel,
 }) => {
+  const hasSrLabel = typeof srLabel === 'string' && srLabel.length > 0;
   const baseClasses = cn(
     'bg-gray-200 dark:bg-gray-700',
     animation === 'pulse' && 'animate-pulse',
@@ -46,9 +64,9 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   return (
     <div
       className="flex flex-col gap-2 w-full"
-      role="status"
-      aria-label="Loading content"
-      aria-live="polite"
+      // Decorative by default (W-A11Y-002 M5): nothing is announced unless an
+      // srLabel opts in, so the whole subtree stays out of the a11y tree.
+      aria-hidden={hasSrLabel ? undefined : true}
     >
       {Array.from({ length: count }).map((_, i) => (
         <div
@@ -65,7 +83,11 @@ export const Skeleton: React.FC<SkeletonProps> = ({
           )}
         </div>
       ))}
-      <span className="sr-only">Loading...</span>
+      {hasSrLabel && (
+        <span role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+          {srLabel}
+        </span>
+      )}
     </div>
   );
 };

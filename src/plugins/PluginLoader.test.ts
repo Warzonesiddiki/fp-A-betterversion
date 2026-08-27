@@ -192,4 +192,120 @@ describe('PluginLoader', () => {
       expect(loader.getCached('loader-plugin')).toBeUndefined();
     });
   });
+
+  // ==========================================================================
+  // W6-P0-03 REGRESSION (2026-08-24): the hardened sandbox (PluginSandbox)
+  // existed but was NOT wired into the plugin execution path —
+  // loadFromManifest invoked moduleFactory(api) directly. These tests pin the
+  // wired behavior: factory invocation routed through executeSandboxed, and a
+  // source-entry path (PluginManifestFile.entry "inline code") that runs the
+  // FULL validated/sandboxed pipeline.
+  // ==========================================================================
+  describe('W6-P0-03 sandboxed execution wiring', () => {
+    it('loadFromSource installs a plugin produced by inline source', async () => {
+      const src =
+        "(function(){ return { id: 'loader-plugin', name: 'Src Plugin', init: function(){}, destroy: function(){} }; })();";
+      const result = await loader.loadFromSource(makeManifest(), src);
+      expect(result.success).toBe(true);
+      expect(registry.has('loader-plugin')).toBe(true);
+      expect(loader.getCached('loader-plugin')?.name).toBe('Src Plugin');
+    });
+
+    it('loadFromSource rejects invalid manifests', async () => {
+      const result = await loader.loadFromSource(makeManifest({ id: '' }), '(function(){})()');
+      expect(result.success).toBe(false);
+      expect(result.error).toBeTruthy();
+    });
+
+    it('loadFromSource rejects the fromCharCode prototype-chain escape', async () => {
+      const src =
+        "(function(){ var o={}; var k=String.fromCharCode(99,111,110,115,116,114,117,99,116,111,114); return o[k][k]('return 1')(); })();";
+      const result = await loader.loadFromSource(makeManifest({ id: 'evil-src' }), src);
+      expect(result.success).toBe(false);
+      expect(result.error).toMatch(/computed|AST/i);
+    });
+
+    it('loadFromSource rejects eval-calling source', async () => {
+      const result = await loader.loadFromSource(
+        makeManifest({ id: 'evil-eval' }),
+        "(function(){ return eval('1'); })();"
+      );
+      expect(result.success).toBe(false);
+    });
+
+    it('loadFromSource rejects source that does not produce a Plugin shape', async () => {
+      const result = await loader.loadFromSource(
+        makeManifest({ id: 'bad-shape' }),
+        '(function(){ return 42; })();'
+      );
+      expect(result.success).toBe(false);
+      expect(result.error).toMatch(/init|destroy/i);
+    });
+
+    it('factory exceptions still surface verbatim through the sandboxed entry', async () => {
+      const result = await loader.loadFromManifest(makeManifest({ id: 'throwy-sandbox' }), () => {
+        throw new Error('kaboom');
+      });
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('kaboom');
+    });
+
+    it('factories executing inside the sandbox entry receive the full PluginAPI', async () => {
+      let received: PluginAPI | null = null;
+      const factory = (api: PluginAPI): Plugin => {
+        received = api;
+        return makePlugin();
+      };
+      const result = await loader.loadFromManifest(
+        makeManifest({ id: 'api-passthrough' }),
+        factory
+      );
+      expect(result.success).toBe(true);
+      expect(typeof received?.formula.registerFunction).toBe('function');
+      expect(registry.get('api-passthrough')?.api).toBe(received);
+    });
+  });
+
+  // ==========================================================================
+  // P0-03 sandbox-enforcement wiring: the install/load path must gate plugin
+  // code through validatePluginCode BEFORE any execution side effect and
+  // BEFORE persistence/registration.
+  // ==========================================================================
+  describe('P0-03 sandbox enforcement wiring', () => {
+    it('loadFromSource rejects flagged source BEFORE any execution side effect', async () => {
+      const apiFactorySpy = vi.fn(() => createPluginAPI('evil-pre'));
+      const gatedLoader = new PluginLoader(registry, apiFactorySpy);
+      const result = await gatedLoader.loadFromSource(
+        makeManifest({ id: 'evil-pre' }),
+        `(function(){ var o={}; return o.constructor.constructor("return 1")(); })();`
+      );
+      expect(result.success).toBe(false);
+      expect(result.sandboxViolations).toBeDefined();
+      expect(result.sandboxViolations?.length).toBeGreaterThan(0);
+      expect(String(result.error)).toMatch(/forbidden property|constructor/i);
+      expect(apiFactorySpy).not.toHaveBeenCalled();
+      expect(registry.has('evil-pre')).toBe(false);
+    });
+
+    it('loadFromManifest rejects a manifest whose entry is flagged inline code', async () => {
+      const result = await loader.loadFromManifest(
+        makeManifest({
+          id: 'evil-entry-mf',
+          entry: `(function(){ return eval("1"); })();`,
+        }),
+        (_api: PluginAPI) => makePlugin()
+      );
+      expect(result.success).toBe(false);
+      expect(result.sandboxViolations?.length).toBeGreaterThan(0);
+      expect(String(result.error)).toMatch(/eval/i);
+      expect(registry.has('evil-entry-mf')).toBe(false);
+      expect(loader.getCached('evil-entry-mf')).toBeUndefined();
+    });
+
+    it('clean plugins with module-path entries load unchanged', async () => {
+      const result = await loader.loadFromManifest(makeManifest(), () => makePlugin());
+      expect(result.success).toBe(true);
+      expect(result.sandboxViolations).toBeUndefined();
+    });
+  });
 });

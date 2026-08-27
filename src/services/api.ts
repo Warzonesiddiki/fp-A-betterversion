@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
+import { authClient } from '@/services/authClient';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
@@ -80,13 +81,15 @@ api.interceptors.response.use(
         throw new Error('No refresh token available');
       }
 
-      const { data } = await axios.post<{ accessToken: string }>(
-        `${api.defaults.baseURL}/auth/refresh`,
-        { refreshToken }
-      );
-
-      const newToken = data.accessToken;
-      useAuthStore.setState({ accessToken: newToken });
+      // SEC-2 rotation contract (server/src/routes/auth.ts /refresh): every
+      // success REVOKES the presented refresh token and returns a replacement
+      // pair. Persist BOTH tokens — saving only the access token strands the
+      // now-revoked refresh token in state, so the NEXT refresh replays a
+      // dead token, trips reuse detection (family revocation) and force-logs
+      // the user out.
+      const { accessToken: newToken, refreshToken: newRefreshToken } =
+        await authClient.refresh(refreshToken);
+      useAuthStore.setState({ accessToken: newToken, refreshToken: newRefreshToken });
       processPendingQueue(null, newToken);
 
       originalRequest.headers.Authorization = `Bearer ${newToken}`;

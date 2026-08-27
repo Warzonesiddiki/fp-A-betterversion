@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PluginRegistry } from './PluginRegistry';
+import { PluginSandboxViolationError } from './PluginSandbox';
 import { createPluginAPI } from './PluginAPI';
 import type { PluginManifest, Plugin } from './types';
 
@@ -262,6 +263,84 @@ describe('PluginRegistry', () => {
       registry.register(makeManifest({ id: 'b', name: 'B' }));
       registry.clear();
       expect(registry.size()).toBe(0);
+    });
+  });
+
+  describe('P0-03 sandbox enforcement at register', () => {
+    it('rejects a manifest whose entry is inline code containing eval', () => {
+      const handler = vi.fn();
+      registry.on('install', handler);
+      let thrown: unknown = null;
+      try {
+        registry.register(
+          makeManifest({
+            id: 'evil-eval-entry',
+            entry: `(function(){ return eval("1+1"); })();`,
+          })
+        );
+      } catch (e) {
+        thrown = e;
+      }
+      expect(thrown).toBeInstanceOf(PluginSandboxViolationError);
+      const err = thrown as PluginSandboxViolationError;
+      expect(err.pluginId).toBe('evil-eval-entry');
+      expect(err.violations.length).toBeGreaterThan(0);
+      expect(err.message).toMatch(/eval/i);
+      expect(registry.has('evil-eval-entry')).toBe(false);
+      expect(handler).not.toHaveBeenCalled();
+    });
+
+    it('rejects prototype-chain escape inline entry', () => {
+      let thrown: unknown = null;
+      try {
+        registry.register(
+          makeManifest({
+            id: 'evil-proto-entry',
+            entry: `(function(){ var o={}; return o.constructor.constructor("return 1")(); })();`,
+          })
+        );
+      } catch (e) {
+        thrown = e;
+      }
+      expect(thrown).toBeInstanceOf(PluginSandboxViolationError);
+      expect((thrown as PluginSandboxViolationError).message).toMatch(
+        /forbidden property|constructor/i
+      );
+      expect(registry.has('evil-proto-entry')).toBe(false);
+    });
+
+    it('fails closed on unparseable inline entry', () => {
+      let thrown: unknown = null;
+      try {
+        registry.register(
+          makeManifest({
+            id: 'evil-parse-entry',
+            entry: `(function(){ var o = ; })();`,
+          })
+        );
+      } catch (e) {
+        thrown = e;
+      }
+      expect(thrown).toBeInstanceOf(PluginSandboxViolationError);
+      expect((thrown as PluginSandboxViolationError).message).toMatch(/parse error/i);
+      expect(registry.has('evil-parse-entry')).toBe(false);
+    });
+
+    it('installs unchanged when entry is a module path', () => {
+      const entry = registry.register(makeManifest({ id: 'path-entry' }));
+      expect(entry.state).toBe('installed');
+      expect(registry.has('path-entry')).toBe(true);
+    });
+
+    it('installs unchanged when inline entry passes the sandbox scan', () => {
+      const entry = registry.register(
+        makeManifest({
+          id: 'good-inline-entry',
+          entry: `(function(){ var x = Math.max(1, 2); return { id: "x" }; })();`,
+        })
+      );
+      expect(entry.state).toBe('installed');
+      expect(registry.has('good-inline-entry')).toBe(true);
     });
   });
 });

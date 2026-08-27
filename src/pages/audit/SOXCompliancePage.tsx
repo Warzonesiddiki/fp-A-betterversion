@@ -27,6 +27,7 @@ import {
   CalendarCheck,
 } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -245,6 +246,24 @@ export default function SOXCompliancePage() {
   const [report, setReport] = useState<SOXReport | null>(null);
   const [filterCategory, setFilterCategory] = useState<SOXControlCategory | 'all'>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  // E-09 mock-data honesty audit: true when no GL data exists and the report
+  // fell back to built-in sample figures instead of the user's financials.
+  const [usingSampleFinancials, setUsingSampleFinancials] = useState(false);
+  // E-09-F: no GL data at all → render a "connect GL data" empty state instead
+  // of any report (product ruling: fabricated financials are never presented
+  // as real). The sample-data banner above stays as defense-in-depth.
+  const [noGLData, setNoGLData] = useState(false);
+
+  // E-09-F: closed periods derive from the period-close store — every entry
+  // not in 'open' state counts as closed. Previously hardcoded ['Q4-2025'],
+  // which fabricated a closed period that may not exist in real data.
+  const closedPeriodIds = useMemo(
+    () =>
+      Object.values(closeEntries)
+        .filter((entry) => entry.state !== 'open')
+        .map((entry) => entry.periodId),
+    [closeEntries]
+  );
 
   // Create engines with some sample data for demo
   const [engine] = useState(() => {
@@ -329,6 +348,24 @@ export default function SOXCompliancePage() {
     const trialBalance = useGLStore.getState().trialBalance;
     const entries = useGLStore.getState().entries;
 
+    // E-09-F remediation (Lead-approved product decision: no fabricated
+    // financials presented as real): with no GL data the page renders a
+    // connect-GL empty state INSTEAD of a report. The former fallback that
+    // fabricated a balanced 100k/60k/40k balance sheet plus fake ledger and
+    // recent entries is removed. `usingSampleFinancials` stays true here as
+    // defense-in-depth disclosure.
+    const hasGLData = trialBalance.length > 0 || entries.length > 0;
+    if (!hasGLData) {
+      // No banner here on purpose: the empty state shows NO figures, so a
+      // "sample data in use" notice would be misleading. The banner stays
+      // wired for any future path that renders a report without real GL data
+      // (defense-in-depth disclosure).
+      setNoGLData(true);
+      setReport(null);
+      return;
+    }
+    setNoGLData(false);
+
     // Calculate balance sheet from trial balance. Ending balance per row
     // is the canonical `endingBalance` (if present) or beginning + debits
     // − credits. All arithmetic on the decimal primitive.
@@ -351,40 +388,33 @@ export default function SOXCompliancePage() {
     const liabilitiesR = roundTo(liabilities, 2);
     const equityR = roundTo(equity, 2);
 
-    // Fallback to sensible defaults when no GL data exists
     const bs = {
-      assets: assetsR || 100000,
-      liabilities: liabilitiesR || 60000,
-      equity: equityR || 40000,
+      assets: assetsR,
+      liabilities: liabilitiesR,
+      equity: equityR,
     };
 
-    // Derive ledger entries from GL entries
-    const ledgerEntries =
-      entries.length > 0
-        ? entries.slice(0, 20).map((e) => ({ debit: e.debit ?? 0, credit: e.credit ?? 0 }))
-        : [
-            { debit: 5000, credit: 0 },
-            { debit: 0, credit: 5000 },
-          ];
-
-    // Derive recent entries from GL entries
-    const recentEntries =
-      entries.length > 0
-        ? entries.slice(0, 10).map((e) => ({
-            period: e.period ?? 'Unknown',
-            timestamp: e.date ?? new Date().toISOString(),
-            action: 'create' as const,
-          }))
-        : [{ period: 'Q1-2026', timestamp: '2026-01-15T10:00:00Z', action: 'create' as const }];
+    // Derive ledger + recent entries from REAL GL entries only (no fabricated
+    // stand-ins when the store is empty — that path now shows the empty state).
+    const ledgerEntries = entries.slice(0, 20).map((e) => ({
+      debit: e.debit ?? 0,
+      credit: e.credit ?? 0,
+    }));
+    const recentEntries = entries.slice(0, 10).map((e) => ({
+      period: e.period ?? 'Unknown',
+      timestamp: e.date ?? new Date().toISOString(),
+      action: 'create' as const,
+    }));
 
     const r = engine.generateReport({
       balanceSheet: bs,
       ledgerEntries,
-      closedPeriods: ['Q4-2025'],
+      closedPeriods: closedPeriodIds,
       recentEntries,
     });
+    setUsingSampleFinancials(false);
     setReport(r);
-  }, [engine]);
+  }, [engine, closedPeriodIds]);
 
   useEffect(() => {
     generateReport();
@@ -437,7 +467,9 @@ export default function SOXCompliancePage() {
     URL.revokeObjectURL(url);
   }, [report]);
 
-  if (!report) {
+  // E-09-F: no GL data → render the connect-GL empty state (not the loading
+  // spinner, which previously showed forever because report stays null).
+  if (!report && !noGLData) {
     return (
       <div
         className="p-12 text-center max-w-md mx-auto"
@@ -492,165 +524,221 @@ export default function SOXCompliancePage() {
         }
       />
 
-      {/* Status Banner */}
-      <section aria-label="Compliance Status Summary">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-8">
-              <ScoreGauge score={report.overallScore} />
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <StatusBadge status={report.overallStatus} />
-                  <span className="text-sm text-[var(--text-muted)]">
-                    Generated {new Date(report.generatedAt).toLocaleString()}
-                  </span>
-                </div>
-                <div className="grid grid-cols-4 gap-4 mb-4">
-                  <div>
-                    <p className="text-2xl font-bold text-green-400">{report.summary.passed}</p>
-                    <p className="text-xs text-[var(--text-muted)]">Passed</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-red-400">{report.summary.failed}</p>
-                    <p className="text-xs text-[var(--text-muted)]">Failed</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-yellow-400">{report.summary.warnings}</p>
-                    <p className="text-xs text-[var(--text-muted)]">Warnings</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold text-[var(--text-muted)]">
-                      {report.summary.total}
-                    </p>
-                    <p className="text-xs text-[var(--text-muted)]">Total Checks</p>
-                  </div>
-                </div>
-                {report.criticalFindings.length > 0 && (
-                  <div className="p-3 bg-red-900/20 border border-red-800/30 rounded">
-                    <p className="text-sm text-red-400 font-medium">
-                      {report.criticalFindings.length} critical finding(s) require immediate
-                      attention
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* Category Summary */}
-      <section aria-label="Category Summary">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          {(Object.keys(report.byCategory) as SOXControlCategory[]).map((cat) => (
-            <CategorySummaryCard key={cat} category={cat} data={report.byCategory[cat]} />
-          ))}
+      {/* E-09 honesty disclosure: shown when the report fell back to sample
+          figures because no GL data exists. */}
+      {usingSampleFinancials && (
+        <div
+          role="note"
+          aria-label="Sample data notice"
+          data-testid="sox-sample-data-notice"
+          className="flex items-start gap-2 rounded-md border border-yellow-500/40 bg-yellow-500/10 px-3 py-2 text-sm text-yellow-300"
+        >
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+          <span>
+            Sample data in use: no general-ledger records exist yet, so balance-sheet, ledger and
+            recent-entry figures in this report are illustrative defaults — not your actual
+            financials.
+          </span>
         </div>
-      </section>
-
-      {/* Recommendations */}
-      {report.recommendations.length > 0 && (
-        <section aria-label="Recommendations">
-          <Card>
-            <CardContent className="p-4">
-              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-amber-400" aria-hidden="true" />
-                Recommendations
-              </h3>
-              <ul className="space-y-2">
-                {report.recommendations.map((rec, i) => (
-                  <li
-                    key={i}
-                    className="text-sm text-[var(--text-secondary)] flex items-start gap-2"
-                  >
-                    <span className="text-amber-400 mt-0.5">*</span>
-                    {rec}
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        </section>
       )}
 
-      {/* Filters */}
-      <section aria-label="Compliance Check Filters">
+      {/* E-09-F: no GL data → connect-GL empty state instead of any report. */}
+      {noGLData && (
         <Card>
-          <CardContent className="p-4">
-            <div className="flex gap-3 items-end flex-wrap">
-              <div>
-                <label htmlFor="category" className="block text-xs text-[var(--text-muted)] mb-1">
-                  Category
-                </label>
-                <select
-                  id="category"
-                  className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"
-                  value={filterCategory}
-                  onChange={(e) => setFilterCategory(e.target.value as SOXControlCategory | 'all')}
-                >
-                  <option value="all">All Categories</option>
-                  {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
-                    <option key={key} value={key}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="status" className="block text-xs text-[var(--text-muted)] mb-1">
-                  Status
-                </label>
-                <select
-                  id="status"
-                  className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                >
-                  <option value="all">All Statuses</option>
-                  <option value="pass">Pass</option>
-                  <option value="fail">Fail</option>
-                  <option value="warning">Warning</option>
-                  <option value="not_applicable">N/A</option>
-                </select>
-              </div>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => {
-                  setFilterCategory('all');
-                  setFilterStatus('all');
-                }}
-              >
-                Clear
-              </Button>
-            </div>
+          <CardContent className="p-2">
+            <EmptyState
+              variant="no-file"
+              title="No general-ledger data yet"
+              description="Checks run against your real general-ledger records. Import or post GL entries, then generate the report — no sample figures are used."
+              action={
+                <Link to="/data">
+                  <Button variant="outline">
+                    <FileText className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+                    Go to Data Import
+                  </Button>
+                </Link>
+              }
+            />
           </CardContent>
         </Card>
-      </section>
+      )}
 
-      {/* Checks List */}
-      <section aria-label="Compliance Checks">
-        <Card>
-          <CardContent className="p-0">
-            <div className="px-4 py-3 border-b border-slate-800">
-              <h3 className="text-sm font-semibold">Compliance Checks ({filteredChecks.length})</h3>
-            </div>
-            <div className="max-h-[600px] overflow-y-auto">
-              {filteredChecks.length === 0 ? (
-                <div
-                  className="p-8 text-center text-[var(--text-muted)]"
-                  role="status"
-                  aria-live="polite"
-                >
-                  No checks match the current filters.
+      {/* Status Banner */}
+      {!noGLData && report && (
+        <>
+          <section aria-label="Compliance Status Summary">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center gap-8">
+                  <ScoreGauge score={report.overallScore} />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-3">
+                      <StatusBadge status={report.overallStatus} />
+                      <span className="text-sm text-[var(--text-muted)]">
+                        Generated {new Date(report.generatedAt).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-4 gap-4 mb-4">
+                      <div>
+                        <p className="text-2xl font-bold text-green-400">{report.summary.passed}</p>
+                        <p className="text-xs text-[var(--text-muted)]">Passed</p>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-red-400">{report.summary.failed}</p>
+                        <p className="text-xs text-[var(--text-muted)]">Failed</p>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-yellow-400">
+                          {report.summary.warnings}
+                        </p>
+                        <p className="text-xs text-[var(--text-muted)]">Warnings</p>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-bold text-[var(--text-muted)]">
+                          {report.summary.total}
+                        </p>
+                        <p className="text-xs text-[var(--text-muted)]">Total Checks</p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-[var(--text-muted)] mb-3">
+                      Note: control checks partly derive from built-in sample workflow/audit events
+                      included for demonstration (E-09 honesty disclosure).
+                    </p>
+                    {report.criticalFindings.length > 0 && (
+                      <div className="p-3 bg-red-900/20 border border-red-800/30 rounded">
+                        <p className="text-sm text-red-400 font-medium">
+                          {report.criticalFindings.length} critical finding(s) require immediate
+                          attention
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              ) : (
-                filteredChecks.map((check) => <CheckRow key={check.id} check={check} />)
-              )}
+              </CardContent>
+            </Card>
+          </section>
+
+          {/* Category Summary */}
+          <section aria-label="Category Summary">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              {(Object.keys(report.byCategory) as SOXControlCategory[]).map((cat) => (
+                <CategorySummaryCard key={cat} category={cat} data={report.byCategory[cat]} />
+              ))}
             </div>
-          </CardContent>
-        </Card>
-      </section>
+          </section>
+
+          {/* Recommendations */}
+          {report.recommendations.length > 0 && (
+            <section aria-label="Recommendations">
+              <Card>
+                <CardContent className="p-4">
+                  <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-amber-400" aria-hidden="true" />
+                    Recommendations
+                  </h3>
+                  <ul className="space-y-2">
+                    {report.recommendations.map((rec, i) => (
+                      <li
+                        key={i}
+                        className="text-sm text-[var(--text-secondary)] flex items-start gap-2"
+                      >
+                        <span className="text-amber-400 mt-0.5">*</span>
+                        {rec}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </section>
+          )}
+
+          {/* Filters */}
+          <section aria-label="Compliance Check Filters">
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex gap-3 items-end flex-wrap">
+                  <div>
+                    <label
+                      htmlFor="category"
+                      className="block text-xs text-[var(--text-muted)] mb-1"
+                    >
+                      Category
+                    </label>
+                    <select
+                      id="category"
+                      className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"
+                      value={filterCategory}
+                      onChange={(e) =>
+                        setFilterCategory(e.target.value as SOXControlCategory | 'all')
+                      }
+                    >
+                      <option value="all">All Categories</option>
+                      {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+                        <option key={key} value={key}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="status" className="block text-xs text-[var(--text-muted)] mb-1">
+                      Status
+                    </label>
+                    <select
+                      id="status"
+                      className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm"
+                      value={filterStatus}
+                      onChange={(e) => setFilterStatus(e.target.value)}
+                    >
+                      <option value="all">All Statuses</option>
+                      <option value="pass">Pass</option>
+                      <option value="fail">Fail</option>
+                      <option value="warning">Warning</option>
+                      <option value="not_applicable">N/A</option>
+                    </select>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setFilterCategory('all');
+                      setFilterStatus('all');
+                    }}
+                  >
+                    Clear
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </section>
+
+          {/* Checks List */}
+          <section aria-label="Compliance Checks">
+            <Card>
+              <CardContent className="p-0">
+                <div className="px-4 py-3 border-b border-slate-800">
+                  <h3 className="text-sm font-semibold">
+                    Compliance Checks ({filteredChecks.length})
+                  </h3>
+                </div>
+                <div className="max-h-[600px] overflow-y-auto">
+                  {filteredChecks.length === 0 ? (
+                    <div
+                      className="p-8 text-center text-[var(--text-muted)]"
+                      role="status"
+                      aria-live="polite"
+                    >
+                      No checks match the current filters.
+                    </div>
+                  ) : (
+                    filteredChecks.map((check) => <CheckRow key={check.id} check={check} />)
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </section>
+        </>
+      )}
     </main>
   );
 }

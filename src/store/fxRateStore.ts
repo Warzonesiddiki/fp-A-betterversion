@@ -1,4 +1,3 @@
-// @money-ast-allow Reason: String identity check: r.fromCurrency === fromCurrency compares ISO-4217 currency codes, not money amounts
 import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';

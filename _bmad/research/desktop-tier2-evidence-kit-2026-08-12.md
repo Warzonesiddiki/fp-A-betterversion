@@ -8,15 +8,16 @@
 
 ## 1. What a desktop Tier-2 loop can and cannot prove
 
-| Claim | Status | Desktop loop can… | Desktop loop CANNOT… |
-|---|---|---|---|
-| Wedge (close→decision→board-pack) is wanted | UNVALIDATED | show workflow completion/retention on real installs | prove market size |
-| WTP ($500k+ / paid path) | UNVALIDATED | surface unsolicited "I'd pay" signals (partial A-01 signal only) | quantify WTP |
-| All-in-one breadth is valued | UNVALIDATED (owner direction only, E-019) | surface which modules users actually open | prove breadth beats focus commercially |
-| First segment selection (R-04) | PENDING | inform segment scoring | decide it alone |
-| Desktop/Tauri deployment is acceptable | UNVALIDATED (A-12 channel closed) | real installs + retention | validate deployment assumptions (Tier 1) |
+| Claim                                       | Status                                    | Desktop loop can…                                                | Desktop loop CANNOT…                     |
+| ------------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------- |
+| Wedge (close→decision→board-pack) is wanted | UNVALIDATED                               | show workflow completion/retention on real installs              | prove market size                        |
+| WTP ($500k+ / paid path)                    | UNVALIDATED                               | surface unsolicited "I'd pay" signals (partial A-01 signal only) | quantify WTP                             |
+| All-in-one breadth is valued                | UNVALIDATED (owner direction only, E-019) | surface which modules users actually open                        | prove breadth beats focus commercially   |
+| First segment selection (R-04)              | PENDING                                   | inform segment scoring                                           | decide it alone                          |
+| Desktop/Tauri deployment is acceptable      | UNVALIDATED (A-12 channel closed)         | real installs + retention                                        | validate deployment assumptions (Tier 1) |
 
 **Honest labeling rules (non-negotiable):**
+
 - All workspace data is local/draft — never presented as official numbers. Keep "Draft — Local workspace data" truth labels everywhere.
 - No fabricated participants, testimonials, or usage numbers. Waitlist counters are real counters.
 - Assumptions stay UNVALIDATED until Tier-1 evidence exists.
@@ -29,6 +30,7 @@
 4. **≥3 unsolicited "I'd pay for this" signals** from unrelated users — PARTIAL A-01 signal (never VALIDATED).
 
 **Qualified signup definition (suggested, owner-adjustable):**
+
 - Works in finance/FP&A/accounting OR operates a finance function for a business; AND
 - Completes onboarding (company name + role) in the app; AND
 - Opts into the beta mailing list.
@@ -36,11 +38,13 @@
 ## 3. Desktop waitlist plan
 
 **Mechanism (owner's call — T-06):**
+
 - Option A — in-app waitlist: the Tauri app's first-run onboarding gains an optional "Join the beta list" step (name, email, role, company stage, free-text pains). Local-only storage; email sent only when owner configures a mail channel. Zero telemetry otherwise.
 - Option B — landing page waitlist: a single honest page (no marketing overclaim) with the waitlist form + link to the desktop installer.
 - Option C — both, with the in-app one primary (desktop users are already past the install barrier).
 
 **Landing copy (single page, no overclaim):**
+
 1. One-line value: "FinPlan Pro — analyst-grade financial workspace: import actuals, reconcile/close, plan, and publish an evidence-backed board pack."
 2. Honest status: "Early beta — desktop app in active development. Local data only; nothing leaves your machine."
 3. Waitlist form: name, email, role, company stage, what pains you'd want solved (free text).
@@ -79,13 +83,13 @@
 
 ## 5. What to log (and how to label it)
 
-| Signal | Log as | Example |
-|---|---|---|
-| Waitlist signups | BETA-USAGE (Tier 2) | "E-020: waitlist 31 qualified signups (real form data)" |
-| Active users / loops completed | BETA-USAGE (Tier 2) | "≥5 completed close→decision→board-pack loops" |
-| Community reactions | ARTIFACT (Tier 3) | "r/FPandA post → 14 comments, 3 practitioners offered feedback" |
-| Unsolicited "I'd pay" | BETA-USAGE partial A-01 signal | "2 independent users asked about pricing" |
-| Nothing fabricated, ever | — | counters are real counters |
+| Signal                         | Log as                         | Example                                                         |
+| ------------------------------ | ------------------------------ | --------------------------------------------------------------- |
+| Waitlist signups               | BETA-USAGE (Tier 2)            | "E-020: waitlist 31 qualified signups (real form data)"         |
+| Active users / loops completed | BETA-USAGE (Tier 2)            | "≥5 completed close→decision→board-pack loops"                  |
+| Community reactions            | ARTIFACT (Tier 3)              | "r/FPandA post → 14 comments, 3 practitioners offered feedback" |
+| Unsolicited "I'd pay"          | BETA-USAGE partial A-01 signal | "2 independent users asked about pricing"                       |
+| Nothing fabricated, ever       | —                              | counters are real counters                                      |
 
 ## 6. Owner decisions required (T-06/T-07)
 

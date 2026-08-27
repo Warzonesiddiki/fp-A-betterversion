@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useGLStore } from '@/store/glStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -44,7 +45,13 @@ const HELP_SECTIONS = [
 export default function RollingForecastPage() {
   const fmt = useCurrencyFormatter();
   const [helpOpen, setHelpOpen] = useState(false);
-  const { entries, isLoading, importError } = useGLStore();
+  const { entries, isLoading, importError } = useGLStore(
+    useShallow((s) => ({
+      entries: s.entries,
+      isLoading: s.isLoading,
+      importError: s.importError,
+    }))
+  );
   const [period, setPeriod] = useState<'3m' | '6m' | '12m'>('12m');
 
   useEffect(() => {
@@ -64,7 +71,13 @@ export default function RollingForecastPage() {
   if (isLoading) {
     return (
       <div className="p-6 space-y-6">
-        <Skeleton count={1} height="40px" width="30%" className="mb-4" />
+        <Skeleton
+          count={1}
+          height="40px"
+          width="30%"
+          className="mb-4"
+          srLabel="Loading rolling forecast…"
+        />
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
             <Skeleton key={i} count={1} height="80px" variant="rectangular" />

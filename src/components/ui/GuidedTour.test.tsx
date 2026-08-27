@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { GuidedTour } from './GuidedTour';
 
@@ -64,5 +64,62 @@ describe('GuidedTour', () => {
     fireEvent.click(screen.getByText('Next'));
     fireEvent.click(screen.getByText('Back'));
     expect(screen.queryByText('Back')).not.toBeInTheDocument();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// R9-c: JS smooth-scroll compliance with prefers-reduced-motion.
+// The real useReducedMotion hook reads window.matchMedia, so mocking
+// matchMedia proves the component end-to-end (hook → scrollIntoView args).
+// ---------------------------------------------------------------------------
+const originalMatchMedia = window.matchMedia;
+
+function mockMatchMedia(prefersReducedMotion: boolean) {
+  window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+    matches: query === '(prefers-reduced-motion: reduce)' ? prefersReducedMotion : false,
+    media: query,
+    onchange: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }));
+}
+
+// Default: motion allowed. Individual tests override via mockMatchMedia(true).
+beforeEach(() => {
+  mockMatchMedia(false);
+});
+
+describe('GuidedTour reduced-motion scrolling (R9-c)', () => {
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia;
+    vi.restoreAllMocks();
+  });
+
+  function mountTourAtTarget() {
+    const target = document.createElement('div');
+    target.id = 'tour-target';
+    document.body.appendChild(target);
+    render(
+      <GuidedTour
+        steps={[{ title: 'Welcome', content: 'Overview.', target: '#tour-target' }]}
+        isOpen={true}
+        onClose={vi.fn()}
+      />
+    );
+  }
+
+  it("scrolls the target into view instantly (behavior 'auto') when reduced motion is preferred", () => {
+    mockMatchMedia(true);
+    const scrollSpy = vi.spyOn(Element.prototype, 'scrollIntoView').mockImplementation(() => {});
+    mountTourAtTarget();
+    expect(scrollSpy).toHaveBeenCalledWith({ behavior: 'auto', block: 'center' });
+  });
+
+  it('keeps smooth target scrolling when motion is allowed', () => {
+    mockMatchMedia(false);
+    const scrollSpy = vi.spyOn(Element.prototype, 'scrollIntoView').mockImplementation(() => {});
+    mountTourAtTarget();
+    expect(scrollSpy).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
   });
 });

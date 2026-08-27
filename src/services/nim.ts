@@ -3,6 +3,10 @@
 // Provides AI-powered financial analysis via NVIDIA NIM API (OpenAI-compatible)
 // =============================================================================
 
+import { LlmEgressHttpError, llmEgress } from './llm/llmEgress';
+import { formatMoney, subtractMoney, variancePct as variancePctOf } from '../utils/money';
+import Decimal from 'decimal.js';
+
 // SECURITY (Phase 7 audit finding, Hephaestus PATCH 2): NIM API keys MUST NOT
 // be embedded in production client bundles. In production builds, force the
 // use of a server-side proxy (e.g., /api/nim/*) — direct browser-to-NIM calls
@@ -20,14 +24,21 @@ if (
 }
 
 const NIM_BASE_URL = import.meta.env.VITE_NIM_BASE_URL || 'https://integrate.api.nvidia.com/v1';
-const NIM_API_KEY_1 = import.meta.env.VITE_NIM_API_KEY_1 || '';
-const NIM_API_KEY_2 = import.meta.env.VITE_NIM_API_KEY_2 || '';
 
+// Keys are read LAZILY (per call) rather than snapshotted at module load so
+// that gating consumers (e.g. AutoCommentaryEngine, W0.9 lane R19) and tests
+// observe current env state; Vite inlines build-time values either way.
 // Round-robin key rotation for rate limit distribution
 let activeKeyIndex = 0;
 
+function getConfiguredKeys(): string[] {
+  return [import.meta.env.VITE_NIM_API_KEY_1, import.meta.env.VITE_NIM_API_KEY_2].filter(
+    (key): key is string => Boolean(key)
+  );
+}
+
 function getApiKey(): string {
-  const keys = [NIM_API_KEY_1, NIM_API_KEY_2].filter(Boolean);
+  const keys = getConfiguredKeys();
   if (keys.length === 0) {
     throw new Error(
       'NIM API keys not configured. Set VITE_NIM_API_KEY_1 and/or VITE_NIM_API_KEY_2 in .env'
@@ -91,27 +102,7 @@ export const NIM_MODELS = {
 
 export type NIMModelId = (typeof NIM_MODELS)[keyof typeof NIM_MODELS];
 
-// --- Core API ---
-
-async function nimFetch<T>(endpoint: string, body: unknown): Promise<T> {
-  const response = await fetch(`${NIM_BASE_URL}${endpoint}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${getApiKey()}`,
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text().catch(() => 'Unknown error');
-    throw new Error(`NIM API error ${response.status}: ${errorText}`);
-  }
-
-  return response.json() as Promise<T>;
-}
-
-// --- Chat Completion ---
+// --- Core API (all model traffic flows through the LLM egress chokepoint, W0.9) ---
 
 export async function nimChat(
   messages: NIMMessage[],
@@ -122,14 +113,22 @@ export async function nimChat(
     top_p?: number;
   } = {}
 ): Promise<NIMChatResponse> {
-  return nimFetch<NIMChatResponse>('/chat/completions', {
-    model: options.model || NIM_MODELS.DEFAULT,
-    messages,
-    temperature: options.temperature ?? 0.7,
-    max_tokens: options.max_tokens ?? 1024,
-    top_p: options.top_p ?? 0.9,
-    stream: false,
-  });
+  try {
+    return await llmEgress.complete<NIMChatResponse>(messages, {
+      endpoint: `${NIM_BASE_URL}/chat/completions`,
+      model: options.model || NIM_MODELS.DEFAULT,
+      temperature: options.temperature ?? 0.7,
+      maxTokens: options.max_tokens ?? 1024,
+      topP: options.top_p ?? 0.9,
+      headers: () => ({ Authorization: `Bearer ${getApiKey()}` }),
+    });
+  } catch (error) {
+    if (error instanceof LlmEgressHttpError) {
+      // Preserve the historical NIM error surface for existing consumers.
+      throw new Error(`NIM API error ${error.status}: ${error.bodyPreview}`);
+    }
+    throw error;
+  }
 }
 
 // --- Streaming Chat ---
@@ -142,19 +141,12 @@ export async function* nimChatStream(
     max_tokens?: number;
   } = {}
 ): AsyncGenerator<NIMStreamChunk, void, unknown> {
-  const response = await fetch(`${NIM_BASE_URL}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${getApiKey()}`,
-    },
-    body: JSON.stringify({
-      model: options.model || NIM_MODELS.DEFAULT,
-      messages,
-      temperature: options.temperature ?? 0.7,
-      max_tokens: options.max_tokens ?? 1024,
-      stream: true,
-    }),
+  const response = await llmEgress.openStream(messages, {
+    endpoint: `${NIM_BASE_URL}/chat/completions`,
+    model: options.model || NIM_MODELS.DEFAULT,
+    temperature: options.temperature ?? 0.7,
+    maxTokens: options.max_tokens ?? 1024,
+    headers: () => ({ Authorization: `Bearer ${getApiKey()}` }),
   });
 
   if (!response.ok) {
@@ -221,6 +213,74 @@ export async function analyzeVariance(params: {
   return response.choices[0]?.message?.content || 'No analysis generated.';
 }
 
+/** Result of the enhanced variance pass — which path produced the text. */
+export interface VarianceAnalysisResult {
+  text: string;
+  /** 'llm' = gated+redacted chokepoint call succeeded; 'local' = deterministic fallback. */
+  source: 'llm' | 'local';
+}
+
+/** Deterministic local fallback — mirrors variancePrompt's arithmetic contract. */
+function localVarianceSentence(params: {
+  metric: string;
+  actual: number;
+  budget: number;
+  period: string;
+}): string {
+  const variance = subtractMoney(params.actual, params.budget);
+  // (actual − base) / base × 100; variancePct returns Decimal (0 for 0/0).
+  const variancePctDecimal =
+    params.budget !== 0 ? variancePctOf(params.actual, params.budget) : new Decimal(0);
+  const direction = variance.gte(0) ? 'above' : 'below';
+  return (
+    `${params.metric} for ${params.period}: actual ${params.actual.toLocaleString()} vs ` +
+    `budget ${params.budget.toLocaleString()} — ${variance.abs().toNumber().toLocaleString()} ` +
+    `(${formatMoney(Math.abs(variancePctDecimal.toNumber()), { places: 1 })}%) ${direction} budget.`
+  );
+}
+
+/**
+ * W0.9 (lane R37): fail-closed variance analysis — the chokepoint-routed
+ * sibling of {@link analyzeVariance}, mirroring the AutoCommentaryEngine R19
+ * wiring.
+ *
+ * Contract:
+ *  - egress disabled or NIM unconfigured → deterministic local sentence; the
+ *    transport is never touched and no audit event is emitted;
+ *  - enabled + allowed → facts-only variancePrompt via nimChat (kill-switch
+ *    gated, host-allowlisted, redacted, audited inside the chokepoint),
+ *    conservative temperature 0.2;
+ *  - ANY failure (blocked/denied host, HTTP error, empty model content)
+ *    degrades to the same local sentence — this never throws into the UI.
+ */
+export async function analyzeVarianceEnhanced(params: {
+  metric: string;
+  actual: number;
+  budget: number;
+  period: string;
+}): Promise<VarianceAnalysisResult> {
+  const prompt = variancePrompt(params);
+  const localText = localVarianceSentence(params);
+  if (!llmEgress.isEgressEnabled() || !isNimConfigured()) {
+    return { text: localText, source: 'local' };
+  }
+  try {
+    const response = await nimChat(
+      [
+        { role: 'system', content: prompt.system },
+        { role: 'user', content: prompt.user },
+      ],
+      { temperature: 0.2, max_tokens: 512 }
+    );
+    const llmText = response.choices[0]?.message?.content?.trim();
+    return llmText ? { text: llmText, source: 'llm' } : { text: localText, source: 'local' };
+  } catch {
+    // Fail-closed: LlmEgressBlockedError, HTTP errors, network failures all
+    // degrade to the deterministic local sentence.
+    return { text: localText, source: 'local' };
+  }
+}
+
 export async function generateForecastInsight(params: {
   metric: string;
   historicalData: Array<{ period: string; value: number }>;
@@ -273,9 +333,9 @@ export async function summarizeBudget(budgetData: {
 // --- Utility ---
 
 export function isNimConfigured(): boolean {
-  return Boolean(NIM_API_KEY_1 || NIM_API_KEY_2);
+  return getConfiguredKeys().length > 0;
 }
 
 export function getNimKeyCount(): number {
-  return [NIM_API_KEY_1, NIM_API_KEY_2].filter(Boolean).length;
+  return getConfiguredKeys().length;
 }

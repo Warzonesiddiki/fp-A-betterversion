@@ -144,6 +144,13 @@ export interface AuditFilter {
   search?: string;
   limit?: number;
   offset?: number;
+  /**
+   * W0.2d: tenant scope for audit_log reads. When provided, only rows
+   * stamped with that tenant are returned. Omit ONLY in trusted system
+   * contexts (retention tooling); HTTP routes must always set it from
+   * resolveTenantId(req.user).
+   */
+  tenantId?: string;
 }
 
 export interface AuditStats {
@@ -602,6 +609,12 @@ export class AuditService {
     const conditions: string[] = [];
     const params: unknown[] = [];
 
+    // W0.2d: tenant scope — audit_log is a TENANT_SCOPED_TABLES member, so
+    // an explicit tenantId filter is applied before any other condition.
+    if (filter.tenantId) {
+      conditions.push('tenant_id = ?');
+      params.push(filter.tenantId);
+    }
     if (filter.category) {
       conditions.push('category = ?');
       params.push(filter.category);
@@ -815,33 +828,52 @@ export class AuditService {
 
   /**
    * Get a single audit entry by ID.
+   * W0.2d: tenantId scopes the lookup; a cross-tenant id reads as not-found.
    */
-  getById(id: string): AuditLogEntry | null {
-    const row = db.prepare('SELECT * FROM audit_log WHERE id = ?').get(id) as
-      | Record<string, unknown>
-      | undefined;
+  getById(id: string, tenantId?: string): AuditLogEntry | null {
+    const row = tenantId
+      ? (db.prepare('SELECT * FROM audit_log WHERE id = ? AND tenant_id = ?').get(id, tenantId) as
+          | Record<string, unknown>
+          | undefined)
+      : (db.prepare('SELECT * FROM audit_log WHERE id = ?').get(id) as
+          | Record<string, unknown>
+          | undefined);
     return row ? this.mapAuditRow(row) : null;
   }
 
   /**
    * Get the full history for a specific resource.
+   * W0.2d: optional tenant scope.
    */
-  getResourceHistory(resourceType: string, resourceId: string): AuditLogEntry[] {
-    const rows = db
-      .prepare(
-        'SELECT * FROM audit_log WHERE resource_type = ? AND resource_id = ? ORDER BY timestamp DESC'
-      )
-      .all(resourceType, resourceId) as Record<string, unknown>[];
+  getResourceHistory(resourceType: string, resourceId: string, tenantId?: string): AuditLogEntry[] {
+    const rows = tenantId
+      ? (db
+          .prepare(
+            'SELECT * FROM audit_log WHERE resource_type = ? AND resource_id = ? AND tenant_id = ? ORDER BY timestamp DESC'
+          )
+          .all(resourceType, resourceId, tenantId) as Record<string, unknown>[])
+      : (db
+          .prepare(
+            'SELECT * FROM audit_log WHERE resource_type = ? AND resource_id = ? ORDER BY timestamp DESC'
+          )
+          .all(resourceType, resourceId) as Record<string, unknown>[]);
     return rows.map((row) => this.mapAuditRow(row));
   }
 
   /**
    * Get the full activity for a specific user.
+   * W0.2d: optional tenant scope.
    */
-  getUserActivity(userId: string, limit = 100): AuditLogEntry[] {
-    const rows = db
-      .prepare('SELECT * FROM audit_log WHERE user_id = ? ORDER BY timestamp DESC LIMIT ?')
-      .all(userId, limit) as Record<string, unknown>[];
+  getUserActivity(userId: string, limit = 100, tenantId?: string): AuditLogEntry[] {
+    const rows = tenantId
+      ? (db
+          .prepare(
+            'SELECT * FROM audit_log WHERE user_id = ? AND tenant_id = ? ORDER BY timestamp DESC LIMIT ?'
+          )
+          .all(userId, tenantId, limit) as Record<string, unknown>[])
+      : (db
+          .prepare('SELECT * FROM audit_log WHERE user_id = ? ORDER BY timestamp DESC LIMIT ?')
+          .all(userId, limit) as Record<string, unknown>[]);
     return rows.map((row) => this.mapAuditRow(row));
   }
 
@@ -851,11 +883,18 @@ export class AuditService {
 
   /**
    * Get comprehensive audit statistics.
+   * W0.2d: optional tenantId scopes the audit_log-derived sections.
+   * login_attempts stays deliberately cross-tenant (TENANCY_EXEMPT —
+   * brute-force counters must not reset per tenant).
    */
-  getStats(dateRange?: { startDate?: string; endDate?: string }): AuditStats {
+  getStats(dateRange?: { startDate?: string; endDate?: string }, tenantId?: string): AuditStats {
     const whereConditions: string[] = [];
     const whereParams: unknown[] = [];
 
+    if (tenantId) {
+      whereConditions.push('tenant_id = ?');
+      whereParams.push(tenantId);
+    }
     if (dateRange?.startDate) {
       whereConditions.push('timestamp >= ?');
       whereParams.push(dateRange.startDate);

@@ -1,0 +1,436 @@
+﻿[
+    {
+        "repo":  "johnxu22786/spec-driven",
+        "v":  "KEEP",
+        "c":  "spec-workflow",
+        "r":  "spec-driven development workflow",
+        "bucket":  "agent-orchestration"
+    },
+    {
+        "repo":  "leemancheung/dsh-task-dag",
+        "v":  "KEEP",
+        "c":  "task-dag",
+        "r":  "DAG task orchestration",
+        "bucket":  "agent-orchestration"
+    },
+    {
+        "repo":  "johnxu22786/browser-automation",
+        "v":  "KEEP",
+        "c":  "browser-automation",
+        "r":  "browser automation for testing",
+        "bucket":  "browser-computer"
+    },
+    {
+        "repo":  "johnxu22786/computer-control",
+        "v":  "KEEP",
+        "c":  "computer-use",
+        "r":  "computer use desktop control",
+        "bucket":  "browser-computer"
+    },
+    {
+        "repo":  "leemancheung/dsh-agent-preset-recommender",
+        "v":  "KEEP",
+        "c":  "preset-recommender",
+        "r":  "recommends agent preset configurations",
+        "bucket":  "config-env"
+    },
+    {
+        "repo":  "zoahdev/dsh-cn-boot",
+        "v":  "KEEP",
+        "c":  "env-bootstrap",
+        "r":  "China mirror/locale bootstrap, env utility",
+        "bucket":  "config-env"
+    },
+    {
+        "repo":  "chael-chael/dsh-reference-anything",
+        "v":  "KEEP",
+        "c":  "context-refs",
+        "r":  "attach arbitrary references to context",
+        "bucket":  "context-opt"
+    },
+    {
+        "repo":  "wode25500/dsh-winget",
+        "v":  "KEEP",
+        "c":  "package-management",
+        "r":  "Windows package installation",
+        "bucket":  "context-opt"
+    },
+    {
+        "repo":  "geekricardo/dsh-balance",
+        "v":  "KEEP",
+        "c":  "llm-balance",
+        "r":  "provider balance quota monitor",
+        "bucket":  "cost-usage"
+    },
+    {
+        "repo":  "leemancheung/dsh-token-usage",
+        "v":  "KEEP",
+        "c":  "token-usage",
+        "r":  "token usage tracking",
+        "bucket":  "cost-usage"
+    },
+    {
+        "repo":  "johnxu22786/db-connector",
+        "v":  "KEEP",
+        "c":  "database",
+        "r":  "SQL database connectivity",
+        "bucket":  "db"
+    },
+    {
+        "repo":  "omdsh-dev/dsh-data-agent",
+        "v":  "KEEP",
+        "c":  "data-agent",
+        "r":  "SQL/data analysis agent",
+        "bucket":  "db"
+    },
+    {
+        "repo":  "aks1st/dock",
+        "v":  "KEEP",
+        "c":  "navigation",
+        "r":  "dock navigation for workspace tools",
+        "bucket":  "docs-office"
+    },
+    {
+        "repo":  "aks1st/dock-editor",
+        "v":  "KEEP",
+        "c":  "file-tools",
+        "r":  "GUI code editing panel",
+        "bucket":  "docs-office"
+    },
+    {
+        "repo":  "a903067276-rgb/dsh-file-upload",
+        "v":  "KEEP",
+        "c":  "file-transfer",
+        "r":  "file upload support",
+        "bucket":  "file-transfer"
+    },
+    {
+        "repo":  "hellosky983/dsh-qrcode",
+        "v":  "KEEP",
+        "c":  "local-share",
+        "r":  "QR handoff of files/links",
+        "bucket":  "file-transfer"
+    },
+    {
+        "repo":  "aks1st/dock-git",
+        "v":  "KEEP",
+        "c":  "git-tools",
+        "r":  "GUI git operations panel",
+        "bucket":  "git-github"
+    },
+    {
+        "repo":  "chouyong/dsh-branch-review",
+        "v":  "KEEP",
+        "c":  "git-review",
+        "r":  "git branch review tooling",
+        "bucket":  "git-github"
+    },
+    {
+        "repo":  "chiang21fcb/cn-linebreak",
+        "v":  "KEEP",
+        "c":  "i18n-text",
+        "r":  "Chinese linebreak text fix",
+        "bucket":  "i18n-text"
+    },
+    {
+        "repo":  "jesse-njx/dsh-polyglot",
+        "v":  "KEEP",
+        "c":  "i18n",
+        "r":  "multilingual i18n translation support",
+        "bucket":  "i18n-text"
+    },
+    {
+        "repo":  "johnxu22786/snippet-expander",
+        "v":  "KEEP",
+        "c":  "input-utility",
+        "r":  "snippet expansion input utility",
+        "bucket":  "input-utils"
+    },
+    {
+        "repo":  "omdsh-dev/dsh-at-file",
+        "v":  "KEEP",
+        "c":  "at-file-refs",
+        "r":  "@file reference navigation utility",
+        "bucket":  "input-utils"
+    },
+    {
+        "repo":  "geekricardo/dsh-cordis-mcp",
+        "v":  "KEEP",
+        "c":  "mcp-bridge",
+        "r":  "exposes Cordis via MCP",
+        "bucket":  "mcp"
+    },
+    {
+        "repo":  "perrylink/dsh-mcp-panel",
+        "v":  "KEEP",
+        "c":  "mcp-management",
+        "r":  "MCP server panel management",
+        "bucket":  "mcp"
+    },
+    {
+        "repo":  "leemancheung/dsh-image-gen",
+        "v":  "KEEP",
+        "c":  "image-gen",
+        "r":  "image generation utility",
+        "bucket":  "media-gen"
+    },
+    {
+        "repo":  "stardustlc666/dsh-ffmpeg",
+        "v":  "KEEP",
+        "c":  "media-processing",
+        "r":  "media conversion via ffmpeg",
+        "bucket":  "media-gen"
+    },
+    {
+        "repo":  "aks1st/dock-markdown",
+        "v":  "KEEP",
+        "c":  "docs-notes",
+        "r":  "GUI markdown preview panel",
+        "bucket":  "memory-notes"
+    },
+    {
+        "repo":  "omdsh-dev/dsh-annotation",
+        "v":  "KEEP",
+        "c":  "annotations",
+        "r":  "markup annotations for review",
+        "bucket":  "memory-notes"
+    },
+    {
+        "repo":  "johnxu22786/apply-patch",
+        "v":  "KEEP",
+        "c":  "patch-tools",
+        "r":  "applies unified diff patches",
+        "bucket":  "misc"
+    },
+    {
+        "repo":  "lesliewylie/dsh-ops-kit",
+        "v":  "KEEP",
+        "c":  "ops-kit",
+        "r":  "operations tooling kit",
+        "bucket":  "misc"
+    },
+    {
+        "repo":  "letter2025/dsh-model-failover",
+        "v":  "KEEP",
+        "c":  "model-failover",
+        "r":  "model fallback routing",
+        "bucket":  "model-routing"
+    },
+    {
+        "repo":  "michengai/dsh-codex-ui",
+        "v":  "KEEP",
+        "c":  "model-bridge",
+        "r":  "embeds Codex agent sessions",
+        "bucket":  "model-routing"
+    },
+    {
+        "repo":  "michengai/dsh-im-connect",
+        "v":  "KEEP",
+        "c":  "notify-bridge",
+        "r":  "IM messaging and notification bridge",
+        "bucket":  "notify"
+    },
+    {
+        "repo":  "omdsh-dev/dsh-lark",
+        "v":  "KEEP",
+        "c":  "notify",
+        "r":  "Lark message notification channel",
+        "bucket":  "notify"
+    },
+    {
+        "repo":  "omdsh-dev/dsh-inspect",
+        "v":  "KEEP",
+        "c":  "introspect",
+        "r":  "runtime and session introspection",
+        "bucket":  "observability"
+    },
+    {
+        "repo":  "perrylink/dsh-observe",
+        "v":  "KEEP",
+        "c":  "observability",
+        "r":  "agent run observability",
+        "bucket":  "observability"
+    },
+    {
+        "repo":  "aks1st/dsh-skill-manager",
+        "v":  "KEEP",
+        "c":  "skill-mgmt",
+        "r":  "manage installed skills",
+        "bucket":  "plugin-skill-mgmt"
+    },
+    {
+        "repo":  "aks1st/model-usage-plugin",
+        "v":  "KEEP",
+        "c":  "cost-monitor",
+        "r":  "model usage token tracking",
+        "bucket":  "plugin-skill-mgmt"
+    },
+    {
+        "repo":  "hellosky983/dsh-foundry",
+        "v":  "KEEP",
+        "c":  "plugin-builder",
+        "r":  "builder for crafting new capabilities",
+        "bucket":  "plugin-skill-mgmt"
+    },
+    {
+        "repo":  "adithya-hmt/fullstack-expert",
+        "v":  "KEEP",
+        "c":  "prompt-enhance",
+        "r":  "expert persona prompt enhancement",
+        "bucket":  "prompt-enhance"
+    },
+    {
+        "repo":  "hellosky983/dsh-fabric",
+        "v":  "KEEP",
+        "c":  "prompt-patterns",
+        "r":  "Fabric prompt pattern library",
+        "bucket":  "prompt-enhance"
+    },
+    {
+        "repo":  "lesliewylie/dsh-fleet-audit",
+        "v":  "KEEP",
+        "c":  "fleet-audit",
+        "r":  "multi-agent fleet auditing",
+        "bucket":  "quality-testing"
+    },
+    {
+        "repo":  "lesliewylie/review-workflow",
+        "v":  "KEEP",
+        "c":  "review-workflow",
+        "r":  "code review workflow",
+        "bucket":  "quality-testing"
+    },
+    {
+        "repo":  "perrylink/dsh-auto-review",
+        "v":  "KEEP",
+        "c":  "code-review",
+        "r":  "automated code review",
+        "bucket":  "quality-testing"
+    },
+    {
+        "repo":  "jesse-njx/dsh-tmuxctl",
+        "v":  "KEEP",
+        "c":  "tmux-remote",
+        "r":  "tmux session remote control",
+        "bucket":  "remote-infra"
+    },
+    {
+        "repo":  "wode25500/dsh-ssh-pro",
+        "v":  "KEEP",
+        "c":  "ssh-remote",
+        "r":  "advanced SSH remote operations",
+        "bucket":  "remote-infra"
+    },
+    {
+        "repo":  "jesse-njx/dsh-routines",
+        "v":  "KEEP",
+        "c":  "scheduling",
+        "r":  "scheduled routine cron tasks",
+        "bucket":  "schedule-automation"
+    },
+    {
+        "repo":  "johnxu22786/model-catalog",
+        "v":  "KEEP",
+        "c":  "model-routing",
+        "r":  "model catalog aids routing",
+        "bucket":  "schedule-automation"
+    },
+    {
+        "repo":  "johnxu22786/rss-digest",
+        "v":  "KEEP",
+        "c":  "rss-research",
+        "r":  "RSS fetch digest for research",
+        "bucket":  "search-research"
+    },
+    {
+        "repo":  "lesliewylie/dsh-session-search-pro",
+        "v":  "KEEP",
+        "c":  "session-search",
+        "r":  "session history search",
+        "bucket":  "search-research"
+    },
+    {
+        "repo":  "johnxu22786/safety-net",
+        "v":  "KEEP",
+        "c":  "safety-guards",
+        "r":  "guards destructive operations",
+        "bucket":  "security-safety"
+    },
+    {
+        "repo":  "johnxu22786/secret-guard",
+        "v":  "KEEP",
+        "c":  "secret-guard",
+        "r":  "detects leaked secrets",
+        "bucket":  "security-safety"
+    },
+    {
+        "repo":  "aks1st/dsh-archived-conversations",
+        "v":  "KEEP",
+        "c":  "session-mgmt",
+        "r":  "conversation archive, session recovery",
+        "bucket":  "session-mgmt"
+    },
+    {
+        "repo":  "geekricardo/dsh-convmap",
+        "v":  "KEEP",
+        "c":  "conv-nav",
+        "r":  "conversation map index navigation",
+        "bucket":  "session-mgmt"
+    },
+    {
+        "repo":  "johnxu22786/session-export",
+        "v":  "KEEP",
+        "c":  "session-export",
+        "r":  "exports shares sessions",
+        "bucket":  "session-mgmt"
+    },
+    {
+        "repo":  "1helloman1/dsh-vision-fallback",
+        "v":  "KEEP",
+        "c":  "vision-fallback",
+        "r":  "vision model fallback routing",
+        "bucket":  "vision-ocr"
+    },
+    {
+        "repo":  "omdsh-dev/qwen-mm-plugins",
+        "v":  "KEEP",
+        "c":  "mm-vision",
+        "r":  "Qwen multimodal vision support",
+        "bucket":  "vision-ocr"
+    },
+    {
+        "repo":  "jesse-njx/dsh-voice",
+        "v":  "KEEP",
+        "c":  "tts-voice",
+        "r":  "TTS voice input/output",
+        "bucket":  "voice"
+    },
+    {
+        "repo":  "stardustlc666/dsh-voice",
+        "v":  "KEEP",
+        "c":  "voice-tts",
+        "r":  "voice input and TTS",
+        "bucket":  "voice"
+    },
+    {
+        "repo":  "acebang0303/dsh-quick-launch",
+        "v":  "KEEP",
+        "c":  "navigation",
+        "r":  "launcher aids quick navigation",
+        "bucket":  "workspace-nav"
+    },
+    {
+        "repo":  "johnxu22786/codegraph",
+        "v":  "KEEP",
+        "c":  "code-graph",
+        "r":  "code structure graph navigation",
+        "bucket":  "workspace-nav"
+    },
+    {
+        "repo":  "zoahdev/dsh-shelf",
+        "v":  "KEEP",
+        "c":  "bookmarks",
+        "r":  "saved-item shelf, bookmarks/index",
+        "bucket":  "workspace-nav"
+    }
+]

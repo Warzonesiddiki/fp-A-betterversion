@@ -40,6 +40,28 @@ export interface DataTableProps<T extends object = Record<string, unknown>> {
 const VIRTUAL_THRESHOLD = 100;
 const ROW_HEIGHT = 40;
 
+/**
+ * UI-HF numeric-sort hotfix: type-aware cell comparison.
+ *
+ * The previous comparator coerced every cell through String(), which sorted
+ * numbers lexically ("100" < "20" < "3") across 63 consumer pages — a
+ * data-trust defect in a financial app. Repo convention stores financial
+ * values as raw `number`s, so:
+ *  - number ⊕ number        → arithmetic difference;
+ *  - Date ⊕ Date            → epoch difference;
+ *  - anything else          → locale-aware string compare (text columns keep
+ *                             natural collation instead of ASCII/codepoint
+ *                             ordering);
+ *  - null/undefined/''      → handled by the caller: always last, regardless
+ *                             of direction.
+ */
+const compareCellValues = (a: unknown, b: unknown): number => {
+  if (a instanceof Date && b instanceof Date) return a.getTime() - b.getTime();
+  if (typeof a === 'number' && typeof b === 'number') return a - b;
+  if (typeof a === 'bigint' && typeof b === 'bigint') return a < b ? -1 : a > b ? 1 : 0;
+  return String(a).localeCompare(String(b));
+};
+
 export const DataTable = memo(function <T extends object = Record<string, unknown>>({
   columns: _columns,
   data: rawData,
@@ -67,21 +89,27 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
   const [currentPage, setCurrentPage] = useState(1);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Handle sorting
+  // W-A11Y-002 M2+M3: single focus model per the ARIA 1.1 grid pattern.
+  // Roving tabindex over data cells; arrow keys move the focused cell.
+  const [focusedCell, setFocusedCell] = useState<{ row: number; col: number } | null>(null);
+  const cellRefs = useRef(new Map<string, HTMLTableCellElement>());
+
+  // Handle sorting (UI-HF: type-aware comparator — see compareCellValues).
+  // Nullish/empty cells sort last deterministically in BOTH directions;
+  // non-empty cells flip with direction.
   const sortedData = useMemo(() => {
     const items = [...(data ?? [])];
     if (sortConfig !== null) {
+      const dirFactor = sortConfig.direction === 'asc' ? 1 : -1;
       items.sort((a, b) => {
-        const aValue = String(a[sortConfig.key] ?? '');
-        const bValue = String(b[sortConfig.key] ?? '');
-
-        if (aValue < bValue) {
-          return sortConfig.direction === 'asc' ? -1 : 1;
-        }
-        if (aValue > bValue) {
-          return sortConfig.direction === 'asc' ? 1 : -1;
-        }
-        return 0;
+        const aValue = a[sortConfig.key];
+        const bValue = b[sortConfig.key];
+        const aEmpty = aValue === null || aValue === undefined || aValue === '';
+        const bEmpty = bValue === null || bValue === undefined || bValue === '';
+        if (aEmpty && bEmpty) return 0;
+        if (aEmpty) return 1;
+        if (bEmpty) return -1;
+        return dirFactor * compareCellValues(aValue, bValue);
       });
     }
     return items;
@@ -114,6 +142,27 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
     const startIndex = (currentPage - 1) * pageSize;
     return filteredData.slice(startIndex, startIndex + pageSize);
   }, [filteredData, currentPage, pageSize, useVirtual]);
+
+  // Wave-7E a11y: single-source results announcer. The old live span lived
+  // inside the `filteredData.length > pageSize` footer, so filters that
+  // shrank the table to one page — or emptied it — went unannounced. This
+  // text feeds a PERSISTENT polite region below; only its content swaps.
+  const hasActiveFilters = Object.values(filters).some((value) => value.trim() !== '');
+  const resultsAnnouncement = (() => {
+    if (loading) return '';
+    const total = filteredData.length;
+    // Count-phrasing (not the visible emptyMessage) so the announcement never
+    // duplicates the empty-state copy rendered inside the table body.
+    if (total === 0) {
+      return hasActiveFilters ? 'Showing 0 entries for the current filters' : 'Showing 0 entries';
+    }
+    if (!useVirtual && total > pageSize) {
+      const start = (currentPage - 1) * pageSize + 1;
+      const end = Math.min(total, currentPage * pageSize);
+      return `Showing ${start} to ${end} of ${total} entries`;
+    }
+    return `Showing all ${total.toLocaleString()} entries`;
+  })();
 
   const requestSort = (key: string) => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -152,31 +201,45 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
     );
   }
 
-  // Render a single row (shared between virtual and paginated modes)
-  const renderRow = (row: Record<string, unknown>, rowIdx: number) => (
+  // Render the cells of one row (shared between virtual and paginated modes).
+  // `absRow` is the index within filteredData; `isFirstRendered` marks the
+  // first body row actually mounted, so exactly one roving tab stop exists
+  // even past page 1 or inside a virtual window (W-A11Y-002 M2). Rows are
+  // never tab stops: keyboard activation of a clickable row happens from its
+  // focused cell via Enter/Space.
+  const renderCells = (row: Record<string, unknown>, absRow: number, isFirstRendered: boolean) =>
+    columns.map((column, colIdx) => (
+      <td
+        key={column.key}
+        ref={setCellRef(absRow, colIdx)}
+        tabIndex={cellTabIndex(absRow, colIdx, isFirstRendered)}
+        aria-selected={
+          focusedCell?.row === absRow && focusedCell?.col === colIdx ? true : undefined
+        }
+        onFocus={() => setFocusedCell({ row: absRow, col: colIdx })}
+        onClick={onRowClick ? () => onRowClick(row) : undefined}
+        onKeyDown={onRowClick ? activateOnKey(() => onRowClick(row)) : undefined}
+        className={cn(
+          'px-4 py-3 text-[var(--text-primary)] whitespace-nowrap',
+          onRowClick ? 'cursor-pointer' : 'cursor-default',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset',
+          'focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400',
+          'focus-visible:bg-[var(--bg-hover)] dark:focus-visible:bg-gray-700/60',
+          column.align === 'right' && 'text-right',
+          column.align === 'center' && 'text-center'
+        )}
+      >
+        {column.render ? column.render(row[column.key], row) : String(row[column.key] ?? '')}
+      </td>
+    ));
+
+  const renderRow = (row: Record<string, unknown>, rowIdx: number, isFirstRendered: boolean) => (
     <tr
       key={(row.id as React.Key) ?? rowIdx}
-      className={cn(
-        'transition-colors hover:bg-[var(--bg-surface)]/50 dark:hover:bg-gray-700/50 group',
-        onRowClick && 'cursor-pointer'
-      )}
-      onClick={() => onRowClick?.(row)}
-      onKeyDown={onRowClick ? activateOnKey(() => onRowClick(row)) : undefined}
-      tabIndex={onRowClick ? 0 : undefined}
+      className="transition-colors hover:bg-[var(--bg-surface)]/50 dark:hover:bg-gray-700/50 group"
       aria-rowindex={rowIdx + 1}
     >
-      {columns.map((column) => (
-        <td
-          key={column.key}
-          className={cn(
-            'px-4 py-3 text-[var(--text-primary)] whitespace-nowrap',
-            column.align === 'right' && 'text-right',
-            column.align === 'center' && 'text-center'
-          )}
-        >
-          {column.render ? column.render(row[column.key], row) : String(row[column.key] ?? '')}
-        </td>
-      ))}
+      {renderCells(row, rowIdx, isFirstRendered)}
     </tr>
   );
 
@@ -184,6 +247,7 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
   const renderVirtualBody = () => {
     if (!virtualizer) return null;
     const virtualItems = virtualizer.getVirtualItems();
+    const firstRenderedRow = virtualItems[0]?.index ?? -1;
     const totalSize = virtualizer.getTotalSize();
     const paddingTop = virtualItems.length > 0 ? virtualItems[0]!.start : 0;
     const paddingBottom =
@@ -201,30 +265,11 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
           return (
             <tr
               key={(row!.id as React.Key) ?? virtualRow.index}
-              className={cn(
-                'transition-colors hover:bg-[var(--bg-surface)]/50 dark:hover:bg-gray-700/50 group',
-                onRowClick && 'cursor-pointer'
-              )}
-              onClick={() => onRowClick?.(row!)}
-              onKeyDown={onRowClick ? activateOnKey(() => onRowClick(row!)) : undefined}
-              tabIndex={onRowClick ? 0 : undefined}
+              className="transition-colors hover:bg-[var(--bg-surface)]/50 dark:hover:bg-gray-700/50 group"
               data-index={virtualRow.index}
               aria-rowindex={virtualRow.index + 1}
             >
-              {columns.map((column) => (
-                <td
-                  key={column.key}
-                  className={cn(
-                    'px-4 py-3 text-[var(--text-primary)] whitespace-nowrap',
-                    column.align === 'right' && 'text-right',
-                    column.align === 'center' && 'text-center'
-                  )}
-                >
-                  {column.render
-                    ? column.render(row?.[column.key], row!)
-                    : String(row?.[column.key] ?? '')}
-                </td>
-              ))}
+              {renderCells(row!, virtualRow.index, virtualRow.index === firstRenderedRow)}
             </tr>
           );
         })}
@@ -263,7 +308,9 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
           </td>
         </tr>
       ) : (
-        paginatedData.map((row, rowIdx) => renderRow(row, rowIdx))
+        paginatedData.map((row, rowIdx) =>
+          renderRow(row, (currentPage - 1) * pageSize + rowIdx, rowIdx === 0)
+        )
       )}
     </tbody>
   );
@@ -271,6 +318,54 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
   const getAriaSort = (columnKey: string): 'ascending' | 'descending' | undefined => {
     if (sortConfig?.key !== columnKey) return undefined;
     return sortConfig.direction === 'asc' ? 'ascending' : 'descending';
+  };
+
+  // W-A11Y-002 M3: arrow-key cell navigation per the ARIA 1.1 grid pattern.
+  const NAV_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+  // Native controls keep their own arrow-key behavior; the grid must not
+  // hijack it (e.g. caret movement in a filter input or a cell's button).
+  const NATIVE_ARROW_TARGETS = ['TH', 'INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'];
+  const handleGridKeyDown = (e: React.KeyboardEvent) => {
+    if (!NAV_KEYS.includes(e.key)) return;
+    if (e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
+    const target = e.target as HTMLElement;
+    if (NATIVE_ARROW_TARGETS.includes(target.tagName)) return;
+    if (filteredData.length === 0 || columns.length === 0) return;
+    e.preventDefault();
+
+    const start = focusedCell ?? { row: 0, col: 0 };
+    let { row, col } = start;
+    if (e.key === 'ArrowDown') row += 1;
+    else if (e.key === 'ArrowUp') row -= 1;
+    else if (e.key === 'ArrowRight') col += 1;
+    else col -= 1;
+
+    row = Math.min(Math.max(row, 0), filteredData.length - 1);
+    col = Math.min(Math.max(col, 0), columns.length - 1);
+    setFocusedCell({ row, col });
+
+    // In virtual mode ensure the target row is rendered before focusing.
+    if (useVirtual) virtualizer.scrollToIndex(row, { align: 'auto' });
+    requestAnimationFrame(() => {
+      cellRefs.current.get(`${row}:${col}`)?.focus();
+    });
+  };
+
+  // Roving tabindex (W-A11Y-002 M2): the focused cell is the ONLY tab stop
+  // among data cells; before any cell is focused, the first rendered data
+  // cell takes the stop — not absolute row 0, which may be on a later page
+  // or outside the current virtual window (which would leave zero tab stops).
+  const cellTabIndex = (absRow: number, colIdx: number, isFirstRendered: boolean): number => {
+    if (focusedCell) {
+      return focusedCell.row === absRow && focusedCell.col === colIdx ? 0 : -1;
+    }
+    return isFirstRendered && colIdx === 0 ? 0 : -1;
+  };
+
+  const setCellRef = (absRow: number, colIdx: number) => (el: HTMLTableCellElement | null) => {
+    const key = `${absRow}:${colIdx}`;
+    if (el) cellRefs.current.set(key, el);
+    else cellRefs.current.delete(key);
   };
 
   return (
@@ -288,6 +383,7 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
           aria-rowcount={filteredData.length}
           aria-colcount={columns.length}
           aria-label={ariaLabel || caption}
+          onKeyDown={handleGridKeyDown}
         >
           {caption && (
             <caption
@@ -384,6 +480,15 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
         </table>
       </div>
 
+      {/* Wave-7E a11y: persistent polite results region — mounted for every
+          non-error state, only its text swaps (see resultsAnnouncement).
+          Deliberately bare aria-live without role="status": DataTable is used
+          by 60+ pages, and an extra status role would hijack page-level
+          getByRole('status') queries aimed at those pages' own regions. */}
+      <p aria-live="polite" aria-atomic="true" className="sr-only">
+        {resultsAnnouncement}
+      </p>
+
       {useVirtual && !loading && (
         <div className="mt-2 text-xs text-[var(--text-secondary)] text-center">
           Showing all {filteredData.length.toLocaleString()} rows (virtual scrolling)
@@ -392,7 +497,9 @@ export const DataTable = memo(function <T extends object = Record<string, unknow
 
       {!loading && !useVirtual && filteredData.length > pageSize && (
         <div className="mt-4 flex items-center justify-between text-xs text-[var(--text-secondary)]">
-          <span aria-live="polite" aria-atomic="true">
+          {/* Announcement duty moved to the persistent region above; this
+              visible span stays plain text to avoid double announcements. */}
+          <span>
             Showing {Math.min(filteredData.length, (currentPage - 1) * pageSize + 1)} to{' '}
             {Math.min(filteredData.length, currentPage * pageSize)} of {filteredData.length} entries
           </span>

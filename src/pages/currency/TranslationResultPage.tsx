@@ -1,21 +1,21 @@
 // @money-ast-allow Reason: this file is the currency-translation results
 // page. The flagged `===` is `sourceCurrency === targetCurrency`, a string
-// identity check on an ISO-4217 currency code. The flagged
-// `(entry.debit || 0) - (entry.credit || 0)` is a single-line helper
-// that derives the signed net amount of a GL entry; the result is fed
-// directly into `sumMoney` / `subtractMoney` / `multiplyMoney` in the
-// canonical money primitive. No currency value is compared or accumulated
-// with raw float math downstream.
+// identity check on an ISO-4217 currency code. The signed net amount of a
+// GL entry is derived in `translationResultData.ts` and fed into the
+// canonical money primitive (`sumMoney` / `roundTo`). No currency value is
+// compared or accumulated with raw float math downstream.
 
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
-import { Repeat, ArrowRight, TrendingUp, TrendingDown } from 'lucide-react';
+import { Repeat, ArrowRight } from 'lucide-react';
 import { formatNumber } from '@/utils/financialFormatting';
-import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
+import { sumMoney, roundTo } from '@/utils/money';
+import { buildTranslationEntries } from './translationResultData';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { ErrorState } from '@/components/ui/ErrorState';
 
 const RATES: Record<string, Record<string, number>> = {
   USD: {
@@ -75,12 +75,66 @@ function formatCurrency(n: number, currency: string): string {
   }).format(n);
 }
 
-interface TranslationEntry {
-  accountCode: string;
-  accountName: string;
-  originalAmount: number;
-  translatedAmount: number;
-  gainLoss: number;
+interface CurrencySelectorProps {
+  readonly sourceCurrency: string;
+  readonly targetCurrency: string;
+  readonly onSourceChange: (currency: string) => void;
+  readonly onTargetChange: (currency: string) => void;
+  readonly rate: number | undefined;
+}
+
+function CurrencySelector({
+  sourceCurrency,
+  targetCurrency,
+  onSourceChange,
+  onTargetChange,
+  rate,
+}: CurrencySelectorProps) {
+  return (
+    <div className="flex items-center gap-4 flex-wrap">
+      <div>
+        <label htmlFor="source-currency" className="block text-xs text-[var(--text-muted)] mb-1">
+          Source Currency
+        </label>
+        <select
+          id="source-currency"
+          value={sourceCurrency}
+          onChange={(e) => onSourceChange(e.target.value)}
+          className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
+        >
+          {CURRENCIES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
+      </div>
+      <ArrowRight className="h-5 w-5 text-[var(--text-muted)] mt-4" />
+      <div>
+        <label htmlFor="target-currency" className="block text-xs text-[var(--text-muted)] mb-1">
+          Target Currency
+        </label>
+        <select
+          id="target-currency"
+          value={targetCurrency}
+          onChange={(e) => onTargetChange(e.target.value)}
+          className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
+        >
+          {CURRENCIES.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="ml-auto text-right mt-4">
+        <div className="text-xs text-[var(--text-muted)]">Exchange Rate</div>
+        <div className="text-lg font-bold tabular-nums">
+          {rate === undefined ? '—' : formatNumber(rate, 6)}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function TranslationResultPage() {
@@ -89,42 +143,20 @@ export default function TranslationResultPage() {
   const [sourceCurrency, setSourceCurrency] = useState('USD');
   const [targetCurrency, setTargetCurrency] = useState('EUR');
 
-  const rate = useMemo(() => {
+  const rate = useMemo<number | undefined>(() => {
     if (sourceCurrency === targetCurrency) return 1;
-    return RATES[sourceCurrency]?.[targetCurrency] ?? 1;
+    return RATES[sourceCurrency]?.[targetCurrency];
   }, [sourceCurrency, targetCurrency]);
 
-  const translationData = useMemo((): TranslationEntry[] => {
-    const accountMap = new Map<string, { name: string; total: number }>();
-    for (const entry of entries) {
-      const code = entry.accountCode || 'Unknown';
-      const existing = accountMap.get(code);
-      const amount = (entry.debit || 0) - (entry.credit || 0);
-      if (existing) {
-        existing.total += amount;
-      } else {
-        accountMap.set(code, { name: entry.accountName || code, total: amount });
-      }
-    }
-    return Array.from(accountMap.entries())
-      .map(([code, { name, total }]) => ({
-        accountCode: code,
-        accountName: name,
-        originalAmount: total,
-        translatedAmount: total * rate,
-        gainLoss: total * rate - total,
-      }))
-      .sort((a, b) => a.accountCode.localeCompare(b.accountCode));
-  }, [entries, rate]);
+  const translationData = useMemo(
+    () => (rate === undefined ? [] : buildTranslationEntries(entries, rate)),
+    [entries, rate]
+  );
 
   const totals = useMemo(() => {
     const original = roundTo(sumMoney(translationData.map((e) => e.originalAmount)), 2);
     const translated = roundTo(sumMoney(translationData.map((e) => e.translatedAmount)), 2);
-    return {
-      original,
-      translated,
-      gainLoss: roundTo(subtractMoney(translated, original), 2),
-    };
+    return { original, translated };
   }, [translationData]);
 
   if (entries.length === 0)
@@ -139,6 +171,29 @@ export default function TranslationResultPage() {
       </div>
     );
 
+  if (rate === undefined)
+    return (
+      <div className="p-6 space-y-6">
+        <PageHeader title="Translation Results" />
+        <Card>
+          <CardContent className="p-4">
+            <CurrencySelector
+              sourceCurrency={sourceCurrency}
+              targetCurrency={targetCurrency}
+              onSourceChange={setSourceCurrency}
+              onTargetChange={setTargetCurrency}
+              rate={undefined}
+            />
+          </CardContent>
+        </Card>
+        <ErrorState
+          title="Missing exchange rate"
+          message={`No exchange rate is available for ${sourceCurrency} → ${targetCurrency}. Translation is blocked rather than computed at a placeholder rate of 1. Pick a supported pair or load the missing rate.`}
+          errorCode="MISSING_FX_RATE"
+        />
+      </div>
+    );
+
   return (
     <div className="p-6 space-y-6">
       <PageHeader title="Translation Results" />
@@ -146,58 +201,18 @@ export default function TranslationResultPage() {
       {/* Currency Selector */}
       <Card>
         <CardContent className="p-4">
-          <div className="flex items-center gap-4 flex-wrap">
-            <div>
-              <label
-                htmlFor="source-currency"
-                className="block text-xs text-[var(--text-muted)] mb-1"
-              >
-                Source Currency
-              </label>
-              <select
-                id="source-currency"
-                value={sourceCurrency}
-                onChange={(e) => setSourceCurrency(e.target.value)}
-                className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
-              >
-                {CURRENCIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <ArrowRight className="h-5 w-5 text-[var(--text-muted)] mt-4" />
-            <div>
-              <label
-                htmlFor="target-currency"
-                className="block text-xs text-[var(--text-muted)] mb-1"
-              >
-                Target Currency
-              </label>
-              <select
-                id="target-currency"
-                value={targetCurrency}
-                onChange={(e) => setTargetCurrency(e.target.value)}
-                className="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-white"
-              >
-                {CURRENCIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="ml-auto text-right mt-4">
-              <div className="text-xs text-[var(--text-muted)]">Exchange Rate</div>
-              <div className="text-lg font-bold tabular-nums">{formatNumber(rate, 6)}</div>
-            </div>
-          </div>
+          <CurrencySelector
+            sourceCurrency={sourceCurrency}
+            targetCurrency={targetCurrency}
+            onSourceChange={setSourceCurrency}
+            onTargetChange={setTargetCurrency}
+            rate={rate}
+          />
         </CardContent>
       </Card>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
             <div className="text-xs text-[var(--text-muted)]">Original ({sourceCurrency})</div>
@@ -211,22 +226,6 @@ export default function TranslationResultPage() {
             <div className="text-xs text-[var(--text-muted)]">Translated ({targetCurrency})</div>
             <div className="text-lg font-bold">
               {formatCurrency(totals.translated, targetCurrency)}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-xs text-[var(--text-muted)]">Translation Gain/Loss</div>
-            <div
-              className="text-lg font-bold flex items-center justify-center gap-1"
-              style={{ color: totals.gainLoss >= 0 ? '#4ade80' : '#f87171' }}
-            >
-              {totals.gainLoss >= 0 ? (
-                <TrendingUp className="h-4 w-4" />
-              ) : (
-                <TrendingDown className="h-4 w-4" />
-              )}
-              {formatCurrency(totals.gainLoss, targetCurrency)}
             </div>
           </CardContent>
         </Card>
@@ -255,9 +254,6 @@ export default function TranslationResultPage() {
                   <th scope="col" className="px-4 py-3 text-right">
                     Translated ({targetCurrency})
                   </th>
-                  <th scope="col" className="px-4 py-3 text-right">
-                    Gain/Loss
-                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
@@ -273,13 +269,6 @@ export default function TranslationResultPage() {
                     <td className="px-4 py-2 text-right tabular-nums font-medium">
                       {formatCurrency(e.translatedAmount, targetCurrency)}
                     </td>
-                    <td
-                      className="px-4 py-2 text-right tabular-nums font-medium"
-                      style={{ color: e.gainLoss >= 0 ? '#4ade80' : '#f87171' }}
-                    >
-                      {e.gainLoss >= 0 ? '+' : ''}
-                      {formatCurrency(e.gainLoss, targetCurrency)}
-                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -291,13 +280,6 @@ export default function TranslationResultPage() {
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">
                     {formatCurrency(totals.translated, targetCurrency)}
-                  </td>
-                  <td
-                    className="px-4 py-3 text-right tabular-nums"
-                    style={{ color: totals.gainLoss >= 0 ? '#4ade80' : '#f87171' }}
-                  >
-                    {totals.gainLoss >= 0 ? '+' : ''}
-                    {formatCurrency(totals.gainLoss, targetCurrency)}
                   </td>
                 </tr>
               </tfoot>

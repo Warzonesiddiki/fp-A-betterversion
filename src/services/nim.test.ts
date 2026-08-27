@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
+import type { LlmEgressAuditEvent } from './llm/llmEgress';
+
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe('nim service', () => {
@@ -10,6 +12,10 @@ describe('nim service', () => {
     vi.stubEnv('VITE_NIM_BASE_URL', 'https://test-nim.api.com/v1');
     vi.stubEnv('VITE_NIM_API_KEY_1', 'key-aaa');
     vi.stubEnv('VITE_NIM_API_KEY_2', 'key-bbb');
+    // W0.9: NIM traffic now routes through the llmEgress chokepoint — tests
+    // must enable egress and allowlist the stubbed NIM host.
+    vi.stubEnv('VITE_LLM_EGRESS_ENABLED', 'true');
+    vi.stubEnv('VITE_LLM_EGRESS_ALLOWED_HOSTS', 'test-nim.api.com');
     mockFetch = vi.fn();
     vi.stubGlobal('fetch', mockFetch);
     vi.resetModules();
@@ -396,6 +402,111 @@ describe('nim service', () => {
       expect(NIM_MODELS.LLAMA_3_1_8B).toBe('meta/llama-3.1-8b-instruct');
       expect(NIM_MODELS.CODESTRAL_24B).toBe('mistralai/codestral-24b-instruct');
       expect(NIM_MODELS.DEFAULT).toBe('meta/llama-3.1-70b-instruct');
+    });
+  });
+
+  describe('analyzeVarianceEnhanced (W0.9 egress wiring)', () => {
+    const PARAMS = { metric: 'Revenue', actual: 120000, budget: 100000, period: 'Q1 2026' };
+
+    // vi.resetModules() in beforeEach means ./nim and ./llm/llmEgress must be
+    // imported from the SAME post-reset generation, or the audit sink would be
+    // attached to a stale module instance.
+    async function importNimWithSink(events: LlmEgressAuditEvent[]) {
+      const nim = await import('./nim');
+      const egress = await import('./llm/llmEgress');
+      egress.setLlmEgressAuditSink({ append: (event) => events.push(event) });
+      return nim;
+    }
+
+    function mockModelContent(content: string): void {
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: 'var-1',
+            choices: [{ index: 0, message: { role: 'assistant', content }, finish_reason: 'stop' }],
+            usage: {},
+          }),
+      });
+    }
+
+    it('uses the local path and never touches transport when egress is disabled', async () => {
+      vi.stubEnv('VITE_LLM_EGRESS_ENABLED', 'false');
+      const events: LlmEgressAuditEvent[] = [];
+      const { analyzeVarianceEnhanced } = await importNimWithSink(events);
+
+      const result = await analyzeVarianceEnhanced(PARAMS);
+
+      expect(result.source).toBe('local');
+      expect(result.text).toContain('Revenue for Q1 2026:');
+      expect(result.text).toContain('(20.0%) above budget.');
+      expect(mockFetch).not.toHaveBeenCalled();
+      expect(events).toHaveLength(0);
+    });
+
+    it('routes through the chokepoint when enabled and the host is allowlisted', async () => {
+      mockModelContent('  Root causes identified by the model.  ');
+      const events: LlmEgressAuditEvent[] = [];
+      const { analyzeVarianceEnhanced } = await importNimWithSink(events);
+
+      const result = await analyzeVarianceEnhanced(PARAMS);
+
+      expect(result.source).toBe('llm');
+      expect(result.text).toBe('Root causes identified by the model.');
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+
+      const [url] = mockFetch.mock.calls[0]!;
+      expect(String(url)).toContain('test-nim.api.com/v1/chat/completions');
+
+      // Conservative sampling parameters, facts-only prompt.
+      const body = JSON.parse(mockFetch.mock.calls[0]![1].body);
+      expect(body.temperature).toBe(0.2);
+      expect(body.max_tokens).toBe(512);
+      expect(body.messages[0].role).toBe('system');
+      expect(body.messages[1].content).toContain('Analyze this variance for "Revenue"');
+
+      // Gating proof via the audit hook.
+      expect(events).toHaveLength(1);
+      expect(events[0]!.endpoint).toContain('test-nim.api.com');
+      expect(events[0]!.promptBytes).toBeGreaterThan(0);
+      expect(typeof events[0]!.redactions).toBe('number');
+    });
+
+    it('falls back to the local text without throwing when the host is not allowed', async () => {
+      vi.stubEnv('VITE_LLM_EGRESS_ALLOWED_HOSTS', 'other-host.example.com');
+      const events: LlmEgressAuditEvent[] = [];
+      const { analyzeVarianceEnhanced } = await importNimWithSink(events);
+
+      const result = await analyzeVarianceEnhanced(PARAMS);
+
+      expect(result.source).toBe('local');
+      expect(result.text).toContain('(20.0%) above budget.');
+      expect(mockFetch).not.toHaveBeenCalled();
+      // Gate rejections fire before the audit hook.
+      expect(events).toHaveLength(0);
+    });
+
+    it('falls back to the local text when the model response is non-OK', async () => {
+      mockFetch.mockResolvedValue({ ok: false, status: 503, text: () => Promise.resolve('down') });
+      const events: LlmEgressAuditEvent[] = [];
+      const { analyzeVarianceEnhanced } = await importNimWithSink(events);
+
+      const result = await analyzeVarianceEnhanced(PARAMS);
+
+      expect(result.source).toBe('local');
+      expect(result.text).toContain('(20.0%) above budget.');
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+    });
+
+    it('falls back to the local text when the model returns empty content', async () => {
+      mockModelContent('');
+      const events: LlmEgressAuditEvent[] = [];
+      const { analyzeVarianceEnhanced } = await importNimWithSink(events);
+
+      const result = await analyzeVarianceEnhanced(PARAMS);
+
+      expect(result.source).toBe('local');
+      expect(mockFetch).toHaveBeenCalledTimes(1);
     });
   });
 });

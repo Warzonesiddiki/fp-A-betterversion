@@ -14,7 +14,7 @@ STAGED_FMT=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|t
 # Gate 1: ESLint on staged code files (zero warnings).
 if [ -n "$STAGED_CODE" ]; then
   echo "→ eslint (staged)"
-  echo "$STAGED_CODE" | xargs npx eslint --max-warnings 0
+  echo "$STAGED_CODE" | xargs -n 25 npx eslint --max-warnings 0
 else
   echo "→ eslint: no staged code files, skipped"
 fi
@@ -30,7 +30,7 @@ fi
 # Gate 3: Prettier on staged files.
 if [ -n "$STAGED_FMT" ]; then
   echo "→ prettier --check (staged)"
-  echo "$STAGED_FMT" | xargs npx prettier --check
+  echo "$STAGED_FMT" | xargs -n 30 npx prettier --check
 else
   echo "→ prettier: no staged formattable files, skipped"
 fi

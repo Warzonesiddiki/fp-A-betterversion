@@ -8,6 +8,11 @@ import { useForecastStore } from '@/store/forecastStore';
 import { useScenarioStore } from '@/store/scenarioStore';
 import { useEntityStore } from '@/store/entityStore';
 import { useNavigate } from 'react-router-dom';
+import { LiveRegion } from '@/components/ui/LiveRegion';
+
+// Focus-trap selector — same pattern as ShortcutHelpModal.
+const FOCUSABLE = 'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export interface CommandItem {
   id: string;
   label: string;
@@ -52,6 +57,7 @@ export function CommandPalette({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const filteredItems = useMemo(() => {
     if (!query.trim()) return items;
     const lowerQuery = query.toLowerCase();
@@ -112,6 +118,29 @@ export function CommandPalette({
     }
     prevVisible.current = visible;
   }, [visible]);
+  // A11Y PASS 1: keep keyboard focus inside the dialog while it is open —
+  // same pattern as ShortcutHelpModal: Tab on the last focusable wraps to
+  // the first, Shift+Tab on the first wraps to the last.
+  useEffect(() => {
+    if (!visible) return;
+    const handleTrapKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab' || !dialogRef.current) return;
+      const focusables = dialogRef.current.querySelectorAll<HTMLElement>(FOCUSABLE);
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleTrapKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleTrapKeyDown);
+    };
+  }, [visible]);
   const prevQuery = useRef(query);
   useEffect(() => {
     if (query !== prevQuery.current && filteredItems.length > 0) {
@@ -158,9 +187,9 @@ export function CommandPalette({
       }}
       role="presentation"
       tabIndex={-1}
-      aria-hidden="true"
     >
       <div
+        ref={dialogRef}
         className="w-full max-w-lg rounded-lg shadow-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] overflow-hidden animate-scale-in"
         role="dialog"
         aria-modal="true"
@@ -195,26 +224,30 @@ export function CommandPalette({
           </kbd>
         </div>
         {/* Item List */}
-        <div
-          ref={listRef}
-          id="command-list"
-          role="listbox"
-          aria-label="Commands"
-          className="max-h-80 overflow-y-auto p-2"
-        >
-          {filteredItems.length === 0 ? (
-            <div
-              className="text-center py-8"
-              style={{ color: 'var(--text-secondary)' }}
-              role="option"
-              aria-hidden="true"
-              aria-selected="false"
-            >
+        {filteredItems.length === 0 ? (
+          // ARIA: an empty listbox must not keep role=listbox (it would demand
+          // option/group children). Announce the empty state as a status instead.
+          <div
+            ref={listRef}
+            id="command-list"
+            role="status"
+            aria-label={t('commands.notFound')}
+            className="max-h-80 overflow-y-auto p-2"
+          >
+            <div className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
               <p className="text-sm">{t('commands.notFound')}</p>
             </div>
-          ) : (
-            Array.from(groupedItems.entries()).map(([category, categoryItems]) => (
-              <div key={category} className="mb-2">
+          </div>
+        ) : (
+          <div
+            ref={listRef}
+            id="command-list"
+            role="listbox"
+            aria-label="Commands"
+            className="max-h-80 overflow-y-auto p-2"
+          >
+            {Array.from(groupedItems.entries()).map(([category, categoryItems]) => (
+              <div key={category} role="group" aria-label={category} className="mb-2">
                 <div
                   className="px-3 py-1 text-xs font-semibold uppercase tracking-wider"
                   style={{ color: 'var(--text-secondary)' }}
@@ -230,6 +263,7 @@ export function CommandPalette({
                       data-index={globalIndex}
                       role="option"
                       aria-selected={globalIndex === selectedIndex}
+                      tabIndex={-1}
                       className="w-full flex items-center gap-3 px-3 py-2 rounded text-sm transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
                       style={{
                         background:
@@ -262,15 +296,16 @@ export function CommandPalette({
                   );
                 })}
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
         {/* Footer */}
         <div
           className="flex items-center justify-between px-4 py-2 border-t text-xs"
           style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-secondary)' }}
         >
           <span>{filteredItems.length} results</span>
+          <LiveRegion politeness="polite" message={`${filteredItems.length} results`} />
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               <kbd

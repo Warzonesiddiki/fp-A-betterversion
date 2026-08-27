@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   CascadeCalculationEngine,
+  InvalidOwnershipShareError,
   type OwnershipNode,
   type CascadeICPair,
   type CascadeFXRate,
@@ -126,10 +127,30 @@ describe('CascadeCalculationEngine', () => {
     expect(CascadeCalculationEngine.computeICElimination(pair, 0, 1)).toBe(0);
   });
 
-  it('10. computeNCI returns minority share of net income', () => {
-    expect(CascadeCalculationEngine.computeNCI(1000, 30)).toBe(300);
+  it('10. computeNCI returns minority share of net income (DECIMALS: 0.3 = 30%)', () => {
+    expect(CascadeCalculationEngine.computeNCI(1000, 0.3)).toBe(300);
     expect(CascadeCalculationEngine.computeNCI(1000, 0)).toBe(0);
-    expect(CascadeCalculationEngine.computeNCI(-500, 25)).toBe(-125);
+    expect(CascadeCalculationEngine.computeNCI(-500, 0.25)).toBe(-125);
+    // boundary shares are legal
+    expect(CascadeCalculationEngine.computeNCI(1000, 1)).toBe(1000);
+  });
+
+  it('10b. computeNCI rejects percent-scale / out-of-range shares (100x guard)', () => {
+    // percent-scale input (30 meaning 30%) must fail loudly, not yield 300
+    expect(() => CascadeCalculationEngine.computeNCI(1000, 30)).toThrow(InvalidOwnershipShareError);
+    expect(() => CascadeCalculationEngine.computeNCI(1000, 25)).toThrow(InvalidOwnershipShareError);
+    expect(() => CascadeCalculationEngine.computeNCI(1000, 1.5)).toThrow(
+      InvalidOwnershipShareError
+    );
+    expect(() => CascadeCalculationEngine.computeNCI(1000, -0.1)).toThrow(
+      InvalidOwnershipShareError
+    );
+    expect(() => CascadeCalculationEngine.computeNCI(1000, Number.NaN)).toThrow(
+      InvalidOwnershipShareError
+    );
+    expect(() => CascadeCalculationEngine.computeNCI(1000, Number.POSITIVE_INFINITY)).toThrow(
+      InvalidOwnershipShareError
+    );
   });
 
   it('11. computeFXImpact applies current-rate translation', () => {

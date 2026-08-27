@@ -1,6 +1,6 @@
-// @money-ast-allow Reason: EBITDA margin ratio: (metrics.ebitda / metrics.revenue) * 100 is a dimensionless percentage, not money
+﻿// @money-ast-allow Reason: EBITDA margin ratio: (metrics.ebitda / metrics.revenue) * 100 is a dimensionless percentage, not money
 // =============================================================================
-// MONTE CARLO SIMULATION ENGINE — Full-featured probabilistic analysis
+// MONTE CARLO SIMULATION ENGINE â€” Full-featured probabilistic analysis
 // Integrates with ScenarioEngine for financial scenario generation
 // Pure TypeScript, deterministic with seeded PRNG, testable
 // =============================================================================
@@ -81,7 +81,7 @@ export interface MonteCarloResult {
   readonly confidenceInterval: ConfidenceInterval;
   readonly histogram: HistogramBin[];
   readonly values: readonly number[];
-  readonly rawSamples: ReadonlyArray<Record<string, number>>;
+  readonly drawsByIteration: ReadonlyArray<Record<string, number>>;
 }
 
 export interface MonteCarloDriver {
@@ -298,8 +298,16 @@ function computeKurtosis(values: readonly number[], mean: number, stdDev: number
 function computeHistogram(values: readonly number[], bins: number = 30): HistogramBin[] {
   if (values.length === 0) return [];
 
-  const min = Math.min(...values);
-  const max = Math.max(...values);
+  // Linear scan for min/max — Math.min(...values)/Math.max(...values) spread the
+  // whole array as call arguments and overflow the stack beyond ~125k elements
+  // (ledger #47). Selection via comparison is bit-identical to the spread form.
+  let min = values[0]!;
+  let max = values[0]!;
+  for (let i = 1; i < values.length; i++) {
+    const v = values[i]!;
+    if (v < min) min = v;
+    if (v > max) max = v;
+  }
   if (min === max) {
     return [{ lower: min, upper: max, count: values.length, density: 1 }];
   }
@@ -373,7 +381,7 @@ export class MonteCarloEngine {
 
     // --- Run simulation ---
     const values: number[] = [];
-    const rawSamples: Record<string, number>[] = [];
+    const drawsByIteration: Record<string, number>[] = [];
 
     for (let i = 0; i < config.iterations; i++) {
       const samples: Record<string, number> = {};
@@ -385,13 +393,13 @@ export class MonteCarloEngine {
         throw new Error(`Model returned non-finite value at iteration ${i + 1}: ${output}`);
       }
       values.push(output);
-      rawSamples.push(samples);
+      drawsByIteration.push(samples);
     }
 
     // --- Compute statistics ---
     return MonteCarloEngine.computeStatistics(
       values,
-      rawSamples,
+      drawsByIteration,
       config.iterations,
       config.confidenceLevel
     );
@@ -499,7 +507,6 @@ export class MonteCarloEngine {
     // --- Compute per-metric statistics ---
     const metricResults = {} as Record<keyof ScenarioMetrics, MonteCarloResult>;
     for (const key of validMetrics) {
-      const _sorted = [...metricValues[key]].sort((a, b) => a - b);
       metricResults[key] = MonteCarloEngine.computeStatistics(
         metricValues[key]!,
         [],
@@ -701,7 +708,7 @@ export class MonteCarloEngine {
   /** Compute full statistics from a values array */
   static computeStatistics(
     values: number[],
-    rawSamples: Record<string, number>[],
+    drawsByIteration: Record<string, number>[],
     iterations: number,
     confidenceLevel: number
   ): MonteCarloResult {
@@ -747,7 +754,7 @@ export class MonteCarloEngine {
       confidenceInterval,
       histogram,
       values,
-      rawSamples,
+      drawsByIteration,
     };
   }
 }

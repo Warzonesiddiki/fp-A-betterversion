@@ -1,71 +1,169 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
-}));
-
-vi.mock('@/utils/formatters', () => ({
-  formatCurrency: (n: number) => `$${n}`,
-  formatNumber: (n: number) => `${n}`,
-  formatCompactNumber: (n: number) => `$${n}`,
-}));
-
-vi.mock('@/components/ui/Sparkline', () => ({
-  Sparkline: () => <div data-testid="sparkline" />,
-}));
-
-vi.mock('@/components/ui/DataTable', () => ({
-  DataTable: ({ data }: { data: unknown[] }) => (
-    <div data-testid="data-table">{data?.length ?? 0} rows</div>
-  ),
-}));
-
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
-  return {
-    Truck: makeIcon(),
-    Package: makeIcon(),
-    MapPin: makeIcon(),
-    Clock: makeIcon(),
-    ArrowUpRight: makeIcon(),
-    ArrowDownRight: makeIcon(),
-    Minus: makeIcon(),
-    ChevronUp: makeIcon(),
-    ChevronDown: makeIcon(),
-    ChevronsUpDown: makeIcon(),
-  };
-});
-
 import LogisticsPage from '@/pages/logistics/LogisticsPage';
+import { useGLStore } from '@/store/glStore';
+import { useLogisticsStore } from '@/store/logisticsStore';
+import { ExportEngine } from '@/engines/ExportEngine';
+import type { GLEntry } from '@/types';
 
-function renderPage() {
-  return render(
-    <MemoryRouter initialEntries={['/logistics']}>
-      <LogisticsPage />
-    </MemoryRouter>
-  );
-}
+vi.mock('@/engines/ExportEngine', () => ({
+  ExportEngine: {
+    exportToPDF: vi.fn().mockResolvedValue(undefined),
+    exportToExcel: vi.fn().mockResolvedValue(undefined),
+  },
+}));
 
-describe('LogisticsPage smoke test', () => {
+const mockEntries: GLEntry[] = [
+  {
+    id: 'entry-1',
+    accountId: 'acc-5101',
+    accountCode: '5101',
+    accountName: 'Freight Carrier Expenses',
+    debit: 145000,
+    credit: 0,
+    netChange: 145000,
+    amount: 145000,
+    date: '2026-05-01',
+    period: '2026-05',
+  },
+  {
+    id: 'entry-2',
+    accountId: 'acc-4101',
+    accountCode: '4101',
+    accountName: 'Logistics Service Revenue',
+    debit: 0,
+    credit: 210000,
+    netChange: -210000,
+    amount: -210000,
+    date: '2026-05-05',
+    period: '2026-05',
+  },
+  {
+    id: 'entry-3',
+    accountId: 'acc-5201',
+    accountCode: '5201',
+    accountName: 'Warehouse Lease & Storage',
+    debit: 45000,
+    credit: 0,
+    netChange: 45000,
+    amount: 45000,
+    date: '2026-05-10',
+    period: '2026-05',
+  },
+];
+
+describe('LogisticsPage (store-wired & exports)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useGLStore.setState({ entries: [] });
+    useLogisticsStore.setState({
+      shipments: [],
+      carrierPerformance: [],
+      routeCosts: [],
+    });
   });
-  it('renders without crashing', () => {
-    const { container } = renderPage();
+
+  it('renders empty state when GL entries are empty', () => {
+    render(
+      <MemoryRouter>
+        <LogisticsPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('No Logistics Data')).toBeInTheDocument();
     expect(
-      container.querySelectorAll('*').length,
-      'rendered nothing: a truthy container does not prove the page mounted'
-    ).toBeGreaterThanOrEqual(2);
+      screen.getByRole('button', { name: /import gl data to view logistics metrics/i })
+    ).toBeInTheDocument();
   });
-  it('displays expected empty state', () => {
-    renderPage();
-    expect(screen.getByText(/No Logistics Data/i)).toBeTruthy();
+
+  it('renders logistics KPIs from GL store and logisticsStore', () => {
+    useGLStore.setState({ entries: mockEntries });
+    useLogisticsStore.setState({
+      shipments: [
+        {
+          id: 'shp-1',
+          origin: 'Chicago Hub',
+          destination: 'Dallas Distribution',
+          carrier: 'Swift Freight',
+          status: 'In Transit',
+          cost: 2400,
+          eta: '2026-05-08',
+        },
+      ],
+      carrierPerformance: [
+        { carrier: 'Swift Freight', onTimeRate: 96.5, avgCost: 2200, volume: 150 },
+      ],
+      routeCosts: [{ route: 'ORD -> DFW', cost: 2400, volume: 80 }],
+    });
+
+    render(
+      <MemoryRouter>
+        <LogisticsPage />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('Logistics')).toBeInTheDocument();
+    expect(screen.getByText('3 entries imported')).toBeInTheDocument();
+
+    // Top KPIs
+    expect(screen.getByText('Total Debit')).toBeInTheDocument();
+    expect(screen.getByText('Total Credit')).toBeInTheDocument();
+    expect(screen.getByText('Active Accounts')).toBeInTheDocument();
+    expect(screen.getAllByText('Net Change').length).toBeGreaterThanOrEqual(1);
+
+    // Operational KPIs
+    expect(screen.getByText('Active Shipments')).toBeInTheDocument();
+    expect(screen.getByText('On-Time Rate')).toBeInTheDocument();
+    expect(screen.getByText('Active Carriers')).toBeInTheDocument();
+    expect(screen.getByText('Monitored Corridors')).toBeInTheDocument();
+
+    // Account Breakdown
+    expect(screen.getByText('Account Breakdown')).toBeInTheDocument();
+    expect(screen.getByText('Freight Carrier Expenses')).toBeInTheDocument();
+    expect(screen.getByText('Logistics Service Revenue')).toBeInTheDocument();
+  });
+
+  it('exports a PDF report with logistics KPIs and disclosures', async () => {
+    useGLStore.setState({ entries: mockEntries });
+
+    render(
+      <MemoryRouter>
+        <LogisticsPage />
+      </MemoryRouter>
+    );
+
+    const pdfBtn = screen.getByRole('button', { name: /export pdf report/i });
+    fireEvent.click(pdfBtn);
+
+    await waitFor(() => {
+      expect(ExportEngine.exportToPDF).toHaveBeenCalledTimes(1);
+    });
+
+    const [data, config] = vi.mocked(ExportEngine.exportToPDF).mock.calls[0]!;
+    expect(config?.title).toBe('Logistics_Financial_Report');
+    expect(data.rows.length).toBeGreaterThan(0);
+  });
+
+  it('exports an Excel workbook with logistics operations and GL accounts', async () => {
+    useGLStore.setState({ entries: mockEntries });
+
+    render(
+      <MemoryRouter>
+        <LogisticsPage />
+      </MemoryRouter>
+    );
+
+    const excelBtn = screen.getByRole('button', { name: /export excel workbook/i });
+    fireEvent.click(excelBtn);
+
+    await waitFor(() => {
+      expect(ExportEngine.exportToExcel).toHaveBeenCalledTimes(1);
+    });
+
+    const [data, config] = vi.mocked(ExportEngine.exportToExcel).mock.calls[0]!;
+    expect(config?.title).toBe('Logistics_Operations_Review');
+    expect(data.rows.length).toBeGreaterThan(0);
   });
 });

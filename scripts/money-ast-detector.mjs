@@ -37,8 +37,22 @@
  *   - Calls into the canonical primitive: addMoney, subtractMoney, sumMoney,
  *     multiplyMoney, divideMoney, roundMoney, compareMoney, allocateMoney, ...
  *   - decimal.js instances and their method chains (.plus/.minus/.times/.div)
+ *   - Values the TS type checker proves are NOT floats-at-risk (W0.1.6):
+ *       · bigint / PreciseAmount  — exact integer arithmetic, no IEEE-754 drift
+ *       · string-typed operands    — ISO-4217 code identity checks, not money
+ *       · Decimal-typed values     — even through helper-function return types
+ *     This retires the currency-comparison false-positive class
+ *     (@money-ast-allow on FXPositionGrid / FXRateManager / fxRateStore / …).
  *   - String building (template literals, concatenation with a string literal)
  *   - Non-monetary arithmetic (counts, indices, percentages, rates, dates)
+ *
+ * TYPE-AWARE MONETARY DETECTION (W0.1.6)
+ * ---------------------------------------
+ * Name heuristics alone miss variables deliberately given neutral names while
+ * carrying a monetary declared type. When an operand's apparent type has an
+ * alias/symbol name matching the money-word list (`RevenueTotal`,
+ * `InvoiceAmount`, ...), it is monetary regardless of the local identifier —
+ * renaming can no longer launder float arithmetic past the gate.
  *
  * EXPECT THE NUMBER TO FALL. The legacy metric reported 25.44% adoption. That
  * number was never real. A drop on first run is the detector working, not a
@@ -421,14 +435,17 @@ const EQUALITY_OPS = new Map([
 ]);
 
 /** Analyse one source file; return the list of unsafe monetary operations. */
-function analyseFile(filePath, text) {
-  const sf = ts.createSourceFile(
-    filePath,
-    text,
-    ts.ScriptTarget.Latest,
-    true,
-    /\.tsx$/.test(filePath) ? ts.ScriptKind.TSX : ts.ScriptKind.TS
-  );
+function analyseFile(filePath, text, prog = null) {
+  let sf = prog ? prog.getSourceFile(filePath) : undefined;
+  if (!sf) {
+    sf = ts.createSourceFile(
+      filePath,
+      text,
+      ts.ScriptTarget.Latest,
+      true,
+      /\.tsx$/.test(filePath) ? ts.ScriptKind.TSX : ts.ScriptKind.TS
+    );
+  }
 
   const findings = [];
   const at = (node) => sf.getLineAndCharacterOfPosition(node.getStart(sf)).line + 1;
@@ -446,26 +463,27 @@ function analyseFile(filePath, text) {
       if (ARITH_OPS.has(kind)) {
         if (
           !isStringContext(node) &&
-          (isMonetaryExpression(node.left) || isMonetaryExpression(node.right)) &&
-          !isDecimalExpression(node.left) &&
-          !isDecimalExpression(node.right)
+          (monetaryOperand(node.left) || monetaryOperand(node.right)) &&
+          !safeOperand(node.left) &&
+          !safeOperand(node.right)
         ) {
           add(node, 'arithmetic', ARITH_OPS.get(kind));
         }
       } else if (COMPOUND_OPS.has(kind)) {
         if (
-          isMonetaryExpression(node.left) &&
-          !isDecimalExpression(node.right) &&
+          monetaryOperand(node.left) &&
+          !safeOperand(node.left) &&
+          !safeOperand(node.right) &&
           !isIntegerCounterStep(node.right)
         ) {
           add(node, 'compound-assign', COMPOUND_OPS.get(kind));
         }
       } else if (COMPARE_OPS.has(kind)) {
         if (
-          isMonetaryExpression(node.left) &&
-          isMonetaryExpression(node.right) &&
-          !isDecimalExpression(node.left) &&
-          !isDecimalExpression(node.right)
+          monetaryOperand(node.left) &&
+          monetaryOperand(node.right) &&
+          !safeOperand(node.left) &&
+          !safeOperand(node.right)
         ) {
           add(node, 'comparison', COMPARE_OPS.get(kind));
         }
@@ -477,12 +495,12 @@ function analyseFile(filePath, text) {
           ts.isStringLiteral(n) ||
           (ts.isIdentifier(n) && n.text === 'undefined');
         if (
-          isMonetaryExpression(node.left) &&
-          isMonetaryExpression(node.right) &&
+          monetaryOperand(node.left) &&
+          monetaryOperand(node.right) &&
           !lit(node.left) &&
           !lit(node.right) &&
-          !isDecimalExpression(node.left) &&
-          !isDecimalExpression(node.right)
+          !safeOperand(node.left) &&
+          !safeOperand(node.right)
         ) {
           add(node, 'float-equality', EQUALITY_OPS.get(kind));
         }
@@ -499,7 +517,7 @@ function analyseFile(filePath, text) {
       const target = node.expression.expression;
 
       // .toFixed(n) producing a monetary VALUE
-      if (method === 'toFixed' && isMonetaryExpression(target) && !isDecimalExpression(target)) {
+      if (method === 'toFixed' && monetaryOperand(target) && !safeOperand(target)) {
         add(node, 'toFixed', '.toFixed()');
       }
 
@@ -512,9 +530,9 @@ function analyseFile(filePath, text) {
             if (
               ts.isBinaryExpression(n) &&
               (ARITH_OPS.has(n.operatorToken.kind) || COMPOUND_OPS.has(n.operatorToken.kind)) &&
-              (isMonetaryExpression(n.left) || isMonetaryExpression(n.right)) &&
-              !isDecimalExpression(n.left) &&
-              !isDecimalExpression(n.right) &&
+              (monetaryOperand(n.left) || monetaryOperand(n.right)) &&
+              !safeOperand(n.left) &&
+              !safeOperand(n.right) &&
               !isStringContext(n)
             ) {
               unsafeAccum = true;
@@ -524,7 +542,7 @@ function analyseFile(filePath, text) {
           scan(fn.body);
           // Reported once per reduce, and the inner binary is reported too;
           // dedupe below keeps a single finding per line.
-          if (unsafeAccum && (isMonetaryExpression(target) || isMonetaryExpression(fn.body))) {
+          if (unsafeAccum && (monetaryOperand(target) || monetaryOperand(fn.body))) {
             add(node, 'reduce-accumulate', '.reduce()');
           }
         }
@@ -539,8 +557,8 @@ function analyseFile(filePath, text) {
       node.expression.expression.text === 'Math' &&
       ['round', 'floor', 'ceil'].includes(node.expression.name.text) &&
       node.arguments.length === 1 &&
-      isMonetaryExpression(node.arguments[0]) &&
-      !isDecimalExpression(node.arguments[0])
+      monetaryOperand(node.arguments[0]) &&
+      !safeOperand(node.arguments[0])
     ) {
       add(node, 'math-round', `Math.${node.expression.name.text}()`);
     }
@@ -574,6 +592,149 @@ function walk(dir, out = []) {
 }
 
 const files = SCAN_DIRS.flatMap((d) => walk(join(ROOT, d)));
+
+/* ------------------------------------------------------------------ *
+ * W0.1.6: one shared Program + TypeChecker for the whole scan.
+ *
+ * Compiler options come from tsconfig.json when present so that `@/`
+ * path aliases, Decimal and branded types resolve. In fixture contexts
+ * (temp dir, no tsconfig) we fall back to default options; local type
+ * annotations still resolve, only cross-file imports degrade to `any`.
+ * ------------------------------------------------------------------ */
+function buildProgram(rootNames) {
+  const configPath = join(ROOT, 'tsconfig.json');
+  let options = {
+    target: ts.ScriptTarget.Latest,
+    module: ts.ModuleKind.ESNext,
+    moduleResolution: ts.ModuleResolutionKind.Node10,
+    esModuleInterop: true,
+    strict: true,
+    skipLibCheck: true,
+    noEmit: true,
+  };
+  if (existsSync(configPath)) {
+    try {
+      const cfg = ts.readConfigFile(configPath, ts.sys.readFile);
+      const parsed = ts.parseJsonConfigFileContent(cfg.config, ts.sys, ROOT);
+      if (!parsed.errors.length && parsed.options) options = parsed.options;
+    } catch {
+      /* fall back to defaults */
+    }
+  }
+  return ts.createProgram({ rootNames: [...rootNames], options });
+}
+
+let program = null;
+let checker = null;
+
+/** Per-expression type probes (null-safe when the checker is unavailable). */
+function makeTypeProbes(node) {
+  if (!checker || !node) {
+    return { decimalTyped: false, bigIntTyped: false, stringTyped: false, typeMonetary: false };
+  }
+  let type;
+  try {
+    type = checker.getTypeAtLocation(node);
+  } catch {
+    return { decimalTyped: false, bigIntTyped: false, stringTyped: false, typeMonetary: false };
+  }
+
+  let decimalTyped = false;
+  let bigIntTyped = false;
+  let stringTyped = false;
+  let typeMonetary = false;
+
+  const probe = (t) => {
+    if (!t) return;
+    // Unions / intersections / enums: probe each constituent.
+    if (t.isUnion?.()) {
+      t.types.forEach(probe);
+      return;
+    }
+    const flags = t.flags ?? 0;
+    if (flags & (ts.TypeFlags.BigIntLike | ts.TypeFlags.BigIntLiteral)) bigIntTyped = true;
+    if (flags & ts.TypeFlags.StringLike) stringTyped = true;
+    const apparent = checker.getApparentType(t);
+    const sym = apparent.getSymbol?.() || t.aliasSymbol || t.getSymbol?.();
+    const name = sym?.getName?.();
+    if (name === 'Decimal') decimalTyped = true;
+    // A declaration inside the canonical money primitive is money by origin,
+    // even when the local identifier hides it.
+    for (const d of sym?.declarations ?? []) {
+      const f = d.getSourceFile()?.fileName?.replace(/\\/g, '/') ?? '';
+      if (/\/utils\/money(\.ts|\/)/.test(f)) {
+        if (flags & (ts.TypeFlags.NumberLike | ts.TypeFlags.NumberLiteral)) typeMonetary = true;
+      }
+    }
+  };
+  probe(type);
+
+  // Declared-type names: the checker flattens aliases (`InvoiceAmount` ->
+  // `number`), so the alias name must be recovered from the declaration site.
+  // This is what catches innocuously-renamed monetary values.
+  const nameNode = ts.isIdentifier(node)
+    ? node
+    : ts.isPropertyAccessExpression(node)
+      ? node.name
+      : ts.isElementAccessExpression(node) && ts.isStringLiteral(node.argumentExpression)
+        ? null // handled by the syntactic heuristic already
+        : null;
+  if (nameNode) {
+    let sym = null;
+    try {
+      sym = checker.getSymbolAtLocation(nameNode);
+    } catch {
+      sym = null;
+    }
+    for (const d of sym?.declarations ?? []) {
+      const tn = /** @type {{ type?: unknown }} */ (d).type;
+      if (!tn || typeof tn.getText !== 'function') continue;
+      let ann = '';
+      try {
+        ann = tn.getText(d.getSourceFile());
+      } catch {
+        continue;
+      }
+      if (/^Decimal\b/.test(ann.trim())) decimalTyped = true;
+      if (/\bbigint\b/.test(ann)) bigIntTyped = true;
+      const base = ann.replace(/\s*&\s*\{[\s\S]*\}\s*$/, '').trim(); // strip brands
+      if (
+        looksMonetary(base) &&
+        /^(number|[A-Z][A-Za-z0-9_]*)$/.test(base.split(/[.|<>\[\]]/)[0].trim())
+      ) {
+        typeMonetary = true;
+      }
+    }
+  }
+
+  return { decimalTyped, bigIntTyped, stringTyped, typeMonetary };
+}
+
+/**
+ * Combined monetary predicate: the legacy name heuristic OR a monetary
+ * declared type. Renaming `invoiceTotal` to `x` no longer escapes the gate.
+ */
+function monetaryOperand(node) {
+  if (!node) return false;
+  if (isMonetaryExpression(node)) return true;
+  const p = node.kind !== undefined ? makeTypeProbes(node) : null;
+  return p ? p.typeMonetary : false;
+}
+
+/**
+ * Combined safety predicate: syntactic decimal-safety OR the checker proves
+ * the operand is not an at-risk float (bigint exact math, string identity,
+ * Decimal instance).
+ */
+function safeOperand(node) {
+  if (!node) return false;
+  if (isDecimalExpression(node)) return true;
+  const p = makeTypeProbes(node);
+  return p.decimalTyped || p.bigIntTyped || p.stringTyped;
+}
+program = buildProgram(files);
+checker = program.getTypeChecker();
+
 const results = [];
 
 for (const f of files) {
@@ -581,7 +742,7 @@ for (const f of files) {
   const rel = relative(ROOT, f).replace(/\\/g, '/');
   let findings = [];
   try {
-    findings = analyseFile(f, text);
+    findings = analyseFile(f, text, program);
   } catch (err) {
     console.error(`  ! parse failure ${rel}: ${err.message}`);
     process.exitCode = 1;
@@ -594,11 +755,9 @@ for (const f of files) {
     const head = text.slice(0, 2048);
     const m = head.match(/@money-ast-allow([\s\S]*?)(?:\n\s*\n|\nimport|\n\nexport|$)/);
     if (m) {
-      const reason = (m[1] || '')
-        .replace(/\s+/g, ' ')
-        .replace(/^\W+/, '')
-        .trim()
-        .slice(0, 140) || 'no reason given';
+      const reason =
+        (m[1] || '').replace(/\s+/g, ' ').replace(/^\W+/, '').trim().slice(0, 140) ||
+        'no reason given';
       console.error(
         `  ⊘ suppression: ${rel} (${findings.length} finding(s) suppressed; reason: ${reason})`
       );

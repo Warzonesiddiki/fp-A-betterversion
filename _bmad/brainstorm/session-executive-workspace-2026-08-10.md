@@ -49,25 +49,25 @@ How-Might-We reframing, Crazy 8s, reverse brainstorming, and impact/risk scoring
 
 Decision clarity (30%), evidence/trust (25%), actionability (20%), executive cognitive load (15%), implementation risk (10%). Scores are design hypotheses, not user-test results.
 
-| Concept | Clarity | Trust | Action | Load | Risk | Total / 5 |
-|---|---:|---:|---:|---:|---:|---:|
-| KPI widget dashboard | 2 | 2 | 1 | 3 | 4 | 2.3 |
-| Narrative briefing | 3 | 2 | 2 | 4 | 4 | 3.0 |
-| Materiality inbox | 5 | 4 | 5 | 4 | 4 | 4.5 |
-| Cash-only center | 4 | 3 | 3 | 5 | 4 | 3.8 |
-| Board-pack home | 3 | 5 | 2 | 3 | 4 | 3.5 |
-| Close cockpit home | 3 | 5 | 3 | 3 | 3 | 3.5 |
-| AI-chat home | 2 | 1 | 2 | 3 | 3 | 2.1 |
-| Entity heatmap | 3 | 3 | 2 | 3 | 4 | 3.0 |
+| Concept              | Clarity | Trust | Action | Load | Risk | Total / 5 |
+| -------------------- | ------: | ----: | -----: | ---: | ---: | --------: |
+| KPI widget dashboard |       2 |     2 |      1 |    3 |    4 |       2.3 |
+| Narrative briefing   |       3 |     2 |      2 |    4 |    4 |       3.0 |
+| Materiality inbox    |       5 |     4 |      5 |    4 |    4 |       4.5 |
+| Cash-only center     |       4 |     3 |      3 |    5 |    4 |       3.8 |
+| Board-pack home      |       3 |     5 |      2 |    3 |    4 |       3.5 |
+| Close cockpit home   |       3 |     5 |      3 |    3 |    3 |       3.5 |
+| AI-chat home         |       2 |     1 |      2 |    3 |    3 |       2.1 |
+| Entity heatmap       |       3 |     3 |      2 |    3 |    4 |       3.0 |
 
 ## Pre-mortem — materiality-first Decision Workspace
 
-| Failure | Early signal | Mitigation |
-|---|---|---|
-| Users cannot agree on materiality | queue is ignored or manually overridden | configurable metric/entity thresholds with policy owner and visible basis |
-| Evidence drill-down is slow | users export to Excel/PDF | performance budget and direct linked source/snapshot paths |
-| Action queue becomes task noise | excessive low-value assignments | require materiality/role policy or explicit user creation |
-| Executives still want headline view | requests to restore card grid | compact top-line summary above ranked decisions, not a widget grid |
+| Failure                             | Early signal                            | Mitigation                                                                |
+| ----------------------------------- | --------------------------------------- | ------------------------------------------------------------------------- |
+| Users cannot agree on materiality   | queue is ignored or manually overridden | configurable metric/entity thresholds with policy owner and visible basis |
+| Evidence drill-down is slow         | users export to Excel/PDF               | performance budget and direct linked source/snapshot paths                |
+| Action queue becomes task noise     | excessive low-value assignments         | require materiality/role policy or explicit user creation                 |
+| Executives still want headline view | requests to restore card grid           | compact top-line summary above ranked decisions, not a widget grid        |
 
 ## Recommended direction
 

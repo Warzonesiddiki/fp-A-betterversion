@@ -12,13 +12,13 @@ Each local mutation carries command ID, actor/device session, base revision, mod
 
 ## Conflict policy
 
-| Object | Resolution |
-|---|---|
-| Comment/thread | merge messages with immutable event history |
-| Independent draft fields/cells | merge only if policy and revisions permit |
-| Same financial cell | explicit resolution UI with both values/formulas/actors/times |
-| Published/approved/locked state | reject; adjustment/new version path only |
-| Master data | authoritative review; never silent last-write-wins |
+| Object                          | Resolution                                                    |
+| ------------------------------- | ------------------------------------------------------------- |
+| Comment/thread                  | merge messages with immutable event history                   |
+| Independent draft fields/cells  | merge only if policy and revisions permit                     |
+| Same financial cell             | explicit resolution UI with both values/formulas/actors/times |
+| Published/approved/locked state | reject; adjustment/new version path only                      |
+| Master data                     | authoritative review; never silent last-write-wins            |
 
 ## Collaboration rules
 

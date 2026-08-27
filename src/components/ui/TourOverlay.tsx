@@ -1,11 +1,21 @@
 import { useEffect, useState, useRef } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useTourStore } from '@/store/tourStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from './Button';
 
 export function TourOverlay() {
-  const { isActive, currentStepIndex, steps, nextStep, prevStep, stopTour } = useTourStore();
+  const { isActive, currentStepIndex, steps, nextStep, prevStep, stopTour } = useTourStore(
+    useShallow((s) => ({
+      isActive: s.isActive,
+      currentStepIndex: s.currentStepIndex,
+      steps: s.steps,
+      nextStep: s.nextStep,
+      prevStep: s.prevStep,
+      stopTour: s.stopTour,
+    }))
+  );
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0, height: 0 });
   const step = steps[currentStepIndex];
   const requestRef = useRef<number>(0);

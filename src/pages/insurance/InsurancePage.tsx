@@ -5,84 +5,112 @@ import { useInsuranceStore } from '@/store/insuranceStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { DataTable, Column } from '@/components/ui/DataTable';
-import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
-import { Shield, DollarSign, Layers, TrendingUp } from 'lucide-react';
-import type { GLEntry } from '@/types';
-import { addMoney, roundTo, sumMoney } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
-
-function computeInsuranceStats(entries: readonly GLEntry[]) {
-  const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
-  const totalCredit = roundTo(sumMoney(entries.map((e) => e.credit)), 2);
-  const netChange = roundTo(sumMoney(entries.map((e) => e.netChange)), 2);
-  const uniqueAccounts = new Set(entries.map((e) => e.accountCode)).size;
-
-  const accountMap = new Map<
-    string,
-    { name: string; debit: number; credit: number; net: number; count: number }
-  >();
-  for (const e of entries) {
-    const existing = accountMap.get(e.accountCode) ?? {
-      name: e.accountName,
-      debit: 0,
-      credit: 0,
-      net: 0,
-      count: 0,
-    };
-    existing.debit = addMoney(existing.debit, e.debit ?? 0).toNumber();
-    existing.credit = addMoney(existing.credit, e.credit ?? 0).toNumber();
-    existing.net = addMoney(existing.net, e.netChange ?? 0).toNumber();
-    existing.count += 1;
-    accountMap.set(e.accountCode, existing);
-  }
-
-  const accountBreakdown = Array.from(accountMap.entries())
-    .map(([code, data]) => ({
-      accountCode: code,
-      accountName: data.name,
-      debit: data.debit,
-      credit: data.credit,
-      netChange: data.net,
-      transactions: data.count,
-    }))
-    .sort((a, b) => Math.abs(b.credit) - Math.abs(a.credit));
-
-  return { totalDebit, totalCredit, netChange, uniqueAccounts, accountBreakdown };
-}
-
-const columns: Column[] = [
-  { key: 'accountCode', header: 'Account Code', sortable: true },
-  { key: 'accountName', header: 'Account Name', sortable: true },
-  { key: 'debit', header: 'Debit', align: 'right', sortable: true },
-  { key: 'credit', header: 'Credit', align: 'right', sortable: true },
-  { key: 'netChange', header: 'Net Change', align: 'right', sortable: true },
-  { key: 'transactions', header: 'Transactions', align: 'right', sortable: true },
-];
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { InsuranceEngine, type InsuranceStats } from '@/engines/InsuranceEngine';
+import { aggregateAccounts, type AccountBreakdownRow } from './accountOverview';
+import { AccountOverviewCard } from './AccountOverviewCard';
+import { roundTo, sumMoney } from '@/utils/money';
+import {
+  Shield,
+  DollarSign,
+  Layers,
+  TrendingUp,
+  Download,
+  FileSpreadsheet,
+  Percent,
+  Info,
+} from 'lucide-react';
 
 export function InsurancePage() {
   const { entries } = useGLStore();
   const { lossPicks } = useInsuranceStore();
   const navigate = useNavigate();
+  const fmt = useCurrencyFormatter();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Insurance';
   }, []);
 
-  const stats = useMemo(() => computeInsuranceStats(entries), [entries]);
-
-  const tableData = useMemo(
-    () =>
-      stats.accountBreakdown.map((row) => ({
-        accountCode: row.accountCode,
-        accountName: row.accountName,
-        debit: formatCurrency(row.debit),
-        credit: formatCurrency(row.credit),
-        netChange: formatCurrency(row.netChange),
-        transactions: formatNumber(row.transactions),
-      })),
-    [stats.accountBreakdown]
+  const totalDebit = useMemo(
+    () => roundTo(sumMoney(entries.map((e) => e.debit ?? 0)), 2),
+    [entries]
   );
+  const totalCredit = useMemo(
+    () => roundTo(sumMoney(entries.map((e) => e.credit ?? 0)), 2),
+    [entries]
+  );
+
+  const insuranceStats: InsuranceStats = useMemo(
+    () => InsuranceEngine.calculateStats([...entries]),
+    [entries]
+  );
+
+  const accountRows: AccountBreakdownRow[] = useMemo(() => aggregateAccounts(entries), [entries]);
+
+  const handleExportPDF = () => {
+    void ExportEngine.exportToPDF(
+      {
+        headers: ['Metric', 'Value', 'Basis / Lineage'],
+        rows: [
+          [
+            'Gross Written Premium',
+            fmt.currency(insuranceStats.grossWrittenPremium),
+            'GL Account 41xx (Credit-Normal)',
+          ],
+          [
+            'Earned Premium',
+            fmt.currency(insuranceStats.earnedPremium),
+            'GL Account 42xx (Credit-Normal)',
+          ],
+          [
+            'Net Written Premium',
+            insuranceStats.netWrittenPremium !== null
+              ? fmt.currency(insuranceStats.netWrittenPremium)
+              : 'No Cessions Posted',
+            'Gross less 43xx ceded premium',
+          ],
+          [
+            'Loss Ratio',
+            insuranceStats.lossRatio !== null ? `${insuranceStats.lossRatio}%` : 'N/A',
+            'Loss & LAE (51xx) / Earned Premium (42xx)',
+          ],
+          [
+            'Expense Ratio',
+            insuranceStats.expenseRatio !== null ? `${insuranceStats.expenseRatio}%` : 'N/A',
+            'Underwriting & Commissions (52xx/53xx) / Written Premium (41xx)',
+          ],
+          [
+            'Combined Ratio',
+            insuranceStats.combinedRatio !== null ? `${insuranceStats.combinedRatio}%` : 'N/A',
+            'Loss Ratio + Expense Ratio',
+          ],
+          ['Actuarial Loss Picks', String(lossPicks.length), 'Recorded loss-pick rows on file'],
+        ],
+      },
+      { title: 'Insurance_Sector_Financial_Report' }
+    ).catch(reportExportFailure);
+  };
+
+  const handleExportExcel = () => {
+    void ExportEngine.exportToExcel(
+      {
+        headers: ['Metric', 'Amount', 'Notes'],
+        rows: [
+          ['Gross Written Premium', insuranceStats.grossWrittenPremium, 'GL 41xx'],
+          ['Earned Premium', insuranceStats.earnedPremium, 'GL 42xx'],
+          ['Net Written Premium', insuranceStats.netWrittenPremium ?? 0, 'Gross less 43xx ceded'],
+          ['Loss Ratio (%)', insuranceStats.lossRatio ?? 0, 'Loss / Earned'],
+          ['Expense Ratio (%)', insuranceStats.expenseRatio ?? 0, 'Expense / Written'],
+          ['Combined Ratio (%)', insuranceStats.combinedRatio ?? 0, 'Loss + Expense'],
+          ['Actuarial Loss Picks', lossPicks.length, 'Store rows'],
+        ],
+      },
+      { title: 'Insurance_Portfolio_Review' }
+    ).catch(reportExportFailure);
+  };
 
   const handleImportKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -123,15 +151,38 @@ export function InsurancePage() {
       >
         Skip to key metrics
       </a>
-      <PageHeader
-        title="Insurance"
-        titleId="insurance-heading"
-        status={
-          <span className="text-sm text-[var(--text-muted)]">
-            {formatNumber(entries.length)} entries imported
-          </span>
-        }
-      />
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <PageHeader
+          title="Insurance"
+          titleId="insurance-heading"
+          status={
+            <span className="text-sm text-[var(--text-muted)]">
+              {fmt.number(entries.length)} entries imported
+            </span>
+          }
+        />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportPDF}
+            aria-label="Export PDF Report"
+          >
+            <Download className="h-4 w-4 mr-1.5" aria-hidden="true" />
+            PDF Report
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportExcel}
+            aria-label="Export Excel Workbook"
+          >
+            <FileSpreadsheet className="h-4 w-4 mr-1.5" aria-hidden="true" />
+            Excel Export
+          </Button>
+        </div>
+      </div>
+
       <section
         id="kpi-section"
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
@@ -140,43 +191,80 @@ export function InsurancePage() {
       >
         <KPIValue
           label="Total Entries"
-          value={formatNumber(entries.length)}
+          value={fmt.number(entries.length)}
           icon={<Shield className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
-          label="Policies"
-          value={formatNumber(lossPicks.length)}
+          label="Loss Picks"
+          value={fmt.number(lossPicks.length)}
+          changeLabel={lossPicks.length > 0 ? 'loss-pick rows on file' : 'no loss picks recorded'}
           icon={<Layers className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
           label="Total Debit"
-          value={formatCompactNumber(stats.totalDebit)}
+          value={fmt.compact(totalDebit)}
           icon={<DollarSign className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
           label="Total Credit"
-          value={formatCompactNumber(stats.totalCredit)}
+          value={fmt.compact(totalCredit)}
           icon={<TrendingUp className="h-4 w-4" aria-hidden="true" />}
         />
       </section>
-      <Card aria-label="Account Overview" aria-live="polite">
-        <CardHeader>
-          <CardTitle id="account-overview-title">Account Overview</CardTitle>
+
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-4" aria-label="Underwriting KPIs">
+        <KPIValue
+          label="Gross Written Premium"
+          value={fmt.compact(insuranceStats.grossWrittenPremium)}
+          changeLabel="GL 41xx (credit-normal)"
+          icon={<DollarSign className="h-4 w-4 text-[#16A34A]" aria-hidden="true" />}
+        />
+        <KPIValue
+          label="Earned Premium"
+          value={fmt.compact(insuranceStats.earnedPremium)}
+          changeLabel="GL 42xx (recognized)"
+          icon={<DollarSign className="h-4 w-4 text-blue-500" aria-hidden="true" />}
+        />
+        <KPIValue
+          label="Loss Ratio"
+          value={insuranceStats.lossRatio !== null ? `${insuranceStats.lossRatio}%` : 'N/A'}
+          changeLabel={
+            insuranceStats.lossRatio !== null ? 'Losses / Earned Premium' : 'No earned premium'
+          }
+          icon={<Percent className="h-4 w-4" aria-hidden="true" />}
+        />
+        <KPIValue
+          label="Combined Ratio"
+          value={insuranceStats.combinedRatio !== null ? `${insuranceStats.combinedRatio}%` : 'N/A'}
+          changeLabel={
+            insuranceStats.combinedRatio !== null ? 'Loss + Expense Ratio' : 'Incomplete components'
+          }
+          icon={<TrendingUp className="h-4 w-4 text-purple-500" aria-hidden="true" />}
+        />
+      </section>
+
+      <Card aria-label="Insurance Basis Disclosures">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <Info className="h-4 w-4 text-blue-500" aria-hidden="true" />
+            Underwriting & Lineage Disclosure
+          </CardTitle>
         </CardHeader>
-        <CardContent aria-labelledby="account-overview-title">
-          {tableData.length > 0 ? (
-            <DataTable
-              columns={columns}
-              data={tableData}
-              sortable
-              caption="Account overview table"
-              ariaLabel="Account overview data table for insurance sector"
-            />
-          ) : (
-            <p className="text-[var(--text-muted)]">No account data available.</p>
-          )}
+        <CardContent className="text-xs text-[var(--text-muted)] space-y-1">
+          <p>
+            • <strong>Statutory Basis:</strong> Account conventions follow ASC 944 / Statutory
+            Accounting Principles (SAP): 41xx Written Premium, 42xx Earned Premium, 43xx Reinsurance
+            Ceded, 51xx Losses & LAE, 52xx Commissions, 53xx Underwriting Expenses.
+          </p>
+          <p>
+            • <strong>Actuarial Integrity:</strong> Loss ratio requires posted earned premium (&gt;
+            0). Expense ratio requires posted written premium (&gt; 0). Unposted components remain
+            N/A rather than fabricated estimates.
+          </p>
         </CardContent>
       </Card>
+
+      <AccountOverviewCard rows={accountRows} />
     </main>
   );
 }

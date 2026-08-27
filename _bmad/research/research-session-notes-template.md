@@ -20,8 +20,8 @@ Describe the most recent real workflow in chronological order. Capture handoffs,
 ## 3. Verbatim evidence
 
 | Quote or observed behavior | Problem / job indicated | Assumption IDs touched | Supports / contradicts | Confidence |
-|---|---|---|---|---|
-|  |  |  |  |  |
+| -------------------------- | ----------------------- | ---------------------- | ---------------------- | ---------- |
+|                            |                         |                        |                        |            |
 
 ## 4. Quantified impact
 

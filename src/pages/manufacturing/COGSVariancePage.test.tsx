@@ -3,18 +3,18 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
 
+const { useGLStore, calculateGLVariances } = vi.hoisted(() => ({
+  useGLStore: vi.fn((): { entries: unknown[] } => ({ entries: [] })),
+  calculateGLVariances: vi.fn(),
+}));
+
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+  useGLStore,
 }));
 
 vi.mock('@/engines/COGSVarianceEngine', () => ({
   COGSVarianceEngine: {
-    calculateGLVariances: vi.fn(() => ({
-      actualCOGS: 0,
-      standardCOGS: 0,
-      totalVariance: 0,
-      breakdown: [{ name: 'test', value: 0 }],
-    })),
+    calculateGLVariances,
   },
 }));
 
@@ -82,6 +82,7 @@ function renderPage() {
 describe('COGSVariancePage smoke test', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useGLStore.mockReturnValue({ entries: [] });
   });
   it('renders without crashing', () => {
     const { container } = renderPage();
@@ -93,5 +94,85 @@ describe('COGSVariancePage smoke test', () => {
   it('displays expected empty state', () => {
     renderPage();
     expect(screen.getByText(/No Manufacturing Data/i)).toBeTruthy();
+  });
+
+  it('renders em-dash placeholders and the standard-cost disclosure when no standards are posted', () => {
+    // GL-only ledger: every standard-derived output is null by contract.
+    useGLStore.mockReturnValue({ entries: [{ id: 'e1' }] });
+    calculateGLVariances.mockReturnValue({
+      actualCOGS: 1234.5,
+      standardCOGS: null,
+      variance: null,
+      variancePercent: null,
+      totalVariance: null,
+      breakdown: null,
+    });
+    renderPage();
+    // Actual COGS is still measured; the three standard-derived cards disclose.
+    expect(screen.getByText('Actual COGS')).toBeInTheDocument();
+    expect(screen.getAllByText('—').length).toBeGreaterThanOrEqual(3);
+    expect(screen.getAllByText('Standard-cost layer required')).toHaveLength(3);
+    expect(
+      screen.getByText(/Standard-cost layer required\. The general ledger records only actual/i)
+    ).toBeInTheDocument();
+    // No fabricated decomposition chart renders without posted components.
+    expect(screen.queryByTestId('responsive-container')).not.toBeInTheDocument();
+  });
+
+  it('renders measured variances when a standard cost and components are posted', () => {
+    useGLStore.mockReturnValue({ entries: [{ id: 'e1' }] });
+    calculateGLVariances.mockReturnValue({
+      actualCOGS: 1000,
+      standardCOGS: 950,
+      variance: -50,
+      variancePercent: -5.26,
+      totalVariance: -50,
+      breakdown: [
+        { name: 'Price', value: -20 },
+        { name: 'Usage', value: -15 },
+        { name: 'Efficiency', value: 5 },
+        { name: 'Volume', value: -10 },
+      ],
+    });
+    renderPage();
+    expect(screen.getByText('Total Variance')).toBeInTheDocument();
+    expect(screen.getByText('Purchase Price Variance')).toBeInTheDocument();
+    expect(screen.getByText('Usage Variance')).toBeInTheDocument();
+    // The ChartWrapper mock renders children only, so the decomposition branch
+    // is pinned via its container testids.
+    expect(screen.getByTestId('chart-wrapper')).toBeInTheDocument();
+    expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
+    expect(screen.queryByText(/Standard-cost layer required/i)).not.toBeInTheDocument();
+  });
+
+  it('discloses instead of fabricating material alerts and inventory impacts', () => {
+    useGLStore.mockReturnValue({ entries: [{ id: 'e1' }] });
+    calculateGLVariances.mockReturnValue({
+      actualCOGS: 1000,
+      standardCOGS: null,
+      variance: null,
+      variancePercent: null,
+      totalVariance: null,
+      breakdown: null,
+    });
+    renderPage();
+    // The pre-remediation page invented these alerts and dollar figures
+    // outright; every one of them must stay gone.
+    for (const literal of [
+      'Material Alerts',
+      'Steel Scrapped',
+      'Copper Price',
+      'Abnormal waste detected in Production Line 3.',
+      'Revaluation Reserve',
+      'Obsolescence Risk',
+      '$124,500',
+      '$42,000',
+      'Adjust Inventory',
+    ]) {
+      expect(screen.queryByText(literal)).not.toBeInTheDocument();
+    }
+    // The honest replacement names the feed that would make the figures real.
+    expect(screen.getByText('Inventory Impact')).toBeInTheDocument();
+    expect(screen.getByText(/no inventory valuation subledger feed/i)).toBeInTheDocument();
   });
 });

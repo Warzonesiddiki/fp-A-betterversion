@@ -70,6 +70,11 @@
   --border-strong: #4a68a4;
 
   /* Typography — high contrast, readable */
+  /* Contrast ruling (2026-08-22, contrast audit): Constitution 4.9 makes AAA
+     RECOMMENDED (not required) for critical financial data; critical monetary
+     figures render in --text-primary (12+:1, AAA both themes), so labels/
+     captions on hover surfaces are AA-sufficient and stay as-is to preserve
+     the neutral hierarchy. Ruling journalled by Ledger-Scribe. */
   /* UI-07 — #6484b4 was AA only on the two darkest surfaces (4.17:1 on
      --bg-elevated, 3.60:1 on --bg-hover), and muted text lands on cards and
      hovered rows constantly. Lightened just far enough to clear 4.5:1 on
@@ -346,8 +351,13 @@
 * {
   box-sizing: border-box;
 }
-html {
-  scroll-behavior: smooth;
+/* W-A11Y-001 m-minor: smooth scrolling is progressive enhancement only.
+   Users with (prefers-reduced-motion: reduce) — e.g. vestibular disorders —
+   get instant anchor/programmatic jumps instead of animated scrolling. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 body {
   margin: 0;
@@ -715,7 +725,11 @@ body {
 }
 .badge-positive {
   background: var(--positive-subtle);
-  color: var(--positive);
+  /* Text token, not --positive: --positive is a fill/glyph tone and lands at
+     only 3.30:1 (dark) / 4.42:1 (light) on the composited subtle fill.
+     --text-on-positive-subtle is tuned per-theme for this exact surface:
+     #4ade80 = 8.39:1 dark, #166534 = 6.29:1 light. Contrast audit C-1/C-2. */
+  color: var(--text-on-positive-subtle);
 }
 .badge-negative {
   background: var(--negative-subtle);
@@ -1129,7 +1143,10 @@ h3,
   width: 26px;
   height: 26px;
   border-radius: var(--radius-sm);
-  background: var(--accent-primary);
+  /* Fill token, not --accent-primary: white on #0284c7 is 4.10:1 in dark
+     (fails AA at this 11px size). --action-fill is the fill-safe tone,
+     white = 5.93:1 both themes. Contrast audit C-3. */
+  background: var(--action-fill);
   color: #ffffff;
   font-size: 0.6875rem;
   font-weight: 700;
@@ -1311,13 +1328,16 @@ h3,
   color: var(--text-primary);
 }
 .fp-nav-item[data-active='true'] {
-  background: var(--accent-primary);
-  color: #ffffff;
+  /* Fill tokens, not --accent-primary: white on #0284c7 is 4.10:1 in dark
+     (fails AA for nav text). --action-fill/-hover are the fill-safe tones,
+     white = 5.93:1 / 4.92:1. Contrast audit C-3. */
+  background: var(--action-fill);
+  color: var(--text-on-accent);
   font-weight: 550;
 }
 .fp-nav-item[data-active='true']:hover {
-  background: var(--accent-hover);
-  color: #ffffff;
+  background: var(--action-fill-hover);
+  color: var(--text-on-accent);
 }
 .fp-nav-item__label {
   min-width: 0;

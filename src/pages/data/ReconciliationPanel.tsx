@@ -32,7 +32,7 @@ export function ReconciliationPanel({
     <div className="p-4">
       <div className="flex items-center gap-2 mb-4">
         <ArrowLeftRight className="h-5 w-5 text-blue-400" aria-hidden="true" />
-        <h3 className="font-semibold">Data Reconciliation</h3>
+        <h2 className="font-semibold">Data Reconciliation</h2>
       </div>
       <p className="text-sm text-[var(--text-muted)] mb-4">
         Upload a CSV file from your source system to compare against imported data. The

@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useFinancialContextStore } from '@/store/financialContextStore';
 import { FinancialStatusBadge } from '@/components/ui/FinancialStatusBadge';
 import type { FreshnessState } from '@/types/financialContext';
@@ -44,7 +45,9 @@ export const FinancialContextBar = memo(function FinancialContextBar({
   entities,
   versions = [],
 }: FinancialContextBarProps) {
-  const { context, setContext } = useFinancialContextStore();
+  const { context, setContext } = useFinancialContextStore(
+    useShallow((s) => ({ context: s.context, setContext: s.setContext }))
+  );
   const { scope, period, version, currency, freshness, source } = context;
 
   const selectedEntity = entities.find((e) => e.id === scope.entityIds[0]);

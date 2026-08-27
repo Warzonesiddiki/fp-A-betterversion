@@ -4,8 +4,9 @@
 //   All persistent secrets (session tokens, API keys, encryption keys, CSRF
 //   tokens, recovery codes) MUST be stored encrypted-at-rest using the OS
 //   keychain (macOS Keychain, Windows Credential Vault, Linux Secret Service)
-//   via the tauri-plugin-stronghold bridge. This module is the TypeScript
-//   contract for those IPC calls.
+//   through the `secure_storage_*` Tauri commands registered in
+//   src-tauri/src/lib.rs. This module is the TypeScript contract for those
+//   IPC calls.
 //
 // THREAT MODEL ADDRESSED:
 //   - CWE-256 (Plaintext Storage of a Password): all secrets passed to
@@ -35,17 +36,24 @@
 //     the application — no FinPlan-side key rotation needed.
 //
 // DEPENDENCIES (Rust side):
-//   - tauri-plugin-stronghold (Tauri 2 official plugin)
-//   - keyring crate (cross-platform OS keychain)
+//   - keyring crate (cross-platform OS keychain); the commands are
+//     registered in lib.rs generate_handler! since wave-3 lane R20
+//     (BLUEPRINT F-DESK-006).
 //
-// IPC CONTRACT (Rust commands, declared in src-tauri/src/secure_storage.rs):
-//   - secure_storage_store(account: String, secret_b64: String) -> Result<(), String>
-//   - secure_storage_retrieve(account: String) -> Result<String, String>
-//   - secure_storage_delete(account: String) -> Result<(), String>
-//   - secure_storage_exists(account: String) -> Result<bool, String>
-//   - secure_storage_list_accounts() -> Result<Vec<String>, String>
-//   - secure_storage_lock() -> Result<(), String>
-//   - secure_storage_unlock(password: String) -> Result<(), String>
+// IPC CONTRACT (registered commands; declared in src-tauri/src/secure_storage.rs;
+// every command except lock takes ONE `args` struct parameter):
+//   - secure_storage_store(args: {service, account, secret}) -> Result<(), CommandError>
+//   - secure_storage_retrieve(args: {service, account}) -> Result<String, CommandError>
+//   - secure_storage_delete(args: {service, account}) -> Result<(), CommandError>
+//   - secure_storage_exists(args: {service, account}) -> Result<bool, CommandError>
+//   - secure_storage_list_accounts(args: {service}) -> Result<string[], CommandError>
+//   - secure_storage_lock() -> Result<(), CommandError>  (zero invoke parameters)
+//   - secure_storage_unlock(args: {password}) -> Result<(), CommandError>
+//
+// CommandError rejects as { code: string, message: string }. retrieve()
+// returns the stored string verbatim: this module base64-encodes secrets
+// before store() and decodes after retrieve(), so the round-trip holds (the
+// Rust side persists exactly the string we send).
 //
 // The TypeScript service here is the wrapper. Tests mock the Tauri invoke
 // call to verify behavior without a real Tauri runtime.
@@ -57,7 +65,8 @@ export const TAURI_SECURE_STORAGE_CONSTANTS = {
   MAX_SECRET_BYTES: 1_048_576,
   /** Hard cap on number of distinct accounts. */
   MAX_ACCOUNTS: 1_000,
-  /** Default Stronghold vault path (relative to app data). */
+  /** Legacy stronghold-era path constant, kept for API compatibility;
+   * unused by the OS-keychain backend (the keychain owns its own storage). */
   VAULT_PATH: 'finplan-pro-vault.bin',
   /** Lockout threshold — failed unlock attempts before forced lockout. */
   MAX_UNLOCK_ATTEMPTS: 5,
@@ -201,7 +210,7 @@ export class TauriSecureStorage {
       this.attempts = 0;
     }
     try {
-      await this.tauri.invoke<null>('plugin:stronghold|unlock', { password });
+      await this.tauri.invoke<null>('secure_storage_unlock', { args: { password } });
       this.locked = false;
       this.unlockedAt = this.now();
       this.attempts = 0;
@@ -226,7 +235,7 @@ export class TauriSecureStorage {
       throw new Error('TauriSecureStorage not initialized');
     }
     try {
-      await this.tauri.invoke<null>('plugin:stronghold|lock');
+      await this.tauri.invoke<null>('secure_storage_lock');
       this.locked = true;
       this.accounts.clear();
       return this.buildResult('lock', '__lock__', true, 'ok', 0, 0);
@@ -260,10 +269,12 @@ export class TauriSecureStorage {
     }
     const secretB64 = bytesToBase64(bytes);
     try {
-      await this.tauri.invoke<null>('plugin:stronghold|store', {
-        service: TAURI_SECURE_STORAGE_CONSTANTS.SERVICE_NAME,
-        account,
-        secret: secretB64,
+      await this.tauri.invoke<null>('secure_storage_store', {
+        args: {
+          service: TAURI_SECURE_STORAGE_CONSTANTS.SERVICE_NAME,
+          account,
+          secret: secretB64,
+        },
       });
       this.accounts.add(account);
       return this.buildResult('store', account, true, 'ok', 0, bytes.byteLength);
@@ -282,9 +293,11 @@ export class TauriSecureStorage {
     const v = validateAccount(account);
     if (!v.ok) return this.buildResult('retrieve', account, false, v.reason, 0, 0);
     try {
-      const secretB64 = await this.tauri.invoke<string>('plugin:stronghold|retrieve', {
-        service: TAURI_SECURE_STORAGE_CONSTANTS.SERVICE_NAME,
-        account,
+      const secretB64 = await this.tauri.invoke<string>('secure_storage_retrieve', {
+        args: {
+          service: TAURI_SECURE_STORAGE_CONSTANTS.SERVICE_NAME,
+          account,
+        },
       });
       const bytes = base64ToBytes(secretB64);
       this.accounts.add(account);
@@ -304,9 +317,11 @@ export class TauriSecureStorage {
     const v = validateAccount(account);
     if (!v.ok) return this.buildResult('delete', account, false, v.reason, 0, 0);
     try {
-      await this.tauri.invoke<null>('plugin:stronghold|delete', {
-        service: TAURI_SECURE_STORAGE_CONSTANTS.SERVICE_NAME,
-        account,
+      await this.tauri.invoke<null>('secure_storage_delete', {
+        args: {
+          service: TAURI_SECURE_STORAGE_CONSTANTS.SERVICE_NAME,
+          account,
+        },
       });
       this.accounts.delete(account);
       return this.buildResult('delete', account, true, 'ok', 0, 0);
@@ -325,9 +340,11 @@ export class TauriSecureStorage {
     const v = validateAccount(account);
     if (!v.ok) return this.buildResult('exists', account, false, v.reason, 0, 0);
     try {
-      const exists = await this.tauri.invoke<boolean>('plugin:stronghold|exists', {
-        service: TAURI_SECURE_STORAGE_CONSTANTS.SERVICE_NAME,
-        account,
+      const exists = await this.tauri.invoke<boolean>('secure_storage_exists', {
+        args: {
+          service: TAURI_SECURE_STORAGE_CONSTANTS.SERVICE_NAME,
+          account,
+        },
       });
       return this.buildResult('exists', account, true, 'ok', 0, 0, exists);
     } catch (_err) {
@@ -343,8 +360,10 @@ export class TauriSecureStorage {
     if (!this.initialized) throw new Error('TauriSecureStorage not initialized');
     if (this.locked) return this.buildResult('list', '__list__', false, 'vault-locked', 0, 0);
     try {
-      const accounts = await this.tauri.invoke<string[]>('plugin:stronghold|list', {
-        service: TAURI_SECURE_STORAGE_CONSTANTS.SERVICE_NAME,
+      const accounts = await this.tauri.invoke<string[]>('secure_storage_list_accounts', {
+        args: {
+          service: TAURI_SECURE_STORAGE_CONSTANTS.SERVICE_NAME,
+        },
       });
       const filtered = accounts.filter(
         (a) => !(TAURI_SECURE_STORAGE_CONSTANTS.RESERVED_ACCOUNTS as readonly string[]).includes(a)
@@ -443,8 +462,16 @@ function base64ToBytes(b64: string): Uint8Array {
 
 function isNotFoundError(err: unknown): boolean {
   if (!err) return false;
+  // The registered Rust commands reject with the serialized CommandError
+  // object ({ code, message }); match its `code` first, then fall back to
+  // free-text matching for other error shapes.
+  if (typeof err === 'object' && 'code' in (err as Record<string, unknown>)) {
+    if (String((err as Record<string, unknown>).code).toLowerCase() === 'not-found') {
+      return true;
+    }
+  }
   const msg = typeof err === 'string' ? err : err instanceof Error ? err.message : String(err);
-  return /not[_-]?found|no[_-]?entry/i.test(msg);
+  return /not[_-]?found|no[_-]?entry|no such entry/i.test(msg);
 }
 
 function shortRandomId(): string {

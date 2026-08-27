@@ -11,14 +11,6 @@ export const educationConfig: SectorConfig = {
       format: 'percent',
       target: 88,
     },
-    { id: 'revenue_per_student', label: 'Revenue Per Student', format: 'currency', target: 22000 },
-    {
-      id: 'faculty_to_student_ratio',
-      label: 'Faculty to Student Ratio',
-      format: 'number',
-      target: 15,
-      lowerIsBetter: true,
-    },
     {
       id: 'research_grant_win_rate',
       label: 'Research Grant Win Rate',

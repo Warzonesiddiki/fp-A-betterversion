@@ -3,8 +3,12 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
 
+const glState = vi.hoisted(() => ({
+  entries: [] as Array<Record<string, unknown>>,
+}));
+
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+  useGLStore: vi.fn(() => glState),
 }));
 
 vi.mock('@/engines', () => ({
@@ -79,6 +83,20 @@ vi.mock('recharts', () => ({
   Legend: () => <div />,
 }));
 
+// The page imports InsuranceEngine from its direct path, not the barrel —
+// mock THAT module so unit tests stay isolated from real ratio math.
+vi.mock('@/engines/InsuranceEngine', () => ({
+  InsuranceEngine: {
+    calculateStats: vi.fn(() => ({
+      lossRatio: null,
+      combinedRatio: null,
+      earnedPremium: 0,
+    })),
+    getPremiumByLine: vi.fn(() => []),
+    getCombinedRatioTrend: vi.fn(() => []),
+  },
+}));
+
 import ClaimsAnalyticsPage from '@/pages/insurance/ClaimsAnalyticsPage';
 
 function renderPage() {
@@ -103,5 +121,27 @@ describe('ClaimsAnalyticsPage smoke test', () => {
   it('displays page heading', () => {
     renderPage();
     expect(screen.getByText('Claims Analytics')).toBeTruthy();
+  });
+});
+
+describe('ClaimsAnalyticsPage — Loss Run Export honesty (R4 residual)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    glState.entries = [];
+  });
+
+  it('renders no Loss Run Export control when the GL is empty', () => {
+    renderPage();
+    expect(screen.queryByText(/loss run export/i)).not.toBeInTheDocument();
+  });
+
+  it('still renders no Loss Run Export control once entries exist (was an enabled no-op)', () => {
+    glState.entries = [{ accountCode: '5100', period: '2026-01', debit: 100 }];
+    renderPage();
+    expect(screen.queryByText(/loss run export/i)).not.toBeInTheDocument();
+    // Page still mounts fully with data present.
+    expect(screen.getByText('Claims Analytics')).toBeInTheDocument();
+    // The per-claim disclosure stands: no claim rows are shown or implied.
+    expect(screen.getAllByText(/claim-management/i).length).toBeGreaterThan(0);
   });
 });

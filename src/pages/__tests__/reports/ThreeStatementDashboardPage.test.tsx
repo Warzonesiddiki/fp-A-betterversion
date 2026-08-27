@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+  useGLStore: Object.assign(vi.fn((sel?: (s: unknown) => unknown) => { const state = { entries: [] }; return sel ? sel(state) : state; }), { getState: () => ({ entries: [] }) }),
 }));
 vi.mock('@/engines/ThreeStatementEngine', async () => {
   // Use the real engine: the balance check it performs is part of what we assert.

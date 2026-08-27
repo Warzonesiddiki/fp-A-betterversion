@@ -2,6 +2,7 @@ import { Router, Response, Request } from 'express';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db/connection.js';
+import { resolveTenantId } from '../db/tenancy.js';
 import { authMiddleware, requireRole } from '../middleware/auth.js';
 import { filterByEntityAccess } from '../middleware/entityAuth.js';
 
@@ -58,12 +59,21 @@ function audit(
   entityType: string,
   entityId: string,
   userId: string,
+  tenantId?: string,
   details?: Record<string, unknown>
 ) {
   db.prepare(
-    `INSERT INTO audit_trail (id, action, entity_type, entity_id, user_id, details, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, datetime('now'))`
-  ).run(uuidv4(), action, entityType, entityId, userId, JSON.stringify(details ?? {}));
+    `INSERT INTO audit_trail (id, tenant_id, action, entity_type, entity_id, user_id, details, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+  ).run(
+    uuidv4(),
+    tenantId ?? 'default',
+    action,
+    entityType,
+    entityId,
+    userId,
+    JSON.stringify(details ?? {})
+  );
 }
 
 function auditPeriodClose(
@@ -71,14 +81,15 @@ function auditPeriodClose(
   fromState: string,
   toState: string,
   userId: string,
+  tenantId: string,
   reason?: string,
   approvalId?: string
 ) {
   const id = uuidv4();
   db.prepare(
-    `INSERT INTO period_close_audit (id, period_id, from_state, to_state, actor_id, reason, approval_id, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`
-  ).run(id, periodId, fromState, toState, userId, reason ?? null, approvalId ?? null);
+    `INSERT INTO period_close_audit (id, tenant_id, period_id, from_state, to_state, actor_id, reason, approval_id, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+  ).run(id, tenantId, periodId, fromState, toState, userId, reason ?? null, approvalId ?? null);
 }
 
 function _getCloseState(periodId: string): CloseState {
@@ -114,6 +125,10 @@ router.get('/', filterByEntityAccess, (req: Request, res: Response) => {
     const conditions: string[] = [];
     const params: unknown[] = [];
 
+    // Tenant scope (W0.2b)
+    conditions.push('tenant_id = ?');
+    params.push(resolveTenantId(req.user));
+
     if (year && typeof year === 'string') {
       conditions.push('year = ?');
       params.push(Number(year));
@@ -145,8 +160,10 @@ router.get('/:id/state', (req: Request, res: Response) => {
   try {
     const periodId = String(req.params.id);
     const period = db
-      .prepare('SELECT id, close_state, is_closed FROM fiscal_periods WHERE id = ?')
-      .get(periodId) as Record<string, unknown> | undefined;
+      .prepare(
+        'SELECT id, close_state, is_closed FROM fiscal_periods WHERE id = ? AND tenant_id = ?'
+      )
+      .get(periodId, resolveTenantId(req.user)) as Record<string, unknown> | undefined;
 
     if (!period) {
       res.status(404).json({ error: 'Fiscal period not found' });
@@ -180,9 +197,9 @@ router.post(
       }
 
       const periodId = String(req.params.id);
-      const period = db.prepare('SELECT * FROM fiscal_periods WHERE id = ?').get(periodId) as
-        | Record<string, unknown>
-        | undefined;
+      const period = db
+        .prepare('SELECT * FROM fiscal_periods WHERE id = ? AND tenant_id = ?')
+        .get(periodId, resolveTenantId(req.user)) as Record<string, unknown> | undefined;
 
       if (!period) {
         res.status(404).json({ error: 'Fiscal period not found' });
@@ -245,8 +262,14 @@ router.post(
       db.prepare(
         `UPDATE fiscal_periods
          SET close_state = ?, is_closed = ?, closed_at = ${closedAt}, closed_by = ?, updated_at = datetime('now')
-         WHERE id = ?`
-      ).run(targetState, isClosed ? 1 : 0, isClosed ? req.user!.id : null, periodId);
+         WHERE id = ? AND tenant_id = ?`
+      ).run(
+        targetState,
+        isClosed ? 1 : 0,
+        isClosed ? req.user!.id : null,
+        periodId,
+        resolveTenantId(req.user)
+      );
 
       // Audit the transition
       auditPeriodClose(
@@ -254,18 +277,28 @@ router.post(
         currentState,
         targetState,
         req.user!.id,
+        resolveTenantId(req.user),
         parsed.data.reason,
         parsed.data.approvalId
       );
 
-      audit('PERIOD_TRANSITION', 'fiscal_period', periodId, req.user!.id, {
-        fromState: currentState,
-        toState: targetState,
-        reason: parsed.data.reason,
-        approvalId: parsed.data.approvalId,
-      });
+      audit(
+        'PERIOD_TRANSITION',
+        'fiscal_period',
+        periodId,
+        req.user!.id,
+        resolveTenantId(req.user),
+        {
+          fromState: currentState,
+          toState: targetState,
+          reason: parsed.data.reason,
+          approvalId: parsed.data.approvalId,
+        }
+      );
 
-      const updated = db.prepare('SELECT * FROM fiscal_periods WHERE id = ?').get(periodId);
+      const updated = db
+        .prepare('SELECT * FROM fiscal_periods WHERE id = ? AND tenant_id = ?')
+        .get(periodId, resolveTenantId(req.user));
       res.json({
         ...updated,
         closeState: targetState,
@@ -292,9 +325,9 @@ router.post(
       }
 
       const periodId = String(req.params.id);
-      const period = db.prepare('SELECT * FROM fiscal_periods WHERE id = ?').get(periodId) as
-        | Record<string, unknown>
-        | undefined;
+      const period = db
+        .prepare('SELECT * FROM fiscal_periods WHERE id = ? AND tenant_id = ?')
+        .get(periodId, resolveTenantId(req.user)) as Record<string, unknown> | undefined;
 
       if (!period) {
         res.status(404).json({ error: 'Fiscal period not found' });
@@ -329,19 +362,34 @@ router.post(
       const closedAt = isClosed ? "datetime('now')" : 'NULL';
 
       db.prepare(
-        `UPDATE fiscal_periods SET close_state = ?, is_closed = ?, closed_at = ${closedAt}, closed_by = ?, updated_at = datetime('now') WHERE id = ?`
-      ).run(targetState, isClosed ? 1 : 0, isClosed ? req.user!.id : null, periodId);
+        `UPDATE fiscal_periods SET close_state = ?, is_closed = ?, closed_at = ${closedAt}, closed_by = ?, updated_at = datetime('now') WHERE id = ? AND tenant_id = ?`
+      ).run(
+        targetState,
+        isClosed ? 1 : 0,
+        isClosed ? req.user!.id : null,
+        periodId,
+        resolveTenantId(req.user)
+      );
 
       // Audit the transition
-      auditPeriodClose(periodId, currentState, targetState, req.user!.id, parsed.data.reason);
+      auditPeriodClose(
+        periodId,
+        currentState,
+        targetState,
+        req.user!.id,
+        resolveTenantId(req.user),
+        parsed.data.reason
+      );
 
-      audit('CLOSE', 'fiscal_period', periodId, req.user!.id, {
+      audit('CLOSE', 'fiscal_period', periodId, req.user!.id, resolveTenantId(req.user), {
         name: period.name,
         reason: parsed.data.reason,
         targetState,
       });
 
-      const updated = db.prepare('SELECT * FROM fiscal_periods WHERE id = ?').get(periodId);
+      const updated = db
+        .prepare('SELECT * FROM fiscal_periods WHERE id = ? AND tenant_id = ?')
+        .get(periodId, resolveTenantId(req.user));
       res.json(updated);
     } catch (err) {
       console.error('POST /periods/:id/close error:', err);
@@ -360,9 +408,9 @@ router.post('/:id/reopen', requireRole('Admin'), (req: Request, res: Response) =
     }
 
     const periodId = String(req.params.id);
-    const period = db.prepare('SELECT * FROM fiscal_periods WHERE id = ?').get(periodId) as
-      | Record<string, unknown>
-      | undefined;
+    const period = db
+      .prepare('SELECT * FROM fiscal_periods WHERE id = ? AND tenant_id = ?')
+      .get(periodId, resolveTenantId(req.user)) as Record<string, unknown> | undefined;
 
     if (!period) {
       res.status(404).json({ error: 'Fiscal period not found' });
@@ -396,8 +444,8 @@ router.post('/:id/reopen', requireRole('Admin'), (req: Request, res: Response) =
 
     // Execute reopen
     db.prepare(
-      `UPDATE fiscal_periods SET close_state = 'open', is_closed = 0, closed_at = NULL, closed_by = NULL, updated_at = datetime('now') WHERE id = ?`
-    ).run(periodId);
+      `UPDATE fiscal_periods SET close_state = 'open', is_closed = 0, closed_at = NULL, closed_by = NULL, updated_at = datetime('now') WHERE id = ? AND tenant_id = ?`
+    ).run(periodId, resolveTenantId(req.user));
 
     // Audit the transition
     auditPeriodClose(
@@ -405,18 +453,21 @@ router.post('/:id/reopen', requireRole('Admin'), (req: Request, res: Response) =
       currentState,
       'open',
       req.user!.id,
+      resolveTenantId(req.user),
       parsed.data.reason,
       parsed.data.approvalId
     );
 
-    audit('REOPEN', 'fiscal_period', periodId, req.user!.id, {
+    audit('REOPEN', 'fiscal_period', periodId, req.user!.id, resolveTenantId(req.user), {
       name: period.name,
       reason: parsed.data.reason,
       fromState: currentState,
       approvalId: parsed.data.approvalId,
     });
 
-    const updated = db.prepare('SELECT * FROM fiscal_periods WHERE id = ?').get(periodId);
+    const updated = db
+      .prepare('SELECT * FROM fiscal_periods WHERE id = ? AND tenant_id = ?')
+      .get(periodId, resolveTenantId(req.user));
     res.json(updated);
   } catch (err) {
     console.error('POST /periods/:id/reopen error:', err);
@@ -429,8 +480,10 @@ router.get('/:id/audit', (req: Request, res: Response) => {
   try {
     const periodId = String(req.params.id);
     const rows = db
-      .prepare(`SELECT * FROM period_close_audit WHERE period_id = ? ORDER BY created_at DESC`)
-      .all(periodId);
+      .prepare(
+        `SELECT * FROM period_close_audit WHERE period_id = ? AND tenant_id = ? ORDER BY created_at DESC`
+      )
+      .all(periodId, resolveTenantId(req.user));
     res.json(rows);
   } catch (err) {
     console.error('GET /periods/:id/audit error:', err);

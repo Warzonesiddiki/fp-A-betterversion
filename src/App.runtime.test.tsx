@@ -14,6 +14,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import App from '@/App';
+import { actAs, signOut } from '@/test/rbacFixtures';
 
 // ---------------------------------------------------------------------------
 // jsdom environment gaps (NOT runtime shims): ThemeContext calls
@@ -55,6 +56,7 @@ beforeEach(() => {
 afterEach(() => {
   delete WINDOW_ANY.__TAURI_INTERNALS__;
   delete WINDOW_ANY.__TAURI__;
+  signOut();
   localStorage.clear();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
@@ -75,6 +77,9 @@ describe('App desktop-only runtime gate', () => {
     WINDOW_ANY.__TAURI_INTERNALS__ = {};
     const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     localStorage.setItem('finplan-setup-complete', 'true');
+    // AppLayout sits behind ProtectedRoute — an authenticated Admin session
+    // is required or the shell redirects to /login before rendering.
+    actAs('Admin');
 
     render(<App />);
 

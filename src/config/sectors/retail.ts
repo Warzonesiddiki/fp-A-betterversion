@@ -3,11 +3,11 @@ import type { SectorConfig } from './index';
 export const retailConfig: SectorConfig = {
   id: 'retail',
   name: 'Retail / Commerce',
-  description: 'Store metrics: SSS, Footfall, Conversion, ATV',
+  description:
+    'Retail metrics: SSS, conversion, GMROI, inventory turnover; gross margin derived from classified GL.',
   defaultKPIs: [
     { id: 'sss', label: 'Same-Store Sales Growth', format: 'percent', target: 5 },
     { id: 'conversion_rate', label: 'Conversion Rate', format: 'percent', target: 3.5 },
-    { id: 'atv', label: 'Average Ticket Value', format: 'currency', target: 85 },
     { id: 'gmroi', label: 'Gross Margin ROI', format: 'number', target: 2.5 },
     {
       id: 'inventory_shrink',

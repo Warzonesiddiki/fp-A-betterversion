@@ -1,18 +1,18 @@
 [
   {
     "benchmark": "monte-carlo-10k",
-    "timestamp": "2026-08-11T20:29:09.780Z",
+    "timestamp": "2026-08-22T23:45:07.625Z",
     "hardware": {
-      "cpu": "Intel(R) Xeon(R) Processor @ 2.60GHz",
-      "ram": "3940MB",
-      "os": "linux x64",
-      "node": "v22.22.3"
+      "cpu": "Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz",
+      "ram": "20231MB",
+      "os": "win32 x64",
+      "node": "v26.7.0"
     },
     "iterations": 10000,
-    "coldMs": 27.88,
-    "warmMs": 12.96,
-    "warmAvgMs": 13.36,
-    "memoryPeakMB": 12.3,
+    "coldMs": 76.54,
+    "warmMs": 39.65,
+    "warmAvgMs": 47.71,
+    "memoryPeakMB": 12.87,
     "passed": true,
     "target": "<30000ms",
     "engineFile": "src/engines/MonteCarloEngine.ts",

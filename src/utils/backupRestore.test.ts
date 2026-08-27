@@ -21,6 +21,8 @@ import {
   canonicalJSON,
   computeChecksum,
   BACKUP_FORMAT_VERSION,
+  createRawEmergencyBackup,
+  downloadRawEmergencyBackup,
 } from './backupRestore';
 import { PERSISTED_STORE_KEYS, BACKUP_STORE_KEYS, BACKUP_EXCLUDED_KEYS } from './persistedStores';
 import { masterStorage } from './masterStorage';
@@ -336,6 +338,122 @@ describe('F-0010 backup/restore', () => {
       const report = await BackupRestore.checkIntegrity();
       expect(report.populatedStores).toEqual([]);
       expect(report.warnings.join(' ')).toMatch(/would be empty/i);
+    });
+  });
+
+  describe('F-B4-11 raw emergency dump', () => {
+    it('emits the emergency envelope with raw localStorage entries and no masterStorage reads', async () => {
+      localStorage.setItem('finplan-sqljs-db', 'AAAAc3FsaXRlYmFzZTY0==');
+      localStorage.setItem('finplan.storage-key.v1', 'ZGV2aWNla2V5');
+      localStorage.setItem('legacy-store-key', '{"old":true}');
+      const getItemSpy = vi.spyOn(masterStorage, 'getItem');
+
+      try {
+        const dump = await createRawEmergencyBackup();
+
+        expect(dump.kind).toBe('finplan-emergency-dump');
+        expect(dump.version).toBe(1);
+        expect(new Date(dump.capturedAt).toString()).not.toBe('Invalid Date');
+
+        const byKey = new Map(dump.entries.map((e) => [e.key, e.value]));
+        // Raw bytes, not decrypted/parsed persist envelopes.
+        expect(byKey.get('finplan-sqljs-db')).toBe('AAAAc3FsaXRlYmFzZTY0==');
+        expect(byKey.get('finplan.storage-key.v1')).toBe('ZGV2aWNla2V5');
+        expect(byKey.get('legacy-store-key')).toBe('{"old":true}');
+
+        expect(getItemSpy, 'the dump must bypass masterStorage entirely').not.toHaveBeenCalled();
+        expect(dump.errors).toEqual([]);
+      } finally {
+        getItemSpy.mockRestore();
+        localStorage.removeItem('finplan-sqljs-db');
+        localStorage.removeItem('finplan.storage-key.v1');
+        localStorage.removeItem('legacy-store-key');
+      }
+    });
+
+    it('collects per-key errors instead of throwing when a key is unreadable', async () => {
+      localStorage.setItem('bad-key', 'unreachable');
+      const getItemSpy = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(function (
+        this: Storage,
+        key: string
+      ) {
+        if (key === 'bad-key') throw new Error('permission denied');
+        return null;
+      });
+
+      try {
+        const dump = await createRawEmergencyBackup();
+
+        expect(dump.errors.some((message) => /"bad-key".*permission denied/.test(message))).toBe(
+          true
+        );
+        expect(dump.kind).toBe('finplan-emergency-dump');
+      } finally {
+        getItemSpy.mockRestore();
+        localStorage.removeItem('bad-key');
+      }
+    });
+
+    it('falls back to collected errors for the desktop SQLite backend while keeping raw entries', async () => {
+      localStorage.setItem('finplan.storage-key.v1', 'ZGV2aWNla2V5');
+      // Tauri v2 contract key (see isTauriRuntime) — the stale legacy
+      // '__TAURI_INTERNALS' spelling silently stopped enabling Tauri mode.
+      (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__ = {};
+
+      try {
+        const dump = await createRawEmergencyBackup();
+
+        expect(dump.errors.some((message) => /Failed to read SQLite store/.test(message))).toBe(
+          true
+        );
+        // Best-effort: the localStorage side of the dump still completed.
+        expect(dump.entries.map((e) => e.key)).toContain('finplan.storage-key.v1');
+      } finally {
+        delete (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__;
+        localStorage.removeItem('finplan.storage-key.v1');
+      }
+    });
+
+    it('downloads the dump through a blob anchor like a regular backup export', async () => {
+      const originalCreate = URL.createObjectURL;
+      const originalRevoke = URL.revokeObjectURL;
+      const createObjectURL = vi.fn(() => 'blob:emergency-dump');
+      const revokeObjectURL = vi.fn();
+      Object.defineProperty(URL, 'createObjectURL', {
+        configurable: true,
+        writable: true,
+        value: createObjectURL,
+      });
+      Object.defineProperty(URL, 'revokeObjectURL', {
+        configurable: true,
+        writable: true,
+        value: revokeObjectURL,
+      });
+      const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+
+      try {
+        const dump = await downloadRawEmergencyBackup();
+
+        expect(dump.kind).toBe('finplan-emergency-dump');
+        expect(createObjectURL).toHaveBeenCalledTimes(1);
+        expect(revokeObjectURL).toHaveBeenCalledWith('blob:emergency-dump');
+        expect(clickSpy).toHaveBeenCalledTimes(1);
+        const anchor = clickSpy.mock.instances[0] as HTMLAnchorElement;
+        expect(anchor.download).toMatch(/^finplan-emergency-dump-\d{4}-\d{2}-\d{2}\.json$/);
+        expect(anchor.href).toBe('blob:emergency-dump');
+      } finally {
+        clickSpy.mockRestore();
+        Object.defineProperty(URL, 'createObjectURL', {
+          configurable: true,
+          writable: true,
+          value: originalCreate,
+        });
+        Object.defineProperty(URL, 'revokeObjectURL', {
+          configurable: true,
+          writable: true,
+          value: originalRevoke,
+        });
+      }
     });
   });
 });

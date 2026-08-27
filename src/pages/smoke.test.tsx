@@ -61,21 +61,27 @@ vi.mock('@/store/glStore', () => ({
 }));
 
 vi.mock('@/store/forecastStore', () => ({
-  useForecastStore: vi.fn(() => ({
-    forecasts: [],
-    drivers: [],
-    selectedForecastId: null,
-    isLoading: false,
-    setForecasts: vi.fn(),
-    createForecast: vi.fn(),
-    updateForecast: vi.fn(),
-    deleteForecast: vi.fn(),
-    addDriver: vi.fn(),
-    updateDriver: vi.fn(),
-    removeDriver: vi.fn(),
-    undo: vi.fn(),
-    redo: vi.fn(),
-  })),
+  useForecastStore: Object.assign(
+    vi.fn((sel?: (s: unknown) => unknown) => {
+      const state = {
+        forecasts: [],
+        drivers: [],
+        selectedForecastId: null,
+        isLoading: false,
+        setForecasts: vi.fn(),
+        createForecast: vi.fn(),
+        updateForecast: vi.fn(),
+        deleteForecast: vi.fn(),
+        addDriver: vi.fn(),
+        updateDriver: vi.fn(),
+        removeDriver: vi.fn(),
+        undo: vi.fn(),
+        redo: vi.fn(),
+      };
+      return sel ? sel(state) : state;
+    }),
+    { getState: () => ({ forecasts: [], drivers: [] }) }
+  ),
 }));
 
 vi.mock('@/store/scenarioStore', () => ({

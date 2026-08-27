@@ -118,31 +118,22 @@ describe('COGSVarianceEngine — money primitive known answers (GAP-1 / F-0006)'
   });
 
   describe('calculateGLVariances', () => {
-    it('derives the standard COGS and variance exactly from GL entries', () => {
+    // The GL carries no standard-cost layer. The pre-remediation engine
+    // invented one (standardCOGS = actual × 0.95, decomposed as an invented
+    // −2% / −1.5% / +0.5% with volume as the balancing figure); these pins
+    // lock the honest contract instead: null unless standards are POSTED.
+
+    it('returns null variance outputs when no standard cost is posted', () => {
       const result = COGSVarianceEngine.calculateGLVariances([entry('5000', -1000.1, 'c1')]);
       expect(result.actualCOGS).toBe(1000.1);
-      // 1000.10 * 0.95 = 950.095 -> 950.10 at cent precision (float gave 950.095)
-      expect(result.standardCOGS).toBe(950.1);
-      expect(result.variance).toBe(-50.01);
-      expect(result.totalVariance).toBe(result.variance);
+      expect(result.standardCOGS).toBeNull();
+      expect(result.variance).toBeNull();
+      expect(result.totalVariance).toBeNull();
+      expect(result.variancePercent).toBeNull();
+      expect(result.breakdown).toBeNull();
     });
 
-    it('decomposes the breakdown into exact cent amounts', () => {
-      const result = COGSVarianceEngine.calculateGLVariances([entry('5000', -1000.1, 'c1')]);
-      const byName = Object.fromEntries(result.breakdown.map((b) => [b.name, b.value]));
-      // Float: -1000.10 * 0.02 === -20.002000000000002; * 0.015 === -15.0015
-      expect(byName.Price).toBe(-20);
-      expect(byName.Usage).toBe(-15);
-      expect(byName.Efficiency).toBe(5);
-      expect(byName.Volume).toBe(-20);
-    });
-
-    it('computes the variance percentage from exact decimals', () => {
-      const result = COGSVarianceEngine.calculateGLVariances([entry('5000', -1000.1, 'c1')]);
-      expect(result.variancePercent).toBe(-5.2631578947);
-    });
-
-    it('sums many small COGS postings without drift', () => {
+    it('sums many small COGS postings without drift even without standards', () => {
       const result = COGSVarianceEngine.calculateGLVariances([
         entry('5000', -0.1, 'c1'),
         entry('5000', -0.1, 'c2'),
@@ -152,12 +143,63 @@ describe('COGSVarianceEngine — money primitive known answers (GAP-1 / F-0006)'
       expect(result.actualCOGS).toBe(0.3);
     });
 
-    it('returns zeros rather than NaN when there are no COGS entries', () => {
-      const result = COGSVarianceEngine.calculateGLVariances([]);
-      expect(result.actualCOGS).toBe(0);
+    it('settles exactly against a posted standard cost', () => {
+      const result = COGSVarianceEngine.calculateGLVariances([entry('5000', -1000.1, 'c1')], {
+        standardCost: 950,
+      });
+      expect(result.actualCOGS).toBe(1000.1);
+      expect(result.standardCOGS).toBe(950);
+      // 950 − 1000.10 = −50.10
+      expect(result.variance).toBe(-50.1);
+      expect(result.totalVariance).toBe(result.variance);
+      // −50.10 ÷ 950 × 100 = −5.2736842105263… → 10 places
+      expect(result.variancePercent).toBe(-5.2736842105);
+    });
+
+    it('keeps the decomposition null until every component variance is posted', () => {
+      const partial = COGSVarianceEngine.calculateGLVariances([entry('5000', -1000.1, 'c1')], {
+        standardCost: 950,
+        priceVariance: -20,
+      });
+      expect(partial.breakdown).toBeNull();
+    });
+
+    it('passes posted components through at cent precision once all four exist', () => {
+      const full = COGSVarianceEngine.calculateGLVariances([entry('5000', -1000.1, 'c1')], {
+        standardCost: 950,
+        priceVariance: -20.004,
+        usageVariance: -15.0015,
+        efficiencyVariance: 5,
+        volumeVariance: -20.0945,
+      });
+      expect(full.breakdown).not.toBeNull();
+      const byName = Object.fromEntries(full.breakdown!.map((b) => [b.name, b.value]));
+      // ROUND_HALF_UP at cents; no balancing figure is derived.
+      expect(byName.Price).toBe(-20);
+      expect(byName.Usage).toBe(-15);
+      expect(byName.Efficiency).toBe(5);
+      expect(byName.Volume).toBe(-20.09);
+    });
+
+    it('returns a null percent rather than a fake zero for a non-positive posted standard', () => {
+      const result = COGSVarianceEngine.calculateGLVariances([entry('5000', -100.5, 'c1')], {
+        standardCost: 0,
+      });
       expect(result.standardCOGS).toBe(0);
-      expect(result.variancePercent).toBe(0);
-      expect(Number.isFinite(result.variancePercent)).toBe(true);
+      // 0 − 100.50 = −100.50
+      expect(result.variance).toBe(-100.5);
+      expect(result.variancePercent).toBeNull();
+    });
+
+    it('handles an empty ledger coherently with and without standards', () => {
+      const unposted = COGSVarianceEngine.calculateGLVariances([]);
+      expect(unposted.actualCOGS).toBe(0);
+      expect(unposted.variancePercent).toBeNull();
+      expect(Number.isFinite(unposted.actualCOGS)).toBe(true);
+
+      const posted = COGSVarianceEngine.calculateGLVariances([], { standardCost: 500 });
+      expect(posted.variance).toBe(500);
+      expect(posted.variancePercent).toBe(100);
     });
   });
 });

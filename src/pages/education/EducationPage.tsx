@@ -1,86 +1,131 @@
 import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
+import { useEducationStore } from '@/store/educationStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { DataTable, Column } from '@/components/ui/DataTable';
-import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
-import { GraduationCap, Users, DollarSign, BookOpen } from 'lucide-react';
-import type { GLEntry } from '@/types';
-import { addMoney, roundTo, sumMoney } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
-
-function computeEducationStats(entries: readonly GLEntry[]) {
-  const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
-  const totalCredit = roundTo(sumMoney(entries.map((e) => e.credit)), 2);
-  const netChange = roundTo(sumMoney(entries.map((e) => e.netChange)), 2);
-  const uniqueAccounts = new Set(entries.map((e) => e.accountCode)).size;
-
-  const accountMap = new Map<
-    string,
-    { name: string; debit: number; credit: number; net: number; count: number }
-  >();
-  for (const e of entries) {
-    const existing = accountMap.get(e.accountCode) ?? {
-      name: e.accountName,
-      debit: 0,
-      credit: 0,
-      net: 0,
-      count: 0,
-    };
-    existing.debit = addMoney(existing.debit, e.debit ?? 0).toNumber();
-    existing.credit = addMoney(existing.credit, e.credit ?? 0).toNumber();
-    existing.net = addMoney(existing.net, e.netChange ?? 0).toNumber();
-    existing.count += 1;
-    accountMap.set(e.accountCode, existing);
-  }
-
-  const accountBreakdown = Array.from(accountMap.entries())
-    .map(([code, data]) => ({
-      accountCode: code,
-      accountName: data.name,
-      debit: data.debit,
-      credit: data.credit,
-      netChange: data.net,
-      transactions: data.count,
-    }))
-    .sort((a, b) => Math.abs(b.credit) - Math.abs(a.credit));
-
-  return { totalDebit, totalCredit, netChange, uniqueAccounts, accountBreakdown };
-}
-
-const columns: Column[] = [
-  { key: 'accountCode', header: 'Account Code', sortable: true },
-  { key: 'accountName', header: 'Account Name', sortable: true },
-  { key: 'debit', header: 'Debit', align: 'right', sortable: true },
-  { key: 'credit', header: 'Credit', align: 'right', sortable: true },
-  { key: 'netChange', header: 'Net Change', align: 'right', sortable: true },
-  { key: 'transactions', header: 'Transactions', align: 'right', sortable: true },
-];
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { aggregateAccounts, type AccountBreakdownRow } from './accountOverview';
+import { AccountOverviewCard } from './AccountOverviewCard';
+import { roundTo, sumMoney } from '@/utils/money';
+import {
+  GraduationCap,
+  Users,
+  DollarSign,
+  BookOpen,
+  Download,
+  FileSpreadsheet,
+  Info,
+  Award,
+  TrendingUp,
+} from 'lucide-react';
 
 export default function EducationPage() {
   const { entries } = useGLStore();
+  const educationStore = useEducationStore();
+  const programs = useMemo(() => educationStore?.programs ?? [], [educationStore?.programs]);
+  const scholarships = useMemo(
+    () => educationStore?.scholarships ?? [],
+    [educationStore?.scholarships]
+  );
+  const enrollmentTrends = useMemo(
+    () => educationStore?.enrollmentTrends ?? [],
+    [educationStore?.enrollmentTrends]
+  );
+  const getTotalEnrollment = educationStore?.getTotalEnrollment;
+  const getActiveProgramCount = educationStore?.getActiveProgramCount;
+
   const navigate = useNavigate();
+  const fmt = useCurrencyFormatter();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Education';
   }, []);
 
-  const stats = useMemo(() => computeEducationStats(entries), [entries]);
-
-  const tableData = useMemo(
-    () =>
-      stats.accountBreakdown.map((row) => ({
-        accountCode: row.accountCode,
-        accountName: row.accountName,
-        debit: formatCurrency(row.debit),
-        credit: formatCurrency(row.credit),
-        netChange: formatCurrency(row.netChange),
-        transactions: formatNumber(row.transactions),
-      })),
-    [stats.accountBreakdown]
+  const totalDebit = useMemo(
+    () => roundTo(sumMoney(entries.map((e) => e.debit ?? 0)), 2),
+    [entries]
   );
+  const totalCredit = useMemo(
+    () => roundTo(sumMoney(entries.map((e) => e.credit ?? 0)), 2),
+    [entries]
+  );
+  const netChange = useMemo(
+    () => roundTo(sumMoney(entries.map((e) => e.netChange ?? 0)), 2),
+    [entries]
+  );
+  const uniqueAccounts = useMemo(() => new Set(entries.map((e) => e.accountCode)).size, [entries]);
+
+  const totalEnrollment = useMemo(() => {
+    return typeof getTotalEnrollment === 'function'
+      ? getTotalEnrollment()
+      : roundTo(sumMoney(programs.map((p) => p.enrollment)), 0);
+  }, [getTotalEnrollment, programs]);
+
+  const activePrograms = useMemo(() => {
+    return typeof getActiveProgramCount === 'function'
+      ? getActiveProgramCount()
+      : programs.filter((p) => p.status === 'Active').length;
+  }, [getActiveProgramCount, programs]);
+
+  const totalScholarshipAmount = useMemo(
+    () => roundTo(sumMoney(scholarships.map((s) => s.amount)), 2),
+    [scholarships]
+  );
+
+  const accountRows: AccountBreakdownRow[] = useMemo(() => aggregateAccounts(entries), [entries]);
+
+  const handleExportPDF = () => {
+    void ExportEngine.exportToPDF(
+      {
+        headers: ['Metric', 'Value', 'Source / Lineage'],
+        rows: [
+          ['Tuition & Fee Revenue', fmt.currency(totalCredit), 'GL Credit-Normal Accounts (4xxx)'],
+          [
+            'Instructional & Operating Spend',
+            fmt.currency(totalDebit),
+            'GL Debit-Normal Accounts (5xxx/6xxx)',
+          ],
+          ['Net Institutional Surplus', fmt.currency(netChange), 'GL Balance Net Change'],
+          ['Enrolled Student Body', fmt.number(totalEnrollment), 'Academic Program Census'],
+          ['Active Degree Programs', fmt.number(activePrograms), 'Accredited Program Roster'],
+          ['Scholarships Awarded', fmt.number(scholarships.length), 'Institutional Aid Registry'],
+          [
+            'Total Financial Aid Disbursed',
+            fmt.currency(totalScholarshipAmount),
+            'Institutional Aid Disbursed',
+          ],
+          [
+            'Historical Enrollment Semesters',
+            fmt.number(enrollmentTrends.length),
+            'Registrar Census Feeds',
+          ],
+        ],
+      },
+      { title: 'Education_Institutional_Report' }
+    ).catch(reportExportFailure);
+  };
+
+  const handleExportExcel = () => {
+    void ExportEngine.exportToExcel(
+      {
+        headers: ['Metric', 'Amount', 'Notes'],
+        rows: [
+          ['Tuition & Fee Revenue', totalCredit, 'GL 4xxx'],
+          ['Operating & Instructional Costs', totalDebit, 'GL 5xxx/6xxx'],
+          ['Net Institutional Surplus', netChange, 'GL Net Change'],
+          ['Total Enrolled Students', totalEnrollment, 'Program enrollments'],
+          ['Active Programs', activePrograms, 'Accredited offerings'],
+          ['Financial Aid Disbursements', totalScholarshipAmount, 'Scholarships registry'],
+        ],
+      },
+      { title: 'Education_Institutional_Review' }
+    ).catch(reportExportFailure);
+  };
 
   const handleImportKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -103,14 +148,12 @@ export default function EducationPage() {
           aria-hidden="true"
         />
         <h1 className="text-xl font-semibold mb-2">No Education Data</h1>
-        <p className="text-[var(--text-muted)] mb-6">
-          Import GL data to view education financials.
-        </p>
+        <p className="text-[var(--text-muted)] mb-6">Import GL data to view education.</p>
         <Button
           id="import-btn"
           onClick={() => navigate('/data/gl-upload')}
           onKeyDown={handleImportKeyDown}
-          aria-label="Import GL data to view education financials"
+          aria-label="Import GL data to view education"
         >
           Import Data
         </Button>
@@ -126,60 +169,121 @@ export default function EducationPage() {
       >
         Skip to key metrics
       </a>
-      <PageHeader
-        title="Education"
-        titleId="edu-heading"
-        status={
-          <span className="text-sm text-[var(--text-muted)]">
-            {formatNumber(entries.length)} entries imported
-          </span>
-        }
-      />
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <PageHeader
+          title="Education"
+          titleId="education-heading"
+          status={
+            <span className="text-sm text-[var(--text-muted)]">
+              {fmt.number(entries.length)} entries imported
+            </span>
+          }
+        />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportPDF}
+            aria-label="Export PDF Report"
+          >
+            <Download className="h-4 w-4 mr-1.5" aria-hidden="true" />
+            PDF Report
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportExcel}
+            aria-label="Export Excel Workbook"
+          >
+            <FileSpreadsheet className="h-4 w-4 mr-1.5" aria-hidden="true" />
+            Excel Export
+          </Button>
+        </div>
+      </div>
+
       <section
         id="kpi-section"
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
         aria-label="Education KPIs"
-        aria-labelledby="edu-heading"
+        aria-labelledby="education-heading"
       >
         <KPIValue
-          label="Total Entries"
-          value={formatNumber(entries.length)}
-          icon={<Users className="h-4 w-4" aria-hidden="true" />}
+          label="Total Revenue"
+          value={fmt.compact(totalCredit)}
+          icon={<DollarSign className="h-4 w-4 text-[#16A34A]" aria-hidden="true" />}
         />
         <KPIValue
-          label="Tuition Revenue"
-          value={formatCompactNumber(stats.totalCredit)}
-          icon={<DollarSign className="h-4 w-4" aria-hidden="true" />}
+          label="Total Debit"
+          value={fmt.compact(totalDebit)}
+          icon={<TrendingUp className="h-4 w-4 text-amber-500" aria-hidden="true" />}
         />
         <KPIValue
-          label="Programs"
-          value={formatNumber(stats.uniqueAccounts)}
+          label="Active Accounts"
+          value={fmt.number(uniqueAccounts)}
           icon={<BookOpen className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
-          label="Net Income"
-          value={formatCompactNumber(stats.netChange)}
+          label="Net Change"
+          value={fmt.compact(netChange)}
           icon={<GraduationCap className="h-4 w-4" aria-hidden="true" />}
         />
       </section>
-      <Card aria-label="Enrollment Overview" aria-live="polite">
-        <CardHeader>
-          <CardTitle id="enrollment-overview-title">Account Overview</CardTitle>
+
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-4" aria-label="Academic KPIs">
+        <KPIValue
+          label="Enrolled Students"
+          value={fmt.number(totalEnrollment)}
+          changeLabel={totalEnrollment > 0 ? 'Active program census' : 'No students recorded'}
+          icon={<Users className="h-4 w-4 text-blue-500" aria-hidden="true" />}
+        />
+        <KPIValue
+          label="Degree Programs"
+          value={fmt.number(activePrograms)}
+          changeLabel={activePrograms > 0 ? 'Active academic departments' : 'No program records'}
+          icon={<BookOpen className="h-4 w-4 text-indigo-500" aria-hidden="true" />}
+        />
+        <KPIValue
+          label="Scholarships"
+          value={fmt.number(scholarships.length)}
+          changeLabel={
+            scholarships.length > 0
+              ? `${fmt.currency(totalScholarshipAmount)} aid allocated`
+              : 'No aid records'
+          }
+          icon={<Award className="h-4 w-4 text-amber-500" aria-hidden="true" />}
+        />
+        <KPIValue
+          label="Tracked Semesters"
+          value={fmt.number(enrollmentTrends.length)}
+          changeLabel={
+            enrollmentTrends.length > 0 ? 'Historical census terms' : 'No term trend data'
+          }
+          icon={<GraduationCap className="h-4 w-4 text-emerald-500" aria-hidden="true" />}
+        />
+      </section>
+
+      <Card aria-label="Education Basis Disclosures">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <Info className="h-4 w-4 text-blue-500" aria-hidden="true" />
+            Institutional Accounting Basis & Recognition (ASC 958)
+          </CardTitle>
         </CardHeader>
-        <CardContent aria-labelledby="enrollment-overview-title">
-          {tableData.length > 0 ? (
-            <DataTable
-              columns={columns}
-              data={tableData}
-              sortable
-              caption="Education sector data table"
-              ariaLabel="Education sector data"
-            />
-          ) : (
-            <p className="text-[var(--text-muted)]">No account data available.</p>
-          )}
+        <CardContent className="text-xs text-[var(--text-muted)] space-y-1">
+          <p>
+            • <strong>Not-for-Profit / Higher Ed Framework:</strong> Accounting reflects ASC 958
+            guidelines for Net Assets with Donor Restrictions vs Without Donor Restrictions. Tuition
+            revenue is recognized net of institutional allowances and remissions.
+          </p>
+          <p>
+            • <strong>Enrollment & Metric Feeds:</strong> Operational retention, credit hours, and
+            faculty headcount require Student Information System (SIS) integration. Where SIS
+            telemetry is absent, ratios are not estimated.
+          </p>
         </CardContent>
       </Card>
+
+      <AccountOverviewCard rows={accountRows} />
     </main>
   );
 }

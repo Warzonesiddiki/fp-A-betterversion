@@ -58,32 +58,75 @@ export interface ScenarioDriver {
 }
 
 export class ScenarioEngine {
+  /**
+   * Derive scenario base metrics from GL entries.
+   *
+   * BASIS OF PREPARATION (K17/K18 honesty):
+   * - revenue, cogs, opex and both margins are DERIVED from posted GL
+   *   account-prefix activity: revenue CREDIT-normal (4xxx), COGS and OpEx
+   *   DEBIT-normal (5xxx / 6xxx) — the same convention as
+   *   scenarioBuilderModel.deriveScenarioBase.
+   * - netIncome equals EBITDA by simplification: this simulator splits out no
+   *   tax or interest lines.
+   * - cashFlow is a simplified conversion at 80% of EBITDA — not measured
+   *   cash movement.
+   * - burnRate is the monthly average of posted OpEx (opex ÷ 12), not a
+   *   forward-looking burn forecast.
+   * - headcount is a SIMULATOR BASE ASSUMPTION (user-editable driver input),
+   *   seeded so driver/WhatIf/sensitivity math has a base to scale — it is
+   *   not a measured actual.
+   * - runway is a SIMULATOR BASE ASSUMPTION held constant at 18 months — it
+   *   is not derived from cash/burn runway arithmetic.
+   *
+   * The numeric defaults above are intentional simulation inputs and stay
+   * intact; consumers that DISPLAY these figures must present them as
+   * assumptions, not measured actuals.
+   */
   static calculateBaseMetrics(entries: GLEntry[]): ScenarioMetrics {
     // All monetary arithmetic is routed through the canonical money primitive
     // (decimal.js-backed) so GL sums and derived metrics carry no IEEE-754 drift.
-    const netOf = (prefix: string) =>
+    //
+    // Posting-normality mirrors scenarioBuilderModel.deriveScenarioBase
+    // exactly (K18): revenue accounts (4xxx) are CREDIT-normal, COGS (5xxx)
+    // and OpEx (6xxx) are DEBIT-normal. The previous debit-minus-credit
+    // aggregation of prefix 4 drove grossProfit/EBITDA/margins NEGATIVE on a
+    // conventionally posted ledger (revenues carried as credits).
+    const netOf = (prefix: string, normal: 'debit' | 'credit') =>
       sumMoney(
         entries
           .filter((e) => (e.accountCode || '').startsWith(prefix))
-          .map((e) => subtractMoney(e.debit, e.credit))
+          .map((e) =>
+            normal === 'credit'
+              ? subtractMoney(e.credit, e.debit)
+              : subtractMoney(e.debit, e.credit)
+          )
       );
 
-    const revenue = netOf('4');
-    const cogs = netOf('5').abs();
-    const opex = netOf('6').abs();
+    const revenue = netOf('4', 'credit');
+    const cogs = netOf('5', 'debit');
+    const opex = netOf('6', 'debit');
 
     const grossProfit = revenue.minus(cogs);
     const ebitda = grossProfit.minus(opex);
-    const netIncome = ebitda; // Simplified for scenario modeling
+    // Simplification: net income equals EBITDA in this simulator — no tax or
+    // interest lines are split out of the GL for scenario modeling.
+    const netIncome = ebitda;
 
     return {
       revenue: roundTo(revenue.abs(), CURRENCY_PLACES),
       ebitda: roundTo(ebitda, CURRENCY_PLACES),
       netIncome: roundTo(netIncome, CURRENCY_PLACES),
-      // Simplified cash conversion (80% of EBITDA).
+      // Simulator base assumption — simplified cash conversion at 80% of
+      // EBITDA; not measured cash movement.
       cashFlow: roundTo(multiplyMoney(ebitda, '0.8'), CURRENCY_PLACES),
-      headcount: 100, // Mocked base headcount
+      // Simulator base assumption (user-editable) — seeded so driver/WhatIf
+      // math has a base to scale; NOT a measured actual.
+      headcount: 100,
+      // Simulator base assumption — monthly average of posted OpEx, not a
+      // forward-looking burn forecast.
       burnRate: roundTo(divideMoney(opex, 12), CURRENCY_PLACES),
+      // Simulator base assumption (constant 18 months) — not derived from
+      // cash/burn runway arithmetic.
       runway: 18,
       grossMargin: revenue.isZero()
         ? 0

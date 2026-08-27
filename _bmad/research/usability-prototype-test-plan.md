@@ -8,14 +8,14 @@ Determine whether the proposed controlled close-to-decision-to-board-pack experi
 
 ## Prototype scenarios
 
-| Scenario | Persona | Success behavior | Hypotheses tested |
-|---|---|---|---|
-| Find the material issue | CFO / VP Finance | identifies the most material variance, baseline, freshness, and why it ranks first | R-04, A-03 |
-| Verify before acting | CFO / Controller | opens evidence and explains source, policy, lineage, owner, and next action | R-03, A-03 |
-| Triage a close blocker | Controller | identifies blocker, missing evidence, exception path, and certification impact | R-03, A-03 |
-| Change a forecast safely | FP&A analyst | edits a driver/formula, sees impact, resolves validation, submits correct version | R-01, A-03 |
-| Recover from conflict/offline | FP&A analyst / IT | understands queued/not-official state and resolves a revision conflict | A-02, A-04 |
-| Review a board-pack number | CFO / board-prep | distinguishes snapshot from live data and retrieves permitted evidence | R-03 |
+| Scenario                      | Persona           | Success behavior                                                                   | Hypotheses tested |
+| ----------------------------- | ----------------- | ---------------------------------------------------------------------------------- | ----------------- |
+| Find the material issue       | CFO / VP Finance  | identifies the most material variance, baseline, freshness, and why it ranks first | R-04, A-03        |
+| Verify before acting          | CFO / Controller  | opens evidence and explains source, policy, lineage, owner, and next action        | R-03, A-03        |
+| Triage a close blocker        | Controller        | identifies blocker, missing evidence, exception path, and certification impact     | R-03, A-03        |
+| Change a forecast safely      | FP&A analyst      | edits a driver/formula, sees impact, resolves validation, submits correct version  | R-01, A-03        |
+| Recover from conflict/offline | FP&A analyst / IT | understands queued/not-official state and resolves a revision conflict             | A-02, A-04        |
+| Review a board-pack number    | CFO / board-prep  | distinguishes snapshot from live data and retrieves permitted evidence             | R-03              |
 
 ## Test method
 
@@ -28,13 +28,13 @@ Determine whether the proposed controlled close-to-decision-to-board-pack experi
 
 ## Metrics
 
-| Metric | Target hypothesis | Failure signal |
-|---|---|---|
-| Task completion | ≥80% unassisted for each core task in early prototype | participant cannot identify next action or evidence path |
-| Materiality comprehension | participant explains ranking/baseline without prompting | treats severity as unexplained red/green visual |
-| Trust / evidence retrieval | participant retrieves and interprets source/lineage | exports or asks for an analyst to verify |
-| Model safety | participant understands draft/queued/conflict/locked state | assumes local change is official or overwrites conflict |
-| Perceived value | participant names a real current workaround this would replace | calls it another dashboard/tool duplicate |
+| Metric                     | Target hypothesis                                              | Failure signal                                           |
+| -------------------------- | -------------------------------------------------------------- | -------------------------------------------------------- |
+| Task completion            | ≥80% unassisted for each core task in early prototype          | participant cannot identify next action or evidence path |
+| Materiality comprehension  | participant explains ranking/baseline without prompting        | treats severity as unexplained red/green visual          |
+| Trust / evidence retrieval | participant retrieves and interprets source/lineage            | exports or asks for an analyst to verify                 |
+| Model safety               | participant understands draft/queued/conflict/locked state     | assumes local change is official or overwrites conflict  |
+| Perceived value            | participant names a real current workaround this would replace | calls it another dashboard/tool duplicate                |
 
 ## Prototype fidelity requirements
 

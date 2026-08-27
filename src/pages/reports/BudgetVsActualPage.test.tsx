@@ -44,6 +44,19 @@ vi.mock('lucide-react', () => {
 
 import BudgetVsActualPage from '@/pages/reports/BudgetVsActualPage';
 
+// The page mounts useReducedMotion (R9-c); jsdom lacks window.matchMedia,
+// so stub it as "motion allowed" for these smoke tests.
+beforeEach(() => {
+  window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }));
+});
+
 function renderPage() {
   return render(
     <MemoryRouter initialEntries={['/reports/budget-vs-actual']}>

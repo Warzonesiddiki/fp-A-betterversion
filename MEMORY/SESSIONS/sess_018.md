@@ -15,7 +15,7 @@ T-018: money-AST `CashForecastPage` (10) → 0 and fabrication
 
 ## Read
 
-`MEMORY/INDEX.md` → `STATE.json` → `TRUTH.md` → `TASKS/NOW.md`, then
+`MEMORY/INDEX.md` → `STATE.json` → `MEMORY/TRUTH.md` → `MEMORY/TASKS/NOW.md`, then
 `src/pages/cash/CashForecastPage.tsx`, its two test files,
 `src/pages/sectors/EducationDashboardPage.tsx`, `src/pages/sector/EducationDashboardPage.tsx`,
 `src/store/educationStore.ts`, `BudgetLineItem` in `src/types/index.ts`.

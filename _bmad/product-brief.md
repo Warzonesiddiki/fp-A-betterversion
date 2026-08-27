@@ -19,13 +19,13 @@ The initial product hypothesis is not “all-in-one FP&A.” It is a **controlle
 
 ## 2. Evidence and assumptions
 
-| Claim | Evidence source | Confidence | Required validation |
-|---|---|---|---|
-| Finance teams need trusted connected planning/close workflows | Phase 0 category research and competitor signals | Medium | primary workflow observation |
-| Generic dashboards do not solve executive decision work | codebase audit + UX hypothesis | Medium | CFO comparative prototype test |
-| Control/evidence is central to enterprise credibility | competitor/security research | High | controller/auditor interviews |
-| Local-first/hybrid may differentiate | strategic hypothesis only | Low | IT/security and buyer research |
-| $500k+ price point is viable | no direct evidence yet | Low | WTP interviews, paid design partner/LOI |
+| Claim                                                         | Evidence source                                  | Confidence | Required validation                     |
+| ------------------------------------------------------------- | ------------------------------------------------ | ---------- | --------------------------------------- |
+| Finance teams need trusted connected planning/close workflows | Phase 0 category research and competitor signals | Medium     | primary workflow observation            |
+| Generic dashboards do not solve executive decision work       | codebase audit + UX hypothesis                   | Medium     | CFO comparative prototype test          |
+| Control/evidence is central to enterprise credibility         | competitor/security research                     | High       | controller/auditor interviews           |
+| Local-first/hybrid may differentiate                          | strategic hypothesis only                        | Low        | IT/security and buyer research          |
+| $500k+ price point is viable                                  | no direct evidence yet                           | Low        | WTP interviews, paid design partner/LOI |
 
 ## 3. Initial target customer hypothesis
 
@@ -33,14 +33,14 @@ The initial product hypothesis is not “all-in-one FP&A.” It is a **controlle
 
 ## 4. Users and jobs
 
-| User | Job | Required product outcome |
-|---|---|---|
-| CFO / VP Finance | Decide where to intervene and communicate a trusted story | materiality, cash/forecast context, evidence, owner, next action |
-| Controller | Close safely and demonstrate control | reconciliation, certification, exceptions, lock, audit evidence |
-| FP&A analyst | Update plan/forecast and explain why | keyboard-grade model workflow, formulas, versions, lineage, workflow |
-| Budget owner | Provide accountable input | scoped task, guidance, validation, due date, approval state |
-| Data owner / admin | Keep inputs secure and current | mapping, quality checks, retry/reconcile, health, access controls |
-| Auditor | Reconstruct official result/change | scoped immutable evidence and export |
+| User               | Job                                                       | Required product outcome                                             |
+| ------------------ | --------------------------------------------------------- | -------------------------------------------------------------------- |
+| CFO / VP Finance   | Decide where to intervene and communicate a trusted story | materiality, cash/forecast context, evidence, owner, next action     |
+| Controller         | Close safely and demonstrate control                      | reconciliation, certification, exceptions, lock, audit evidence      |
+| FP&A analyst       | Update plan/forecast and explain why                      | keyboard-grade model workflow, formulas, versions, lineage, workflow |
+| Budget owner       | Provide accountable input                                 | scoped task, guidance, validation, due date, approval state          |
+| Data owner / admin | Keep inputs secure and current                            | mapping, quality checks, retry/reconcile, health, access controls    |
+| Auditor            | Reconstruct official result/change                        | scoped immutable evidence and export                                 |
 
 ## 5. In-scope release hypothesis
 
@@ -64,13 +64,13 @@ The initial product hypothesis is not “all-in-one FP&A.” It is a **controlle
 
 ## 7. Success criteria
 
-| Horizon | Evidence of success |
-|---|---|
-| Research (30–60 days) | validation-plan thresholds achieved or strategic pivot documented |
-| Pilot | one customer-shaped close-to-board-pack loop completes with traceable evidence and no critical control workaround |
-| Product | ≥95% moderated completion for decision, reconciliation, plan edit, approval, and report-evidence tasks |
-| Trust | 100% published values drill to permitted source/version/calculation/actor evidence |
-| Economics | paid pilot/LOI and validated packaging before $500k+ public claim |
+| Horizon               | Evidence of success                                                                                               |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Research (30–60 days) | validation-plan thresholds achieved or strategic pivot documented                                                 |
+| Pilot                 | one customer-shaped close-to-board-pack loop completes with traceable evidence and no critical control workaround |
+| Product               | ≥95% moderated completion for decision, reconciliation, plan edit, approval, and report-evidence tasks            |
+| Trust                 | 100% published values drill to permitted source/version/calculation/actor evidence                                |
+| Economics             | paid pilot/LOI and validated packaging before $500k+ public claim                                                 |
 
 ## 8. Risks and boundaries
 

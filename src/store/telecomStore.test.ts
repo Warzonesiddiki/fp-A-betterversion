@@ -1,8 +1,33 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useTelecomStore } from './telecomStore';
+import { useAuthStore } from './authStore';
+
+// W6-P0-14: RBAC-aware fixture — grants exactly the permissions this store's
+// guarded actions enforce (mirrors glUploadStore.test.ts).
+function authenticateTelecomUser() {
+  useAuthStore.setState({
+    user: {
+      id: 'telecom-test-user',
+      email: 'telecom-test@finplan.local',
+      firstName: 'Telecom',
+      lastName: 'Tester',
+      avatarUrl: null,
+      role: 'Admin',
+      departmentId: 'finance',
+      departmentName: 'Finance',
+      entityId: 'entity-001',
+      status: 'Active',
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+      permissions: ['inventory:create', 'inventory:update', 'inventory:delete', 'dashboard:update'],
+    },
+    isAuthenticated: true,
+  });
+}
 
 describe('telecomStore', () => {
   beforeEach(() => {
+    authenticateTelecomUser();
     useTelecomStore.setState({
       subscribers: [],
       networkMetrics: [],

@@ -1,7 +1,7 @@
 # Owner Direction Record — Solo-Developer Evidence Strategy
 
 > **Date:** 2026-08-11 · **Source:** Owner (explicit direction) · **Type:** Strategic re-baseline of the research/validation path
-> **Direction:** *"For R-01 participants we don't have such option available — we are solo developing the project."*
+> **Direction:** _"For R-01 participants we don't have such option available — we are solo developing the project."_
 > **Status:** ACTIVE — supersedes the enterprise-participant recruitment path for the current phase; the interview track remains revivable if access ever appears.
 
 ## What changed
@@ -20,12 +20,12 @@
 
 ## New evidence hierarchy for solo development
 
-| Tier | Evidence type | Label | What it can support |
-|---|---|---|---|
-| 1 | Primary participant interviews (future) | PRIMARY | Validation per original thresholds (revivable) |
-| 2 | Product-led signals: beta usage, waitlist signups, real workflow completion, retention, unsolicited demand | BETA-USAGE | Early product-market learning; partial workflow-value signal |
-| 3 | Public practitioner artifacts: real community threads, case studies, conference/vendor content | ARTIFACT | Refining questions/hypotheses; competitive calibration |
-| 4 | Secondary surveys/vendor analysis (existing E-003/E-011/E-012) | SECONDARY | Question sharpening only |
+| Tier | Evidence type                                                                                              | Label      | What it can support                                          |
+| ---- | ---------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------ |
+| 1    | Primary participant interviews (future)                                                                    | PRIMARY    | Validation per original thresholds (revivable)               |
+| 2    | Product-led signals: beta usage, waitlist signups, real workflow completion, retention, unsolicited demand | BETA-USAGE | Early product-market learning; partial workflow-value signal |
+| 3    | Public practitioner artifacts: real community threads, case studies, conference/vendor content             | ARTIFACT   | Refining questions/hypotheses; competitive calibration       |
+| 4    | Secondary surveys/vendor analysis (existing E-003/E-011/E-012)                                             | SECONDARY  | Question sharpening only                                     |
 
 **Only Tier 1 (or ≥3-participant-equivalent verified operational evidence) changes validation status.** Tiers 2–4 update confidence and inform scope — never `VALIDATED`.
 

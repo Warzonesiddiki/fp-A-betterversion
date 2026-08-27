@@ -2,15 +2,19 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScenarioStore } from '@/store/scenarioStore';
 import { useGLStore } from '@/store/glStore';
+import { useShallow } from 'zustand/react/shallow';
 import { runMonteCarlo } from '@/workers';
 
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { FileText, Table as TableIcon, Save, Layers } from 'lucide-react';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { FileText, Table as TableIcon, Save } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { addMoney, compareMoney, roundTo } from '@/utils/money';
+import { addMoney, compareMoney, divideMoney, multiplyMoney, roundTo } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -31,8 +35,10 @@ export type { ScenarioComparisonInput, ScenarioComparisonResult } from './scenar
 export default function ScenarioBuilderPage() {
   const fmt = useCurrencyFormatter();
   const navigate = useNavigate();
-  const { entries } = useGLStore();
-  const { scenarios, createScenario } = useScenarioStore();
+  const { entries } = useGLStore(useShallow((s) => ({ entries: s.entries })));
+  const { scenarios, createScenario } = useScenarioStore(
+    useShallow((s) => ({ scenarios: s.scenarios, createScenario: s.createScenario }))
+  );
 
   const [growthRate, setGrowthRate] = useState(10);
   const [headcountChange, setHeadcountChange] = useState(0);
@@ -201,15 +207,26 @@ export default function ScenarioBuilderPage() {
   };
 
   if (!base || !scenarioComparison) {
+    // K30 four-states: shared EmptyState under the page-level h1 (PageHeader
+    // stays mounted in this branch). The CTA re-enters the import flow; no
+    // demo revenue base is invented.
     return (
-      <div className="p-12 text-center max-w-md mx-auto">
-        <Layers className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Scenario Builder Data</h2>
-        <p className="text-[var(--text-muted)] mb-6">
-          Import General Ledger entries to set the scenario base from posted revenue, COGS and
-          operating expenses. A demo revenue base is not invented.
-        </p>
-        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
+      <div className="p-6 space-y-6 max-w-7xl" aria-labelledby="scenario-builder-heading">
+        <PageHeader
+          title="Scenario Builder"
+          titleId="scenario-builder-heading"
+          purpose="Apply user-stated shocks to posted General Ledger actuals. Headcount cost is omitted until a salary is entered."
+        />
+        <EmptyState
+          variant="no-data"
+          title="No scenario builder data"
+          description="Import General Ledger entries to set the scenario base from posted revenue, COGS and operating expenses. A demo revenue base is not invented."
+          action={
+            <Button onClick={() => navigate('/data/gl-upload')} data-testid="scenario-empty-import">
+              Import Data
+            </Button>
+          }
+        />
       </div>
     );
   }
@@ -217,17 +234,27 @@ export default function ScenarioBuilderPage() {
   const costImpact = roundTo(
     addMoney(scenarioComparison.cogsImpact, scenarioComparison.opexImpact)
   );
+  // Share of the posted cost base (COGS + OpEx) that the scenario moves —
+  // feeds the Cost Impact card's change badge. Derived, never invented; zero
+  // posted costs leave no percentage to state.
+  const baseCosts = addMoney(base.cogs, base.opex);
+  const costImpactPct =
+    compareMoney(baseCosts, 0) === 0
+      ? 0
+      : roundTo(multiplyMoney(divideMoney(costImpact, baseCosts), 100));
 
   return (
     <main className="p-6 space-y-6" aria-labelledby="scenario-builder-heading">
       {saveError && (
-        <div
-          className="bg-red-900/20 border border-red-800 rounded-lg p-3 text-sm text-red-400"
-          role="alert"
-          aria-live="assertive"
-        >
-          {saveError}
-        </div>
+        // K30 four-states: shared ErrorState (role=alert) whose retry control
+        // re-runs exactly the failed save.
+        <ErrorState
+          title="Could not save scenario"
+          message={saveError}
+          onRetry={handleSave}
+          retryLabel="Retry save"
+          className="py-8"
+        />
       )}
       <PageHeader
         title="Scenario Builder"
@@ -274,12 +301,22 @@ export default function ScenarioBuilderPage() {
         aria-label="Scenario impact key performance indicators"
         data-testid="scenario-kpis"
       >
+        {/* K18: trend direction is computed from the sign of the derived
+            impact, never hardcoded — a negative revenue shock must not point
+            up. `change` carries the real derived percentage so the shared
+            KPIValue renders the directional badge at all. */}
         <KPIValue
           label="Revenue Impact"
           value={fmt.currency0(scenarioComparison.revenueVariance)}
-          trend="up"
+          change={scenarioComparison.variancePct}
+          trend={compareMoney(scenarioComparison.revenueVariance, 0) >= 0 ? 'up' : 'down'}
         />
-        <KPIValue label="Cost Impact" value={fmt.currency0(costImpact)} trend="down" />
+        <KPIValue
+          label="Cost Impact"
+          value={fmt.currency0(costImpact)}
+          change={costImpactPct}
+          trend={compareMoney(costImpact, 0) >= 0 ? 'up' : 'down'}
+        />
         <KPIValue
           label="Net Impact"
           value={fmt.currency0(scenarioComparison.netImpact)}
@@ -348,9 +385,23 @@ export default function ScenarioBuilderPage() {
             </Button>
           </div>
           {mcError && (
-            <p className="text-sm text-red-400" role="alert">
-              {mcError}
-            </p>
+            // K30 four-states: shared ErrorState whose retry re-runs the
+            // simulation with the current assumptions.
+            <ErrorState
+              title="Monte Carlo simulation failed"
+              message={mcError}
+              onRetry={() => void handleRunMonteCarlo()}
+              retryLabel="Retry simulation"
+              className="py-8"
+            />
+          )}
+          {mcLoading && (
+            // K30 four-states: visible in-flight skeleton region (the run
+            // button stays disabled via mcLoading; announced to assistive tech).
+            <div data-testid="scenario-mc-skeleton" aria-busy="true" className="space-y-2">
+              <Skeleton count={1} height="20px" width="35%" />
+              <Skeleton count={4} variant="text" height="16px" />
+            </div>
           )}
           {mcResults && (
             <div

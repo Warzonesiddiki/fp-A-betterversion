@@ -23,6 +23,29 @@
  *   percent-literal    `24.3%`, `+12%` in the same positions
  *   hardcoded-rate     `taxRate: 21` (a numeric literal) in src/pages
  *
+ * ENGINES: ENTITY-LABEL RULES (2026-08-25, gate-9c wave)
+ * ------------------------------------------------------
+ * src/engines was already inside SCAN_DIRS for financial figures, but that
+ * missed a second fabrication class: engines embedding demo BUSINESS
+ * ENTITIES as literals ('Line B - Packaging' shipped to the production
+ * dashboard as if it were measured master data). Engines are pure
+ * computation — entity identity must arrive via parameters or data, never
+ * be typed into source:
+ *
+ *   hardcoded-entity-label  a direct string-literal value on an operational
+ *                           entity prop (`line:` etc.) anywhere in
+ *                           src/engines — zero tolerance by construction
+ *   demo-entity-literal     a demo-smell string (`Demo…`, `Sample…`,
+ *                           `Acme…`) on a business-entity prop
+ *                           (customer/vendor/product/site/plant/warehouse/
+ *                           department…) in src/engines
+ *
+ * Only DIRECT string initializers are inspected; synonym/mapping arrays
+ * (NLQ keyword lists, column-name mappings) are not fabricated entities.
+ * The ratchet tolerates pre-existing debt via scripts/fabrication-baseline.json;
+ * at seeding time the only file matching these rules was ManufacturingEngine.ts,
+ * which was cleaned in the same wave — so the seeded debt is zero.
+ *
  * WHAT IS SAFE
  * ------------
  *   - Comments and documentation strings (AST: we only inspect property
@@ -106,6 +129,34 @@ const CURRENCY_GROUPED = /\$\s*\d{1,3}(?:,\d{3})+(?:\.\d+)?\b/;
 const CURRENCY_DECIMAL = /\$\s*\d+\.\d+\b/;
 const PERCENT = /[+\-]?\d+(?:\.\d+)?\s*%/;
 
+/**
+ * Operational entity whose name must come from config/data, never from an
+ * engine source literal (witness: ManufacturingEngine 'Line B - Packaging').
+ */
+const OPERATIONAL_ENTITY_PROPS = new Set(['line', 'linename', 'productionline']);
+
+/** Business entities where only demo-smell wording is flagged (keeps legit defaults out). */
+const BUSINESS_ENTITY_PROPS = new Set([
+  'customer',
+  'customername',
+  'vendor',
+  'vendorname',
+  'supplier',
+  'suppliername',
+  'product',
+  'productname',
+  'department',
+  'departmentname',
+  'site',
+  'sitename',
+  'plant',
+  'plantname',
+  'warehouse',
+  'warehousename',
+]);
+
+const DEMO_WORD = /^(demo|sample|example|mock|dummy|fake|testdata|test|lorem|acme)\b/i;
+
 function classifyLiteral(text) {
   if (CURRENCY_COMPACT.test(text) || CURRENCY_GROUPED.test(text) || CURRENCY_DECIMAL.test(text)) {
     return 'currency-literal';
@@ -153,6 +204,7 @@ function analyseFile(filePath, text) {
   const add = (node, kind, op) => findings.push({ line: at(node), kind, op, code: snippet(node) });
 
   const inPages = filePath.replace(/\\/g, '/').includes('/src/pages/');
+  const inEngines = filePath.replace(/\\/g, '/').includes('/src/engines/');
 
   function inspectDisplayValue(nameNode, valueNode) {
     const name = propName(nameNode).replace(/[_-]/g, '').toLowerCase();
@@ -162,6 +214,17 @@ function analyseFile(filePath, text) {
     for (const lit of lits) {
       const kind = classifyLiteral(lit.text);
       if (kind) add(lit, kind, lit.text);
+    }
+  }
+
+  /** Engine entity-label rules: direct string initializers only (no arrays/maps). */
+  function inspectEntityLabel(nameNode, valueNode) {
+    if (!valueNode || !ts.isStringLiteral(valueNode)) return;
+    const name = propName(nameNode).replace(/[_-]/g, '').toLowerCase();
+    if (OPERATIONAL_ENTITY_PROPS.has(name)) {
+      add(valueNode, 'hardcoded-entity-label', valueNode.text);
+    } else if (BUSINESS_ENTITY_PROPS.has(name) && DEMO_WORD.test(valueNode.text)) {
+      add(valueNode, 'demo-entity-literal', valueNode.text);
     }
   }
 
@@ -176,6 +239,9 @@ function analyseFile(filePath, text) {
         ts.isNumericLiteral(node.initializer)
       ) {
         add(node.initializer, 'hardcoded-rate', node.initializer.getText(sf));
+      }
+      if (inEngines && ts.isPropertyAssignment(node)) {
+        inspectEntityLabel(node.name, node.initializer);
       }
     }
 

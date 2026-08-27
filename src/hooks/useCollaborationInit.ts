@@ -4,6 +4,7 @@
 // =============================================================================
 
 import { useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useAuthStore } from '@/store/authStore';
 import { RealtimeCollaborationManager } from '@/services/RealtimeCollaborationManager';
 
@@ -39,7 +40,9 @@ export function useCollaborationInit(): void {
  * Should be called when user logs in or user data changes.
  */
 export function useCollaborationUser(): void {
-  const { user, accessToken } = useAuthStore();
+  const { user, accessToken } = useAuthStore(
+    useShallow((s) => ({ user: s.user, accessToken: s.accessToken }))
+  );
 
   useEffect(() => {
     if (!user || !accessToken) return;
@@ -75,7 +78,9 @@ export function useCollaborationUser(): void {
  * Hook to connect/disconnect WebSocket based on authentication state.
  */
 export function useCollaborationConnection(): void {
-  const { isAuthenticated, accessToken } = useAuthStore();
+  const { isAuthenticated, accessToken } = useAuthStore(
+    useShallow((s) => ({ isAuthenticated: s.isAuthenticated, accessToken: s.accessToken }))
+  );
 
   useEffect(() => {
     const manager = RealtimeCollaborationManager.getInstance();

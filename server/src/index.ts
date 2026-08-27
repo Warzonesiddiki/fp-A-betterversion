@@ -2,7 +2,10 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import { z } from 'zod';
 import { runMigrations } from './db/migrate.js';
+import { resolveTrustProxy } from './config/env.js';
+import { validate } from './middleware/validate.js';
 import authRouter from './routes/auth.js';
 import auditRouter from './routes/audit.js';
 import budgetsRouter from './routes/budgets.js';
@@ -14,6 +17,9 @@ import entitiesRouter from './routes/entities.js';
 import exportRouter from './routes/export.js';
 import periodsRouter from './routes/periods.js';
 import commandsRouter from './routes/commands.js';
+// Wave 3 (lane R24): server-held-key NVIDIA NIM proxy — the browser never
+// touches NIM credentials; see server/src/routes/ai.ts for the contract.
+import aiRouter from './routes/ai.js';
 import { authMiddleware, requireRole } from './middleware/auth.js';
 import { auditRequestMiddleware } from './middleware/auditMiddleware.js';
 import { authLimiter, generalLimiter } from './middleware/rateLimit.js';
@@ -77,6 +83,18 @@ app.use(
 app.use(express.json({ limit: '1mb' }));
 
 // ---------------------------------------------------------------------------
+// SEC-3: trust proxy (config-driven)
+// ---------------------------------------------------------------------------
+// Behind a reverse proxy / load balancer, Express must trust the proxy chain
+// for req.ip to reflect the real client — rate limiting and lockout key on
+// it. Unset TRUST_PROXY keeps the Express default; see resolveTrustProxy()
+// for the accepted forms ("true"|"false"|hops|"ip, ip").
+const trustProxy = resolveTrustProxy(process.env.TRUST_PROXY);
+if (trustProxy !== undefined) {
+  app.set('trust proxy', trustProxy);
+}
+
+// ---------------------------------------------------------------------------
 // Health Check
 // ---------------------------------------------------------------------------
 
@@ -122,9 +140,24 @@ app.use('/api/periods', generalLimiter, periodsRouter);
 // base revisions, trusted-actor scope, typed errors, audit evidence).
 app.use('/api/v1', generalLimiter, commandsRouter);
 
+// Wave 3 (lane R24): AI NIM proxy — JWT-gated inside the router; per-tenant
+// limiting is applied by the router itself on top of the IP limiter here.
+app.use('/api/ai', generalLimiter, aiRouter);
+
 // ---------------------------------------------------------------------------
-// Incident Response — wired (SECURITY FIX M-05)
+// Incident Response — wired (SECURITY FIX M-05), zod-validated (SEC-5)
 // ---------------------------------------------------------------------------
+
+/** SEC-5: strict input contract for incident creation. */
+const CreateIncidentSchema = z.object({
+  title: z.string().min(1).max(200),
+  description: z.string().max(2000).optional(),
+  severity: z.enum(['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO']).optional(),
+  reporter: z.string().max(255).optional(),
+  affectedSystems: z.array(z.string().max(255)).max(100).optional(),
+  affectedUsers: z.number().int().min(0).optional(),
+  tags: z.array(z.string().min(1).max(64)).max(50).optional(),
+});
 
 app.get(
   '/api/incidents',
@@ -145,22 +178,19 @@ app.post(
   '/api/incidents',
   authMiddleware,
   requireRole('Admin', 'FP&A_Manager', 'compliance', 'data-protection-officer'),
+  validate(CreateIncidentSchema),
   (req, res) => {
     try {
+      const body = req.validated as z.infer<typeof CreateIncidentSchema>;
       const ir = IncidentResponse.getInstance();
       const incident = ir.createIncident({
-        title: req.body?.title ?? 'Server-side incident',
-        description: req.body?.description ?? 'Created via server endpoint',
-        severity: (req.body?.severity ?? 'MEDIUM') as
-          | 'CRITICAL'
-          | 'HIGH'
-          | 'MEDIUM'
-          | 'LOW'
-          | 'INFO',
+        title: body.title,
+        description: body.description ?? 'Created via server endpoint',
+        severity: (body.severity ?? 'MEDIUM') as 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INFO',
         reporter: req.user?.email ?? 'system',
-        affectedSystems: req.body?.affectedSystems ?? [],
-        affectedUsers: req.body?.affectedUsers ?? 0,
-        tags: req.body?.tags ?? ['server-triggered'],
+        affectedSystems: body.affectedSystems ?? [],
+        affectedUsers: body.affectedUsers ?? 0,
+        tags: body.tags ?? ['server-triggered'],
       });
       res.status(201).json({ incident });
     } catch (err) {

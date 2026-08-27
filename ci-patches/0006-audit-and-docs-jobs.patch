@@ -1,0 +1,59 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 525a9e17..31362371 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -379,10 +379,37 @@ jobs:
+             coverage/a11y/
+           retention-days: 30  # Longer retention for a11y audit trail
+ 
++  docs:
++    # N-0013/N-0014 (audit ZCFA-2026-07-29-002): README statistics and the
++    # engine manifest can silently drift from reality. `docs:verify` measures
++    # every README claim against the tree; `engines:verify` re-checks the
++    # manifest -- which once left the loader
++    # knowing only 40 of 181 engines -- fails CI instead of shipping.
++    name: Docs & Engine Manifest Integrity
++    runs-on: ubuntu-latest
++    timeout-minutes: 10
++    steps:
++      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
++
++      - name: Setup Node.js
++        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
++        with:
++          node-version: ${{ env.NODE_VERSION }}
++          cache: npm
++
++      - name: Install dependencies
++        run: npm ci
++
++      - name: Verify README / architecture claims
++        run: npm run docs:verify
++
++      - name: Verify engine manifest is current
++        run: npm run engines:verify
++
+   summary:
+     name: CI Summary
+     if: always()
+-    needs: [typecheck, lint, test, test-merge, build, server, audit, e2e, a11y]
++    needs: [typecheck, lint, test, test-merge, build, server, audit, docs, e2e, a11y]
+     runs-on: ubuntu-latest
+     steps:
+       - name: Check results
+@@ -398,6 +425,7 @@ jobs:
+           echo "| Build & Bundle | ${{ needs.build.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| Server (tsc + tests) | ${{ needs.server.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| Dependency Audit | ${{ needs.audit.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
++          echo "| Docs & Engine Manifest | ${{ needs.docs.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| E2E Tests | ${{ needs.e2e.result == 'success' && ':white_check_mark: Pass' || (needs.e2e.result == 'skipped' && ':fast_forward: Skipped' || ':x: Fail') }} |" >> $GITHUB_STEP_SUMMARY
+           echo "| A11Y | ${{ needs.a11y.result == 'success' && ':white_check_mark: Pass' || (needs.a11y.result == 'skipped' && ':fast_forward: Skipped' || ':x: A11Y violations (see a11y-report artifact)') }} |" >> $GITHUB_STEP_SUMMARY
+ 
+@@ -408,6 +436,7 @@ jobs:
+              [ "${{ needs.a11y.result }}" != "success" ] || \
+              [ "${{ needs.server.result }}" != "success" ] || \
+              [ "${{ needs.audit.result }}" != "success" ] || \
++             [ "${{ needs.docs.result }}" != "success" ] || \
+              [ "${{ needs.build.result }}" != "success" ]; then
+             echo ""
+             echo ":x: **CI FAILED** - One or more required checks did not pass."

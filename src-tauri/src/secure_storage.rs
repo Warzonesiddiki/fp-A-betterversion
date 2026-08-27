@@ -18,9 +18,23 @@
 //   - keyring = "3"
 //   - base64 = "0.22"
 //
-// The commands are registered in lib.rs via `tauri::generate_handler!`.
-
-#![allow(dead_code)]
+// REGISTRATION: all seven commands below are registered in lib.rs via
+// `tauri::generate_handler!` (BLUEPRINT F-DESK-006, P0); SecureStorageState
+// is managed in run_with_builder. The former file-wide #![allow(dead_code)]
+// was removed once every item became reachable.
+//
+// KNOWN GAPS (documented honestly, left for follow-up lanes):
+//   1. list_accounts always returns an empty Vec (see its body comment);
+//      the client-side cache stays authoritative until a platform listing
+//      path exists.
+//   2. unlock does not cryptographically verify the password against the
+//      OS keychain; verification is OS-mediated on first access. Deriving
+//      a wrapping key from the password is left for v1.1.0.
+//   3. src/services/TauriSecureStorage.ts currently routes through
+//      `plugin:stronghold|*` (that plugin is NOT installed). Its documented
+//      flat per-field contract (account / secret_b64) also does not match
+//      this implementation's single `args` struct parameter. Reconciling
+//      that contract is a cross-plane task outside the src-tauri lane.
 
 use base64::{engine::general_purpose, Engine as _};
 use serde::{Deserialize, Serialize};

@@ -1,1 +1,1 @@
-{}
+{"default":{"identifier":"default","description":"Default capabilities for the FinPlan Pro application (least-privilege, F-0019). Scoped to app data only — no desktop, document, or download access (F-0005 fix).","local":true,"windows":["main","drill-down-*","dependency-graph-*"],"permissions":["core:default","fs:allow-read","fs:allow-write","fs:scope-appdata-recursive","fs:scope-applocaldata-recursive","fs:scope-appconfig-recursive","fs:scope-applog-recursive","dialog:default","sql:allow-load","sql:allow-select","sql:allow-execute","sql:allow-close","updater:default"]}}

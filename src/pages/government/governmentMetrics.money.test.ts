@@ -73,6 +73,45 @@ describe('governmentMetrics — known answers (GAP-1)', () => {
     expect(m.unutilizedBudget).toBe(-200_000);
   });
 
+  // W-FAB lane N4: quantities the ledger never posted are `null` in and
+  // `null` out — the previous pages back-filled a $10M budget and 1.25M
+  // citizens to keep every KPI populated.
+  it('returns null KPIs when their inputs were never posted (W-FAB)', () => {
+    const m = computeGovernmentMetrics({
+      budgetAppropriated: null,
+      actualSpend: null,
+      grantAllocated: null,
+      grantDisbursed: null,
+      citizensServed: null,
+      totalExpenses: 500_000,
+      revenueCollected: null,
+      revenueForecast: null,
+    });
+    expect(m.budgetUtilizationPct).toBeNull();
+    expect(m.grantDisbursementRatePct).toBeNull();
+    expect(m.costPerCitizen).toBeNull();
+    expect(m.revenueCollectionGapPct).toBeNull();
+    expect(m.unutilizedBudget).toBeNull();
+  });
+
+  it('keeps partial coverage honest (budget posted, citizens missing)', () => {
+    const m = computeGovernmentMetrics({
+      budgetAppropriated: 1_000_000,
+      actualSpend: 750_000,
+      grantAllocated: null,
+      grantDisbursed: null,
+      citizensServed: null,
+      totalExpenses: 750_000,
+      revenueCollected: 900_000,
+      revenueForecast: 900_000,
+    });
+    expect(m.budgetUtilizationPct).toBe(75);
+    expect(m.unutilizedBudget).toBe(250_000);
+    expect(m.revenueCollectionGapPct).toBe(0);
+    expect(m.costPerCitizen).toBeNull();
+    expect(m.grantDisbursementRatePct).toBeNull();
+  });
+
   it('modelGrantDisbursement is an exact percentage share', () => {
     expect(modelGrantDisbursement(2_000_000, 90)).toBe(1_800_000);
     expect(modelGrantDisbursement(0.1, 50)).toBe(0.05);
@@ -120,5 +159,43 @@ describe('procurementMetrics — known answers (GAP-1)', () => {
     });
     expect(m.negotiatedSavings).toBe(0);
     expect(m.savingsRatePct).toBe(0);
+  });
+
+  // W-FAB lane N4: no posted procurement accounts → null KPIs, never the old
+  // invented record (48-of-50 audits, 1350 days ÷ 30 contracts, 6M→5.7M).
+  it('returns null procurement KPIs when inputs were never posted (W-FAB)', () => {
+    const m = computeProcurementMetrics({
+      contractValue: null,
+      competitivelyTenderedValue: null,
+      compliantAudits: null,
+      totalAudits: null,
+      cycleDaysSum: null,
+      contractCount: null,
+      baselineSpend: null,
+      realizedSpend: null,
+    });
+    expect(m.competitiveTenderPct).toBeNull();
+    expect(m.complianceScorePct).toBeNull();
+    expect(m.avgCycleDays).toBeNull();
+    expect(m.negotiatedSavings).toBeNull();
+    expect(m.savingsRatePct).toBeNull();
+  });
+
+  it('keeps partial procurement coverage honest (audits only)', () => {
+    const m = computeProcurementMetrics({
+      contractValue: null,
+      competitivelyTenderedValue: null,
+      compliantAudits: 45,
+      totalAudits: 50,
+      cycleDaysSum: null,
+      contractCount: null,
+      baselineSpend: null,
+      realizedSpend: null,
+    });
+    expect(m.complianceScorePct).toBe(90);
+    expect(m.competitiveTenderPct).toBeNull();
+    expect(m.avgCycleDays).toBeNull();
+    expect(m.negotiatedSavings).toBeNull();
+    expect(m.savingsRatePct).toBeNull();
   });
 });

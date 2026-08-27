@@ -36,8 +36,17 @@ export interface StoreStats {
 export interface RetailDashboardStats {
   avgRevenuePerStore: number;
   avgNetMargin: number;
-  salesPerLaborHour: number;
-  avgCustSat: number;
+  /**
+   * Sales per labor hour needs posted labor HOURS. The GL carries labor cost
+   * (51xx accounts) but no hours, so this engine cannot derive it: null means
+   * "not measurable from the ledger", never a placeholder estimate.
+   */
+  salesPerLaborHour: number | null;
+  /**
+   * Customer satisfaction originates in an external survey feed, not the GL:
+   * null unless such a feed is integrated upstream.
+   */
+  avgCustSat: number | null;
 }
 
 export class RetailEngine {
@@ -94,7 +103,7 @@ export class RetailEngine {
   static calculateDashboardStats(entries: GLEntry[]): RetailDashboardStats {
     const stores = this.getStoreBreakdown(entries);
     if (stores.length === 0)
-      return { avgRevenuePerStore: 0, avgNetMargin: 0, salesPerLaborHour: 0, avgCustSat: 92.8 };
+      return { avgRevenuePerStore: 0, avgNetMargin: 0, salesPerLaborHour: null, avgCustSat: null };
 
     const totalRevenue = sumMoney(stores.map((s) => s.revenue));
     const totalProfit = sumMoney(stores.map((s) => s.netProfit));
@@ -107,8 +116,11 @@ export class RetailEngine {
       avgNetMargin: totalRevenue.isZero()
         ? 0
         : roundTo(divideMoney(totalProfit, totalRevenue).times(100), RATIO_PLACES),
-      salesPerLaborHour: 254, // Needs operational data
-      avgCustSat: 92.8,
+      // Null-with-contract: neither operational field is derivable from GL
+      // postings (the ledger carries labor cost, not labor hours; survey
+      // scores live outside it). Report null rather than a hardcoded stand-in.
+      salesPerLaborHour: null,
+      avgCustSat: null,
     };
   }
 

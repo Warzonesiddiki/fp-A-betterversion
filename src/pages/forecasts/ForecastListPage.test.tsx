@@ -6,22 +6,27 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import React from 'react';
 
+// Selector-aware mock: the page subscribes via useForecastStore((s) => s.forecasts),
+// so the mock must apply a selector when one is passed.
 vi.mock('@/store/forecastStore', () => ({
-  useForecastStore: vi.fn(() => ({
-    forecasts: [],
-    drivers: [],
-    selectedForecastId: null,
-    isLoading: false,
-    setForecasts: vi.fn(),
-    createForecast: vi.fn(),
-    updateForecast: vi.fn(),
-    deleteForecast: vi.fn(),
-    addDriver: vi.fn(),
-    updateDriver: vi.fn(),
-    removeDriver: vi.fn(),
-    undo: vi.fn(),
-    redo: vi.fn(),
-  })),
+  useForecastStore: vi.fn((selector?: (s: Record<string, unknown>) => unknown) => {
+    const state = {
+      forecasts: [],
+      drivers: [],
+      selectedForecastId: null,
+      isLoading: false,
+      setForecasts: vi.fn(),
+      createForecast: vi.fn(),
+      updateForecast: vi.fn(),
+      deleteForecast: vi.fn(),
+      addDriver: vi.fn(),
+      updateDriver: vi.fn(),
+      removeDriver: vi.fn(),
+      undo: vi.fn(),
+      redo: vi.fn(),
+    };
+    return selector ? selector(state) : state;
+  }),
 }));
 
 vi.mock('lucide-react', () => {

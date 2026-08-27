@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // ENERGY SECTOR PLANNING TEMPLATE
 // Integrated energy company model with upstream production, midstream
 // throughput, downstream refining margins, and renewable energy portfolio.
@@ -382,7 +382,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'multiplicative',
     weight: 1,
-    formula: 'x * boe_per_day * 365',
+    formula: 'x * enp_boe_per_day * 365',
     description: 'Lifting cost drives upstream opex',
   },
   {
@@ -402,7 +402,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'multiplicative',
     weight: 1,
-    formula: 'x * crack_spread * 365',
+    formula: 'x * enp_crack_spread * 365',
     description: 'Throughput + crack spread drives downstream',
   },
   {

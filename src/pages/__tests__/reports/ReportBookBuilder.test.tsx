@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+  useGLStore: vi.fn((sel?: unknown) => {
+    const s = { entries: [] as unknown[] };
+    return typeof sel === 'function' ? (sel as (st: typeof s) => unknown)(s) : s;
+  }),
 }));
 vi.mock('@/store/reportStore', () => ({
   useReportStore: vi.fn(() => ({
@@ -26,8 +29,8 @@ describe('ReportBookBuilder', () => {
 
   it('renders with entries', async () => {
     const { useGLStore } = await import('@/store/glStore');
-    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
-      entries: [
+    (useGLStore as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+      (selector?: (s: { entries: unknown[] }) => unknown) => selector?.({ entries: [
         {
           id: '1',
           accountCode: '1100',
@@ -38,8 +41,8 @@ describe('ReportBookBuilder', () => {
             amount: 50000,
           date: '2024-01-01',
         },
-      ],
-    });
+      ] })
+    );
     render(<ReportBookBuilderPage />);
     expect(screen.getByText(/Report Book Builder/i)).toBeInTheDocument();
   });

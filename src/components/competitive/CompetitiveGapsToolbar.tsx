@@ -205,82 +205,87 @@ export function CompetitiveGapsToolbar({
         </button>
       </div>
 
-      {/* (6) Sheet Tabs */}
+      {/* (6) Sheet Tabs — E-02 a11y fix: real buttons in a labeled group
+          replace div[role=tab] wrappers that nested focusable controls
+          (axe rules `nested-interactive` + `aria-required-children`: a
+          tablist may only contain tabs, and a tab must not contain other
+          interactive elements). Active state is conveyed via aria-pressed. */}
       <div
         className="flex items-center gap-1 flex-1 min-w-0"
-        role="tablist"
+        role="group"
         aria-label="Workbook sheets"
       >
-        {sheets.map((sh) => (
-          <div
-            key={sh.id}
-            className={`flex items-center gap-1 rounded-t-md border-b-2 px-2 py-1 text-xs cursor-pointer ${
-              sh.id === activeSheetId
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200'
-                : 'border-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
-            }`}
-            role="tab"
-            aria-selected={sh.id === activeSheetId}
-            tabIndex={0}
-            onClick={() => setActiveSheet(sh.id)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                setActiveSheet(sh.id);
-              }
-            }}
-          >
-            {renamingId === sh.id ? (
-              <input
-                value={renamingValue}
-                onChange={(e) => setRenamingValue(e.target.value)}
-                onBlur={() => {
-                  if (renamingValue.trim()) renameSheet(sh.id, renamingValue.trim());
-                  setRenamingId(null);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+        {sheets.map((sh) => {
+          const isActive = sh.id === activeSheetId;
+          return (
+            <div
+              key={sh.id}
+              className={`flex items-center gap-1 rounded-t-md border-b-2 px-2 py-1 text-xs ${
+                isActive
+                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-200'
+                  : 'border-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+              }`}
+            >
+              {renamingId === sh.id ? (
+                <input
+                  value={renamingValue}
+                  onChange={(e) => setRenamingValue(e.target.value)}
+                  onBlur={() => {
                     if (renamingValue.trim()) renameSheet(sh.id, renamingValue.trim());
                     setRenamingId(null);
-                  }
-                  if (e.key === 'Escape') setRenamingId(null);
-                }}
-                className="w-20 rounded border border-slate-300 bg-white dark:bg-slate-800 px-1 text-xs"
-                aria-label={`Rename sheet ${sh.name}`}
-                onFocus={(e) => e.currentTarget.select()}
-              />
-            ) : (
-              <>
-                <span>{sh.name}</span>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setRenamingId(sh.id);
-                    setRenamingValue(sh.name);
                   }}
-                  className="text-slate-400 hover:text-slate-700"
-                  aria-label={`Rename ${sh.name}`}
-                >
-                  <Edit2 className="h-3 w-3" />
-                </button>
-                {sheets.length > 1 && (
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      if (renamingValue.trim()) renameSheet(sh.id, renamingValue.trim());
+                      setRenamingId(null);
+                    }
+                    if (e.key === 'Escape') setRenamingId(null);
+                  }}
+                  className="w-20 rounded border border-slate-300 bg-white dark:bg-slate-800 px-1 text-xs"
+                  aria-label={`Rename sheet ${sh.name}`}
+                  onFocus={(e) => e.currentTarget.select()}
+                />
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setActiveSheet(sh.id)}
+                    aria-pressed={isActive}
+                    className="cursor-pointer"
+                    title={isActive ? 'Active sheet' : 'Switch to this sheet'}
+                  >
+                    <span>{sh.name}</span>
+                  </button>
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      removeSheet(sh.id);
+                      setRenamingId(sh.id);
+                      setRenamingValue(sh.name);
                     }}
-                    className="text-slate-400 hover:text-red-600"
-                    aria-label={`Delete ${sh.name}`}
+                    className="text-slate-400 hover:text-slate-700"
+                    aria-label={`Rename ${sh.name}`}
                   >
-                    <X className="h-3 w-3" />
+                    <Edit2 className="h-3 w-3" />
                   </button>
-                )}
-              </>
-            )}
-          </div>
-        ))}
+                  {sheets.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeSheet(sh.id);
+                      }}
+                      className="text-slate-400 hover:text-red-600"
+                      aria-label={`Delete ${sh.name}`}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })}
         <button
           type="button"
           onClick={() => addSheet(`Sheet${sheets.length + 1}`)}

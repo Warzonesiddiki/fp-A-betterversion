@@ -1,12 +1,37 @@
-import { useEffect } from 'react';
+/**
+ * Energy production — every figure is derived from recorded energy data.
+ *
+ * CORRECTNESS CONTRACT (K18):
+ *
+ * 1. NEVER render a figure the workspace cannot support. Removed in this
+ *    pass:
+ *    - the hand-typed `SOURCES` fixture (Solar 4,200 MWh @ $28/MWh, Wind
+ *      3,800 @ $22, Hydro 2,100 @ $15, Gas 1,900 @ $45, with revenue
+ *      literals $168k / $152k / $84k / $95k) charted as measured output and
+ *      exported to PDF as if it were posted data;
+ *    - the `MONTHLY` Jan–Jun generation fixture charted as a measured
+ *      trend;
+ *    - the "capacity factor" computed against a hardcoded 15,000 MWh × 6
+ *      benchmark presented as though it were nameplate capacity;
+ *    - the GL-entry gate that implied this dashboard was derived from the
+ *      general ledger while showing store-independent fixtures.
+ * 2. Everything shown comes from the real `useEnergyStore`: recorded
+ *    generation points (per-source MWh over time), recorded assets and the
+ *    recorded capacity mix. Figures that need feeds this workspace does not
+ *    have — per-source operating cost, per-source revenue, capacity factor
+ *    without a stated theoretical maximum — are disclosed, never estimated.
+ * 3. The empty gate now reflects the actual data source: the page renders
+ *    content only when the energy store holds something.
+ */
+import { useEffect, useMemo } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { useNavigate } from 'react-router-dom';
-import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { Download, Zap, TrendingUp, Gauge, DollarSign } from 'lucide-react';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { Download, Zap, TrendingUp, Gauge, Layers, Info } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 import {
   ResponsiveContainer,
   PieChart,
@@ -19,243 +44,256 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  BarChart,
-  Bar,
 } from 'recharts';
-import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { divideMoney, multiplyMoney, roundTo, sumMoney, toDecimal } from '@/utils/money';
-import { formatCompact, formatNumber, formatPercent } from '@/utils/financialFormatting';
-import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-const COLORS = ['#f59e0b', '#3b82f6', '#06b6d4', '#6b7280'];
+import { useEnergyStore } from '@/store/energyStore';
+import { roundTo, sumMoney } from '@/utils/money';
+import { formatNumber } from '@/utils/financialFormatting';
 
-const SOURCES = [
-  { name: 'Solar', value: 4200, cost: 28, revenue: 168000 },
-  { name: 'Wind', value: 3800, cost: 22, revenue: 152000 },
-  { name: 'Hydro', value: 2100, cost: 15, revenue: 84000 },
-  { name: 'Gas', value: 1900, cost: 45, revenue: 95000 },
-];
-
-const MONTHLY = [
-  { month: 'Jan', solar: 3200, wind: 3500, hydro: 1800, gas: 2000 },
-  { month: 'Feb', solar: 3400, wind: 3300, hydro: 1900, gas: 1900 },
-  { month: 'Mar', solar: 3800, wind: 3600, hydro: 2000, gas: 1800 },
-  { month: 'Apr', solar: 4200, wind: 3400, hydro: 2100, gas: 1700 },
-  { month: 'May', solar: 4600, wind: 3800, hydro: 2200, gas: 1600 },
-  { month: 'Jun', solar: 4800, wind: 3900, hydro: 2300, gas: 1500 },
-];
+const SOURCE_COLORS = ['#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#64748b'];
 
 export default function EnergyProductionDashboard() {
-  const fmt = useCurrencyFormatter();
-  const { entries } = useGLStore();
-  const navigate = useNavigate();
+  const { assets, generationTrend, capacityMix } = useEnergyStore();
+
   useEffect(() => {
     document.title = 'FinPlan Pro — Energy Production';
   }, []);
 
-  const totalProduction = roundTo(sumMoney(SOURCES.map((src) => src.value)), 2);
-  const totalRevenue = roundTo(sumMoney(SOURCES.map((src) => src.revenue)), 2);
-  // totalCost: cost × MWh for each source, summed on the decimal primitive.
-  const totalCost = roundTo(
-    sumMoney(SOURCES.map((src) => multiplyMoney(toDecimal(src.cost), toDecimal(src.value)))),
-    2
+  // Total recorded generation across the window (MWh — a unit, not money).
+  const totalGeneration = useMemo(
+    () => roundTo(sumMoney(generationTrend.map((g) => g.total)), 2),
+    [generationTrend]
   );
-  // avgCostPerMWh: totalCost / totalProduction (both money over MWh units
-  // — the result is currency per MWh).
-  const avgCostPerMWh =
-    totalProduction > 0
-      ? roundTo(divideMoney(toDecimal(totalCost), toDecimal(totalProduction)), 2)
-      : 0;
-  // capacityFactor: dimensionless ratio of production over a stated
-  // theoretical max. The 15000*6 is a fixed benchmark, dimensionless over
-  // MWh. The result is a percentage.
-  const capacityFactor = roundTo(
-    multiplyMoney(divideMoney(toDecimal(totalProduction), toDecimal(15000 * 6)), 100),
-    2
-  );
+  const latestPoint = generationTrend.at(-1);
 
-  const costVsRevenue = SOURCES.map((s) => ({
-    name: s.name,
-    cost: roundTo(multiplyMoney(toDecimal(s.cost), toDecimal(s.value)), 2),
-    revenue: s.revenue,
-  }));
+  const hasEnergyData = assets.length > 0 || generationTrend.length > 0 || capacityMix.length > 0;
 
+  // Source mix: prefer the recorded capacityMix; otherwise count assets per
+  // type (capacity strings are labels, not summable numbers).
+  const perSource = useMemo(() => {
+    if (capacityMix.length > 0) return capacityMix;
+    const map = new Map<string, number>();
+    for (const a of assets) map.set(a.type, (map.get(a.type) ?? 0) + 1);
+    return Array.from(map.entries()).map(([name, value], i) => ({
+      name,
+      value,
+      color: SOURCE_COLORS[i % SOURCE_COLORS.length] as string,
+    }));
+  }, [assets, capacityMix]);
+
+  // Exports exactly what is recorded: one row per recorded generation point.
   const handleExport = () => {
     void ExportEngine.exportToPDF(
       {
-        headers: ['Source', 'MWh', 'Cost/MWh', 'Revenue'],
-        rows: SOURCES.map((s) => [s.name, s.value, `$${s.cost}`, fmt.currency0(s.revenue)]),
+        headers: ['Date', 'Solar MWh', 'Wind MWh', 'Hydro MWh', 'Total MWh'],
+        rows: generationTrend.map((g) => [g.date, g.solar, g.wind, g.hydro, g.total]),
       },
-      { title: 'Energy Production Dashboard' }
+      { title: 'Energy Production' }
     ).catch(reportExportFailure);
   };
 
-  if (entries.length === 0)
+  if (!hasEnergyData) {
+    // K30 four-states: shared EmptyState under the page-level h1 (PageHeader
+    // stays mounted in this branch). Nothing is invented while the store is
+    // empty.
     return (
-      <main className="p-12 text-center" role="main" aria-label="Energy Production - No Data">
-        <Zap className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
-        <h1 className="text-xl font-semibold mb-2">No Energy Data</h1>
-        <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
-          Import general ledger data with production accounts to track output, capacity and
-          generation trends.
-        </p>
-        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
-      </main>
+      <div className="p-6 space-y-6 max-w-7xl" aria-labelledby="energy-production-heading">
+        <PageHeader
+          title="Energy Production"
+          titleId="energy-production-heading"
+          purpose="Recorded generation output and capacity mix from the energy workspace."
+        />
+        <EmptyState
+          variant="no-data"
+          title="No energy production data"
+          description="No renewable assets or generation points are recorded in this workspace. Record assets and generation to track output here. Production cost, revenue and capacity factor require their own feeds and are never estimated."
+        />
+      </div>
     );
+  }
 
   return (
-    <div className="p-6 space-y-6">
-      <PageHeader
-        title="Energy Production"
-        purpose="Track production and commodity metrics"
-        actions={
-          <Button variant="outline" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-        }
-      />
+    <div className="p-6 space-y-6" aria-labelledby="energy-production-heading">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <PageHeader
+          title="Energy Production"
+          titleId="energy-production-heading"
+          purpose="Recorded generation output and capacity mix from the energy workspace."
+        />
+        <Button
+          variant="outline"
+          onClick={handleExport}
+          disabled={generationTrend.length === 0}
+          aria-label="Export recorded generation as PDF"
+        >
+          <Download className="h-4 w-4 mr-2" />
+          Export
+        </Button>
+      </div>
 
-      <div className="grid gap-4 md:grid-cols-4">
+      {/* KPIs — derived from recorded energy data; non-derivable disclosed */}
+      <div className="grid gap-4 md:grid-cols-4" aria-label="Energy production KPIs">
         <KPIValue
-          label="Total Production"
-          value={`${formatNumber(divideMoney(toDecimal(totalProduction), toDecimal(1000)).toNumber(), 1)}GWh`}
+          label="Total Generation (window)"
+          value={`${formatNumber(totalGeneration)} MWh`}
+          changeLabel={
+            generationTrend.length > 0
+              ? `${generationTrend.length} periods on file`
+              : 'no generation on file'
+          }
+          trend={totalGeneration > 0 ? 'up' : 'neutral'}
           icon={<Zap className="h-4 w-4" />}
         />
         <KPIValue
-          label="Capacity Factor"
-          value={`${formatPercent(capacityFactor, 1)}`}
-          icon={<Gauge className="h-4 w-4" />}
-        />
-        <KPIValue
-          label="Avg Cost/MWh"
-          value={`$${formatNumber(avgCostPerMWh, 0)}`}
-          icon={<DollarSign className="h-4 w-4" />}
-        />
-        <KPIValue
-          label="Total Revenue"
-          value={fmt.currency0(totalRevenue)}
+          label="Latest Recorded Period"
+          value={latestPoint ? `${formatNumber(latestPoint.total)} MWh` : '—'}
+          changeLabel={latestPoint ? `as of ${latestPoint.date}` : 'no generation on file'}
           icon={<TrendingUp className="h-4 w-4" />}
-          trend="up"
+        />
+        <KPIValue
+          label="Recorded Assets"
+          value={formatNumber(assets.length)}
+          changeLabel={
+            assets.length > 0 ? `${assets.length} facilities on file` : 'no assets on file'
+          }
+          icon={<Layers className="h-4 w-4" />}
+        />
+        <KPIValue
+          label="Capacity Factor"
+          value="—"
+          changeLabel="requires each asset's stated theoretical maximum output"
+          icon={<Gauge className="h-4 w-4" />}
         />
       </div>
 
+      {/* Charts — recorded points only */}
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Production by Source</CardTitle>
+            <CardTitle>Generation Output (MWh)</CardTitle>
+            <CardDescription>
+              {generationTrend.length > 0
+                ? 'Recorded renewable generation over time'
+                : 'No generation recorded yet'}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={280}>
-              <PieChart>
-                <Pie
-                  data={SOURCES}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  dataKey="value"
-                  nameKey="name"
-                  label={({ name, percent }) => `${name} ${formatPercent(percent ?? 0, 0)}`}
-                >
-                  {SOURCES.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    background: '#1e293b',
-                    border: '1px solid #334155',
-                    borderRadius: 8,
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            {generationTrend.length > 0 ? (
+              <ResponsiveContainer width="100%" height={280}>
+                <AreaChart data={[...generationTrend]}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <XAxis dataKey="date" stroke="#94a3b8" />
+                  <YAxis stroke="#94a3b8" />
+                  <Tooltip />
+                  <Legend />
+                  <Area
+                    type="monotone"
+                    dataKey="solar"
+                    name="Solar"
+                    stackId="1"
+                    fill="#f59e0b"
+                    fillOpacity={0.6}
+                    stroke="#f59e0b"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="wind"
+                    name="Wind"
+                    stackId="1"
+                    fill="#10b981"
+                    fillOpacity={0.6}
+                    stroke="#10b981"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="hydro"
+                    name="Hydro"
+                    stackId="1"
+                    fill="#3b82f6"
+                    fillOpacity={0.6}
+                    stroke="#3b82f6"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-sm text-[var(--text-muted)] py-8 text-center">
+                No generation points are recorded yet. Record generation in the energy workspace to
+                populate this chart — no synthetic trend is shown.
+              </p>
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Revenue vs Cost by Source</CardTitle>
+            <CardTitle>Production by Source</CardTitle>
+            <CardDescription>
+              {perSource.length > 0
+                ? 'From the recorded capacity mix'
+                : 'No assets or capacity mix recorded'}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={costVsRevenue}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="name" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${v ? formatCompact(v) : '—'}`} />
-                <Tooltip
-                  contentStyle={{
-                    background: '#1e293b',
-                    border: '1px solid #334155',
-                    borderRadius: 8,
-                  }}
-                  formatter={(v) => fmt.currency0(Number(v))}
-                />
-                <Legend />
-                <Bar dataKey="revenue" name="Revenue" fill="#22c55e" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="cost" name="Cost" fill="#ef4444" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {perSource.length > 0 ? (
+              <ResponsiveContainer width="100%" height={280}>
+                <PieChart>
+                  <Pie
+                    data={perSource.map((s) => ({ ...s }))}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    dataKey="value"
+                    nameKey="name"
+                  >
+                    {perSource.map((entry, i) => (
+                      <Cell key={`cell-${entry.name ?? i}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-sm text-[var(--text-muted)] py-8 text-center">
+                No assets are recorded yet, so no source mix can be shown.
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
 
+      {/* Non-derivable figures — disclosed, never estimated */}
       <Card>
         <CardHeader>
-          <CardTitle>Generation Output (MWh)</CardTitle>
+          <CardTitle>Not derivable from recorded energy data</CardTitle>
+          <CardDescription>Omitted rather than estimated</CardDescription>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={MONTHLY}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="month" stroke="#94a3b8" />
-              <YAxis stroke="#94a3b8" />
-              <Tooltip
-                contentStyle={{
-                  background: '#1e293b',
-                  border: '1px solid #334155',
-                  borderRadius: 8,
-                }}
-              />
-              <Legend />
-              <Area
-                type="monotone"
-                dataKey="solar"
-                name="Solar"
-                stackId="1"
-                fill="#f59e0b"
-                fillOpacity={0.6}
-                stroke="#f59e0b"
-              />
-              <Area
-                type="monotone"
-                dataKey="wind"
-                name="Wind"
-                stackId="1"
-                fill="#3b82f6"
-                fillOpacity={0.6}
-                stroke="#3b82f6"
-              />
-              <Area
-                type="monotone"
-                dataKey="hydro"
-                name="Hydro"
-                stackId="1"
-                fill="#06b6d4"
-                fillOpacity={0.6}
-                stroke="#06b6d4"
-              />
-              <Area
-                type="monotone"
-                dataKey="gas"
-                name="Gas"
-                stackId="1"
-                fill="#6b7280"
-                fillOpacity={0.6}
-                stroke="#6b7280"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+        <CardContent className="space-y-3 text-sm text-[var(--text-muted)]">
+          <p className="flex items-start gap-1">
+            <Info className="h-3 w-3 mt-0.5 shrink-0" />
+            <span>
+              <span className="font-medium text-[var(--text-secondary)]">Avg cost / MWh</span> —
+              requires a per-asset operating-cost ledger (fuel, purchase agreements); none is
+              recorded.
+            </span>
+          </p>
+          <p className="flex items-start gap-1">
+            <Info className="h-3 w-3 mt-0.5 shrink-0" />
+            <span>
+              <span className="font-medium text-[var(--text-secondary)]">
+                Per-source revenue and cost
+              </span>{' '}
+              — requires a tariff or PPA feed; none is connected.
+            </span>
+          </p>
+          <p className="flex items-start gap-1">
+            <Info className="h-3 w-3 mt-0.5 shrink-0" />
+            <span>
+              <span className="font-medium text-[var(--text-secondary)]">Capacity factor</span> —
+              requires each asset&apos;s stated theoretical maximum output; no nameplate register
+              exists in this workspace.
+            </span>
+          </p>
         </CardContent>
       </Card>
     </div>

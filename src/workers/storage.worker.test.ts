@@ -144,4 +144,57 @@ describe('storage.worker', () => {
     expect(response).toBeDefined();
     expect(response!.id).toBe('correlation-test-id-12345');
   });
+
+  // -------------------------------------------------------------------------
+  // W7E / W6-P1: malformed-message hardening
+  // -------------------------------------------------------------------------
+  function dispatchRaw(data: unknown): void {
+    if (!messageHandler) throw new Error('Worker onmessage not registered');
+    messageHandler({ data } as MessageEvent);
+  }
+
+  describe('W7E/W6-P1 malformed messages', () => {
+    it('11. null request payload gets an error reply instead of crashing uncaught', async () => {
+      await loadWorker();
+      // Pre-fix this threw synchronously OUTSIDE the try block (destructuring
+      // null) and produced no reply at all.
+      expect(() => dispatchRaw({ id: 'null-req', payload: null })).not.toThrow();
+      const response = findResult('null-req');
+      expect(response).toBeDefined();
+      expect(response!.type).toBe('error');
+      expect(typeof response!.error).toBe('string');
+    });
+
+    it('12. null envelope (missing data) gets an error reply, no crash', async () => {
+      await loadWorker();
+      expect(() => dispatchRaw(null)).not.toThrow();
+      expect(postMessageMock.mock.calls.length).toBe(1);
+      expect((postMessageMock.mock.calls[0]![0] as { type: string }).type).toBe('error');
+    });
+
+    it('13. unknown request type gets an error reply (was a silent no-op)', async () => {
+      await loadWorker();
+      expect(() =>
+        dispatchRaw({ id: 'bad-type', payload: { type: 'delete', payload: {} } })
+      ).not.toThrow();
+      const response = findResult('bad-type');
+      expect(response).toBeDefined();
+      expect(response!.type).toBe('error');
+      expect(response!.error).toMatch(/type/);
+    });
+
+    it('14. non-positive chunkSize gets an error reply (chunker infinite-loop guard)', async () => {
+      await loadWorker();
+      expect(() =>
+        dispatchRaw({
+          id: 'zero-chunk',
+          payload: { type: 'stringify', payload: { a: 1 }, chunkSize: 0 },
+        })
+      ).not.toThrow();
+      const response = findResult('zero-chunk');
+      expect(response).toBeDefined();
+      expect(response!.type).toBe('error');
+      expect(response!.error).toMatch(/chunkSize/);
+    });
+  });
 });

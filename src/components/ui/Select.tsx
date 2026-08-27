@@ -23,6 +23,23 @@ export interface SelectProps {
   id?: string;
 }
 
+/**
+ * Radix Select forbids empty-string item values ("A <Select.Item /> must
+ * have a value prop that is not an empty string"), but callers legitimately
+ * model a "no selection / skip" option as { value: '' } — e.g.
+ * GLColumnMapper's '-- Skip Column --'. Such options are encoded with an
+ * internal sentinel when talking to Radix and translated back on change, so
+ * the public API (including value: '') is preserved exactly.
+ *
+ * Regression lock: tests/e2e/spine/20-gl-upload-to-journals.spec.ts — the
+ * GL-upload journey crashed its route group on this before the sentinel.
+ */
+const EMPTY_VALUE_SENTINEL = '__fp_select_empty__';
+
+const toItemValue = (value: string): string => (value === '' ? EMPTY_VALUE_SENTINEL : value);
+
+const fromItemValue = (value: string): string => (value === EMPTY_VALUE_SENTINEL ? '' : value);
+
 export const Select: React.FC<SelectProps> = ({
   options = [],
   value,
@@ -49,7 +66,11 @@ export const Select: React.FC<SelectProps> = ({
           {label}
         </label>
       )}
-      <SelectPrimitive.Root value={value} onValueChange={onChange} disabled={disabled}>
+      <SelectPrimitive.Root
+        value={value ?? ''}
+        onValueChange={(next) => onChange?.(fromItemValue(next))}
+        disabled={disabled}
+      >
         <SelectPrimitive.Trigger
           id={id}
           className={cn(
@@ -85,7 +106,7 @@ export const Select: React.FC<SelectProps> = ({
               {options.map((option) => (
                 <SelectPrimitive.Item
                   key={option.value}
-                  value={option.value}
+                  value={toItemValue(option.value)}
                   disabled={option.disabled}
                   className={cn(
                     'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-[var(--bg-hover)] focus:text-[var(--text-primary)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 transition-colors',

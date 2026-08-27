@@ -4,6 +4,10 @@ import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
 import { divideMoney, sumMoney } from '@/utils/money';
+// W6-P0-14: subscriber records carry revenue data (INVENTORY_* family per
+// sector-store precedent); network/ARPU analytics datasets use DASHBOARD_UPDATE
+// (healthcareStore/insuranceStore metric precedent). Flags stay unguarded.
+import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 export interface Subscriber {
   id: string;
@@ -54,31 +58,37 @@ export const useTelecomStore = create<TelecomState>()(
         arpuTrends: [],
         isLoading: false,
         error: null,
-        setSubscribers: (subscribers) =>
+        setSubscribers: enforce(Permissions.INVENTORY_UPDATE, 'setSubscribers', (subscribers) =>
           set((s) => {
             s.subscribers = subscribers;
-          }),
-        addSubscriber: (subscriber) =>
+          })
+        ),
+        addSubscriber: enforce(Permissions.INVENTORY_CREATE, 'addSubscriber', (subscriber) =>
           set((s) => {
             s.subscribers.push(subscriber);
-          }),
-        updateSubscriber: (id, updates) =>
+          })
+        ),
+        updateSubscriber: enforce(Permissions.INVENTORY_UPDATE, 'updateSubscriber', (id, updates) =>
           set((s) => {
             const i = s.subscribers.findIndex((x) => x.id === id);
             if (i !== -1) Object.assign(s.subscribers[i]!, updates);
-          }),
-        removeSubscriber: (id) =>
+          })
+        ),
+        removeSubscriber: enforce(Permissions.INVENTORY_DELETE, 'removeSubscriber', (id) =>
           set((s) => {
             s.subscribers = s.subscribers.filter((x) => x.id !== id);
-          }),
-        setNetworkMetrics: (metrics) =>
+          })
+        ),
+        setNetworkMetrics: enforce(Permissions.DASHBOARD_UPDATE, 'setNetworkMetrics', (metrics) =>
           set((s) => {
             s.networkMetrics = metrics;
-          }),
-        setArpuTrends: (trends) =>
+          })
+        ),
+        setArpuTrends: enforce(Permissions.DASHBOARD_UPDATE, 'setArpuTrends', (trends) =>
           set((s) => {
             s.arpuTrends = trends;
-          }),
+          })
+        ),
         setLoading: (isLoading) =>
           set((s) => {
             s.isLoading = isLoading;
@@ -87,14 +97,15 @@ export const useTelecomStore = create<TelecomState>()(
           set((s) => {
             s.error = error;
           }),
-        clearAll: () =>
+        clearAll: enforce(Permissions.INVENTORY_DELETE, 'clearAll', () =>
           set((s) => {
             s.subscribers = [];
             s.networkMetrics = [];
             s.arpuTrends = [];
             s.isLoading = false;
             s.error = null;
-          }),
+          })
+        ),
         getTotalSubscribers: () => get().subscribers.filter((s) => s.status === 'Active').length,
         getAverageARPU: () => {
           const active = get().subscribers.filter((s) => s.status === 'Active');

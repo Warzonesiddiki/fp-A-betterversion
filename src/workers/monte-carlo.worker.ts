@@ -13,6 +13,7 @@ import type {
   MonteCarloResultItem,
   MonteCarloDistribution,
 } from './types';
+import { readMessageId, readMessagePayload, validateMonteCarloRequest } from './validateRequest';
 
 // --- Seeded PRNG (xoshiro128**) for reproducible simulations ---
 
@@ -114,7 +115,7 @@ function computeStatistics(values: number[]): MonteCarloResponse['statistics'] {
 
 // --- Core simulation ---
 
-function runMonteCarlo(request: MonteCarloRequest): MonteCarloResponse {
+function runMonteCarlo(request: MonteCarloRequest, taskId: string): MonteCarloResponse {
   const { assumptions, iterations, seed } = request;
 
   if (iterations <= 0 || assumptions.length === 0) {
@@ -152,10 +153,12 @@ function runMonteCarlo(request: MonteCarloRequest): MonteCarloResponse {
     results.push({ iteration: i + 1, values, output });
     outputValues.push(output);
 
-    // Report progress every 1%
+    // Report progress every 1%. W7D: echo the incoming task id so the pool's
+    // `response.id !== task.id` filter lets onProgress fire (a constant id
+    // here was silently dropped by the pool).
     if ((i + 1) % progressInterval === 0 || i === iterations - 1) {
       const progressResponse: WorkerResponse = {
-        id: 'monte-carlo',
+        id: taskId,
         type: 'progress',
         progress: {
           processed: i + 1,
@@ -176,10 +179,16 @@ function runMonteCarlo(request: MonteCarloRequest): MonteCarloResponse {
 // --- Worker message handler ---
 
 self.onmessage = (e: MessageEvent<WorkerMessage<MonteCarloRequest>>) => {
-  const { id, payload } = e.data;
+  // W7E/W6-P1: envelope access is guarded and payloads are validated BEFORE
+  // any math runs — malformed messages get a structured {type:'error'} reply
+  // through the existing protocol instead of crashing uncaught or silently
+  // returning zeroed statistics (NaN iterations used to do exactly that).
+  const envelope: unknown = e.data;
+  const id = readMessageId(envelope);
 
   try {
-    const result = runMonteCarlo(payload);
+    const request = validateMonteCarloRequest(readMessagePayload(envelope));
+    const result = runMonteCarlo(request, id);
     const response: WorkerResponse<MonteCarloResponse> = {
       id,
       type: 'result',

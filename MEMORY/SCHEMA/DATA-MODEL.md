@@ -1,9 +1,9 @@
 ---
 id: MEMORY/SCHEMA/DATA-MODEL.md
 status: active
-last_verified: 2026-08-18
-verified_by: arena-agent/session-017
-confidence: medium
+last_verified: 2026-08-22
+verified_by: arena-agent/session-032
+confidence: high
 ---
 
 # SCHEMA/DATA-MODEL
@@ -28,13 +28,21 @@ cube_history cube_snapshots cube_snapshot_diffs
 `ensureCanonicalAuditTrail`, `ensureServerColumns`, `createAuditTables`, `ensureEntityAccessTable`)
 and also runs the Tauri migrations directory (`MIGRATIONS_DIR` resolves to
 `src-tauri/migrations`). The historical "9 server DDL tables vs 35 Tauri tables" fork is tracked in
-`PRODUCT/GAPS.md`; exact current server-only table list is **UNVERIFIED** this session.
+`MEMORY/PRODUCT/GAPS.md`; exact current server-only table list is **UNVERIFIED** this session.
 
 ## Tenancy
 
-- [MEASURE 2026-08-18] `grep -ric tenant server/src/db/*.ts` → **0 hits in every file**.
-  There is no `tenant_id` / `environment_id` column anywhere in the server DB layer.
-  This blocks Phase 0 exit (INV-010).
+- [MEASURED 2026-08-22, session 032 / W0.2] Every tenant-data table now carries
+  `tenant_id TEXT NOT NULL DEFAULT 'default'`; the governed model/fact surfaces
+  (gl_entries, budgets*, scenarios*, forecasts*, reports, cube_cells/history/
+  snapshots/diffs) also carry `environment_id TEXT NOT NULL DEFAULT 'dev'`.
+  A `tenants` root table exists (seeded `default`). Registry + ratchet:
+  `server/src/db/tenancy.ts` (TENANT_SCOPED_TABLES, 42 entries; exempt:
+  login_attempts, audit_login_attempts — global security telemetry).
+  Reconciliation for legacy DBs: `ensureTenancy(db)` in ensureSchema/runMigrations.
+  Per-table cross-tenant leak tests: `server/src/db/tenancy.test.ts` (48 tests);
+  route-level GL leak tests: `server/src/routes/gl.tenancy.test.ts`. Route adoption
+  beyond gl_entries is W0.2b.
 
 ## Client-side persistence (de-facto system of record today)
 

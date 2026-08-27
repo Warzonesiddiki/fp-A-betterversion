@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate } from 'react-router-dom';
@@ -98,7 +99,13 @@ export default function GLReportingPage() {
     document.title = 'FinPlan Pro — G L Reporting';
   }, []);
 
-  const { entries, accounts, trialBalance } = useGLStore();
+  const { entries, accounts, trialBalance } = useGLStore(
+    useShallow((s) => ({
+      entries: s.entries,
+      accounts: s.accounts,
+      trialBalance: s.trialBalance,
+    }))
+  );
   const navigate = useNavigate();
   const [_dateRange, _setDateRange] = useState(() => {
     const now = new Date();

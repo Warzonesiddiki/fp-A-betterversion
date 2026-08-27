@@ -36,15 +36,15 @@ Reverse brainstorming, six thinking hats, and pre-mortem.
 
 ### Controls selected
 
-| Failure mode | Preventive control | Detection signal |
-|---|---|---|
-| Friendly/positive sample | recruit incumbent users, rejectors, and skeptics; disclose relationship | >50% from one referral/relationship source |
-| Missing role coverage | hard quotas for CFO/controller/FP&A/IT | cohort tracker has role shortfall |
-| Idealized accounts | require recent-event walkthrough before concepts | no concrete system/handoff/example described |
-| Demo confirmation bias | current workflow first; concept only after evidence capture | feature talk appears before workflow notes |
-| Vertical concentration | cap at 40% one vertical | tracker shows overrepresentation |
-| Security self-selection | recruit through IT/security path, not finance only | no enterprise security participant scheduled |
-| Narrative drift | log same day with verbatim/observed distinction | incomplete evidence rows or no disconfirming field |
+| Failure mode             | Preventive control                                                      | Detection signal                                   |
+| ------------------------ | ----------------------------------------------------------------------- | -------------------------------------------------- |
+| Friendly/positive sample | recruit incumbent users, rejectors, and skeptics; disclose relationship | >50% from one referral/relationship source         |
+| Missing role coverage    | hard quotas for CFO/controller/FP&A/IT                                  | cohort tracker has role shortfall                  |
+| Idealized accounts       | require recent-event walkthrough before concepts                        | no concrete system/handoff/example described       |
+| Demo confirmation bias   | current workflow first; concept only after evidence capture             | feature talk appears before workflow notes         |
+| Vertical concentration   | cap at 40% one vertical                                                 | tracker shows overrepresentation                   |
+| Security self-selection  | recruit through IT/security path, not finance only                      | no enterprise security participant scheduled       |
+| Narrative drift          | log same day with verbatim/observed distinction                         | incomplete evidence rows or no disconfirming field |
 
 ## Pre-mortem outcome
 

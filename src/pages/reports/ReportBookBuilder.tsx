@@ -12,8 +12,8 @@ export default function ReportBookBuilderPage() {
     document.title = 'FinPlan Pro — Report Book Builder';
   }, []);
 
-  const { entries } = useGLStore();
-  const { reports  } = useReportStore();
+  const entries = useGLStore((s) => s.entries);
+  const reports = useReportStore((s) => s.reports);
   const navigate = useNavigate();
 
   if (entries.length === 0) {

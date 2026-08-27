@@ -1,5 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { useBudgetStore } from './budgetStore';
+import { usePeriodCloseStore, type PeriodChecklist } from './periodCloseStore';
+import { PeriodLockedError } from './periodLockGuard';
+import { useUIStore } from './uiStore';
 import type { Budget, BudgetLineItem } from '@/types';
 import type { AccountType } from '@/types';
 import { actAs } from '@/test/rbacFixtures';
@@ -392,5 +395,226 @@ describe('budgetStore', () => {
     useBudgetStore.setState({ selectedCellId: 'cell-1' });
     useBudgetStore.getState().setSelectedCell(null);
     expect(useBudgetStore.getState().selectedCellId).toBeNull();
+  });
+
+  // --- period lock guard (W6-P0-11) ---
+
+  describe('period lock guard (W6-P0-11)', () => {
+    const resetPeriodClose = () => {
+      usePeriodCloseStore.setState({
+        entries: {},
+        checklists: {},
+        chain: [],
+        initialized: true,
+      });
+    };
+
+    const lockedEntry = {
+      periodId: 'P01',
+      entityId: 'entity-001',
+      state: 'locked' as const,
+      closedAt: '2024-12-31T00:00:00.000Z',
+      auditEvents: [],
+    };
+
+    const p01Checklist = (fiscalYear: number): PeriodChecklist => ({
+      plan: {
+        id: `close-P01-${fiscalYear}`,
+        period: 'monthly',
+        fiscalYear,
+        fiscalPeriod: 1,
+        jurisdiction: 'US',
+        tasks: [],
+        deadline: `${fiscalYear}-01-31`,
+      },
+      instances: [],
+    });
+
+    const seedLockedPeriod = (fiscalYear?: number) => {
+      usePeriodCloseStore.setState({
+        entries: { P01: lockedEntry },
+        checklists: fiscalYear !== undefined ? { P01: p01Checklist(fiscalYear) } : {},
+        initialized: true,
+      });
+    };
+
+    const seedBudget = () => {
+      const budgets = [
+        {
+          ...createBudgetInput({ fiscalYear: 2024 }),
+          id: 'bgt-1',
+          createdAt: '2024-01-01T00:00:00.000Z',
+          updatedAt: '2024-01-01T00:00:00.000Z',
+          createdBy: 'usr-001',
+        },
+      ] as Budget[];
+      useBudgetStore.setState({ budgets });
+    };
+
+    beforeEach(() => {
+      actAs('Admin');
+      resetPeriodClose();
+    });
+
+    afterEach(() => {
+      resetPeriodClose();
+    });
+
+    it('rejects updating a line whose periodId matches a locked period, leaving store unchanged', () => {
+      seedBudget();
+      seedLockedPeriod();
+      useBudgetStore.setState({
+        lineItems: [createLineItem({ id: 'item-1', periodId: 'P01', month: 1 })],
+      });
+      expect(() => useBudgetStore.getState().updateLineItem('item-1', { amount: 999 })).toThrow(
+        PeriodLockedError
+      );
+      const state = useBudgetStore.getState();
+      expect(state.lineItems[0]!.amount).toBe(10000);
+      expect(state.lineItems[0]!.updatedAt).toBe('2024-01-01T00:00:00.000Z');
+      expect(state.lastChange).toBeNull();
+    });
+
+    it('rejects updates via the month + budget-fiscal-year match even when periodId differs', () => {
+      seedBudget();
+      seedLockedPeriod(2024); // checklist gives P01 fiscalYear 2024
+      useBudgetStore.setState({
+        lineItems: [createLineItem({ id: 'item-1', periodId: 'per-other', month: 1 })],
+      });
+      expect(() => useBudgetStore.getState().updateLineItem('item-1', { amount: 999 })).toThrow(
+        PeriodLockedError
+      );
+      expect(useBudgetStore.getState().lineItems[0]!.amount).toBe(10000);
+    });
+
+    it('still mutates lines in unlocked periods (soft-close/open/absent entry)', () => {
+      seedBudget();
+      usePeriodCloseStore.setState({
+        entries: { P01: { ...lockedEntry, state: 'soft-close' } },
+        initialized: true,
+      });
+      useBudgetStore.setState({
+        lineItems: [
+          createLineItem({ id: 'item-1', periodId: 'P01', month: 1 }),
+          createLineItem({ id: 'item-2', periodId: 'per-none', month: 2 }),
+        ],
+      });
+      expect(() =>
+        useBudgetStore.getState().updateLineItem('item-1', { amount: 777 })
+      ).not.toThrow();
+      expect(() =>
+        useBudgetStore.getState().updateLineItem('item-2', { amount: 888 })
+      ).not.toThrow();
+      expect(useBudgetStore.getState().lineItems[0]!.amount).toBe(777);
+      expect(useBudgetStore.getState().lineItems[1]!.amount).toBe(888);
+    });
+
+    it('permits freeze-marker writes ({ isLocked: true }) but rejects mixed updates on locked lines', () => {
+      seedBudget();
+      seedLockedPeriod();
+      useBudgetStore.setState({
+        lineItems: [createLineItem({ id: 'item-1', periodId: 'P01', month: 1 })],
+      });
+      // Lock propagation contract (periodCloseStore.propagateLock) must keep working.
+      expect(() =>
+        useBudgetStore.getState().updateLineItem('item-1', { isLocked: true })
+      ).not.toThrow();
+      expect(useBudgetStore.getState().lineItems[0]!.isLocked).toBe(true);
+      expect(() =>
+        useBudgetStore.getState().updateLineItem('item-1', { amount: 5, isLocked: false })
+      ).toThrow(PeriodLockedError);
+      expect(useBudgetStore.getState().lineItems[0]!.amount).toBe(10000);
+    });
+
+    it('exposes a typed error with name and periodId', () => {
+      seedBudget();
+      seedLockedPeriod();
+      useBudgetStore.setState({
+        lineItems: [createLineItem({ id: 'item-1', periodId: 'P01', month: 1 })],
+      });
+      try {
+        useBudgetStore.getState().updateLineItem('item-1', { amount: 1 });
+        throw new Error('expected updateLineItem to throw');
+      } catch (e) {
+        expect(e).toBeInstanceOf(PeriodLockedError);
+        expect(e).toBeInstanceOf(Error);
+        expect((e as PeriodLockedError).name).toBe('PeriodLockedError');
+        expect((e as PeriodLockedError).periodId).toBe('P01');
+      }
+    });
+
+    it('surfaces the rejection through the uiStore error toast instead of swallowing silently', () => {
+      seedBudget();
+      seedLockedPeriod();
+      useBudgetStore.setState({
+        lineItems: [createLineItem({ id: 'item-1', periodId: 'P01', month: 1 })],
+      });
+      expect(() => useBudgetStore.getState().updateLineItem('item-1', { amount: 999 })).toThrow(
+        PeriodLockedError
+      );
+      const toasts = useUIStore.getState().toasts;
+      expect(toasts.some((t) => t.type === 'error' && t.message.includes('P01'))).toBe(true);
+    });
+
+    it('blocks undo when the target snapshot would change a locked-period line; store unchanged', () => {
+      seedBudget();
+      seedLockedPeriod();
+      const items1 = [createLineItem({ id: 'item-1', periodId: 'P01', month: 1, amount: 100 })];
+      const items2 = [createLineItem({ id: 'item-1', periodId: 'P01', month: 1, amount: 200 })];
+      useBudgetStore.setState({ lineItems: items2, history: [items1, items2], historyIndex: 1 });
+      expect(() => useBudgetStore.getState().undo()).toThrow(PeriodLockedError);
+      const state = useBudgetStore.getState();
+      expect(state.lineItems[0]!.amount).toBe(200);
+      expect(state.historyIndex).toBe(1);
+    });
+
+    it('blocks redo into a locked-period change just like undo', () => {
+      seedBudget();
+      seedLockedPeriod();
+      const items1 = [createLineItem({ id: 'item-1', periodId: 'P01', month: 1, amount: 100 })];
+      const items2 = [createLineItem({ id: 'item-1', periodId: 'P01', month: 1, amount: 200 })];
+      useBudgetStore.setState({ lineItems: items1, history: [items1, items2], historyIndex: 0 });
+      expect(() => useBudgetStore.getState().redo()).toThrow(PeriodLockedError);
+      const state = useBudgetStore.getState();
+      expect(state.lineItems[0]!.amount).toBe(100);
+      expect(state.historyIndex).toBe(0);
+    });
+
+    it('blocks undo that would delete a locked-period line via snapshot replay', () => {
+      seedBudget();
+      seedLockedPeriod();
+      const lockedLine = createLineItem({ id: 'locked-1', periodId: 'P01', month: 1, amount: 50 });
+      const otherLine = createLineItem({ id: 'other-1', periodId: 'per-x', month: 2, amount: 60 });
+      const target = [otherLine];
+      useBudgetStore.setState({
+        lineItems: [lockedLine, otherLine],
+        history: [target, [lockedLine, otherLine]],
+        historyIndex: 1,
+      });
+      expect(() => useBudgetStore.getState().undo()).toThrow(PeriodLockedError);
+      expect(useBudgetStore.getState().lineItems).toHaveLength(2);
+    });
+
+    it('allows undo/redo when only unlocked-period lines differ', () => {
+      seedBudget();
+      seedLockedPeriod();
+      const lockedLineA = createLineItem({ id: 'l', periodId: 'P01', month: 1, amount: 10 });
+      const otherBefore = createLineItem({ id: 'o', periodId: 'per-y', month: 3, amount: 20 });
+      const otherAfter = createLineItem({ id: 'o', periodId: 'per-y', month: 3, amount: 30 });
+      useBudgetStore.setState({
+        lineItems: [lockedLineA, otherAfter],
+        history: [
+          [lockedLineA, otherBefore],
+          [lockedLineA, otherAfter],
+        ],
+        historyIndex: 1,
+      });
+      expect(() => useBudgetStore.getState().undo()).not.toThrow();
+      expect(useBudgetStore.getState().lineItems[1]!.amount).toBe(20);
+      expect(useBudgetStore.getState().historyIndex).toBe(0);
+      expect(() => useBudgetStore.getState().redo()).not.toThrow();
+      expect(useBudgetStore.getState().lineItems[1]!.amount).toBe(30);
+      expect(useBudgetStore.getState().historyIndex).toBe(1);
+    });
   });
 });

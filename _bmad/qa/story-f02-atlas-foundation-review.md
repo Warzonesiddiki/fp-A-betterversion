@@ -5,15 +5,15 @@
 
 ## Automated checks
 
-| Check | Result | Evidence |
-|---|---|---|
-| Changed-file lint | PASS | ESLint on Atlas components and Dashboard, zero warnings |
-| Type-check | PASS | `tsc --noEmit`, zero errors |
-| Unit / interaction tests | PASS | 4 files, 16 tests: status badge, page header, workspace empty state, dashboard |
-| Diff hygiene | PASS | `git diff --check` |
-| Structural visual contract baseline | PASS | Deterministic Vitest DOM/class snapshot covers PageHeader, FinancialStatusBadge, FinancialWorkspaceEmptyState hierarchy and trust semantics |
-| Browser screenshot baseline | **PASS (2026-08-12)** | Playwright Chromium ran `tests/e2e/atlas-visual.spec.ts` — **5/5 tests**, 11 deterministic PNG baselines committed (badge dark/light; PageHeader wide/compact; empty-state dark/light; Dashboard empty 1440/390; Dashboard populated 1440+1024 dark + 1440 light). Re-run produces byte-identical images (md5-stable). See completion record below. |
-| Canonical Dashboard automated accessibility audit | PASS | `jest-axe` run on the finance-workspace setup state; no violations |
+| Check                                             | Result                | Evidence                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Changed-file lint                                 | PASS                  | ESLint on Atlas components and Dashboard, zero warnings                                                                                                                                                                                                                                                                                             |
+| Type-check                                        | PASS                  | `tsc --noEmit`, zero errors                                                                                                                                                                                                                                                                                                                         |
+| Unit / interaction tests                          | PASS                  | 4 files, 16 tests: status badge, page header, workspace empty state, dashboard                                                                                                                                                                                                                                                                      |
+| Diff hygiene                                      | PASS                  | `git diff --check`                                                                                                                                                                                                                                                                                                                                  |
+| Structural visual contract baseline               | PASS                  | Deterministic Vitest DOM/class snapshot covers PageHeader, FinancialStatusBadge, FinancialWorkspaceEmptyState hierarchy and trust semantics                                                                                                                                                                                                         |
+| Browser screenshot baseline                       | **PASS (2026-08-12)** | Playwright Chromium ran `tests/e2e/atlas-visual.spec.ts` — **5/5 tests**, 11 deterministic PNG baselines committed (badge dark/light; PageHeader wide/compact; empty-state dark/light; Dashboard empty 1440/390; Dashboard populated 1440+1024 dark + 1440 light). Re-run produces byte-identical images (md5-stable). See completion record below. |
+| Canonical Dashboard automated accessibility audit | PASS                  | `jest-axe` run on the finance-workspace setup state; no violations                                                                                                                                                                                                                                                                                  |
 
 ## Acceptance criteria verification
 
@@ -88,8 +88,6 @@ This extension does NOT close the pixel-baseline rejection reason. It strengthen
 - Light-theme contrast verification remains a browser-pixel-baseline item (blocked).
 - Verification: Atlas suite 11/11; lint clean.
 
-
-
 ## Interim evidence extension — full status set + PageHeader anatomy (2026-08-10, later same session)
 
 - `AtlasFoundations.visual-contract.test.tsx` extended to 8 tests (runbook scenarios 1–2, structural equivalents):
@@ -97,7 +95,6 @@ This extension does NOT close the pixel-baseline rejection reason. It strengthen
   - **PageHeader full anatomy** (title `h1.fp-page-header__title`, purpose, status, actions) and **minimal variant** (title only; purpose/actions containers omitted) are pinned by assertions and a snapshot.
 - Verification: Atlas structural suite 8 tests passed; root `tsc --noEmit` 0 errors; changed-file ESLint 0 warnings; docs-link strict check clean (0 broken links/citations repo-wide); production build + bundle check green.
 - Still does NOT close the pixel-baseline rejection reason (theme contrast, fonts, responsive layout require a browser).
-
 
 ## Stale-test reconciliation (2026-08-10, same session)
 

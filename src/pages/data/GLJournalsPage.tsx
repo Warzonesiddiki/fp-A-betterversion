@@ -1,5 +1,11 @@
 // @money-ast-allow Reason: Pagination index: totalPages - 1 is a page-number calculation, not money
+
+// K30 four-states honesty note: entries/accounts come from synchronous Zustand
+// store reads, so this page renders NO loading skeleton — one would fake
+// asynchrony that does not exist (same honesty test as ScenarioBuilderPage).
+// In-flight filtering feedback stays on the real useTransition pending state.
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -9,6 +15,8 @@ import { Button } from '@/components/ui/Button';
 
 import { Select } from '@/components/ui/Select';
 import { Card, CardContent } from '@/components/ui/Card';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { toCSV } from '@/utils/csv';
 import { filterGLEntriesByPermission } from '@/utils/dataPermissionFilter';
 import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
@@ -32,13 +40,18 @@ export function computeJournalTotals(
 
 export default function GLJournalsPage() {
   const fmt = useCurrencyFormatter();
-  const [_helpOpen, setHelpOpen] = useState(false);
+  // K30 four-states: the only fallible action on this page is the CSV export
+  // (blob creation / download); its failure renders ErrorState with a retry
+  // that re-runs exactly that export.
+  const [exportError, setExportError] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — G L Journals';
   }, []);
 
-  const { entries, accounts } = useGLStore();
+  const { entries, accounts } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, accounts: s.accounts }))
+  );
   const navigate = useNavigate();
   const location = useLocation();
   const [startDate, setStartDate] = useState('');
@@ -69,11 +82,10 @@ export default function GLJournalsPage() {
     }
   }, [accounts, location.state]);
 
+  // Radix Select forbids items with an empty-string value; the "no filter"
+  // state is carried by the control's own placeholder instead.
   const accountOptions = useMemo(
-    () => [
-      { value: '', label: 'All Accounts' },
-      ...accounts.map((a) => ({ value: a.id, label: `${a.code} ${a.name}` })),
-    ],
+    () => accounts.map((a) => ({ value: a.id, label: `${a.code} ${a.name}` })),
     [accounts]
   );
 
@@ -106,56 +118,80 @@ export default function GLJournalsPage() {
 
   // B2 Enhancement: Export journals
   const exportJournals = useCallback(() => {
-    const csv = toCSV(
-      filtered.map((e) => ({
-        Date: e.date,
-        Account: e.accountCode,
-        Description: e.description,
-        Debit: e.debit,
-        Credit: e.credit,
-        Reference: e.reference,
-      })),
-      ['Date', 'Account', 'Description', 'Debit', 'Credit', 'Reference']
-    );
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `journals-${startDate || 'all'}-to-${endDate || 'all'}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    setExportError(null);
+    try {
+      const csv = toCSV(
+        filtered.map((e) => ({
+          Date: e.date,
+          Account: e.accountCode,
+          Description: e.description,
+          Debit: e.debit,
+          Credit: e.credit,
+          Reference: e.reference,
+        })),
+        ['Date', 'Account', 'Description', 'Debit', 'Credit', 'Reference']
+      );
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `journals-${startDate || 'all'}-to-${endDate || 'all'}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      // K30 four-states: the failed export is surfaced verbatim; the ErrorState
+      // retry control re-runs this exact callback over the same filter result.
+      setExportError(err instanceof Error ? err.message : 'Failed to generate the journals CSV');
+    }
   }, [filtered, startDate, endDate]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
 
   if (entries.length === 0) {
+    // K30 four-states: shared EmptyState under the page-level h1 (PageHeader
+    // stays mounted in this branch). The CTA re-enters the import flow; no
+    // demo journal rows are invented.
     return (
-      <div className="p-12 text-center max-w-md mx-auto">
-        <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
-          <BookOpen className="h-10 w-10 text-[var(--text-muted)]" />
-        </div>
-        <h2 className="text-xl font-semibold mb-2">No Journal Entries</h2>
-        <p className="text-[var(--text-muted)] mb-6">
-          Import your General Ledger data to view journal entries.
-        </p>
-        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
+      <div className="p-6 space-y-6 max-w-7xl" aria-labelledby="gl-journals-heading">
+        <PageHeader
+          title="General Journal"
+          titleId="gl-journals-heading"
+          purpose="Every posted General Ledger line, filterable by date, account and text, with running debit and credit totals."
+        />
+        <EmptyState
+          variant="no-data"
+          title="No journal entries"
+          description="Import your General Ledger data to view journal entries."
+          icon={<BookOpen className="h-12 w-12 text-[var(--text-muted)]" aria-hidden="true" />}
+          action={
+            <Button onClick={() => navigate('/data/gl-upload')} data-testid="journals-empty-import">
+              Import Data
+            </Button>
+          }
+        />
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6" aria-labelledby="gl-journals-heading">
+      {exportError && (
+        // K30 four-states: shared ErrorState (role=alert) whose retry control
+        // re-runs exactly the failed CSV export over the same filtered rows.
+        <ErrorState
+          title="Could not export journals"
+          message={exportError}
+          onRetry={exportJournals}
+          retryLabel="Retry export"
+          className="py-8"
+        />
+      )}
       <div className="flex items-center justify-between">
         <div>
           <PageHeader
             title="General Journal"
-            actions={
-              <button
-                onClick={() => setHelpOpen(true)}
-                className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
-                aria-label="Help"
-              ></button>
-            }
+            titleId="gl-journals-heading"
+            purpose="Every posted General Ledger line, filterable by date, account and text, with running debit and credit totals."
           />
           <p className="text-sm text-[var(--text-muted)] mt-1">
             {entries.length.toLocaleString()} total entries
@@ -283,7 +319,14 @@ export default function GLJournalsPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody className={`divide-y divide-slate-800 ${isPending ? 'opacity-60' : ''}`}>
+              {/* K30 a11y: the in-flight filter dimming is mirrored to AT via
+                  aria-busy so pending re-filtering is machine-readable, not
+                  just visual opacity. */}
+              <tbody
+                className={`divide-y divide-slate-800 ${isPending ? 'opacity-60' : ''}`}
+                aria-busy={isPending || undefined}
+                data-testid="journals-tbody"
+              >
                 {pageItems.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="text-center py-12 text-[var(--text-muted)]">

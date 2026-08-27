@@ -718,12 +718,13 @@ export class SOXComplianceEngine {
       }
     }
 
-    // Check retention compliance
-    const retentionCutoff = new Date();
-    retentionCutoff.setDate(retentionCutoff.getDate() - requirement.retentionDays);
-    const retentionCompliant = entries.every(
-      (e) => new Date(e.timestamp) >= retentionCutoff || true // entries within retention are always compliant
-    );
+    // Check retention compliance: the audit engine must be configured to
+    // retain entries at least as long as the requirement mandates. An engine
+    // with a shorter window prunes required evidence before the mandate
+    // elapses — a violation no surviving-entry timestamp predicate can detect
+    // after the fact (the previous `>= cutoff || true` guard never failed).
+    const retentionCompliant =
+      entries.length === 0 || this.auditEngine.getRetentionDays() >= requirement.retentionDays;
 
     // Check for gaps in audit trail (periods with no entries)
     const gapsDetected: AuditTrailComplianceResult['gapsDetected'] = [];

@@ -26,28 +26,28 @@ FinPlan should feel like an **operating system for financial decisions**: quiet,
 
 ## 2. Experience principles
 
-| Principle | Product behavior |
-|---|---|
-| Context before content | Entity scope, period, scenario/version, currency, data freshness, and mode are visible before interpretation. |
-| Signal before surface | Materiality, action required, and confidence rank above card/chrome decoration. |
-| Evidence at the point of decision | Every official number, exception, and AI statement opens a permission-aware source/lineage trail. |
-| Dense but calm | Use alignment, typography, whitespace, and progressive disclosure; do not make every item a bordered card. |
-| Keyboard is first class | Analysts can navigate, edit, search, inspect, approve, and recover without a mouse. |
-| Safe speed | Reversible draft changes are fast; material/published changes summarize impact and policy before commitment. |
-| Trust is visible | Draft, calculated, stale, queued, failed, locked, certified, and AI-derived are shared explicit states. |
-| One system, multiple depths | CFO sees decision summary; analyst drills into model; controller drills into reconciliation—without losing context. |
+| Principle                         | Product behavior                                                                                                    |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Context before content            | Entity scope, period, scenario/version, currency, data freshness, and mode are visible before interpretation.       |
+| Signal before surface             | Materiality, action required, and confidence rank above card/chrome decoration.                                     |
+| Evidence at the point of decision | Every official number, exception, and AI statement opens a permission-aware source/lineage trail.                   |
+| Dense but calm                    | Use alignment, typography, whitespace, and progressive disclosure; do not make every item a bordered card.          |
+| Keyboard is first class           | Analysts can navigate, edit, search, inspect, approve, and recover without a mouse.                                 |
+| Safe speed                        | Reversible draft changes are fast; material/published changes summarize impact and policy before commitment.        |
+| Trust is visible                  | Draft, calculated, stale, queued, failed, locked, certified, and AI-derived are shared explicit states.             |
+| One system, multiple depths       | CFO sees decision summary; analyst drills into model; controller drills into reconciliation—without losing context. |
 
 ## 3. Information architecture
 
 ### 3.1 Primary navigation
 
-| Pillar | User question | Destinations | Default persona |
-|---|---|---|---|
-| Workspace | What needs my attention? | Executive Workspace, My Work, Alerts, Calendar, Saved Views | CFO, all |
-| Modeling | Can we deliver the plan? | Plans, Forecasts, Scenarios, Drivers, Headcount, Model Library | FP&A |
-| Close | Is the period safe to close? | Close Cockpit, Reconciliations, Consolidation, Intercompany, Certifications | Controller |
-| Reporting | Can I communicate a trusted story? | Report Library, Board Pack, Dashboards, Report Designer, Schedules | CFO/FP&A |
-| Admin | Is the platform controlled and healthy? | Connections, Data Management, Entities/COA, Users/Policies, Audit, Platform Health | Admin |
+| Pillar    | User question                           | Destinations                                                                       | Default persona |
+| --------- | --------------------------------------- | ---------------------------------------------------------------------------------- | --------------- |
+| Workspace | What needs my attention?                | Executive Workspace, My Work, Alerts, Calendar, Saved Views                        | CFO, all        |
+| Modeling  | Can we deliver the plan?                | Plans, Forecasts, Scenarios, Drivers, Headcount, Model Library                     | FP&A            |
+| Close     | Is the period safe to close?            | Close Cockpit, Reconciliations, Consolidation, Intercompany, Certifications        | Controller      |
+| Reporting | Can I communicate a trusted story?      | Report Library, Board Pack, Dashboards, Report Designer, Schedules                 | CFO/FP&A        |
+| Admin     | Is the platform controlled and healthy? | Connections, Data Management, Entities/COA, Users/Policies, Audit, Platform Health | Admin           |
 
 **Rule:** Sector capabilities live as contextual templates/metrics/analysis inside these pillars. They are not first-class sidebar sprawl unless the selected certified vertical proves a recurring operational job.
 
@@ -77,30 +77,30 @@ FinPlan should feel like an **operating system for financial decisions**: quiet,
 
 The context bar always uses this order: **Scope → Time → Version → Currency → Freshness**.
 
-| Context | Control behavior | Guardrail |
-|---|---|---|
-| Organization/entity | Tree/multi-select according to entitlement | Cannot select unauthorized entity; consolidation scope labels included entities |
-| Period | Fiscal calendar range selector | Shows calendar type, locked/adjustment status, comparison baseline |
-| Version/scenario | Version picker with lifecycle state/base version | Disallows incompatible plan/report selection with explanation |
-| Currency | Functional/reporting currency selector | Shows rate type/date and translation status when applicable |
-| Freshness | Sync/data time and offline queue status | Never says “current” when data is stale or queued |
+| Context             | Control behavior                                 | Guardrail                                                                       |
+| ------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------- |
+| Organization/entity | Tree/multi-select according to entitlement       | Cannot select unauthorized entity; consolidation scope labels included entities |
+| Period              | Fiscal calendar range selector                   | Shows calendar type, locked/adjustment status, comparison baseline              |
+| Version/scenario    | Version picker with lifecycle state/base version | Disallows incompatible plan/report selection with explanation                   |
+| Currency            | Functional/reporting currency selector           | Shows rate type/date and translation status when applicable                     |
+| Freshness           | Sync/data time and offline queue status          | Never says “current” when data is stale or queued                               |
 
 ### 4.2 Shared financial states
 
 Every state has text, icon, accessible label, and defined action:
 
-| State | Visual treatment | Accessible label | Primary action |
-|---|---|---|---|
-| Draft | neutral label + pencil | “Draft; not published” | Continue/edit/submit |
-| Calculated | formula indicator | “Calculated from formula; inspect dependencies” | Inspect formula |
-| Manual input | input indicator | “Manual financial input” | Inspect/audit |
-| Pending approval | clock label | “Awaiting approval by [role/user]” | View workflow |
-| Locked | lock label | “Locked; edits are prohibited” | Request adjustment/unlock |
-| Certified | check/shield label | “Certified for [scope] at [time]” | View certificate |
-| Stale | time/warning label | “Data may be stale since [time]” | Refresh/view source health |
-| Offline/queued | device/queue label | “Offline; [n] changes queued, not official” | View queue |
-| Failed | error icon/text | “Action failed: [reason]” | Retry/resolve/support |
-| AI-generated | sparkle + source count | “AI-generated draft; review sources before use” | Review/cite/approve |
+| State            | Visual treatment       | Accessible label                                | Primary action             |
+| ---------------- | ---------------------- | ----------------------------------------------- | -------------------------- |
+| Draft            | neutral label + pencil | “Draft; not published”                          | Continue/edit/submit       |
+| Calculated       | formula indicator      | “Calculated from formula; inspect dependencies” | Inspect formula            |
+| Manual input     | input indicator        | “Manual financial input”                        | Inspect/audit              |
+| Pending approval | clock label            | “Awaiting approval by [role/user]”              | View workflow              |
+| Locked           | lock label             | “Locked; edits are prohibited”                  | Request adjustment/unlock  |
+| Certified        | check/shield label     | “Certified for [scope] at [time]”               | View certificate           |
+| Stale            | time/warning label     | “Data may be stale since [time]”                | Refresh/view source health |
+| Offline/queued   | device/queue label     | “Offline; [n] changes queued, not official”     | View queue                 |
+| Failed           | error icon/text        | “Action failed: [reason]”                       | Retry/resolve/support      |
+| AI-generated     | sparkle + source count | “AI-generated draft; review sources before use” | Review/cite/approve        |
 
 ## 5. Canonical workspace specifications
 
@@ -196,12 +196,12 @@ Every state has text, icon, accessible label, and defined action:
 
 ### 6.1 Token layers
 
-| Layer | Tokens | Rule |
-|---|---|---|
-| Primitive | neutral, blue, green, amber, red palettes; spacing; radii; shadow; font families | Not used directly by product components except token definitions |
-| Semantic | surface, text, border, action, focus, positive, negative, warning, info, disabled | Components consume semantic tokens only |
-| Financial | input, calculated, locked, certified, stale, variance-favorable, variance-unfavorable, subtotal, total | Must include text/icon/pattern behavior, not only color |
-| Component | button, grid, metric, chart, panel, dialog, workflow, empty/error/loading | Versioned contracts and variants |
+| Layer     | Tokens                                                                                                 | Rule                                                             |
+| --------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| Primitive | neutral, blue, green, amber, red palettes; spacing; radii; shadow; font families                       | Not used directly by product components except token definitions |
+| Semantic  | surface, text, border, action, focus, positive, negative, warning, info, disabled                      | Components consume semantic tokens only                          |
+| Financial | input, calculated, locked, certified, stale, variance-favorable, variance-unfavorable, subtotal, total | Must include text/icon/pattern behavior, not only color          |
+| Component | button, grid, metric, chart, panel, dialog, workflow, empty/error/loading                              | Versioned contracts and variants                                 |
 
 ### 6.2 Typography and spacing
 
@@ -227,15 +227,15 @@ A component may enter the stable Atlas catalog only with: anatomy; variants; sem
 
 ### Keyboard map (canonical baseline)
 
-| Interaction | Requirement |
-|---|---|
-| Global command | Cmd/Ctrl+K open; Esc close and restore focus |
-| Navigation | Arrow/Tab according component semantics; Enter activates; current route announced |
-| Grid | Arrow navigation, Enter/F2 edit, Escape cancel, Tab moves cell, Shift+arrow range, accessible selection announcement |
-| Inspector | Opens from selected object by keyboard; focus returns to originating cell/control |
-| Dialog | Trapped focus, labelled title/description, escape only when safe, focus restore |
-| Filter/context | Full keyboard selection, clear/reset, result count and scope announcements |
-| Status changes | Important async/workflow status announced through appropriate live region without noisy repetition |
+| Interaction    | Requirement                                                                                                          |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Global command | Cmd/Ctrl+K open; Esc close and restore focus                                                                         |
+| Navigation     | Arrow/Tab according component semantics; Enter activates; current route announced                                    |
+| Grid           | Arrow navigation, Enter/F2 edit, Escape cancel, Tab moves cell, Shift+arrow range, accessible selection announcement |
+| Inspector      | Opens from selected object by keyboard; focus returns to originating cell/control                                    |
+| Dialog         | Trapped focus, labelled title/description, escape only when safe, focus restore                                      |
+| Filter/context | Full keyboard selection, clear/reset, result count and scope announcements                                           |
+| Status changes | Important async/workflow status announced through appropriate live region without noisy repetition                   |
 
 ### Responsive contract
 
@@ -246,14 +246,14 @@ A component may enter the stable Atlas catalog only with: anatomy; variants; sem
 
 ## 8. UX research and validation plan
 
-| Study | Participants | Questions | Exit criterion |
-|---|---:|---|---|
-| IA/tree test | CFO, FP&A, controller, budget owner | Can users find five jobs/destinations? | ≥90% direct-find rate |
-| Executive workspace usability | 5 CFO/finance leaders | Can they identify material issue, evidence, owner, action? | ≥95% task success across sample |
-| Analyst model test | 5 analysts | Can they change a driver, inspect formula, resolve error, submit? | ≥95% success; no critical keyboard failure |
-| Close simulation | 5 controllers | Can they identify blocker, reconcile, exception, certify? | 100% control-path completion |
-| Report/board review | 5 CFO/board-prep users | Can they validate number and publication status? | ≥95% evidence retrieval success |
-| Accessibility audit | keyboard + screen reader specialists | Do canonical workflows meet AA/operability? | No critical/blocking issue |
+| Study                         |                         Participants | Questions                                                         | Exit criterion                             |
+| ----------------------------- | -----------------------------------: | ----------------------------------------------------------------- | ------------------------------------------ |
+| IA/tree test                  |  CFO, FP&A, controller, budget owner | Can users find five jobs/destinations?                            | ≥90% direct-find rate                      |
+| Executive workspace usability |                5 CFO/finance leaders | Can they identify material issue, evidence, owner, action?        | ≥95% task success across sample            |
+| Analyst model test            |                           5 analysts | Can they change a driver, inspect formula, resolve error, submit? | ≥95% success; no critical keyboard failure |
+| Close simulation              |                        5 controllers | Can they identify blocker, reconcile, exception, certify?         | 100% control-path completion               |
+| Report/board review           |               5 CFO/board-prep users | Can they validate number and publication status?                  | ≥95% evidence retrieval success            |
+| Accessibility audit           | keyboard + screen reader specialists | Do canonical workflows meet AA/operability?                       | No critical/blocking issue                 |
 
 ## 9. Architectural implications flagged for Phase 3
 

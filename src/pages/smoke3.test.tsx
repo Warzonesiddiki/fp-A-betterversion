@@ -240,6 +240,7 @@ import LoanLossPage from '@/pages/banking/LoanLossPage';
 import BudgetVAReport from '@/pages/budgets/BudgetVAReport';
 import DepreciationForecastPage from '@/pages/capex/DepreciationForecastPage';
 import DebtSchedulePage from '@/pages/cash/DebtSchedulePage';
+import { useDebtStore } from '@/store/debtStore';
 import WorkingCapitalPage from '@/pages/cash/WorkingCapitalPage';
 
 // ---------------------------------------------------------------------------
@@ -353,12 +354,27 @@ describe('Page Smoke Tests (Batch 3 — 5 Untested Pages)', () => {
       expect(screen.getByText(/Debt Schedule/i)).toBeInTheDocument();
     });
 
-    // NOTE: DebtSchedulePage renders a demo debt portfolio (hardcoded sample
-    // instruments whose schedules are computed live by DebtScheduleEngine — see
-    // its own dedicated DebtSchedulePage.test.tsx). It is NOT yet backed by a
-    // debt data store, so no empty state is reachable today. Tracked as a GAP
-    // (debt store wiring) in GAP_LEDGER.md; assert the real rendered behavior.
+    // K17: the store ships no demo portfolio anymore — seed a user-side
+    // instrument so the engine schedule renders, then assert the marker.
     it('renders the computed debt schedule dashboard', () => {
+      useDebtStore.setState({
+        instruments: [
+          {
+            id: 'DEBT-smoke',
+            name: 'Smoke Term Loan',
+            lender: 'Test Bank',
+            displayType: 'Term Loan',
+            status: 'current',
+            principal: 5_000_000,
+            rate: 0.06,
+            termMonths: 48,
+            startDate: '2026-01-01',
+            type: 'term_loan',
+            paymentFrequency: 'monthly',
+            amortizationType: 'fully_amortizing',
+          },
+        ],
+      });
       renderPage(DebtSchedulePage, '/cash/debt', '/cash/debt');
       expect(screen.getByText(/computed live by DebtScheduleEngine/i)).toBeInTheDocument();
     });

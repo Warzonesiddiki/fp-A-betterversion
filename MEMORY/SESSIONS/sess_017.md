@@ -49,7 +49,7 @@ Hypotheses H-001..H-004 opened.
 
 - Detectors failed with `Cannot find module 'typescript'` → sandbox restore wiped `node_modules`;
   fixed with `npm install` (1006 packages, 0 vulns).
-- First MEMORY integrity run FAILED (6 errors: `MAP/TREE.md` used indented relative paths the
+- First MEMORY integrity run FAILED (6 errors: `MEMORY/MAP/TREE.md` used indented relative paths the
   checker could not resolve). Fixed TREE.md to full repo-relative paths → PASS.
 
 ## Outcome

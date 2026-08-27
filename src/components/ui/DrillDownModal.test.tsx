@@ -3,7 +3,13 @@ import { render, screen } from '@testing-library/react';
 import React from 'react';
 
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+  useGLStore: Object.assign(
+    vi.fn((sel?: (s: unknown) => unknown) => {
+      const state = { entries: [] };
+      return sel ? sel(state) : state;
+    }),
+    { getState: () => ({ entries: [] }) }
+  ),
 }));
 
 vi.mock('./Modal', () => ({
@@ -38,7 +44,7 @@ const mockUseGLStore = vi.mocked(useGLStore);
 describe('DrillDownModal', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseGLStore.mockReturnValue({ entries: [] });
+    mockUseGLStore.mockImplementation((selector) => selector({ entries: [] }));
   });
 
   it('renders without crashing when open', () => {

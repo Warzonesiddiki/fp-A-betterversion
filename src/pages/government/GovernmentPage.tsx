@@ -1,102 +1,123 @@
-// @money-ast-allow Reason: Utilization percentage: (totalCredit / totalDebit) * 100 is a budget-utilization ratio for display
 import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
+import { useGovernmentStore } from '@/store/governmentStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { DataTable, Column } from '@/components/ui/DataTable';
-import {
-  formatCurrency,
-  formatNumber,
-  formatCompactNumber,
-  formatPercent,
-} from '@/utils/formatters';
-import { Landmark, FileText, Users, DollarSign } from 'lucide-react';
-import type { GLEntry } from '@/types';
-import { addMoney, roundTo, sumMoney } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
-
-function computeGovernmentStats(entries: readonly GLEntry[]) {
-  const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
-  const totalCredit = roundTo(sumMoney(entries.map((e) => e.credit)), 2);
-  const netChange = roundTo(sumMoney(entries.map((e) => e.netChange)), 2);
-  const uniqueAccounts = new Set(entries.map((e) => e.accountCode)).size;
-  const uniqueDepartments = new Set(entries.map((e) => e.departmentId).filter(Boolean)).size;
-  const utilization = totalDebit > 0 ? (totalCredit / totalDebit) * 100 : 0;
-
-  const accountMap = new Map<
-    string,
-    { name: string; debit: number; credit: number; net: number; count: number }
-  >();
-  for (const e of entries) {
-    const existing = accountMap.get(e.accountCode) ?? {
-      name: e.accountName,
-      debit: 0,
-      credit: 0,
-      net: 0,
-      count: 0,
-    };
-    existing.debit = addMoney(existing.debit, e.debit ?? 0).toNumber();
-    existing.credit = addMoney(existing.credit, e.credit ?? 0).toNumber();
-    existing.net = addMoney(existing.net, e.netChange ?? 0).toNumber();
-    existing.count += 1;
-    accountMap.set(e.accountCode, existing);
-  }
-
-  const accountBreakdown = Array.from(accountMap.entries())
-    .map(([code, data]) => ({
-      accountCode: code,
-      accountName: data.name,
-      debit: data.debit,
-      credit: data.credit,
-      netChange: data.net,
-      transactions: data.count,
-    }))
-    .sort((a, b) => Math.abs(b.debit) - Math.abs(a.debit));
-
-  return {
-    totalDebit,
-    totalCredit,
-    netChange,
-    uniqueAccounts,
-    uniqueDepartments,
-    utilization,
-    accountBreakdown,
-  };
-}
-
-const columns: Column[] = [
-  { key: 'accountCode', header: 'Account Code', sortable: true },
-  { key: 'accountName', header: 'Account Name', sortable: true },
-  { key: 'debit', header: 'Allocated (Debit)', align: 'right', sortable: true },
-  { key: 'credit', header: 'Utilized (Credit)', align: 'right', sortable: true },
-  { key: 'netChange', header: 'Net Change', align: 'right', sortable: true },
-  { key: 'transactions', header: 'Transactions', align: 'right', sortable: true },
-];
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { aggregateAccounts, type AccountBreakdownRow } from './accountOverview';
+import { AccountOverviewCard } from './AccountOverviewCard';
+import { divideMoney, roundTo, sumMoney } from '@/utils/money';
+import {
+  Landmark,
+  FileText,
+  Users,
+  DollarSign,
+  Download,
+  FileSpreadsheet,
+  Info,
+  ShieldCheck,
+  Building2,
+  Percent,
+} from 'lucide-react';
 
 export default function GovernmentPage() {
   const { entries } = useGLStore();
+  const governmentStore = useGovernmentStore();
+  const funds = useMemo(() => governmentStore?.funds ?? [], [governmentStore?.funds]);
+  const compliance = useMemo(
+    () => governmentStore?.compliance ?? [],
+    [governmentStore?.compliance]
+  );
+  const budgetLines = useMemo(
+    () => governmentStore?.budgetLines ?? [],
+    [governmentStore?.budgetLines]
+  );
+
   const navigate = useNavigate();
+  const fmt = useCurrencyFormatter();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Government';
   }, []);
 
-  const stats = useMemo(() => computeGovernmentStats(entries), [entries]);
-
-  const tableData = useMemo(
-    () =>
-      stats.accountBreakdown.map((row) => ({
-        accountCode: row.accountCode,
-        accountName: row.accountName,
-        debit: formatCurrency(row.debit),
-        credit: formatCurrency(row.credit),
-        netChange: formatCurrency(row.netChange),
-        transactions: formatNumber(row.transactions),
-      })),
-    [stats.accountBreakdown]
+  const totalDebit = useMemo(
+    () => roundTo(sumMoney(entries.map((e) => e.debit ?? 0)), 2),
+    [entries]
   );
+  const totalCredit = useMemo(
+    () => roundTo(sumMoney(entries.map((e) => e.credit ?? 0)), 2),
+    [entries]
+  );
+  const uniqueDepartments = useMemo(
+    () => new Set(entries.map((e) => e.departmentId).filter(Boolean)).size,
+    [entries]
+  );
+
+  const utilization = useMemo(() => {
+    if (totalDebit <= 0) return 0;
+    return roundTo(divideMoney(totalCredit, totalDebit).times(100), 2);
+  }, [totalDebit, totalCredit]);
+
+  const compliantItemsCount = useMemo(
+    () => compliance.filter((c) => c.status === 'Compliant').length,
+    [compliance]
+  );
+
+  const accountRows: AccountBreakdownRow[] = useMemo(() => aggregateAccounts(entries), [entries]);
+
+  const handleExportPDF = () => {
+    void ExportEngine.exportToPDF(
+      {
+        headers: ['Metric', 'Value', 'Source / Lineage'],
+        rows: [
+          [
+            'Total Budget / Appropriations',
+            fmt.currency(totalDebit),
+            'GL Appropriations (Debit-Normal)',
+          ],
+          [
+            'Total Expenditures / Disbursed',
+            fmt.currency(totalCredit),
+            'GL Expenditures (Credit-Normal)',
+          ],
+          ['Departmental Entities', fmt.number(uniqueDepartments), 'GL Departmental Cost Centers'],
+          ['Budget Utilization', `${fmt.number(utilization)}%`, 'Disbursements / Appropriations'],
+          ['Monitored Special Funds', fmt.number(funds.length), 'Government Fund Allocations'],
+          [
+            'Compliance Status',
+            compliance.length > 0
+              ? `${compliantItemsCount} / ${compliance.length} Mandates Met`
+              : 'No Compliance Records',
+            'Statutory Audit Oversight',
+          ],
+          ['Tracked Budget Programs', fmt.number(budgetLines.length), 'Program Budget Master'],
+        ],
+      },
+      { title: 'Government_Budget_Execution' }
+    ).catch(reportExportFailure);
+  };
+
+  const handleExportExcel = () => {
+    void ExportEngine.exportToExcel(
+      {
+        headers: ['Metric', 'Amount', 'Notes'],
+        rows: [
+          ['Total Appropriations', totalDebit, 'GL Appropriations'],
+          ['Total Expenditures', totalCredit, 'GL Disbursements'],
+          ['Departments', uniqueDepartments, 'Department IDs'],
+          ['Budget Utilization (%)', utilization, 'Disbursements / Appropriations'],
+          ['Monitored Funds', funds.length, 'Fund allocations'],
+          ['Compliant Audits', compliantItemsCount, 'Statutory items'],
+        ],
+      },
+      { title: 'Government_Budget_Review' }
+    ).catch(reportExportFailure);
+  };
 
   const handleImportKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -117,13 +138,13 @@ export default function GovernmentPage() {
         <Landmark className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
         <h1 className="text-xl font-semibold mb-2">No Government Data</h1>
         <p className="text-[var(--text-muted)] mb-6">
-          Import GL data to view government financials.
+          Import GL data to view government budget tracking.
         </p>
         <Button
           id="import-btn"
           onClick={() => navigate('/data/gl-upload')}
           onKeyDown={handleImportKeyDown}
-          aria-label="Import GL data to view government financials"
+          aria-label="Import GL data to view government budget tracking"
         >
           Import Data
         </Button>
@@ -139,60 +160,124 @@ export default function GovernmentPage() {
       >
         Skip to key metrics
       </a>
-      <PageHeader
-        title="Government"
-        titleId="gov-heading"
-        status={
-          <span className="text-sm text-[var(--text-muted)]">
-            {formatNumber(entries.length)} entries imported
-          </span>
-        }
-      />
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <PageHeader
+          title="Government"
+          titleId="government-heading"
+          status={
+            <span className="text-sm text-[var(--text-muted)]">
+              {fmt.number(entries.length)} entries imported
+            </span>
+          }
+        />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportPDF}
+            aria-label="Export PDF Report"
+          >
+            <Download className="h-4 w-4 mr-1.5" aria-hidden="true" />
+            PDF Report
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportExcel}
+            aria-label="Export Excel Workbook"
+          >
+            <FileSpreadsheet className="h-4 w-4 mr-1.5" aria-hidden="true" />
+            Excel Export
+          </Button>
+        </div>
+      </div>
+
       <section
         id="kpi-section"
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
         aria-label="Government KPIs"
-        aria-labelledby="gov-heading"
+        aria-labelledby="government-heading"
       >
         <KPIValue
-          label="Budget Allocated"
-          value={formatCompactNumber(stats.totalDebit)}
+          label="Total Budget"
+          value={fmt.compact(totalDebit)}
           icon={<DollarSign className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
-          label="Funds Utilized"
-          value={formatPercent(stats.utilization)}
+          label="Expenditures"
+          value={fmt.compact(totalCredit)}
           icon={<FileText className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
           label="Departments"
-          value={formatNumber(stats.uniqueDepartments || stats.uniqueAccounts)}
+          value={fmt.number(uniqueDepartments)}
           icon={<Users className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
-          label="Net Position"
-          value={formatCompactNumber(stats.netChange)}
+          label="Utilization"
+          value={`${fmt.number(utilization)}%`}
           icon={<Landmark className="h-4 w-4" aria-hidden="true" />}
         />
       </section>
-      <Card aria-label="Budget Overview" aria-live="polite">
-        <CardHeader>
-          <CardTitle id="budget-overview-title">Budget Overview</CardTitle>
+
+      <section
+        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        aria-label="Appropriation & Fund KPIs"
+      >
+        <KPIValue
+          label="Monitored Funds"
+          value={fmt.number(funds.length)}
+          changeLabel={funds.length > 0 ? 'Active fund accounts' : 'No fund accounts'}
+          icon={<Building2 className="h-4 w-4 text-blue-500" aria-hidden="true" />}
+        />
+        <KPIValue
+          label="Compliance Items"
+          value={fmt.number(compliance.length)}
+          changeLabel={
+            compliance.length > 0
+              ? `${compliantItemsCount} compliant mandates`
+              : 'No compliance records'
+          }
+          icon={<ShieldCheck className="h-4 w-4 text-[#16A34A]" aria-hidden="true" />}
+        />
+        <KPIValue
+          label="Budget Programs"
+          value={fmt.number(budgetLines.length)}
+          changeLabel={budgetLines.length > 0 ? 'Statutory line items' : 'No program records'}
+          icon={<FileText className="h-4 w-4 text-purple-500" aria-hidden="true" />}
+        />
+        <KPIValue
+          label="Execution Ratio"
+          value={totalDebit > 0 ? `${fmt.number(utilization)}%` : 'N/A'}
+          changeLabel={
+            totalDebit > 0 ? 'Disbursements tied to appropriations' : 'No appropriations recorded'
+          }
+          icon={<Percent className="h-4 w-4 text-emerald-500" aria-hidden="true" />}
+        />
+      </section>
+
+      <Card aria-label="Government Basis Disclosures">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <Info className="h-4 w-4 text-blue-500" aria-hidden="true" />
+            Government Accounting & Fund Basis (GASB 34)
+          </CardTitle>
         </CardHeader>
-        <CardContent aria-labelledby="budget-overview-title">
-          {tableData.length > 0 ? (
-            <DataTable
-              columns={columns}
-              data={tableData}
-              sortable
-              caption="Government accounts table"
-              ariaLabel="Government accounts"
-            />
-          ) : (
-            <p className="text-[var(--text-muted)]">No budget data available.</p>
-          )}
+        <CardContent className="text-xs text-[var(--text-muted)] space-y-1">
+          <p>
+            • <strong>Governmental Fund Basis:</strong> Reporting aligns with GASB Statement No. 34
+            principles (Modified Accrual Basis for governmental funds, Full Accrual for proprietary
+            and fiduciary funds).
+          </p>
+          <p>
+            • <strong>Appropriation Control:</strong> Expenditures are tracked against legislative
+            appropriations. Utilization reflects encumbrances and realized disbursements against
+            authorized spending ceilings.
+          </p>
         </CardContent>
       </Card>
+
+      <AccountOverviewCard rows={accountRows} />
     </main>
   );
 }

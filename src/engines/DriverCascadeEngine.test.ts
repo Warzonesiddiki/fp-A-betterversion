@@ -485,7 +485,7 @@ describe('DriverCascadeEngine', () => {
       expect(result!.affectedCells[0]!.newValue).toBe(1150000);
     });
 
-    it('should fallback to current value on invalid formula', () => {
+    it('should count invalid formula as formulaErrors and leave cell untouched', () => {
       const driver = engine.addDriver({
         name: 'Growth Rate',
         unit: 'percentage',
@@ -510,6 +510,154 @@ describe('DriverCascadeEngine', () => {
 
       const readCell = () => 1000000;
       const result = engine.calculateCascade(driver.id, 15, readCell);
+      expect(result.affectedCells).toHaveLength(0);
+      // W6-P0-15: failures are COUNTED loudly instead of silently frozen.
+      expect(result.formulaErrors).toBe(1);
+    });
+  });
+
+  describe('Cascade formula identifier resolution (W6-P0-15)', () => {
+    const TS = '2026-01-01T00:00:00Z';
+    type ImportState = Parameters<DriverCascadeEngine['importState']>[0];
+    function seed(drivers: ImportState['drivers'], rules: ImportState['rules']) {
+      const local = new DriverCascadeEngine();
+      local.importState({ drivers, rules });
+      return local;
+    }
+
+    it('should resolve sibling driver identifiers from the driver table', () => {
+      const local = seed(
+        [
+          {
+            id: 'labor_rate',
+            name: 'Labor Rate',
+            unit: 'absolute',
+            baseValue: 28,
+            currentValue: 28,
+            minValue: 0,
+            maxValue: 200,
+            step: 1,
+            category: 'Cost',
+            tags: [],
+            createdAt: TS,
+            updatedAt: TS,
+          },
+          {
+            id: 'labor_hours',
+            name: 'Labor Hours',
+            unit: 'absolute',
+            baseValue: 0.75,
+            currentValue: 0.75,
+            minValue: 0,
+            maxValue: 10,
+            step: 0.05,
+            category: 'Cost',
+            tags: [],
+            createdAt: TS,
+            updatedAt: TS,
+          },
+        ],
+        [
+          {
+            id: 'r1',
+            driverId: 'labor_hours',
+            targetCube: 'Budget',
+            targetCoords: { Account: 'Account:Labor' },
+            targetMeasure: 'amount',
+            cascadeType: 'formula',
+            impactType: 'replacement',
+            weight: 1,
+            formula: 'x * labor_rate',
+          },
+        ]
+      );
+
+      // 0.80 h/unit x $28/h = 22.4 — previously labor_rate resolved to 0.
+      const result = local.calculateCascade('labor_hours', 0.8, () => 0);
+      expect(result.formulaErrors).toBe(0);
+      expect(result.affectedCells).toHaveLength(1);
+      expect(result.affectedCells[0]!.newValue).toBeCloseTo(22.4, 6);
+    });
+
+    it('should treat prev as an alias of old_x', () => {
+      const local = seed(
+        [
+          {
+            id: 'growth',
+            name: 'Revenue Growth',
+            unit: 'percentage',
+            baseValue: 8,
+            currentValue: 8,
+            minValue: -50,
+            maxValue: 100,
+            step: 1,
+            category: 'Revenue',
+            tags: [],
+            createdAt: TS,
+            updatedAt: TS,
+          },
+        ],
+        [
+          {
+            id: 'r1',
+            driverId: 'growth',
+            targetCube: 'Budget',
+            targetCoords: { Account: 'Account:Revenue' },
+            targetMeasure: 'amount',
+            cascadeType: 'formula',
+            impactType: 'replacement',
+            weight: 1,
+            formula: 'prev * (1 + x / 100)',
+          },
+        ]
+      );
+
+      // old_x=8 grown by x=12% -> 8.96 — previously prev lexed as a 0-valued ref.
+      const result = local.calculateCascade('growth', 12, () => 0);
+      expect(result.formulaErrors).toBe(0);
+      expect(result.affectedCells).toHaveLength(1);
+      expect(result.affectedCells[0]!.newValue).toBeCloseTo(8.96, 6);
+    });
+
+    it('should count unknown driver identifiers as errors instead of freezing silently', () => {
+      const local = seed(
+        [
+          {
+            id: 'solo',
+            name: 'Solo Driver',
+            unit: 'percentage',
+            baseValue: 10,
+            currentValue: 10,
+            minValue: 0,
+            maxValue: 100,
+            step: 1,
+            category: 'Rev',
+            tags: [],
+            createdAt: TS,
+            updatedAt: TS,
+          },
+        ],
+        [
+          {
+            id: 'r1',
+            driverId: 'solo',
+            targetCube: 'Budget',
+            targetCoords: { Account: 'Account:X' },
+            targetMeasure: 'amount',
+            cascadeType: 'formula',
+            impactType: 'replacement',
+            weight: 1,
+            formula: 'x * mystery_driver',
+          },
+        ]
+      );
+
+      // Selective readCell: only the rule's own target account exists; any
+      // other lookup must come back undefined so unknown identifiers throw.
+      const result = local.calculateCascade('solo', 20, (_cube, coords) =>
+        coords['account'] === 'Account:X' ? 500 : undefined
+      );
+      expect(result.formulaErrors).toBe(1);
       expect(result.affectedCells).toHaveLength(0);
     });
   });

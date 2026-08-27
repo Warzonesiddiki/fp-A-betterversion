@@ -172,7 +172,7 @@ export function CapexTracker() {
   if (glLoading || storeLoading) {
     return (
       <div className="p-6 space-y-6">
-        <Skeleton count={1} height="40px" width="30%" />
+        <Skeleton count={1} height="40px" width="30%" srLabel="Loading capex tracker…" />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
             <Skeleton key={i} count={1} height="80px" variant="rectangular" />

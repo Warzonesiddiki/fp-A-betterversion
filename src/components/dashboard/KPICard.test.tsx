@@ -48,10 +48,11 @@ describe('KPICard', () => {
   });
 
   describe('Loading State', () => {
-    it('renders loading skeleton when loading is true', () => {
+    it('renders decorative skeletons when loading (aria-hidden, no live region)', () => {
       const { container } = render(<KPICard {...defaultProps} loading />);
-      const skeletons = container.querySelectorAll('[role="status"]');
-      expect(skeletons.length).toBeGreaterThan(0);
+      // W-A11Y-002 M5: skeletons announce nothing; the card shows placeholder bars.
+      expect(container.querySelectorAll('[role="status"]').length).toBe(0);
+      expect(container.querySelector('[aria-hidden="true"]')).toBeTruthy();
     });
 
     it('does not render the title when loading', () => {
@@ -187,6 +188,18 @@ describe('KPICard', () => {
       );
       expect(screen.getByText(/PY:/)).toBeInTheDocument();
       expect(screen.getByText(/Budget:/)).toBeInTheDocument();
+    });
+  });
+
+  describe('Null value disclosure', () => {
+    it('renders an em-dash when the measured value is null', () => {
+      render(<KPICard title="Net Charge-Offs" value={null} format="currency" />);
+      expect(screen.getByText('—')).toBeInTheDocument();
+    });
+
+    it('renders an em-dash when the value is omitted', () => {
+      render(<KPICard title="Net Charge-Offs" />);
+      expect(screen.getByText('—')).toBeInTheDocument();
     });
   });
 

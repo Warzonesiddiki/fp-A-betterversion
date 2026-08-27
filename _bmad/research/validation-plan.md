@@ -15,14 +15,14 @@ Can FinPlan win an initial enterprise segment with a **controlled close-to-decis
 
 ## Research tracks and exit thresholds
 
-| Track | Participants / evidence | Core question | Exit threshold | Decision if failed |
-|---|---|---|---|---|
-| Buyer economics | 12 CFO/VP Finance interviews; 3 commercial proposals | Is the pain material enough for premium platform + implementation spend? | ≥4 participants quantify a material close/planning cost/risk and ≥2 accept a paid pilot/LOI path | Reposition to lower ACV/segment or narrow workflow |
-| Controller workflow | 8 controllers/consolidation leads; observe 3 closes | Does the controlled close wedge eliminate a meaningful workaround? | ≥70% rank reconciliation/certification/evidence as top-three urgent pain | Shift wedge toward planning/operational finance |
-| Analyst workflow | 8 FP&A analysts; task observation | Is governed grid speed more valuable than generic dashboards? | ≥80% complete prototype tasks; no critical keyboard/paste objection | Rework model workspace or retain Excel-native path |
-| IT/security | 6 enterprise security/IT buyers; security questionnaire | Is local-first/hybrid accepted and under what boundaries? | clear deployment/security pattern accepted by ≥4; no unmitigated critical blocker | make managed cloud authoritative default; restrict offline scope |
-| Integration | customer stack survey and sample extracts | Which connector/data contract creates initial time-to-value? | one connector appears in ≥50% of target accounts or CSV/XLSX is accepted for paid pilot | delay connector, sell implementation accelerator |
-| Competitive/WTP | win/loss interviews and vendor comparison | Why switch from OneStream/Anaplan/Pigment/Excel? | differentiated message repeated unprompted by ≥50% of buyers | revise positioning; do not claim $500k+ value |
+| Track               | Participants / evidence                                 | Core question                                                            | Exit threshold                                                                                   | Decision if failed                                               |
+| ------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| Buyer economics     | 12 CFO/VP Finance interviews; 3 commercial proposals    | Is the pain material enough for premium platform + implementation spend? | ≥4 participants quantify a material close/planning cost/risk and ≥2 accept a paid pilot/LOI path | Reposition to lower ACV/segment or narrow workflow               |
+| Controller workflow | 8 controllers/consolidation leads; observe 3 closes     | Does the controlled close wedge eliminate a meaningful workaround?       | ≥70% rank reconciliation/certification/evidence as top-three urgent pain                         | Shift wedge toward planning/operational finance                  |
+| Analyst workflow    | 8 FP&A analysts; task observation                       | Is governed grid speed more valuable than generic dashboards?            | ≥80% complete prototype tasks; no critical keyboard/paste objection                              | Rework model workspace or retain Excel-native path               |
+| IT/security         | 6 enterprise security/IT buyers; security questionnaire | Is local-first/hybrid accepted and under what boundaries?                | clear deployment/security pattern accepted by ≥4; no unmitigated critical blocker                | make managed cloud authoritative default; restrict offline scope |
+| Integration         | customer stack survey and sample extracts               | Which connector/data contract creates initial time-to-value?             | one connector appears in ≥50% of target accounts or CSV/XLSX is accepted for paid pilot          | delay connector, sell implementation accelerator                 |
+| Competitive/WTP     | win/loss interviews and vendor comparison               | Why switch from OneStream/Anaplan/Pigment/Excel?                         | differentiated message repeated unprompted by ≥50% of buyers                                     | revise positioning; do not claim $500k+ value                    |
 
 ## Interview guide
 
@@ -69,17 +69,20 @@ For every research session record role/segment, system landscape, verbatim pain 
 ## Solo-dev evidence strategy (2026-08-11, owner re-baseline)
 
 ### Rationale
+
 Solo development cannot recruit enterprise interviewees. Validation must use evidence a solo developer can genuinely collect, while keeping the honesty bar intact.
 
 ### Evidence tiers (label in evidence-log)
-| Tier | Type | Label | Threshold for use | What it can change |
-|---|---|---|---|---|
-| 1 | Enterprise interviews (future) | PRIMARY | ≥3 participants + contradictions documented | Assumption VALIDATED/INVALIDATED |
-| 2 | Product-led: beta usage, waitlist, workflow completion, retention, unsolicited demand | BETA-USAGE | real, consent-aware, anonymized | PARTIAL-validation signals; scope/pilot-segment selection |
-| 3 | Public practitioner artifacts (threads, case studies, conference content) | ARTIFACT | real public sources cited | Hypothesis refinement; competitive calibration |
-| 4 | Secondary surveys/vendor analysis | SECONDARY | public sources cited | Question sharpening only |
+
+| Tier | Type                                                                                  | Label      | Threshold for use                           | What it can change                                        |
+| ---- | ------------------------------------------------------------------------------------- | ---------- | ------------------------------------------- | --------------------------------------------------------- |
+| 1    | Enterprise interviews (future)                                                        | PRIMARY    | ≥3 participants + contradictions documented | Assumption VALIDATED/INVALIDATED                          |
+| 2    | Product-led: beta usage, waitlist, workflow completion, retention, unsolicited demand | BETA-USAGE | real, consent-aware, anonymized             | PARTIAL-validation signals; scope/pilot-segment selection |
+| 3    | Public practitioner artifacts (threads, case studies, conference content)             | ARTIFACT   | real public sources cited                   | Hypothesis refinement; competitive calibration            |
+| 4    | Secondary surveys/vendor analysis                                                     | SECONDARY  | public sources cited                        | Question sharpening only                                  |
 
 ### Product-led validation loop (what a solo dev can run)
+
 1. **Public beta / waitlist**: deploy a real beta (browser/PWA unblocking is a prerequisite — A-12), collect signups; threshold: ≥30 qualified signups for a demand signal.
 2. **Real usage**: ≥10 weekly active beta users; ≥5 complete a real close→decision→board-pack loop with their own data.
 3. **Feedback**: structured session-notes from volunteer beta users (anonymized, consent-aware) — these are real users, not invented ones.
@@ -87,6 +90,7 @@ Solo development cannot recruit enterprise interviewees. Validation must use evi
 5. **Unsolicited demand**: ≥3 "I'd pay for this" signals from unrelated users → PARTIAL A-01 signal (never VALIDATED).
 
 ### Honesty rules (unchanged)
+
 - No fabrication; every evidence row labeled by tier.
 - Only Tier 1 (or verified operational artifact equivalent) changes `VALIDATED` status.
 - Tiers 2–4 update Confidence + scope decisions; assumption Status column remains UNVALIDATED until Tier 1.

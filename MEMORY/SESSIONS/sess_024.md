@@ -18,8 +18,8 @@ green on the PR and now on `main`). Session work = T-023 expanded: money-AST
 
 ## Read
 
-`MASTER HANDOVER PROMPT.txt`, `MEMORY/INDEX.md` → `STATE.json` → `TRUTH.md` → `TASKS/NOW.md`
-→ `ANTI.md`, `.agent/PROJECT_JOURNAL.md` (017–023), `.agent/HANDOVER.md`, then every target
+`MASTER HANDOVER PROMPT.txt`, `MEMORY/INDEX.md` → `STATE.json` → `MEMORY/TRUTH.md` → `MEMORY/TASKS/NOW.md`
+→ `MEMORY/ANTI.md`, `.agent/PROJECT_JOURNAL.md` (017–023), `.agent/HANDOVER.md`, then every target
 file, both detector `--file` dumps, and the `sector/` vs `sectors/` route twins.
 
 ## Changed (paths)

@@ -4,6 +4,10 @@
  *
  * Consumes the exact-money logisticsMetrics engine with a warehouse focus:
  * warehouse cost % revenue, operating margin, and warehousing cost model.
+ * This page displays no fleet-volume KPIs, so the shared model receives
+ * `null` for every volume input — never a placeholder mileage or delivery
+ * count (the previous hardcoded 400,000 miles / 9,500-of-10,000 deliveries /
+ * 470,000 capacity constants were fabricated data).
  */
 import { useEffect, useMemo } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -23,22 +27,20 @@ export interface WarehouseCostInput {
   cogs: number;
   operatingExpenses: number;
   warehouseCost: number;
-  totalMiles: number;
-  loadedMiles: number;
-  onTimeDeliveries: number;
-  totalDeliveries: number;
-  fleetCapacityMiles: number;
 }
 
 /** Derive warehouse-cost inputs from GL entries (exact sums). */
 export function computeWarehouseCostFromEntries(entries: readonly GLEntry[]): WarehouseCostInput {
+  // Credit-normal only: debit-heavy "warehouse/storage"-named rows are the
+  // cost lines this page measures, never revenue.
   const revenue = roundTo(
     sumMoney(
       entries
         .filter((e) =>
           /revenue|sales|freight|shipping|warehouse|storage/.test(e.accountName.toLowerCase())
         )
-        .map((e) => (e.credit > e.debit ? e.credit : e.netChange))
+        .filter((e) => e.credit > e.debit)
+        .map((e) => e.credit)
     ),
     2
   );
@@ -76,11 +78,6 @@ export function computeWarehouseCostFromEntries(entries: readonly GLEntry[]): Wa
     cogs,
     operatingExpenses,
     warehouseCost,
-    totalMiles: 400_000,
-    loadedMiles: 340_000,
-    onTimeDeliveries: 9500,
-    totalDeliveries: 10000,
-    fleetCapacityMiles: 470_000,
   };
 }
 
@@ -93,7 +90,20 @@ export default function WarehouseCostDashboardPage() {
   }, []);
 
   const input = useMemo(() => computeWarehouseCostFromEntries(entries), [entries]);
-  const metrics = useMemo(() => computeLogisticsMetrics(input), [input]);
+  // Volume inputs are `null`: this page renders no fleet-volume KPI, so the
+  // shared model must not be fed invented mileage/delivery numbers.
+  const metrics = useMemo(
+    () =>
+      computeLogisticsMetrics({
+        ...input,
+        totalMiles: null,
+        loadedMiles: null,
+        onTimeDeliveries: null,
+        totalDeliveries: null,
+        fleetCapacityMiles: null,
+      }),
+    [input]
+  );
 
   if (entries.length === 0) {
     return (

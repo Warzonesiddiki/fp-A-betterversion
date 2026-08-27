@@ -14,7 +14,6 @@ export const insuranceConfig: SectorConfig = {
     },
     { id: 'loss_ratio', label: 'Loss Ratio', format: 'percent', target: 65, lowerIsBetter: true },
     { id: 'gwp', label: 'Gross Written Premium', format: 'currency', target: 500000000 },
-    { id: 'retention_ratio', label: 'Policy Retention Ratio', format: 'percent', target: 88 },
     {
       id: 'expense_ratio',
       label: 'Expense Ratio',
@@ -22,7 +21,6 @@ export const insuranceConfig: SectorConfig = {
       target: 27,
       lowerIsBetter: true,
     },
-    { id: 'solvency_ratio', label: 'Solvency II Ratio', format: 'percent', target: 180 },
     { id: 'yield_on_investments', label: 'Investment Yield', format: 'percent', target: 4.5 },
   ],
   enabledModules: ['insurance', 'treasury', 'compliance', 'tax'],

@@ -1,4 +1,4 @@
-// =============================================================================
+﻿// =============================================================================
 // BANKING NIM TEMPLATE
 // Net interest margin model with rate sensitivity, deposit mix,
 // credit quality metrics, and regulatory capital ratios. Regional bank.
@@ -348,7 +348,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'loan_volume * x / 100 / 12',
+    formula: 'bnk_loan_volume * x / 100 / 12',
     description: 'Yield drives interest income',
   },
   {
@@ -358,7 +358,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'deposit_volume * x / 100 / 12',
+    formula: 'bnk_deposit_volume * x / 100 / 12',
     description: 'Cost drives interest expense',
   },
   {
@@ -368,7 +368,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'loan_volume * x / 100',
+    formula: 'bnk_loan_volume * x / 100',
     description: 'NPL ratio drives NPL amount',
   },
   {
@@ -378,7 +378,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'loan_volume * x / 100 / 12',
+    formula: 'bnk_loan_volume * x / 100 / 12',
     description: 'Provision rate drives provision',
   },
   {
@@ -408,7 +408,7 @@ const cascadeRules: CascadeRuleDefinition[] = [
     cascadeType: 'formula',
     impactType: 'replacement',
     weight: 1,
-    formula: 'fed_funds * x / 100',
+    formula: 'bnk_fed_funds * x / 100',
     description: 'Beta drives deposit cost sensitivity',
   },
 ];

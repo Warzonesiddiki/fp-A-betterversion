@@ -155,19 +155,34 @@ export class ConstructionEngine {
   }
 
   /**
-   * Builds backlog trend from monthly entries.
+   * Buckets measured construction revenue by posting period (YYYY-MM).
+   * Backlog and new order metrics require operational project-management feeds;
+   * where those feeds are absent, they remain 0 rather than fabricated noise.
    */
-  static getBacklogTrend(_entries: GLEntry[]): BacklogTrend[] {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    const sr = (s: number) => {
-      const x = Math.sin(s * 9301 + 49297) * 49297;
-      return x - Math.floor(x);
-    };
-    return months.map((m, i) => ({
-      month: m,
-      backlog: Math.round(125000000 + sr(i * 2) * 20000000),
-      new_orders: Math.round(8000000 + sr(i * 2 + 1) * 15000000),
-      revenue: Math.round(11000000 + sr(i * 3) * 5000000),
-    }));
+  static getBacklogTrend(entries: GLEntry[]): BacklogTrend[] {
+    const buckets = new Map<string, GLEntry[]>();
+    for (const e of entries) {
+      const month = e.period || (typeof e.date === 'string' ? e.date.slice(0, 7) : '');
+      if (!month) continue;
+      const bucket = buckets.get(month);
+      if (bucket) bucket.push(e);
+      else buckets.set(month, [e]);
+    }
+
+    return [...buckets.keys()].sort().map((month) => {
+      const monthEntries = buckets.get(month)!;
+      const revEntries = monthEntries.filter((e) => e.accountCode.startsWith('4'));
+      const revenue = sumMoney(
+        revEntries.map((e) =>
+          Math.abs(e.amount ?? subtractMoney(e.debit ?? 0, e.credit ?? 0).toNumber())
+        )
+      ).toNumber();
+      return {
+        month,
+        backlog: 0,
+        new_orders: 0,
+        revenue: roundTo(revenue, 2),
+      };
+    });
   }
 }

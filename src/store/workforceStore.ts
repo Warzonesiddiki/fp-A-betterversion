@@ -4,6 +4,10 @@ import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
 import { sumMoney } from '@/utils/money';
+// W6-P0-14: employees/departments are organizational master data (ENTITY_*
+// family); payroll periods are financial records (BUDGET_UPDATE). Reads
+// (getTotalPayroll etc.) and loading/error flags stay unguarded.
+import { enforce, Permissions } from '../utils/rbacEnforcer';
 
 export interface Employee {
   id: string;
@@ -63,36 +67,42 @@ export const useWorkforceStore = create<WorkforceState>()(
         isLoading: false,
         error: null,
 
-        setEmployees: (employees) =>
+        setEmployees: enforce(Permissions.ENTITY_UPDATE, 'setEmployees', (employees) =>
           set((state) => {
             state.employees = employees;
-          }),
+          })
+        ),
 
-        addEmployee: (employee) =>
+        addEmployee: enforce(Permissions.ENTITY_CREATE, 'addEmployee', (employee) =>
           set((state) => {
             state.employees.push(employee);
-          }),
+          })
+        ),
 
-        updateEmployee: (id, updates) =>
+        updateEmployee: enforce(Permissions.ENTITY_UPDATE, 'updateEmployee', (id, updates) =>
           set((state) => {
             const idx = state.employees.findIndex((e) => e.id === id);
             if (idx !== -1) Object.assign(state.employees[idx]!, updates);
-          }),
+          })
+        ),
 
-        removeEmployee: (id) =>
+        removeEmployee: enforce(Permissions.ENTITY_DELETE, 'removeEmployee', (id) =>
           set((state) => {
             state.employees = state.employees.filter((e) => e.id !== id);
-          }),
+          })
+        ),
 
-        setDepartments: (departments) =>
+        setDepartments: enforce(Permissions.ENTITY_UPDATE, 'setDepartments', (departments) =>
           set((state) => {
             state.departments = departments;
-          }),
+          })
+        ),
 
-        setPayrollPeriods: (periods) =>
+        setPayrollPeriods: enforce(Permissions.BUDGET_UPDATE, 'setPayrollPeriods', (periods) =>
           set((state) => {
             state.payrollPeriods = periods;
-          }),
+          })
+        ),
 
         setLoading: (loading) =>
           set((state) => {
@@ -104,14 +114,15 @@ export const useWorkforceStore = create<WorkforceState>()(
             state.error = error;
           }),
 
-        clearAll: () =>
+        clearAll: enforce(Permissions.ENTITY_DELETE, 'clearAll', () =>
           set((state) => {
             state.employees = [];
             state.departments = [];
             state.payrollPeriods = [];
             state.isLoading = false;
             state.error = null;
-          }),
+          })
+        ),
 
         getEmployeesByDepartment: (deptId) =>
           get().employees.filter((e) => e.department === deptId),

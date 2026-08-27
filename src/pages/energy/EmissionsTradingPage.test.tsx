@@ -2,7 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+  useGLStore: Object.assign(
+    vi.fn((sel?: (s: unknown) => unknown) => {
+      const state = { entries: [] };
+      return sel ? sel(state) : state;
+    }),
+    { getState: () => ({ entries: [] }) }
+  ),
 }));
 
 vi.mock('@/engines', () => ({
@@ -60,5 +66,55 @@ describe('EmissionsTradingPage smoke test', () => {
   it('displays Emissions Trading heading', () => {
     renderPage();
     expect(screen.getByText('Emissions Trading')).toBeTruthy();
+  });
+
+  // =============================================================================
+  // Empty-branch honesty (K17/K18): real energyStore now ships [] defaults
+  // (post-1bea2f3a) and the GL mock is empty, so every KPI renders '—' with
+  // its disclosure, no chart mounts, and both the compliance card and the
+  // inventory section disclose instead of inventing positions.
+  // =============================================================================
+  it('empty store and GL render disclosures and mount no chart or table', () => {
+    renderPage();
+
+    // All four KPIs disclose absence.
+    expect(screen.getByRole('region', { name: 'Recorded Assets' })).toHaveTextContent('—');
+    expect(screen.getByRole('region', { name: 'Total Generation (window)' })).toHaveTextContent(
+      '—'
+    );
+    expect(screen.getAllByText(/no assets recorded/i).length).toBeGreaterThan(0);
+    // 'No generation on file' appears both as a KPI changeLabel and as the
+    // trend card description, hence getAllByText.
+    expect(screen.getAllByText(/no generation on file/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/no GL imported/i)).toBeInTheDocument();
+
+    // Generation chart: disclosure only — no ResponsiveContainer mount.
+    expect(screen.getByText(/No generation trend recorded yet\./i)).toBeInTheDocument();
+    expect(screen.queryByTestId('rc')).not.toBeInTheDocument();
+
+    // Compliance card discloses the missing feed.
+    expect(screen.getByText(/Allowance ledger and price feed required/i)).toBeInTheDocument();
+
+    // Inventory section: disclosure copy, no DataTable mount.
+    expect(
+      screen.getByText(/No carbon allowance positions are recorded in this workspace\./i)
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId('data-table')).not.toBeInTheDocument();
+
+    // Retired seed regression (K17, 1bea2f3a): the pre-wave factory shipped
+    // demo records ("Mojave Solar I" …, generation-point totals 950/1120 …).
+    // On an empty store none of their names or fixture totals may surface
+    // through any render path.
+    for (const retired of [
+      'Mojave Solar I',
+      'North Sea Wind',
+      'Blue River Hydro',
+      'Tesla Megapack Hub',
+    ]) {
+      expect(screen.queryByText(retired)).not.toBeInTheDocument();
+    }
+    expect(screen.queryByText('950')).not.toBeInTheDocument();
+    expect(screen.queryByText('1,120')).not.toBeInTheDocument();
+    expect(screen.queryByText('1120')).not.toBeInTheDocument();
   });
 });

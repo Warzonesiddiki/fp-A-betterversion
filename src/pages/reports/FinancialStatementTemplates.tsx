@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
@@ -31,9 +32,11 @@ export default function FinancialStatementTemplatesPage() {
     document.title = 'FinPlan Pro — Financial Statement Templates';
   }, []);
 
-  const { entries, accounts } = useGLStore();
+  const { entries, accounts } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, accounts: s.accounts }))
+  );
   const lineItems = useBudgetStore((state) => state.lineItems);
-  const { createReport } = useReportStore();
+  const createReport = useReportStore((s) => s.createReport);
   const navigate = useNavigate();
   const [activeStatement, setActiveStatement] = useState<StatementType>('pl');
   const [showDropdown, setShowDropdown] = useState(false);

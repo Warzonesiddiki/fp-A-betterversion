@@ -1,6 +1,7 @@
 import { forwardRef, HTMLAttributes, useCallback, useEffect, useId, useRef } from 'react';
 import { cn } from '../../utils/cn';
 import { X } from 'lucide-react';
+import { isTopDialogLayer, popDialogLayer, pushDialogLayer } from './dialogLayers';
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -18,25 +19,49 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
     const dialogRef = useRef<HTMLDivElement>(null);
     const previousFocusRef = useRef<HTMLElement | null>(null);
     const titleId = useId();
+    // W6-P0-08: this Modal's position in the shared dialog-layer stack; read
+    // at event time so Escape only fires onClose while this Modal is the
+    // TOPMOST layer (e.g. a confirm dialog opened above must close first).
+    const layerIdRef = useRef<number | null>(null);
+    // Wave-7E a11y-modal-grid: the Escape handler reads the latest onClose
+    // through a ref so its identity never changes across renders. Previously
+    // it was useCallback([onClose]), and because the open-effect below listed
+    // handleKeyDown as a dep, ANY parent re-render passing a fresh inline
+    // closure tore the effect down mid-dialog: cleanup restored focus to the
+    // trigger, re-captured activeElement as the new "previous focus", and
+    // pushed/popped dialog layers — corrupting both mid-dialog focus position
+    // and stacked-Escape ordering. Stable handler ⇒ effect deps reduce to
+    // [isOpen] and none of that churn can happen.
+    const onCloseRef = useRef(onClose);
+    useEffect(() => {
+      onCloseRef.current = onClose;
+    });
 
-    const handleKeyDown = useCallback(
-      (e: KeyboardEvent) => {
-        if (e.key === 'Escape') onClose();
-      },
-      [onClose]
-    );
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      const layerId = layerIdRef.current;
+      if (layerId === null || !isTopDialogLayer(layerId)) return;
+      onCloseRef.current();
+    }, []);
 
     useEffect(() => {
       if (!isOpen) return;
 
       previousFocusRef.current = document.activeElement as HTMLElement;
+      const layerId = pushDialogLayer();
+      layerIdRef.current = layerId;
       document.addEventListener('keydown', handleKeyDown);
 
+      // Focus the first focusable on the next frame (Q5.2 focus-restore
+      // budget <50ms; the rAF shape is a structural contract pinned by
+      // src/__tests__/a11y/wcag-aa.test.tsx Q5.2).
       requestAnimationFrame(() => {
         dialogRef.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
       });
 
       return () => {
+        popDialogLayer(layerId);
+        layerIdRef.current = null;
         document.removeEventListener('keydown', handleKeyDown);
         previousFocusRef.current?.focus();
       };
@@ -68,15 +93,14 @@ const Modal = forwardRef<HTMLDivElement, ModalProps>(
     return (
       <div className="fixed inset-0 z-50 overflow-y-auto">
         <div className="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+          {/* Click-to-dismiss backdrop. Pointer-only by design: it must NOT be
+              a keyboard tab stop (it sits inside the dialog's focus trap and
+              would otherwise trap Tab on an invisible control). Keyboard users
+              dismiss with Escape or the visible Close button. */}
           <div
             className="fixed inset-0 bg-black bg-opacity-50 transition-opacity motion-reduce:transition-none"
             aria-hidden="true"
             onClick={onClose}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') onClose();
-            }}
-            role="button"
-            tabIndex={0}
           />
 
           <span className="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">

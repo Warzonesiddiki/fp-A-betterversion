@@ -25,7 +25,6 @@ export interface DataGridProps {
   enableFindReplace?: boolean;
   enableExport?: boolean;
   enableColumnHiding?: boolean;
-  enableRowGrouping?: boolean;
 }
 
 export interface SelectionStats {

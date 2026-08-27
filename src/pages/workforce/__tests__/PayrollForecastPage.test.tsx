@@ -1,32 +1,43 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+// Selector-aware mocks: the page subscribes via useGLStore((s) => s.entries)
+// and useWorkforceStore(useShallow(...)), so each mock must apply a selector
+// when one is passed.
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({
-    entries: [
-      {
-        id: '1',
-        account: '4000',
-        accountName: 'Revenue',
-        amount: 100000,
-        period: '2026-01',
-        department: 'Sales',
-        type: 'revenue',
-      },
-      {
-        id: '2',
-        account: '5000',
-        accountName: 'COGS',
-        amount: 30000,
-        period: '2026-01',
-        department: 'COGS',
-        type: 'expense',
-      },
-    ],
-  })),
+  useGLStore: vi.fn((selector?: (s: { entries: unknown[] }) => unknown) => {
+    const state = {
+      entries: [
+        {
+          id: '1',
+          account: '4000',
+          accountName: 'Revenue',
+          amount: 100000,
+          period: '2026-01',
+          department: 'Sales',
+          type: 'revenue',
+        },
+        {
+          id: '2',
+          account: '5000',
+          accountName: 'COGS',
+          amount: 30000,
+          period: '2026-01',
+          department: 'COGS',
+          type: 'expense',
+        },
+      ],
+    };
+    return selector ? selector(state) : state;
+  }),
 }));
 
 vi.mock('@/store/workforceStore', () => ({
-  useWorkforceStore: vi.fn(() => ({ departments: [], roles: [] })),
+  useWorkforceStore: vi.fn(
+    (selector?: (s: { departments: unknown[]; roles: unknown[] }) => unknown) => {
+      const state = { departments: [], roles: [] };
+      return selector ? selector(state) : state;
+    }
+  ),
 }));
 
 vi.mock('@/engines/ExportEngine', () => ({
@@ -91,9 +102,12 @@ describe('PayrollForecastPage', () => {
     expect(screen.getAllByText(/department/i).length).toBeGreaterThan(0);
   });
 
-  it('renders charts section', () => {
+  it('renders projection disclosure instead of chart exhibits', () => {
+    // Fabrication remediation: the invented Jan-Dec forecast/headcount charts
+    // were removed; the disclosure card replaces them.
     render(<PayrollForecastPage />);
-    expect(screen.getAllByTestId('responsive-container').length).toBeGreaterThan(0);
+    expect(screen.getByText(/monthly projection/i)).toBeTruthy();
+    expect(screen.queryByTestId('responsive-container')).toBeNull();
   });
 
   it('renders export button', () => {

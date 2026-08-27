@@ -14,6 +14,7 @@
  */
 
 import { useMemo, useCallback } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useForecastStore } from '@/store/forecastStore';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
@@ -116,7 +117,9 @@ export function useRollingForecast(
   horizon: ForecastHorizon = 12,
   accountId?: string
 ): RollingForecastResult {
-  const forecastStore = useForecastStore();
+  const { drivers, updateDriver } = useForecastStore(
+    useShallow((s) => ({ drivers: s.drivers, updateDriver: s.updateDriver }))
+  );
   const currentPeriod = getCurrentPeriod();
 
   // Generate the period window
@@ -139,9 +142,7 @@ export function useRollingForecast(
       const isEditable = state === 'forecast';
 
       // Try to get value from store drivers
-      const storedDriver = accountId
-        ? forecastStore.drivers.find((d) => d.id === accountId)
-        : undefined;
+      const storedDriver = accountId ? drivers.find((d) => d.id === accountId) : undefined;
       const storedValue =
         storedDriver && 'values' in storedDriver
           ? (storedDriver as Record<string, unknown>).values
@@ -155,7 +156,7 @@ export function useRollingForecast(
         source: state === 'actual' ? 'gl-import' : 'driver-model',
       };
     });
-  }, [currentPeriod, horizon, accountId, forecastStore.drivers]);
+  }, [currentPeriod, horizon, accountId, drivers]);
 
   // Computed totals
   const actualsTotal = useMemo(
@@ -193,10 +194,10 @@ export function useRollingForecast(
     (period: string, value: number) => {
       const periodData = periods.find((p) => p.period === period);
       if (periodData && periodData.isEditable && accountId) {
-        forecastStore.updateDriver(accountId, { [period]: value } as Record<string, unknown>);
+        updateDriver(accountId, { [period]: value } as Record<string, unknown>);
       }
     },
-    [periods, accountId, forecastStore]
+    [periods, accountId, updateDriver]
   );
 
   return {

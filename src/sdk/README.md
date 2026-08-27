@@ -72,16 +72,17 @@ That's the full happy path. Everything below is reference.
 
 ## Configuration — `FpaClientConfig`
 
-| Field           | Type                         | Default                                              | Notes                                         |
-| --------------- | ---------------------------- | ---------------------------------------------------- | --------------------------------------------- |
-| `baseUrl`       | `string`                     | `DEFAULT_BASE_URL` (`https://api.finplanpro.dev/v1`) | REST base URL.                                |
-| `auth`          | `AuthConfig`                 | — (required)                                         | Discriminated union — see below.              |
-| `timeoutMs`     | `number`                     | `30_000`                                             | Per-request timeout.                          |
-| `retryCount`    | `number`                     | `3`                                                  | Retries on 5xx / 429 (idempotent verbs only). |
-| `connector`     | `ConnectorId`                | —                                                    | Default connector namespace.                  |
-| `headers`       | `Record<string,string>`      | `{}`                                                 | Static headers on every request.              |
-| `realtimeUrl`   | `string`                     | derived                                              | Override WebSocket URL.                       |
-| `onAuthRefresh` | `(a) => Promise<AuthConfig>` | —                                                    | Hook for token persistence.                   |
+| Field           | Type                         | Default                                                                     | Notes                                                                                                     |
+| --------------- | ---------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `baseUrl`       | `string`                     | `import.meta.env.VITE_API_URL` (unset ⇒ ops reject `ApiNotConfiguredError`) | REST base URL. No hardcoded default host.                                                                 |
+| `auth`          | `AuthConfig`                 | — (required)                                                                | Discriminated union — see below.                                                                          |
+| `tokenSource`   | `() => string`               | —                                                                           | Lazy per-request bearer credential (e.g. from authStore via getState()); empty ⇒ `ApiNotConfiguredError`. |
+| `timeoutMs`     | `number`                     | `30_000`                                                                    | Per-request timeout.                                                                                      |
+| `retryCount`    | `number`                     | `3`                                                                         | Retries on 5xx / 429 (idempotent verbs only).                                                             |
+| `connector`     | `ConnectorId`                | —                                                                           | Default connector namespace.                                                                              |
+| `headers`       | `Record<string,string>`      | `{}`                                                                        | Static headers on every request.                                                                          |
+| `realtimeUrl`   | `string`                     | derived                                                                     | Override WebSocket URL.                                                                                   |
+| `onAuthRefresh` | `(a) => Promise<AuthConfig>` | —                                                                           | Hook for token persistence.                                                                               |
 
 ### `AuthConfig` (discriminated union)
 
@@ -89,7 +90,7 @@ That's the full happy path. Everything below is reference.
 | -------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `oauth2` | `client` (`OAuth2ClientConfig`), `tokens` (`OAuth2TokenState`) | `client` is the OAuth2 _flow_ config (`clientId`/`clientSecret`/`tokenUrl`/optional `authorizationUrl`/`redirectUri`/`scopes`). `tokens` is the _runtime_ token state (`accessToken`/`refreshToken`/`expiresAt`/optional `scope`/`tokenType`). The SDK seeds both on the underlying `RestApiClient` for you. |
 | `apiKey` | `apiKey`, `headerName?` (default `X-API-Key`)                  |                                                                                                                                                                                                                                                                                                              |
-| `bearer` | `token`                                                        | Static; no refresh.                                                                                                                                                                                                                                                                                          |
+| `bearer` | `token`, `allowAnonymous?`                                     | Static; no refresh. With `tokenSource`, an empty token rejects as `ApiNotConfiguredError` unless `allowAnonymous: true`.                                                                                                                                                                                     |
 | `basic`  | `username`, `password`                                         | Not recommended for WebSocket.                                                                                                                                                                                                                                                                               |
 
 ---

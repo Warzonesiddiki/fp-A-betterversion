@@ -6,18 +6,19 @@
 
 ## Session runbook (60–90 min)
 
-| Phase | Minutes | What happens |
-|---|---|---|
-| 1. Context & consent | 5 | Re-confirm consent; org profile (entity count, users, systems, regulated context) |
-| 2. Observed workflow | 25–35 | Walk the participant through their LAST REAL cycle chronologically (close / forecast / board pack). Capture systems, handoffs, spreadsheets, exports, approvals, reconciliations, delays, controls. Distinguish observed behavior from opinion. |
-| 3. Quantified impact | 10 | Time/people/external support; delay or decision consequence; error/audit/control risk; voluntary spend disclosure; change trigger |
-| 4. Pain probes (role-specific, see below) | 10–15 | Sharpened by secondary-evidence synthesis |
-| 5. Concept probes | 10–15 | Only after current-workflow capture: close→decision→board-pack loop, materiality workspace, local-first/hybrid (usability-prototype-test-plan scenarios) |
-| 6. Disconfirmation & close | 5 | "What would make you NOT change?" · counterfactual: "What would you do instead in your current tools?" · thank-you + aggregate-findings promise |
+| Phase                                     | Minutes | What happens                                                                                                                                                                                                                                    |
+| ----------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1. Context & consent                      | 5       | Re-confirm consent; org profile (entity count, users, systems, regulated context)                                                                                                                                                               |
+| 2. Observed workflow                      | 25–35   | Walk the participant through their LAST REAL cycle chronologically (close / forecast / board pack). Capture systems, handoffs, spreadsheets, exports, approvals, reconciliations, delays, controls. Distinguish observed behavior from opinion. |
+| 3. Quantified impact                      | 10      | Time/people/external support; delay or decision consequence; error/audit/control risk; voluntary spend disclosure; change trigger                                                                                                               |
+| 4. Pain probes (role-specific, see below) | 10–15   | Sharpened by secondary-evidence synthesis                                                                                                                                                                                                       |
+| 5. Concept probes                         | 10–15   | Only after current-workflow capture: close→decision→board-pack loop, materiality workspace, local-first/hybrid (usability-prototype-test-plan scenarios)                                                                                        |
+| 6. Disconfirmation & close                | 5       | "What would make you NOT change?" · counterfactual: "What would you do instead in your current tools?" · thank-you + aggregate-findings promise                                                                                                 |
 
 ## Role-specific probes (sharpened by round-2 secondary evidence)
 
 ### CFO / VP Finance (Ana)
+
 - Walk through the last decision requiring reforecast/board intervention: what evidence was missing?
 - What did the process cost in time, delay, risk, or external support?
 - [Calibration] What spend level would require your CFO/board approval for a finance-systems programme? (do not pitch price; benchmark against market band $60K–$2M+)
@@ -25,6 +26,7 @@
 - **Disconfirm:** "When would you extend your current platform instead of switching?"
 
 ### Controller / consolidation lead (Percy)
+
 - Show the close checklist/reconciliation/certification/exception process — not the ideal version.
 - [Secondary-evidence probe] Which close steps live in spreadsheets and why? (public signal: 62% close via spreadsheets)
 - Where do adjusting entries, FX, intercompany exceptions, and sign-offs get tracked outside the system?
@@ -32,6 +34,7 @@
 - **Disconfirm:** "Which close controls would you never move out of Excel?"
 
 ### FP&A lead / analyst (Uxie)
+
 - Observe a forecast change from source data to approval: capture tools, exports, rework, handoffs.
 - [Secondary-evidence probe] Map your last forecast cycle hours: how much went to data collection/validation vs analysis? (public signal: 65–75% collection/validation)
 - What Excel behavior is non-negotiable? Which is dangerous?
@@ -39,12 +42,14 @@
 - **Disconfirm:** "Where is a governed grid slower than your current Excel workflow?"
 
 ### IT / security / enterprise architect (Archie)
+
 - What deployment patterns are permitted for financial data? Which factors force on-prem/hybrid? (public signal: data residency + regulatory mandates are the main drivers)
 - Required controls: SSO, tenant isolation, endpoint/local data, encryption, audit, retention, backups, AI providers?
 - What would block a local workspace, browser app, or hybrid model?
 - **Disconfirm:** "Cloud usually wins on 5-yr TCO for most orgs — when would that not hold for you?"
 
 ### Implementation partner (Bob)
+
 - Walk a recent EPM implementation: timeline, cost drivers, admin burden, customer pain at each phase.
 - [Secondary-evidence probe] How does 6–18-month enterprise implementation compare with faster time-to-value options in your deals? (public signal: 4–8 week spreadsheet-first tools exist)
 - What makes customers abandon or stall implementations?

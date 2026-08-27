@@ -426,11 +426,12 @@ describe('Page Smoke Tests (Batch 2)', () => {
       ).toBeGreaterThanOrEqual(2);
     });
 
-    // NOTE: LeaseDashboard renders a demo lease portfolio (hardcoded sample
-    // inputs whose outputs are computed live by LeaseEngine — see its own
-    // dedicated LeaseDashboard.test.tsx). It is NOT yet backed by a lease
-    // data store, so no empty state is reachable today. Tracked as GAP (lease
-    // store wiring) in GAP_LEDGER.md; assert the real rendered behavior.
+    // NOTE (updated by E-09 mock-data honesty audit): LeaseDashboard is fully
+    // backed by the persisted leaseStore (K17 refactor removed all hardcoded
+    // demo portfolios — see leaseStore.ts header). With no leases it renders
+    // an explicit "No Lease Data" empty state; with leases, figures are
+    // computed live from user data by LeaseEngine. No fabricated portfolio
+    // ships or renders. Assert the real rendered behavior.
     it('renders the computed lease portfolio dashboard', () => {
       renderPage(LeaseDashboard, '/lease', '/lease');
       expect(screen.getByText(/Lease Portfolio Dashboard/i)).toBeInTheDocument();

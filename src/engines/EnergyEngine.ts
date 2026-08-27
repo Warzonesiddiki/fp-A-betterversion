@@ -135,18 +135,40 @@ export class EnergyEngine {
 
   /**
    * Builds revenue vs cost trend from monthly entries.
+   * Buckets measured energy revenue (4xxx) and generation costs (5xxx/6xxx) by posting month.
    */
-  static getRevenueTrend(_entries: GLEntry[]): RevenueTrend[] {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    const sr = (s: number) => {
-      const x = Math.sin(s * 9301 + 49297) * 49297;
-      return x - Math.floor(x);
-    };
-    return months.map((m, i) => ({
-      month: m,
-      revenue: Math.round(1200000 + sr(i * 2) * 400000),
-      cost: Math.round(850000 + sr(i * 2 + 1) * 100000),
-      production: Math.round(4200 + sr(i * 3) * 1000),
-    }));
+  static getRevenueTrend(entries: GLEntry[]): RevenueTrend[] {
+    const buckets = new Map<string, GLEntry[]>();
+    for (const e of entries) {
+      const month = e.period || (typeof e.date === 'string' ? e.date.slice(0, 7) : '');
+      if (!month) continue;
+      const bucket = buckets.get(month);
+      if (bucket) bucket.push(e);
+      else buckets.set(month, [e]);
+    }
+
+    return [...buckets.keys()].sort().map((month) => {
+      const monthEntries = buckets.get(month)!;
+      const revEntries = monthEntries.filter((e) => e.accountCode.startsWith('4'));
+      const costEntries = monthEntries.filter(
+        (e) => e.accountCode.startsWith('5') || e.accountCode.startsWith('6')
+      );
+      const revenue = sumMoney(
+        revEntries.map((e) =>
+          Math.abs(e.amount ?? subtractMoney(e.debit ?? 0, e.credit ?? 0).toNumber())
+        )
+      ).toNumber();
+      const cost = sumMoney(
+        costEntries.map((e) =>
+          Math.abs(e.amount ?? subtractMoney(e.debit ?? 0, e.credit ?? 0).toNumber())
+        )
+      ).toNumber();
+      return {
+        month,
+        revenue: roundTo(revenue, 2),
+        cost: roundTo(cost, 2),
+        production: 0,
+      };
+    });
   }
 }

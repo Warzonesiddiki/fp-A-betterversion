@@ -69,6 +69,21 @@ const CONSTANTS: Record<string, number> = {
 // --- Function Registry ---
 type FuncImpl = (args: number[]) => number;
 
+/** Text-returning formula implementations (CONCAT, UPPER, BASE, ROMAN, TEXT, ...). */
+type TextFn = (args: number[]) => string;
+
+/** Range/array-returning formula implementations (SORT, FILTER, UNIQUE, FLATTEN, ...). */
+type RangeFn = (args: number[]) => number[];
+
+/**
+ * Tagged formula entry — discriminated union over declared result kind.
+ * Design: _bmad/safemath-parser-type-refactor-proposal.md (E-01-R).
+ */
+type FuncEntry =
+  | { kind: 'numeric'; fn: FuncImpl }
+  | { kind: 'text'; fn: TextFn }
+  | { kind: 'range'; fn: RangeFn };
+
 const FUNCTIONS: Record<string, FuncImpl> = {
   ABS: (args) => Math.abs(args[0]!),
   ROUND: (args) => {
@@ -121,9 +136,10 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     return new Decimal(ev).div(bv).pow(new Decimal(1).div(n)).minus(1).toNumber();
   },
   IRR: (args) => {
-    // Newton-Raphson IRR with Decimal arithmetic for financial truth
+    // Newton-Raphson IRR with Decimal arithmetic for financial truth.
+    // Fewer than 2 flows ⇒ NaN (Excel #NUM! semantics), never 0.
     const cashflows = args;
-    if (cashflows.length < 2) return 0;
+    if (cashflows.length < 2) return NaN;
     let guess = new Decimal('0.1');
     for (let iter = 0; iter < 100; iter++) {
       let npv = new Decimal(0);
@@ -301,13 +317,6 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     if (multiple === 0) return 0;
     return Math.round(args[0]! / multiple) * multiple;
   },
-  BASE: (args) => {
-    const num = Math.floor(args[0]!);
-    const radix = Math.floor(args[1]!);
-    const minLength = args[2]! ?? 0;
-    const result = num.toString(radix).toUpperCase();
-    return result.padStart(minLength, '0') as unknown as number;
-  },
   DECIMAL: (args) => {
     const text = String(args[0]!);
     const radix = Math.floor(args[1]!);
@@ -325,22 +334,6 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     }
     return result;
   },
-  ROMAN: (args) => {
-    const num = Math.floor(args[0]!);
-    const vals = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
-    const syms = ['M', 'CM', 'D', 'CD', 'C', 'XC', 'L', 'XL', 'X', 'IX', 'V', 'IV', 'I'];
-    let result = '';
-    let remaining = num;
-    for (let i = 0; i < vals.length; i++) {
-      const v = vals[i]!;
-      while (remaining >= v) {
-        result += syms[i]!;
-        remaining -= v;
-      }
-    }
-    return result as unknown as number;
-  },
-
   // =========================================================================
   // STATISTICAL (40+)
   // =========================================================================
@@ -644,24 +637,27 @@ const FUNCTIONS: Record<string, FuncImpl> = {
   // FINANCIAL (50+)
   // =========================================================================
   MIRR: (args) => {
-    // Decimal-based MIRR: eliminates float drift in modified IRR
+    // Excel-compatible MIRR: negative flows are discounted BACK to t0 at the
+    // finance rate; positive flows are compounded FORWARD to t(n-1) at the
+    // reinvest rate; the result is the annualized growth between them over
+    // n-1 periods. NaN mirrors Excel #NUM! (no sign pair or n < 2).
     const values = args.slice(0, -2);
     const financeRate = args[args.length - 2]!;
     const reinvestRate = args[args.length - 1]!;
     const n = values.length;
-    let negNpv = new Decimal(0);
-    let posNpv = new Decimal(0);
+    if (n < 2) return NaN;
+    let negPv = new Decimal(0);
+    let posFv = new Decimal(0);
     const financeRateD = new Decimal(financeRate);
     const reinvestRateD = new Decimal(reinvestRate);
     for (let i = 0; i < n; i++) {
       const val = new Decimal(values[i]!);
-      if (values[i]! < 0) negNpv = negNpv.plus(val.dividedBy(financeRateD.plus(1).pow(i)));
-      else posNpv = posNpv.plus(val.dividedBy(reinvestRateD.plus(1).pow(i)));
+      if (values[i]! < 0) negPv = negPv.plus(val.dividedBy(financeRateD.plus(1).pow(i)));
+      else posFv = posFv.plus(val.times(reinvestRateD.plus(1).pow(n - 1 - i)));
     }
-    if (negNpv.isZero() || posNpv.isZero()) return 0;
-    return posNpv
-      .negated()
-      .dividedBy(negNpv)
+    if (negPv.isZero() || posFv.isZero()) return NaN;
+    return posFv
+      .dividedBy(negPv.negated())
       .pow(new Decimal(1).div(n - 1))
       .minus(1)
       .toNumber();
@@ -1015,24 +1011,6 @@ const FUNCTIONS: Record<string, FuncImpl> = {
   // =========================================================================
   // TEXT (30+)
   // =========================================================================
-  CONCAT: (args) => args.join('') as unknown as number,
-  CONCATENATE: (args) => args.join('') as unknown as number,
-  LEFT: (args) => {
-    const s = String(args[0]!);
-    const n = args[1]! ?? 1;
-    return s.substring(0, n) as unknown as number;
-  },
-  RIGHT: (args) => {
-    const s = String(args[0]!);
-    const n = args[1]! ?? 1;
-    return s.substring(s.length - n) as unknown as number;
-  },
-  MID: (args) => {
-    const s = String(args[0]!);
-    const start = args[1]! - 1;
-    const n = args[2]!;
-    return s.substring(start, start + n) as unknown as number;
-  },
   LEN: (args) => String(args[0]!).length,
   FIND: (args) => {
     const findText = String(args[0]!);
@@ -1048,59 +1026,10 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     const idx = withinText.indexOf(findText, startAt - 1);
     return idx === -1 ? NaN : idx + 1;
   },
-  UPPER: (args) => String(args[0]!).toUpperCase() as unknown as number,
-  LOWER: (args) => String(args[0]!).toLowerCase() as unknown as number,
-  PROPER: (args) => String(args[0]!).replace(/\b\w/g, (c) => c.toUpperCase()) as unknown as number,
-  TRIM: (args) => String(args[0]!).trim() as unknown as number,
-  CLEAN: (args) => String(args[0]!).replace(/[\x00-\x1F]/g, '') as unknown as number, // eslint-disable-line no-control-regex
-  REPLACE: (args) => {
-    const oldText = String(args[0]!);
-    const start = args[1]! - 1;
-    const numChars = args[2]!;
-    const newText = String(args[3]!);
-    return (oldText.substring(0, start) +
-      newText +
-      oldText.substring(start + numChars)) as unknown as number;
-  },
-  SUBSTITUTE: (args) => {
-    const text = String(args[0]!);
-    const oldText = String(args[1]!);
-    const newText = String(args[2]!);
-    const instanceNum = args[3]!;
-    if (instanceNum) {
-      let count = 0;
-      return text.replace(
-        new RegExp(oldText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
-        (match) => {
-          count++;
-          return count === instanceNum ? newText : match;
-        }
-      ) as unknown as number;
-    }
-    return text.split(oldText).join(newText) as unknown as number;
-  },
-  REPT: (args) => String(args[0]!).repeat(args[1]!) as unknown as number,
-  CHAR: (args) => String.fromCharCode(args[0]!) as unknown as number,
   CODE: (args) => String(args[0]!).charCodeAt(0),
   VALUE: (args) => parseFloat(String(args[0]!)),
-  TEXT: (args) => args[0]! as unknown as number,
-  DOLLAR: (args) => {
-    const val = args[0]!;
-    const decimals = args[1]! ?? 2;
-    return `$${formatMoney(val, { places: decimals })}` as unknown as number;
-  },
-  FIXED: (args) => {
-    const val = args[0]!;
-    const decimals = args[1]! ?? 2;
-    const noCommas = args[2]! ?? 0;
-    const grouped = formatMoney(val, { places: decimals });
-    if (noCommas) return grouped.replace(/,/g, '') as unknown as number;
-    return grouped as unknown as number;
-  },
+  TEXT: (args) => args[0]!, // numeric identity (oracle pins TEXT(42) === 42)
   EXACT: (args) => (String(args[0]!) === String(args[1]!) ? 1 : 0),
-  T: (args) =>
-    typeof args[0]! === 'string' ? (args[0]! as unknown as number) : ('' as unknown as number),
-  BAHTTEXT: (args) => `${args[0]!} baht` as unknown as number,
 
   // =========================================================================
   // DATE (30+)
@@ -1301,20 +1230,6 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     return idx >= 1 && idx < args.length ? args[idx]! : 0;
   },
   TRANSPOSE: (args) => args[0]!,
-  SORT: (args) => [...args].sort((a, b) => a - b) as unknown as number,
-  FILTER: (args) => {
-    const half = Math.floor(args.length / 2);
-    const values = args.slice(0, half);
-    const conditions = args.slice(half);
-    return values.filter((_, i) => conditions[i] !== 0) as unknown as number;
-  },
-  UNIQUE: (args) => [...new Set(args)] as unknown as number,
-  ARRAY_CONSTRAIN: (args) => {
-    const array = args.slice(0, -2);
-    const rows = args[args.length - 2];
-    return array.slice(0, rows) as unknown as number;
-  },
-  FLATTEN: (args) => args as unknown as number,
   IFERROR: (args) => (isNaN(args[0]!) || !isFinite(args[0]!) ? args[1]! : args[0]!),
   IFNA: (args) => (isNaN(args[0]!) ? args[1]! : args[0]!),
 
@@ -1398,45 +1313,6 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     const [oldVal = 0, newVal = 0] = args;
 
     return oldVal === 0 ? 0 : ((newVal - oldVal) / Math.abs(oldVal)) * 100;
-  },
-  CUMSUM: (args) => {
-    const result: number[] = [];
-    let sum = 0;
-    for (const v of args) {
-      sum += v;
-      result.push(sum);
-    }
-    return result as unknown as number;
-  },
-  CUMPRODUCT: (args) => {
-    const result: number[] = [];
-    let product = 1;
-    for (const v of args) {
-      product *= v;
-      result.push(product);
-    }
-    return result as unknown as number;
-  },
-  DIFF: (args) => {
-    const result: number[] = [];
-    for (let i = 1; i < args.length; i++) result.push(args[i]! - args[i - 1]!);
-    return result as unknown as number;
-  },
-  ACCUMULATE: (args) => {
-    const result: number[] = [];
-    let acc = 0;
-    for (const v of args) {
-      acc += v;
-      result.push(acc);
-    }
-    return result as unknown as number;
-  },
-  NORMALIZE: (args) => {
-    const min = Math.min(...args);
-    const max = Math.max(...args);
-    const range = max - min;
-    if (range === 0) return args.map(() => 0) as unknown as number;
-    return args.map((v) => (v - min) / range) as unknown as number;
   },
   STANDARDIZE: (args) => {
     const val = args[0]!;
@@ -1694,29 +1570,6 @@ const FUNCTIONS: Record<string, FuncImpl> = {
   // =========================================================================
   NUMBERVALUE: (args) => parseFloat(String(args[0]!).replace(/,/g, '.')),
   UNICODE: (args) => String(args[0]!).codePointAt(0) ?? 0,
-  UNICHAR: (args) => String.fromCodePoint(args[0]!) as unknown as number,
-  WIDECHAR: (args) => {
-    const s = String(args[0]!);
-    return s
-      .split('')
-      .map((c) => {
-        const code = c.charCodeAt(0);
-        return code >= 33 && code <= 126 ? String.fromCharCode(code + 65248) : c;
-      })
-      .join('') as unknown as number;
-  },
-  ASC: (args) => {
-    const s = String(args[0]!);
-    return s
-      .split('')
-      .map((c) => {
-        const code = c.charCodeAt(0);
-        return code >= 65281 && code <= 65374 ? String.fromCharCode(code - 65248) : c;
-      })
-      .join('') as unknown as number;
-  },
-  JIS: (args) => String(args[0]!) as unknown as number,
-  ENCODEURL: (args) => encodeURIComponent(String(args[0]!)) as unknown as number,
   // Fractional dollar notation (e.g. bond prices quoted in 32nds).
   // `fraction` is the denominator, so a value of 0 has no meaning: Excel
   // returns #DIV/0! there, and log10(0) would otherwise yield -Infinity.
@@ -1740,7 +1593,6 @@ const FUNCTIONS: Record<string, FuncImpl> = {
     const fracPart = dollarD.minus(intPart).times(fraction).div(scale);
     return intPart.plus(fracPart).toNumber();
   },
-  CLEAN_TEXT: (args) => String(args[0]!).replace(/[\x00-\x1F\x7F-\x9F]/g, '') as unknown as number, // eslint-disable-line no-control-regex
 
   // =========================================================================
   // ADDITIONAL DATE (10+)
@@ -1785,6 +1637,193 @@ const FUNCTIONS: Record<string, FuncImpl> = {
   DATE_FN: (args) => FUNCTIONS.DATE!(args),
   TIME_FN: (args) => FUNCTIONS.TIME!(args),
 };
+
+// Text-returning formulas moved out of FUNCTIONS in E-01-I step 2
+// (design: _bmad/safemath-parser-type-refactor-proposal.md). Cast-free.
+const TEXT_FUNCTIONS: Record<string, TextFn> = {
+  BASE: (args) => {
+    const num = Math.floor(args[0]!);
+    const radix = Math.floor(args[1]!);
+    const minLength = args[2]! ?? 0;
+    const result = num.toString(radix).toUpperCase();
+    return result.padStart(minLength, '0');
+  },
+  ROMAN: (args) => {
+    const num = Math.floor(args[0]!);
+    const vals = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
+    const syms = ['M', 'CM', 'D', 'CD', 'C', 'XC', 'L', 'XL', 'X', 'IX', 'V', 'IV', 'I'];
+    let result = '';
+    let remaining = num;
+    for (let i = 0; i < vals.length; i++) {
+      const v = vals[i]!;
+      while (remaining >= v) {
+        result += syms[i]!;
+        remaining -= v;
+      }
+    }
+    return result;
+  },
+  CONCAT: (args) => args.join(''),
+  CONCATENATE: (args) => args.join(''),
+  LEFT: (args) => {
+    const s = String(args[0]!);
+    const n = args[1]! ?? 1;
+    return s.substring(0, n);
+  },
+  RIGHT: (args) => {
+    const s = String(args[0]!);
+    const n = args[1]! ?? 1;
+    return s.substring(s.length - n);
+  },
+  MID: (args) => {
+    const s = String(args[0]!);
+    const start = args[1]! - 1;
+    const n = args[2]!;
+    return s.substring(start, start + n);
+  },
+  UPPER: (args) => String(args[0]!).toUpperCase(),
+  LOWER: (args) => String(args[0]!).toLowerCase(),
+  PROPER: (args) => String(args[0]!).replace(/\b\w/g, (c) => c.toUpperCase()),
+  TRIM: (args) => String(args[0]!).trim(),
+  CLEAN: (args) => String(args[0]!).replace(/[\x00-\x1F]/g, ''), // eslint-disable-line no-control-regex
+  REPLACE: (args) => {
+    const oldText = String(args[0]!);
+    const start = args[1]! - 1;
+    const numChars = args[2]!;
+    const newText = String(args[3]!);
+    return oldText.substring(0, start) + newText + oldText.substring(start + numChars);
+  },
+  SUBSTITUTE: (args) => {
+    const text = String(args[0]!);
+    const oldText = String(args[1]!);
+    const newText = String(args[2]!);
+    const instanceNum = args[3]!;
+    if (instanceNum) {
+      let count = 0;
+      return text.replace(
+        new RegExp(oldText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
+        (match) => {
+          count++;
+          return count === instanceNum ? newText : match;
+        }
+      );
+    }
+    return text.split(oldText).join(newText);
+  },
+  REPT: (args) => String(args[0]!).repeat(args[1]!),
+  CHAR: (args) => String.fromCharCode(args[0]!),
+  DOLLAR: (args) => {
+    const val = args[0]!;
+    const decimals = args[1]! ?? 2;
+    return `$${formatMoney(val, { places: decimals })}`;
+  },
+  FIXED: (args) => {
+    const val = args[0]!;
+    const decimals = args[1]! ?? 2;
+    const noCommas = args[2]! ?? 0;
+    const grouped = formatMoney(val, { places: decimals });
+    if (noCommas) return grouped.replace(/,/g, '');
+    return grouped;
+  },
+  T: (args) => (typeof args[0]! === 'string' ? args[0]! : ''),
+  BAHTTEXT: (args) => `${args[0]!} baht`,
+  UNICHAR: (args) => String.fromCodePoint(args[0]!),
+  WIDECHAR: (args) => {
+    const s = String(args[0]!);
+    return s
+      .split('')
+      .map((c) => {
+        const code = c.charCodeAt(0);
+        return code >= 33 && code <= 126 ? String.fromCharCode(code + 65248) : c;
+      })
+      .join('');
+  },
+  ASC: (args) => {
+    const s = String(args[0]!);
+    return s
+      .split('')
+      .map((c) => {
+        const code = c.charCodeAt(0);
+        return code >= 65281 && code <= 65374 ? String.fromCharCode(code - 65248) : c;
+      })
+      .join('');
+  },
+  JIS: (args) => String(args[0]!),
+  ENCODEURL: (args) => encodeURIComponent(String(args[0]!)),
+  CLEAN_TEXT: (args) => String(args[0]!).replace(/[\x00-\x1F\x7F-\x9F]/g, ''), // eslint-disable-line no-control-regex
+};
+
+// Range/array-returning formulas moved out of FUNCTIONS in E-01-I step 3
+// (design: _bmad/safemath-parser-type-refactor-proposal.md). Cast-free.
+const RANGE_FUNCTIONS: Record<string, RangeFn> = {
+  SORT: (args) => [...args].sort((a, b) => a - b),
+  FILTER: (args) => {
+    const half = Math.floor(args.length / 2);
+    const values = args.slice(0, half);
+    const conditions = args.slice(half);
+    return values.filter((_, i) => conditions[i] !== 0);
+  },
+  UNIQUE: (args) => [...new Set(args)],
+  ARRAY_CONSTRAIN: (args) => {
+    const array = args.slice(0, -2);
+    const rows = args[args.length - 2];
+    return array.slice(0, rows);
+  },
+  FLATTEN: (args) => args,
+  CUMSUM: (args) => {
+    const result: number[] = [];
+    let sum = 0;
+    for (const v of args) {
+      sum += v;
+      result.push(sum);
+    }
+    return result;
+  },
+  CUMPRODUCT: (args) => {
+    const result: number[] = [];
+    let product = 1;
+    for (const v of args) {
+      product *= v;
+      result.push(product);
+    }
+    return result;
+  },
+  DIFF: (args) => {
+    const result: number[] = [];
+    for (let i = 1; i < args.length; i++) result.push(args[i]! - args[i - 1]!);
+    return result;
+  },
+  ACCUMULATE: (args) => {
+    const result: number[] = [];
+    let acc = 0;
+    for (const v of args) {
+      acc += v;
+      result.push(acc);
+    }
+    return result;
+  },
+  NORMALIZE: (args) => {
+    const min = Math.min(...args);
+    const max = Math.max(...args);
+    const range = max - min;
+    if (range === 0) return args.map(() => 0);
+    return args.map((v) => (v - min) / range);
+  },
+};
+
+/**
+ * Tagged lookup across all three registries. While TEXT_/RANGE_ registries are
+ * empty this is behaviorally identical to direct `FUNCTIONS[name]` access.
+ */
+function lookupFunction(name: string): FuncEntry | undefined {
+  const numeric = FUNCTIONS[name];
+  if (numeric) return { kind: 'numeric', fn: numeric };
+  const text = TEXT_FUNCTIONS[name];
+  if (text) return { kind: 'text', fn: text };
+  const range = RANGE_FUNCTIONS[name];
+  if (range) return { kind: 'range', fn: range };
+  return undefined;
+}
 
 // --- Lexer ---
 class Lexer {
@@ -1968,7 +2007,7 @@ class Lexer {
 
     // Check if it's a function (lookahead for parenthesis) BEFORE cell ref check
     // This prevents function names like ATAN2, LOG2, LOG10 from being treated as cell refs
-    if (this.pos < this.input.length && this.input[this.pos] === '(' && FUNCTIONS[upper]!) {
+    if (this.pos < this.input.length && this.input[this.pos] === '(' && lookupFunction(upper)) {
       this.addToken('func', upper);
       return;
     }
@@ -2481,13 +2520,21 @@ class Parser {
       }
 
       const funcName = tok.value;
-      const func = FUNCTIONS[funcName];
-      if (!func) {
+      const entry = lookupFunction(funcName);
+      if (!entry) {
         throw new Error(`Unknown function: ${funcName}`);
       }
 
       this.leave();
-      return func(args);
+      if (entry.kind === 'numeric') {
+        return entry.fn(args);
+      }
+      // TODO(E-02-CLEAR): freeze boundary (E-01-I step 5 deferred until
+      // Quinn's E-02 completes). Text/range results pass through the numeric
+      // API exactly as before — the oracle suite pins this behavior; the
+      // typed-error flip is step 5 of
+      // _bmad/safemath-parser-type-refactor-proposal.md.
+      return entry.fn(args) as unknown as number;
     }
 
     throw new Error(`Unexpected token '${tok.value}' (type: ${tok.type}) at position ${tok.pos}`);

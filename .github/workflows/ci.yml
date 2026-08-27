@@ -78,7 +78,7 @@ jobs:
 
       - name: Run tests with coverage (shard ${{ matrix.shard }})
         run: >-
-          node --max-old-space-size=81920 node_modules/vitest/vitest.mjs run
+          node --max-old-space-size=8192 node_modules/vitest/vitest.mjs run
           --shard=${{ matrix.shard }}/4
           --coverage
           --reporter=blob
@@ -117,7 +117,7 @@ jobs:
           merge-multiple: true
 
       - name: Merge shard reports and emit coverage
-        run: node --max-old-space-size=81920 node_modules/vitest/vitest.mjs run --merge-reports=.vitest-reports --coverage
+        run: node --max-old-space-size=8192 node_modules/vitest/vitest.mjs run --merge-reports=.vitest-reports --coverage
 
       - name: Upload coverage report
         if: always()
@@ -257,6 +257,66 @@ jobs:
           path: playwright-report/
           retention-days: 14
 
+  server:
+    # The Express/SQLite backend under server/ had NO CI coverage at all, which
+    # is how 9 failing real-SQLite tests (db/bootSchema, db/schemaReconciliation)
+    # reached main unnoticed: server/.npmrc sets `ignore-scripts=true`, so
+    # `npm ci` installs better-sqlite3 without compiling its native binding.
+    # `npm test` now bootstraps that binding via scripts/ensure-native-db.mjs.
+    name: Server (typecheck + tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+      - name: Unit tests (portable suites)
+        run: npm test
+
+      - name: Unit tests (native-DB suites)
+        run: npm run test:native-db
+
+      - name: Production dependency audit (server)
+        run: npm audit --omit=dev --audit-level=high
+
+  audit:
+    # No CI job ever ran a vulnerability scan, which is how a HIGH-severity
+    # SSRF in `ip-address` (reachable via express-rate-limit's IP keying on the
+    # auth routes) sat unnoticed in the server workspace. `npm run audit:prod`
+    # already existed in package.json but was never wired into a pipeline.
+    name: Dependency Audit (production)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Audit production dependencies (fails on high/critical)
+        run: npm run audit:prod
+
   a11y:
     # A11Y-P0-4: NEVER-AGAIN RULE #50 (A11Y-CI-ENFORCEMENT, proposed by Artemis)
     # Critical a11y violations MUST fail CI. The actual a11y runner is
@@ -319,12 +379,65 @@ jobs:
             coverage/a11y/
           retention-days: 30  # Longer retention for a11y audit trail
 
+  docs:
+    # N-0013/N-0014 (audit ZCFA-2026-07-29-002): README statistics and the
+    # engine manifest can silently drift from reality. `docs:verify` measures
+    # every README claim against the tree; `engines:verify` re-checks the
+    # manifest -- which once left the loader
+    # knowing only 40 of 181 engines -- fails CI instead of shipping.
+    name: Docs & Engine Manifest Integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify README / architecture claims
+        run: npm run docs:verify
+
+      - name: Verify engine manifest is current
+        run: npm run engines:verify
+
+  money-integrity:
+    # Blueprint W0.1.0 / W0.1.7: the AST money-safety ratchet and the
+    # fabrication ratchet previously ran only in .husky/pre-push, so any
+    # push made with hooks bypassed left unsafe monetary arithmetic or
+    # hand-typed fabricated figures invisible to CI. Both detectors are
+    # fail-closed: ANY finding exits non-zero.
+    name: Money & Fabrication Integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: AST money-safety ratchet (fail on increase)
+        run: node scripts/money-ast-detector.mjs
+
+      - name: Fabrication ratchet (fail on any finding)
+        run: node scripts/fabrication-detector.mjs
+
   summary:
     name: CI Summary
     if: always()
-    needs: [typecheck, lint, test, test-merge, build, e2e, a11y]
+    needs: [typecheck, lint, test, test-merge, build, server, audit, docs, money-integrity, e2e, a11y]
     runs-on: ubuntu-latest
-    if: always()
     steps:
       - name: Check results
         run: |
@@ -337,6 +450,10 @@ jobs:
           echo "| Unit Tests (sharded) | ${{ needs.test.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Coverage Merge | ${{ needs.test-merge.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build & Bundle | ${{ needs.build.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Server (tsc + tests) | ${{ needs.server.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dependency Audit | ${{ needs.audit.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Docs & Engine Manifest | ${{ needs.docs.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Money & Fabrication | ${{ needs.money-integrity.result == 'success' && ':white_check_mark: Pass' || ':x: Fail' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| E2E Tests | ${{ needs.e2e.result == 'success' && ':white_check_mark: Pass' || (needs.e2e.result == 'skipped' && ':fast_forward: Skipped' || ':x: Fail') }} |" >> $GITHUB_STEP_SUMMARY
           echo "| A11Y | ${{ needs.a11y.result == 'success' && ':white_check_mark: Pass' || (needs.a11y.result == 'skipped' && ':fast_forward: Skipped' || ':x: A11Y violations (see a11y-report artifact)') }} |" >> $GITHUB_STEP_SUMMARY
 
@@ -345,6 +462,10 @@ jobs:
              [ "${{ needs.test.result }}" != "success" ] || \
              [ "${{ needs.test-merge.result }}" != "success" ] || \
              [ "${{ needs.a11y.result }}" != "success" ] || \
+             [ "${{ needs.server.result }}" != "success" ] || \
+             [ "${{ needs.audit.result }}" != "success" ] || \
+             [ "${{ needs.docs.result }}" != "success" ] || \
+             [ "${{ needs.money-integrity.result }}" != "success" ] || \
              [ "${{ needs.build.result }}" != "success" ]; then
             echo ""
             echo ":x: **CI FAILED** - One or more required checks did not pass."

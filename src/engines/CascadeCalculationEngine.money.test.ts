@@ -12,10 +12,12 @@
 import { describe, it, expect } from 'vitest';
 import {
   CascadeCalculationEngine,
+  InvalidOwnershipShareError,
   type OwnershipNode,
   type CascadeICPair,
   type CascadeFXRate,
 } from './CascadeCalculationEngine';
+import { expectFinancialEqual } from '@/test/engineTestUtils';
 
 function makeOwnership(overrides: Partial<OwnershipNode> = {}): OwnershipNode {
   return {
@@ -94,14 +96,31 @@ describe('CascadeCalculationEngine — money known answers (GAP-1 / F-0006)', ()
   });
 
   describe('computeNCI', () => {
-    it('returns exact minority share (float gave 299.99999999999994)', () => {
-      expect(CascadeCalculationEngine.computeNCI(1000, 30)).toBe(300);
+    it('returns exact minority share with DECIMALS convention (float gave 299.99999999999994)', () => {
+      expect(CascadeCalculationEngine.computeNCI(1000, 0.3)).toBe(300);
       expect(CascadeCalculationEngine.computeNCI(1000, 0)).toBe(0);
-      expect(CascadeCalculationEngine.computeNCI(-500, 25)).toBe(-125);
+      expect(CascadeCalculationEngine.computeNCI(-500, 0.25)).toBe(-125);
     });
 
     it('handles tiny NCI amounts exactly', () => {
-      expect(CascadeCalculationEngine.computeNCI(0.3, 33.3333)).toBe(0.1);
+      // 0.3 × 0.333333 = 0.0999999 → cent-round → 0.1
+      expect(CascadeCalculationEngine.computeNCI(0.3, 0.333333)).toBe(0.1);
+    });
+
+    it('financial-equal: 75/25 ownership ⇒ NCI = 25% of sub NI (expectFinancialEqual)', () => {
+      // 1234.56 × 0.25 = 308.64 exactly
+      expectFinancialEqual(CascadeCalculationEngine.computeNCI(1234.56, 0.25), 308.64);
+      expectFinancialEqual(CascadeCalculationEngine.computeNCI(-2000, 0.25), -500);
+    });
+
+    it('throws InvalidOwnershipShareError on percent-scale input (>1) — 100x guard', () => {
+      // pre-migration this silently returned 25000 (100x); now it must throw
+      expect(() => CascadeCalculationEngine.computeNCI(100000, 25)).toThrow(
+        InvalidOwnershipShareError
+      );
+      expect(() => CascadeCalculationEngine.computeNCI(100000, 100)).toThrow(
+        InvalidOwnershipShareError
+      );
     });
   });
 

@@ -4,6 +4,8 @@
  * Sidebar behaviour (UI-03). The rail is the only way through 190 screens, so
  * the accordion, the active-route pill and the Quick Search wiring are all
  * asserted here. Quick Search was a no-op `onClick={() => {}}` before UI-03.
+ * W-A11Y-002 M1 additionally pins that every control surviving in the
+ * collapsed icon rail keeps exactly one accessible name.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -192,5 +194,68 @@ describe('Sidebar', () => {
     expect(mockCloseMobileSidebar).not.toHaveBeenCalled();
 
     Object.defineProperty(window, 'innerWidth', { value: originalWidth, configurable: true });
+  });
+});
+
+describe('Sidebar collapsed rail names (W-A11Y-002 M1)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockSidebarCollapsed = true;
+    mockMobileSidebarOpen = false;
+    mockTheme = 'dark';
+    mockActiveSectionId = 'planning';
+  });
+
+  it('exposes an accessible name for every control left in the collapsed rail', () => {
+    renderSidebar();
+
+    // Section triggers keep their names although their visible labels are gone.
+    expect(screen.getByRole('button', { name: 'Planning' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Admin' })).toBeInTheDocument();
+    // The footer Help entry renders icon-only while railed — it must stay named.
+    expect(screen.getByRole('link', { name: 'nav.help' })).toBeInTheDocument();
+    // Sub-items intentionally do not render inside the 64px rail, so exactly
+    // one link survives; whatever links exist must all be named.
+    expect(screen.getAllByRole('link')).toHaveLength(1);
+    // Utility controls were already aria-labelled; pin them so a refactor
+    // cannot silently strip the names.
+    expect(screen.getByRole('button', { name: 'sidebar.quickSearch' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'sidebar.lightMode' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'accessibility.expand' })).toBeInTheDocument();
+  });
+
+  it('carries each rail name exactly once, with title only as a supplement', () => {
+    renderSidebar();
+
+    // Exact-string name matching is the double-announcement guard: a stacked
+    // duplicate carrier would compute "Planning Planning" or
+    // "nav.help nav.help" and fail these lookups.
+    const planning = screen.getByRole('button', { name: 'Planning' });
+    expect(planning).not.toHaveAttribute('aria-label');
+    expect(planning).toHaveTextContent('Planning');
+    expect(planning).toHaveAttribute('title', 'Planning');
+
+    const help = screen.getByRole('link', { name: 'nav.help' });
+    expect(help).not.toHaveAttribute('aria-label');
+    expect(help).toHaveTextContent('nav.help');
+    expect(help).toHaveAttribute('title', 'nav.help');
+  });
+
+  it('keeps expanded-rail naming unchanged', () => {
+    mockSidebarCollapsed = false;
+    renderSidebar();
+
+    // Help link shows its real text node again — no sr-only fallback needed.
+    const help = screen.getByRole('link', { name: 'nav.help' });
+    expect(help.querySelector('.sr-only')).toBeNull();
+    expect(help).toHaveAttribute('title', 'nav.help');
+
+    // Section triggers render their visible label carrier as before.
+    const planning = screen.getByRole('button', { name: 'Planning' });
+    expect(planning.querySelector('.fp-nav-section__label')).not.toBeNull();
+    expect(planning).toHaveAttribute('title', 'Planning');
+
+    // Expanded sub-navigation is untouched.
+    expect(screen.getByRole('link', { name: 'Create Budget' })).toBeInTheDocument();
   });
 });

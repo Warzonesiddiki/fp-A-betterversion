@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { HelpPanel } from '@/components/ui/HelpPanel';
 import { DollarSign, HelpCircle, FileText, Table as TableIcon, AlertTriangle } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
@@ -49,7 +51,9 @@ export default function CashFlowPage() {
     document.title = 'FinPlan Pro — Cash Flow Statement';
   }, []);
 
-  const { entries } = useGLStore();
+  const { entries, importError } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, importError: s.importError }))
+  );
   const navigate = useNavigate();
   const [period, setPeriod] = useState(() => {
     const now = new Date();
@@ -221,6 +225,18 @@ export default function CashFlowPage() {
     void ExportEngine.exportToExcel(data, { title: 'Cash_Flow_Statement' }).catch(reportExportFailure);
   };
 
+  if (importError) {
+    return (
+      <ErrorState
+        title="Failed to load data"
+        message={importError}
+        errorCode="GL-IMPORT-ERROR"
+        onRetry={() => window.location.reload()}
+        secondaryAction={{ label: 'Go to Data Import', onClick: () => navigate('/data') }}
+      />
+    );
+  }
+
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
@@ -237,7 +253,8 @@ export default function CashFlowPage() {
   if (!report) {
     return (
       <div className="p-6">
-        <Skeleton count={12} height="32px" />
+        {/* W-A11Y-002 M5: one polite announcement for the whole statement skeleton. */}
+        <Skeleton count={12} height="32px" srLabel="Loading cash flow statement…" />
       </div>
     );
   }

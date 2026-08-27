@@ -3,6 +3,10 @@ import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { masterStorage } from '@/utils/masterStorage';
 import { randomId } from '@/utils/cryptoId';
+// W6-P0-14: dashboards, widgets and per-dashboard filters are content
+// mutations (DASHBOARD_* family, mirroring analyticsStore). Selection
+// (setActiveDashboard) and transient error/loading flags stay unguarded.
+import { enforce, Permissions } from '@/utils/rbacEnforcer';
 
 export type WidgetType =
   | 'kpi'
@@ -93,93 +97,116 @@ export const useDashboardStore = create<DashboardState>()(
         isLoading: false,
         error: null,
 
-        setDashboards: (dashboards) => set({ dashboards }),
+        setDashboards: enforce(Permissions.DASHBOARD_UPDATE, 'setDashboards', (dashboards) =>
+          set({ dashboards })
+        ),
 
-        addDashboard: (data) => {
+        addDashboard: enforce(Permissions.DASHBOARD_CREATE, 'addDashboard', (data) => {
           const id = generateId('dash');
           const now = new Date().toISOString();
           const dashboard: Dashboard = { ...data, id, createdAt: now, updatedAt: now };
           set((state) => ({ dashboards: [...state.dashboards, dashboard] }));
           return id;
-        },
+        }),
 
-        updateDashboard: (id, updates) =>
+        updateDashboard: enforce(Permissions.DASHBOARD_UPDATE, 'updateDashboard', (id, updates) =>
           set((state) => ({
             dashboards: state.dashboards.map((d) =>
               d.id === id ? { ...d, ...updates, updatedAt: new Date().toISOString() } : d
             ),
-          })),
+          }))
+        ),
 
-        deleteDashboard: (id) =>
+        deleteDashboard: enforce(Permissions.DASHBOARD_DELETE, 'deleteDashboard', (id) =>
           set((state) => ({
             dashboards: state.dashboards.filter((d) => d.id !== id),
             activeDashboardId: state.activeDashboardId === id ? null : state.activeDashboardId,
-          })),
+          }))
+        ),
 
+        // Selection is view state — unguarded by design.
         setActiveDashboard: (id) => set({ activeDashboardId: id }),
 
-        addWidget: (dashboardId, data) =>
+        addWidget: enforce(Permissions.DASHBOARD_CREATE, 'addWidget', (dashboardId, data) =>
           set((state) => ({
             dashboards: state.dashboards.map((d) => {
               if (d.id !== dashboardId) return d;
               const widget: Widget = { ...data, id: generateId('w') };
               return { ...d, widgets: [...d.widgets, widget], updatedAt: new Date().toISOString() };
             }),
-          })),
+          }))
+        ),
 
-        updateWidget: (dashboardId, widgetId, updates) =>
-          set((state) => ({
-            dashboards: state.dashboards.map((d) => {
-              if (d.id !== dashboardId) return d;
-              return {
-                ...d,
-                widgets: d.widgets.map((w) => (w.id === widgetId ? { ...w, ...updates } : w)),
-                updatedAt: new Date().toISOString(),
-              };
-            }),
-          })),
+        updateWidget: enforce(
+          Permissions.DASHBOARD_UPDATE,
+          'updateWidget',
+          (dashboardId, widgetId, updates) =>
+            set((state) => ({
+              dashboards: state.dashboards.map((d) => {
+                if (d.id !== dashboardId) return d;
+                return {
+                  ...d,
+                  widgets: d.widgets.map((w) => (w.id === widgetId ? { ...w, ...updates } : w)),
+                  updatedAt: new Date().toISOString(),
+                };
+              }),
+            }))
+        ),
 
-        removeWidget: (dashboardId, widgetId) =>
-          set((state) => ({
-            dashboards: state.dashboards.map((d) => {
-              if (d.id !== dashboardId) return d;
-              return {
-                ...d,
-                widgets: d.widgets.filter((w) => w.id !== widgetId),
-                updatedAt: new Date().toISOString(),
-              };
-            }),
-          })),
+        removeWidget: enforce(
+          Permissions.DASHBOARD_DELETE,
+          'removeWidget',
+          (dashboardId, widgetId) =>
+            set((state) => ({
+              dashboards: state.dashboards.map((d) => {
+                if (d.id !== dashboardId) return d;
+                return {
+                  ...d,
+                  widgets: d.widgets.filter((w) => w.id !== widgetId),
+                  updatedAt: new Date().toISOString(),
+                };
+              }),
+            }))
+        ),
 
-        moveWidget: (dashboardId, widgetId, position) =>
-          set((state) => ({
-            dashboards: state.dashboards.map((d) => {
-              if (d.id !== dashboardId) return d;
-              return {
-                ...d,
-                widgets: d.widgets.map((w) => (w.id === widgetId ? { ...w, position } : w)),
-                updatedAt: new Date().toISOString(),
-              };
-            }),
-          })),
+        moveWidget: enforce(
+          Permissions.DASHBOARD_UPDATE,
+          'moveWidget',
+          (dashboardId, widgetId, position) =>
+            set((state) => ({
+              dashboards: state.dashboards.map((d) => {
+                if (d.id !== dashboardId) return d;
+                return {
+                  ...d,
+                  widgets: d.widgets.map((w) => (w.id === widgetId ? { ...w, position } : w)),
+                  updatedAt: new Date().toISOString(),
+                };
+              }),
+            }))
+        ),
 
-        addFilter: (dashboardId, data) =>
+        addFilter: enforce(Permissions.DASHBOARD_UPDATE, 'addFilter', (dashboardId, data) =>
           set((state) => {
             const filter: DashboardFilter = { ...data, id: generateId('flt') };
             const existing = state.filters[dashboardId] ?? [];
             return { filters: { ...state.filters, [dashboardId]: [...existing, filter] } };
-          }),
+          })
+        ),
 
-        removeFilter: (dashboardId, filterId) =>
-          set((state) => {
-            const existing = state.filters[dashboardId] ?? [];
-            return {
-              filters: {
-                ...state.filters,
-                [dashboardId]: existing.filter((f) => f.id !== filterId),
-              },
-            };
-          }),
+        removeFilter: enforce(
+          Permissions.DASHBOARD_UPDATE,
+          'removeFilter',
+          (dashboardId, filterId) =>
+            set((state) => {
+              const existing = state.filters[dashboardId] ?? [];
+              return {
+                filters: {
+                  ...state.filters,
+                  [dashboardId]: existing.filter((f) => f.id !== filterId),
+                },
+              };
+            })
+        ),
 
         setError: (error) => set({ error }),
         clearError: () => set({ error: null }),

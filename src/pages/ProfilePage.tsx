@@ -10,7 +10,8 @@ import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { organization, updateOrganization } = useSettingsStore();
+  const organization = useSettingsStore((s) => s.organization);
+  const updateOrganization = useSettingsStore((s) => s.updateOrganization);
   const [saved, setSaved] = useState(false);
 
   const [form, setForm] = useState({

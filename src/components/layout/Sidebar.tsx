@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronLeft, ChevronRight, HelpCircle, Search, X } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '@/store/uiStore';
 import { useTheme } from '@/context/ThemeContext';
 import { useAppNavigation } from '@/hooks/useAppNavigation';
@@ -27,11 +28,14 @@ function NavItemLink({ item, onNavigate }: { item: NavItem; onNavigate: () => vo
 function SidebarSection({
   section,
   expanded,
+  collapsed,
   onToggle,
   onNavigate,
 }: {
   section: NavSection;
   expanded: boolean;
+  /** Icon-rail mode: the visible label is hidden, so the name moves to sr-only. */
+  collapsed: boolean;
   onToggle: (id: string) => void;
   onNavigate: () => void;
 }) {
@@ -44,10 +48,15 @@ function SidebarSection({
         className="fp-nav-section__trigger"
         aria-expanded={expanded}
         aria-controls={panelId}
+        title={section.label}
         onClick={() => onToggle(section.id)}
       >
         <Icon className="fp-nav-section__icon" aria-hidden="true" />
-        <span className="fp-nav-section__label">{section.label}</span>
+        {/* W-A11Y-002 M1: collapsed CSS hides `.fp-nav-section__label` with
+            display:none, which also deletes the name from the a11y tree.
+            Swapping this one span to sr-only keeps exactly one accessible
+            name per trigger without touching the stylesheet. */}
+        <span className={collapsed ? 'sr-only' : 'fp-nav-section__label'}>{section.label}</span>
         <ChevronDown
           className="fp-nav-section__chevron"
           data-expanded={expanded ? 'true' : undefined}
@@ -76,8 +85,14 @@ function SidebarSection({
 
 export const Sidebar = memo(function Sidebar() {
   const { t } = useTranslation();
-  const { sidebarCollapsed, toggleSidebar, closeMobileSidebar, toggleCommandPalette } =
-    useUIStore();
+  const { sidebarCollapsed, toggleSidebar, closeMobileSidebar, toggleCommandPalette } = useUIStore(
+    useShallow((s) => ({
+      sidebarCollapsed: s.sidebarCollapsed,
+      toggleSidebar: s.toggleSidebar,
+      closeMobileSidebar: s.closeMobileSidebar,
+      toggleCommandPalette: s.toggleCommandPalette,
+    }))
+  );
   const { theme, toggleTheme } = useTheme();
   const { sections, activeSectionId } = useAppNavigation();
 
@@ -154,6 +169,7 @@ export const Sidebar = memo(function Sidebar() {
               key={section.id}
               section={section}
               expanded={!sidebarCollapsed && expandedId === section.id}
+              collapsed={sidebarCollapsed}
               onToggle={handleToggleSection}
               onNavigate={handleNavClick}
             />
@@ -162,9 +178,18 @@ export const Sidebar = memo(function Sidebar() {
       </nav>
 
       <div className="fp-sidebar__footer">
-        <NavLink to="/help" onClick={handleNavClick} className="fp-nav-item fp-nav-item--icon">
+        <NavLink
+          to="/help"
+          onClick={handleNavClick}
+          className="fp-nav-item fp-nav-item--icon"
+          title={t('nav.help')}
+        >
           <HelpCircle className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-          {!sidebarCollapsed && <span>{t('nav.help')}</span>}
+          {/* W-A11Y-002 M1: this span used to unmount while collapsed, leaving
+              an icon-only link with no accessible name. Keep one text carrier
+              mounted; sr-only in the rail. title supplements it for sighted
+              keyboard users but never carries the name alone. */}
+          <span className={sidebarCollapsed ? 'sr-only' : undefined}>{t('nav.help')}</span>
         </NavLink>
         <button
           type="button"

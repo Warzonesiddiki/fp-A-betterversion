@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
-
+import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, Column } from '@/components/ui/DataTable';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { FileText, Table as TableIcon, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
@@ -13,100 +14,41 @@ import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-// demo defaults — replaced by real data when transfer-pricing transactions come from tax imports
-const mockTransactions = [
-  {
-    id: 'TP-001',
-    from: 'US Parent',
-    to: 'UK Sub',
-    service: 'Management Fees',
-    amount: 2500000,
-    method: 'TNMM',
-    margin: 8.5,
-    armRange: '7-12',
-    status: 'compliant',
-  },
-  {
-    id: 'TP-002',
-    from: 'US Parent',
-    to: 'DE Sub',
-    service: 'R&D Services',
-    amount: 1800000,
-    method: 'CUP',
-    margin: 10.2,
-    armRange: '8-15',
-    status: 'compliant',
-  },
-  {
-    id: 'TP-003',
-    from: 'US Parent',
-    to: 'JP Sub',
-    service: 'Royalties',
-    amount: 3200000,
-    method: 'RPM',
-    margin: 12.1,
-    armRange: '10-18',
-    status: 'review',
-  },
-  {
-    id: 'TP-004',
-    from: 'UK Sub',
-    to: 'SG Sub',
-    service: 'IT Services',
-    amount: 950000,
-    method: 'TNMM',
-    margin: 6.8,
-    armRange: '7-12',
-    status: 'non-compliant',
-  },
-  {
-    id: 'TP-005',
-    from: 'US Parent',
-    to: 'BR Sub',
-    service: 'Technical Assistance',
-    amount: 1200000,
-    method: 'CPM',
-    margin: 9.5,
-    armRange: '8-14',
-    status: 'compliant',
-  },
-  {
-    id: 'TP-006',
-    from: 'DE Sub',
-    to: 'IN Sub',
-    service: 'Manufacturing',
-    amount: 4500000,
-    method: 'TNMM',
-    margin: 11.3,
-    armRange: '9-15',
-    status: 'compliant',
-  },
-];
-
-const methodDistribution = [
-  { method: 'TNMM', count: 3, amount: 7950000 },
-  { method: 'CUP', count: 1, amount: 1800000 },
-  { method: 'RPM', count: 1, amount: 3200000 },
-  { method: 'CPM', count: 1, amount: 1200000 },
-];
+import { deriveTPTransactions, computeMethodDistribution } from './transferPricingData';
 
 export default function TransferPricingPage() {
   const fmt = useCurrencyFormatter();
-  const _navigate = useNavigate();
+  const navigate = useNavigate();
+  const entries = useGLStore((s) => s.entries);
   const [methodFilter, setMethodFilter] = useState<string>('all');
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Transfer Pricing';
   }, []);
 
-  const filtered = useMemo(() => {
-    if (methodFilter === 'all') return mockTransactions;
-    return mockTransactions.filter((t) => t.method === methodFilter);
-  }, [methodFilter]);
+  const transactions = useMemo(() => deriveTPTransactions(entries), [entries]);
 
-  const totalIntercompany = roundTo(sumMoney(mockTransactions.map((t) => t.amount)), 2);
-  const compliantCount = mockTransactions.filter((t) => t.status === 'compliant').length;
-  const complianceRate = (compliantCount / mockTransactions.length) * 100;
+  const methodDistribution = useMemo(() => computeMethodDistribution(transactions), [transactions]);
+
+  const filtered = useMemo(() => {
+    if (methodFilter === 'all') return transactions;
+    return transactions.filter((t) => t.method === methodFilter);
+  }, [methodFilter, transactions]);
+
+  const totalIntercompany = useMemo(
+    () => (transactions.length > 0 ? roundTo(sumMoney(transactions.map((t) => t.amount)), 2) : 0),
+    [transactions]
+  );
+
+  const compliantCount = useMemo(
+    () => transactions.filter((t) => t.status === 'compliant').length,
+    [transactions]
+  );
+
+  const complianceRate = useMemo(
+    () => (transactions.length > 0 ? (compliantCount / transactions.length) * 100 : 0),
+    [compliantCount, transactions.length]
+  );
 
   const columns: Column[] = useMemo(
     () => [
@@ -159,7 +101,7 @@ export default function TransferPricingPage() {
     [fmt]
   );
 
-  const handleExportPDF = () => {
+  const handleExportPDF = useCallback(() => {
     void ExportEngine.exportToPDF(
       {
         headers: ['ID', 'From', 'To', 'Service', 'Amount', 'Method', 'Status'],
@@ -173,11 +115,11 @@ export default function TransferPricingPage() {
           t.status,
         ]),
       },
-      { title: 'Transfer Pricing Report' }
+      { title: 'Transfer_Pricing_Report' }
     ).catch(reportExportFailure);
-  };
+  }, [filtered, fmt]);
 
-  const handleExportExcel = () => {
+  const handleExportExcel = useCallback(() => {
     void ExportEngine.exportToExcel(
       {
         headers: ['ID', 'From', 'To', 'Service', 'Amount', 'Method', 'Margin', 'Status'],
@@ -194,74 +136,117 @@ export default function TransferPricingPage() {
       },
       { title: 'Transfer_Pricing_Report' }
     ).catch(reportExportFailure);
-  };
+  }, [filtered]);
+
+  if (transactions.length === 0) {
+    return (
+      <main className="p-6 space-y-6 max-w-7xl" aria-labelledby="tp-heading">
+        <PageHeader
+          title="Transfer Pricing"
+          titleId="tp-heading"
+          purpose="Intercompany transaction analysis and OECD / IRC §482 compliance."
+        />
+        <EmptyState
+          variant="no-data"
+          title="No transfer pricing transactions loaded"
+          description="Transfer pricing transactions appear here when cross-entity ledger entries or intercompany trades are imported into FinPlan Pro."
+          action={<Button onClick={() => navigate('/data/gl-upload')}>Import GL Data</Button>}
+        />
+      </main>
+    );
+  }
 
   return (
-    <div className="p-6 space-y-6">
+    <main className="p-6 space-y-6 max-w-7xl" aria-labelledby="tp-heading">
       <PageHeader
         title="Transfer Pricing"
-        purpose="Intercompany transaction analysis and compliance"
+        titleId="tp-heading"
+        purpose="Intercompany transaction analysis and OECD / IRC §482 compliance."
         actions={
-          <div className="flex gap-2">
-            <Button size="sm" variant="ghost" onClick={handleExportPDF}>
-              <FileText className="h-3.5 w-3.5 mr-1.5" />
+          <div className="flex gap-2" role="group" aria-label="Transfer pricing actions">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleExportPDF}
+              aria-label="Export PDF report"
+            >
+              <FileText className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
               PDF
             </Button>
-            <Button size="sm" variant="ghost" onClick={handleExportExcel}>
-              <TableIcon className="h-3.5 w-3.5 mr-1.5" />
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleExportExcel}
+              aria-label="Export Excel workbook"
+            >
+              <TableIcon className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
               Excel
             </Button>
           </div>
         }
       />
 
-      <div className="grid grid-cols-4 gap-4">
+      <section
+        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        aria-label="Transfer pricing key metrics"
+      >
         <KPIValue label="Total Intercompany" value={fmt.currency0(totalIntercompany)} />
-        <KPIValue label="Transactions" value={String(mockTransactions.length)} />
+        <KPIValue label="Transactions" value={String(transactions.length)} />
         <KPIValue
           label="Compliance Rate"
           value={`${formatPercent(complianceRate, 0)}`}
           trend={complianceRate >= 80 ? 'up' : 'down'}
         />
-        <KPIValue label="Methods Used" value="4" changeLabel="TNMM, CUP, RPM, CPM" />
-      </div>
+        <KPIValue
+          label="Methods Used"
+          value={String(methodDistribution.length)}
+          changeLabel={methodDistribution.map((m) => m.method).join(', ') || 'None'}
+        />
+      </section>
 
-      <div className="flex gap-2">
-        {['all', 'TNMM', 'CUP', 'RPM', 'CPM'].map((m) => (
+      <div
+        className="flex gap-2"
+        role="group"
+        aria-label="Filter transactions by transfer pricing method"
+      >
+        {(['all', 'TNMM', 'CUP', 'RPM', 'CPM', 'PSM'] as const).map((m) => (
           <Button
             key={m}
             size="sm"
             variant={methodFilter === m ? 'default' : 'ghost'}
             onClick={() => setMethodFilter(m)}
+            aria-pressed={methodFilter === m}
           >
             {m === 'all' ? 'All Methods' : m}
           </Button>
         ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Pricing Method Distribution</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={methodDistribution}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="method" stroke="#94a3b8" />
-              <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${formatCompact(v)}`} />
-              <Tooltip
-                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                formatter={(v) => fmt.currency0(Number(v))}
-              />
-              <Bar dataKey="amount" fill="#3b82f6" name="Total Amount" />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+      {methodDistribution.length > 0 && (
+        <Card aria-label="Pricing Method Distribution Chart">
+          <CardHeader>
+            <CardTitle>Pricing Method Distribution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={methodDistribution}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <XAxis dataKey="method" stroke="#94a3b8" />
+                <YAxis stroke="#94a3b8" tickFormatter={(v) => `$${formatCompact(v)}`} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                  formatter={(v) => fmt.currency0(Number(v))}
+                />
+                <Bar dataKey="amount" fill="#3b82f6" name="Total Amount" />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
 
-      <Card>
+      <Card aria-label="Intercompany Transactions Table">
         <CardHeader>
-          <CardTitle>Intercompany Transactions</CardTitle>
+          <CardTitle>Intercompany Transactions ({filtered.length})</CardTitle>
         </CardHeader>
         <CardContent>
           <DataTable
@@ -273,6 +258,31 @@ export default function TransferPricingPage() {
           />
         </CardContent>
       </Card>
-    </div>
+
+      <Card className="border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+        <CardHeader>
+          <CardTitle className="text-sm">
+            OECD Transfer Pricing Guidelines & IRC §482 Disclosures
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="text-xs text-[var(--text-muted)] space-y-2">
+          <p>
+            • <strong>Arm&apos;s Length Principle:</strong> Controlled transactions between
+            associated enterprises are benchmarked against comparable uncontrolled transactions per
+            OECD Chapter II and IRC §482.
+          </p>
+          <p>
+            • <strong>Method Selection:</strong> Evaluated using the Most Appropriate Method rule
+            (TNMM, CUP, Resale Price, Cost Plus, or Profit Split) based on transaction functional
+            profiles and comparability.
+          </p>
+          <p>
+            • <strong>BEPS Action 13:</strong> Intercompany charges are maintained with
+            contemporaneous documentation to satisfy Local File and Master File compliance
+            obligations across all operating tax jurisdictions.
+          </p>
+        </CardContent>
+      </Card>
+    </main>
   );
 }

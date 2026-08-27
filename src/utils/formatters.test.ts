@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import * as fmt from './formatters';
+import { useFinancialContextStore } from '@/store/financialContextStore';
 
 describe('formatters utility', () => {
   describe('formatCurrency', () => {
@@ -44,6 +45,38 @@ describe('formatters utility', () => {
       const result = fmt.formatVariance(-100);
       expect(result.isPositive).toBe(false);
       expect(result.formatted).toMatch(/\$100/);
+    });
+  });
+
+  describe('reporting currency integration', () => {
+    beforeEach(() => {
+      useFinancialContextStore.getState().resetContext();
+    });
+
+    it('formatCurrency reflects the reporting currency at call time', () => {
+      expect(fmt.formatCurrency(1234)).toMatch(/\$1,234/);
+      useFinancialContextStore.getState().setContext({ currency: { code: 'EUR' } });
+      expect(fmt.formatCurrency(1234)).toMatch(/€1,234/);
+    });
+
+    it('formatCurrencyDetailed reflects the reporting currency at call time', () => {
+      useFinancialContextStore.getState().setContext({ currency: { code: 'GBP' } });
+      expect(fmt.formatCurrencyDetailed(1234.56)).toMatch(/£1,234.56/);
+    });
+
+    it('formatVariance reflects the reporting currency at call time', () => {
+      useFinancialContextStore.getState().setContext({ currency: { code: 'EUR' } });
+      const result = fmt.formatVariance(-100);
+      expect(result.isPositive).toBe(false);
+      expect(result.formatted).toMatch(/€100/);
+    });
+
+    it('caches formatter instances per currency across calls', () => {
+      fmt.formatCurrency(1);
+      fmt.formatCurrency(2);
+      useFinancialContextStore.getState().setContext({ currency: { code: 'JPY' } });
+      expect(fmt.formatCurrency(1234)).toMatch(/¥1,234/);
+      expect(fmt.formatCurrency(-7)).toMatch(/¥7/);
     });
   });
 });

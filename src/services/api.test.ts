@@ -12,11 +12,27 @@ const testState = vi.hoisted(() => ({
   mockResUse: vi.fn(),
 }));
 
+const authClientState = vi.hoisted(() => ({
+  login: vi.fn(),
+  logout: vi.fn(),
+  me: vi.fn(),
+  refresh: vi.fn(),
+}));
+
 vi.mock('@/store/authStore', () => ({
   useAuthStore: Object.assign(vi.fn(), {
     getState: testState.mockGetState,
     setState: testState.mockSetState,
   }),
+}));
+
+vi.mock('@/services/authClient', () => ({
+  authClient: {
+    login: authClientState.login,
+    logout: authClientState.logout,
+    me: authClientState.me,
+    refresh: authClientState.refresh,
+  },
 }));
 
 vi.mock('axios', async () => {
@@ -146,6 +162,62 @@ describe('api', () => {
         value: { href: origHref },
         writable: true,
       });
+    });
+
+    it('persists BOTH rotated tokens after a successful refresh', async () => {
+      const mockLogout = vi.fn();
+      testState.mockGetState.mockReturnValue({
+        accessToken: 'expired-at',
+        refreshToken: 'stale-rt',
+        logout: mockLogout,
+      });
+      authClientState.refresh.mockResolvedValue({ accessToken: 'at-2', refreshToken: 'rt-2' });
+
+      const error = {
+        response: { status: 401 },
+        config: { url: '/budgets', _retry: false, headers: {} },
+      };
+      // The retried original request goes back through the axios instance and
+      // fails in jsdom; only the token-persistence side effect is under test.
+      await onResponseRejected(error).catch(() => 'replay-rejected');
+
+      expect(authClientState.refresh).toHaveBeenCalledWith('stale-rt');
+      // Saving only the access token would strand the revoked 'stale-rt' in
+      // state and trip SEC-2 family revocation on the NEXT refresh.
+      expect(testState.mockSetState).toHaveBeenCalledWith({
+        accessToken: 'at-2',
+        refreshToken: 'rt-2',
+      });
+      expect(mockLogout).not.toHaveBeenCalled();
+    });
+
+    it('logs out and redirects when the refresh call itself fails', async () => {
+      const mockLogout = vi.fn();
+      testState.mockGetState.mockReturnValue({
+        accessToken: 'at',
+        refreshToken: 'revoked-rt',
+        logout: mockLogout,
+      });
+      authClientState.refresh.mockRejectedValue(
+        new Error('Refresh token reuse detected; all sessions revoked')
+      );
+
+      const origHref = window.location.href;
+      Object.defineProperty(window, 'location', { value: { href: '' }, writable: true });
+
+      try {
+        await expect(
+          onResponseRejected({
+            response: { status: 401 },
+            config: { url: '/budgets', _retry: false, headers: {} },
+          })
+        ).rejects.toThrow('reuse detected');
+      } finally {
+        Object.defineProperty(window, 'location', { value: { href: origHref }, writable: true });
+      }
+
+      expect(authClientState.refresh).toHaveBeenCalledWith('revoked-rt');
+      expect(mockLogout).toHaveBeenCalled();
     });
   });
 });

@@ -550,3 +550,66 @@ describe('Probe benchmark tests — performance bounds (PluginSandbox)', () => {
     expect(Date.now() - start).toBeLessThan(500);
   });
 });
+
+// ============================================================================
+// W6-P0-02 REGRESSION (2026-08-24): computed member keys built at runtime
+// (`String.fromCharCode`-assembled 'constructor') bypassed the
+// FORBIDDEN_PROPERTIES walk, which only inspected Identifier / string-Literal
+// keys. The chain below reaches the REAL Function constructor from inside the
+// sandbox today; after the fix every non-static-literal computed key must be
+// rejected by validatePluginCode / executeSandboxed.
+// ============================================================================
+describe('W6-P0-02 computed-key hardening', () => {
+  // String.fromCharCode(99,111,110,115,116,114,117,99,116,111,114) === 'constructor'
+  const CTOR_KEY_SRC = 'String.fromCharCode(99,111,110,115,116,114,117,99,116,111,114)';
+  const ESCAPE_IIFE = `(function(){ var o = {}; var k = ${CTOR_KEY_SRC}; return o[k][k]("return 1")(); })();`;
+
+  it('rejects a fromCharCode-built computed key in validatePluginCode', () => {
+    const r = validatePluginCode(ESCAPE_IIFE);
+    expect(r.safe).toBe(false);
+    expect(r.reason).toMatch(/computed/i);
+  });
+
+  it('blocks the full fromCharCode escape chain in executeSandboxed', () => {
+    const r = executeSandboxed(ESCAPE_IIFE, safeApi);
+    expect(r.success).toBe(false);
+    expect(r.error).toMatch(/computed|AST/i);
+  });
+
+  it('rejects identifier-key computed access', () => {
+    const r = validatePluginCode('(function(){ var a=[1]; var i=0; return a[i]; })();');
+    expect(r.safe).toBe(false);
+  });
+
+  it('rejects template-literal computed keys', () => {
+    const r = validatePluginCode('(function(){ var o={"k":1}; return o[`k`]; })();');
+    expect(r.safe).toBe(false);
+  });
+
+  it('rejects NewExpression callees reached through computed keys', () => {
+    const code = `(function(){ var o={}; var k=${CTOR_KEY_SRC}; var F=o[k][k]; return new F("return 1")(); })();`;
+    expect(validatePluginCode(code).safe).toBe(false);
+  });
+
+  it('still allows static string-literal computed keys that pass safe-name rules', () => {
+    const r = validatePluginCode('(function(){ var o={"total":5}; return o["total"]; })();');
+    expect(r.safe).toBe(true);
+  });
+
+  it('allows object literals with non-computed keys (Property keys are names, not references)', () => {
+    const r = validatePluginCode(
+      "(function(){ var o = { total: 5, label: 'x' }; return o['total']; })();"
+    );
+    expect(r.safe).toBe(true);
+  });
+
+  it('still allows numeric index literals', () => {
+    const r = validatePluginCode('(function(){ var a=[7]; return a[0]; })();');
+    expect(r.safe).toBe(true);
+  });
+
+  it('still rejects forbidden names via static string-literal keys', () => {
+    const r = validatePluginCode('(function(){ return ({})["constructor"]; })();');
+    expect(r.safe).toBe(false);
+  });
+});

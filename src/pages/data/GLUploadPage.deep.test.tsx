@@ -12,7 +12,7 @@
  *   - DO NOT mock lucide-react — setup.ts already does that globally with
  *     the enumerated-icons list.
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
@@ -808,6 +808,112 @@ describe('GLUploadPage (data-driven)', () => {
     });
     expect(storeStub.setImportError).toHaveBeenCalledWith(
       expect.stringMatching(/Maximum supported is 100,000/i)
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// W6-P0-09 / W6-P0-10: live import coercion.
+//
+// P0-10: amounts went through bare parseFloat ("1,234.56" became 1).
+// P0-09: postDate was stored raw (garbage periods like "31/02".slice(0,7)).
+// The wizard transformation must parse amounts via parseFinancialAmount,
+// validate dates via parseImportDate, exclude broken rows, and surface
+// per-row errors through the existing importError channel.
+// ---------------------------------------------------------------------------
+describe('GLUploadPage — W6-P0-09/P0-10 live import coercion', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    storeStub = makeStore();
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  async function runImport(csv: string): Promise<void> {
+    renderPage();
+    await act(async () => {
+      await lastFileDrop!.onFile(makeFile('gl.csv', 'text/csv', csv));
+    });
+    expect(lastColumnMapper).not.toBeNull();
+    act(() => {
+      lastColumnMapper!.onMap('accountCode', 'accountCode');
+      lastColumnMapper!.onMap('postDate', 'postDate');
+      lastColumnMapper!.onMap('debit', 'debit');
+      lastColumnMapper!.onMap('credit', 'credit');
+    });
+    await act(async () => {
+      screen.getByRole('button', { name: /Preview Data/ }).click();
+    });
+    await act(async () => {
+      screen.getByTestId('preview-confirm').click();
+    });
+  }
+
+  function importedRows(): Array<Record<string, unknown>> {
+    const call = storeStub.importGLData.mock.calls[0];
+    return (call?.[0] ?? []) as Array<Record<string, unknown>>;
+  }
+
+  it('parses comma-formatted amounts instead of truncating them', async () => {
+    await runImport('accountCode,postDate,debit,credit\n1000,2024-01-15,"1,234.56",250\n');
+    expect(storeStub.importGLData).toHaveBeenCalledTimes(1);
+    const rows = importedRows();
+    expect(rows).toHaveLength(1);
+    expect(rows[0]!.debit).toBe(1234.56); // bare parseFloat would yield 1
+    expect(rows[0]!.credit).toBe(250);
+  });
+
+  it('stores negative parenthesized and currency-prefixed amounts correctly', async () => {
+    await runImport('accountCode,postDate,debit,credit\n1000,2024-01-15,"(500)","$1,000"\n');
+    expect(storeStub.importGLData).toHaveBeenCalledTimes(1);
+    const rows = importedRows();
+    expect(rows[0]!.debit).toBe(-500);
+    expect(rows[0]!.credit).toBe(1000);
+  });
+
+  it('derives period from a validated ISO date', async () => {
+    await runImport('accountCode,postDate,debit\n1000,2024-01-15,10\n');
+    expect(storeStub.importGLData).toHaveBeenCalledTimes(1);
+    const rows = importedRows();
+    expect(rows[0]!.date).toBe('2024-01-15');
+    expect(rows[0]!.postDate).toBe('2024-01-15');
+    expect(rows[0]!.period).toBe('2024-01');
+    expect(rows[0]!.periodName).toBe('2024-01');
+  });
+
+  it('rejects rows with unparseable dates and surfaces a per-row error', async () => {
+    await runImport('accountCode,postDate,debit\n1000,31/02/2023,10\n');
+    expect(storeStub.importGLData).not.toHaveBeenCalled();
+    expect(storeStub.setImportError).toHaveBeenCalledWith(
+      expect.stringMatching(/unparseable posting date/i)
+    );
+  });
+
+  it('imports only the valid rows when some dates are garbage, reporting each bad row', async () => {
+    await runImport(
+      'accountCode,postDate,debit\n1000,2024-01-15,10\n2000,not-a-date,20\n3000,2024-02-30,30\n'
+    );
+    expect(storeStub.importGLData).toHaveBeenCalledTimes(1);
+    const rows = importedRows();
+    expect(rows).toHaveLength(1);
+    expect(rows[0]!.accountCode).toBe('1000');
+    // Drain the progress interval: per-row errors surface only after the
+    // final status transition so setImportStatus('complete') cannot clear them.
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(500);
+    });
+    expect(storeStub.setImportError).toHaveBeenCalledWith(
+      expect.stringMatching(/Row 3[\s\S]*Row 4/s)
+    );
+  });
+
+  it('rejects rows with unparseable amounts instead of silently storing 0', async () => {
+    await runImport('accountCode,postDate,debit\n1000,2024-01-15,abc\n');
+    expect(storeStub.importGLData).not.toHaveBeenCalled();
+    expect(storeStub.setImportError).toHaveBeenCalledWith(
+      expect.stringMatching(/unparseable debit amount/i)
     );
   });
 });

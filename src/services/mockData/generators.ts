@@ -26,6 +26,7 @@ import type {
   TaskStatus,
   TaskPriority,
 } from '@/types';
+import Decimal from 'decimal.js';
 
 // Utility for ID generation
 const genId = (prefix: string) => `${prefix}-${Math.random().toString(36).substring(2, 11)}`;
@@ -161,10 +162,10 @@ export function generateGLEntries(count: number = 50): GLEntry[] {
       periodName: fiscalPeriod,
       debit,
       credit,
-      netChange: credit - debit,
+      netChange: new Decimal(credit).minus(debit).toNumber(),
       date: postDate,
       postDate,
-      amount: debit + credit,
+      amount: new Decimal(debit).plus(credit).toNumber(),
       description: `Journal Entry ${i}`,
       reference: id,
       entityId: 'Default',
@@ -203,10 +204,12 @@ export function generateVariances(count: number = 10): VarianceAnalysis[] {
   const statuses: VarianceStatus[] = ['Favorable', 'Unfavorable', 'Neutral'];
   const thresholds: ThresholdStatus[] = ['Within', 'Watch', 'Significant'];
   return Array.from({ length: count }, (_, i) => {
-    const budget = Math.random() * 100000;
-    const actual = budget + (Math.random() - 0.5) * 20000;
-    const dollarVar = actual - budget;
-    const percentVar = (dollarVar / budget) * 100;
+    const budget = new Decimal(Math.random()).times(100000).toNumber();
+    const actual = new Decimal(budget)
+      .plus(new Decimal(Math.random()).minus(0.5).times(20000))
+      .toNumber();
+    const dollarVar = new Decimal(actual).minus(budget).toNumber();
+    const percentVar = new Decimal(dollarVar).dividedBy(budget).times(100).toNumber();
     return {
       id: genId('var'),
       accountId: genId('acct'),
@@ -215,7 +218,7 @@ export function generateVariances(count: number = 10): VarianceAnalysis[] {
       accountType: 'OpEx',
       budgetAmount: budget,
       actualAmount: actual,
-      forecastAmount: budget * 1.05,
+      forecastAmount: new Decimal(budget).times(1.05).toNumber(),
       dollarVariance: dollarVar,
       percentVariance: percentVar,
       varianceStatus: statuses[i % 3]!,
@@ -374,7 +377,7 @@ export function generateCashFlow(
       month: i + 1,
       inflow,
       outflow,
-      net: inflow - outflow,
+      net: new Decimal(inflow).minus(outflow).toNumber(),
     };
   });
 }

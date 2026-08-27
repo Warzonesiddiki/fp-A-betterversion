@@ -8,12 +8,6 @@
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build"
   },
-  "updater": {
-    "active": false,
-    "endpoints": [],
-    "dialog": false,
-    "pubkey": ""
-  },
   "app": {
     "windows": [
       {
@@ -37,6 +31,14 @@
       "tooltip": "FinPlan Pro"
     }
   },
+  "plugins": {
+    "updater": {
+      "pubkey": "REPLACE_WITH_REAL_PUBKEY_FROM-tauri-signer-generate-SEE-docs/security/UPDATER_SETUP.md",
+      "endpoints": [
+        "https://updates.example.invalid/{{target}}/{{current_version}}"
+      ]
+    }
+  },
   "bundle": {
     "active": true,
     "targets": "all",
@@ -58,6 +60,7 @@
     "longDescription": "FinPlan Pro is an enterprise-grade FP&A platform for budgeting, forecasting, consolidation, and financial reporting.",
     "copyright": "Copyright 2026 FinPlan Pro. All rights reserved.",
     "licenseFile": "",
+    "createUpdaterArtifacts": true,
     "fileAssociations": [
       {
         "ext": [
@@ -93,6 +96,5 @@
         "description": "Comma-Separated Values"
       }
     ]
-  },
-  "_updater_comment": "F-0020: updater DISABLED. updates.finplanpro.com is not controlled infrastructure, so an active updater would poll a dead/uncontrolled domain. Re-enable only with controlled update infrastructure (endpoints + signing key + tests); scripts/check-version-consistency.mjs blocks unverified re-enablement."
+  }
 }

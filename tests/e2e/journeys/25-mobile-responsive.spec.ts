@@ -1,16 +1,18 @@
 /**
- * P0A-15 — Mobile / PWA responsive E2E
+ * P0A-15 — Mobile responsive E2E
  * PICK CHAIN Elenchus ↔ Hermes (15th pair LOCKED 🔒) + cross-witness Hephaestus
  * 4-ICP verdict: I 9.0/S 9.0/C 9.0/5-Muse 9.0 — D-007 SHL CATCH closure on prior fabrication
  * D-002 3-witness: (1) canonical step file:line (this header),
- *                   (2) WCAG 2.5.5 tap targets ≥44px (W3C spec),
- *                   (3) vite-plugin-pwa v1.3.0 generates /manifest.webmanifest on build (package.json L105)
- * D-007 honesty: PWA manifest is generated at build time by vite-plugin-pwa; we test for the
- *                 <link rel="manifest"> reference in the served HTML instead of the literal file.
+ *                   (2) WCAG 2.5.5 tap targets ≥44px (W3C spec)
  * Sourced from: tests/e2e/critical-user-journeys/dashboard.spec.ts (signInAsCfo helper)
  *
- * [Elenchus|Muse] P0A-15: Mobile / PWA responsive
- * Closes G-015 no mobile/PWA E2E → full responsive + PWA verification
+ * [Elenchus|Muse] P0A-15: Mobile responsive
+ * Closes G-015 no mobile E2E → full responsive verification
+ *
+ * PWA coverage removed 2026-08-25 (owner ruling "desktop-only, REMOVE PWA"):
+ * vite-plugin-pwa uninstalled, so T-mr-3 (manifest link) and T-mr-4
+ * (service-worker wiring) asserted a surface that no longer exists.
+ * tests/e2e/workflows/17-pwa-offline.spec.ts deleted for the same reason.
  */
 import { test, expect, type Page } from '@playwright/test';
 
@@ -30,7 +32,7 @@ const signInAsCfo = async (page: Page) => {
   }
 };
 
-test.describe('P0A-15: Mobile / PWA responsive E2E', () => {
+test.describe('P0A-15: Mobile responsive E2E', () => {
   test.beforeEach(async ({ page }) => {
     await signInAsCfo(page);
   });
@@ -64,45 +66,6 @@ test.describe('P0A-15: Mobile / PWA responsive E2E', () => {
     // drill-down should reveal something
     await page.waitForTimeout(300);
     await expect(kpi).toBeVisible();
-  });
-
-  test('T-mr-3: PWA manifest reference in served HTML', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
-    // vite-plugin-pwa injects <link rel="manifest"> either literally or via registerSW
-    const manifestLink = page.locator('link[rel="manifest"]');
-    // Some setups use a generated asset path; we accept either a literal link or the SW registration
-    const swScript = page
-      .locator('script')
-      .filter({ hasText: /workbox|service.?worker|navigator\.serviceWorker/i });
-    const linkCount = await manifestLink.count();
-    const swCount = await swScript.count();
-    // At least one of the two signals must be present
-    expect(
-      linkCount + swCount,
-      'Expected PWA manifest link or SW registration script'
-    ).toBeGreaterThan(0);
-  });
-
-  test('T-mr-4: Service Worker registration available (or graceful fallback)', async ({ page }) => {
-    await page.goto('/', { waitUntil: 'domcontentloaded' });
-    // In dev mode SW may not be registered; in preview/build it must be.
-    // We check that navigator.serviceWorker exists and that vite-plugin-pwa's virtual module is wired.
-    const swAvailable = await page.evaluate(() => {
-      return typeof navigator !== 'undefined' && 'serviceWorker' in navigator;
-    });
-    expect(swAvailable).toBe(true);
-    // Look for registerSW in script content (vite-plugin-pwa's virtual module)
-    const swScripts = await page.locator('script').allInnerTexts();
-    const hasRegister = swScripts.some((s) =>
-      /registerSW|serviceWorker\.register|workbox/i.test(s)
-    );
-    // Acceptable to have registerSW OR not (dev mode disables it)
-    if (hasRegister) {
-      expect(hasRegister).toBe(true);
-    } else {
-      // In dev mode SW is not registered — this is acceptable
-      // The PWA build/preview will register it
-    }
   });
 
   test('T-mr-5: landscape 812×375 — analytics chart still rendered', async ({ page }) => {

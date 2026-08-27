@@ -55,39 +55,47 @@ function mergeStyles(base: CellStyle, override?: Partial<CellStyle>): React.CSSP
   };
 }
 
-function resolveMetricValue(content: MetricCellContent, cubeData: CubeData): string {
-  const key = ReportBuilderEngine.buildMetricKey(content);
-  const raw = cubeData[key];
-  if (raw === undefined || raw === null) return '—';
-  const num = typeof raw === 'number' ? raw : Number(raw);
-  if (!Number.isFinite(num)) return String(raw);
-  return ReportBuilderEngine.formatNumber(num, content.format, content.decimals);
+interface ResolvedCellValue {
+  display: string;
+  /** Raw numeric value when one exists (metric cells); undefined for labels/missing data. */
+  raw: number | undefined;
 }
 
-function resolveCellDisplay(cellContent: CellContent, cubeData: CubeData): string {
+function resolveMetricValue(content: MetricCellContent, cubeData: CubeData): ResolvedCellValue {
+  const key = ReportBuilderEngine.buildMetricKey(content);
+  const cubeValue = cubeData[key];
+  if (cubeValue === undefined || cubeValue === null) return { display: '—', raw: undefined };
+  const num = typeof cubeValue === 'number' ? cubeValue : Number(cubeValue);
+  if (!Number.isFinite(num)) return { display: String(cubeValue), raw: undefined };
+  return {
+    display: ReportBuilderEngine.formatNumber(num, content.format, content.decimals),
+    raw: num,
+  };
+}
+
+function resolveCellDisplay(cellContent: CellContent, cubeData: CubeData): ResolvedCellValue {
   if (cellContent.type === 'text') {
-    return cellContent.content.text;
+    return { display: cellContent.content.text, raw: undefined };
   }
   if (cellContent.type === 'metric') {
     return resolveMetricValue(cellContent.content, cubeData);
   }
   if (cellContent.type === 'formula') {
     const fc = cellContent.content as FormulaCellContent;
-    return fc.label ?? fc.expression;
+    return { display: fc.label ?? fc.expression, raw: undefined };
   }
-  if (cellContent.type === 'chart') return `[Chart]`;
-  if (cellContent.type === 'table') return `[Table]`;
-  return '';
+  if (cellContent.type === 'chart') return { display: `[Chart]`, raw: undefined };
+  if (cellContent.type === 'table') return { display: `[Table]`, raw: undefined };
+  return { display: '', raw: undefined };
 }
 
 function getConditionalStyle(
   formats: ConditionalFormat[] | undefined,
-  value: string
+  raw: number | undefined
 ): Partial<CellStyle> | null {
   if (!formats || formats.length === 0) return null;
-  const num = Number(value.replace(/[^0-9.-]/g, ''));
-  if (!Number.isFinite(num)) return null;
-  return ReportBuilderEngine.evaluateConditionalFormats(formats, num);
+  if (raw === undefined || !Number.isFinite(raw)) return null;
+  return ReportBuilderEngine.evaluateConditionalFormats(formats, raw);
 }
 
 /* ────────────────── row component ────────────────── */
@@ -131,23 +139,27 @@ function GridRow({
         const cell = row.cells[colIdx];
         if (!cell) return <td key={col.id} className="px-4 py-2" />;
 
-        const display = resolveCellDisplay(cell.content, cubeData);
+        const { display, raw } = resolveCellDisplay(cell.content, cubeData);
         const condStyle =
           cell.type === 'metric'
             ? getConditionalStyle(
                 (cell.content as { content: MetricCellContent }).content.conditionalFormats,
-                display
+                raw
               )
             : cell.type === 'formula'
               ? getConditionalStyle(
                   (cell.content as { content: FormulaCellContent }).content.conditionalFormats,
-                  display
+                  raw
                 )
               : null;
 
         const cellStyle = condStyle ? mergeStyles(cell.style, condStyle) : mergeStyles(cell.style);
         const isLabel = col.type === 'label';
         const isNumber = cell.type === 'metric' || cell.type === 'formula';
+        // Variance sign derives from the RAW value; formatted strings like "($1,234.56)"
+        // or "-2.1%" are display-only and must never be re-parsed for coloring.
+        const isNegative = cell.type === 'metric' && raw !== undefined && raw < 0;
+        const isPositive = cell.type === 'metric' && raw !== undefined && raw > 0;
 
         return (
           <td
@@ -155,11 +167,8 @@ function GridRow({
             className={cn(
               'px-4 py-2 text-sm tabular-nums',
               isNumber && 'text-right',
-              cell.type === 'metric' && display.startsWith('(') && 'text-red-400',
-              cell.type === 'metric' &&
-                !display.startsWith('(') &&
-                display !== '—' &&
-                'text-green-400'
+              isNegative && 'text-[#DC2626]',
+              isPositive && 'text-[#16A34A]'
             )}
             style={cellStyle}
             role="gridcell"

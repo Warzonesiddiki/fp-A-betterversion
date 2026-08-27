@@ -6,6 +6,7 @@ import type { Budget, BudgetState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { useUIStore } from './uiStore';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
+import { assertSnapshotReplayAllowed, assertUpdateAllowed } from './periodLockGuard';
 
 export const useBudgetStore = create<BudgetState>()(
   subscribeWithSelector(
@@ -54,6 +55,12 @@ export const useBudgetStore = create<BudgetState>()(
             (typeof updates.amount !== 'number' || !Number.isFinite(updates.amount))
           ) {
             throw new Error('amount must be a finite number');
+          }
+          // W6-P0-11: hard-locked periods are immutable — reject (typed
+          // PeriodLockedError + error toast) before any state mutation.
+          const existingItem = get().lineItems.find((i) => i.id === id);
+          if (existingItem) {
+            assertUpdateAllowed(existingItem, updates);
           }
           set((state) => {
             const idx = state.lineItems.findIndex((i) => i.id === id);
@@ -232,6 +239,8 @@ export const useBudgetStore = create<BudgetState>()(
         undo: () => {
           const { historyIndex, history } = get();
           if (historyIndex > 0) {
+            // W6-P0-11: replay must not resurrect changes in hard-locked periods.
+            assertSnapshotReplayAllowed(get().lineItems, history[historyIndex - 1]!);
             set((state) => {
               state.lineItems = history[historyIndex - 1]!;
               state.historyIndex = historyIndex - 1;
@@ -242,6 +251,8 @@ export const useBudgetStore = create<BudgetState>()(
         redo: () => {
           const { historyIndex, history } = get();
           if (historyIndex < history.length - 1) {
+            // W6-P0-11: replay must not apply changes to hard-locked periods.
+            assertSnapshotReplayAllowed(get().lineItems, history[historyIndex + 1]!);
             set((state) => {
               state.lineItems = history[historyIndex + 1]!;
               state.historyIndex = historyIndex + 1;

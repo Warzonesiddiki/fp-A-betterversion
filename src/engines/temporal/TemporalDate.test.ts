@@ -29,7 +29,6 @@ import {
   isLeapYear,
   parseToUTCEpoch,
   startOfUTCDay,
-  _startOfUTCMonth,
   toCalendarDateInTZ,
   toUTCISOString,
   // Fiscal calendar
@@ -411,5 +410,84 @@ describe('Boundary and edge cases', () => {
   it('toUTCISOString emits fixed-width Z format', () => {
     const ms = Date.UTC(2026, 5, 15, 12, 34, 56, 789);
     expect(toUTCISOString(ms)).toBe('2026-06-15T12:34:56.789Z');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Test 11: REGRESSION — addMonths negative deltas (lane A3/F21)
+//   Buggy formula: year + floor(targetMonth/12) + (targetMonth<0 ? -1 : 0)
+//   double-subtracted across year boundaries (Jun 15 2026 -6mo → Dec 2024
+//   instead of Dec 2025). floor() alone already rounds toward -inf.
+//   All expected values below hand-computed against the Gregorian calendar.
+// ---------------------------------------------------------------------------
+
+describe('addMonths negative deltas (regression A3/F21)', () => {
+  const ymd = (ms: number): { year: number; month: number; day: number } => {
+    const d = new Date(ms);
+    return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() };
+  };
+
+  it('mid-month -1mo stays in same year: Jun 15 2026 -1 → May 15 2026', () => {
+    expect(ymd(addMonths(Date.UTC(2026, 5, 15), -1))).toEqual({ year: 2026, month: 5, day: 15 });
+  });
+
+  it('THE DEFECT: mid-month -6mo crosses one year boundary only: Jun 15 2026 -6 → Dec 15 2025', () => {
+    expect(ymd(addMonths(Date.UTC(2026, 5, 15), -6))).toEqual({ year: 2025, month: 12, day: 15 });
+  });
+
+  it('mid-month -12mo lands on same month previous year: Jun 15 2026 -12 → Jun 15 2025', () => {
+    expect(ymd(addMonths(Date.UTC(2026, 5, 15), -12))).toEqual({ year: 2025, month: 6, day: 15 });
+  });
+
+  it('mid-month -13mo lands one month earlier than -12: Jun 15 2026 -13 → May 15 2025', () => {
+    expect(ymd(addMonths(Date.UTC(2026, 5, 15), -13))).toEqual({ year: 2025, month: 5, day: 15 });
+  });
+
+  it('month-end -1mo into January crosses year WITHOUT extra decrement: Jan 31 2027 -1 → Dec 31 2026', () => {
+    expect(ymd(addMonths(Date.UTC(2027, 0, 31), -1))).toEqual({ year: 2026, month: 12, day: 31 });
+  });
+
+  it('month-end -12mo: Dec 31 2026 -12 → Dec 31 2025', () => {
+    expect(ymd(addMonths(Date.UTC(2026, 11, 31), -12))).toEqual({ year: 2025, month: 12, day: 31 });
+  });
+
+  it('month-end -13mo clamps to shorter target month: Dec 31 2026 -13 → Nov 30 2025', () => {
+    expect(ymd(addMonths(Date.UTC(2026, 11, 31), -13))).toEqual({ year: 2025, month: 11, day: 30 });
+  });
+
+  it('EOM clamp backward into non-leap Feb: Mar 31 2026 -1 → Feb 28 2026', () => {
+    expect(ymd(addMonths(Date.UTC(2026, 2, 31), -1))).toEqual({ year: 2026, month: 2, day: 28 });
+  });
+
+  it('EOM clamp backward over multiple months: May 31 2026 -3 → Feb 28 2026', () => {
+    expect(ymd(addMonths(Date.UTC(2026, 4, 31), -3))).toEqual({ year: 2026, month: 2, day: 28 });
+  });
+
+  it('EOM clamp backward into leap Feb: Mar 31 2028 -1 → Feb 29 2028', () => {
+    expect(ymd(addMonths(Date.UTC(2028, 2, 31), -1))).toEqual({ year: 2028, month: 2, day: 29 });
+  });
+
+  it('leap-day source clamps backward: Feb 29 2028 -12 → Feb 28 2027', () => {
+    expect(ymd(addMonths(Date.UTC(2028, 1, 29), -12))).toEqual({ year: 2027, month: 2, day: 28 });
+  });
+
+  it('non-leap Feb backward then forward is stable: Feb 28 2027 +12 -12 → Feb 28 2027', () => {
+    const ms = Date.UTC(2027, 1, 28);
+    expect(addMonths(addMonths(ms, 12), -12)).toBe(ms);
+  });
+
+  it('round-trips exactly when no clamping occurs: Jun 15 2026 +6 -6 → original epoch', () => {
+    const ms = Date.UTC(2026, 5, 15, 12, 34, 56, 789);
+    expect(addMonths(addMonths(ms, 6), -6)).toBe(ms);
+  });
+
+  it('preserves time-of-day on negative deltas: Jun 15 12:34:56.789 2026 -6 → Dec 15 12:34:56.789 2025', () => {
+    const result = addMonths(Date.UTC(2026, 5, 15, 12, 34, 56, 789), -6);
+    expect(result).toBe(Date.UTC(2025, 11, 15, 12, 34, 56, 789));
+  });
+
+  it('symmetry with positive deltas: Jun 15 2026 +7 -7 → original epoch (positive path unaffected)', () => {
+    const ms = Date.UTC(2026, 5, 15);
+    expect(addMonths(addMonths(ms, 7), -7)).toBe(ms);
   });
 });

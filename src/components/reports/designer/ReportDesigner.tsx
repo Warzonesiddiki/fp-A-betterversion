@@ -45,7 +45,7 @@ const COLUMN_TYPES_MAP: Record<
 };
 
 export function ReportDesigner() {
-  const { engine } = useCubeStore();
+  const engine = useCubeStore((s) => s.engine);
   const [report, setReport] = useState<ReportDefinition>(() =>
     ReportBuilderEngine.createReport('New Report', 'custom', 'designer')
   );

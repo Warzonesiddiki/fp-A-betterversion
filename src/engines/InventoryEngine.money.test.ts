@@ -69,6 +69,15 @@ describe('InventoryEngine — money primitive known answers (GAP-1 / F-0006)', (
       expect(stats.daysOnHand).toBe(0);
       expect(Number.isFinite(stats.daysOnHand)).toBe(true);
     });
+
+    it('reports stockouts as null rather than a mocked incident count', () => {
+      const stats = InventoryEngine.calculateGLInventoryStats([
+        entry('1210', 1000, 'i1'),
+        entry('5000', -100, 'c1'),
+      ]);
+      // Null-unless-posted: no GL account class records stockout events.
+      expect(stats.stockouts).toBeNull();
+    });
   });
 
   describe('calculateTurnover', () => {

@@ -1,13 +1,16 @@
 import { useState, useMemo } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useGLStore } from '@/store/glStore';
+import { useShallow } from 'zustand/react/shallow';
 import { PivotTableEngine, type PivotConfig, type PivotField } from '@/engines/PivotTableEngine';
 import { PivotBuilder, PivotTable } from '@/components/ui/PivotTable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { subtractMoney } from '@/utils/money';
 
 export default function PivotExplorerPage() {
-  const { entries, accounts } = useGLStore();
+  const { entries, accounts } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, accounts: s.accounts }))
+  );
 
   const [config, setConfig] = useState<PivotConfig>({
     rows: ['accountType', 'accountName'],

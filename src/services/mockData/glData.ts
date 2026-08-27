@@ -1,4 +1,5 @@
 import type { GLEntry } from '@/types';
+import Decimal from 'decimal.js';
 
 interface RawGLEntry {
   readonly id: string;
@@ -17,14 +18,14 @@ interface RawGLEntry {
 }
 
 function toGLEntry(raw: RawGLEntry): GLEntry {
-  const netChange = raw.credit - raw.debit;
+  const netChange = new Decimal(raw.credit).minus(raw.debit).toNumber();
   return {
     ...raw,
     accountId: raw.id,
     period: raw.fiscalPeriod,
     periodName: raw.fiscalPeriod,
     netChange,
-    amount: raw.debit + raw.credit,
+    amount: new Decimal(raw.debit).plus(raw.credit).toNumber(),
     date: raw.postDate,
     reference: raw.journalId,
     entityId: raw.entity,
@@ -928,13 +929,17 @@ const rawGLEntries: RawGLEntry[] = [
 ];
 
 export function computeTrialBalance(): TrialBalanceItem[] {
-  const grouped = new Map<string, { debit: number; credit: number; count: number }>();
+  const grouped = new Map<string, { debit: Decimal; credit: Decimal; count: number }>();
 
   for (const entry of rawGLEntries) {
     const key = `${entry.accountCode}::${entry.accountName}`;
-    const existing = grouped.get(key) ?? { debit: 0, credit: 0, count: 0 };
-    existing.debit += entry.debit;
-    existing.credit += entry.credit;
+    const existing = grouped.get(key) ?? {
+      debit: new Decimal(0),
+      credit: new Decimal(0),
+      count: 0,
+    };
+    existing.debit = existing.debit.plus(entry.debit);
+    existing.credit = existing.credit.plus(entry.credit);
     existing.count++;
     grouped.set(key, existing);
   }
@@ -944,9 +949,9 @@ export function computeTrialBalance(): TrialBalanceItem[] {
     return {
       accountCode: accountCode!,
       accountName: accountName!,
-      totalDebit: data.debit,
-      totalCredit: data.credit,
-      netBalance: data.debit - data.credit,
+      totalDebit: data.debit.toNumber(),
+      totalCredit: data.credit.toNumber(),
+      netBalance: data.debit.minus(data.credit).toNumber(),
       entryCount: data.count,
     };
   });

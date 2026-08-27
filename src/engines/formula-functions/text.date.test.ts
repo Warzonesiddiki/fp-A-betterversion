@@ -37,9 +37,14 @@ import {
   registerTextFunctions,
 } from './text';
 
-// serial(2024-01-15) = days between 1899-12-30 and 2024-01-15
+// serial(2024-01-15) = days between the Excel epoch 1899-12-30 and 2024-01-15,
+// built in PURE UTC day-number space to mirror text.ts's documented serial
+// contract ("Excel 1900-system serials live in PURE UTC DAY-NUMBER SPACE").
+// A local-midnight helper (`new Date(y, m-1, d)`) silently depends on the host
+// timezone database: on Windows IST the pre-1900 LMT offset (+5:21) differs
+// from the modern +5:30, drifting the result a full day versus the impl.
 const serial = (y: number, m: number, d: number): number =>
-  Math.floor((new Date(y, m - 1, d).getTime() - new Date(1899, 11, 30).getTime()) / 86400000);
+  Math.round((Date.UTC(y, m - 1, d) - Date.UTC(1899, 11, 30)) / 86400000);
 
 describe('basic text helpers', () => {
   it('LEN counts digits', () => {

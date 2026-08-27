@@ -3,17 +3,10 @@ import type { SectorConfig } from './index';
 export const bankingConfig: SectorConfig = {
   id: 'banking',
   name: 'Banking / Financial Services',
-  description: 'Banking metrics: NIM, CET1, NPL, Efficiency Ratio',
+  description:
+    'Banking metrics: NIM and efficiency ratio derived from classified GL; ROA and cost of funds tracked as targets.',
   defaultKPIs: [
     { id: 'nim', label: 'Net Interest Margin', format: 'percent', target: 3.2 },
-    { id: 'cet1', label: 'Common Equity Tier 1 Ratio', format: 'percent', target: 14.5 },
-    {
-      id: 'npl_ratio',
-      label: 'Non-Performing Loan Ratio',
-      format: 'percent',
-      target: 1.5,
-      lowerIsBetter: true,
-    },
     {
       id: 'efficiency_ratio',
       label: 'Efficiency Ratio',
@@ -29,7 +22,6 @@ export const bankingConfig: SectorConfig = {
       target: 2.5,
       lowerIsBetter: true,
     },
-    { id: 'loan_deposit_ratio', label: 'Loan-to-Deposit Ratio', format: 'percent', target: 85 },
   ],
   enabledModules: ['banking', 'treasury', 'compliance', 'tax'],
   sidebarOrder: [

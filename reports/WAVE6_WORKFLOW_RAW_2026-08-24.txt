@@ -1,0 +1,291 @@
+workflow "wave6-zero-flaw-30-lane-audit" completed (30 agents).
+Return value:
+{
+  "lanesReported": 19,
+  "lanesFailed": [
+    "engines-correctness",
+    "engines-coverage",
+    "ui-primitives",
+    "components-domain",
+    "i18n-completeness",
+    "templates-coverage",
+    "server-backend",
+    "security-posture",
+    "test-health-static",
+    "ci-gates",
+    "mission-gap-map"
+  ],
+  "totalsBySeverity": {
+    "P0": 11,
+    "P1": 70,
+    "P2": 48
+  },
+  "p0List": [
+    "workers-protocol: batch-calc formula evaluator silently zeroes results: Function() eval is blocked by the shipped Tauri CSP and the catch-all returns 0",
+    "plugins-sandbox: Sandbox escape: AST validator inspects only static member-access names — runtime-computed keys and reflection-builtin string arguments reach the host Function constructor",
+    "plugins-sandbox: Documented sandbox control is not wired into any real plugin-execution path — loader runs factories unsandboxed while docs claim a hardened sandbox",
+    "utils-storage-crypto: Both raw storage backends swallow every error, making masterStorage's fail-closed read, quota-exceeded, and corrupted-data recovery architecture dead code",
+    "utils-storage-crypto: Single-copy encryption key stored beside the data with auto-rotation on corruption and no escrow: clearing site data, WebView profile reset, or app reinstall permanently destroys ALL encrypted financial history",
+    "config-sectors: Main-dashboard sector KPI tiles always render $0: no sector config sets accountCodes, and percent KPIs are force-formatted as currency",
+    "tauri-shell: Native menu is inert end-to-end: every File/View/Tools menu item does nothing in the packaged desktop app",
+    "a11y-wcag: Shipped ConfirmDialog primitive is mounted nowhere; exported confirm.* API deadlocks on first use",
+    "data-io-pipelines: GL import stores unusable dates and garbage periods — no date parsing/validation on the live wizard path",
+    "data-io-pipelines: parseFloat coercion silently truncates comma-formatted amounts on import — wrong financial output",
+    "collab-locking: Undo/redo and updateLineItem bypass the period hard-lock freeze on budget line items"
+  ],
+  "p1List": [
+    "stores-integrity: 200 whole-state store subscriptions (`useXStore()` with no selector) cause app-wide over-render",
+    "stores-integrity: periodCloseStore is the only persisting store off the canonical middleware stack — bare persist(), no subscribeWithSelector and no immer",
+    "stores-integrity: Three core stores blow the 500-line limit: glStore.ts 1189, authStore.ts 812, auditTrailStore.ts 790",
+    "pages-routing: Help system serves 95 routes references to a nonexistent docs/parts/ corpus",
+    "pages-routing: Industry routes resolve to wrong-sector documentation titles in the live Help panel",
+    "pages-routing: Wildcard-family help fallback is dead code due to escaped-$ regex bug",
+    "pages-routing: 13 page components are production-dead (test-only imports) and 4 of 51 page directories have no routed component",
+    "hooks-quality: Live useAutoSave silently drops the pending save on unmount",
+    "hooks-quality: usePersistence discards version-migration results — stale data loads as-is",
+    "hooks-quality: ~16 of 46 hook modules have zero production consumers — realtime, persistence, URL-state, undo and rolling-forecast surfaces are unwired",
+    "hooks-quality: useGlobalShortcuts cleanup never unregisters system-wide shortcuts — and duplicates a correct implementation",
+    "workers-protocol: WorkerPool.terminate() strands every in-flight task forever (promise never settles), and there is no per-run cancel for long simulations",
+    "workers-protocol: Progress reporting is dead end-to-end: workers post progress with constant ids while the pool filters responses by task id, so onProgress never fires",
+    "workers-protocol: No incoming payload validation before math in any of the four workers — malformed or extreme payloads go straight into computation",
+    "workers-protocol: Consolidation worker counts auto-detected intercompany eliminations but never applies them — consolidated totals keep gross IC balances while claiming N eliminations",
+    "services-api: WebSocket layer reconnects with backoff but never re-authenticates or resubscribes: stale frozen token + one-shot presence:join kill collaboration after first token rotation",
+    "services-api: Shared REST transport auto-retries non-idempotent POST/PUT requests (network errors and 5xx) with no idempotency key — duplicate ERP/financial records on retry",
+    "services-api: crdtSync.applyIncomingOperations wipes pendingOps claiming 'All ops acknowledged' without any server acknowledgment — silent loss of unsynced offline edits; engine is also entirely unwired",
+    "services-api: ERP write-back 'atomic transaction' rolls back nothing: rollbackWriteBack invoked with an empty results array, and no connector implements executeWriteBack/rollbackWriteBack at all",
+    "services-api: No AbortController/cancellation anywhere in the HTTP API layer: connector requests chain 3 retries × 30s timeout and cannot be aborted, letting stale overlapping responses land",
+    "services-api: Unvalidated response parsing at trust boundaries violates the unknown->validated rule: 'Bearer undefined' and NaN expiry are reachable from malformed refresh responses",
+    "plugins-sandbox: Marketplace install gates are no-ops and failures are swallowed: version-compatibility and permission-consent stubs always approve, validation errors ignored, latent double-registration",
+    "plugins-sandbox: No signature/hash/integrity validation anywhere in the marketplace install path while the UI advertises a 'verified' badge backed by self-asserted seed data",
+    "plugins-sandbox: Manifest input validation is presence-only: arbitrary permission strings, unrestricted ids, and unused-but-unsanitized entry points accepted into the registry",
+    "utils-storage-crypto: safeJSONStorage wrapper on dataStore defeats masterStorage's typed fail-closed contract, silently hydrating empty state and swallowing write failures",
+    "utils-storage-crypto: Schema-migration story is nominal: 2 stores declare version without migrate (silent hydration skip on upgrade), 32 of 39 migrate functions are identity no-ops, and the canonical persistConfig factory is unused by all 41 stores",
+    "config-sectors: Mission gap: no Professional Services and no Nonprofit sector config — 2 of the credible all-industry verticals missing despite the one-stop ALL-INDUSTRY mandate",
+    "config-sectors: Banking config violates the registry's own validator (4 KPIs < required 5); validateConfig is dead code and src/config/sectors has zero test coverage",
+    "config-sectors: Percent-unit convention conflict: sector KPI targets are whole-number percents, contradicting the repo law 'percentages stored as decimals'; formatPercent performs no ×100, so mixed consumers misrender by 100×",
+    "config-sectors: Hardcoded currency: all 15 sectors pin defaultCurrency:'USD', a 9-currency validator whitelist, and the sector badge can contradict the currency actually displayed",
+    "config-sectors: No fiscal-calendar linkage in sector configs while the app default hardcodes a stale fiscalYearStart '2024-01-01' — wrong FY alignment for government/education users who don't manually override",
+    "types-strictness: Test files are type-checked by NO gate: tsc excludes them and Vitest does not typecheck",
+    "types-strictness: ESLint runs the untyped 'recommended' preset — no-floating-promises & co. are absent",
+    "misc-layers: GL server-commit channel ships with hardcoded empty bearer token and placeholder base URL — every ledger publish 401s against the real Control Plane",
+    "misc-layers: Circular import between layers: utils/tokenRotation.ts ↔ store/authStore.ts, plus further utils→store imports that break the utils leaf-layer",
+    "misc-layers: Three orphaned layers with zero production consumers: src/api, src/a11y, src/wasm",
+    "tauri-shell: F-DESK-006 secure-storage stack (Rust keyring commands + TauriSecureStorage + SecretsVault) has zero production wiring",
+    "tauri-shell: Vault lock is security theater: secure_storage_unlock accepts ANY non-empty password; lockout counter is dead code",
+    "tauri-shell: Capability manifest denies the very plugin APIs the frontend calls: notifications, global shortcuts, and WebviewWindow pop-outs are ACL-blocked in production",
+    "tauri-shell: No updater configured at all, while lib.rs falsely claims the updater plugin is registered — a v1.0.0 desktop finance app with no patch channel",
+    "e2e-journeys: Core FP&A journey specs contain a vacuous page-error guard: pageerror listener registered in afterEach AFTER the test body, so it can never record an error",
+    "e2e-journeys: Phantom canonical spec: 17 spec files cite tests/e2e/USER_JOURNEY_TEST_COVERAGE.md (31 references) but the document does not exist anywhere in the repo",
+    "e2e-journeys: Orphaned e2e/ directory: 5 a11y q5-temporal Playwright specs sit outside testDir './tests', are TODO-empty skeletons importing a non-installed dependency, and are cited by docs as existing verification",
+    "build-bundle: scripts/bundle-check.js crashes with ReferenceError (TDZ) on its own warn/fail paths",
+    "build-bundle: CI runs two divergent bundle gates; ci.yml's inline copy silently bypasses G19/critical-path/lazy-vendor enforcement",
+    "build-bundle: CLAUDE.md documents a chunk graph that does not exist (Vite 7 + grid/form/state-vendor)",
+    "build-bundle: bundle-check.js self-documentation drifted from its own gate list; excel-vendor and db-vendor carry zero budget anywhere",
+    "a11y-wcag: Modal focus restore and mid-dialog focus position destroyed by unstable effect deps",
+    "a11y-wcag: DataGrid column-visibility menu uses ARIA menu roles with zero menu keyboard support and unfocusable items",
+    "a11y-wcag: FileDropZone validation errors are invisible to screen readers (no role, no live region, no association)",
+    "a11y-wcag: FileDropZone Remove button label fails text contrast: text-red-400 = 2.77:1 on white",
+    "a11y-wcag: Modal light-mode close icon contrast 2.54:1 < 3:1 (SC 1.4.11), using the exact gray the codebase already banned",
+    "a11y-wcag: Toast system nests assertive alert inside polite status region; every toast interrupts assertively and none can be paused",
+    "a11y-wcag: DataTable filter/empty results unannounced whenever row count <= pageSize (live region conditionally rendered)",
+    "performance: ~180 components subscribe to whole Zustand stores with no selector, re-rendering on every store action",
+    "performance: Purpose-built workers sit unwired while the heaviest pages aggregate Decimal.js synchronously on the main thread",
+    "performance: 7 benchmark suites plus test:bench:ci script exist but nothing ever runs them - performance budgets unenforced",
+    "performance: DashboardPage runs a discarded O(n) FinanceCopilotEngine aggregation on every render",
+    "data-io-pipelines: Formula-injection invariant violated by shipped DataGrid export/copy writers (live banking pages)",
+    "data-io-pipelines: sql.js persistence silently dies at localStorage quota and rewrites the ENTIRE database on every setItem",
+    "data-io-pipelines: CSV import pipeline structurally truncated to first 20 rows — preview reused as allRows",
+    "data-io-pipelines: AdvancedExcelEngine produces invalid .xlsx files — bare XML blob labeled as spreadsheet MIME type",
+    "data-io-pipelines: exportToExcelWithPassword silently ignores the password — API promises encryption, delivers plaintext",
+    "pwa-offline: Update-prompt machinery is dead end-to-end and incompatible with autoUpdate, leaving mid-session stale-chunk breakage unmitigated",
+    "pwa-offline: Product ships an installable 'offline-first' PWA manifest while App.tsx hard-blocks every browser (alert + null) — contradictory surface, and an unguarded SW layer runs inside Tauri",
+    "pwa-offline: 'Offline-first' claim broken for core features: chart/grid/excel/pdf vendors excluded from precache and the only safety net is a 50-entry LRU runtime cache spanning all JS/CSS",
+    "pwa-offline: navigator.storage.persist() is never called anywhere — the entire financial dataset and the offline cache ride best-effort storage with silent-eviction exposure",
+    "collab-locking: Scenario locks are ownerless, unexpiring, and persisted forever — no stale-lock takeover policy or attribution",
+    "collab-locking: Optimistic-concurrency version fields exist on shared entities but no store maintains or checks them",
+    "collab-locking: Realtime collaboration data plane is scaffolding: lifecycle hooks mounted, but no producer/consumer ever moves data"
+  ],
+  "lanes": [
+    {
+      "findings": [
+        {
+          "evidence": "Grep witness #1 (regex `use\\w+Store\\()` across src/*.{ts,tsx}: 200 matches; independent grep witness #2 (narrow regex): 124 `useGLStore()` call sites alone. Representative reads: src/pages/DashboardPage.tsx:120 `const glStore = useGLStore();`, src/pages/sector/SectorDriverDashboard.tsx:826 `const glState = useGLStore();`, src/hooks/useRollingForecast.ts:119, src/pages/workforce/PayrollForecastPage.tsx:80, src/components/ai/NLQChat.tsx:54 `const { entries } = useGLStore();`. GL state holds entries/accounts/trialBalance/importProgress (src/store/glStore.ts:316-334), so every immer set() produces a new state object and re-renders every mounted consumer — e.g., importProgress ticking during a GL upload re-renders ~124 components. The codebase itself admits the waste in comments at src/pages/retail/PromoAnalysisPage.tsx:39 and src/pages/retail/promoAnalysisData.ts:10.",
+          "fix": "Mechanical sweep: replace every `useXStore()` with field selectors (`useGLStore((s) => s.entries)`); for multi-field picks use `useShallow` from 'zustand/react/shallow'; for whole-store imperative grabs (DashboardPage.tsx:120, SectorDriverDashboard.tsx:826) switch to `useGLStore.getState()` inside handlers/effects. Add an ESLint rule (e.g. react-hooks extra or custom no-restricted-syntax on `CallExpression[callee.name=/Store$/][arguments.length=0]`) to prevent regressions.",
+          "severity": "P1",
+          "title": "200 whole-state store subscriptions (`useXStore()` with no selector) cause app-wide over-render"
+        },
+        {
+          "evidence": "src/store/periodCloseStore.ts:23-24 imports only `create` and `persist` from 'zustand/middleware' (no subscribeWithSelector, no immer — corroborated by grep for `immer(` returning 0 hits in this file). Store declared at lines 221-222 as `create<PeriodCloseStateShape>()(persist(` with options at 401-411 (`name: 'period-close-store'`, storage: masterStorage). All other 41 persisting stores carry the full stack — verified by direct reads of glStore.ts:315-318, authStore.ts:438-441, auditTrailStore.ts:332-339, esgStore.ts:45-48, scenarioStore.ts:8-11, plus a repo-wide grep showing 40 files contain `subscribeWithSelector(` (the one persisting store missing from that list is periodCloseStore). AGENTS.md mandates subscribeWithSelector(persist(immer())) where persistence is intended.",
+          "fix": "Wrap to canonical form `subscribeWithSelector(persist(immer((set,get)=>({...})), {name:'period-close-store', storage: masterStorage, ...}))` and convert the manual spread setters (e.g. lines 373-378, 389-392) to immer draft mutations, matching the documented pattern; keep partialize/migrate unchanged.",
+          "severity": "P1",
+          "title": "periodCloseStore is the only persisting store off the canonical middleware stack — bare persist(), no subscribeWithSelector and no immer"
+        },
+        {
+          "evidence": "Two witnesses per file: pwsh line-count listing and Read tool end-of-file totals. glStore.ts = 1189 lines (Read shows 'of 1189'), authStore.ts = 812 ('of 812'), auditTrailStore.ts = 790 ('of 790') vs the 500-line cap in AGENTS.md/CLAUDE.md. Also in the same directory, migration helpers exceed it (single-witness pwsh counts): storeMigrators.ts 1849, cubeMigration.ts 537. These stores mix state, actions, RBAC enforcement wrappers, selectors maps (glStore.ts:1160-1189) and module-level helper engines (glStore.ts captureGLSnapshot ~L305, auditTrailStore.ts demo/stats helpers L326-330, 781-790).",
+          "fix": "Extract cohesive slices: move glStore's normalize/capture/snapshot helpers and its exported selector map into sibling modules (glStore.helpers.ts / glSelectors.ts), then split state into entries/accounts/import slices recombined via spread in one create() call; apply the same helper-extraction to authStore and auditTrailStore. No behavior change, brings each under 500.",
+          "severity": "P1",
+          "title": "Three core stores blow the 500-line limit: glStore.ts 1189, authStore.ts 812, auditTrailStore.ts 790"
+        },
+        {
+          "evidence": "Repo-wide grep of `masterStorage` shows both forms side by side: relative `'../utils/masterStorage'` at src/store/authStore.ts:5, budgetStore.ts:6, analyticsStore.ts:6, collaborationStore.ts:6, dataStore.ts:52, educationStore.ts:5, entityStore.ts:5, forecastStore.ts:5, glStore.ts:13, notificationStore.ts:6, periodCloseStore.ts:25, reportStore.ts:6, scenarioStore.ts:5, settingsStore.ts:5-6, tourStore.ts:5, uiStore.ts:6, varianceStore.ts:6 (=17 files), versus alias form e.g. src/store/glUploadStore.ts:6, healthcareStore.ts:4, cubeStore.ts:4. AGENTS.md Path Alias section: '@/' → 'src/' — 'Use for all internal imports'.",
+          "fix": "Codemod the 17 relative imports to '@/utils/masterStorage' (pure rename, no runtime change since both resolve identically); optionally add the alias rule to the ESLint import config so new files can't regress.",
+          "severity": "P2",
+          "title": "17 stores import masterStorage via relative '../utils/masterStorage' instead of the required '@/utils/masterStorage' alias"
+        },
+        {
+          "evidence": "src/store/glStore.ts:1183-1188 exports derived selectors that allocate per call, e.g. line 1187 `activeAccounts: (state: GLState) => state.accounts.filter((a) => a.isActive)` and 1185-1186 boolean derivations. Grep for `activeAccounts` across src returns exactly 1 match (the definition itself) — nothing consumes them today, so there is no live bug; but zustand v5 compares selector results with Object.is, so the first consumer of these will re-render on every store change (or trip the 'getSnapshot should be cached' warning).",
+          "fix": "Either delete the unused derived-selector block or convert array-returning ones to memoized forms (move the filter to consumers wrapped in useShallow, or precompute inside actions). At minimum add a comment forbidding direct hook consumption of the fresh-array selectors.",
+          "severity": "P2",
+          "title": "glStore's exported derived selectors return fresh arrays/objects on every call — latent over-render trap (currently unconsumed)"
+        }
+      ],
+      "lane": "stores-integrity",
+      "summary": "Audited all 47 non-test .ts files under src/store (44 root stores + 3 migration helpers; glob=106 paths incl. tests, corroborated by pwsh listing). PASS: persist names are 100% unique (41 distinct keys extracted via two greps; no double-quote variants missed); every persisting store wires storage through masterStorage (41/41, incl. dataStore's documented safeJSONStorage wrapper); canonical middleware order subscribeWithSelector(persist(immer())) confirmed by direct read in glStore:315-318, authStore:438-441, auditTrailStore:332-339, esgStore:45-48, scenarioStore:8-11 and present in 40/42 persisting stores overall; eventLedger.ts and auditTrailGdprEvents.ts are plain modules (no create()), financialContextStore.ts is a transient unpersisted store, so middleware rules don't apply to them; no immer draft-mutation+return mixing found at any examined suspect site (authStore:769 is a persist migrate fn, scenarioStore:47 is a legal pure-replacement recipe, glStore:602 is an action return). FINDINGS: pervasive no-selector store subscriptions (200 sites, 124 on the hot GL store) driving app-wide over-render; periodCloseStore as the lone off-canonical persisting store; three stores 1.6-2.4x over the 500-line cap; 17 non-alias masterStorage imports; latent fresh-array selector exports in glStore. No P0s: persistence layer is sound, no data-loss or wrong-output risk found in this lane.",
+      "verdict": "FINDINGS"
+    },
+    {
+      "findings": [
+        {
+          "evidence": "src/pages/_routeHelpMap.ts declares 95 entries whose `path` fields all point under docs/parts/ (header cites \"docs/parts/00-INDEX.md\" as source of truth, L5). Repo-wide search returned: Test-Path docs\\parts = False; docs/ contains only a11y, adr, architecture, audit, compliance, design, engines, onboarding, product, release, security, testing; Get-ChildItem -Recurse -Filter 'Part_*_*.md' = 0 hits (pwsh, read-only). Consumer chain is live UI: MergedHelpResolver.ts L24 imports getRouteHelpDoc, L105 calls it, fromRouteHelp L77 renders \"File: ${doc.path}\" into sections; HelpPanel.tsx L46 uses MergedHelpResolver. Witnesses: pwsh corpus search + read of _routeHelpMap.ts/MergedHelpResolver.ts.",
+          "fix": "Either restore/generate the docs/parts corpus the manifest was built from (regenerate via the G14 pipeline referenced in the header), or strip the `file`/`path` fields and render partRef-only help text so the panel stops citing nonexistent files. Add a unit test asserting every non-null ROUTE_HELP_DOCS.path resolves on disk.",
+          "severity": "P1",
+          "title": "Help system serves 95 routes references to a nonexistent docs/parts/ corpus"
+        },
+        {
+          "evidence": "_routeHelpMap.ts L430-447 maps /manufacturing/{production,cogs,inventory} to Part_105_Sector_Insurance.md (\"Sector: Insurance\"); L448-459 maps /retail/{stores,promo} to Part_106_Sector_Telecom.md (\"Sector: Telecommunications\"); L478-495 maps /healthcare/{dashboard,revenue,clinical-trials} to Part_108_Sector_Mining.md (\"Sector: Mining & Metals\"); L496-525 maps five /energy/* routes to Part_109_Audit_Compliance_Test.md (\"Audit & Compliance Testing\"); L526-537 maps /esg/{carbon,csrd} to Part_110_Print_PDF.md (\"Print, PDF & Board Pack\"). These flow unfiltered into the HelpPanel because PAGE_HELP covers only ~17 routes (MergedHelpResolver.test.ts L26), so Rule 2 (MergedHelpResolver L105-107) wins for industry pages. Witnesses: direct read of _routeHelpMap.ts + consumer-chain grep (47 matches) showing HelpPanel usage.",
+          "fix": "Rebuild these rows from the actual sector part numbers (or from the sector config in src/config/) and add a consistency test asserting each industry route's help title contains its own domain keyword (e.g. /healthcare/* must not resolve to a Mining-titled doc).",
+          "severity": "P1",
+          "title": "Industry routes resolve to wrong-sector documentation titles in the live Help panel"
+        },
+        {
+          "evidence": "getRouteHelpDoc (_routeHelpMap.ts L608): `const family = route.replace(/\\/[^/]+\\$/, '/*');` — inside a regex literal `\\$` matches a literal dollar character, not end-of-string, so normal pathnames never match and the function falls through to `return null` (L610). Four family keys exist precisely for this purpose and are unreachable: '/budgets/*' (L64), '/forecasts/*' (L88), '/scenarios/*' (L106), '/lease/*' (L364). Impact: param routes declared in App.tsx (/budgets/:id L405, /forecasts/:id L409, /scenarios/:id L414, /lease/:id L527) get NO_HELP from getMergedHelp (MergedHelpResolver L116) despite explicit family entries. Witnesses: read of L605-611 + read of family-key declarations.",
+          "fix": "Change the regex to `/\\/[^/]+$/` (unescaped end anchor) and add a regression test: getRouteHelpDoc('/budgets/abc').part === 33 and getRouteHelpDoc('/lease/x').part === 39.",
+          "severity": "P1",
+          "title": "Wildcard-family help fallback is dead code due to escaped-$ regex bug"
+        },
+        {
+          "evidence": "Importer sweep (grep over src, *.{ts,tsx}) shows each of these imported ONLY by *.test.tsx / smoke loaders, while their URL slots are Navigate redirects in App.tsx: charts/ChartOfAccountsPage.tsx (glob line 234; /charts/chart-of-accounts redirects at App.tsx L498-501; importers only __tests__/a11y/wcag-aa*.test.tsx L31/L290 + charts test L3); settings/ConnectorSettingsPage.tsx (spill L179; /settings/connectors redirect L491-494 marked \"Superseded\"); telecom/TelecomPage.tsx (spill L304; /telecom redirect L673-676); education/EducationPage.tsx (L364; /education redirect L664); government/GovernmentPage.tsx (L385; /government redirect L667); logistics/LogisticsPage.tsx (L275; /logistics redirect L670); retail/RetailDashboard.tsx (L367) and retail/RetailDashboardPage.tsx (L345) (/retail/dashboard redirect L477-480); onboarding/SetupWizardPage.tsx (L139; no route anywhere); sectors/{Education,Government,Logistics,Telecom}DashboardPage.tsx (L292-298; App.tsx L267 comment states /sectors/* duplicates were removed; importers are only their own .money.test.tsx files). Directories with ZERO routed components: dashboard/ (test-only), onboarding/, telecom/, sectors/. smoke-all-pages.test.tsx even enshrines the dead ones in its loader inventory (L293 RetailDashboard, L316 ConnectorSettingsPage, L347 TelecomPage).",
+          "fix": "Delete the 13 orphan components plus their test-only harnesses (and the sectors/ data modules if nothing else imports them), or re-route whichever are genuinely wanted (e.g. SetupWizardPage vs components/ui/OnboardingWizard — pick one onboarding entry point). Then add a CI guard script asserting every src/pages/**/X.tsx with a default export is imported by App.tsx or a routed parent.",
+          "severity": "P1",
+          "title": "13 page components are production-dead (test-only imports) and 4 of 51 page directories have no routed component"
+        },
+        {
+          "evidence": "Glob census lists exactly one file in src/pages/dashboard/: DashboardPage.test.tsx (glob spill line 101). Its component import at L136 is `@/pages/DashboardPage` — the real page is src/pages/DashboardPage.tsx (glob L439), routed at /dashboard (App.tsx L37-39, L382-389). The colocated-test convention (*.test.tsx next to source) is therefore violated, and the phantom directory inflates the directory census (it is one of the 51 reported by Get-ChildItem -Directory). Witnesses: glob manifest + Select-String of the import line.",
+          "fix": "Move the test to src/pages/DashboardPage.dashboard-routes.test.tsx beside the real page (or merge into existing DashboardPage.test.tsx) and delete the empty dashboard/ directory.",
+          "severity": "P2",
+          "title": "Phantom directory src/pages/dashboard/ holds a single misplaced test importing the root-level page"
+        }
+      ],
+      "lane": "pages-routing",
+      "summary": "Route table core is sound: all 181 React.lazy('./pages/...') imports in App.tsx resolve to existing files (grep import list x glob manifest of 484 .tsx files), 228 path attributes yield 0 duplicate literals (Select-String Group-Object x manual read), and every lazy element is wrapped in Suspense + ErrorBoundary (RouteGroupWrapper L283-291 or explicit ErrorBoundary under top-level Suspense L332); no route points to a nonexistent component. The 51 directories check out (49 domain + __snapshots__ + __tests__, pwsh x glob), but the defects sit around the table: (1) the entire docs/parts corpus backing all 95 _routeHelpMap entries is absent from the repo while MergedHelpResolver/HelpPanel render those paths to users; (2) five industry families map to wrong-sector docs (manufacturing->Insurance, retail->Telecom, healthcare->Mining, energy->Audit, esg->Print/PDF) and reach the live Help panel because PAGE_HELP covers only ~17 routes; (3) the wildcard-family fallback regex at _routeHelpMap L608 uses \\\\$ (literal dollar) instead of $ anchor, permanently disabling /budgets/*, /forecasts/*, /scenarios/*, /lease/* lookups for param routes; (4) 13 page components across 7 directories are imported only by tests while their URLs are Navigate redirects (whole dirs onboarding/, telecom/, sectors/, dashboard/ unrouted), with smoke-all-pages.test.tsx enshrining several; (5) src/pages/dashboard/ is a phantom dir containing one misplaced test that imports @/pages/DashboardPage. Counts corroborated two-witness (grep x glob/pwsh) throughout.",
+      "verdict": "FINDINGS"
+    },
+    {
+      "findings": [
+        {
+          "evidence": "src/hooks/useAutoSave.ts:33-44 — the effect's cleanup only does clearTimeout(timeoutRef.current); there is no unmount/beforeunload flush of a dirty buffer, and previousDataRef (line 14) is only updated inside save() (line 24). Any edit within the 3000ms delay window is silently discarded when the component unmounts. Hook is LIVE: src/components/ui/SaveStatusIndicator.tsx:1 imports useAutoSave. Secondary issue: line 20 compares documents via JSON.stringify(data) !== JSON.stringify(previousDataRef.current) on every change — O(document size) per keystroke on large budgets.",
+          "fix": "In the cleanup, flush instead of dropping: keep latest save in a ref and call it in cleanup when JSON comparison shows dirty; additionally register a window 'beforeunload'/'visibilitychange' flush while enabled. Replace repeated JSON.stringify with a cheap version counter incremented by writers, or hash once per change.",
+          "severity": "P1",
+          "title": "Live useAutoSave silently drops the pending save on unmount"
+        },
+        {
+          "evidence": "src/hooks/usePersistence.ts:29 aliases `const storedRecord = stored as Record<string, unknown> | null`; lines 30-34 reassign `stored = options.migrate(...)` but never update storedRecord; line 36 then reads `storedRecord._data` — i.e., the UN-migrated object. Migrated payloads are computed and thrown away, so persisted records always load pre-migration. Exported as public API via src/hooks/index.ts:7 (`export * from './usePersistence'`). Currently no app call sites (only usePersistence.test.ts:6), which is why this hasn't surfaced.",
+          "fix": "Reassign the alias after migration: `storedRecord = migrate(...) as Record<string, unknown>` (and define whether migrate returns the wrapper or the inner _data), then read `_data` from the post-migration object; add a regression test asserting a v0 record loads through migrate().",
+          "severity": "P1",
+          "title": "usePersistence discards version-migration results — stale data loads as-is"
+        },
+        {
+          "evidence": "Two independent grep passes (direct '@/hooks/x' imports + bare-name import scan) show ZERO production consumers, only self/test imports, for: useWebSocket (useWebSocket.test.ts:31 only), useOptimistic (:6), useURLState family (:7), usePersistence (:6), useWorkerCleanup/useWorkerPoolStatus, useGlobalShortcuts (useTauriMenu.test.ts:30), useTauriGlobalShortcuts (test :6), useUndoRedo/createUndoRedoActions (test :5), useRollingForecast (217-line fiscal feature, src/hooks/useRollingForecast.ts:115, no callers, no test), useIndexedDB (tests only), useAnnounce (test :7), useUndoableAction (test :6), useConfirmation (test :7), useOffline (test :10), useSessionAnnounce (a11y test only). Meanwhile the realtime surface IS partially wired (AppLayout.tsx:77 useCollaborationSetup; PresenceIndicator.tsx:8) but its WebSocket hook is not.",
+          "fix": "Pick one pass: either wire the intended features (rolling forecast page, URL-state filters, copilot global shortcut via the CORRECT useTauriGlobalShortcuts) or delete/mothball the dead modules. At minimum wire useTauriGlobalShortcuts in AppLayout so the documented Ctrl+Shift+A copilot shortcut exists, and delete the broken duplicate.",
+          "severity": "P1",
+          "title": "~16 of 46 hook modules have zero production consumers — realtime, persistence, URL-state, undo and rolling-forecast surfaces are unwired"
+        },
+        {
+          "evidence": "src/hooks/useTauriMenu.ts:117-142: `let unlisten` (line 119) is never assigned — register() at lines 125/128 returns Promise<void>, not a disposer — so cleanup at lines 138-140 (`unlisten?.()`) is a no-op and neither shortcut is ever unregistered on unmount/HMR; re-registering an already-registered shortcut throws and is swallowed by the catch at line 131, leaving zombie OS-level handlers firing CustomEvents into a torn-down tree. A second, CORRECT implementation exists at src/hooks/useTauriGlobalShortcuts.ts:18-26,59-68 (captures unregisterAllFn and calls it in cleanup) — same feature implemented twice with opposite cleanup behavior; the correct one is the unwired one.",
+          "fix": "Delete useGlobalShortcuts from useTauriMenu.ts and standardize on useTauriGlobalShortcuts.ts's capture-unregisterAll-in-cleanup pattern; wire it at app root. Add a test asserting unregisterAll is invoked on unmount (the mock already supports it, see src/test/__mocks__/tauri-shortcut.ts).",
+          "severity": "P1",
+          "title": "useGlobalShortcuts cleanup never unregisters system-wide shortcuts — and duplicates a correct implementation"
+        },
+        {
+          "evidence": "src/hooks/useUndoableAction.ts:60-73 (undo) and 76-90 (redo) perform entry.undo()/entry.redo(), clearTimeout, nested setRedoStack/setUndoStack, and addToast INSIDE the updater passed to setState. React StrictMode is enabled (src/main.tsx:79-81), so dev double-invokes these updaters: entry.undo() runs twice and toasts duplicate; under concurrent replay the same can occur in prod. For an FP&A undo path (restore/delete financial rows) double-execution corrupts state. Hook is currently unused in app code (only useUndoableAction.test.ts:6) but is exported via the barrel (index.ts:10).",
+          "fix": "Make updaters pure: read the stack via a ref or functional peek, then run side effects after the state update settles (compute nextEntry outside, call entry.undo() in the event handler, and push to redoStack with plain setRedoStack([...])). Add a StrictMode renderHook test asserting undo executes exactly once.",
+          "severity": "P2",
+          "title": "useUndoableAction executes undo()/redo() and toasts inside impure setState updaters"
+        },
+        {
+          "evidence": "src/hooks/useIndexedDB.ts: openDB() runs indexedDB.open(dbName) (line 4) for EVERY getItem/setItem/removeItem/clear/getAll (calls at lines 17, 29, 41, 53, 64) and no db.close() exists anywhere in the 77-line file; leaked IDBDatabase connections accumulate and block versionchange/deleteDatabase from other contexts. All request.onerror handlers silently resolve success (lines 24, 36, 48, 60, 72), so failed writes to an offline-first store are indistinguishable from saves. Module has no app consumers (tests only: useIndexedDB.test.ts:41, useIndexedDB.branch.test.ts:24) but is barrel-exported (index.ts:4).",
+          "fix": "Cache one open connection per dbName/storeName (module-level Map + promise), close on versionchange, and propagate failures: reject or return typed results instead of resolve(null)/resolve() in onerror. Only usable once wired — decide its fate together with the dead-code finding.",
+          "severity": "P2",
+          "title": "useIndexedDB leaks one IndexedDB connection per operation and swallows every write error"
+        },
+        {
+          "evidence": "src/hooks/useUndoRedo.ts:72-87: `const state = store.getState()` (line 80) at render time with no subscription — returned canUndo()/canRedo() (lines 84-85) are frozen until an unrelated re-render happens, so undo/redo buttons will show stale enabled/disabled states after store changes; the JSDoc (lines 67-70) presents it as a reactive hook. Identical pattern in src/hooks/useWorkerCleanup.ts:33-35 (getWorkerPoolStatus() called in the render body). Both are unused in app code (greps: only self/test imports) — latent traps for the first consumer.",
+          "fix": "Rewrite with useSyncExternalStore(store.subscribe, () => ({canUndo: ..., canRedo: ...})) or select primitive fields via the store hook (useMyStore((s) => s.canUndo)) so components re-render on history changes; for pool status, expose a subscribed snapshot or poll interval with cleanup.",
+          "severity": "P2",
+          "title": "Non-reactive pseudo-hooks freeze store snapshots: useUndoRedo and useWorkerPoolStatus never subscribe"
+        },
+        {
+          "evidence": "(a) A full Zustand store lives in src/hooks: src/hooks/useCopilotSidebar.ts:13 create<CopilotSidebarState>() — AGENTS.md mandates stores in src/store/{domain}Store.ts with subscribeWithSelector(persist(immer())) ordering (persist legitimately skipped here, but location/naming breach stands; live consumer CopilotSidebar.tsx:8 area). (b) Non-use-prefixed logic exported from hooks/: filterNavItemsByRole (useAppNavigation.ts:18), createUndoRedoActions (useUndoRedo.ts:29), densityMetrics/denserMetrics/densityClass (useDensity.ts:58,70,80), getAnimationProps (useReducedMotion.ts:38) — pure helpers belonging in utils//config/. (c) src/hooks/index.ts:1-14 re-exports only 14 of ~45 modules, so '@/hooks' barrel coverage is arbitrary and drives inconsistent import styles.",
+          "fix": "Move useCopilotSidebar to src/store/copilotSidebarStore.ts; relocate pure helpers to src/utils/ (or config/) and re-export from there; regenerate the barrel to cover all public hooks or delete the barrel and standardize on direct module imports.",
+          "severity": "P2",
+          "title": "Convention drift in src/hooks: store-in-hooks, non-use-prefixed logic exports, 14/45-file barrel"
+        }
+      ],
+      "lane": "hooks-quality",
+      "summary": "Inventoried 46 source files in src/hooks (glob + directory listing, two methods). No rules-of-hooks violations (no conditional/loop hook calls found across ~30 files read in full); no file exceeds the 300-line limit (max useRollingForecast.ts 217 lines, corroborated by read-tool totals against pwsh Measure-Object which undercounts blank lines). Listener/subscription cleanup is correct in the LIVE hooks (useOffline.ts:13-16, useWebSocket.ts:44/72, usePresence.ts:38/84/116, useKeyboardShortcuts.ts:35). The real damage: one live autosave data-loss gap (P1), a migration-discarding persistence bug behind a barrel export (P1), a ~16-module dead-hook cluster including entire unwired feature surfaces — realtime WS, URL state, optimistic writes, undo engines, a 217-line rolling-forecast feature, and both global-shortcut hooks (P1 mission gap), and a broken-cleanup global-shortcut variant duplicating a correct implementation (P1). Remaining P2s: impure setState updaters in useUndoableAction, IDB connection leak + silent write failures, non-subscribing pseudo-hooks (useUndoRedo/useWorkerPoolStatus), and store/convention drift (Zustand store inside hooks dir, non-use-prefixed helper exports, 14/45-file barrel). Usage claims triangulated via two independent grep passes (direct @/hooks imports + bare-name import scan).",
+      "verdict": "FINDINGS"
+    },
+    {
+      "findings": [
+        {
+          "evidence": "src/workers/batch-calc.worker.ts:173-182 — evaluateFormula runs `Function(`\"use strict\"; return (${expr})`)()` and wraps it in `try { ... } catch { return 0 }` (also `isFinite(result) ? result : 0` at :177 and `parseFloat(expr) || 0` at :179): any evaluation failure yields 0, never an error. src-tauri/tauri.conf.json:26 — production CSP is `script-src 'self' 'wasm-unsafe-eval'; ... worker-src 'self' blob:` with NO 'unsafe-eval', so `new Function` throws EvalError inside the worker in the shipped desktop shell (app is Tauri-only per AGENTS.md §App Behavior); every formula silently becomes 0 and runBatchCalc (batch-calc.worker.ts:244-289) then reports `converged: true` with zeroed values. No error channel exists in BatchCalcResponse (types.ts:186-192) and the worker posts {type:'error'} only if runBatchCalc itself throws (:305-312), which it never does for unevalatable formulas.",
+          "fix": "Replace the Function-constructor evaluator with a small hand-written tokenizer/shunting-yard parser (digits, + - * / % parens already whitelisted at :175) so no runtime eval is needed under CSP; on parse/eval failure, record the cell key into a new `errors: string[]` field on BatchCalcResponse instead of returning 0, and leave the cell's prior value untouched.",
+          "severity": "P0",
+          "title": "batch-calc formula evaluator silently zeroes results: Function() eval is blocked by the shipped Tauri CSP and the catch-all returns 0"
+        },
+        {
+          "evidence": "WorkerPool.run() promises are settled only from closures registered in dispatchTask (src/workers/worker-pool.ts:206-238). terminate() (worker-pool.ts:150-166) clears timers, calls managed.worker.terminate(), empties this.workers, then rejects ONLY `this.queue` — in-flight PendingTasks (busy workers with currentTaskId set, :202-203) are referenced nowhere else, so after terminate() their run() promise never settles. Live trigger: src/hooks/useWorkerCleanup.ts:19-26 calls terminateAllWorkers() on root unmount, and src/workers/index.ts:157-170 exposes it publicly. There is also no per-run cancellation anywhere in the API (run(data, onProgress) only, worker-pool.ts:81; index.ts:96-151) even though the Monte Carlo pool allows 120s runs (worker-pool.ts:337 timeoutMs:120000) and ScenarioBuilderPage.tsx:116-153 offers no stop control (button disabled while loading).",
+          "fix": "Track in-flight tasks (e.g. Map<ManagedWorker, PendingTask>) and reject each with Error('WorkerPool terminated') inside terminate(); add optional AbortSignal support to run() that terminates the assigned worker and rejects the task, and wire a Cancel button to it in the scenario/goal-seek pages.",
+          "severity": "P1",
+          "title": "WorkerPool.terminate() strands every in-flight task forever (promise never settles), and there is no per-run cancel for long simulations"
+        },
+        {
+          "evidence": "The pool assigns task ids 'task-N' (src/workers/worker-pool.ts:86) and drops any response whose id differs: `if (response.id !== task.id) return;` (worker-pool.ts:209). All three compute workers post progress with constant ids instead of the envelope id: monte-carlo.worker.ts:157-158 (`id: 'monte-carlo'`), consolidation.worker.ts:388-389 (`id: 'consolidation'`), batch-calc.worker.ts:266-267 (`id: 'batch-calc'`) — so every progress message is discarded and onProgress can never fire through index.ts runMonteCarlo/runConsolidation/runBatchCalc (index.ts:96-151, which document the callback). worker-pool.test.ts:196-222 only passes because the mock echoes `postedMessage.id`; the worker-side test (monte-carlo.worker.test.ts:141-152) only asserts messages were posted, never delivered; worker-compute.test.ts:120-181 re-implements worker helpers inline rather than exercising the real integration.",
+          "fix": "Thread the incoming envelope `id` into the workers' progress helpers (postProgress(processed,total,id)) and post it as the response id; add one integration test where the real worker module answers a pool-dispatched task and onProgress must fire.",
+          "severity": "P1",
+          "title": "Progress reporting is dead end-to-end: workers post progress with constant ids while the pool filters responses by task id, so onProgress never fires"
+        },
+        {
+          "evidence": "monte-carlo.worker.ts:178-182, consolidation.worker.ts:402-406, batch-calc.worker.ts:294-298 each destructure e.data and pass payload straight into math with no schema/narrowing checks; storage.worker.ts:22-23 destructures `const { type, payload, chunkSize = ... } = request` BEFORE its try block starts at :25, so a null/undefined request throws as an uncaught worker error instead of the {type:'error'} reply protocol. Unvalidated `iterations` is unbounded: monte-carlo.worker.ts:138-153 allocates a `{iteration, values, output}` object per iteration with no cap (header comment :5 claims 'up to 1,000,000 iterations' but nothing enforces it), so iterations=1e9 OOM-kills the worker mid-run; NaN/string amounts flow unchecked into Decimal math (consolidation.worker.ts:127,235). Only gross failures are caught and replied (:189-196 etc.), garbage-but-typevalid inputs compute silently.",
+          "fix": "Add a shared narrowRequest guard (unknown -> typed checks: Array.isArray(assumptions), Number.isFinite(iterations), clamp iterations to <=1_000_000, Number.isFinite on every amount) executed before any math in all four onmessage handlers, moving storage.worker's destructuring inside try; reply {type:'error'} on any malformed message.",
+          "severity": "P1",
+          "title": "No incoming payload validation before math in any of the four workers — malformed or extreme payloads go straight into computation"
+        },
+        {
+          "evidence": "eliminateIntercompany auto-detects IC accounts (`accountCode.startsWith('9')`, consolidation.worker.ts:144-179) and increments eliminationCount/totalEliminated for them; runConsolidation reports that count (consolidation.worker.ts:342, :382). But applyEliminationsAndAdjustments (consolidation.worker.ts:223-293) builds its adjustment map exclusively from explicit icPairs (:231-252) and manual adjustments (:255-259) — grep confirms no auto-detect/'9' reference exists in that function within src/workers. So a request whose entities carry '9'-prefix balances but supplies few/no icPairs returns eliminationCount>=1 while consolidatedEntries/totals (:355-384) still include both gross intercompany legs. Related internal contradiction: eliminateIntercompany counts min(|from|,|to|) as eliminated (:136-139) while the apply step subtracts BOTH legs in full (:237-250), wiping genuine unmatched residuals off the books.",
+          "fix": "Have eliminateIntercompany return the resolved pair list (explicit + auto-detected with matched amounts) and feed that list into applyEliminationsAndAdjustments so counted eliminations and applied adjustments come from one source; eliminate only the matched amount per leg, leaving residuals visible.",
+          "severity": "P1",
+          "title": "Consolidation worker counts auto-detected intercompany eliminations but never applies them — consolidated totals keep gross IC balances while claiming N eliminations"
+        },
+        {
+          "evidence": "The success/error-response cleanup removes only the message handler (src/workers/worker-pool.ts:216-221: clearTimeout + removeEventListener('message')); errorHandler is removed solely inside itself (:243-244) and in the timeout path (:262-263). Workers are long-lived and reused across tasks, so every completed task leaves one stale closure referencing its old `managed` and `task`. If an ErrorEvent later fires on an idle worker, ALL stale handlers execute: each clears timers, forces busy=false, and — when that old task had retriesLeft>0 (:248-251) — unshifts the already-settled task back into the queue and calls processQueue(), re-executing finished work against a second resolve/reject attempt.",
+          "fix": "In the messageHandler cleanup block, also call managed.worker.removeEventListener('error', errorHandler) before marking the worker idle; optionally tag handlers with the taskId and ignore events for non-current tasks.",
+          "severity": "P2",
+          "title": "Pool leaks one stale 'error' listener per completed task on reused workers; a late worker error event fires every stale handler and can re-queue already-settled tasks"
+        },
+        {
+          "evidence": "monte-carlo.worker.ts:17 documents 'Seeded PRNG (xoshiro128**) for reproducible simulations'. Both production callers generate a fresh seed per click and drop it: src/pages/scenarios/ScenarioBuilderPage.tsx:124 and src/pages/analytics/GoalSeekPage.tsx:70 use `seed: Math.floor(Math.random() * 2 ** 31)` with no display/storage of the value, so identical inputs yield different results run-to-run with no way to reproduce or audit a prior simulation (MonteCarloResponse, types.ts:55-68, carries no echo of the seed either).",
+          "fix": "Echo the effective seed in MonteCarloResponse, keep the last-used seed in component state, and offer a fixed-seed rerun toggle (e.g. default seed derived from input hash) so results are reproducible and auditable.",
+          "severity": "P2",
+          "title": "Determinism claim broken at the UI layer: random seeds are generated fresh per run and discarded, so claimed-reproducible simulations cannot be reproduced"
+        },
+        {
+          "evidence": "The seeded PRNG emits result/4294967296 which can be exactly 0 (monte-carlo.worker.ts:30-42). Box-Muller computes Math.sqrt(-2.0 * Math.log(u1)) with u1 straight from the PRNG (monte-carlo.worker.ts:59-62): u1===0 gives log=-Infinity, z0=±Infinity (cos term is generically nonzero). computeStatistics (monte-carlo.worker.ts:83-113) performs no finiteness checks, so mean/variance/percentiles become Infinity/NaN and are returned as the response statistics (monte-carlo.worker.ts:170-173) with no error — deterministically reproducible for the unlucky seed.",
+          "fix": "Regenerate u1 in a loop until > 0 (standard Box-Muller guard) or clamp to Number.EPSILON, and make computeStatistics throw (surfacing as the existing {type:'error'} reply) when any sample is non-finite.",
+          "severity": "P2",
+          "title": "Box-Muller transform can emit ±Infinity/NaN samples that poison all summary statistics, reachable deterministically via a seed"
+        }
+      ],
+      "lane": "workers-protocol",
+      "summary": "Audited src/workers (4 workers + pool + types) against the 6 protocol checks. Heavy loops genuinely run off main thread and worker crashes/errors are surfaced via the pool's error/timeout/retry machinery
+… [truncated: 158113 more characters]

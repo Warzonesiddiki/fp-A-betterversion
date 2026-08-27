@@ -13,7 +13,31 @@ import {
   canonicalizeForHash,
   type ExtendedAuditEntry,
 } from './auditTrailStore';
+import { useAuthStore } from './authStore';
 import { sha256Hex } from '@/utils/sha256';
+
+// W6-P0-14: seedDemoData is guarded by audit:create — authenticate an
+// Admin-scope user for the seed-path test.
+function authenticateSeedUser() {
+  useAuthStore.setState({
+    user: {
+      id: 'seed-test-user',
+      email: 'seed-test@finplan.local',
+      firstName: 'Seed',
+      lastName: 'Tester',
+      avatarUrl: null,
+      role: 'Admin',
+      departmentId: 'finance',
+      departmentName: 'Finance',
+      entityId: 'entity-001',
+      status: 'Active',
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+      permissions: ['audit:create', 'audit:read'],
+    },
+    isAuthenticated: true,
+  });
+}
 
 // ---------------------------------------------------------------------------
 // Fixtures
@@ -172,6 +196,7 @@ describe('KAV-11 audit chain integrity', () => {
   });
 
   it('KAV-11.2 seeded demo data verifies clean (seed path is chained too)', () => {
+    authenticateSeedUser();
     useAuditTrailStore.getState().seedDemoData();
     const v = useAuditTrailStore.getState().verifyIntegrity();
     expect(v.valid).toBe(true);

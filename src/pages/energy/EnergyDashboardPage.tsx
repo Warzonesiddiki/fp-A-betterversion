@@ -28,7 +28,7 @@ import { useGLStore } from '@/store/glStore';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 
-const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
+const fiscalPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
 /**
  * Energy Dashboard (session 028, replaces fabricated session-022 version).
@@ -121,7 +121,7 @@ export default function EnergyDashboardPage() {
           purpose="Monitor production efficiency, revenue streams, and asset performance across all grids."
         />
         <div className="flex items-center gap-3">
-          <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
+          <PeriodPicker value={periodId} onChange={setPeriodId} periods={fiscalPeriods} />
           <Button variant="outline" size="sm" onClick={handleExport} className="h-10">
             <Download className="h-4 w-4 mr-2" />
             Export
@@ -330,7 +330,7 @@ function EmptyState({ message }: { message: string }) {
 }
 
 function formatUsdCompact(n: number): string {
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}k`;
-  return `$${n.toFixed(0)}`;
+  if (n >= 1_000_000) return `$${roundTo(n / 1_000_000, 1)}M`;
+  if (n >= 1_000) return `$${roundTo(n / 1_000, 1)}k`;
+  return `$${roundTo(n, 0)}`;
 }

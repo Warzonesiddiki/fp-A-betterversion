@@ -1,92 +1,121 @@
-import React, { useEffect, useMemo } from 'react';
+/**
+ * Manufacturing overview — every figure is derived from the posted GL.
+ *
+ * CORRECTNESS CONTRACT:
+ * 1. All sector KPIs come from `ManufacturingEngine.calculateStats` (pure,
+ *    money-primitive-backed). This page previously rendered a generic
+ *    debit/credit reskin identical to the healthcare overview while the
+ *    engine sat unwired.
+ * 2. OEE is disclosed as an engine derivation (85 + grossMargin÷5, capped at
+ *    99), not a measured shop-floor figure.
+ * 3. `ManufacturingEngine.getOutputTrend` ignores its entries argument and
+ *    `getProductionLines` models line status/efficiency with pseudo-random
+ *    literals — neither is rendered here until those gaps are fixed in the
+ *    engine lane.
+ */
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  AlertTriangle,
+  CheckCircle,
+  Download,
+  DollarSign,
+  Factory,
+  FileSpreadsheet,
+  Layers,
+  TrendingUp,
+} from 'lucide-react';
 import { useGLStore } from '@/store/glStore';
+import { ManufacturingEngine } from '@/engines/ManufacturingEngine';
+import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { computeManufacturingRatioPct } from './manufacturingMetrics';
+import { aggregateAccounts } from './accountOverview';
+import { AccountOverviewCard } from './AccountOverviewCard';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { DataTable, Column } from '@/components/ui/DataTable';
-import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
-import { Factory, DollarSign, Layers, TrendingUp } from 'lucide-react';
-import type { GLEntry } from '@/types';
-import { addMoney, roundTo, sumMoney } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
 
-function computeManufacturingStats(entries: readonly GLEntry[]) {
-  const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
-  const totalCredit = roundTo(sumMoney(entries.map((e) => e.credit)), 2);
-  const netChange = roundTo(sumMoney(entries.map((e) => e.netChange)), 2);
-  const uniqueAccounts = new Set(entries.map((e) => e.accountCode)).size;
+const COST_STRUCTURE_ROWS = [
+  { key: 'materialCost', label: 'Raw Materials (57xx)' },
+  { key: 'laborCost', label: 'Direct Labor (58xx)' },
+  { key: 'overheadCost', label: 'Manufacturing Overhead (59xx)' },
+] as const;
 
-  const accountMap = new Map<
-    string,
-    { name: string; debit: number; credit: number; net: number; count: number }
-  >();
-  for (const e of entries) {
-    const existing = accountMap.get(e.accountCode) ?? {
-      name: e.accountName,
-      debit: 0,
-      credit: 0,
-      net: 0,
-      count: 0,
-    };
-    existing.debit = addMoney(existing.debit, e.debit ?? 0).toNumber();
-    existing.credit = addMoney(existing.credit, e.credit ?? 0).toNumber();
-    existing.net = addMoney(existing.net, e.netChange ?? 0).toNumber();
-    existing.count += 1;
-    accountMap.set(e.accountCode, existing);
-  }
+/** Tailwind-scannable width buckets for the COGS share bars (no inline styles). */
+const SHARE_BAR_WIDTHS: Record<number, string> = {
+  0: 'w-0',
+  10: 'w-[10%]',
+  20: 'w-[20%]',
+  30: 'w-[30%]',
+  40: 'w-[40%]',
+  50: 'w-[50%]',
+  60: 'w-[60%]',
+  70: 'w-[70%]',
+  80: 'w-[80%]',
+  90: 'w-[90%]',
+  100: 'w-full',
+};
 
-  const accountBreakdown = Array.from(accountMap.entries())
-    .map(([code, data]) => ({
-      accountCode: code,
-      accountName: data.name,
-      debit: data.debit,
-      credit: data.credit,
-      netChange: data.net,
-      transactions: data.count,
-    }))
-    .sort((a, b) => Math.abs(b.credit) - Math.abs(a.credit));
-
-  return { totalDebit, totalCredit, netChange, uniqueAccounts, accountBreakdown };
+function shareBarClass(pct: number): string {
+  const bucket = Math.min(10, Math.max(0, Math.round(pct / 10))) * 10;
+  return SHARE_BAR_WIDTHS[bucket] ?? 'w-0';
 }
 
-const columns: Column[] = [
-  { key: 'accountCode', header: 'Account Code', sortable: true },
-  { key: 'accountName', header: 'Account Name', sortable: true },
-  { key: 'debit', header: 'Debit', align: 'right', sortable: true },
-  { key: 'credit', header: 'Credit', align: 'right', sortable: true },
-  { key: 'netChange', header: 'Net Change', align: 'right', sortable: true },
-  { key: 'transactions', header: 'Transactions', align: 'right', sortable: true },
-];
-
 export function ManufacturingPage() {
-  const { entries } = useGLStore();
+  const fmt = useCurrencyFormatter();
+  const entries = useGLStore((s) => s.entries);
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Manufacturing';
   }, []);
 
-  const stats = useMemo(() => computeManufacturingStats(entries), [entries]);
+  const stats = useMemo(() => ManufacturingEngine.calculateStats(entries), [entries]);
+  const accountBreakdown = useMemo(() => aggregateAccounts(entries), [entries]);
 
-  const tableData = useMemo(
+  const costStructure = useMemo(
     () =>
-      stats.accountBreakdown.map((row) => ({
-        accountCode: row.accountCode,
-        accountName: row.accountName,
-        debit: formatCurrency(row.debit),
-        credit: formatCurrency(row.credit),
-        netChange: formatCurrency(row.netChange),
-        transactions: formatNumber(row.transactions),
+      COST_STRUCTURE_ROWS.map((row) => ({
+        ...row,
+        amount: stats[row.key],
+        shareOfCogs: computeManufacturingRatioPct(stats[row.key], stats.cogs),
       })),
-    [stats.accountBreakdown]
+    [stats]
   );
 
-  const handleImportKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      navigate('/data/gl-upload');
-    }
+  const handleExportPDF = () => {
+    void ExportEngine.exportToPDF(
+      {
+        headers: ['Metric', 'Value'],
+        rows: [
+          ['Revenue', fmt.currency0(stats.revenue)],
+          ['COGS', fmt.currency0(stats.cogs)],
+          ['Gross Margin', fmt.percent(stats.grossMargin, 1)],
+          ['Raw Materials (57xx)', fmt.currency0(stats.materialCost)],
+          ['Direct Labor (58xx)', fmt.currency0(stats.laborCost)],
+          ['Mfg Overhead (59xx)', fmt.currency0(stats.overheadCost)],
+          ['OEE (derived)', fmt.percent(stats.oee, 1)],
+        ],
+      },
+      { title: 'Manufacturing Overview Report' }
+    ).catch(reportExportFailure);
+  };
+
+  const handleExportExcel = () => {
+    void ExportEngine.exportToExcel(
+      {
+        headers: ['Metric', 'Value'],
+        rows: costStructure.map((row) => [
+          row.label,
+          row.amount,
+          `${fmt.percent(row.shareOfCogs, 1)} of COGS`,
+        ]),
+      },
+      { title: 'Manufacturing_Cost_Structure' }
+    ).catch(reportExportFailure);
   };
 
   if (entries.length === 0) {
@@ -104,7 +133,6 @@ export function ManufacturingPage() {
         <Button
           id="import-btn"
           onClick={() => navigate('/data/gl-upload')}
-          onKeyDown={handleImportKeyDown}
           aria-label="Import GL data to view manufacturing"
         >
           Import Data
@@ -128,10 +156,23 @@ export function ManufacturingPage() {
       <PageHeader
         title="Manufacturing"
         titleId="manufacturing-heading"
+        purpose="Sector KPIs derived from posted GL accounts (47xx revenue, 57xx–59xx production costs, 5xxx/6xxx COGS) via ManufacturingEngine."
         status={
           <span className="text-sm text-[var(--text-muted)]">
-            {formatNumber(entries.length)} entries imported
+            {fmt.number(entries.length)} entries imported
           </span>
+        }
+        actions={
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
+              <Download className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              PDF
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
+              <FileSpreadsheet className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              Excel
+            </Button>
+          </div>
         }
       />
       <section
@@ -141,42 +182,96 @@ export function ManufacturingPage() {
         aria-labelledby="manufacturing-heading"
       >
         <KPIValue
-          label="Total Entries"
-          value={formatNumber(entries.length)}
-          icon={<Factory className="h-4 w-4" aria-hidden="true" />}
-        />
-        <KPIValue
-          label="Unique Accounts"
-          value={formatNumber(stats.uniqueAccounts)}
-          icon={<Layers className="h-4 w-4" aria-hidden="true" />}
-        />
-        <KPIValue
-          label="Total Debit"
-          value={formatCompactNumber(stats.totalDebit)}
+          label="Revenue"
+          value={fmt.currency0(stats.revenue)}
           icon={<DollarSign className="h-4 w-4" aria-hidden="true" />}
+          changeLabel="Posted 47xx product revenue"
         />
         <KPIValue
-          label="Total Credit"
-          value={formatCompactNumber(stats.totalCredit)}
+          label="COGS"
+          value={fmt.currency0(stats.cogs)}
+          icon={<Layers className="h-4 w-4" aria-hidden="true" />}
+          changeLabel="Posted 5xxx/6xxx cost accounts"
+        />
+        <KPIValue
+          label="Gross Margin"
+          value={fmt.percent(stats.grossMargin, 1)}
           icon={<TrendingUp className="h-4 w-4" aria-hidden="true" />}
+          changeLabel="(Revenue − COGS) ÷ Revenue"
+        />
+        <KPIValue
+          label="OEE"
+          value={fmt.percent(stats.oee, 1)}
+          changeLabel="Derived by engine: 85 + grossMargin ÷ 5, capped at 99 — not a shop-floor feed"
         />
       </section>
-      <Card aria-label="Account Overview" aria-live="polite">
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card aria-label="Production Cost Structure" aria-live="polite">
+          <CardHeader>
+            <CardTitle>Production Cost Structure</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {costStructure.every((row) => row.amount === 0) ? (
+              <p className="text-[var(--text-muted)]">
+                No production-cost accounts (prefixes 57/58/59) posted yet. Import GL data with
+                manufacturing cost codes to populate this breakdown.
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {costStructure.map((row) => (
+                  <li key={row.key}>
+                    <div className="flex items-baseline justify-between text-sm">
+                      <span>{row.label}</span>
+                      <span className="font-mono tabular-nums">
+                        {fmt.currency(row.amount)}
+                        <span className="ml-2 text-[var(--text-secondary)]">
+                          {fmt.percent(row.shareOfCogs, 1)} of COGS
+                        </span>
+                      </span>
+                    </div>
+                    <div
+                      className="mt-1 h-2 rounded bg-[var(--bg-surface)] border border-[var(--border-subtle)]"
+                      role="presentation"
+                    >
+                      <div
+                        className={`h-2 rounded bg-blue-500 ${shareBarClass(row.shareOfCogs)}`}
+                      />
+                    </div>
+                  </li>
+                ))}
+                <li className="pt-2 text-xs text-[var(--text-muted)]">
+                  Shares are exact decimal divisions; a missing denominator renders 0%, never an
+                  estimate.
+                </li>
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+
+        <AccountOverviewCard rows={accountBreakdown} />
+      </div>
+
+      <Card>
         <CardHeader>
-          <CardTitle id="account-overview-title">Account Overview</CardTitle>
+          <CardTitle>Data Lineage</CardTitle>
         </CardHeader>
-        <CardContent aria-labelledby="account-overview-title">
-          {tableData.length > 0 ? (
-            <DataTable
-              columns={columns}
-              data={tableData}
-              sortable
-              caption="Account overview table"
-              ariaLabel="Account overview data table for manufacturing sector"
-            />
-          ) : (
-            <p className="text-[var(--text-muted)]">No account data available.</p>
-          )}
+        <CardContent className="space-y-2 text-xs text-[var(--text-muted)]">
+          <p className="flex items-start gap-2">
+            <CheckCircle className="h-4 w-4 shrink-0 mt-0.5 text-[#16A34A]" aria-hidden="true" />
+            <span>
+              Revenue, COGS, gross margin and OEE come from ManufacturingEngine.calculateStats over{' '}
+              {fmt.number(entries.length)} posted rows using exact decimal money arithmetic.
+            </span>
+          </p>
+          <p className="flex items-start gap-2">
+            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-[#DC2626]" aria-hidden="true" />
+            <span>
+              Production-line status and output-trend charts are intentionally absent:{' '}
+              ManufacturingEngine.getProductionLines / getOutputTrend model these figures instead of
+              measuring them from the ledger.
+            </span>
+          </p>
         </CardContent>
       </Card>
     </main>

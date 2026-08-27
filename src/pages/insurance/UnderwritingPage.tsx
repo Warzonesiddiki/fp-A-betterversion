@@ -11,6 +11,8 @@ import { useGLStore } from '@/store/glStore';
 import { formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { deriveUnderwriting } from './underwritingData';
+import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 
 const fiscalPeriods = buildFiscalPeriods();
 
@@ -20,6 +22,33 @@ export default function UnderwritingPage() {
   const { entries } = useGLStore();
   const [periodId, setPeriodId] = useState('P01');
   const derivation = useMemo(() => deriveUnderwriting(entries), [entries]);
+
+  /**
+   * Truthfulness (wave 2): the header previously offered a "Rate Filing
+   * Report" button with no handler — an export of filings this page itself
+   * discloses as not derivable. The control now exports exactly what the
+   * derivation supports, including the omitted-metric reasons.
+   */
+  const handleExport = () => {
+    const d = derivation;
+    const rows: (string | number)[][] = [
+      ['Posted premium', d.premium],
+      ['Posted claims', d.claims],
+      ['Posted underwriting expense', d.expense],
+      ['Underwriting income', d.underwritingIncome],
+      ['Loss ratio %', d.lossRatioPct === null ? 'not derivable' : d.lossRatioPct],
+      ['Expense ratio %', d.expenseRatioPct === null ? 'not derivable' : d.expenseRatioPct],
+      ['Combined ratio %', d.combinedRatioPct === null ? 'not derivable' : d.combinedRatioPct],
+      ...d.unavailable.map((item): (string | number)[] => [
+        `Not derivable — ${item.label}`,
+        item.reason,
+      ]),
+    ];
+    void ExportEngine.exportToExcel(
+      { headers: ['Measure', 'Value'], rows },
+      { title: 'Underwriting_Derivation' }
+    ).catch(reportExportFailure);
+  };
 
   if (entries.length === 0) {
     return (
@@ -44,9 +73,9 @@ export default function UnderwritingPage() {
         />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={fiscalPeriods} />
-          <Button variant="outline" size="sm" className="h-10">
+          <Button variant="outline" size="sm" className="h-10" onClick={handleExport}>
             <Download className="h-4 w-4 mr-2" />
-            Rate Filing Report
+            Export Derivation
           </Button>
         </div>
       </div>

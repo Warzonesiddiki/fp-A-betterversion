@@ -243,4 +243,29 @@ describe('PluginManager', () => {
       expect(await api2.storage.get('k')).toBe('v2');
     });
   });
+
+  describe('P0-03 sandbox enforcement', () => {
+    it('installPlugin returns failure naming the violation for flagged inline entry', async () => {
+      manager.init();
+      const result = await manager.installPlugin(
+        makeManifest({
+          id: 'mgr-evil',
+          entry: `(function(){ var o={}; return o.constructor.constructor("return 1")(); })();`,
+        }),
+        makeFactory()
+      );
+      expect(result.success).toBe(false);
+      expect(result.sandboxViolations?.length).toBeGreaterThan(0);
+      expect(String(result.error)).toMatch(/forbidden property|constructor/i);
+      expect(manager.getPlugin('mgr-evil')).toBeUndefined();
+      expect(manager.isPluginActive('mgr-evil')).toBe(false);
+    });
+
+    it('clean installs are unchanged by the sandbox gate', async () => {
+      manager.init();
+      const result = await manager.installPlugin(makeManifest(), makeFactory());
+      expect(result.success).toBe(true);
+      expect(result.sandboxViolations).toBeUndefined();
+    });
+  });
 });

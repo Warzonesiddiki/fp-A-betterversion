@@ -16,6 +16,7 @@ vi.mock('@tauri-apps/plugin-sql', () => ({
   },
 }));
 
+import { StorageBackendError } from './storageErrors';
 import { tauriSqlStorage, isTauri } from './tauriSqlStorage';
 
 describe('isTauri', () => {
@@ -25,10 +26,38 @@ describe('isTauri', () => {
   });
 
   it('should return false in jsdom (no Tauri runtime)', async () => {
-    // In a jsdom test environment, neither __TAURI_INTERNALS nor __TAURI__
-    // are present on the window object, so isTauri() returns false.
+    // In a jsdom test environment, __TAURI_INTERNALS__ is not present on the
+    // window object, so isTauri() returns false.
     const result = await isTauri();
     expect(result).toBe(false);
+  });
+
+  // Tauri v2 contract: the real internals key is `__TAURI_INTERNALS__`.
+  it('returns true when only __TAURI_INTERNALS__ is present', async () => {
+    const w = window as unknown as Record<string, unknown>;
+    w.__TAURI_INTERNALS__ = {};
+    try {
+      expect(await isTauri()).toBe(true);
+    } finally {
+      delete w.__TAURI_INTERNALS__;
+    }
+  });
+
+  // Regression (lane B11 P0): the legacy `__TAURI__` key requires
+  // withGlobalTauri:true, which tauri.conf.json does not set. It must NOT
+  // enable Tauri mode — otherwise packaged desktop builds silently fall
+  // back to the sql.js/localStorage backend.
+  it('does NOT treat legacy __TAURI__ alone as a Tauri runtime', async () => {
+    const w = window as unknown as Record<string, unknown>;
+    delete w.__TAURI_INTERNALS__;
+    w.__TAURI__ = true;
+    try {
+      expect(await isTauri()).toBe(false);
+      expect(mockLoad).not.toHaveBeenCalled();
+      expect(await tauriSqlStorage.getItem('ui-store')).toBeNull();
+    } finally {
+      delete w.__TAURI__;
+    }
   });
 
   it('should not throw when called', async () => {
@@ -40,7 +69,10 @@ describe('isTauri', () => {
 // no-op — it never touches @tauri-apps/plugin-sql and never throws.
 describe('tauriSqlStorage (non-Tauri browser)', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    // resetAllMocks (not clearAllMocks): W6-P0-04 propagation means stale
+    // mockRejectedValue implementations from a previous test now THROW —
+    // clearing call history alone is no longer sufficient hygiene.
+    vi.resetAllMocks();
     delete (window as unknown as Record<string, unknown>).__TAURI__;
     delete (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__;
   });
@@ -67,10 +99,12 @@ describe('tauriSqlStorage (non-Tauri browser)', () => {
 
 describe('tauriSqlStorage', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    // The Tauri runtime flag makes getDb() take the lazy @tauri-apps/plugin-sql
-    // path (mocked above), mirroring the desktop runtime.
-    (window as unknown as Record<string, unknown>).__TAURI__ = true;
+    // resetAllMocks (not clearAllMocks): stale mockRejectedValue
+    // implementations now propagate as typed errors after W6-P0-04.
+    vi.resetAllMocks();
+    // Tauri v2 internals key (see isTauriRuntime) — the legacy `__TAURI__`
+    // key must never enable Tauri mode.
+    (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__ = {};
     mockLoad.mockResolvedValue({
       select: mockSelect,
       execute: mockExecute,
@@ -102,21 +136,35 @@ describe('tauriSqlStorage', () => {
       expect(result).toBeNull();
     });
 
-    it('should return null on error', async () => {
-      mockSelect.mockRejectedValue(new Error('DB error'));
+    // W6-P0-04: a backend read FAILURE is typed and propagated — it is never
+    // downgraded to `null` ("no data"), which let a broken backend hydrate an
+    // empty store that presented as the user's real data.
+    it('should reject with StorageBackendError on select failure', async () => {
+      const cause = new Error('DB error');
+      mockSelect.mockRejectedValue(cause);
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-      const result = await tauriSqlStorage.getItem('broken');
-      expect(result).toBeNull();
+      const promise = tauriSqlStorage.getItem('broken');
+      await expect(promise).rejects.toBeInstanceOf(StorageBackendError);
+      try {
+        await promise;
+      } catch (err) {
+        expect(err).toBeInstanceOf(StorageBackendError);
+        const backendError = err as StorageBackendError;
+        expect(backendError.operation).toBe('get');
+        expect(backendError.storeKey).toBe('broken');
+        expect(backendError.cause).toBe(cause);
+      }
       consoleSpy.mockRestore();
     });
 
-    it('should handle invalid JSON gracefully', async () => {
+    // W6-P0-04: corrupt rows fail closed with a typed error instead of
+    // silently reporting the store as absent.
+    it('should reject with StorageBackendError on invalid JSON', async () => {
       mockSelect.mockResolvedValue([{ value: 'not-json' }]);
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-      const result = await tauriSqlStorage.getItem('corrupt');
-      expect(result).toBeNull();
+      await expect(tauriSqlStorage.getItem('corrupt')).rejects.toBeInstanceOf(StorageBackendError);
       consoleSpy.mockRestore();
     });
   });
@@ -144,12 +192,25 @@ describe('tauriSqlStorage', () => {
       ]);
     });
 
-    it('should not throw on error (logs to console)', async () => {
-      mockExecute.mockRejectedValue(new Error('Write failed'));
+    // W6-P0-04: a failed write must surface as a typed error so
+    // masterStorage's quota-exceeded handling can run — silent swallowing
+    // made callers believe data was persisted when it was not.
+    it('should reject with StorageBackendError on execute failure', async () => {
+      const cause = new Error('Write failed');
+      mockExecute.mockRejectedValue(cause);
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-      await tauriSqlStorage.setItem('store', { state: {} });
-
+      await expect(tauriSqlStorage.setItem('store', { state: {} })).rejects.toBeInstanceOf(
+        StorageBackendError
+      );
+      try {
+        await tauriSqlStorage.setItem('store', { state: {} });
+      } catch (err) {
+        const backendError = err as StorageBackendError;
+        expect(backendError.operation).toBe('set');
+        expect(backendError.storeKey).toBe('store');
+        expect(backendError.cause).toBe(cause);
+      }
       expect(consoleSpy).toHaveBeenCalled();
       consoleSpy.mockRestore();
     });
@@ -162,13 +223,21 @@ describe('tauriSqlStorage', () => {
       expect(mockExecute).toHaveBeenCalledWith('DELETE FROM stores WHERE id = $1', ['old-store']);
     });
 
-    it('should not throw on error (logs to console)', async () => {
-      mockExecute.mockRejectedValue(new Error('Delete failed'));
+    // W6-P0-04: remove failures propagate as typed errors too.
+    it('should reject with StorageBackendError on delete failure', async () => {
+      const cause = new Error('Delete failed');
+      mockExecute.mockRejectedValue(cause);
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-      await tauriSqlStorage.removeItem('store');
-
-      expect(consoleSpy).toHaveBeenCalled();
+      await expect(tauriSqlStorage.removeItem('store')).rejects.toBeInstanceOf(StorageBackendError);
+      try {
+        await tauriSqlStorage.removeItem('store');
+      } catch (err) {
+        const backendError = err as StorageBackendError;
+        expect(backendError.operation).toBe('remove');
+        expect(backendError.storeKey).toBe('store');
+        expect(backendError.cause).toBe(cause);
+      }
       consoleSpy.mockRestore();
     });
   });

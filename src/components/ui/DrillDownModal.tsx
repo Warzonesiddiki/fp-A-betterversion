@@ -22,7 +22,7 @@ export function DrillDownModal({
   endDate,
 }: DrillDownModalProps) {
   const fmt = useCurrencyFormatter();
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
 
   const filteredEntries = useMemo(() => {
     return entries.filter((e) => {

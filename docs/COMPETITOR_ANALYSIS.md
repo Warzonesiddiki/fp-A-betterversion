@@ -71,7 +71,7 @@
 | FX/Currency        | ASC 830 compliant         | Anaplan                 | NONE — we match                      |
 | Sector Coverage    | 16 sectors, 31 pages      | Anaplan (15 industries) | WE WIN — more sectors                |
 | Plugin System      | 7 files, 1585 lines       | NONE                    | WE WIN — no competitor has this      |
-| Desktop App        | Tauri + PWA               | NONE                    | WE WIN — no competitor has desktop   |
+| Desktop App        | Tauri desktop             | NONE                    | WE WIN — no competitor has desktop   |
 | Offline-First      | Local-first architecture  | NONE                    | WE WIN — no competitor is offline    |
 | AI Agents          | AIEngine + WASM           | Anaplan (CoModeler)     | SMALL GAP — need more AI agents      |
 | Data Migration     | Migration wizard          | Vena (Excel-native)     | SMALL GAP — need more source formats |

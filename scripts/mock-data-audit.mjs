@@ -26,7 +26,12 @@ import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, extname, relative } from 'node:path';
 
 const ROOT = process.cwd();
-const SCAN_DIRS = ['src/pages', 'src/components'];
+// E-09-F scope extension: stores/, engines/, and report/budget templates are
+// scanned alongside pages/components. The worst E-09 finding (SOX fallback
+// fabrication) lived in a page, but store/engine-level synthetic data escapes
+// a pages+components-only gate entirely — honesty infrastructure must cover
+// every directory product code can ship fabricated figures from.
+const SCAN_DIRS = ['src/pages', 'src/components', 'src/store', 'src/engines', 'src/templates'];
 const MOCK_RE = /mock|sample|demo|dummy|fake|placeholder|seed|fixture/i;
 // Top-level (module scope) const array declarations: `const NAME [ : Type[] ] = [`
 const DECL_RE = /^[ \t]*const\s+([A-Za-z0-9_]+)\s*(?::[^=]+)?=\s*\[/gm;
@@ -104,6 +109,13 @@ const DISPOSITIONS = {
   'src/pages/treasury/FXExposurePage.tsx::mockExposures': 'disclosed',
   'src/components/currency/FXPositionGrid.tsx::SAMPLE_POSITIONS': 'disclosed',
   'src/components/currency/HedgeManager.tsx::SAMPLE': 'disclosed',
+  // ── E-09-F scope extension: store/engines findings ────────────────────────
+  // Opt-in demo seed fixtures consumed only by seedDemoData() (no production
+  // UI calls it; initial state ships empty) — deliberate, labeled demo data.
+  'src/store/auditTrailStore.ts::DEMO_USERS': 'disclosed',
+  'src/store/auditTrailStore.ts::DEMO_OPERATIONS': 'disclosed',
+  'src/store/auditTrailStore.ts::DEMO_SECTORS': 'disclosed',
+  'src/store/auditTrailStore.ts::DEMO_PERIODS': 'disclosed',
 };
 
 const DISCLOSURE_MARKER = 'demo defaults';
@@ -155,7 +167,7 @@ for (const h of unique) {
   byFile.get(h.file).push(h.name);
 }
 
-console.log('🎭 Mock-data audit (pages/components rendering synthetic data)\n');
+console.log('🎭 Mock-data audit (pages/components/store/engines/templates rendering synthetic data)\n');
 console.log(`  files with mock/demo arrays: ${byFile.size}`);
 console.log(`  total synthetic arrays:      ${unique.length}\n`);
 

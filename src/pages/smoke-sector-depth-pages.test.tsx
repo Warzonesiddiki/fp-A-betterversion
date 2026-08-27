@@ -112,6 +112,11 @@ describe('Sector Depth specialized page smoke tests', () => {
       'rendered nothing: a truthy container does not prove the page mounted'
     ).toBeGreaterThanOrEqual(2);
     expect(screen.getByRole('main')).toBeInTheDocument();
+    // Real surface: PageHeader h1 from the page source (content branch — the
+    // suite's glStore mock supplies one entry, so the empty branch is not hit).
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Fleet Cost Dashboard' })
+    ).toBeInTheDocument();
   });
 
   it('WarehouseCostDashboardPage renders dashboard', () => {
@@ -121,6 +126,9 @@ describe('Sector Depth specialized page smoke tests', () => {
       'rendered nothing: a truthy container does not prove the page mounted'
     ).toBeGreaterThanOrEqual(2);
     expect(screen.getByRole('main')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Warehouse Cost Dashboard' })
+    ).toBeInTheDocument();
   });
 
   it('GrantDisbursementPage renders dashboard', () => {
@@ -130,6 +138,9 @@ describe('Sector Depth specialized page smoke tests', () => {
       'rendered nothing: a truthy container does not prove the page mounted'
     ).toBeGreaterThanOrEqual(2);
     expect(screen.getByRole('main')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Grants & Disbursement' })
+    ).toBeInTheDocument();
   });
 
   it('ProcurementCyclePage renders dashboard', () => {
@@ -139,6 +150,9 @@ describe('Sector Depth specialized page smoke tests', () => {
       'rendered nothing: a truthy container does not prove the page mounted'
     ).toBeGreaterThanOrEqual(2);
     expect(screen.getByRole('main')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Procurement Cycle' })
+    ).toBeInTheDocument();
   });
 
   it('EnrollmentRetentionPage renders dashboard', () => {
@@ -148,6 +162,9 @@ describe('Sector Depth specialized page smoke tests', () => {
       'rendered nothing: a truthy container does not prove the page mounted'
     ).toBeGreaterThanOrEqual(2);
     expect(screen.getByRole('main')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Enrollment & Retention' })
+    ).toBeInTheDocument();
   });
 
   it('ResearchGrantsPage renders dashboard', () => {
@@ -157,5 +174,8 @@ describe('Sector Depth specialized page smoke tests', () => {
       'rendered nothing: a truthy container does not prove the page mounted'
     ).toBeGreaterThanOrEqual(2);
     expect(screen.getByRole('main')).toBeInTheDocument();
+    // Real surface: PageHeader h1 from the page source (content branch — the
+    // suite's glStore mock supplies one entry, so the empty branch is not hit).
+    expect(screen.getByRole('heading', { level: 1, name: 'Research Grants' })).toBeInTheDocument();
   });
 });

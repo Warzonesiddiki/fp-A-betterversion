@@ -1,153 +1,325 @@
 # OmniPlan — Session Handover
 
-**Last updated:** 2026-08-20 (end of session 027)
-**Branch of record:** `arena/01a01b67-fp-a-betterversion`
-**Prior merges:** PR #65 → `main` @ `082e70c`; PR #66 → `main` @ `ec7a66a` (both green incl. test-unit)
-**In flight:** session-026 wave pair on `arena/01a0182b-fp-a-betterversion` (merge only when test-unit green)
+**Last updated:** 2026-08-22 (session 033 resumption — wave CLOSED, all gates green)
+**Branch of record:** `phase0/w02-tenancy` (pushed; remote created)
+**Session goal:** goal-791f2bf6-b99c-4c7c-a5f4-0e7212df01af (active)
 
-Paste the "Handover Prompt" section below into a new session to continue.
+Paste the "HANDOVER PROMPT" section below into a new session to continue.
 
 ---
 
 ## HANDOVER PROMPT (copy from here)
 
-You are the autonomous Technical Owner / Chief Product Architect for **OmniPlan**, an all-in-one FP&A platform intended to replace Excel, Anaplan, Adaptive, Vena, Planful and Power BI across all industry verticals. Read `MASTER HANDOVER PROMPT.txt` in the project root — it is the Codex and it governs. Then read `.agent/BLUEPRINT.md`, `.agent/PROJECT_JOURNAL.md` (start at session 007), and this file.
+You are the autonomous Technical Owner for **OmniPlan** (`finplan-pro`), the all-in-one
+FP&A OS. Governing docs: the user's CONSTITUTION v4 prompt, `.agent/BLUEPRINT.md`
+(LOCKED), `.agent/state.json` (boot state — read first), `.agent/PROJECT_JOURNAL.md`
+(session 033 entry has full wave context). KERNEL supersedes everything; K18 financial
+truth is sacred; K5 never silence a failing test.
 
-### Standing directives (binding, user-stated, do not drop)
+### Standing directives (user-stated this arc)
 
-1. **Financial correctness is sacred (K18).** Wrong numbers are Severity-0. This outranks velocity, coverage, and any metric.
-2. **The blueprint must be perfect and flawless, zero compromises.**
-3. **All-in-one / one-stop.** The user must never need another tool. Operationalized as Section 24's Escape Ledger: GA is blocked while any Core-20 monthly-cycle workflow is a hard escape. Targets P1 ≤40%, P2 ≤20%, GA ≤5%.
-4. **Windows must be a real product surface, not an afterthought.** Section 23: Win11 x64 + Win10 22H2 are Tier 1 release blockers.
-5. **Industry-neutral core; vertical packs must not fork the engine (K19).**
-6. Optimize SHI × UVI × DEI simultaneously. Phase 3 target: SHI ≥92, UVI ≥95, DEI ≥95.
+1. **NON-STOP WORK LOOP.** Never stop; retry through provider errors; keep a subagent
+   fleet busy at all times (read-only audits fan out freely; file mutations require
+   disjoint per-agent file ownership; heavy verification stays serialized).
+2. **Use latest Node** (user decision 2026-08-22). System default = v26.7.0, server
+   stack verified green on it. Node 22.23.2 stays user-scoped at
+   `%LOCALAPPDATA%\Programs\node22` for CI-parity debugging. CI still pins 22 until a
+   deliberate ci-patch.
+3. Zero compromises on capability: acquire whatever the project needs.
 
-### Where things stand
+### Environment (REAL laptop — old sandbox profile is obsolete)
 
-The Article XVIII blueprint gate is **LOCKED** (`.agent/state.json` → `blueprint_status`), so product code is unblocked. Phase 0 / Wave W0.1.1 is in progress: raising AST money safety toward ≥90%.
+i7-10510U 4c/8t · 20GB RAM · MX330 · MSVC BuildTools v18 (VC.Tools.x86.x64) present ·
+WebView2 present. Installed this session: rustup stable-msvc (cargo/rustc 1.98,
+user-scoped `%USERPROFILE%\.cargo\bin`), gh CLI 2.98.0
+(`%LOCALAPPDATA%\Programs\gh\bin`), Playwright chromium (was absent — E2E dead before),
+Node 26.7.0 MSI machine-wide + Node 22 zip fallback. `winget` absent; `choco` present
+but non-elevated shell → use user-scoped installs or ask user to approve UAC (they
+will). npm note: global shim is npm 12; lockfile ops stay pinned via
+`npx npm@10.9.8 ci`.
 
-**Money-AST ratchet: 376 unsafe ops / 156 unsafe modules / 730 safe / 82.39%.** Baseline in `scripts/money-ast-baseline.json`, enforced as pre-push gate 9b. Session 026 moved `BalanceSheetPage` 7→0 — and with it a Severity-0 the detector cannot see: the page rolled up prefixes 1/2/3 and asserted `Assets = Liabilities + Equity`, so it reported "Off by _net income_" on every balanced ledger that had traded. Closing equity now includes current-period earnings. Per-file diff confined to that one file.
+### Where things stand (verified facts)
 
-**Fabrication ratchet: 10 findings / 6 files / export engines at 0.** Baseline in `scripts/fabrication-baseline.json`, enforced as pre-push gate 9c. Session 026 moved `InsuranceDashboardPage` 3→0 (read no store, called no engine; now derived from the real `InsuranceEngine`, with policy count and per-line loss ratios disclosed as not derivable).
+**Committed on branch** (all gates green at commit time):
 
-Completed W0.1.1 modules: `FinancialStatementTemplates` (59→0), `ThreeStatementDashboardPage` (34→0), `SafeMathParser` (27→0), the two export engines (37 findings, all page-geometry false positives), `TaxProvisionPage` (22→0), `AutoCommentaryEngine` (16→0), `FinancialInstrumentsEngine` (15→0), `GoalSeekPage` (14→0), `ScenarioBuilderPage` (14→0), `CreditRiskPage` (13→0), `BenchmarkingPage` (8→0), `DriverCascadeEngine` (7→0), `RevRecEngine` (7→0), `BalanceSheetPage` (7→0), `telecomStore` ARPU (2→0).
+- `424d164e` server(W0.2b+W0.3+W0.4): route tenancy adoption + JWT tenant claims;
+  runtime three-statement gate **including a Severity-0 fix before ship** — open-ledger
+  identity must be `A+Exp = L+E+Rev` over the CLOSED type vocabulary
+  (Asset/CapEx/OpEx/COGS | Liability/Equity/Revenue), fail-closed FP-0303 on unknown
+  types; teeth proven by temporary-revert.
+- `fa31c55f` web(W0.5s1+K30+W0.8.6 draft): PillarNav wired, /sectors/\* collapse,
+  ROUTE_MAP drift gate 9e, render-probe harness, glStore sdk/gl commit namespace.
+- `50ba62f2` ROUTE_MAP = generated artifact (prettier-excluded) — resolves the
+  prettier-vs-drift-gate conflict per K7.
+- `719e866f` money detector W0.1.6 type-aware; ratchet 100%/0 **honest**: HEAD
+  detector re-run showed only ISO currency-code string compares remain.
+- `b10116ce` ci-patches 0006/0007 delivered; `.aionrs/`+`.opencode/` ignored.
+- `adc4e51f` platform-acquisition memory record.
 
-**Next money-AST worklist item:** next ranked module from `node scripts/money-ast-detector.mjs --list`. Skip `mockData/*` (fixture factories). Candidates: `LeaseEngine` (7), `LeaseDetailPage` (7), `SankeyChart` (6 — check it is not layout geometry), `WorkingCapitalPage` / `HealthcareDashboardPage` / `CashFlowPage` / `StoreDashboardPage` / `DeferredSchedulePage` / `ARRDashboard` (6 each). Still open: the grouping idiom `existing.debit += e.debit` recurs in **16** non-test files (enumerated in `MEMORY/TASKS/NOW.md`) — a class-wide fix moves several at once.
+**Working tree right now (CLEAN — resumption complete, everything below committed):**
 
-**Next fabrication worklist (worst first):** `BoardPackPage` (3), then the twos (EmissionsTrading, EnergyDashboard, ClaimsAnalytics, FacilityManagement) and the ones (RenewableEnergy, ICReconciliationReport). Check both `src/pages/sector/` and `src/pages/sectors/` twins, grep each page for its store, and read the store's persist seeds first.
+1. `d53066a8` Tauri desktop verification (R-24 CLOSED — cargo check Finished):
+   schema-invalid updater keys removed, dead dep dropped, `mod commands` E0255
+   workaround for rustc ≥1.98; gen/schemas regenerated.
+2. `554b2e02` BudgetListPage:290 light-theme-unreadable text-slate-400 →
+   var(--text-muted) — caught by the newly honest lightContrast contract.
+3. `3d5117c2` /sector/telecom dead redirects → telecommunications; ROUTE_MAP
+   regenerated (generator-owned), drift gate green.
+4. `9772e810` theme contracts Windows-portable (lightContrast find → node:fs
+   walker; buttonContrast backslash-path regex breakage) + text.date serial()
+   helper rewritten in UTC space (IST LMT offset drifted local-midnight math a
+   full day; impl untouched).
+5. `7ccfe586` masterStorage env-pollution REPRODUCED + hardened. Mechanism
+   proven by experiment: vitest threads pool shares ONE process.env per
+   worker across test files, AND parent-process poisoning reproduces it solo
+   (`MASTER_STORAGE_KEY=… npx vitest run` → "resolved undefined" signature).
+   setup.ts EXONERATED — its L204-227 is only a localStorage polyfill; zero
+   current src/ writers exist. Guard: file-level beforeEach scrub + afterEach
+   restore, defense-in-depth in-test re-scrub (K5 strength unchanged).
+6. `a6d7447a` journal second half, state.json, action_log.
+   `.github/workflows/*.yml` edits stay uncommitted by convention (= ci-patches
+   0006/0007).
 
-### Read this before you trust either ratchet
+Verification battery re-run after ALL repairs: root tsc ✓ eslint ✓ focused
+subset 8 files/263 ✓ server tsc+243+83 ✓ detectors 100%/0+0 ✓ persistence-map
+41/41 ✓ schema-equality ✓ route-map ✓ docs+engines ✓ cargo ✓ build PWA ✓.
 
-The single most important lesson of sessions 007–011:
+### Next session: pick from "Ready-to-execute queued work" below
 
-> **The money-AST detector cannot see the worst defects in this codebase.**
+W0.8.6-server is fully spec'd and unblocked (W0.2b+W0.3 landed). The W-FAB-002
+SectorDriverDashboard read-only audit has been re-run and its report is the fix
+spec. Original verification battery preserved here:
 
-It reads _arithmetic_. Every fabrication bug found so far was **hand-typed literals**, which contain no arithmetic at all. Concretely:
-
-- Session 007: a report surface invented statement figures behind a dead data-key mapping.
-- Session 010: `ExportTemplateEngine` hardcoded `$12.4M` revenue, `$2.1M` net income, `24.3%` EBITDA margin that rendered into a CONFIDENTIAL-stamped board PDF for every entity and every period.
-- Session 011: `TaxProvisionPage` invented a four-jurisdiction ASC 740 provision (Federal 70%@21%, CA 15%@8.84%, NY 10%@6.5%, International 5%@12.5%) plus a seeded quarterly ETR, and exported it. Pretax itself ignored COGS.
-
-The fabrication detector (W0.1.7) now catches the session-010 class (displayed `$12.4M` / `24.3%` in a `value:` property). It does **not** catch numeric ratio invention (`pretax * 0.7`, `taxRate: 21` in a computed object). Per-module source guards remain mandatory on every derivation extracted during W0.1.1.
-
-So: **a file at "0 unsafe ops" or "0 fabrication findings" is un-flagged, not certified.** When you report progress, say plainly whether a number moved because the product got safer or because measurement got more accurate.
-
-### Hard-won rules (violating these has cost real time)
-
-- **Before suppressing any identifier in the detector, prove the suppression is confined:** dump `--json` before and after, diff per-file counts. If a file you did not intend to touch changes, you dropped a true positive.
-- **Verify every fix has teeth:** revert the production change from a `/tmp` backup, confirm the new test fails, restore. A test that passes against the bug is worthless.
-- **A test can be vacuous exactly where it matters.** Both board-pack test files `vi.mock`-ed the whole engine and asserted against their own fixtures — checking for `$4.2M`, a number existing nowhere in the product, while `$12.4M` shipped. Use `importOriginal` and keep the real logic under test.
-- **An oracle test can encode a bug.** `VDB(10000,1000,5,2,4) === 4704` was wrong (correct: `2304`). A test named "oracle" is only an oracle if its expected values came from the vendor. Verify against published output.
-- **A large green suite is not coverage.** 381 SafeMathParser tests missed five zeroed defaults because every test passed optional args explicitly. Probe by execution with args omitted.
-- **`x = 0` in destructuring kills a downstream `x ?? N`.** Only `args[i]! ?? N` survives.
-- **Not every money-AST finding is money.** Ratios and margins are dimensionless; page geometry is millimetres. Do not "fix" layout arithmetic with money helpers.
-- **Never lower a gate to pass it (§22.6).** If a gate fails, cut the _next_ phase's scope. Gate changes require an ADR.
-- Only `src/utils/money.ts` is money-safe. **Never** `src/utils/decimalUtils.ts`.
-- Do not guess engine field names (`IncomeStatementData` uses `opex`). Pair every source-text guard with a DOM assertion using the real engine.
-- **Source guards must not trip on disclosure prose.** Session 011's first guard matched the sentence that _named_ the invented jurisdictions. Strip comments, then match assignment patterns (`jurisdiction: '…'`, `.times(0.7)`), not words.
-- **Do not call a correct engine with invented inputs.** `TaxEngine.computeProvision` is money-safe; feeding it `taxRate: 0.21` the GL does not carry would launder a fabrication through a trusted API.
-- **A waterfall that adds the residual as a third step double-counts.** Pretax − tax is the bridge; do not also add net income.
-- **Closing equity must include current-period earnings.** `Assets = Liabilities + Equity` cannot hold on a traded ledger without it; a balance sheet that omits it reports an imbalance exactly equal to net income (session 026).
-- **The fabrication detector does not see KPI deltas, sparkline arrays or trend words.** `change={-6.2}` next to a flagged `84.7%` is the same lie in a shape the scanner ignores.
-
-### Environment and workflow
-
-- **Session is fixed to branch `arena/01a0182b-fp-a-betterversion`.** Commit and push only there. (Each Arena session gets its own `arena/<id>-fp-a-betterversion` branch; PRs always target `main`.)
-- **`MEMORY/` is the secondary brain.** Boot with `MEMORY/INDEX.md` → `STATE.json` → `TRUTH.md` → `TASKS/NOW.md`; write through in the same turn; `node MEMORY/_system/check.mjs` must stay PASS. Disk > MEMORY > recollection.
-- **Pre-commit** (~45s): eslint (staged) → `tsc --noEmit` → prettier (staged) → secret scan. **Pre-push** (~3–5 min): 12 gates incl. build, P0 shard, README claim checks, money ratchet, fabrication ratchet, cascade-hold ledger.
-- **Always push via `start_process`**, never `bash` — pre-push exceeds the bash timeout. Poll with `get_process_output`.
-- **Always `npx prettier --write` before `git add`** on any JSON or MD you generated, or pre-commit fails with husky exit 123.
-- **CORRECTED (session 023): the CI `test-unit` failure was NOT benign.** The failing step is the Vitest run itself, not the coverage upload. The full suite was genuinely red (6 files) while every pre-push gate passed, because pre-push runs an 839-test P0 shard that excludes the smoke/contract files. Run the FULL suite before opening a PR. A tracker hook auto-commits `docs(tracker): auto-update progress tracker` after your commits. Expected, not an error.
-- **`.github/workflows/**`cannot be pushed** — deliver CI changes via`ci-patches/`for a human to`git apply`. **`ci-patches/0005-\*.patch`is still pending and is now urgent:** besides the 80 GiB heap flag and the 15-minute timeout, it removes a duplicated`if: always()`key that makes`ci.yml`**invalid YAML**. That file therefore produces **zero jobs** on every run —`typecheck`, `lint`, the 4-way sharded `test`, `test-merge`, `build`, `e2e`, `a11y`and the blocking`CI Summary`gate have never executed. Measured session 026; see`ci-patches/README.md` § Severity note.
-- **No cargo/rustc in the sandbox** → do not edit `src-tauri/src/*.rs` (§23.8 K2, ADR-011).
-- Sandbox restores wipe `node_modules/` and rewind `HEAD`. First symptom is `Cannot find module 'typescript'`. Recover: `git fetch origin <branch>` → `git reset --soft <sha>` → bare `git reset` → `npm install`.
-- vitest 4.1.7 has **no `basic` reporter** — use default or `--reporter=dot`. Full suite ≈15 min. `0 tests` reported ⇒ suspect a parse error.
-
-### Open debts (carried, none closed this session except the fabrication detector)
-
-**Correctness / gates**
-
-- Fabrication worklist uncleaned: 13 displayed invented figures across 7 files (ratcheted; sessions 024-025 cleaned Telecom/Construction/Equipment/ValueBasedCare + healthcareStore seeds + EnergyRisk). Sector dashboards ship module fixtures or fall back to demo data when their store is empty — check for that pattern, the detector only sees the literals. Also check the STORE's persist seeds — session 024 found the same fabrication living in both the page and the store.
-- No detector for raw floats crossing a render/format boundary. Live instance: `ProfessionalExportEngine` types rows as `(string|number)[][]` and passes them to `autoTable` with only column 0 stringified — an unformatted float prints `0.30000000000000004` into a board pack.
-- Detector blind spot: single-line arrow bodies over `args[i]!` (logged for W0.1.6, type-based detection).
-- No automated detector for numeric ratio invention or view/memo divergence (source guards are per-module).
-- Re-derive the remaining `formula-functions/financial.ts` oracle values from published Excel output.
-- `ODDFPRICE` / `ODDLPRICE` bodies are byte-identical and both ignore `_firstPeriod` / `_lastPeriod`.
-
-**Infrastructure**
-
-- `scripts/escape-ledger-check.mjs` — specified in Section 24, **not written**; must wire into `docs:verify`.
-- Wire `docs:links --strict` into `docs:verify` / pre-push (currently advisory only).
-- Retire legacy `money:adoption` (~25%) after W0.1.1 — it measures imports, not operations, and must never be conflated with AST safety.
-- **W0.8 persistence authority, sequenced BEFORE W0.2.** 43 `persist()` localStorage stores hold financial truth; only 14 non-test files call the server; `tenant` has 0 hits in `server/src/db/`; schema is forked (35 Tauri tables vs 9 server DDL).
-- **MSI installer missing** — repo ships NSIS only, but Section 23 requires MSI + NSIS at GA.
-
-**Product**
-
-- `src/pages/sector/InsuranceDashboardPage.tsx` (routed at `/sector/insurance`) derives "revenue" from `entries.filter(e => e.credit > e.debit)` and "claims" from `accountName.toLowerCase().includes('claim')`. Neither is a chart-of-accounts rule and neither detector flags it. Found in session 026, not fixed.
-- `BoardPackTemplate` is exported through the barrel but **not routed** — no user reaches it. Decide whether to route it or delete it.
-- 13 P0-open features in §3.8 (F-PLAT-001/005, F-SEM-001, F-MDM-001, F-OPS-002, F-SEC-003/004, F-CTRL-001, F-AI-011, F-INTEGRATE-000, F-WORKFLOW-007/008, F-COLLAB-002).
-
-### Phase 0 exit gate (all must hold)
-
-AST money safety ≥90% · no IEEE-754 money persisted · PERSISTENCE_MAP drift-checked with glStore authoritative · schema equality gate · `tenant_id`/`environment_id` + per-table leak test · runtime three-statement gate blocking writes · error registry · ≤40 routes + ⌘K · LLM chokepoint redaction · clean tsc/eslint/suite · **SHI ≥78 · UVI ≥52 · DEI ≥60**.
-
-### Top risks (score)
-
-R-21 no system of record (20) · R-22 money-gate false-green (20) · R-24 desktop unverifiable (20) · R-29 all-in-one claimed while users still leave (20) · R-27 unsigned installer (16).
-
-## (end of handover prompt)
-
----
-
-## Key file map
-
-| Path                                    | What it is                                                                         |
-| --------------------------------------- | ---------------------------------------------------------------------------------- |
-| `MASTER HANDOVER PROMPT.txt`            | The Codex, 3,765 lines. Part XVIII @136–853 (blueprint genesis), Addendum II @1965 |
-| `.agent/BLUEPRINT.md`                   | Locked blueprint, 25 sections + Appendix A (generated)                             |
-| `.agent/blueprint-parts/`               | **Source of truth** — edit here, concatenate in numeric order                      |
-| `.agent/PROJECT_JOURNAL.md`             | Session narrative + ADRs 001–013. Sessions 007–012 carry the correctness lessons   |
-| `.agent/state.json`                     | `blueprint_status`, indices, phase, queue                                          |
-| `scripts/money-ast-detector.mjs`        | AST money-safety detector (`--update --list --file --json`)                        |
-| `scripts/money-ast-baseline.json`       | Ratchet baseline (390 / 82.13%)                                                    |
-| `scripts/fabrication-detector.mjs`      | Displayed-literal fabrication detector (W0.1.7)                                    |
-| `scripts/fabrication-baseline.json`     | Ratchet baseline (13 / 7 files)                                                    |
-| `src/utils/money.ts`                    | **The only** money primitive: decimal.js, precision 40, ROUND_HALF_UP              |
-| `src/utils/moneyAstDetector.test.ts`    | Detector regression locks incl. the `margin` precision fix                         |
-| `src/utils/fabricationDetector.test.ts` | Fabrication detector must-catch / must-ignore locks                                |
-| `src/pages/tax/taxProvisionData.ts`     | Book-tax derivation (no invented jurisdictions)                                    |
-| `MASTER_ROADMAP.md`                     | Waves 1–14; 1–6 done, 7 in progress                                                |
-
-## Useful commands
-
-```bash
-node scripts/money-ast-detector.mjs              # check ratchet
-node scripts/money-ast-detector.mjs --list       # ranked worklist
-node scripts/money-ast-detector.mjs --file <p>   # single file
-node scripts/money-ast-detector.mjs --update     # rebaseline (then prettier --write)
-node scripts/fabrication-detector.mjs            # check fabrication ratchet
-node scripts/fabrication-detector.mjs --list     # ranked worklist
-npx vitest run <path> --reporter=dot             # targeted tests
-npm run docs:verify                              # docs gates
 ```
+npx vitest run <the four repaired scopes>            # targeted
+npx vitest run --reporter=dot                        # FULL suite must be 0-fail (s023 rule)
+cd server && npx tsc --noEmit && npm test && npm run test:native-db   # 243 + 83 expected
+node scripts/money-ast-detector.mjs && node scripts/fabrication-detector.mjs
+node scripts/persistence-map-check.mjs && node scripts/schema-equality-check.mjs
+node scripts/generate-route-map.js --check && npm run docs:verify && npm run engines:verify
+Set-Location src-tauri; cargo check                  # R-24 proof (PATH += ~/.cargo/bin)
+git push -u origin phase0/w02-tenancy                # branch is local-only; creates remote
+```
+
+Then commit in logical chunks (desktop-verification fixes · test-cluster repairs ·
+route fix · memory), update `.agent/PROJECT_JOURNAL.md` (session 033 entry needs its
+"failures triage + environment acquisition" second half), `.agent/state.json`,
+`.agent/action_log.jsonl`. Prettier any generated md/json before staging (pre-commit
+gates strict; husky exit 123 = formatting debt — fix, never bypass).
+
+### Ready-to-execute queued work (spec'd by completed read-only agents)
+
+1. **W0.8.6-server** (spec COMPLETE): add journal_id/idempotency_key/version/deleted_at
+   to gl_entries (4-file checklist from schema-recipe agent: 001_initial_schema.sql
+   ~L71; migrate.ts ensureServerColumns ~L204 append tuples; bootSchema.test L50;
+   schemaReconciliation.test legacy-row test). Partial unique index
+   `uq_gl_entries_tenant_idem(tenant_id,idempotency_key) WHERE idempotency_key IS NOT
+NULL` (fresh .sql + idempotent legacy block near ensureGateIndexes). Apply
+   deleted_at IS NULL predicates at exactly: gl.ts L176, L182, L394(pre-check),
+   trial-balance ON-clause L636-652, gate aggregate threeStatementGate.ts L300-311,
+   export.ts L327-338 + L365-383 (ON-clause, NEVER WHERE on LEFT JOINs). Rewrite DELETE
+   route as tombstone UPDATE **before** gate call in same tx (else every soft delete
+   throws FP-0300). Flip hard-deletion assert threeStatementGate.test L442-451.
+   Client side (glStore inventory): commit path half-landed but UNWIRED — no product
+   trigger for commitDraftsToServer; applyCommitResult discards server ids/versions
+   (If-Match unusable); undo/redo desync entrySyncState; clearData phantom-draft
+   duplicate-posting hazard; e2e seeds lack entrySyncState (legacy rows hydrate as
+   'draft' → would re-post). Highest-risk reroute: importGLData (sync-result consumers
+   GLUploadPage L298-308, integrationStore L300-320).
+2. **W-FAB-001/002**: sector InsuranceDashboardPage fix outline complete (consume
+   buildInsuranceDashboardModel; prefixes 41-44/51-53; retention/solvency/policy-count
+   NOT derivable → remove; REWRITE pinning tests SectorInsurance.money +
+   sector-pages fixtures). SectorDriverDashboard shared-model audit pending (agent
+   silent — relaunch): magnitude sums, invented bases, DEFAULT_DRIVERS constants.
+3. **W-K30-001**: four-state remediation; 10-page fix order delivered with line-cited
+   gaps and primitive props (Skeleton/ErrorState/EmptyState/FinancialWorkspaceEmptyState).
+4. **W-A11Y-001**: CommandPalette blockers (aria-hidden on focused overlay L161;
+   missing focus trap — copy ShortcutHelpModal L19-42 pattern), majors M1-M8, minors
+   m1-m11 with exact fixes. Create-or-remove phantom `.claude/rules/finplan-accessibility.md`.
+5. **W0.5-slice-2**: batch plan B0-B11 delivered (B0 = fix drift-gate parser seeing only
+   191 of 200 route literals; B2 = ~22 rescue redirects turn ~15 red e2e specs green).
+   Ten protected routes enumerated with evidence; Playwright risk register D1-D6.
+
+### Red-team substitute result (own sweep after 2 agent failures)
+
+All six W0.2b routes CLEAN: every mutation carries tenant_id from resolveTenantId only;
+list queries seed tenant first; GL writers confined to gl.ts's three gate-wrapped
+sites. Hygiene backlog: dead `_getCloseState` (periods.ts L95, zero callers); repo-wide
+global-UNIQUE anti-pattern on accounts/entities/departments `.code` columns (flagged
+independently twice).
+
+### Hard-won rules (still binding)
+
+- A comment arguing with its own fixture is a defect report (W0.3 lesson).
+- Tests pinning fabricated numbers get rewritten, not trusted (5 precedents).
+- Prove detector suppressions confined: re-run HEAD detector, diff per-file (--json).
+- Generated artifacts are generator-owned (K7): ROUTE_MAP prettier-excluded; never
+  introduce an in-code CREATE TABLE gl_entries (would activate equality comparison).
+- PowerShell `>` writes UTF-16 — pipe git show through Out-File -Encoding utf8.
+- ESM temp copies of repo scripts can't resolve typescript — copy inside repo tree.
+- gh CLI user-scoped: `%LOCALAPPDATA%\Programs\gh\bin\gh.exe`.
+- cargo check "failure" exit codes via pwsh can be stderr-noise artifacts — trust
+  cargo's own `Finished`/`error[` lines, not the wrapper's exit code.
+
+## (end handover prompt)
+
+## SESSION 033 FINAL ADDENDUM (2026-08-22 late) - read after the refresh above
+
+Landed + PUSHED since that refresh (remote = local @ post-b3f5312d):
+
+- f6b34650 W0.8.6-SERVER: gl_entries journal_id/idempotency_key/idempotency_hash/
+  version/deleted_at; DELETE=tombstone-before-gate in-tx; bulk honors
+  Idempotency-Key (FP-0401 on payload change); responses entries:[{id,version}].
+- 4d9a62c5 SECURITY (red-team S0+H): export.ts BvA join now tenant-scoped BOTH
+  sides (was cross-tenant contamination); /users/list+/users/:id scoped; accounts
+  GET/POST/PUT tenanted+admin-gated+per-tenant code-uniqueness; zod account-type
+  enum = closed set (Revenue/COGS/OpEx/CapEx/Asset/Liability/Equity); closed-period
+  checks tenant-scoped. M-tier authz edges QUEUED as W0.2c-hardening.
+- 022daae6 W-FAB-001: sector insurance page -> buildInsuranceDashboardModel only;
+  fabricated tiles removed; pinning tests rewritten with trap-row proofs.
+- dba01d7f W-A11Y-001 pass1: palette aria-hidden/focus-trap/options-tabIndex/
+  groups/LiveRegion; PillarNav badge name+contrast+focus-ring tokens.
+- 8fb44654 + b3f5312d W0.5-B0+B2: drift gate sees ALL routes (RC1 fail-closed,
+  alias-inheritance pillar pass); 21 rescue redirects; routeShell pin 221.
+- a39e814d ADR-014 GOAL ALIGNMENT: scripts/escape-ledger-check.mjs +
+  docs/product/escape-ledger.json INSTRUMENT LIVE (pre-push 9g advisory;
+  --phase gates at reviews). BASELINE: escape rate 76.7%, Core-20 hard=16,
+  built 7/30. state.json phase0_exit_amendments records five blueprint-gap fixes.
+
+VERIFICATION STATE: full suite 1272 files / 14495 green; server tsc+247+83 on
+Node 26.7.0 default; cargo check green; all ratchets/gates green; remote=local.
+
+STILL OPEN (spec-complete, solo-ready):
+
+1. ScenarioBuilderPage four-states (bfec73a0 died pre-edit; PeriodClose half is
+   COMMITTED inside b3f5312d sweep - verified 16/16).
+2. BoardPackPage.probe.test.tsx never written (CashFlow probe landed untracked->committed).
+3. SectorDriver part-1 execution (a3868396 failed twice; its audit spec at
+   .agent/W-FAB-002-sectordriver-fabrication-audit.md).
+4. README stale claims (12e80ee1 audit): tests-count 13438/1197 stale (now 14495/1272),
+   server 107->255 census, money-adoption triple-contradiction (ADJUDICATED:
+   legacy metric retired-pending, 7 sites are roundMoney().toFixed() false positives),
+   '78 verticals' unsupported (real: 18 sector routes/14 templates), row-9 FIXED.
+5. glStore client promotion per e9c93c68 plan v2 (G6 UUID resolver = P0 blocker;
+   G1-G5,G7,G8 spec'd; updateEntry descoped - no server PUT).
+6. ci-patch 0008 spec ready (30544152): NODE_VERSION 22->26 safe (better-sqlite3 v13
+   bundles N-API prebuilds ABI-stable); needs human git apply like 0006/0007.
+7. W-A11Y-002 backlog (ea8c1ea6 pass-2 audit): DataTable dual-focus-model M2/M3,
+   skeleton live-region spam M5, Sidebar rail names M1, K34 sweep M7.
+8. K30 extension backlog (73d7397e): ICElimination mockPairs page worst.
+9. W0.2c-hardening M-tier: entityAuth allow-through, scenario apply entity-crossing,
+   entity_id reassignment, empty-entityFilter fallthrough, global code-uniques.
+
+USER DIRECTIVES ACTIVE: non-stop loop; SOLO mode (no subagents); latest Node;
+zero compromises; retry through provider errors.
+
+## SESSION 033 CONTINUATION (2026-08-22/23) - read after the addendum above
+
+LANDED on phase0/w02-tenancy (local; push at wave end):
+
+- ada953e6 test(period-close): orphaned K30 four-states specs from died wave
+  bfec73a0 verified 16/16 against the b3f5312d page and landed.
+- 661dd9ab docs(readme): all five audited stale clusters fixed with live
+  measurements — tests 14,495/1,272; server 247/25 + native-db 83 (measured);
+  money triple-contradiction resolved onto money:ast truth (990 scanned /
+  896 safe / 0 unsafe / 100%, Gate 9b; fabrication Gate 9c = 0); adoption
+  denominator 258→255 (208 engines + 47 store non-test; importers re-measured
+  88, Gate 7 PASS); verticals 78→18 sector routes + 14 templates; footer
+  re-verification stamp 7c09eea9. check-readme-claims 11/11, verify-readme-stats,
+  prettier green.
+- d39602c7 feat(scenarios/K30): ScenarioBuilderPage four-states — shared
+  EmptyState under mounted h1, MC in-flight skeleton, ErrorState retry for
+  save/MC failures; NO fake page-hydrate skeleton (derivation is synchronous);
+  new 5-spec component suite (real stores, PeriodClose idiom).
+- da8eac31 fix(sector/W-FAB-002 p1): SectorDriverDashboard rebuilt. Signed
+  prefix-first classifier replaces regex+absEntryAmount; invented bases,
+  filledMetrics target-filler, x0.62 claims fallback and regulatory
+  fabrications (cet1/solvency-180/npl/loan_deposit/backlog/wip/ar_days/
+  case_mix/cost_per_citizen/faculty-90000/portfolio×16…) REMOVED; derived
+  metrics null-with-disclosure; driver KPIs moved to a labeled "Scenario
+  simulator" card with per-metric basis strings; header copy now states the
+  measured-vs-projection split. Tests rewritten per K5: sign-sensitivity,
+  insurance identity 60/25/85, filler-absence, disclosure-not-number.
+  NOTE: honest fixtures caught a real classifier defect mid-wave (prefix-5
+  claim rows never reached the claims bucket) — fixed in-wave.
+
+REMAINING W-FAB-002 part-2: sectors/\*.ts config copy still advertises removed
+KPIs (e.g. banking description "NIM, CET1, NPL"); LEGACY_SECTOR_COPY sr-only
+sweep; render-probe specs per sector branch; industry-pack vertical-truthfulness
+sweep (phase0-exit amendment item 3).
+
+NEXT QUEUE after that: BoardPackPage probe spec; glStore client promotion
+(G6 UUID resolver P0 blocker); ci-patch 0008 human apply; W0.2c-hardening
+M-tier; W-A11Y-002 backlog.
+
+VERIFICATION STATE: tsc/eslint/prettier clean; money-ast 100%/0; fabrication 0;
+sector cluster 75/75; scenario cluster 32/32; PeriodClose 16/16; README gates
+green. Full-suite + build re-run at next pre-push.
+
+## SESSION 033 FLEET WAVE (2026-08-23 early) - read after continuation above
+
+Directive change: SOLO mode revoked by founder - a 15-subagent fleet ran on
+disjoint file territories (edits-only; orchestrator serialized all commits).
+All 15 lanes reported. Commits: 6fc332be G6 -> 7447c1f7 publish trigger ->
+7ee5c3cc sector-config p2 -> db9902b5 a11y M1-M5 batch -> 730b2dea sr-only
+sweep -> 1163e012 ICElimination K30 -> server W0.2c batch -> cross-lane
+fixup. state.json queue entries updated in place.
+
+KEY RESULTS:
+
+- glStore promotion waves 1-2: G6 UUID/version resolver (fail-closed arity),
+  DurabilityBanner publish trigger (import:create RBAC-gated), undo/redo
+  sync-aware snapshots. REMAINS: SDK listEntries + boot hydrate.
+- W-FAB-002 p1+p2 COMPLETE: model honesty + config pruning (24 fabricated
+  ids) + legacy copy sweep. REMAINS: other industry packs sweep.
+- Server W0.2c M-tier DONE: scenario entity-scope fail-closed (FP-0201),
+  entity_id immutable (FP-0410), scoped listings, dup codes (FP-0402);
+  server suite 28 files / 286 tests green. LEFTOVERS flagged: departments
+  POST inserts nonexistent updated_at (500s); entity code-uniqueness is
+  DB-global not tenant-scoped; POST /gl/accounts lacks role gate.
+- a11y: DataTable ARIA grid (M2/M3), Skeleton announce-once (M5), Sidebar
+  rail names (M1), skip-link/reduced-motion minors, .claude a11y rule file
+  created (gitignored locally - shipping needs a repo policy call).
+- Probes caught real spec rot, not page bugs: CashFlow probe fixture had
+  unbalanced rows/wrong constants; corrected with balanced pairs under real
+  COA prefixes (cash=11xx). Page math verified right throughout.
+- ci-patch/0008-node26-bump.patch authored + git-apply --check verified
+  (human apply required like 0006/0007).
+- docs:links gate has PRE-EXISTING debt (~130 citations in .agent/journal,
+  docs/GLOSSARY.md, STRATEGIC_DECISIONS_LOG.md + missing skill-creator refs)
+  - not in pre-push battery; queued as its own cleanup lane.
+
+SKILLS INSTALLED (founder directive): configuring-tauri-capabilities (maps to
+W-DESK-01), json-render react/zustand adapters (vercel-labs). Searched and
+rejected per quality rubric: playwright/finance ecosystems (top item <150
+installs or wrong domain).
+
+NEXT QUEUE (post-fleet): glStore boot hydrate; industry-pack truthfulness
+sweep; server leftovers trio; docs:links debt; W0.9 egress chokepoint.
+
+## SESSION 033 WAVE-3 CLOSE (2026-08-23 ~04:45) - read after fleet wave
+
+All 14 wave-2 subagent lanes + orchestrator integration lane LANDED and
+committed in logical batches (a1d2ad01 .. f9bc73fc + docs commits).
+Wave-3 re-tasks on the same agent roster also landed: R1 routes slice-2,
+R2 engine placeholder null-contracts, R4 ClaimsAnalytics dead export
+removed, R5 announce-once adoption x5, R6 docs-links win32 fix + MEMORY
+citations (strict gate now 0/0 repo-wide), R7 ci-patch 0009, R8 KPI trend
+honesty, R9 AppLayout single skip link, R10 mockPeriods renames, R11
+server environment_id filter (292 tests), R12/R13 ledger evidence +
+energy K17 locks, R14 last 3 sector configs.
+
+K17 STORE SWEEP COMPLETE: energyStore demo assets/generation/mix removed
+(1bea2f3a), debtStore SEED_INSTRUMENTS ($65.5M fake facilities) removed,
+leaseStore SEED_LEASES (6 invented leases) removed - factories ship [],
+persist v2 migrate strips retired seed ids while preserving user rows.
+Verified-clean siblings documented (construction/insurance/healthcare/
+realEstate stores).
+
+REMAINING OPEN (small, spec-ready): README refresh to final counts at next
+battery; W0.9 production wiring (no workflow routes through llmEgress yet);
+ClaimsAnalytics per-claim export awaits a real claim-management feed;
+desktop orphan modules disposition (crash_reporter/secure_storage).
+
+PUSH DEBT: origin still at bc3d44b7; this wave adds ~25 commits awaiting the
+final clean battery + push.

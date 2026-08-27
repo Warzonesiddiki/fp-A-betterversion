@@ -55,7 +55,7 @@ describe('Account Lockout', () => {
 
   describe('checkAccountLockout', () => {
     it('should return not locked when no failed attempts exist', () => {
-      const status = checkAccountLockout(testEmail);
+      const status = checkAccountLockout(testEmail, testIp);
 
       expect(status.locked).toBe(false);
       expect(status.remainingMinutes).toBe(0);
@@ -65,7 +65,7 @@ describe('Account Lockout', () => {
     it('should return not locked with correct remaining attempts after 1 failure', () => {
       recordLoginAttempt(testEmail, testIp, false);
 
-      const status = checkAccountLockout(testEmail);
+      const status = checkAccountLockout(testEmail, testIp);
 
       expect(status.locked).toBe(false);
       expect(status.attemptsRemaining).toBe(4);
@@ -76,18 +76,18 @@ describe('Account Lockout', () => {
         recordLoginAttempt(testEmail, testIp, false);
       }
 
-      const status = checkAccountLockout(testEmail);
+      const status = checkAccountLockout(testEmail, testIp);
 
       expect(status.locked).toBe(false);
       expect(status.attemptsRemaining).toBe(1);
     });
 
-    it('should lock account after 5 failed attempts', () => {
+    it('should lock (email, ip) pair after 5 failed attempts from that IP', () => {
       for (let i = 0; i < 5; i++) {
         recordLoginAttempt(testEmail, testIp, false);
       }
 
-      const status = checkAccountLockout(testEmail);
+      const status = checkAccountLockout(testEmail, testIp);
 
       expect(status.locked).toBe(true);
       expect(status.remainingMinutes).toBeGreaterThan(0);
@@ -102,7 +102,7 @@ describe('Account Lockout', () => {
       }
       recordLoginAttempt(testEmail, testIp, true);
 
-      const status = checkAccountLockout(testEmail);
+      const status = checkAccountLockout(testEmail, testIp);
 
       expect(status.locked).toBe(false);
       expect(status.attemptsRemaining).toBe(5);
@@ -118,12 +118,68 @@ describe('Account Lockout', () => {
       }
 
       // email2 has no attempts
-      const status1 = checkAccountLockout(email1);
-      const status2 = checkAccountLockout(email2);
+      const status1 = checkAccountLockout(email1, testIp);
+      const status2 = checkAccountLockout(email2, testIp);
 
       expect(status1.locked).toBe(true);
       expect(status2.locked).toBe(false);
       expect(status2.attemptsRemaining).toBe(5);
+    });
+
+    it('should handle NULL ip addresses as their own dimension bucket', () => {
+      for (let i = 0; i < 5; i++) {
+        recordLoginAttempt(testEmail, null, false);
+      }
+
+      // NULL-ip pair locked...
+      expect(checkAccountLockout(testEmail, null).locked).toBe(true);
+      // ...while a named IP keeps its own full budget.
+      expect(checkAccountLockout(testEmail, '10.0.0.9').locked).toBe(false);
+      expect(checkAccountLockout(testEmail, '10.0.0.9').attemptsRemaining).toBe(5);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // SEC-4: per-(email, ip) dimension vs email-global ceiling
+  // -------------------------------------------------------------------------
+
+  describe('SEC-4: per-IP lockout dimension + email-global cap', () => {
+    it('a hostile IP does not consume a different IP attempt budget', () => {
+      for (let i = 0; i < 5; i++) {
+        recordLoginAttempt(testEmail, '203.0.113.66', false);
+      }
+      // Attacker's pair is locked...
+      expect(checkAccountLockout(testEmail, '203.0.113.66').locked).toBe(true);
+      // ...but the legitimate user on another IP still gets a fresh budget.
+      const victim = checkAccountLockout(testEmail, '198.51.100.7');
+      expect(victim.locked).toBe(false);
+      expect(victim.attemptsRemaining).toBe(5);
+    });
+
+    it('targeted DoS: 15 spray attempts across IPs do NOT lock the victim IP', () => {
+      for (let i = 0; i < 15; i++) {
+        recordLoginAttempt(testEmail, `203.0.113.${i}`, false);
+      }
+      const victim = checkAccountLockout(testEmail, '198.51.100.7');
+      expect(victim.locked).toBe(false);
+      expect(victim.attemptsRemaining).toBe(5);
+    });
+
+    it('email-global cap (20) locks even when every source stays under its own budget', () => {
+      for (let i = 0; i < 20; i++) {
+        recordLoginAttempt(testEmail, `203.0.113.${i}`, false);
+      }
+      // Every individual pair is at 1/5, but the wide brute-force trips the cap.
+      const victim = checkAccountLockout(testEmail, '198.51.100.7');
+      expect(victim.locked).toBe(true);
+      expect(victim.remainingMinutes).toBeGreaterThan(0);
+    });
+
+    it('19 distributed attempts stay under the email-global cap', () => {
+      for (let i = 0; i < 19; i++) {
+        recordLoginAttempt(testEmail, `203.0.113.${i}`, false);
+      }
+      expect(checkAccountLockout(testEmail, '198.51.100.7').locked).toBe(false);
     });
   });
 
@@ -204,13 +260,12 @@ describe('Account Lockout', () => {
   // -------------------------------------------------------------------------
 
   describe('lockout expiry', () => {
+    const isoToSqlite = (msAgo: number) =>
+      new Date(Date.now() - msAgo).toISOString().replace('T', ' ').replace('Z', '').split('.')[0]; // "YYYY-MM-DD HH:MM:SS"
+
     it('should unlock account after lockout window expires', () => {
       // Create 5 failed attempts with old timestamps (SQLite CURRENT_TIMESTAMP format)
-      const oldTime = new Date(Date.now() - 16 * 60 * 1000)
-        .toISOString()
-        .replace('T', ' ')
-        .replace('Z', '')
-        .split('.')[0]; // "YYYY-MM-DD HH:MM:SS"
+      const oldTime = isoToSqlite(16 * 60 * 1000);
       for (let i = 0; i < 5; i++) {
         testDb
           .prepare(
@@ -220,18 +275,14 @@ describe('Account Lockout', () => {
       }
 
       // Account should be unlocked because attempts are outside the window
-      const status = checkAccountLockout(testEmail);
+      const status = checkAccountLockout(testEmail, testIp);
       expect(status.locked).toBe(false);
       expect(status.attemptsRemaining).toBe(5);
     });
 
     it('should still lock if last attempt is within window', () => {
       // 4 old failures outside window
-      const oldTime = new Date(Date.now() - 16 * 60 * 1000)
-        .toISOString()
-        .replace('T', ' ')
-        .replace('Z', '')
-        .split('.')[0];
+      const oldTime = isoToSqlite(16 * 60 * 1000);
       for (let i = 0; i < 4; i++) {
         testDb
           .prepare(
@@ -243,9 +294,23 @@ describe('Account Lockout', () => {
       // 1 recent failure - only 1 in the 15-min window, not enough for lockout
       recordLoginAttempt(testEmail, testIp, false);
 
-      const status = checkAccountLockout(testEmail);
+      const status = checkAccountLockout(testEmail, testIp);
       expect(status.locked).toBe(false);
       expect(status.attemptsRemaining).toBe(4);
+    });
+
+    it('email-global expiry unlocks once all attempts age out of the window', () => {
+      const oldTime = isoToSqlite(16 * 60 * 1000);
+      for (let i = 0; i < 20; i++) {
+        testDb
+          .prepare(
+            'INSERT INTO login_attempts (email, ip_address, success, attempted_at) VALUES (?, ?, 0, ?)'
+          )
+          .run(testEmail, `203.0.113.${i}`, oldTime);
+      }
+      expect(checkAccountLockout(testEmail, '198.51.100.7').locked).toBe(false);
+      // Aged-out rows were cleared.
+      expect(getFailedAttemptCount(testEmail)).toBe(0);
     });
   });
 
@@ -264,13 +329,13 @@ describe('Account Lockout', () => {
       expect(getFailedAttemptCount('test@example.com')).toBe(1);
     });
 
-    it('should handle rapid successive attempts', () => {
+    it('should handle rapid successive brute-force from one IP', () => {
       // Simulate rapid brute-force
       for (let i = 0; i < 10; i++) {
         recordLoginAttempt(testEmail, testIp, false);
       }
 
-      const status = checkAccountLockout(testEmail);
+      const status = checkAccountLockout(testEmail, testIp);
       expect(status.locked).toBe(true);
       expect(status.remainingMinutes).toBeGreaterThan(0);
     });
@@ -280,12 +345,12 @@ describe('Account Lockout', () => {
       for (let i = 0; i < 5; i++) {
         recordLoginAttempt(testEmail, testIp, false);
       }
-      expect(checkAccountLockout(testEmail).locked).toBe(true);
+      expect(checkAccountLockout(testEmail, testIp).locked).toBe(true);
 
       // Clear attempts (simulates time passing and cleanup)
       testDb.prepare('DELETE FROM login_attempts WHERE email = ?').run(testEmail);
 
-      const status = checkAccountLockout(testEmail);
+      const status = checkAccountLockout(testEmail, testIp);
       expect(status.locked).toBe(false);
       expect(status.attemptsRemaining).toBe(5);
     });

@@ -321,7 +321,8 @@ describe('Sector Page Smoke Tests', () => {
 
     it('displays the page heading', () => {
       renderPage(HealthcareDashboardPage, '/healthcare', '/healthcare');
-      expect(screen.getByText(/Healthcare/i)).toBeInTheDocument();
+      // Anchor to the heading: KPI/disclosure copy also mentions Healthcare.
+      expect(screen.getByRole('heading', { level: 1, name: /Healthcare/i })).toBeInTheDocument();
     });
   });
 

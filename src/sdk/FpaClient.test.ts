@@ -20,6 +20,7 @@
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { FpaClient } from './FpaClient';
+import { ApiNotConfiguredError } from './types';
 import type { AuthConfig } from './types';
 import { SDK_VERSION } from './types';
 
@@ -43,6 +44,7 @@ function makeClient(
 
 describe('FpaClient', () => {
   afterEach(() => {
+    vi.unstubAllEnvs();
     while (FAKES.length) {
       const c = FAKES.pop();
       try {
@@ -63,10 +65,21 @@ describe('FpaClient', () => {
 
   // ── baseUrl ─────────────────────────────────────────────────────────────
 
-  it('uses DEFAULT_BASE_URL when baseUrl is not provided', () => {
+  it('without baseUrl or VITE_API_URL, construction succeeds but operations reject ApiNotConfiguredError (W6-P0-13)', async () => {
+    vi.stubEnv('VITE_API_URL', '');
     const c = new FpaClient({ auth: { type: 'bearer', token: 't' } });
     FAKES.push(c);
-    expect(c.baseUrl).toBe('https://api.finplanpro.dev/v1');
+    // Honest default: NO fictional host. The origin stays unconfigured and
+    // every operation fails fast before any network attempt.
+    expect(c.baseUrl).toBe('');
+    await expect(c.get('/health')).rejects.toBeInstanceOf(ApiNotConfiguredError);
+  });
+
+  it('resolves the origin from VITE_API_URL when baseUrl is not provided', async () => {
+    vi.stubEnv('VITE_API_URL', 'http://localhost:3001');
+    const c = new FpaClient({ auth: { type: 'bearer', token: 't' } });
+    FAKES.push(c);
+    expect(c.baseUrl).toBe('http://localhost:3001');
   });
 
   it('respects explicit baseUrl', () => {

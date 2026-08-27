@@ -1,88 +1,155 @@
-import React, { useEffect, useMemo } from 'react';
+/**
+ * ESG sector overview — every metric is derived from the posted GL and useESGStore.
+ *
+ * CORRECTNESS CONTRACT:
+ * 1. Sector financial KPIs come from posted environmental, social, and governance
+ *    expenditure accounts in the GL using exact decimal money arithmetic.
+ *    This page previously rendered a generic debit/credit reskin while the engine
+ *    and store sat unwired.
+ * 2. Non-financial ESG indicators (carbon scope emissions, diversity ratios, SDG
+ *    alignment) reflect recorded data in `useESGStore`. Where primary activity data
+ *    is absent, requirements are disclosed rather than fabricated.
+ */
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  AlertTriangle,
+  CheckCircle,
+  Download,
+  DollarSign,
+  FileSpreadsheet,
+  Layers,
+  Leaf,
+  ShieldCheck,
+  TrendingUp,
+} from 'lucide-react';
 import { useGLStore } from '@/store/glStore';
 import { useESGStore } from '@/store/esgStore';
+import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { aggregateAccounts } from './accountOverview';
+import { AccountOverviewCard } from './AccountOverviewCard';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { DataTable, Column } from '@/components/ui/DataTable';
-import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
-import { Leaf, DollarSign, Layers, TrendingUp } from 'lucide-react';
-import type { GLEntry } from '@/types';
-import { addMoney, roundTo, sumMoney } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
-
-function computeESGStats(entries: readonly GLEntry[]) {
-  const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
-  const totalCredit = roundTo(sumMoney(entries.map((e) => e.credit)), 2);
-  const netChange = roundTo(sumMoney(entries.map((e) => e.netChange)), 2);
-  const uniqueAccounts = new Set(entries.map((e) => e.accountCode)).size;
-
-  const accountMap = new Map<
-    string,
-    { name: string; debit: number; credit: number; net: number; count: number }
-  >();
-  for (const e of entries) {
-    const existing = accountMap.get(e.accountCode) ?? {
-      name: e.accountName,
-      debit: 0,
-      credit: 0,
-      net: 0,
-      count: 0,
-    };
-    existing.debit = addMoney(existing.debit, e.debit ?? 0).toNumber();
-    existing.credit = addMoney(existing.credit, e.credit ?? 0).toNumber();
-    existing.net = addMoney(existing.net, e.netChange ?? 0).toNumber();
-    existing.count += 1;
-    accountMap.set(e.accountCode, existing);
-  }
-
-  const accountBreakdown = Array.from(accountMap.entries())
-    .map(([code, data]) => ({
-      accountCode: code,
-      accountName: data.name,
-      debit: data.debit,
-      credit: data.credit,
-      netChange: data.net,
-      transactions: data.count,
-    }))
-    .sort((a, b) => Math.abs(b.credit) - Math.abs(a.credit));
-
-  return { totalDebit, totalCredit, netChange, uniqueAccounts, accountBreakdown };
-}
-
-const columns: Column[] = [
-  { key: 'accountCode', header: 'Account Code', sortable: true },
-  { key: 'accountName', header: 'Account Name', sortable: true },
-  { key: 'debit', header: 'Debit', align: 'right', sortable: true },
-  { key: 'credit', header: 'Credit', align: 'right', sortable: true },
-  { key: 'netChange', header: 'Net Change', align: 'right', sortable: true },
-  { key: 'transactions', header: 'Transactions', align: 'right', sortable: true },
-];
+import { addMoney, roundTo, subtractMoney, sumMoney } from '@/utils/money';
 
 export function ESGPage() {
-  const { entries } = useGLStore();
-  const { metrics: esgMetrics } = useESGStore();
+  const fmt = useCurrencyFormatter();
+  const entries = useGLStore((s) => s.entries);
+  const { metrics, initiatives, getOverallScore } = useESGStore();
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — ESG';
   }, []);
 
-  const stats = useMemo(() => computeESGStats(entries), [entries]);
+  const overallScore = useMemo(() => getOverallScore(), [getOverallScore]);
 
-  const tableData = useMemo(
-    () =>
-      stats.accountBreakdown.map((row) => ({
-        accountCode: row.accountCode,
-        accountName: row.accountName,
-        debit: formatCurrency(row.debit),
-        credit: formatCurrency(row.credit),
-        netChange: formatCurrency(row.netChange),
-        transactions: formatNumber(row.transactions),
-      })),
-    [stats.accountBreakdown]
-  );
+  const esgSpend = useMemo(() => {
+    if (entries.length === 0) {
+      return {
+        environmental: 0,
+        social: 0,
+        governance: 0,
+        total: 0,
+      };
+    }
+
+    const envEntries = entries.filter(
+      (e) =>
+        e.accountCode?.startsWith('681') ||
+        (/environment|energy|carbon|waste|clean|renewab/i.test(e.accountName ?? '') &&
+          !/training|safety|compliance|audit|legal/i.test(e.accountName ?? ''))
+    );
+    const socialEntries = entries.filter(
+      (e) =>
+        e.accountCode?.startsWith('682') ||
+        /training|safety|wellness|diversity|social|community/i.test(e.accountName ?? '')
+    );
+    const govEntries = entries.filter(
+      (e) =>
+        e.accountCode?.startsWith('683') ||
+        /compliance|audit|legal|governance|regulatory/i.test(e.accountName ?? '')
+    );
+
+    const getNet = (e: (typeof entries)[number]) =>
+      subtractMoney(e.debit ?? 0, e.credit ?? 0).toNumber();
+
+    const env = roundTo(sumMoney(envEntries.map(getNet)), 2);
+    const soc = roundTo(sumMoney(socialEntries.map(getNet)), 2);
+    const gov = roundTo(sumMoney(govEntries.map(getNet)), 2);
+    const total = roundTo(addMoney(addMoney(env, soc), gov), 2);
+
+    return {
+      environmental: env,
+      social: soc,
+      governance: gov,
+      total,
+    };
+  }, [entries]);
+
+  const accountBreakdown = useMemo(() => aggregateAccounts(entries), [entries]);
+
+  const handleExportPDF = () => {
+    void ExportEngine.exportToPDF(
+      {
+        headers: ['Category / Indicator', 'Value', 'Source / Basis'],
+        rows: [
+          [
+            'Total ESG Investment',
+            fmt.currency0(esgSpend.total),
+            'Posted GL environmental, social, governance spend',
+          ],
+          [
+            'Environmental Spend',
+            fmt.currency0(esgSpend.environmental),
+            'Clean energy, waste reduction, carbon offsets',
+          ],
+          [
+            'Social Spend',
+            fmt.currency0(esgSpend.social),
+            'Workforce wellness, diversity & community',
+          ],
+          [
+            'Governance & Compliance',
+            fmt.currency0(esgSpend.governance),
+            'Audit, legal & regulatory compliance',
+          ],
+          [
+            'Overall ESG Score',
+            metrics.length > 0 ? `${overallScore}%` : 'Disclosed pending metrics',
+            'Recorded in esgStore',
+          ],
+          ['Active Initiatives', fmt.number(initiatives.length), 'Recorded in esgStore'],
+        ],
+      },
+      { title: 'ESG_Overview_Report' }
+    ).catch(reportExportFailure);
+  };
+
+  const handleExportExcel = () => {
+    void ExportEngine.exportToExcel(
+      {
+        headers: ['Pillar', 'Metric / Indicator', 'Amount / Value'],
+        rows: [
+          ['Financial', 'Environmental Spend (GL)', esgSpend.environmental],
+          ['Financial', 'Social Spend (GL)', esgSpend.social],
+          ['Financial', 'Governance Spend (GL)', esgSpend.governance],
+          ['Financial', 'Total ESG Spend (GL)', esgSpend.total],
+          ...metrics.map((m) => [m.category, m.name, `${m.value} ${m.unit}`]),
+          ...initiatives.map((init) => [
+            'Initiative',
+            init.name,
+            `Budget: ${init.budget}, Spent: ${init.spent}`,
+          ]),
+        ],
+      },
+      { title: 'ESG_Metrics_and_Spend' }
+    ).catch(reportExportFailure);
+  };
 
   const handleImportKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -91,7 +158,7 @@ export function ESGPage() {
     }
   };
 
-  if (entries.length === 0) {
+  if (entries.length === 0 && metrics.length === 0) {
     return (
       <main className="p-12 text-center" role="main" aria-label="ESG - No Data">
         <a
@@ -102,7 +169,9 @@ export function ESGPage() {
         </a>
         <Leaf className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
         <h1 className="text-xl font-semibold mb-2">No ESG Data</h1>
-        <p className="text-[var(--text-muted)] mb-6">Import GL data to view ESG.</p>
+        <p className="text-[var(--text-muted)] mb-6">
+          Import GL data to view ESG expenditures and metrics.
+        </p>
         <Button
           id="import-btn"
           onClick={() => navigate('/data/gl-upload')}
@@ -126,10 +195,23 @@ export function ESGPage() {
       <PageHeader
         title="ESG"
         titleId="esg-heading"
+        purpose="Sustainability indicators and GL-posted investments in environmental, social, and governance initiatives."
         status={
           <span className="text-sm text-[var(--text-muted)]">
-            {formatNumber(entries.length)} entries imported
+            {fmt.number(entries.length)} entries imported · {metrics.length} tracked metrics
           </span>
+        }
+        actions={
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={handleExportPDF} aria-label="Export PDF">
+              <Download className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              PDF
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleExportExcel} aria-label="Export Excel">
+              <FileSpreadsheet className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+              Excel
+            </Button>
+          </div>
         }
       />
       <section
@@ -139,42 +221,92 @@ export function ESGPage() {
         aria-labelledby="esg-heading"
       >
         <KPIValue
-          label="Total Entries"
-          value={formatNumber(entries.length)}
-          icon={<Leaf className="h-4 w-4" aria-hidden="true" />}
-        />
-        <KPIValue
-          label="ESG Metrics"
-          value={formatNumber(esgMetrics.length)}
-          icon={<Layers className="h-4 w-4" aria-hidden="true" />}
-        />
-        <KPIValue
-          label="Total Debit"
-          value={formatCompactNumber(stats.totalDebit)}
+          label="Total ESG Spend"
+          value={fmt.currency0(esgSpend.total)}
           icon={<DollarSign className="h-4 w-4" aria-hidden="true" />}
+          changeLabel="Posted Environmental, Social & Governance costs"
         />
         <KPIValue
-          label="Total Credit"
-          value={formatCompactNumber(stats.totalCredit)}
+          label="Environmental Spend"
+          value={fmt.currency0(esgSpend.environmental)}
+          icon={<Leaf className="h-4 w-4" aria-hidden="true" />}
+          changeLabel="Clean energy, waste reduction, carbon offsets"
+        />
+        <KPIValue
+          label="Overall ESG Score"
+          value={metrics.length > 0 ? `${overallScore}%` : 'Pending'}
           icon={<TrendingUp className="h-4 w-4" aria-hidden="true" />}
+          changeLabel={
+            metrics.length > 0
+              ? 'Target completion across tracked metrics'
+              : 'Record metrics in ESG store'
+          }
+        />
+        <KPIValue
+          label="Active Initiatives"
+          value={fmt.number(initiatives.length)}
+          icon={<ShieldCheck className="h-4 w-4" aria-hidden="true" />}
+          changeLabel="Initiatives tracked in ESG store"
         />
       </section>
-      <Card aria-label="Account Overview" aria-live="polite">
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card aria-label="ESG Spend Breakdown" aria-live="polite">
+          <CardHeader>
+            <CardTitle>ESG Investment Allocation</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-3">
+              <li className="flex items-baseline justify-between text-sm">
+                <span className="flex items-center gap-2">
+                  <Leaf className="h-4 w-4 text-emerald-500" aria-hidden="true" />
+                  Environmental (E)
+                </span>
+                <span className="font-mono tabular-nums">
+                  {fmt.currency(esgSpend.environmental)}
+                </span>
+              </li>
+              <li className="flex items-baseline justify-between text-sm">
+                <span className="flex items-center gap-2">
+                  <Layers className="h-4 w-4 text-blue-500" aria-hidden="true" />
+                  Social & Workforce (S)
+                </span>
+                <span className="font-mono tabular-nums">{fmt.currency(esgSpend.social)}</span>
+              </li>
+              <li className="flex items-baseline justify-between text-sm">
+                <span className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-purple-500" aria-hidden="true" />
+                  Governance & Compliance (G)
+                </span>
+                <span className="font-mono tabular-nums">{fmt.currency(esgSpend.governance)}</span>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        <AccountOverviewCard rows={accountBreakdown} />
+      </div>
+
+      <Card>
         <CardHeader>
-          <CardTitle id="account-overview-title">Account Overview</CardTitle>
+          <CardTitle>Data Lineage & Disclosures</CardTitle>
         </CardHeader>
-        <CardContent aria-labelledby="account-overview-title">
-          {tableData.length > 0 ? (
-            <DataTable
-              columns={columns}
-              data={tableData}
-              sortable
-              caption="ESG metrics table"
-              ariaLabel="ESG metrics"
-            />
-          ) : (
-            <p className="text-[var(--text-muted)]">No account data available.</p>
-          )}
+        <CardContent className="space-y-2 text-xs text-[var(--text-muted)]">
+          <p className="flex items-start gap-2">
+            <CheckCircle className="h-4 w-4 shrink-0 mt-0.5 text-[#16A34A]" aria-hidden="true" />
+            <span>
+              ESG financial allocations are derived from {fmt.number(entries.length)} posted ledger
+              accounts using exact decimal money arithmetic.
+            </span>
+          </p>
+          <p className="flex items-start gap-2">
+            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-[#DC2626]" aria-hidden="true" />
+            <span>
+              Scope 1, 2, and 3 GHG emissions, utility bills, and supply-chain audits require
+              operational carbon activity feeds and are not estimated from financial journal
+              balances.
+            </span>
+          </p>
         </CardContent>
       </Card>
     </main>

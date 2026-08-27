@@ -8,9 +8,8 @@ import { KPICard } from '@/components/dashboard/KPICard';
 import { ChartWrapper } from '@/components/analytics/ChartWrapper';
 import { COGSVarianceEngine } from '@/engines/COGSVarianceEngine';
 import { HelpPanel } from '@/components/ui/HelpPanel';
-import { divideMoney } from '@/utils/money';
 import { PAGE_HELP } from '../_docs';
-import { Activity, Factory, Package, AlertCircle } from 'lucide-react';
+import { Activity, Factory, Package } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -22,6 +21,23 @@ import {
   Cell,
 } from 'recharts';
 import { PageHeader } from '@/components/ui/PageHeader';
+
+/**
+ * Placeholder card for a standard-derived figure the ledger cannot produce.
+ * The GL has no standard-cost layer, so until standards are posted every
+ * variance renders an em dash plus this disclosure — never an estimate.
+ */
+function NullVarianceCard({ title }: { title: string }) {
+  return (
+    <Card className="p-4">
+      <div className="text-xs text-[var(--text-muted)] truncate">{title}</div>
+      <div className="text-2xl font-bold tabular-nums" aria-label={`${title}: not derivable`}>
+        —
+      </div>
+      <div className="text-xs mt-1 text-[var(--text-muted)]">Standard-cost layer required</div>
+    </Card>
+  );
+}
 
 export default function COGSVariancePage() {
   const fmtCurrency = useCurrencyFormatter();
@@ -35,17 +51,12 @@ export default function COGSVariancePage() {
   const { entries } = useGLStore();
   const navigate = useNavigate();
 
-  const metrics = useMemo(() => {
-    if (entries.length === 0) return null;
-    const res = COGSVarianceEngine.calculateGLVariances(entries);
-    return {
-      ...res,
-      variancePercent:
-        res.standardCOGS !== 0
-          ? divideMoney(res.totalVariance, res.standardCOGS).toNumber() * 100
-          : 0,
-    };
-  }, [entries]);
+  // The engine returns `null` for every standard-derived figure until a
+  // standard cost is posted; no page-side arithmetic re-derives them here.
+  const metrics = useMemo(
+    () => (entries.length === 0 ? null : COGSVarianceEngine.calculateGLVariances(entries)),
+    [entries]
+  );
 
   if (!metrics) {
     return (
@@ -96,25 +107,37 @@ export default function COGSVariancePage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard title="Actual COGS" value={metrics.actualCOGS} format="currency" />
-        <KPICard
-          title="Total Variance"
-          value={metrics.totalVariance}
-          format="currency"
-          trend={metrics.totalVariance >= 0 ? 'up' : 'down'}
-          change={metrics.variancePercent}
-        />
-        <KPICard
-          title="Purchase Price Variance"
-          value={metrics.breakdown[0]!.value}
-          format="currency"
-          trend={metrics.breakdown[0]!.value >= 0 ? 'up' : 'down'}
-        />
-        <KPICard
-          title="Usage Variance"
-          value={metrics.breakdown[1]!.value}
-          format="currency"
-          trend={metrics.breakdown[1]!.value >= 0 ? 'up' : 'down'}
-        />
+        {metrics.totalVariance === null ? (
+          <NullVarianceCard title="Total Variance" />
+        ) : (
+          <KPICard
+            title="Total Variance"
+            value={metrics.totalVariance}
+            format="currency"
+            trend={metrics.totalVariance >= 0 ? 'up' : 'down'}
+            change={metrics.variancePercent ?? undefined}
+          />
+        )}
+        {metrics.breakdown?.[0] ? (
+          <KPICard
+            title="Purchase Price Variance"
+            value={metrics.breakdown[0].value}
+            format="currency"
+            trend={metrics.breakdown[0].value >= 0 ? 'up' : 'down'}
+          />
+        ) : (
+          <NullVarianceCard title="Purchase Price Variance" />
+        )}
+        {metrics.breakdown?.[1] ? (
+          <KPICard
+            title="Usage Variance"
+            value={metrics.breakdown[1].value}
+            format="currency"
+            trend={metrics.breakdown[1].value >= 0 ? 'up' : 'down'}
+          />
+        ) : (
+          <NullVarianceCard title="Usage Variance" />
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -124,50 +147,61 @@ export default function COGSVariancePage() {
             subtitle="Analysis of COGS variance by driver"
             height={400}
           >
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={metrics.breakdown} layout="vertical" margin={{ left: 20 }}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  horizontal={true}
-                  vertical={false}
-                  stroke="#334155"
-                />
-                <XAxis type="number" hide />
-                <YAxis
-                  dataKey="name"
-                  type="category"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: '#94a3b8', fontSize: 12 }}
-                />
-                <Tooltip
-                  cursor={{ fill: '#1e293b' }}
-                  content={({ active, payload }) => {
-                    if (active && payload && payload.length) {
-                      const data = payload[0]!.payload;
-                      return (
-                        <div className="bg-slate-900 border border-slate-800 p-2 rounded shadow-xl">
-                          <div className="text-xs font-bold text-slate-400 uppercase">
-                            {data.name}
+            {metrics.breakdown ? (
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={metrics.breakdown} layout="vertical" margin={{ left: 20 }}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    horizontal={true}
+                    vertical={false}
+                    stroke="#334155"
+                  />
+                  <XAxis type="number" hide />
+                  <YAxis
+                    dataKey="name"
+                    type="category"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#94a3b8', fontSize: 12 }}
+                  />
+                  <Tooltip
+                    cursor={{ fill: '#1e293b' }}
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0]!.payload;
+                        return (
+                          <div className="bg-slate-900 border border-slate-800 p-2 rounded shadow-xl">
+                            <div className="text-xs font-bold text-slate-400 uppercase">
+                              {data.name}
+                            </div>
+                            <div
+                              className={`text-sm font-bold ${data.value >= 0 ? 'text-green-400' : 'text-red-400'}`}
+                            >
+                              {fmtCurrency.custom()(data.value)}
+                            </div>
                           </div>
-                          <div
-                            className={`text-sm font-bold ${data.value >= 0 ? 'text-green-400' : 'text-red-400'}`}
-                          >
-                            {fmtCurrency.custom()(data.value)}
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-                <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                  {metrics.breakdown.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.value >= 0 ? '#10b981' : '#f43f5e'} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                    {metrics.breakdown.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.value >= 0 ? '#10b981' : '#f43f5e'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex h-[350px] items-center justify-center px-6 text-center">
+                <p className="text-sm text-[var(--text-muted)]" role="note">
+                  Standard-cost layer required. The general ledger records only actual COGS (5xxx
+                  postings); without a posted standard cost and posted price / usage / efficiency /
+                  volume components there is no baseline to decompose, so the breakdown is disclosed
+                  as unavailable rather than estimated.
+                </p>
+              </div>
+            )}
           </ChartWrapper>
         </div>
 
@@ -175,47 +209,16 @@ export default function COGSVariancePage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-yellow-400" />
-                Material Alerts
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                <div className="text-xs font-bold text-red-400">Steel Scrapped: +12%</div>
-                <p className="text-[10px] text-slate-400 mt-1">
-                  Abnormal waste detected in Production Line 3.
-                </p>
-              </div>
-              <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-                <div className="text-xs font-bold text-yellow-400">Copper Price: +8%</div>
-                <p className="text-[10px] text-slate-400 mt-1">
-                  Market price index trending above standard.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-bold flex items-center gap-2">
                 <Package className="h-4 w-4 text-blue-400" />
                 Inventory Impact
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between text-xs">
-                <span className="text-[var(--text-muted)]">Revaluation Reserve</span>
-                <span className="font-bold">$124,500</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-[var(--text-muted)]">Obsolescence Risk</span>
-                <span className="font-bold text-red-400">$42,000</span>
-              </div>
-              <div className="pt-2">
-                <Button variant="ghost" size="sm" className="w-full text-blue-400">
-                  Adjust Inventory
-                </Button>
-              </div>
+            <CardContent>
+              <p className="text-sm text-[var(--text-muted)]" role="note">
+                No inventory impact figures are shown: revaluation reserve and obsolescence risk are
+                not derivable from the general ledger alone, and this workspace has no inventory
+                valuation subledger feed. Figures appear here once valuation postings exist.
+              </p>
             </CardContent>
           </Card>
         </div>

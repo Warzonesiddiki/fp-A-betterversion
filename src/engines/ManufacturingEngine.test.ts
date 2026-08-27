@@ -1,8 +1,12 @@
 /**
  * Tests for ManufacturingEngine
- * Covers: calculateStats, getProductionData, getEfficiencyTrend
+ * Covers: calculateStats, parameter-driven getProductionLines,
+ * GL-bucketed getMonthlyTrend, and the no-demo-literal source contract.
  */
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import { ManufacturingEngine } from './ManufacturingEngine';
 import type { GLEntry } from '@/types';
 
@@ -61,20 +65,52 @@ describe('ManufacturingEngine', () => {
     });
   });
 
-  describe('getProductionLines', () => {
-    it('should return production breakdown by account', () => {
-      const data = ManufacturingEngine.getProductionLines(mockEntries);
-      expect(Array.isArray(data)).toBe(true);
-      expect(data.length).toBeGreaterThan(0);
+  describe('source purity (no demo literals)', () => {
+    const source = readFileSync(resolve('src/engines/ManufacturingEngine.ts'), 'utf8');
+
+    it('never embeds demo production-line names', () => {
+      expect(source).not.toContain('Line A');
+      expect(source).not.toContain('Line B');
+      expect(source).not.toContain('Packaging');
+      expect(source).not.toContain('Welding');
+      expect(source).not.toContain('Painting');
+    });
+
+    it('contains no pseudo-random fabrication helper', () => {
+      expect(source).not.toMatch(/9301/);
+      expect(source).not.toMatch(/Math\.sin/);
     });
   });
 
-  describe('getOutputTrend', () => {
-    it('should return monthly output trend', () => {
-      const trend = ManufacturingEngine.getOutputTrend(mockEntries);
-      expect(trend.length).toBeGreaterThan(0);
-      expect(trend[0]!).toHaveProperty('month');
-      expect(trend[0]!).toHaveProperty('output');
+  describe('getProductionLines', () => {
+    it('returns an honest empty state without configured lines', () => {
+      expect(ManufacturingEngine.getProductionLines(mockEntries)).toEqual([]);
+      expect(ManufacturingEngine.getProductionLines(mockEntries, [])).toEqual([]);
+    });
+
+    it('allocates measured production cost evenly across configured lines', () => {
+      const lines = ManufacturingEngine.getProductionLines(mockEntries, [
+        { name: 'Press' },
+        { name: 'Finishing' },
+      ]);
+      expect(lines.map((l) => l.line)).toEqual(['Press', 'Finishing']);
+      const total = lines.reduce((s, l) => s + l.costShare, 0);
+      expect(total).toBe(940000);
+      expect(lines[0]!.costShare).toBe(470000);
+      expect(lines[1]!.costShare).toBe(470000);
+    });
+  });
+
+  describe('getMonthlyTrend', () => {
+    it('buckets measured revenue and production cost by posting month', () => {
+      const trend = ManufacturingEngine.getMonthlyTrend(mockEntries);
+      expect(trend).toHaveLength(2);
+      expect(trend[0]).toEqual({ month: '2024-01', revenue: 800000, productionCost: 450000 });
+      expect(trend[1]).toEqual({ month: '2024-02', revenue: 900000, productionCost: 490000 });
+    });
+
+    it('returns an empty trend when there are no entries', () => {
+      expect(ManufacturingEngine.getMonthlyTrend([])).toEqual([]);
     });
   });
 });

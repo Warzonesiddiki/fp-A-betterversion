@@ -23,7 +23,7 @@ import { RealEstateEngine } from '@/engines/RealEstateEngine';
 import { formatPercent } from '@/utils/financialFormatting';
 import { formatMoney } from '@/utils/money';
 
-const mockPeriods = buildFiscalPeriods();
+const fiscalPeriods = buildFiscalPeriods();
 
 export default function REITDashboardPage() {
   const fmtCurrency = useCurrencyFormatter();
@@ -72,7 +72,7 @@ export default function REITDashboardPage() {
           purpose="Funds From Operations from the posted General Ledger. AFFO, NAV per share, dividend yield and public-peer quotes require inputs the GL does not carry — they are omitted, not estimated."
         />
         <div className="flex items-center gap-3">
-          <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
+          <PeriodPicker value={periodId} onChange={setPeriodId} periods={fiscalPeriods} />
         </div>
       </div>
 

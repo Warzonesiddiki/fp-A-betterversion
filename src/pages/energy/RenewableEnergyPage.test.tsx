@@ -91,4 +91,59 @@ describe('RenewableEnergyPage smoke test', () => {
     renderPage();
     expect(screen.getByRole('heading', { name: /Renewable Energy/i })).toBeTruthy();
   });
+
+  // =============================================================================
+  // Empty-branch honesty (K17/K18): with a fully empty store — the post-
+  // 1bea2f3a factory default — every KPI renders '—', no chart mounts and
+  // the asset table is replaced by disclosure copy. No seeded records may
+  // appear.
+  // =============================================================================
+  it('empty store renders disclosures and mounts no chart or table', () => {
+    renderPage();
+
+    // KPIs disclose absence instead of showing figures. The absence label
+    // repeats across all four cards and the capacity/table descriptions, so
+    // these are asserted with getAllByText.
+    expect(screen.getAllByText(/no generation on file/i).length).toBeGreaterThan(0);
+    const solarKpi = screen.getByRole('region', { name: /Solar \(latest period\)/i });
+    expect(solarKpi).toHaveTextContent('—');
+    expect(screen.getAllByText(/no assets recorded/i).length).toBeGreaterThan(0);
+
+    // Generation chart: disclosure text only, no LineChart mount.
+    expect(screen.getByText(/No generation trend recorded yet\./i)).toBeInTheDocument();
+    expect(screen.queryByTestId('line-chart')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('responsive-container')).not.toBeInTheDocument();
+
+    // Capacity card: disclosure only, no PieChart mount.
+    expect(screen.getByText(/No assets to chart\./i)).toBeInTheDocument();
+    expect(screen.queryByTestId('pie-chart')).not.toBeInTheDocument();
+
+    // Asset portfolio: disclosure paragraphs replace the DataTable.
+    expect(screen.getByText(/No renewable assets recorded yet\./i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Add assets in the energy store to populate this table\./i)
+    ).toBeInTheDocument();
+    expect(screen.queryByTestId('data-table')).not.toBeInTheDocument();
+
+    // The REC / CO2 non-derivability disclosure stays visible.
+    expect(
+      screen.getByText(/Renewable Energy Credits \(RECs\) and CO2 offset are not derivable/i)
+    ).toBeInTheDocument();
+
+    // Retired seed regression (K17, 1bea2f3a): the pre-wave factory shipped
+    // demo records ("Mojave Solar I" …, generation-point totals 950/1120 …).
+    // On an empty store none of their names or fixture totals may surface
+    // through any render path.
+    for (const retired of [
+      'Mojave Solar I',
+      'North Sea Wind',
+      'Blue River Hydro',
+      'Tesla Megapack Hub',
+    ]) {
+      expect(screen.queryByText(retired)).not.toBeInTheDocument();
+    }
+    expect(screen.queryByText('950')).not.toBeInTheDocument();
+    expect(screen.queryByText('1,120')).not.toBeInTheDocument();
+    expect(screen.queryByText('1120')).not.toBeInTheDocument();
+  });
 });

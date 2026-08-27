@@ -1,95 +1,122 @@
-// @money-ast-allow Reason: Average revenue: totalCredit / entries.length divides by entry count for display, not money
 import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
+import { useTelecomStore } from '@/store/telecomStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { DataTable, Column } from '@/components/ui/DataTable';
-import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
-import { Wifi, DollarSign, Users, Activity } from 'lucide-react';
-import type { GLEntry } from '@/types';
-import { addMoney, roundTo, sumMoney } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
-
-function computeTelecomStats(entries: readonly GLEntry[]) {
-  const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit ?? 0)), 2);
-  const totalCredit = roundTo(sumMoney(entries.map((e) => e.credit ?? 0)), 2);
-  const netChange = roundTo(sumMoney(entries.map((e) => e.netChange ?? 0)), 2);
-  const uniqueAccounts = new Set(entries.map((e) => e.accountCode)).size;
-  const avgRevenuePerEntry = entries.length > 0 ? totalCredit / entries.length : 0;
-
-  const accountMap = new Map<
-    string,
-    { name: string; debit: number; credit: number; net: number; count: number }
-  >();
-  for (const e of entries) {
-    const existing = accountMap.get(e.accountCode) ?? {
-      name: e.accountName,
-      debit: 0,
-      credit: 0,
-      net: 0,
-      count: 0,
-    };
-    existing.debit = addMoney(existing.debit, e.debit ?? 0).toNumber();
-    existing.credit = addMoney(existing.credit, e.credit ?? 0).toNumber();
-    existing.net = addMoney(existing.net, e.netChange ?? 0).toNumber();
-    existing.count += 1;
-    accountMap.set(e.accountCode, existing);
-  }
-
-  const accountBreakdown = Array.from(accountMap.entries())
-    .map(([code, data]) => ({
-      accountCode: code,
-      accountName: data.name,
-      debit: data.debit,
-      credit: data.credit,
-      netChange: data.net,
-      transactions: data.count,
-    }))
-    .sort((a, b) => Math.abs(b.credit) - Math.abs(a.credit));
-
-  return {
-    totalDebit,
-    totalCredit,
-    netChange,
-    uniqueAccounts,
-    avgRevenuePerEntry,
-    accountBreakdown,
-  };
-}
-
-const columns: Column[] = [
-  { key: 'accountCode', header: 'Account Code', sortable: true },
-  { key: 'accountName', header: 'Account Name', sortable: true },
-  { key: 'debit', header: 'Debit', align: 'right', sortable: true },
-  { key: 'credit', header: 'Credit', align: 'right', sortable: true },
-  { key: 'netChange', header: 'Net Change', align: 'right', sortable: true },
-  { key: 'transactions', header: 'Transactions', align: 'right', sortable: true },
-];
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { aggregateAccounts, type AccountBreakdownRow } from './accountOverview';
+import { AccountOverviewCard } from './AccountOverviewCard';
+import { divideMoney, roundTo, sumMoney } from '@/utils/money';
+import {
+  Wifi,
+  DollarSign,
+  Users,
+  Activity,
+  Download,
+  FileSpreadsheet,
+  Info,
+  Signal,
+} from 'lucide-react';
 
 export default function TelecomPage() {
   const { entries } = useGLStore();
+  const telecomStore = useTelecomStore();
+  const subscribers = useMemo(() => telecomStore?.subscribers ?? [], [telecomStore?.subscribers]);
+  const networkMetrics = useMemo(
+    () => telecomStore?.networkMetrics ?? [],
+    [telecomStore?.networkMetrics]
+  );
+  const getAverageARPU = telecomStore?.getAverageARPU;
   const navigate = useNavigate();
+  const fmt = useCurrencyFormatter();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Telecom';
   }, []);
 
-  const stats = useMemo(() => computeTelecomStats(entries), [entries]);
-
-  const tableData = useMemo(
-    () =>
-      stats.accountBreakdown.map((row) => ({
-        accountCode: row.accountCode,
-        accountName: row.accountName,
-        debit: formatCurrency(row.debit),
-        credit: formatCurrency(row.credit),
-        netChange: formatCurrency(row.netChange),
-        transactions: formatNumber(row.transactions),
-      })),
-    [stats.accountBreakdown]
+  const totalDebit = useMemo(
+    () => roundTo(sumMoney(entries.map((e) => e.debit ?? 0)), 2),
+    [entries]
   );
+  const totalCredit = useMemo(
+    () => roundTo(sumMoney(entries.map((e) => e.credit ?? 0)), 2),
+    [entries]
+  );
+  const netChange = useMemo(
+    () => roundTo(sumMoney(entries.map((e) => e.netChange ?? 0)), 2),
+    [entries]
+  );
+
+  const avgRevenuePerEntry = useMemo(() => {
+    if (entries.length === 0) return 0;
+    return roundTo(divideMoney(totalCredit, entries.length), 2);
+  }, [totalCredit, entries.length]);
+
+  const averageARPU = useMemo(() => {
+    return typeof getAverageARPU === 'function' ? getAverageARPU() : 0;
+  }, [getAverageARPU]);
+
+  const accountRows: AccountBreakdownRow[] = useMemo(() => aggregateAccounts(entries), [entries]);
+
+  const handleExportPDF = () => {
+    void ExportEngine.exportToPDF(
+      {
+        headers: ['Metric', 'Value', 'Source / Lineage'],
+        rows: [
+          [
+            'Total Recognized Revenue',
+            fmt.currency(totalCredit),
+            'GL Credit-Normal Accounts (4xxx)',
+          ],
+          [
+            'Total Operating Costs',
+            fmt.currency(totalDebit),
+            'GL Debit-Normal Accounts (5xxx/6xxx)',
+          ],
+          ['Net Surplus / (Deficit)', fmt.currency(netChange), 'GL Balance Net Change'],
+          ['Active Subscribers', fmt.number(subscribers.length), 'Recorded Subscribers Store'],
+          [
+            'Average Revenue Per User (ARPU)',
+            averageARPU > 0 ? fmt.currency(averageARPU) : 'N/A (No Billing Feed)',
+            'Active Subscriber Store ARPU',
+          ],
+          [
+            'Average Revenue / Entry',
+            fmt.currency(avgRevenuePerEntry),
+            'Recognized Revenue / Posting Count',
+          ],
+          [
+            'Monitored Network Regions',
+            fmt.number(networkMetrics.length),
+            'Network Telemetry Store',
+          ],
+        ],
+      },
+      { title: 'Telecom_Financial_Report' }
+    ).catch(reportExportFailure);
+  };
+
+  const handleExportExcel = () => {
+    void ExportEngine.exportToExcel(
+      {
+        headers: ['Metric', 'Amount', 'Notes'],
+        rows: [
+          ['Total Recognized Revenue', totalCredit, 'GL 4xxx'],
+          ['Total Operating Costs', totalDebit, 'GL 5xxx/6xxx'],
+          ['Net Change', netChange, 'GL Net Change'],
+          ['Subscribers', subscribers.length, 'Store records'],
+          ['Average ARPU', averageARPU, 'Store ARPU'],
+          ['Avg Revenue Per Entry', avgRevenuePerEntry, 'Revenue / Entry Count'],
+        ],
+      },
+      { title: 'Telecom_Performance_Review' }
+    ).catch(reportExportFailure);
+  };
 
   const handleImportKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -130,15 +157,38 @@ export default function TelecomPage() {
       >
         Skip to key metrics
       </a>
-      <PageHeader
-        title="Telecom"
-        titleId="telecom-heading"
-        status={
-          <span className="text-sm text-[var(--text-muted)]">
-            {formatNumber(entries.length)} entries imported
-          </span>
-        }
-      />
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <PageHeader
+          title="Telecom"
+          titleId="telecom-heading"
+          status={
+            <span className="text-sm text-[var(--text-muted)]">
+              {fmt.number(entries.length)} entries imported
+            </span>
+          }
+        />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportPDF}
+            aria-label="Export PDF Report"
+          >
+            <Download className="h-4 w-4 mr-1.5" aria-hidden="true" />
+            PDF Report
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportExcel}
+            aria-label="Export Excel Workbook"
+          >
+            <FileSpreadsheet className="h-4 w-4 mr-1.5" aria-hidden="true" />
+            Excel Export
+          </Button>
+        </div>
+      </div>
+
       <section
         id="kpi-section"
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
@@ -147,43 +197,85 @@ export default function TelecomPage() {
       >
         <KPIValue
           label="Total Revenue"
-          value={formatCompactNumber(stats.totalCredit)}
+          value={fmt.compact(totalCredit)}
           icon={<DollarSign className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
           label="Total Entries"
-          value={formatNumber(entries.length)}
+          value={fmt.number(entries.length)}
           icon={<Users className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
           label="Avg Revenue/Entry"
-          value={formatCurrency(stats.avgRevenuePerEntry)}
+          value={fmt.currency(avgRevenuePerEntry)}
           icon={<Activity className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
           label="Net Change"
-          value={formatCompactNumber(stats.netChange)}
+          value={fmt.compact(netChange)}
           icon={<Wifi className="h-4 w-4" aria-hidden="true" />}
         />
       </section>
-      <Card aria-label="Account Breakdown" aria-live="polite">
-        <CardHeader>
-          <CardTitle id="account-breakdown-title">Account Breakdown</CardTitle>
+
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-4" aria-label="Subscriber KPIs">
+        <KPIValue
+          label="Subscribers"
+          value={fmt.number(subscribers.length)}
+          changeLabel={
+            subscribers.length > 0 ? 'Recorded active accounts' : 'No subscribers recorded'
+          }
+          icon={<Users className="h-4 w-4 text-blue-500" aria-hidden="true" />}
+        />
+        <KPIValue
+          label="Average ARPU"
+          value={averageARPU > 0 ? fmt.currency(averageARPU) : 'N/A'}
+          changeLabel={averageARPU > 0 ? 'Monthly revenue per subscriber' : 'Billing feed required'}
+          icon={<DollarSign className="h-4 w-4 text-[#16A34A]" aria-hidden="true" />}
+        />
+        <KPIValue
+          label="Network Regions"
+          value={fmt.number(networkMetrics.length)}
+          changeLabel={networkMetrics.length > 0 ? 'Telemetry nodes active' : 'No telemetry nodes'}
+          icon={<Signal className="h-4 w-4 text-purple-500" aria-hidden="true" />}
+        />
+        <KPIValue
+          label="Network Uptime"
+          value={
+            networkMetrics.length > 0
+              ? `${roundTo(
+                  divideMoney(sumMoney(networkMetrics.map((n) => n.uptime)), networkMetrics.length),
+                  2
+                )}%`
+              : 'N/A'
+          }
+          changeLabel={
+            networkMetrics.length > 0 ? 'Fleet average uptime' : 'Telemetry feed required'
+          }
+          icon={<Activity className="h-4 w-4 text-emerald-500" aria-hidden="true" />}
+        />
+      </section>
+
+      <Card aria-label="Telecom Basis Disclosures">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <Info className="h-4 w-4 text-blue-500" aria-hidden="true" />
+            Telecom Basis & Lineage Disclosure
+          </CardTitle>
         </CardHeader>
-        <CardContent aria-labelledby="account-breakdown-title">
-          {tableData.length > 0 ? (
-            <DataTable
-              columns={columns}
-              data={tableData}
-              sortable
-              caption="Account breakdown table"
-              ariaLabel="Account breakdown data table for telecom sector"
-            />
-          ) : (
-            <p className="text-[var(--text-muted)]">No account data available.</p>
-          )}
+        <CardContent className="text-xs text-[var(--text-muted)] space-y-1">
+          <p>
+            • <strong>Revenue Recognition:</strong> Subscription and data revenue is recognized
+            under ASC 606 from GL accounts 4xxx.
+          </p>
+          <p>
+            • <strong>Operational Metrics:</strong> Subscriber counts, ARPU, and network
+            availability require customer billing and telemetry feeds. Missing operational data is
+            disclosed rather than populated with placeholder estimates.
+          </p>
         </CardContent>
       </Card>
+
+      <AccountOverviewCard rows={accountRows} />
     </main>
   );
 }

@@ -1,8 +1,33 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useLogisticsStore } from './logisticsStore';
+import { useAuthStore } from './authStore';
+
+// W6-P0-14: RBAC-aware fixture — grants exactly the permissions this store's
+// guarded actions enforce (mirrors glUploadStore.test.ts).
+function authenticateLogisticsUser() {
+  useAuthStore.setState({
+    user: {
+      id: 'logistics-test-user',
+      email: 'logistics-test@finplan.local',
+      firstName: 'Logistics',
+      lastName: 'Tester',
+      avatarUrl: null,
+      role: 'Admin',
+      departmentId: 'finance',
+      departmentName: 'Finance',
+      entityId: 'entity-001',
+      status: 'Active',
+      lastLoginAt: new Date().toISOString(),
+      mfaEnabled: false,
+      permissions: ['inventory:create', 'inventory:update', 'inventory:delete', 'dashboard:update'],
+    },
+    isAuthenticated: true,
+  });
+}
 
 describe('logisticsStore', () => {
   beforeEach(() => {
+    authenticateLogisticsUser();
     useLogisticsStore.setState({
       shipments: [],
       carrierPerformance: [],

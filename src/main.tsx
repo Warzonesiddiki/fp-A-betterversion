@@ -7,9 +7,21 @@ import './styles/accessibility.css';
 import './styles/print.css';
 import { registerSW } from './pwa';
 import { buildSentryReplayOptions } from './sentryReplayConfig';
+import { initCrashReporter } from './crashReporter';
+import { isTauriRuntime } from './utils/tauriRuntime';
+import { RootErrorBoundary } from './components/errors/RootErrorBoundary';
 
 // ── PWA service worker (must run before render) ─────────────────────────
-registerSW();
+// Web-only. Inside the Tauri shell a service worker would cache static
+// assets behind the native updater's back and serve stale bundles, so it
+// must never register there.
+if (!isTauriRuntime()) {
+  registerSW();
+}
+
+// ── Global crash net (localStorage-backed error/rejection log) ──────────
+// Must be attached before render so crashes during first mount are captured.
+initCrashReporter();
 
 // ── Sentry observability (self-hosted per T-ATL-007 Docker + R2 archive) ──
 // Gated on VITE_SENTRY_DSN so dev/staging/CI run without Sentry.
@@ -77,6 +89,8 @@ if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dar
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <RootErrorBoundary>
+      <App />
+    </RootErrorBoundary>
   </React.StrictMode>
 );

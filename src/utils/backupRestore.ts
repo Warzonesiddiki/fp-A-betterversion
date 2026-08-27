@@ -19,10 +19,40 @@
  * write occurs, so a malformed file cannot leave the database half-restored.
  */
 import { masterStorage } from './masterStorage';
-import { BACKUP_STORE_KEYS, BACKUP_EXCLUDED_KEYS } from './persistedStores';
+import { BACKUP_STORE_KEYS, BACKUP_EXCLUDED_KEYS, PERSISTED_STORE_KEYS } from './persistedStores';
+import { isTauri, tauriSqlStorage } from './tauriSqlStorage';
+import { readEscrowRecord, type EscrowRecordV1 } from './keyEscrow';
 
-/** Bump when the on-disk backup shape changes incompatibly. */
-export const BACKUP_FORMAT_VERSION = 2;
+/**
+ * Bump when the on-disk backup shape changes incompatibly.
+ *
+ * v3 (2026-08-25): metadata optionally carries the key-escrow record
+ * (scheme a — recovery code wrapping K_root) so an exported backup documents
+ * which root key encrypted its payload and keeps the wrapped key available
+ * off-device. v2 files remain fully readable (escrow field is simply absent).
+ */
+export const BACKUP_FORMAT_VERSION = 3;
+
+/** Backup format versions this build reads without a version warning. */
+const SUPPORTED_BACKUP_FORMAT_VERSIONS = [2, 3];
+
+export interface EmergencyDumpEntry {
+  key: string;
+  value: string;
+}
+
+/**
+ * Last-resort recovery artefact (F-B4-11). Raw backend bytes, NOT parsed or
+ * decrypted through masterStorage — safe to produce even while the storage
+ * layer that createBackupData depends on is failing.
+ */
+export interface RawEmergencyBackup {
+  kind: 'finplan-emergency-dump';
+  version: 1;
+  capturedAt: string;
+  entries: EmergencyDumpEntry[];
+  errors: string[];
+}
 
 export interface BackupMetadata {
   /** Backup file format version, not the app version. */
@@ -33,6 +63,12 @@ export interface BackupMetadata {
   storeSizes: Record<string, number>;
   /** SHA-256 over the canonical JSON of `data`. */
   checksum: string;
+  /**
+   * v3: the enrolled key-escrow record (wrapped root storage key), if any.
+   * Read from the RAW escrow store, never decrypted through masterStorage.
+   * Restore does NOT auto-install it — it is archival/audit data.
+   */
+  escrow?: EscrowRecordV1 | null;
 }
 
 export interface BackupData {
@@ -141,6 +177,7 @@ export class BackupRestore {
         exportedAt: new Date().toISOString(),
         storeSizes,
         checksum,
+        escrow: readEscrowRecord(),
       },
       data,
     };
@@ -202,10 +239,25 @@ export class BackupRestore {
 
     const backup = parsed;
 
-    if (backup.metadata.formatVersion !== BACKUP_FORMAT_VERSION) {
+    if (!SUPPORTED_BACKUP_FORMAT_VERSIONS.includes(backup.metadata.formatVersion)) {
       warnings.push(
         `Backup format version ${backup.metadata.formatVersion ?? 'unknown'} differs from the ` +
           `current version ${BACKUP_FORMAT_VERSION}. Restoring on a best-effort basis.`
+      );
+    } else if (backup.metadata.formatVersion < BACKUP_FORMAT_VERSION && backup.metadata.escrow) {
+      // Defensive: v2 files cannot legitimately carry escrow metadata.
+      warnings.push(
+        'Backup declares a pre-v3 format but contains key-escrow metadata; ' +
+          'the escrow record was ignored.'
+      );
+    }
+
+    if (backup.metadata.escrow && backup.metadata.formatVersion === BACKUP_FORMAT_VERSION) {
+      // Informational only: restore never auto-installs escrow records, so a
+      // hostile backup cannot silently rebind this device's recovery target.
+      warnings.push(
+        `Backup contains a key-escrow record (keyId ${backup.metadata.escrow.keyId}). ` +
+          'It is archived with the file; recovery enrollment on THIS device is unchanged.'
       );
     }
 
@@ -294,4 +346,107 @@ export class BackupRestore {
       warnings,
     };
   }
+}
+
+function describeEmergencyCause(cause: unknown): string {
+  if (cause instanceof Error) return cause.message;
+  return String(cause);
+}
+
+/**
+ * F-B4-11 escape hatch for when masterStorage itself is failing.
+ *
+ * `createBackupData` reads THROUGH masterStorage, so a broken backend (failing
+ * reads, decryption errors) also breaks the documented recovery path — the
+ * banner told users to "export a backup now" with no way to do it. This dump
+ * bypasses masterStorage entirely: no decryption, no parsing, no persist
+ * envelope reconstruction. Whatever bytes are reachable are written out as-is;
+ * a support engineer can reassemble them offline even without the app running.
+ *
+ * Browser backend: the whole sql.js database image lives in localStorage under
+ * 'finplan-sqljs-db', alongside the device key ('finplan.storage-key.v1') and
+ * any legacy/chunked leftovers — enumerating every localStorage entry captures
+ * all of it raw. Desktop backend: each known store is read through the raw
+ * tauriSqlStorage adapter (no decrypt), and per-key failures are collected
+ * into `errors` instead of aborting the dump.
+ *
+ * Defensive by contract: this must never throw out of enumeration.
+ */
+export async function createRawEmergencyBackup(): Promise<RawEmergencyBackup> {
+  const entries: EmergencyDumpEntry[] = [];
+  const errors: string[] = [];
+
+  const record = (key: string, value: unknown): void => {
+    try {
+      entries.push({
+        key,
+        value: typeof value === 'string' ? value : (JSON.stringify(value) ?? ''),
+      });
+    } catch (cause) {
+      errors.push(`Failed to serialize "${key}": ${describeEmergencyCause(cause)}`);
+    }
+  };
+
+  try {
+    if (typeof localStorage !== 'undefined' && localStorage !== null) {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key === null) continue;
+        try {
+          record(key, localStorage.getItem(key));
+        } catch (cause) {
+          errors.push(`Failed to read localStorage key "${key}": ${describeEmergencyCause(cause)}`);
+        }
+      }
+    } else {
+      errors.push('localStorage is unavailable in this environment.');
+    }
+  } catch (cause) {
+    errors.push(`localStorage enumeration failed: ${describeEmergencyCause(cause)}`);
+  }
+
+  try {
+    if (await isTauri()) {
+      for (const key of PERSISTED_STORE_KEYS) {
+        try {
+          const value = await tauriSqlStorage.getItem(key);
+          if (value !== null && value !== undefined) {
+            record(`sqlite:stores/${key}`, value);
+          }
+        } catch (cause) {
+          errors.push(`Failed to read SQLite store "${key}": ${describeEmergencyCause(cause)}`);
+        }
+      }
+    }
+  } catch (cause) {
+    errors.push(`Desktop SQLite enumeration failed: ${describeEmergencyCause(cause)}`);
+  }
+
+  if (entries.length === 0 && errors.length === 0) {
+    errors.push('No storage entries were found to dump.');
+  }
+
+  return {
+    kind: 'finplan-emergency-dump',
+    version: 1,
+    capturedAt: new Date().toISOString(),
+    entries,
+    errors,
+  };
+}
+
+/** Create a raw emergency dump and trigger a browser download. */
+export async function downloadRawEmergencyBackup(): Promise<RawEmergencyBackup> {
+  const dump = await createRawEmergencyBackup();
+  const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  try {
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `finplan-emergency-dump-${new Date().toISOString().split('T')[0]}.json`;
+    anchor.click();
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+  return dump;
 }

@@ -56,3 +56,54 @@ describe('WaterfallChart', () => {
     expect(container.querySelector('[data-testid="responsive-container"]')).toBeTruthy();
   });
 });
+
+describe('WaterfallChart hook stability (regression: hooks must run unconditionally)', () => {
+  const data = [
+    { label: 'Revenue', value: 500000 },
+    { label: 'Net Income', value: 150000, isTotal: true },
+  ];
+
+  it('survives loading=true → data transition without hook-count mismatch', () => {
+    const { rerender, container } = render(<WaterfallChart data={data} loading />);
+    expect(container.querySelector('.animate-spin')).toBeTruthy();
+    expect(container.querySelector('[data-testid="bar-chart"]')).toBeNull();
+
+    rerender(<WaterfallChart data={data} />);
+
+    expect(container.querySelector('[data-testid="bar-chart"]')).toBeTruthy();
+  });
+
+  it('survives data → loading transition without hook-count mismatch', () => {
+    const { rerender } = render(<WaterfallChart data={data} />);
+    rerender(<WaterfallChart data={data} loading />);
+  });
+
+  it('survives error → data transition without hook-count mismatch', () => {
+    const { rerender, container } = render(<WaterfallChart data={data} error="load failed" />);
+    expect(container.textContent).toContain('load failed');
+
+    rerender(<WaterfallChart data={data} />);
+
+    expect(container.querySelector('[data-testid="bar-chart"]')).toBeTruthy();
+  });
+
+  it('survives data → error → data transitions without hook-count mismatch', () => {
+    const { rerender, container } = render(<WaterfallChart data={data} />);
+    expect(container.querySelector('[data-testid="bar-chart"]')).toBeTruthy();
+
+    rerender(<WaterfallChart data={data} error="boom" />);
+    expect(container.textContent).toContain('boom');
+
+    rerender(<WaterfallChart data={data} />);
+    expect(container.querySelector('[data-testid="bar-chart"]')).toBeTruthy();
+  });
+
+  it('survives empty → data transition', () => {
+    const { rerender, container } = render(<WaterfallChart data={[]} />);
+    expect(container.textContent).toContain('No data');
+
+    rerender(<WaterfallChart data={data} />);
+
+    expect(container.querySelector('[data-testid="bar-chart"]')).toBeTruthy();
+  });
+});

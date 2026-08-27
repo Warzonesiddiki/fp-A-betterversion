@@ -22,7 +22,7 @@ interface RecResult {
 }
 
 export default function ReconciliationPage() {
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const [recFile, setRecFile] = useState<File | null>(null);
   const [recData, setRecData] = useState<Record<string, string>[]>([]);
   const [recKeyCol, setRecKeyCol] = useState('');
@@ -246,9 +246,14 @@ export default function ReconciliationPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-sm text-[var(--text-muted)]">Tolerance</div>
+            {/* E-02 a11y fix: was a plain div — now a real <label> for the
+                tolerance input (axe rules `label`; WCAG 4.1.2 / 3.3.2). */}
+            <label htmlFor="rec-tolerance" className="block text-sm text-[var(--text-muted)]">
+              Tolerance
+            </label>
             <div className="flex items-center gap-2 mt-1">
               <Input
+                id="rec-tolerance"
                 type="number"
                 step="0.001"
                 min="0"
@@ -260,6 +265,7 @@ export default function ReconciliationPage() {
                   if (result) setResult({ ...result, tolerance: v });
                 }}
                 className="w-24"
+                aria-label="Reconciliation tolerance"
               />
               <span className="text-xs text-[var(--text-muted)]">
                 ({formatPercent(tolerance * 100)})
@@ -294,7 +300,7 @@ export default function ReconciliationPage() {
       {/* Upload + Column Selection Panel */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle as="h2" className="flex items-center gap-2">
             <FileText className="h-5 w-5" /> External Source File
           </CardTitle>
         </CardHeader>
@@ -339,7 +345,7 @@ export default function ReconciliationPage() {
       {result && (
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Reconciliation Results</CardTitle>
+            <CardTitle as="h2">Reconciliation Results</CardTitle>
             <Badge variant={result.mismatches + result.missing === 0 ? 'default' : 'destructive'}>
               {result.matching} match • {result.mismatches} mismatch • {result.missing} missing
             </Badge>

@@ -8,14 +8,14 @@ A published report is an immutable snapshot of a defined metric set, financial c
 
 ## Authoritative objects
 
-| Object | Required versioned evidence |
-|---|---|
+| Object            | Required versioned evidence                                                                                 |
+| ----------------- | ----------------------------------------------------------------------------------------------------------- |
 | Metric Definition | owner, business definition, formula/calculation version, dimensions, currency/rounding, certification state |
-| Report Definition | layout, metric references, filters, formatting, zero suppression, author/reviewer, lifecycle |
-| Report Run | input-set IDs, fiscal/as-of context, run time, validation status, job/correlation ID |
-| Snapshot | report/run versions, frozen data/FX/context, publisher, certification/watermark, artifact hash |
-| Distribution | recipient/group, entitlement policy, channel, expiry, access/export event |
-| Narrative Block | author/AI source, citations, review state, factual claim links |
+| Report Definition | layout, metric references, filters, formatting, zero suppression, author/reviewer, lifecycle                |
+| Report Run        | input-set IDs, fiscal/as-of context, run time, validation status, job/correlation ID                        |
+| Snapshot          | report/run versions, frozen data/FX/context, publisher, certification/watermark, artifact hash              |
+| Distribution      | recipient/group, entitlement policy, channel, expiry, access/export event                                   |
+| Narrative Block   | author/AI source, citations, review state, factual claim links                                              |
 
 ## Lifecycle
 

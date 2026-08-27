@@ -6,7 +6,7 @@ import rateLimit from 'express-rate-limit';
  */
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
+  max: Number(process.env.RATE_LIMIT_GENERAL_MAX ?? 100),
   standardHeaders: 'draft-7', // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false, // Disable `X-RateLimit-*` headers
   message: {
@@ -20,7 +20,7 @@ export const generalLimiter = rateLimit({
  */
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10,
+  max: Number(process.env.RATE_LIMIT_AUTH_MAX ?? 10),
   standardHeaders: 'draft-7',
   legacyHeaders: false,
   message: {

@@ -2,8 +2,15 @@ import React, { useMemo, useRef, useCallback, useState, useEffect } from 'react'
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { AgGridReact } from 'ag-grid-react';
 import {
-  AllCommunityModule,
+  ClientSideRowModelModule,
+  CsvExportModule,
+  DateFilterModule,
   ModuleRegistry,
+  NumberFilterModule,
+  RowSelectionModule,
+  RowStyleModule,
+  TextFilterModule,
+  ValidationModule,
   type ColDef,
   type GridOptions,
   type CellValueChangedEvent,
@@ -13,7 +20,21 @@ import { ExcelKeyboardEngine } from '@/engines/ExcelKeyboardEngine';
 import { cn } from '@/utils/cn';
 import { useDensity, densityMetrics } from '@/hooks/useDensity';
 
-ModuleRegistry.registerModules([AllCommunityModule]);
+// Modular registration (P-02-I): register only the modules this grid uses.
+// NOTE: CsvExportModule is REQUIRED here — FinPlanGrid.handleExport calls
+// api.exportDataAsCsv() (line ~265). Capability witnesses:
+// _bmad/p02-bundle-remediation-proposal.md §1.2.
+ModuleRegistry.registerModules([
+  ClientSideRowModelModule,
+  TextFilterModule,
+  NumberFilterModule,
+  DateFilterModule,
+  RowSelectionModule,
+  RowStyleModule,
+  CsvExportModule,
+  // Dev-time module-misconfiguration warnings; excluded from prod bundles.
+  ...(import.meta.env.DEV ? [ValidationModule] : []),
+]);
 
 export type GridPreset = 'standard' | 'report' | 'spreadsheet' | 'comparison';
 

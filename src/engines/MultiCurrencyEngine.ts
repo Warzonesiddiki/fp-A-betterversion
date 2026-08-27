@@ -1,4 +1,3 @@
-// @money-ast-allow Reason: String identity check: fromCurrency === toCurrency compares ISO-4217 codes, not amounts
 /**
  * @fileoverview Multi-currency translation + FX gain/loss calculation (input validation + math only)
  * @purity-tier 1 PURE

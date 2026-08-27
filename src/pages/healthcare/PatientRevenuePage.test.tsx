@@ -3,8 +3,13 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
 
+// Selector-aware mock: the page subscribes via useGLStore((s) => s.entries),
+// so the mock must apply a selector when one is passed.
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [] })),
+  useGLStore: vi.fn((selector?: (s: { entries: unknown[] }) => unknown) => {
+    const state = { entries: [] as unknown[] };
+    return selector ? selector(state) : state;
+  }),
 }));
 
 // NOTE: this file previously mocked '@/engines'. The page imports

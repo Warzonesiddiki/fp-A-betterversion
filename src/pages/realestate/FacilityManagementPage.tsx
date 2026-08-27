@@ -23,7 +23,7 @@ import { useRealEstateStore } from '@/store/realEstateStore';
 import { roundTo, sumMoney } from '@/utils/money';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
-const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
+const fiscalPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
 /**
  * Facility Operations (session 028, replaces fabricated session-022 version).
@@ -113,7 +113,7 @@ export default function FacilityManagementPage() {
           purpose="OpEx tracking from the general ledger. Per-site splits and ratings require a facilities-management feed."
         />
         <div className="flex items-center gap-3">
-          <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
+          <PeriodPicker value={periodId} onChange={setPeriodId} periods={fiscalPeriods} />
           <Button variant="outline" size="sm" disabled>
             <Settings className="h-4 w-4 mr-2" />
             Service Rules

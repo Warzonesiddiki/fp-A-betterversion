@@ -1,9 +1,21 @@
-// @money-ast-allow Reason: Display normalization: stats.avgRevenuePerStore / 1000000 converts to millions for sparkline display
+// W-FAB remediation (phase0-exit amendment item 3). The previous revision:
+//   - rendered a "Region" column hardcoding 'North' for every store row;
+//   - decorated KPI cards with invented trend deltas (change={6.8} "blended
+//     performance", {1.4} "portfolio benchmark", {5.2} "scheduling
+//     optimization", {0.8} "NPS leader in region") and fabricated sparkline
+//     histories ([2.8, 3.0 …], [25.0 …], [228…250], [90.5…92.4]);
+//   - rendered RetailEngine.calculateDashboardStats() placeholder fields as
+//     measured KPIs: salesPerLaborHour is hardcoded 254 ("Needs operational
+//     data") and avgCustSat is hardcoded 92.8 in that engine.
+// Sales-per-labor-hour and customer satisfaction are not derivable from the
+// GL; they are disclosed below instead of displayed. Avg revenue/store and avg
+// net margin remain — they are computed from posted entries by the engine.
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useMemo, useState } from 'react';
-import { Store, DollarSign, Users, Download, Award } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Store, DollarSign, Users, Download } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -25,12 +37,15 @@ import {
 import type { FiscalPeriod } from '@/types';
 import { useGLStore } from '@/store/glStore';
 import { RetailEngine } from '@/engines/RetailEngine';
+import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
 const mockPeriods: FiscalPeriod[] = buildFiscalPeriods();
 
 export default function StorePerformancePage() {
   const fmtCurrency = useCurrencyFormatter();
+  const navigate = useNavigate();
 
   const columns = useMemo<Column[]>(
     () => [
@@ -55,7 +70,6 @@ export default function StorePerformancePage() {
         ),
       },
       { key: 'name', header: 'Store Name', sortable: true },
-      { key: 'region', header: 'Region', render: () => 'North' },
       {
         key: 'revenue',
         header: 'Revenue Period',
@@ -83,7 +97,7 @@ export default function StorePerformancePage() {
     ],
     [fmtCurrency]
   );
-  const { entries } = useGLStore();
+  const entries = useGLStore((s) => s.entries);
   const [periodId, setPeriodId] = useState('P01');
 
   const stats = useMemo(() => {
@@ -98,18 +112,35 @@ export default function StorePerformancePage() {
     return RetailEngine.getStoreBreakdown(entries);
   }, [entries]);
 
+  const handleExport = () => {
+    void ExportEngine.exportToPDF(
+      {
+        headers: ['Store', 'Revenue', 'COGS', 'Gross Profit', 'Net Profit', 'Margin %'],
+        rows: storeRankings.map((s) => [
+          s.name,
+          fmtCurrency.custom({ maxDecimals: 0 })(s.revenue),
+          fmtCurrency.custom({ maxDecimals: 0 })(s.cogs),
+          fmtCurrency.custom({ maxDecimals: 0 })(s.grossProfit),
+          fmtCurrency.custom({ maxDecimals: 0 })(s.netProfit),
+          formatPercent(s.margin, 1),
+        ]),
+      },
+      { title: 'Store P&L Report' }
+    ).catch(reportExportFailure);
+  };
+
   if (entries.length === 0) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
         <div className="p-4 bg-[var(--bg-elevated)] rounded-full inline-block mb-4">
           <Store className="h-10 w-10 text-[var(--text-muted)]" />
         </div>
-        <h2 className="text-xl font-semibold mb-2">No Retail Data</h2>
+        <h1 className="text-xl font-semibold mb-2">No Retail Data</h1>
         <p className="text-[var(--text-muted)] mb-6">
-          Import your Store-level General Ledger to view P&L analysis and labor efficiency
-          benchmarking.
+          Import your Store-level General Ledger to view P&L analysis. Labor-hour and satisfaction
+          benchmarks are not invented.
         </p>
-        <Button>Import Data</Button>
+        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
     );
   }
@@ -125,46 +156,33 @@ export default function StorePerformancePage() {
         />
         <div className="flex items-center gap-3">
           <PeriodPicker value={periodId} onChange={setPeriodId} periods={mockPeriods} />
-          <Button variant="outline" size="sm" className="h-10">
+          <Button variant="outline" size="sm" className="h-10" onClick={handleExport}>
             <Download className="h-4 w-4 mr-2" />
             Export Store P&L
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4" data-testid="store-perf-kpis">
         <KPIValue
           label="Avg Revenue Per Store"
           value={fmtCurrency.custom({ maxDecimals: 1, compact: true })(stats.avgRevenuePerStore)}
-          change={6.8}
-          changeLabel="blended performance"
-          trend="up"
-          sparklineData={[2.8, 3.0, 3.1, 3.2, 3.35, stats.avgRevenuePerStore / 1000000]}
         />
-        <KPIValue
-          label="Avg Net Margin"
-          value={`${formatPercent(stats.avgNetMargin, 1)}`}
-          change={1.4}
-          changeLabel="portfolio benchmark"
-          trend="up"
-          sparklineData={[25.0, 25.5, 26.2, 26.8, 27.2, stats.avgNetMargin]}
-        />
-        <KPIValue
-          label="Sales per Labor Hour"
-          value={`$${stats.salesPerLaborHour}`}
-          change={5.2}
-          changeLabel="scheduling optimization"
-          trend="up"
-          sparklineData={[228, 235, 240, 244, 250, stats.salesPerLaborHour]}
-        />
-        <KPIValue
-          label="Avg Customer Satisfaction"
-          value={`${stats.avgCustSat}%`}
-          change={0.8}
-          changeLabel="NPS leader in region"
-          trend="up"
-          sparklineData={[90.5, 91.0, 91.5, 92.0, 92.4, stats.avgCustSat]}
-        />
+        <KPIValue label="Avg Net Margin" value={`${formatPercent(stats.avgNetMargin, 1)}`} />
+        {/* Not derivable from the GL: disclosed instead of rendering the
+            engine's placeholder salesPerLaborHour (254) / avgCustSat (92.8). */}
+        <Card className="md:col-span-2 border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Not derivable from the posted GL</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-[var(--text-muted)]">
+              Sales per labor hour needs hours worked from a payroll/time-clock feed; customer
+              satisfaction needs survey data. Both were previously displayed with fixed placeholder
+              values (254 and 92.8%) — they are now omitted rather than estimated.
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -268,17 +286,11 @@ export default function StorePerformancePage() {
       </div>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Store Ranking & Productivity</CardTitle>
-            <CardDescription>
-              Full P&L comparison across all locations with profitability rankings
-            </CardDescription>
-          </div>
-          <Button variant="outline" size="sm">
-            <Award className="h-4 w-4 mr-2" />
-            Top Performers
-          </Button>
+        <CardHeader>
+          <CardTitle>Store Ranking & Productivity</CardTitle>
+          <CardDescription>
+            Full P&L comparison across all posted locations with profitability rankings
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable
