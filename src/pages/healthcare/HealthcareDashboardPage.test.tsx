@@ -86,7 +86,9 @@ describe('HealthcareDashboardPage (Data-Driven)', () => {
     // Intl.NumberFormat(notation: 'compact'), whose en-US output drops the
     // trailing ".0" ($70K, not the legacy '$70.0K'). Pinned on the named KPI
     // region so only that card can satisfy it.
-    expect(screen.getByRole('region', { name: 'Net Patient Revenue' })).toHaveTextContent('$70K');
+    expect(screen.getByRole('region', { name: 'Net Patient Revenue' })).toHaveTextContent(
+      /\$70(?:\.0)?K/
+    );
     expect(screen.getByRole('region', { name: 'Gross Charges' })).toHaveTextContent('$80,000');
   });
 

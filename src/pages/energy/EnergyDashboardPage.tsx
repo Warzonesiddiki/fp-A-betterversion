@@ -330,7 +330,7 @@ function EmptyState({ message }: { message: string }) {
 }
 
 function formatUsdCompact(n: number): string {
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}k`;
-  return `$${n.toFixed(0)}`;
+  if (n >= 1_000_000) return `$${roundTo(n / 1_000_000, 1)}M`;
+  if (n >= 1_000) return `$${roundTo(n / 1_000, 1)}k`;
+  return `$${roundTo(n, 0)}`;
 }

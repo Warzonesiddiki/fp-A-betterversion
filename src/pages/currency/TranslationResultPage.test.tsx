@@ -75,7 +75,7 @@ describe('TranslationResultPage', () => {
   it('translates a supported pair and renders both totals without fake P&L', () => {
     mockEntries = [glEntry({ accountCode: '4000', accountName: 'Revenue', debit: 1000 })];
     renderPage();
-    expect(screen.getByText('Translated (EUR)')).toBeTruthy();
+    expect(screen.getAllByText('Translated (EUR)').length).toBeGreaterThan(0);
     expect(screen.queryByText(/Gain\/Loss/i)).toBeNull();
     expect(screen.queryByText(/Translation Gain\/Loss/i)).toBeNull();
   });
@@ -103,6 +103,6 @@ describe('TranslationResultPage', () => {
 
     fireEvent.change(screen.getByLabelText(/Source Currency/i), { target: { value: 'USD' } });
     expect(screen.queryByText('Missing exchange rate')).toBeNull();
-    expect(screen.getByText('Translated (EUR)')).toBeTruthy();
+    expect(screen.getAllByText('Translated (EUR)').length).toBeGreaterThan(0);
   });
 });

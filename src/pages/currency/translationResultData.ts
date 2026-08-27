@@ -19,6 +19,7 @@ export interface TranslationEntry {
   readonly accountName: string;
   readonly originalAmount: number;
   readonly translatedAmount: number;
+  readonly gainLoss: number;
 }
 
 /** Signed net amount of one GL entry: debit − credit, exact. */
@@ -47,6 +48,7 @@ export function buildTranslationEntries(
       accountName: name,
       originalAmount: total.toNumber(),
       translatedAmount: total.times(rate).toNumber(),
+      gainLoss: total.times(rate).minus(total).toNumber(),
     }))
     .sort((a, b) => a.accountCode.localeCompare(b.accountCode));
 }

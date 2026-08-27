@@ -90,12 +90,12 @@ export default function ClaimsAnalyticsPage() {
   const kpis = [
     {
       label: 'Loss Ratio',
-      value: stats.lossRatio == null ? '—' : `${stats.lossRatio.toFixed(1)}%`,
+      value: stats.lossRatio == null ? '—' : `${roundTo(stats.lossRatio, 1)}%`,
       changeLabel: 'loss / earned premium',
     },
     {
       label: 'Combined Ratio',
-      value: stats.combinedRatio == null ? '—' : `${stats.combinedRatio.toFixed(1)}%`,
+      value: stats.combinedRatio == null ? '—' : `${roundTo(stats.combinedRatio, 1)}%`,
       changeLabel: 'loss + expense',
     },
     {
@@ -243,7 +243,7 @@ export default function ClaimsAnalyticsPage() {
                         <span className="font-medium">{s.name}</span>
                       </div>
                       <span className="text-[var(--text-secondary)]">
-                        {total > 0 ? `${((s.earned / total) * 100).toFixed(0)}%` : '—'}
+                        {total > 0 ? `${roundTo((s.earned / total) * 100, 0)}%` : '—'}
                       </span>
                     </div>
                   );

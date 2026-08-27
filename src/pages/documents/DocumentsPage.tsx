@@ -83,7 +83,7 @@ export function DocumentsPage() {
         icon={<FileText className="h-6 w-6" aria-hidden="true" />}
         purpose="Central register for uploaded financial artifacts — budgets, forecasts, reports and scenario packs."
         status={
-          <span className="rounded-full bg-[var(--accent-subtle)] px-2.5 py-0.5 text-xs font-bold text-[var(--accent-primary)]">
+          <span className="rounded-full bg-[var(--accent-subtle)] px-2.5 py-0.5 text-xs font-bold text-[var(--text-accent)]">
             {documents.length} {documents.length === 1 ? 'document' : 'documents'}
           </span>
         }
@@ -117,7 +117,7 @@ export function DocumentsPage() {
               className={cn(
                 'rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]',
                 activeTag === tag
-                  ? 'border-[var(--accent-primary)] bg-[var(--accent-subtle)] text-[var(--accent-primary)]'
+                  ? 'border-[var(--accent-primary)] bg-[var(--accent-subtle)] text-[var(--text-accent)]'
                   : 'border-[var(--border-subtle)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
               )}
             >
@@ -151,7 +151,7 @@ export function DocumentsPage() {
                   id="document-upload-category"
                   value={uploadCategory}
                   onChange={(e) => setUploadCategory(e.target.value as DocumentCategory)}
-                  className="mt-1 w-full rounded-md border border-[var(--border-default)] bg-[var(--bg-canvas)] px-2 py-1.5 text-sm capitalize text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
+                  className="mt-1 w-full rounded-md border border-[var(--border-default)] bg-[var(--bg-surface)] px-2 py-1.5 text-sm capitalize text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
                 >
                   {DOCUMENT_CATEGORIES.map((category) => (
                     <option key={category} value={category}>
@@ -172,7 +172,7 @@ export function DocumentsPage() {
                   value={uploadTags}
                   onChange={(e) => setUploadTags(e.target.value)}
                   placeholder="board, q3"
-                  className="mt-1 w-full rounded-md border border-[var(--border-default)] bg-[var(--bg-canvas)] px-2 py-1.5 text-sm text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
+                  className="mt-1 w-full rounded-md border border-[var(--border-default)] bg-[var(--bg-surface)] px-2 py-1.5 text-sm text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
                 />
               </div>
               <div>
@@ -187,7 +187,7 @@ export function DocumentsPage() {
                   value={uploadEntityId}
                   onChange={(e) => setUploadEntityId(e.target.value)}
                   placeholder="entity-001"
-                  className="mt-1 w-full rounded-md border border-[var(--border-default)] bg-[var(--bg-canvas)] px-2 py-1.5 text-sm text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
+                  className="mt-1 w-full rounded-md border border-[var(--border-default)] bg-[var(--bg-surface)] px-2 py-1.5 text-sm text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
                 />
               </div>
             </div>
@@ -206,10 +206,12 @@ export function DocumentsPage() {
                 description="Upload your first CSV or Excel artifact above to start the document register."
               />
             ) : (
-              <EmptyListState
-                title="No documents match the current filters"
-                description="Clear the category filter or tag selection to see the full register."
-              />
+              <div role="status">
+                <EmptyListState
+                  title="No documents match the current filters"
+                  description="Clear the category filter or tag selection to see the full register."
+                />
+              </div>
             )
           ) : (
             <ul aria-label="Document list" className="space-y-2">

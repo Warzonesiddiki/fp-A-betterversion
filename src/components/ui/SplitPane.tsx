@@ -60,7 +60,7 @@ export function SplitPane({ left, right, defaultSplit = 50, minSize = 200 }: Spl
       className={cn('flex flex-col md:flex-row w-full h-full overflow-hidden select-none')}
     >
       <div
-        className="h-full w-full max-md:h-1/2 overflow-auto md:w-[calc(var(--split-width)*1%)]"
+        className="h-full w-full max-md:h-1/2 overflow-auto md:w-[calc(var(--split-width,50)*1%)]"
         style={{ '--split-width': split } as React.CSSProperties}
       >
         {left}

@@ -98,9 +98,18 @@ describe('ConstructionEngine', () => {
   });
 
   describe('getBacklogTrend', () => {
-    it('should return backlog trend data', () => {
+    it('should return backlog trend data computed from entries', () => {
       const trend = ConstructionEngine.getBacklogTrend(mockEntries);
       expect(Array.isArray(trend)).toBe(true);
+      expect(trend.length).toBe(2);
+      expect(trend[0]!.month).toBe('2024-01');
+      expect(trend[0]!.revenue).toBe(700000);
+      expect(trend[1]!.month).toBe('2024-02');
+      expect(trend[1]!.revenue).toBe(300000);
+    });
+
+    it('returns empty array when entries are empty', () => {
+      expect(ConstructionEngine.getBacklogTrend([])).toEqual([]);
     });
   });
 });

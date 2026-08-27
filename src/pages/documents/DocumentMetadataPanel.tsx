@@ -52,7 +52,7 @@ export function DocumentMetadataPanel({ doc }: DocumentMetadataPanelProps) {
           id="document-name-input"
           value={nameDraft}
           onChange={(e) => setNameDraft(e.target.value)}
-          className="min-w-0 flex-1 rounded-md border border-[var(--border-subtle)] bg-[var(--bg-canvas)] px-2 py-1 text-sm font-semibold text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
+          className="min-w-0 flex-1 rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-2 py-1 text-sm font-semibold text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
         />
         <button
           type="button"
@@ -101,7 +101,7 @@ export function DocumentMetadataPanel({ doc }: DocumentMetadataPanelProps) {
           {doc.tags.map((tag) => (
             <li
               key={tag}
-              className="rounded-full bg-[var(--accent-subtle)] px-2 py-0.5 text-xs font-semibold text-[var(--accent-primary)]"
+              className="rounded-full bg-[var(--accent-subtle)] px-2 py-0.5 text-xs font-semibold text-[var(--text-accent)]"
             >
               {tag}
             </li>
@@ -119,7 +119,7 @@ export function DocumentMetadataPanel({ doc }: DocumentMetadataPanelProps) {
             value={tagDraft}
             onChange={(e) => setTagDraft(e.target.value)}
             placeholder="Add tag…"
-            className="min-w-0 flex-1 rounded-md border border-[var(--border-subtle)] bg-[var(--bg-canvas)] px-2 py-1 text-xs text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
+            className="min-w-0 flex-1 rounded-md border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-2 py-1 text-xs text-[var(--text-primary)] focus-visible:ring-2 focus-visible:ring-[var(--accent-primary)]"
           />
           <button
             type="button"

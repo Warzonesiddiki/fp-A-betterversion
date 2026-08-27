@@ -102,7 +102,7 @@ export default function EmissionsTradingPage() {
       key: 'gainPct',
       header: 'Unrealised Gain/Loss',
       align: 'right',
-      render: (v) => (v == null ? '—' : `${(v as number).toFixed(1)}%`),
+      render: (v) => (v == null ? '—' : `${formatNumber(v as number, 1)}%`),
     },
   ];
 

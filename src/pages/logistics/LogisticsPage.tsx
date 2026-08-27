@@ -1,94 +1,125 @@
 import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
+import { useLogisticsStore } from '@/store/logisticsStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
-import { DataTable, Column } from '@/components/ui/DataTable';
-import { formatCurrency, formatNumber, formatCompactNumber } from '@/utils/formatters';
-import { Truck, Package, MapPin, Clock } from 'lucide-react';
-import type { GLEntry } from '@/types';
-import { addMoney, roundTo, sumMoney } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
-
-function computeLogisticsStats(entries: readonly GLEntry[]) {
-  const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
-  const totalCredit = roundTo(sumMoney(entries.map((e) => e.credit)), 2);
-  const netChange = roundTo(sumMoney(entries.map((e) => e.netChange)), 2);
-  const uniqueAccounts = new Set(entries.map((e) => e.accountCode)).size;
-  const uniqueDepartments = new Set(entries.map((e) => e.departmentId).filter(Boolean)).size;
-
-  const accountMap = new Map<
-    string,
-    { name: string; debit: number; credit: number; net: number; count: number }
-  >();
-  for (const e of entries) {
-    const existing = accountMap.get(e.accountCode) ?? {
-      name: e.accountName,
-      debit: 0,
-      credit: 0,
-      net: 0,
-      count: 0,
-    };
-    existing.debit = addMoney(existing.debit, e.debit ?? 0).toNumber();
-    existing.credit = addMoney(existing.credit, e.credit ?? 0).toNumber();
-    existing.net = addMoney(existing.net, e.netChange ?? 0).toNumber();
-    existing.count += 1;
-    accountMap.set(e.accountCode, existing);
-  }
-
-  const accountBreakdown = Array.from(accountMap.entries())
-    .map(([code, data]) => ({
-      accountCode: code,
-      accountName: data.name,
-      debit: data.debit,
-      credit: data.credit,
-      netChange: data.net,
-      transactions: data.count,
-    }))
-    .sort((a, b) => Math.abs(b.netChange) - Math.abs(a.netChange));
-
-  return {
-    totalDebit,
-    totalCredit,
-    netChange,
-    uniqueAccounts,
-    uniqueDepartments,
-    accountBreakdown,
-  };
-}
-
-const columns: Column[] = [
-  { key: 'accountCode', header: 'Account Code', sortable: true },
-  { key: 'accountName', header: 'Account Name', sortable: true },
-  { key: 'debit', header: 'Debit', align: 'right', sortable: true },
-  { key: 'credit', header: 'Credit', align: 'right', sortable: true },
-  { key: 'netChange', header: 'Net Change', align: 'right', sortable: true },
-  { key: 'transactions', header: 'Transactions', align: 'right', sortable: true },
-];
+import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { ExportEngine } from '@/engines/ExportEngine';
+import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { aggregateAccounts, type AccountBreakdownRow } from './accountOverview';
+import { AccountOverviewCard } from './AccountOverviewCard';
+import { roundTo, sumMoney } from '@/utils/money';
+import {
+  Truck,
+  Package,
+  MapPin,
+  Clock,
+  Download,
+  FileSpreadsheet,
+  Info,
+  CheckCircle2,
+  Navigation,
+} from 'lucide-react';
 
 export default function LogisticsPage() {
   const { entries } = useGLStore();
+  const logisticsStore = useLogisticsStore();
+  const shipments = useMemo(() => logisticsStore?.shipments ?? [], [logisticsStore?.shipments]);
+  const carrierPerformance = useMemo(
+    () => logisticsStore?.carrierPerformance ?? [],
+    [logisticsStore?.carrierPerformance]
+  );
+  const routeCosts = useMemo(() => logisticsStore?.routeCosts ?? [], [logisticsStore?.routeCosts]);
+  const getActiveShipmentCount = logisticsStore?.getActiveShipmentCount;
+  const getOnTimeRate = logisticsStore?.getOnTimeRate;
+
   const navigate = useNavigate();
+  const fmt = useCurrencyFormatter();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Logistics';
   }, []);
 
-  const stats = useMemo(() => computeLogisticsStats(entries), [entries]);
-
-  const tableData = useMemo(
-    () =>
-      stats.accountBreakdown.map((row) => ({
-        accountCode: row.accountCode,
-        accountName: row.accountName,
-        debit: formatCurrency(row.debit),
-        credit: formatCurrency(row.credit),
-        netChange: formatCurrency(row.netChange),
-        transactions: formatNumber(row.transactions),
-      })),
-    [stats.accountBreakdown]
+  const totalDebit = useMemo(
+    () => roundTo(sumMoney(entries.map((e) => e.debit ?? 0)), 2),
+    [entries]
   );
+  const totalCredit = useMemo(
+    () => roundTo(sumMoney(entries.map((e) => e.credit ?? 0)), 2),
+    [entries]
+  );
+  const netChange = useMemo(
+    () => roundTo(sumMoney(entries.map((e) => e.netChange ?? 0)), 2),
+    [entries]
+  );
+  const uniqueAccounts = useMemo(() => new Set(entries.map((e) => e.accountCode)).size, [entries]);
+
+  const activeShipments = useMemo(() => {
+    return typeof getActiveShipmentCount === 'function'
+      ? getActiveShipmentCount()
+      : shipments.length;
+  }, [getActiveShipmentCount, shipments.length]);
+
+  const onTimeRate = useMemo(() => {
+    return typeof getOnTimeRate === 'function' ? getOnTimeRate() : 0;
+  }, [getOnTimeRate]);
+
+  const accountRows: AccountBreakdownRow[] = useMemo(() => aggregateAccounts(entries), [entries]);
+
+  const handleExportPDF = () => {
+    void ExportEngine.exportToPDF(
+      {
+        headers: ['Metric', 'Value', 'Source / Lineage'],
+        rows: [
+          [
+            'Total Operating Costs (Freight/Fleet)',
+            fmt.currency(totalDebit),
+            'GL Debit-Normal Accounts (5xxx/6xxx)',
+          ],
+          [
+            'Total Logistics Revenue',
+            fmt.currency(totalCredit),
+            'GL Credit-Normal Accounts (4xxx)',
+          ],
+          ['Net Balance Change', fmt.currency(netChange), 'GL Balance Net Change'],
+          ['Active General Accounts', fmt.number(uniqueAccounts), 'GL Chart of Accounts'],
+          ['Active In-Transit Shipments', fmt.number(activeShipments), 'Logistics Store Shipments'],
+          [
+            'On-Time Delivery Performance',
+            onTimeRate > 0 ? `${fmt.number(onTimeRate)}%` : 'N/A (No Carrier Telemetry)',
+            'Carrier Performance Tracking',
+          ],
+          [
+            'Active Carrier Partners',
+            fmt.number(carrierPerformance.length),
+            'Recorded Carrier Roster',
+          ],
+          ['Monitored Freight Corridors', fmt.number(routeCosts.length), 'Route Cost Models'],
+        ],
+      },
+      { title: 'Logistics_Financial_Report' }
+    ).catch(reportExportFailure);
+  };
+
+  const handleExportExcel = () => {
+    void ExportEngine.exportToExcel(
+      {
+        headers: ['Metric', 'Amount', 'Notes'],
+        rows: [
+          ['Total Logistics Operating Costs', totalDebit, 'GL 5xxx/6xxx'],
+          ['Total Logistics Revenue', totalCredit, 'GL 4xxx'],
+          ['Net Change', netChange, 'GL Net Change'],
+          ['Active Accounts', uniqueAccounts, 'Account count'],
+          ['Active Shipments', activeShipments, 'Store records'],
+          ['On-Time Delivery Rate (%)', onTimeRate, 'Carrier telemetry'],
+        ],
+      },
+      { title: 'Logistics_Operations_Review' }
+    ).catch(reportExportFailure);
+  };
 
   const handleImportKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -129,15 +160,38 @@ export default function LogisticsPage() {
       >
         Skip to key metrics
       </a>
-      <PageHeader
-        title="Logistics"
-        titleId="logistics-heading"
-        status={
-          <span className="text-sm text-[var(--text-muted)]">
-            {formatNumber(entries.length)} entries imported
-          </span>
-        }
-      />
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <PageHeader
+          title="Logistics"
+          titleId="logistics-heading"
+          status={
+            <span className="text-sm text-[var(--text-muted)]">
+              {fmt.number(entries.length)} entries imported
+            </span>
+          }
+        />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportPDF}
+            aria-label="Export PDF Report"
+          >
+            <Download className="h-4 w-4 mr-1.5" aria-hidden="true" />
+            PDF Report
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportExcel}
+            aria-label="Export Excel Workbook"
+          >
+            <FileSpreadsheet className="h-4 w-4 mr-1.5" aria-hidden="true" />
+            Excel Export
+          </Button>
+        </div>
+      </div>
+
       <section
         id="kpi-section"
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
@@ -146,43 +200,77 @@ export default function LogisticsPage() {
       >
         <KPIValue
           label="Total Debit"
-          value={formatCompactNumber(stats.totalDebit)}
+          value={fmt.compact(totalDebit)}
           icon={<Package className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
           label="Total Credit"
-          value={formatCompactNumber(stats.totalCredit)}
+          value={fmt.compact(totalCredit)}
           icon={<Clock className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
           label="Active Accounts"
-          value={formatNumber(stats.uniqueAccounts)}
+          value={fmt.number(uniqueAccounts)}
           icon={<MapPin className="h-4 w-4" aria-hidden="true" />}
         />
         <KPIValue
           label="Net Change"
-          value={formatCompactNumber(stats.netChange)}
+          value={fmt.compact(netChange)}
           icon={<Truck className="h-4 w-4" aria-hidden="true" />}
         />
       </section>
-      <Card aria-label="Account Breakdown" aria-live="polite">
-        <CardHeader>
-          <CardTitle id="account-breakdown-title">Account Breakdown</CardTitle>
+
+      <section className="grid grid-cols-2 md:grid-cols-4 gap-4" aria-label="Operational KPIs">
+        <KPIValue
+          label="Active Shipments"
+          value={fmt.number(activeShipments)}
+          changeLabel={activeShipments > 0 ? 'Freight in transit' : 'No active shipments'}
+          icon={<Truck className="h-4 w-4 text-blue-500" aria-hidden="true" />}
+        />
+        <KPIValue
+          label="On-Time Rate"
+          value={onTimeRate > 0 ? `${fmt.number(onTimeRate)}%` : 'N/A'}
+          changeLabel={onTimeRate > 0 ? 'Carrier delivery score' : 'Carrier tracking required'}
+          icon={<CheckCircle2 className="h-4 w-4 text-[#16A34A]" aria-hidden="true" />}
+        />
+        <KPIValue
+          label="Active Carriers"
+          value={fmt.number(carrierPerformance.length)}
+          changeLabel={
+            carrierPerformance.length > 0 ? 'Contracted fleet partners' : 'No carrier records'
+          }
+          icon={<Navigation className="h-4 w-4 text-purple-500" aria-hidden="true" />}
+        />
+        <KPIValue
+          label="Monitored Corridors"
+          value={fmt.number(routeCosts.length)}
+          changeLabel={routeCosts.length > 0 ? 'Freight routes modeled' : 'No route cost models'}
+          icon={<MapPin className="h-4 w-4 text-emerald-500" aria-hidden="true" />}
+        />
+      </section>
+
+      <Card aria-label="Logistics Basis Disclosures">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <Info className="h-4 w-4 text-blue-500" aria-hidden="true" />
+            Logistics Financial & Operational Basis
+          </CardTitle>
         </CardHeader>
-        <CardContent aria-labelledby="account-breakdown-title">
-          {tableData.length > 0 ? (
-            <DataTable
-              columns={columns}
-              data={tableData}
-              sortable
-              caption="Account overview table"
-              ariaLabel="Account overview data table for logistics sector"
-            />
-          ) : (
-            <p className="text-[var(--text-muted)]">No account data available.</p>
-          )}
+        <CardContent className="text-xs text-[var(--text-muted)] space-y-1">
+          <p>
+            • <strong>Freight & Warehouse Cost Allocation:</strong> Operating expenditures are
+            mapped from GL accounts 5xxx/6xxx for fuel, freight, third-party logistics (3PL), and
+            warehouse operations.
+          </p>
+          <p>
+            • <strong>Shipment Visibility:</strong> Operational delivery metrics (on-time rate,
+            active transit volume) require TMS (Transportation Management System) feeds. Where feeds
+            are not configured, operational measures remain unpopulated to prevent false reporting.
+          </p>
         </CardContent>
       </Card>
+
+      <AccountOverviewCard rows={accountRows} />
     </main>
   );
 }

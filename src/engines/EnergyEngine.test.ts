@@ -66,9 +66,19 @@ describe('EnergyEngine', () => {
   });
 
   describe('getRevenueTrend', () => {
-    it('should return monthly revenue trend', () => {
+    it('should return monthly revenue trend computed from entries', () => {
       const trend = EnergyEngine.getRevenueTrend(mockEntries);
-      expect(trend.length).toBeGreaterThan(0);
+      expect(trend.length).toBe(2);
+      expect(trend[0]!.month).toBe('2024-01');
+      expect(trend[0]!.revenue).toBe(800000);
+      expect(trend[0]!.cost).toBe(250000);
+      expect(trend[1]!.month).toBe('2024-02');
+      expect(trend[1]!.revenue).toBe(730000);
+      expect(trend[1]!.cost).toBe(0);
+    });
+
+    it('returns empty array when entries are empty', () => {
+      expect(EnergyEngine.getRevenueTrend([])).toEqual([]);
     });
   });
 });

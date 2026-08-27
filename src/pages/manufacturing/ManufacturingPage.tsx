@@ -59,8 +59,8 @@ const SHARE_BAR_WIDTHS: Record<number, string> = {
   100: 'w-full',
 };
 
-function shareBarClass(shareOfCogs: number): string {
-  const bucket = Math.min(10, Math.max(0, Math.round(shareOfCogs / 10))) * 10;
+function shareBarClass(pct: number): string {
+  const bucket = Math.min(10, Math.max(0, Math.round(pct / 10))) * 10;
   return SHARE_BAR_WIDTHS[bucket] ?? 'w-0';
 }
 

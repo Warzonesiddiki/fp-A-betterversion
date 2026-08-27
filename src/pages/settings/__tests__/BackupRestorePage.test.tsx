@@ -40,6 +40,9 @@ vi.mock('lucide-react', () => {
     CheckCircle: makeIcon(),
     HardDrive: makeIcon(),
     Globe: makeIcon(),
+    KeyRound: makeIcon(),
+    Copy: makeIcon(),
+    RefreshCw: makeIcon(),
   };
 });
 

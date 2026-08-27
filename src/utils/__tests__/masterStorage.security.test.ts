@@ -224,6 +224,9 @@ describe('F-0011: no silent storage writes (KAV-14)', () => {
     const setSpy = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
       throw new DOMException('denied', 'SecurityError');
     });
+    const protoSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('denied', 'SecurityError');
+    });
     const events: StorageErrorEvent[] = [];
     const unsubscribe = subscribeStorageErrors((e) => events.push(e));
 
@@ -234,6 +237,7 @@ describe('F-0011: no silent storage writes (KAV-14)', () => {
     expect(events[0]!.error.cause).toBeInstanceOf(StorageKeyUnavailableError);
     unsubscribe();
     setSpy.mockRestore();
+    protoSpy.mockRestore();
   });
 
   it('removeItem failure surfaces via the error channel and throws', async () => {

@@ -210,7 +210,7 @@ describe('sqlJsStorage error propagation (W6-P0-04)', () => {
     const quotaError = Object.assign(new Error('exceeded storage quota'), {
       name: 'QuotaExceededError',
     });
-    const setItemSpy = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
+    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw quotaError;
     });
 
@@ -252,7 +252,7 @@ describe('sqlJsStorage error propagation (W6-P0-04)', () => {
     const quotaError = Object.assign(new Error('exceeded storage quota'), {
       name: 'QuotaExceededError',
     });
-    const setItemSpy = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
+    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw quotaError;
     });
 

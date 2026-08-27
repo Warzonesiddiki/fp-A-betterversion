@@ -79,7 +79,7 @@ export class RootErrorBoundary extends Component<RootErrorBoundaryProps, RootErr
           Something went wrong and the app could not continue. Your data is safe on disk.
         </p>
         <p className="mb-6 max-w-md break-all font-mono text-xs text-red-400">{error.message}</p>
-        <p className="mb-8 text-xs text-slate-500">
+        <p className="mb-8 text-xs text-[var(--text-muted)]">
           Error ID:{' '}
           <code className="rounded bg-slate-900 px-1.5 py-0.5 font-mono text-slate-400">
             {errorId}

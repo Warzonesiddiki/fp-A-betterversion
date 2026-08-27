@@ -82,6 +82,10 @@ node scripts/money-ast-detector.mjs
 echo "→ fabrication ratchet"
 node scripts/fabrication-detector.mjs
 
+# Gate 9c2: Financial statement oracles (D-03).
+echo "→ financial statement oracles"
+npm run financial:oracles
+
 # Gate 9d: persistence-map drift (W0.8.1) and schema-home equality (W0.8.4).
 echo "→ persistence map + schema equality"
 node scripts/persistence-map-check.mjs
