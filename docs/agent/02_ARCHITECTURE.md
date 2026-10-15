@@ -94,13 +94,17 @@ export const useXStore = create<XState>()(
   subscribeWithSelector(
     // outermost: fine-grained subscriptions
     persist(
-      immer((set, get) => ({/* state + actions */})),
+      immer((set, get) => ({
+        /* state + actions */
+      })),
       {
         name: 'x-store', // key in masterStorage
         storage: masterStorage, // never localStorage directly
         version: N,
         migrate, // bump + migrate on shape change
-        partialize: (s) => ({/* persisted subset only */}),
+        partialize: (s) => ({
+          /* persisted subset only */
+        }),
       }
     )
   )

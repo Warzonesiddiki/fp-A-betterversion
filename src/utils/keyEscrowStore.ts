@@ -18,6 +18,7 @@ import {
   regenerateRecoveryCode,
   type EscrowStatusSnapshot,
 } from './keyEscrow';
+import { nowMs } from '@/utils/clock';
 
 export type KeyEscrowStatus = 'unknown' | 'checking' | 'enrolled' | 'not-enrolled';
 
@@ -58,7 +59,7 @@ function applySnapshot(
     state.keyId = snapshot.keyId;
     state.failedAttempts = snapshot.failedAttempts;
     state.lockedUntil = snapshot.lockedUntil;
-    state.refreshedAt = Date.now();
+    state.refreshedAt = nowMs();
   });
 }
 

@@ -5,6 +5,7 @@ import type { WritableDraft } from 'immer';
 import { DocumentEngine, type FinanceDocument } from '@/engines/DocumentEngine';
 import { masterStorage } from '@/utils/masterStorage';
 import { enforce, getCurrentUser, Permissions } from '@/utils/rbacEnforcer';
+import { nowISO, nowMs } from '@/utils/clock';
 
 /**
  * Categories mirror FinanceDocument['type'] so every stored document can be
@@ -68,7 +69,7 @@ let idSequence = 0;
 
 function nextDocumentId(): string {
   idSequence += 1;
-  return `doc-${Date.now()}-${idSequence}`;
+  return `doc-${nowMs()}-${idSequence}`;
 }
 
 function validateName(name: string): string {
@@ -104,7 +105,7 @@ export const useDocumentStore = create<DocumentState>()(
             if (input.size !== undefined && (!Number.isFinite(input.size) || input.size < 0)) {
               throw new Error('Document size must be a non-negative finite number');
             }
-            const now = new Date().toISOString();
+            const now = nowISO();
             const doc: ManagedDocument = {
               id: nextDocumentId(),
               name: validateName(input.name),
@@ -144,7 +145,7 @@ export const useDocumentStore = create<DocumentState>()(
               const doc = state.documents.find((d) => d.id === id);
               if (doc) {
                 doc.name = validated;
-                doc.updatedAt = new Date().toISOString();
+                doc.updatedAt = nowISO();
               }
             });
           }
@@ -160,7 +161,7 @@ export const useDocumentStore = create<DocumentState>()(
               const doc = state.documents.find((d) => d.id === id);
               if (doc && !doc.tags.includes(trimmed)) {
                 doc.tags.push(trimmed);
-                doc.updatedAt = new Date().toISOString();
+                doc.updatedAt = nowISO();
               }
             });
           }
@@ -174,7 +175,7 @@ export const useDocumentStore = create<DocumentState>()(
               const doc = state.documents.find((d) => d.id === id);
               if (doc) {
                 doc.entityId = entityId;
-                doc.updatedAt = new Date().toISOString();
+                doc.updatedAt = nowISO();
               }
             });
           }

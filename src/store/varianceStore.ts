@@ -5,6 +5,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { VarianceState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
+import { nowMs } from '@/utils/clock';
 
 export const useVarianceStore = create<VarianceState>()(
   subscribeWithSelector(
@@ -24,7 +25,7 @@ export const useVarianceStore = create<VarianceState>()(
 
         addAnalysis: enforce(Permissions.VARIANCE_CREATE, 'addAnalysis', (analysis) =>
           set((state) => ({
-            analyses: [...state.analyses, { ...analysis, id: `var-${Date.now()}` }],
+            analyses: [...state.analyses, { ...analysis, id: `var-${nowMs()}` }],
           }))
         ),
 

@@ -6,6 +6,7 @@ import type { AnalyticsFilter, AnalyticsState } from '@/types';
 import { masterStorage } from '../utils/masterStorage';
 import { useUIStore } from './uiStore';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
+import { nowMs } from '@/utils/clock';
 
 const defaultFilter: AnalyticsFilter = {
   accountTypes: ['Revenue', 'COGS', 'OpEx'],
@@ -33,7 +34,7 @@ export const useAnalyticsStore = create<AnalyticsState>()(
         setLoading: (isLoading) => set({ isLoading }),
 
         addChart: enforce(Permissions.DASHBOARD_CREATE, 'addChart', (chart) => {
-          const id = `chart-${Date.now()}`;
+          const id = `chart-${nowMs()}`;
           set((state) => ({ charts: [...state.charts, { ...chart, id }] }));
           useUIStore.getState().addToast({
             type: 'success',

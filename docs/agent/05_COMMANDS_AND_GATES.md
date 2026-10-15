@@ -50,7 +50,7 @@ files; server 32/32.** Re-measure; do not quote stale tallies.
 | `npm run engines:verify`                                                     | `src/engines/manifest.generated.*` matches the tree                                                                                                       | `npm run engines:manifest` regenerates                                                                           |
 | `npm run money:ast` (`:list`)                                                | AST scan for unsafe arithmetic on money-named values                                                                                                      | `scripts/money-ast-baseline.json`; must stay 0; suppress only with `@money-ast-allow Reason:` for non-money math |
 | `npm run money:adoption`                                                     | % of financial modules importing `@/utils/money` (28.89 %)                                                                                                | `scripts/money-adoption-baseline.json`; must not fall                                                            |
-| `npm run determinism:ratchet` (`--list`, `--update`)                         | `new Date()` / `Date.now()` / `Math.random()` per file in engines/store/services/utils                                                                    | `scripts/determinism-baseline.json` (638 sites / 160 files); `--update` only after lowering                      |
+| `npm run determinism:ratchet` (`--list`, `--update`)                         | `new Date()` / `Date.now()` / `Math.random()` per file in engines/store/services/utils                                                                    | `scripts/determinism-baseline.json` (518 sites / 131 files); `--update` only after lowering                      |
 | `npm run type-safety:ratchet`                                                | `as any` / `as unknown as` / ts-ignore in financial paths                                                                                                 | `scripts/type-safety-baseline.json` (116)                                                                        |
 | `npm run escape:ledger`                                                      | `eslint-disable` inventory                                                                                                                                | ledger must not grow                                                                                             |
 | `npm run fabrication:audit` (`node scripts/fabrication-detector.mjs --list`) | hard-coded figures presented as data                                                                                                                      | `scripts/fabrication-baseline.json`; scanner is scope-limited — a clean result is not proof                      |
@@ -83,11 +83,9 @@ Workflows: `ci.yml` (typecheck, lint, test matrix, test-merge, build, e2e,
 server), `tsc.yml`, `lint.yml`, `test-unit.yml`, `build.yml`, `deploy.yml`,
 `release.yml`, `sentry-self-test.yml`, `cascade-hold-check.yml`.
 
-- **Agents cannot edit `.github/workflows/**`** (GitHub App lacks `workflows`
-  permission). Put a unified diff in `ci-patches/NNNN-*.patch` with a header
-  comment explaining what it does and how to verify, and list it in
-  `ci-patches/README.md`. Until a human applies it and a green run is
-  observed, the gate is `config_written_but_not_enforced`.
+- **Agents cannot edit `.github/workflows/**`** (GitHub App lacks `workflows`permission). Put a unified diff in`ci-patches/NNNN-\*.patch`with a header
+comment explaining what it does and how to verify, and list it in`ci-patches/README.md`. Until a human applies it and a green run is
+observed, the gate is `config_written_but_not_enforced`.
 - Known: `main` CI has failed since 2026-08-20; the E2E job lacks
   `timeout-minutes` and has run for 6 h. Patch pending.
 - Job logs cannot be downloaded from the sandbox; use `gh run view` for

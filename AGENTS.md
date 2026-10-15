@@ -45,7 +45,7 @@ Full rationale and examples: `docs/agent/04_ENGINEERING_RULES.md`.
    (decimal.js). Never add float arithmetic on amounts. `npm run money:ast`
    must stay at 0 unsafe ops; `npm run money:adoption` must not fall.
 4. **Deterministic.** Time comes from `src/utils/clock.ts` (`now()`,
-   `todayISO()`), never `new Date()` / `Date.now()` in engines, stores,
+   `nowISO()`, `nowMs()`, `todayISO()`), never `new Date()` / `Date.now()` in engines, stores,
    services, utils. Randomness is injected and seeded.
    `npm run determinism:ratchet` must not rise for any file.
 5. **Nothing silently discarded.** Every rejected import row has a row

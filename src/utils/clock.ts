@@ -28,6 +28,16 @@ export function todayISO(): string {
   return now().toISOString().slice(0, 10);
 }
 
+/** Current instant as an ISO 8601 UTC string from the active clock. */
+export function nowISO(): string {
+  return now().toISOString();
+}
+
+/** Current instant as epoch milliseconds from the active clock (replaces `Date.now()`). */
+export function nowMs(): number {
+  return now().getTime();
+}
+
 /**
  * Replace the active clock. Accepts a fixed instant (Date or ISO string) or
  * a function. Intended for tests and for replaying a run at a given date.

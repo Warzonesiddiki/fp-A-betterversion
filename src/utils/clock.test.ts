@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { now, todayISO, setClock, resetClock } from './clock';
+import { now, nowISO, nowMs, todayISO, setClock, resetClock } from './clock';
 
 describe('clock', () => {
   afterEach(() => {
@@ -28,6 +28,12 @@ describe('clock', () => {
     // Each call returns a fresh Date so callers cannot mutate the pin.
     now().setUTCFullYear(1999);
     expect(todayISO()).toBe('2025-01-31');
+  });
+
+  it('nowISO and nowMs read the active clock', () => {
+    setClock('2026-10-15T09:30:00.250Z');
+    expect(nowISO()).toBe('2026-10-15T09:30:00.250Z');
+    expect(nowMs()).toBe(Date.UTC(2026, 9, 15, 9, 30, 0, 250));
   });
 
   it('accepts a function clock', () => {

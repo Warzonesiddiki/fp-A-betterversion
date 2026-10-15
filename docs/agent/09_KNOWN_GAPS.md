@@ -63,7 +63,7 @@ Open questions Q7, Q10, Q11–Q14 in `docs/discovery/current-workflow.md`.
 
 | Ratchet                   | Value at tip                | File                                   |
 | ------------------------- | --------------------------- | -------------------------------------- |
-| determinism sites / files | 638 / 160                   | `scripts/determinism-baseline.json`    |
+| determinism sites / files | 518 / 131                   | `scripts/determinism-baseline.json`    |
 | type-safety escapes       | 116                         | `scripts/type-safety-baseline.json`    |
 | money AST violations      | 0                           | `scripts/money-ast-baseline.json`      |
 | money adoption            | 28.89 % (floor)             | `scripts/money-adoption-baseline.json` |

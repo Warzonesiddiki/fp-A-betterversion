@@ -11,6 +11,7 @@ import {
   type RecordInput,
 } from '@/store/auditTrailStore';
 import type { CellAddress } from '@/types/cell';
+import { nowMs } from '@/utils/clock';
 
 // ---------------------------------------------------------------------------
 // GDPR Event Interface Contract (8 event types per GDPR Art. citations)
@@ -173,7 +174,7 @@ const gdprCellId = (eventType: string, dataSubjectId: string): CellAddress =>
 const mapGdprEventToAuditEntry = (event: GdprEvent): ExtendedAuditEntry => {
   const baseEntry = {
     id: crypto.randomUUID(),
-    timestamp: Date.now(),
+    timestamp: nowMs(),
     cellId: gdprCellId(event.type, 'dataSubjectId' in event ? event.dataSubjectId : 'system'),
     userId: 'dataSubjectId' in event ? event.dataSubjectId : 'system',
     dataType: 'object' as const,

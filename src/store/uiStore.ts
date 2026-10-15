@@ -8,6 +8,7 @@ import { masterStorage } from '../utils/masterStorage';
 import { isTauriRuntime } from '@/utils/tauriRuntime';
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
 import { createLogger } from '@/utils/logger';
+import { nowMs } from '@/utils/clock';
 
 const uiStoreLogger = createLogger('UIStore');
 
@@ -38,7 +39,7 @@ export const useUIStore = create<UIState>()(
         toggleHelpPanel: () => set((s) => ({ helpPanelOpen: !s.helpPanelOpen })),
         setHelpPanelOpen: (open: boolean) => set({ helpPanelOpen: open }),
         addToast: enforce(Permissions.UI_UPDATE, 'addToast', (toast) => {
-          const id = `toast-${Date.now()}`;
+          const id = `toast-${nowMs()}`;
           set((s) => ({ toasts: [...s.toasts, { ...toast, id }] }));
           setTimeout(
             () => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),

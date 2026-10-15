@@ -3,6 +3,7 @@
  * Replaces console.log/error/warn with structured, leveled logging
  * In production, can be wired to crash reporting (Sentry, custom, etc.)
  */
+import { nowISO } from '@/utils/clock';
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
@@ -35,7 +36,7 @@ function createEntry(
     level,
     message,
     context,
-    timestamp: new Date().toISOString(),
+    timestamp: nowISO(),
     source,
   };
 }

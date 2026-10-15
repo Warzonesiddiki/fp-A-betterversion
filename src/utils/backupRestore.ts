@@ -22,6 +22,7 @@ import { masterStorage } from './masterStorage';
 import { BACKUP_STORE_KEYS, BACKUP_EXCLUDED_KEYS, PERSISTED_STORE_KEYS } from './persistedStores';
 import { isTauri, tauriSqlStorage } from './tauriSqlStorage';
 import { readEscrowRecord, type EscrowRecordV1 } from './keyEscrow';
+import { nowISO } from '@/utils/clock';
 
 /**
  * Bump when the on-disk backup shape changes incompatibly.
@@ -174,7 +175,7 @@ export class BackupRestore {
       metadata: {
         formatVersion: BACKUP_FORMAT_VERSION,
         appVersion: '1.0.0',
-        exportedAt: new Date().toISOString(),
+        exportedAt: nowISO(),
         storeSizes,
         checksum,
         escrow: readEscrowRecord(),
@@ -196,7 +197,7 @@ export class BackupRestore {
     try {
       const anchor = document.createElement('a');
       anchor.href = url;
-      anchor.download = `finplan-pro-backup-${new Date().toISOString().split('T')[0]}.json`;
+      anchor.download = `finplan-pro-backup-${nowISO().split('T')[0]}.json`;
       anchor.click();
     } finally {
       URL.revokeObjectURL(url);
@@ -315,7 +316,7 @@ export class BackupRestore {
 
   /** Report which registered stores currently hold data. */
   static async checkIntegrity(): Promise<BackupIntegrityResult> {
-    const checkedAt = new Date().toISOString();
+    const checkedAt = nowISO();
     const populatedStores: string[] = [];
     const emptyStores: string[] = [];
     const errors: string[] = [];
@@ -429,7 +430,7 @@ export async function createRawEmergencyBackup(): Promise<RawEmergencyBackup> {
   return {
     kind: 'finplan-emergency-dump',
     version: 1,
-    capturedAt: new Date().toISOString(),
+    capturedAt: nowISO(),
     entries,
     errors,
   };
@@ -443,7 +444,7 @@ export async function downloadRawEmergencyBackup(): Promise<RawEmergencyBackup> 
   try {
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = `finplan-emergency-dump-${new Date().toISOString().split('T')[0]}.json`;
+    anchor.download = `finplan-emergency-dump-${nowISO().split('T')[0]}.json`;
     anchor.click();
   } finally {
     URL.revokeObjectURL(url);

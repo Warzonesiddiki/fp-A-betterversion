@@ -22,12 +22,12 @@ adding one is a valid, welcome unit of work.
 
 ## C. Determinism
 
-| Rule                                                                                                                     | Gate                                                             |
-| ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
-| `now()` / `todayISO()` from `src/utils/clock.ts`; no `new Date()` / `Date.now()` in `src/{engines,store,services,utils}` | `determinism:ratchet` (per-file; `--update` refuses regressions) |
-| No `Math.random()` in those paths; seeded generators injected via parameters                                             | same                                                             |
-| Ids derive from content (hash) or from the injected clock, never from both the clock _and_ a random suffix               | review; provenance tests                                         |
-| Iteration order over `Map`/`Set`/object keys that affects output must be made explicit (`sort`)                          | review                                                           |
+| Rule                                                                                                                                                                                                 | Gate                                                             |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `now()` / `nowISO()` / `nowMs()` / `todayISO()` from `src/utils/clock.ts`; elapsed-time measurement uses `performance.now()`; no `new Date()` / `Date.now()` in `src/{engines,store,services,utils}` | `determinism:ratchet` (per-file; `--update` refuses regressions) |
+| No `Math.random()` in those paths; seeded generators injected via parameters                                                                                                                         | same                                                             |
+| Ids derive from content (hash) or from the injected clock, never from both the clock _and_ a random suffix                                                                                           | review; provenance tests                                         |
+| Iteration order over `Map`/`Set`/object keys that affects output must be made explicit (`sort`)                                                                                                      | review                                                           |
 
 ## D. Scope discipline
 

@@ -6,6 +6,7 @@ import type { Comment, Task, ActivityLog, CollaborationState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { SyncEngine } from '../engines/SyncEngine';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
+import { nowISO, nowMs } from '@/utils/clock';
 
 export const useCollaborationStore = create<CollaborationState>()(
   subscribeWithSelector(
@@ -25,14 +26,14 @@ export const useCollaborationStore = create<CollaborationState>()(
         setComments: (comments) => set({ comments }),
 
         addComment: enforce(Permissions.COLLAB_UPDATE, 'addComment', (comment) => {
-          const id = `cmt-${Date.now()}`;
+          const id = `cmt-${nowMs()}`;
           set((state) => ({
             comments: [
               ...state.comments,
               {
                 ...comment,
                 id,
-                createdAt: new Date().toISOString(),
+                createdAt: nowISO(),
                 replies: [],
               } as Comment,
             ],
@@ -49,14 +50,14 @@ export const useCollaborationStore = create<CollaborationState>()(
         setTasks: (tasks) => set({ tasks }),
 
         addTask: enforce(Permissions.COLLAB_UPDATE, 'addTask', (task) => {
-          const id = `tsk-${Date.now()}`;
+          const id = `tsk-${nowMs()}`;
           set((state) => ({
             tasks: [
               ...state.tasks,
               {
                 ...task,
                 id,
-                createdAt: new Date().toISOString(),
+                createdAt: nowISO(),
               } as Task,
             ],
           }));
@@ -87,7 +88,7 @@ export const useCollaborationStore = create<CollaborationState>()(
                   return {
                     ...a,
                     status,
-                    reviewedAt: new Date().toISOString(),
+                    reviewedAt: nowISO(),
                     ...(comment ? { comments: comment } : {}),
                   };
                 }
@@ -104,8 +105,8 @@ export const useCollaborationStore = create<CollaborationState>()(
             activityLog: [
               {
                 ...activity,
-                id: `act-${Date.now()}`,
-                timestamp: new Date().toISOString(),
+                id: `act-${nowMs()}`,
+                timestamp: nowISO(),
               } as ActivityLog,
               ...state.activityLog,
             ],
