@@ -29,6 +29,8 @@ import type { GlJournalBatch, GlCommitResult, GlListedEntry } from '@/sdk/gl/GlC
 import { useCubeStore } from './cubeStore';
 import { useUIStore } from './uiStore';
 import { useAuthStore } from './authStore';
+import { usePeriodCloseStore } from './periodCloseStore';
+import { getGLPeriodWriteIssues } from '@/services/import/glPeriodWriteGuard';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
 import { now } from '../utils/clock';
 import {
@@ -272,6 +274,11 @@ async function tombstoneCommittedEntries(
   const failures: GlTombstoneFailure[] = [];
   for (const id of ids) {
     if ((entrySyncState[id] ?? 'draft') !== 'committed') continue;
+    const issues = periodWriteIssues(useGLStore.getState().entries.filter((e) => e.id === id));
+    if (issues.length > 0) {
+      failures.push({ id, message: issues.map((i) => i.reason).join('; ') });
+      continue;
+    }
     const result = await glCommitClient.deleteEntry({ entryId: id, environmentId });
     if (result.status === 'committed' || result.status === 'already_deleted') continue;
     const message =
@@ -344,6 +351,31 @@ function captureGLSnapshot(get: () => ReturnType<typeof useGLStore.getState>) {
   });
 }
 
+function periodWriteIssues(rows: readonly Partial<GLEntry>[]) {
+  return getGLPeriodWriteIssues(
+    rows,
+    usePeriodCloseStore.getState(),
+    usePeriodCloseStore.persist.hasHydrated()
+  );
+}
+
+/** Fail without mutating financial state or consuming undo history. */
+function blockPeriodWrite(
+  rows: readonly Partial<GLEntry>[],
+  set: (patch: Partial<GLState>) => void
+): boolean {
+  const issues = periodWriteIssues(rows);
+  if (issues.length === 0) return false;
+  set({
+    importStatus: 'error',
+    importError: issues
+      .slice(0, 5)
+      .map((i) => i.reason)
+      .join('; '),
+  });
+  return true;
+}
+
 export const useGLStore = create<GLState>()(
   subscribeWithSelector(
     persist(
@@ -389,6 +421,13 @@ export const useGLStore = create<GLState>()(
             let failed = 0;
 
             if (drafts.length === 0) return { committed, failed, conflicts };
+            if (blockPeriodWrite(drafts, set)) {
+              return {
+                committed: 0,
+                failed: drafts.length,
+                conflicts: [{ code: 'PERIOD_CLOSED', message: get().importError! }],
+              };
+            }
 
             set((state) => {
               for (const e of drafts) state.entrySyncState[e.id] = 'pending';
@@ -404,6 +443,14 @@ export const useGLStore = create<GLState>()(
             }
 
             for (const group of groups.values()) {
+              if (blockPeriodWrite(group, set)) {
+                failed += group.length;
+                set((state) => {
+                  for (const e of group) state.entrySyncState[e.id] = 'failed';
+                });
+                conflicts.push({ code: 'PERIOD_CLOSED', message: get().importError! });
+                continue;
+              }
               const validation = validateEntries(group);
               if (!validation.isValid) {
                 failed += group.length;
@@ -423,6 +470,16 @@ export const useGLStore = create<GLState>()(
                 batch: toJournalBatch(group, environmentId),
                 idempotencyKey: `gl-${environmentId}-${groupIdentity(group)}`,
               });
+              if (blockPeriodWrite(group, set)) {
+                failed += group.length;
+                set((state) => {
+                  for (const e of group) state.entrySyncState[e.id] = 'failed';
+                });
+                const message = `${get().importError} The server request was already sent; reconcile its outcome before retrying.`;
+                set({ importError: message });
+                conflicts.push({ code: 'PERIOD_CLOSED', message });
+                continue;
+              }
               const outcome = await applyCommitResult(result, group, set);
               if (outcome.committed) {
                 committed += group.length;
@@ -435,7 +492,14 @@ export const useGLStore = create<GLState>()(
             }
 
             if (failed > 0) {
-              set({ importError: `${failed} draft entr(ies) failed server commit` });
+              set({
+                importError: conflicts.some((c) => c.code === 'PERIOD_CLOSED')
+                  ? conflicts
+                      .filter((c) => c.code === 'PERIOD_CLOSED')
+                      .map((c) => c.message)
+                      .join('; ')
+                  : `${failed} draft entr(ies) failed server commit`,
+              });
             }
             return { committed, failed, conflicts };
           }
@@ -484,6 +548,16 @@ export const useGLStore = create<GLState>()(
             }
 
             if (updates.length === 0 && inserts.length === 0) return { hydrated: 0 };
+            if (
+              blockPeriodWrite(
+                [
+                  ...updates.flatMap((u) => [before.entries[u.index]!, u.next]),
+                  ...inserts.map((i) => i.entry),
+                ],
+                set
+              )
+            )
+              return { hydrated: 0 };
 
             set((state) => {
               for (const u of updates) {
@@ -508,6 +582,8 @@ export const useGLStore = create<GLState>()(
 
         // --- Undo/Redo Actions ---
         undo: enforce(Permissions.UI_UPDATE, 'undo', () => {
+          const target = undoEngine.peekUndo();
+          if (target && blockPeriodWrite([...get().entries, ...target.entries], set)) return;
           const snapshot = undoEngine.undo();
           if (snapshot !== null) {
             set({
@@ -522,6 +598,8 @@ export const useGLStore = create<GLState>()(
         }),
 
         redo: enforce(Permissions.UI_UPDATE, 'redo', () => {
+          const target = undoEngine.peekRedo();
+          if (target && blockPeriodWrite([...get().entries, ...target.entries], set)) return;
           const snapshot = undoEngine.redo();
           if (snapshot !== null) {
             set({
@@ -542,6 +620,7 @@ export const useGLStore = create<GLState>()(
         // --- Mutation Actions (with undo capture) ---
 
         setEntries: enforce(Permissions.IMPORT_CREATE, 'setEntries', (entries) => {
+          if (blockPeriodWrite([...get().entries, ...entries], set)) return;
           captureGLSnapshot(get);
           const normalizedEntries = entries.map((entry, index) =>
             normalizeGLEntry(entry, index, 'gl-set')
@@ -564,6 +643,7 @@ export const useGLStore = create<GLState>()(
         }),
 
         addEntries: enforce(Permissions.IMPORT_CREATE, 'addEntries', (newEntries: GLEntry[]) => {
+          if (blockPeriodWrite(newEntries, set)) return;
           captureGLSnapshot(get);
           const normalizedEntries = newEntries.map((entry, index) =>
             normalizeGLEntry(entry, index, `gl-add-${now().getTime()}`)
@@ -641,6 +721,23 @@ export const useGLStore = create<GLState>()(
                   .map((r) => `Row ${r.row}: ${r.reason}`)
                   .join('; ')}`,
                 importStatus: 'error',
+              });
+              return { success: false, imported: 0, errors: rejections.length, rejections };
+            }
+
+            const periodIssues = periodWriteIssues(rawEntries);
+            if (periodIssues.length > 0) {
+              const rejections: ImportRejection[] = periodIssues.map((issue) => ({
+                row: issue.index < 0 ? 0 : (sourceRows[issue.index] ?? issue.index + 2),
+                code: 'VALIDATION',
+                reason: issue.reason,
+              }));
+              set({
+                importStatus: 'error',
+                importError: rejections
+                  .slice(0, 5)
+                  .map((r) => r.reason)
+                  .join('; '),
               });
               return { success: false, imported: 0, errors: rejections.length, rejections };
             }
@@ -770,6 +867,7 @@ export const useGLStore = create<GLState>()(
         ),
 
         addEntry: enforce(Permissions.IMPORT_CREATE, 'addEntry', (entry) => {
+          if (blockPeriodWrite(Array.isArray(entry) ? entry : [entry], set)) return;
           captureGLSnapshot(get);
           const entries = (Array.isArray(entry) ? entry : [entry]).map((item, index) =>
             normalizeGLEntry(item, index, `gl-entry-${now().getTime()}`)
@@ -788,6 +886,7 @@ export const useGLStore = create<GLState>()(
         }),
 
         setAccounts: enforce(Permissions.IMPORT_UPDATE, 'setAccounts', (accounts) => {
+          if (blockPeriodWrite(get().entries, set)) return;
           captureGLSnapshot(get);
           set({ accounts });
         }),
@@ -924,7 +1023,7 @@ export const useGLStore = create<GLState>()(
         ),
 
         clearData: enforce(Permissions.IMPORT_DELETE, 'clearData', async () => {
-          captureGLSnapshot(get);
+          if (blockPeriodWrite(get().entries, set)) return;
           // W0.8.6 §4: every COMMITTED row gets a compensating server
           // tombstone before the local wipe; drafts never reached the server
           // and simply vanish locally. A wipe with zero committed rows never
@@ -938,6 +1037,15 @@ export const useGLStore = create<GLState>()(
               ? await tombstoneCommittedEntries(committedIds, entrySyncState, environmentId)
               : [];
 
+          // A close may have happened while tombstones were in flight.
+          if (blockPeriodWrite(get().entries, set)) {
+            if (committedIds.length > 0)
+              set({
+                importError: `${get().importError} Server deletes may already have completed; reconcile before retrying.`,
+              });
+            return;
+          }
+          captureGLSnapshot(get);
           set({
             entries: [],
             trialBalance: [],
@@ -999,6 +1107,9 @@ export const useGLStore = create<GLState>()(
         ),
 
         undoLastImport: enforce(Permissions.IMPORT_DELETE, 'undoLastImport', async () => {
+          const affected = () =>
+            get().entries.filter((e) => get().lastImportEntryIds.includes(e.id));
+          if (blockPeriodWrite(affected(), set)) return;
           // W0.8.6 §4: compensating server tombstones FIRST — committed rows
           // of the batch are deleted server-side (already_deleted tolerated),
           // then the existing local undo runs. Drafts/pending/failed rows
@@ -1014,6 +1125,13 @@ export const useGLStore = create<GLState>()(
               ? await tombstoneCommittedEntries(committedIds, entrySyncState, environmentId)
               : [];
 
+          if (blockPeriodWrite(affected(), set)) {
+            if (committedIds.length > 0)
+              set({
+                importError: `${get().importError} Server deletes may already have completed; reconcile before retrying.`,
+              });
+            return;
+          }
           set((state) => {
             const count = state.lastImportEntryIds.length;
             if (count === 0) {

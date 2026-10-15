@@ -9,6 +9,41 @@ atomic and testable. Evidence = literal command output with date.
 - **Current continuation branch:** `arena/019fd6ad-fp-a-betterversion` (Wave 9 Phase 3 sector-depth session)
 - **Current base:** `289a67a` (PR #35 merge commit on `main`; Wave 8 8/8 Phase 2 complete; ratchet baseline 209/888 frontend, 2/23 server, 0 raw `toFixed`)
 
+## 2026-10-16 — Interrupted period-write safety checkpoint
+
+Branch: `arena/48b4e481-fp-a-betterversion`. Earlier branch/base metadata below
+is historical, not this session's branch. Closed-period guards now cover GL import,
+add/replace, account replacement, undo/redo, clear/undo-import, server publish and
+server-to-local refresh. Guards fail closed before close-store hydration and on
+missing/ambiguous fiscal scope. No history is consumed by a blocked undo/redo.
+Period initialization and transitions also wait for successful hydration.
+
+This is local API enforcement, not cross-process transactional immutability:
+server writes already in flight may complete; affected local updates are stopped
+and the error requests reconciliation. Whole-store replacement/undo is deliberately
+conservative and checks all current/target rows, including unchanged closed rows.
+Direct Zustand setState, backup restoration and independent server/native writers
+remain outside this guard. No claim of complete DEC-008 delivery.
+
+The interrupted draft contained a regression-test typo: `history` resolved to the
+browser History object. Captured the numeric pre-action history length explicitly;
+kept the invariant assertion unchanged.
+
+Verified command:
+`npm test -- src/store/glStore src/services/import src/pages/data src/store/periodCloseStore.test.ts src/pages/periods src/engines/UndoRedoEngine src/engines/PeriodCloseStateMachine.test.ts`
+
+Literal output (ANSI color stripped):
+```text
+ Test Files  40 passed (40)
+      Tests  469 passed (469)
+   Start at  21:58:26
+   Duration  27.54s (transform 2.79s, setup 11.51s, import 12.81s, tests 18.90s, environment 53.20s)
+```
+
+`npm run tsc -- --noEmit` also exited 0. Full sharded suite not rerun.
+
+---
+
 ## Wave 9 Phase 3 Sector Depth — IN PROGRESS (2026-08-06, branch `arena/019fd6ad-fp-a-betterversion`)
 
 Started Phase 3 sector-depth gate without touching `.github/workflows/**`:

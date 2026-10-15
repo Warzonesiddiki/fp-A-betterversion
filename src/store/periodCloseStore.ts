@@ -243,6 +243,11 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
         ...initialState,
 
         initialize: (periods, jurisdiction, entityId = 'entity-001') => {
+          if (!usePeriodCloseStore.persist.hasHydrated()) {
+            throw new Error(
+              'Period-close storage hydration has not succeeded. Retry before initializing the fiscal calendar.'
+            );
+          }
           // Preflight the entire calendar before any mutation. Period IDs are
           // currently single-entity keys: never silently reuse P01 for another
           // year/entity, or rewrite the date range attached to a closed period.
@@ -317,6 +322,14 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
           ): Promise<PeriodCloseActionResult> => {
             const state = get();
             const entry = state.entries[periodId];
+            if (!usePeriodCloseStore.persist.hasHydrated()) {
+              return {
+                success: false,
+                newState: entry?.state ?? 'open',
+                error:
+                  'Period-close storage hydration has not succeeded. Retry before changing close state.',
+              };
+            }
             if (!entry) {
               return { success: false, newState: 'open', error: `Unknown period: ${periodId}` };
             }
@@ -420,6 +433,7 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
           Permissions.PERIOD_CLOSE,
           'periodClose.updateTaskStatus',
           (periodId: string, taskId: string, status: CloseTaskStatus): boolean => {
+            if (!usePeriodCloseStore.persist.hasHydrated()) return false;
             const checklist = get().checklists[periodId];
             if (!checklist?.instances.some((i) => i.taskId === taskId)) return false;
             set((s) => {
@@ -437,6 +451,7 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
           Permissions.PERIOD_CLOSE,
           'periodClose.assignTask',
           (periodId: string, taskId: string, assignee: string): boolean => {
+            if (!usePeriodCloseStore.persist.hasHydrated()) return false;
             const checklist = get().checklists[periodId];
             if (!checklist?.instances.some((i) => i.taskId === taskId)) return false;
             set((s) => {
@@ -454,6 +469,8 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
           Permissions.PERIOD_CLOSE,
           'periodClose.resetPeriod',
           (periodId: string) => {
+            if (!usePeriodCloseStore.persist.hasHydrated())
+              throw new Error('Period-close storage hydration has not succeeded.');
             const entry = get().entries[periodId];
             if (!entry || entry.state === 'open') return;
             // Compatibility action only. Reopening must go through transition()

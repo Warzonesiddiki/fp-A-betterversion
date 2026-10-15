@@ -46,6 +46,17 @@ export class UndoRedoEngine<T = unknown> {
     }
   }
 
+  /** Inspect without consuming history; write guards must run before stack movement. */
+  peekUndo(): T | null {
+    const snapshot = this.instanceUndoStack.at(-1);
+    return snapshot === undefined ? null : JSON.parse(JSON.stringify(snapshot));
+  }
+
+  peekRedo(): T | null {
+    const snapshot = this.instanceRedoStack.at(-1);
+    return snapshot === undefined ? null : JSON.parse(JSON.stringify(snapshot));
+  }
+
   undo(): T | null {
     if (this.instanceUndoStack.length === 0) return null;
     const snapshot = this.instanceUndoStack.pop()!;
