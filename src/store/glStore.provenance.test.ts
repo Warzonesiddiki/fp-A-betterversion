@@ -239,4 +239,38 @@ describe('glStore import provenance (Gate 2)', () => {
     expect(remaining.every((e) => e.provenance?.batchId === firstBatch)).toBe(true);
     expect(remaining[0]!.provenance?.sourceFile).toBe('one.csv');
   });
+
+  it('FR-001: the batch records its period/date coverage and says when entity/currency were not in the file', () => {
+    const result = useGLStore
+      .getState()
+      .importGLData([...JOURNAL, ...JOURNAL_B], 'GL.csv', { fileHash: FILE_HASH });
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    expect(result.scope).toEqual({
+      periods: ['2026-09'],
+      dateRange: { from: '2026-09-15', to: '2026-09-30' },
+      entities: 'unavailable',
+      currencies: 'unavailable',
+      importedAt: FIXED_INSTANT,
+    });
+    expect(useGLStore.getState().importHistory[0]?.scope).toEqual(result.scope);
+  });
+
+  it('FR-002: rows the caller rejected before hand-over are recorded on the batch, counted, and sorted by row', () => {
+    const result = useGLStore.getState().importGLData(JOURNAL, 'GL.csv', {
+      fileHash: FILE_HASH,
+      sourceRows: [2, 4, 5],
+      rejections: [{ row: 3, code: 'VALIDATION', reason: 'unparseable posting date "31/13/2026"' }],
+    });
+    expect(result.success).toBe(true);
+    if (!result.success) return;
+    expect(result.rejections).toEqual([
+      { row: 3, code: 'VALIDATION', reason: 'unparseable posting date "31/13/2026"' },
+    ]);
+    const history = useGLStore.getState().importHistory[0]!;
+    expect(history.status).toBe('partial');
+    expect(history.rowCount).toBe(4); // 3 handed over + 1 rejected upstream
+    expect(history.errorCount).toBe(1);
+    expect(history.rejections).toHaveLength(1);
+  });
 });

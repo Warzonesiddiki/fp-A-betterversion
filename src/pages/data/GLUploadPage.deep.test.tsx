@@ -85,6 +85,13 @@ function makeStore(overrides: Partial<StoreStub> = {}): StoreStub {
       fileHash: 'f'.repeat(64),
       rejections: [],
       controlTotals: { rows: 3, debit: '100.00', credit: '100.00', net: '0.00' },
+      scope: {
+        periods: ['2024-01'],
+        dateRange: { from: '2024-01-15', to: '2024-01-16' },
+        entities: 'unavailable',
+        currencies: 'unavailable',
+        importedAt: '2026-10-15T09:30:00.000Z',
+      },
     })),
     validateEntries: vi.fn(() => ({ isValid: true, errors: [], validCount: 3 })),
     lastImportEntryIds: [],
@@ -968,7 +975,7 @@ describe('GLUploadPage — import provenance', () => {
     expect(filename).toBe('gl.csv');
     // NIST-style known answer: sha256 of exactly these bytes.
     const { sha256Hex } = await import('@/utils/sha256');
-    expect(source).toEqual({ fileHash: sha256Hex(csv), sourceRows: [2, 3] });
+    expect(source).toEqual({ fileHash: sha256Hex(csv), sourceRows: [2, 3], rejections: [] });
   });
 
   it('skips a broken row but keeps the true source row numbers of the rows it sends', async () => {
@@ -978,6 +985,10 @@ describe('GLUploadPage — import provenance', () => {
     const [rows, , source] = storeStub.importGLData.mock.calls[0]!;
     expect((rows as unknown[]).length).toBe(2);
     expect((source as { sourceRows: number[] }).sourceRows).toEqual([2, 4]);
+    // The skipped row is handed over as a structured rejection, not just a banner.
+    expect((source as { rejections: unknown[] }).rejections).toEqual([
+      { row: 3, code: 'VALIDATION', reason: 'missing accountCode' },
+    ]);
   });
 
   it('shows batch id, file hash and control totals on the Done step', async () => {
@@ -993,6 +1004,8 @@ describe('GLUploadPage — import provenance', () => {
     expect(panel.textContent).toContain('f'.repeat(64));
     expect(panel.textContent).toContain('100.00');
     expect(panel.textContent).toContain('0.00');
+    expect(panel.textContent).toContain('2024-01 (2024-01-15 → 2024-01-16)');
+    expect(panel.textContent).toContain('not in file'); // entity/currency unavailable, said explicitly
     expect(panel.textContent).not.toContain('not imported');
   });
 
@@ -1008,6 +1021,13 @@ describe('GLUploadPage — import provenance', () => {
         fileHash: 'e'.repeat(64),
         rejections: [{ row: 3, code: 'DUPLICATE_ROW', reason: 'already in the ledger' }],
         controlTotals: { rows: 1, debit: '100.00', credit: '0.00', net: '100.00' },
+        scope: {
+          periods: ['2024-01'],
+          dateRange: { from: '2024-01-15', to: '2024-01-15' },
+          entities: 'unavailable',
+          currencies: 'unavailable',
+          importedAt: '2026-10-15T09:30:00.000Z',
+        },
       })),
     });
     await runImport(

@@ -33,6 +33,7 @@ import { enforce, Permissions } from '../utils/rbacEnforcer';
 import { now } from '../utils/clock';
 import {
   computeControlTotals,
+  computeImportScope,
   defaultSourceRows,
   findPriorImport,
   hashRowContent,
@@ -104,10 +105,22 @@ export function setGlCommitClient(client: GlCommitNamespace): void {
   glCommitClient = client;
 }
 
+/**
+ * Stable identity for a group of entries pushed to the server. Prefers the
+ * source journal id, then the import batch id (provenance), then a content
+ * hash — never the clock or a random number, so a retried push carries the
+ * same journal id and idempotency key as the first attempt (NFR-001).
+ */
+function groupIdentity(entries: readonly GLEntry[]): string {
+  const journalId = entries.find((e) => e.journalId)?.journalId;
+  if (journalId) return journalId;
+  const batchId = entries.find((e) => e.provenance)?.provenance?.batchId;
+  if (batchId) return batchId;
+  return `batch-${hashRowContent(entries).slice(0, 20)}`;
+}
+
 function toJournalBatch(entries: GLEntry[], environmentId: string): GlJournalBatch {
-  const journalId =
-    entries.find((e) => e.journalId)?.journalId ??
-    `batch-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+  const journalId = groupIdentity(entries);
   return {
     journalId,
     environmentId,
@@ -408,7 +421,7 @@ export const useGLStore = create<GLState>()(
 
               const result = await glCommitClient.createJournalBatch({
                 batch: toJournalBatch(group, environmentId),
-                idempotencyKey: `gl-${environmentId}-${group[0]?.journalId ?? Date.now()}`,
+                idempotencyKey: `gl-${environmentId}-${groupIdentity(group)}`,
               });
               const outcome = await applyCommitResult(result, group, set);
               if (outcome.committed) {
@@ -553,7 +566,7 @@ export const useGLStore = create<GLState>()(
         addEntries: enforce(Permissions.IMPORT_CREATE, 'addEntries', (newEntries: GLEntry[]) => {
           captureGLSnapshot(get);
           const normalizedEntries = newEntries.map((entry, index) =>
-            normalizeGLEntry(entry, index, `gl-add-${Date.now()}`)
+            normalizeGLEntry(entry, index, `gl-add-${now().getTime()}`)
           );
           const ids = normalizedEntries.map((e) => e.id);
           set((state) => {
@@ -640,12 +653,18 @@ export const useGLStore = create<GLState>()(
               rawEntries as GLEntry[]
             );
             const duplicateIndexSet = new Set(duplicateIndices);
-            const rejections: ImportRejection[] = duplicateIndices.map((idx) => ({
-              row: sourceRows[idx] ?? idx + 2,
-              code: 'DUPLICATE_ROW',
-              reason:
-                'An entry with the same account, posting date and amount already exists in the ledger.',
-            }));
+            const callerRejections: ImportRejection[] = [...(source?.rejections ?? [])];
+            const rejections: ImportRejection[] = [
+              ...callerRejections,
+              ...duplicateIndices.map(
+                (idx): ImportRejection => ({
+                  row: sourceRows[idx] ?? idx + 2,
+                  code: 'DUPLICATE_ROW',
+                  reason:
+                    'An entry with the same account, posting date and amount already exists in the ledger.',
+                })
+              ),
+            ].sort((a, b) => a.row - b.row);
 
             if (newEntries.length === 0) {
               set({ importError: 'All rows were duplicates.', importStatus: 'error' });
@@ -677,6 +696,7 @@ export const useGLStore = create<GLState>()(
               )
             );
             const controlTotals = computeControlTotals(finalEntries);
+            const scope = computeImportScope(finalEntries, importedAtISO);
 
             const ids = finalEntries.map((e) => e.id);
 
@@ -692,15 +712,16 @@ export const useGLStore = create<GLState>()(
 
             const result: ImportResult = {
               filename: sourceFile,
-              rowCount: rawEntries.length,
+              rowCount: rawEntries.length + callerRejections.length,
               successCount: finalEntries.length,
-              errorCount: validation.errors.length + duplicates,
+              errorCount: validation.errors.length + duplicates + callerRejections.length,
               warningCount: duplicates,
-              status: duplicates > 0 ? 'partial' : 'success',
+              status: rejections.length > 0 ? 'partial' : 'success',
               batchId,
               fileHash,
               rejections,
               controlTotals,
+              scope,
             };
 
             get().recordImport(result);
@@ -714,6 +735,7 @@ export const useGLStore = create<GLState>()(
               fileHash,
               rejections,
               controlTotals,
+              scope,
             };
           }
         ),
@@ -721,7 +743,7 @@ export const useGLStore = create<GLState>()(
         addEntry: enforce(Permissions.IMPORT_CREATE, 'addEntry', (entry) => {
           captureGLSnapshot(get);
           const entries = (Array.isArray(entry) ? entry : [entry]).map((item, index) =>
-            normalizeGLEntry(item, index, `gl-entry-${Date.now()}`)
+            normalizeGLEntry(item, index, `gl-entry-${now().getTime()}`)
           );
           set((state) => {
             state.entries.push(...entries);

@@ -17,7 +17,7 @@ import { ExcelImportEngine } from '@/engines/ExcelImportEngine';
 import { hasDuplicateHeaders, parseCSV } from '@/utils/csv';
 import { parseFinancialAmount } from '@/utils/parseFinancialAmount';
 import { parseImportDate } from '@/utils/parseImportDate';
-import type { GLEntry, ImportControlTotals, ImportRejection } from '@/types';
+import type { GLEntry, ImportControlTotals, ImportRejection, ImportScope } from '@/types';
 import { hashFileBytes } from '@/services/import/importProvenance';
 import {
   CheckCircle2,
@@ -97,6 +97,7 @@ export default function GLUploadPage() {
     fileHash: string;
     controlTotals: ImportControlTotals;
     rejections: readonly ImportRejection[];
+    scope: ImportScope;
   } | null>(null);
 
   const resetWizard = useCallback(() => {
@@ -303,6 +304,9 @@ export default function GLUploadPage() {
     // Broken rows are excluded from the import and reported via the existing
     // importError channel — never silently stored.
     const rowErrors: string[] = [];
+    // Same facts as rowErrors, structured, so they are recorded on the batch
+    // (FR-002: a rejected row must stay explainable after the banner is gone).
+    const preRejections: ImportRejection[] = [];
     const parsedEntries: Partial<GLEntry>[] = [];
     const sourceRows: number[] = [];
 
@@ -310,13 +314,18 @@ export default function GLUploadPage() {
       const rowNum = idx + 2; // header occupies row 1 of the source file
       const getVal = (field: string) => row[mappings[field]!];
 
+      const reject = (reason: string) => {
+        rowErrors.push(`Row ${rowNum}: ${reason}`);
+        preRejections.push({ row: rowNum, code: 'VALIDATION', reason });
+      };
+
       const accountCode = getVal('accountCode') || '';
-      if (!accountCode) rowErrors.push(`Row ${rowNum}: missing accountCode`);
+      if (!accountCode) reject('missing accountCode');
 
       const rawDate = String(getVal('postDate') ?? '').trim();
       const postDate = parseImportDate(rawDate);
       if (!postDate) {
-        rowErrors.push(`Row ${rowNum}: unparseable posting date "${rawDate}"`);
+        reject(`unparseable posting date "${rawDate}"`);
       }
 
       const parseCellAmount = (field: string): number => {
@@ -325,7 +334,7 @@ export default function GLUploadPage() {
         if (cell === '') return 0;
         const value = parseFinancialAmount(cell);
         if (Number.isNaN(value)) {
-          rowErrors.push(`Row ${rowNum}: unparseable ${field} amount "${cell}"`);
+          reject(`unparseable ${field} amount "${cell}"`);
           return Number.NaN;
         }
         return value;
@@ -370,6 +379,7 @@ export default function GLUploadPage() {
     const result = useGLStore.getState().importGLData(parsedEntries, currentFile?.name, {
       fileHash: fileHash ?? undefined,
       sourceRows,
+      rejections: preRejections,
     });
 
     if (!result.success) {
@@ -392,6 +402,7 @@ export default function GLUploadPage() {
       fileHash: result.fileHash,
       controlTotals: result.controlTotals,
       rejections: result.rejections,
+      scope: result.scope,
     });
 
     // Simulate nice progress bar
@@ -675,6 +686,28 @@ export default function GLUploadPage() {
                     <dd className="tabular-nums">{batchEvidence.controlTotals.credit}</dd>
                     <dt className="text-[var(--text-muted)]">Net (debit − credit)</dt>
                     <dd className="tabular-nums">{batchEvidence.controlTotals.net}</dd>
+                    <dt className="text-[var(--text-muted)]">Periods</dt>
+                    <dd>
+                      {batchEvidence.scope.periods.length > 0
+                        ? batchEvidence.scope.periods.join(', ')
+                        : 'none'}
+                      {batchEvidence.scope.dateRange &&
+                        ` (${batchEvidence.scope.dateRange.from} → ${batchEvidence.scope.dateRange.to})`}
+                    </dd>
+                    <dt className="text-[var(--text-muted)]">Entities</dt>
+                    <dd>
+                      {batchEvidence.scope.entities === 'unavailable'
+                        ? 'not in file'
+                        : batchEvidence.scope.entities.join(', ')}
+                    </dd>
+                    <dt className="text-[var(--text-muted)]">Currencies</dt>
+                    <dd>
+                      {batchEvidence.scope.currencies === 'unavailable'
+                        ? 'not in file'
+                        : batchEvidence.scope.currencies.join(', ')}
+                    </dd>
+                    <dt className="text-[var(--text-muted)]">Imported at</dt>
+                    <dd className="tabular-nums">{batchEvidence.scope.importedAt}</dd>
                   </dl>
                   {batchEvidence.rejections.length > 0 && (
                     <div className="mt-3">

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   computeControlTotals,
+  computeImportScope,
   defaultSourceRows,
   findPriorImport,
   hashFileBytes,
@@ -134,6 +135,64 @@ describe('importProvenance', () => {
     });
     it('never matches legacy rows without a hash', () => {
       expect(findPriorImport(history, undefined as unknown as string)).toBeUndefined();
+    });
+  });
+
+  describe('computeImportScope', () => {
+    const at = '2026-10-15T09:30:00.000Z';
+    it('reports sorted periods, the date range and the import instant', () => {
+      const scope = computeImportScope(
+        [
+          { date: '2026-09-30', postDate: '2026-09-30', period: '2026-09' },
+          { date: '2026-08-02', postDate: '2026-08-02', period: '2026-08' },
+          { date: '2026-09-01', postDate: '2026-09-01', period: '2026-09' },
+        ],
+        at
+      );
+      expect(scope.periods).toEqual(['2026-08', '2026-09']);
+      expect(scope.dateRange).toEqual({ from: '2026-08-02', to: '2026-09-30' });
+      expect(scope.importedAt).toBe(at);
+    });
+    it("says 'unavailable' for entity and currency when no row carries them — never a default", () => {
+      const scope = computeImportScope(
+        [{ date: '2026-09-30', postDate: '2026-09-30', period: '2026-09' }],
+        at
+      );
+      expect(scope.entities).toBe('unavailable');
+      expect(scope.currencies).toBe('unavailable');
+    });
+    it('lists distinct entities and currencies when present', () => {
+      const scope = computeImportScope(
+        [
+          {
+            date: '2026-09-30',
+            postDate: '2026-09-30',
+            period: '2026-09',
+            entityId: 'E2',
+            currency: 'USD',
+          },
+          {
+            date: '2026-09-30',
+            postDate: '2026-09-30',
+            period: '2026-09',
+            entityId: 'E1',
+            currency: 'USD',
+          },
+          { date: '2026-09-30', postDate: '2026-09-30', period: '2026-09', entityId: 'E1' },
+        ],
+        at
+      );
+      expect(scope.entities).toEqual(['E1', 'E2']);
+      expect(scope.currencies).toEqual(['USD']);
+    });
+    it('is empty-safe', () => {
+      expect(computeImportScope([], at)).toEqual({
+        periods: [],
+        dateRange: null,
+        entities: 'unavailable',
+        currencies: 'unavailable',
+        importedAt: at,
+      });
     });
   });
 });

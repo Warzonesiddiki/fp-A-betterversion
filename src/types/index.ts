@@ -761,6 +761,23 @@ export interface ImportRejection {
   readonly reason: string;
 }
 
+/**
+ * What a batch covers (FR-001). Facts the file did not carry are reported as
+ * `'unavailable'`, never guessed or shown as a default.
+ */
+export interface ImportScope {
+  /** Distinct `YYYY-MM` periods present, sorted ascending. */
+  periods: string[];
+  /** Earliest and latest posting date present (ISO `YYYY-MM-DD`), or null for an empty batch. */
+  dateRange: { from: string; to: string } | null;
+  /** Distinct entity ids present, or `'unavailable'` when no row carried one. */
+  entities: string[] | 'unavailable';
+  /** Distinct currency codes present, or `'unavailable'` when no row carried one. */
+  currencies: string[] | 'unavailable';
+  /** Import instant (ISO), from the injectable clock. */
+  importedAt: string;
+}
+
 /** Independently computed control totals for an import batch (FR-004). Amounts are decimal strings, cent-exact. */
 export interface ImportControlTotals {
   readonly rows: number;
@@ -813,6 +830,8 @@ export interface ImportResult {
   rejections?: ImportRejection[];
   /** Control totals of the rows actually committed (FR-004). */
   controlTotals?: ImportControlTotals;
+  /** Period / entity / currency coverage of the committed rows (FR-001). */
+  scope?: ImportScope;
 }
 
 /** Identity of the source an import came from, supplied by the caller (page or connector). */
@@ -821,6 +840,12 @@ export interface ImportSource {
   readonly fileHash?: string;
   /** 1-based source-file row for each entry, aligned by index. Defaults to index + 2 (header = row 1). */
   readonly sourceRows?: readonly number[];
+  /**
+   * Rows the caller already rejected before handing over (e.g. unparseable
+   * dates or amounts). Recorded on the batch so they are never lost once the
+   * transient error banner is gone.
+   */
+  readonly rejections?: readonly ImportRejection[];
 }
 
 export interface ImportHistoryEntry extends ImportResult {
@@ -931,6 +956,7 @@ export interface GLState {
         fileHash: string;
         rejections: readonly ImportRejection[];
         controlTotals: ImportControlTotals;
+        scope: ImportScope;
       }
     | {
         success: false;

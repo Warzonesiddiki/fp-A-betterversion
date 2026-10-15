@@ -9,7 +9,7 @@
  * on the entry itself, so it survives whichever store of record is chosen.
  */
 
-import type { GLEntry, GLEntryProvenance, ImportControlTotals } from '@/types';
+import type { GLEntry, GLEntryProvenance, ImportControlTotals, ImportScope } from '@/types';
 import { sha256Hex, sha256HexBytes } from '@/utils/sha256';
 import { subtractMoney, sumMoney } from '@/utils/money';
 
@@ -106,4 +106,38 @@ export function findPriorImport<T extends { fileHash?: string; status: string; b
   return history.find(
     (h) => h.fileHash === fileHash && (h.status === 'success' || h.status === 'partial')
   );
+}
+
+/**
+ * What the committed rows cover (FR-001). Entity and currency are reported
+ * as `'unavailable'` when no row carried them — the UI must say so rather
+ * than imply a single-entity, single-currency file.
+ */
+export function computeImportScope(
+  entries: readonly Pick<GLEntry, 'date' | 'postDate' | 'period' | 'entityId' | 'currency'>[],
+  importedAtISO: string
+): ImportScope {
+  const periods = new Set<string>();
+  const entities = new Set<string>();
+  const currencies = new Set<string>();
+  let from: string | null = null;
+  let to: string | null = null;
+  for (const e of entries) {
+    const date = e.postDate || e.date || '';
+    const period = e.period || date.slice(0, 7);
+    if (period) periods.add(period);
+    if (date) {
+      if (from === null || date < from) from = date;
+      if (to === null || date > to) to = date;
+    }
+    if (e.entityId) entities.add(e.entityId);
+    if (e.currency) currencies.add(e.currency);
+  }
+  return {
+    periods: [...periods].sort(),
+    dateRange: from !== null && to !== null ? { from, to } : null,
+    entities: entities.size > 0 ? [...entities].sort() : 'unavailable',
+    currencies: currencies.size > 0 ? [...currencies].sort() : 'unavailable',
+    importedAt: importedAtISO,
+  };
 }
