@@ -7,6 +7,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { useAuthStore } from './authStore';
 import { useGLStore } from './glStore';
 import { setClock, resetClock } from '@/utils/clock';
+import { parseGLRows } from '@/services/import/parseGLRows';
 import type { GLEntry } from '@/types';
 
 const FIXED_INSTANT = '2026-10-15T09:30:00.000Z';
@@ -161,20 +162,21 @@ describe('glStore import provenance (Gate 2)', () => {
     ]);
   });
 
-  it('FR-002: rows skipped as ledger duplicates are each reported with their source row', () => {
+  it('DEC-009: a balanced ledger overlap rejects the entire file and reports source rows', () => {
     const first = useGLStore
       .getState()
       .importGLData(JOURNAL_B, 'first.csv', { fileHash: 'c'.repeat(64) });
     expect(first.success).toBe(true);
     // Second file: the two JNL-2 lines again (already in the ledger) plus JNL-1.
+    const before = useGLStore.getState();
     const result = useGLStore.getState().importGLData([...JOURNAL, ...JOURNAL_B], 'second.csv', {
       fileHash: 'd'.repeat(64),
       sourceRows: [2, 3, 4, 5, 6],
     });
-    expect(result.success).toBe(true);
-    if (!result.success) return;
-    expect(result.imported).toBe(3);
-    expect(useGLStore.getState().entries).toHaveLength(5);
+    expect(result.success).toBe(false);
+    expect(result.imported).toBe(0);
+    expect(useGLStore.getState().entries).toBe(before.entries);
+    expect(useGLStore.getState().entries).toHaveLength(2);
     expect(result.rejections).toEqual([
       {
         row: 5,
@@ -187,11 +189,98 @@ describe('glStore import provenance (Gate 2)', () => {
         reason: expect.stringContaining('already exists in the ledger'),
       },
     ]);
-    // Surviving rows keep their true source rows (2, 3, 4), not re-numbered ones.
-    const added = useGLStore.getState().entries.slice(2);
-    expect(added.map((e) => e.provenance?.sourceRow)).toEqual([2, 3, 4]);
-    expect(useGLStore.getState().importHistory[0]?.status).toBe('partial');
-    expect(useGLStore.getState().importHistory[0]?.rejections).toHaveLength(2);
+    expect(useGLStore.getState().importHistory).toHaveLength(1);
+    expect(useGLStore.getState().importHistory[0]?.filename).toBe('first.csv');
+    expect(useGLStore.getState().importStatus).toBe('error');
+  });
+
+  it('DEC-009: a one-sided overlap cannot commit an unbalanced remainder', () => {
+    useGLStore.getState().importGLData(JOURNAL_B, 'first.csv', { fileHash: 'c'.repeat(64) });
+    const before = useGLStore.getState();
+    const input = [JOURNAL_B[0]!, row({ accountCode: '9999', credit: 75, postDate: '2026-09-15' })];
+    expect(before.validateEntries(input).isValid).toBe(true);
+    const result = before.importGLData(input, 'overlap.csv', {
+      fileHash: FILE_HASH,
+      sourceRows: [8, 9],
+    });
+    expect(result.success).toBe(false);
+    expect(result.rejections).toEqual([
+      { row: 8, code: 'DUPLICATE_ROW', reason: expect.any(String) },
+    ]);
+    const after = useGLStore.getState();
+    for (const key of [
+      'entries',
+      'importHistory',
+      'lastImportEntryIds',
+      'entrySyncState',
+      'entryVersions',
+      'trialBalance',
+      'accountAnalysis',
+      'lastImportResult',
+    ] as const) {
+      expect(after[key]).toBe(before[key]);
+    }
+    // No successful import history/hash is consumed by the failed attempt.
+    const retry = after.importGLData(JOURNAL, 'corrected.csv', { fileHash: FILE_HASH });
+    expect(retry.success).toBe(true);
+  });
+
+  it('matches parsed upload rows despite their placeholder amount and reports actual file rows', () => {
+    const mappings = { accountCode: 'Account', postDate: 'Date', debit: 'Debit', credit: 'Credit' };
+    const parsed = parseGLRows(
+      [
+        { Account: '1000', Date: '2026-09-30', Debit: '125', Credit: '' },
+        { Account: '4000', Date: '2026-09-30', Debit: '', Credit: '125' },
+      ],
+      mappings,
+      10
+    );
+    expect(parsed.entries[0]?.amount).toBe(0); // the upload parser's placeholder
+    expect(
+      useGLStore.getState().importGLData(parsed.entries, 'first.csv', { fileHash: FILE_HASH })
+        .success
+    ).toBe(true);
+    const before = useGLStore.getState();
+    const result = before.importGLData(parsed.entries, 'different-bytes.csv', {
+      fileHash: 'b'.repeat(64),
+      sourceRows: parsed.sourceRows,
+    });
+    expect(result.success).toBe(false);
+    expect(result.rejections?.map((r) => r.row)).toEqual([10, 11]);
+    expect(useGLStore.getState().entries).toBe(before.entries);
+  });
+
+  it('does not collapse distinct gross debit/credit pairs with the same net amount', () => {
+    useGLStore.setState({
+      entries: [{ ...row({ debit: 100, credit: 20, amount: 80 }), id: 'existing' } as GLEntry],
+    });
+    const result = useGLStore
+      .getState()
+      .checkDuplicates([
+        { ...row({ debit: 90, credit: 10, amount: 80 }), id: 'incoming' } as GLEntry,
+      ]);
+    expect(result.duplicates).toBe(0);
+  });
+
+  it('preserves repeated lines within a new file: equal values alone are not duplicate identity', () => {
+    const repeated = [...JOURNAL, ...JOURNAL].map((e) => ({ ...e }));
+    const result = useGLStore
+      .getState()
+      .importGLData(repeated, 'repeated-lines.csv', { fileHash: FILE_HASH });
+    expect(result.success).toBe(true);
+    expect(result.imported).toBe(6);
+    expect(useGLStore.getState().entries.map((e) => e.provenance?.sourceRow)).toEqual([
+      2, 3, 4, 5, 6, 7,
+    ]);
+  });
+
+  it('rejects an empty batch without success history', () => {
+    const result = useGLStore.getState().importGLData([], 'empty.csv');
+    expect(result.success).toBe(false);
+    expect(result.rejections).toEqual([
+      { row: 0, code: 'VALIDATION', reason: 'No entries to import.' },
+    ]);
+    expect(useGLStore.getState().importHistory).toHaveLength(0);
   });
 
   it('FR-004: control totals are computed in cents from the committed rows only', () => {

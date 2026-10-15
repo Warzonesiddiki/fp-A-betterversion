@@ -158,3 +158,37 @@ Prettier (changed source files and agent data-model doc); Vitest GL store/import
 services/upload page **12 files / 182 tests passed**; money AST, determinism ratchet
 (345 unchanged), documentation verification and fabrication audit passed. The full
 sharded suite was **not rerun** for this change.
+
+## 2026-10-16 — Ledger-overlap completeness (DEC-009)
+
+Inspection found that `importGLData` validated balance before removing rows that
+matched the ledger, then committed the remainder without another balance check.
+Even a balanced remainder could silently omit a complete journal. Changed the
+policy to reject the whole file for review whenever a possible ledger overlap is
+found; no entries/history/undo identifiers/sync metadata change. Failed attempts
+do not consume a hash. Same-file hash rejection remains unchanged.
+
+The overlap key now normalizes debit/credit using the same authority as persisted
+entries: upload parser `amount: 0` placeholders no longer conceal overlaps, and
+different gross debit/credit pairs with the same net are not collapsed. This is
+still a conservative match heuristic, not a proven duplicate identity. Entity/
+currency-aware matching and verified source journal/line identifiers remain open.
+Repeated equal-valued lines within a new file are preserved. Empty imports now
+return an explicit validation reason without success history.
+
+Tests cover balanced overlaps, one-sided overlaps (formerly an unbalanced
+remainder), parser → store placeholder amounts with true source-row numbers,
+equal-net/different-gross entries, repeated source lines and empty files.
+
+Period lock investigation: `PeriodCloseEntry` persists a fiscal-period ID and
+entity, while GL imports primarily identify periods through posting dates and
+`YYYY-MM`. Close checklists retain a deadline but not the full fiscal date range.
+Before DEC-008 can be enforced across import/edit/delete/undo, retain authoritative
+fiscal date ranges and define entity/adjusting-period matching; do not guess a
+calendar-month mapping or claim the gate is closed.
+
+Verification for DEC-009: TypeScript passed; ESLint on changed TypeScript files
+passed with zero warnings; Prettier passed; all GL-store/import-services/data-page
+tests passed (**31 files / 305 tests**). Money AST, determinism (345 unchanged),
+documentation verification and fabrication audit passed. Full sharded suite was
+not rerun for this change.

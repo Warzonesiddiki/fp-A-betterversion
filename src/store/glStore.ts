@@ -586,8 +586,8 @@ export const useGLStore = create<GLState>()(
          *   at most once; a repeat is rejected with the prior batch id and
          *   has no financial effect.
          * - FR-002 atomicity: any validation error rejects the whole batch;
-         *   nothing is committed. Rows skipped as duplicates of entries
-         *   already in the ledger are each reported with their source row.
+         *   nothing is committed. Possible overlaps with ledger entries also
+         *   reject the whole file (DEC-009), with source-row reasons for review.
          * - FR-005 provenance: every committed entry carries
          *   {batchId, fileHash, sourceFile, sourceRow}.
          * - FR-004 control totals: debit/credit/net of the committed rows are
@@ -667,7 +667,6 @@ export const useGLStore = create<GLState>()(
             const { duplicates, newEntries, duplicateIndices } = get().checkDuplicates(
               rawEntries as GLEntry[]
             );
-            const duplicateIndexSet = new Set(duplicateIndices);
             const rejections: ImportRejection[] = [
               ...callerRejections,
               ...duplicateIndices.map(
@@ -675,20 +674,36 @@ export const useGLStore = create<GLState>()(
                   row: sourceRows[idx] ?? idx + 2,
                   code: 'DUPLICATE_ROW',
                   reason:
-                    'An entry with the same account, posting date and amount already exists in the ledger.',
+                    'A possible matching entry already exists in the ledger (same account, posting date, debit and credit). Review the overlap; no rows from this file were imported.',
                 })
               ),
             ].sort((a, b) => a.row - b.row);
 
-            if (newEntries.length === 0) {
-              set({ importError: 'All rows were duplicates.', importStatus: 'error' });
+            // DEC-009: an overlap is not proof of duplicate identity. Dropping
+            // matching rows can unbalance a journal or omit a balanced subjournal.
+            // Reject for review instead of committing a filtered remainder.
+            if (duplicates > 0) {
+              set({
+                importError:
+                  'Entire file rejected: possible ledger overlaps require review; no rows were imported.',
+                importStatus: 'error',
+              });
               return { success: false, imported: 0, errors: duplicates, rejections };
+            }
+            if (newEntries.length === 0) {
+              set({ importError: 'No entries to import.', importStatus: 'error' });
+              return {
+                success: false,
+                imported: 0,
+                errors: 1,
+                rejections: [{ row: 0, code: 'VALIDATION', reason: 'No entries to import.' }],
+              };
             }
 
             captureGLSnapshot(get);
             const importedAtISO = now().toISOString();
             const batchId = makeBatchId(fileHash, importedAtISO);
-            const keptSourceRows = sourceRows.filter((_, idx) => !duplicateIndexSet.has(idx));
+            const keptSourceRows = sourceRows;
             const stamped = stampProvenance(
               newEntries,
               { batchId, fileHash, sourceFile },
@@ -1044,12 +1059,15 @@ export const useGLStore = create<GLState>()(
 
         checkDuplicates: (entries) => {
           const state = get();
-          // The amount fallback (debit − credit) is currency: exact decimal
-          // so the dedupe key matches the normalized stored amount (F-0006).
-          const entryKey = (
-            e: Pick<GLEntry, 'accountCode' | 'postDate' | 'date' | 'amount' | 'debit' | 'credit'>
-          ) =>
-            `${e.accountCode}|${e.postDate || e.date}|${e.amount ?? roundTo(subtractMoney(e.debit, e.credit))}`;
+          // Use the same debit/credit authority as persisted entries. Upload
+          // rows carry amount: 0 as a placeholder; trusting that field misses
+          // real overlaps. Keep gross sides separate (equal net != equal row).
+          // JSON tuples also avoid delimiter collisions in account/date text.
+          // This remains a possible-match heuristic, NOT source-line identity.
+          const entryKey = (entry: Partial<GLEntry>) => {
+            const e = normalizeGLEntry(entry, 0);
+            return JSON.stringify([e.accountCode, e.postDate || e.date, e.debit, e.credit]);
+          };
           const existingKeys = new Set(state.entries.map(entryKey));
           const duplicateIndices: number[] = [];
           const newEntries: GLEntry[] = [];

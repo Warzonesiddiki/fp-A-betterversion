@@ -37,9 +37,12 @@ turns source rows into entries + `VALIDATION` rejections; then
    from `batchId` + row (no `Date.now()` collisions).
 3. Same `fileHash` already in `importHistory` → whole file rejected
    `DUPLICATE_FILE`, nothing written.
-4. Row-level duplicates within the file or against existing entries →
-   `DUPLICATE_ROW` rejections; remaining rows still import (quarantine, not
-   abort).
+4. Possible overlaps with existing ledger entries → `DUPLICATE_ROW`
+   source-row rejections; the entire file aborts for review (DEC-009).
+   Match normalized account/date/debit/credit, not placeholder `amount` or net
+   alone. This is a conservative heuristic, not verified source-line identity;
+   entity/currency-aware matching is still open. Equal-valued repeated rows
+   within a new file are preserved, never silently deduplicated.
 5. Upstream parse rejections abort the whole file (DEC-007), return source-row reasons
    and leave financial state/history untouched. Corrected retries are allowed.
    Failed-attempt history is not yet durable. Batch must balance (debits = credits, integer cents) — `validateEntries`
