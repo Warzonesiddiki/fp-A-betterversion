@@ -71,8 +71,13 @@ const engineFiles = readdirSync(engineDir)
   )
   .map((f) => basename(f, '.ts'));
 
+// Runtime consumers = everything outside src/engines. The barrel
+// (src/engines/index.ts) and the generated manifest re-export every engine,
+// so counting them as consumers made every engine "reachable" by definition
+// (the 2026-10-15 audit found 85 engines with no page/store/service caller
+// while this script reported 0 orphans). They are excluded here.
 const sourceBlobs = allSrc
-  .filter((f) => !f.startsWith(engineDir) || basename(f) === 'index.ts')
+  .filter((f) => !f.startsWith(engineDir))
   .map((f) => {
     try {
       return readFileSync(f, 'utf8');
@@ -81,22 +86,37 @@ const sourceBlobs = allSrc
     }
   });
 
+const ENGINE_PLUMBING = new Set(['index', 'engineManifest.generated', 'EngineRegistry']);
 const engineDirBlobs = allSrc
-  .filter((f) => f.startsWith(engineDir))
+  .filter((f) => f.startsWith(engineDir) && !ENGINE_PLUMBING.has(basename(f, extname(f))))
   .map((f) => ({ name: basename(f, '.ts'), text: readFileSync(f, 'utf8') }));
 
 // Reachability is case/kebab-insensitive: `report-builder-types` imports are
 // matched by the normalized file name, so kebab-case consumers cannot produce
 // a false orphan.
 const normalize = (s) => s.toLowerCase().replace(/[-_]/g, '');
-const shippedEngines = engineFiles.filter((name) => {
-  const needle = normalize(name);
-  const re = new RegExp(`\\b${needle}\\b`);
-  if (sourceBlobs.some((t) => re.test(normalize(t)))) return true;
-  // consumed by another engine that is itself reachable
-  return engineDirBlobs.some((e) => e.name !== name && re.test(normalize(e.text)));
-});
-const orphanEngines = engineFiles.filter((n) => !shippedEngines.includes(n));
+const needleOf = (name) => new RegExp(`\\b${normalize(name)}\\b`);
+const normalizedSource = sourceBlobs.map(normalize);
+const normalizedEngines = engineDirBlobs.map((e) => ({ name: e.name, text: normalize(e.text) }));
+// Fixed point: directly reachable from runtime code, or consumed by an engine
+// that is itself reachable. Engine↔engine cycles with no runtime entry stay orphans.
+const reachable = new Set(
+  engineFiles.filter((name) => normalizedSource.some((t) => needleOf(name).test(t)))
+);
+let grew = true;
+while (grew) {
+  grew = false;
+  for (const name of engineFiles) {
+    if (reachable.has(name)) continue;
+    const re = needleOf(name);
+    if (normalizedEngines.some((e) => e.name !== name && reachable.has(e.name) && re.test(e.text))) {
+      reachable.add(name);
+      grew = true;
+    }
+  }
+}
+const shippedEngines = engineFiles.filter((n) => reachable.has(n));
+const orphanEngines = engineFiles.filter((n) => !reachable.has(n));
 
 // --- stores / workers --------------------------------------------------
 const storeCount = readdirSync(join(ROOT, 'src', 'store')).filter(
@@ -137,7 +157,27 @@ const forbidden = [
     expect: measured.stores,
     label: 'store count',
   },
+  {
+    pattern: /(\d+) reachable engines/g,
+    expect: measured.shippedEngines,
+    label: 'reachable engine count',
+  },
+  {
+    pattern: /(\d+) orphan engines/g,
+    expect: measured.orphanEngines,
+    label: 'orphan engine count',
+  },
 ];
+
+// Words that assert a measurement no script produces are forbidden outright.
+const unbackedClaims = [
+  { re: /100%\s*(money\s*safety|green)/i, why: 'no script measures "100% money safety/green"' },
+  { re: /Engines Shipped/i, why: 'use "reachable engines" (measured) — a file with a test is not shipped' },
+];
+for (const { re, why } of unbackedClaims) {
+  const m = readme.match(re);
+  if (m) failures.push(`README unbacked claim "${m[0]}": ${why}`);
+}
 
 for (const { pattern, expect, label } of forbidden) {
   for (const m of readme.matchAll(pattern)) {
@@ -169,6 +209,12 @@ try {
   }
 } catch {
   /* checklist optional */
+}
+
+if (process.argv.includes('--list')) {
+  console.log(`Orphan engines (${orphanEngines.length}) — no runtime consumer outside src/engines:`);
+  for (const n of orphanEngines) console.log(`  - ${n}`);
+  console.log('');
 }
 
 console.log('Measured repository statistics:');

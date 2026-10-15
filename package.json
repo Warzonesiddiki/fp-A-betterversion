@@ -9,8 +9,11 @@
     "preview": "node node_modules/vite/bin/vite.js preview",
     "tauri:dev": "node node_modules/@tauri-apps/cli/cli.js dev",
     "tauri:build": "node node_modules/@tauri-apps/cli/cli.js build",
-    "lint": "node node_modules/eslint/bin/eslint.js src --fix",
-    "format": "node node_modules/prettier/bin/prettier.js --write \"src/**/*.{ts,tsx,css,md}\"",
+    "lint": "node node_modules/eslint/bin/eslint.js src --max-warnings 0",
+    "lint:fix": "node node_modules/eslint/bin/eslint.js src --fix",
+    "tsc": "node node_modules/typescript/bin/tsc --noEmit",
+    "format": "node node_modules/prettier/bin/prettier.cjs --write \"src/**/*.{ts,tsx,css,md}\"",
+    "format:check": "node node_modules/prettier/bin/prettier.cjs --check \"src/**/*.{ts,tsx,css,md}\"",
     "test": "node --max-old-space-size=8192 node_modules/vitest/vitest.mjs run",
     "test:sharded": "node scripts/test-sharded.mjs",
     "test:watch": "node --max-old-space-size=8192 node_modules/vitest/vitest.mjs",
@@ -45,7 +48,8 @@
     "persistence:map": "node scripts/persistence-map-check.mjs",
     "schema:equality": "node scripts/schema-equality-check.mjs",
     "routemap:check": "node scripts/generate-route-map.js --check",
-    "escape:ledger": "node scripts/escape-ledger-check.mjs"
+    "escape:ledger": "node scripts/escape-ledger-check.mjs",
+    "check": "npm run tsc && npm run lint && npm run format:check && npm run docs:verify && npm run engines:verify && npm run money:ast && npm run fabrication:audit && npm run test:sharded"
   },
   "dependencies": {
     "@json-render/core": "^0.19.0",
