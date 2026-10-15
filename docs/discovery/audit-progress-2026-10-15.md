@@ -105,12 +105,26 @@ These observations are preliminary: they do not replace a full review of specs, 
 | AUD-009 | High | Verified | Relational SQLite schema unused; app state is JSON blobs in a KV table; three unreconciled schema homes (migrations, server DDL, Zustand shapes). | DEC-005; then a table-and-column equality test against the live schema. |
 | AUD-010 | High | Verified | Express server (auth/RBAC/period close) has no client; desktop production build cannot authenticate offline. | DEC-004 (auth/offline model). |
 | AUD-011 | High | Verified | 87 of 182 engines, 8 client-side "security" services, 4 of 5 export engines and all ERP connectors have no runtime consumer; tested-but-unwired code was presented as shipped. | Wire-or-archive per module; make `engines:verify` fail on orphans (now measurable: `node scripts/verify-readme-stats.mjs --list`). |
-| AUD-012 | High | Verified | Calculations and page logic read the wall clock directly (339 sites in engines); `SafeMathParser` exposes `RAND()`. NFR-001 not met. | Clock/rng injection sweep; lint rule banning `new Date()` / `Date.now()` / `Math.random` in engines (allow-list for seeded Monte Carlo). `src/utils/clock.ts` now exists as the target API. |
+| AUD-012 | High | **Verified — ratcheted on branch** | Calculations and page logic read the wall clock directly; `SafeMathParser` exposes `RAND()`. NFR-001 not met. Branch: `npm run determinism:ratchet` (in `npm run check`) fails on any per-file increase; `glStore` and the financial stores (period close, budget, forecast, scenario, data, driver, audit trail) now read `src/utils/clock.ts`; baseline 684 → 638 sites. | Continue the sweep through `src/engines` (352 sites) and `src/services` (166); decide `RAND()` policy. |
 | AUD-013 | High | Verified | Production dependency advisories: root 3 high; server 1 critical (`proxy-addr` IP spoofing). | Cleared on the working branch (`aa1812e`): root 0, server 0. Keep `audit:prod` in CI. |
 | AUD-014 | Medium | Verified | 464 Markdown files (6.2 MB), 15+ competing plans of record, 62 root files, committed agent scaffolding and tool residue. No index says which document wins. | Adopt this pack + `docs/audit/` as plan of record (DEC-006); archive the rest. |
 | AUD-015 | Medium | Verified | The Dynamics connector targets Dataverse CRM, not F&O/BC GL; it cannot serve the owner's monthly GL export even if wired. | Discovery Q6/Q8 (which D365 product, export shape) before any connector work. |
 | AUD-016 | Medium | Verified | No PowerPoint export; no cross-artifact tie-out test (UI == Excel == PDF). | Gate 5 scope decision. |
 | AUD-017 | Low | Verified | `npm run format` was broken (Prettier 3 ships `prettier.cjs`); `npm run check` and `npm run tsc`, both referenced by the README, did not exist; `lint` mutated files. | Fixed (`c0d33ff`). |
+
+## Branch log (what has been done on `arena/48b4e481-fp-a-betterversion` since the baseline)
+
+| Commit | Scope |
+|---|---|
+| `b1f596b` | Audit document `docs/audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md` |
+| `1fc7127` | Suite green: injectable clock, stale icon mock, clock-relative server fixture |
+| `c0d33ff` | README rewritten from measurements; `docs:verify` rejects unbacked claims; broken scripts fixed |
+| `aa1812e` | Production advisories cleared (root 0, server 0) |
+| `4dbbba3` | This pack adopted at `docs/discovery/`; executed evidence recorded |
+| `f30e123` | Gate 2 import slice: SHA-256 idempotency, atomic validation, per-row rejections, provenance on every entry, control totals, batch evidence UI |
+| `05367e7` | Determinism ratchet script + baseline, wired into `npm run check` |
+| `a2e8847` | Batch scope (FR-001), persisted pre-parse rejections, Source column in GL Explorer, stable server journal identity |
+| `810b10a` | Financial stores moved to the injectable clock (baseline 679 → 638) |
 
 ## Recommended next sequence (updated 2026-10-15 after execution)
 
