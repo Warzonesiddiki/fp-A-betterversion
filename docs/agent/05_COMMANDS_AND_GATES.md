@@ -39,8 +39,9 @@ No Rust toolchain → `npm run tauri:*` will not work in the sandbox.
 | `npm run test:bench`                                | benchmarks (`vitest.bench.config.ts`)                                    | not part of `check`                                                                                      |
 | `npm run financial:oracles`                         | `src/engines/__tests__/financialStatementOracles.test.ts`                | the statement oracle set                                                                                 |
 
-Measured on 2026-10-15 after fixes: **8/8 shards green, 1,318 frontend test
-files; server 32/32.** Re-measure; do not quote stale tallies.
+Measured on 2026-10-15 at `947295b`: **8/8 shards green, 1,318 frontend test
+files, 15,448 tests (1 skipped); server 32 files / 323 tests.** Re-measure; do
+not quote stale tallies.
 
 ## Truth and ratchet gates
 

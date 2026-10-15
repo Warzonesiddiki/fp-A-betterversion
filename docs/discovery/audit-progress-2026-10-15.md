@@ -126,7 +126,7 @@ These observations are preliminary: they do not replace a full review of specs, 
 | `a2e8847` | Batch scope (FR-001), persisted pre-parse rejections, Source column in GL Explorer, stable server journal identity |
 | `810b10a` | Financial stores moved to the injectable clock (baseline 679 → 638) |
 | `70e2eaa` | Canonical agent handbook: `AGENTS.md` + `docs/agent/00–10`, `HANDOVER_TEMPLATE.md`; `CLAUDE.md`/`GEMINI.md`/`CONTRIBUTING.md` point at it |
-| _(next)_ | Remaining stores and utils moved to the clock; `nowISO()`/`nowMs()` added (baseline 638 → 518) |
+| `947295b` | Remaining stores and utils moved to the clock; `nowISO()`/`nowMs()` added (baseline 638 → 518). Full `test:sharded` after it: 8/8, 1,318 files, 15,448 tests passed, 1 skipped (pre-existing) |
 
 ## Recommended next sequence (updated 2026-10-15 after execution)
 
