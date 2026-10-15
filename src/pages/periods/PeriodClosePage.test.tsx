@@ -13,6 +13,7 @@ import { actAs } from '@/test/rbacFixtures';
 import { usePeriodCloseStore } from '@/store/periodCloseStore';
 import { useGLStore } from '@/store/glStore';
 import type { GLEntry } from '@/types';
+import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 
 function makeEntry(overrides: Partial<GLEntry> & { id: string }): GLEntry {
   return {
@@ -103,6 +104,18 @@ describe('PeriodClosePage', () => {
 
   afterEach(() => {
     resetClock();
+  });
+
+  it('shows a recoverable calendar error instead of reusing a period ID from another year', async () => {
+    const p = buildFiscalPeriods()[0]!;
+    usePeriodCloseStore.getState().initialize([{ ...p, year: p.year - 1 }], 'US-GAAP');
+    const before = usePeriodCloseStore.getState();
+    render(<PeriodClosePage />);
+    expect(await screen.findByText('Fiscal calendar conflict')).toBeInTheDocument();
+    expect(screen.getByText(/migration required/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Retry calendar validation' }));
+    expect(usePeriodCloseStore.getState().entries).toBe(before.entries);
+    expect(usePeriodCloseStore.getState().chain).toBe(before.chain);
   });
 
   it('renders the page with a fiscal-period grid and current period highlighted', async () => {
@@ -301,6 +314,9 @@ describe('PeriodClosePage', () => {
     usePeriodCloseStore.setState({ initialized: true, entries: {}, initialize: initSpy });
     render(<PeriodClosePage />);
     expect(screen.getByText(/No fiscal periods to close/i)).toBeInTheDocument();
+    // Existing calendars are validated on mount as well as on an explicit retry.
+    expect(initSpy).toHaveBeenCalledTimes(1);
+    initSpy.mockClear();
     fireEvent.click(screen.getByTestId('period-close-init'));
     expect(initSpy).toHaveBeenCalledTimes(1);
   });

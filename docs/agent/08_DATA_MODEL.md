@@ -119,3 +119,28 @@ Fiscal calendars other than calendar months, multi-currency translation,
 consolidation eliminations, intercompany, account mapping versions, period
 lock state as data (there is a `period-close-store`, but the GL store does
 not consult it before writing), per-tenant separation on the client.
+
+## Fiscal close identity and reopen safety (DEC-008; partial)
+
+`periodCloseStore.checklists[periodId].fiscalScope` retains the supplied canonical
+`startDate`, `endDate`, and `isAdjustingPeriod`. It is optional for legacy persisted
+checklists. No start date is inferred from a deadline or `P01`-style ID. Initialization
+prevalidates all ranges and IDs before mutation; changing an existing binding's
+fiscal year, period number, deadline, date range, adjusting flag or entity requires
+an explicit migration. IDs are still single-entity keys, not a multi-entity schema.
+Compatible legacy bindings are backfilled from the supplied fiscal calendar while
+preserving close entries, tasks and the audit chain. This additive field is included
+in the existing persisted `checklists`; the storage version remains 1.
+
+`resetPeriod` is now a compatibility no-op for open/unknown periods and throws for
+closed periods, including for Admin. Reopening must use `transition`, which checks
+reopen permissions, requires a non-blank reason, and appends the audit event/chain.
+A generated local approval ID is correlation metadata, **not independent approval**.
+The page validates bindings on mount and displays a recoverable calendar-conflict
+error rather than overwriting an old year's period state.
+
+**Not yet enforced:** GL import/edit/delete/clear/undo guards, ambiguous overlapping
+or adjusting-period resolution, unknown-entity policy, hydration readiness and
+cross-store concurrency. Scope retention and reopen safety alone do not make the
+ledger immutable after close. `FiscalPeriod.isClosed` is also not automatically
+converted into a close-state-machine transition by initialization.

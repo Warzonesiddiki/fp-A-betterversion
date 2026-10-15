@@ -16,7 +16,7 @@
 // period:reopen (Admin, FP&A_Manager) — mirrors server TRANSITION_ROLES.
 // =============================================================================
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Link } from 'react-router-dom';
 import {
@@ -144,6 +144,7 @@ export default function PeriodClosePage() {
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [initializationError, setInitializationError] = useState<string | null>(null);
   // K30 four-states: remembers the transition whose attempt failed so the
   // ErrorState retry control can re-run exactly that action.
   const [lastFailedTransition, setLastFailedTransition] = useState<CloseTransition | null>(null);
@@ -154,11 +155,21 @@ export default function PeriodClosePage() {
     document.title = 'FinPlan Pro — Period Close';
   }, []);
 
-  useEffect(() => {
-    if (!initialized) {
+  const initializeCalendar = useCallback(() => {
+    try {
+      // Also checks existing bindings and backfills compatible legacy scopes.
       initialize(periods, DEFAULT_JURISDICTION);
+      setInitializationError(null);
+    } catch (error) {
+      setInitializationError(
+        error instanceof Error ? error.message : 'Fiscal calendar initialization failed.'
+      );
     }
-  }, [initialized, initialize, periods]);
+  }, [initialize, periods]);
+
+  useEffect(() => {
+    initializeCalendar();
+  }, [initializeCalendar]);
 
   // Default selection: current fiscal period (today within start/end), else P01.
   const currentPeriod = useMemo(() => {
@@ -233,6 +244,21 @@ export default function PeriodClosePage() {
     }
   }, [selected, entry]);
 
+  if (initializationError) {
+    return (
+      <div className="p-6 space-y-6 max-w-7xl">
+        <PageHeader title="Period Close" purpose="Fiscal calendar requires review." />
+        <ErrorState
+          title="Fiscal calendar conflict"
+          message={initializationError}
+          errorCode="PERIOD-CALENDAR-CONFLICT"
+          onRetry={initializeCalendar}
+          retryLabel="Retry calendar validation"
+        />
+      </div>
+    );
+  }
+
   if (!initialized) {
     // K30 four-states: skeleton while the close store hydrates, so a cold
     // start never flashes the degenerate "no periods" text. PageHeader stays
@@ -262,10 +288,7 @@ export default function PeriodClosePage() {
           title="No fiscal periods to close"
           description="The period close workflow has no initialized fiscal periods yet. Initialize the close workflow to build periods from the fiscal calendar, then start closing."
           action={
-            <Button
-              onClick={() => initialize(periods, DEFAULT_JURISDICTION)}
-              data-testid="period-close-init"
-            >
+            <Button onClick={initializeCalendar} data-testid="period-close-init">
               Initialize period close
             </Button>
           }

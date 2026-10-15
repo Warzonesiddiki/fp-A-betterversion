@@ -192,3 +192,35 @@ passed with zero warnings; Prettier passed; all GL-store/import-services/data-pa
 tests passed (**31 files / 305 tests**). Money AST, determinism (345 unchanged),
 documentation verification and fabrication audit passed. Full sharded suite was
 not rerun for this change.
+
+## 2026-10-16 — Fiscal scope retention and reopen bypass (DEC-008 partial)
+
+Close checklists now persist supplied canonical start/end dates and adjusting-period
+flags. Calendar initialization prevalidates all input before mutation, rejects
+invalid ranges/duplicate IDs, and refuses year/date/entity rebinding of existing
+period IDs. Compatible legacy checklists are backfilled without replacing tasks,
+close entries or audit history. The page validates existing bindings on mount and
+surfaces conflicts with an explicit retry/error state rather than crashing or
+silently reusing prior-year close state.
+
+Removed a verified bypass: `resetPeriod` previously changed any closed state to
+open without PERIOD_REOPEN or an audit event. It now refuses closed periods, even
+for Admin; open/unknown periods are no-ops. Authorized reopen and force-reopen
+require a trimmed, non-blank audit reason. Local generated approval IDs are not
+independent approval evidence.
+
+Still open: all GL write guards, entity and overlapping/adjusting-period resolution,
+hydration readiness and concurrent transition/write semantics. No claim of complete
+closed-ledger immutability. Initialization does not infer a state-machine close from
+the fiscal calendar's `isClosed` flag.
+
+Targeted verification: **17 files / 292 tests passed**, covering period store,
+period page (including accessibility/money), state machine, GL stores, import
+services and upload page. The first expanded test run caught a changed mount-time
+initialization call count; the empty-state test now explicitly separates mount-time
+validation from the user retry. No weakened assertions or skipped tests. Full
+sharded suite was not rerun for this change.
+
+Additional checks passed: TypeScript, changed-file ESLint (zero warnings), Prettier,
+money AST, determinism ratchet (345 unchanged), docs verification, fabrication audit
+and architecture guardrails.
