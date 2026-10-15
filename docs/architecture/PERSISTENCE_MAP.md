@@ -87,3 +87,17 @@ after tenancy (W0.2).
 | `server`      | Control Plane is the system of record. Client is a replica/cache. |
 | `local-draft` | Client copy is a **draft**. Must be labelled. Not official.       |
 | `local`       | Local is the legitimate authority (preferences, session).         |
+
+## Temporary exact GL staging (non-Zustand, not a financial authority)
+
+The import staging repository uses the existing encrypted `masterStorage` API with
+keys `gl-ingestion-stage:v1:<batchId>:manifest` and
+`gl-ingestion-stage:v1:<batchId>:chunk:<index>`. Payloads retain monetary strings
+and raw quarantine text inside an opaque JSON envelope. These are temporary stage
+records, not another `persist()` store or the ledger system of record. A `ready`
+manifest does not authorize or perform financial posting.
+
+Staging is not wired to the upload UI yet. Backup inclusion, retention/discard,
+orphan cleanup, discovery/resume, cross-window locking and transactional promotion
+are open gates. No committed ledger data should depend on these keys. Existing
+native schema authority and the registered store count remain unchanged.

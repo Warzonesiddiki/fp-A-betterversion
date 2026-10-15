@@ -76,7 +76,7 @@ src/
 ├── store/          # Store Architecture (46 Stores) — Zustand; 42 persisted via masterStorage
 ├── pages/          # routed page modules (242 <Route>s — scope reduction is audit P1-6)
 ├── components/     # UI, charts, sectors, AI copilot, spreadsheet
-├── workers/        # Active Workers (4) — consolidation, Monte Carlo, batch calc, storage
+├── workers/        # Active Workers (5) — consolidation, Monte Carlo, batch calc, storage, GL staging
 ├── services/       # connectors (unwired), import pipeline, client-side security modules (several unused)
 ├── utils/          # money primitive, clock, formatters, validation, storage
 server/src/         # Express routes, auth, tenancy, period close (not called by the client)

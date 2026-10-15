@@ -245,3 +245,17 @@ This is not durable quarantine, worker/SQLite integration, streaming CSV/XLSX, a
 harness. Accepted and rejected rows are materialized. See GAP_LEDGER.md for exact
 contract and test evidence; no acceptance test was created with invented downstream
 APIs or mocked export artifacts.
+
+## 2026-10-16 — Chunk coordinator and persistence boundary
+
+Exact staging now has an acknowledged async coordinator, a validated GL worker and
+an encrypted repository on the existing masterStorage backend. Whole-file voucher
+controls span chunks; quarantine/empty/error sessions cannot become posting-ready.
+The ledger and Zustand row state are untouched. README worker entrypoints corrected
+from four to five. See GAP_LEDGER.md for the literal **28 files / 409 tests** output
+and storage-test boundaries; the Vite build emits the new worker successfully.
+
+Still not a production upload replacement: staging backup/lifecycle, discovery/
+resume, cross-window locking, tokenization and transactional exact-string ledger
+promotion are open. Native verification and 250k-row browser persistence evidence
+are absent; existing localStorage snapshot limitations remain explicit.

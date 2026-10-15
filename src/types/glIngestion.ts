@@ -83,3 +83,8 @@ export interface GLIngestResult {
   /** Staging eligibility only. The store must still check file identity, locks and transactional writes. */
   readonly canPost: boolean;
 }
+
+/** Structured-cloneable worker payload: no generator crosses the worker boundary. */
+export type GLIngestChunkInput = Omit<GLIngestInput, 'rows'> & {
+  readonly rows: readonly Readonly<Record<string, string>>[];
+};

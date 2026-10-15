@@ -150,3 +150,35 @@ already in flight, raw `setState`/backup/native mutation paths and application-w
 financial immutability. In-flight server writes may complete; the local update is
 stopped and requires reconciliation. `FiscalPeriod.isClosed` is not automatically
 converted into a close-state-machine transition by initialization.
+
+## Exact chunk staging (not ledger promotion)
+
+`stageGLImport` coordinates tokenized async chunks through `runGLIngestionChunk`
+and `gl-ingestion.worker.ts`, at most 2,000 source records per request. The next
+chunk is not requested until the current result is persisted. Whole-file voucher
+controls span chunk boundaries; per-chunk balance is not used to declare a file
+ready. Main-thread coordination retains voucher totals and source-record indexes,
+not a second accumulated raw/accepted-row array. Each returned chunk is still
+materialized; COA/entity lists are copied with requests, and source-index metadata
+is O(rows), not a constant-memory guarantee.
+
+`glStagingRepository` writes versioned opaque JSON envelopes through the existing
+encrypted masterStorage backend. Quarantine raw strings (including `$d:` prefixes)
+are not subjected to money-tag decoding. Keys are
+`gl-ingestion-stage:v1:<batchId>:manifest` and `...:chunk:<index>`.
+
+Manifest states: `staging`, `ready`, `blocked`, `failed`. **Ready means staged and
+eligible for further checks, never posted.** Quarantine, schema failures, empty
+files and any whole-file voucher imbalance prevent ready. Compute/read/write errors
+propagate; a failed marker is attempted without masking the original error.
+Readers can retrieve persisted chunks by batch ID for review. Duplicate session
+IDs are rejected, not overwritten. The caller-supplied file digest is recorded,
+not recalculated or checked against committed ledger history by this coordinator.
+
+Not yet delivered: UI wiring, retention/discard and orphan cleanup, batch discovery/
+resume, staging backup inclusion, cross-window transaction locks, transactional
+SQLite ledger promotion, file-identity/closed-period checks at promotion, or
+streaming CSV/XLSX tokenization. The browser backend still snapshots SQLite into
+localStorage and may hit quota limits; no 250k-row release claim. Existing ledger
+storage authority is unchanged. Do not enable this staging API as the production
+upload replacement until lifecycle and promotion gates are verified.

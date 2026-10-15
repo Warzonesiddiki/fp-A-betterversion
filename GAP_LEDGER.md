@@ -1716,3 +1716,61 @@ Literal output (ANSI stripped):
 
 This targeted run is not the full sharded repository suite. No native/Tauri runtime
 or 250k-row SQLite benchmark was run.
+
+## 2026-10-16 — Acknowledged worker/chunk staging and encrypted persistence (partial)
+
+Added the real `stageGLImport` coordinator and `gl-ingestion.worker.ts` using the
+existing worker pool/message contract. Payload validation caps each chunk at 2,000
+rows, requires text cells, validates date/sign enums and safe source-record offsets,
+and rejects malformed requests through the normal error envelope. The public
+worker API includes lifecycle termination/status. No main-thread ingest fallback.
+
+The coordinator waits for computation and persistence before requesting another
+chunk, recomputes voucher totals across boundaries, and never promotes a balanced
+remainder when quarantine exists. It retains voucher/index metadata, not all raw
+rows in Zustand. Chunk results are still materialized and metadata can grow with
+row/voucher count. Same-realm/session-ID collisions are refused; cross-window locks
+and source-file hash idempotency against committed history are not implemented.
+
+The repository delegates to existing encrypted masterStorage, preserving exact
+strings and raw quarantine inside an opaque JSON envelope. The SQLite/WASM test
+loads actual sql.js (bypassing the global mock), runs production encryption and
+serialization, substitutes the SQL transport with real parameterized WASM queries,
+then exports/reopens the SQLite image. It verifies that raw amounts are not visible
+in stored values and that exact amounts/raw `$d:`-prefixed quarantine survive.
+This is not a Tauri or browser localStorage durability/performance certification.
+The test transport initially double-encoded strings and lacked chunk-cleanup
+DELETE support; it was corrected to mirror the existing SQL storage contract.
+Assertions were not removed or weakened.
+
+Tests additionally cover split vouchers, opposite voucher imbalances that cancel
+in the aggregate, duplicate session IDs, cancellation, interrupted sources, failed
+chunk writes/final acknowledgements, oversized chunks, malformed saved envelopes,
+concurrent session attempts, worker unavailability and exact values beyond Number
+safe integers. The async repository API now returns rejected promises consistently
+for invalid keys (the test caught a synchronous throw).
+
+Verification command:
+`npm test -- src/services/import src/workers src/engines/SmartImportMapper src/utils/masterStorage src/utils/moneySerialize src/engines/ThreeStatementEngine.test.ts src/engines/ConsolidationEngine.test.ts`
+
+Literal output (ANSI stripped):
+```text
+ Test Files  28 passed (28)
+      Tests  409 passed (409)
+   Start at  22:26:10
+   Duration  14.98s (transform 956ms, setup 7.37s, import 1.47s, tests 5.27s, environment 35.79s)
+```
+
+Additional gates passed: `npm run tsc -- --noEmit`; changed-file ESLint with zero
+warnings; money AST; docs verification (5 worker entrypoints); determinism (345
+unchanged); engine-manifest verification; architecture guardrails. `npx vite build`
+passed and emitted `gl-ingestion.worker-Bwxd2vjA.js` (46.83 kB). Worker tests execute
+the actual handler/financial engine under a simulated message scope, not a live
+browser Worker. Full sharded suite and native tests were not run.
+
+Remaining gates: UI upload integration, parser/physical line offsets, retention/
+discard/orphan cleanup, discovery/resume, backup inclusion, verified 250k-row
+memory/quota/performance, and atomic exact-string ledger promotion with hash/lock
+checks. A `ready` manifest means staged only. Browser SQLite snapshots still use
+localStorage; this backend must not be advertised as industrial 250k-row storage.
+No schema migration or change to the financial system of record was performed.

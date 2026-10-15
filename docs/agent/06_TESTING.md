@@ -78,6 +78,9 @@ controlTotals/scope`). A stub that omits fields is a test bug, not a reason
 | Import idempotency / atomicity / rejections / provenance / totals / scope | `src/store/glStore.provenance.test.ts`                    |
 | Provenance helpers                                                        | `src/services/import/importProvenance.test.ts`            |
 | Row parsing / validation fixtures                                         | `src/services/import/parseGLRows.test.ts`                 |
+| Exact chunk staging and failure recovery                                  | `src/services/import/glStagingCoordinator.test.ts`        |
+| Real SQL.js/WASM + production encryption roundtrip                        | `src/services/import/glStagingRepository.sqljs.test.ts`   |
+| GL worker protocol and payload bounds                                     | `src/workers/gl-ingestion.worker.test.ts`                 |
 | Upload page behaviour                                                     | `src/pages/data/GLUploadPage.deep.test.tsx`               |
 | Trial balance and GL math                                                 | `src/store/glStore.test.ts`, `glStore.money.test.ts`      |
 | Money primitive                                                           | `src/utils/money.test.ts`                                 |
@@ -104,3 +107,10 @@ passed (M)`, with the command.
   `NODE_OPTIONS=--max-old-space-size=3000`; otherwise use shards.
 - Two vitest runs in parallel on 2 vCPUs roughly double each other's time;
   check `ps aux | grep vitest` before starting another.
+
+The SQL.js staging test deliberately uses `vi.importActual('sql.js')` to bypass the
+global SQL.js stub, runs the bundled WASM, and substitutes only the low-level SQL
+transport with parameterized queries. Production masterStorage encryption and
+serialization still execute. It exports/reopens the database image and verifies
+exact strings and raw quarantine text. This does not certify native Tauri, a real
+browser worker runtime, localStorage quota/disk durability or 250k-row performance.
