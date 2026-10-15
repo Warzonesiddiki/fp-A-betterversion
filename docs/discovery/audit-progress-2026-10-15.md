@@ -137,3 +137,24 @@ These observations are preliminary: they do not replace a full review of specs, 
 3. Gate 2 vertical slice on the existing TypeScript/Tauri app — **started (store-neutral part done on the branch):** file hash, batch id, per-row rejection reasons, atomic commit on validation errors, control totals, source-row provenance on every imported `GLEntry`. Remaining: synthetic D365 GL fixture + column dictionary (needs DEC-001), source-side control-total comparison, drill-to-source, FR-001 scope fields (entity/currency/import time on the batch), FR-006 missing-vs-zero contract. Acceptance = FR-001 … FR-006 tests.
 4. Reference (`FPA-modular`) patterns judged transferable on evidence: integer-minor-unit money with float rejection, quarantine-with-reasons, hash/batch idempotency, canonical finding key, oracle-first tests, acceptance harness with planted exceptions and controls, "evidence or not done" handover. Not transferable without a decision: the Python engine, the 28-rule catalogue as-is, its Dataverse-vs-F&O/BC assumptions.
 5. Only after Gate 2 is green: exception rules (Gate 4) and board exports (Gate 5). No new routes, engines or sector packs before then.
+
+## 2026-10-16 — Owner-delegated defaults and strict malformed-file policy
+
+Owner authorized autonomous project decisions. DEC-001–006 now record conservative
+accepted technical defaults, with unverified exports, native migration, auth changes
+and egress enforcement explicitly pending. DEC-007 rejects a file containing any
+upstream parse rejection; DEC-008 selects blocking closed-period semantics (not yet
+implemented). No destructive archive, authentication bypass or storage migration was
+performed.
+
+Implemented DEC-007 in `glStore.importGLData`: return sorted source-row rejections
+before financial writes, keep caller inputs and existing financial state unchanged,
+and allow corrected retries without consuming the hash. Duplicate-file/duplicate-row
+behavior is unchanged and still needs its own completeness review. Rejected-attempt
+history is not yet durable.
+
+Verification: `npm run tsc`; ESLint (changed TypeScript files, zero warnings);
+Prettier (changed source files and agent data-model doc); Vitest GL store/import
+services/upload page **12 files / 182 tests passed**; money AST, determinism ratchet
+(345 unchanged), documentation verification and fabrication audit passed. The full
+sharded suite was **not rerun** for this change.

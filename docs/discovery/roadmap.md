@@ -1,6 +1,6 @@
 # Proposed Roadmap: Audit to Working Product
 
-**Status:** Proposed sequence; adjust after repository audit and user discovery. This is not a promise of dates or evidence that these capabilities exist.
+**Status:** Sequence adopted under owner-delegated technical decisions on 2026-10-16 (DEC-001–008). This is not a promise of dates or evidence that these capabilities exist. Gate 1 technical defaults are selected; real-export inspection and workflow validation remain open. Gate 2 is the active implementation focus; no new domain feature expansion.
 
 ## Gate 0 — Establish the baseline
 **Goal:** Know what is already built and reproduce it.

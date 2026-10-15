@@ -40,7 +40,9 @@ turns source rows into entries + `VALIDATION` rejections; then
 4. Row-level duplicates within the file or against existing entries →
    `DUPLICATE_ROW` rejections; remaining rows still import (quarantine, not
    abort).
-5. Batch must balance (debits = credits, integer cents) — `validateEntries`
+5. Upstream parse rejections abort the whole file (DEC-007), return source-row reasons
+   and leave financial state/history untouched. Corrected retries are allowed.
+   Failed-attempt history is not yet durable. Batch must balance (debits = credits, integer cents) — `validateEntries`
    (FP-0002). Unbalanced → `status: 'error'`, nothing written.
 6. Commit is atomic: entries, history row, `lastImportEntryIds`,
    `entrySyncState` in one `set()`.

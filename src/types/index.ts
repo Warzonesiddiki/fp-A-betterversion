@@ -842,8 +842,8 @@ export interface ImportSource {
   readonly sourceRows?: readonly number[];
   /**
    * Rows the caller already rejected before handing over (e.g. unparseable
-   * dates or amounts). Recorded on the batch so they are never lost once the
-   * transient error banner is gone.
+   * dates or amounts). Any rejection aborts the entire file (DEC-007).
+   * Returned to the caller; no financial entries or success history are written.
    */
   readonly rejections?: readonly ImportRejection[];
 }

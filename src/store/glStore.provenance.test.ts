@@ -256,21 +256,42 @@ describe('glStore import provenance (Gate 2)', () => {
     expect(useGLStore.getState().importHistory[0]?.scope).toEqual(result.scope);
   });
 
-  it('FR-002: rows the caller rejected before hand-over are recorded on the batch, counted, and sorted by row', () => {
+  it('DEC-007: upstream parse failures reject the entire file, even with a balanced remainder', () => {
+    const before = useGLStore.getState();
+    const rejections = [
+      { row: 7, code: 'VALIDATION' as const, reason: 'missing accountCode' },
+      { row: 3, code: 'VALIDATION' as const, reason: 'unparseable posting date "31/13/2026"' },
+      { row: 3, code: 'VALIDATION' as const, reason: 'unparseable debit amount "bad"' },
+    ];
     const result = useGLStore.getState().importGLData(JOURNAL, 'GL.csv', {
       fileHash: FILE_HASH,
       sourceRows: [2, 4, 5],
-      rejections: [{ row: 3, code: 'VALIDATION', reason: 'unparseable posting date "31/13/2026"' }],
+      rejections,
     });
-    expect(result.success).toBe(true);
-    if (!result.success) return;
-    expect(result.rejections).toEqual([
-      { row: 3, code: 'VALIDATION', reason: 'unparseable posting date "31/13/2026"' },
-    ]);
-    const history = useGLStore.getState().importHistory[0]!;
-    expect(history.status).toBe('partial');
-    expect(history.rowCount).toBe(4); // 3 handed over + 1 rejected upstream
-    expect(history.errorCount).toBe(1);
-    expect(history.rejections).toHaveLength(1);
+    expect(result.success).toBe(false);
+    expect(result.imported).toBe(0);
+    expect(result.errors).toBe(3);
+    expect(result.rejections?.map((r) => r.row)).toEqual([3, 3, 7]);
+    expect(rejections.map((r) => r.row)).toEqual([7, 3, 3]); // caller input not mutated
+    const after = useGLStore.getState();
+    for (const key of [
+      'entries',
+      'importHistory',
+      'lastImportEntryIds',
+      'entrySyncState',
+      'entryVersions',
+      'trialBalance',
+      'accountAnalysis',
+      'lastImportResult',
+    ] as const) {
+      expect(after[key]).toBe(before[key]);
+    }
+    expect(after.importStatus).toBe('error');
+    expect(after.importError).toContain('Entire file rejected');
+
+    // Failed attempts do not consume the hash: corrected content can be retried.
+    const retry = after.importGLData(JOURNAL, 'GL.csv', { fileHash: FILE_HASH });
+    expect(retry.success).toBe(true);
+    expect(useGLStore.getState().importHistory).toHaveLength(1);
   });
 });

@@ -630,6 +630,21 @@ export const useGLStore = create<GLState>()(
               };
             }
 
+            // DEC-007: parsing failures abort the file, even if the remaining
+            // rows happen to balance. Never commit a financially incomplete file.
+            const callerRejections: ImportRejection[] = [...(source?.rejections ?? [])];
+            if (callerRejections.length > 0) {
+              const rejections = callerRejections.sort((a, b) => a.row - b.row);
+              set({
+                importError: `Entire file rejected; correct the source and retry. ${rejections
+                  .slice(0, 5)
+                  .map((r) => `Row ${r.row}: ${r.reason}`)
+                  .join('; ')}`,
+                importStatus: 'error',
+              });
+              return { success: false, imported: 0, errors: rejections.length, rejections };
+            }
+
             const validation = get().validateEntries(rawEntries);
             if (!validation.isValid) {
               set({ importError: validation.errors.slice(0, 5).join('; '), importStatus: 'error' });
@@ -653,7 +668,6 @@ export const useGLStore = create<GLState>()(
               rawEntries as GLEntry[]
             );
             const duplicateIndexSet = new Set(duplicateIndices);
-            const callerRejections: ImportRejection[] = [...(source?.rejections ?? [])];
             const rejections: ImportRejection[] = [
               ...callerRejections,
               ...duplicateIndices.map(
