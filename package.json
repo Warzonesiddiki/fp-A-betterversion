@@ -30,6 +30,7 @@
     "tracker:update": "node scripts/update-tracker.mjs",
     "mock-data:audit": "node scripts/mock-data-audit.mjs",
     "type-safety:ratchet": "node scripts/type-safety-ratchet.mjs",
+    "determinism:ratchet": "node scripts/determinism-ratchet.mjs",
     "docs:verify": "node scripts/verify-readme-stats.mjs && node scripts/persistence-map-check.mjs && node scripts/schema-equality-check.mjs",
     "engines:manifest": "node scripts/generate-engine-manifest.mjs",
     "engines:verify": "node scripts/generate-engine-manifest.mjs --check",
@@ -49,7 +50,7 @@
     "schema:equality": "node scripts/schema-equality-check.mjs",
     "routemap:check": "node scripts/generate-route-map.js --check",
     "escape:ledger": "node scripts/escape-ledger-check.mjs",
-    "check": "npm run tsc && npm run lint && npm run format:check && npm run docs:verify && npm run engines:verify && npm run money:ast && npm run fabrication:audit && npm run test:sharded"
+    "check": "npm run tsc && npm run lint && npm run format:check && npm run docs:verify && npm run engines:verify && npm run money:ast && npm run determinism:ratchet && npm run fabrication:audit && npm run test:sharded"
   },
   "dependencies": {
     "@json-render/core": "^0.19.0",

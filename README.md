@@ -47,7 +47,7 @@ npm install                      # root
 npm run dev                      # Vite on :5173 — NOTE: the app blocks plain browsers (desktop-only gate)
 npm run tauri:dev                # desktop shell (requires Rust + Tauri prerequisites)
 
-npm run check                    # the whole gate: tsc · eslint · prettier · docs · engines · money · fabrication · sharded tests
+npm run check                    # the whole gate: tsc · eslint · prettier · docs · engines · money · determinism · fabrication · sharded tests
 ```
 
 | Script                            | Purpose                                                                          |
@@ -60,6 +60,7 @@ npm run check                    # the whole gate: tsc · eslint · prettier · 
 | `npm run test:e2e`                | Playwright (shims the Tauri runtime; it does not exercise the real shell)        |
 | `npm run money:ast`               | AST money-safety ratchet                                                         |
 | `npm run money:adoption`          | Money-primitive adoption (percentage of financial modules on `@/utils/money`)    |
+| `npm run determinism:ratchet`     | Wall-clock / `Math.random` call sites in calculation paths must not rise per file |
 | `npm run docs:verify`             | README / persistence-map / schema-home truth checks (fails on unmeasured claims) |
 | `npm run engines:verify`          | Engine manifest is current                                                       |
 | `npm run check`                   | Everything above plus the sharded suite, with an honest exit code                |
@@ -90,9 +91,10 @@ docs/               # architecture, ADRs, security, audits
 
 1. **Measured, or not stated.** Any number in this README must come from a script. `npm run docs:verify` rejects "100 %" style claims that no script produces and rejects engine/store/worker counts that disagree with the tree.
 2. **Money through one primitive.** New or touched financial code uses `@/utils/money` and ships a `*.money.test.ts` with exact expected values that fail against float arithmetic. `npm run money:ast` must stay at 0 unsafe ops; `npm run money:adoption` must not regress.
-3. **Deterministic code.** Pages, stores and engines read time through `src/utils/clock.ts` (`now()`, `todayISO()`), never `new Date()` directly, so tests can pin the clock. Random sources are seeded.
+3. **Deterministic code.** Pages, stores and engines read time through `src/utils/clock.ts` (`now()`, `todayISO()`), never `new Date()` directly, so tests can pin the clock. Random sources are seeded. `npm run determinism:ratchet` fails if any calculation-path file gains a `new Date()` / `Date.now()` / `Math.random()` site (baseline recorded 2026-10-15 in `scripts/determinism-baseline.json`; the goal is to drive it to zero).
 4. **Tests use the shared mocks.** `lucide-react` is mocked globally in `src/test/setup.ts`; do not hand-mock it per file (partial mocks rot when a page adopts a new icon).
 5. **Do not edit `.github/workflows/**`from an agent session.** The GitHub App lacks the`workflows` permission; CI changes must be applied by a human (`ci-patches/README.md`).
+6. **Imports are idempotent and traceable.** `importGLData` rejects a file whose content hash was already imported, commits a batch all-or-nothing on validation errors, reports every rejected source row with a reason, and stamps `provenance {batchId, fileHash, sourceFile, sourceRow}` on every entry. Contract tests: `src/store/glStore.provenance.test.ts`.
 
 ---
 
