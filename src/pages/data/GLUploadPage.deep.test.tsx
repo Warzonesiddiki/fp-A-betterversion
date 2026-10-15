@@ -76,7 +76,16 @@ function makeStore(overrides: Partial<StoreStub> = {}): StoreStub {
       newEntries: entries,
     })),
     setEntries: vi.fn(),
-    importGLData: vi.fn(() => ({ success: true, imported: 3, errors: 0 })),
+    importGLData: vi.fn(() => ({
+      success: true,
+      imported: 3,
+      duplicates: 0,
+      errors: 0,
+      batchId: 'batch-0123456789abcdef0123',
+      fileHash: 'f'.repeat(64),
+      rejections: [],
+      controlTotals: { rows: 3, debit: '100.00', credit: '100.00', net: '0.00' },
+    })),
     validateEntries: vi.fn(() => ({ isValid: true, errors: [], validCount: 3 })),
     lastImportEntryIds: [],
     ...overrides,
@@ -915,5 +924,121 @@ describe('GLUploadPage — W6-P0-09/P0-10 live import coercion', () => {
     expect(storeStub.setImportError).toHaveBeenCalledWith(
       expect.stringMatching(/unparseable debit amount/i)
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Gate 2 provenance (FR-003 / FR-004 / FR-005): the page hashes the file bytes,
+// passes true source rows, and shows the batch evidence it gets back.
+// ---------------------------------------------------------------------------
+describe('GLUploadPage — import provenance', () => {
+  beforeEach(() => {
+    storeStub = makeStore();
+    lastFileDrop = null;
+    lastColumnMapper = null;
+    lastDataPreview = null;
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  async function runImport(csv: string) {
+    renderPage();
+    await act(async () => {
+      await lastFileDrop!.onFile(makeFile('gl.csv', 'text/csv', csv));
+    });
+    act(() => {
+      lastColumnMapper!.onMap('accountCode', 'accountCode');
+      lastColumnMapper!.onMap('postDate', 'postDate');
+      lastColumnMapper!.onMap('debit', 'debit');
+      lastColumnMapper!.onMap('credit', 'credit');
+    });
+    await act(async () => {
+      screen.getByRole('button', { name: /Preview Data/ }).click();
+    });
+    await act(async () => {
+      screen.getByTestId('preview-confirm').click();
+    });
+  }
+
+  it('passes the SHA-256 of the file bytes and the 1-based source rows to the store', async () => {
+    const csv = 'accountCode,postDate,debit,credit\n1000,2024-01-15,100,0\n2000,2024-01-16,0,100\n';
+    await runImport(csv);
+    const [, filename, source] = storeStub.importGLData.mock.calls[0]!;
+    expect(filename).toBe('gl.csv');
+    // NIST-style known answer: sha256 of exactly these bytes.
+    const { sha256Hex } = await import('@/utils/sha256');
+    expect(source).toEqual({ fileHash: sha256Hex(csv), sourceRows: [2, 3] });
+  });
+
+  it('skips a broken row but keeps the true source row numbers of the rows it sends', async () => {
+    const csv =
+      'accountCode,postDate,debit,credit\n1000,2024-01-15,100,0\n,2024-01-16,0,100\n2000,2024-01-17,0,100\n';
+    await runImport(csv);
+    const [rows, , source] = storeStub.importGLData.mock.calls[0]!;
+    expect((rows as unknown[]).length).toBe(2);
+    expect((source as { sourceRows: number[] }).sourceRows).toEqual([2, 4]);
+  });
+
+  it('shows batch id, file hash and control totals on the Done step', async () => {
+    vi.useFakeTimers();
+    await runImport(
+      'accountCode,postDate,debit,credit\n1000,2024-01-15,100,0\n2000,2024-01-15,0,100\n'
+    );
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(500);
+    });
+    const panel = screen.getByTestId('import-batch-evidence');
+    expect(panel.textContent).toContain('batch-0123456789abcdef0123');
+    expect(panel.textContent).toContain('f'.repeat(64));
+    expect(panel.textContent).toContain('100.00');
+    expect(panel.textContent).toContain('0.00');
+    expect(panel.textContent).not.toContain('not imported');
+  });
+
+  it('lists every rejected source row with its reason', async () => {
+    vi.useFakeTimers();
+    storeStub = makeStore({
+      importGLData: vi.fn(() => ({
+        success: true,
+        imported: 1,
+        duplicates: 1,
+        errors: 0,
+        batchId: 'batch-aaaaaaaaaaaaaaaaaaaa',
+        fileHash: 'e'.repeat(64),
+        rejections: [{ row: 3, code: 'DUPLICATE_ROW', reason: 'already in the ledger' }],
+        controlTotals: { rows: 1, debit: '100.00', credit: '0.00', net: '100.00' },
+      })),
+    });
+    await runImport(
+      'accountCode,postDate,debit,credit\n1000,2024-01-15,100,0\n2000,2024-01-15,0,100\n'
+    );
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(500);
+    });
+    const panel = screen.getByTestId('import-batch-evidence');
+    expect(panel.textContent).toContain('1 source row not imported');
+    expect(panel.textContent).toContain('Row 3: already in the ledger');
+  });
+
+  it('explains a duplicate-file rejection and does not advance', async () => {
+    storeStub = makeStore({
+      importGLData: vi.fn(() => ({
+        success: false,
+        imported: 0,
+        errors: 1,
+        duplicateOfBatchId: 'batch-prior',
+        rejections: [
+          { row: 0, code: 'DUPLICATE_FILE', reason: 'Identical file content was already imported' },
+        ],
+      })),
+    });
+    await runImport(
+      'accountCode,postDate,debit,credit\n1000,2024-01-15,100,0\n2000,2024-01-15,0,100\n'
+    );
+    expect(storeStub.setImportError).toHaveBeenCalledWith(
+      expect.stringMatching(/already imported as batch-prior; nothing was changed/)
+    );
+    expect(screen.queryByTestId('import-batch-evidence')).toBeNull();
   });
 });

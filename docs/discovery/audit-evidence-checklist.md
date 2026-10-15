@@ -28,11 +28,11 @@ Use this checklist to distinguish repository evidence from product-owner stateme
 ## C. Import and data quality
 - [~] Header mapping and schema drift behavior tested. (`SmartImportMapper` has unit tests; no D365 export contract exists to test against)
 - [ ] Blank rows, malformed values, encoding, decimal separators, and negative values tested.
-- [ ] Duplicate/repeated files and duplicate journal candidates tested. **(Verified gap: no file/batch identity — AUD-008)**
+- [~] Duplicate/repeated files and duplicate journal candidates tested. (Branch: file-hash idempotency + per-row ledger-duplicate rejection, tested in `glStore.provenance.test.ts`; duplicate *journal* heuristics still open)
 - [ ] Row arity/column count and type errors surfaced with actionable detail.
-- [ ] Atomicity or partial-acceptance policy documented and tested. **(Verified gap: `'partial'` status, undocumented)**
+- [~] Atomicity or partial-acceptance policy documented and tested. (Branch: store is all-or-nothing on validation errors; ledger-duplicate rows are skipped and each reported — documented in `importGLData` doc comment; page-level pre-filtering of unparseable rows still open)
 - [ ] Reconciliation compares source-side controls and imported data.
-- [ ] Every accepted or rejected row is explainable; no silent data loss. **(Verified gap: `skippedRows` count only)**
+- [~] Every accepted or rejected row is explainable; no silent data loss. (Branch: `ImportRejection[]` with row/code/reason returned and shown; accepted rows carry `provenance.sourceRow`)
 
 ## D. Financial correctness
 - [ ] Debit/credit and account normal-balance conventions documented.

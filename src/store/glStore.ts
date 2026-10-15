@@ -30,6 +30,16 @@ import { useCubeStore } from './cubeStore';
 import { useUIStore } from './uiStore';
 import { useAuthStore } from './authStore';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
+import { now } from '../utils/clock';
+import {
+  computeControlTotals,
+  defaultSourceRows,
+  findPriorImport,
+  hashRowContent,
+  makeBatchId,
+  stampProvenance,
+} from '@/services/import/importProvenance';
+import type { ImportRejection, ImportSource } from '@/types';
 
 function extractTimeCode(dateStr: string): string {
   const d = new Date(dateStr);
@@ -554,36 +564,119 @@ export const useGLStore = create<GLState>()(
           });
         }),
 
-        /** High-level robust import action used by the GL Upload wizard */
+        /**
+         * High-level robust import action used by the GL Upload wizard and
+         * the connector path.
+         *
+         * Gate 2 contract (docs/discovery/requirements-register.md):
+         * - FR-003 idempotency: the same file content (SHA-256) is imported
+         *   at most once; a repeat is rejected with the prior batch id and
+         *   has no financial effect.
+         * - FR-002 atomicity: any validation error rejects the whole batch;
+         *   nothing is committed. Rows skipped as duplicates of entries
+         *   already in the ledger are each reported with their source row.
+         * - FR-005 provenance: every committed entry carries
+         *   {batchId, fileHash, sourceFile, sourceRow}.
+         * - FR-004 control totals: debit/credit/net of the committed rows are
+         *   computed independently in integer cents and recorded with the
+         *   batch.
+         * The import instant comes from the injectable clock (NFR-001).
+         */
         importGLData: enforce(
           Permissions.IMPORT_CREATE,
           'importGLData',
-          (rawEntries: Partial<GLEntry>[], filename?: string) => {
+          (rawEntries: Partial<GLEntry>[], filename?: string, source?: ImportSource) => {
+            const sourceFile = filename || 'unknown';
+            const sourceRows =
+              source?.sourceRows && source.sourceRows.length === rawEntries.length
+                ? [...source.sourceRows]
+                : defaultSourceRows(rawEntries.length);
+            const fileHash = source?.fileHash ?? hashRowContent(rawEntries);
+
+            // FR-003: same content already committed → reject, no effect.
+            const prior = findPriorImport(get().importHistory, fileHash);
+            if (prior) {
+              const when = prior.timestamp ? ` on ${prior.timestamp}` : '';
+              const rejections: ImportRejection[] = [
+                {
+                  row: 0,
+                  code: 'DUPLICATE_FILE',
+                  reason: `Identical file content was already imported as ${prior.batchId ?? prior.id}${when} (${prior.filename}).`,
+                },
+              ];
+              set({
+                importError: `Duplicate import rejected: ${rejections[0]!.reason}`,
+                importStatus: 'error',
+              });
+              return {
+                success: false,
+                imported: 0,
+                errors: 1,
+                duplicateOfBatchId: prior.batchId ?? prior.id,
+                rejections,
+              };
+            }
+
             const validation = get().validateEntries(rawEntries);
             if (!validation.isValid) {
               set({ importError: validation.errors.slice(0, 5).join('; '), importStatus: 'error' });
-              return { success: false, imported: 0, errors: validation.errors.length };
+              return {
+                success: false,
+                imported: 0,
+                errors: validation.errors.length,
+                rejections: validation.errors.map((message, i) => {
+                  const m = /^Row (\d+): (.*)$/.exec(message);
+                  const idx = m ? Number(m[1]) - 1 : i;
+                  return {
+                    row: sourceRows[idx] ?? idx + 2,
+                    code: 'VALIDATION' as const,
+                    reason: m ? m[2]! : message,
+                  };
+                }),
+              };
             }
 
-            const { duplicates, newEntries } = get().checkDuplicates(rawEntries as GLEntry[]);
+            const { duplicates, newEntries, duplicateIndices } = get().checkDuplicates(
+              rawEntries as GLEntry[]
+            );
+            const duplicateIndexSet = new Set(duplicateIndices);
+            const rejections: ImportRejection[] = duplicateIndices.map((idx) => ({
+              row: sourceRows[idx] ?? idx + 2,
+              code: 'DUPLICATE_ROW',
+              reason:
+                'An entry with the same account, posting date and amount already exists in the ledger.',
+            }));
 
             if (newEntries.length === 0) {
               set({ importError: 'All rows were duplicates.', importStatus: 'error' });
-              return { success: false, imported: 0, errors: duplicates };
+              return { success: false, imported: 0, errors: duplicates, rejections };
             }
 
             captureGLSnapshot(get);
-            const timestamp = Date.now();
-            const finalEntries = newEntries.map((entry, index) =>
+            const importedAtISO = now().toISOString();
+            const batchId = makeBatchId(fileHash, importedAtISO);
+            const keptSourceRows = sourceRows.filter((_, idx) => !duplicateIndexSet.has(idx));
+            const stamped = stampProvenance(
+              newEntries,
+              { batchId, fileHash, sourceFile },
+              keptSourceRows
+            );
+            // Entry ids derive from the batch id, not the millisecond clock:
+            // two batches committed in the same instant (or under a pinned
+            // clock) must never share ids, or undoLastImport would remove
+            // the wrong rows.
+            const idPrefix = `gl-${batchId.slice('batch-'.length)}`;
+            const finalEntries = stamped.map((entry, index) =>
               normalizeGLEntry(
                 {
                   ...entry,
-                  id: entry.id || `gl-${timestamp}-${index}`,
+                  id: entry.id || `${idPrefix}-${index}`,
                 },
                 index,
-                `gl-${timestamp}`
+                idPrefix
               )
             );
+            const controlTotals = computeControlTotals(finalEntries);
 
             const ids = finalEntries.map((e) => e.id);
 
@@ -598,12 +691,16 @@ export const useGLStore = create<GLState>()(
             });
 
             const result: ImportResult = {
-              filename: filename || 'unknown',
+              filename: sourceFile,
               rowCount: rawEntries.length,
               successCount: finalEntries.length,
               errorCount: validation.errors.length + duplicates,
               warningCount: duplicates,
               status: duplicates > 0 ? 'partial' : 'success',
+              batchId,
+              fileHash,
+              rejections,
+              controlTotals,
             };
 
             get().recordImport(result);
@@ -613,6 +710,10 @@ export const useGLStore = create<GLState>()(
               imported: finalEntries.length,
               duplicates,
               errors: validation.errors.length,
+              batchId,
+              fileHash,
+              rejections,
+              controlTotals,
             };
           }
         ),
@@ -828,12 +929,13 @@ export const useGLStore = create<GLState>()(
 
         recordImport: enforce(Permissions.IMPORT_CREATE, 'recordImport', (result) =>
           set((state) => {
+            const recordedAt = now();
             state.importHistory.unshift({
-              id: `import-${Date.now()}`,
+              id: result.batchId ?? `import-${recordedAt.getTime()}`,
               ...result,
-              timestamp: new Date().toISOString(),
+              timestamp: recordedAt.toISOString(),
             });
-            state.lastImportResult = { ...result, timestamp: new Date().toISOString() };
+            state.lastImportResult = { ...result, timestamp: recordedAt.toISOString() };
             state.importStatus = 'complete';
             state.importProgress = 100;
 
@@ -913,19 +1015,19 @@ export const useGLStore = create<GLState>()(
           ) =>
             `${e.accountCode}|${e.postDate || e.date}|${e.amount ?? roundTo(subtractMoney(e.debit, e.credit))}`;
           const existingKeys = new Set(state.entries.map(entryKey));
-          const duplicates: GLEntry[] = [];
+          const duplicateIndices: number[] = [];
           const newEntries: GLEntry[] = [];
 
-          entries.forEach((e) => {
+          entries.forEach((e, idx) => {
             const key = entryKey(e);
             if (existingKeys.has(key)) {
-              duplicates.push(e);
+              duplicateIndices.push(idx);
             } else {
               newEntries.push(e);
             }
           });
 
-          return { duplicates: duplicates.length, newEntries };
+          return { duplicates: duplicateIndices.length, newEntries, duplicateIndices };
         },
 
         validateEntries: (entries: Partial<GLEntry>[]) => {
