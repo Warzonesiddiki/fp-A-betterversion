@@ -126,7 +126,7 @@ These observations are preliminary: they do not replace a full review of specs, 
 | `a2e8847` | Batch scope (FR-001), persisted pre-parse rejections, Source column in GL Explorer, stable server journal identity |
 | `810b10a` | Financial stores moved to the injectable clock (baseline 679 → 638) |
 | `70e2eaa` | Canonical agent handbook: `AGENTS.md` + `docs/agent/00–10`, `HANDOVER_TEMPLATE.md`; `CLAUDE.md`/`GEMINI.md`/`CONTRIBUTING.md` point at it |
-| _(next)_ | `parseGLRows` extracted from the upload wizard as a pure, fixture-tested function (FR-002/UX-002); whitespace-only account codes now rejected; full `test:sharded` at `897b6a0`: 8/8, 1,318 files, 15,448 tests |
+| `132a261` | `parseGLRows` extracted from the upload wizard as a pure, fixture-tested function (FR-002/UX-002); whitespace-only account codes now rejected; full `test:sharded` at `897b6a0`: 8/8, 1,318 files, 15,448 tests |
 | `897b6a0` | All 54 reachable engines moved to the clock (baseline 518 → 345); remaining sites are orphans, unreachable services and `RAND` |
 | `947295b` | Remaining stores and utils moved to the clock; `nowISO()`/`nowMs()` added (baseline 638 → 518). Full `test:sharded` after it: 8/8, 1,318 files, 15,448 tests passed, 1 skipped (pre-existing) |
 
