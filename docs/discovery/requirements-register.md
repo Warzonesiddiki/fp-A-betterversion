@@ -1,0 +1,33 @@
+# Initial Requirements Register
+
+**Status:** Draft proposals; validate during audit and product discovery.  
+**Priority:** P0 = foundation/release gate; P1 = core workflow; P2 = later capability.  
+**Status vocabulary:** Proposed / Accepted / Rejected / Deferred / Implemented / Verified.
+
+| ID | Priority | Requirement | Acceptance criteria (draft) | Status | Target evidence (2026-10-15, base `04c329e`) |
+|---|---|---|---|---|---|
+| FR-001 | P0 | The user can identify the scope of each monthly dataset. | Period, source identity, entity (if present), currency (if present), and import time are stored or explicitly marked unavailable; the UI does not imply an unknown scope. | Proposed | **Partial.** Periods exist (`src/pages/periods/`), but `GLEntry` (`src/types/index.ts:712`) has no source identity or import time; entity/currency are not marked unavailable. |
+| FR-002 | P0 | The import validates the agreed export schema before analysis. | Missing/renamed required columns and invalid values produce actionable errors; no row is silently discarded; behavior is covered by fixtures. | Proposed | **Not met.** `ImportResult.status` includes `'partial'`; rejected rows surface only as a `skippedRows` count (`src/services/GLImportService.ts`). |
+| FR-003 | P0 | Import results are reproducible and protected from accidental duplicates. | Re-importing the same file is detected or handled by an explicit documented policy; test verifies no unintended duplicate financial effect. | Proposed | **Not met.** No file hash or batch id; re-import appends (Verified in `GLImportService.ts`, `ImportPipeline.ts`). |
+| FR-004 | P0 | The system provides import control totals and reconciliation status. | For the agreed scope, row counts and financial controls are independently computed and shown; differences prevent a “reconciled” status. | Proposed | **Partial.** Trial-balance checks exist in engines; no independently computed import control totals shown next to the import result. |
+| FR-005 | P0 | A displayed financial result is traceable to its definition and inputs. | A reviewer can inspect period/scope, formula or aggregation, and contributing source records for designated core outputs. | Proposed | **Not met.** No `sourceFile` / `sourceRow` / `importBatchId` on entries; no drill to source rows. |
+| FR-006 | P0 | Missing and invalid data are not presented as zero. | UI and calculation contracts distinguish zero, missing, invalid, not applicable, and unavailable; automated tests cover each state. | Proposed | **Not met.** Domain amounts are JS `number`; missing vs zero is not distinguished in `GLEntry`; 87 orphan engines compute KPIs with no availability contract. |
+| FR-007 | P1 | The product presents an agreed initial FP&A view. | The view has owner-approved definitions, period rules, sign policy, currency behavior, and independent test examples. | Proposed | Unknown — definitions not owner-approved; many views exist (242 routes) but none is designated the first view (DEC-002). |
+| FR-008 | P1 | The product flags defined abnormality patterns for human review. | Each flag identifies the versioned rule and evidence; no flag is labeled a confirmed error without human disposition. | Proposed | **Not met.** Anomaly services exist but no versioned rule catalogue, canonical finding key or evidence record; no answer key. |
+| FR-009 | P1 | The user can record a review disposition and rationale for an exception. | The disposition and note are associated with the exception and persist across reload; edit/history behavior is defined. | Proposed | **Not met.** No persisted disposition on exceptions. |
+| UX-001 | P0 | The user can understand the current period state and next action. | Usability test participants can identify blockers and next action without external explanation in the agreed core workflow. | Proposed | Unknown — not usability-tested; `docs/CAPABILITY_TRUTH_MATRIX.md` records 0 routes CONNECTED/GOVERNED. |
+| UX-002 | P0 | Validation errors are understandable and recoverable. | Error identifies affected row/field, reason, and available action; a corrected synthetic file can be reprocessed successfully. | Proposed | **Not met.** Follows from FR-002. |
+| UX-003 | P1 | Users can navigate from a summary value to supporting detail. | For agreed outputs, drill-down preserves period/filter context and returns to the prior view. | Proposed | Unknown — drill-down present on some pages; context preservation untested. |
+| NFR-001 | P0 | Financial calculations are deterministic for identical inputs and configuration. | Repeated test runs yield identical results; rounding and ordering are explicit; boundary fixtures pass. | Proposed | **Not met.** 339 wall-clock call sites in `src/engines`; `SafeMathParser` exposes `RAND()`; 13 tests rotted on 2026-09-01 (fixed: `src/utils/clock.ts`). |
+| NFR-002 | P0 | The product avoids unsupported or fabricated financial claims. | A metric is enabled only when required inputs and approved definition exist; otherwise the user sees an explicit unavailable reason. | Proposed | **Not met.** README claimed 100 % money safety / 100 % green / fully offline (false; corrected `c0d33ff`); fabrication scanner is scope-limited. |
+| NFR-003 | P0 | Sensitive data handling matches an agreed deployment policy. | Data locations, logging exclusions, retention, and external service use are documented and tested where feasible before real data use. | Proposed | Unknown — Sentry and PWA egress present; no data-flow inventory; AES-GCM blob encryption present (`masterStorage.ts`). |
+| NFR-004 | P1 | Core workflows are testable and reproducible. | Documented setup/test commands work in a clean environment; integration tests cover import-to-output on synthetic fixtures. | Proposed | **Partial.** Clean-environment `npm ci` + `npm run check` works after branch fixes; no import-to-output integration test on a synthetic D365 fixture. |
+| AI-001 | P2 | AI may draft commentary only from approved, verified facts. | Numerical statements are linked to approved values or rejected; AI output is labeled draft, editable, and never posts accounting entries. | Proposed | Not started — AI features exist behind flags; no verified-facts gate. |
+
+## Requirement governance
+
+- Give every accepted requirement an owner and decision date.
+- Split requirements when their acceptance criteria cannot be tested together.
+- Link each accepted requirement to implementation issues and verification tests.
+- Do not mark “Implemented” until code exists; do not mark “Verified” until evidence passes.
+- Add explicit data-source prerequisites to every metric and anomaly rule.

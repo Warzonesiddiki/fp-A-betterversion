@@ -98,10 +98,11 @@ docs/               # architecture, ADRs, security, audits
 
 ## Where the plan lives
 
+- **Discovery & governance pack (plan of record, proposed):** [`docs/discovery/`](./docs/discovery) — charter, requirements register (FR/UX/NFR/AI), risk register, decision log (DEC-001…006, all awaiting owner), gated roadmap, and the executed audit-progress record.
 - **Gap analysis and prioritised work list:** [`docs/audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md`](./docs/audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md) §8 (P0 → P2).
 - **Architecture notes and ADRs:** [`docs/architecture/`](./docs/architecture), [`docs/adr/`](./docs/adr).
 - **Security policies:** [`docs/security/`](./docs/security), [`SECURITY.md`](./SECURITY.md).
-- Historical plans, handovers and prior audits are numerous and partly contradictory; the audit above supersedes them until they are consolidated (audit P0-4).
+- Historical plans, handovers and prior audits are numerous and partly contradictory; the discovery pack and the audit above supersede them until they are consolidated (audit P0-4 / DEC-006).
 
 ---
 
