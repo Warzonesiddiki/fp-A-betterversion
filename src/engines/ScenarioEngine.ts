@@ -9,6 +9,7 @@ import {
   multiplyMoney,
   divideMoney,
 } from '../utils/money';
+import { nowISO } from '@/utils/clock';
 
 /**
  * Currency amounts are rounded to cents; ratio/margin/percentage outputs keep
@@ -437,10 +438,10 @@ export class ScenarioEngine {
   }
 
   static lockScenario<T extends { isLocked: boolean; updatedAt: string }>(scenario: T): T {
-    return { ...scenario, isLocked: true, updatedAt: new Date().toISOString() };
+    return { ...scenario, isLocked: true, updatedAt: nowISO() };
   }
 
   static unlockScenario<T extends { isLocked: boolean; updatedAt: string }>(scenario: T): T {
-    return { ...scenario, isLocked: false, updatedAt: new Date().toISOString() };
+    return { ...scenario, isLocked: false, updatedAt: nowISO() };
   }
 }

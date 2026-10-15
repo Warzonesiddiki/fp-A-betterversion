@@ -15,6 +15,7 @@
  * @cross-witness Archimedes T-FIX-10 PRE-STAGE (Mathematical Purity Lens — purity algebra + 186 engines @purity-tier JSDoc schema)
  */
 import { storageGetJSON, storageSetJSON } from '@/utils/storageAdapter';
+import { nowISO } from '@/utils/clock';
 
 export interface ColumnMapping {
   sourceColumn: string;
@@ -170,7 +171,7 @@ export class SmartImportMapper {
       sourceFile,
       headers: mappings.map((m) => m.sourceColumn),
       mappings,
-      learnedAt: new Date().toISOString(),
+      learnedAt: nowISO(),
       useCount: existing ? existing.useCount + 1 : 1,
     };
     this.learnedMappings.set(sourceFile, learned);

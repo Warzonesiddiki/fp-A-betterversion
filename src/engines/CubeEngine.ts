@@ -17,6 +17,7 @@ import type {
   CubeStorageMode,
 } from '@/types/cube-types';
 import { CubeEnginePersistence } from './CubeEnginePersistence';
+import { nowISO, nowMs } from '@/utils/clock';
 
 // =============================================================================
 // CUBE ENGINE — Multi-dimensional OLAP data model
@@ -194,12 +195,12 @@ export class CubeEngine {
     this.cubeCellIndex.get(cube)!.add(key);
 
     const historyEntry: CellHistoryEntry = {
-      id: `hist-${Date.now()}-${this.cellHistory.length}`,
+      id: `hist-${nowMs()}-${this.cellHistory.length}`,
       cellId: key,
       oldValue,
       newValue: cell.value,
       dataType: cell.dataType,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
     };
     this.cellHistory.push(historyEntry);
 
@@ -326,9 +327,9 @@ export class CubeEngine {
 
   createSnapshot(name: string, description?: string): Snapshot {
     const snapshot: Snapshot = {
-      id: `snap-${Date.now()}-${++this.snapshotCounter}`,
+      id: `snap-${nowMs()}-${++this.snapshotCounter}`,
       name,
-      createdAt: new Date().toISOString(),
+      createdAt: nowISO(),
       description,
     };
     this.snapshots.push(snapshot);

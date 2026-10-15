@@ -6,6 +6,7 @@
  * money primitive (src/utils/money.ts). Raw * eliminated. roundTo for results.
  */
 import { multiplyMoney, roundTo } from '../utils/money';
+import { nowISO } from '@/utils/clock';
 
 export interface Driver {
   id: string;
@@ -140,7 +141,7 @@ export class DriverLibrary {
       oldValue: old,
       newValue: value,
       changedBy: userId,
-      changedAt: new Date().toISOString(),
+      changedAt: nowISO(),
       reason,
     });
   }

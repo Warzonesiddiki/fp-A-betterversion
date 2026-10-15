@@ -10,6 +10,7 @@ import {
   toCents,
   formatMoney,
 } from '@/utils/money';
+import { nowISO } from '@/utils/clock';
 
 /**
  * MONEY MIGRATION (2026-08-03): All currency-bearing amounts (eliminations,
@@ -1263,7 +1264,7 @@ export class ConsolidationEngine {
           debit: adjustment.debitAmount,
           credit: adjustment.creditAmount,
           netChange: netChg,
-          date: new Date().toISOString().split('T')[0] ?? '',
+          date: nowISO().split('T')[0] ?? '',
           amount: netChg,
           description: '',
           reference: '',

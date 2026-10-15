@@ -20,6 +20,7 @@
 
 import Decimal from 'decimal.js';
 import { toDecimal, roundTo, allocateMoney, DEFAULT_CURRENCY_PLACES } from '@/utils/money';
+import { nowISO } from '@/utils/clock';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -99,7 +100,7 @@ function dSum(arr: number[]): Decimal {
 }
 
 function generateTimestamp(): string {
-  return new Date().toISOString();
+  return nowISO();
 }
 
 // ---------------------------------------------------------------------------

@@ -12,6 +12,7 @@ import type { GLEntry, GLAccount } from '@/types';
 import { reportingCurrency } from '@/store/financialContextStore';
 import { currencyFormatter } from '@/utils/financialFormatting';
 import { divideMoney, roundTo, sumMoney, toDecimal } from '../utils/money';
+import { now as clockNow } from '@/utils/clock';
 
 /**
  * MONEY MIGRATION (2026-08-03): All currency-bearing paths (netChange, debit,
@@ -406,7 +407,7 @@ export class NLQEngine {
   ): readonly GLEntry[] {
     if (!period) return entries;
 
-    const now = new Date();
+    const now = clockNow();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth() + 1;
     const currentQuarter = Math.ceil(currentMonth / 3);

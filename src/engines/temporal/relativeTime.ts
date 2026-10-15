@@ -26,6 +26,7 @@
 // =============================================================================
 
 import { parseToUTCEpoch } from './TemporalDate';
+import { nowMs } from '@/utils/clock';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -46,7 +47,7 @@ export interface FormatRelativeTimeOptions {
   readonly locale?: string;
 
   /**
-   * Reference time for the diff calculation. Defaults to Date.now().
+   * Reference time for the diff calculation. Defaults to nowMs().
    * Useful for testing or for backfilled timestamps.
    */
   readonly now?: number;
@@ -73,7 +74,7 @@ export function formatRelativeTime(
   timestamp: string | number | Date | null | undefined,
   options: FormatRelativeTimeOptions = {}
 ): string {
-  const { maxDays = 7, locale = 'en-US', now = Date.now() } = options;
+  const { maxDays = 7, locale = 'en-US', now = nowMs() } = options;
 
   const thenMs = parseToUTCEpoch(timestamp);
   if (thenMs === null) return 'unknown';

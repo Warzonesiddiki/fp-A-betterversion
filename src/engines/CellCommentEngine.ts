@@ -1,3 +1,4 @@
+import { nowISO } from '@/utils/clock';
 export interface CellComment {
   id: string;
   cellKey: string;
@@ -30,7 +31,7 @@ export class CellCommentEngine {
       cellKey,
       author,
       text,
-      createdAt: new Date().toISOString(),
+      createdAt: nowISO(),
       resolved: false,
       parentId,
       mentions,

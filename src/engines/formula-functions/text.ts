@@ -3,6 +3,7 @@
 // =============================================================================
 import type { FormulaFunction } from './helpers';
 import { roundTo } from '@/utils/money';
+import { nowMs } from '@/utils/clock';
 
 // =============================================================================
 // TEXT FUNCTIONS
@@ -140,7 +141,7 @@ export function YEARFRAC(s1: number, s2: number): number {
 }
 export function NOW(): number {
   // Pure UTC epoch math — no local-midnight epoch mixing.
-  return (Date.now() - EXCEL_EPOCH_MS) / 86400000;
+  return (nowMs() - EXCEL_EPOCH_MS) / 86400000;
 }
 export function TODAY(): number {
   return Math.floor(NOW());

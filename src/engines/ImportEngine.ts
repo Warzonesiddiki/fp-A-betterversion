@@ -2,6 +2,7 @@
  * ImportEngine — Robust file import with validation, error handling, and rollback
  * Supports CSV (auto-delimiter/encoding detection), Excel, JSON
  */
+import { nowISO, nowMs } from '@/utils/clock';
 // @money-ast-allow
 // Reason: the CSV parser in `parseCSV` accumulates a string buffer with
 // `currentField += c` and `currentField += '"'`. The variable name matches
@@ -370,8 +371,8 @@ export class ImportEngine {
 
       // Create snapshot for rollback
       const snapshot: ImportSnapshot = {
-        id: `import-${Date.now()}`,
-        timestamp: new Date().toISOString(),
+        id: `import-${nowMs()}`,
+        timestamp: nowISO(),
         format: 'csv',
         fileName: file.name,
         rowCount: result.rowCount,
@@ -501,8 +502,8 @@ export class ImportEngine {
       this.setProgress('complete', 100, `Imported ${result.rowCount} rows`);
 
       const snapshot: ImportSnapshot = {
-        id: `import-${Date.now()}`,
-        timestamp: new Date().toISOString(),
+        id: `import-${nowMs()}`,
+        timestamp: nowISO(),
         format: 'json',
         fileName: file.name,
         rowCount: result.rowCount,

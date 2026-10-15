@@ -1,3 +1,4 @@
+import { nowISO } from '@/utils/clock';
 export interface FinanceDocument {
   id: string;
   name: string;
@@ -36,7 +37,7 @@ export class DocumentEngine {
       version: nextVersion,
       content: JSON.parse(JSON.stringify(document.content)),
       createdBy,
-      createdAt: new Date().toISOString(),
+      createdAt: nowISO(),
       signatures: [],
     };
 

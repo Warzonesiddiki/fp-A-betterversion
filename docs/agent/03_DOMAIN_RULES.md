@@ -48,7 +48,7 @@ re-read this file and move at least one rule toward Enforced.
 
 | Rule                                                                                 | Status                                                                                    |
 | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| All "now"/"today" reads go through `src/utils/clock.ts`; tests pin with `setClock()` | Enforced by ratchet per file (518 legacy sites remain; none may be added)                 |
+| All "now"/"today" reads go through `src/utils/clock.ts`; tests pin with `setClock()` | Enforced by ratchet per file (345 legacy sites remain; none may be added)                 |
 | Period selection ("the period containing today") is a pure function of the clock     | Enforced for `PeriodClosePage` (3 suites pin `2026-08-07`)                                |
 | Period close is a state machine with checks, closedAt/closedBy, reopen with reason   | Exists in `periodCloseStore`; semantics documented in `docs/architecture/period-close.md` |
 | Fiscal calendar, time zone, reversals, opening balances                              | **Unknown** — discovery questions Q11–Q14; do not assume calendar = fiscal                |

@@ -57,6 +57,7 @@ import {
   buildEnergyTemplate,
   buildInsuranceTemplate,
 } from './templates';
+import { nowISO } from '@/utils/clock';
 
 // ===========================================================================
 // TEMPLATE LIBRARY ENGINE
@@ -123,7 +124,7 @@ export class TemplateLibrary {
       generatedDrivers,
       generatedRules: [...template.cascadeRules],
       generatedAccounts: [...template.accounts],
-      instantiatedAt: new Date().toISOString(),
+      instantiatedAt: nowISO(),
     };
   }
 
@@ -176,7 +177,7 @@ export class TemplateLibrary {
       mergedDrivers,
       mergedRules,
       mergedAccounts,
-      createdAt: new Date().toISOString(),
+      createdAt: nowISO(),
     };
 
     this.compositions.set(id, composition);
@@ -250,7 +251,7 @@ export class TemplateLibrary {
     cascadeRules: CascadeRuleDefinition[];
   }): FPTemplate {
     const id = `tpl-custom-${randomId()}`;
-    const now = new Date().toISOString();
+    const now = nowISO();
 
     const template: FPTemplate = {
       id,

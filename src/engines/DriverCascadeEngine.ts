@@ -134,7 +134,7 @@ export class DriverCascadeEngine {
 
   addDriver(driver: Omit<Driver, 'id' | 'createdAt' | 'updatedAt'>): Driver {
     const id = generateId('drv');
-    const now = new Date().toISOString();
+    const now = nowISO();
     const fullDriver: Driver = {
       ...driver,
       id,
@@ -167,7 +167,7 @@ export class DriverCascadeEngine {
     const updated: Driver = {
       ...driver,
       ...updates,
-      updatedAt: new Date().toISOString(),
+      updatedAt: nowISO(),
     };
     this.drivers.set(id, updated);
     return updated;
@@ -517,7 +517,7 @@ export class DriverCascadeEngine {
     const snapshot: DriverSnapshot = {
       drivers: this.listDrivers(),
       rules: this.getAllRules(),
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
     };
     this.snapshots.push(snapshot);
     return snapshot;
@@ -633,6 +633,7 @@ export class DriverCascadeEngine {
 
 import { randomId } from '@/utils/cryptoId';
 import { safeMathParser } from './SafeMathParser';
+import { nowISO } from '@/utils/clock';
 
 /** Thrown when a cascade formula references an unknown identifier, fails to parse, or yields a non-finite value. */
 export class CascadeFormulaError extends Error {

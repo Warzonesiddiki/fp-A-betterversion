@@ -21,6 +21,7 @@
 
 // CHRONOS BUG-AT-1 FIX — timezone-safe timestamp comparison
 import { isInRange, parseToUTCEpoch } from './temporal';
+import { nowISO } from '@/utils/clock';
 
 // --- Type Definitions ---
 
@@ -166,7 +167,7 @@ export class AuditTrailEngine {
       tampered: tamperedEntries.length > 0 || brokenChains.length > 0,
       tamperedEntries,
       brokenChains,
-      verifiedAt: new Date().toISOString(),
+      verifiedAt: nowISO(),
     };
   }
 
@@ -278,7 +279,7 @@ export class AuditTrailEngine {
       entriesByEntity: byEntity,
       merkleRoot: AuditTrailEngine.buildMerkleRoot(inRange),
       chainVerified: !AuditTrailEngine.verifyChain(inRange).tampered,
-      exportedAt: new Date().toISOString(),
+      exportedAt: nowISO(),
     };
   }
 

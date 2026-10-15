@@ -6,6 +6,7 @@
 
 import { randomId } from '@/utils/cryptoId';
 import { divideMoney, roundTo, sumMoney, toDecimal } from '../utils/money';
+import { nowISO } from '@/utils/clock';
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -96,7 +97,7 @@ export class WhatIfSandboxEngine {
     baseCells: Map<string, number>
   ): Sandbox {
     const id = generateId('sandbox');
-    const now = new Date().toISOString();
+    const now = nowISO();
 
     const sandbox: Sandbox = {
       id,
@@ -148,7 +149,7 @@ export class WhatIfSandboxEngine {
     const sandbox = this.sandboxes.get(id);
     if (!sandbox) return undefined;
     sandbox.status = 'archived';
-    sandbox.updatedAt = new Date().toISOString();
+    sandbox.updatedAt = nowISO();
     return sandbox;
   }
 
@@ -177,11 +178,11 @@ export class WhatIfSandboxEngine {
       measure,
       originalValue,
       modifiedValue: newValue,
-      appliedAt: new Date().toISOString(),
+      appliedAt: nowISO(),
     };
 
     sandbox.modifications.push(modification);
-    sandbox.updatedAt = new Date().toISOString();
+    sandbox.updatedAt = nowISO();
 
     // Update snapshot
     snapshot.cellValues.set(key, newValue);
@@ -209,7 +210,7 @@ export class WhatIfSandboxEngine {
     }
 
     sandbox.modifications.splice(idx, 1);
-    sandbox.updatedAt = new Date().toISOString();
+    sandbox.updatedAt = nowISO();
 
     // Invalidate comparison cache
     this.comparisonCache.clear();

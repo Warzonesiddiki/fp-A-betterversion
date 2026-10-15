@@ -4,6 +4,7 @@
 // =============================================================================
 
 import { loadJsPDF } from '@/utils/pdfRuntime';
+import { now as clockNow } from '@/utils/clock';
 
 export type TemplateType =
   | 'board_pack'
@@ -103,7 +104,7 @@ const DEFAULT_VARIABLES: TemplateVariable[] = [
   { key: 'entity', label: 'Entity', defaultValue: 'Company Name' },
   { key: 'period', label: 'Period', defaultValue: 'FY 2026' },
   { key: 'currency', label: 'Currency', defaultValue: 'USD' },
-  { key: 'date', label: 'Date', defaultValue: new Date().toLocaleDateString() },
+  { key: 'date', label: 'Date', defaultValue: clockNow().toLocaleDateString() },
   { key: 'preparedBy', label: 'Prepared By', defaultValue: 'Finance Team' },
 ];
 

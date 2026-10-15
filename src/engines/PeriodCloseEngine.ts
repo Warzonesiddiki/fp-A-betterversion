@@ -3,6 +3,7 @@
 // locale-dependent ambiguity of `new Date(s).getTime()` when `s` is a local-
 // format ISO string (no 'Z' suffix). Audit: docs/engines/TEMPORAL_ENGINE_CORRECTNESS.md
 import { parseToUTCEpoch } from './temporal';
+import { nowISO } from '@/utils/clock';
 
 export interface CloseTask {
   id: string;
@@ -64,7 +65,7 @@ export class PeriodCloseEngine {
       period,
       tasks: finalTasks,
       progress: this.calculateProgress({ period, tasks: finalTasks, progress: 0, slaBreaches: [] }),
-      slaBreaches: this.getSLABreaches(finalTasks, new Date().toISOString()),
+      slaBreaches: this.getSLABreaches(finalTasks, nowISO()),
     };
   }
 
@@ -133,7 +134,7 @@ export class PeriodCloseEngine {
       ...checklist,
       tasks: updatedTasks,
       progress: this.calculateProgress({ ...checklist, tasks: updatedTasks }),
-      slaBreaches: this.getSLABreaches(updatedTasks, new Date().toISOString()),
+      slaBreaches: this.getSLABreaches(updatedTasks, nowISO()),
     };
   }
 }

@@ -1,3 +1,4 @@
+import { now as clockNow, nowISO } from '@/utils/clock';
 // Role-Based Access Control Engine
 // Pure TypeScript, no external dependencies
 
@@ -85,7 +86,7 @@ export class RBACEngine {
       accounts: opts?.accounts,
       periods: opts?.periods,
       grantedBy,
-      grantedAt: new Date().toISOString(),
+      grantedAt: nowISO(),
       expiresAt: opts?.expiresAt,
     };
     this.userRoles.push(assignment);
@@ -190,6 +191,6 @@ export class RBACEngine {
   }
 
   private isExpired(r: UserRole): boolean {
-    return r.expiresAt ? new Date(r.expiresAt) < new Date() : false;
+    return r.expiresAt ? new Date(r.expiresAt) < clockNow() : false;
   }
 }

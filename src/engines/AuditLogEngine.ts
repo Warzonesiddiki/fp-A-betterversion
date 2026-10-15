@@ -2,6 +2,7 @@
 // Pure TypeScript, no external dependencies
 
 import { randomId } from '@/utils/cryptoId';
+import { now as clockNow, nowISO, nowMs } from '@/utils/clock';
 
 export type AuditAction =
   | 'create'
@@ -66,7 +67,7 @@ export class AuditLogEngine {
     const auditEntry: AuditEntry = {
       ...entry,
       id: randomId('audit'),
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
     };
     this.entries.push(auditEntry);
     if (this.entries.length > this.maxEntries) {
@@ -162,7 +163,7 @@ export class AuditLogEngine {
   }
 
   prune(): number {
-    const cutoff = new Date();
+    const cutoff = clockNow();
     cutoff.setDate(cutoff.getDate() - this.retentionDays);
     const cutoffStr = cutoff.toISOString();
     const before = this.entries.length;
@@ -308,7 +309,7 @@ export class AuditLogEngine {
       return {
         ok: true,
         totalEntries: 0,
-        checkedAt: new Date().toISOString(),
+        checkedAt: nowISO(),
         reason: 'EMPTY_CHAIN',
       };
     }
@@ -320,7 +321,7 @@ export class AuditLogEngine {
         return {
           ok: false,
           totalEntries: this.entries.length,
-          checkedAt: new Date().toISOString(),
+          checkedAt: nowISO(),
           brokenAt: i,
           reason: 'BROKEN_PREV_HASH',
           expectedHash: prevHash,
@@ -332,7 +333,7 @@ export class AuditLogEngine {
         return {
           ok: false,
           totalEntries: this.entries.length,
-          checkedAt: new Date().toISOString(),
+          checkedAt: nowISO(),
           brokenAt: i,
           reason: 'BROKEN_HASH_MISMATCH',
           expectedHash: expected.entryHash,
@@ -341,7 +342,7 @@ export class AuditLogEngine {
       }
       prevHash = recomputed;
     }
-    return { ok: true, totalEntries: this.entries.length, checkedAt: new Date().toISOString() };
+    return { ok: true, totalEntries: this.entries.length, checkedAt: nowISO() };
   }
 
   /** Returns the current head of the hash chain, or 64-zero string if empty. */
@@ -489,7 +490,7 @@ export class AuditLogEngine {
   /** PATCH 8.4: Combine maxEntries and maxAgeDays enforcement. Returns the count removed. */
   autoPrune(): number {
     const before = this.entries.length;
-    const cutoffMs = Date.now() - this._retention.maxAgeDays * 86_400_000;
+    const cutoffMs = nowMs() - this._retention.maxAgeDays * 86_400_000;
     const cutoffIso = new Date(cutoffMs).toISOString();
     this.entries = this.entries.filter((e) => e.timestamp >= cutoffIso);
     if (this.entries.length > this._retention.maxEntries) {

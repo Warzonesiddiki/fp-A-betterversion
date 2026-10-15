@@ -9,6 +9,7 @@ import { AuditLogEngine, type AuditEntry, type AuditAction } from './AuditLogEng
 import { WorkflowEngine, type ApprovalRequest } from './WorkflowEngine';
 import { RBACEngine, type Role } from './RBACEngine';
 import { addMoney, sumMoney, roundMoney, toDecimal } from '../utils/money';
+import { nowISO, nowMs } from '@/utils/clock';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -532,7 +533,7 @@ export class SOXComplianceEngine {
   addSODRule(rule: Omit<SegregationOfDutiesRule, 'id'>): SegregationOfDutiesRule {
     const newRule: SegregationOfDutiesRule = {
       ...rule,
-      id: 'SOD-' + Date.now().toString(36),
+      id: 'SOD-' + nowMs().toString(36),
     };
     this.sodRules.push(newRule);
     return newRule;
@@ -564,7 +565,7 @@ export class SOXComplianceEngine {
 
       if (hasRoleA && hasRoleB) {
         violations.push({
-          id: 'sod-v-' + Date.now(),
+          id: 'sod-v-' + nowMs(),
           controlId: rule.id,
           category: 'segregation_of_duties',
           name: `SOD Violation: ${rule.name}`,
@@ -577,7 +578,7 @@ export class SOXComplianceEngine {
             `Attempted role: ${newRole}`,
             `Rule: ${rule.id}`,
           ],
-          timestamp: new Date().toISOString(),
+          timestamp: nowISO(),
           remediation: `Remove one of the conflicting roles (${rule.roleA} or ${rule.roleB}) before assigning ${newRole}`,
         });
       }
@@ -600,7 +601,7 @@ export class SOXComplianceEngine {
 
         if (hasRoleA && hasRoleB) {
           violations.push({
-            id: 'sod-s-' + Date.now() + '-' + userId,
+            id: 'sod-s-' + nowMs() + '-' + userId,
             controlId: rule.id,
             category: 'segregation_of_duties',
             name: `SOD Conflict: ${rule.name}`,
@@ -613,7 +614,7 @@ export class SOXComplianceEngine {
               `Roles: ${roles.join(', ')}`,
               `Conflicting rule: ${rule.id} (${rule.name})`,
             ],
-            timestamp: new Date().toISOString(),
+            timestamp: nowISO(),
             remediation: `Remove conflicting role assignment for user ${userId}`,
           });
         }
@@ -790,7 +791,7 @@ export class SOXComplianceEngine {
     for (const entry of recentEntries) {
       if (closedPeriods.includes(entry.period) && ['update', 'delete'].includes(entry.action)) {
         violations.push({
-          id: 'cpi-' + Date.now(),
+          id: 'cpi-' + nowMs(),
           controlId: 'SOX-404-09',
           category: 'audit_trail',
           name: 'Closed Period Modification',
@@ -803,7 +804,7 @@ export class SOXComplianceEngine {
             `Action: ${entry.action}`,
             `Timestamp: ${entry.timestamp}`,
           ],
-          timestamp: new Date().toISOString(),
+          timestamp: nowISO(),
           remediation: 'Reverse the unauthorized modification and investigate the access',
         });
       }
@@ -843,7 +844,7 @@ export class SOXComplianceEngine {
       details: passed
         ? `Balance sheet balanced: Assets ($${m(totalAssets)}) = L+E ($${m(expected)}), diff: $${m(diffD)}`
         : `IMBALANCE: Assets ($${m(totalAssets)}) != L+E ($${m(expected)}), diff: $${m(diffD)}`,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
     };
 
     this.integrityResults.push(result);
@@ -875,7 +876,7 @@ export class SOXComplianceEngine {
       details: passed
         ? `Debits ($${m(totalDebits)}) = Credits ($${m(totalCredits)}), diff: $${m(diffD)}`
         : `MISMATCH: Debits ($${m(totalDebits)}) != Credits ($${m(totalCredits)}), diff: $${m(diffD)}`,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
     };
 
     this.integrityResults.push(result);
@@ -915,7 +916,7 @@ export class SOXComplianceEngine {
       details: passed
         ? `Data integrity verified for key: ${key}`
         : `TAMPERING DETECTED for key: ${key} - hash mismatch`,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
     };
 
     this.integrityResults.push(result);
@@ -945,7 +946,7 @@ export class SOXComplianceEngine {
         details: passed
           ? `Period ${period} integrity verified - no modifications since close`
           : `Period ${period} MODIFIED after close - expected ${closeHash}, got ${currentHash}`,
-        timestamp: new Date().toISOString(),
+        timestamp: nowISO(),
       });
     }
 
@@ -1010,7 +1011,7 @@ export class SOXComplianceEngine {
     daysInactive: number;
   }> {
     const allUsers = this.rbacEngine.listUsers();
-    const now = Date.now();
+    const now = nowMs();
 
     const orphaned: Array<{
       userId: string;
@@ -1061,7 +1062,7 @@ export class SOXComplianceEngine {
     ledgerEntries?: Array<{ debit: number; credit: number }>;
   }): SOXReport {
     const checks: SOXCheckResult[] = [];
-    const now = new Date().toISOString();
+    const now = nowISO();
 
     // 1. Approval workflow checks
     const pendingApprovals = this.getPendingApprovals();
@@ -1284,7 +1285,7 @@ export class SOXComplianceEngine {
       userName: 'SOX Compliance Engine',
       action: 'create',
       resource: 'sox_report',
-      resourceId: 'report-' + Date.now(),
+      resourceId: 'report-' + nowMs(),
       details: `SOX compliance report generated: ${overallStatus} (${overallScore}%)`,
       metadata: { overallStatus, overallScore, criticalFindings: criticalFindings.length },
     });
@@ -1318,7 +1319,7 @@ export class SOXComplianceEngine {
   addControl(control: Omit<SOXControl, 'id'>): SOXControl {
     const newControl: SOXControl = {
       ...control,
-      id: 'SOX-CUSTOM-' + Date.now().toString(36),
+      id: 'SOX-CUSTOM-' + nowMs().toString(36),
     };
     this.controls.push(newControl);
     return newControl;

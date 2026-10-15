@@ -1,3 +1,4 @@
+import { nowISO, nowMs } from '@/utils/clock';
 // =============================================================================
 // VERSION CONTROL ENGINE — Git-like versioning for budgets
 // Pure TypeScript, deterministic, testable
@@ -87,7 +88,7 @@ export class VersionControlEngine {
   // --- Helpers ---
 
   private generateId(prefix: string): string {
-    return `${prefix}-${Date.now()}-${++this.idCounter}`;
+    return `${prefix}-${nowMs()}-${++this.idCounter}`;
   }
 
   private cellKey(cube: string, coords: Record<string, string>, measure: string): string {
@@ -135,7 +136,7 @@ export class VersionControlEngine {
   }
 
   private now(): string {
-    return new Date().toISOString();
+    return nowISO();
   }
 
   // --- Branch Management ---

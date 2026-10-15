@@ -10,6 +10,7 @@
  */
 
 import { roundTo } from '../utils/money';
+import { nowISO } from '@/utils/clock';
 
 /**
  * Severity level for detected anomalies.
@@ -406,7 +407,7 @@ export class AnomalyDetectionEngine {
         anomalyCount: 0,
         anomalyRate: 0,
         statistics: this.computeStatistics(dataPoints.map((dp) => dp.value)),
-        generatedAt: new Date().toISOString(),
+        generatedAt: nowISO(),
       };
     }
 
@@ -428,7 +429,7 @@ export class AnomalyDetectionEngine {
       anomalyCount: merged.length,
       anomalyRate: dataPoints.length > 0 ? merged.length / dataPoints.length : 0,
       statistics: this.computeStatistics(values),
-      generatedAt: new Date().toISOString(),
+      generatedAt: nowISO(),
     };
   }
 
@@ -605,7 +606,7 @@ export class AnomalyDetectionEngine {
       anomalyCount: merged.length,
       anomalyRate: dataPoints.length > 0 ? merged.length / dataPoints.length : 0,
       statistics: statisticalResult.statistics,
-      generatedAt: new Date().toISOString(),
+      generatedAt: nowISO(),
     };
   }
 

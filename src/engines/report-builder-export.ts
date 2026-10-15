@@ -15,6 +15,7 @@ import {
 } from './report-builder-types';
 import { resolveLayout } from './report-builder-formulas';
 import { formatMoney } from '../utils/money';
+import { nowISO } from '@/utils/clock';
 
 // ---------------------------------------------------------------------------
 // PDF Export Metadata
@@ -115,7 +116,7 @@ export function generateExcelExport(
     ],
     metadata: {
       title: report.name,
-      createdAt: new Date().toISOString(),
+      createdAt: nowISO(),
       author: report.createdBy,
       orientation: 'landscape',
     },

@@ -1,3 +1,4 @@
+import { nowISO, nowMs } from '@/utils/clock';
 // =============================================================================
 // FINANCIAL CLOSE ENGINE — Period-End Close Workflow Orchestration
 // Pure TypeScript, deterministic, testable. Models the period-end close
@@ -176,14 +177,14 @@ export class FinancialCloseEngine {
       ...instance,
       assignee,
       status: instance.status === 'not-started' ? 'in-progress' : instance.status,
-      startedAt: instance.startedAt ?? new Date().toISOString(),
+      startedAt: instance.startedAt ?? nowISO(),
     };
   }
 
   // 7. Mark task complete
   static markComplete(instance: CloseTaskInstance): CloseTaskInstance {
     if (instance.status === 'complete') return instance;
-    return { ...instance, status: 'complete', completedAt: new Date().toISOString() };
+    return { ...instance, status: 'complete', completedAt: nowISO() };
   }
 
   // 8. Check if period is lockable (all critical tasks complete)
@@ -210,7 +211,7 @@ export class FinancialCloseEngine {
       if (inst?.status !== 'complete') hoursRemaining += t.estimatedHours;
     }
     const percentComplete = totalTasks === 0 ? 0 : Math.round((completed / totalTasks) * 100);
-    const overdue = new Date(plan.deadline).getTime() < Date.now() && completed < totalTasks;
+    const overdue = new Date(plan.deadline).getTime() < nowMs() && completed < totalTasks;
     return {
       totalTasks,
       completedTasks: completed,
@@ -394,7 +395,7 @@ export class FinancialCloseEngine {
       if (
         (t.priority === 'critical' || t.regulatoryFlag) &&
         !instMap.get(t.id)?.assignee &&
-        new Date(plan.deadline).getTime() - Date.now() < 7 * 24 * 60 * 60 * 1000
+        new Date(plan.deadline).getTime() - nowMs() < 7 * 24 * 60 * 60 * 1000
       ) {
         conflicts.push({
           type: 'unassigned-critical',
@@ -404,7 +405,7 @@ export class FinancialCloseEngine {
       }
     }
     if (
-      new Date(plan.deadline).getTime() < Date.now() &&
+      new Date(plan.deadline).getTime() < nowMs() &&
       instances.filter((i) => i.status === 'complete').length < plan.tasks.length
     )
       conflicts.push({

@@ -7,6 +7,7 @@
  */
 import { generateId } from '@/utils/deterministicRng';
 import { storageGet, storageSet } from '@/utils/storageAdapter';
+import { nowMs } from '@/utils/clock';
 
 interface UndoAction {
   id: string;
@@ -77,13 +78,13 @@ export class UndoRedoEngine<T = unknown> {
   static pushAction(storeKey: string, action: string, data: unknown, userId?: string): void {
     // PATCH 22 — Veridicus T-FIX-10: deterministic RNG via generateId()
     // (Date.now + Math.random were non-reproducible — SOX/IFRS violation)
-    const monotonicCounter = (UndoRedoEngine.undoStack.length ?? 0) + Date.now();
+    const monotonicCounter = (UndoRedoEngine.undoStack.length ?? 0) + nowMs();
     const entry: UndoAction = {
       id: generateId('undo', monotonicCounter),
       storeKey,
       action,
       data: JSON.parse(JSON.stringify(data)),
-      timestamp: Date.now(),
+      timestamp: nowMs(),
       userId,
     };
 

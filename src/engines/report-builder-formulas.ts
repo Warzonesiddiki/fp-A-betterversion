@@ -20,6 +20,7 @@ import {
 } from './report-builder-types';
 import { generateReportId } from './report-builder-templates';
 import { sumMoney } from '../utils/money';
+import { nowISO } from '@/utils/clock';
 
 // ---------------------------------------------------------------------------
 // Formula Parsing
@@ -564,7 +565,7 @@ export function addParameter(
   return {
     ...report,
     parameters: [...existing, parameter],
-    updatedAt: new Date().toISOString(),
+    updatedAt: nowISO(),
     version: report.version + 1,
   } as ReportDefinition;
 }
@@ -586,7 +587,7 @@ export function updateParameterValue(
   return {
     ...report,
     parameters: updated,
-    updatedAt: new Date().toISOString(),
+    updatedAt: nowISO(),
     version: report.version + 1,
   } as ReportDefinition;
 }
@@ -597,7 +598,7 @@ export function removeParameter(report: ReportDefinition, parameterId: string): 
   return {
     ...report,
     parameters: existing.filter((p) => p.id !== parameterId),
-    updatedAt: new Date().toISOString(),
+    updatedAt: nowISO(),
     version: report.version + 1,
   } as ReportDefinition;
 }

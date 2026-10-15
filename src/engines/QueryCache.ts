@@ -1,3 +1,4 @@
+import { nowMs } from '@/utils/clock';
 export interface CacheEntry<T> {
   key: string;
   value: T;
@@ -83,7 +84,7 @@ export class QueryCache<T = unknown> {
 
   private isExpired(entry: CacheEntry<T>): boolean {
     if (!entry.ttl) return false;
-    return Date.now() - entry.createdAt > entry.ttl;
+    return nowMs() - entry.createdAt > entry.ttl;
   }
 
   private evict(): void {
@@ -133,7 +134,7 @@ export class QueryCache<T = unknown> {
       return undefined;
     }
 
-    entry.lastAccessed = Date.now();
+    entry.lastAccessed = nowMs();
     entry.accessCount++;
     if (this.config.enableStats) this.hits++;
     return entry.value;
@@ -153,8 +154,8 @@ export class QueryCache<T = unknown> {
       key,
       value,
       size,
-      createdAt: Date.now(),
-      lastAccessed: Date.now(),
+      createdAt: nowMs(),
+      lastAccessed: nowMs(),
       accessCount: 0,
       ttl: ttl ?? this.config.defaultTtl,
     };

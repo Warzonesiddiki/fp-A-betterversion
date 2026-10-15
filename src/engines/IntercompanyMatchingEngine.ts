@@ -21,6 +21,7 @@ import {
   toDecimal,
   type MoneyInput,
 } from '../utils/money';
+import { nowISO } from '@/utils/clock';
 
 export interface ICTransaction {
   id: string;
@@ -120,7 +121,7 @@ export class IntercompanyMatchingEngine {
           tolerance,
           status: 'auto_matched',
           matchedBy: 'system',
-          matchedAt: new Date().toISOString(),
+          matchedAt: nowISO(),
         };
 
         debit.status = 'matched';
@@ -155,7 +156,7 @@ export class IntercompanyMatchingEngine {
       tolerance: 0,
       status: 'manual_matched',
       matchedBy: userId,
-      matchedAt: new Date().toISOString(),
+      matchedAt: nowISO(),
     };
 
     debit.status = 'matched';
@@ -187,7 +188,7 @@ export class IntercompanyMatchingEngine {
         entityPair: [match.debitTransaction.fromEntity, match.debitTransaction.toEntity],
         period,
         createdBy: userId,
-        createdAt: new Date().toISOString(),
+        createdAt: nowISO(),
       };
 
       match.debitTransaction.status = 'eliminated';
@@ -339,9 +340,9 @@ export class IntercompanyMatchingEngine {
       debitAccount: 'Cost of Goods Sold',
       creditAccount: accountCode,
       entityPair: [sellerEntity, buyerEntity].sort() as [string, string],
-      period: new Date().toISOString().slice(0, 7),
+      period: nowISO().slice(0, 7),
       createdBy: userId,
-      createdAt: new Date().toISOString(),
+      createdAt: nowISO(),
     };
 
     this.eliminations.push(elimination);
@@ -436,7 +437,7 @@ export class IntercompanyMatchingEngine {
           currency: 'USD',
           accountCode: template.accountCode,
           description: `${template.description} - ${entities[i]!.name} → ${entities[j]!.name}`,
-          date: new Date().toISOString().slice(0, 10),
+          date: nowISO().slice(0, 10),
           status: 'pending',
         };
         transactions.push(tx);

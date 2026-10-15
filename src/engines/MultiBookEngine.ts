@@ -8,6 +8,7 @@
  * cents. No raw + - * / or Math.abs on currency values remains.
  */
 import { addMoney, roundTo, subtractMoney } from '../utils/money';
+import { nowISO, nowMs } from '@/utils/clock';
 
 export interface AccountingBook {
   id: string;
@@ -56,12 +57,12 @@ export class MultiBookEngine {
     entityId: string
   ): AccountingBook {
     const book: AccountingBook = {
-      id: `book-${Date.now()}-${++this.idCounter}`,
+      id: `book-${nowMs()}-${++this.idCounter}`,
       name,
       gaap,
       currency,
       entityId,
-      createdAt: new Date().toISOString(),
+      createdAt: nowISO(),
       closedPeriods: [],
       status: 'active',
     };
@@ -92,12 +93,12 @@ export class MultiBookEngine {
 
     const fullEntry: BookEntry = {
       ...entry,
-      id: `entry-${Date.now()}-${++this.idCounter}`,
+      id: `entry-${nowMs()}-${++this.idCounter}`,
       bookId,
       debit: roundTo(entry.debit),
       credit: roundTo(entry.credit),
       adjusted: false,
-      date: new Date().toISOString(),
+      date: nowISO(),
     };
 
     const bookEntries = this.entries.get(bookId) ?? [];
@@ -143,14 +144,14 @@ export class MultiBookEngine {
       adjustment.credit !== undefined ? roundTo(adjustment.credit) : original.credit;
 
     const adjusted: BookEntry = {
-      id: `adj-${Date.now()}-${++this.idCounter}`,
+      id: `adj-${nowMs()}-${++this.idCounter}`,
       bookId,
       accountId: original.accountId,
       debit: adjDebit,
       credit: adjCredit,
       description: adjustment.description,
       period: original.period,
-      date: new Date().toISOString(),
+      date: nowISO(),
       userId: adjustment.userId,
       adjusted: true,
       adjustmentOf: entryId,

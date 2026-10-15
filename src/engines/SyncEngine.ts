@@ -2,6 +2,7 @@
  * SyncEngine — Offline-first sync for collaboration
  * Queues local changes, syncs when online, handles conflicts
  */
+import { nowMs } from '@/utils/clock';
 
 interface SyncChange {
   id: string;
@@ -42,7 +43,7 @@ export class SyncEngine {
     const entry: SyncChange = {
       ...change,
       id: crypto.randomUUID(),
-      timestamp: Date.now(),
+      timestamp: nowMs(),
       synced: false,
       retryCount: 0,
     };
@@ -144,7 +145,7 @@ export class SyncEngine {
    * Clear synced items older than N days
    */
   static cleanup(retentionDays: number): number {
-    const cutoff = Date.now() - retentionDays * 24 * 60 * 60 * 1000;
+    const cutoff = nowMs() - retentionDays * 24 * 60 * 60 * 1000;
     const before = this.queue.length;
     this.queue = this.queue.filter((c) => !c.synced || c.timestamp > cutoff);
     return before - this.queue.length;
