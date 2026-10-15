@@ -45,6 +45,7 @@ import {
 import type { FiscalPeriod } from '@/types';
 import { useBudgetStore } from './budgetStore';
 import { useScenarioStore } from './scenarioStore';
+import { now } from '@/utils/clock';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -136,7 +137,7 @@ async function hashCloseEvent(event: PeriodCloseAuditEvent, prevHash: string): P
 export async function verifyCloseChain(
   entries: readonly CloseChainEntry[]
 ): Promise<ChainVerification> {
-  const checkedAt = new Date().toISOString();
+  const checkedAt = now().toISOString();
   if (entries.length === 0) {
     return { ok: true, totalEntries: 0, reason: 'EMPTY_CHAIN', checkedAt };
   }
@@ -291,9 +292,9 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
               state: result.newState,
               auditEvents: [...entry.auditEvents, result.auditEvent],
               ...(result.newState !== 'open'
-                ? { closedAt: new Date().toISOString(), closedBy: actor.id }
+                ? { closedAt: now().toISOString(), closedBy: actor.id }
                 : {
-                    reopenedAt: new Date().toISOString(),
+                    reopenedAt: now().toISOString(),
                     reopenedBy: actor.id,
                     reopenReason: reason,
                     reopenApprovalId: approvalId,

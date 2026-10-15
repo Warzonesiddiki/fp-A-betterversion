@@ -25,6 +25,7 @@ import { randomId } from '@/utils/cryptoId';
 // the F-0015 hash chain. setCurrentUserRole is ephemeral view state
 // (excluded from persistence via partialize).
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
+import { now as clockNow } from '@/utils/clock';
 
 // ---------------------------------------------------------------------------
 // Types (re-exported from canonical location)
@@ -170,7 +171,7 @@ export interface AuditChainVerification {
  */
 const uid = (): string => randomId();
 
-const now = (): number => Date.now();
+const now = (): number => clockNow().getTime();
 
 /**
  * F-CLIO-3 FIX (Sentinel-SecurityAuditor BRUTAL v2.0 P0 — GDPR Art. 5(1)(c) + Art. 32 + CWE-359):
@@ -378,8 +379,10 @@ export const useAuditTrailStore = create<State & Actions>()(
               userId: DEMO_USERS[i % DEMO_USERS.length]!,
               operation: DEMO_OPERATIONS[i % DEMO_OPERATIONS.length]!,
               dataType: 'number',
-              previousValue: i % 3 === 0 ? null : Math.round(Math.random() * 100000) / 100,
-              newValue: Math.round(Math.random() * 100000) / 100,
+              // Demo values are derived from the index so the seeded demo trail is
+              // identical on every run (NFR-001).
+              previousValue: i % 3 === 0 ? null : ((i * 7919) % 100000) / 100,
+              newValue: ((i * 104729 + 17) % 100000) / 100,
               approvalStatus: (['approved', 'auto', 'pending', 'approved'] as ApprovalStatus[])[
                 i % 4
               ]!,

@@ -54,6 +54,7 @@ import { masterStorage } from '../utils/masterStorage';
 // Ledger destruction is expressed as import:delete per the RBAC catalogue
 // (gl:delete deliberately does not exist). Selection stays unguarded.
 import { enforce, Permissions } from '../utils/rbacEnforcer';
+import { now as clockNow } from '@/utils/clock';
 
 export const useDataStore = create<DataState>()(
   subscribeWithSelector(
@@ -70,7 +71,10 @@ export const useDataStore = create<DataState>()(
 
         addAccount: enforce(Permissions.IMPORT_CREATE, 'addAccount', (account) =>
           set((state) => ({
-            accounts: [...state.accounts, { ...account, id: `acct-${Date.now()}`, children: [] }],
+            accounts: [
+              ...state.accounts,
+              { ...account, id: `acct-${clockNow().getTime()}`, children: [] },
+            ],
           }))
         ),
 
@@ -115,8 +119,8 @@ export const useDataStore = create<DataState>()(
         }),
 
         addImportJob: enforce(Permissions.IMPORT_CREATE, 'addImportJob', (job) => {
-          const id = `import-${Date.now()}`;
-          const now = new Date().toISOString();
+          const id = `import-${clockNow().getTime()}`;
+          const now = clockNow().toISOString();
           set((state) => ({
             importJobs: [
               { ...job, id, status: 'Pending', startedAt: now } as ImportJob,
@@ -137,7 +141,7 @@ export const useDataStore = create<DataState>()(
                   return {
                     ...j,
                     status,
-                    ...(isCompleted ? { completedAt: new Date().toISOString() } : {}),
+                    ...(isCompleted ? { completedAt: clockNow().toISOString() } : {}),
                     ...(error ? { error } : {}),
                   };
                 }
@@ -145,7 +149,7 @@ export const useDataStore = create<DataState>()(
               });
               return {
                 importJobs: newJobs,
-                ...(isCompleted ? { lastImportDate: new Date().toISOString() } : {}),
+                ...(isCompleted ? { lastImportDate: clockNow().toISOString() } : {}),
               };
             });
           }
