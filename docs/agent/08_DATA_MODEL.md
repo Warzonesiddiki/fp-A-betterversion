@@ -139,8 +139,14 @@ A generated local approval ID is correlation metadata, **not independent approva
 The page validates bindings on mount and displays a recoverable calendar-conflict
 error rather than overwriting an old year's period state.
 
-**Not yet enforced:** GL import/edit/delete/clear/undo guards, ambiguous overlapping
-or adjusting-period resolution, unknown-entity policy, hydration readiness and
-cross-store concurrency. Scope retention and reopen safety alone do not make the
-ledger immutable after close. `FiscalPeriod.isClosed` is also not automatically
+**Local guards now implemented:** GL import, add/replace, account replacement,
+undo/redo, clear/undo-import, server publish and server-to-local refresh consult
+`glPeriodWriteGuard` against hydrated close state. Missing/ambiguous ranges and
+conflicting posting metadata fail closed. Whole-store replacement/undo checks all
+current/target rows conservatively, including unchanged closed rows.
+
+**Still not guaranteed:** cross-process/server transaction isolation for requests
+already in flight, raw `setState`/backup/native mutation paths and application-wide
+financial immutability. In-flight server writes may complete; the local update is
+stopped and requires reconciliation. `FiscalPeriod.isClosed` is not automatically
 converted into a close-state-machine transition by initialization.

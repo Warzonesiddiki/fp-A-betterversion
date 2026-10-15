@@ -224,3 +224,24 @@ sharded suite was not rerun for this change.
 Additional checks passed: TypeScript, changed-file ESLint (zero warnings), Prettier,
 money AST, determinism ratchet (345 unchanged), docs verification, fabrication audit
 and architecture guardrails.
+
+## 2026-10-16 — Owner enterprise directive and exact ingestion staging
+
+`ACQUISITION_PROTOCOL.md` records the new mission/harvest backlog and its final
+execution precedence (DEC-010). The interrupted local period-write guards were
+verified and checkpointed in `42b84ac`; cross-process/server transactions remain
+unverified. `GAP_LEDGER.md` now carries current branch metadata and literal test
+outputs instead of treating its older August continuation metadata as current.
+
+SmartImportMapper now has a real, pure `ingest(GLIngestInput)` staging method with
+exact decimal-string monetary fields, explicit date/sign dialects, deterministic
+header aliases/overrides, COA/entity/currency validation, raw-row quarantine reasons,
+source-record offsets, exact totals and per-voucher imbalance diagnostics. Existing
+number-valued amount parsing remains a compatibility boundary; its exact lexeme
+parser is shared with the new method. Accounting trailing-minus input is supported.
+
+This is not durable quarantine, worker/SQLite integration, streaming CSV/XLSX, a
+250k-row performance result, completed source transplants, or a golden full-pipeline
+harness. Accepted and rejected rows are materialized. See GAP_LEDGER.md for exact
+contract and test evidence; no acceptance test was created with invented downstream
+APIs or mocked export artifacts.

@@ -10,12 +10,12 @@
  *    exactly 1-2 digits at the end of the string; otherwise it is thousands
  *    grouping.
  *  - Currency symbols ($ € £ ¥ ₹ ¤) and spaces (incl. NBSP variants) are
- *    stripped; a leading +/- sign or surrounding parentheses carry the sign,
+ *    stripped; a leading +/- sign, trailing minus or surrounding parentheses carry the sign,
  *    so "(500)" parses to -500.
  *  - Thousands grouping is only accepted when every group after the first is
  *    exactly 3 digits ("12,34,567" ok, "1,2345" rejected).
  *
- * Returns NaN for anything unparseable so callers can reject the row instead
+ * The number compatibility wrapper returns NaN for anything unparseable so callers can reject the row instead
  * of silently storing a wrong value.
  */
 const CURRENCY_AND_SPACE = /[\s\u00A0\u2007\u202F$€£¥₹¤]/g;
@@ -34,15 +34,16 @@ function stripThousandsGroups(intPart: string, sep: string): string | null {
   return groups.join('');
 }
 
-export function parseFinancialAmount(raw: string): number {
-  if (typeof raw !== 'string') return Number.NaN;
+/** Exact decimal lexeme for ingestion; null means invalid. No Number conversion. */
+export function parseFinancialAmountExact(raw: string): string | null {
+  if (typeof raw !== 'string') return null;
   let s = raw.trim();
-  if (s.length === 0) return Number.NaN;
+  if (s.length === 0) return null;
 
   // Strip currency symbols and spaces (incl. NBSP variants) first so signs
   // wrapped inside them — "$(1,234.50)" — still read correctly.
   s = s.replace(CURRENCY_AND_SPACE, '');
-  if (s.length === 0) return Number.NaN;
+  if (s.length === 0) return null;
 
   let negative = false;
   const paren = /^\((.*)\)$/.exec(s);
@@ -52,10 +53,13 @@ export function parseFinancialAmount(raw: string): number {
   } else if (/^[+-]/.test(s)) {
     negative = s.startsWith('-');
     s = s.slice(1).trim();
+  } else if (/\d-$/.test(s)) {
+    negative = true;
+    s = s.slice(0, -1);
   }
 
   if (s.length === 0 || !ONLY_DIGITS_AND_SEPARATORS.test(s) || !HAS_A_DIGIT.test(s)) {
-    return Number.NaN;
+    return null;
   }
 
   const lastComma = s.lastIndexOf(',');
@@ -64,7 +68,7 @@ export function parseFinancialAmount(raw: string): number {
   if (lastComma >= 0 && lastDot >= 0) {
     decimalSep = lastComma > lastDot ? ',' : '.';
     // The chosen decimal separator may occur only once.
-    if (s.split(decimalSep).length - 1 !== 1) return Number.NaN;
+    if (s.split(decimalSep).length - 1 !== 1) return null;
   } else if (lastComma >= 0 || lastDot >= 0) {
     const sep = lastComma >= 0 ? ',' : '.';
     const occursOnce = s.split(sep).length - 1 === 1;
@@ -77,24 +81,30 @@ export function parseFinancialAmount(raw: string): number {
   if (decimalSep !== '') {
     const thousandsSep = decimalSep === '.' ? ',' : '.';
     const [intPart, ...rest] = s.split(decimalSep);
-    if (intPart === undefined || rest.length > 1) return Number.NaN;
+    if (intPart === undefined || rest.length > 1) return null;
     const strippedInt =
       intPart.includes(thousandsSep) || intPart === ''
         ? stripThousandsGroups(intPart, thousandsSep)
         : intPart;
-    if (strippedInt === null || strippedInt.length === 0) return Number.NaN;
+    if (strippedInt === null || strippedInt.length === 0) return null;
     normalized = `${strippedInt}.${rest[0] ?? ''}`;
   } else if (lastComma >= 0 || lastDot >= 0) {
     const sep = lastComma >= 0 ? ',' : '.';
     const stripped = stripThousandsGroups(s, sep);
-    if (stripped === null) return Number.NaN;
+    if (stripped === null) return null;
     normalized = stripped;
   } else {
     normalized = s;
   }
 
-  if (!/^\d+(\.\d*)?$/.test(normalized)) return Number.NaN;
-  const n = Number(normalized);
-  if (!Number.isFinite(n)) return Number.NaN;
-  return negative ? -n : n;
+  if (!/^\d+(\.\d*)?$/.test(normalized)) return null;
+  return negative ? `-${normalized}` : normalized;
+}
+
+/** Compatibility boundary for existing number-valued callers. */
+export function parseFinancialAmount(raw: string): number {
+  const exact = parseFinancialAmountExact(raw);
+  if (exact === null) return Number.NaN;
+  const value = Number(exact);
+  return Number.isFinite(value) ? (value === 0 ? 0 : value) : Number.NaN;
 }

@@ -5,9 +5,77 @@
 (and the earlier forensic audits under `reports/audit/`) — never from assumption. Each entry is
 atomic and testable. Evidence = literal command output with date.
 
-- **Date of latest re-verification:** 2026-08-06 (UTC)
-- **Current continuation branch:** `arena/019fd6ad-fp-a-betterversion` (Wave 9 Phase 3 sector-depth session)
-- **Current base:** `289a67a` (PR #35 merge commit on `main`; Wave 8 8/8 Phase 2 complete; ratchet baseline 209/888 frontend, 2/23 server, 0 raw `toFixed`)
+- **Date of latest re-verification:** 2026-10-16 (current entries below; older entries retain their original evidence)
+- **Current continuation branch:** `arena/48b4e481-fp-a-betterversion`
+- **Session base:** `04c329e`; the older Wave 9/base metadata is historical. See Git and `docs/discovery/` for current implementation state.
+
+## 2026-10-16 — Pipeline directive, ingestion staging foundation (partial)
+
+The owner supplied the enterprise mission, acquisition protocol and full month-end
+pipeline backlog. Normalized protocol saved in `ACQUISITION_PROTOCOL.md`. Follow
+the final execution precedence: ingestion first, then verified consolidation/FX/IC,
+exports, and a real golden harness. SaaS/other sectors and harvests remain queued;
+no sibling code was copied and no unverified acquisition is claimed.
+
+**Contract:** `SmartImportMapper.ingest(GLIngestInput)` accepts headers and an
+iterable of already-tokenized rows. It uses deterministic exact header aliases or
+explicit field overrides, an explicit date dialect and signed-amount convention,
+a supplied chart/entity list, source identity/first record number and one expected
+two-decimal currency. Output: exact-string candidate rows, in-memory quarantine
+with raw source rows and typed reasons, exact debit/credit controls, unbalanced
+voucher IDs and a staging `canPost` gate. Rejected rows always block promotion,
+even if surviving rows balance. Separate vouchers cannot hide opposite imbalances.
+No source journal ID is invented when absent: controls then group by entity/file.
+Physical multiline CSV line offsets remain the tokenizer/coordinator's job; this
+API numbers tokenized records with the supplied first-row offset.
+
+Added exact lexeme parsing without conversion through Number; the existing
+`parseFinancialAmount` number API remains a compatibility wrapper. Accounting
+parentheses, trailing minus, grouped/localized decimals and explicit zero work;
+corrupted or sub-cent staging amounts are rejected. Amounts are bounded to 24
+integer digits per row. Existing number-valued consumers are **not** claimed migrated.
+
+**TDD:** first run of the 11 new ingest tests failed because `ingest` did not exist.
+Implemented the real method, then added three mapping/cent/metadata regressions.
+No mocked ingest results or weakened checks.
+
+Verified command:
+`npm test -- src/engines/SmartImportMapper.ingest.money.test.ts src/engines/SmartImportMapper.test.ts src/utils/parseFinancialAmount.test.ts src/engines/ThreeStatementEngine.test.ts src/engines/ConsolidationEngine.test.ts`
+
+Literal output (ANSI stripped):
+```text
+ Test Files  5 passed (5)
+      Tests  167 passed (167)
+   Start at  22:03:02
+   Duration  2.82s (transform 534ms, setup 1.59s, import 618ms, tests 163ms, environment 5.69s)
+```
+
+Core smoke command:
+`npx vitest run src/engines/ThreeStatementEngine.test.ts src/engines/ConsolidationEngine.test.ts`
+```text
+ Test Files  2 passed (2)
+      Tests  107 passed (107)
+   Start at  22:04:01
+   Duration  1.19s (transform 228ms, setup 383ms, import 249ms, tests 50ms, environment 1.41s)
+```
+
+TypeScript (`npm run tsc -- --noEmit`), changed-file ESLint, money AST (0 unsafe
+operations), determinism (345 unchanged), docs verification, engine-manifest check,
+architecture guardrails and fabrication audit passed.
+
+**Not delivered:** fuzzy COA/Jaro-Winkler review, CSV dialect tokenization/XLSX
+streaming, worker/coordinator wiring, durable SQLite quarantine, hash-idempotent
+transactional promotion, 250k-row memory/performance verification, a full API-level
+migration of the existing import wizard, source-verified transplants, or the
+end-to-end XLSX/PPTX/PDF artifact harness. The new method materializes its outputs;
+it is not a bounded-memory streaming import. Existing consolidation smoke tests do
+not prove ASC 810/830 compliance or the requested golden pipeline.
+
+**Next target:** connect exact staging to worker/coordinator persistence without
+converting Decimal strings to the legacy GL store's number fields; verify real
+source API/FX/IC and artifact contracts before constructing the final harness.
+
+---
 
 ## 2026-10-16 — Interrupted period-write safety checkpoint
 
@@ -1632,3 +1700,19 @@ Evidence = literal command output, 2026-08-08 (closeout: `reports/mission-e-clos
 ### OPEN (unchanged dispositions)
 - **F-02 (ENV-BOUND):** Playwright E2E unexecutable in sandbox (browser CDN egress blocked).
 - **Deploy workflow:** fails on merges (pre-existing, env-bound; GAP-7 forbids workflow edits).
+
+## 2026-10-16 — Combined post-ingestion regression run
+
+Command:
+`npm test -- src/engines/SmartImportMapper.ingest.money.test.ts src/engines/SmartImportMapper.test.ts src/utils/parseFinancialAmount.test.ts src/engines/ThreeStatementEngine.test.ts src/engines/ConsolidationEngine.test.ts src/store/glStore src/services/import src/pages/data src/store/periodCloseStore.test.ts src/pages/periods src/engines/UndoRedoEngine src/engines/PeriodCloseStateMachine.test.ts`
+
+Literal output (ANSI stripped):
+```text
+ Test Files  45 passed (45)
+      Tests  636 passed (636)
+   Start at  22:04:52
+   Duration  30.36s (transform 3.22s, setup 12.85s, import 13.65s, tests 20.22s, environment 58.95s)
+```
+
+This targeted run is not the full sharded repository suite. No native/Tauri runtime
+or 250k-row SQLite benchmark was run.
