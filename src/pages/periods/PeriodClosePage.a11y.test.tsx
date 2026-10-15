@@ -6,7 +6,8 @@
 // must be announced via a polite live region (Q5.4).
 // =============================================================================
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { setClock, resetClock } from '@/utils/clock';
 import { render, screen, fireEvent, waitFor } from '@/test/testUtils';
 import PeriodClosePage from '@/pages/periods/PeriodClosePage';
 import { actAs } from '@/test/rbacFixtures';
@@ -50,10 +51,18 @@ function balancedEntries(): GLEntry[] {
 }
 
 describe('PeriodClosePage a11y', () => {
+  // Pin the clock: the page selects the fiscal period containing "today".
+  // These fixtures live in August 2026; without a pinned clock the suite
+  // rots the day the calendar moves on (it did, on 2026-09-01).
   beforeEach(() => {
+    setClock('2026-08-07T12:00:00Z');
     usePeriodCloseStore.setState({ entries: {}, checklists: {}, chain: [], initialized: false });
     useGLStore.setState({ entries: [] });
     actAs('Admin');
+  });
+
+  afterEach(() => {
+    resetClock();
   });
 
   it('has exactly one live region with polite politeness and atomic announcements', async () => {

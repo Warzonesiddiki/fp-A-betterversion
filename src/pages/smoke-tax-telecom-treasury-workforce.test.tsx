@@ -94,45 +94,9 @@ vi.mock('recharts', () => {
   };
 });
 
-// ---------------------------------------------------------------------------
-// Mock lucide-react
-// ---------------------------------------------------------------------------
-
-vi.mock('lucide-react', () => {
-  const makeIcon = () => {
-    const Icon = ({ className }: { className?: string }) => (
-      <span data-testid="mock-icon" className={className} />
-    );
-    Icon.displayName = 'MockIcon';
-    return Icon;
-  };
-  return {
-    ChevronUp: makeIcon(),
-    ChevronDown: makeIcon(),
-    Search: makeIcon(),
-    Info: makeIcon(),
-    AlertTriangle: makeIcon(),
-    Landmark: makeIcon(),
-    Download: makeIcon(),
-    FileText: makeIcon(),
-    Table: makeIcon(),
-    Percent: makeIcon(),
-    DollarSign: makeIcon(),
-    TrendingUp: makeIcon(),
-    TrendingDown: makeIcon(),
-    ArrowLeftRight: makeIcon(),
-    CheckCircle: makeIcon(),
-    AlertCircle: makeIcon(),
-    Clock: makeIcon(),
-    Wifi: makeIcon(),
-    Users: makeIcon(),
-    Activity: makeIcon(),
-    BarChart3: makeIcon(),
-    Shield: makeIcon(),
-    ShieldAlert: makeIcon(),
-    Headphones: makeIcon(),
-  };
-});
+// lucide-react is mocked globally in src/test/setup.ts with every named export.
+// Do not hand-mock it here: a partial local mock silently breaks the moment a
+// page adopts a new icon (this file failed on `Inbox` for exactly that reason).
 
 // ---------------------------------------------------------------------------
 // Import pages AFTER mocks
@@ -198,7 +162,9 @@ describe('Tax pages smoke tests', () => {
     });
     it('displays the page heading', () => {
       renderPage(TransferPricingPage, '/tax/transfer-pricing');
-      expect(screen.getByText(/Transfer Pricing/i)).toBeTruthy();
+      // The page also mentions "Transfer Pricing" in body copy and in the
+      // empty-state heading, so assert on the h1 specifically.
+      expect(screen.getByRole('heading', { level: 1, name: /^Transfer Pricing$/i })).toBeTruthy();
     });
   });
 });

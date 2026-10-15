@@ -38,6 +38,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useGLStore } from '@/store/glStore';
+import { todayISO } from '@/utils/clock';
 import { useBudgetStore } from '@/store/budgetStore';
 import { useSettingsStore } from '@/store/settingsStore';
 import { usePeriodCloseStore, type CloseChainEntry } from '@/store/periodCloseStore';
@@ -161,7 +162,7 @@ export default function PeriodClosePage() {
 
   // Default selection: current fiscal period (today within start/end), else P01.
   const currentPeriod = useMemo(() => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = todayISO();
     return (
       periods.find((p) => p.startDate.slice(0, 10) <= today && p.endDate.slice(0, 10) >= today) ??
       periods[0] ??

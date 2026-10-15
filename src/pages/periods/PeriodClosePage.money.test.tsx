@@ -7,7 +7,8 @@
 // the helper layer and the page layer.
 // =============================================================================
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { setClock, resetClock } from '@/utils/clock';
 import { render, screen, waitFor } from '@/test/testUtils';
 import PeriodClosePage from '@/pages/periods/PeriodClosePage';
 import { actAs } from '@/test/rbacFixtures';
@@ -152,9 +153,17 @@ describe('evaluateCloseReadiness — money-exact trial balance', () => {
 });
 
 describe('PeriodClosePage money display', () => {
+  // Pin the clock: the page selects the fiscal period containing "today".
+  // These fixtures live in August 2026; without a pinned clock the suite
+  // rots the day the calendar moves on (it did, on 2026-09-01).
   beforeEach(() => {
+    setClock('2026-08-07T12:00:00Z');
     resetStores();
     actAs('Admin');
+  });
+
+  afterEach(() => {
+    resetClock();
   });
 
   it('renders TB totals formatted to 2dp from real GL (no raw float display)', async () => {
