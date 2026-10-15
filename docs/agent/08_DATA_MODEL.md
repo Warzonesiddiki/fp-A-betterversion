@@ -27,6 +27,8 @@ these types (K3 risk — see `09_KNOWN_GAPS.md`).
 
 ## Import pipeline invariants (implemented, tested)
 
+`parseGLRows(rawRows, mappings)` (pure; `src/services/import/parseGLRows.ts`)
+turns source rows into entries + `VALIDATION` rejections; then
 `useGLStore.getState().importGLData(entries, filename, source?)`:
 
 1. `fileHash` = caller's SHA-256 of bytes, else SHA-256 of canonical row

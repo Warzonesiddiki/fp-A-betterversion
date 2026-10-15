@@ -77,6 +77,7 @@ controlTotals/scope`). A stub that omits fields is a test bug, not a reason
 | ------------------------------------------------------------------------- | --------------------------------------------------------- |
 | Import idempotency / atomicity / rejections / provenance / totals / scope | `src/store/glStore.provenance.test.ts`                    |
 | Provenance helpers                                                        | `src/services/import/importProvenance.test.ts`            |
+| Row parsing / validation fixtures                                         | `src/services/import/parseGLRows.test.ts`                 |
 | Upload page behaviour                                                     | `src/pages/data/GLUploadPage.deep.test.tsx`               |
 | Trial balance and GL math                                                 | `src/store/glStore.test.ts`, `glStore.money.test.ts`      |
 | Money primitive                                                           | `src/utils/money.test.ts`                                 |

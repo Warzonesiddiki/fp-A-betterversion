@@ -15,10 +15,9 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { ExcelImportEngine } from '@/engines/ExcelImportEngine';
 import { hasDuplicateHeaders, parseCSV } from '@/utils/csv';
-import { parseFinancialAmount } from '@/utils/parseFinancialAmount';
-import { parseImportDate } from '@/utils/parseImportDate';
-import type { GLEntry, ImportControlTotals, ImportRejection, ImportScope } from '@/types';
+import type { ImportControlTotals, ImportRejection, ImportScope } from '@/types';
 import { hashFileBytes } from '@/services/import/importProvenance';
+import { parseGLRows, missingRequiredMappings } from '@/services/import/parseGLRows';
 import {
   CheckCircle2,
   Upload,
@@ -285,7 +284,7 @@ export default function GLUploadPage() {
   }, []);
 
   const handlePreview = useCallback(() => {
-    if (!mappings.accountCode || !mappings.postDate) {
+    if (missingRequiredMappings(mappings).length > 0) {
       setImportError(
         'Account Code and Posting Date are required fields. Please map them before continuing.'
       );
@@ -298,73 +297,16 @@ export default function GLUploadPage() {
     setImportStatus('importing');
     setImportProgress(0);
 
-    // W6-P0-09/P0-10: strict per-row coercion. Amounts go through
-    // parseFinancialAmount (bare parseFloat truncated "1,234.56" to 1) and
-    // dates through parseImportDate (raw cells produced garbage periods).
-    // Broken rows are excluded from the import and reported via the existing
-    // importError channel — never silently stored.
-    const rowErrors: string[] = [];
-    // Same facts as rowErrors, structured, so they are recorded on the batch
-    // (FR-002: a rejected row must stay explainable after the banner is gone).
-    const preRejections: ImportRejection[] = [];
-    const parsedEntries: Partial<GLEntry>[] = [];
-    const sourceRows: number[] = [];
-
-    rawData.forEach((row, idx) => {
-      const rowNum = idx + 2; // header occupies row 1 of the source file
-      const getVal = (field: string) => row[mappings[field]!];
-
-      const reject = (reason: string) => {
-        rowErrors.push(`Row ${rowNum}: ${reason}`);
-        preRejections.push({ row: rowNum, code: 'VALIDATION', reason });
-      };
-
-      const accountCode = getVal('accountCode') || '';
-      if (!accountCode) reject('missing accountCode');
-
-      const rawDate = String(getVal('postDate') ?? '').trim();
-      const postDate = parseImportDate(rawDate);
-      if (!postDate) {
-        reject(`unparseable posting date "${rawDate}"`);
-      }
-
-      const parseCellAmount = (field: string): number => {
-        if (!mappings[field]) return 0;
-        const cell = String(getVal(field) ?? '').trim();
-        if (cell === '') return 0;
-        const value = parseFinancialAmount(cell);
-        if (Number.isNaN(value)) {
-          reject(`unparseable ${field} amount "${cell}"`);
-          return Number.NaN;
-        }
-        return value;
-      };
-      const debit = parseCellAmount('debit');
-      const credit = parseCellAmount('credit');
-
-      if (!accountCode || !postDate || Number.isNaN(debit) || Number.isNaN(credit)) return;
-
-      const period = postDate.slice(0, 7); // canonical YYYY-MM
-      sourceRows.push(rowNum);
-      parsedEntries.push({
-        id: '',
-        accountId: accountCode,
-        accountCode,
-        accountName: accountCode,
-        period,
-        periodName: period,
-        debit,
-        credit,
-        netChange: 0,
-        amount: 0,
-        date: postDate,
-        postDate,
-        description: getVal('description') || '',
-        reference: getVal('reference') || '',
-        entityId: getVal('entityId') || '',
-        departmentId: getVal('departmentId') || '',
-      });
-    });
+    // Row → entry parsing is a pure, fixture-tested function
+    // (src/services/import/parseGLRows.ts). Broken rows are excluded and
+    // reported both as banner text and as structured rejections recorded on
+    // the batch (FR-002: nothing is silently discarded).
+    const {
+      entries: parsedEntries,
+      sourceRows,
+      rejections: preRejections,
+      rowErrors,
+    } = parseGLRows(rawData, mappings);
 
     if (parsedEntries.length === 0) {
       setImportError(
