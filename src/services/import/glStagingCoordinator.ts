@@ -45,6 +45,7 @@ export type GLStagingSessionState =
   | 'ready'
   | 'blocked'
   | 'failed'
+  | 'promoted'
   | 'in_progress'
   | 'incomplete'
   | 'orphaned';
@@ -288,6 +289,10 @@ export async function discardStagingBatch(
   const lock = await repository.readLock(batchId);
   if (lock && lock.expiresAtMs > nowMs()) {
     throw new Error(`Cannot discard locked GL staging batch "${batchId}".`);
+  }
+  const manifest = await repository.readManifest(batchId);
+  if (manifest?.status === 'promoted') {
+    throw new Error(`Cannot discard staging batch "${batchId}": batch is already promoted.`);
   }
   await repository.removeBatch(batchId);
 }

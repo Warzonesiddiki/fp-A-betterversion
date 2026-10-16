@@ -10,7 +10,7 @@ export interface GLStagingManifest {
   readonly batchId: string;
   readonly fileHash: string;
   readonly sourceId: string;
-  readonly status: 'staging' | 'ready' | 'blocked' | 'failed';
+  readonly status: 'staging' | 'ready' | 'blocked' | 'failed' | 'promoted';
   readonly chunkCount: number;
   readonly rowCount: number;
   readonly acceptedCount: number;
@@ -19,6 +19,7 @@ export interface GLStagingManifest {
   readonly controlTotals: GLIngestResult['controlTotals'];
   readonly unbalancedVouchers: readonly VoucherImbalance[];
   readonly failure?: string;
+  readonly promotedAt?: string;
 }
 
 export interface GLStagingLock {

@@ -9,6 +9,11 @@ import {
   readStagingQuarantinePage,
   discardStagingBatch,
 } from './glStagingCoordinator';
+import {
+  promoteStagingBatch,
+  readPromotedLedgerBatch,
+  readPromotedLedgerEntries,
+} from './glStagingPromotion';
 import { SmartImportMapper } from '@/engines/SmartImportMapper';
 
 // Substitute only the SQL transport. Production masterStorage encryption,
@@ -107,6 +112,39 @@ describe('staging repository with real SQL.js/WASM', () => {
       await discardStagingBatch('sqlite-oracle', { repository: restored });
       expect(await discoverStagingSessions({ repository: restored })).toEqual([]);
       expect(await restored.readManifest('sqlite-oracle')).toBeNull();
+
+      // Now stage a balanced ready batch, promote it, and verify SQLite binary export/reopen
+      async function* balancedChunks() {
+        yield [debit, credit];
+      }
+      const readyManifest = await stageGLImport(
+        { batchId: 'sqlite-promoted', fileHash: 'e'.repeat(64), config, chunks: balancedChunks() },
+        { repository: restored, compute: async (input) => SmartImportMapper.ingest(input) }
+      );
+      expect(readyManifest.status).toBe('ready');
+      await promoteStagingBatch('sqlite-promoted', {
+        repository: restored,
+        periodAuthority: { entries: {}, checklists: {} },
+        periodHydrated: true,
+        promotedAt: '2026-10-16T10:00:00.000Z',
+      });
+
+      const reopenedAfterPromote = new SQL.Database(reopened.export());
+      try {
+        boundary.port = portFor(reopenedAfterPromote);
+        const promotedBatch = await readPromotedLedgerBatch('sqlite-promoted');
+        expect(promotedBatch?.controlTotals).toEqual({
+          debit: '9007199254740993.01',
+          credit: '9007199254740993.01',
+          imbalance: '0.00',
+        });
+        const promotedEntries = await readPromotedLedgerEntries('sqlite-promoted');
+        expect(promotedEntries).toHaveLength(2);
+        expect(promotedEntries[0]?.debit).toBe('9007199254740993.01');
+        expect(promotedEntries[1]?.credit).toBe('9007199254740993.01');
+      } finally {
+        reopenedAfterPromote.close();
+      }
     } finally {
       reopened?.close();
       db.close();

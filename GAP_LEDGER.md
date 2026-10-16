@@ -36,13 +36,15 @@ Total: 6682.79KB raw / 2021.01KB gzip
 :white_check_mark: G19 PASS: chart-vendor = 129.3KB gzip (<= 300KB)
 ```
 
-### 2. GL staging lifecycle & streaming CSV tokenizer (`DEC-010` Step 1 slice)
+### 2. GL staging lifecycle, streaming CSV/XLSX tokenizers & transactional exact-string promotion (`DEC-010` Step 1 slice)
 
-- Extended `src/services/import/glStagingRepository.ts` with batch index (`gl-ingestion-stage:v1:index`), orphan/batch removal (`removeChunksFrom`, `removeBatch`), and cross-window lease locks (`readLock`, `acquireLock`, `releaseLock`).
-- Extended `src/services/import/glStagingCoordinator.ts` with `discoverStagingSessions`, `recoverStagingSessions`, `discardStagingBatch`, `readStagingQuarantinePage`, lease-lock enforcement across `stageGLImport`/`discardStagingBatch`, and `GLStagingChunkSlice` (`rowNumbers?: readonly number[]`) support.
+- Extended `src/services/import/glStagingRepository.ts` with batch index (`gl-ingestion-stage:v1:index`), orphan/batch removal (`removeChunksFrom`, `removeBatch`), cross-window lease locks (`readLock`, `acquireLock`, `releaseLock`), and `'promoted'` manifest state (`promotedAt`).
+- Extended `src/services/import/glStagingCoordinator.ts` with `discoverStagingSessions`, `recoverStagingSessions`, `discardStagingBatch` (refusing to discard `'promoted'` batches), `readStagingQuarantinePage`, lease-lock enforcement across `stageGLImport`/`discardStagingBatch`, and `GLStagingChunkSlice` (`rowNumbers?: readonly number[]`) support.
 - Extended `src/types/glIngestion.ts`, `src/workers/glIngestionRequest.ts`, and `src/engines/SmartImportMapper.ts` to validate and attribute explicit 1-based physical line numbers (`rowNumbers`) across chunks, accepted rows, quarantined rows, and voucher imbalance diagnostics.
 - Implemented `src/services/import/glCsvTokenizer.ts` (`CSVTokenizationError`, `tokenizeGLCsvStream`, `stageGLCsvImport`) with fatal UTF-8 decoding, RFC-4180 quote/escape/column-count validation, physical line tracking across blank lines and multiline quoted fields, and backpressured streaming into `stageGLImport`.
-- Added TDD suites in `src/services/import/glStagingLifecycle.test.ts` (6 tests), `src/services/import/glCsvTokenizer.test.ts` (3 tests), and expanded `src/services/import/glStagingRepository.sqljs.test.ts`, `src/engines/SmartImportMapper.ingest.money.test.ts`, and `src/workers/gl-ingestion.worker.test.ts`.
+- Implemented `src/services/import/glXlsxTokenizer.ts` (`XLSXTokenizationError`, `tokenizeGLXlsxBytes`, `stageGLXlsxImport`) reading OOXML worksheet XML directly from `.xlsx` ZIP archives via `DecompressionStream('deflate-raw')` without `ExcelJS` / `parseFloat` float coercion, preserving >53-bit exact decimal lexemes (`9007199254740993.15`), converting date-styled Excel serials to `'YYYY-MM-DD'`, tracking physical 1-based Excel row numbers across blank rows, and failing closed on unevaluated formulas (`<f>` without `<v>`), missing sheets, duplicate headers, and ragged rows.
+- Implemented `src/services/import/glStagingPromotion.ts` (`promoteStagingBatch`, `listPromotedLedgerBatches`, `readPromotedLedgerBatch`, `readPromotedLedgerEntries`) enforcing under cross-window lease locks: `'ready'` manifest eligibility, full chunk re-verification, SHA-256 `fileHash`/`batchId` idempotency, `DEC-008` closed-period write guards (`getGLPeriodWriteIssues`) at promotion time, atomic index commit into `gl-ledger-exact:v1:*` with rollback of partial keys on write failure, and transition of the staging manifest to `'promoted'`.
+- Added TDD suites in `src/services/import/glStagingLifecycle.test.ts` (6 tests), `src/services/import/glCsvTokenizer.test.ts` (3 tests), `src/services/import/glXlsxTokenizer.test.ts` (3 tests), `src/services/import/glStagingPromotion.test.ts` (4 tests), and expanded `src/services/import/glStagingRepository.sqljs.test.ts`, `src/engines/SmartImportMapper.ingest.money.test.ts`, and `src/workers/gl-ingestion.worker.test.ts`.
 
 Verified test command:
 `npm test -- src/services/import src/workers src/engines/SmartImportMapper src/utils/masterStorage src/utils/money src/utils/backupRestore.test.ts src/engines/ThreeStatementEngine.test.ts src/engines/ConsolidationEngine.test.ts`
@@ -50,15 +52,15 @@ Verified test command:
 Literal output (ANSI stripped):
 
 ```text
- Test Files  33 passed (33)
-      Tests  499 passed (499)
-   Start at  09:25:06
-   Duration  41.30s (transform 1.71s, setup 12.39s, import 2.80s, tests 42.62s, environment 55.38s)
+ Test Files  35 passed (35)
+      Tests  506 passed (506)
+   Start at  12:00:53
+   Duration  47.67s (transform 1.82s, setup 14.22s, import 3.58s, tests 54.55s, environment 69.27s)
 ```
 
-Verified static & invariant gates (`npm run tsc -- --noEmit`, `npx eslint ... --max-warnings 0`, `npm run money:ast`, `npm run money:adoption`, `npm run determinism:ratchet`, `npm run docs:verify`, `npm run engines:verify`, `npm run fabrication:audit`, `npm run format:check`): all exited `0`.
+Verified static & invariant gates (`npm run tsc -- --noEmit`, `npx eslint ... --max-warnings 0`, `npm run money:ast`, `npm run money:adoption`, `npm run determinism:ratchet`, `npm run docs:verify`, `npm run engines:verify`, `npm run architecture:guardrails`, `npm run fabrication:audit`, `npm run format:check`): all exited `0`.
 
-**Not yet delivered:** streaming XLSX tokenizer, transactional SQLite ledger promotion preserving exact decimal strings (without converting through `glStore`'s legacy `number` fields), UI wizard wiring to the new staging coordinator, 250k-row browser/native scalability evidence, Step 2 consolidation/FX/IC contract verification, Step 3 real formula-preserving XLSX / editable PPTX exports, or Step 4 month-end acceptance harness.
+**Not yet delivered:** UI upload-wizard wiring to the new staging/promotion coordinator, migration of legacy number-valued `glStore` consumers to `gl-ledger-exact:v1:*`, 250k-row browser/native scalability evidence, Step 2 consolidation/FX/IC contract verification, Step 3 real formula-preserving XLSX / editable PPTX exports, or Step 4 month-end acceptance harness.
 
 ---
 

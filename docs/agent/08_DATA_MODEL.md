@@ -190,10 +190,30 @@ across blank lines and multiline quoted fields and failing closed with
 `CSVTokenizationError` on invalid UTF-8 (`TextDecoder(..., { fatal: true })`),
 unclosed quotes, unescaped quotes, or ragged column counts.
 
-Not yet delivered: UI wiring, streaming XLSX tokenization, transactional SQLite
-ledger promotion preserving exact decimal strings (without converting through the
-legacy number-valued `glStore`), and file-identity/closed-period checks at
-promotion. The browser backend still snapshots SQLite into localStorage and may
-hit quota limits; no 250k-row release claim. Existing ledger storage authority is
-unchanged. Do not enable this staging API as the production upload replacement
-until XLSX streaming and transactional promotion gates are verified.
+`glXlsxTokenizer` (`tokenizeGLXlsxBytes` / `stageGLXlsxImport`) reads OOXML
+worksheet XML directly from the `.xlsx` ZIP archive via `DecompressionStream('deflate-raw')`
+instead of `ExcelJS.Workbook.xlsx.load`, preserving exact `<v>` decimal lexemes
+(including >53-bit exact decimal strings) without IEEE-754 `parseFloat`/`Number`
+coercion, converting Excel date serials to ISO `'YYYY-MM-DD'`, preserving physical
+1-based Excel row numbers across blank rows, and failing closed with
+`XLSXTokenizationError` on corrupt ZIP entries, missing sheets, duplicate headers,
+ragged rows, or unevaluated formula cells (`<f>` without `<v>`).
+
+`glStagingPromotion` (`promoteStagingBatch`, `listPromotedLedgerBatches`,
+`readPromotedLedgerBatch`, `readPromotedLedgerEntries`) promotes a `'ready'`
+staged batch into an exact-string ledger store (`gl-ledger-exact:v1:*`) under
+cross-window lease locks without coercing `debit`/`credit` through `number`.
+Before committing, it re-verifies every staged chunk (`schemaErrors`,
+`quarantinedRows`, recomputed `controlTotals`, and whole-file voucher balance),
+enforces SHA-256 `fileHash` and `batchId` idempotency against promoted history,
+enforces `DEC-008` closed-period write guards (`getGLPeriodWriteIssues`) at
+promotion time, transitions the staging manifest to `'promoted'` (`promotedAt`),
+and rolls back any partial keys on write failure. `discardStagingBatch` refuses
+to discard `'promoted'` batches.
+
+Not yet delivered: UI upload-wizard wiring to the new staging/promotion APIs,
+migration of legacy number-valued `glStore` consumers to `gl-ledger-exact:v1:*`,
+and 250k-row browser/native scalability evidence (the browser backend still
+snapshots SQLite into localStorage and may hit quota limits). Do not claim
+production UI upload replacement until the upload wizard and downstream consumers
+are wired to the exact-string promotion store.

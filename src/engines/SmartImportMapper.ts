@@ -138,7 +138,7 @@ const GL_ALIASES: Record<GLIngestField, readonly string[]> = {
     'acctnum',
   ],
   accountName: ['accountname', 'glaccountname'],
-  postDate: ['date', 'postingdate', 'transactiondate', 'transdate', 'entrydate'],
+  postDate: ['date', 'postdate', 'postingdate', 'transactiondate', 'transdate', 'entrydate'],
   debit: ['debit', 'debitamount', 'dr'],
   credit: ['credit', 'creditamount', 'cr'],
   amount: ['amount', 'netamount', 'signedamount'],
