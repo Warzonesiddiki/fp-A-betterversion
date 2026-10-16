@@ -62,6 +62,7 @@ docs/CAPABILITY_TRUTH_MATRIX.md          per-route/per-module maturity (generate
 | `docs/discovery/decision-log.md`      | DEC-001… every decision, owner, rationale, review trigger.            |
 | `docs/discovery/risk-register.md`     | Risks with likelihood/impact/mitigation.                              |
 | `docs/discovery/current-workflow.md`   | The owner's real monthly workflow and its open questions.            |
+| `docs/discovery/d365-export-contract.md` | Cited D365 GL export contract (expected shape; not verified support). |
 
 ### Engineering handbook — `docs/agent/`
 

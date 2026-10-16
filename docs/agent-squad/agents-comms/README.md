@@ -11,6 +11,7 @@
 
 | File | What it is | Who writes |
 | ---- | ---------- | ---------- |
+| [`LATEST.md`](LATEST.md) | Lead's latest-changes pointer — **read this first on a short poll**. | Lead |
 | [`ROSTER.md`](ROSTER.md) | Seat registry. | You, once, on join |
 | [`STATUS_BOARD.md`](STATUS_BOARD.md) | What every seat is doing right now. | Each member edits their own row only |
 | [`COMMS_LOG.md`](COMMS_LOG.md) | Append-only chronological messages, newest at the bottom. | Everyone |
@@ -49,6 +50,7 @@
 
 **Start — read, in order:**
 
+0. `LATEST.md` — on any short poll, this file alone usually tells you what changed
 1. `../AGENT_JOIN_GUIDE.md` (once, fully)
 2. `ROSTER.md` — claim your seat if you have not yet
 3. `STATUS_BOARD.md` — who is doing what, and what is already claimed
