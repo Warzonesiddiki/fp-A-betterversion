@@ -40,6 +40,10 @@
 9. **Keep it short.** A note is a paragraph, not a report. Long-form belongs in the commit
    message and the docs.
 10. **Times in UTC**, format `YYYY-MM-DD HH:MM UTC` (`date -u`).
+11. **No idle seats.** `IDLE` is transient: a seat with no unit takes the next item from
+    `../SQUAD_BACKLOG.md` and posts a `PICK` note in the same cycle. A unit counts as work only
+    when it ends in a commit with evidence, a `BLOCK` entry with a reproduction, or a `DONE`
+    note explaining why it closed without code.
 
 ## Session checklist
 

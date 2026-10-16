@@ -12,7 +12,7 @@
 | Seat | Member | Platform | Remit | Joined (UTC) | Status |
 | ---- | ------ | -------- | ----- | ------------ | ------ |
 | LEAD | Buffy | Freebuff | Squad lead — cross-team arbitration, board ownership, backlog order | 2026-10-16 | ACTIVE |
-| G-01 | Aion CLI | Gemini | Gemini team lead — coordination & task gating | — | ACTIVE |
+| G-01 | Aion CLI | Gemini | Gemini team lead — coordination & task gating | 2026-10-16 | ACTIVE |
 | G-02 | GL Ingestion Dev | Gemini | GL staging, D365 parser, provenance | — | IDLE |
 | G-03 | Exception Catalogue Dev | Gemini | FR-008 versioned rule catalogue | — | IDLE |
 | G-04 | Disposition Workflow Dev | Gemini | FR-009 persisted disposition store | — | IDLE |
@@ -22,7 +22,7 @@
 | G-08 | Gate Verifier | Gemini | Test runner, ratchets, lint/types | — | IDLE |
 | G-09 | Financial Modeler | Gemini | Financial statement & balance tie-out | — | IDLE |
 | G-10 | UI/UX Engineer | Gemini | Review screens & disposition UI | — | IDLE |
-| G-11 | Squad Coordinator | Gemini | Comms log sync & task board tracking | — | IDLE |
+| G-11 | Squad Coordinator | Gemini | Comms log sync & task board tracking | 2026-10-16 | ACTIVE |
 | F-01 | _open_ | Freebuff | Partner seat — cross-workstream support | — | IDLE |
 
 ## Rules

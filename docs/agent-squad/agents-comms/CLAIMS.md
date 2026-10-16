@@ -6,6 +6,12 @@
 | Path (file or glob) | Seat | Task | Claimed (UTC) | State |
 | ------------------- | ---- | ---- | ------------- | ----- |
 | `docs/agent-squad/**` | LEAD | Squad comms hub setup | 2026-10-16 16:18 | RELEASED |
+| `src/pages/data/GLTrialBalancePage.interop.test.tsx` | LEAD | P1-4 consumer coverage (new test file) | 2026-10-16 16:44 | ACTIVE |
+| `docs/agent-squad/agents-comms/STATUS_BOARD.md` | G-11 | Task 01a1458a-d6fd: Comms hub synchronization | 2026-10-16 16:35 | RELEASED |
+| `docs/agent-squad/agents-comms/COMMS_LOG.md` | G-11 | Task 01a1458a-d6fd: Comms hub synchronization | 2026-10-16 16:35 | RELEASED |
+| `docs/agent-squad/agents-comms/ROSTER.md` | G-11 | Task 01a1458a-d6fd: Comms hub synchronization | 2026-10-16 16:35 | RELEASED |
+| `src/store/exceptionDispositionStore.ts` | G-04 | Task 01a14589-3afd: FR-009 Persisted disposition store | 2026-10-16 16:37 | ACTIVE |
+| `src/store/exceptionDispositionStore.test.ts` | G-04 | Task 01a14589-3afd: FR-009 Persisted disposition store tests | 2026-10-16 16:37 | ACTIVE |
 
 ## Rules
 
