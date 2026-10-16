@@ -396,6 +396,73 @@ describe('glStore boot hydrate — hydrateCommittedFromServer (W0.8.6 plan §5)'
     expect(useGLStore.getState().entries).toEqual(before.entries);
     expect(useGLStore.getState().entryVersions).toEqual({ e1: 2 });
   });
+
+  it('rejects server rows with provided-but-invalid or missing amounts instead of coercing them to zero (FR-006)', async () => {
+    setGlCommitClient(
+      fakeListClient(() =>
+        Promise.resolve({
+          status: 'listed',
+          entries: [
+            // Committed local row; the server payload carries a non-finite debit.
+            // NaN is type-valid `number`, so it reaches the store unchecked.
+            {
+              id: 'srv-nan',
+              version: 4,
+              accountCode: '1000',
+              postDate: '2026-04-01',
+              debit: Number.NaN,
+              credit: 0,
+            },
+            // Locally absent row with BOTH amounts missing — adoption would
+            // fabricate a 0.00/0.00 entry (missing is not zero).
+            { id: 'srv-missing', version: 1, accountCode: '4000', postDate: '2026-04-02' },
+            // Valid row must still hydrate — the guard must not over-block.
+            {
+              id: 'srv-valid',
+              version: 1,
+              accountCode: '2000',
+              postDate: '2026-04-03',
+              debit: 0,
+              credit: 42.5,
+            },
+          ],
+        })
+      )
+    );
+
+    const { addEntries } = useGLStore.getState();
+    addEntries([makeEntry('srv-nan')]);
+    useGLStore.setState({
+      entrySyncState: { 'srv-nan': 'committed' },
+      entryVersions: { 'srv-nan': 3 },
+    });
+
+    const summary = await useGLStore.getState().hydrateCommittedFromServer();
+
+    // Only the valid row hydrates; the two rejected rows change nothing.
+    expect(summary).toEqual({ hydrated: 1 });
+    const state = useGLStore.getState();
+
+    // Invalid amount: the committed local row keeps its own numbers —
+    // never NaN, never a coerced 0.
+    const nanRow = state.entries.find((e) => e.id === 'srv-nan');
+    expect(nanRow?.debit).toBe(100);
+    expect(state.entryVersions['srv-nan']).toBe(3);
+
+    // Missing both amounts: no fabricated zero row is adopted.
+    expect(state.entries.some((e) => e.id === 'srv-missing')).toBe(false);
+
+    // The valid row still converges.
+    const valid = state.entries.find((e) => e.id === 'srv-valid');
+    expect(valid?.credit).toBe(42.5);
+    expect(valid?.amount).toBe(-42.5);
+    expect(state.entrySyncState['srv-valid']).toBe('committed');
+
+    // Nothing silently discarded: both rejections are visible with reasons.
+    expect(state.importError).toMatch(/srv-nan/);
+    expect(state.importError).toMatch(/srv-missing/);
+    expect(state.importError).toMatch(/invalid or missing amounts/i);
+  });
 });
 
 type DeleteFn = ReturnType<GlCommitNamespace['deleteEntry']>;

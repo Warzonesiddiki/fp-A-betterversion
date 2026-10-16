@@ -563,6 +563,7 @@ export const useGLStore = create<GLState>()(
             const before = get();
             const updates: { index: number; next: GLEntry; version?: number }[] = [];
             const inserts: { entry: GLEntry; version?: number }[] = [];
+            const rejected: { id: string; reason: string }[] = [];
             const seen = new Set<string>();
             for (const row of result.entries) {
               if (seen.has(row.id)) continue;
@@ -572,17 +573,61 @@ export const useGLStore = create<GLState>()(
                 if ((before.entrySyncState[row.id] ?? 'draft') !== 'committed') continue;
                 const local = before.entries[index];
                 if (!local) continue;
+                // FR-006 residual: a provided-but-invalid server amount must
+                // not be coerced to 0 by normalizeGLEntry/toFiniteNumber.
+                // Fail closed per row — reject with a reason and keep the
+                // local numbers untouched.
+                const candidate = mergeListedEntry(local, row);
+                const amountIssues = finiteAmountIssues([candidate]);
+                if (amountIssues.length > 0) {
+                  rejected.push({ id: row.id, reason: amountIssues.join('; ') });
+                  continue;
+                }
                 updates.push({
                   index,
-                  next: normalizeGLEntry(mergeListedEntry(local, row), index, 'gl-srv'),
+                  next: normalizeGLEntry(candidate, index, 'gl-srv'),
                   version: row.version,
                 });
               } else {
+                const candidate = listedToGLEntry(row);
+                // FR-006 residual: a new row with BOTH amounts absent cannot
+                // be adopted — missing is not zero; adoption would fabricate
+                // a 0.00/0.00 entry.
+                if (row.debit === undefined && row.credit === undefined) {
+                  rejected.push({
+                    id: row.id,
+                    reason:
+                      'missing amounts: both debit and credit are absent; not adopted as 0.00',
+                  });
+                  continue;
+                }
+                const amountIssues = finiteAmountIssues([candidate]);
+                if (amountIssues.length > 0) {
+                  rejected.push({ id: row.id, reason: amountIssues.join('; ') });
+                  continue;
+                }
                 inserts.push({
-                  entry: normalizeGLEntry(listedToGLEntry(row), 0, 'gl-srv'),
+                  entry: normalizeGLEntry(candidate, 0, 'gl-srv'),
                   version: row.version,
                 });
               }
+            }
+
+            // FR-006: nothing silently discarded — rejected server rows are
+            // named on the existing importError channel (the tombstone-
+            // failure pattern). A later closed-period block overwrites this
+            // with the operative reason; the rejected rows changed nothing
+            // either way.
+            if (rejected.length > 0) {
+              set({
+                importError:
+                  `${rejected.length} server row(s) rejected during hydrate ` +
+                  `(invalid or missing amounts; local state left untouched): ` +
+                  rejected
+                    .slice(0, 5)
+                    .map((r) => `${r.id} (${r.reason})`)
+                    .join('; '),
+              });
             }
 
             if (updates.length === 0 && inserts.length === 0) return { hydrated: 0 };
