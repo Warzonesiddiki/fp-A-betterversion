@@ -41,6 +41,7 @@ export interface FormulaWorkbookInspection {
   sheetNames: string[];
   formulaCells: FormulaCellRecord[];
   summaryMetrics: PackageSummaryMetrics;
+  sheetRows: Record<string, (string | number | null)[][]>;
 }
 
 export interface EditablePptxSlide {
@@ -59,6 +60,21 @@ export interface EditablePptxInspection {
 export interface FinancialPackageTieOutResult {
   matches: boolean;
   discrepancies: string[];
+}
+
+export interface BoardPackRowTieOutDiscrepancy {
+  target: 'XLSX' | 'PPTX';
+  sheetOrSlide: string;
+  rowIdentifier: string;
+  field: string;
+  expected: string | number;
+  actual: string | number | null | undefined;
+}
+
+export interface BoardPackRowTieOutResult {
+  matches: boolean;
+  checkedRowCount: number;
+  discrepancies: BoardPackRowTieOutDiscrepancy[];
 }
 
 const SAFE_FORMULA_PATTERN =
@@ -461,10 +477,35 @@ export async function inspectFormulaWorkbookBytes(
   const sheetNames = workbook.worksheets.map((ws) => ws.name);
   const formulaCells: FormulaCellRecord[] = [];
   const keyedMetrics = new Map<string, string>();
+  const sheetRows: Record<string, (string | number | null)[][]> = {};
 
   for (const ws of workbook.worksheets) {
-    ws.eachRow((row) => {
+    const rows: (string | number | null)[][] = [];
+    ws.eachRow({ includeEmpty: false }, (row) => {
       const rowKey = String(row.getCell(1).value ?? '').trim();
+      const rowVals: (string | number | null)[] = [];
+      const colLimit = Math.max(row.cellCount, row.actualCellCount);
+      for (let c = 1; c <= colLimit; c += 1) {
+        const cell = row.getCell(c);
+        const val = cell.value;
+        if (val && typeof val === 'object' && 'formula' in val) {
+          const formulaObj = val as { formula?: string; result?: number | string };
+          const res = formulaObj.result;
+          rowVals.push(
+            res !== undefined && res !== null ? (typeof res === 'number' ? res : String(res)) : null
+          );
+        } else if (typeof val === 'number') {
+          rowVals.push(val);
+        } else if (typeof val === 'string') {
+          rowVals.push(val);
+        } else if (val === null || val === undefined) {
+          rowVals.push(null);
+        } else {
+          rowVals.push(String(val));
+        }
+      }
+      rows.push(rowVals);
+
       row.eachCell((cell) => {
         const val = cell.value;
         if (val && typeof val === 'object' && 'formula' in val) {
@@ -483,6 +524,7 @@ export async function inspectFormulaWorkbookBytes(
         }
       });
     });
+    sheetRows[ws.name] = rows;
   }
 
   const totalLiabilitiesSigned = keyedMetrics.get('Balance_Sheet:TOTAL_LIAB') ?? '0.00';
@@ -493,6 +535,7 @@ export async function inspectFormulaWorkbookBytes(
   return {
     sheetNames,
     formulaCells,
+    sheetRows,
     summaryMetrics: {
       totalAssets: keyedMetrics.get('Balance_Sheet:TOTAL_ASSETS') ?? '0.00',
       totalLiabilitiesCredit,
@@ -1164,6 +1207,578 @@ export function verifyFinancialPackageTieOut(
 
   return {
     matches: discrepancies.length === 0,
+    discrepancies,
+  };
+}
+
+/**
+ * Exhaustive row-level tie-out verification between the exact consolidation engine
+ * result, exported XLSX sheets, and exported PPTX presentation slides.
+ * Asserts that each row, account, category, eliminated amount, and trial balance
+ * line exactly ties out to the in-app GL aggregates.
+ */
+export function verifyBoardPackRowTieOut(
+  consolidated: ExactConsolidationResult,
+  xlsx: FormulaWorkbookInspection,
+  pptx: EditablePptxInspection
+): BoardPackRowTieOutResult {
+  const discrepancies: BoardPackRowTieOutDiscrepancy[] = [];
+  let checkedRowCount = 0;
+
+  // 1. XLSX Consolidated_TB sheet rows
+  const tbRows = xlsx.sheetRows['Consolidated_TB'] ?? [];
+  const expectedTb = consolidated.consolidatedTrialBalance;
+  for (const [i, exp] of expectedTb.entries()) {
+    const row = tbRows[i + 1];
+    const rowId = `account:${exp.accountCode}`;
+    if (!row) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Consolidated_TB',
+        rowIdentifier: rowId,
+        field: 'rowExists',
+        expected: 'present',
+        actual: 'missing',
+      });
+      continue;
+    }
+    checkedRowCount += 1;
+    if (row[0] !== exp.accountCode) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Consolidated_TB',
+        rowIdentifier: rowId,
+        field: 'accountCode',
+        expected: exp.accountCode,
+        actual: row[0],
+      });
+    }
+    if (row[1] !== exp.accountName) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Consolidated_TB',
+        rowIdentifier: rowId,
+        field: 'accountName',
+        expected: exp.accountName,
+        actual: row[1],
+      });
+    }
+    if (row[2] !== exp.category) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Consolidated_TB',
+        rowIdentifier: rowId,
+        field: 'category',
+        expected: exp.category,
+        actual: row[2],
+      });
+    }
+    if (toFixedMoneyString(row[3] ?? 0) !== toFixedMoneyString(exp.preEliminationSigned)) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Consolidated_TB',
+        rowIdentifier: rowId,
+        field: 'preEliminationSigned',
+        expected: exp.preEliminationSigned,
+        actual: row[3],
+      });
+    }
+    if (toFixedMoneyString(row[4] ?? 0) !== toFixedMoneyString(exp.eliminationSigned)) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Consolidated_TB',
+        rowIdentifier: rowId,
+        field: 'eliminationSigned',
+        expected: exp.eliminationSigned,
+        actual: row[4],
+      });
+    }
+    if (toFixedMoneyString(row[5] ?? 0) !== toFixedMoneyString(exp.consolidatedSigned)) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Consolidated_TB',
+        rowIdentifier: rowId,
+        field: 'consolidatedSigned',
+        expected: exp.consolidatedSigned,
+        actual: row[5],
+      });
+    }
+    if (toFixedMoneyString(row[6] ?? 0) !== toFixedMoneyString(exp.debit)) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Consolidated_TB',
+        rowIdentifier: rowId,
+        field: 'debit',
+        expected: exp.debit,
+        actual: row[6],
+      });
+    }
+    if (toFixedMoneyString(row[7] ?? 0) !== toFixedMoneyString(exp.credit)) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Consolidated_TB',
+        rowIdentifier: rowId,
+        field: 'credit',
+        expected: exp.credit,
+        actual: row[7],
+      });
+    }
+  }
+
+  // Check TB Total Control Row
+  const totalRow = tbRows[expectedTb.length + 1];
+  if (totalRow) {
+    checkedRowCount += 1;
+    const debitTotal = toFixedMoneyString(totalRow[6] ?? 0);
+    const creditTotal = toFixedMoneyString(totalRow[7] ?? 0);
+    if (debitTotal !== creditTotal) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Consolidated_TB',
+        rowIdentifier: 'TOTAL',
+        field: 'debitEqualsCredit',
+        expected: debitTotal,
+        actual: creditTotal,
+      });
+    }
+  }
+
+  // 2. XLSX Income_Statement rows
+  const isRows = xlsx.sheetRows['Income_Statement'] ?? [];
+  const expectedRevs = expectedTb.filter((l) => l.category === 'revenue');
+  const expectedExps = expectedTb.filter((l) => l.category === 'expense');
+
+  for (const rev of expectedRevs) {
+    const rowId = `revenue:${rev.accountCode}`;
+    const row = isRows.find((r) => r[0] === rev.accountCode);
+    if (!row) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Income_Statement',
+        rowIdentifier: rowId,
+        field: 'rowExists',
+        expected: 'present',
+        actual: 'missing',
+      });
+      continue;
+    }
+    checkedRowCount += 1;
+    const expectedCredit = toFixedMoneyString(toDecimal(rev.consolidatedSigned).negated());
+    if (toFixedMoneyString(row[2] ?? 0) !== expectedCredit) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Income_Statement',
+        rowIdentifier: rowId,
+        field: 'amount',
+        expected: expectedCredit,
+        actual: row[2],
+      });
+    }
+  }
+
+  for (const exp of expectedExps) {
+    const rowId = `expense:${exp.accountCode}`;
+    const row = isRows.find((r) => r[0] === exp.accountCode);
+    if (!row) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Income_Statement',
+        rowIdentifier: rowId,
+        field: 'rowExists',
+        expected: 'present',
+        actual: 'missing',
+      });
+      continue;
+    }
+    checkedRowCount += 1;
+    const expectedDebit = toFixedMoneyString(exp.consolidatedSigned);
+    if (toFixedMoneyString(row[2] ?? 0) !== expectedDebit) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Income_Statement',
+        rowIdentifier: rowId,
+        field: 'amount',
+        expected: expectedDebit,
+        actual: row[2],
+      });
+    }
+  }
+
+  // 3. XLSX Balance_Sheet rows
+  const bsRows = xlsx.sheetRows['Balance_Sheet'] ?? [];
+  const expectedAssets = expectedTb.filter((l) => l.category === 'asset');
+  const expectedLiabs = expectedTb.filter((l) => l.category === 'liability');
+  const expectedEquities = expectedTb.filter((l) => l.category === 'equity');
+
+  for (const asset of expectedAssets) {
+    const rowId = `asset:${asset.accountCode}`;
+    const row = bsRows.find((r) => r[0] === asset.accountCode);
+    if (!row) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Balance_Sheet',
+        rowIdentifier: rowId,
+        field: 'rowExists',
+        expected: 'present',
+        actual: 'missing',
+      });
+      continue;
+    }
+    checkedRowCount += 1;
+    if (toFixedMoneyString(row[2] ?? 0) !== toFixedMoneyString(asset.consolidatedSigned)) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Balance_Sheet',
+        rowIdentifier: rowId,
+        field: 'amount',
+        expected: asset.consolidatedSigned,
+        actual: row[2],
+      });
+    }
+  }
+
+  for (const liab of expectedLiabs) {
+    const rowId = `liability:${liab.accountCode}`;
+    const row = bsRows.find((r) => r[0] === liab.accountCode);
+    if (!row) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Balance_Sheet',
+        rowIdentifier: rowId,
+        field: 'rowExists',
+        expected: 'present',
+        actual: 'missing',
+      });
+      continue;
+    }
+    checkedRowCount += 1;
+    if (toFixedMoneyString(row[2] ?? 0) !== toFixedMoneyString(liab.consolidatedSigned)) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Balance_Sheet',
+        rowIdentifier: rowId,
+        field: 'amount',
+        expected: liab.consolidatedSigned,
+        actual: row[2],
+      });
+    }
+  }
+
+  for (const eq of expectedEquities) {
+    const rowId = `equity:${eq.accountCode}`;
+    const row = bsRows.find((r) => r[0] === eq.accountCode);
+    if (!row) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Balance_Sheet',
+        rowIdentifier: rowId,
+        field: 'rowExists',
+        expected: 'present',
+        actual: 'missing',
+      });
+      continue;
+    }
+    checkedRowCount += 1;
+    if (toFixedMoneyString(row[2] ?? 0) !== toFixedMoneyString(eq.consolidatedSigned)) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'Balance_Sheet',
+        rowIdentifier: rowId,
+        field: 'amount',
+        expected: eq.consolidatedSigned,
+        actual: row[2],
+      });
+    }
+  }
+
+  // 4. XLSX FX_CTA_Schedule rows
+  const ctaRows = xlsx.sheetRows['FX_CTA_Schedule'] ?? [];
+  for (const t of consolidated.entityTranslations) {
+    const rowId = `entity:${t.entityId}`;
+    const row = ctaRows.find((r) => r[0] === t.entityId);
+    if (!row) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'FX_CTA_Schedule',
+        rowIdentifier: rowId,
+        field: 'rowExists',
+        expected: 'present',
+        actual: 'missing',
+      });
+      continue;
+    }
+    checkedRowCount += 1;
+    if (row[1] !== t.entityName) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'FX_CTA_Schedule',
+        rowIdentifier: rowId,
+        field: 'entityName',
+        expected: t.entityName,
+        actual: row[1],
+      });
+    }
+    if (toFixedMoneyString(row[9] ?? 0) !== toFixedMoneyString(t.totalCTA)) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'FX_CTA_Schedule',
+        rowIdentifier: rowId,
+        field: 'totalCTA',
+        expected: t.totalCTA,
+        actual: row[9],
+      });
+    }
+  }
+
+  // 5. XLSX IC_Eliminations rows
+  const icRows = xlsx.sheetRows['IC_Eliminations'] ?? [];
+  for (const r of consolidated.icReconciliation) {
+    const rowId = `ic:${r.fromEntityId}:${r.fromAccountCode}->${r.toEntityId}:${r.toAccountCode}`;
+    const row = icRows.find(
+      (rw) =>
+        rw[0] === r.fromEntityId &&
+        rw[1] === r.fromAccountCode &&
+        rw[2] === r.toEntityId &&
+        rw[3] === r.toAccountCode
+    );
+    if (!row) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'IC_Eliminations',
+        rowIdentifier: rowId,
+        field: 'rowExists',
+        expected: 'present',
+        actual: 'missing',
+      });
+      continue;
+    }
+    checkedRowCount += 1;
+    if (toFixedMoneyString(row[6] ?? 0) !== toFixedMoneyString(r.eliminatedAmount)) {
+      discrepancies.push({
+        target: 'XLSX',
+        sheetOrSlide: 'IC_Eliminations',
+        rowIdentifier: rowId,
+        field: 'eliminatedAmount',
+        expected: r.eliminatedAmount,
+        actual: row[6],
+      });
+    }
+  }
+
+  // 6. PPTX Slide 3 (Consolidated Income Statement)
+  const isPptxTable = pptx.slides[2]?.tables[0] ?? [];
+  for (const line of expectedTb.filter(
+    (l) => l.category === 'revenue' || l.category === 'expense'
+  )) {
+    const rowId = `pptx-is:${line.accountCode}`;
+    const row = isPptxTable.find((r) => r[0] === line.accountCode);
+    if (!row) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 3 (Income Statement)',
+        rowIdentifier: rowId,
+        field: 'rowExists',
+        expected: 'present',
+        actual: 'missing',
+      });
+      continue;
+    }
+    checkedRowCount += 1;
+    if (row[1] !== line.accountName) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 3 (Income Statement)',
+        rowIdentifier: rowId,
+        field: 'accountName',
+        expected: line.accountName,
+        actual: row[1],
+      });
+    }
+    if (toFixedMoneyString(row[3] ?? 0) !== toFixedMoneyString(line.consolidatedSigned)) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 3 (Income Statement)',
+        rowIdentifier: rowId,
+        field: 'consolidatedSigned',
+        expected: line.consolidatedSigned,
+        actual: row[3],
+      });
+    }
+  }
+
+  // 7. PPTX Slide 4 (Consolidated Balance Sheet)
+  const bsPptxTable = pptx.slides[3]?.tables[0] ?? [];
+  for (const line of expectedTb.filter(
+    (l) => l.category === 'asset' || l.category === 'liability' || l.category === 'equity'
+  )) {
+    const rowId = `pptx-bs:${line.accountCode}`;
+    const row = bsPptxTable.find((r) => r[0] === line.accountCode);
+    if (!row) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 4 (Balance Sheet)',
+        rowIdentifier: rowId,
+        field: 'rowExists',
+        expected: 'present',
+        actual: 'missing',
+      });
+      continue;
+    }
+    checkedRowCount += 1;
+    if (row[1] !== line.accountName) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 4 (Balance Sheet)',
+        rowIdentifier: rowId,
+        field: 'accountName',
+        expected: line.accountName,
+        actual: row[1],
+      });
+    }
+    if (toFixedMoneyString(row[3] ?? 0) !== toFixedMoneyString(line.consolidatedSigned)) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 4 (Balance Sheet)',
+        rowIdentifier: rowId,
+        field: 'consolidatedSigned',
+        expected: line.consolidatedSigned,
+        actual: row[3],
+      });
+    }
+  }
+
+  // 8. PPTX Slide 5 (ASC 830 FX Translation & CTA Bridge)
+  const ctaPptxTable = pptx.slides[4]?.tables[0] ?? [];
+  for (const t of consolidated.entityTranslations) {
+    const rowId = `pptx-cta:${t.entityId}`;
+    const row = ctaPptxTable.find((r) => r[0] === t.entityId);
+    if (!row) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 5 (FX Translation)',
+        rowIdentifier: rowId,
+        field: 'rowExists',
+        expected: 'present',
+        actual: 'missing',
+      });
+      continue;
+    }
+    checkedRowCount += 1;
+    if (toFixedMoneyString(row[4] ?? 0) !== toFixedMoneyString(t.totalCTA)) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 5 (FX Translation)',
+        rowIdentifier: rowId,
+        field: 'totalCTA',
+        expected: t.totalCTA,
+        actual: row[4],
+      });
+    }
+  }
+
+  // 9. PPTX Slide 6 (ASC 810 IC Eliminations)
+  const icPptxTable = pptx.slides[5]?.tables[0] ?? [];
+  for (const r of consolidated.icReconciliation) {
+    const pairLabel = `${r.fromEntityId}:${r.fromAccountCode} <-> ${r.toEntityId}:${r.toAccountCode}`;
+    const rowId = `pptx-ic:${pairLabel}`;
+    const row = icPptxTable.find((rw) => rw[0] === pairLabel);
+    if (!row) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 6 (IC Eliminations)',
+        rowIdentifier: rowId,
+        field: 'rowExists',
+        expected: 'present',
+        actual: 'missing',
+      });
+      continue;
+    }
+    checkedRowCount += 1;
+    if (toFixedMoneyString(row[3] ?? 0) !== toFixedMoneyString(r.eliminatedAmount)) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 6 (IC Eliminations)',
+        rowIdentifier: rowId,
+        field: 'eliminatedAmount',
+        expected: r.eliminatedAmount,
+        actual: row[3],
+      });
+    }
+  }
+
+  // 10. PPTX Slide 7 (Consolidated Trial Balance Control)
+  const tbPptxTable = pptx.slides[6]?.tables[0] ?? [];
+  for (const tb of expectedTb) {
+    const label = `${tb.accountCode} ${tb.accountName}`;
+    const rowId = `pptx-tb:${label}`;
+    const row = tbPptxTable.find((r) => r[0] === label);
+    if (!row) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 7 (TB Control)',
+        rowIdentifier: rowId,
+        field: 'rowExists',
+        expected: 'present',
+        actual: 'missing',
+      });
+      continue;
+    }
+    checkedRowCount += 1;
+    if (toFixedMoneyString(row[1] ?? 0) !== toFixedMoneyString(tb.preEliminationSigned)) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 7 (TB Control)',
+        rowIdentifier: rowId,
+        field: 'preEliminationSigned',
+        expected: tb.preEliminationSigned,
+        actual: row[1],
+      });
+    }
+    if (toFixedMoneyString(row[2] ?? 0) !== toFixedMoneyString(tb.eliminationSigned)) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 7 (TB Control)',
+        rowIdentifier: rowId,
+        field: 'eliminationSigned',
+        expected: tb.eliminationSigned,
+        actual: row[2],
+      });
+    }
+    if (toFixedMoneyString(row[3] ?? 0) !== toFixedMoneyString(tb.consolidatedSigned)) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 7 (TB Control)',
+        rowIdentifier: rowId,
+        field: 'consolidatedSigned',
+        expected: tb.consolidatedSigned,
+        actual: row[3],
+      });
+    }
+    if (toFixedMoneyString(row[4] ?? 0) !== toFixedMoneyString(tb.debit)) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 7 (TB Control)',
+        rowIdentifier: rowId,
+        field: 'debit',
+        expected: tb.debit,
+        actual: row[4],
+      });
+    }
+    if (toFixedMoneyString(row[5] ?? 0) !== toFixedMoneyString(tb.credit)) {
+      discrepancies.push({
+        target: 'PPTX',
+        sheetOrSlide: 'Slide 7 (TB Control)',
+        rowIdentifier: rowId,
+        field: 'credit',
+        expected: tb.credit,
+        actual: row[5],
+      });
+    }
+  }
+
+  return {
+    matches: discrepancies.length === 0,
+    checkedRowCount,
     discrepancies,
   };
 }
