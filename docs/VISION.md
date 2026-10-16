@@ -1,0 +1,151 @@
+# FinPlan Pro — Product Vision
+
+> **Goal:** one all-in-one FP&A workspace — a single tool that carries a finance
+> team from raw GL data to reviewed, board-ready output without leaving the app.
+> This document owns *what the product is and where it is going*. The evidence
+> for what actually exists lives in
+> [`docs/CAPABILITY_TRUTH_MATRIX.md`](CAPABILITY_TRUTH_MATRIX.md) and
+> [`docs/agent/09_KNOWN_GAPS.md`](agent/09_KNOWN_GAPS.md).
+
+Last reviewed: **2026-10-16**. Aligned with
+[`docs/discovery/roadmap.md`](discovery/roadmap.md) and
+[`docs/discovery/decision-log.md`](discovery/decision-log.md) (DEC-010, DEC-011).
+
+---
+
+## 1. Why this product exists
+
+The owner is an FP&A practitioner. Every month they export a General Ledger dump
+from **Microsoft Dynamics 365**, do FP&A work on it, and highlight abnormalities
+and potentially wrong entries by hand. That manual month-end review is the
+product's reason to exist.
+
+"All-in-one / one-stop" means: the practitioner never has to export the GL into
+one tool, build the analysis in a spreadsheet, check a rule in another script,
+and assemble the board pack by hand. Every step below happens in one workspace,
+over one trusted dataset, with one audit trail:
+
+```text
+D365 GL export
+  → import & quarantine        (schema, per-row reasons, atomic, control totals)
+  → period scope & tie-out     (which period/entity/currency; TB must balance)
+  → analysis & variance        (statements, drivers, drill-to-source)
+  → exception review           (versioned rules → findings → human disposition)
+  → consolidation              (multi-entity, FX/CTA, intercompany elimination)
+  → board outputs              (Excel / PDF / PPTX that tie out to the screen)
+```
+
+Everything before the exception step is the **spine**. The spine must work
+end-to-end on a synthetic D365-shaped file before the product can be called a
+one-stop solution. Everything else is depth added on top of a working spine —
+never instead of it.
+
+---
+
+## 2. The all-in-one module map
+
+The product is organised into the six pillars that already exist in the target
+shell ([`docs/product/ROUTE_MAP.md`](product/ROUTE_MAP.md)). Each pillar is a
+claim about capability; each capability is only "real" at the maturity the
+generated matrix can prove.
+
+| Pillar      | Job to be done                                                    | Core capability                                                           |
+| ----------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| **DATA**    | Get the ledger in, safely, and know exactly what arrived.          | D365/CSV/XLSX import, schema validation, quarantine, control totals, provenance |
+| **CLOSE**   | Prove the books are tied out and locked for the period.           | Trial balance, tie-out, period close state machine, write guards, audit chain |
+| **PLAN**    | Build budgets, forecasts, scenarios and drivers.                  | Budgeting, rolling forecasts, scenarios, workforce/CapEx/cash planning      |
+| **ANALYZE** | Explain the numbers and surface what is worth a second look.      | Statements, variance decomposition, drill-to-source, exception detection    |
+| **MODEL**   | Handle the hard accounting: consolidation, FX, revenue, leases, tax. | Exact-string consolidation, ASC 830 CTA, ASC 810 IC elimination, rev-rec, leases, tax |
+| **REPORT**  | Produce trustworthy, tie-out-verified outputs.                    | Financial statements, board pack, formula-preserving XLSX, editable PPTX    |
+
+Cross-cutting: **ADMIN** (settings, users, integrations, data management),
+**GOVERN** (RBAC, SOX/audit, security policy), and **AI** (commentary drafted
+only from verified facts — deferred, never a source of numbers).
+
+### Maturity vocabulary
+
+Every capability is graded, and grades may not be claimed without evidence:
+
+| Grade               | Meaning                                                                 | Evidence required                                  |
+| ------------------- | ----------------------------------------------------------------------- | -------------------------------------------------- |
+| **BUILT**           | Source exists.                                                          | Source path and owner.                             |
+| **CONNECTED**       | Uses real domain contracts and handles loading/empty/error states.       | Integration test or E2E run, data contract.        |
+| **GOVERNED**        | Authorization, validation, audit and entity scope are enforced.         | API/authz tests, audit record, policy reference.   |
+| **ENTERPRISE-READY**| Governed and operationally fit for a supported workflow.                 | Performance, a11y, backup/rollback, runbook, acceptance. |
+
+A blank or `UNVERIFIED` grade is not a failure — it is a prohibition on making
+the claim. Per-capability grades are generated by
+`npm run capability:inventory` into
+[`docs/CAPABILITY_TRUTH_MATRIX.md`](CAPABILITY_TRUTH_MATRIX.md).
+
+---
+
+## 3. What "zero compromise" means here
+
+This repository is run under a measurable standard. These are the standing
+commitments, and each is enforced by a gate rather than by good intentions:
+
+1. **Measured, or not stated.** No claim in any doc, commit or summary without
+   the command that produced it.
+2. **Nothing is done without evidence.** Done = code + a test that fails without
+   the change + gates green + docs updated in the same commit.
+3. **Money has one primitive.** All amount arithmetic goes through
+   `src/utils/money.ts` (decimal.js). `money:ast` stays at 0 unsafe ops.
+4. **Deterministic.** Time and randomness are injected; the determinism ratchet
+   may only go down.
+5. **Nothing silently discarded.** Every rejected row has a number, a code and a
+   reason; every batch has a hash, an id and control totals.
+6. **Missing is not zero.** Unavailable inputs render as unavailable with a
+   reason, never as 0.
+7. **A potential exception is never an error.** Flags are review candidates;
+   only a human disposition makes something wrong.
+8. **Missing and invalid are distinguished** at every boundary.
+9. **One source of truth per fact.**
+10. **No gate is weakened to pass it.**
+
+The full rationale and the command behind each lives in `AGENTS.md` §2 and
+[`docs/agent/04_ENGINEERING_RULES.md`](agent/04_ENGINEERING_RULES.md).
+
+---
+
+## 4. Non-goals for the first working product
+
+Stated so nobody builds them by accident:
+
+- No cloud sync, multi-tenant login or real-time collaboration in v1.
+- No ERP write-back; the GL is read-only input.
+- No AI that computes, posts or asserts numbers. AI may draft commentary only
+  from approved, verified facts, and only behind an explicit user action.
+- No new industry packs, dashboards or connectors until the spine works
+  end-to-end on a synthetic D365-shaped file.
+
+---
+
+## 5. Success looks like
+
+A working week that satisfies the roadmap's Gate 2–4:
+
+1. A synthetic D365 export imports with a visible batch record.
+2. Every row is accepted with provenance, or rejected with a row number, a code
+   and a reason.
+3. Control totals tie to the source.
+4. The trial balance balances, and a close cannot be bypassed by a write path.
+5. One agreed exception rule produces findings with evidence and a rule id.
+6. The owner can mark a finding reviewed with a note that survives reload.
+7. A board pack (Excel and PPTX) ties out to the screen, verified by test.
+8. `npm run check` is green, and no document claims anything a script cannot
+   back.
+
+---
+
+## 6. Where the detail lives
+
+| Question                                   | Document                                        |
+| ------------------------------------------ | ----------------------------------------------- |
+| What was asked, and is it done?            | `docs/discovery/requirements-register.md`       |
+| In what order do we build it?              | `docs/discovery/roadmap.md`                     |
+| What has been decided?                     | `docs/discovery/decision-log.md`                |
+| What can go wrong?                         | `docs/discovery/risk-register.md`               |
+| What actually exists right now?            | `docs/CAPABILITY_TRUTH_MATRIX.md`, `docs/agent/09_KNOWN_GAPS.md` |
+| How do we build it without breaking money? | `docs/agent/03_DOMAIN_RULES.md`                 |
+| How is each rule enforced?                 | `docs/agent/05_COMMANDS_AND_GATES.md`           |

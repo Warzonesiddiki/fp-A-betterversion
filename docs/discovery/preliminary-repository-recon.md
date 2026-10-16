@@ -46,6 +46,6 @@ The reference `FPA-modular` is the repository whose README describes a Python 3.
 
 - Confirm with the owner which repository is the product of record and whether Python or TypeScript/Tauri is the chosen implementation.
 - Obtain a local checkout or inspect targeted source files: target import path, money primitive/adoption, one financial engine, persistence layer, one key screen, one integration/E2E test, fabrication safeguards, and relevant docs.
-- Inspect reference `TASKBOARD.md`, `docs/00_INDEX.md`, the relevant D365/import specifications, sample data, and implemented importer/tests.
+- Inspect reference `TASKBOARD.md`, `docs/agent/00_INDEX.md`, the relevant D365/import specifications, sample data, and implemented importer/tests.
 - Run target checks and reference tests in reproducible environments before making claims about test health.
 - Use a safe synthetic D365 export fixture to connect repository audit to the user's actual monthly process.

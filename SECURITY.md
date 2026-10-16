@@ -29,7 +29,7 @@ An audit of the WebSocket and Collaboration services was performed to verify sec
   **Recommendation:** Ensure the WebSocket backend verifies user permissions for every `resourceType/resourceId` referenced in incoming messages.
 
 ### 3. Threat Model Gaps
-- **Missing Threat Model:** A formal `<threat_model>` block was not found in the project's documentation (`PLAN.md`, `PHASE_*_PLAN.md`). 
+- **Missing Threat Model:** A formal `<threat_model>` block was not found in the project's documentation at the time of this review (the retired plan docs). 
 - **Recommendation:** Document specific security threats, their dispositions (mitigate/accept/transfer), and planned mitigations to enable systematic verification.
 
 ## Verified Mitigations

@@ -3,7 +3,7 @@
 A typed, ergonomic TypeScript SDK for the **FinPlan Pro** API surface. Wraps
 the existing `RestApiClient` and `WebSocketManager` services without
 duplicating their logic, and adds a connector-namespaced, IDE-discoverable
-surface that mirrors the full API surface (see `docs/ARCHITECTURE.md`) and the SDK quick-start
+surface that mirrors the full API surface (see `docs/agent/02_ARCHITECTURE.md`) and the SDK quick-start
 preview in the examples below (§6).
 
 **Version:** `0.1.0` (semver — bump on any breaking type change)
@@ -301,7 +301,7 @@ the API examples (§6).
 
 ## Related docs
 
-- [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md) — full system surface spec
+- [`docs/agent/02_ARCHITECTURE.md`](../../docs/agent/02_ARCHITECTURE.md) — full system surface spec
 - SDK examples below — working code examples
 - [`src/services/api-integration/RestApiClient.ts`](../../services/api-integration/RestApiClient.ts) — the underlying client
 - [`src/services/WebSocketManager.ts`](../../services/WebSocketManager.ts) — the underlying WebSocket

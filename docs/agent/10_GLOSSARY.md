@@ -1,7 +1,8 @@
 # 10 — Glossary (repo and domain terms an agent will meet)
 
-The long-form product glossary is `docs/GLOSSARY.md`. This page defines the
-terms that appear in code, scripts, commit bodies and the discovery pack.
+This page is the authoritative glossary. The earlier long-form product glossary
+was retired on 2026-10-16 (DEC-011) and is kept for provenance at
+`docs/archive/legacy-2026-10/docs/GLOSSARY.md`.
 
 ## Repo / process terms
 

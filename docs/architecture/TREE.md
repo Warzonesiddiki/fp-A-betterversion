@@ -5,7 +5,7 @@
 > **Written at:** blueprint lock, 2026-08-17 (Section 22, Article XVIII-N).
 >
 > This is the **target** tree, not the current repository layout. It is filled in phase
-> order per `.agent/BLUEPRINT.md` Section 18. Directories and `README.md` stubs are
+> order per `docs/archive/legacy-2026-10/.agent/BLUEPRINT.md` Section 18. Directories and `README.md` stubs are
 > created as their phase begins — creating 600 empty directories at lock would be
 > ceremony, not engineering.
 >
@@ -13,7 +13,7 @@
 > lands a directory, it lands here in the same pull request. Generated artifacts remain
 > generated and are not listed as source. Agent memory lives under `/.agent`.
 >
-> **Deviations from this tree that are already decided** (see `.agent/BLUEPRINT.md`
+> **Deviations from this tree that are already decided** (see `docs/archive/legacy-2026-10/.agent/BLUEPRINT.md`
 > Section 21, ADR-003) are recorded at the bottom of this file under
 > _"Known deviations"_. The tree below is reproduced unmodified so that future cycles
 > compare against the original, not against a quietly edited copy.
@@ -693,4 +693,4 @@ here is still a target, and a divergence found in the repo is a defect.
 | `infra/terraform/**`, `ops/**`                                                                                                                                                                                      | Phase 2. Written when there is a cloud account to apply them to; unapplied IaC is fiction.                                                                                                                             | Section 18.4                    |
 | `.github/workflows/**`                                                                                                                                                                                              | Cannot be pushed from this environment (GitHub App permission). Delivered as numbered patches in `ci-patches/` for a human to apply.                                                                                   | ADR-011                         |
 | Kafka / Redis modules                                                                                                                                                                                               | Not adopted in Phase 1. The outbox pattern runs in Postgres until measurement justifies a broker.                                                                                                                      | ADR-003, ADR-005                |
-| `.agent/BLUEPRINT_GAPS.md`, `docs/architecture/FINANCIAL_RULES.md`, `docs/architecture/ERROR_CODES.md`, `docs/architecture/METRIC_REGISTRY.md`, `docs/architecture/SOD_MATRIX.md`, `docs/architecture/CALENDARS.md` | Content exists inside `.agent/BLUEPRINT.md` (Sections 6, 16.8, and Appendix A). They are extracted into standalone generated files in Phase 0/1, at which point they become the generated artefacts the Codex intends. | Section 18.2 W0.4, Section 18.3 |
+| `.agent/BLUEPRINT_GAPS.md`, `docs/architecture/FINANCIAL_RULES.md`, `docs/architecture/ERROR_CODES.md`, `docs/architecture/METRIC_REGISTRY.md`, `docs/architecture/SOD_MATRIX.md`, `docs/architecture/CALENDARS.md` | Content exists inside `docs/archive/legacy-2026-10/.agent/BLUEPRINT.md` (Sections 6, 16.8, and Appendix A). They are extracted into standalone generated files in Phase 0/1, at which point they become the generated artefacts the Codex intends. | Section 18.2 W0.4, Section 18.3 |

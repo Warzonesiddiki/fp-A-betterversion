@@ -51,6 +51,15 @@ const allowFile = (rel) =>
   // reference files that legitimately no longer exist; they are records, not
   // navigational docs. Exempt from the live docs graph by policy (2026-08-07).
   rel.startsWith('reports/') ||
+  // docs/archive/ = retired documents kept for provenance (DEC-011, 2026-10-16).
+  // Superseded plans, handovers and prior-iteration corpora are records, not the
+  // live docs graph; their cross-references point at the tree as it was. Only
+  // live docs must resolve. Exempt by policy, same rationale as reports/ above.
+  rel.startsWith('docs/archive/') ||
+  // docs/audit/ = dated audit records. They cite the tree as it stood on their
+  // date; rewriting those citations would falsify the finding. Records, not
+  // navigational docs — same policy as reports/ above.
+  rel.startsWith('docs/audit/') ||
   // session handovers are superseded snapshots once the next session starts.
   /^HANDOVER_PROMPT_SESSION\d+\.md$/.test(rel);
 const allowTarget = (t) => Object.prototype.hasOwnProperty.call(ALLOWLIST.targets || {}, t);

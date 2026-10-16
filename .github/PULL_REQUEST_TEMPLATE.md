@@ -29,7 +29,7 @@
 ## Checklist
 
 - [ ] Tests added/updated for every behavior change
-- [ ] No new TODO/FIXME without a `docs/security-deferrals.md` entry
+- [ ] No new TODO/FIXME without a `docs/archive/legacy-2026-10/docs/security-deferrals.md` entry
 - [ ] Docs updated where behavior changed
 - [ ] No weakened or deleted test assertions
 - [ ] Residual risks listed above (or "none")

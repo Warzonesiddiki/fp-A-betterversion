@@ -1,5 +1,10 @@
 # FP&A Copilot — Audit & Product Discovery Pack
 
+> **Product goal (authoritative):** [`docs/VISION.md`](../VISION.md). This folder
+> is the discovery-phase plan of record — requirements, decisions, risks and the
+> gated roadmap. Where this pack and VISION.md disagree on *product direction*,
+> VISION.md wins; where they disagree on *requirements evidence*, this pack wins.
+
 **Status:** Plan of record (proposed, DEC-006) — adopted into `docs/discovery/` on 2026-10-15; target repository checks executed, see [audit progress](audit-progress-2026-10-15.md) and the full audit [`../audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md`](../audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md)  
 **Product ambition:** An all-in-one FP&A workspace that becomes the user's trusted one-stop solution.  
 **Current known workflow:** The user exports a General Ledger (GL) dump from Microsoft Dynamics 365 each month, performs FP&A work, and highlights abnormalities and potentially incorrect entries.

@@ -1,7 +1,7 @@
 # FinPlan Atlas Visual Regression Runbook
 
 > **Status:** Required to complete BMAD Story F-02 — **EXECUTED AND CLOSED 2026-08-12** (5/5 scenarios pass; 11 committed PNG baselines; F-02 QA APPROVED).
-> **Current sandbox note (2026-08-12):** executed in this environment's real Chromium via `tests/e2e/atlas-visual.spec.ts` — see the completion record in `_bmad/qa/story-f02-atlas-foundation-review.md` and ledger #33. Earlier 2026-08-10 sandboxes could not download Playwright Chromium (TLS `ECONNRESET`); that blocker is resolved here. Re-run with `npm run test:e2e -- tests/e2e/atlas-visual.spec.ts`; any `--update-snapshots` diff must be reviewed as a code change, never auto-approved.
+> **Current sandbox note (2026-08-12):** executed in this environment's real Chromium via `tests/e2e/atlas-visual.spec.ts` — see the completion record in `docs/archive/legacy-2026-10/_bmad/qa/story-f02-atlas-foundation-review.md` and ledger #33. Earlier 2026-08-10 sandboxes could not download Playwright Chromium (TLS `ECONNRESET`); that blocker is resolved here. Re-run with `npm run test:e2e -- tests/e2e/atlas-visual.spec.ts`; any `--update-snapshots` diff must be reviewed as a code change, never auto-approved.
 
 ## Purpose
 
@@ -56,4 +56,4 @@ This is a test-only shim. It must never be used to relax production desktop/brow
 
 ## Completion evidence
 
-Attach Playwright report, snapshot diff review, viewport list, fixture version, browser version, and reviewer decision to `_bmad/qa/story-f02-atlas-foundation-review.md`. Only then may F-02 move from QA rejected to approved.
+Attach Playwright report, snapshot diff review, viewport list, fixture version, browser version, and reviewer decision to `docs/archive/legacy-2026-10/_bmad/qa/story-f02-atlas-foundation-review.md`. Only then may F-02 move from QA rejected to approved.

@@ -10,7 +10,7 @@ Use this checklist to distinguish repository evidence from product-owner stateme
 - [x] File tree and entry points inventoried. (audit §1–§3: 242 routes, 182 engines, 95 reachable)
 - [x] Setup, run, and test commands executed in a clean environment where possible. (`npm ci`, `tsc`, `eslint`, sharded vitest, server vitest, `vite --host`)
 - [x] Test, lint, type-check, and CI results captured exactly. (audit-progress "Target — executed" table)
-- [~] Specs/taskboard/milestones reconciled against actual implementation. (Partially: README and `CAPABILITY_TRUTH_MATRIX.md` reconciled; the 15+ other plans were inventoried, not reconciled — DEC-006)
+- [~] Specs/taskboard/milestones reconciled against actual implementation. (Partially: README and `docs/CAPABILITY_TRUTH_MATRIX.md` reconciled; the 15+ other plans were inventoried, not reconciled — DEC-006)
 - [x] Dependencies, secrets/configuration, packaging, and release process reviewed. (advisories root 3H/1M/1L, server 1C/4M → 0/0; Tauri bundle not compiled — no Rust toolchain; release workflow not exercised)
 - [x] Prior audit counts and claims verified or marked unverified. (README "14,835 tests / 100 % green / 100 % money safety / fully offline / 182 engines" all falsified and corrected)
 

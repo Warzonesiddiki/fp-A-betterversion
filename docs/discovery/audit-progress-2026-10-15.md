@@ -129,7 +129,7 @@ These observations are preliminary: they do not replace a full review of specs, 
 | `05367e7` | Determinism ratchet script + baseline, wired into `npm run check`                                                                                                                                               |
 | `a2e8847` | Batch scope (FR-001), persisted pre-parse rejections, Source column in GL Explorer, stable server journal identity                                                                                              |
 | `810b10a` | Financial stores moved to the injectable clock (baseline 679 → 638)                                                                                                                                             |
-| `70e2eaa` | Canonical agent handbook: `AGENTS.md` + `docs/agent/00–10`, `HANDOVER_TEMPLATE.md`; `CLAUDE.md`/`GEMINI.md`/`CONTRIBUTING.md` point at it                                                                       |
+| `70e2eaa` | Canonical agent handbook: `AGENTS.md` + `docs/agent/00–10`, `docs/agent/HANDOVER_TEMPLATE.md`; `CLAUDE.md`/`GEMINI.md`/`CONTRIBUTING.md` point at it                                                                       |
 | `132a261` | `parseGLRows` extracted from the upload wizard as a pure, fixture-tested function (FR-002/UX-002); whitespace-only account codes now rejected; full `test:sharded` at `897b6a0`: 8/8, 1,318 files, 15,448 tests |
 | `897b6a0` | All 54 reachable engines moved to the clock (baseline 518 → 345); remaining sites are orphans, unreachable services and `RAND`                                                                                  |
 | `947295b` | Remaining stores and utils moved to the clock; `nowISO()`/`nowMs()` added (baseline 638 → 518). Full `test:sharded` after it: 8/8, 1,318 files, 15,448 tests passed, 1 skipped (pre-existing)                   |
@@ -231,10 +231,10 @@ and architecture guardrails.
 
 ## 2026-10-16 — Owner enterprise directive and exact ingestion staging
 
-`ACQUISITION_PROTOCOL.md` records the new mission/harvest backlog and its final
+`docs/archive/legacy-2026-10/root/ACQUISITION_PROTOCOL.md` records the new mission/harvest backlog and its final
 execution precedence (DEC-010). The interrupted local period-write guards were
 verified and checkpointed in `42b84ac`; cross-process/server transactions remain
-unverified. `GAP_LEDGER.md` now carries current branch metadata and literal test
+unverified. `docs/archive/legacy-2026-10/root/GAP_LEDGER.md` now carries current branch metadata and literal test
 outputs instead of treating its older August continuation metadata as current.
 
 SmartImportMapper now has a real, pure `ingest(GLIngestInput)` staging method with

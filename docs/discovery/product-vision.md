@@ -1,6 +1,12 @@
 # Product Vision and Scope
 
-**Status:** Proposed for owner review
+> **Superseded for product direction (2026-10-16, DEC-011).** The authoritative
+> product goal and all-in-one module map now live in [`docs/VISION.md`](../VISION.md).
+> This page is retained as the discovery-phase proposal record — its principles,
+> non-goals and success measures were carried into VISION.md. Do not treat it as
+> the live product definition.
+
+**Status:** Discovery-phase proposal, superseded by [`docs/VISION.md`](../VISION.md)
 
 ## Vision
 
