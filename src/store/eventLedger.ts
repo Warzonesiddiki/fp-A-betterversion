@@ -16,6 +16,7 @@
 
 import Decimal from 'decimal.js';
 import { sha256Hex } from '@/utils/sha256';
+import { nowMs } from '@/utils/clock';
 
 // ── Event vocabulary (extensible union) ──────────────────────────────────────
 export interface BalanceAdjustedEvent {
@@ -89,7 +90,7 @@ function encodeRandom(): string {
 }
 
 /** Generate a 26-char ULID. `now` is injectable for deterministic tests. */
-export function ulid(now: number = Date.now()): string {
+export function ulid(now: number = nowMs()): string {
   return encodeTime(now) + encodeRandom();
 }
 
@@ -132,7 +133,7 @@ export class EventLedger {
   private chainHead: string = LEDGER_GENESIS_HASH;
 
   /** Append an event and return the frozen, hash-chained entry. */
-  append(event: FinancialEvent, ctx: EventContext, now: number = Date.now()): LedgerEntry {
+  append(event: FinancialEvent, ctx: EventContext, now: number = nowMs()): LedgerEntry {
     const unsigned: UnsignedEntry = {
       eventId: ulid(now),
       timestamp: new Date(now).toISOString(),

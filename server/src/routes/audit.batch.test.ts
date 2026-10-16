@@ -343,13 +343,24 @@ describe('R43 POST /api/audit/batch ingestion', () => {
 
   it('prune with a cutoff BEFORE the batch timestamps keeps the whole batch intact', async () => {
     const batchId = `r43-prune-keep-${Date.now()}`;
+    // Stamp the entries relative to the test clock (yesterday). The shared
+    // fixture is pinned to 2026-08-20, which made this test rot the day the
+    // calendar passed 2026-09-19 ("now - 30d" stopped being before the stamp).
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const fixture = batchPayload(batchId) as {
+      batchId: string;
+      entries: Array<Record<string, unknown>>;
+    };
     const seeded = await request(app)
       .post('/api/audit/batch')
       .set('Authorization', `Bearer ${adminA}`)
-      .send(batchPayload(batchId));
+      .send({
+        batchId: fixture.batchId,
+        entries: fixture.entries.map((e) => ({ ...e, ts: yesterday })),
+      });
     expect(seeded.status).toBe(201);
 
-    // Cutoff ≈ now - 30d is BEFORE 2026-08-20 → nothing of ours expires.
+    // Cutoff ≈ now - 30d is BEFORE yesterday → nothing of ours expires.
     const pruned = await request(app)
       .post('/api/audit/prune')
       .set('Authorization', `Bearer ${adminA}`)

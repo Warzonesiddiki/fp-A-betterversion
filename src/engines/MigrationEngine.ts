@@ -4,6 +4,7 @@
  */
 
 import ExcelJS from 'exceljs';
+import { nowISO, nowMs } from '@/utils/clock';
 
 export type MigrationSource = 'excel' | 'planful' | 'adaptive' | 'anaplan' | 'csv' | 'unknown';
 
@@ -659,8 +660,8 @@ export class MigrationEngine {
       this.setProgress('complete', 100, `Imported ${result.rowCount} rows from "${sheetName}"`);
 
       const migrationSnapshot: MigrationSnapshot = {
-        id: `migration-${Date.now()}`,
-        timestamp: new Date().toISOString(),
+        id: `migration-${nowMs()}`,
+        timestamp: nowISO(),
         source: 'excel',
         fileName: file.name,
         plan: {

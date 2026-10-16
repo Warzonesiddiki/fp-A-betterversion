@@ -42,6 +42,7 @@ async function hashEntry(data: string): Promise<string> {
 // queryEntries/getChain/getCurrentValue/getValueAtTime are reads or derived
 // status only and stay unguarded.
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
+import { nowISO } from '@/utils/clock';
 
 interface CellLineageActions {
   /** Record a new lineage entry for a cell */
@@ -89,7 +90,7 @@ export const useCellLineageStore = create<CellLineageStoreState>()(
               chain?.entries[chain.entries.length - 1]?.entryHash ?? '0'.repeat(64);
 
             const entryId = randomId('lin');
-            const timestamp = new Date().toISOString();
+            const timestamp = nowISO();
 
             const entryData = JSON.stringify({
               id: entryId,
@@ -199,7 +200,7 @@ export const useCellLineageStore = create<CellLineageStoreState>()(
 
           set((state) => {
             state.integrityVerified = allValid;
-            state.lastIntegrityCheck = new Date().toISOString();
+            state.lastIntegrityCheck = nowISO();
           });
 
           return allValid;

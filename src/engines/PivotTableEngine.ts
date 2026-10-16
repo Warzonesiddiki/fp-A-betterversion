@@ -4,6 +4,7 @@
 // =============================================================================
 
 import { sanitizeSpreadsheetText } from '@/utils/spreadsheetSanitize';
+import { nowISO } from '@/utils/clock';
 
 export type AggregationType = 'sum' | 'avg' | 'count' | 'min' | 'max' | 'median';
 
@@ -136,7 +137,7 @@ export class PivotTableEngine {
       metadata: {
         totalRows: rows.length,
         totalColumns: columnHeaders.length,
-        generatedAt: new Date().toISOString(),
+        generatedAt: nowISO(),
       },
     };
   }

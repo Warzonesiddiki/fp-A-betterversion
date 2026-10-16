@@ -4,6 +4,7 @@
  * Rule-based cell formatting engine supporting multiple rule types,
  * operators, visual formats, icon sets, color scales, and data bars.
  */
+import { nowMs } from '@/utils/clock';
 
 // ── Rule Type Definitions ──────────────────────────────────────────
 
@@ -184,7 +185,7 @@ export function createBudgetVsActualRule(id: string = 'bva-traffic'): Conditiona
 
 let _idCounter = 0;
 export function generateRuleId(): string {
-  return `cf-rule-${Date.now()}-${++_idCounter}`;
+  return `cf-rule-${nowMs()}-${++_idCounter}`;
 }
 
 // ── Icon Definitions ────────────────────────────────────────────────

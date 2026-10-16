@@ -7,6 +7,7 @@ import { randomId } from '@/utils/cryptoId';
 // mutations (DASHBOARD_* family, mirroring analyticsStore). Selection
 // (setActiveDashboard) and transient error/loading flags stay unguarded.
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
+import { nowISO } from '@/utils/clock';
 
 export type WidgetType =
   | 'kpi'
@@ -103,7 +104,7 @@ export const useDashboardStore = create<DashboardState>()(
 
         addDashboard: enforce(Permissions.DASHBOARD_CREATE, 'addDashboard', (data) => {
           const id = generateId('dash');
-          const now = new Date().toISOString();
+          const now = nowISO();
           const dashboard: Dashboard = { ...data, id, createdAt: now, updatedAt: now };
           set((state) => ({ dashboards: [...state.dashboards, dashboard] }));
           return id;
@@ -112,7 +113,7 @@ export const useDashboardStore = create<DashboardState>()(
         updateDashboard: enforce(Permissions.DASHBOARD_UPDATE, 'updateDashboard', (id, updates) =>
           set((state) => ({
             dashboards: state.dashboards.map((d) =>
-              d.id === id ? { ...d, ...updates, updatedAt: new Date().toISOString() } : d
+              d.id === id ? { ...d, ...updates, updatedAt: nowISO() } : d
             ),
           }))
         ),
@@ -132,7 +133,7 @@ export const useDashboardStore = create<DashboardState>()(
             dashboards: state.dashboards.map((d) => {
               if (d.id !== dashboardId) return d;
               const widget: Widget = { ...data, id: generateId('w') };
-              return { ...d, widgets: [...d.widgets, widget], updatedAt: new Date().toISOString() };
+              return { ...d, widgets: [...d.widgets, widget], updatedAt: nowISO() };
             }),
           }))
         ),
@@ -147,7 +148,7 @@ export const useDashboardStore = create<DashboardState>()(
                 return {
                   ...d,
                   widgets: d.widgets.map((w) => (w.id === widgetId ? { ...w, ...updates } : w)),
-                  updatedAt: new Date().toISOString(),
+                  updatedAt: nowISO(),
                 };
               }),
             }))
@@ -163,7 +164,7 @@ export const useDashboardStore = create<DashboardState>()(
                 return {
                   ...d,
                   widgets: d.widgets.filter((w) => w.id !== widgetId),
-                  updatedAt: new Date().toISOString(),
+                  updatedAt: nowISO(),
                 };
               }),
             }))
@@ -179,7 +180,7 @@ export const useDashboardStore = create<DashboardState>()(
                 return {
                   ...d,
                   widgets: d.widgets.map((w) => (w.id === widgetId ? { ...w, position } : w)),
-                  updatedAt: new Date().toISOString(),
+                  updatedAt: nowISO(),
                 };
               }),
             }))

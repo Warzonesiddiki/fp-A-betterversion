@@ -14,6 +14,7 @@ describe('Workers module exports', () => {
     expect(typeof mod.runMonteCarlo).toBe('function');
     expect(typeof mod.runConsolidation).toBe('function');
     expect(typeof mod.runBatchCalc).toBe('function');
+    expect(typeof mod.runGLIngestionChunk).toBe('function');
     expect(typeof mod.terminateAllWorkers).toBe('function');
     expect(typeof mod.getWorkerPoolStatus).toBe('function');
   });
@@ -32,6 +33,7 @@ describe('Workers module exports', () => {
     expect(status.monteCarlo).toEqual({ workers: 0, busy: 0, queued: 0 });
     expect(status.consolidation).toEqual({ workers: 0, busy: 0, queued: 0 });
     expect(status.batchCalc).toEqual({ workers: 0, busy: 0, queued: 0 });
+    expect(status.glIngestion).toEqual({ workers: 0, busy: 0, queued: 0 });
   });
 
   it('should have terminateAllWorkers as a no-op when no pools exist', async () => {

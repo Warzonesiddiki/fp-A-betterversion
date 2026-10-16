@@ -1,156 +1,159 @@
-# FinPlan Pro — Agent Instructions
+# FinPlan Pro — Agent Handbook (entry point)
 
-> **Operating method:** this project runs under **BMAD v5.0 ULTRA-YOLO** — read `_bmad/BMAD_V5_OPERATING_CHARTER.md`, `_bmad/BMAD_V5_REASONING_QUALITY_ADDON.md`, and `_bmad/path-lock.md` before any work; every significant decision is logged in `_bmad/reasoning-ledger.md`.
+> **Read this file first, every session.** It is the single authoritative
+> instruction set for any human or AI agent working in this repository.
+> `CLAUDE.md` and `GEMINI.md` only point here. If anything else in the repo
+> contradicts this file or `docs/agent/`, this file wins — and the
+> contradiction is a bug to be fixed, not a choice to be made.
 
-Offline-first FP&A desktop app. React 19 + TypeScript strict + Vite 8 + Tailwind 4 + Zustand/Immer + AG Grid + Recharts. Optional Tauri shell.
+Last verified against the tree: **2026-10-15**, branch
+`arena/48b4e481-fp-a-betterversion`. Every number below is produced by a
+script named next to it; do not update a number by hand.
 
-## Commands
+---
 
-```bash
-npm run dev              # Vite dev server on :5173 (strictPort)
-npm run build            # Production build
-npm run lint             # ESLint with --fix
-npm run format           # Prettier --write
-npm run test             # Vitest single run (8GB heap — node --max-old-space-size=8192)
-npm run test:watch       # Vitest watch mode (same heap)
-npm run test:e2e         # Playwright (tests/ dir, chromium only, auto-starts dev server)
-npx vitest run src/path/to/file.test.ts   # Single test file
-npx tsc --noEmit         # Type check (CI runs this before lint)
+## 1. What this project is (in one minute)
+
+- **Product:** a desktop FP&A workspace (React 19 + TypeScript strict + Vite 8
+  - Tailwind 4 + Zustand/Immer, Tauri 2 shell). Package name `finplan-pro`.
+- **Owner's real workflow (the thing we must serve first):** each month the
+  owner exports a General Ledger dump from **Microsoft Dynamics 365**, does
+  FP&A work on it, and highlights abnormalities and potentially wrong entries.
+- **Current truth:** the codebase is very wide (206 routes, 46 stores, ~200
+  engines) and shallow where it matters. Imports gained idempotency,
+  provenance and control totals on 2026-10-15; there is still **no D365
+  export contract, no exception catalogue, no answer key, no disposition
+  workflow, no relational store of record, and the desktop build cannot sign
+  in offline.** Details: `docs/agent/09_KNOWN_GAPS.md`.
+- **Plan of record:** `docs/discovery/` (requirements register, risk
+  register, decision log, gated roadmap) + `docs/audit/` (the measured
+  audit). Everything else under `docs/`, the root `*_PROMPT*.md`, `PLAN.md`,
+  `MASTER_ROADMAP.md`, `_bmad/`, `agents/`, `plan/`, `prompt/` is **historical**
+  and must not be treated as instructions (see `docs/agent/00_INDEX.md`).
+
+## 2. Non-negotiable rules (the short list)
+
+Full rationale and examples: `docs/agent/04_ENGINEERING_RULES.md`.
+
+1. **Measured, or not stated.** No claim in any document, commit message,
+   PR, or chat summary without the command that produced it. "Tests pass"
+   means you ran them in this tree and can paste the tally.
+2. **Nothing is done without evidence.** Done = code + tests that fail
+   without the change + gates green + docs updated in the same commit.
+   Stubs, mocks, TODOs and "wired later" are not done and must say so.
+3. **Money goes through one primitive.** `src/utils/money.ts`
+   (decimal.js). Never add float arithmetic on amounts. `npm run money:ast`
+   must stay at 0 unsafe ops; `npm run money:adoption` must not fall.
+4. **Deterministic.** Time comes from `src/utils/clock.ts` (`now()`,
+   `nowISO()`, `nowMs()`, `todayISO()`), never `new Date()` / `Date.now()` in engines, stores,
+   services, utils. Randomness is injected and seeded.
+   `npm run determinism:ratchet` must not rise for any file.
+5. **Nothing silently discarded.** Every rejected import row has a row
+   number, a code and a reason; every batch has a content hash, a batch id
+   and control totals; every entry has provenance. (`importGLData` contract.)
+6. **Missing ≠ zero.** Never render a KPI from absent inputs as 0 or a
+   default. Say "not in file" / "unavailable" and why.
+7. **A potential exception is never an error.** Flags are review candidates
+   with a rule id and evidence; only a human disposition makes them wrong.
+8. **No new surface before the spine works.** No new routes, pages,
+   engines, stores, sector packs or connectors until Gate 2 of
+   `docs/discovery/roadmap.md` is green. Wire or delete; do not add.
+9. **No egress by default.** No network calls, telemetry, or AI provider
+   calls unless behind an explicit allow-listed, user-initiated path. The
+   existing Sentry/PWA/LLM paths are gated by `VITE_*` flags that default off.
+10. **Do not weaken a gate to pass it.** No skipping tests, lowering bars,
+    editing baselines upward, adding `eslint-disable`, `as any`, or
+    `@ts-expect-error` to make something green. Fix the cause or stop and
+    report.
+11. **One source of truth per fact.** If a number/rule lives in two places,
+    delete one or make a script assert equality.
+12. **Owner decisions are not yours.** DEC-001…DEC-006 in
+    `docs/discovery/decision-log.md` are open. Implement around them, never
+    through them. If blocked, say exactly which decision blocks you.
+
+## 3. Session protocol
+
+```text
+START   read AGENTS.md → docs/agent/00_INDEX.md → docs/agent/09_KNOWN_GAPS.md
+        git status; git log --oneline -5; npm ci --ignore-scripts (if node_modules missing)
+        npm run tsc && npm run lint        (≈ 45 s + 2 min; must be clean before you touch anything)
+WORK    one item per commit; tests first or alongside; run the narrowest relevant
+        test files after each change; run every ratchet you could have moved
+END     npm run check (or the subset you can justify) → paste tallies →
+        update docs in the same commit → handover per docs/agent/HANDOVER_TEMPLATE.md
 ```
 
-CI order: `tsc --noEmit → lint → test → build → bundle size check`. Main chunk must stay under 150KB gzip, total JS under 2MB gzip.
+Branch rules for Arena sessions: work only on the session branch, commit and
+push there, never create or switch branches. CI workflows under
+`.github/workflows/**` cannot be modified from an agent session (GitHub App
+lacks the `workflows` permission) — deliver CI changes as patches in
+`ci-patches/` for a human.
 
-## Architecture
+## 4. Commands you will actually use
 
-Entry: `src/main.tsx` → `src/App.tsx` (all routes defined here, lazy-loaded).
+| Command                                       | Purpose                                                                   | Typical time    |
+| --------------------------------------------- | ------------------------------------------------------------------------- | --------------- |
+| `npm ci --ignore-scripts`                     | install from lockfile (root); also `cd server && npm ci --ignore-scripts` | 1–2 min         |
+| `npm run tsc`                                 | type check                                                                | ~45 s           |
+| `npm run lint`                                | ESLint, zero warnings                                                     | ~2 min          |
+| `npm run format:check` / `format`             | Prettier on `src/**`                                                      | seconds         |
+| `npx vitest run <file-or-dir>`                | targeted tests (preferred inner loop)                                     | seconds–minutes |
+| `npm run test:sharded`                        | full suite in 8 shards (use on < 8 GB RAM)                                | ~30 min         |
+| `npm run test`                                | full suite in one process (needs 8 GB heap)                               | ~20 min         |
+| `cd server && npm test`                       | server suite                                                              | ~1 min          |
+| `npm run docs:verify`                         | README numbers, persistence map, schema homes                             | seconds         |
+| `npm run money:ast` / `money:adoption`        | money ratchets                                                            | ~30 s           |
+| `npm run determinism:ratchet`                 | wall-clock/random ratchet (`--list`, `--update`)                          | seconds         |
+| `npm run engines:verify`                      | engine manifest current                                                   | seconds         |
+| `node scripts/verify-readme-stats.mjs --list` | reachable vs orphan engines                                               | seconds         |
+| `npm run check`                               | the whole gate, honest exit code                                          | ~35 min         |
 
-| Directory            | What lives here                                                  |
-| -------------------- | ---------------------------------------------------------------- |
-| `src/store/`         | 28+ Zustand stores, colocated `.test.ts` files                   |
-| `src/engines/`       | 180+ pure calculation engines (financial logic, no side effects) |
-| `src/pages/`         | Route pages, 30+ domain subdirs, all `React.lazy`                |
-| `src/components/ui/` | 240+ atomic UI primitives, barrel-exported via `index.ts`        |
-| `src/components/`    | Domain components (budget/, reports/, analytics/)                |
-| `src/hooks/`         | 40+ custom hooks (`use` prefix)                                  |
-| `src/workers/`       | Web Workers (Monte Carlo, consolidation, formulas)               |
-| `src/services/`      | API layer, WebSocket, collaboration                              |
-| `src/plugins/`       | Plugin system (registry, sandbox, marketplace)                   |
-| `src/utils/`         | Formatters, calculations, storage, encryption                    |
-| `src/config/`        | Design tokens, keyboard shortcuts, sector configs                |
-| `src/types/`         | Shared TS types                                                  |
-| `src/templates/`     | Report/budget templates                                          |
-| `src/test/`          | Test setup, mocks, utilities                                     |
-| `src-tauri/`         | Tauri desktop shell (Rust)                                       |
+Everything else in `package.json` is documented in
+`docs/agent/05_COMMANDS_AND_GATES.md`.
 
-## Path Alias
+## 5. Where things live
 
-`@/` → `src/`. Use for all internal imports:
-
-```typescript
-import { Button } from '@/components/ui/Button';
-import { useBudgetStore } from '@/store/budgetStore';
+```text
+src/main.tsx → src/App.tsx          all routes (206 <Route>, 182 React.lazy)
+src/pages/        route pages by domain          src/store/      46 Zustand stores (persist+immer)
+src/engines/      pure calculation modules       src/services/   import, export, connectors, api sdk
+src/components/ui 122 primitives (barrel index)  src/utils/      money.ts, clock.ts, sha256.ts, storage
+src/types/index.ts domain types (GLEntry etc.)   src/test/setup.ts global test mocks (lucide, sql.js)
+src-tauri/        Rust shell + 35-table SQLite migrations (client never writes them)
+server/           Express + SQLite API (JWT/RBAC) — no frontend caller, not bundled
+scripts/          every gate and generator      docs/agent/     this handbook
+docs/discovery/   plan of record                docs/audit/     measured audit 2026-10-15
 ```
 
-## Zustand Store Pattern (required middleware order)
+Architecture detail and dependency direction: `docs/agent/02_ARCHITECTURE.md`.
+Domain rules the code must enforce: `docs/agent/03_DOMAIN_RULES.md`.
+Data model and persistence truth: `docs/agent/08_DATA_MODEL.md`.
+Testing conventions: `docs/agent/06_TESTING.md`.
+Definition of done, commit format, handover: `docs/agent/07_WORKFLOW_AND_DOD.md`.
 
-```typescript
-export const useSomeStore = create<State>()(
-  subscribeWithSelector(
-    // outermost — fine-grained subscriptions
-    persist(
-      // middle — for auth/settings/UI prefs; skip for transient data
-      immer((set, get) => ({
-        // innermost — immutable updates via drafts
-        // state + actions
-      })),
-      { name: 'store-name', storage: masterStorage }
-    )
-  )
-);
-```
+## 6. Things that will bite you (learned the hard way)
 
-Import `masterStorage` from `@/utils/masterStorage` for persistence. Store naming: `{domain}Store.ts`.
+- `node_modules` is not snapshotted in Arena sandboxes; if `npx tsc` suddenly
+  "isn't the tsc you're looking for", run `npm ci --ignore-scripts`.
+- `npm audit fix --omit=dev` prunes dev deps; always follow with `npm install`.
+- Prettier 3 ships `prettier.cjs`, not `prettier.js`.
+- `lucide-react` is mocked globally in `src/test/setup.ts` with an enumerated
+  icon list. Never hand-mock it per test file; add new icons to the global mock.
+- Tests that depend on "today" rot. Pin with `setClock()` from
+  `src/utils/clock.ts` and make fixtures relative to the pinned instant.
+- The store enforces **double-entry balance per journal batch** in
+  `validateEntries`. Unbalanced fixtures fail import with
+  `FP-0002`-style messages — balance your test journals.
+- Entry ids derive from the batch id, not the millisecond clock; two batches
+  in the same instant must never share ids (it broke `undoLastImport` once).
+- `docs:verify` fails if README numbers drift from the tree. Update the
+  README from the script output, not from memory.
+- The uploaded planning docs contain curly quotes; exact-string patching
+  with ASCII quotes silently misses.
 
-## Code Conventions
+## 7. If you are unsure
 
-- **Named exports only** — no default exports
-- **Component props** — explicit `{Component}Props` interface
-- **No inline styles** — Tailwind only
-- **No fetch in components** — use services/ or store actions
-- **File size limits**: 300 lines (components), 500 lines (engines/stores)
-- **Financial numbers**: raw `number`, formatted only at display layer
-- **Percentages**: stored as decimals (0.15 = 15%)
-- **Variance colors**: favorable = green (#16A34A), unfavorable = red (#DC2626)
-- **No `any`** — use `unknown` for untrusted input (tsconfig strict + noUncheckedIndexedAccess)
-
-## Testing
-
-- **Unit**: Vitest + @testing-library/react (jsdom, threads pool, 4 max workers)
-- **E2E**: Playwright in `tests/` dir, chromium only, 60s timeout, auto-starts dev server
-- **Test files**: colocated with source (`Foo.tsx` → `Foo.test.tsx`)
-- **Setup**: `src/test/setup.ts` (auto-cleanup via `@testing-library/jest-dom/vitest`)
-- **Render helper**: `import { render } from '@/test/testUtils'` — wraps in BrowserRouter + I18nextProvider
-- **Store tests**: `import { resetStore } from '@/test/storeTestUtils'` — use `resetStore(store, initialState)` in `beforeEach`
-- **Engine tests**: `import { expectCloseTo, expectFinancialEqual } from '@/test/engineTestUtils'`
-- **Tauri mock**: `@tauri-apps/plugin-global-shortcut` aliased to `src/test/__mocks__/tauri-shortcut.ts`
-- **Global mocks**: lucide-react, sql.js, worker-pool all mocked in setup.ts
-
-## Build & Deploy
-
-- Vite 8 manual chunks: vite.config.ts defines 10 chunk rules — ai-vendor (@huggingface/transformers optional peer; no chunk emitted while uninstalled), react-vendor, icon-vendor, grid-react-vendor, grid-community-vendor, chart-vendor, excel-vendor + excel-core-vendor (exceljs split; the dist-entry rule can emit no separate file), pdf-vendor, db-vendor. No form-vendor or state-vendor chunks exist; per-build sizes are gated by scripts/bundle-check.js budgets.
-- Tailwind CSS 4 via `@tailwindcss/vite` plugin (not PostCSS)
-- Tauri desktop only — no PWA/web-manifest surface (owner ruling 2026-08-25: vite-plugin-pwa uninstalled)
-- Tauri desktop: `npm run tauri:dev` / `npm run tauri:build`
-- CI: Node 22, `npm ci`
-- Bundle limits: main chunk 150KB gzip, total JS 2MB gzip (`scripts/bundle-check.js`)
-
-## App Behavior
-
-- **Tauri-only**: App shows alert and returns null if not running in Tauri desktop shell
-- **First run**: Shows onboarding wizard on first launch
-- **Mock auth gate**: `main.tsx` throws if `VITE_USE_MOCK_AUTH=true` in production builds
-
-## Pre-push Hooks
-
-Husky pre-push (`.husky/pre-push` — canon for this section, rewritten per F-0024) runs a fail-fast (`set -e`) gate chain:
-
-1. **Gate 1** — TypeScript: `tsc --noEmit`
-2. **Gate 2** — ESLint zero-warnings: `eslint src --max-warnings 0`
-3. **Gate 3** — Vitest P0 financial/security shard (`--testTimeout=10000`): FXEngine, ConsolidationEngine, SafeMathParser, glValidation, glStore.smoke, spreadsheetSanitize, masterStorage.security, moneySerialize, persistenceAuthority, components/layout/, plugins/ (full suite runs in CI)
-4. **Gate 4** — Production build: `npm run build` (includes tsc + eslint + vite)
-5. **Gate 5** — Bundle budget: `scripts/bundle-check.js`
-6. **Gate 6** — Version consistency: package.json / Cargo.toml / tauri.conf.json / lib.rs
-7. **Gate 7** — README claim check (F-0034)
-8. **Gate 8** — Production dependency audit (F-0021): HIGH/CRITICAL blocks unless allowlisted in `security/audit-allowlist.json` with expiry
-9. **Gate 9** — Tautological-assertion scan (F-0027)
-10. **Gates 9b–9g** — ratchets & drift checks: AST money-safety ratchet, fabrication ratchet, persistence-map + schema equality, route-map drift (`generate-route-map.js --check`), docs truth + engine manifest (`docs:verify`, `engines:verify`), §24.2 escape-ledger check (advisory)
-11. **Gate 10** — CASCADE-HOLD-BUNDLE auto-detection (spec: `docs/security/HUSKY_GATE_10_CASCADE_HOLD_BUNDLE.md`, CI mirror `.github/workflows/cascade-hold-check.yml`): blocks multi-T-ID / multi-Co-Authored-By / cross-Muse commits without a CHB entry in `docs/security/CASCADE_HOLD_LEDGER.md`
-
-## Other
-
-- i18next for internationalization (src/i18n/)
-- MCP servers configured in `.mcp.json`: github, git, filesystem, excel-analyser, playwright
-- Multi-agent task assignments in `agents/` dir (A1–A5 phased roadmap)
-- `server/` directory: separate Express backend (own package.json, not bundled with frontend)
-
-## Disciplines
-
-5 cascade-discipline ground rules (formalized 2026-06-13, cycle-9 wave 4 close; Mnemosyne augmentation 2026-06-13 cycle-10 wave 6 added D-011 + D-012):
-
-- **D-002 Three-Witnesses** (rule / evidence / consequence) — applied to every $X claim across all Muse deliverables. Each empirical claim (file:line, count, size, mtime, LOC, $X) must be backed by 3 independent witnesses (typically a Read, a wc -l / stat, and a Grep). Source-of-truth: `docs/STRATEGIC_DECISIONS_LOG.md` §D-002 row (L75).
-- **D-007 IDLE patrol + Honest Labeling** — pre-flight self-correction before claiming "X is verified / Glob-checked / Glob-ABSOLUTE-path". Cumulative count: **13 fabrications caught, 0 escaped** (protocol records archived in the 2026-08-07 docs triage; verified 2026-06-13 by Mnemosyne D-002 Glob+Read+Grep triangulation). "Honest Labeling" cohort = 10/11 Muses (91%, cycle 8 final). Mnemosyne 14th Honest Labeling moment in cycle-9 wave 4 (per Leader ACK 2026-06-13).
-- **D-009 Triangulation** — file:line citations to real source docs (NOT "all Glob-verified" without count). 8th codification = Glob with ABSOLUTE path parameter. 9th codification = wc -l before/after every file size claim. 10th codification = Glob path+pattern in single call. Source-of-truth: `docs/ONBOARDING.md` §2.4 (L83 11 ADRs + 8 D-009 codifications).
-- **D-011 4-ICP Verdict** (added 2026-06-13 cycle-10 wave 6 by Mnemosyne T-MN-015 v2 §9.1, integrated with Strategos T-ST-018 v0.2) — every major decision (ADR acceptance, cascade authorization, P0/P1 fix) must pass a 4-ICP verdict. ICP-1 Carla (cascade discipline), ICP-2 Vera (logic/evidence), ICP-3 Chris (operational), ICP-4 Beth (user/customer). Recorded as `VERDICT: 4/4 ICPs ACCEPT (Carla ✓, Vera ✓, Chris ✓, Beth ✓)`.
-- **D-012 Canonical ICP-Numbering** (added 2026-06-13 cycle-10 wave 6 by Mnemosyne T-MN-015 v2 §9.1, integrated with Strategos T-ST-018 v0.2) — the 4 ICPs are numbered ICP-1 Carla, ICP-2 Vera, ICP-3 Chris, ICP-4 Beth. This order is STABLE across all PR reviews, Muse handoffs, and task IDs. DO NOT renumber. If a 5th ICP is added, it is ICP-5.
-
-**Ratification State** (per T-MN-015 v2 §5.2, as of 2026-06-13):
-
-| ADR                      | Carla (ICP-1) | Vera (ICP-2) | Chris (ICP-3) | Beth (ICP-4) | Founder-ping  |
-| ------------------------ | ------------- | ------------ | ------------- | ------------ | ------------- |
-| ADR-002 Zustand          | ⏳            | ⏳           | ⏳            | ⏳           | ⏳ 2026-08-15 |
-| ADR-003 OLAP cube        | ⏳            | ⏳           | ⏳            | ⏳           | ⏳ 2026-08-15 |
-| ADR-004 Decimal.js       | ⏳            | ⏳           | ⏳            | ⏳           | ⏳ 2026-08-15 |
-| ADR-005 masterStorage    | ⏳            | ⏳           | ⏳            | ⏳           | ⏳ 2026-08-15 |
-| ADR-010 Schema migration | ⏳            | ⏳           | ⏳            | ⏳           | ⏳ 2026-08-15 |
-
-⏳ = pending. ✅ = signed. ❌ = rejected. All 5 P0 ADRs are at **0 of 4 ICPs** + **0 of 1 Founder-ping**. TENTATIVE per D-011.
+Stop and ask the owner with a concrete question that names the decision
+(e.g. "DEC-005: blob store or relational SQLite?"). Do not pick for them and
+do not leave it implicit in code. Record the answer in
+`docs/discovery/decision-log.md` before building on it.

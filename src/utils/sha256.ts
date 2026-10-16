@@ -32,7 +32,15 @@ const rotr = (x: number, n: number): number => ((x >>> n) | (x << (32 - n))) >>>
  * Deterministic across browsers and Node (no platform crypto dependency).
  */
 export function sha256Hex(message: string): string {
-  const bytes = new TextEncoder().encode(message);
+  return sha256HexBytes(new TextEncoder().encode(message));
+}
+
+/**
+ * Compute the SHA-256 digest of raw bytes, returned as lowercase hex.
+ * Used for source-file identity on import (FR-003): the same file content
+ * always yields the same hash regardless of file name or import time.
+ */
+export function sha256HexBytes(bytes: Uint8Array): string {
   const bitLen = bytes.length * 8;
 
   // Padding: message || 0x80 || zeros || 64-bit big-endian bit length,

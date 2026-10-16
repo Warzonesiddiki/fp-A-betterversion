@@ -29,7 +29,20 @@ import type { GlJournalBatch, GlCommitResult, GlListedEntry } from '@/sdk/gl/GlC
 import { useCubeStore } from './cubeStore';
 import { useUIStore } from './uiStore';
 import { useAuthStore } from './authStore';
+import { usePeriodCloseStore } from './periodCloseStore';
+import { getGLPeriodWriteIssues } from '@/services/import/glPeriodWriteGuard';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
+import { now } from '../utils/clock';
+import {
+  computeControlTotals,
+  computeImportScope,
+  defaultSourceRows,
+  findPriorImport,
+  hashRowContent,
+  makeBatchId,
+  stampProvenance,
+} from '@/services/import/importProvenance';
+import type { ImportRejection, ImportSource } from '@/types';
 
 function extractTimeCode(dateStr: string): string {
   const d = new Date(dateStr);
@@ -94,10 +107,22 @@ export function setGlCommitClient(client: GlCommitNamespace): void {
   glCommitClient = client;
 }
 
+/**
+ * Stable identity for a group of entries pushed to the server. Prefers the
+ * source journal id, then the import batch id (provenance), then a content
+ * hash — never the clock or a random number, so a retried push carries the
+ * same journal id and idempotency key as the first attempt (NFR-001).
+ */
+function groupIdentity(entries: readonly GLEntry[]): string {
+  const journalId = entries.find((e) => e.journalId)?.journalId;
+  if (journalId) return journalId;
+  const batchId = entries.find((e) => e.provenance)?.provenance?.batchId;
+  if (batchId) return batchId;
+  return `batch-${hashRowContent(entries).slice(0, 20)}`;
+}
+
 function toJournalBatch(entries: GLEntry[], environmentId: string): GlJournalBatch {
-  const journalId =
-    entries.find((e) => e.journalId)?.journalId ??
-    `batch-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+  const journalId = groupIdentity(entries);
   return {
     journalId,
     environmentId,
@@ -249,6 +274,11 @@ async function tombstoneCommittedEntries(
   const failures: GlTombstoneFailure[] = [];
   for (const id of ids) {
     if ((entrySyncState[id] ?? 'draft') !== 'committed') continue;
+    const issues = periodWriteIssues(useGLStore.getState().entries.filter((e) => e.id === id));
+    if (issues.length > 0) {
+      failures.push({ id, message: issues.map((i) => i.reason).join('; ') });
+      continue;
+    }
     const result = await glCommitClient.deleteEntry({ entryId: id, environmentId });
     if (result.status === 'committed' || result.status === 'already_deleted') continue;
     const message =
@@ -321,6 +351,31 @@ function captureGLSnapshot(get: () => ReturnType<typeof useGLStore.getState>) {
   });
 }
 
+function periodWriteIssues(rows: readonly Partial<GLEntry>[]) {
+  return getGLPeriodWriteIssues(
+    rows,
+    usePeriodCloseStore.getState(),
+    usePeriodCloseStore.persist.hasHydrated()
+  );
+}
+
+/** Fail without mutating financial state or consuming undo history. */
+function blockPeriodWrite(
+  rows: readonly Partial<GLEntry>[],
+  set: (patch: Partial<GLState>) => void
+): boolean {
+  const issues = periodWriteIssues(rows);
+  if (issues.length === 0) return false;
+  set({
+    importStatus: 'error',
+    importError: issues
+      .slice(0, 5)
+      .map((i) => i.reason)
+      .join('; '),
+  });
+  return true;
+}
+
 export const useGLStore = create<GLState>()(
   subscribeWithSelector(
     persist(
@@ -366,6 +421,13 @@ export const useGLStore = create<GLState>()(
             let failed = 0;
 
             if (drafts.length === 0) return { committed, failed, conflicts };
+            if (blockPeriodWrite(drafts, set)) {
+              return {
+                committed: 0,
+                failed: drafts.length,
+                conflicts: [{ code: 'PERIOD_CLOSED', message: get().importError! }],
+              };
+            }
 
             set((state) => {
               for (const e of drafts) state.entrySyncState[e.id] = 'pending';
@@ -381,6 +443,14 @@ export const useGLStore = create<GLState>()(
             }
 
             for (const group of groups.values()) {
+              if (blockPeriodWrite(group, set)) {
+                failed += group.length;
+                set((state) => {
+                  for (const e of group) state.entrySyncState[e.id] = 'failed';
+                });
+                conflicts.push({ code: 'PERIOD_CLOSED', message: get().importError! });
+                continue;
+              }
               const validation = validateEntries(group);
               if (!validation.isValid) {
                 failed += group.length;
@@ -398,8 +468,18 @@ export const useGLStore = create<GLState>()(
 
               const result = await glCommitClient.createJournalBatch({
                 batch: toJournalBatch(group, environmentId),
-                idempotencyKey: `gl-${environmentId}-${group[0]?.journalId ?? Date.now()}`,
+                idempotencyKey: `gl-${environmentId}-${groupIdentity(group)}`,
               });
+              if (blockPeriodWrite(group, set)) {
+                failed += group.length;
+                set((state) => {
+                  for (const e of group) state.entrySyncState[e.id] = 'failed';
+                });
+                const message = `${get().importError} The server request was already sent; reconcile its outcome before retrying.`;
+                set({ importError: message });
+                conflicts.push({ code: 'PERIOD_CLOSED', message });
+                continue;
+              }
               const outcome = await applyCommitResult(result, group, set);
               if (outcome.committed) {
                 committed += group.length;
@@ -412,7 +492,14 @@ export const useGLStore = create<GLState>()(
             }
 
             if (failed > 0) {
-              set({ importError: `${failed} draft entr(ies) failed server commit` });
+              set({
+                importError: conflicts.some((c) => c.code === 'PERIOD_CLOSED')
+                  ? conflicts
+                      .filter((c) => c.code === 'PERIOD_CLOSED')
+                      .map((c) => c.message)
+                      .join('; ')
+                  : `${failed} draft entr(ies) failed server commit`,
+              });
             }
             return { committed, failed, conflicts };
           }
@@ -461,6 +548,16 @@ export const useGLStore = create<GLState>()(
             }
 
             if (updates.length === 0 && inserts.length === 0) return { hydrated: 0 };
+            if (
+              blockPeriodWrite(
+                [
+                  ...updates.flatMap((u) => [before.entries[u.index]!, u.next]),
+                  ...inserts.map((i) => i.entry),
+                ],
+                set
+              )
+            )
+              return { hydrated: 0 };
 
             set((state) => {
               for (const u of updates) {
@@ -485,6 +582,8 @@ export const useGLStore = create<GLState>()(
 
         // --- Undo/Redo Actions ---
         undo: enforce(Permissions.UI_UPDATE, 'undo', () => {
+          const target = undoEngine.peekUndo();
+          if (target && blockPeriodWrite([...get().entries, ...target.entries], set)) return;
           const snapshot = undoEngine.undo();
           if (snapshot !== null) {
             set({
@@ -499,6 +598,8 @@ export const useGLStore = create<GLState>()(
         }),
 
         redo: enforce(Permissions.UI_UPDATE, 'redo', () => {
+          const target = undoEngine.peekRedo();
+          if (target && blockPeriodWrite([...get().entries, ...target.entries], set)) return;
           const snapshot = undoEngine.redo();
           if (snapshot !== null) {
             set({
@@ -519,6 +620,7 @@ export const useGLStore = create<GLState>()(
         // --- Mutation Actions (with undo capture) ---
 
         setEntries: enforce(Permissions.IMPORT_CREATE, 'setEntries', (entries) => {
+          if (blockPeriodWrite([...get().entries, ...entries], set)) return;
           captureGLSnapshot(get);
           const normalizedEntries = entries.map((entry, index) =>
             normalizeGLEntry(entry, index, 'gl-set')
@@ -541,9 +643,10 @@ export const useGLStore = create<GLState>()(
         }),
 
         addEntries: enforce(Permissions.IMPORT_CREATE, 'addEntries', (newEntries: GLEntry[]) => {
+          if (blockPeriodWrite(newEntries, set)) return;
           captureGLSnapshot(get);
           const normalizedEntries = newEntries.map((entry, index) =>
-            normalizeGLEntry(entry, index, `gl-add-${Date.now()}`)
+            normalizeGLEntry(entry, index, `gl-add-${now().getTime()}`)
           );
           const ids = normalizedEntries.map((e) => e.id);
           set((state) => {
@@ -554,36 +657,172 @@ export const useGLStore = create<GLState>()(
           });
         }),
 
-        /** High-level robust import action used by the GL Upload wizard */
+        /**
+         * High-level robust import action used by the GL Upload wizard and
+         * the connector path.
+         *
+         * Gate 2 contract (docs/discovery/requirements-register.md):
+         * - FR-003 idempotency: the same file content (SHA-256) is imported
+         *   at most once; a repeat is rejected with the prior batch id and
+         *   has no financial effect.
+         * - FR-002 atomicity: any validation error rejects the whole batch;
+         *   nothing is committed. Possible overlaps with ledger entries also
+         *   reject the whole file (DEC-009), with source-row reasons for review.
+         * - FR-005 provenance: every committed entry carries
+         *   {batchId, fileHash, sourceFile, sourceRow}.
+         * - FR-004 control totals: debit/credit/net of the committed rows are
+         *   computed independently in integer cents and recorded with the
+         *   batch.
+         * The import instant comes from the injectable clock (NFR-001).
+         */
         importGLData: enforce(
           Permissions.IMPORT_CREATE,
           'importGLData',
-          (rawEntries: Partial<GLEntry>[], filename?: string) => {
+          (rawEntries: Partial<GLEntry>[], filename?: string, source?: ImportSource) => {
+            const sourceFile = filename || 'unknown';
+            const sourceRows =
+              source?.sourceRows && source.sourceRows.length === rawEntries.length
+                ? [...source.sourceRows]
+                : defaultSourceRows(rawEntries.length);
+            const fileHash = source?.fileHash ?? hashRowContent(rawEntries);
+
+            // FR-003: same content already committed → reject, no effect.
+            const prior = findPriorImport(get().importHistory, fileHash);
+            if (prior) {
+              const when = prior.timestamp ? ` on ${prior.timestamp}` : '';
+              const rejections: ImportRejection[] = [
+                {
+                  row: 0,
+                  code: 'DUPLICATE_FILE',
+                  reason: `Identical file content was already imported as ${prior.batchId ?? prior.id}${when} (${prior.filename}).`,
+                },
+              ];
+              set({
+                importError: `Duplicate import rejected: ${rejections[0]!.reason}`,
+                importStatus: 'error',
+              });
+              return {
+                success: false,
+                imported: 0,
+                errors: 1,
+                duplicateOfBatchId: prior.batchId ?? prior.id,
+                rejections,
+              };
+            }
+
+            // DEC-007: parsing failures abort the file, even if the remaining
+            // rows happen to balance. Never commit a financially incomplete file.
+            const callerRejections: ImportRejection[] = [...(source?.rejections ?? [])];
+            if (callerRejections.length > 0) {
+              const rejections = callerRejections.sort((a, b) => a.row - b.row);
+              set({
+                importError: `Entire file rejected; correct the source and retry. ${rejections
+                  .slice(0, 5)
+                  .map((r) => `Row ${r.row}: ${r.reason}`)
+                  .join('; ')}`,
+                importStatus: 'error',
+              });
+              return { success: false, imported: 0, errors: rejections.length, rejections };
+            }
+
+            const periodIssues = periodWriteIssues(rawEntries);
+            if (periodIssues.length > 0) {
+              const rejections: ImportRejection[] = periodIssues.map((issue) => ({
+                row: issue.index < 0 ? 0 : (sourceRows[issue.index] ?? issue.index + 2),
+                code: 'VALIDATION',
+                reason: issue.reason,
+              }));
+              set({
+                importStatus: 'error',
+                importError: rejections
+                  .slice(0, 5)
+                  .map((r) => r.reason)
+                  .join('; '),
+              });
+              return { success: false, imported: 0, errors: rejections.length, rejections };
+            }
+
             const validation = get().validateEntries(rawEntries);
             if (!validation.isValid) {
               set({ importError: validation.errors.slice(0, 5).join('; '), importStatus: 'error' });
-              return { success: false, imported: 0, errors: validation.errors.length };
+              return {
+                success: false,
+                imported: 0,
+                errors: validation.errors.length,
+                rejections: validation.errors.map((message, i) => {
+                  const m = /^Row (\d+): (.*)$/.exec(message);
+                  const idx = m ? Number(m[1]) - 1 : i;
+                  return {
+                    row: sourceRows[idx] ?? idx + 2,
+                    code: 'VALIDATION' as const,
+                    reason: m ? m[2]! : message,
+                  };
+                }),
+              };
             }
 
-            const { duplicates, newEntries } = get().checkDuplicates(rawEntries as GLEntry[]);
+            const { duplicates, newEntries, duplicateIndices } = get().checkDuplicates(
+              rawEntries as GLEntry[]
+            );
+            const rejections: ImportRejection[] = [
+              ...callerRejections,
+              ...duplicateIndices.map(
+                (idx): ImportRejection => ({
+                  row: sourceRows[idx] ?? idx + 2,
+                  code: 'DUPLICATE_ROW',
+                  reason:
+                    'A possible matching entry already exists in the ledger (same account, posting date, debit and credit). Review the overlap; no rows from this file were imported.',
+                })
+              ),
+            ].sort((a, b) => a.row - b.row);
 
+            // DEC-009: an overlap is not proof of duplicate identity. Dropping
+            // matching rows can unbalance a journal or omit a balanced subjournal.
+            // Reject for review instead of committing a filtered remainder.
+            if (duplicates > 0) {
+              set({
+                importError:
+                  'Entire file rejected: possible ledger overlaps require review; no rows were imported.',
+                importStatus: 'error',
+              });
+              return { success: false, imported: 0, errors: duplicates, rejections };
+            }
             if (newEntries.length === 0) {
-              set({ importError: 'All rows were duplicates.', importStatus: 'error' });
-              return { success: false, imported: 0, errors: duplicates };
+              set({ importError: 'No entries to import.', importStatus: 'error' });
+              return {
+                success: false,
+                imported: 0,
+                errors: 1,
+                rejections: [{ row: 0, code: 'VALIDATION', reason: 'No entries to import.' }],
+              };
             }
 
             captureGLSnapshot(get);
-            const timestamp = Date.now();
-            const finalEntries = newEntries.map((entry, index) =>
+            const importedAtISO = now().toISOString();
+            const batchId = makeBatchId(fileHash, importedAtISO);
+            const keptSourceRows = sourceRows;
+            const stamped = stampProvenance(
+              newEntries,
+              { batchId, fileHash, sourceFile },
+              keptSourceRows
+            );
+            // Entry ids derive from the batch id, not the millisecond clock:
+            // two batches committed in the same instant (or under a pinned
+            // clock) must never share ids, or undoLastImport would remove
+            // the wrong rows.
+            const idPrefix = `gl-${batchId.slice('batch-'.length)}`;
+            const finalEntries = stamped.map((entry, index) =>
               normalizeGLEntry(
                 {
                   ...entry,
-                  id: entry.id || `gl-${timestamp}-${index}`,
+                  id: entry.id || `${idPrefix}-${index}`,
                 },
                 index,
-                `gl-${timestamp}`
+                idPrefix
               )
             );
+            const controlTotals = computeControlTotals(finalEntries);
+            const scope = computeImportScope(finalEntries, importedAtISO);
 
             const ids = finalEntries.map((e) => e.id);
 
@@ -598,12 +837,17 @@ export const useGLStore = create<GLState>()(
             });
 
             const result: ImportResult = {
-              filename: filename || 'unknown',
-              rowCount: rawEntries.length,
+              filename: sourceFile,
+              rowCount: rawEntries.length + callerRejections.length,
               successCount: finalEntries.length,
-              errorCount: validation.errors.length + duplicates,
+              errorCount: validation.errors.length + duplicates + callerRejections.length,
               warningCount: duplicates,
-              status: duplicates > 0 ? 'partial' : 'success',
+              status: rejections.length > 0 ? 'partial' : 'success',
+              batchId,
+              fileHash,
+              rejections,
+              controlTotals,
+              scope,
             };
 
             get().recordImport(result);
@@ -613,14 +857,20 @@ export const useGLStore = create<GLState>()(
               imported: finalEntries.length,
               duplicates,
               errors: validation.errors.length,
+              batchId,
+              fileHash,
+              rejections,
+              controlTotals,
+              scope,
             };
           }
         ),
 
         addEntry: enforce(Permissions.IMPORT_CREATE, 'addEntry', (entry) => {
+          if (blockPeriodWrite(Array.isArray(entry) ? entry : [entry], set)) return;
           captureGLSnapshot(get);
           const entries = (Array.isArray(entry) ? entry : [entry]).map((item, index) =>
-            normalizeGLEntry(item, index, `gl-entry-${Date.now()}`)
+            normalizeGLEntry(item, index, `gl-entry-${now().getTime()}`)
           );
           set((state) => {
             state.entries.push(...entries);
@@ -636,6 +886,7 @@ export const useGLStore = create<GLState>()(
         }),
 
         setAccounts: enforce(Permissions.IMPORT_UPDATE, 'setAccounts', (accounts) => {
+          if (blockPeriodWrite(get().entries, set)) return;
           captureGLSnapshot(get);
           set({ accounts });
         }),
@@ -772,7 +1023,7 @@ export const useGLStore = create<GLState>()(
         ),
 
         clearData: enforce(Permissions.IMPORT_DELETE, 'clearData', async () => {
-          captureGLSnapshot(get);
+          if (blockPeriodWrite(get().entries, set)) return;
           // W0.8.6 §4: every COMMITTED row gets a compensating server
           // tombstone before the local wipe; drafts never reached the server
           // and simply vanish locally. A wipe with zero committed rows never
@@ -786,6 +1037,15 @@ export const useGLStore = create<GLState>()(
               ? await tombstoneCommittedEntries(committedIds, entrySyncState, environmentId)
               : [];
 
+          // A close may have happened while tombstones were in flight.
+          if (blockPeriodWrite(get().entries, set)) {
+            if (committedIds.length > 0)
+              set({
+                importError: `${get().importError} Server deletes may already have completed; reconcile before retrying.`,
+              });
+            return;
+          }
+          captureGLSnapshot(get);
           set({
             entries: [],
             trialBalance: [],
@@ -828,12 +1088,13 @@ export const useGLStore = create<GLState>()(
 
         recordImport: enforce(Permissions.IMPORT_CREATE, 'recordImport', (result) =>
           set((state) => {
+            const recordedAt = now();
             state.importHistory.unshift({
-              id: `import-${Date.now()}`,
+              id: result.batchId ?? `import-${recordedAt.getTime()}`,
               ...result,
-              timestamp: new Date().toISOString(),
+              timestamp: recordedAt.toISOString(),
             });
-            state.lastImportResult = { ...result, timestamp: new Date().toISOString() };
+            state.lastImportResult = { ...result, timestamp: recordedAt.toISOString() };
             state.importStatus = 'complete';
             state.importProgress = 100;
 
@@ -846,6 +1107,9 @@ export const useGLStore = create<GLState>()(
         ),
 
         undoLastImport: enforce(Permissions.IMPORT_DELETE, 'undoLastImport', async () => {
+          const affected = () =>
+            get().entries.filter((e) => get().lastImportEntryIds.includes(e.id));
+          if (blockPeriodWrite(affected(), set)) return;
           // W0.8.6 §4: compensating server tombstones FIRST — committed rows
           // of the batch are deleted server-side (already_deleted tolerated),
           // then the existing local undo runs. Drafts/pending/failed rows
@@ -861,6 +1125,13 @@ export const useGLStore = create<GLState>()(
               ? await tombstoneCommittedEntries(committedIds, entrySyncState, environmentId)
               : [];
 
+          if (blockPeriodWrite(affected(), set)) {
+            if (committedIds.length > 0)
+              set({
+                importError: `${get().importError} Server deletes may already have completed; reconcile before retrying.`,
+              });
+            return;
+          }
           set((state) => {
             const count = state.lastImportEntryIds.length;
             if (count === 0) {
@@ -906,26 +1177,29 @@ export const useGLStore = create<GLState>()(
 
         checkDuplicates: (entries) => {
           const state = get();
-          // The amount fallback (debit − credit) is currency: exact decimal
-          // so the dedupe key matches the normalized stored amount (F-0006).
-          const entryKey = (
-            e: Pick<GLEntry, 'accountCode' | 'postDate' | 'date' | 'amount' | 'debit' | 'credit'>
-          ) =>
-            `${e.accountCode}|${e.postDate || e.date}|${e.amount ?? roundTo(subtractMoney(e.debit, e.credit))}`;
+          // Use the same debit/credit authority as persisted entries. Upload
+          // rows carry amount: 0 as a placeholder; trusting that field misses
+          // real overlaps. Keep gross sides separate (equal net != equal row).
+          // JSON tuples also avoid delimiter collisions in account/date text.
+          // This remains a possible-match heuristic, NOT source-line identity.
+          const entryKey = (entry: Partial<GLEntry>) => {
+            const e = normalizeGLEntry(entry, 0);
+            return JSON.stringify([e.accountCode, e.postDate || e.date, e.debit, e.credit]);
+          };
           const existingKeys = new Set(state.entries.map(entryKey));
-          const duplicates: GLEntry[] = [];
+          const duplicateIndices: number[] = [];
           const newEntries: GLEntry[] = [];
 
-          entries.forEach((e) => {
+          entries.forEach((e, idx) => {
             const key = entryKey(e);
             if (existingKeys.has(key)) {
-              duplicates.push(e);
+              duplicateIndices.push(idx);
             } else {
               newEntries.push(e);
             }
           });
 
-          return { duplicates: duplicates.length, newEntries };
+          return { duplicates: duplicateIndices.length, newEntries, duplicateIndices };
         },
 
         validateEntries: (entries: Partial<GLEntry>[]) => {

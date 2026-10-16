@@ -1,3 +1,4 @@
+import { now as clockNow } from '@/utils/clock';
 export interface FiscalPeriodInput {
   year: number;
   periodNumber: number;
@@ -17,7 +18,7 @@ export interface FiscalYearConfig {
 
 export class FiscalCalendar {
   static generatePeriods(config: FiscalYearConfig): FiscalPeriodInput[] {
-    const year = config.year || new Date().getFullYear();
+    const year = config.year || clockNow().getFullYear();
     const startMonth = config.startMonth < 1 || config.startMonth > 12 ? 1 : config.startMonth;
     const periods: FiscalPeriodInput[] = [];
 

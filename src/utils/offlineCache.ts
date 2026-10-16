@@ -1,4 +1,5 @@
 import { openDB } from './indexedDBStorage';
+import { now as clockNow, nowISO } from '@/utils/clock';
 
 // =============================================================================
 // OFFLINE CACHE — IndexedDB-backed cache with metadata for offline data
@@ -54,7 +55,7 @@ export async function cacheSet<T>(
   value: T,
   ttlMs: number = DEFAULT_TTL_MS
 ): Promise<void> {
-  const now = new Date();
+  const now = clockNow();
   const entry: CacheEntry<T> = {
     key: `${storeName}:${key}`,
     value,
@@ -101,7 +102,7 @@ export async function cacheGet<T>(storeName: string, key: string): Promise<T | n
           return;
         }
         // Check expiration
-        if (entry.expiresAt && new Date(entry.expiresAt) < new Date()) {
+        if (entry.expiresAt && new Date(entry.expiresAt) < clockNow()) {
           resolve(null);
           return;
         }
@@ -130,7 +131,7 @@ export async function cacheIsStale(storeName: string, key: string): Promise<bool
           resolve(true); // no entry = stale
           return;
         }
-        if (meta.expiresAt && new Date(meta.expiresAt) < new Date()) {
+        if (meta.expiresAt && new Date(meta.expiresAt) < clockNow()) {
           resolve(true);
           return;
         }
@@ -160,7 +161,7 @@ export async function cacheGetMetadata(storeName?: string): Promise<CacheMetadat
           version: number;
           storeName: string;
         }>;
-        const now = new Date();
+        const now = clockNow();
         const filtered = storeName ? entries.filter((e) => e.storeName === storeName) : entries;
         resolve(
           filtered.map((e) => ({
@@ -258,7 +259,7 @@ export async function getCacheStatus(): Promise<CacheStatus> {
  * Mark that a sync has just completed.
  */
 export function markSynced(): void {
-  _lastSyncAt = new Date().toISOString();
+  _lastSyncAt = nowISO();
 }
 
 /**
@@ -299,7 +300,7 @@ export async function cacheBulkSet<T>(
 
   try {
     const db = await getDB();
-    const now = new Date();
+    const now = clockNow();
     const tx = db.transaction([CACHE_STORE_NAME, CACHE_META_STORE_NAME], 'readwrite');
     const cacheObjStore = tx.objectStore(CACHE_STORE_NAME);
     const metaObjStore = tx.objectStore(CACHE_META_STORE_NAME);
@@ -344,7 +345,7 @@ export async function cacheGetAll<T>(storeName: string): Promise<T[]> {
       const req = tx.objectStore(CACHE_STORE_NAME).getAll();
       req.onsuccess = () => {
         const entries = (req.result ?? []) as CacheEntry<T>[];
-        const now = new Date();
+        const now = clockNow();
         const valid = entries
           .filter(
             (e) => e.storeName === storeName && (!e.expiresAt || new Date(e.expiresAt) >= now)

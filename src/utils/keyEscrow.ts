@@ -1,3 +1,4 @@
+import { nowMs } from '@/utils/clock';
 /**
  * One-time recovery code escrow for the root storage key (K_root) — scheme (a).
  *
@@ -408,7 +409,7 @@ export interface EscrowStatusSnapshot {
   iter: number | null;
 }
 
-export function getEscrowStatusSnapshot(now: number = Date.now()): EscrowStatusSnapshot {
+export function getEscrowStatusSnapshot(now: number = nowMs()): EscrowStatusSnapshot {
   const record = readEscrowRecord();
   if (!record) {
     return {
@@ -433,7 +434,7 @@ export function getEscrowStatusSnapshot(now: number = Date.now()): EscrowStatusS
 async function registerFailedAttempt(record: EscrowRecordV1): Promise<void> {
   const failedAttempts = record.failedAttempts + 1;
   const lockedUntil =
-    failedAttempts >= MAX_FAILED_ATTEMPTS ? Date.now() + LOCKOUT_MS : record.lockedUntil;
+    failedAttempts >= MAX_FAILED_ATTEMPTS ? nowMs() + LOCKOUT_MS : record.lockedUntil;
   const withoutChecksum: Omit<EscrowRecordV1, 'recordChecksum'> = {
     v: record.v,
     scheme: record.scheme,
@@ -540,7 +541,7 @@ export async function recoverStorageKey(codeInput: string): Promise<{ keyId: str
   const record = readEscrowRecord();
   if (!record) throw new EscrowNotEnrolledError();
 
-  const now = Date.now();
+  const now = nowMs();
   if (record.lockedUntil !== null && record.lockedUntil > now) {
     throw new EscrowLockedError(record.lockedUntil);
   }

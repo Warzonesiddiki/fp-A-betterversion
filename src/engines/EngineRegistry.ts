@@ -4,6 +4,7 @@
  */
 
 import { ENGINE_MANIFEST, ENGINE_IDS, type EngineId } from './engineManifest.generated';
+import { nowMs } from '@/utils/clock';
 
 type EngineModule = Record<string, unknown>;
 
@@ -45,7 +46,7 @@ class EngineRegistry {
   async load(engineId: string): Promise<EngineModule> {
     const cached = this.cache.get(engineId);
     if (cached) {
-      cached.lastAccessed = Date.now();
+      cached.lastAccessed = nowMs();
       return cached.module;
     }
 
@@ -69,8 +70,8 @@ class EngineRegistry {
     const mod = await this.dynamicImport(engineId);
     this.cache.set(engineId, {
       module: mod,
-      loadedAt: Date.now(),
-      lastAccessed: Date.now(),
+      loadedAt: nowMs(),
+      lastAccessed: nowMs(),
     });
     return mod;
   }
@@ -115,7 +116,7 @@ class EngineRegistry {
   get(engineId: string): EngineModule | null {
     const cached = this.cache.get(engineId);
     if (cached) {
-      cached.lastAccessed = Date.now();
+      cached.lastAccessed = nowMs();
       return cached.module;
     }
     return null;
@@ -147,7 +148,7 @@ class EngineRegistry {
    * Evict cold engines not accessed within maxAge ms.
    */
   evictCold(maxAge: number = 15 * 60 * 1000): number {
-    const now = Date.now();
+    const now = nowMs();
     let evicted = 0;
     for (const [id, entry] of this.cache) {
       if (now - entry.lastAccessed > maxAge) {
@@ -165,7 +166,7 @@ class EngineRegistry {
    * Get cache stats.
    */
   getStats(): { loaded: number; critical: string[]; cold: number } {
-    const now = Date.now();
+    const now = nowMs();
     let cold = 0;
     for (const entry of this.cache.values()) {
       if (now - entry.lastAccessed > 15 * 60 * 1000) cold++;

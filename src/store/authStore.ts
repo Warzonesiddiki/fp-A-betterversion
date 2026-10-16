@@ -6,6 +6,7 @@ import { masterStorage } from '../utils/masterStorage';
 import { parseTokenExpiry, startRotation, stopRotation } from '../utils/tokenRotation';
 import { randomId } from '@/utils/cryptoId';
 import { AuthRequestError, authClient, type AuthUserDto } from '@/services/authClient';
+import { nowISO, nowMs } from '@/utils/clock';
 
 // --- Mock-Auth build-time gate ---
 // SECURITY FIX (C-01): Mock auth tokens are unsigned and forgeable.
@@ -374,7 +375,7 @@ const MOCK_USERS: Record<string, User> = {
     departmentName: 'Executive',
     entityId: 'entity-001',
     status: 'Active',
-    lastLoginAt: new Date().toISOString(),
+    lastLoginAt: nowISO(),
     mfaEnabled: false,
     permissions: ROLE_PERMISSIONS.Admin,
   },
@@ -389,7 +390,7 @@ const MOCK_USERS: Record<string, User> = {
     departmentName: 'Finance',
     entityId: 'entity-001',
     status: 'Active',
-    lastLoginAt: new Date().toISOString(),
+    lastLoginAt: nowISO(),
     mfaEnabled: false,
     permissions: ROLE_PERMISSIONS.Analyst,
   },
@@ -404,7 +405,7 @@ const MOCK_USERS: Record<string, User> = {
     departmentName: 'Operations',
     entityId: 'entity-001',
     status: 'Active',
-    lastLoginAt: new Date().toISOString(),
+    lastLoginAt: nowISO(),
     mfaEnabled: false,
     permissions: ROLE_PERMISSIONS.Viewer,
   },
@@ -430,7 +431,7 @@ function toStoreUser(dto: AuthUserDto): User {
     departmentName: '',
     entityId: dto.entityId ?? '',
     status: dto.isActive ? 'Active' : 'Inactive',
-    lastLoginAt: new Date().toISOString(),
+    lastLoginAt: nowISO(),
     mfaEnabled: false,
     permissions: ROLE_PERMISSIONS[role] ?? [],
   };
@@ -448,8 +449,8 @@ function generateMockToken(userId: string, role: Role): string {
     JSON.stringify({
       sub: userId,
       role,
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + 900, // 15 min
+      iat: Math.floor(nowMs() / 1000),
+      exp: Math.floor(nowMs() / 1000) + 900, // 15 min
     })
   );
   return `${header}.${payload}.mock-signature`;
@@ -525,8 +526,8 @@ export const useAuthStore = create<AuthState>()(
           const state = get();
           if (state.lockedUntil) {
             const lockExpiry = new Date(state.lockedUntil);
-            if (lockExpiry > new Date()) {
-              const retryAfter = Math.ceil((lockExpiry.getTime() - Date.now()) / 60000);
+            if (lockExpiry.getTime() > nowMs()) {
+              const retryAfter = Math.ceil((lockExpiry.getTime() - nowMs()) / 60000);
               set((s) => {
                 s.isLoading = false;
               });
@@ -555,7 +556,7 @@ export const useAuthStore = create<AuthState>()(
               set((s) => {
                 s.loginAttempts += 1;
                 if (s.loginAttempts >= 5) {
-                  s.lockedUntil = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+                  s.lockedUntil = new Date(nowMs() + 15 * 60 * 1000).toISOString();
                   s.error = 'Too many failed attempts. Account locked for 15 minutes.';
                 } else {
                   s.error = `Invalid credentials. ${5 - s.loginAttempts} attempt(s) remaining.`;
@@ -720,7 +721,7 @@ export const useAuthStore = create<AuthState>()(
             }
 
             const newUser: User = {
-              id: `usr-${Date.now()}`,
+              id: `usr-${nowMs()}`,
               email: email.toLowerCase(),
               firstName: name.split(' ')[0] ?? name,
               lastName: name.split(' ').slice(1).join(' ') || '',
@@ -737,7 +738,7 @@ export const useAuthStore = create<AuthState>()(
               status: 'Active',
               permissions: [],
               mfaEnabled: false,
-              lastLoginAt: new Date().toISOString(),
+              lastLoginAt: nowISO(),
             };
 
             const accessToken = generateMockToken(newUser.id, newUser.role);

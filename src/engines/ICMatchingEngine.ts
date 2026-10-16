@@ -10,6 +10,7 @@ import {
   addMoney,
   compareMoney,
 } from '../utils/money';
+import { nowISO } from '@/utils/clock';
 
 /**
  * Intercompany balances must eliminate to ZERO on consolidation, so every
@@ -283,7 +284,7 @@ export class ICMatchingEngine {
             )
           ),
           confidence: bestMatch.score,
-          matchedAt: new Date().toISOString(),
+          matchedAt: nowISO(),
           matchedBy: 'auto',
         });
 
@@ -318,7 +319,7 @@ export class ICMatchingEngine {
       percentageDifference: pctDiff,
       dateDifferenceDays: dateDiff,
       confidence: 1,
-      matchedAt: new Date().toISOString(),
+      matchedAt: nowISO(),
       matchedBy: 'manual',
     };
 
@@ -424,7 +425,7 @@ export class ICMatchingEngine {
 
     return {
       entityPairs: lines,
-      generatedAt: new Date().toISOString(),
+      generatedAt: nowISO(),
       period,
       totalDifferences: lines.filter((l) => l.difference > 0).length,
       withinToleranceCount: lines.filter((l) => l.withinTolerance).length,

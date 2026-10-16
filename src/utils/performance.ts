@@ -1,3 +1,4 @@
+import { nowMs } from '@/utils/clock';
 interface MetricEntry {
   name: string;
   value: number;
@@ -31,7 +32,7 @@ export function trackWebVitals() {
       for (const entry of list.getEntries()) {
         const name = entry.name;
         const value = entry.startTime;
-        metrics.push({ name, value, rating: rate(name, value), timestamp: Date.now() });
+        metrics.push({ name, value, rating: rate(name, value), timestamp: nowMs() });
       }
     });
     observer.observe({ type: 'largest-contentful-paint', buffered: true });

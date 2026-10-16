@@ -1,4 +1,5 @@
 import type { CellAuditEntry } from '@/types';
+import { now as clockNow, nowISO, nowMs } from '@/utils/clock';
 
 // =============================================================================
 // EXTENDED AUDIT ENTRY — Full compliance-grade audit trail
@@ -137,7 +138,7 @@ export class CellAuditTrailEngine {
       newValue,
       userId,
       userName,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       reason: options.reason ?? null,
       operation: 'write',
       dataType: options.dataType ?? 'input',
@@ -175,7 +176,7 @@ export class CellAuditTrailEngine {
       newValue,
       userId,
       userName,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       reason: options.reason ?? null,
       operation: 'update',
       dataType: options.dataType ?? 'input',
@@ -212,7 +213,7 @@ export class CellAuditTrailEngine {
       newValue: null as unknown as number,
       userId,
       userName,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       reason: options.reason ?? null,
       operation: 'delete',
       dataType: options.dataType ?? 'input',
@@ -241,8 +242,8 @@ export class CellAuditTrailEngine {
     userName: string,
     reason?: string
   ): ExtendedAuditEntry[] {
-    const transactionId = `txn-${++this.transactionCounter}-${Date.now()}`;
-    const timestamp = new Date().toISOString();
+    const transactionId = `txn-${++this.transactionCounter}-${nowMs()}`;
+    const timestamp = nowISO();
 
     const auditEntries: ExtendedAuditEntry[] = entries.map((e) => ({
       id: `audit-${++this.idCounter}`,
@@ -395,7 +396,7 @@ export class CellAuditTrailEngine {
       ...entry,
       approvalStatus: 'approved',
       approvedBy,
-      approvedAt: new Date().toISOString(),
+      approvedAt: nowISO(),
     } as ExtendedAuditEntry;
     this.history[idx] = Object.freeze(updated);
     return updated;
@@ -410,7 +411,7 @@ export class CellAuditTrailEngine {
       ...entry,
       approvalStatus: 'rejected',
       approvedBy: rejectedBy,
-      approvedAt: new Date().toISOString(),
+      approvedAt: nowISO(),
     } as ExtendedAuditEntry;
     this.history[idx] = Object.freeze(updated);
     return updated;
@@ -500,7 +501,7 @@ export class CellAuditTrailEngine {
     }
 
     return {
-      generatedAt: new Date().toISOString(),
+      generatedAt: nowISO(),
       dateRange: { start: startDate, end: endDate },
       totalChanges: filtered.length,
       changesByUser: Array.from(userMap.values()),
@@ -580,7 +581,7 @@ export class CellAuditTrailEngine {
   // --- Retention ---
 
   enforceRetention(): void {
-    const cutoff = new Date();
+    const cutoff = clockNow();
     cutoff.setDate(cutoff.getDate() - this.retentionConfig.retentionDays);
 
     this.history = this.history.filter((h) => new Date(h.timestamp).getTime() >= cutoff.getTime());

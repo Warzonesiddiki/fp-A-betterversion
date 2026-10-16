@@ -45,6 +45,8 @@ import {
 import type { FiscalPeriod } from '@/types';
 import { useBudgetStore } from './budgetStore';
 import { useScenarioStore } from './scenarioStore';
+import { now } from '@/utils/clock';
+import { parseImportDate } from '@/utils/parseImportDate';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -60,6 +62,12 @@ export interface CloseChainEntry {
 }
 
 export interface PeriodChecklist {
+  /** Absent only on legacy persisted checklists. Never infer a start from the deadline. */
+  readonly fiscalScope?: {
+    readonly startDate: string;
+    readonly endDate: string;
+    readonly isAdjustingPeriod: boolean;
+  };
   readonly plan: ClosePlan;
   readonly instances: readonly CloseTaskInstance[];
 }
@@ -136,7 +144,7 @@ async function hashCloseEvent(event: PeriodCloseAuditEvent, prevHash: string): P
 export async function verifyCloseChain(
   entries: readonly CloseChainEntry[]
 ): Promise<ChainVerification> {
-  const checkedAt = new Date().toISOString();
+  const checkedAt = now().toISOString();
   if (entries.length === 0) {
     return { ok: true, totalEntries: 0, reason: 'EMPTY_CHAIN', checkedAt };
   }
@@ -199,7 +207,15 @@ function buildChecklist(period: FiscalPeriod, jurisdiction: string): PeriodCheck
     completedAt: null,
     notes: '',
   }));
-  return { plan, instances };
+  return {
+    plan,
+    instances,
+    fiscalScope: {
+      startDate: period.startDate,
+      endDate: period.endDate,
+      isAdjustingPeriod: period.isAdjustingPeriod,
+    },
+  };
 }
 
 function actorContext(): { id: string; role: string } {
@@ -227,6 +243,47 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
         ...initialState,
 
         initialize: (periods, jurisdiction, entityId = 'entity-001') => {
+          if (!usePeriodCloseStore.persist.hasHydrated()) {
+            throw new Error(
+              'Period-close storage hydration has not succeeded. Retry before initializing the fiscal calendar.'
+            );
+          }
+          // Preflight the entire calendar before any mutation. Period IDs are
+          // currently single-entity keys: never silently reuse P01 for another
+          // year/entity, or rewrite the date range attached to a closed period.
+          const current = get();
+          const seen = new Set<string>();
+          for (const p of periods) {
+            if (!p.id.trim() || seen.has(p.id)) {
+              throw new Error(`Invalid or duplicate fiscal period ID: ${p.id}`);
+            }
+            seen.add(p.id);
+            if (
+              parseImportDate(p.startDate) !== p.startDate ||
+              parseImportDate(p.endDate) !== p.endDate ||
+              p.startDate > p.endDate
+            ) {
+              throw new Error(`Invalid fiscal date range for ${p.id}`);
+            }
+            const entry = current.entries[p.id];
+            const checklist = current.checklists[p.id];
+            const scope = checklist?.fiscalScope;
+            if (
+              (entry && entry.entityId !== entityId) ||
+              (checklist &&
+                (checklist.plan.fiscalYear !== p.year ||
+                  checklist.plan.fiscalPeriod !== p.periodNumber ||
+                  checklist.plan.deadline !== p.endDate)) ||
+              (scope &&
+                (scope.startDate !== p.startDate ||
+                  scope.endDate !== p.endDate ||
+                  scope.isAdjustingPeriod !== p.isAdjustingPeriod))
+            ) {
+              throw new Error(
+                `Fiscal period ${p.id} is already bound to another calendar scope or entity; migration required.`
+              );
+            }
+          }
           set((state) => {
             for (const p of periods) {
               if (!state.entries[p.id]) {
@@ -239,6 +296,14 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
                   p,
                   jurisdiction
                 ) as WritableDraft<PeriodChecklist>;
+              } else if (!state.checklists[p.id]!.fiscalScope) {
+                // Compatible legacy checklist: add explicit dates from the
+                // supplied calendar, preserving tasks, close state and audit.
+                state.checklists[p.id]!.fiscalScope = {
+                  startDate: p.startDate,
+                  endDate: p.endDate,
+                  isAdjustingPeriod: p.isAdjustingPeriod,
+                };
               }
             }
             state.initialized = true;
@@ -257,6 +322,14 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
           ): Promise<PeriodCloseActionResult> => {
             const state = get();
             const entry = state.entries[periodId];
+            if (!usePeriodCloseStore.persist.hasHydrated()) {
+              return {
+                success: false,
+                newState: entry?.state ?? 'open',
+                error:
+                  'Period-close storage hydration has not succeeded. Retry before changing close state.',
+              };
+            }
             if (!entry) {
               return { success: false, newState: 'open', error: `Unknown period: ${periodId}` };
             }
@@ -272,6 +345,14 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
                   error: `Insufficient permissions: '${Permissions.PERIOD_REOPEN}' required for ${transition} (Admin only).`,
                 };
               }
+              if (!reason?.trim()) {
+                return {
+                  success: false,
+                  newState: entry.state,
+                  error: 'Reopening a period requires a non-empty audit reason.',
+                };
+              }
+              reason = reason.trim();
               if (!approvalId) approvalId = randomId('reopen-approval');
             }
 
@@ -291,9 +372,9 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
               state: result.newState,
               auditEvents: [...entry.auditEvents, result.auditEvent],
               ...(result.newState !== 'open'
-                ? { closedAt: new Date().toISOString(), closedBy: actor.id }
+                ? { closedAt: now().toISOString(), closedBy: actor.id }
                 : {
-                    reopenedAt: new Date().toISOString(),
+                    reopenedAt: now().toISOString(),
                     reopenedBy: actor.id,
                     reopenReason: reason,
                     reopenApprovalId: approvalId,
@@ -352,6 +433,7 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
           Permissions.PERIOD_CLOSE,
           'periodClose.updateTaskStatus',
           (periodId: string, taskId: string, status: CloseTaskStatus): boolean => {
+            if (!usePeriodCloseStore.persist.hasHydrated()) return false;
             const checklist = get().checklists[periodId];
             if (!checklist?.instances.some((i) => i.taskId === taskId)) return false;
             set((s) => {
@@ -369,6 +451,7 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
           Permissions.PERIOD_CLOSE,
           'periodClose.assignTask',
           (periodId: string, taskId: string, assignee: string): boolean => {
+            if (!usePeriodCloseStore.persist.hasHydrated()) return false;
             const checklist = get().checklists[periodId];
             if (!checklist?.instances.some((i) => i.taskId === taskId)) return false;
             set((s) => {
@@ -386,11 +469,15 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
           Permissions.PERIOD_CLOSE,
           'periodClose.resetPeriod',
           (periodId: string) => {
+            if (!usePeriodCloseStore.persist.hasHydrated())
+              throw new Error('Period-close storage hydration has not succeeded.');
             const entry = get().entries[periodId];
-            if (!entry) return;
-            set((s) => {
-              s.entries[periodId] = { ...entry, state: 'open' };
-            });
+            if (!entry || entry.state === 'open') return;
+            // Compatibility action only. Reopening must go through transition()
+            // so PERIOD_REOPEN, audit reason and the hash chain are enforced.
+            throw new Error(
+              'Closed periods cannot be reset. Use the authorized reopen transition with an audit reason.'
+            );
           }
         ),
 

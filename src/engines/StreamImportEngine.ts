@@ -14,6 +14,7 @@
  * @cross-witness Veridicus-EnginePurity T-1 PICK ι (slot 019eda63-af5f-77c3-b18b-5fb6a1146859)
  * @cross-witness Archimedes T-FIX-10 PRE-STAGE (Mathematical Purity Lens — purity algebra + 186 engines @purity-tier JSDoc schema)
  */
+import { nowMs } from '@/utils/clock';
 
 export interface ImportRow {
   rowIndex: number;
@@ -204,7 +205,7 @@ export class StreamImportEngine {
       const tx = db.transaction(storeName, 'readwrite');
       const store = tx.objectStore(storeName);
       for (const row of rows) {
-        store.put({ id: `import_${row.rowIndex}`, ...row.data, _importedAt: Date.now() });
+        store.put({ id: `import_${row.rowIndex}`, ...row.data, _importedAt: nowMs() });
       }
       tx.oncomplete = () => resolve();
       tx.onerror = () => reject(tx.error);

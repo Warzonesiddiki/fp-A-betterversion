@@ -11,6 +11,7 @@ import {
   type StoreData,
 } from './storeMigrators';
 import { masterStorage } from '@/utils/masterStorage';
+import { nowISO, nowMs } from '@/utils/clock';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -88,8 +89,8 @@ export class CubeMigration {
       stopOnFailure: config?.stopOnFailure ?? true,
     };
 
-    const start = Date.now();
-    const reportId = `${REPORT_PREFIX}${Date.now()}`;
+    const start = performance.now();
+    const reportId = `${REPORT_PREFIX}${nowMs()}`;
     const results: MigrationResult[] = [];
     let backupId: string | null = null;
 
@@ -157,14 +158,14 @@ export class CubeMigration {
 
     const report: MigrationReport = {
       id: reportId,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       config: fullConfig,
       results,
       totalCellsWritten: results.reduce((sum, r) => sum + r.cellsWritten, 0),
       totalDimensionsCreated: [...new Set(results.flatMap((r) => r.dimensionsCreated))],
       totalCubesCreated: [...new Set(results.flatMap((r) => r.cubesCreated))],
       overallSuccess: results.every((r) => r.success) && verificationPassed,
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
       backupId,
       verificationPassed,
     };
@@ -214,7 +215,7 @@ export class CubeMigration {
   // -------------------------------------------------------------------------
 
   async createBackup(storeNames: string[]): Promise<MigrationBackup> {
-    const backupId = `${BACKUP_PREFIX}${Date.now()}-${++backupCounter}`;
+    const backupId = `${BACKUP_PREFIX}${nowMs()}-${++backupCounter}`;
     const storeData: Record<string, StoreData> = {};
 
     for (const storeName of storeNames) {
@@ -237,7 +238,7 @@ export class CubeMigration {
 
     const backup: MigrationBackup = {
       id: backupId,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       storeData,
       cubeSnapshot,
     };

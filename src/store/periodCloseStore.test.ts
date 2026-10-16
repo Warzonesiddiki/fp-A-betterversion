@@ -290,11 +290,133 @@ describe('periodCloseStore', () => {
     expect(useScenarioStore.getState().scenarios[0]?.isLocked).toBe(true);
   });
 
-  it('resetPeriod returns a period to open state', async () => {
-    const store = usePeriodCloseStore.getState();
-    await store.transition('P01', 'soft-close', 'close');
-    expect(usePeriodCloseStore.getState().entries['P01']?.state).toBe('soft-close');
-    usePeriodCloseStore.getState().resetPeriod('P01');
-    expect(usePeriodCloseStore.getState().entries['P01']?.state).toBe('open');
+  it.each(['soft-close', 'hard-close', 'locked'] as const)(
+    'resetPeriod cannot bypass authorized reopen from %s, even for Admin',
+    (state) => {
+      const entry = usePeriodCloseStore.getState().entries.P01!;
+      usePeriodCloseStore.setState({ entries: { P01: { ...entry, state } } });
+      const before = usePeriodCloseStore.getState();
+      expect(() => before.resetPeriod('P01')).toThrow(/authorized reopen/);
+      expect(usePeriodCloseStore.getState().entries).toBe(before.entries);
+      expect(usePeriodCloseStore.getState().chain).toBe(before.chain);
+    }
+  );
+
+  it('resetPeriod is a no-op for an open or unknown period', () => {
+    const before = usePeriodCloseStore.getState();
+    before.resetPeriod('P01');
+    before.resetPeriod('unknown');
+    expect(usePeriodCloseStore.getState()).toBe(before);
+  });
+
+  it.each([undefined, '', '   '])(
+    'reopen requires a meaningful audit reason (%s)',
+    async (reason) => {
+      await usePeriodCloseStore.getState().transition('P01', 'soft-close', 'close');
+      const before = usePeriodCloseStore.getState();
+      const result = await before.transition('P01', 'reopen', reason);
+      expect(result.success).toBe(false);
+      expect(result.error).toMatch(/non-empty audit reason/);
+      expect(usePeriodCloseStore.getState()).toBe(before);
+    }
+  );
+
+  it('force-reopen also requires a non-empty reason and cannot mutate a locked period', async () => {
+    const entry = usePeriodCloseStore.getState().entries.P01!;
+    usePeriodCloseStore.setState({ entries: { P01: { ...entry, state: 'locked' } } });
+    const before = usePeriodCloseStore.getState();
+    const result = await before.transition('P01', 'force-reopen', '   ', undefined, 'approval-1');
+    expect(result.success).toBe(false);
+    expect(result.error).toMatch(/non-empty audit reason/);
+    expect(usePeriodCloseStore.getState()).toBe(before);
+  });
+
+  it('authorized reopen records a trimmed reason and preserves a verifiable chain', async () => {
+    await usePeriodCloseStore.getState().transition('P01', 'soft-close', 'close');
+    const result = await usePeriodCloseStore
+      .getState()
+      .transition('P01', 'reopen', '  correction approved  ');
+    expect(result.success).toBe(true);
+    const state = usePeriodCloseStore.getState();
+    expect(state.entries.P01?.reopenReason).toBe('correction approved');
+    expect(state.chain.at(-1)?.event.reason).toBe('correction approved');
+    expect((await state.verifyChain('P01')).ok).toBe(true);
+  });
+
+  it('retains supplied fiscal dates instead of guessing calendar months from period IDs', () => {
+    const p = {
+      ...makePeriods()[0]!,
+      id: 'retail-2026-P01',
+      startDate: '2025-12-29',
+      endDate: '2026-01-25',
+    };
+    usePeriodCloseStore.getState().initialize([p], 'US-GAAP');
+    expect(usePeriodCloseStore.getState().checklists[p.id]?.fiscalScope).toEqual({
+      startDate: '2025-12-29',
+      endDate: '2026-01-25',
+      isAdjustingPeriod: false,
+    });
+  });
+
+  it('reinitialization is idempotent and cannot reopen closed periods', async () => {
+    await usePeriodCloseStore.getState().transition('P01', 'soft-close', 'close');
+    const before = usePeriodCloseStore.getState();
+    before.initialize(makePeriods(), 'US-GAAP');
+    expect(usePeriodCloseStore.getState()).toBe(before);
+  });
+
+  it('backfills compatible legacy checklists without replacing tasks or audit state', async () => {
+    await usePeriodCloseStore.getState().transition('P01', 'soft-close', 'close');
+    const original = usePeriodCloseStore.getState().checklists.P01!;
+    const legacy = { plan: original.plan, instances: original.instances };
+    usePeriodCloseStore.setState({ checklists: { P01: legacy } });
+    const before = usePeriodCloseStore.getState();
+    before.initialize([makePeriods()[0]!], 'US-GAAP');
+    const after = usePeriodCloseStore.getState();
+    expect(after.checklists.P01?.fiscalScope?.startDate).toBe('2026-01-01');
+    expect(after.checklists.P01?.instances).toBe(before.checklists.P01?.instances);
+    expect(after.entries).toBe(before.entries);
+    expect(after.chain).toBe(before.chain);
+  });
+
+  it.each([
+    { year: 2027 },
+    { periodNumber: 5 },
+    { startDate: '2025-12-31' },
+    { endDate: '2026-01-30' },
+    { isAdjustingPeriod: true },
+  ])('rejects rebinding an existing period scope atomically: %j', (change) => {
+    const before = usePeriodCloseStore.getState();
+    const newPeriod = { ...makePeriods()[1]!, id: 'new-period' };
+    const changed = { ...makePeriods()[0]!, ...change };
+    expect(() => before.initialize([newPeriod, changed], 'US-GAAP')).toThrow(/migration required/);
+    expect(usePeriodCloseStore.getState()).toBe(before);
+  });
+
+  it('rejects entity reuse of an existing period ID', () => {
+    const before = usePeriodCloseStore.getState();
+    expect(() => before.initialize(makePeriods(), 'US-GAAP', 'other-entity')).toThrow(
+      /migration required/
+    );
+    expect(usePeriodCloseStore.getState()).toBe(before);
+  });
+
+  it.each([
+    { startDate: '2026-02-30', endDate: '2026-03-01' },
+    { startDate: '2026-02-10', endDate: '2026-02-01' },
+    { startDate: '2026/02/01', endDate: '2026-02-28' },
+  ])('rejects invalid or noncanonical calendar ranges without partial changes: %j', (range) => {
+    const before = usePeriodCloseStore.getState();
+    expect(() =>
+      before.initialize([{ ...makePeriods()[1]!, id: 'bad', ...range }], 'US-GAAP')
+    ).toThrow(/Invalid fiscal date range/);
+    expect(usePeriodCloseStore.getState()).toBe(before);
+  });
+
+  it('rejects duplicate calendar IDs before creating any periods', () => {
+    const before = usePeriodCloseStore.getState();
+    const p = { ...makePeriods()[0]!, id: 'new-period' };
+    expect(() => before.initialize([p, p], 'US-GAAP')).toThrow(/duplicate fiscal period ID/);
+    expect(usePeriodCloseStore.getState()).toBe(before);
   });
 });

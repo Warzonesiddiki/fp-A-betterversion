@@ -7,6 +7,7 @@ import {
   DSO as DSO_CANONICAL,
   DSI as DSI_CANONICAL,
 } from './formula-functions/financial';
+import { now as clockNow, nowMs } from '@/utils/clock';
 // =============================================================================
 // SAFEMATHPARSER — Bulletproof recursive descent math expression parser
 // NO eval(), NO new Function(), NO dynamic code execution
@@ -1044,9 +1045,9 @@ const FUNCTIONS: Record<string, FuncImpl> = {
   HOUR: (args) => new Date(args[0]!).getHours(),
   MINUTE: (args) => new Date(args[0]!).getMinutes(),
   SECOND: (args) => new Date(args[0]!).getSeconds(),
-  NOW: () => Date.now(),
+  NOW: () => nowMs(),
   TODAY: () => {
-    const d = new Date();
+    const d = clockNow();
     return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
   },
   TIME: (args) => {

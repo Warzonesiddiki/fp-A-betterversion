@@ -5,6 +5,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { Notification, NotificationState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
+import { nowISO, nowMs } from '@/utils/clock';
 
 export const useNotificationStore = create<NotificationState>()(
   subscribeWithSelector(
@@ -54,8 +55,8 @@ export const useNotificationStore = create<NotificationState>()(
             set((state) => {
               const newNotification: Notification = {
                 ...notification,
-                id: `notif-${Date.now()}`,
-                createdAt: new Date().toISOString(),
+                id: `notif-${nowMs()}`,
+                createdAt: nowISO(),
                 isRead: false,
               };
               const notifications = [newNotification, ...state.notifications];

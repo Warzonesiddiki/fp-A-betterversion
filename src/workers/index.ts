@@ -29,7 +29,13 @@ export type {
   BatchCalcResponse,
 } from './types';
 
-import { createMonteCarloPool, createConsolidationPool, createBatchCalcPool } from './worker-pool';
+import {
+  createMonteCarloPool,
+  createConsolidationPool,
+  createBatchCalcPool,
+  createGLIngestionPool,
+} from './worker-pool';
+import type { GLIngestChunkInput, GLIngestResult } from '@/types/glIngestion';
 import type { WorkerPool } from './worker-pool';
 import type { WorkerProgress } from './types';
 import type {
@@ -48,6 +54,7 @@ import type {
 let monteCarloPool: WorkerPool | null = null;
 let consolidationPool: WorkerPool | null = null;
 let batchCalcPool: WorkerPool | null = null;
+let glIngestionPool: WorkerPool | null = null;
 
 function getMonteCarloPool(): WorkerPool {
   if (!monteCarloPool) {
@@ -150,11 +157,21 @@ export async function runBatchCalc(
   return getBatchCalcPool().run<BatchCalcResponse>(request, onProgress);
 }
 
+/** No main-thread fallback: callers must surface worker unavailability. */
+export async function runGLIngestionChunk(request: GLIngestChunkInput): Promise<GLIngestResult> {
+  if (!glIngestionPool) glIngestionPool = createGLIngestionPool();
+  return glIngestionPool.run<GLIngestResult>(request);
+}
+
 /**
  * Terminate all worker pools and free resources.
  * Call this when workers are no longer needed (e.g., on app shutdown).
  */
 export function terminateAllWorkers(): void {
+  if (glIngestionPool) {
+    glIngestionPool.terminate();
+    glIngestionPool = null;
+  }
   if (monteCarloPool) {
     monteCarloPool.terminate();
     monteCarloPool = null;
@@ -176,8 +193,14 @@ export function getWorkerPoolStatus(): {
   monteCarlo: { workers: number; busy: number; queued: number };
   consolidation: { workers: number; busy: number; queued: number };
   batchCalc: { workers: number; busy: number; queued: number };
+  glIngestion: { workers: number; busy: number; queued: number };
 } {
   return {
+    glIngestion: {
+      workers: glIngestionPool?.workerCount ?? 0,
+      busy: glIngestionPool?.busyCount ?? 0,
+      queued: glIngestionPool?.queuedCount ?? 0,
+    },
     monteCarlo: {
       workers: monteCarloPool?.workerCount ?? 0,
       busy: monteCarloPool?.busyCount ?? 0,

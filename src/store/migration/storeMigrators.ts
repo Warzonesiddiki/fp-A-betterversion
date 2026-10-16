@@ -49,7 +49,7 @@ function generateId(prefix: string): string {
 // ---------------------------------------------------------------------------
 
 export function migrateAuthStore(cube: CubeEngine, data: StoreData): MigrationResult {
-  const start = Date.now();
+  const start = performance.now();
   const dimsCreated: string[] = [];
   const cubesCreated: string[] = [];
   let cellsWritten = 0;
@@ -134,7 +134,7 @@ export function migrateAuthStore(cube: CubeEngine, data: StoreData): MigrationRe
       cellsWritten,
       dimensionsCreated: dimsCreated,
       cubesCreated,
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   } catch (err) {
     return {
@@ -144,7 +144,7 @@ export function migrateAuthStore(cube: CubeEngine, data: StoreData): MigrationRe
       dimensionsCreated: dimsCreated,
       cubesCreated,
       error: err instanceof Error ? err.message : 'Unknown error',
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   }
 }
@@ -154,7 +154,7 @@ export function migrateAuthStore(cube: CubeEngine, data: StoreData): MigrationRe
 // ---------------------------------------------------------------------------
 
 export function migrateSettingsStore(cube: CubeEngine, data: StoreData): MigrationResult {
-  const start = Date.now();
+  const start = performance.now();
   const dimsCreated: string[] = [];
   const cubesCreated: string[] = [];
   let cellsWritten = 0;
@@ -291,7 +291,7 @@ export function migrateSettingsStore(cube: CubeEngine, data: StoreData): Migrati
       cellsWritten,
       dimensionsCreated: dimsCreated,
       cubesCreated,
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   } catch (err) {
     return {
@@ -301,7 +301,7 @@ export function migrateSettingsStore(cube: CubeEngine, data: StoreData): Migrati
       dimensionsCreated: dimsCreated,
       cubesCreated,
       error: err instanceof Error ? err.message : 'Unknown error',
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   }
 }
@@ -311,7 +311,7 @@ export function migrateSettingsStore(cube: CubeEngine, data: StoreData): Migrati
 // ---------------------------------------------------------------------------
 
 export function migrateBudgetStore(cube: CubeEngine, data: StoreData): MigrationResult {
-  const start = Date.now();
+  const start = performance.now();
   const dimsCreated: string[] = [];
   const cubesCreated: string[] = [];
   let cellsWritten = 0;
@@ -421,7 +421,7 @@ export function migrateBudgetStore(cube: CubeEngine, data: StoreData): Migration
       cellsWritten,
       dimensionsCreated: dimsCreated,
       cubesCreated,
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   } catch (err) {
     return {
@@ -431,7 +431,7 @@ export function migrateBudgetStore(cube: CubeEngine, data: StoreData): Migration
       dimensionsCreated: dimsCreated,
       cubesCreated,
       error: err instanceof Error ? err.message : 'Unknown error',
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   }
 }
@@ -441,7 +441,7 @@ export function migrateBudgetStore(cube: CubeEngine, data: StoreData): Migration
 // ---------------------------------------------------------------------------
 
 export function migrateForecastStore(cube: CubeEngine, data: StoreData): MigrationResult {
-  const start = Date.now();
+  const start = performance.now();
   const dimsCreated: string[] = [];
   const cubesCreated: string[] = [];
   let cellsWritten = 0;
@@ -538,7 +538,7 @@ export function migrateForecastStore(cube: CubeEngine, data: StoreData): Migrati
       cellsWritten,
       dimensionsCreated: dimsCreated,
       cubesCreated,
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   } catch (err) {
     return {
@@ -548,7 +548,7 @@ export function migrateForecastStore(cube: CubeEngine, data: StoreData): Migrati
       dimensionsCreated: dimsCreated,
       cubesCreated,
       error: err instanceof Error ? err.message : 'Unknown error',
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   }
 }
@@ -558,7 +558,7 @@ export function migrateForecastStore(cube: CubeEngine, data: StoreData): Migrati
 // ---------------------------------------------------------------------------
 
 export function migrateGlStore(cube: CubeEngine, data: StoreData): MigrationResult {
-  const start = Date.now();
+  const start = performance.now();
   const dimsCreated: string[] = [];
   const cubesCreated: string[] = [];
   let cellsWritten = 0;
@@ -712,7 +712,7 @@ export function migrateGlStore(cube: CubeEngine, data: StoreData): MigrationResu
       cellsWritten,
       dimensionsCreated: dimsCreated,
       cubesCreated,
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   } catch (err) {
     return {
@@ -722,7 +722,7 @@ export function migrateGlStore(cube: CubeEngine, data: StoreData): MigrationResu
       dimensionsCreated: dimsCreated,
       cubesCreated,
       error: err instanceof Error ? err.message : 'Unknown error',
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   }
 }
@@ -732,7 +732,7 @@ export function migrateGlStore(cube: CubeEngine, data: StoreData): MigrationResu
 // ---------------------------------------------------------------------------
 
 export function migrateScenarioStore(cube: CubeEngine, data: StoreData): MigrationResult {
-  const start = Date.now();
+  const start = performance.now();
   const dimsCreated: string[] = [];
   const cubesCreated: string[] = [];
   let cellsWritten = 0;
@@ -847,7 +847,7 @@ export function migrateScenarioStore(cube: CubeEngine, data: StoreData): Migrati
       cellsWritten,
       dimensionsCreated: dimsCreated,
       cubesCreated,
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   } catch (err) {
     return {
@@ -857,7 +857,7 @@ export function migrateScenarioStore(cube: CubeEngine, data: StoreData): Migrati
       dimensionsCreated: dimsCreated,
       cubesCreated,
       error: err instanceof Error ? err.message : 'Unknown error',
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   }
 }
@@ -867,7 +867,7 @@ export function migrateScenarioStore(cube: CubeEngine, data: StoreData): Migrati
 // ---------------------------------------------------------------------------
 
 export function migrateReportStore(cube: CubeEngine, data: StoreData): MigrationResult {
-  const start = Date.now();
+  const start = performance.now();
   const dimsCreated: string[] = [];
   const cubesCreated: string[] = [];
   let cellsWritten = 0;
@@ -978,7 +978,7 @@ export function migrateReportStore(cube: CubeEngine, data: StoreData): Migration
       cellsWritten,
       dimensionsCreated: dimsCreated,
       cubesCreated,
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   } catch (err) {
     return {
@@ -988,7 +988,7 @@ export function migrateReportStore(cube: CubeEngine, data: StoreData): Migration
       dimensionsCreated: dimsCreated,
       cubesCreated,
       error: err instanceof Error ? err.message : 'Unknown error',
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   }
 }
@@ -998,7 +998,7 @@ export function migrateReportStore(cube: CubeEngine, data: StoreData): Migration
 // ---------------------------------------------------------------------------
 
 export function migrateVarianceStore(cube: CubeEngine, data: StoreData): MigrationResult {
-  const start = Date.now();
+  const start = performance.now();
   const dimsCreated: string[] = [];
   const cubesCreated: string[] = [];
   let cellsWritten = 0;
@@ -1134,7 +1134,7 @@ export function migrateVarianceStore(cube: CubeEngine, data: StoreData): Migrati
       cellsWritten,
       dimensionsCreated: dimsCreated,
       cubesCreated,
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   } catch (err) {
     return {
@@ -1144,7 +1144,7 @@ export function migrateVarianceStore(cube: CubeEngine, data: StoreData): Migrati
       dimensionsCreated: dimsCreated,
       cubesCreated,
       error: err instanceof Error ? err.message : 'Unknown error',
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   }
 }
@@ -1154,7 +1154,7 @@ export function migrateVarianceStore(cube: CubeEngine, data: StoreData): Migrati
 // ---------------------------------------------------------------------------
 
 export function migrateNotificationStore(cube: CubeEngine, data: StoreData): MigrationResult {
-  const start = Date.now();
+  const start = performance.now();
   const dimsCreated: string[] = [];
   const cubesCreated: string[] = [];
   let cellsWritten = 0;
@@ -1230,7 +1230,7 @@ export function migrateNotificationStore(cube: CubeEngine, data: StoreData): Mig
       cellsWritten,
       dimensionsCreated: dimsCreated,
       cubesCreated,
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   } catch (err) {
     return {
@@ -1240,7 +1240,7 @@ export function migrateNotificationStore(cube: CubeEngine, data: StoreData): Mig
       dimensionsCreated: dimsCreated,
       cubesCreated,
       error: err instanceof Error ? err.message : 'Unknown error',
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   }
 }
@@ -1250,7 +1250,7 @@ export function migrateNotificationStore(cube: CubeEngine, data: StoreData): Mig
 // ---------------------------------------------------------------------------
 
 export function migrateCollaborationStore(cube: CubeEngine, data: StoreData): MigrationResult {
-  const start = Date.now();
+  const start = performance.now();
   const dimsCreated: string[] = [];
   const cubesCreated: string[] = [];
   let cellsWritten = 0;
@@ -1362,7 +1362,7 @@ export function migrateCollaborationStore(cube: CubeEngine, data: StoreData): Mi
       cellsWritten,
       dimensionsCreated: dimsCreated,
       cubesCreated,
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   } catch (err) {
     return {
@@ -1372,7 +1372,7 @@ export function migrateCollaborationStore(cube: CubeEngine, data: StoreData): Mi
       dimensionsCreated: dimsCreated,
       cubesCreated,
       error: err instanceof Error ? err.message : 'Unknown error',
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   }
 }
@@ -1382,7 +1382,7 @@ export function migrateCollaborationStore(cube: CubeEngine, data: StoreData): Mi
 // ---------------------------------------------------------------------------
 
 export function migrateDataStore(cube: CubeEngine, data: StoreData): MigrationResult {
-  const start = Date.now();
+  const start = performance.now();
   const dimsCreated: string[] = [];
   const cubesCreated: string[] = [];
   let cellsWritten = 0;
@@ -1473,7 +1473,7 @@ export function migrateDataStore(cube: CubeEngine, data: StoreData): MigrationRe
       cellsWritten,
       dimensionsCreated: dimsCreated,
       cubesCreated,
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   } catch (err) {
     return {
@@ -1483,7 +1483,7 @@ export function migrateDataStore(cube: CubeEngine, data: StoreData): MigrationRe
       dimensionsCreated: dimsCreated,
       cubesCreated,
       error: err instanceof Error ? err.message : 'Unknown error',
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   }
 }
@@ -1493,7 +1493,7 @@ export function migrateDataStore(cube: CubeEngine, data: StoreData): MigrationRe
 // ---------------------------------------------------------------------------
 
 export function migrateTourStore(cube: CubeEngine, data: StoreData): MigrationResult {
-  const start = Date.now();
+  const start = performance.now();
   const dimsCreated: string[] = [];
   const cubesCreated: string[] = [];
   let cellsWritten = 0;
@@ -1593,7 +1593,7 @@ export function migrateTourStore(cube: CubeEngine, data: StoreData): MigrationRe
       cellsWritten,
       dimensionsCreated: dimsCreated,
       cubesCreated,
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   } catch (err) {
     return {
@@ -1603,7 +1603,7 @@ export function migrateTourStore(cube: CubeEngine, data: StoreData): MigrationRe
       dimensionsCreated: dimsCreated,
       cubesCreated,
       error: err instanceof Error ? err.message : 'Unknown error',
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   }
 }
@@ -1613,7 +1613,7 @@ export function migrateTourStore(cube: CubeEngine, data: StoreData): MigrationRe
 // ---------------------------------------------------------------------------
 
 export function migrateAnalyticsStore(cube: CubeEngine, data: StoreData): MigrationResult {
-  const start = Date.now();
+  const start = performance.now();
   const dimsCreated: string[] = [];
   const cubesCreated: string[] = [];
   let cellsWritten = 0;
@@ -1705,7 +1705,7 @@ export function migrateAnalyticsStore(cube: CubeEngine, data: StoreData): Migrat
       cellsWritten,
       dimensionsCreated: dimsCreated,
       cubesCreated,
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   } catch (err) {
     return {
@@ -1715,7 +1715,7 @@ export function migrateAnalyticsStore(cube: CubeEngine, data: StoreData): Migrat
       dimensionsCreated: dimsCreated,
       cubesCreated,
       error: err instanceof Error ? err.message : 'Unknown error',
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   }
 }
@@ -1725,7 +1725,7 @@ export function migrateAnalyticsStore(cube: CubeEngine, data: StoreData): Migrat
 // ---------------------------------------------------------------------------
 
 export function migrateUiStore(cube: CubeEngine, data: StoreData): MigrationResult {
-  const start = Date.now();
+  const start = performance.now();
   const dimsCreated: string[] = [];
   const cubesCreated: string[] = [];
   let cellsWritten = 0;
@@ -1807,7 +1807,7 @@ export function migrateUiStore(cube: CubeEngine, data: StoreData): MigrationResu
       cellsWritten,
       dimensionsCreated: dimsCreated,
       cubesCreated,
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   } catch (err) {
     return {
@@ -1817,7 +1817,7 @@ export function migrateUiStore(cube: CubeEngine, data: StoreData): MigrationResu
       dimensionsCreated: dimsCreated,
       cubesCreated,
       error: err instanceof Error ? err.message : 'Unknown error',
-      duration: Date.now() - start,
+      duration: Math.round(performance.now() - start),
     };
   }
 }

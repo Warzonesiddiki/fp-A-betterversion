@@ -6,6 +6,7 @@
 
 import { randomId } from '@/utils/cryptoId';
 import { sumMoney, formatMoney } from '../utils/money';
+import { nowISO } from '@/utils/clock';
 
 // --- Cell Type Definitions ---
 
@@ -356,7 +357,7 @@ export class ReportBuilderEngine {
       throw new Error('Report name is required');
     }
 
-    const now = new Date().toISOString();
+    const now = nowISO();
     const id = this.generateId();
 
     const layout = this.getTemplateLayout(template);
@@ -392,7 +393,7 @@ export class ReportBuilderEngine {
     return {
       ...report,
       ...updates,
-      updatedAt: new Date().toISOString(),
+      updatedAt: nowISO(),
       version: report.version + 1,
     };
   }
@@ -411,7 +412,7 @@ export class ReportBuilderEngine {
     return {
       ...report,
       isArchived: true,
-      updatedAt: new Date().toISOString(),
+      updatedAt: nowISO(),
     };
   }
 
@@ -427,7 +428,7 @@ export class ReportBuilderEngine {
       throw new Error('Clone name is required');
     }
 
-    const now = new Date().toISOString();
+    const now = nowISO();
     return {
       ...report,
       id: this.generateId(),
@@ -820,7 +821,7 @@ export class ReportBuilderEngine {
     sharedBy: string
   ): ReportDefinition {
     const existingShareIndex = report.shares.findIndex((s) => s.userId === userId);
-    const now = new Date().toISOString();
+    const now = nowISO();
 
     let shares: ReportShare[];
     if (existingShareIndex >= 0) {
@@ -841,7 +842,7 @@ export class ReportBuilderEngine {
     return {
       ...report,
       shares: report.shares.filter((s) => s.userId !== userId),
-      updatedAt: new Date().toISOString(),
+      updatedAt: nowISO(),
     };
   }
 
@@ -2330,7 +2331,7 @@ export class ReportBuilderEngine {
       ],
       metadata: {
         title: report.name,
-        createdAt: new Date().toISOString(),
+        createdAt: nowISO(),
         author: report.createdBy,
         orientation: 'landscape',
       },
@@ -2409,7 +2410,7 @@ export class ReportBuilderEngine {
     return {
       ...report,
       parameters: [...existing, parameter],
-      updatedAt: new Date().toISOString(),
+      updatedAt: nowISO(),
       version: report.version + 1,
     } as ReportDefinition;
   }
@@ -2434,7 +2435,7 @@ export class ReportBuilderEngine {
     return {
       ...report,
       parameters: updated,
-      updatedAt: new Date().toISOString(),
+      updatedAt: nowISO(),
       version: report.version + 1,
     } as ReportDefinition;
   }
@@ -2448,7 +2449,7 @@ export class ReportBuilderEngine {
     return {
       ...report,
       parameters: existing.filter((p) => p.id !== parameterId),
-      updatedAt: new Date().toISOString(),
+      updatedAt: nowISO(),
       version: report.version + 1,
     } as ReportDefinition;
   }

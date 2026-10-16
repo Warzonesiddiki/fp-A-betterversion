@@ -370,3 +370,11 @@ export function createStoragePool(options?: WorkerPoolOptions): WorkerPool {
     { maxWorkers: 1, timeoutMs: 30000, ...options } // maxWorkers: 1 to preserve order if needed, though tasks are named
   );
 }
+
+/** Exact GL staging calculations; one acknowledged chunk at a time per coordinator. */
+export function createGLIngestionPool(options?: WorkerPoolOptions): WorkerPool {
+  return new WorkerPool(
+    () => new Worker(new URL('./gl-ingestion.worker.ts', import.meta.url), { type: 'module' }),
+    { maxWorkers: 1, timeoutMs: 60000, ...options }
+  );
+}

@@ -5,6 +5,7 @@ import type { Entity } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { cacheSet, cacheGet, cacheClearStore, markSynced } from '../utils/offlineCache';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
+import { nowMs } from '@/utils/clock';
 
 // =============================================================================
 // ENTITY STORE — Multi-entity management with offline caching
@@ -60,7 +61,7 @@ export const useEntityStore = create<EntityState>()(
         }),
 
         addEntity: enforce(Permissions.ENTITY_CREATE, 'addEntity', (entity) => {
-          const newId = `ent-${Date.now()}`;
+          const newId = `ent-${nowMs()}`;
           const newEntity: Entity = {
             ...entity,
             id: newId,

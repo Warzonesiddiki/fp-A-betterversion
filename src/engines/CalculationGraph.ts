@@ -22,6 +22,7 @@
  */
 
 import { FormulaEngine } from './FormulaEngine';
+import { nowMs } from '@/utils/clock';
 
 export interface CellNode {
   ref: string;
@@ -199,7 +200,7 @@ export class CalculationGraph {
         }
 
         node.dirty = false;
-        node.lastCalculated = Date.now();
+        node.lastCalculated = nowMs();
         node.calculationTime = performance.now() - start;
         evaluated++;
       }

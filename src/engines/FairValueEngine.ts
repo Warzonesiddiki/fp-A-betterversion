@@ -21,6 +21,7 @@
  */
 
 import { addMoney, divideMoney, roundTo, sumMoney, toDecimal } from '../utils/money';
+import { nowMs } from '@/utils/clock';
 
 interface FairValueMeasurement {
   id: string;
@@ -45,7 +46,7 @@ export class FairValueEngine {
   private static measurements: Map<string, FairValueMeasurement[]> = new Map();
 
   static measure(params: Omit<FairValueMeasurement, 'id'>): FairValueMeasurement {
-    const id = `fv_${Date.now()}`;
+    const id = `fv_${nowMs()}`;
     const measurement: FairValueMeasurement = { ...params, id };
     const existing = this.measurements.get(params.assetId) ?? [];
     existing.push(measurement);

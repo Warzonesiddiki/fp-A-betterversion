@@ -4,6 +4,7 @@ import { sqlJsStorage } from '@/utils/sqlJsStorage';
 import { tauriSqlStorage, isTauri } from '@/utils/tauriSqlStorage';
 import { masterStorage } from '@/utils/masterStorage';
 import { PERSIST_KEYS } from '@/utils/storageConstants';
+import { nowISO } from '@/utils/clock';
 
 const migrationLogger = createLogger('LegacyStorageMigration');
 
@@ -246,7 +247,7 @@ export async function performLegacyToTauriMigration(
 
     // Write migration metadata
     const metadata = {
-      completedAt: new Date().toISOString(),
+      completedAt: nowISO(),
       checksum,
       keysMigrated: result.migratedKeys.length,
       from: 'browser',

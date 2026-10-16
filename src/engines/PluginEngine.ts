@@ -22,6 +22,7 @@ const pluginEngineLogger = createLogger('PluginEngine');
 
 import { formatMoney } from '../utils/money';
 import { storageGet, storageSet, storageRemove, storageAdapter } from '@/utils/storageAdapter';
+import { nowMs } from '@/utils/clock';
 
 const CURRENT_VERSION = '1.0.0';
 const MAX_PLUGIN_STORAGE_MB = 10;
@@ -175,7 +176,7 @@ export class PluginEngine {
       plugin,
       status: 'loaded',
       api,
-      loadedAt: Date.now(),
+      loadedAt: nowMs(),
     };
 
     // Initialize

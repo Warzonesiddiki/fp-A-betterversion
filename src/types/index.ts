@@ -734,6 +734,56 @@ export interface GLEntry {
   readonly journalId?: string;
   readonly journalLine?: number;
   readonly source?: string;
+  /**
+   * Source-row provenance (FR-005). Present on every entry created through
+   * `importGLData`; absent only on legacy rows persisted before provenance
+   * existed and on rows created by hand (`addEntry`).
+   */
+  readonly provenance?: GLEntryProvenance;
+}
+
+/** Where a GL entry came from: which import batch, which file, which row. */
+export interface GLEntryProvenance {
+  /** Deterministic batch id: derived from the content hash and import instant. */
+  readonly batchId: string;
+  /** SHA-256 (hex) of the source file bytes, or of the canonical row content when no file exists. */
+  readonly fileHash: string;
+  /** Source file name as supplied by the user / connector. */
+  readonly sourceFile: string;
+  /** 1-based row number in the source file (header row = 1). */
+  readonly sourceRow: number;
+}
+
+/** One rejected source row, with a machine code and a human reason (FR-002: nothing is silently discarded). */
+export interface ImportRejection {
+  readonly row: number;
+  readonly code: 'DUPLICATE_ROW' | 'DUPLICATE_FILE' | 'VALIDATION';
+  readonly reason: string;
+}
+
+/**
+ * What a batch covers (FR-001). Facts the file did not carry are reported as
+ * `'unavailable'`, never guessed or shown as a default.
+ */
+export interface ImportScope {
+  /** Distinct `YYYY-MM` periods present, sorted ascending. */
+  periods: string[];
+  /** Earliest and latest posting date present (ISO `YYYY-MM-DD`), or null for an empty batch. */
+  dateRange: { from: string; to: string } | null;
+  /** Distinct entity ids present, or `'unavailable'` when no row carried one. */
+  entities: string[] | 'unavailable';
+  /** Distinct currency codes present, or `'unavailable'` when no row carried one. */
+  currencies: string[] | 'unavailable';
+  /** Import instant (ISO), from the injectable clock. */
+  importedAt: string;
+}
+
+/** Independently computed control totals for an import batch (FR-004). Amounts are decimal strings, cent-exact. */
+export interface ImportControlTotals {
+  readonly rows: number;
+  readonly debit: string;
+  readonly credit: string;
+  readonly net: string;
 }
 
 export interface TrialBalanceRow {
@@ -773,6 +823,29 @@ export interface ImportResult {
   successCount: number;
   status: 'success' | 'partial' | 'error';
   timestamp?: string;
+  /** Batch identity (FR-003). Absent on history rows recorded before provenance existed. */
+  batchId?: string;
+  fileHash?: string;
+  /** Every row that was not imported, with its reason (FR-002). */
+  rejections?: ImportRejection[];
+  /** Control totals of the rows actually committed (FR-004). */
+  controlTotals?: ImportControlTotals;
+  /** Period / entity / currency coverage of the committed rows (FR-001). */
+  scope?: ImportScope;
+}
+
+/** Identity of the source an import came from, supplied by the caller (page or connector). */
+export interface ImportSource {
+  /** SHA-256 hex of the file bytes. When omitted, the store hashes the canonical row content. */
+  readonly fileHash?: string;
+  /** 1-based source-file row for each entry, aligned by index. Defaults to index + 2 (header = row 1). */
+  readonly sourceRows?: readonly number[];
+  /**
+   * Rows the caller already rejected before handing over (e.g. unparseable
+   * dates or amounts). Any rejection aborts the entire file (DEC-007).
+   * Returned to the caller; no financial entries or success history are written.
+   */
+  readonly rejections?: readonly ImportRejection[];
 }
 
 export interface ImportHistoryEntry extends ImportResult {
@@ -858,7 +931,12 @@ export interface GLState {
    * land in importError; the local undo always proceeds.
    */
   undoLastImport: () => Promise<void>;
-  checkDuplicates: (entries: GLEntry[]) => { duplicates: number; newEntries: GLEntry[] };
+  checkDuplicates: (entries: GLEntry[]) => {
+    duplicates: number;
+    newEntries: GLEntry[];
+    /** Indices (into the input array) of the rows judged duplicates, so callers can explain each one. */
+    duplicateIndices: number[];
+  };
   validateEntries: (entries: Partial<GLEntry>[]) => {
     isValid: boolean;
     errors: string[];
@@ -866,10 +944,28 @@ export interface GLState {
   };
   importGLData: (
     entries: Partial<GLEntry>[],
-    filename?: string
+    filename?: string,
+    source?: ImportSource
   ) =>
-    | { success: true; imported: number; duplicates: number; errors: number }
-    | { success: false; imported: number; errors: number };
+    | {
+        success: true;
+        imported: number;
+        duplicates: number;
+        errors: number;
+        batchId: string;
+        fileHash: string;
+        rejections: readonly ImportRejection[];
+        controlTotals: ImportControlTotals;
+        scope: ImportScope;
+      }
+    | {
+        success: false;
+        imported: number;
+        errors: number;
+        /** Set when the same file content was already imported (FR-003). */
+        duplicateOfBatchId?: string;
+        rejections?: readonly ImportRejection[];
+      };
   syncToCube: () => void;
   syncFromCube: () => void;
   getCubeState: () => {

@@ -136,8 +136,22 @@ export default function GLExplorerPage() {
         Debit: entry.debit,
         Credit: entry.credit,
         Reference: entry.reference,
+        'Source file': entry.provenance?.sourceFile ?? '',
+        'Source row': entry.provenance?.sourceRow ?? '',
+        Batch: entry.provenance?.batchId ?? '',
       })),
-      ['Date', 'Account', 'Name', 'Description', 'Debit', 'Credit', 'Reference']
+      [
+        'Date',
+        'Account',
+        'Name',
+        'Description',
+        'Debit',
+        'Credit',
+        'Reference',
+        'Source file',
+        'Source row',
+        'Batch',
+      ]
     );
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -266,6 +280,9 @@ export default function GLExplorerPage() {
                   <th scope="col" className="px-4 py-3 text-right">
                     Credit
                   </th>
+                  <th scope="col" className="px-4 py-3">
+                    Source
+                  </th>
                   <th scope="col" className="px-2 py-3 w-12">
                     Analyze
                   </th>
@@ -286,6 +303,18 @@ export default function GLExplorerPage() {
                     </td>
                     <td className="px-4 py-2 text-right tabular-nums text-green-400 text-xs">
                       {entry.credit > 0 ? fmt.currency0(entry.credit) : ''}
+                    </td>
+                    <td
+                      className="px-4 py-2 text-xs text-slate-400 max-w-[200px] truncate"
+                      title={
+                        entry.provenance
+                          ? `${entry.provenance.sourceFile} row ${entry.provenance.sourceRow}\nbatch ${entry.provenance.batchId}\nsha256 ${entry.provenance.fileHash}`
+                          : 'No source provenance recorded (imported before provenance existed, or created by hand)'
+                      }
+                    >
+                      {entry.provenance
+                        ? `${entry.provenance.sourceFile}:${entry.provenance.sourceRow}`
+                        : '—'}
                     </td>
                     <td className="px-2 py-2">
                       <Button

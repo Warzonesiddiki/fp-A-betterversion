@@ -11,6 +11,7 @@
 import { FiscalCalendar, type FiscalPeriodInput } from '@/engines/FiscalCalendar';
 import { useSettingsStore } from '@/store/settingsStore';
 import type { FiscalPeriod } from '@/types';
+import { now } from '@/utils/clock';
 
 const MONTH_NAMES = [
   'January',
@@ -34,7 +35,7 @@ export function buildFiscalPeriods(): FiscalPeriod[] {
   const state =
     typeof useSettingsStore.getState === 'function' ? useSettingsStore.getState() : undefined;
   const org = state?.organization;
-  const year = org?.fiscalYear ?? new Date().getFullYear();
+  const year = org?.fiscalYear ?? now().getFullYear();
   const startMonth =
     org?.fiscalYearStart && /^\d{4}-(\d{2})/.test(org.fiscalYearStart)
       ? Number(org.fiscalYearStart.match(/^\d{4}-(\d{2})/)![1])

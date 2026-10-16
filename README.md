@@ -1,320 +1,121 @@
-<div align="center">
+# FinPlan Pro
 
-<!-- ••••••••••••••••••••••• HERO •••••••••••••••••••••••• -->
+**Desktop FP&A workspace (Tauri 2 + React 19 + TypeScript).** Budgeting, forecasting, consolidation, period close, reporting and an AI copilot, with financial math routed through an exact-decimal money primitive (`src/utils/money.ts`, `decimal.js`, ROUND_HALF_UP).
 
-# 📊 FinPlan Pro
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React 19](https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tauri 2](https://img.shields.io/badge/Tauri-2-FFC131?logo=tauri&logoColor=black)](https://tauri.app/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green)](./LICENSE)
 
-### Enterprise Financial Planning & Analysis — Rebuilt for Precision and Speed
-
-> _"Eliminate spreadsheets. Replace armies of financial analysts with real-time, accurate, and beautiful financial intelligence."_
-
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React 19](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-8.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tailwind](https://img.shields.io/badge/Tailwind-4.3-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![Tauri 2](https://img.shields.io/badge/Tauri-2.0-FFC131?style=for-the-badge&logo=tauri&logoColor=black)](https://tauri.app/)
-[![Decimal.js](https://img.shields.io/badge/Money%20Math-decimal.js-0e7c66?style=for-the-badge)](https://mikemcl.github.io/decimal.js/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](./LICENSE)
-
-<br/>
-
-| | |
-| :-----------------------------------------: | :----------------------------------: |
-| <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">182</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Financial Engines Shipped</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">45</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Zustand Stores</div></div> |
-| <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">14,835</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Tests (100% Green)</div></div> | <div><div style="font-size:28px;font-weight:800;color:#0b1f3a">100%</div><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#5b6b82">Money Safety</div></div> |
-
-<br/>
-
-**One FP&A platform.** Budgeting, forecasting, consolidation, close, reporting, and an AI copilot —
-running natively on desktop (offline/local-first). It is a desktop app, not a web app: plain browsers are
-blocked by the Tauri-only runtime gate. Financial math routes through an **audit-grade decimal primitive**
-(`src/utils/money.ts`, exact `decimal.js` + ROUND_HALF_UP) — measured adoption: **88 of 255** engine/store
-modules today, with the UI-layer sweep in progress; no `0.1 + 0.2 = 0.30000000000000004` bug ships in
-covered paths.
-
-[🚀 Getting Started](#-getting-started) ·
-[🧩 Capabilities](#-capability-map) ·
-[🗿️ Architecture](#%EF%B8%8F-architecture--engineering) ·
-[🧪 Quality Gates](#-quality-gates) ·
-[🗺️ Roadmap & Gaps](#%EF%B8%8F-roadmap--the-gap-ledger) ·
-[🤝 Contributing](#-contributing)
-
-</div>
+> **Status (2026-10-15): pre-release, not usable end-to-end.** This README states only what has been
+> measured on a clean checkout; the numbers below are produced by scripts and checked by
+> `npm run docs:verify`, which fails the build when the README and the tree disagree. The current
+> gap analysis and the prioritised work list live in
+> [`docs/audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md`](./docs/audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md).
+> Read that before the capability list.
 
 ---
 
-## 🎯 The Problem — and How FinPlan Pro Solves It
+## What is true today
 
-Corporate finance still runs on spreadsheets: fragile, error-prone, single-player, impossible to audit.
-FinPlan Pro attacks each failure mode directly.
-
-| Industry Pain Point        | Today's Reality                                                                            | FinPlan Pro Answer                                                      |
-| -------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
-| **Spreadsheet error risk** | Manual formulas drift; floating-point rounding silently corrupts totals.                   | 182 engines on a canonical decimal-exact money primitive (`decimal.js` + ROUND_HALF_UP). |
-| **Slow monthly close**     | Close cycles stretch days-to-weeks across emails and workbook versions.                    | Soft/hard/locked state machine with adjusting-entry support, RBAC-gated posting, audit trail. |
-| **Multi-entity chaos**     | IC eliminations, FX, minority interest done by hand.                                       | ASC 810/830 consolidation engine + dedicated Web Worker: eliminations, NCI, hyperinflation, translation. |
-| **Scenario paralysis**     | "What if revenue drops 15%?" takes days of re-modeling.                                    | Scenario, Monte-Carlo, driver-based and rolling-forecast engines answer instantly. |
-| **Vertical blindness**     | Generic tools lack sector KPIs (SaaS churn, construction WIP, healthcare patient revenue). | 18 pre-wired sector dashboards backed by 14 planning templates, with sector-specific GL templates. |
-| **Cloud lock-in**          | Many regulated orgs cannot put ledger data in SaaS clouds.                                 | Offline-first Tauri desktop: everything computes on-device, local encryption at rest. |
-| **Audit-grade evidence**   | Results are trusted because "the analyst said so."                                         | Every migrated money path ships a `*.money.test.ts` with exact known answers. |
-
-> [!TIP]
-> **No `$NaN` renders, no phantom imbalances, no "looks right" totals.** Every currency path in the scanned financial directories is wired through one primitive. See [docs/architecture/money.md](./docs/architecture/money.md).
+| Area                       | Measured state                                                                                                                                                                                                                                                                                                           |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Type check / lint / format | `tsc --noEmit`, `eslint src --max-warnings 0`, `prettier --check` are clean.                                                                                                                                                                                                                                             |
+| Unit tests (frontend)      | ~1,315 files · ~13,350 tests via `npm run test:sharded`. Green on this branch after the 2026-10-15 fixes (clock-dependent period-close suites, stale icon mock). `main` CI has been red since 2026-08-20 — see the audit.                                                                                                |
+| Unit tests (server)        | 32 files, green after the 2026-10-15 fix (clock-relative audit-prune fixture).                                                                                                                                                                                                                                           |
+| Money primitive            | `src/utils/money.ts` is correct and tested. **Adoption is 28.9 %** of financial modules (`npm run money:adoption`). The AST ratchet (`npm run money:ast`) reports 0 _detected_ unsafe ops in scanned paths; that is a ratchet floor, not proof. Core domain types (`GLEntry.debit/credit/amount`) are still JS `number`. |
+| Engines                    | 182 engine modules in `src/engines`; **95 reachable engines** from runtime code, **87 orphan engines** with no page/store/service caller (`node scripts/verify-readme-stats.mjs --list`).                                                                                                                                |
+| Stores                     | 46 Zustand store modules; 42 persisted. Financial data is persisted as encrypted JSON blobs in a single key-value table; the 35-table relational schema in `src-tauri/migrations` is not written by the app.                                                                                                             |
+| Server (`server/`)         | Express + SQLite with JWT, RBAC, tenancy and period-close routes. **No frontend module calls it.** It is not bundled with the desktop app.                                                                                                                                                                               |
+| Runtime                    | Desktop-only: a plain browser is blocked by the Tauri runtime gate (`src/utils/tauriRuntime.ts`). Production builds refuse mock auth; real auth needs a running server — so an offline desktop build cannot currently sign in. Decision pending (audit §8, P0-3).                                                        |
+| Integrations               | Connector classes for QuickBooks, NetSuite, Xero, Sage, Dynamics (Dataverse), Salesforce, Stripe, Plaid, Slack exist with OAuth/HTTP code and tests, but **none is wired to a page**. CSV/Excel GL import is wired.                                                                                                      |
+| Exports                    | Excel (`exceljs`) and PDF (`jspdf`). No PowerPoint. No cross-artifact tie-out test.                                                                                                                                                                                                                                      |
+| Coverage gate              | 50 % statements/branches/functions/lines in `vite.config.ts` (a floor, not a measured figure).                                                                                                                                                                                                                           |
+| Dependency advisories      | `npm audit --omit=dev` on 2026-10-15: root 3 high / 1 moderate / 1 low; server 1 critical / 4 moderate. Open.                                                                                                                                                                                                            |
 
 ---
 
-## 🚀 Getting Started
+## Getting started
+
+Requirements: Node 22, npm 10+. Rust toolchain only if you build the desktop shell.
 
 ```bash
-# 1. Install (root + server)
-npm install
+npm install                      # root
+(cd server && npm install)       # optional: the Express API
 
-# 2. Run the dev server (web UI on http://localhost:5173)
-npm run dev
+npm run dev                      # Vite on :5173 — NOTE: the app blocks plain browsers (desktop-only gate)
+npm run tauri:dev                # desktop shell (requires Rust + Tauri prerequisites)
 
-# 3. Run the full quality gate (TypeScript · ESLint · Prettier · 14,835 tests)
-npm run check
+npm run check                    # the whole gate: tsc · eslint · prettier · docs · engines · money · determinism · fabrication · sharded tests
 ```
 
-**Common scripts:**
-
-| Command                     | Purpose                                                                               |
-| --------------------------- | ------------------------------------------------------------------------------------- |
-| `npm run dev`               | Start the Vite dev server                                                             |
-| `npm run build`             | Production build (vite)                                                               |
-| `npm test`                  | Full Vitest suite (1,287 files / 14,835 tests — measured full-suite run 2026-08-23) |
-| `npm run tsc`               | TypeScript strict check (`--noEmit`)                                                  |
-| `npm run lint`              | ESLint (`--max-warnings 0`)                                                           |
-| `npm run format`            | Prettier write                                                                        |
-| `npm run money:ast`         | AST money-safety ratchet (pre-push Gate 9b)                                           |
-| `npm run docs:verify`       | README/architecture claims audit                                                      |
-| `npm run engines:verify`    | Engine manifest / reachability audit                                                  |
-| `cd server && npm run test` | Server-side suite (323 tests / 32 files)                                              |
-
----
-
-## 🧭 A Guided Walkthrough
-
-The day-to-day workflow of a finance team on FinPlan Pro, from raw GL data to board-ready insight:
-
-<div align="center">
-
-| 1️⃣ **Connect**                                              | 2️⃣ **Validate**                                                                                    | 3️⃣ **Model**                                                                                       |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| QuickBooks · NetSuite · Xero · Sage · Dynamics · Excel/CSV | Column mapping · blocking validation · duplicate detection · loud `InvalidMoneyError` on bad inputs | Budgets, forecasts, consolidation, scenarios, variance analysis, Monte-Carlo, sensitivity tables |
-
-</div>
+| Script                            | Purpose                                                                          |
+| --------------------------------- | -------------------------------------------------------------------------------- |
+| `npm run tsc`                     | TypeScript strict check (`--noEmit`)                                             |
+| `npm run lint` / `lint:fix`       | ESLint with `--max-warnings 0` / with `--fix`                                    |
+| `npm run format` / `format:check` | Prettier write / check                                                           |
+| `npm test`                        | Full Vitest suite in one process (asks for an 8 GB heap)                         |
+| `npm run test:sharded`            | Same suite in 8 sequential shards — use this on machines with < 8 GB free        |
+| `npm run test:e2e`                | Playwright (shims the Tauri runtime; it does not exercise the real shell)        |
+| `npm run money:ast`               | AST money-safety ratchet                                                         |
+| `npm run money:adoption`          | Money-primitive adoption (percentage of financial modules on `@/utils/money`)    |
+| `npm run determinism:ratchet`     | Wall-clock / `Math.random` call sites in calculation paths must not rise per file |
+| `npm run docs:verify`             | README / persistence-map / schema-home truth checks (fails on unmeasured claims) |
+| `npm run engines:verify`          | Engine manifest is current                                                       |
+| `npm run check`                   | Everything above plus the sharded suite, with an honest exit code                |
+| `cd server && npm test`           | Server suite (Supertest + SQLite)                                                |
 
 ---
 
-## 🧩 Capability Map
-
-### Core FP&A
-
-- **General Ledger** — import, journal entry management, trial balance, chart of accounts
-- **Budgeting & Forecasting** — annual budgets, rolling forecasts, driver-based modeling, spreading
-- **Consolidation** (ASC 810/830) — multi-entity, intercompany eliminations, minority interest, FX translation/CTA, hyperinflation
-- **Revenue Recognition** (ASC 606) — contract modifications, deferred revenue, performance obligations
-- **Lease Accounting** (ASC 842 / IFRS 16) — ROU assets, lease liabilities, discount-rate handling
-- **Depreciation & Impairment** (IAS 36 / ASC 360) — SL/SYD/DDB/VDB/declining-balance, revaluation, disposal
-- **Tax Provision** (ASC 740 / IAS 12) — current/deferred, valuation allowances, NOLs
-- **Debt & Financial Instruments** — amortization, refinancing, prepayment, fair value (ASC 820), bond pricing
-- **Period Close** — soft/hard/locked state machine, audit trail, RBAC-gated posting, reopen-with-approval
-- **Variance Analysis** — decomposition, attribution, drill-through to transactions
-- **Intercompany Matching** — tolerance-based reconciliation, auto-matching, difference reports
-
-### Sector Packs (18 Sector Dashboards)
-
-Agriculture · Banking · Construction · Education · Emissions · Energy · Equipment · Government · Healthcare ·
-Hospitality · Insurance · Logistics · Manufacturing · Real Estate · Retail · Technology (SaaS) ·
-Telecommunications — plus the sector overview hub; each with its own KPI dashboard, and 14 planning
-templates in `src/templates/` covering the major modeling patterns.
-
-### AI Copilot
-
-- **Alerts layer** — anomalies, large entries, expense-vs-revenue, threshold-watch (migrated to the money primitive; float-math false alerts fixed)
-- **Natural-Language Query (NLQ)** — ask the ledger in plain English
-- **Auto-commentary** — narrative generation for variance reports
-- **Formula assistance** — guided model building
-
-### Integrations
-
-QuickBooks · NetSuite · Xero · Sage Intacct · Microsoft Dynamics 365 · Salesforce · Excel/CSV import/export · PDF board-pack export.
-
-### Deployment
-
-| Mode          | Stack                              | Notes                                                                                                 |
-| ------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| **Desktop**   | Tauri 2 + Rust backend             | Fully offline, local-first, data encrypted at rest.                                                   |
-| **Web build** | React 19 + Vite + Tailwind 4       | Frontend bundle for the Tauri shell; plain-browser rendering is intentionally blocked (desktop-only). |
-| **Server**    | Node + Express + SQLite (mockable) | Multi-user APIs, RBAC, period close, JWT auth; 323 integration tests.                                 |
-
----
-
-## 🗿️ Architecture & Engineering
+## Repository layout
 
 ```
 src/
-├── engines/        # Financial Engines (182 modules) — lazy-reachable via manifest
-├── store/          # Zustand Stores (45 stores)
-├── pages/          # routed page modules
+├── engines/        # Financial Engines (182 modules) — 95 reachable, 87 orphans (see audit P1-12)
+├── store/          # Store Architecture (46 Stores) — Zustand; 42 persisted via masterStorage
+├── pages/          # routed page modules (242 <Route>s — scope reduction is audit P1-6)
 ├── components/     # UI, charts, sectors, AI copilot, spreadsheet
-├── workers/        # Web Workers (4 active) — consolidation, Monte Carlo, batch calc, storage
-├── services/       # API integrations, threat model, prompt library
-├── utils/          # money primitive, cn, formatters, validation, GL analysis
-server/src/         # Express routes, auth, period close, reports (decimal.js)
-scripts/            # CI ratchets, engine manifest, audit, SHA-pinning tooling
+├── workers/        # Active Workers (5) — consolidation, Monte Carlo, batch calc, storage, GL staging
+├── services/       # connectors (unwired), import pipeline, client-side security modules (several unused)
+├── utils/          # money primitive, clock, formatters, validation, storage
+server/src/         # Express routes, auth, tenancy, period close (not called by the client)
+src-tauri/          # Tauri 2 shell (Rust, 3 modules), capabilities, SQL migrations (unused tables)
+scripts/            # ratchets, manifests, truth checks
+docs/               # architecture, ADRs, security, audits
 ```
 
-> **Measured repository composition** (enforced by `npm run docs:verify` and `scripts/check-readme-claims.mjs`):
-> **Financial Engines (182 modules)**, **Zustand Stores (45 stores)**, **Web Workers (4 active)**.
-> Coverage thresholds in `vite.config.ts` are 50% (statements/branches/functions/lines) — this is a
-> floor, not a claim of production coverage; no full-suite coverage run completes inside CI.
-> **Measured adoption: 88 of 255 engine/store modules** route through the canonical money primitive
-> at the engine/store layer (with UI-layer adoption continuing in GAP-1; see the AST ratchet for
-> total financial-path safety).
+---
 
-### The Money Primitive (F-0006) — the "no rounding bugs" promise
+## Engineering rules that are actually enforced
 
-Every currency calculation routes through `src/utils/money.ts`, a thin wrapper around `decimal.js`
-with `ROUND_HALF_UP`, deterministic penny allocation, and strict input validation that throws
-`InvalidMoneyError` instead of silently returning `0` or `NaN`:
-
-```ts
-import { sumMoney, roundTo, addMoney, percentOf } from '@/utils/money';
-
-// Exact: 0.1 + 0.2 = 0.3 (not 0.30000000000000004)
-const totalDebit = roundTo(sumMoney(entries.map((e) => e.debit)));
-const withTax = roundTo(addMoney(subtotal, percentOf(subtotal, 0.0825)));
-```
-
-> [!NOTE]
-> **Money safety (measured, gate-enforced):** the AST money-safety ratchet (`npm run money:ast`,
-> pre-push Gate 9b) parses every ratcheted financial path: **990** modules scanned, **896** handle
-> money, **896 are safe**, **0** unsafe operations, **100%** safety. Raw float arithmetic cannot
-> re-enter those paths without failing the gate. A companion fabrication ratchet (Gate 9c) holds at
-> **0** findings for hand-typed `$12.4M` / `24.3%` literals. The older import-proxy script
-> (`money-adoption.mjs`) is retired-pending: its residual exit-1 sites were adjudicated as
-> `roundMoney(...).toFixed()` display formatting (not financial truth). Server-side, the canonical
-> engine paths run on `decimal.js`.
-
-### Precision Bugs Caught and Fixed (excerpt)
-
-- `DepreciationEngine.assetRevaluation` — `Math.round(0.05 × 1.5)` returned **0** in IEEE-754 (0.075 ≈ 0.07499…), wiping accumulated depreciation; half-up gives **0.08**.
-- `ICMatchingEngine` — perfectly offsetting intercompany books reported **`5.55e-17` phantom imbalance** and downgraded from `matched` to `partial`.
-- Copilot alerts — cent-equal books fired a **false "expenses exceed revenue"** alert; threshold boundaries were mis-flagged from `1.15 × 0.1 = 0.114999…` undershoot.
-- `glStore.checkDuplicates` — stored `0.2` vs re-imported `0.3 − 0.1` produced different fallback dedupe keys; duplicates went **undetected**.
-- `BreakEvenEngine.multiProduct` — break-even revenue `1.67213114754…` vs exact **1.7**.
-
-Every one of these is pinned by a `*.money.test.ts` that fails against the original float code.
+1. **Measured, or not stated.** Any number in this README must come from a script. `npm run docs:verify` rejects "100 %" style claims that no script produces and rejects engine/store/worker counts that disagree with the tree.
+2. **Money through one primitive.** New or touched financial code uses `@/utils/money` and ships a `*.money.test.ts` with exact expected values that fail against float arithmetic. `npm run money:ast` must stay at 0 unsafe ops; `npm run money:adoption` must not regress.
+3. **Deterministic code.** Pages, stores and engines read time through `src/utils/clock.ts` (`now()`, `todayISO()`), never `new Date()` directly, so tests can pin the clock. Random sources are seeded. `npm run determinism:ratchet` fails if any calculation-path file gains a `new Date()` / `Date.now()` / `Math.random()` site (baseline recorded 2026-10-15 in `scripts/determinism-baseline.json`, 684 → 638 so far; the goal is to drive it to zero).
+4. **Tests use the shared mocks.** `lucide-react` is mocked globally in `src/test/setup.ts`; do not hand-mock it per file (partial mocks rot when a page adopts a new icon).
+5. **Do not edit `.github/workflows/**`from an agent session.** The GitHub App lacks the`workflows` permission; CI changes must be applied by a human (`ci-patches/README.md`).
+6. **Imports are idempotent and traceable.** `importGLData` rejects a file whose content hash was already imported, commits a batch all-or-nothing on validation errors, reports every rejected source row with a reason, and stamps `provenance {batchId, fileHash, sourceFile, sourceRow}` on every entry. Contract tests: `src/store/glStore.provenance.test.ts`.
 
 ---
 
-## 🧪 Quality Gates
+## Where the plan lives
 
-<div align="center">
-
-| Gate                             | Status                                                                           | Standard                                                                   |
-| -------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| **TypeScript** (`tsc --noEmit`)  | ✅                                                                              | Strict mode, zero errors                                                 |
-| **ESLint** (`--max-warnings 0`)  | ✅                                                                              | Zero warnings tolerated                                                  |
-| **Prettier**                     | ✅                                                                              | Enforced in CI                                                           |
-| **Vitest** — frontend          | ✅ **1,287 files · 14,834 passed / 0 failed** (+1 skipped · 14,835 collected) | Full suite green — measured full-suite run 2026-08-23                    |
-| **Vitest** — server            | ✅ **323 tests / 32 files** · native-DB 83                                     | Supertest + mock DB / better-sqlite3                            |
-| **LLM egress chokepoint (W0.9)** | ✅ Enforced                                                                     | Build-time kill switch · host allowlist · prompt redaction (`src/services/...`) |
-| **AST money-safety ratchet**     | ✅ **100% safe · 896/896 · 0 unsafe ops**                                     | `npm run money:ast` (Gate 9b)                                      |
-| **Engine reachability**          | ✅ **180/180 reachable, 0 orphans**                                             | Manifest + direct + lazy                                               |
-| **README claims audit**          | ✅                                                                              | `npm run docs:verify`                                                  |
-| **Docs verification**            | ✅                                                                              | `npm run docs:verify`                                                  |
-| **Production dependency audit**  | ✅ critical=0 high=0 moderate=0 low=0                                           | `scripts/check-dependency-audit.mjs`                                   |
-| **Bundle check**                 | ✅ Green (2 warnings) — measured 2026-08-23                                   | Total JS 2,083.33 KB gzip vs enforced TOTAL_JS_LIMIT_KB=2,248 · main chunk 145 KB |
-| **Build & Bundle Check** (CI)    | 🛑 Known blocker                                                               | Legacy 2048 KB workflow cap (= old plan literal) vs fresh measured 2,083 KB gzip |
-
-</div>
-
-> [!WARNING]
-> **Known CI blocker (GAP-7):** The `Build & Bundle Check` GitHub Action fails because of a legacy
-> 2048 KB gzip cap in the workflow file (measured 2026-08-23: 2,083.33 KB gzip — green against the enforced 2,248 KB gate, above this legacy 2048 KB plan literal; tightening tracked as P-0007).
-> **Fix status:** The GitHub App that would apply the patch lacks `workflows` permission on the repo, so
-> the fix is delivered as a tool + patch (`scripts/pin-workflow-actions.mjs`,
-> `ci-patches/0003-gap7-sha-pin-workflows.patch`). It does not affect application code.
+- **Discovery & governance pack (plan of record, proposed):** [`docs/discovery/`](./docs/discovery) — charter, requirements register (FR/UX/NFR/AI), risk register, decision log (DEC-001…006, all awaiting owner), gated roadmap, and the executed audit-progress record.
+- **Gap analysis and prioritised work list:** [`docs/audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md`](./docs/audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md) §8 (P0 → P2).
+- **Architecture notes and ADRs:** [`docs/architecture/`](./docs/architecture), [`docs/adr/`](./docs/adr).
+- **Security policies:** [`docs/security/`](./docs/security), [`SECURITY.md`](./SECURITY.md).
+- Historical plans, handovers and prior audits are numerous and partly contradictory; the discovery pack and the audit above supersede them until they are consolidated (audit P0-4 / DEC-006).
 
 ---
 
-## 🗺️ Roadmap & The Gap Ledger
+## Contributing
 
-All in-flight work, defects fixed, blockers, and honest "what we thought was done but wasn't"
-notes live in **[`GAP_LEDGER.md`](./GAP_LEDGER.md)** — a persistent, evidence-only ledger
-updated every session with literal command output. It is the single source of truth for project status.
+1. Branch from `main`. One work item per commit; the commit message says what was measured.
+2. Run `npm run check` before pushing. If it is red, fix it or record exactly why in the PR — do not weaken a gate.
+3. Touching money: `@/utils/money`, exact-answer tests, falsify against float, keep the ratchets green.
+4. Touching time: `@/utils/clock`.
+5. New routes, engines or stores need a runtime consumer in the same PR — a file with a unit test is not a feature.
 
-### Current GAP-1 (Money Migration) Status
-
-- **✅ Complete in:** `src/engines`, `src/store`, `src/utils`, `src/services`, `src/workers`, `src/components/ai`, `server/src/routes/{gl,export}.ts`
-- **🚧 In progress:** UI-layer backlog in `src/components/*` and `src/pages/*` (GL debit/credit
-  tables, IC reconciliation, multi-currency reporting, variance drill, page totals) — being
-  migrated file-by-file with falsified tests.
-- **❌ Excluded by policy** (non-currency): non-currency stores (budget/forecast/debt/Monte-Carlo),
-  percentages/counts/hours/z-scores/match scores, display-only `×100 → %` / `/1000 → K/M`
-  formatting, pre-screened clean AI components.
-
-### Release v1.0 Gates (all tracked in the ledger)
-
-- ✅ Full-suite certification (14,835 tests green — measured full-suite run 2026-08-23)
-- 🚧 Playwright E2E farm — journey spine + GL-journal fixture landing under `tests/e2e/spine`
-- 🚧 Performance benchmarks
-- 🚧 Accessibility (a11y) sweep
-- 🚧 Vendor chunk splitting
-- 🚧 `exceljs` migration
-- 🚧 i18n verification
-- 🚧 Security hardening (backend NVIDIA NIM proxy, JWT rotation)
-
----
-
-## 🧑‍💻 Project Philosophy (a.k.a. "Brutal Honesty Engineering")
-
-> **Re-run the evidence, never trust the ledger.**
->
-> Every session opens by re-running the full suite and the ratchets on a clean checkout of
-> `main`, not on assumptions from a prior handover. A status marked "VERIFIED_DONE" has
-> multiple times turned out to be un-shipped, un-imported, or red when re-checked — and was
-> caught because the first action of every session is `npm test`, not "pick up where I left off."
-
-Three rules govern the codebase:
-
-1. **Falsify before accepting.** Every migrated currency path ships a `*.money.test.ts` with
-   exact `toBe` answers; the test must FAIL when run against the pre-migration (float) code.
-   If it doesn't, the test isn't testing anything.
-2. **Ratchet, don't promise.** Adoption percentages are enforced by a script that exits non-zero
-   if they regress — not by a human remembering.
-3. **Document the failures, not just the wins.** Known blockers (GAP-7), excluded surfaces, and
-   rejections are written down as loudly as shipped features.
-
----
-
-## 🤝 Contributing
-
-1. **Read [`GAP_LEDGER.md`](./GAP_LEDGER.md)** first — it contains the current backlog, protocol, and known traps.
-2. Branch off `main`; this session works on `arena/*` branches.
-3. Run the full gate before pushing:
-   ```bash
-   npm run tsc && npm run lint && npm run format:check && npm test && npm run money:ast && npm run fabrication:audit && npm run docs:verify
-   ```
-4. If you touch currency math: use `@/utils/money`; add a `*.money.test.ts` with exact known answers; stash-falsify it against the old float code; then confirm `npm run money:ast` still reports 0 unsafe ops.
-5. Do not edit `.github/workflows/**` — those are reserved for GAP-7 and any commit touching them poisons the branch until the App has `workflows` permission.
-
----
-
-## 📄 License
+## License
 
 MIT — see [`LICENSE`](./LICENSE).
-
----
-
-<div align="center">
-<sub>
-<b>Repository:</b> <code>Warzonesiddiki/fp-A-betterversion</code> ·
-<b>Base commit this README was verified against:</b> <code>7c09eea9</code> (phase0/w02-tenancy) ·
-<b>Report date:</b> 22 August 2026 ·
-For board/investor detail see <a href="./reports/FinPlanPro-Executive-Investor-Report-2026-08-04.html">the full executive briefing</a>.
-</sub>
-</div>

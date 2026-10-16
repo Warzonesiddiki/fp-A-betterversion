@@ -1,4 +1,5 @@
 import { randomId } from '@/utils/cryptoId';
+import { nowISO, nowMs } from '@/utils/clock';
 /**
  * AuditEngine — Audit trail logging, querying, export
  */
@@ -58,7 +59,7 @@ export class AuditEngine {
       oldValue: params.oldValue ?? null,
       newValue: params.newValue ?? null,
       severity: params.severity ?? 'INFO',
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
       details: params.details,
     };
 
@@ -165,7 +166,7 @@ export class AuditEngine {
    * Clear old entries based on retention days
    */
   static archive(retentionDays: number): number {
-    const cutoff = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000).toISOString();
+    const cutoff = new Date(nowMs() - retentionDays * 24 * 60 * 60 * 1000).toISOString();
     const before = AuditEngine.entries.length;
     AuditEngine.entries = AuditEngine.entries.filter((e) => e.timestamp >= cutoff);
     return before - AuditEngine.entries.length;

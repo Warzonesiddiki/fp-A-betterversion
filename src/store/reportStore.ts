@@ -5,6 +5,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { FinanceReport, ScheduledReport, ReportState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
+import { nowMs } from '@/utils/clock';
 
 export const useReportStore = create<ReportState>()(
   subscribeWithSelector(
@@ -42,7 +43,7 @@ export const useReportStore = create<ReportState>()(
         ),
 
         createReport: enforce(Permissions.REPORT_CREATE, 'createReport', (report) => {
-          const id = `rpt-${Date.now()}`;
+          const id = `rpt-${nowMs()}`;
           set((state) => {
             state.reports.push({ ...report, id } as FinanceReport);
           });
@@ -69,7 +70,7 @@ export const useReportStore = create<ReportState>()(
           Permissions.REPORT_SCHEDULE,
           'addScheduledReport',
           (scheduled) => {
-            const id = `sch-${Date.now()}`;
+            const id = `sch-${nowMs()}`;
             set((state) => {
               state.scheduledReports.push({ ...scheduled, id } as ScheduledReport);
             });

@@ -1,4 +1,5 @@
 import { randomId } from '@/utils/cryptoId';
+import { nowISO } from '@/utils/clock';
 /**
  * TemplateEngine — manages budget/forecast/report templates.
  *
@@ -154,7 +155,7 @@ export class TemplateEngine {
       instanceId: randomId('inst'),
       data: instanceData,
       customizations: {},
-      createdAt: new Date().toISOString(),
+      createdAt: nowISO(),
     };
   }
 
@@ -170,7 +171,7 @@ export class TemplateEngine {
     return {
       ...template,
       ...changes,
-      updatedAt: new Date().toISOString(),
+      updatedAt: nowISO(),
       version: template.version + 1,
     };
   }

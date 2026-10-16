@@ -7,6 +7,7 @@
 import { randomId } from '@/utils/cryptoId';
 import type { ExportData, ExportConfig } from './ExportEngine';
 import { buildReportData, type GlLikeEntry, type BudgetLikeItem } from './reportDataBuilder';
+import { now as clockNow, nowISO } from '@/utils/clock';
 
 // ---------------------------------------------------------------------------
 // Type Definitions
@@ -110,7 +111,7 @@ function substituteVariables(
   entity?: Entity
 ): string {
   let result = template;
-  const now = new Date();
+  const now = clockNow();
 
   const allVars: Record<string, string> = {
     date: now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
@@ -160,8 +161,8 @@ export class ReportBookEngine {
       name,
       description,
       entries: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: nowISO(),
+      updatedAt: nowISO(),
     };
     this.books.set(id, book);
     return book;
@@ -193,7 +194,7 @@ export class ReportBookEngine {
     };
 
     book.entries.push(newEntry);
-    book.updatedAt = new Date().toISOString();
+    book.updatedAt = nowISO();
     return newEntry;
   }
 
@@ -205,7 +206,7 @@ export class ReportBookEngine {
     if (idx === -1) throw new Error(`Entry "${entryId}" not found`);
 
     book.entries[idx] = { ...book.entries[idx]!, ...updates };
-    book.updatedAt = new Date().toISOString();
+    book.updatedAt = nowISO();
   }
 
   removeEntry(bookId: string, entryId: string): void {
@@ -216,7 +217,7 @@ export class ReportBookEngine {
     book.entries.forEach((e, i) => {
       e.order = i;
     });
-    book.updatedAt = new Date().toISOString();
+    book.updatedAt = nowISO();
   }
 
   reorderEntries(bookId: string, entryIds: string[]): void {
@@ -230,7 +231,7 @@ export class ReportBookEngine {
     book.entries.forEach((e, i) => {
       e.order = i;
     });
-    book.updatedAt = new Date().toISOString();
+    book.updatedAt = nowISO();
   }
 
   // --- Report Generation ---
@@ -299,9 +300,9 @@ export class ReportBookEngine {
             config: {
               title: reportName,
               companyName: entity.name,
-              date: new Date().toLocaleDateString(),
+              date: clockNow().toLocaleDateString(),
             },
-            generatedAt: new Date().toISOString(),
+            generatedAt: nowISO(),
           });
         } catch (err) {
           progress.errors.push(
@@ -437,7 +438,7 @@ export class BoardPackGenerator {
       [`Entity: ${config.entityName}`, '', ''],
       [`Template: ${config.template}`, '', ''],
       ['', '', ''],
-      [`Generated: ${new Date().toLocaleDateString()}`, '', ''],
+      [`Generated: ${clockNow().toLocaleDateString()}`, '', ''],
     ];
 
     return {
@@ -469,7 +470,7 @@ export class BoardPackGenerator {
         ['Total Reports Generated', String(reports.length)],
         ['Entities Covered', entityNames.join(', ')],
         ['Report Types', reportNames.join(', ')],
-        ['Generation Date', new Date().toLocaleDateString()],
+        ['Generation Date', clockNow().toLocaleDateString()],
       ],
     };
   }

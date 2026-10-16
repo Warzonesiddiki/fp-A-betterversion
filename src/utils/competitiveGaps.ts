@@ -16,6 +16,7 @@ import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { useEffect, useMemo } from 'react';
+import { nowMs } from '@/utils/clock';
 
 /* ──────────────────────────────────────────────────────────────────────────
  * 6. Sheet Tabs
@@ -78,7 +79,7 @@ export const useSheetStore = create<SheetStoreState>()(
       cellSelection: null,
 
       addSheet: (name) => {
-        const id = `sheet-${Date.now()}`;
+        const id = `sheet-${nowMs()}`;
         set((state) => {
           state.sheets[id] = { id, name, cells: {}, activeCellRef: 'A1' };
         });

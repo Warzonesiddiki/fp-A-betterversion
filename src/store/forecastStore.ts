@@ -5,6 +5,7 @@ import type { Forecast, ForecastDriver, ForecastState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { UndoRedoEngine } from '@/engines/UndoRedoEngine';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
+import { now } from '@/utils/clock';
 
 interface ForecastSnapshot {
   forecasts: Forecast[];
@@ -88,9 +89,9 @@ export const useForecastStore = create<ForecastState>()(
           captureForecastSnapshot(get);
           const newForecast: Forecast = {
             ...forecast,
-            id: `fcst-${Date.now()}`,
-            createdAt: new Date().toISOString(),
-            lastUpdated: new Date().toISOString(),
+            id: `fcst-${now().getTime()}`,
+            createdAt: now().toISOString(),
+            lastUpdated: now().toISOString(),
           };
           set((state) => {
             state.forecasts.push(newForecast);
@@ -104,7 +105,7 @@ export const useForecastStore = create<ForecastState>()(
             const forecast = state.forecasts.find((f) => f.id === id);
             if (forecast) {
               Object.assign(forecast, updates);
-              forecast.lastUpdated = new Date().toISOString();
+              forecast.lastUpdated = now().toISOString();
             }
           });
         }),

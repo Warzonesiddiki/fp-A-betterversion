@@ -15,9 +15,9 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { ExcelImportEngine } from '@/engines/ExcelImportEngine';
 import { hasDuplicateHeaders, parseCSV } from '@/utils/csv';
-import { parseFinancialAmount } from '@/utils/parseFinancialAmount';
-import { parseImportDate } from '@/utils/parseImportDate';
-import type { GLEntry } from '@/types';
+import type { ImportControlTotals, ImportRejection, ImportScope } from '@/types';
+import { hashFileBytes } from '@/services/import/importProvenance';
+import { parseGLRows, missingRequiredMappings } from '@/services/import/parseGLRows';
 import {
   CheckCircle2,
   Upload,
@@ -88,6 +88,16 @@ export default function GLUploadPage() {
   const [mappings, setMappings] = useState<Record<string, string>>({});
   const [importedRowCount, setImportedRowCount] = useState(0);
   const [importedErrorCount, setImportedErrorCount] = useState(0);
+  // Gate 2 provenance (FR-003/FR-004/FR-005): identity of the file being
+  // imported and the batch evidence returned by the store.
+  const [fileHash, setFileHash] = useState<string | null>(null);
+  const [batchEvidence, setBatchEvidence] = useState<{
+    batchId: string;
+    fileHash: string;
+    controlTotals: ImportControlTotals;
+    rejections: readonly ImportRejection[];
+    scope: ImportScope;
+  } | null>(null);
 
   const resetWizard = useCallback(() => {
     setStep(0);
@@ -100,6 +110,8 @@ export default function GLUploadPage() {
     setImportProgress(0);
     setImportedRowCount(0);
     setImportedErrorCount(0);
+    setFileHash(null);
+    setBatchEvidence(null);
   }, [setImportError, setImportStatus, setImportProgress]);
 
   const [sheetNames, setSheetNames] = useState<string[]>([]);
@@ -119,10 +131,17 @@ export default function GLUploadPage() {
       setImportStatus('parsing');
       setImportError(null);
       setCurrentFile(file);
+      setBatchEvidence(null);
 
       try {
+        // File identity for idempotent imports (FR-003): SHA-256 of the
+        // bytes, independent of file name. Synchronous pure-JS digest; at
+        // the 50 MB cap this is on the order of a second.
+        const bytes = await file.arrayBuffer();
+        setFileHash(hashFileBytes(bytes));
+
         if (ext === 'csv') {
-          const text = await file.text();
+          const text = new TextDecoder().decode(bytes);
           const { headers, rows: data } = parseCSV(text);
           if (headers.length === 0 || data.length === 0) {
             setImportError(
@@ -265,7 +284,7 @@ export default function GLUploadPage() {
   }, []);
 
   const handlePreview = useCallback(() => {
-    if (!mappings.accountCode || !mappings.postDate) {
+    if (missingRequiredMappings(mappings).length > 0) {
       setImportError(
         'Account Code and Posting Date are required fields. Please map them before continuing.'
       );
@@ -278,63 +297,16 @@ export default function GLUploadPage() {
     setImportStatus('importing');
     setImportProgress(0);
 
-    // W6-P0-09/P0-10: strict per-row coercion. Amounts go through
-    // parseFinancialAmount (bare parseFloat truncated "1,234.56" to 1) and
-    // dates through parseImportDate (raw cells produced garbage periods).
-    // Broken rows are excluded from the import and reported via the existing
-    // importError channel — never silently stored.
-    const rowErrors: string[] = [];
-    const parsedEntries: Partial<GLEntry>[] = [];
-
-    rawData.forEach((row, idx) => {
-      const rowNum = idx + 2; // header occupies row 1 of the source file
-      const getVal = (field: string) => row[mappings[field]!];
-
-      const accountCode = getVal('accountCode') || '';
-      if (!accountCode) rowErrors.push(`Row ${rowNum}: missing accountCode`);
-
-      const rawDate = String(getVal('postDate') ?? '').trim();
-      const postDate = parseImportDate(rawDate);
-      if (!postDate) {
-        rowErrors.push(`Row ${rowNum}: unparseable posting date "${rawDate}"`);
-      }
-
-      const parseCellAmount = (field: string): number => {
-        if (!mappings[field]) return 0;
-        const cell = String(getVal(field) ?? '').trim();
-        if (cell === '') return 0;
-        const value = parseFinancialAmount(cell);
-        if (Number.isNaN(value)) {
-          rowErrors.push(`Row ${rowNum}: unparseable ${field} amount "${cell}"`);
-          return Number.NaN;
-        }
-        return value;
-      };
-      const debit = parseCellAmount('debit');
-      const credit = parseCellAmount('credit');
-
-      if (!accountCode || !postDate || Number.isNaN(debit) || Number.isNaN(credit)) return;
-
-      const period = postDate.slice(0, 7); // canonical YYYY-MM
-      parsedEntries.push({
-        id: '',
-        accountId: accountCode,
-        accountCode,
-        accountName: accountCode,
-        period,
-        periodName: period,
-        debit,
-        credit,
-        netChange: 0,
-        amount: 0,
-        date: postDate,
-        postDate,
-        description: getVal('description') || '',
-        reference: getVal('reference') || '',
-        entityId: getVal('entityId') || '',
-        departmentId: getVal('departmentId') || '',
-      });
-    });
+    // Row → entry parsing is a pure, fixture-tested function
+    // (src/services/import/parseGLRows.ts). Broken rows are excluded and
+    // reported both as banner text and as structured rejections recorded on
+    // the batch (FR-002: nothing is silently discarded).
+    const {
+      entries: parsedEntries,
+      sourceRows,
+      rejections: preRejections,
+      rowErrors,
+    } = parseGLRows(rawData, mappings);
 
     if (parsedEntries.length === 0) {
       setImportError(
@@ -346,15 +318,34 @@ export default function GLUploadPage() {
     }
 
     // Use the new robust high-level import action
-    const result = useGLStore.getState().importGLData(parsedEntries, currentFile?.name);
+    const result = useGLStore.getState().importGLData(parsedEntries, currentFile?.name, {
+      fileHash: fileHash ?? undefined,
+      sourceRows,
+      rejections: preRejections,
+    });
 
     if (!result.success) {
-      setImportError(
-        'Import failed: ' + (result.errors ? 'validation/duplicates issues' : 'unknown')
-      );
+      const detail = result.duplicateOfBatchId
+        ? `this file was already imported as ${result.duplicateOfBatchId}; nothing was changed`
+        : result.rejections && result.rejections.length > 0
+          ? result.rejections
+              .slice(0, 5)
+              .map((r) => (r.row > 0 ? `row ${r.row}: ${r.reason}` : r.reason))
+              .join('; ')
+          : result.errors
+            ? 'validation/duplicates issues'
+            : 'unknown';
+      setImportError(`Import failed: ${detail}`);
       setImportStatus('error');
       return;
     }
+    setBatchEvidence({
+      batchId: result.batchId,
+      fileHash: result.fileHash,
+      controlTotals: result.controlTotals,
+      rejections: result.rejections,
+      scope: result.scope,
+    });
 
     // Simulate nice progress bar
     let progress = 0;
@@ -374,7 +365,15 @@ export default function GLUploadPage() {
         }
       }
     }, 40);
-  }, [rawData, mappings, currentFile, setImportStatus, setImportProgress, setImportError]);
+  }, [
+    rawData,
+    mappings,
+    currentFile,
+    fileHash,
+    setImportStatus,
+    setImportProgress,
+    setImportError,
+  ]);
 
   const getStepStatus = (index: number): 'done' | 'current' | 'pending' => {
     if (step > index) return 'done';
@@ -608,6 +607,70 @@ export default function GLUploadPage() {
                 Successfully imported {importedRowCount.toLocaleString()} rows
                 {importedErrorCount > 0 && ` with ${importedErrorCount} warnings`}.
               </p>
+              {batchEvidence && (
+                <div
+                  className="text-left mx-auto max-w-xl mb-6 rounded-md border border-[var(--border)] p-4 text-sm"
+                  data-testid="import-batch-evidence"
+                >
+                  <h3 className="font-medium mb-2">Batch evidence</h3>
+                  <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+                    <dt className="text-[var(--text-muted)]">Batch</dt>
+                    <dd className="font-mono break-all">{batchEvidence.batchId}</dd>
+                    <dt className="text-[var(--text-muted)]">File SHA-256</dt>
+                    <dd className="font-mono break-all">{batchEvidence.fileHash}</dd>
+                    <dt className="text-[var(--text-muted)]">Rows committed</dt>
+                    <dd className="tabular-nums">
+                      {batchEvidence.controlTotals.rows.toLocaleString()}
+                    </dd>
+                    <dt className="text-[var(--text-muted)]">Total debit</dt>
+                    <dd className="tabular-nums">{batchEvidence.controlTotals.debit}</dd>
+                    <dt className="text-[var(--text-muted)]">Total credit</dt>
+                    <dd className="tabular-nums">{batchEvidence.controlTotals.credit}</dd>
+                    <dt className="text-[var(--text-muted)]">Net (debit − credit)</dt>
+                    <dd className="tabular-nums">{batchEvidence.controlTotals.net}</dd>
+                    <dt className="text-[var(--text-muted)]">Periods</dt>
+                    <dd>
+                      {batchEvidence.scope.periods.length > 0
+                        ? batchEvidence.scope.periods.join(', ')
+                        : 'none'}
+                      {batchEvidence.scope.dateRange &&
+                        ` (${batchEvidence.scope.dateRange.from} → ${batchEvidence.scope.dateRange.to})`}
+                    </dd>
+                    <dt className="text-[var(--text-muted)]">Entities</dt>
+                    <dd>
+                      {batchEvidence.scope.entities === 'unavailable'
+                        ? 'not in file'
+                        : batchEvidence.scope.entities.join(', ')}
+                    </dd>
+                    <dt className="text-[var(--text-muted)]">Currencies</dt>
+                    <dd>
+                      {batchEvidence.scope.currencies === 'unavailable'
+                        ? 'not in file'
+                        : batchEvidence.scope.currencies.join(', ')}
+                    </dd>
+                    <dt className="text-[var(--text-muted)]">Imported at</dt>
+                    <dd className="tabular-nums">{batchEvidence.scope.importedAt}</dd>
+                  </dl>
+                  {batchEvidence.rejections.length > 0 && (
+                    <div className="mt-3">
+                      <p className="font-medium">
+                        {batchEvidence.rejections.length} source row
+                        {batchEvidence.rejections.length === 1 ? '' : 's'} not imported
+                      </p>
+                      <ul className="list-disc ml-5 mt-1 space-y-0.5">
+                        {batchEvidence.rejections.slice(0, 20).map((r) => (
+                          <li key={`${r.code}-${r.row}`}>
+                            Row {r.row}: {r.reason}
+                          </li>
+                        ))}
+                        {batchEvidence.rejections.length > 20 && (
+                          <li>… and {batchEvidence.rejections.length - 20} more</li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="flex gap-3 justify-center mb-8">
                 <Button variant="outline" onClick={resetWizard}>
                   <Upload className="h-4 w-4 mr-2" />
@@ -649,6 +712,9 @@ export default function GLUploadPage() {
                         Errors
                       </th>
                       <th scope="col" className="pb-3 pr-4">
+                        Batch
+                      </th>
+                      <th scope="col" className="pb-3 pr-4">
                         Status
                       </th>
                       <th scope="col" className="pb-3 pr-4">
@@ -672,6 +738,19 @@ export default function GLUploadPage() {
                           {h.rowCount.toLocaleString()}
                         </td>
                         <td className="py-3 pr-4 text-right tabular-nums">{h.errorCount}</td>
+                        <td
+                          className="py-3 pr-4 font-mono text-xs"
+                          title={
+                            h.fileHash
+                              ? `${h.batchId ?? h.id}\nfile sha256 ${h.fileHash}` +
+                                (h.controlTotals
+                                  ? `\ndebit ${h.controlTotals.debit} · credit ${h.controlTotals.credit} · net ${h.controlTotals.net}`
+                                  : '')
+                              : 'Imported before batch provenance existed'
+                          }
+                        >
+                          {h.batchId ? h.batchId.replace(/^batch-/, '').slice(0, 10) : '—'}
+                        </td>
                         <td className="py-3 pr-4">
                           <Badge
                             variant={

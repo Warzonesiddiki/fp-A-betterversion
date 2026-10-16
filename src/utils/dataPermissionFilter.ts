@@ -14,6 +14,7 @@ import type {
   ColumnFilter,
   FilteredDataView,
 } from '@/types/permissions';
+import { nowISO } from '@/utils/clock';
 
 // ─── Row Filtering ─────────────────────────────────────────────────────────
 
@@ -168,7 +169,7 @@ export function getEffectivePermissions(
   userId: string,
   roles: readonly string[]
 ): DataPermission[] {
-  const now = new Date().toISOString();
+  const now = nowISO();
 
   return permissions.filter((perm) => {
     if (!perm.isActive) return false;

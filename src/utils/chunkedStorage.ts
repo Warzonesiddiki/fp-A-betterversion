@@ -8,6 +8,7 @@ import {
 import { createLogger } from './logger';
 
 import type { StorageRequest, StorageResult } from '../workers/storage.worker';
+import { nowMs } from '@/utils/clock';
 
 const storagePool = createStoragePool();
 const chunkedStorageLogger = createLogger('ChunkedStorage');
@@ -196,7 +197,7 @@ export function wrapChunkedStorage(storage: RawStorage): RawStorage {
             _isChunked: true,
             chunkCount: result.chunks.length,
             totalSize: result.totalSize!,
-            timestamp: Date.now(),
+            timestamp: nowMs(),
           };
 
           // Store metadata first

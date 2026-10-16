@@ -28,6 +28,7 @@ import { randomId } from '@/utils/cryptoId';
 // importToLedger writes GL rows (import:create, matching glStore.importGLData).
 // getConnection is a read.
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
+import { nowMs } from '@/utils/clock';
 
 export interface IntegrationConnection {
   provider: string;
@@ -134,7 +135,7 @@ export const useIntegrationStore = create<IntegrationState>()(
               const conn = state.connections[provider];
               if (conn) {
                 conn.status = ok ? 'connected' : 'error';
-                conn.connectedAt = ok ? Date.now() : undefined;
+                conn.connectedAt = ok ? nowMs() : undefined;
                 conn.lastError = ok
                   ? undefined
                   : 'Connection test failed — check your credentials.';
@@ -182,7 +183,7 @@ export const useIntegrationStore = create<IntegrationState>()(
                   ? undefined
                   : 'Connection test failed — check your credentials.';
                 if (ok) {
-                  conn.connectedAt ??= Date.now();
+                  conn.connectedAt ??= nowMs();
                 }
               }
             });
@@ -309,7 +310,7 @@ export const useIntegrationStore = create<IntegrationState>()(
               state.busy[provider] = false;
               const conn = state.connections[provider];
               if (conn) {
-                conn.lastImportAt = Date.now();
+                conn.lastImportAt = nowMs();
                 conn.lastImportCount = result.success ? result.imported : 0;
                 conn.lastError = undefined;
               }

@@ -7,6 +7,7 @@ import { masterStorage } from '../utils/masterStorage';
 import { useUIStore } from './uiStore';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
 import { assertSnapshotReplayAllowed, assertUpdateAllowed } from './periodLockGuard';
+import { now } from '@/utils/clock';
 
 export const useBudgetStore = create<BudgetState>()(
   subscribeWithSelector(
@@ -71,7 +72,7 @@ export const useBudgetStore = create<BudgetState>()(
                 cellId: id,
                 oldValue: oldItem!.amount,
                 newValue: updates.amount ?? oldItem!.amount,
-                timestamp: new Date().toISOString(),
+                timestamp: now().toISOString(),
               };
             }
           });
@@ -95,9 +96,9 @@ export const useBudgetStore = create<BudgetState>()(
             }
             const newBudget: Budget = {
               ...budget,
-              id: `bgt-${Date.now()}`,
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
+              id: `bgt-${now().getTime()}`,
+              createdAt: now().toISOString(),
+              updatedAt: now().toISOString(),
               createdBy: 'usr-001',
             };
             set((state) => {
@@ -138,13 +139,13 @@ export const useBudgetStore = create<BudgetState>()(
         duplicateBudget: enforce(Permissions.BUDGET_CREATE, 'duplicateBudget', (id) => {
           const budget = get().budgets.find((b) => b.id === id);
           if (budget) {
-            const newId = `bgt-${Date.now()}`;
+            const newId = `bgt-${now().getTime()}`;
             const newBudget: Budget = {
               ...budget,
               id: newId,
               name: `${budget.name} (Copy)`,
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
+              createdAt: now().toISOString(),
+              updatedAt: now().toISOString(),
             };
             set((state) => {
               state.budgets.push(newBudget as WritableDraft<Budget>);
@@ -230,7 +231,7 @@ export const useBudgetStore = create<BudgetState>()(
               const budget = state.budgets.find((b) => b.id === id);
               if (budget) {
                 Object.assign(budget, updates);
-                budget.updatedAt = new Date().toISOString();
+                budget.updatedAt = now().toISOString();
               }
             });
           }

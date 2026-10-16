@@ -11,18 +11,19 @@
  * @purity-tier TIER_3_SIDE_EFFECTING (boundary isolated)
  * @boundary Network IO confined to `request()` + `authenticate()`; config/token storage in static Maps
  * @pure-methods buildUrl, signRequest, parseRateLimit, calculateBackoff, validateConfig, sanitizeResponse
- * @side-effects Network fetch + static Maps (configs + tokens) + Date.now() for rate limit windows
- * @deterministic NO (network state + Date.now() in rate limit windows; use injected Clock for testability)
+ * @side-effects Network fetch + static Maps (configs + tokens) + the injectable clock (nowMs()) for rate limit windows
+ * @deterministic NO (network state; rate-limit windows read the injectable clock, pin with setClock() in tests)
  * @idempotent PARTIAL (GET = YES; POST = NO without idempotency-key; PUT/DELETE = YES)
  * @commutative NO (order-dependent for token refresh + rate limit windows)
  * @migrated-from src/engines/ (relocate target: src/services/ConnectorEngine.ts — Vulcan T-FIX-10)
  * @cross-witness Veridicus-EnginePurity T-1 PICK ι (slot 019eda63-af5f-77c3-b18b-5fb6a1146859)
  * @cross-witness Archimedes T-FIX-10 PRE-STAGE (Mathematical Purity Lens — purity algebra + 186 engines @purity-tier JSDoc schema)
- * @clock-injection NOTE: Date.now() is used deliberately for wall-clock-dependent state
+ * @clock-injection NOTE: the injectable clock (nowMs()) is used for wall-clock-dependent state
  * (token expiry / version timestamps). Injected-clock extraction is optional
  * testability polish (no such shared/dependencies.ts exists — the annotation
  * previously referenced a nonexistent module).
  */
+import { nowMs } from '@/utils/clock';
 export interface ConnectorConfig {
   id: string;
   name: string;
@@ -101,7 +102,7 @@ export class ConnectorEngine {
       };
 
       const token = this.tokens.get(id);
-      if (token && token.expires > Date.now()) {
+      if (token && token.expires > nowMs()) {
         headers['Authorization'] = `Bearer ${token.access}`;
       } else if (config.apiKey) {
         headers['X-API-Key'] = config.apiKey;
@@ -155,7 +156,7 @@ export class ConnectorEngine {
       const data = (await response.json()) as { access_token: string; expires_in: number };
       this.tokens.set(config.id, {
         access: data.access_token,
-        expires: Date.now() + data.expires_in * 1000,
+        expires: nowMs() + data.expires_in * 1000,
       });
       return { success: true };
     } catch (e: unknown) {

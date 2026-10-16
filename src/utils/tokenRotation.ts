@@ -9,6 +9,7 @@
 
 import { useAuthStore } from '@/store/authStore';
 import { createLogger } from '@/utils/logger';
+import { nowMs } from '@/utils/clock';
 
 const tokenRotationLogger = createLogger('TokenRotation');
 
@@ -51,7 +52,7 @@ export function parseTokenExpiry(token: string): number | null {
 function getTimeUntilExpiry(token: string): number | null {
   const expiry = parseTokenExpiry(token);
   if (!expiry) return null;
-  return expiry - Date.now();
+  return expiry - nowMs();
 }
 
 // ─── Cookie Management (for refresh token in production) ──────────────────────

@@ -4,6 +4,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { Scenario, ScenarioState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
+import { now } from '@/utils/clock';
 
 export const useScenarioStore = create<ScenarioState>()(
   subscribeWithSelector(
@@ -30,10 +31,10 @@ export const useScenarioStore = create<ScenarioState>()(
         createScenario: enforce(Permissions.SCENARIO_CREATE, 'createScenario', (scenario) => {
           const newScenario: Scenario = {
             ...scenario,
-            id: `scn-${Date.now()}`,
+            id: `scn-${now().getTime()}`,
             isLocked: false,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            createdAt: now().toISOString(),
+            updatedAt: now().toISOString(),
           };
           set((state) => ({ scenarios: [...state.scenarios, newScenario] }));
           return newScenario.id;
@@ -44,7 +45,7 @@ export const useScenarioStore = create<ScenarioState>()(
             scenarios: state.scenarios.map((s) => {
               if (s.id !== id) return s;
               if (s.isLocked) return s;
-              return { ...s, ...updates, updatedAt: new Date().toISOString() };
+              return { ...s, ...updates, updatedAt: now().toISOString() };
             }),
           }));
         }),
@@ -74,7 +75,7 @@ export const useScenarioStore = create<ScenarioState>()(
         lockScenario: enforce(Permissions.SCENARIO_LOCK, 'lockScenario', (id) => {
           set((state) => ({
             scenarios: state.scenarios.map((s) =>
-              s.id === id ? { ...s, isLocked: true, updatedAt: new Date().toISOString() } : s
+              s.id === id ? { ...s, isLocked: true, updatedAt: now().toISOString() } : s
             ),
           }));
         }),
@@ -82,7 +83,7 @@ export const useScenarioStore = create<ScenarioState>()(
         unlockScenario: enforce(Permissions.SCENARIO_LOCK, 'unlockScenario', (id) => {
           set((state) => ({
             scenarios: state.scenarios.map((s) =>
-              s.id === id ? { ...s, isLocked: false, updatedAt: new Date().toISOString() } : s
+              s.id === id ? { ...s, isLocked: false, updatedAt: now().toISOString() } : s
             ),
           }));
         }),
@@ -99,11 +100,11 @@ export const useScenarioStore = create<ScenarioState>()(
               if (source.isLocked || target.isLocked) return state;
               const merged: Scenario = {
                 ...target,
-                id: `scn-merge-${Date.now()}`,
+                id: `scn-merge-${now().getTime()}`,
                 name: mergedName || `Merge of ${source.name} + ${target.name}`,
                 isLocked: false,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
+                createdAt: now().toISOString(),
+                updatedAt: now().toISOString(),
                 assumptions: [...target.assumptions],
               };
               return { scenarios: [...state.scenarios, merged] };

@@ -14,6 +14,7 @@
 
 import { randomId } from '@/utils/cryptoId';
 import { sumMoney, moneyEquals, type MoneyInput } from '../utils/money';
+import { nowISO } from '@/utils/clock';
 
 // ---------------------------------------------------------------------------
 // State Machine Types
@@ -216,7 +217,7 @@ export class PeriodCloseStateMachine {
     }
 
     const newState = TRANSITION_TARGET[transition];
-    const now = new Date().toISOString();
+    const now = nowISO();
     const auditEventId = `pca-${entry.periodId}-${randomId()}`;
 
     const auditEvent: PeriodCloseAuditEvent = {

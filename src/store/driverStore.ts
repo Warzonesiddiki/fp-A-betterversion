@@ -17,6 +17,7 @@ import {
   type DriverSnapshot,
 } from '@/engines/DriverCascadeEngine';
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
+import { now } from '@/utils/clock';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -278,8 +279,8 @@ export const DRIVER_TEMPLATES: DriverTemplate[] = [
         maxValue: 10000,
         step: 100,
         tags: ['revenue'],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: now().toISOString(),
+        updatedAt: now().toISOString(),
       },
       {
         id: 'price',
@@ -292,8 +293,8 @@ export const DRIVER_TEMPLATES: DriverTemplate[] = [
         maxValue: 1000,
         step: 1,
         tags: ['revenue'],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: now().toISOString(),
+        updatedAt: now().toISOString(),
       },
     ],
   },
@@ -314,8 +315,8 @@ export const DRIVER_TEMPLATES: DriverTemplate[] = [
         maxValue: 1000,
         step: 1,
         tags: ['headcount'],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: now().toISOString(),
+        updatedAt: now().toISOString(),
       },
       {
         id: 'avg-salary',
@@ -328,8 +329,8 @@ export const DRIVER_TEMPLATES: DriverTemplate[] = [
         maxValue: 500000,
         step: 1000,
         tags: ['headcount'],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: now().toISOString(),
+        updatedAt: now().toISOString(),
       },
     ],
   },

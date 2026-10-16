@@ -15,6 +15,20 @@
  * @cross-witness Archimedes T-FIX-10 PRE-STAGE (Mathematical Purity Lens — purity algebra + 186 engines @purity-tier JSDoc schema)
  */
 import { storageGetJSON, storageSetJSON } from '@/utils/storageAdapter';
+import { nowISO } from '@/utils/clock';
+import { addMoney, subtractMoney, compareMoney, toDecimal } from '@/utils/money';
+import { parseFinancialAmountExact } from '@/utils/parseFinancialAmount';
+import { parseImportDate } from '@/utils/parseImportDate';
+import type {
+  GLIngestField,
+  GLIngestInput,
+  GLIngestMappings,
+  GLIngestReason,
+  GLIngestResult,
+  StagedGLRow,
+  QuarantinedGLRow,
+  VoucherImbalance,
+} from '@/types/glIngestion';
 
 export interface ColumnMapping {
   sourceColumn: string;
@@ -105,8 +119,248 @@ const FIELD_PATTERNS: Record<
   },
 };
 
+// Exact aliases only. Fuzzy COA suggestions require a separate analyst review
+// contract; broad substring matches must not silently select a financial column.
+const GL_ALIASES: Record<GLIngestField, readonly string[]> = {
+  accountCode: [
+    'account',
+    'accountcode',
+    'accountnumber',
+    'glaccount',
+    'glcode',
+    'glaccountcode',
+    'acctnum',
+  ],
+  accountName: ['accountname', 'glaccountname'],
+  postDate: ['date', 'postingdate', 'transactiondate', 'transdate', 'entrydate'],
+  debit: ['debit', 'debitamount', 'dr'],
+  credit: ['credit', 'creditamount', 'cr'],
+  amount: ['amount', 'netamount', 'signedamount'],
+  entityId: ['entity', 'entityid', 'company', 'companycode', 'subsidiary'],
+  currency: ['currency', 'currencycode', 'ccy'],
+  journalId: ['journal', 'journalid', 'voucher', 'voucherid', 'journalnumber'],
+  description: ['description', 'memo', 'narrative'],
+  reference: ['reference', 'ref'],
+};
+
+function ingestDate(raw: string, order: GLIngestInput['dateOrder']): string | null {
+  if (/^\d{4}[-/.]/.test(raw)) return parseImportDate(raw);
+  if (order === 'ISO_ONLY') return null;
+  const parts = /^(\d{1,2})([-/.])(\d{1,2})\2(\d{4})$/.exec(raw);
+  if (!parts) return null;
+  const month = order === 'MDY' ? parts[1] : parts[3];
+  const day = order === 'MDY' ? parts[3] : parts[1];
+  return parseImportDate(`${parts[4]}-${month}-${day}`);
+}
+
+/** Exact cents, no silent sub-cent rounding; bounded to 24 integer digits per row. */
+function ingestAmount(raw: string, allowNegative: boolean): string | null {
+  const lexeme = parseFinancialAmountExact(raw);
+  if (lexeme === null || lexeme.length > 128) return null;
+  if (lexeme.replace(/^-/, '').split('.')[0]!.replace(/^0+/, '').length > 24) return null;
+  const value = toDecimal(lexeme);
+  if (value.decimalPlaces() > 2 || (!allowNegative && value.isNegative() && !value.isZero()))
+    return null;
+  return value.isZero() ? '0.00' : value.toFixed(2);
+}
+
 export class SmartImportMapper {
   private static learnedMappings: Map<string, LearnedMapping> = new Map();
+
+  /**
+   * Pure staging/validation of already-tokenized ERP rows. Does not read learned
+   * mappings, post financial state, persist quarantine, parse XLSX, or claim bounded
+   * output memory. Call once per single-currency file/chunk; cross-chunk controls
+   * and transactional promotion are the coordinator's responsibility.
+   */
+  static ingest(input: GLIngestInput): GLIngestResult {
+    const mappings: GLIngestMappings = {};
+    const schemaErrors: string[] = [];
+    const normalizedHeader = (header: string) =>
+      header
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
+    if (!input.sourceId.trim()) schemaErrors.push('Source identity is required.');
+    if (!Number.isSafeInteger(input.firstRowNumber ?? 2) || (input.firstRowNumber ?? 2) < 1)
+      schemaErrors.push('First source row must be a positive safe integer.');
+    if (!input.expectedCurrency.trim()) schemaErrors.push('Expected currency is required.');
+    if (new Set(input.headers).size !== input.headers.length)
+      schemaErrors.push('Duplicate source headers are not allowed.');
+    for (const field of Object.keys(GL_ALIASES) as GLIngestField[]) {
+      const override = input.mappings?.[field];
+      const matches = override
+        ? [override]
+        : input.headers.filter((h) => GL_ALIASES[field].includes(normalizedHeader(h)));
+      if (matches.length > 1)
+        schemaErrors.push(`Multiple columns match ${field}; supply an explicit mapping.`);
+      else if (matches[0]) {
+        if (!input.headers.includes(matches[0]))
+          schemaErrors.push(`Mapped ${field} column is absent: ${matches[0]}`);
+        else mappings[field] = matches[0];
+      }
+    }
+    for (const field of ['accountCode', 'postDate', 'entityId', 'currency'] as const) {
+      if (!mappings[field]) schemaErrors.push(`Missing required column: ${field}`);
+    }
+    const mappedSources = Object.values(mappings);
+    if (new Set(mappedSources).size !== mappedSources.length)
+      schemaErrors.push('A source column cannot be assigned to multiple fields.');
+    const dual = Boolean(mappings.debit && mappings.credit);
+    if (!dual && !mappings.amount)
+      schemaErrors.push('Map both debit/credit columns or a signed amount column.');
+    if (
+      !dual &&
+      input.amountConvention !== 'positive-debit' &&
+      input.amountConvention !== 'positive-credit'
+    )
+      schemaErrors.push('Signed amounts require an explicit sign convention.');
+    if (input.dateOrder !== 'MDY' && input.dateOrder !== 'DMY' && input.dateOrder !== 'ISO_ONLY')
+      schemaErrors.push('An explicit date order is required.');
+    const accounts = new Set(input.knownAccountCodes);
+    const entities = new Set(input.knownEntityIds);
+    const acceptedRows: StagedGLRow[] = [];
+    const quarantinedRows: QuarantinedGLRow[] = [];
+    const groups = new Map<
+      string,
+      {
+        entityId: string;
+        currency: string;
+        journalId: string;
+        debit: string;
+        credit: string;
+        sourceRows: number[];
+      }
+    >();
+    let totalDebit = '0.00';
+    let totalCredit = '0.00';
+    let sourceRow = input.firstRowNumber ?? 2;
+    for (const raw of input.rows) {
+      const line = sourceRow++;
+      const cell = (field: GLIngestField) => {
+        const header = mappings[field];
+        return header ? (raw[header] ?? '').trim() : '';
+      };
+      const reasons: GLIngestReason[] = [];
+      const fail = (code: GLIngestReason['code'], field: string, message: string) =>
+        reasons.push({ code, field, message });
+      if (schemaErrors.length > 0) {
+        quarantinedRows.push({
+          sourceId: input.sourceId,
+          sourceRow: line,
+          raw: { ...raw },
+          reasons: schemaErrors.map((message) => ({
+            code: 'SCHEMA_ERROR',
+            field: 'schema',
+            message,
+          })),
+        });
+        continue;
+      }
+      const accountCode = cell('accountCode');
+      const entityId = cell('entityId');
+      const currency = cell('currency');
+      if (!accountCode || !accounts.has(accountCode))
+        fail(
+          'UNKNOWN_ACCOUNT',
+          'accountCode',
+          `Account is not in the supplied chart: ${accountCode}`
+        );
+      const postDate = ingestDate(cell('postDate'), input.dateOrder);
+      if (!postDate)
+        fail(
+          'INVALID_DATE',
+          'postDate',
+          `Invalid ${input.dateOrder} posting date: ${cell('postDate')}`
+        );
+      if (!entityId) fail('MISSING_ENTITY', 'entityId', 'Entity is required.');
+      else if (!entities.has(entityId))
+        fail('UNKNOWN_ENTITY', 'entityId', `Unknown entity: ${entityId}`);
+      if (!currency || currency !== input.expectedCurrency)
+        fail(
+          'CURRENCY_MISMATCH',
+          'currency',
+          `Expected ${input.expectedCurrency}; received ${currency || '(missing)'}.`
+        );
+      let debit: string | null = '0.00';
+      let credit: string | null = '0.00';
+      if (dual) {
+        debit = cell('debit') === '' ? '0.00' : ingestAmount(cell('debit'), false);
+        credit = cell('credit') === '' ? '0.00' : ingestAmount(cell('credit'), false);
+        if (debit === null) fail('INVALID_AMOUNT', 'debit', `Invalid debit: ${cell('debit')}`);
+        if (credit === null) fail('INVALID_AMOUNT', 'credit', `Invalid credit: ${cell('credit')}`);
+      } else {
+        const signed = ingestAmount(cell('amount'), true);
+        if (signed === null)
+          fail('INVALID_AMOUNT', 'amount', `Invalid signed amount: ${cell('amount')}`);
+        else {
+          const value =
+            input.amountConvention === 'positive-credit'
+              ? subtractMoney('0', signed)
+              : toDecimal(signed);
+          if (compareMoney(value, '0') < 0) credit = subtractMoney('0', value).toFixed(2);
+          else debit = value.toFixed(2);
+        }
+      }
+      if (reasons.length > 0) {
+        quarantinedRows.push({
+          sourceId: input.sourceId,
+          sourceRow: line,
+          raw: { ...raw },
+          reasons,
+        });
+        continue;
+      }
+      const row: StagedGLRow = {
+        sourceId: input.sourceId,
+        sourceRow: line,
+        accountCode,
+        postDate: postDate!,
+        debit: debit!,
+        credit: credit!,
+        entityId,
+        currency,
+        journalId: cell('journalId'),
+        accountName: cell('accountName'),
+        description: cell('description'),
+        reference: cell('reference'),
+      };
+      acceptedRows.push(row);
+      totalDebit = addMoney(totalDebit, row.debit).toFixed(2);
+      totalCredit = addMoney(totalCredit, row.credit).toFixed(2);
+      const key = JSON.stringify([entityId, currency, row.journalId]);
+      const group = groups.get(key) ?? {
+        entityId,
+        currency,
+        journalId: row.journalId,
+        debit: '0.00',
+        credit: '0.00',
+        sourceRows: [],
+      };
+      group.debit = addMoney(group.debit, row.debit).toFixed(2);
+      group.credit = addMoney(group.credit, row.credit).toFixed(2);
+      group.sourceRows.push(line);
+      groups.set(key, group);
+    }
+    const unbalancedVouchers: VoucherImbalance[] = [...groups.values()]
+      .filter((v) => compareMoney(v.debit, v.credit) !== 0)
+      .map((v) => ({ ...v, imbalance: subtractMoney(v.debit, v.credit).toFixed(2) }));
+    const imbalance = subtractMoney(totalDebit, totalCredit).toFixed(2);
+    return {
+      mappings,
+      schemaErrors,
+      acceptedRows,
+      quarantinedRows,
+      controlTotals: { debit: totalDebit, credit: totalCredit, imbalance },
+      unbalancedVouchers,
+      canPost:
+        schemaErrors.length === 0 &&
+        acceptedRows.length > 0 &&
+        quarantinedRows.length === 0 &&
+        unbalancedVouchers.length === 0 &&
+        compareMoney(imbalance, '0') === 0,
+    };
+  }
 
   /**
    * Auto-detect column mappings from headers
@@ -170,7 +424,7 @@ export class SmartImportMapper {
       sourceFile,
       headers: mappings.map((m) => m.sourceColumn),
       mappings,
-      learnedAt: new Date().toISOString(),
+      learnedAt: nowISO(),
       useCount: existing ? existing.useCount + 1 : 1,
     };
     this.learnedMappings.set(sourceFile, learned);

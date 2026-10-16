@@ -1,4 +1,5 @@
 import { randomId } from '@/utils/cryptoId';
+import { nowISO, nowMs } from '@/utils/clock';
 export type ApprovalState =
   | 'draft'
   | 'submitted'
@@ -99,7 +100,7 @@ export class WorkflowEngine {
 
   createWorkflow(def: Omit<WorkflowDefinition, 'id' | 'createdAt'>): WorkflowDefinition {
     const id = randomId('wf');
-    const workflow: WorkflowDefinition = { ...def, id, createdAt: new Date().toISOString() };
+    const workflow: WorkflowDefinition = { ...def, id, createdAt: nowISO() };
     this.workflows.set(id, workflow);
     return workflow;
   }
@@ -129,7 +130,7 @@ export class WorkflowEngine {
     const workflow = this.workflows.get(workflowId);
     if (!workflow || workflow.steps.length === 0) return null;
     const id = randomId('apr');
-    const now = new Date().toISOString();
+    const now = nowISO();
     const request: ApprovalRequest = {
       id,
       workflowId,
@@ -143,7 +144,7 @@ export class WorkflowEngine {
       period,
       createdAt: now,
       updatedAt: now,
-      history: [{ id: 'evt-' + Date.now(), action: 'submit', actor: requester, timestamp: now }],
+      history: [{ id: 'evt-' + nowMs(), action: 'submit', actor: requester, timestamp: now }],
       changeRequests: [],
     };
     this.requests.set(id, request);
@@ -155,11 +156,11 @@ export class WorkflowEngine {
     ) {
       request.state = 'approved';
       request.history.push({
-        id: 'evt-' + (Date.now() + 1),
+        id: 'evt-' + (nowMs() + 1),
         action: 'approve',
         actor: 'system',
         comment: 'Auto-approved: condition not met',
-        timestamp: new Date().toISOString(),
+        timestamp: nowISO(),
       });
     }
     return request;
@@ -177,9 +178,9 @@ export class WorkflowEngine {
       currentStep.approvers.includes(effectiveApprover) ||
       (currentStep.delegateTo?.includes(effectiveApprover) ?? false);
     if (!isAuthorized) return null;
-    const now = new Date().toISOString();
+    const now = nowISO();
     request.history.push({
-      id: 'evt-' + Date.now(),
+      id: 'evt-' + nowMs(),
       action: 'approve',
       actor: effectiveApprover,
       stepId: currentStep.id,
@@ -210,9 +211,9 @@ export class WorkflowEngine {
     const request = this.requests.get(requestId);
     if (!request || !['submitted', 'in_review'].includes(request.state)) return null;
     request.state = 'rejected';
-    const now = new Date().toISOString();
+    const now = nowISO();
     request.history.push({
-      id: 'evt-' + Date.now(),
+      id: 'evt-' + nowMs(),
       action: 'reject',
       actor: approver,
       stepId: this.getCurrentStepId(request),
@@ -231,9 +232,9 @@ export class WorkflowEngine {
   ): ApprovalRequest | null {
     const request = this.requests.get(requestId);
     if (!request || !['submitted', 'in_review'].includes(request.state)) return null;
-    const now = new Date().toISOString();
+    const now = nowISO();
     request.history.push({
-      id: 'evt-' + Date.now(),
+      id: 'evt-' + nowMs(),
       action: 'delegate',
       actor: fromUser,
       stepId: this.getCurrentStepId(request),
@@ -249,15 +250,15 @@ export class WorkflowEngine {
     const request = this.requests.get(requestId);
     if (!request || request.state !== 'approved') return null;
     request.state = 'locked';
-    const now = new Date().toISOString();
-    request.history.push({ id: 'evt-' + Date.now(), action: 'lock', actor, timestamp: now });
+    const now = nowISO();
+    request.history.push({ id: 'evt-' + nowMs(), action: 'lock', actor, timestamp: now });
     request.updatedAt = now;
     return request;
   }
 
   checkEscalations(): string[] {
     const escalated: string[] = [];
-    const now = Date.now();
+    const now = nowMs();
     for (const request of this.requests.values()) {
       if (!['submitted', 'in_review'].includes(request.state)) continue;
       const workflow = this.workflows.get(request.workflowId);
@@ -268,9 +269,9 @@ export class WorkflowEngine {
       if (!lastEvent) continue;
       const elapsedHours = (now - new Date(lastEvent.timestamp).getTime()) / (1000 * 60 * 60);
       if (elapsedHours >= currentStep.timeoutHours) {
-        const nowStr = new Date().toISOString();
+        const nowStr = nowISO();
         request.history.push({
-          id: 'evt-' + Date.now(),
+          id: 'evt-' + nowMs(),
           action: 'escalate',
           actor: 'system',
           stepId: currentStep.id,
@@ -301,7 +302,7 @@ export class WorkflowEngine {
       requester,
       description,
       status: 'pending',
-      createdAt: new Date().toISOString(),
+      createdAt: nowISO(),
     };
     request.changeRequests.push(cr);
     request.updatedAt = cr.createdAt;
@@ -319,13 +320,13 @@ export class WorkflowEngine {
     const cr = request.changeRequests.find((c) => c.id === changeRequestId);
     if (!cr || cr.status !== 'pending') return false;
     cr.status = accepted ? 'accepted' : 'rejected';
-    cr.resolvedAt = new Date().toISOString();
+    cr.resolvedAt = nowISO();
     cr.resolvedBy = resolver;
     request.updatedAt = cr.resolvedAt;
     if (accepted) {
       request.state = 'draft';
       request.history.push({
-        id: 'evt-' + Date.now(),
+        id: 'evt-' + nowMs(),
         action: 'submit',
         actor: 'system',
         comment: 'Reset to draft due to accepted change request',
@@ -396,7 +397,7 @@ export class WorkflowEngine {
       if (!step) continue;
       for (const a of step.approvers) bottlenecks[a] = (bottlenecks[a] || 0) + 1;
     }
-    const now = Date.now();
+    const now = nowMs();
     const slaBreaches = pending.filter((req) => {
       const workflow = this.workflows.get(req.workflowId);
       if (!workflow) return false;
@@ -459,7 +460,7 @@ export class WorkflowEngine {
   }
 
   private getEffectiveApprover(user: string): string {
-    const now = new Date().toISOString();
+    const now = nowISO();
     const d = this.delegations.find(
       (del) => del.fromUser === user && del.startDate <= now && del.endDate >= now
     );

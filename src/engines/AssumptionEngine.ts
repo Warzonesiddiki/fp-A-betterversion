@@ -11,6 +11,7 @@
 
 import { randomId } from '@/utils/cryptoId';
 import { roundTo, subtractMoney } from '../utils/money';
+import { nowISO } from '@/utils/clock';
 
 export interface Assumption {
   id: string;
@@ -75,7 +76,7 @@ export class AssumptionEngine {
     existing.history.push({
       value: existing.value,
       changedBy: userId,
-      changedAt: new Date().toISOString(),
+      changedAt: nowISO(),
       reason,
     });
 

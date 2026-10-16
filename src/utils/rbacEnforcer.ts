@@ -37,6 +37,7 @@ import type { StateCreator } from 'zustand';
 import { hasPermission, useAuthStore } from '../store/authStore';
 import type { User } from '../types';
 import { createLogger } from '@/utils/logger';
+import { nowISO } from '@/utils/clock';
 
 const rbacEnforcerLogger = createLogger('RBAC');
 
@@ -64,7 +65,7 @@ export class PermissionError extends Error {
     this.permission = permission;
     this.action = action;
     this.userId = userId;
-    this.timestamp = new Date().toISOString();
+    this.timestamp = nowISO();
   }
 }
 
@@ -145,7 +146,7 @@ export function enforce<TArgs extends unknown[], TReturn>(
       permission,
       granted,
       user,
-      timestamp: new Date().toISOString(),
+      timestamp: nowISO(),
     });
 
     if (!granted) {

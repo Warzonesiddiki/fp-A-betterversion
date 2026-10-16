@@ -8,6 +8,7 @@ import { masterStorage } from '../utils/masterStorage';
 // admin-grade settings; updatePreferences is a local UI preference (density /
 // active sector) guarded by ui:update, which every role holds.
 import { enforce, Permissions } from '../utils/rbacEnforcer';
+import { now as clockNow, nowMs } from '@/utils/clock';
 
 export const useSettingsStore = create<SettingsState>()(
   subscribeWithSelector(
@@ -15,7 +16,7 @@ export const useSettingsStore = create<SettingsState>()(
       immer((set) => ({
         organization: {
           name: '',
-          fiscalYear: new Date().getFullYear(),
+          fiscalYear: clockNow().getFullYear(),
           fiscalYearStart: '2024-01-01',
           calendarType: 'Standard',
           baseCurrency: 'USD',
@@ -48,7 +49,7 @@ export const useSettingsStore = create<SettingsState>()(
 
         addUser: enforce(Permissions.USER_CREATE, 'addUser', (user) =>
           set((state) => ({
-            users: [...state.users, { ...user, id: `usr-${Date.now()}` } as UserProfile],
+            users: [...state.users, { ...user, id: `usr-${nowMs()}` } as UserProfile],
           }))
         ),
 
