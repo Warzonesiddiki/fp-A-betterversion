@@ -23,7 +23,13 @@ reference method recommends; do not add more without deleting one).
 | Telemetry     | @sentry/react ^10 (**off unless `VITE_SENTRY_DSN` set**)                       | —                                                   |
 | Tests         | vitest 4 (jsdom, threads pool), @testing-library, playwright                   | —                                                   |
 
-Node 22 is what the sandbox and CI use. No `engines` field is declared.
+Node 22 is what CI uses. No `engines` field is declared, so nothing enforces
+it — and a newer runtime is not equivalent. Measured 2026-10-16 on Node
+26.10.0: Node exposes a native `localStorage` accessor that breaks the three
+tests which mock `Storage.prototype` (`src/utils/sqlJsStorage.test.ts` ×2,
+src/utils/backupRestore.test.ts ×1), so those fail on 26 and pass on 22. See
+`docs/agent/09_KNOWN_GAPS.md` (Environment caveats) before treating them as
+regressions.
 
 ## Entry points and runtime gate
 

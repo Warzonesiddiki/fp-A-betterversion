@@ -60,6 +60,18 @@ by code · **DECIDED** = owner decision recorded · **OPEN** = needs owner.
 
 Open questions Q7, Q10, Q11–Q14 in `docs/discovery/current-workflow.md`.
 
+## Environment caveats
+
+Measured 2026-10-16 on this sandbox (Node **26.10.0**). The project targets Node
+22 (`docs/agent/02_ARCHITECTURE.md`, no `engines` field to enforce it).
+
+| Symptom | Where | Cause | Action |
+| --- | --- | --- | --- |
+| 3 failures: 2 in `src/utils/sqlJsStorage.test.ts`, 1 in `src/utils/backupRestore.test.ts` (quota/permission paths resolve instead of rejecting) | `test:sharded` shard 1 | These tests mock `Storage.prototype`. On Node 26 a native `localStorage` accessor shadows it, so the spy never intercepts and the real write succeeds. They were last touched by PR #72 and fail in isolation, before any 2026-10-16 change. | **Do not weaken the tests.** Run the suite on Node 22, or fix the proxy target deliberately. Recorded so they are not misread as regressions. |
+
+Full-suite evidence for this environment: `npm run test:sharded` → 7/8 shards
+PASS, 15,597 tests, 3 failed — all three being the rows above.
+
 ## Ratchet baselines (direction: down only)
 
 | Ratchet                   | Value at tip                | File                                   |

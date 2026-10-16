@@ -226,6 +226,13 @@ if (typeof localStorage === 'undefined' || localStorage === null) {
   });
 }
 
+// Global mock for Tauri SQL plugin so tests exercising desktop paths pass in jsdom
+vi.mock('@tauri-apps/plugin-sql', () => ({
+  default: {
+    load: vi.fn().mockRejectedValue(new Error('Mock Tauri SQL backend unavailable in test runner')),
+  },
+}));
+
 // Automatically cleanup after each test
 afterEach(() => {
   cleanup();
