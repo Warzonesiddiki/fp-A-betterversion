@@ -340,6 +340,23 @@ orphan engines' KPI availability contract, not this path.
 
 ---
 
+### 2026-10-16 17:16 UTC · LEAD · AUDIT · TO: @G-07, @G-08, @ALL
+**Task:** gate-baseline audit — `scripts/determinism-baseline.json` is modified in the working tree
+**What:** Audited the uncommitted baseline change. It moves **downward only** and is backed by code:
+`total` 345 → 344 and `dateNow` 128 → 127 because `src/engines/AnomalyExplainer.ts` lost its one
+`Date.now()` site, and its `perFile` entry is removed; `filesWithSites` 80 → 79. `modulesScanned`
+379 → 390 rose only because new modules were added, **and no per-file count increased**. Verdict:
+a legitimate ratchet tightening, not a weakening.
+**Evidence:** `git diff scripts/determinism-baseline.json` (shown above); `npm run
+determinism:ratchet` → "Ratchet holds (baseline: 344 sites across 79 files)".
+**Action requested:** whoever commits the `AnomalyExplainer.ts` clock change must say in its DONE
+note that the baseline moved 345 → 344 and why. Rule from here on: **a baseline move must be named
+in the commit and DONE note, with the removed sites identified**; an upward move is a rejection,
+not a decision. @G-07 — confirm the `AnomalyExplainer.ts` `nowMs()` change is yours.
+**Verify first:** `git diff scripts/determinism-baseline.json` then `npm run determinism:ratchet`.
+
+---
+
 ### 2026-10-16 17:12 UTC · G-04 · DONE · TO: LEAD, G-01, @ALL
 
 **Task:** Task 01a14589-3afd: FR-009 Persisted disposition store with audit trail
@@ -469,3 +486,27 @@ Commits: `b8e50292` (guard + test), `7632f95b` (register evidence line).
 **Action requested:** none — G-03/G-04 own the WIP cleanup; @G-08 may re-verify my gates.
 **Verify first:** `npx vitest run src/store/glStore.server.test.ts` (18 passed) and
 `git show --stat b8e50292`.
+
+---
+
+### 2026-10-16 17:45 UTC · G-03 · DONE · TO: @LEAD, @G-01, @ALL
+
+**Task:** Task 01a145ac-9e43-7aa3-a3e3-bcb308d3c480: FR-008/009: End-to-end exception pipeline integration test
+**What:** Created end-to-end integration test suite in `src/store/exceptionPipeline.integration.test.ts` verifying complete exception lifecycle across catalogue, finding keys, UI review components, disposition store, and state rehydration:
+
+1. **Rule Catalogue -> Finding Key:** Registered custom exception rule in `useExceptionRuleCatalogueStore`. Generated canonical deterministic finding key `{ruleId}:{targetId}:{periodKey}` using `createFindingKey` and constructed finding via `createFinding`. Verified round-trip parsing with `parseFindingKey`.
+2. **Review Ingestion & Rule 7 Compliance:** Ingested finding candidate into `ExceptionReviewCard`. Verified that candidate displays as Review Candidate (Pending) with Rule 7 banner and is never labeled confirmed error without human disposition.
+3. **Human Disposition & Audit Trail:** Applied human disposition with required rationale. Verified disposition state in `useExceptionDispositionStore`. Transitioned disposition (ACCEPT -> ESCALATE) and verified append-only audit trail (`sequenceNumber`, timestamps, prior disposition, attribution).
+4. **Persistence & Reload Preservation:** Tested store reload via `persist.rehydrate()`, asserting that dispositions, audit trail, and rule catalogue state are preserved across reloads. Verified that `ExceptionReviewList` summary stats reflect rehydrated dispositions.
+5. **Rule Supersession & Stability:** Verified that superseding a rule in catalogue (v1 -> v2) preserves finding key stability for target accounts and updates active rules.
+
+**Evidence:**
+- `npx vitest run src/store/exceptionPipeline.integration.test.ts` → 1 test file passed, 2 tests passed (100%).
+- `npx vitest run src/store/exceptionRuleCatalogue.test.ts src/store/exceptionPipeline.integration.test.ts` → 2 test files passed, 15 tests passed (100%).
+- `npx eslint src/store/exceptionPipeline.integration.test.ts` → clean (0 errors, 0 warnings).
+- `npm run determinism:ratchet` → holds with 344 sites.
+- Claims in `CLAIMS.md` released; `STATUS_BOARD.md` marked DONE.
+
+**Action requested:** @LEAD, @G-01, @G-08 review and gate verification.
+**Verify first:** `npx vitest run src/store/exceptionPipeline.integration.test.ts`
+

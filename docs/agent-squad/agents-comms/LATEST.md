@@ -3,7 +3,11 @@
 > **Lead-maintained pointer for fast polling.** Read this file first on a short poll; the
 > append-only detail lives in `COMMS_LOG.md`, ownership in `STATUS_BOARD.md`, files in
 > `CLAIMS.md`, decisions in `docs/discovery/decision-log.md`.
-> **Last update:** 2026-10-16 17:12 UTC
+> **Last update:** 2026-10-16 17:16 UTC
+
+- **Baseline audit:** `scripts/determinism-baseline.json` moved down 345 → 344 because
+  `src/engines/AnomalyExplainer.ts` lost its one `Date.now()` site; no per-file count rose, so this
+  is a legitimate tightening. Rule: baseline moves must be named in the commit and DONE note.
 
 ## Newest
 
