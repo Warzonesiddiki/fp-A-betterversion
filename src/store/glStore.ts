@@ -376,6 +376,44 @@ function blockPeriodWrite(
   return true;
 }
 
+/**
+ * FR-006: a provided-but-invalid amount is not a missing one. `toFiniteNumber`
+ * maps NaN / Infinity / non-numbers to 0 and `normalizeGLEntry` then treats that
+ * as a real zero, silently discarding money. Rows the import path rejects are
+ * rejected here too, so every write surface fails the same way (§2 rule 5/6).
+ */
+function finiteAmountIssues(rows: readonly Partial<GLEntry>[]): string[] {
+  const issues: string[] = [];
+  rows.forEach((row, index) => {
+    const candidates = [
+      ['debit', row.debit, false],
+      ['credit', row.credit, false],
+      ['amount', row.amount, true],
+    ] as const;
+    for (const [field, value, signed] of candidates) {
+      if (value === undefined) continue;
+      if (typeof value !== 'number' || !Number.isFinite(value) || (!signed && value < 0)) {
+        issues.push(`Row ${index + 1}: ${field} must be a finite non-negative number`);
+      }
+    }
+  });
+  return issues;
+}
+
+/** Reject invalid money without mutating financial state or consuming undo history. */
+function blockInvalidAmounts(
+  rows: readonly Partial<GLEntry>[],
+  set: (patch: Partial<GLState>) => void
+): boolean {
+  const issues = finiteAmountIssues(rows);
+  if (issues.length === 0) return false;
+  set({
+    importStatus: 'error',
+    importError: issues.slice(0, 5).join('; '),
+  });
+  return true;
+}
+
 export const useGLStore = create<GLState>()(
   subscribeWithSelector(
     persist(
@@ -620,6 +658,7 @@ export const useGLStore = create<GLState>()(
         // --- Mutation Actions (with undo capture) ---
 
         setEntries: enforce(Permissions.IMPORT_CREATE, 'setEntries', (entries) => {
+          if (blockInvalidAmounts(entries, set)) return;
           if (blockPeriodWrite([...get().entries, ...entries], set)) return;
           captureGLSnapshot(get);
           const normalizedEntries = entries.map((entry, index) =>
@@ -643,6 +682,7 @@ export const useGLStore = create<GLState>()(
         }),
 
         addEntries: enforce(Permissions.IMPORT_CREATE, 'addEntries', (newEntries: GLEntry[]) => {
+          if (blockInvalidAmounts(newEntries, set)) return;
           if (blockPeriodWrite(newEntries, set)) return;
           captureGLSnapshot(get);
           const normalizedEntries = newEntries.map((entry, index) =>
@@ -867,9 +907,11 @@ export const useGLStore = create<GLState>()(
         ),
 
         addEntry: enforce(Permissions.IMPORT_CREATE, 'addEntry', (entry) => {
-          if (blockPeriodWrite(Array.isArray(entry) ? entry : [entry], set)) return;
+          const incoming = Array.isArray(entry) ? entry : [entry];
+          if (blockInvalidAmounts(incoming, set)) return;
+          if (blockPeriodWrite(incoming, set)) return;
           captureGLSnapshot(get);
-          const entries = (Array.isArray(entry) ? entry : [entry]).map((item, index) =>
+          const entries = incoming.map((item, index) =>
             normalizeGLEntry(item, index, `gl-entry-${now().getTime()}`)
           );
           set((state) => {
