@@ -164,21 +164,36 @@ is O(rows), not a constant-memory guarantee.
 
 `glStagingRepository` writes versioned opaque JSON envelopes through the existing
 encrypted masterStorage backend. Quarantine raw strings (including `$d:` prefixes)
-are not subjected to money-tag decoding. Keys are
-`gl-ingestion-stage:v1:<batchId>:manifest` and `...:chunk:<index>`.
+are not subjected to money-tag decoding. Keys are `gl-ingestion-stage:v1:index`,
+`gl-ingestion-stage:v1:<batchId>:manifest`, `...:chunk:<index>`, and
+`...:lock` (cross-window lease locks). Ephemeral staging keys are intentionally
+excluded from `BACKUP_STORE_KEYS` (`src/utils/backupRestore.ts`).
 
 Manifest states: `staging`, `ready`, `blocked`, `failed`. **Ready means staged and
 eligible for further checks, never posted.** Quarantine, schema failures, empty
 files and any whole-file voucher imbalance prevent ready. Compute/read/write errors
 propagate; a failed marker is attempted without masking the original error.
-Readers can retrieve persisted chunks by batch ID for review. Duplicate session
-IDs are rejected, not overwritten. The caller-supplied file digest is recorded,
-not recalculated or checked against committed ledger history by this coordinator.
+Readers can retrieve persisted chunks by batch ID (`readChunks`) or paginate
+quarantined rows across chunks (`readStagingQuarantinePage`) without loading the
+full batch into memory. `discoverStagingSessions` enumerates indexed staging
+manifests (`ready`, `blocked`, `failed`, `staging`), `recoverStagingSessions`
+cleans up unacknowledged orphan chunks and marks stale/unindexed `staging`
+sessions `failed`, and `discardStagingBatch` removes a batch's chunks, manifest,
+lock, and index entry while remaining safe when another batch holds an active
+lease lock. Duplicate session IDs and active cross-window lease conflicts are
+rejected without mutating existing batch evidence.
 
-Not yet delivered: UI wiring, retention/discard and orphan cleanup, batch discovery/
-resume, staging backup inclusion, cross-window transaction locks, transactional
-SQLite ledger promotion, file-identity/closed-period checks at promotion, or
-streaming CSV/XLSX tokenization. The browser backend still snapshots SQLite into
-localStorage and may hit quota limits; no 250k-row release claim. Existing ledger
-storage authority is unchanged. Do not enable this staging API as the production
-upload replacement until lifecycle and promotion gates are verified.
+`glCsvTokenizer` (`tokenizeGLCsvStream` / `stageGLCsvImport`) streams RFC-4180 CSV
+or explicit delimiter text/byte streams into bounded `GLStagingChunkSlice` batches
+with exact 1-based physical line numbers (`rowNumbers`), preserving line offsets
+across blank lines and multiline quoted fields and failing closed with
+`CSVTokenizationError` on invalid UTF-8 (`TextDecoder(..., { fatal: true })`),
+unclosed quotes, unescaped quotes, or ragged column counts.
+
+Not yet delivered: UI wiring, streaming XLSX tokenization, transactional SQLite
+ledger promotion preserving exact decimal strings (without converting through the
+legacy number-valued `glStore`), and file-identity/closed-period checks at
+promotion. The browser backend still snapshots SQLite into localStorage and may
+hit quota limits; no 250k-row release claim. Existing ledger storage authority is
+unchanged. Do not enable this staging API as the production upload replacement
+until XLSX streaming and transactional promotion gates are verified.

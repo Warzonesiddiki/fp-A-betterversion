@@ -3,7 +3,12 @@ import { resolve } from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import type { Database } from 'sql.js';
 import { createGLStagingRepository, type StagingStoragePort } from './glStagingRepository';
-import { stageGLImport } from './glStagingCoordinator';
+import {
+  stageGLImport,
+  discoverStagingSessions,
+  readStagingQuarantinePage,
+  discardStagingBatch,
+} from './glStagingCoordinator';
 import { SmartImportMapper } from '@/engines/SmartImportMapper';
 
 // Substitute only the SQL transport. Production masterStorage encryption,
@@ -89,6 +94,19 @@ describe('staging repository with real SQL.js/WASM', () => {
       expect(secondChunk?.acceptedRows[0]?.credit).toBe('9007199254740993.01');
       expect(secondChunk?.quarantinedRows[0]?.raw).toEqual(invalid);
       expect(secondChunk?.quarantinedRows[0]?.sourceRow).toBe(4);
+      const discovered = await discoverStagingSessions({ repository: restored });
+      expect(discovered.map((s) => ({ batchId: s.batchId, state: s.sessionState }))).toEqual([
+        { batchId: 'sqlite-oracle', state: 'blocked' },
+      ]);
+      const quarantinePage = await readStagingQuarantinePage(
+        'sqlite-oracle',
+        { offset: 0, limit: 10 },
+        { repository: restored }
+      );
+      expect(quarantinePage.rows[0]?.raw).toEqual(invalid);
+      await discardStagingBatch('sqlite-oracle', { repository: restored });
+      expect(await discoverStagingSessions({ repository: restored })).toEqual([]);
+      expect(await restored.readManifest('sqlite-oracle')).toBeNull();
     } finally {
       reopened?.close();
       db.close();

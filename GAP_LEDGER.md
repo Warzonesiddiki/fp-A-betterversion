@@ -6,8 +6,61 @@
 atomic and testable. Evidence = literal command output with date.
 
 - **Date of latest re-verification:** 2026-10-16 (current entries below; older entries retain their original evidence)
-- **Current continuation branch:** `arena/48b4e481-fp-a-betterversion`
-- **Session base:** `04c329e`; the older Wave 9/base metadata is historical. See Git and `docs/discovery/` for current implementation state.
+- **Current continuation branch:** `arena/e7da43c9-fp-a-betterversion`
+- **Session base:** `9cefaee351c6e619acfb6ac79f8de89e6b77b18a` (PR #73 merge commit on `main`); the older Wave 9/base metadata is historical. See Git and `docs/discovery/` for current implementation state.
+
+## 2026-10-16 — PR #73 CI verification, bundle/money-ratchet fix, GL staging lifecycle & streaming CSV tokenizer
+
+### 1. Final CI verification on PR #73 (`38876871220`, `38876871125`) and `main` (`9cefaee`, runs `38876921921`, `38876921828`)
+
+- Verified via `gh api` that **`Vitest (single-run, 8 GiB heap, coverage)`** (`116893914567` on PR #73, `116894074375` on `main`) and **`Unit Tests (merge coverage)`** (`116895486561` on PR #73, `116896367801` on `main`) completed with **`conclusion: "success"`**, along with `Type Check`, `ESLint (zero-warnings)`, `TypeScript --noEmit`, `Build (macos-latest)`, `Build (windows-latest)`, `Lint`, `Server (typecheck + tests)`, `Dependency Audit (production)`, `Docs & Engine Manifest Integrity`, and `Money & Fabrication Integrity`.
+- Diagnosed and fixed the `Build (ubuntu-latest)` / `Build & Bundle Check` failure (`Total JS 2055.41KB gzip exceeds 2048KB limit`): extracted pure `ingestGLRows` in `src/engines/SmartImportMapper.ts` for `src/workers/gl-ingestion.worker.ts` and added `sector-pages`, `templates`, and `ui-primitives` chunk rules in `vite.config.ts` `manualChunks`.
+- Diagnosed and fixed the `npm run money:adoption` regression (`raw toFixed() sites in financial paths INCREASED: 0 -> 18` from `.toFixed(2)` calls on `Decimal` in `SmartImportMapper.ts`, `glStagingCoordinator.ts`, and `importProvenance.ts`): added `toFixedMoneyString` in `src/utils/money.ts` and routed all 18 sites through it (`raw toFixed(n) sites: 0`, `285` modules on `@/utils/money`).
+
+Verified bundle-check command:
+`npx vite build && node scripts/bundle-check.js && rm -rf dist`
+Literal output excerpt:
+
+```text
+Critical path (index.html modulepreloads): 419.81KB gzip (9 chunks)
+:white_check_mark: **PASS:** Critical path within limit
+:white_check_mark: **PASS:** no lazy vendor in critical path (pdf-vendor, excel-core-vendor, grid-community-vendor, ai-vendor)
+Main chunk: index-Bd6jYxvm.js
+  gzip: 68.28KB (limit 150KB)
+:white_check_mark: **PASS:** Main chunk within limit
+Total: 6682.79KB raw / 2021.01KB gzip
+:white_check_mark: G19 PASS: grid-community-vendor = 206.35KB gzip (<= 300KB)
+:white_check_mark: G19 PASS: excel-core-vendor = 248.23KB gzip (<= 300KB)
+:white_check_mark: G19 PASS: grid-react-vendor = 14.28KB gzip (<= 300KB)
+:white_check_mark: G19 PASS: pdf-vendor = 179.11KB gzip (<= 300KB)
+:white_check_mark: G19 PASS: chart-vendor = 129.3KB gzip (<= 300KB)
+```
+
+### 2. GL staging lifecycle & streaming CSV tokenizer (`DEC-010` Step 1 slice)
+
+- Extended `src/services/import/glStagingRepository.ts` with batch index (`gl-ingestion-stage:v1:index`), orphan/batch removal (`removeChunksFrom`, `removeBatch`), and cross-window lease locks (`readLock`, `acquireLock`, `releaseLock`).
+- Extended `src/services/import/glStagingCoordinator.ts` with `discoverStagingSessions`, `recoverStagingSessions`, `discardStagingBatch`, `readStagingQuarantinePage`, lease-lock enforcement across `stageGLImport`/`discardStagingBatch`, and `GLStagingChunkSlice` (`rowNumbers?: readonly number[]`) support.
+- Extended `src/types/glIngestion.ts`, `src/workers/glIngestionRequest.ts`, and `src/engines/SmartImportMapper.ts` to validate and attribute explicit 1-based physical line numbers (`rowNumbers`) across chunks, accepted rows, quarantined rows, and voucher imbalance diagnostics.
+- Implemented `src/services/import/glCsvTokenizer.ts` (`CSVTokenizationError`, `tokenizeGLCsvStream`, `stageGLCsvImport`) with fatal UTF-8 decoding, RFC-4180 quote/escape/column-count validation, physical line tracking across blank lines and multiline quoted fields, and backpressured streaming into `stageGLImport`.
+- Added TDD suites in `src/services/import/glStagingLifecycle.test.ts` (6 tests), `src/services/import/glCsvTokenizer.test.ts` (3 tests), and expanded `src/services/import/glStagingRepository.sqljs.test.ts`, `src/engines/SmartImportMapper.ingest.money.test.ts`, and `src/workers/gl-ingestion.worker.test.ts`.
+
+Verified test command:
+`npm test -- src/services/import src/workers src/engines/SmartImportMapper src/utils/masterStorage src/utils/money src/utils/backupRestore.test.ts src/engines/ThreeStatementEngine.test.ts src/engines/ConsolidationEngine.test.ts`
+
+Literal output (ANSI stripped):
+
+```text
+ Test Files  33 passed (33)
+      Tests  499 passed (499)
+   Start at  09:25:06
+   Duration  41.30s (transform 1.71s, setup 12.39s, import 2.80s, tests 42.62s, environment 55.38s)
+```
+
+Verified static & invariant gates (`npm run tsc -- --noEmit`, `npx eslint ... --max-warnings 0`, `npm run money:ast`, `npm run money:adoption`, `npm run determinism:ratchet`, `npm run docs:verify`, `npm run engines:verify`, `npm run fabrication:audit`, `npm run format:check`): all exited `0`.
+
+**Not yet delivered:** streaming XLSX tokenizer, transactional SQLite ledger promotion preserving exact decimal strings (without converting through `glStore`'s legacy `number` fields), UI wizard wiring to the new staging coordinator, 250k-row browser/native scalability evidence, Step 2 consolidation/FX/IC contract verification, Step 3 real formula-preserving XLSX / editable PPTX exports, or Step 4 month-end acceptance harness.
+
+---
 
 ## 2026-10-16 — Pipeline directive, ingestion staging foundation (partial)
 
@@ -43,6 +96,7 @@ Verified command:
 `npm test -- src/engines/SmartImportMapper.ingest.money.test.ts src/engines/SmartImportMapper.test.ts src/utils/parseFinancialAmount.test.ts src/engines/ThreeStatementEngine.test.ts src/engines/ConsolidationEngine.test.ts`
 
 Literal output (ANSI stripped):
+
 ```text
  Test Files  5 passed (5)
       Tests  167 passed (167)
@@ -52,6 +106,7 @@ Literal output (ANSI stripped):
 
 Core smoke command:
 `npx vitest run src/engines/ThreeStatementEngine.test.ts src/engines/ConsolidationEngine.test.ts`
+
 ```text
  Test Files  2 passed (2)
       Tests  107 passed (107)
@@ -101,6 +156,7 @@ Verified command:
 `npm test -- src/store/glStore src/services/import src/pages/data src/store/periodCloseStore.test.ts src/pages/periods src/engines/UndoRedoEngine src/engines/PeriodCloseStateMachine.test.ts`
 
 Literal output (ANSI color stripped):
+
 ```text
  Test Files  40 passed (40)
       Tests  469 passed (469)
@@ -1584,6 +1640,7 @@ in `src/pages/*` and every directory in `src/components/*` is now in the ratchet
 Evidence = literal command output, 2026-08-07 (see `reports/audit/ZERO_COMPROMISE_FINAL_AUDIT_v1.0.0_2026-08-07.md`).
 
 ### CLOSED (verified this session)
+
 - **Fake report data (P0):** `ReportBookEngine.generateMockData` emitted hardcoded rows ('Revenue 1,250,000…'); `ReportGenerator`/`BookBurstBuilder` used `setTimeout` "simulate async work". Replaced with `src/engines/reportDataBuilder.ts` (real GL+budget rows, money-exact); 4 dead fake components deleted. `/reports/book-builder` now previews+generates from real stores.
 - **Fake report preview (P0):** `ReportDesigner` filled metric cells with `Math.random()*100000` → now resolves from cube store, else '—'.
 - **CSPRNG sweep (P0, CWE-338):** 80+ `Math.random()` security IDs → `src/utils/cryptoId.ts` (`crypto.randomUUID`, throws rather than degrade). Audit entries, refresh tokens, request IDs, retention/IC/segment/template IDs, CircuitBreaker/RateLimiter/TauriSecureStorage tokens, report IDs.
@@ -1597,6 +1654,7 @@ Evidence = literal command output, 2026-08-07 (see `reports/audit/ZERO_COMPROMIS
 - **Server money (P2):** audited — remaining 21/23 server modules are pure pass-through/IO (no currency arithmetic); only rounding paths (gl.ts, export.ts) are decimal.js.
 
 ### OPEN — dispositions
+
 - **F-01 (P2):** Period close has server API + engines (`server/src/routes/periods.ts`, `PeriodCloseStateMachine`, `PeriodLockEngine`, lifecycle tests) but **no client UI route**. User cannot close a period from the UI. Fix tracked (client page) or accept as server-canonical gap.
 - **F-02 (P2, ENV-BOUND):** Playwright E2E unexecutable in sandbox (browser CDN egress blocked; same as ZCFA-2026-07-28 #14). Real-browser journeys remain UNVERIFIED_BLOCKED.
 - **F-03 (P2):** covered-claims reconciliation — fixed in-session (see coverage row above).
@@ -1609,6 +1667,7 @@ Evidence = literal command output, 2026-08-07 (see `reports/audit/ZERO_COMPROMIS
 Evidence = literal command output, 2026-08-07 (see updated `reports/audit/ZERO_COMPROMISE_FINAL_AUDIT_v1.0.0_2026-08-07.md`).
 
 ### CLOSED — F-01 (audit's only FAIL of the all-in-one claim)
+
 - **Period-close client UI shipped:** `/periods/close` → `src/pages/periods/PeriodClosePage.tsx` (fiscal-period grid from real `FiscalCalendar`, close checklist from `FinancialCloseEngine`, `PeriodCloseStateMachine` open → soft-close → hard-close → locked, money-exact pre-close validation via `evaluateCloseReadiness`, SHA-256 chained audit panel via `verifyCloseChain`, post-close P&L/BS/CF export from real GL via `reportDataBuilder` + `ExportEngine`).
 - **Store:** `src/store/periodCloseStore.ts` — offline-first, masterStorage-persisted, `enforce(Permissions.PERIOD_CLOSE)` on transitions + Admin-gated `PERIOD_REOPEN` for reopen/force-reopen; lock propagates to budget line items + fiscal-year scenarios (store-tested).
 - **Permissions:** `period:read` (all roles), `period:close` (Admin + FP&A_Manager), `period:reopen` (Admin) added to `Permissions` + `ROLE_PERMISSIONS`; RBAC matrix tests green.
@@ -1618,12 +1677,14 @@ Evidence = literal command output, 2026-08-07 (see updated `reports/audit/ZERO_C
 - **Gates (literal):** `tsc --noEmit` 0; `eslint src --max-warnings 0` 0; `money-adoption.mjs` **231/906, 0 raw toFixed** (server 2/23, 0); `verify-readme-stats.mjs` ✓; `_docs.test.ts` 7/7; a11y 448/1.
 
 ### CLOSED — F-04 (zero-mock-data completion)
+
 - **17 files / 23 synthetic arrays → 7 wired, 16 disclosed, 0 left.**
 - **Wired (real store/engine):** MultiBookPage MOCK_BOOKS → `MultiBookEngine`; CapExDashboard mockProjects → `capexStore` (+ categoryData now derived money-exact, fabricated chart data removed); OwnershipTreePage mockEntities → `entityStore`; PatientRevenuePage mockPeriods → `buildFiscalPeriods()`; TelecomDashboardPage mockArpuTrend → `telecomStore` (+ hardcoded KPI fallbacks removed); PayrollForecastPage mockDepartments → `workforceStore` (headcount/salary derived from employees); LogisticsDashboardPage mockTopLanes → `logisticsStore.routeCosts`.
 - **Disclosed (labeled `// demo defaults — replaced by real data when X is imported`):** DashboardTemplate ×5, GovernmentDashboard ×3, ICEliminationPage, InventoryPage, PromoAnalysisPage, DeferredSchedulePage, TransferPricingPage, FXExposurePage, FXPositionGrid, HedgeManager.
 - **Enforcement:** `scripts/mock-data-audit.mjs` extended with a DISPOSITIONS list (wired=7, disclosed=16) — **exit 1 on any site without a disposition, any disclosed site lacking the `demo defaults` marker, or any wired site still present**. Run: `node scripts/mock-data-audit.mjs` → ✓ gate holds.
 
 ### OPEN (unchanged dispositions)
+
 - **F-02 (ENV-BOUND):** Playwright E2E unexecutable in sandbox (browser CDN egress blocked).
 - **F-03:** claim corrected in-session (coverage 50 floor / 71.3% measured) — recorded as fixed.
 
@@ -1632,16 +1693,19 @@ Evidence = literal command output, 2026-08-07 (see updated `reports/audit/ZERO_C
 Evidence = literal command output, 2026-08-07 (closeout: `reports/mission-d-closeout-2026-08-07.md`).
 
 ### CLOSED — Docs triage (audit §8 residual; RELEASE_CHECKLIST "145 codif docs")
+
 - **Deleted 209 ritual/process files / ~4.1MB:** `docs/_archive/codif/` (146), `docs/strategy/` (30), `IMP_ANSWERS*` (8), MUSE_LINEUP_v2, STRATEGIC_INDEX, V1_SESSION_STATUS, VIBE_CODING×2, RATIFICATION_GATE×2, task-board×2, PERFECTION_PLAN, skills×3, BMAD_INTEGRATION, OPENCODE_SYNC, MISTAKES, husky-gates, never_again_rules/, leader/, personas/, specs/, 2026-06-12 audit drafts×2, tests/e2e process docs×5 → **docs/ 321 files / 5.8MB → 112 files / 1.7MB** (git history retains all).
 - **New gate:** `scripts/docs-link-check.mjs` + `docs-link-allowlist.json` (`npm run docs:links`) — hard-fail on broken markdown links, strict-fail on broken citations. Before: **4 broken links + 651 broken citations**; after 81 citation fixes in kept docs: **`✓ docs-link graph clean: 0 broken links, 0 broken citations (strict)`**.
-- **Allowlist (documented reasons, not dodge-list):** STRATEGIC_DECISIONS_LOG (historical decision record), GLOSSARY (self-documents its draft drift), reports/** (dated evidence), session handovers, forward-refs.
+- **Allowlist (documented reasons, not dodge-list):** STRATEGIC_DECISIONS_LOG (historical decision record), GLOSSARY (self-documents its draft drift), reports/\*\* (dated evidence), session handovers, forward-refs.
 
 ### CLOSED — Coverage depth (engines layer)
+
 - **71.32/73.44 → 73.30/75.41 stmts/lines; 4,940 → 5,030 tests (274 files)** — exact CI command (`vitest run src/engines --coverage --include='src/engines/**'`).
 - Deleted dead `src/engines/shared/` (6 files: 0 importers / 0 tests / 0 manifest entries; reachability still 181/181, 0 orphans).
 - Added oracle test files: `helpers.test.ts`, `statistical.dist.test.ts`, `text.date.test.ts`, `math.ext.test.ts` (~117 tests).
 
 ### CLOSED — 6 real defects found by the new oracle tests and FIXED
+
 1. `tDistCDF` ignored sign of t (F(-1.812,10)=0.95 → 0.05).
 2. `CHIDIST` wrong tail probabilities (CHIDIST(18.307,10)=0.9984 → 0.05; now `gammq(df/2, x/2)`).
 3. `GAMMADIST` cumulative wrong (GAMMADIST(1,2,1,t)=1.0 → 0.2642; now `gammp(alpha, x/beta)`).
@@ -1650,6 +1714,7 @@ Evidence = literal command output, 2026-08-07 (closeout: `reports/mission-d-clos
 6. `EDATE` day overflow (2024-01-31 + 1M = Mar 2 → Feb 29 clamp) + `DEC2HEX`/`BIN2HEX` partial-parse garbage (parseInt("1f")===1 → honest NaN).
 
 ### OPEN (unchanged dispositions)
+
 - **F-02 (ENV-BOUND):** Playwright E2E unexecutable in sandbox (browser CDN egress blocked; re-tried 2026-08-07).
 - **Deploy workflow:** fails on merges (pre-existing, env-bound; GAP-7 forbids workflow edits).
 
@@ -1658,6 +1723,7 @@ Evidence = literal command output, 2026-08-07 (closeout: `reports/mission-d-clos
 Evidence = literal command output, 2026-08-08 (closeout: `reports/mission-e-closeout-2026-08-08.md`).
 
 ### CLOSED — Engines Coverage Depth (all bottom-24 engines >80–100%)
+
 - **Engines layer coverage uplift:**
   - **Statements:** 81.72% → **89.69%** (+7.97 pp, 20,610/22,977 stmts)
   - **Lines:** 83.54% → **91.25%** (+7.71 pp, 18,435/20,201 lines)
@@ -1694,10 +1760,12 @@ Evidence = literal command output, 2026-08-08 (closeout: `reports/mission-e-clos
   - `PluginEngine.ts`: 69.66% → **86.51%** stmts (23 tests)
 
 ### CLOSED — Server-Side Period Close Integration
+
 - `src/store/periodCloseStore.ts`: wired client-to-server sync to `POST /api/periods/:id/transition` with offline graceful fallback.
 - `server/src/routes/periodCloseLifecycle.test.ts`: verified full state-machine traversal, permission matrix, and audit trails (25/25 passed).
 
 ### OPEN (unchanged dispositions)
+
 - **F-02 (ENV-BOUND):** Playwright E2E unexecutable in sandbox (browser CDN egress blocked).
 - **Deploy workflow:** fails on merges (pre-existing, env-bound; GAP-7 forbids workflow edits).
 
@@ -1707,6 +1775,7 @@ Command:
 `npm test -- src/engines/SmartImportMapper.ingest.money.test.ts src/engines/SmartImportMapper.test.ts src/utils/parseFinancialAmount.test.ts src/engines/ThreeStatementEngine.test.ts src/engines/ConsolidationEngine.test.ts src/store/glStore src/services/import src/pages/data src/store/periodCloseStore.test.ts src/pages/periods src/engines/UndoRedoEngine src/engines/PeriodCloseStateMachine.test.ts`
 
 Literal output (ANSI stripped):
+
 ```text
  Test Files  45 passed (45)
       Tests  636 passed (636)
@@ -1754,6 +1823,7 @@ Verification command:
 `npm test -- src/services/import src/workers src/engines/SmartImportMapper src/utils/masterStorage src/utils/moneySerialize src/engines/ThreeStatementEngine.test.ts src/engines/ConsolidationEngine.test.ts`
 
 Literal output (ANSI stripped):
+
 ```text
  Test Files  28 passed (28)
       Tests  409 passed (409)

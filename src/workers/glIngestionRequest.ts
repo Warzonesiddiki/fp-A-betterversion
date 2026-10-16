@@ -41,6 +41,23 @@ export function validateGLIngestionChunk(value: unknown): GLIngestChunkInput {
     !Number.isSafeInteger(firstRowNumber + rows.length)
   )
     throw new WorkerRequestError('firstRowNumber must be a positive safe source-record index');
+  let rowNumbers: readonly number[] | undefined;
+  if (input.rowNumbers !== undefined) {
+    const rawNumbers = expectArray(input.rowNumbers, 'rowNumbers', MAX_GL_CHUNK_ROWS);
+    if (rawNumbers.length !== rows.length) {
+      throw new WorkerRequestError('rowNumbers length must match rows length');
+    }
+    let prev = 0;
+    rowNumbers = rawNumbers.map((n) => {
+      if (typeof n !== 'number' || !Number.isSafeInteger(n) || n < 1 || n <= prev) {
+        throw new WorkerRequestError(
+          'rowNumbers must be strictly increasing positive safe integers'
+        );
+      }
+      prev = n;
+      return n;
+    });
+  }
   let mappings: GLIngestMappings | undefined;
   if (input.mappings !== undefined) {
     const raw = expectObject(input.mappings, 'mappings');
@@ -66,6 +83,7 @@ export function validateGLIngestionChunk(value: unknown): GLIngestChunkInput {
     headers: texts(input.headers, 'headers', 256),
     rows,
     firstRowNumber,
+    ...(rowNumbers !== undefined ? { rowNumbers } : {}),
     sourceId: text(input.sourceId, 'sourceId', 1024),
     mappings,
     knownAccountCodes: texts(input.knownAccountCodes, 'knownAccountCodes', 100000),

@@ -18,6 +18,8 @@ export interface GLIngestInput {
   readonly rows: Iterable<Readonly<Record<string, string>>>;
   readonly sourceId: string;
   readonly firstRowNumber?: number;
+  /** Optional 1-based physical source line numbers per row (for blank-line or multiline-quoted CSV records). */
+  readonly rowNumbers?: readonly number[];
   readonly mappings?: Readonly<GLIngestMappings>;
   readonly knownAccountCodes: readonly string[];
   readonly knownEntityIds: readonly string[];

@@ -87,6 +87,11 @@ export function roundTo(value: MoneyInput, places = DEFAULT_CURRENCY_PLACES): nu
   return roundMoney(value, places).toNumber();
 }
 
+/** Exact fixed-scale decimal string (ROUND_HALF_UP) for financial persistence and control totals. */
+export function toFixedMoneyString(value: MoneyInput, places = DEFAULT_CURRENCY_PLACES): string {
+  return roundMoney(value, places).toFixed(places);
+}
+
 export function addMoney(a: MoneyInput, b: MoneyInput): Decimal {
   return toDecimal(a).plus(toDecimal(b));
 }
