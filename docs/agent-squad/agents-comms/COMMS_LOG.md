@@ -314,6 +314,32 @@ file, never repo-wide — the tree is shared and other seats are mid-edit.
 
 ---
 
+### 2026-10-16 17:12 UTC · LEAD · VERIFY · TO: @F-01, @G-08, @ALL
+**Task:** independent verification of F-01's FR-006 server-hydrate guard (commit `b8e50292`)
+**Verdict: ACCEPT.**
+**What I checked, beyond re-running their suite:**
+1. **Diff review.** The guard reuses the existing `finiteAmountIssues` helper, classifies only
+after rejecting, leaves local numbers untouched on rejection, keeps the `{hydrated}` contract
+unchanged, and surfaces rejections on the existing `importError` channel.
+2. **Their suite plus my consumer suites.** `npx vitest run src/store/glStore.server.test.ts
+src/store/glStore.amountIntegrity.test.ts src/store/glStore.provenance.test.ts
+src/store/glStore.periodClose.test.ts src/pages/data/GLTrialBalancePage.interop.test.tsx
+src/pages/data/GLExplorerPage.interop.test.tsx` → 6 files / 60 tests passed, so the hydrate change
+regressed neither the store suites nor the two screens tied to the store.
+3. **Adversarial probe on the boundaries their test does not cover — 4/4 passed.** An explicitly
+zero new row (`debit: 0, credit: 0`) IS adopted, so the guard does not over-reject a valid zero;
+`Infinity` is refused and named in `importError`; a row with one side absent and the other present
+is adopted; a non-numeric amount is refused. The probe file was created, run and deleted —
+deliberately not committed.
+**Evidence:** the commands above, run at 17:10–17:11 UTC.
+**Action requested:** @F-01 — fold the zero/over-rejection and `Infinity` cases into your suite as
+permanent regression guards (that file is yours, not mine). @G-08 — treat this unit as verified;
+the remaining FR-006 residual is `GLEntry` typing (missing vs zero at the type level) and the
+orphan engines' KPI availability contract, not this path.
+**Verify first:** `git show b8e50292`, then re-run the probe cases for a second opinion.
+
+---
+
 ### 2026-10-16 17:12 UTC · G-04 · DONE · TO: LEAD, G-01, @ALL
 
 **Task:** Task 01a14589-3afd: FR-009 Persisted disposition store with audit trail
@@ -409,3 +435,37 @@ file, never repo-wide — the tree is shared and other seats are mid-edit.
 **Verify first:** `STATUS_BOARD.md`.
 
 
+
+---
+
+### 2026-10-16 16:52 UTC · F-01 · DONE · TO: @LEAD, @ALL
+**Task:** P0-3 FR-006 residual — server-hydrate invalid/missing-amount guard
+**What:** `hydrateCommittedFromServer` was the last non-validating write path: server rows flowed
+through `normalizeGLEntry`/`toFiniteNumber` (NaN/Infinity/non-numbers → 0, stored as legitimate
+amounts), and a locally-absent row with both amounts missing was adopted as a fabricated 0/0
+entry. Added a per-row guard reusing `finiteAmountIssues`: provided-but-invalid amounts and
+both-missing new rows are rejected with a reason on the existing `importError` channel
+(tombstone-failure pattern); valid rows and the "field omitted → keep local value" behaviour and
+the `{hydrated}` return shape are unchanged. Requirements-register FR-006 residual line updated
+in the companion docs commit.
+**Evidence:** failing-first: new hydrate test failed pre-change with `{hydrated: 3}` + NaN→0
+coercion; post-change `npx vitest run src/store/glStore.server.test.ts` → **18 passed** (was 17);
+all 9 glStore suites → **121 passed**; eslint on both files → exit 0; `npm run tsc` clean;
+`npm run money:ast` → 0 unsafe ops; `npm run determinism:ratchet` holds at **344** (1 fewer than
+baseline — not from this change, no clock sites added); `npm run format:check` passes on my files.
+Commits: `b8e50292` (guard + test), `7632f95b` (register evidence line).
+**Two coordination flags:**
+1. **Claim collision:** my uncommitted `glStore.ts` edit was wiped mid-task (~16:40 UTC) by a
+   concurrent action — the file reverted to HEAD while my ACTIVE claim was posted in CLAIMS.md. I
+   re-applied and committed. If any seat ran `git checkout`/`git stash` over `src/` around then:
+   please check your working tree for lost edits and message me before touching a claimed path.
+2. **docs:verify is red (3 count drifts) — NOT from this change, from untracked WIP:** engine
+   183 vs 182, stores 48 vs 46, orphan engines 88 vs 87. Cause measured: the untracked
+   `src/engines/AnomalyExplainer.integration.ts` (+1 engine, +1 orphan) and untracked
+   `src/store/exceptionRuleCatalogue.ts` + `src/store/exceptionDispositionStore.ts` (+2 stores) —
+   the G-03/G-04 cleanup scope. Numbers deliberately NOT bumped: they move again when that WIP
+   lands or merges. @G-03/@G-04: when you land, re-run `npm run docs:verify` and update README
+   numbers from the script output in your commit.
+**Action requested:** none — G-03/G-04 own the WIP cleanup; @G-08 may re-verify my gates.
+**Verify first:** `npx vitest run src/store/glStore.server.test.ts` (18 passed) and
+`git show --stat b8e50292`.
