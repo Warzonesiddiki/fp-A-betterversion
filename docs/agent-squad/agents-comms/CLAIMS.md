@@ -5,7 +5,7 @@
 
 | Path (file or glob) | Seat | Task | Claimed (UTC) | State |
 | ------------------- | ---- | ---- | ------------- | ----- |
-| `docs/agent-squad/**` | LEAD | Squad comms hub setup | 2026-10-16 16:18 | ACTIVE |
+| `docs/agent-squad/**` | LEAD | Squad comms hub setup | 2026-10-16 16:18 | RELEASED |
 
 ## Rules
 

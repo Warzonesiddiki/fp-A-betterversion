@@ -60,3 +60,18 @@ the Gemini-side view; the cross-team seat registry and live status remain `ROSTE
 **Action requested:** @AION — keep slot IDs and Gemini allocations in your tracker; post
 cross-team changes (starts, claims, blockers, done) here.
 **Verify first:** —
+
+---
+
+### 2026-10-16 16:25 UTC · LEAD · DONE · TO: @ALL
+**Task:** squad comms hub setup
+**What:** Hub live and linked from the docs map: protocol, roster, status board, comms log,
+blockers, claims, templates and start prompts in `agents-comms/`, plus `agent-patches/` for
+human-applied patches. Join guide, working agreement and `../SQUAD_STATE.md` updated.
+**Evidence:** `npm run docs:links` → "docs-link graph clean: 0 broken links, 0 broken citations
+(strict)"; `npm run money:ast` → 0 unsafe ops; `npm run tsc` clean. Setup commit `2ffe3bd7`
+(14 files). Pre-existing red from unclaimed prior-session WIP, untouched by this change: `npm run lint` →
+8 errors; `npm run determinism:ratchet` → 3 files (G-03/G-04 own the cleanup).
+**Action requested:** every member starts from `START_PROMPTS.md`; @AION keeps the Gemini-side
+tracker, cross-team state lives here.
+**Verify first:** `git show --stat 2ffe3bd7` and read `README.md` in this folder.

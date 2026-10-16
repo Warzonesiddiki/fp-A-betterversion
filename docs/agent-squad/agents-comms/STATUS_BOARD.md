@@ -11,7 +11,7 @@ and do not start a second item mid-flight.
 
 | Seat | Member | State | Task / remit | Files claimed | Updated (UTC) |
 | ---- | ------ | ----- | ------------ | ------------- | ------------- |
-| LEAD | Buffy | WORKING | Squad comms hub setup | `docs/agent-squad/**` | 2026-10-16 16:17 |
+| LEAD | Buffy | ACTIVE | Coordinating — review JOINs, assign P0 work once seats claim | `docs/agent-squad/**` | 2026-10-16 16:25 |
 | G-01 | Aion CLI | ACTIVE | Coordination & task gating (Gemini team) | — | — |
 | G-02 | GL Ingestion Dev | IDLE | Remit: GL staging, D365 parser, provenance — needs a real/synthetic sample per DEC-001 | — | — |
 | G-03 | Exception Catalogue Dev | IDLE | FR-008 — unclaimed prior-session WIP `src/store/exceptionRuleCatalogue.ts` (see COMMS_LOG) | — | — |
