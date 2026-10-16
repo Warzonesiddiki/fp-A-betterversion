@@ -93,7 +93,7 @@ function AnomalyCard({
             {label}
           </span>
           <span className={cn('text-[10px] font-semibold uppercase', config.color)}>
-            {anomaly.severity}
+            {anomaly.severity} (Candidate)
           </span>
         </div>
         <p className="text-[10px] mt-0.5" style={{ color: 'var(--text-muted)' }}>
@@ -219,11 +219,23 @@ export function AnomalyHighlight({
           <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
             {result.anomalyCount} {result.anomalyCount === 1 ? 'Anomaly' : 'Anomalies'} Detected
           </span>
+          <span
+            className="text-[10px] px-1.5 py-0.5 rounded font-medium bg-[var(--surface-elevated,rgba(255,255,255,0.05))] text-[var(--text-secondary)] border border-[var(--border-subtle)]"
+            data-testid="rule-7-review-candidate-badge"
+          >
+            Review Candidates
+          </span>
         </div>
         <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
           {result.totalPoints} points analyzed
         </span>
       </div>
+
+      {/* Rule 7 Review Candidate Notice */}
+      <p className="text-[11px] text-[var(--text-muted)] italic" data-testid="rule-7-notice">
+        Note: Flags are review candidates awaiting human disposition — not confirmed errors (Rule
+        7).
+      </p>
 
       {/* Stats */}
       <StatSummary result={result} />

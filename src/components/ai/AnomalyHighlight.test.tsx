@@ -57,4 +57,13 @@ describe('AnomalyHighlight', () => {
     // Should show text "+X more anomalies"
     expect(screen.getByText(/\+.*more anomalies/i)).toBeInTheDocument();
   });
+
+  it('renders review candidate notice and badge per Rule 7 (not confirmed errors)', () => {
+    const values = [10, 11, 9, 10, 12, 100, 11];
+    render(<AnomalyHighlight values={values} />);
+    expect(screen.getByTestId('rule-7-review-candidate-badge')).toBeInTheDocument();
+    expect(screen.getByTestId('rule-7-notice')).toHaveTextContent(
+      /Flags are review candidates awaiting human disposition — not confirmed errors/i
+    );
+  });
 });

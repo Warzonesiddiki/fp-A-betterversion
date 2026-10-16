@@ -1027,3 +1027,16 @@ export interface AnalyticsState {
   clearError: () => void;
   setLoading: (loading: boolean) => void;
 }
+
+/** FR-009: Exception disposition interface */
+export type DispositionStatus = 'ACCEPT' | 'REJECT' | 'REVIEW' | 'ESCALATE';
+
+export interface ExceptionDisposition {
+  readonly exceptionId: string; // ruleId:entryId or batchId:entryId
+  readonly ruleId?: string;
+  readonly disposition: DispositionStatus;
+  readonly rationale: string; // free-text note from user
+  readonly recordedAt: string;
+  readonly recordedBy: string;
+  readonly action?: string;
+}

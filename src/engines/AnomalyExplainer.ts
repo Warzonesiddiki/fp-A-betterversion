@@ -3,6 +3,7 @@
  */
 
 import { formatMoney } from '../utils/money';
+import { nowMs } from '../utils/clock';
 
 export interface Anomaly {
   id: string;
@@ -83,7 +84,7 @@ export class AnomalyExplainer {
     // Cross-reference with approvals
     if (context.approvals?.length) {
       const recent = context.approvals.filter((a) => {
-        const daysDiff = (Date.now() - new Date(a.date).getTime()) / (1000 * 60 * 60 * 24);
+        const daysDiff = (nowMs() - new Date(a.date).getTime()) / (1000 * 60 * 60 * 24);
         return daysDiff < 30;
       });
       if (recent.length > 0) {
