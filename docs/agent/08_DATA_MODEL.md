@@ -211,6 +211,29 @@ promotion time, transitions the staging manifest to `'promoted'` (`promotedAt`),
 and rolls back any partial keys on write failure. `discardStagingBatch` refuses
 to discard `'promoted'` batches.
 
+`ConsolidationEngine.consolidateExact` (`src/engines/ConsolidationEngine.ts`)
+operates directly on promoted exact-string GL entries (`PromotedGLEntry` /
+`StagedGLRow`) across multiple entities and currencies without coercing
+`debit`/`credit` strings through IEEE-754 `number`. It enforces per-entity
+functional-currency trial-balance equality, translates foreign entities via
+ASC 830 current-rate rules (`spotRate` for `1xxx`/`2xxx`, `historicalRate` for
+`3xxx`, `averageRate` for `4xxx`–`9xxx`), derives the cent-reconciled ASC 830
+Cumulative Translation Adjustment (`openingEquityRateEffect`,
+`netIncomeRateEffect`, `roundingResidual`, `totalCTA` on OCI account `'3900'`),
+and reconciles/eliminates intercompany pairs (`icRules`) with balanced
+double-entry elimination lines while surfacing unmatched IC differences
+(`icReconciliation`) without inventing plug accounts.
+
+`financialPackageExport` (`src/services/export/financialPackageExport.ts`)
+generates both a multi-sheet formula-preserving `.xlsx` workbook
+(`buildFormulaPreservingWorkbookBytes` / `inspectFormulaWorkbookBytes` with an
+allowlisted formula validator `assertSafeSpreadsheetFormula`) and an 8-slide
+editable ECMA-376 OpenXML `.pptx` presentation
+(`buildEditableBoardPackPptxBytes` / `parseEditablePptxBytes` using native
+DrawingML `<p:sp>` text frames and `<a:tbl>` tables) from a single
+`ExactConsolidationResult`, verified by `verifyFinancialPackageTieOut` and
+`src/services/import/monthEndClosePipeline.integration.test.ts`.
+
 Not yet delivered: UI upload-wizard wiring to the new staging/promotion APIs,
 migration of legacy number-valued `glStore` consumers to `gl-ledger-exact:v1:*`,
 and 250k-row browser/native scalability evidence (the browser backend still

@@ -12,6 +12,7 @@ import {
   listPromotedLedgerBatches,
 } from './glStagingPromotion';
 import { ingestGLRows } from '@/engines/SmartImportMapper';
+import { ConsolidationEngine } from '@/engines/ConsolidationEngine';
 import type { GLIngestChunkInput } from '@/types/glIngestion';
 import type { GLPeriodAuthority } from './glPeriodWriteGuard';
 import type { PeriodCloseEntry } from '@/engines/PeriodCloseStateMachine';
@@ -370,5 +371,210 @@ describe('promoteStagingBatch — transactional exact-string ledger promotion', 
         periodHydrated: true,
       })
     ).rejects.toThrow(/recomputed totals do not match manifest/i);
+  });
+
+  it('bridges promoted exact-string USD and EUR ledger batches directly into ConsolidationEngine.consolidateExact', async () => {
+    const port = memoryPort();
+    const repository = createGLStagingRepository(port);
+
+    await stageGLImport(
+      {
+        batchId: 'batch-us01',
+        fileHash: '1'.repeat(64),
+        config: {
+          ...baseConfig,
+          knownAccountCodes: ['1000', '1290', '3000', '4000'],
+          knownEntityIds: ['US01'],
+          expectedCurrency: 'USD',
+        },
+        chunks: sliceChunks({
+          rows: [
+            {
+              AccountCode: '1000',
+              AccountName: 'Cash',
+              PostDate: '2026-03-31',
+              Debit: '89000.00',
+              Credit: '0.00',
+              EntityId: 'US01',
+              Currency: 'USD',
+              JournalId: 'US-J1',
+              Description: 'Cash',
+              Reference: 'R1',
+            },
+            {
+              AccountCode: '1290',
+              AccountName: 'IC Receivable',
+              PostDate: '2026-03-31',
+              Debit: '11000.00',
+              Credit: '0.00',
+              EntityId: 'US01',
+              Currency: 'USD',
+              JournalId: 'US-J1',
+              Description: 'IC Rec',
+              Reference: 'R2',
+            },
+            {
+              AccountCode: '3000',
+              AccountName: 'Common Stock',
+              PostDate: '2026-03-31',
+              Debit: '0.00',
+              Credit: '70000.00',
+              EntityId: 'US01',
+              Currency: 'USD',
+              JournalId: 'US-J1',
+              Description: 'Equity',
+              Reference: 'R3',
+            },
+            {
+              AccountCode: '4000',
+              AccountName: 'Revenue',
+              PostDate: '2026-03-31',
+              Debit: '0.00',
+              Credit: '30000.00',
+              EntityId: 'US01',
+              Currency: 'USD',
+              JournalId: 'US-J1',
+              Description: 'Rev',
+              Reference: 'R4',
+            },
+          ],
+        }),
+      },
+      {
+        repository,
+        compute: async (chunk) => ingestGLRows(chunk),
+      }
+    );
+
+    await stageGLImport(
+      {
+        batchId: 'batch-de01',
+        fileHash: '2'.repeat(64),
+        config: {
+          ...baseConfig,
+          knownAccountCodes: ['1000', '2190', '3000', '4000'],
+          knownEntityIds: ['DE01'],
+          expectedCurrency: 'EUR',
+        },
+        chunks: sliceChunks({
+          rows: [
+            {
+              AccountCode: '1000',
+              AccountName: 'Cash',
+              PostDate: '2026-03-31',
+              Debit: '50000.00',
+              Credit: '0.00',
+              EntityId: 'DE01',
+              Currency: 'EUR',
+              JournalId: 'DE-J1',
+              Description: 'Cash',
+              Reference: 'R5',
+            },
+            {
+              AccountCode: '2190',
+              AccountName: 'IC Payable',
+              PostDate: '2026-03-31',
+              Debit: '0.00',
+              Credit: '10000.00',
+              EntityId: 'DE01',
+              Currency: 'EUR',
+              JournalId: 'DE-J1',
+              Description: 'IC Pay',
+              Reference: 'R6',
+            },
+            {
+              AccountCode: '3000',
+              AccountName: 'Subscribed Capital',
+              PostDate: '2026-03-31',
+              Debit: '0.00',
+              Credit: '30000.00',
+              EntityId: 'DE01',
+              Currency: 'EUR',
+              JournalId: 'DE-J1',
+              Description: 'Equity',
+              Reference: 'R7',
+            },
+            {
+              AccountCode: '4000',
+              AccountName: 'Revenue',
+              PostDate: '2026-03-31',
+              Debit: '0.00',
+              Credit: '10000.00',
+              EntityId: 'DE01',
+              Currency: 'EUR',
+              JournalId: 'DE-J1',
+              Description: 'Rev',
+              Reference: 'R8',
+            },
+          ],
+        }),
+      },
+      {
+        repository,
+        compute: async (chunk) => ingestGLRows(chunk),
+      }
+    );
+
+    await promoteStagingBatch('batch-us01', {
+      storage: port,
+      repository,
+      periodAuthority: openPeriodAuthority,
+      periodHydrated: true,
+    });
+    await promoteStagingBatch('batch-de01', {
+      storage: port,
+      repository,
+      periodAuthority: openPeriodAuthority,
+      periodHydrated: true,
+    });
+
+    const usEntries = await readPromotedLedgerEntries('batch-us01', { storage: port });
+    const deEntries = await readPromotedLedgerEntries('batch-de01', { storage: port });
+
+    const consolidated = ConsolidationEngine.consolidateExact({
+      reportingCurrency: 'USD',
+      fxRates: [
+        {
+          fromCurrency: 'EUR',
+          toCurrency: 'USD',
+          spotRate: '1.10',
+          averageRate: '1.05',
+          historicalRate: '1.00',
+        },
+      ],
+      entities: [
+        {
+          entityId: 'US01',
+          entityName: 'US Parent',
+          functionalCurrency: 'USD',
+          entries: usEntries,
+        },
+        {
+          entityId: 'DE01',
+          entityName: 'DE Sub',
+          functionalCurrency: 'EUR',
+          entries: deEntries,
+        },
+      ],
+      icRules: [
+        {
+          fromEntityId: 'US01',
+          fromAccountCode: '1290',
+          toEntityId: 'DE01',
+          toAccountCode: '2190',
+        },
+      ],
+    });
+
+    // DE01 CTA: Equity -30,000 * (1.10 - 1.00) = -3,000.00; NI -10,000 * (1.10 - 1.05) = -500.00; Total CTA = -3,500.00
+    expect(consolidated.totalCTA).toBe('-3500.00');
+    expect(consolidated.icReconciliation[0]!.status).toBe('matched');
+    expect(consolidated.icReconciliation[0]!.eliminatedAmount).toBe('11000.00');
+    expect(consolidated.totalAssets).toBe('144000.00');
+    expect(consolidated.totalLiabilities).toBe('0.00');
+    expect(consolidated.totalEquity).toBe('-103500.00');
+    expect(consolidated.totalRevenueCredit).toBe('40500.00');
+    expect(consolidated.accountingEquationImbalance).toBe('0.00');
+    expect(consolidated.isBalanced).toBe(true);
   });
 });

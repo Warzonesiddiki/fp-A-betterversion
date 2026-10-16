@@ -117,5 +117,29 @@ describe('ICMatchingEngine', () => {
     const pairs = engine.autoMatch([source], [target]);
     const eliminations = engine.generateEliminations(pairs, { '1000': 'IC Receivable' });
     expect(Array.isArray(eliminations)).toBe(true);
+    expect(eliminations).toHaveLength(1);
+    // Source is positive (+1000 receivable), so eliminating source requires a credit (-1000)
+    expect(eliminations[0]!.eliminatedAmount).toBe(-1000);
+    expect(eliminations[0]!.debitAmount).toBe(0);
+    expect(eliminations[0]!.creditAmount).toBe(1000);
+    expect(eliminations[0]!.toAccountCode).toBe('1000');
+  });
+
+  it('computes exact unmatchedAmount in getSummary when transactions remain unmatched', () => {
+    const matchedSource = makeSource({ id: 's1', amount: 1000 });
+    const unmatchedSource = makeSource({ id: 's2', amount: 250.45, accountCode: '1100' });
+    const matchedTarget = makeTarget({ id: 't1', amount: -1000 });
+    const unmatchedTarget = makeTarget({ id: 't2', amount: -149.55, accountCode: '2100' });
+
+    engine.autoMatch([matchedSource, unmatchedSource], [matchedTarget, unmatchedTarget]);
+    const summary = engine.getSummary(
+      [matchedSource, unmatchedSource],
+      [matchedTarget, unmatchedTarget]
+    );
+
+    expect(summary.matchedCount).toBe(1);
+    expect(summary.unmatchedCount).toBe(2);
+    expect(summary.matchedAmount).toBe(1000);
+    expect(summary.unmatchedAmount).toBe(400);
   });
 });

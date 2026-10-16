@@ -60,7 +60,87 @@ Literal output (ANSI stripped):
 
 Verified static & invariant gates (`npm run tsc -- --noEmit`, `npx eslint ... --max-warnings 0`, `npm run money:ast`, `npm run money:adoption`, `npm run determinism:ratchet`, `npm run docs:verify`, `npm run engines:verify`, `npm run architecture:guardrails`, `npm run fabrication:audit`, `npm run format:check`): all exited `0`.
 
-**Not yet delivered:** UI upload-wizard wiring to the new staging/promotion coordinator, migration of legacy number-valued `glStore` consumers to `gl-ledger-exact:v1:*`, 250k-row browser/native scalability evidence, Step 2 consolidation/FX/IC contract verification, Step 3 real formula-preserving XLSX / editable PPTX exports, or Step 4 month-end acceptance harness.
+### 3. Consolidation/FX/IC contracts, formula-preserving XLSX & editable 8-slide PPTX exports, and month-end close integration (`DEC-010` Steps 2–4)
+
+- **`src/engines/ConsolidationEngine.ts` & `src/engines/ICMatchingEngine.ts` (`DEC-010` Step 2):**
+  - Preserved `toAccountCode` on `EliminationEntry`, updated `intercompanyPairKey` and `applyEliminationsAndAdjustments` so asymmetric intercompany account pairs (e.g. `1290` IC Receivable vs `2190` IC Payable, or `4900` IC Revenue vs `5900` IC Expense) eliminate both legs cleanly, and consumed account-level adjustments across multi-entry accounts without over-eliminating.
+  - Recorded ASC 830 Cumulative Translation Adjustment (`3900`, `'Cumulative Translation Adjustment'`) in `ConsolidationEngine.consolidate` when a foreign subsidiary's pre-translation local balance sheet (`1xxx + 2xxx + 3xxx`) is balanced and `spot !== historical`.
+  - Fixed `ICMatchingEngine.prototype.getSummary` (`unmatchedAmount` computed via `sumMoney` instead of hardcoded `0`), `ICMatchingEngine.detectICTransactions` (`compareMoney`/`subtractMoney` instead of float subtraction), and `ICMatchingEngine.prototype.generateEliminations` (`toAccountCode` and sign convention aligned with `ConsolidationEngine`).
+  - Added `ConsolidationEngine.consolidateExact(input: ExactConsolidationInput): ExactConsolidationResult` operating directly on promoted exact-decimal string GL rows (`PromotedGLEntry` / `StagedGLRow`) across `USD` and foreign (`EUR`) entities without coercing `debit`/`credit` strings through `number`, computing cent-reconciled ASC 830 CTA decomposition (`openingEquityRateEffect`, `netIncomeRateEffect`, `roundingResidual`, `totalCTA` on OCI account `'3900'`), balanced double-entry IC elimination lines, and explicit `icReconciliation` status (`'matched' | 'unmatched_difference'`) without fabricating plug accounts.
+- **`src/services/export/financialPackageExport.ts` (`DEC-010` Step 3):**
+  - Implemented `assertSafeSpreadsheetFormula` (allowlisting `SUM`, `ABS`, `ROUND`, cell ranges, and arithmetic operators while rejecting DDE/command/injection syntax per `F-0017`), `buildFormulaPreservingWorkbookBytes`, and `inspectFormulaWorkbookBytes` (producing and round-trip parsing a 5-sheet `.xlsx` workbook: `Consolidated_TB`, `Income_Statement`, `Balance_Sheet`, `FX_CTA_Schedule`, `IC_Eliminations` with live `<f>` formulas and cached `<v>` numeric results).
+  - Implemented `buildEditableBoardPackPptxBytes` and `parseEditablePptxBytes` (producing and round-trip parsing a standards-compliant 8-slide ECMA-376 OpenXML `.pptx` ZIP archive with native DrawingML `<p:sp>` text frames and `<a:tbl>` editable tables), plus `verifyFinancialPackageTieOut` asserting cent-exact agreement across `ExactConsolidationResult`, `.xlsx` formula results, and `.pptx` slide tables.
+- **`src/services/import/monthEndClosePipeline.integration.test.ts` (`DEC-010` Step 4):**
+  - End-to-end integration test executing: messy USD CSV import (`stageGLCsvImport`) -> atomic `'blocked'` status with physical source row numbers, `INVALID_AMOUNT`/`INVALID_DATE` quarantine reasons, and `JRN-UNBAL` voucher imbalance -> clean USD CSV (`stageGLCsvImport`) & clean EUR `.xlsx` (`stageGLXlsxImport`) -> `DEC-008` `hard_close` period write-guard rejection -> open-period transactional promotion (`promoteStagingBatch`) -> `readPromotedLedgerEntries` -> `ConsolidationEngine.consolidateExact` -> `buildFormulaPreservingWorkbookBytes` & `buildEditableBoardPackPptxBytes` -> `verifyFinancialPackageTieOut` (`matches: true`, `discrepancies: []`).
+
+Verified evidence commands and literal outputs:
+
+1. `npx vitest run src/engines/ThreeStatementEngine.test.ts src/engines/ConsolidationEngine.test.ts`
+
+```text
+ RUN  v4.1.7 /home/user/fp-A-betterversion
+
+ ✓ src/engines/ThreeStatementEngine.test.ts (32 tests) 24ms
+ ✓ src/engines/ConsolidationEngine.test.ts (80 tests) 56ms
+
+ Test Files  2 passed (2)
+      Tests  112 passed (112)
+   Start at  12:47:40
+   Duration  1.56s (transform 345ms, setup 528ms, import 366ms, tests 80ms, environment 1.79s)
+```
+
+2. `npm test -- src/services/import/glCsvTokenizer.test.ts src/services/import/glXlsxTokenizer.test.ts src/services/import/glStagingPromotion.test.ts src/services/import/glStagingLifecycle.test.ts src/services/import/glStagingCoordinator.test.ts src/services/import/glStagingRepository.test.ts src/services/import/glStagingRepository.sqljs.test.ts src/services/import/glPeriodWriteGuard.test.ts src/services/import/importProvenance.test.ts src/services/import/monthEndClosePipeline.integration.test.ts src/services/export/financialPackageExport.test.ts src/workers/gl-ingestion.worker.test.ts src/workers/glIngestionRequest.test.ts src/workers/consolidation.worker.money.test.ts src/engines/SmartImportMapper.ingest.money.test.ts src/engines/SmartImportMapper.test.ts src/engines/ConsolidationEngine.test.ts src/engines/ConsolidationEngine.money.test.ts src/engines/ConsolidationEngine.recursive.test.ts src/engines/ConsolidationEngine.integration.test.ts src/engines/ICMatchingEngine.test.ts src/engines/ICMatchingEngine.money.test.ts src/engines/FXEngine.test.ts src/engines/FXEngine.money.test.ts src/engines/__tests__/FXEngine.exactness.test.ts src/engines/MultiCurrencyEngine.test.ts src/engines/ThreeStatementEngine.test.ts src/pages/consolidation/ICEliminationPage.test.tsx src/utils/money.test.ts src/utils/moneySerialize.test.ts src/utils/parseFinancialAmount.test.ts`
+
+```text
+ Test Files  29 passed (29)
+      Tests  444 passed (444)
+   Start at  12:47:42
+   Duration  21.22s (transform 2.34s, setup 10.31s, import 5.66s, tests 5.28s, environment 49.29s)
+```
+
+3. `npm run money:ast && npm run money:adoption && npm run determinism:ratchet`
+
+```text
+AST money safety (financial paths):
+  modules scanned               1042
+  modules handling money        949
+  SAFE (zero unsafe ops)        949
+  UNSAFE                        0
+  unsafe operations             0
+  safety                        100%
+✓ Ratchet holds (baseline: 0 unsafe ops across 0 modules, 100% safe).
+
+Money primitive adoption (financial paths only):
+  financial modules scanned     988
+  modules using money primitive 288
+  adoption                      29.15%
+  raw toFixed(n) sites          0
+✓ Ratchet holds (baseline: 209 modules, 0 toFixed sites; server: 2 modules, 0 toFixed sites).
+
+Determinism ratchet (calculation paths: engines, store, services, utils):
+  modules scanned             387
+  files with sites            80
+  total non-deterministic     345
+✓ Ratchet holds (baseline: 345 sites across 80 files).
+```
+
+4. `npx vite build && node scripts/bundle-check.js && rm -rf dist`
+
+```text
+Critical path (index.html modulepreloads): 419.83KB gzip (9 chunks)
+:white_check_mark: **PASS:** Critical path within limit
+Main chunk: index-DXMZyjjT.js
+  gzip: 68.31KB (limit 150KB)
+:white_check_mark: **PASS:** Main chunk within limit
+Total: 6689.06KB raw / 2022.99KB gzip
+:white_check_mark: G19 PASS: grid-community-vendor = 206.35KB gzip (<= 300KB)
+:white_check_mark: G19 PASS: excel-core-vendor = 248.23KB gzip (<= 300KB)
+:white_check_mark: G19 PASS: grid-react-vendor = 14.28KB gzip (<= 300KB)
+:white_check_mark: G19 PASS: pdf-vendor = 179.11KB gzip (<= 300KB)
+:white_check_mark: G19 PASS: chart-vendor = 129.3KB gzip (<= 300KB)
+```
+
+**Not yet delivered:** UI upload-wizard/Board-Pack button wiring to the new staging/promotion and `financialPackageExport` services, migration of legacy number-valued `glStore` consumers to `gl-ledger-exact:v1:*`, 250k-row browser/native scalability evidence, and the queued `ACQUISITION_PROTOCOL.md` harvest items (CycleRelaxationEngine, largest-remainder rounding, 24 close exception rules, 13-week cash/debt, industry packs, audit chaining).
 
 ---
 
