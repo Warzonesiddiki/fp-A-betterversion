@@ -1,5 +1,5 @@
 /** Exact, side-effect-free GL chunk computation. Persistence stays with the coordinator. */
-import { SmartImportMapper } from '@/engines/SmartImportMapper';
+import { ingestGLRows } from '@/engines/SmartImportMapper';
 import { validateGLIngestionChunk } from './glIngestionRequest';
 import { readMessageId, readMessagePayload } from './validateRequest';
 import type { WorkerResponse } from './types';
@@ -12,7 +12,7 @@ self.onmessage = (event: MessageEvent<unknown>) => {
     const response: WorkerResponse<GLIngestResult> = {
       id,
       type: 'result',
-      payload: SmartImportMapper.ingest(input),
+      payload: ingestGLRows(input),
     };
     self.postMessage(response);
   } catch (error) {

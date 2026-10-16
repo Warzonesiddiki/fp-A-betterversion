@@ -164,21 +164,79 @@ is O(rows), not a constant-memory guarantee.
 
 `glStagingRepository` writes versioned opaque JSON envelopes through the existing
 encrypted masterStorage backend. Quarantine raw strings (including `$d:` prefixes)
-are not subjected to money-tag decoding. Keys are
-`gl-ingestion-stage:v1:<batchId>:manifest` and `...:chunk:<index>`.
+are not subjected to money-tag decoding. Keys are `gl-ingestion-stage:v1:index`,
+`gl-ingestion-stage:v1:<batchId>:manifest`, `...:chunk:<index>`, and
+`...:lock` (cross-window lease locks). Ephemeral staging keys are intentionally
+excluded from `BACKUP_STORE_KEYS` (`src/utils/backupRestore.ts`).
 
 Manifest states: `staging`, `ready`, `blocked`, `failed`. **Ready means staged and
 eligible for further checks, never posted.** Quarantine, schema failures, empty
 files and any whole-file voucher imbalance prevent ready. Compute/read/write errors
 propagate; a failed marker is attempted without masking the original error.
-Readers can retrieve persisted chunks by batch ID for review. Duplicate session
-IDs are rejected, not overwritten. The caller-supplied file digest is recorded,
-not recalculated or checked against committed ledger history by this coordinator.
+Readers can retrieve persisted chunks by batch ID (`readChunks`) or paginate
+quarantined rows across chunks (`readStagingQuarantinePage`) without loading the
+full batch into memory. `discoverStagingSessions` enumerates indexed staging
+manifests (`ready`, `blocked`, `failed`, `staging`), `recoverStagingSessions`
+cleans up unacknowledged orphan chunks and marks stale/unindexed `staging`
+sessions `failed`, and `discardStagingBatch` removes a batch's chunks, manifest,
+lock, and index entry while remaining safe when another batch holds an active
+lease lock. Duplicate session IDs and active cross-window lease conflicts are
+rejected without mutating existing batch evidence.
 
-Not yet delivered: UI wiring, retention/discard and orphan cleanup, batch discovery/
-resume, staging backup inclusion, cross-window transaction locks, transactional
-SQLite ledger promotion, file-identity/closed-period checks at promotion, or
-streaming CSV/XLSX tokenization. The browser backend still snapshots SQLite into
-localStorage and may hit quota limits; no 250k-row release claim. Existing ledger
-storage authority is unchanged. Do not enable this staging API as the production
-upload replacement until lifecycle and promotion gates are verified.
+`glCsvTokenizer` (`tokenizeGLCsvStream` / `stageGLCsvImport`) streams RFC-4180 CSV
+or explicit delimiter text/byte streams into bounded `GLStagingChunkSlice` batches
+with exact 1-based physical line numbers (`rowNumbers`), preserving line offsets
+across blank lines and multiline quoted fields and failing closed with
+`CSVTokenizationError` on invalid UTF-8 (`TextDecoder(..., { fatal: true })`),
+unclosed quotes, unescaped quotes, or ragged column counts.
+
+`glXlsxTokenizer` (`tokenizeGLXlsxBytes` / `stageGLXlsxImport`) reads OOXML
+worksheet XML directly from the `.xlsx` ZIP archive via `DecompressionStream('deflate-raw')`
+instead of `ExcelJS.Workbook.xlsx.load`, preserving exact `<v>` decimal lexemes
+(including >53-bit exact decimal strings) without IEEE-754 `parseFloat`/`Number`
+coercion, converting Excel date serials to ISO `'YYYY-MM-DD'`, preserving physical
+1-based Excel row numbers across blank rows, and failing closed with
+`XLSXTokenizationError` on corrupt ZIP entries, missing sheets, duplicate headers,
+ragged rows, or unevaluated formula cells (`<f>` without `<v>`).
+
+`glStagingPromotion` (`promoteStagingBatch`, `listPromotedLedgerBatches`,
+`readPromotedLedgerBatch`, `readPromotedLedgerEntries`) promotes a `'ready'`
+staged batch into an exact-string ledger store (`gl-ledger-exact:v1:*`) under
+cross-window lease locks without coercing `debit`/`credit` through `number`.
+Before committing, it re-verifies every staged chunk (`schemaErrors`,
+`quarantinedRows`, recomputed `controlTotals`, and whole-file voucher balance),
+enforces SHA-256 `fileHash` and `batchId` idempotency against promoted history,
+enforces `DEC-008` closed-period write guards (`getGLPeriodWriteIssues`) at
+promotion time, transitions the staging manifest to `'promoted'` (`promotedAt`),
+and rolls back any partial keys on write failure. `discardStagingBatch` refuses
+to discard `'promoted'` batches.
+
+`ConsolidationEngine.consolidateExact` (`src/engines/ConsolidationEngine.ts`)
+operates directly on promoted exact-string GL entries (`PromotedGLEntry` /
+`StagedGLRow`) across multiple entities and currencies without coercing
+`debit`/`credit` strings through IEEE-754 `number`. It enforces per-entity
+functional-currency trial-balance equality, translates foreign entities via
+ASC 830 current-rate rules (`spotRate` for `1xxx`/`2xxx`, `historicalRate` for
+`3xxx`, `averageRate` for `4xxx`–`9xxx`), derives the cent-reconciled ASC 830
+Cumulative Translation Adjustment (`openingEquityRateEffect`,
+`netIncomeRateEffect`, `roundingResidual`, `totalCTA` on OCI account `'3900'`),
+and reconciles/eliminates intercompany pairs (`icRules`) with balanced
+double-entry elimination lines while surfacing unmatched IC differences
+(`icReconciliation`) without inventing plug accounts.
+
+`financialPackageExport` (`src/services/export/financialPackageExport.ts`)
+generates both a multi-sheet formula-preserving `.xlsx` workbook
+(`buildFormulaPreservingWorkbookBytes` / `inspectFormulaWorkbookBytes` with an
+allowlisted formula validator `assertSafeSpreadsheetFormula`) and an 8-slide
+editable ECMA-376 OpenXML `.pptx` presentation
+(`buildEditableBoardPackPptxBytes` / `parseEditablePptxBytes` using native
+DrawingML `<p:sp>` text frames and `<a:tbl>` tables) from a single
+`ExactConsolidationResult`, verified by `verifyFinancialPackageTieOut` and
+`src/services/import/monthEndClosePipeline.integration.test.ts`.
+
+Not yet delivered: UI upload-wizard wiring to the new staging/promotion APIs,
+migration of legacy number-valued `glStore` consumers to `gl-ledger-exact:v1:*`,
+and 250k-row browser/native scalability evidence (the browser backend still
+snapshots SQLite into localStorage and may hit quota limits). Do not claim
+production UI upload replacement until the upload wizard and downstream consumers
+are wired to the exact-string promotion store.

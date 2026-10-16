@@ -236,4 +236,28 @@ describe('SmartImportMapper.ingest — exact validation boundary', () => {
     expect(a).toEqual(SmartImportMapper.ingest({ ...config, rows: stream() }));
     expect(JSON.stringify(input)).toBe(before);
   });
+  it('honors explicit physical rowNumbers and rejects non-increasing or mismatched rowNumbers', () => {
+    const r = rows([
+      {
+        'GL Account': '9999',
+        'Posting Date': '2026-09-30',
+        Debit: '10.00',
+        Credit: '',
+        Company: 'PARENT',
+        Currency: 'USD',
+        Voucher: 'J2',
+      },
+    ]);
+    const valid = SmartImportMapper.ingest({ ...config, rows: r, rowNumbers: [4, 9, 15] });
+    expect(valid.acceptedRows.map((row) => row.sourceRow)).toEqual([4, 9]);
+    expect(valid.quarantinedRows[0]?.sourceRow).toBe(15);
+
+    const nonMonotonic = SmartImportMapper.ingest({ ...config, rows: r, rowNumbers: [4, 4, 15] });
+    expect(nonMonotonic.schemaErrors.join(';')).toMatch(/strictly increasing/i);
+    expect(nonMonotonic.canPost).toBe(false);
+
+    const mismatched = SmartImportMapper.ingest({ ...config, rows: r, rowNumbers: [4, 9] });
+    expect(mismatched.schemaErrors.join(';')).toMatch(/count/i);
+    expect(mismatched.canPost).toBe(false);
+  });
 });

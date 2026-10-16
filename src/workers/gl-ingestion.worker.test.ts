@@ -91,6 +91,8 @@ describe('GL worker protocol with the real ingest engine', () => {
       { dateOrder: 'guess' },
       { amountConvention: 'guess' },
       { mappings: { unsupported: 'Debit' } },
+      { rowNumbers: [8] },
+      { rowNumbers: [9, 8] },
     ]) {
       expect(() => validateGLIngestionChunk({ ...config, rows, ...extra })).toThrow();
     }

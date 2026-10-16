@@ -1423,3 +1423,392 @@ describe('KAV-06: effective ownership math', () => {
     expect(map.get('C')).toBeCloseTo(50, 10);
   });
 });
+
+describe('DEC-010 Step 2: asymmetric IC pairs, ASC 830 CTA, and exact-string consolidation', () => {
+  it('eliminates asymmetric IC receivable (1290) vs IC payable (2190) across entities and keeps balance sheet balanced', () => {
+    const parentEntries = [
+      createEntry('p1', '1000', 'Cash', 90000, 'parent'),
+      createEntry('p2', '1290', 'IC Receivable - Sub', 10000, 'parent'),
+      createEntry('p3', '3000', 'Common Stock', -100000, 'parent'),
+    ];
+    const subEntries = [
+      createEntry('s1', '1000', 'Cash', 35000, 'sub'),
+      createEntry('s2', '2190', 'IC Payable - Parent', -10000, 'sub'),
+      createEntry('s3', '3000', 'Common Stock', -25000, 'sub'),
+    ];
+
+    const entities = [createParent(parentEntries), createSubsidiary('sub', 'Sub', subEntries)];
+    const ownerships = [createOwnership('parent', 'sub', 100)];
+    const icPairs: ICPair[] = [
+      {
+        fromEntityId: 'parent',
+        toEntityId: 'sub',
+        accountCode: '1290',
+        toAccountCode: '2190',
+        amount: 10000,
+        type: 'receivable',
+      },
+    ];
+
+    const result = ConsolidationEngine.consolidate(entities, ownerships, icPairs);
+
+    expect(result.status).toBe('success');
+    expect(result.eliminations).toHaveLength(1);
+    expect(result.eliminations[0]!.accountCode).toBe('1290');
+    expect(result.eliminations[0]!.toAccountCode).toBe('2190');
+    expect(result.totalAssets).toBe(125000);
+    expect(result.totalLiabilities).toBe(0);
+    expect(result.totalEquity).toBe(-125000);
+    expect(result.isBalanced).toBe(true);
+    expect(result.imbalanceAmount).toBe(0);
+  });
+
+  it('does not over-eliminate when an entity has multiple GL entries on the same IC account', () => {
+    const parentEntries = [
+      createEntry('p1', '1000', 'Cash', 90000, 'parent'),
+      createEntry('p2a', '1100', 'IC Receivable Invoice 1', 6000, 'parent'),
+      createEntry('p2b', '1100', 'IC Receivable Invoice 2', 4000, 'parent'),
+      createEntry('p3', '3000', 'Common Stock', -100000, 'parent'),
+    ];
+    const subEntries = [
+      createEntry('s1', '1000', 'Cash', 35000, 'sub'),
+      createEntry('s2', '1100', 'IC Payable', -10000, 'sub'),
+      createEntry('s3', '3000', 'Common Stock', -25000, 'sub'),
+    ];
+
+    const entities = [createParent(parentEntries), createSubsidiary('sub', 'Sub', subEntries)];
+    const ownerships = [createOwnership('parent', 'sub', 100)];
+    const icPairs: ICPair[] = [createICPair('parent', 'sub', '1100', 10000, 'receivable')];
+
+    const result = ConsolidationEngine.consolidate(entities, ownerships, icPairs);
+
+    expect(result.status).toBe('success');
+    expect(result.totalAssets).toBe(125000);
+    expect(result.totalLiabilities).toBe(0);
+    expect(result.totalEquity).toBe(-125000);
+    expect(result.isBalanced).toBe(true);
+    expect(result.imbalanceAmount).toBe(0);
+  });
+
+  it('records ASC 830 Cumulative Translation Adjustment (3900) so a balanced EUR subsidiary consolidates in balance when spot !== historical', () => {
+    const parentEntries = [
+      createEntry('p1', '1000', 'Cash', 100000, 'parent'),
+      createEntry('p2', '3000', 'Common Stock', -100000, 'parent'),
+    ];
+    const foreignEntries = [
+      createEntry('f1', '1000', 'Cash', 50000, 'foreign', 'EUR'),
+      createEntry('f2', '3000', 'Common Stock', -50000, 'foreign', 'EUR'),
+    ];
+    const entities = [
+      createParent(parentEntries),
+      {
+        ...createSubsidiary('foreign', 'Foreign Sub', foreignEntries, true, 'EUR'),
+        isForeign: true,
+        functionalCurrency: 'EUR',
+      },
+    ];
+    const ownerships = [createOwnership('parent', 'foreign', 100)];
+    const fxRates: FXRate[] = [
+      { fromCurrency: 'EUR', toCurrency: 'USD', rate: 1.1, rateType: 'spot', date: '2026-03-31' },
+      {
+        fromCurrency: 'EUR',
+        toCurrency: 'USD',
+        rate: 1.05,
+        rateType: 'average',
+        date: '2026-03-31',
+      },
+      {
+        fromCurrency: 'EUR',
+        toCurrency: 'USD',
+        rate: 1.0,
+        rateType: 'historical',
+        date: '2026-03-31',
+      },
+    ];
+
+    const result = ConsolidationEngine.consolidate(entities, ownerships, [], fxRates);
+
+    expect(result.status).toBe('success');
+    expect(result.totalAssets).toBe(155000);
+    // Parent equity (-100,000) + EUR sub historical equity (-50,000) + CTA (-5,000) = -155,000
+    expect(result.totalEquity).toBe(-155000);
+    expect(result.isBalanced).toBe(true);
+    expect(result.imbalanceAmount).toBe(0);
+    const ctaEntry = result.consolidatedEntries.find((e) => e.accountCode === '3900');
+    expect(ctaEntry).toBeDefined();
+    expect(ctaEntry!.amount).toBe(-5000);
+  });
+
+  it('consolidateExact translates promoted exact-decimal USD/EUR ledgers, derives exact ASC 830 CTA decomposition, and eliminates IC pairs without float coercion', () => {
+    const exactResult = ConsolidationEngine.consolidateExact({
+      reportingCurrency: 'USD',
+      fxRates: [
+        {
+          fromCurrency: 'EUR',
+          toCurrency: 'USD',
+          spotRate: '1.10',
+          averageRate: '1.05',
+          historicalRate: '1.00',
+        },
+      ],
+      entities: [
+        {
+          entityId: 'US01',
+          entityName: 'US Parent Corp',
+          functionalCurrency: 'USD',
+          entries: [
+            {
+              accountCode: '1000',
+              accountName: 'Cash',
+              postDate: '2026-03-31',
+              debit: '100000.00',
+              credit: '0.00',
+              entityId: 'US01',
+              currency: 'USD',
+            },
+            {
+              accountCode: '1290',
+              accountName: 'IC Receivable - DE01',
+              postDate: '2026-03-31',
+              debit: '11000.00',
+              credit: '0.00',
+              entityId: 'US01',
+              currency: 'USD',
+            },
+            {
+              accountCode: '3000',
+              accountName: 'Common Stock',
+              postDate: '2026-03-31',
+              debit: '0.00',
+              credit: '80000.00',
+              entityId: 'US01',
+              currency: 'USD',
+            },
+            {
+              accountCode: '4000',
+              accountName: 'Product Revenue',
+              postDate: '2026-03-31',
+              debit: '0.00',
+              credit: '50000.00',
+              entityId: 'US01',
+              currency: 'USD',
+            },
+            {
+              accountCode: '4900',
+              accountName: 'IC Management Fee Revenue',
+              postDate: '2026-03-31',
+              debit: '0.00',
+              credit: '5250.00',
+              entityId: 'US01',
+              currency: 'USD',
+            },
+            {
+              accountCode: '5000',
+              accountName: 'Operating Expense',
+              postDate: '2026-03-31',
+              debit: '24250.00',
+              credit: '0.00',
+              entityId: 'US01',
+              currency: 'USD',
+            },
+          ],
+        },
+        {
+          entityId: 'DE01',
+          entityName: 'Germany GmbH',
+          functionalCurrency: 'EUR',
+          entries: [
+            {
+              accountCode: '1000',
+              accountName: 'Cash',
+              postDate: '2026-03-31',
+              debit: '60000.00',
+              credit: '0.00',
+              entityId: 'DE01',
+              currency: 'EUR',
+            },
+            {
+              accountCode: '2190',
+              accountName: 'IC Payable - US01',
+              postDate: '2026-03-31',
+              debit: '0.00',
+              credit: '10000.00',
+              entityId: 'DE01',
+              currency: 'EUR',
+            },
+            {
+              accountCode: '3000',
+              accountName: 'Subscribed Capital',
+              postDate: '2026-03-31',
+              debit: '0.00',
+              credit: '40000.00',
+              entityId: 'DE01',
+              currency: 'EUR',
+            },
+            {
+              accountCode: '4000',
+              accountName: 'Product Revenue',
+              postDate: '2026-03-31',
+              debit: '0.00',
+              credit: '25000.00',
+              entityId: 'DE01',
+              currency: 'EUR',
+            },
+            {
+              accountCode: '5000',
+              accountName: 'Operating Expense',
+              postDate: '2026-03-31',
+              debit: '10000.00',
+              credit: '0.00',
+              entityId: 'DE01',
+              currency: 'EUR',
+            },
+            {
+              accountCode: '5900',
+              accountName: 'IC Management Fee Expense',
+              postDate: '2026-03-31',
+              debit: '5000.00',
+              credit: '0.00',
+              entityId: 'DE01',
+              currency: 'EUR',
+            },
+          ],
+        },
+      ],
+      icRules: [
+        {
+          fromEntityId: 'US01',
+          fromAccountCode: '1290',
+          toEntityId: 'DE01',
+          toAccountCode: '2190',
+          description: 'IC Receivable/Payable US01 <-> DE01',
+        },
+        {
+          fromEntityId: 'US01',
+          fromAccountCode: '4900',
+          toEntityId: 'DE01',
+          toAccountCode: '5900',
+          description: 'IC Management Fee US01 <-> DE01',
+        },
+      ],
+    });
+
+    // DE01 in EUR:
+    // Net Assets (Cash 60,000 - IC Payable 10,000) = +50,000 EUR @ 1.10 = +55,000.00 USD
+    // Equity (-40,000 EUR @ 1.00) = -40,000.00 USD -> opening equity CTA = -4,000.00 USD
+    // Net Income (-25,000 + 10,000 + 5,000 = -10,000 EUR credit @ 1.05 = -10,500.00 USD) -> NI CTA = -500.00 USD
+    // Total DE01 CTA (signed debit-minus-credit) = -4,500.00 USD (credit to 3900 OCI)
+    expect(exactResult.entityTranslations).toHaveLength(2);
+    const deTranslation = exactResult.entityTranslations.find((t) => t.entityId === 'DE01')!;
+    expect(deTranslation.openingEquityRateEffect).toBe('-4000.00');
+    expect(deTranslation.netIncomeRateEffect).toBe('-500.00');
+    expect(deTranslation.roundingResidual).toBe('0.00');
+    expect(deTranslation.totalCTA).toBe('-4500.00');
+
+    // IC eliminations:
+    // 1) 1290 (+11,000.00 USD) vs 2190 (-10,000 EUR @ 1.10 = -11,000.00 USD) -> matched 11,000.00, diff 0.00
+    // 2) 4900 (-5,250.00 USD) vs 5900 (+5,000 EUR @ 1.05 = +5,250.00 USD) -> matched 5,250.00, diff 0.00
+    expect(exactResult.icReconciliation).toHaveLength(2);
+    expect(exactResult.icReconciliation[0]!.status).toBe('matched');
+    expect(exactResult.icReconciliation[0]!.eliminatedAmount).toBe('11000.00');
+    expect(exactResult.icReconciliation[0]!.unmatchedDifference).toBe('0.00');
+    expect(exactResult.icReconciliation[1]!.status).toBe('matched');
+    expect(exactResult.icReconciliation[1]!.eliminatedAmount).toBe('5250.00');
+    expect(exactResult.icReconciliation[1]!.unmatchedDifference).toBe('0.00');
+
+    // Consolidated totals after IC elimination:
+    // Assets: US01 Cash 100,000 + DE01 Cash 66,000 (1290 eliminated) = 166,000.00
+    // Liabilities: DE01 2190 (-11,000) eliminated = 0.00
+    // Equity: US01 (-80,000) + DE01 (-40,000) + CTA (-4,500) = -124,500.00
+    // Revenue: US01 (-50,000) + DE01 (-26,250) (4900 eliminated) = -76,250.00 (credit: 76,250.00)
+    // Expenses: US01 (+24,250) + DE01 (+10,500) (5900 eliminated) = 34,750.00
+    // Net Income: 76,250.00 - 34,750.00 = 41,500.00
+    // Accounting Equation: 166,000.00 + 0.00 + (-124,500.00) + (-76,250.00) + 34,750.00 = 0.00
+    expect(exactResult.totalAssets).toBe('166000.00');
+    expect(exactResult.totalLiabilities).toBe('0.00');
+    expect(exactResult.totalEquity).toBe('-124500.00');
+    expect(exactResult.totalCTA).toBe('-4500.00');
+    expect(exactResult.totalRevenue).toBe('-76250.00');
+    expect(exactResult.totalRevenueCredit).toBe('76250.00');
+    expect(exactResult.totalExpenses).toBe('34750.00');
+    expect(exactResult.netIncome).toBe('41500.00');
+    expect(exactResult.accountingEquationImbalance).toBe('0.00');
+    expect(exactResult.isBalanced).toBe(true);
+  });
+
+  it('consolidateExact surfaces unmatched IC differences without inventing plug accounts', () => {
+    const exactResult = ConsolidationEngine.consolidateExact({
+      reportingCurrency: 'USD',
+      fxRates: [],
+      entities: [
+        {
+          entityId: 'US01',
+          entityName: 'US Parent',
+          functionalCurrency: 'USD',
+          entries: [
+            {
+              accountCode: '1290',
+              accountName: 'IC Receivable',
+              postDate: '2026-03-31',
+              debit: '10000.00',
+              credit: '0.00',
+              entityId: 'US01',
+              currency: 'USD',
+            },
+            {
+              accountCode: '3000',
+              accountName: 'Equity',
+              postDate: '2026-03-31',
+              debit: '0.00',
+              credit: '10000.00',
+              entityId: 'US01',
+              currency: 'USD',
+            },
+          ],
+        },
+        {
+          entityId: 'US02',
+          entityName: 'US Sub',
+          functionalCurrency: 'USD',
+          entries: [
+            {
+              accountCode: '1000',
+              accountName: 'Cash',
+              postDate: '2026-03-31',
+              debit: '9250.00',
+              credit: '0.00',
+              entityId: 'US02',
+              currency: 'USD',
+            },
+            {
+              accountCode: '2190',
+              accountName: 'IC Payable',
+              postDate: '2026-03-31',
+              debit: '0.00',
+              credit: '9250.00',
+              entityId: 'US02',
+              currency: 'USD',
+            },
+          ],
+        },
+      ],
+      icRules: [
+        {
+          fromEntityId: 'US01',
+          fromAccountCode: '1290',
+          toEntityId: 'US02',
+          toAccountCode: '2190',
+        },
+      ],
+    });
+
+    expect(exactResult.icReconciliation).toHaveLength(1);
+    expect(exactResult.icReconciliation[0]!.status).toBe('unmatched_difference');
+    expect(exactResult.icReconciliation[0]!.eliminatedAmount).toBe('9250.00');
+    expect(exactResult.icReconciliation[0]!.unmatchedDifference).toBe('750.00');
+    // Trial balance still balances (750.00 uneliminated IC Receivable remains on 1290),
+    // and hasUnmatchedIC flags the IC discrepancy explicitly.
+    expect(exactResult.accountingEquationImbalance).toBe('0.00');
+    expect(exactResult.hasUnmatchedIC).toBe(true);
+  });
+});

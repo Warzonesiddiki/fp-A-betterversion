@@ -1,6 +1,8 @@
 import type { GLEntry } from '@/types';
 import { MissingFXRateError } from './FXEngine';
 import {
+  toDecimal,
+  compareMoney,
   addMoney,
   subtractMoney,
   multiplyMoney,
@@ -9,8 +11,11 @@ import {
   roundTo,
   toCents,
   formatMoney,
+  toFixedMoneyString,
 } from '@/utils/money';
 import { nowISO } from '@/utils/clock';
+
+type Decimal = ReturnType<typeof toDecimal>;
 
 /**
  * MONEY MIGRATION (2026-08-03): All currency-bearing amounts (eliminations,
@@ -63,6 +68,7 @@ export interface EliminationEntry {
   fromEntityId: string;
   toEntityId: string;
   accountCode: string;
+  toAccountCode?: string;
   accountName: string;
   eliminatedAmount: number;
   debitAmount: number;
@@ -215,6 +221,122 @@ export interface EntityHierarchyNode {
   children: EntityHierarchyNode[];
 }
 
+export interface ExactLedgerEntry {
+  accountCode: string;
+  accountName?: string;
+  postDate: string;
+  debit: string;
+  credit: string;
+  entityId: string;
+  currency: string;
+  journalId?: string;
+  description?: string;
+  reference?: string;
+}
+
+export interface ExactEntityLedger {
+  entityId: string;
+  entityName: string;
+  functionalCurrency: string;
+  entries: readonly ExactLedgerEntry[];
+}
+
+export interface ExactFXRate {
+  fromCurrency: string;
+  toCurrency: string;
+  spotRate: string;
+  averageRate: string;
+  historicalRate: string;
+}
+
+export interface ExactICRule {
+  fromEntityId: string;
+  fromAccountCode: string;
+  toEntityId: string;
+  toAccountCode: string;
+  description?: string;
+}
+
+export interface ExactConsolidationInput {
+  reportingCurrency: string;
+  entities: readonly ExactEntityLedger[];
+  fxRates: readonly ExactFXRate[];
+  icRules?: readonly ExactICRule[];
+  ctaAccountCode?: string;
+  ctaAccountName?: string;
+}
+
+export interface ExactEntityTranslationSummary {
+  entityId: string;
+  entityName: string;
+  functionalCurrency: string;
+  reportingCurrency: string;
+  localTotalDebit: string;
+  localTotalCredit: string;
+  translatedAssets: string;
+  translatedLiabilities: string;
+  translatedEquityBeforeCTA: string;
+  translatedRevenue: string;
+  translatedExpenses: string;
+  openingEquityRateEffect: string;
+  netIncomeRateEffect: string;
+  roundingResidual: string;
+  totalCTA: string;
+}
+
+export interface ExactICReconciliationItem {
+  fromEntityId: string;
+  fromAccountCode: string;
+  toEntityId: string;
+  toAccountCode: string;
+  fromSignedBalance: string;
+  toSignedBalance: string;
+  eliminatedAmount: string;
+  unmatchedDifference: string;
+  status: 'matched' | 'unmatched_difference';
+  description: string;
+}
+
+export interface ExactEliminationJournalLine {
+  entityId: string;
+  accountCode: string;
+  accountName: string;
+  debit: string;
+  credit: string;
+  description: string;
+}
+
+export interface ExactTrialBalanceLine {
+  accountCode: string;
+  accountName: string;
+  category: AccountCategory;
+  preEliminationSigned: string;
+  eliminationSigned: string;
+  consolidatedSigned: string;
+  debit: string;
+  credit: string;
+}
+
+export interface ExactConsolidationResult {
+  reportingCurrency: string;
+  entityTranslations: ExactEntityTranslationSummary[];
+  icReconciliation: ExactICReconciliationItem[];
+  eliminationLines: ExactEliminationJournalLine[];
+  consolidatedTrialBalance: ExactTrialBalanceLine[];
+  totalAssets: string;
+  totalLiabilities: string;
+  totalLiabilitiesCredit: string;
+  totalEquity: string;
+  totalCTA: string;
+  totalRevenue: string;
+  totalRevenueCredit: string;
+  totalExpenses: string;
+  netIncome: string;
+  accountingEquationImbalance: string;
+  hasUnmatchedIC: boolean;
+  isBalanced: boolean;
+}
+
 // --- Account Category Mapping ---
 
 const ACCOUNT_CATEGORY_MAP: Record<string, AccountCategory> = {
@@ -238,9 +360,13 @@ function getAccountCategory(accountCode: string): AccountCategory {
 function intercompanyPairKey(
   fromEntityId: string,
   toEntityId: string,
-  accountCode: string
+  accountCode: string,
+  toAccountCode?: string
 ): string {
-  return [fromEntityId, toEntityId].sort().join(':') + `:${accountCode}`;
+  const targetAccount = toAccountCode ?? accountCode;
+  const legA = `${fromEntityId}:${accountCode}`;
+  const legB = `${toEntityId}:${targetAccount}`;
+  return [legA, legB].sort().join('<->');
 }
 
 // =============================================================================
@@ -322,8 +448,61 @@ export class ConsolidationEngine {
       const parentId = entities[0]!.entityId;
       const effectiveOwnershipMap = this.calculateEffectiveOwnership(parentId, ownerships);
 
-      // Step 1: Translate foreign subsidiaries to reporting currency
-      const translatedEntities = this.translateForeignSubsidiaries(entities, fxRates);
+      // Step 0.5: Identify foreign subsidiaries whose pre-translation local balance sheet is balanced
+      const balancedForeignEntityIds = new Set<string>();
+      for (const entity of entities) {
+        if (entity.isForeign && entity.currency !== 'USD' && entity.entries.length > 0) {
+          const localBsEntries = entity.entries.filter((e) => {
+            const cat = getAccountCategory(e.accountCode);
+            return cat === 'asset' || cat === 'liability' || cat === 'equity';
+          });
+          if (localBsEntries.length > 0) {
+            const localBsSum = roundTo(sumMoney(localBsEntries.map((e) => e.amount)));
+            if (localBsSum === 0) {
+              balancedForeignEntityIds.add(entity.entityId);
+            }
+          }
+        }
+      }
+
+      // Step 1: Translate foreign subsidiaries to reporting currency and record ASC 830 CTA (3900)
+      const translatedEntities = this.translateForeignSubsidiaries(entities, fxRates).map(
+        (entity) => {
+          if (!balancedForeignEntityIds.has(entity.entityId)) return entity;
+          const translatedBsEntries = entity.entries.filter((e) => {
+            const cat = getAccountCategory(e.accountCode);
+            return cat === 'asset' || cat === 'liability' || cat === 'equity';
+          });
+          const translatedBsSum =
+            translatedBsEntries.length > 0
+              ? roundTo(sumMoney(translatedBsEntries.map((e) => e.amount)))
+              : 0;
+          if (translatedBsSum === 0) return entity;
+          const ctaAmount = roundTo(multiplyMoney(translatedBsSum, -1));
+          const sampleEntry = entity.entries[0];
+          const ctaEntry: GLEntry = {
+            id: `cta-${entity.entityId}`,
+            accountId: '3900',
+            accountCode: '3900',
+            accountName: 'Cumulative Translation Adjustment',
+            period: sampleEntry?.period ?? '',
+            periodName: sampleEntry?.periodName ?? '',
+            debit: ctaAmount > 0 ? ctaAmount : 0,
+            credit: ctaAmount < 0 ? Math.abs(ctaAmount) : 0,
+            netChange: ctaAmount,
+            date: sampleEntry?.date ?? nowISO().split('T')[0] ?? '',
+            amount: ctaAmount,
+            description: `ASC 830 CTA for ${entity.entityId}`,
+            reference: `CTA-${entity.entityId}`,
+            entityId: entity.entityId,
+            currency: 'USD',
+          };
+          return {
+            ...entity,
+            entries: [...entity.entries, ctaEntry],
+          };
+        }
+      );
 
       // Step 2: Build entity maps
       const entityMap = new Map<string, EntityData>();
@@ -575,7 +754,12 @@ export class ConsolidationEngine {
 
     // Process manual IC pairs
     for (const pair of icPairs) {
-      const pairKey = intercompanyPairKey(pair.fromEntityId, pair.toEntityId, pair.accountCode);
+      const pairKey = intercompanyPairKey(
+        pair.fromEntityId,
+        pair.toEntityId,
+        pair.accountCode,
+        pair.toAccountCode
+      );
       if (processedPairs.has(pairKey)) continue;
       processedPairs.add(pairKey);
 
@@ -1142,6 +1326,7 @@ export class ConsolidationEngine {
       fromEntityId: pair.fromEntityId,
       toEntityId: pair.toEntityId,
       accountCode: pair.accountCode,
+      ...(pair.toAccountCode !== undefined ? { toAccountCode: pair.toAccountCode } : {}),
       accountName: this.getAccountName(entries, pair.accountCode),
       eliminatedAmount: eliminate,
       debitAmount: eliminate > 0 ? eliminate : 0,
@@ -1216,7 +1401,8 @@ export class ConsolidationEngine {
 
     for (const elimination of eliminations) {
       const keyFrom = `${elimination.fromEntityId}:${elimination.accountCode}`;
-      const keyTo = `${elimination.toEntityId}:${elimination.accountCode}`;
+      const toAccountCode = elimination.toAccountCode ?? elimination.accountCode;
+      const keyTo = `${elimination.toEntityId}:${toAccountCode}`;
       const prevFrom = adjustmentMap.get(keyFrom) ?? 0;
       adjustmentMap.set(keyFrom, roundTo(addMoney(prevFrom, elimination.eliminatedAmount)));
       const prevTo = adjustmentMap.get(keyTo) ?? 0;
@@ -1230,14 +1416,37 @@ export class ConsolidationEngine {
       adjustmentMap.set(key, roundTo(addMoney(prev, netAdjustment)));
     }
 
+    // Count entries per (entityId, accountCode) so multi-line accounts absorb the
+    // account-level elimination/adjustment across their lines without over-eliminating.
+    const remainingEntriesByKey = new Map<string, number>();
+    for (const entry of allEntries) {
+      const key = `${entry.entityId}:${entry.accountCode}`;
+      remainingEntriesByKey.set(key, (remainingEntriesByKey.get(key) ?? 0) + 1);
+    }
+
     // Apply adjustments
     const result: GLEntry[] = [];
     const processedKeys = new Set<string>();
 
     for (const entry of allEntries) {
       const key = `${entry.entityId}:${entry.accountCode}`;
+      const remainingEntries = (remainingEntriesByKey.get(key) ?? 1) - 1;
+      remainingEntriesByKey.set(key, remainingEntries);
       const adjustment = adjustmentMap.get(key) ?? 0;
-      const newAmount = roundTo(addMoney(entry.amount, adjustment));
+      let appliedAdjustment = adjustment;
+      if (
+        remainingEntries > 0 &&
+        adjustment !== 0 &&
+        entry.amount !== 0 &&
+        Math.sign(entry.amount) === -Math.sign(adjustment) &&
+        Math.abs(adjustment) > Math.abs(entry.amount)
+      ) {
+        appliedAdjustment = roundTo(multiplyMoney(entry.amount, -1));
+        adjustmentMap.set(key, roundTo(subtractMoney(adjustment, appliedAdjustment)));
+      } else {
+        adjustmentMap.delete(key);
+      }
+      const newAmount = roundTo(addMoney(entry.amount, appliedAdjustment));
 
       if (Math.abs(newAmount) > 0.001) {
         result.push({
@@ -1282,5 +1491,369 @@ export class ConsolidationEngine {
       .filter((e) => getAccountCategory(e.accountCode) === category)
       .map((e) => e.amount);
     return vals.length > 0 ? roundTo(sumMoney(vals)) : 0;
+  }
+
+  /**
+   * Exact-decimal multi-entity consolidation, ASC 830 FX translation with CTA
+   * decomposition, and ASC 810 intercompany matching/elimination over promoted
+   * exact-string GL rows (`PromotedGLEntry` / `StagedGLRow`).
+   *
+   * Never converts debit/credit strings through IEEE-754 `number` during ledger
+   * aggregation, FX translation, CTA derivation, or intercompany elimination.
+   */
+  static consolidateExact(input: ExactConsolidationInput): ExactConsolidationResult {
+    const reportingCurrency = input.reportingCurrency.trim().toUpperCase();
+    if (!/^[A-Z]{3}$/.test(reportingCurrency)) {
+      throw new ConsolidationFailedError([
+        {
+          stage: 'validation',
+          message: `Invalid reportingCurrency "${input.reportingCurrency}"`,
+        },
+      ]);
+    }
+    if (!Array.isArray(input.entities) || input.entities.length === 0) {
+      throw new ConsolidationFailedError([
+        {
+          stage: 'validation',
+          message: 'No entities provided for exact consolidation',
+        },
+      ]);
+    }
+
+    const ctaAccountCode = input.ctaAccountCode ?? '3900';
+    const ctaAccountName = input.ctaAccountName ?? 'Cumulative Translation Adjustment (OCI)';
+
+    const fxRateMap = new Map<string, ExactFXRate>();
+    for (const fx of input.fxRates) {
+      fxRateMap.set(`${fx.fromCurrency.toUpperCase()}:${fx.toCurrency.toUpperCase()}`, fx);
+    }
+
+    const entityAccountTranslated = new Map<string, Decimal>();
+    const accountNames = new Map<string, string>();
+    const preEliminationByAccount = new Map<string, Decimal>();
+    const entityTranslations: ExactEntityTranslationSummary[] = [];
+    let totalCTADecimal = toDecimal(0);
+
+    for (const entity of input.entities) {
+      const funcCurrency = entity.functionalCurrency.trim().toUpperCase();
+      let localDebitSum = toDecimal(0);
+      let localCreditSum = toDecimal(0);
+      const localByAccount = new Map<string, Decimal>();
+
+      for (const entry of entity.entries) {
+        if (entry.entityId !== entity.entityId) {
+          throw new ConsolidationFailedError([
+            {
+              stage: 'validation',
+              message: `Entry entityId "${entry.entityId}" does not match entity "${entity.entityId}"`,
+            },
+          ]);
+        }
+        if (entry.currency.trim().toUpperCase() !== funcCurrency) {
+          throw new ConsolidationFailedError([
+            {
+              stage: 'validation',
+              message: `Entry currency "${entry.currency}" does not match entity "${entity.entityId}" functionalCurrency "${funcCurrency}"`,
+            },
+          ]);
+        }
+        const debitD = toDecimal(entry.debit);
+        const creditD = toDecimal(entry.credit);
+        localDebitSum = addMoney(localDebitSum, debitD);
+        localCreditSum = addMoney(localCreditSum, creditD);
+        const signedD = subtractMoney(debitD, creditD);
+        const prev = localByAccount.get(entry.accountCode) ?? toDecimal(0);
+        localByAccount.set(entry.accountCode, addMoney(prev, signedD));
+        if (entry.accountName && !accountNames.has(entry.accountCode)) {
+          accountNames.set(entry.accountCode, entry.accountName);
+        }
+      }
+
+      if (compareMoney(localDebitSum, localCreditSum) !== 0) {
+        throw new ConsolidationFailedError([
+          {
+            stage: 'validation',
+            message: `Entity "${entity.entityId}" local trial balance is out of balance: debit=${toFixedMoneyString(localDebitSum)} vs credit=${toFixedMoneyString(localCreditSum)}`,
+          },
+        ]);
+      }
+
+      const isForeign = funcCurrency !== reportingCurrency;
+      let spotRate = toDecimal(1);
+      let averageRate = toDecimal(1);
+      let historicalRate = toDecimal(1);
+
+      if (isForeign) {
+        const fx = fxRateMap.get(`${funcCurrency}:${reportingCurrency}`);
+        if (!fx) {
+          throw new MissingFXRateError(
+            funcCurrency,
+            reportingCurrency,
+            undefined,
+            `fx-translation: entity ${entity.entityId} requires ${funcCurrency}->${reportingCurrency} rates`
+          );
+        }
+        spotRate = toDecimal(fx.spotRate);
+        averageRate = toDecimal(fx.averageRate);
+        historicalRate = toDecimal(fx.historicalRate);
+        if (spotRate.lte(0) || averageRate.lte(0) || historicalRate.lte(0)) {
+          throw new MissingFXRateError(
+            funcCurrency,
+            reportingCurrency,
+            undefined,
+            `fx-translation: entity ${entity.entityId} has non-positive spot/average/historical rate`
+          );
+        }
+      }
+
+      let localEquitySigned = toDecimal(0);
+      let localNetIncomeSigned = toDecimal(0);
+      let translatedAssets = toDecimal(0);
+      let translatedLiabilities = toDecimal(0);
+      let translatedEquityBeforeCTA = toDecimal(0);
+      let translatedRevenue = toDecimal(0);
+      let translatedExpenses = toDecimal(0);
+
+      for (const [accountCode, localSigned] of localByAccount.entries()) {
+        const category = getAccountCategory(accountCode);
+        if (category === 'equity') {
+          localEquitySigned = addMoney(localEquitySigned, localSigned);
+        } else if (category === 'revenue' || category === 'expense') {
+          localNetIncomeSigned = addMoney(localNetIncomeSigned, localSigned);
+        }
+
+        const rate =
+          category === 'asset' || category === 'liability'
+            ? spotRate
+            : category === 'equity'
+              ? historicalRate
+              : averageRate;
+
+        const translatedSigned = isForeign
+          ? multiplyMoney(localSigned, rate).toDecimalPlaces(2)
+          : localSigned.toDecimalPlaces(2);
+
+        entityAccountTranslated.set(`${entity.entityId}:${accountCode}`, translatedSigned);
+        preEliminationByAccount.set(
+          accountCode,
+          addMoney(preEliminationByAccount.get(accountCode) ?? toDecimal(0), translatedSigned)
+        );
+
+        switch (category) {
+          case 'asset':
+            translatedAssets = addMoney(translatedAssets, translatedSigned);
+            break;
+          case 'liability':
+            translatedLiabilities = addMoney(translatedLiabilities, translatedSigned);
+            break;
+          case 'equity':
+            translatedEquityBeforeCTA = addMoney(translatedEquityBeforeCTA, translatedSigned);
+            break;
+          case 'revenue':
+            translatedRevenue = addMoney(translatedRevenue, translatedSigned);
+            break;
+          case 'expense':
+            translatedExpenses = addMoney(translatedExpenses, translatedSigned);
+            break;
+        }
+      }
+
+      const preCtaSum = sumMoney([
+        translatedAssets,
+        translatedLiabilities,
+        translatedEquityBeforeCTA,
+        translatedRevenue,
+        translatedExpenses,
+      ]);
+      const entityCTA = isForeign ? subtractMoney(0, preCtaSum) : toDecimal(0);
+      const openingEquityRateEffect = isForeign
+        ? multiplyMoney(localEquitySigned, subtractMoney(spotRate, historicalRate)).toDecimalPlaces(
+            2
+          )
+        : toDecimal(0);
+      const netIncomeRateEffect = isForeign
+        ? multiplyMoney(localNetIncomeSigned, subtractMoney(spotRate, averageRate)).toDecimalPlaces(
+            2
+          )
+        : toDecimal(0);
+      const roundingResidual = subtractMoney(
+        entityCTA,
+        addMoney(openingEquityRateEffect, netIncomeRateEffect)
+      );
+
+      if (compareMoney(entityCTA, 0) !== 0) {
+        totalCTADecimal = addMoney(totalCTADecimal, entityCTA);
+        accountNames.set(ctaAccountCode, ctaAccountName);
+        preEliminationByAccount.set(
+          ctaAccountCode,
+          addMoney(preEliminationByAccount.get(ctaAccountCode) ?? toDecimal(0), entityCTA)
+        );
+      }
+
+      entityTranslations.push({
+        entityId: entity.entityId,
+        entityName: entity.entityName,
+        functionalCurrency: funcCurrency,
+        reportingCurrency,
+        localTotalDebit: toFixedMoneyString(localDebitSum),
+        localTotalCredit: toFixedMoneyString(localCreditSum),
+        translatedAssets: toFixedMoneyString(translatedAssets),
+        translatedLiabilities: toFixedMoneyString(translatedLiabilities),
+        translatedEquityBeforeCTA: toFixedMoneyString(translatedEquityBeforeCTA),
+        translatedRevenue: toFixedMoneyString(translatedRevenue),
+        translatedExpenses: toFixedMoneyString(translatedExpenses),
+        openingEquityRateEffect: toFixedMoneyString(openingEquityRateEffect),
+        netIncomeRateEffect: toFixedMoneyString(netIncomeRateEffect),
+        roundingResidual: toFixedMoneyString(roundingResidual),
+        totalCTA: toFixedMoneyString(entityCTA),
+      });
+    }
+
+    const icReconciliation: ExactICReconciliationItem[] = [];
+    const eliminationLines: ExactEliminationJournalLine[] = [];
+    const eliminationByAccount = new Map<string, Decimal>();
+
+    for (const rule of input.icRules ?? []) {
+      const fromSigned =
+        entityAccountTranslated.get(`${rule.fromEntityId}:${rule.fromAccountCode}`) ?? toDecimal(0);
+      const toSigned =
+        entityAccountTranslated.get(`${rule.toEntityId}:${rule.toAccountCode}`) ?? toDecimal(0);
+
+      const oppositeSigns =
+        (fromSigned.gt(0) && toSigned.lt(0)) || (fromSigned.lt(0) && toSigned.gt(0));
+      const absFrom = fromSigned.abs();
+      const absTo = toSigned.abs();
+      const eliminatedMag = oppositeSigns
+        ? compareMoney(absFrom, absTo) <= 0
+          ? absFrom
+          : absTo
+        : toDecimal(0);
+      const unmatchedDiff = addMoney(fromSigned, toSigned).abs();
+      const description =
+        rule.description ??
+        `IC elimination ${rule.fromEntityId}:${rule.fromAccountCode} <-> ${rule.toEntityId}:${rule.toAccountCode}`;
+
+      if (compareMoney(eliminatedMag, 0) > 0) {
+        const fromElimSigned = fromSigned.gt(0) ? eliminatedMag.negated() : eliminatedMag;
+        const toElimSigned = toSigned.gt(0) ? eliminatedMag.negated() : eliminatedMag;
+
+        eliminationByAccount.set(
+          rule.fromAccountCode,
+          addMoney(eliminationByAccount.get(rule.fromAccountCode) ?? toDecimal(0), fromElimSigned)
+        );
+        eliminationByAccount.set(
+          rule.toAccountCode,
+          addMoney(eliminationByAccount.get(rule.toAccountCode) ?? toDecimal(0), toElimSigned)
+        );
+
+        eliminationLines.push({
+          entityId: rule.fromEntityId,
+          accountCode: rule.fromAccountCode,
+          accountName: accountNames.get(rule.fromAccountCode) ?? rule.fromAccountCode,
+          debit: fromElimSigned.gt(0) ? toFixedMoneyString(fromElimSigned) : '0.00',
+          credit: fromElimSigned.lt(0) ? toFixedMoneyString(fromElimSigned.abs()) : '0.00',
+          description,
+        });
+        eliminationLines.push({
+          entityId: rule.toEntityId,
+          accountCode: rule.toAccountCode,
+          accountName: accountNames.get(rule.toAccountCode) ?? rule.toAccountCode,
+          debit: toElimSigned.gt(0) ? toFixedMoneyString(toElimSigned) : '0.00',
+          credit: toElimSigned.lt(0) ? toFixedMoneyString(toElimSigned.abs()) : '0.00',
+          description,
+        });
+      }
+
+      icReconciliation.push({
+        fromEntityId: rule.fromEntityId,
+        fromAccountCode: rule.fromAccountCode,
+        toEntityId: rule.toEntityId,
+        toAccountCode: rule.toAccountCode,
+        fromSignedBalance: toFixedMoneyString(fromSigned),
+        toSignedBalance: toFixedMoneyString(toSigned),
+        eliminatedAmount: toFixedMoneyString(eliminatedMag),
+        unmatchedDifference: toFixedMoneyString(unmatchedDiff),
+        status: compareMoney(unmatchedDiff, 0) === 0 ? 'matched' : 'unmatched_difference',
+        description,
+      });
+    }
+
+    const allAccountCodes = Array.from(
+      new Set([...preEliminationByAccount.keys(), ...eliminationByAccount.keys()])
+    ).sort();
+
+    const consolidatedTrialBalance: ExactTrialBalanceLine[] = [];
+    let totalAssetsD = toDecimal(0);
+    let totalLiabilitiesD = toDecimal(0);
+    let totalEquityD = toDecimal(0);
+    let totalRevenueD = toDecimal(0);
+    let totalExpensesD = toDecimal(0);
+
+    for (const accountCode of allAccountCodes) {
+      const preElim = preEliminationByAccount.get(accountCode) ?? toDecimal(0);
+      const elim = eliminationByAccount.get(accountCode) ?? toDecimal(0);
+      const consolidatedSigned = addMoney(preElim, elim);
+      const category = getAccountCategory(accountCode);
+
+      consolidatedTrialBalance.push({
+        accountCode,
+        accountName: accountNames.get(accountCode) ?? accountCode,
+        category,
+        preEliminationSigned: toFixedMoneyString(preElim),
+        eliminationSigned: toFixedMoneyString(elim),
+        consolidatedSigned: toFixedMoneyString(consolidatedSigned),
+        debit: consolidatedSigned.gt(0) ? toFixedMoneyString(consolidatedSigned) : '0.00',
+        credit: consolidatedSigned.lt(0) ? toFixedMoneyString(consolidatedSigned.abs()) : '0.00',
+      });
+
+      switch (category) {
+        case 'asset':
+          totalAssetsD = addMoney(totalAssetsD, consolidatedSigned);
+          break;
+        case 'liability':
+          totalLiabilitiesD = addMoney(totalLiabilitiesD, consolidatedSigned);
+          break;
+        case 'equity':
+          totalEquityD = addMoney(totalEquityD, consolidatedSigned);
+          break;
+        case 'revenue':
+          totalRevenueD = addMoney(totalRevenueD, consolidatedSigned);
+          break;
+        case 'expense':
+          totalExpensesD = addMoney(totalExpensesD, consolidatedSigned);
+          break;
+      }
+    }
+
+    const totalRevenueCreditD = totalRevenueD.negated();
+    const netIncomeD = subtractMoney(totalRevenueCreditD, totalExpensesD);
+    const equationImbalanceD = sumMoney([
+      totalAssetsD,
+      totalLiabilitiesD,
+      totalEquityD,
+      totalRevenueD,
+      totalExpensesD,
+    ]);
+    const hasUnmatchedIC = icReconciliation.some((item) => item.status === 'unmatched_difference');
+
+    return {
+      reportingCurrency,
+      entityTranslations,
+      icReconciliation,
+      eliminationLines,
+      consolidatedTrialBalance,
+      totalAssets: toFixedMoneyString(totalAssetsD),
+      totalLiabilities: toFixedMoneyString(totalLiabilitiesD),
+      totalLiabilitiesCredit: toFixedMoneyString(totalLiabilitiesD.negated()),
+      totalEquity: toFixedMoneyString(totalEquityD),
+      totalCTA: toFixedMoneyString(totalCTADecimal),
+      totalRevenue: toFixedMoneyString(totalRevenueD),
+      totalRevenueCredit: toFixedMoneyString(totalRevenueCreditD),
+      totalExpenses: toFixedMoneyString(totalExpensesD),
+      netIncome: toFixedMoneyString(netIncomeD),
+      accountingEquationImbalance: toFixedMoneyString(equationImbalanceD),
+      hasUnmatchedIC,
+      isBalanced: compareMoney(equationImbalanceD, 0) === 0 && !hasUnmatchedIC,
+    };
   }
 }

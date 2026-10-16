@@ -11,7 +11,7 @@
 
 import type { GLEntry, GLEntryProvenance, ImportControlTotals, ImportScope } from '@/types';
 import { sha256Hex, sha256HexBytes } from '@/utils/sha256';
-import { subtractMoney, sumMoney } from '@/utils/money';
+import { subtractMoney, sumMoney, toFixedMoneyString } from '@/utils/money';
 
 /** SHA-256 of raw file bytes — the file's identity for duplicate detection. */
 export function hashFileBytes(bytes: ArrayBuffer | Uint8Array): string {
@@ -91,9 +91,9 @@ export function computeControlTotals(
   const credit = sumMoney(entries.map((e) => e.credit));
   return {
     rows: entries.length,
-    debit: debit.toFixed(2),
-    credit: credit.toFixed(2),
-    net: subtractMoney(debit, credit).toFixed(2),
+    debit: toFixedMoneyString(debit),
+    credit: toFixedMoneyString(credit),
+    net: toFixedMoneyString(subtractMoney(debit, credit)),
   };
 }
 

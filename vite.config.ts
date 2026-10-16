@@ -184,6 +184,15 @@ export default defineConfig({
           if (id.includes('exceljs')) return 'excel-core-vendor';
           if (id.includes('jspdf') || id.includes('html2canvas')) return 'pdf-vendor';
           if (id.includes('sql.js')) return 'db-vendor';
+          if (id.includes('/src/pages/sector/')) return 'sector-pages';
+          if (id.includes('/src/templates/')) return 'templates';
+          if (
+            /\/src\/components\/ui\/(Badge|Card|DataTable|EmptyState|Input|PageHeader|Select|Skeleton|StatCard|StatusBadge|Tabs|Tooltip)\.tsx$/.test(
+              id
+            )
+          ) {
+            return 'ui-primitives';
+          }
         },
       },
     },

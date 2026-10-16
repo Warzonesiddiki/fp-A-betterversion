@@ -154,11 +154,9 @@ export class ICMatchingEngine {
         const amount = entry.amount ?? entry.netChange ?? 0;
         const otherAmount = other.amount ?? other.netChange ?? 0;
         const isOpposite = Math.sign(amount) !== Math.sign(otherAmount);
+        const absDiff = subtractMoney(toDecimal(amount).abs(), toDecimal(otherAmount).abs()).abs();
 
-        if (
-          isOpposite &&
-          Math.abs(Math.abs(amount) - Math.abs(otherAmount)) <= tolerance.amountTolerance
-        ) {
+        if (isOpposite && compareMoney(absDiff, tolerance.amountTolerance) <= 0) {
           transactions.push({
             id: `ic-${entry.id}`,
             entityId: entry.entityId,
@@ -363,7 +361,14 @@ export class ICMatchingEngine {
         sumMoney(partial.map((m) => toDecimal(m.source.amount).abs())),
         CURRENCY_PLACES
       ),
-      unmatchedAmount: 0, // computed from unmatched transactions
+      unmatchedAmount: roundTo(
+        sumMoney(
+          [...sourceTransactions, ...targetTransactions]
+            .filter((t) => !matchedIds.has(t.id))
+            .map((t) => toDecimal(t.amount).abs())
+        ),
+        CURRENCY_PLACES
+      ),
       matchRate:
         total > 0 ? roundTo(divideMoney(matchedIds.size, total).times(100), RATIO_PLACES) : 0,
     };
@@ -447,16 +452,20 @@ export class ICMatchingEngine {
 
       const sourceAmount = match.source.amount;
       const elimAmount = Math.min(Math.abs(sourceAmount), Math.abs(match.target.amount));
+      const eliminatedAmount =
+        sourceAmount > 0 ? roundTo(multiplyMoney(elimAmount, -1), CURRENCY_PLACES) : elimAmount;
 
-      // Eliminate the receivable/payable
+      // Eliminate the receivable/payable using ConsolidationEngine's sign convention:
+      // a positive source balance is eliminated via a negative adjustment (credit).
       eliminations.push({
         fromEntityId: match.source.entityId,
         toEntityId: match.target.entityId,
         accountCode: match.source.accountCode,
+        toAccountCode: match.target.accountCode,
         accountName: accountNames[match.source.accountCode] ?? match.source.accountName,
-        eliminatedAmount: elimAmount,
-        debitAmount: sourceAmount > 0 ? elimAmount : 0,
-        creditAmount: sourceAmount < 0 ? elimAmount : 0,
+        eliminatedAmount,
+        debitAmount: eliminatedAmount > 0 ? elimAmount : 0,
+        creditAmount: eliminatedAmount < 0 ? elimAmount : 0,
         description: `IC elimination: ${match.source.entityName} ↔ ${match.target.entityName}`,
         type: 'auto',
       });
