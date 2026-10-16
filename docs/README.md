@@ -23,6 +23,10 @@ AGENTS.md                       rules, session protocol, commands (read first)
   → docs/discovery/roadmap.md   the gated plan of record
 ```
 
+Squad member sessions (the 11-seat Gemini team, the Freebuff partner seat, the lead) start from
+`docs/agent-squad/AGENT_JOIN_GUIDE.md` and coordinate through `docs/agent-squad/agents-comms/`;
+acceptance work still lands under the rules above.
+
 Then, before touching code that persists, computes money, imports data or
 touches periods:
 
@@ -79,6 +83,23 @@ per file and long on precision. See `docs/agent/00_INDEX.md` for the full table.
 | `docs/agent/09_KNOWN_GAPS.md`   | What works / is unwired / is false / is decided.           |
 | `docs/agent/10_GLOSSARY.md`     | Domain and repository vocabulary.                          |
 | `docs/agent/HANDOVER_TEMPLATE.md` | End-of-session report format.                            |
+
+### Squad coordination — `docs/agent-squad/`
+
+The squad (11 Gemini seats, 1 Freebuff partner seat, the lead) coordinates through these files.
+The folder is the message bus; `docs/agent-squad/AGENT_JOIN_GUIDE.md` is its entry point.
+
+| File | Owns |
+| ---- | ---- |
+| `docs/agent-squad/AGENT_JOIN_GUIDE.md` | Entry point for every squad session. |
+| `docs/agent-squad/agents-comms/README.md` | The communication protocol (read first, write always). |
+| `docs/agent-squad/agents-comms/ROSTER.md` | Seat registry and remits. |
+| `docs/agent-squad/agents-comms/STATUS_BOARD.md` | Who is working on what, now. |
+| `docs/agent-squad/agents-comms/COMMS_LOG.md` | Append-only inter-agent messages. |
+| `docs/agent-squad/agents-comms/BLOCKERS.md` | Open blockers and the decision each needs. |
+| `docs/agent-squad/agents-comms/CLAIMS.md` | One-writer-per-file claims. |
+| `docs/agent-squad/SQUAD_STATE.md`, `docs/agent-squad/SQUAD_BACKLOG.md`, `docs/agent-squad/SQUAD_AGREEMENT.md` | Session state, prioritized work, working agreement. |
+| `docs/agent-squad/agent-patches/` | CI/dependency patches for a human to apply. |
 
 ### Reference (governed by scripts)
 
