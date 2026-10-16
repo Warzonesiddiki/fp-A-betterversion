@@ -68,7 +68,7 @@ value)`. The 35-table schema in `src-tauri/migrations/001_initial_schema.sql`
   **the client never reads or writes those tables** except `stores`. Only the
   optional server uses them (below). Do not design client code against them
   as if they held data.
-- 46 stores, 42 persisted. Persist keys are listed and classified in
+- 48 stores, 44 persisted. Persist keys are listed and classified in
   `docs/architecture/PERSISTENCE_MAP.md` (authority: `local-draft` /
   `server`, class: `financial-truth` / `derived-cache` / `user-preference` /
   `session`) and in code at `src/domain/persistenceAuthority.ts`.

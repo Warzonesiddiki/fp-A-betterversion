@@ -510,3 +510,46 @@ Commits: `b8e50292` (guard + test), `7632f95b` (register evidence line).
 **Action requested:** @LEAD, @G-01, @G-08 review and gate verification.
 **Verify first:** `npx vitest run src/store/exceptionPipeline.integration.test.ts`
 
+
+---
+
+### 2026-10-17 00:35 UTC · LEAD · NOTE · TO: @ALL (SOLO MODE)
+
+**Task:** all Gemini seats departed (roster screenshot: every seat Idle). Lead verifies and
+lands the in-flight uncommitted work alone, then continues the P1-4 unit.
+**What:**
+1. **Abandoned lint debt cleared.** 17 problems (16 prettier errors + 1 unused `Explanation`
+   import) across `syntheticTieOutLedger.{ts,test.ts}`,
+   `ThreeStatementEngine.doubleEntryMissingZero.test.ts` and
+   `AnomalyExplainer.integration.ts` → fixed via `eslint --fix` + import removal.
+2. **Deleted an invented-API test.** `ThreeStatementEngine.doubleEntryMissingZero.test.ts`
+   asserted `calculateThreeStatement`/`calculateHistoricalTrends`, which exist nowhere in the
+   tree; the real engine (`ThreeStatementEngine.link`) already has balance, tolerance,
+   cash-tie-out, RE-roll-forward and NaN/Infinity coverage in the three existing engine suites.
+3. **Deleted an orphan module.** `AnomalyExplainer.integration.ts` had zero importers and its
+   raw-`setState` `recordDisposition` bypassed the audited `setDisposition` path that FR-009
+   now owns (audit trail + sequence numbers).
+4. **Repaired G-09's fixture suite.** The test filtered `e.batchId`, but `GLEntry` has no
+   `batchId` (the fixture uses `journalId`) — 0-of-N entries matched, failing balance and
+   cash-roll-forward assertions. Two-line fix; suite now 7/7.
+5. **money:ast FAIL fixed at the cause.** `d365Parser.ts:408-409` computed `debit - credit`
+   with raw float arithmetic → routed through `subtractMoney` + `roundTo`.
+6. **docs:verify FAIL fixed at the docs.** README/AGENTS/08_DATA_MODEL claimed 46 stores;
+   script measured 48 (44 persisted via masterStorage) → claims updated from script output.
+7. **New unit (P1-4, third screen).** `GLJournalsPage.interop.test.tsx` runs the real store
+   and real page together: counts, date-filter recompute, search filtering and
+   `computeJournalTotals` footer totals are all store-derived. 4/4.
+**Evidence (all run in this tree, this session):**
+- `npm run lint` → EXIT 0 (was 17 problems); `npm run tsc` → EXIT 0.
+- `npm run money:ast` → EXIT 0, 0 unsafe ops (was 2).
+- `npm run docs:verify` → EXIT 0 (was: README store count 46 vs measured 48).
+- `npm run determinism:ratchet` → holds, 344 sites / 79 files.
+- `npm run docs:links` → 0 broken; `npm run engines:verify` → EXIT 0.
+- Orphaned-seat suites verified green: 9 files / 92 tests (exception catalogue 16,
+  disposition store 8, pipeline 2, d365 parser 15, board-pack tie-out 3, AnomalyHighlight 5,
+  + 3 engine suites).
+- `npx vitest run src/pages/data/GLJournalsPage.interop.test.tsx` → 4/4.
+**Action requested:** none — departed seats' ACTIVE claims are marked revoked in `CLAIMS.md`.
+The GLUploadPage interop test (old G-10 remit) stays the next P1-4 unit.
+**Verify first:** re-run any command above; then
+`npx vitest run src/pages/data/GLJournalsPage.interop.test.tsx`.

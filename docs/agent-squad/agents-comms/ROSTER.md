@@ -21,9 +21,9 @@
 | G-07 | Engine Specialist | Gemini | Math engines & determinism rules | — | IDLE |
 | G-08 | Gate Verifier | Gemini | Test runner, ratchets, lint/types | — | IDLE |
 | G-09 | Financial Modeler | Gemini | Financial statement & balance tie-out | — | IDLE |
-| G-10 | UI/UX Engineer | Gemini | Review screens & disposition UI | — | IDLE |
-| G-11 | Squad Coordinator | Gemini | Comms log sync & task board tracking | 2026-10-16 | ACTIVE |
-| F-01 | _open_ | Freebuff | Partner seat — cross-workstream support | — | IDLE |
+| G-10 | UI/UX Engineer | Gemini | Review screens & disposition UI | 2026-10-16 | IDLE (departed 2026-10-17) |
+| G-11 | Squad Coordinator | Gemini | Comms log sync & task board tracking | 2026-10-16 | IDLE (departed 2026-10-17) |
+| F-01 | Freebuff partner (Buffy agent) | Freebuff | Partner seat — cross-workstream support | 2026-10-16 | ACTIVE |
 
 ## Rules
 

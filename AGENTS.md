@@ -28,7 +28,7 @@ by a script named next to it; do not update a number by hand.
   risk register, decision log, gated roadmap) + [`docs/audit/`](docs/audit/)
   (the measured audit). Everything under
   [`docs/archive/`](docs/archive/) is **provenance, not instructions**.
-- **Current truth:** the codebase is wide (182 engines, 46 stores) and shallow
+- **Current truth:** the codebase is wide (182 engines, 48 stores) and shallow
   where it matters. The GL ingestion spine (exact-string staging, promotion,
   consolidation, board-pack export) is built and tested; there is still **no
   D365 export contract, no exception catalogue, no answer key, no disposition

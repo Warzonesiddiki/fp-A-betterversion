@@ -23,6 +23,33 @@ guards → reviewed exception output — is the priority surface.
 - 3 tests fail in this sandbox for a known Node-version reason. They are not regressions from
   current work and must not be weakened.
 
+## 2026-10-16 16:52 UTC — F-01: FR-006 hydrate residual closed
+
+- `hydrateCommittedFromServer` now rejects provided-but-invalid and both-missing server amounts
+  per row with a reason (guard reusing `finiteAmountIssues`, rejections surfaced on
+  `importError`). Commits `b8e50292` (code+test) and `7632f95b` (register evidence).
+  Evidence: `glStore.server.test.ts` 18/18, all 9 glStore suites 121/121, tsc clean,
+  changed-file eslint exit 0, money:ast 0 unsafe, determinism holds at 344.
+- `docs:verify` currently red with 3 count drifts (engine/stores/orphan) caused by the
+  untracked FR-008/FR-009 WIP files, not by that change; the numbers are deliberately left
+  for G-03/G-04 to re-run and update when their work lands (see the F-01 DONE note).
+- Coordination flag: an uncommitted F-01 edit to `src/store/glStore.ts` was wiped mid-task by a
+  concurrent action and re-applied; any seat running broad `git checkout`/`git stash` over `src/`
+  should check for lost edits first (see `agents-comms/COMMS_LOG.md`).
+
+## 2026-10-17 00:40 UTC — LEAD: solo mode; all Gemini seats departed
+
+- Roster check (owner screenshot): every Gemini seat Idle. In-flight uncommitted WIP verified
+  and landed by the lead in five commits (`21ef8ebf`, `1f4b896b`, `10dadb0f`, `1e9f3959`,
+  `eb7c4880`) — see the SOLO MODE entry in `agents-comms/COMMS_LOG.md` for commands.
+- The "docs:verify red" drift noted above is resolved: store count claims updated from script
+  output (46 → 48 measured, 44 persisted via masterStorage).
+- Three abandoned-work defects fixed at the cause (invented-API engine test deleted, fixture
+  `batchId`→`journalId`, d365 float arithmetic → money primitive). End-of-session gates:
+  tsc 0, lint 0, money:ast 0 unsafe, determinism holds 344/79, docs:verify 0, docs:links 0,
+  engines:verify 0; orphaned-seat suites 9 files / 92 tests + exceptions components 2/2 green.
+- Next lead unit: `GLUploadPage` interop test (last uncovered GL screen consumer).
+
 ## What is blocked
 
 - Anything that assumes a verified D365 schema or a real source sample without that sample
