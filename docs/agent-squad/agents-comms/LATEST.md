@@ -7,7 +7,7 @@
 
 - **SOLO MODE.** All Gemini seats departed (roster: every seat Idle). The lead verifies and
   lands everything alone; departed seats' ACTIVE claims are revoked in `CLAIMS.md`. If a seat
-  returns, re-claim per `AGENT_JOIN_GUIDE.md` before touching files.
+  returns, re-claim per `../AGENT_JOIN_GUIDE.md` before touching files.
 
 ## Newest (solo session, 2026-10-17)
 
