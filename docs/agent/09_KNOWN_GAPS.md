@@ -1,6 +1,6 @@
 # 09 — Known gaps and truth matrix
 
-Last verified 2026-10-15 at tip `6777ce7`. When you change a row, change it
+Last verified 2026-10-16. When you change a row, change it
 here in the same commit. Source audit: `docs/audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md`;
 evidence per requirement: `docs/discovery/requirements-register.md`.
 
@@ -22,6 +22,7 @@ by code · **DECIDED** = owner decision recorded · **OPEN** = needs owner.
 | Server: auth, GL commit, audit routes, idempotency key                                                                                                              | `server` 323 tests                                         |
 | Statement oracles                                                                                                                                                   | `financialStatementOracles.test.ts`                        |
 | Full suite green, prod advisories 0/0                                                                                                                               | `test:sharded` 8/8; `audit:prod`                           |
+| Period-close write guards on every local GL write path (import, add/replace, accounts, undo/redo, clear, undo-import, server publish, server-to-local hydrate)       | `glStore.periodClose.test.ts` (17 tests, DEC-008); `glPeriodWriteGuard.test.ts` (17); `monthEndClosePipeline.integration.test.ts` |
 
 ## Unwired (exists, unreachable)
 
@@ -34,7 +35,6 @@ by code · **DECIDED** = owner decision recorded · **OPEN** = needs owner.
 | All ERP connectors (`ConnectorRegistry`, QuickBooks, NetSuite, Xero, Sage, Dynamics)                                                                                                                    | `src/services/api-integration/`               | 0 UI consumers; `DynamicsConnector` targets **Dataverse CRM**, not F&O / BC GL                                                                                                                                                                                                                                                            |
 | Server (`server/`) from the desktop build                                                                                                                                                               | `src/sdk`, `src/api/commandClient.ts`         | inert without `VITE_API_URL`; not bundled with Tauri                                                                                                                                                                                                                                                                                      |
 | 35-table SQLite schema on the client                                                                                                                                                                    | `src-tauri/migrations/`                       | created by the shell, never queried by the client (blobs only); only the optional server uses it                                                                                                                                                                                                                                          |
-| Period-close lock vs GL writes                                                                                                                                                                          | `period-close-store`, `glStore.ts`            | GL store does not check lock state before import                                                                                                                                                                                                                                                                                          |
 | ~120 non-data routes (industries, AI, ML, simulation…)                                                                                                                                                  | `docs/CAPABILITY_TRUTH_MATRIX.md`             | render, but compute on empty or mock state; matrix marks `UNVERIFIED`                                                                                                                                                                                                                                                                     |
 
 ## False or formerly false claims
