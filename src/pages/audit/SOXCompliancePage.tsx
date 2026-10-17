@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
+import { todayISO } from '@/utils/clock';
 import { usePeriodCloseStore } from '@/store/periodCloseStore';
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
 import { addMoney, roundTo, subtractMoney, toDecimal } from '@/utils/money';
 import { PeriodCloseStateMachine } from '@/engines/PeriodCloseStateMachine';
 import { SOXComplianceEngine } from '@/engines/SOXComplianceEngine';
 import type { SOXReport, SOXCheckResult, SOXControlCategory } from '@/engines/SOXComplianceEngine';
-import { AuditLogEngine } from '@/engines/AuditLogEngine';
-import { WorkflowEngine } from '@/engines/WorkflowEngine';
-import { RBACEngine } from '@/engines/RBACEngine';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import {
@@ -46,6 +44,7 @@ const STATUS_ICON: Record<string, typeof CheckCircle> = {
   fail: XCircle,
   warning: AlertTriangle,
   not_applicable: Info,
+  insufficient_data: Info,
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -53,6 +52,7 @@ const STATUS_COLORS: Record<string, string> = {
   fail: '#EF4444',
   warning: '#EAB308',
   not_applicable: '#6B7280',
+  insufficient_data: '#6B7280',
 };
 
 const CATEGORY_LABELS: Record<SOXControlCategory, string> = {
@@ -77,9 +77,22 @@ const CATEGORY_ICONS: Record<SOXControlCategory, typeof Shield> = {
 // Components
 // ---------------------------------------------------------------------------
 
-function ScoreGauge({ score }: { score: number }) {
-  const color =
-    score >= 90 ? '#22C55E' : score >= 70 ? '#EAB308' : score >= 50 ? '#F97316' : '#EF4444';
+/**
+ * Compliance-score gauge. `null` means the score is not available — some
+ * control family had no source data to evaluate — and is rendered as the
+ * unavailable marker with an empty ring, never as 0 and never as 100.
+ */
+function ScoreGauge({ score }: { score: number | null }) {
+  const unavailable = score === null;
+  const color = unavailable
+    ? '#6B7280'
+    : score >= 90
+      ? '#22C55E'
+      : score >= 70
+        ? '#EAB308'
+        : score >= 50
+          ? '#F97316'
+          : '#EF4444';
   return (
     <div className="flex flex-col items-center">
       <div className="relative w-32 h-32">
@@ -92,17 +105,29 @@ function ScoreGauge({ score }: { score: number }) {
             fill="none"
             stroke={color}
             strokeWidth="8"
-            strokeDasharray={`${(score / 100) * 283} 283`}
+            strokeDasharray={`${((unavailable ? 0 : score) / 100) * 283} 283`}
             strokeLinecap="round"
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-3xl font-bold" style={{ color }}>
-            {score}
-          </span>
+          {unavailable ? (
+            <span
+              className="text-3xl font-bold text-[var(--text-muted)]"
+              data-testid="sox-score-unavailable"
+              title="No compliance score: at least one control family has no source data"
+            >
+              —
+            </span>
+          ) : (
+            <span className="text-3xl font-bold" style={{ color }}>
+              {score}
+            </span>
+          )}
         </div>
       </div>
-      <span className="text-sm text-[var(--text-muted)] mt-2">Compliance Score</span>
+      <span className="text-sm text-[var(--text-muted)] mt-2">
+        {unavailable ? 'Compliance score unavailable' : 'Compliance Score'}
+      </span>
     </div>
   );
 }
@@ -133,15 +158,26 @@ function SeverityBadge({ severity }: { severity: string }) {
   );
 }
 
+/**
+ * Per-family summary card.
+ *
+ * A family whose checks are all `not_applicable` is **not evaluated** — it is
+ * not 0% and not 100%. A family with no checks defined says so instead of
+ * reporting a comfortable 100%.
+ */
 function CategorySummaryCard({
   category,
   data,
 }: {
   category: SOXControlCategory;
-  data: { passed: number; failed: number; total: number };
+  data: { passed: number; failed: number; notApplicable?: number; total: number };
 }) {
   const Icon = CATEGORY_ICONS[category];
-  const pct = data.total > 0 ? Math.round((data.passed / data.total) * 100) : 100;
+  const notApplicable = data.notApplicable ?? 0;
+  const evaluated = data.total - notApplicable;
+  const state =
+    data.total === 0 ? 'no checks defined' : evaluated === 0 ? 'not evaluated' : 'evaluated';
+  const pct = state === 'evaluated' ? Math.round((data.passed / evaluated) * 100) : 0;
   return (
     <Card>
       <CardContent className="p-4">
@@ -152,7 +188,11 @@ function CategorySummaryCard({
           <div>
             <p className="text-sm font-medium">{CATEGORY_LABELS[category]}</p>
             <p className="text-xs text-[var(--text-muted)]">
-              {data.passed}/{data.total} passed
+              {state === 'evaluated'
+                ? `${data.passed}/${evaluated} passed`
+                : state === 'not evaluated'
+                  ? `not evaluated · ${notApplicable} check(s) without a source`
+                  : 'no checks defined'}
             </p>
           </div>
         </div>
@@ -161,7 +201,14 @@ function CategorySummaryCard({
             className="h-2 rounded-full transition-all"
             style={{
               width: `${pct}%`,
-              backgroundColor: pct === 100 ? '#22C55E' : pct >= 50 ? '#EAB308' : '#EF4444',
+              backgroundColor:
+                state !== 'evaluated'
+                  ? '#6B7280'
+                  : pct === 100
+                    ? '#22C55E'
+                    : pct >= 50
+                      ? '#EAB308'
+                      : '#EF4444',
             }}
           />
         </div>
@@ -233,7 +280,7 @@ export default function SOXCompliancePage() {
   // close workflow (the SOX page is where an auditor expects to find it).
   const periods = useMemo(() => buildFiscalPeriods(), []);
   const closeEntries = usePeriodCloseStore((s) => s.entries);
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = todayISO();
   const currentPeriod =
     periods.find(
       (p) => p.startDate.slice(0, 10) <= todayStr && p.endDate.slice(0, 10) >= todayStr
@@ -265,83 +312,16 @@ export default function SOXCompliancePage() {
     [closeEntries]
   );
 
-  // Create engines with some sample data for demo
-  const [engine] = useState(() => {
-    const auditEngine = new AuditLogEngine({ retentionDays: 2555 });
-    const workflowEngine = new WorkflowEngine();
-    const rbacEngine = new RBACEngine();
-
-    // Set up sample RBAC data
-    rbacEngine.assignRole('admin-user', 'admin', ['*'], 'system');
-    rbacEngine.assignRole('mgr-user', 'manager', ['entity-1'], 'admin-user');
-    rbacEngine.assignRole('analyst-user', 'analyst', ['entity-1'], 'admin-user');
-    rbacEngine.assignRole('viewer-user', 'viewer', ['entity-1'], 'admin-user');
-
-    // Log some audit entries
-    auditEngine.log({
-      userId: 'analyst-user',
-      userName: 'Analyst',
-      action: 'create',
-      resource: 'journal_entry',
-      resourceId: 'je-001',
-      details: 'Created journal entry',
-      oldValue: null,
-      newValue: { amount: 5000 },
-    });
-    auditEngine.log({
-      userId: 'mgr-user',
-      userName: 'Manager',
-      action: 'approve',
-      resource: 'journal_entry',
-      resourceId: 'je-001',
-      details: 'Approved journal entry',
-    });
-    auditEngine.log({
-      userId: 'analyst-user',
-      userName: 'Analyst',
-      action: 'create',
-      resource: 'budget',
-      resourceId: 'b-001',
-      details: 'Created Q1 budget',
-    });
-
-    // Create a workflow
-    const wf = workflowEngine.createWorkflow({
-      name: 'Budget Approval',
-      description: 'Standard budget approval workflow',
-      steps: [
-        {
-          id: 's1',
-          name: 'Manager Review',
-          type: 'sequential',
-          approvers: ['mgr-user'],
-          order: 0,
-          timeoutHours: 48,
-        },
-        {
-          id: 's2',
-          name: 'Admin Approval',
-          type: 'sequential',
-          approvers: ['admin-user'],
-          order: 1,
-          timeoutHours: 24,
-        },
-      ],
-      createdBy: 'admin-user',
-      isTemplate: false,
-    });
-
-    // Submit a request
-    workflowEngine.submitRequest(
-      wf.id,
-      'Q1 Budget Review',
-      'Quarterly budget',
-      'analyst-user',
-      50000
-    );
-
-    return new SOXComplianceEngine(auditEngine, workflowEngine, rbacEngine);
-  });
+  // The engines start empty on purpose. This page used to seed a demo audit log
+  // (3 entries), four demo RBAC roles and a demo workflow with a submitted
+  // request, and the engine then reported the approval-workflow,
+  // segregation-of-duties, audit-trail and access-control controls as passing on
+  // events that never happened — fabricated assurance behind a "compliant / 100"
+  // verdict. With empty sources those families report `not_applicable` and the
+  // report publishes no score and no verdict (see
+  // `SOXComplianceEngine.generateReport`). Wiring a real source is an owner
+  // decision (which audit trail is authoritative), not something to fake here.
+  const [engine] = useState(() => new SOXComplianceEngine());
 
   const generateReport = useCallback(() => {
     // Derive real data from GL store
@@ -424,6 +404,15 @@ export default function SOXCompliancePage() {
     generateReport();
   }, [generateReport]);
 
+  /** Control families where every check is `not_applicable`: no source data. */
+  const unevaluatedCategories = useMemo(() => {
+    if (!report) return [] as SOXControlCategory[];
+    return (Object.keys(report.byCategory) as SOXControlCategory[]).filter((cat) => {
+      const data = report.byCategory[cat];
+      return data.total > 0 && (data.notApplicable ?? 0) === data.total;
+    });
+  }, [report]);
+
   const filteredChecks = useMemo(() => {
     if (!report) return [];
     let checks = [...report.checks];
@@ -466,7 +455,7 @@ export default function SOXCompliancePage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `sox-compliance-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `sox-compliance-${todayISO()}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }, [report]);
@@ -582,7 +571,7 @@ export default function SOXCompliancePage() {
                         Generated {new Date(report.generatedAt).toLocaleString()}
                       </span>
                     </div>
-                    <div className="grid grid-cols-4 gap-4 mb-4">
+                    <div className="grid grid-cols-5 gap-4 mb-4">
                       <div>
                         <p className="text-2xl font-bold text-green-400">{report.summary.passed}</p>
                         <p className="text-xs text-[var(--text-muted)]">Passed</p>
@@ -598,16 +587,33 @@ export default function SOXCompliancePage() {
                         <p className="text-xs text-[var(--text-muted)]">Warnings</p>
                       </div>
                       <div>
+                        <p
+                          className="text-2xl font-bold text-[var(--text-muted)]"
+                          data-testid="sox-not-evaluated-count"
+                        >
+                          {report.summary.notApplicable ?? 0}
+                        </p>
+                        <p className="text-xs text-[var(--text-muted)]">Not evaluated</p>
+                      </div>
+                      <div>
                         <p className="text-2xl font-bold text-[var(--text-muted)]">
                           {report.summary.total}
                         </p>
                         <p className="text-xs text-[var(--text-muted)]">Total Checks</p>
                       </div>
                     </div>
-                    <p className="text-xs text-[var(--text-muted)] mb-3">
-                      Note: control checks partly derive from built-in sample workflow/audit events
-                      included for demonstration (E-09 honesty disclosure).
-                    </p>
+                    {unevaluatedCategories.length > 0 && (
+                      <p
+                        className="text-xs text-[var(--text-muted)] mb-3"
+                        data-testid="sox-unevaluated-note"
+                      >
+                        {unevaluatedCategories.map((c) => CATEGORY_LABELS[c]).join(', ')} checks are
+                        not evaluated: no authoritative source is wired for them, and choosing that
+                        source is an open owner decision. No sample or demonstration events are
+                        used, so no compliance score or verdict is published until every control
+                        family can be evaluated.
+                      </p>
+                    )}
                     {report.criticalFindings.length > 0 && (
                       <div className="p-3 bg-red-900/20 border border-red-800/30 rounded">
                         <p className="text-sm text-red-400 font-medium">

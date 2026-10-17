@@ -77,6 +77,25 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **The SOX report no longer publishes assurance it does not have.**
+  `SOXCompliancePage` seeded a demo `AuditLogEngine` (3 entries), four demo RBAC roles and a demo
+  workflow with a submitted request, and `SOXComplianceEngine.generateReport` turned that invented
+  data into `pass` verdicts for the approval-workflow, segregation-of-duties, audit-trail (×4) and
+  access-control families — on screen: a 100 gauge and a "compliant" badge. A disclosure note said
+  sample events were involved; the verdict still read as the user's posture. The demo seeding is
+  deleted, a family whose source holds no data is now `not_applicable` with the reason,
+  `overallScore` is `number | null` (null while any family is unevaluated, so never 0 and never
+  100), `overallStatus` gains `insufficient_data` (a critical GL finding still outranks it as
+  `non_compliant`), `byCategory` counts `notApplicable`, and the page renders "—", a
+  "Not evaluated" KPI, per-family "not evaluated" cards and the reason. Two `new Date()` wall-clock
+  reads in the page now come from `@/utils/clock`. The authoritative audit/workflow/RBAC source is
+  still an owner decision and was **not** made here. Failing-first: **9 red** (5 engine:
+  `expected 'pass' to be 'not_applicable'`, `expected 100 to be null`, `expected 78 to be null`;
+  4 page: no `not applicable` badges, no `sox-score-unavailable`, audit trail still read
+  "2 entries", old sample-events note present) → green after: `SOXComplianceEngine.test.ts` 83/83,
+  `SOXCompliancePage.assurance.test.tsx` 5/5, 10 files / 169 tests across that engine suite,
+  `src/pages/audit` and the all-pages smoke suite. Gates: tsc 0, lint 0, format:check 0, engines:manifest+verify 182,
+  money:ast 0, determinism 344/79, architecture:guardrails 0, fabrication:audit 0, docs:verify 0.
 - 2026-10-17 (LEAD, solo): **A standard D365 export now imports end to end, and NFR-004 has its
   import-to-output test.** `src/services/import/d365Parser.ts` had 0 non-test callers: the wizard's
   auto-map knew only generic column names, so an F&O `GeneralJournalAccountEntryEntity` or a BC
