@@ -881,12 +881,24 @@ describe('GLUploadPage — W6-P0-09/P0-10 live import coercion', () => {
     expect(rows[0]!.credit).toBe(250);
   });
 
-  it('stores negative parenthesized and currency-prefixed amounts correctly', async () => {
-    await runImport('accountCode,postDate,debit,credit\n1000,2024-01-15,"(500)","$1,000"\n');
+  it('parses currency-prefixed amounts', async () => {
+    await runImport('accountCode,postDate,debit,credit\n1000,2024-01-15,"$500","$1,000"\n');
     expect(storeStub.importGLData).toHaveBeenCalledTimes(1);
     const rows = importedRows();
-    expect(rows[0]!.debit).toBe(-500);
+    expect(rows[0]!.debit).toBe(500);
     expect(rows[0]!.credit).toBe(1000);
+  });
+
+  it('rejects a negative parenthesized debit instead of importing it (debit >= 0)', async () => {
+    // The domain rule is debit >= 0 / credit >= 0. This test previously
+    // asserted that `(500)` became debit -500; the store would have rejected
+    // that row at commit time, but this suite mocks the store, so the illegal
+    // value looked accepted.
+    await runImport('accountCode,postDate,debit,credit\n1000,2024-01-15,"(500)","$1,000"\n');
+    expect(storeStub.importGLData).not.toHaveBeenCalled();
+    expect(storeStub.setImportError).toHaveBeenCalledWith(
+      expect.stringMatching(/debit must be a non-negative amount/)
+    );
   });
 
   it('derives period from a validated ISO date', async () => {
