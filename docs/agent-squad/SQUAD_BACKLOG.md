@@ -77,6 +77,29 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **The migration wizard now migrates.** `handleImport` simulated the
+  run — `setTimeout` 0→100 %, message "Import complete", `onComplete('snapshot-' + Date.now())`,
+  with the comment "In a real implementation, this would call engine.importData()". No row was
+  read, no snapshot recorded, yet `MigrationPage.handleComplete` navigated to `/data` with
+  `migrationComplete: true` and that invented id and refreshed a history that could not contain it.
+  The wizard also built its own `MigrationEngine` (a fresh throwaway per render, via
+  `useRef(new MigrationEngine())`), so even a real run would have been invisible to the page.
+  Now: the wizard calls `executeMigration(file, mappings, { sheetName })`, reports the engine's own
+  `migration-<nowMs()>` snapshot id and its validated row count, renders every rejected row with
+  row/column/reason (`import-error-list`), claims no success and calls no `onComplete` when the run
+  is invalid or records no snapshot, and takes an optional `engine` prop; `MigrationPage` injects
+  its own instance. `useState(() => new MigrationEngine())` replaces the per-render throwaway, and
+  the `Date.now()` in the component is gone. Failing-first: **5 red** (4 wizard: no
+  `Imported 2 rows from "Data"`, `expected 'snapshot-1792272293253' to match /^migration-\d+$/`,
+  header-only file claimed success, injected engine's `executeMigration` never called; 1 page:
+  `expected undefined to be MigrationEngine{}`) → green after: `MigrationWizard.execute` 5/5,
+  `MigrationPage` 10/10, 4 files / 28 tests in `src/components/migration` + the page suite, and
+  35 files / 299 tests across `src/pages/data`, `src/pages/__tests__/data`, the all-pages smoke
+  suite and `MigrationEngine.test.ts`. Gates: tsc 0, lint 0 (after moving the fallback engine off a
+  ref — `react-hooks/refs` rejects reading a ref during render), format:check 0, engines:verify 182,
+  money:ast 0, determinism 344/79, architecture:guardrails 0, fabrication:audit 0, docs:verify 0.
+  Queued next, recorded as STILL FALSE in `docs/agent/09_KNOWN_GAPS.md`: readiness reports 100 % GREEN for a
+  header-only file and 70 % YELLOW for an empty sheet.
 - 2026-10-17 (LEAD, solo): **The SOX report no longer publishes assurance it does not have.**
   `SOXCompliancePage` seeded a demo `AuditLogEngine` (3 entries), four demo RBAC roles and a demo
   workflow with a submitted request, and `SOXComplianceEngine.generateReport` turned that invented

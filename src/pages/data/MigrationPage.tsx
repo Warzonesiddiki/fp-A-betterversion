@@ -176,7 +176,11 @@ export default function MigrationPage() {
             </Button>
           }
         />
-        <MigrationWizard onComplete={handleComplete} onCancel={handleCancel} />
+        <MigrationWizard
+          engine={migrationEngine}
+          onComplete={handleComplete}
+          onCancel={handleCancel}
+        />
       </div>
     );
   }
