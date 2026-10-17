@@ -26,8 +26,37 @@ export const Alert: React.FC<AlertProps> = memo(
     variant = 'default',
     confirmText = 'Confirm',
     cancelText = 'Cancel',
+    className,
   }) => {
-    void type;
+    // Two call shapes share this component:
+    //  - confirmations (useConfirmation) pass `open` + handlers → modal
+    //    dialog, below.
+    //  - inline banners (GL upload import failures, BudgetCreatePage form
+    //    errors, DataImportPage migration errors, ReconciliationPanel) pass
+    //    only title/message/type/className. Rendering the modal path for
+    //    them left them with NOTHING on screen — a rejected source row
+    //    computed its reason and the user never saw it (FR-002). The
+    //    display-only shape renders an in-page role="alert" banner.
+    const isDialog = open !== undefined || onConfirm !== undefined || onCancel !== undefined;
+
+    if (!isDialog) {
+      return (
+        <div
+          role="alert"
+          className={cn(
+            'rounded-lg border p-4',
+            type === 'error'
+              ? 'border-[var(--negative)] bg-[var(--negative-subtle)] text-[var(--text-on-danger-subtle)]'
+              : 'border-[var(--border-default)] bg-[var(--bg-elevated)] text-[var(--text-primary)]',
+            className
+          )}
+        >
+          <p className="font-semibold">{title}</p>
+          <p className="text-sm">{message}</p>
+        </div>
+      );
+    }
+
     return (
       <AlertDialog.Root open={open}>
         <AlertDialog.Portal>
