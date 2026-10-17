@@ -52,3 +52,43 @@ Aligned with `docs/agent-squad/SQUAD_BACKLOG.md`:
 ## 4. Work Activity Log
 
 - **2026-10-16:** Roster expanded from 6 to 11 agents. Renamed 5 existing agents to domain roles; spawned 5 specialized teammates. Initialized tracker document.
+
+- **2026-10-17 19:23 UTC — F-02: GLUploadPage interop (the last uncovered GL screen consumer):**
+  - Commit claimed: needs a new commit on the session branch (this run authored the test file; the
+    four prior commits `0751af7f`, `d5702168`, `c879d3e8`, `dffe0aea` are already in the local
+    history but not pushed). Until pushed, treat this as "on disk, re-verified this run", not "landed".
+  - What F-02 proves, on screen AND in the real store from one run:
+    1. GLUploadPage interop: 5/5 — clean import end to end (counts, cent-exact control totals
+       `1500.50/1500.50/0.00`, batch/SHA-256/source-row provenance, "not in file" for absent
+       entity/currency facts, never zero); FR-003 byte-identical re-import refused with prior batch id
+       and no financial effect; FR-002 whole-file rejection naming `row 26: missing accountCode` with
+       no entries/history; preview gate blocks a bad row inside its window.
+    2. Alert display-only shape now renders a real inline `role="alert"` banner: `Alert.test.tsx`
+       12/12, with the previously-dropped `className` honored and the confirmation-dialog path untouched.
+    3. ExceptionReviewCard/List CSS: the pre-existing `tokenBridge` red from departed-seat `1f4b896b`
+       (6 undeclared `var(--surface-subtle)`/`var(--bg-base)` reads) was mapped to the declared
+       `--bg-elevated`; `ExceptionReviewCard.test.tsx` + `ExceptionReviewList.test.tsx` 9/9, no
+       assertion changed.
+  - Commands run this session on the current files (exit status captured with `set -o pipefail`):
+    `npx tsc` 0; Alert 12/12; exceptions components 9/9; GLUploadPage interop 5/5;
+    GLUploadPage.test.tsx 4/4; GLJournalsPage.interop 4/4; GLExplorerPage.interop 3/3;
+    GLTrialBalancePage.test.tsx 5/5; components barrel index 4/4; `AnomalyExplainer.integration.ts`
+    0 importers, removed from tree.
+  - Honesty note: `GLDataPreview` says "N errors detected in 25 rows" while only validating the first
+    20 — the late-row rejection test works around that. This is observed but out of scope for F-02.
+  - Next: re-state the verified state into `LATEST.md`/`COMMS_LOG.md`/`STATUS_BOARD.md` under a single
+    commit if the tree is still clean after F-02's files settle.
+
+- **2026-10-17 19:23 UTC — verification-before-completion gate (final):**
+  - Drafted proof bundle composed at commit time:
+    - `GLUploadPage.interop.test.tsx` — 5/5
+    - `Alert.test.tsx` — 12/12
+    - `ExceptionReviewCard.test.tsx` + `ExceptionReviewList.test.tsx` — 9/9
+    - tsc — 0
+    - money:ast — 0 unsafe (held from the departed-seat fix)
+    - determinism:ratchet — 344 sites / 79 files (held)
+    - docs:verify — 0 (store count 48 measured, 44 persisted)
+    - docs:links — 0 broken
+    - engines:verify — 0
+  - No command on the current files returned non-zero; no test was skipped, weakened, or retouched to
+    pass; no `as any` / `@ts-expect-error` / `eslint-disable` was added to make a green gate.
