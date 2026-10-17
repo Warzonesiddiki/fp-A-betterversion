@@ -77,6 +77,24 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **Migration readiness no longer scores a file it never assessed.**
+  `assessReadiness` began at `score = 100` and only deducted, so a workbook with a header row and no
+  data rows came back as "Migration Readiness: 100 %" with a GREEN badge, and an entirely empty sheet
+  came back as 70 % YELLOW for "Required columns not mapped" — blaming the user's mapping for a file
+  with nothing in it. `MigrationReadiness.score` is now `number | null`, `status` gains `unknown`
+  (exported as `MigrationReadinessStatus`), and the engine returns early with the reason, which also
+  reaches `plan.warnings`. `MigrationWizard` renders "—" in the Readiness Score KPI plus a
+  `readiness-not-assessed` note and a muted icon; `DataImportPage` renders "—" with a neutral
+  `NOT ASSESSED` badge (not the red failure styling, not the green all-clear) and disables
+  "Start Migration". Files that do hold rows score exactly as before. Failing-first with the three
+  sources stashed: **5 red** (`expected 100 to be null`, `expected 70 to be null`, no "—" in the
+  readiness KPI, 2× missing `migration-readiness-score`) → green after: `MigrationEngine.test.ts`
+  (3 new in "readiness is not earned by an empty file"), `DataImportPage.deep.test.tsx` (2 new, one
+  of them the numeric-score guard), `MigrationWizard.execute.test.tsx` (1 new), 6 files / 77 tests
+  targeted and 35 files / 305 tests across `src/pages/data`, `src/pages/__tests__/data`,
+  `src/components/migration`, the engine suite and the all-pages smoke suite. Gates: tsc 0, lint 0,
+  format:check 0, engines:verify 182, money:ast 0, determinism 344/79, architecture:guardrails 0,
+  fabrication:audit 0, docs:links strict 0, docs:verify 0.
 - 2026-10-17 (LEAD, solo): **The migration wizard now migrates.** `handleImport` simulated the
   run — `setTimeout` 0→100 %, message "Import complete", `onComplete('snapshot-' + Date.now())`,
   with the comment "In a real implementation, this would call engine.importData()". No row was

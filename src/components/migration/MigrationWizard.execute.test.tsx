@@ -18,7 +18,7 @@
  * hand the wizard the workbook the test built.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, act, waitFor } from '@testing-library/react';
+import { render, screen, act, waitFor, within } from '@testing-library/react';
 import ExcelJS from 'exceljs';
 import type { MigrationEngine } from '@/engines/MigrationEngine';
 import MigrationWizard from './MigrationWizard';
@@ -143,6 +143,29 @@ describe('MigrationWizard import execution', () => {
     // to invent `snapshot-<Date.now()>`, an id no store or engine ever held, so
     // MigrationPage navigated away claiming a migration that did not exist.
     expect(reportedId).toMatch(/^migration-\d+$/);
+  });
+
+  it('reports readiness as unavailable for a workbook with no data rows', async () => {
+    pendingFile = await xlsxFile([['Account', 'Amount']], 'header-only.xlsx');
+    renderWizard();
+
+    await act(async () => {
+      screen.getByText('Excel (.xlsx/.xls)').click();
+    });
+    await act(async () => {
+      screen.getByTestId('upload-btn').click();
+    });
+    await waitFor(() => expect(screen.getByText('Column Mapping')).toBeInTheDocument());
+
+    // A header-only workbook has nothing to assess. The wizard used to show
+    // "Readiness Score 100%" with a green icon for it. Scope the score
+    // assertion to the readiness KPI: the mapping table legitimately renders
+    // 100% confidence for exact column matches.
+    const readinessKpi = screen.getByRole('region', { name: 'Readiness Score' });
+    expect(within(readinessKpi).getByText('—')).toBeInTheDocument();
+    expect(within(readinessKpi).queryByText('100%')).toBeNull();
+    expect(screen.getByTestId('readiness-not-assessed')).toHaveTextContent(/no data rows/i);
+    expect(screen.queryByText('null%')).toBeNull();
   });
 
   it('refuses to claim success for a workbook that holds no data rows', async () => {

@@ -399,34 +399,48 @@ export default function DataImportPage() {
               {/* Readiness Report */}
               <div
                 className={`p-4 rounded-lg border ${
-                  readiness.status === 'green'
-                    ? 'bg-green-900/20 border-green-800/30'
-                    : readiness.status === 'yellow'
-                      ? 'bg-yellow-900/20 border-yellow-800/30'
-                      : 'bg-red-900/20 border-red-800/30'
+                  // 'unknown' is neutral: nothing was assessed, which is
+                  // neither a good nor a bad posture, so it must not borrow the
+                  // red failure styling or the green all-clear.
+                  readiness.status === 'unknown'
+                    ? 'bg-slate-800/20 border-slate-700/30'
+                    : readiness.status === 'green'
+                      ? 'bg-green-900/20 border-green-800/30'
+                      : readiness.status === 'yellow'
+                        ? 'bg-yellow-900/20 border-yellow-800/30'
+                        : 'bg-red-900/20 border-red-800/30'
                 }`}
               >
                 <div className="flex items-center gap-3 mb-2">
                   <Shield
                     className={`h-5 w-5 ${
-                      readiness.status === 'green'
-                        ? 'text-green-400'
-                        : readiness.status === 'yellow'
-                          ? 'text-yellow-400'
-                          : 'text-red-400'
+                      readiness.status === 'unknown'
+                        ? 'text-slate-400'
+                        : readiness.status === 'green'
+                          ? 'text-green-400'
+                          : readiness.status === 'yellow'
+                            ? 'text-yellow-400'
+                            : 'text-red-400'
                     }`}
                   />
-                  <span className="font-semibold">Migration Readiness: {readiness.score}%</span>
+                  <span className="font-semibold">
+                    Migration Readiness:{' '}
+                    <span data-testid="migration-readiness-score">
+                      {readiness.score === null ? '—' : `${readiness.score}%`}
+                    </span>
+                  </span>
                   <Badge
                     variant={
-                      readiness.status === 'green'
-                        ? 'default'
-                        : readiness.status === 'yellow'
-                          ? 'secondary'
+                      readiness.status === 'unknown' || readiness.status === 'yellow'
+                        ? 'secondary'
+                        : readiness.status === 'green'
+                          ? 'default'
                           : 'destructive'
                     }
                   >
-                    {readiness.status.toUpperCase()}
+                    {readiness.status === 'unknown'
+                      ? 'NOT ASSESSED'
+                      : readiness.status.toUpperCase()}
                   </Badge>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3 text-sm">
@@ -565,7 +579,7 @@ export default function DataImportPage() {
                 </Button>
                 <Button
                   onClick={handleExecuteMigration}
-                  disabled={readiness.status === 'red'}
+                  disabled={readiness.status === 'red' || readiness.status === 'unknown'}
                   aria-label="Start migration"
                 >
                   <Globe className="h-4 w-4 mr-2" />

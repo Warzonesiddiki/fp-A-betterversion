@@ -211,6 +211,9 @@ export default function MigrationWizard({
         return 'text-yellow-600';
       case 'red':
         return 'fin-negative';
+      case 'unknown':
+        // Nothing was assessed: no colour-coded posture, good or bad.
+        return 'text-muted-foreground';
       default:
         return '';
     }
@@ -303,7 +306,7 @@ export default function MigrationWizard({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <KPIValue
                 label="Readiness Score"
-                value={`${readiness.score}%`}
+                value={readiness.score === null ? '—' : `${readiness.score}%`}
                 icon={<CheckCircle className={`h-4 w-4 ${getReadinessColor(readiness.status)}`} />}
               />
               <KPIValue
@@ -317,6 +320,11 @@ export default function MigrationWizard({
                 icon={<FileSpreadsheet className="h-4 w-4" />}
               />
             </div>
+            {readiness.score === null && (
+              <p data-testid="readiness-not-assessed" className="text-sm text-muted-foreground">
+                Readiness was not assessed: {readiness.issues[0]?.message ?? 'no reason recorded'}.
+              </p>
+            )}
             {readiness.issues.length > 0 && (
               <div className="space-y-2">
                 {readiness.issues.map((issue, i) => (
