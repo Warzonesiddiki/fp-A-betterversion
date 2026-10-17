@@ -74,7 +74,7 @@ re-run the commands if you want them fresh.
 - **Squad docs updated with the exact measured numbers from this session.**
   Files: `docs/agent-squad/agents-comms/LATEST.md`,
   `docs/agent-squad/agents-comms/COMMS_LOG.md`,
-  `docs/agent-squad/STATUS_BOARD.md`,
+  `docs/agent-squad/agents-comms/STATUS_BOARD.md`,
   `docs/agent-squad/SQUAD_STATE.md`,
   `docs/agent-squad/SQUAD_BACKLOG.md`.
 
@@ -314,7 +314,7 @@ Suggested, not mandatory:
      ~90% completion with zero-compromise coding across all existing areas, with
      evidence for every claim.
 
-3. **Pick the highest finishable unit from `SQUAD_BACKLOG.md` and run it
+3. **Pick the highest finishable unit from `docs/agent-squad/SQUAD_BACKLOG.md` and run it
    one item at a time, one commit at a time.**
    - Prefer the current P0/P1 order in that file unless a decision-log decision
      changes it.
@@ -347,7 +347,7 @@ of these:
 - [ ] Re-ran the gate once on the clean tree (`npm run tsc && npm run lint &&
       npm run format:check`) and recorded the result.
 - [ ] Understood that the only uncommitted change right now is the F-02 doc note
-      in `SQUAD_ACTIVITY_AND_TRACKER.md`.
+      in `docs/agent-squad/SQUAD_ACTIVITY_AND_TRACKER.md`.
 - [ ] Understood the next-session target as written in section 8, including the
       caveat that "completion %" is a planning target until the tree proves it.
 
@@ -375,7 +375,7 @@ this is the compact version:
 > `docs/agent-squad/SQUAD_ACTIVITY_AND_TRACKER.md`. Read `AGENTS.md` first, then
 > `docs/README.md`, then the backlog at `docs/agent-squad/SQUAD_BACKLOG.md`.
 > Current branch is `main`; the only dirty path right now is the F-02 doc note
-> in `SQUAD_ACTIVITY_AND_TRACKER.md`; the code deliverables from this session
+> in `docs/agent-squad/SQUAD_ACTIVITY_AND_TRACKER.md`; the code deliverables from this session
 > are committed locally but not pushed. Mission for the fresh session: finish the
 > documented spine and gap list toward ~90% completion with zero-compromise coding
 > across all existing areas, one item and one commit at a time, with evidence for

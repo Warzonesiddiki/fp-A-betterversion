@@ -67,6 +67,27 @@ guards → reviewed exception output — is the priority surface.
   docs:verify 0, docs:links 0/0, engines:verify 0; Alert-consumer suites 9 files/116 tests.
 - Next lead unit: `masterStorage` test suite (G-06's abandoned remit — no file exists).
 
+## 2026-10-17 15:30 UTC — LEAD: preview gate now shares the import contract
+
+- `GLDataPreview` was validating its own invented rule set: only the first 20 rows, amounts through
+  `parseFloat`, blank amount cells rejected, row numbers 1-based instead of source-file rows — while
+  the banner claimed "N errors detected in M rows". A structurally broken row past row 20 passed the
+  gate with Confirm enabled. Fixed at the cause: every row is now validated through `parseGLRows` (the
+  same function `handleImport` uses), rejected rows are named by source-file row with the importer's
+  reason (including rows outside the 20-row table window), the scope/window copy is exact, and
+  confirmation is blocked. Failing-first: 8 red on the component suite.
+- Evidence: `GLDataPreview.test.tsx` 26/26; `GLUploadPage.interop.test.tsx` 7/7 (clean import with a
+  blank amount cell, FR-003 duplicate refusal, source-row-26 gate block, store-level double-entry
+  atomic rejection, corrected-file reprocessing for UX-002); consumers `GLUploadPage.test.tsx` 4/4,
+  `.deep` 44/44, smoke 10/10; tsc 0, lint 0, format 0, money:ast 0 unsafe, determinism 344/79.
+- Install gate: `npm ci` failed at HEAD (lockfile 1.1.21 vs override ^2.1.7 for `brace-expansion`);
+  resynced minimally and verified `npm ci` exit 0.
+- Correction to the inherited handover: `src/utils/masterStorage.test.ts` **does exist and is green**
+  (9/9); it is not an open gap. The F-02 doc note and the four local-only commits named in the
+  handover are not present in this checkout (squashed history), so the re-verification above is the
+  evidence of record.
+- Next lead unit: backlog P1-5 template-clone honesty audit, or another measured P0/P1 gap.
+
 ## What is blocked
 
 - Anything that assumes a verified D365 schema or a real source sample without that sample

@@ -600,3 +600,42 @@ entry's commit.
 abandoned remit; no file exists).
 **Verify first:** `npx vitest run src/pages/data/GLUploadPage.interop.test.tsx`, then
 `npx vitest run src/theme/tokenBridge.contract.test.ts`.
+
+## 2026-10-17 15:30 UTC — LEAD — DONE: preview gate now enforces the import contract
+
+**From:** LEAD (solo; no seats active)
+**Files:** `src/components/data/GLDataPreview.tsx`, `src/components/data/GLDataPreview.test.tsx`,
+`src/pages/data/GLUploadPage.interop.test.tsx`, `package-lock.json`.
+
+**What:**
+1. **Defect:** `GLDataPreview` implemented a second validation rule set — `parseFloat` amounts,
+   only `data.slice(0, 20)` validated, blank amount cells rejected, US M/D/YYYY export dates
+   rejected, row numbers 1-based — while the banner said "N errors detected in {data.length}
+   rows". A structurally broken row past the 20-row window passed the gate with Confirm enabled,
+   so the user could import a file the preview never checked. This is the gap recorded in the
+   handover (limitation #2); it was worse than the count wording: the gate itself was wrong and
+   disagreed with the importer in both directions.
+2. **Fix:** the preview derives every row's status from `parseGLRows` — the same pure function
+   `handleImport` calls. All rows are validated; only the table is windowed at 20. Rows are
+   numbered by source-file position (header = row 1), matching `ImportRejection.row`. Rejected
+   rows outside the window get a named list ("Row 26: missing accountCode …"). The scope line is
+   exact: "All N data rows checked against the import rules · Showing the first 20 of N data rows".
+   Confirmation is blocked whenever any row is rejected. The optional `accounts` prop remains a
+   preview-only advisory and is not passed by `GLUploadPage`.
+3. **`npm ci` at HEAD was broken:** lockfile `brace-expansion@1.1.21` under `minimatch@3.1.5`
+   did not satisfy the `^2.1.7` override. Resynced only that target; `npm ci --ignore-scripts`
+   now exits 0.
+
+**Evidence (this tree, pipefail):**
+- Failing-first: `GLDataPreview.test.tsx` 8 failed / 17 passed before the fix → **26/26** after.
+- `GLUploadPage.interop.test.tsx` **7/7**: clean import now carries a blank amount cell (proves
+  preview/import agreement end to end), FR-003 duplicate refusal, source-row-26 gate block with
+  the store untouched, store-level double-entry atomic rejection, corrected-file reprocessing.
+- Consumers: `GLUploadPage.test.tsx` 4/4, `GLUploadPage.deep.test.tsx` 44/44,
+  `smoke-data-pages.test.tsx` 10/10 (58/58 combined).
+- `masterStorage.test.ts` 9/9 — the inherited handover says the file does not exist; it does.
+- Gates: tsc 0 · lint 0 · format:check 0 · money:ast 0 unsafe · determinism 344/79 · `npm ci` 0.
+
+**Verify first:** `npx vitest run src/components/data/GLDataPreview.test.tsx
+src/pages/data/GLUploadPage.interop.test.tsx`.
+**Action requested:** none — solo mode. D365 remains "expected, not verified" (DEC-001).

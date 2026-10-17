@@ -77,6 +77,14 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **Preview gate/import divergence closed** — `GLDataPreview` had its own
+  validation rules (float `parseFloat`, only the first 20 rows, blank cells rejected) while the
+  banner claimed the error count covered the whole file; a broken row past row 20 left Confirm
+  enabled. It now derives every row's status from `parseGLRows` (the import's parser), numbers rows
+  by source-file position, lists rejected rows outside the display window, and blocks confirmation.
+  Failing-first: 8 red → `GLDataPreview.test.tsx` 26/26; `GLUploadPage.interop.test.tsx` 7/7
+  (incl. corrected-file reprocessing, UX-002). Also repaired `npm ci` at HEAD via a one-target
+  lockfile resync. Gates: tsc 0, lint 0, format 0, money:ast 0, determinism 344/79.
 - 2026-10-17 (LEAD, solo): P1-4 consumer coverage completed across all four GL screens —
   `GLUploadPage` real-store interop 5/5 (`c879d3e8`) plus the Alert display-only renders-nothing
   fix (`0751af7f`); pre-existing tokenBridge dangling-token red repaired (`d5702168`).

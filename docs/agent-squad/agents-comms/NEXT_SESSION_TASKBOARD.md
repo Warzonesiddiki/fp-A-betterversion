@@ -34,7 +34,7 @@
 
 - What: the incoming session should be able to coordinate, even if solo.
 - Files:
-  - `docs/agent-squad/AGENT_JOIN_GIDE.md`
+  - `docs/agent-squad/AGENT_JOIN_GUIDE.md`
   - `docs/agent-squad/SQUAD_STATE.md`
   - `docs/agent-squad/SQUAD_BACKLOG.md`
   - `docs/agent-squad/SQUAD_AGREEMENT.md`
@@ -50,7 +50,7 @@
   1. Read the hub files in that order.
   2. Re-affirm the session reality: solo mode, all Gemini seats departed.
   3. If you take a file, register the claim in `CLAIMS.md` before editing.
-  4. If shared state changes, update `STATUS_BOARD.md` and `SQUAD_STATE.md` and append a note in `COMMS_LOG.md`.
+  4. If shared state changes, update `STATUS_BOARD.md` and `docs/agent-squad/SQUAD_STATE.md` and append a note in `COMMS_LOG.md`.
 - Acceptance: you know who owns what, what is dirty, and where to append notes.
 - Verify first: `npm run docs:links` after any doc edit.
 - Honest failure mode: if you inherit an unclaimed file that is also dirty, do not silently overwrite it; record the collision and ask.
@@ -216,6 +216,12 @@
 - Verify first:
   - `npx vitest run src/components/data/GLDataPreview.test.tsx src/pages/data/GLUploadPage.interop.test.tsx`
 - Honest failure mode: do not change the wording only in the test while leaving the component lying.
+- **Status: DONE 2026-10-17 (LEAD).** Contract chosen: validate every row through `parseGLRows`
+  (the import's parser); only the table is windowed at 20. Rows are numbered by source-file
+  position, off-window rejected rows are listed with the importer's reason, and the scope line
+  states the window exactly. Failing-first 8 red → `GLDataPreview.test.tsx` 26/26;
+  `GLUploadPage.interop.test.tsx` 7/7 (source-row-26 block, store atomic rejection, corrected-file
+  reprocessing).
 
 ---
 
@@ -231,7 +237,7 @@
   - `docs/agent-squad/SQUAD_ACTIVITY_AND_TRACKER.md`
   - `docs/agent-squad/agents-comms/COMMS_LOG.md`
   - `docs/agent-squad/agents-comms/LATEST.md`
-  - `docs/agent-squad/STATUS_BOARD.md`
+  - `docs/agent-squad/agents-comms/STATUS_BOARD.md`
   - `docs/agent-squad/SQUAD_BACKLOG.md`
 - Instructions:
   1. Re-run the suite on the current files before you touch anything.
@@ -425,14 +431,15 @@
   - `src/components/data/GLDataPreview.tsx`
   - `src/components/data/GLDataPreview.test.tsx`
   - the interop test that works around it
-- Status: observed, not fixed.
-- Instructions: see Task E4. If not finished, leave it recorded honestly.
+- Status: **fixed 2026-10-17** (see Task E4). The count is exact because every row is validated;
+  the 20-row limit is now only the display window and says so.
 
 **Task K2 — masterStorage.test.ts never landed**
 
-- What: the departed G-06 seat started but did not finish the offline/storage test suite; no file exists now.
-- Files: none currently; the task is to create/finish the suite if it is worth doing.
-- Status: open, unclaimed, no file.
+- What: the departed G-06 seat started but did not finish the offline/storage test suite.
+- Files: `src/utils/masterStorage.test.ts` (225 lines; covers quota, corruption, migration paths).
+- Status: **not a gap** — measured 2026-10-17: file exists, `npx vitest run
+  src/utils/masterStorage.test.ts` → 9/9 green. The earlier "no file exists" note was stale.
 - Instructions:
   1. Decide whether this is worth a session unit.
   2. If yes, write failing-first coverage that matches the storage contract the project already uses.
@@ -484,7 +491,7 @@
   - the changed source/test/doc files
   - `docs/agent-squad/agents-comms/COMMS_LOG.md`
   - `docs/agent-squad/SQUAD_STATE.md`
-  - `docs/agent-squad/STATUS_BOARD.md`
+  - `docs/agent-squad/agents-comms/STATUS_BOARD.md`
   - `docs/agent-squad/agents-comms/CLAIMS.md`
 - Instructions:
   1. Write the proof for each unit: what changed, the command that proves it, the commit, and what to verify first.

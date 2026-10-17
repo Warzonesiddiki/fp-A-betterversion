@@ -22,8 +22,11 @@
  *  4. idempotency — a byte-identical re-import is refused with the prior
  *     batch id and no financial effect (FR-003).
  *
- * Amount cells carry explicit `0`s because GLDataPreview validates amounts
- * with parseFloat: a blank cell reads as NaN and would block the preview.
+ * Validation is shared, not duplicated: `GLDataPreview` calls the same
+ * `parseGLRows` the import uses, so a row the preview accepts cannot be
+ * rejected at import for a structural reason (and a blank amount cell is 0,
+ * not an error). Amount cells below are intentionally blank in places to
+ * keep that agreement under test.
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
@@ -41,7 +44,7 @@ const PINNED = '2026-04-30T09:00:00.000Z';
 /** Balanced April journal: debits 1200.50 + 300.00, credits the same. */
 const CLEAN_CSV = [
   'Account Code,Posting Date,Debit,Credit,Description',
-  '4000,2026-04-15,1200.50,0,Consulting revenue',
+  '4000,2026-04-15,1200.50,,Consulting revenue',
   '1100,2026-04-15,0,1200.50,AR settlement',
   '5000,2026-04-20,300.00,0,Office supplies',
   '1000,2026-04-20,0,300.00,Cash paid',
@@ -191,10 +194,10 @@ describe('GLUploadPage ↔ glStore interop (P1-4 consumer coverage)', () => {
     expect(screen.queryByTestId('import-batch-evidence')).toBeNull();
   });
 
-  it('rejects the whole file naming the rejected source row, leaving the store untouched (FR-002)', async () => {
-    // Preview validates only the first 20 data rows, so a broken row at
-    // source row 26 passes the preview gate and must still be caught — by
-    // number and reason — at import, with the batch rolled back whole.
+  it('names a rejected row past the display window and blocks the gate (FR-002)', async () => {
+    // The table renders 20 rows; validation is not limited to that window.
+    // A broken row at source row 26 must be counted, named with its source
+    // row and import reason, and the gate must refuse to import the file.
     const header = 'Account Code,Posting Date,Debit,Credit,Description';
     const valid: string[] = [];
     for (let i = 0; i < 24; i++) {
@@ -208,21 +211,92 @@ describe('GLUploadPage ↔ glStore interop (P1-4 consumer coverage)', () => {
 
     renderPage();
     await upload(csv, 'gl-large.csv');
-    await preview('0 errors detected in 25 rows'); // broken row is #25, past the window
+    await preview('1 errors detected in 25 rows');
+
+    // Honest scope: validation covers every row; only the table is windowed.
+    expect(screen.getByText(/Showing the first 20 of 25 data rows/)).toBeTruthy();
+    // The failing row is named by source-file row, not by table position.
+    expect(screen.getByText(/Row 26: missing accountCode/)).toBeTruthy();
+
+    const confirm = screen.getByRole('button', { name: 'Fix Errors to Continue' });
+    expect(confirm).toBeDisabled();
+
+    // The gate runs before importGLData: the store must not move at all.
+    const st = useGLStore.getState();
+    expect(st.entries).toHaveLength(0);
+    expect(st.importHistory).toHaveLength(0);
+    expect(st.importStatus).toBe('idle');
+  });
+
+  it('rejects the whole file atomically when the store double-entry guard fails (FR-002)', async () => {
+    // Structurally valid rows (the preview passes them) that do not balance
+    // can only be caught by the store; the whole batch must be refused with
+    // no entries and no history recorded.
+    const csv = [
+      'Account Code,Posting Date,Debit,Credit,Description',
+      '4000,2026-04-15,100.00,0,Balanced-looking revenue',
+      '1100,2026-04-15,0,90.00,Short credit',
+      '',
+    ].join('\n');
+
+    renderPage();
+    await upload(csv, 'gl-unbalanced.csv');
+    await preview('0 errors detected in 2 rows');
     confirmImport();
 
-    const expected = 'Import failed: row 26: missing accountCode';
     const alertBox = await screen.findByRole('alert');
     expect(within(alertBox).getByText('Import Error')).toBeInTheDocument();
-    expect(within(alertBox).getByText(expected)).toBeInTheDocument();
+    expect(within(alertBox).getByText(/Import failed: .*do not equal credits/)).toBeInTheDocument();
 
-    // Atomic: nothing committed, no batch recorded, screen and store agree.
     const st = useGLStore.getState();
     expect(st.entries).toHaveLength(0);
     expect(st.importHistory).toHaveLength(0);
     expect(st.importStatus).toBe('error');
-    expect(st.importError).toBe(expected);
+    expect(st.importError).toMatch(/do not equal credits/);
     expect(screen.queryByTestId('import-batch-evidence')).toBeNull();
+  });
+
+  it('reprocesses a corrected file successfully after the gate rejected the broken one (UX-002)', async () => {
+    const header = 'Account Code,Posting Date,Debit,Credit,Description';
+    const balancedPairs: string[] = [];
+    for (let i = 0; i < 12; i++) {
+      balancedPairs.push(`5100,2026-04-15,100.00,0,Supplies ${i}`);
+      balancedPairs.push(`2000,2026-04-15,0,100.00,Offset ${i}`);
+    }
+    const broken = [
+      header,
+      ...balancedPairs,
+      ',2026-04-25,100.00,0,Row with no account code',
+      '',
+    ].join('\n');
+    // The correction completes the broken row AND balances the journal.
+    const corrected = [
+      header,
+      ...balancedPairs,
+      '5100,2026-04-25,100.00,0,Supplies corrected',
+      '2000,2026-04-25,0,100.00,Offset corrected',
+      '',
+    ].join('\n');
+
+    renderPage();
+    await upload(broken, 'gl-broken.csv');
+    await preview('1 errors detected in 25 rows');
+    expect(screen.getByRole('button', { name: 'Fix Errors to Continue' })).toBeDisabled();
+
+    // Back out of the gate and reprocess a corrected synthetic file.
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(await screen.findByText('Map Columns')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    await upload(corrected, 'gl-corrected.csv');
+    await preview('0 errors detected in 26 rows');
+    confirmImport();
+
+    expect(await screen.findByText('Import Complete')).toBeTruthy();
+    expect(screen.getByText('Successfully imported 26 rows.')).toBeTruthy();
+    const st = useGLStore.getState();
+    expect(st.entries).toHaveLength(26);
+    expect(st.importHistory).toHaveLength(1);
+    expect(st.importStatus).toBe('complete');
   });
 
   it('blocks confirmation at the preview gate for a bad row inside the preview window', async () => {
@@ -236,7 +310,7 @@ describe('GLUploadPage ↔ glStore interop (P1-4 consumer coverage)', () => {
     renderPage();
     await upload(csv, 'gl-broken.csv');
     await preview('1 errors detected in 2 rows');
-    expect(screen.getByText('Missing account code')).toBeTruthy();
+    expect(screen.getByText('missing accountCode')).toBeTruthy();
 
     const confirm = screen.getByRole('button', { name: 'Fix Errors to Continue' });
     expect(confirm).toBeDisabled();
