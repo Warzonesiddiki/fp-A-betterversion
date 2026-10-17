@@ -10,14 +10,22 @@ export interface GLColumnMapperProps {
   onAutoMap?: (newMappings: Record<string, string>) => void;
 }
 
+/**
+ * Every field `parseGLRows` understands, so no fact a source file carries is
+ * dropped for want of a control to map it. Account Name, Currency and Reference
+ * are optional; leaving them unmapped keeps them absent rather than defaulted.
+ */
 const targetFields = [
   { key: 'accountCode', label: 'Account Code', required: true },
   { key: 'postDate', label: 'Posting Date', required: true },
   { key: 'debit', label: 'Debit', required: false },
   { key: 'credit', label: 'Credit', required: false },
+  { key: 'accountName', label: 'Account Name', required: false },
+  { key: 'currency', label: 'Currency', required: false },
   { key: 'entityId', label: 'Entity ID', required: false },
   { key: 'departmentId', label: 'Department ID', required: false },
   { key: 'description', label: 'Description', required: false },
+  { key: 'reference', label: 'Reference', required: false },
 ];
 
 function autoDetect(csvColumn: string): string | null {
@@ -27,6 +35,15 @@ function autoDetect(csvColumn: string): string | null {
     code: 'accountCode',
     'account code': 'accountCode',
     acct: 'accountCode',
+    'account name': 'accountName',
+    'gl account name': 'accountName',
+    'account description': 'accountName',
+    currency: 'currency',
+    'currency code': 'currency',
+    ccy: 'currency',
+    reference: 'reference',
+    ref: 'reference',
+    'reference no': 'reference',
     date: 'postDate',
     'post date': 'postDate',
     'posting date': 'postDate',

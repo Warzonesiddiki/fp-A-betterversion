@@ -194,6 +194,38 @@ describe('GLUploadPage ↔ glStore interop (P1-4 consumer coverage)', () => {
     expect(screen.queryByTestId('import-batch-evidence')).toBeNull();
   });
 
+  it('names the currency and the account names the file carried, instead of claiming they were not in it', async () => {
+    // The wizard can only map fields it offers. A file that names its accounts
+    // and its currency must not have those facts dropped: the ledger would
+    // show the code as the account name and the provenance panel would claim
+    // "not in file" for a column that is in the file (FR-001/FR-005).
+    const csv = [
+      'Account Code,Account Name,Posting Date,Debit,Credit,Currency,Description',
+      '4000,Consulting Revenue,2026-04-15,1200.50,,USD,April billing',
+      '1100,Accounts Receivable,2026-04-15,0,1200.50,USD,AR settlement',
+      '',
+    ].join('\n');
+
+    renderPage();
+    await upload(csv, 'gl-usd.csv');
+    await preview('0 errors detected in 2 rows');
+    confirmImport();
+    expect(await screen.findByText('Import Complete')).toBeTruthy();
+
+    const st = useGLStore.getState();
+    expect(st.entries).toHaveLength(2);
+    expect(st.entries.map((e) => e.currency)).toEqual(['USD', 'USD']);
+    expect(st.entries.map((e) => e.accountName)).toEqual([
+      'Consulting Revenue',
+      'Accounts Receivable',
+    ]);
+
+    const evidence = screen.getByTestId('import-batch-evidence');
+    const txt = evidence.textContent ?? '';
+    expect(txt).toContain('CurrenciesUSD');
+    expect(txt).not.toContain('Currenciesnot in file');
+  });
+
   it('names a rejected row past the display window and blocks the gate (FR-002)', async () => {
     // The table renders 20 rows; validation is not limited to that window.
     // A broken row at source row 26 must be counted, named with its source

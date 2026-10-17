@@ -77,6 +77,17 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **The wizard can now map every fact the parser understands.**
+  `GLColumnMapper` offered 7 fields while `parseGLRows` also accepted `reference`, and neither
+  exposed `accountName` or `currency` — a file carrying them had the fact dropped, the ledger
+  showed the account code as the account name, and the Done step claimed `Currencies not in file`
+  for a column that was in the file. `GLImportField` gained `accountName`/`currency`, the mapper
+  renders 10 controls, and blank/unmapped optional columns stay absent (no invented default).
+  Failing-first: 3 red (parser name, parser currency, page panel `expected [ undefined, undefined ]
+to deeply equal [ 'USD', 'USD' ]`) → `parseGLRows.test.ts` 18/18, `GLUploadPage.interop.test.tsx`
+  8/8, `GLColumnMapper.test.tsx` 11/11, `GLDataPreview.test.tsx` 27/27; 49 files / 397 tests across
+  `src/pages/data`, `src/components/data`, `src/services/import` and the data smoke suite. Gates:
+  tsc 0, eslint 0, prettier 0.
 - 2026-10-17 (LEAD, solo): **Migration success rate stops lying at zero.** With no migrations the
   KPI computed `0` and rendered "0.0%", which reads as "every migration failed". The rate is now
   `null` and renders the unavailable marker (`—`) with a muted colour and

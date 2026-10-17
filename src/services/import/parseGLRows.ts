@@ -14,6 +14,10 @@
  *    rejects the row. The store enforces `debit >= 0` / `credit >= 0`
  *    (docs/agent/03_DOMAIN_RULES.md); rejecting here keeps the preview and
  *    the import from disagreeing about a row the ledger can never accept.
+ *  - Optional facts the file carries — account name, currency, entity,
+ *    department, description, reference — are copied onto the entry when the
+ *    user mapped a column to them. An unmapped or blank optional column stays
+ *    absent: a name falls back to the account code, a currency is not invented.
  *  - A row collects every reason that applies (one `ImportRejection` per
  *    reason) and is excluded from `entries` — nothing is silently dropped.
  *  - `sourceRows[i]` is the 1-based source-file row of `entries[i]`
@@ -25,12 +29,23 @@ import type { GLEntry, ImportRejection } from '@/types';
 import { parseFinancialAmount } from '@/utils/parseFinancialAmount';
 import { parseImportDate } from '@/utils/parseImportDate';
 
-/** Field keys the wizard can map a source column onto. */
+/**
+ * Field keys the wizard can map a source column onto.
+ *
+ * Every key here is a fact a real GL export can carry and `GLEntry` can hold.
+ * `accountName` and `currency` were added because dropping them is not
+ * neutral: the ledger then reports the account code as the account name, and
+ * the import scope reports the currency as unavailable — which the Done screen
+ * renders as "not in file" for a column that IS in the file. Both stay
+ * optional; an absent column is absent, never defaulted.
+ */
 export type GLImportField =
   | 'accountCode'
+  | 'accountName'
   | 'postDate'
   | 'debit'
   | 'credit'
+  | 'currency'
   | 'description'
   | 'reference'
   | 'entityId'
@@ -117,12 +132,17 @@ export function parseGLRows(
     if (!accountCode || !postDate || Number.isNaN(debit) || Number.isNaN(credit)) return;
 
     const period = postDate.slice(0, 7); // canonical YYYY-MM
+    // A blank or unmapped name column falls back to the code (the store does
+    // the same); a blank currency stays absent so the import scope reports it
+    // as unavailable rather than as an empty string.
+    const mappedName = (getVal('accountName') ?? '').trim();
+    const mappedCurrency = (getVal('currency') ?? '').trim();
     sourceRows.push(rowNum);
     entries.push({
       id: '',
       accountId: accountCode,
       accountCode,
-      accountName: accountCode,
+      accountName: mappedName || accountCode,
       period,
       periodName: period,
       debit,
@@ -135,6 +155,7 @@ export function parseGLRows(
       reference: getVal('reference') || '',
       entityId: getVal('entityId') || '',
       departmentId: getVal('departmentId') || '',
+      ...(mappedCurrency ? { currency: mappedCurrency } : {}),
     });
   });
 

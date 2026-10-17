@@ -213,6 +213,43 @@ describe('parseGLRows — rejections (FR-002: nothing silently discarded)', () =
   });
 });
 
+describe('parseGLRows — facts the file carries but the parser used to drop', () => {
+  // A source file that names its accounts and its currency must not have those
+  // facts discarded: the ledger then reports the code as the account name and
+  // the import scope claims the currency was "not in file" when it was.
+  const FACT_MAP = { ...MAP, accountName: 'Account Name', currency: 'Currency' } as const;
+  const factRow = (o: Partial<Record<string, string>>): Record<string, string> => ({
+    ...row(o),
+    'Account Name': '',
+    Currency: '',
+    ...o,
+  });
+
+  it('carries a mapped account name instead of repeating the account code', () => {
+    const r = parseGLRows(
+      [factRow({ Account: '4000', 'Account Name': 'Product Revenue', Debit: '10' })],
+      FACT_MAP
+    );
+    expect(r.rejections).toEqual([]);
+    expect(r.entries[0]).toMatchObject({ accountCode: '4000', accountName: 'Product Revenue' });
+  });
+
+  it('falls back to the account code when the name column is blank', () => {
+    const r = parseGLRows([factRow({ Account: '4000', Debit: '10' })], FACT_MAP);
+    expect(r.entries[0]).toMatchObject({ accountCode: '4000', accountName: '4000' });
+  });
+
+  it('carries a mapped currency so the import scope can name it', () => {
+    const r = parseGLRows([factRow({ Account: '4000', Currency: 'USD', Debit: '10' })], FACT_MAP);
+    expect(r.entries[0]).toMatchObject({ currency: 'USD' });
+  });
+
+  it('leaves the currency absent when no column is mapped to it', () => {
+    const r = parseGLRows([row({ Debit: '10' })], MAP);
+    expect(r.entries[0]!.currency).toBeUndefined();
+  });
+});
+
 describe('missingRequiredMappings', () => {
   it('lists unmapped required fields in a stable order', () => {
     expect(missingRequiredMappings({})).toEqual(['accountCode', 'postDate']);
