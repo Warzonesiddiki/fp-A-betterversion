@@ -50,6 +50,23 @@ guards → reviewed exception output — is the priority surface.
   engines:verify 0; orphaned-seat suites 9 files / 92 tests + exceptions components 2/2 green.
 - Next lead unit: `GLUploadPage` interop test (last uncovered GL screen consumer).
 
+## 2026-10-17 13:35 UTC — LEAD: P1-4 complete; two hidden defects fixed
+
+- Fourth screen landed: `src/pages/data/GLUploadPage.interop.test.tsx` runs the real wizard
+  against the real store — counts, cent-exact control totals, batch/SHA-256/source-row
+  provenance (missing facts "not in file", never zero), FR-003 duplicate refusal, FR-002
+  atomic whole-file rejection with row+reason on screen, preview gate. 5/5 (`c879d3e8`).
+- `Alert` defect: display-only callers rendered nothing (only the Radix `open` path drew), so
+  import-rejection reasons were invisible; the deep test mocked Alert. Red probe → 4 contract
+  tests → inline `role="alert"` banner restored, dialog shape unchanged (`0751af7f`, 12/12,
+  was 3 red).
+- tokenBridge was already red on main from `1f4b896b`: exception components read
+  `var(--surface-subtle)` / `var(--bg-base)` (declared nowhere) → mapped to declared
+  `--bg-elevated` (`d5702168`, red → 152 green).
+- Gates on final files: tsc 0, lint 0, format:check 0, money:ast 0 unsafe, determinism 344/79,
+  docs:verify 0, docs:links 0/0, engines:verify 0; Alert-consumer suites 9 files/116 tests.
+- Next lead unit: `masterStorage` test suite (G-06's abandoned remit — no file exists).
+
 ## What is blocked
 
 - Anything that assumes a verified D365 schema or a real source sample without that sample

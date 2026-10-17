@@ -553,3 +553,50 @@ lands the in-flight uncommitted work alone, then continues the P1-4 unit.
 The GLUploadPage interop test (old G-10 remit) stays the next P1-4 unit.
 **Verify first:** re-run any command above; then
 `npx vitest run src/pages/data/GLJournalsPage.interop.test.tsx`.
+
+---
+
+### 2026-10-17 13:35 UTC · LEAD · DONE · TO: @ALL (SOLO MODE)
+
+**Task:** P1-4 fourth screen — `GLUploadPage` real-store interop test — plus the two red gates
+it surfaced.
+**What:**
+1. **New unit:** `src/pages/data/GLUploadPage.interop.test.tsx` drives the REAL wizard end to
+   end (real FileDropZone input, `file.arrayBuffer` + parseCSV, real auto-mapping, real
+   GLDataPreview, real `importGLData`, real inline Alert) and asserts screen↔store agreement
+   from one run: accepted counts + cent-exact control totals + batch/SHA-256/source-row
+   provenance on the Done screen (entities/currencies "not in file", never zero); FR-003
+   byte-identical re-import refused with the prior batch id and zero financial effect;
+   FR-002 whole-file rejection naming `row 26: missing accountCode` with entries and history
+   untouched; preview gate blocks a bad row inside its window. **5/5.**
+2. **Alert defect fixed at the cause, red first.** Every display-only `<Alert>` caller (GL
+   upload errors ×2, BudgetCreatePage ×2, ReconciliationPanel, DataImportPage ×3) renders
+   NOTHING — the component only drew its Radix dialog for `open`, so the wizard's rejection
+   reasons never reached the user; `GLUploadPage.deep.test.tsx` passed only because it mocks
+   Alert. Probe proved red → 4 contract tests added to `Alert.test.tsx` → display-only shape
+   now renders an inline `role="alert"` banner honoring the previously-dropped
+   type/className; confirmation-dialog shape unchanged. **3 red → 12/12.**
+3. **Pre-existing tokenBridge red repaired** (from `1f4b896b`, not this unit):
+   `ExceptionReviewCard`/`ExceptionReviewList` read `var(--surface-subtle)` and `var(--bg-base)`
+   — declared nowhere, so evidence panels and filter inputs rendered unstyled. Mapped to the
+   declared `--bg-elevated` (the value the same card already uses for its other inset boxes).
+   No assertion changed; the existing contract was the failing-first evidence. **red → 152
+   green.**
+**Evidence (all run in this tree, this session, pipefail):**
+- `npx vitest run src/pages/data/GLUploadPage.interop.test.tsx` → 5/5, EXIT 0.
+- `npx vitest run src/components/ui/Alert.test.tsx` → EXIT 1 (3 failed/12) before the fix,
+  EXIT 0 (12/12) after.
+- `npx vitest run src/theme/tokenBridge.contract.test.ts` → 1 failed ("6 offenders") before
+  the token fix; with buttonContrast + exception component suites → 4 files / 152 tests EXIT 0.
+- Alert-consumer suites on final files: 9 files / 116 tests EXIT 0 (GLUpload unit+deep,
+  interop, Alert, BudgetCreatePage, Reconciliation ×2, DataImport ×2).
+- Gates on final files: `npm run tsc` 0 · `npm run lint` 0 · `npm run format:check` 0 ·
+  `npm run money:ast` 0 unsafe · `npm run determinism:ratchet` holds 344/79 ·
+  `npm run docs:verify` 0 · `npm run docs:links` 0 broken/0 citations ·
+  `npm run engines:verify` 0.
+**Commits:** `0751af7f` (Alert), `d5702168` (tokens), `c879d3e8` (interop suite), docs in this
+entry's commit.
+**Action requested:** none — solo mode. Next lead unit: `masterStorage` test suite (G-06's
+abandoned remit; no file exists).
+**Verify first:** `npx vitest run src/pages/data/GLUploadPage.interop.test.tsx`, then
+`npx vitest run src/theme/tokenBridge.contract.test.ts`.

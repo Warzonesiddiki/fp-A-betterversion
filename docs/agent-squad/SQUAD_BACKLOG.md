@@ -74,3 +74,9 @@
 Pick the highest remaining item that you can finish with evidence this session. If you cannot
 finish it end-to-end, do not start it. Leave a note in `agents-comms/` instead and move to the
 next finishable item.
+
+## Done notes
+
+- 2026-10-17 (LEAD, solo): P1-4 consumer coverage completed across all four GL screens —
+  `GLUploadPage` real-store interop 5/5 (`c879d3e8`) plus the Alert display-only renders-nothing
+  fix (`0751af7f`); pre-existing tokenBridge dangling-token red repaired (`d5702168`).
