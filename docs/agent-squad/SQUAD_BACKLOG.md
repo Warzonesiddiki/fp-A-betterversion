@@ -77,6 +77,31 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **The security settings page stopped inventing its own evidence.**
+  `/settings/security` showed "Security Status: Protected" in green for any session, took MFA from a
+  local `useState(false)` (a user recorded as `mfaEnabled: true` was shown "Disabled"), took the
+  session timeout from a local `useState(30)` nothing enforced, offered an MFA toggle and an
+  audit-logging toggle with no capability behind either, listed four hard-coded "Recent Security
+  Activity" rows (a password change "2 days ago", a failed login "5 days ago" from an "Unknown IP", a
+  full backup export "1 week ago"), and printed "Password updated successfully." from a handler that
+  called nothing — there is no password-change capability in `src/store`, `src/services` or
+  `src/utils`, and its own smoke test mocked an `updatePassword` that does not exist. Now: posture is
+  derived (Unknown / Locked / Protected / Signed in) from `user`, `lockedUntil` and `user.mfaEnabled`
+  against `nowMs()`; session lifetime is read from `tokenExpiry`; MFA reads "Not available" when
+  there is no user record; the three do-nothing controls are read-only rows that say why they cannot
+  be changed here (auth backend = DEC-004); the invented feed is the real `user.lastLoginAt` plus an
+  explicit "No security activity log is available in this build" panel naming the server-only tables
+  (`audit_login_attempts`, `audit_log`, `audit_permission_changes`) and pointing at `/audit/trail`
+  for data-change history; the password submit is disabled with a note that nothing typed is stored
+  or applied, while the strength meter — a real local computation — stays. Failing-first: **9 red**
+  (no `mfa-status` / `security-status` / `session-timeout` / `last-sign-in` testids, the invented
+  feed present, the password button enabled with no note, the fake toggles present) with 1 green
+  guard (`Strength: Very Strong` for a typed password) → green after: 10/10, plus the two existing
+  smoke suites, 14 files / 83 tests across `src/pages/settings` and both all-pages smoke suites.
+  Gates: tsc 0, lint 0 (unused `CheckCircle` import removed), format:check 0, docs:verify (4 checks)
+  0, engines:verify 182, money:ast 0, determinism 344/79, type-safety 47, money:adoption 289/0,
+  architecture:guardrails 0, fabrication:audit 0, docs:links strict 0. Not claimed: a real password
+  change or MFA enrolment — both need DEC-004.
 - 2026-10-17 (LEAD, solo): **The documented ratchet numbers are now the enforced ones.** The
   "Ratchet baselines" table in `docs/agent/09_KNOWN_GAPS.md` claimed determinism 345 / 80 (gate:
   344 / 79), type-safety escapes 116 (tree: 47) and a money-adoption floor of 28.89 % (baseline

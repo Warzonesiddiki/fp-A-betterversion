@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useAuthStore } from '@/store/authStore';
+import { nowMs } from '@/utils/clock';
 import {
   Shield,
   Lock,
@@ -13,24 +14,18 @@ import {
   Key,
   Clock,
   AlertTriangle,
-  CheckCircle,
   Fingerprint,
   Smartphone,
 } from 'lucide-react';
 
 export default function SecuritySettingsPage() {
   const { organization } = useSettingsStore();
-  const { user } = useAuthStore();
+  const { user, lockedUntil, tokenExpiry } = useAuthStore();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState('');
-  const [passwordSuccess, setPasswordSuccess] = useState('');
-  const [sessionTimeout, setSessionTimeout] = useState(30);
-  const [mfaEnabled, setMfaEnabled] = useState(false);
-  const [auditLogEnabled, setAuditLogEnabled] = useState(true);
 
   useEffect(() => {
     document.title = 'FinPlan Pro - Security Settings';
@@ -50,56 +45,57 @@ export default function SecuritySettingsPage() {
     return { score, label: 'Very Strong', color: 'bg-emerald-500' };
   };
 
-  const handleChangePassword = () => {
-    setPasswordError('');
-    setPasswordSuccess('');
-
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      setPasswordError('All fields are required.');
-      return;
-    }
-    if (newPassword.length < 8) {
-      setPasswordError('New password must be at least 8 characters.');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setPasswordError('New passwords do not match.');
-      return;
-    }
-    if (newPassword === currentPassword) {
-      setPasswordError('New password must differ from current password.');
-      return;
-    }
-
-    setPasswordSuccess('Password updated successfully.');
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-  };
-
   const strength = passwordStrength(newPassword);
 
-  const recentActivity = [
-    {
-      action: 'Login',
-      detail: `User ${user?.email ?? 'unknown'}`,
-      time: 'Just now',
-      status: 'success',
-    },
-    {
-      action: 'Password change',
-      detail: 'Via security settings',
-      time: '2 days ago',
-      status: 'success',
-    },
-    { action: 'Failed login attempt', detail: 'Unknown IP', time: '5 days ago', status: 'warning' },
-    {
-      action: 'Backup exported',
-      detail: 'Full data export',
-      time: '1 week ago',
-      status: 'success',
-    },
-  ];
+  // Every fact on this page comes from the auth store or from the user's own
+  // keystrokes. The tree holds no password-change capability (nothing on
+  // `AuthState`, in `src/store` or in `src/services`), no MFA enrolment action
+  // and no client security-activity log, so none of those are claimed. What the
+  // store does hold is reported; what it does not hold is reported as
+  // unavailable with the reason — missing is never rendered as a value.
+  const hasUserRecord = user !== null && user !== undefined;
+
+  const mfaLabel = !hasUserRecord
+    ? 'Not available'
+    : user?.mfaEnabled === true
+      ? 'Enabled'
+      : 'Not enrolled';
+
+  const lockExpiryMs = typeof lockedUntil === 'string' ? Date.parse(lockedUntil) : Number.NaN;
+  const isLocked = Number.isFinite(lockExpiryMs) && lockExpiryMs > nowMs();
+
+  const posture = !hasUserRecord
+    ? {
+        label: 'Unknown',
+        detail: 'no signed-in user record, so nothing is known about this session',
+        text: 'text-[var(--text-muted)]',
+        icon: 'text-slate-400',
+      }
+    : isLocked
+      ? {
+          label: 'Locked',
+          detail: `sign-in locked until ${lockedUntil}`,
+          text: 'text-red-400',
+          icon: 'text-red-400',
+        }
+      : user?.mfaEnabled === true
+        ? {
+            label: 'Protected',
+            detail: `MFA enrolled for ${user?.email ?? 'this account'}`,
+            text: 'text-green-400',
+            icon: 'text-green-400',
+          }
+        : {
+            label: 'Signed in',
+            detail: 'MFA is not enrolled on this account',
+            text: 'text-amber-400',
+            icon: 'text-amber-400',
+          };
+
+  const sessionLabel =
+    typeof tokenExpiry === 'number'
+      ? `${Math.max(0, Math.round((tokenExpiry - nowMs()) / 60_000))} minutes remaining`
+      : 'Not available';
 
   return (
     <main
@@ -121,10 +117,13 @@ export default function SecuritySettingsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <Shield className="h-5 w-5 text-green-400 shrink-0" />
+            <Shield className={`h-5 w-5 shrink-0 ${posture.icon}`} />
             <div>
               <div className="text-sm text-[var(--text-muted)]">Security Status</div>
-              <div className="font-medium text-green-400">Protected</div>
+              <div data-testid="security-status" className={`font-medium ${posture.text}`}>
+                {posture.label}
+              </div>
+              <div className="text-xs text-[var(--text-muted)]">{posture.detail}</div>
             </div>
           </CardContent>
         </Card>
@@ -133,8 +132,8 @@ export default function SecuritySettingsPage() {
             <Fingerprint className="h-5 w-5 text-blue-400 shrink-0" />
             <div>
               <div className="text-sm text-[var(--text-muted)]">MFA Status</div>
-              <div className="font-medium text-[var(--text-primary)]">
-                {mfaEnabled ? 'Enabled' : 'Disabled'}
+              <div data-testid="mfa-status" className="font-medium text-[var(--text-primary)]">
+                {mfaLabel}
               </div>
             </div>
           </CardContent>
@@ -143,8 +142,11 @@ export default function SecuritySettingsPage() {
           <CardContent className="p-4 flex items-center gap-3">
             <Clock className="h-5 w-5 text-amber-400 shrink-0" />
             <div>
-              <div className="text-sm text-[var(--text-muted)]">Session Timeout</div>
-              <div className="font-medium text-[var(--text-primary)]">{sessionTimeout} minutes</div>
+              <div className="text-sm text-[var(--text-muted)]">Session Lifetime</div>
+              <div data-testid="session-timeout" className="font-medium text-[var(--text-primary)]">
+                {sessionLabel}
+              </div>
+              <div className="text-xs text-[var(--text-muted)]">from the auth token expiry</div>
             </div>
           </CardContent>
         </Card>
@@ -244,31 +246,27 @@ export default function SecuritySettingsPage() {
             </div>
           </div>
 
-          {passwordError && (
-            <div className="flex items-center gap-2 text-red-400 text-sm" role="alert">
-              <AlertTriangle className="h-4 w-4 shrink-0" />
-              {passwordError}
-            </div>
-          )}
-          {passwordSuccess && (
-            <div className="flex items-center gap-2 text-green-400 text-sm" role="status">
-              <CheckCircle className="h-4 w-4 shrink-0" />
-              {passwordSuccess}
-            </div>
-          )}
-
-          <Button
-            onClick={handleChangePassword}
-            className="w-full sm:w-auto"
-            aria-label="Update password"
+          <p
+            data-testid="password-unavailable-note"
+            className="flex items-start gap-2 text-sm text-[var(--text-muted)]"
           >
+            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span>
+              Password changes are not available in this build: no authentication backend is wired
+              (the auth and offline model is open decision DEC-004) and nothing in the app can
+              change a password. Nothing typed here is stored or applied — the strength meter is a
+              local check on the characters you entered, not a change to this account.
+            </span>
+          </p>
+
+          <Button disabled className="w-full sm:w-auto" aria-label="Update password">
             <Key className="w-4 h-4 mr-2" />
             Update Password
           </Button>
         </CardContent>
       </Card>
 
-      {/* Security Preferences */}
+      {/* Security Preferences — read-only: nothing here can be changed yet */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -277,73 +275,56 @@ export default function SecuritySettingsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-            <div className="flex items-center gap-3">
-              <Smartphone className="h-5 w-5 text-blue-400" />
+          <div className="flex items-start justify-between gap-4 p-3 bg-slate-800/50 rounded-lg">
+            <div className="flex items-start gap-3">
+              <Smartphone className="h-5 w-5 text-blue-400 shrink-0" />
               <div>
                 <div className="text-sm font-medium text-white">Multi-Factor Authentication</div>
                 <div className="text-xs text-slate-400">
-                  Add an extra layer of security to your account
+                  Enrolment is not available in this build: the auth store exposes no MFA action and
+                  the authentication backend is open decision DEC-004. The value shown is the one
+                  recorded on your user entry — a toggle here would have changed nothing.
                 </div>
               </div>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={mfaEnabled}
-                onChange={(e) => setMfaEnabled(e.target.checked)}
-                className="sr-only peer"
-                aria-label="Toggle multi-factor authentication"
-              />
-              <div className="w-11 h-6 bg-slate-700 peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white dark:bg-gray-900 dark:bg-gray-900 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" />
-            </label>
+            <span data-testid="mfa-preference" className="text-sm font-medium text-white shrink-0">
+              {mfaLabel}
+            </span>
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-            <div className="flex items-center gap-3">
-              <Clock className="h-5 w-5 text-amber-400" />
+          <div className="flex items-start justify-between gap-4 p-3 bg-slate-800/50 rounded-lg">
+            <div className="flex items-start gap-3">
+              <Clock className="h-5 w-5 text-amber-400 shrink-0" />
               <div>
-                <div className="text-sm font-medium text-white">Session Timeout</div>
-                <div className="text-xs text-slate-400">Automatically log out after inactivity</div>
+                <div className="text-sm font-medium text-white">Session Lifetime</div>
+                <div className="text-xs text-slate-400">
+                  Not configurable here: the session ends when the auth token expires, so a local
+                  preference would not have shortened or extended it. The value shown is read from
+                  the token.
+                </div>
               </div>
             </div>
-            <select
-              value={sessionTimeout}
-              onChange={(e) => setSessionTimeout(parseInt(e.target.value))}
-              className="bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-white focus:border-blue-500 outline-none"
-              aria-label="Session timeout duration"
-            >
-              <option value={15}>15 minutes</option>
-              <option value={30}>30 minutes</option>
-              <option value={60}>1 hour</option>
-              <option value={120}>2 hours</option>
-              <option value={480}>8 hours</option>
-            </select>
+            <span className="text-sm font-medium text-white shrink-0">{sessionLabel}</span>
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-            <div className="flex items-center gap-3">
-              <Shield className="h-5 w-5 text-green-400" />
+          <div className="flex items-start justify-between gap-4 p-3 bg-slate-800/50 rounded-lg">
+            <div className="flex items-start gap-3">
+              <Shield className="h-5 w-5 text-green-400 shrink-0" />
               <div>
                 <div className="text-sm font-medium text-white">Audit Logging</div>
-                <div className="text-xs text-slate-400">Track all security-related events</div>
+                <div className="text-xs text-slate-400">
+                  Not switchable here: the client audit trail in src/store/auditTrailStore.ts has no
+                  enable/disable flag, and the server-side security logs (audit_login_attempts,
+                  audit_permission_changes) are not reachable from the desktop build.
+                </div>
               </div>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={auditLogEnabled}
-                onChange={(e) => setAuditLogEnabled(e.target.checked)}
-                className="sr-only peer"
-                aria-label="Toggle audit logging"
-              />
-              <div className="w-11 h-6 bg-slate-700 peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white dark:bg-gray-900 dark:bg-gray-900 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" />
-            </label>
+            <span className="text-sm font-medium text-white shrink-0">Not switchable</span>
           </div>
         </CardContent>
       </Card>
 
-      {/* Recent Security Activity */}
+      {/* Recent Security Activity — no client security log exists, so none is shown */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -351,22 +332,35 @@ export default function SecuritySettingsPage() {
             Recent Security Activity
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {recentActivity.map((activity, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-lg">
-                <div
-                  className={`w-2 h-2 rounded-full shrink-0 ${
-                    activity.status === 'success' ? 'bg-green-400' : 'bg-amber-400'
-                  }`}
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-white">{activity.action}</div>
-                  <div className="text-xs text-slate-400">{activity.detail}</div>
-                </div>
-                <span className="text-xs text-[var(--text-muted)] shrink-0">{activity.time}</span>
+        <CardContent className="space-y-3">
+          <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-lg">
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-medium text-white">Last sign-in</div>
+              <div data-testid="last-sign-in" className="text-xs text-slate-400">
+                {hasUserRecord
+                  ? (user?.lastLoginAt ?? 'not recorded on this user entry')
+                  : 'no signed-in user record'}
               </div>
-            ))}
+            </div>
+          </div>
+          <div
+            data-testid="security-activity-unavailable"
+            className="p-3 rounded-lg border border-slate-700/60 space-y-1"
+          >
+            <p className="text-sm font-medium text-white">
+              No security activity log is available in this build.
+            </p>
+            <p className="text-xs text-slate-400">
+              Sign-in attempts, password changes and permission changes are recorded server-side
+              (audit_login_attempts, audit_log, audit_permission_changes), and the desktop build
+              does not reach those tables. The only security fact this app holds locally is the last
+              sign-in timestamp on your user entry, shown above — so no activity feed is invented
+              here.
+            </p>
+            <p className="text-xs text-slate-400">
+              Data-change history (who changed which value, and when) is recorded on the client and
+              is on the Audit Trail page at /audit/trail.
+            </p>
           </div>
         </CardContent>
       </Card>
