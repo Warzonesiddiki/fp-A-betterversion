@@ -897,7 +897,10 @@ export default function DataImportPage() {
               <Database className="h-5 w-5 text-purple-400" aria-hidden="true" />
               <h3 className="font-semibold">Import Job History</h3>
             </div>
-            <div className="overflow-x-auto">
+            {/* Every job is rendered: the store keeps the full history, and a
+                10-row window with no truncation notice made older imports
+                unreachable. The container scrolls instead of hiding rows. */}
+            <div className="overflow-x-auto max-h-96 overflow-y-auto">
               <table className="w-full text-sm" role="grid" aria-label="Import job history">
                 <thead>
                   <tr
@@ -922,7 +925,7 @@ export default function DataImportPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800">
-                  {importJobs.slice(0, 10).map((job) => (
+                  {importJobs.map((job) => (
                     <tr key={job.id} className="hover:bg-slate-900/50" role="row">
                       <td className="py-2 pr-4 font-mono text-xs" role="gridcell">
                         {job.filename}

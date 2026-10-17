@@ -465,6 +465,33 @@ describe('DataImportPage (data-driven)', () => {
     expect(screen.getByText('import1.xlsx')).toBeInTheDocument();
   });
 
+  it('renders every import job in the history, not just the newest ten', () => {
+    glStub = {
+      entries: [{ id: '1', accountCode: '1000', debit: 100, credit: 0 }],
+      accounts: [],
+      importHistory: [],
+    };
+    dataStub.importJobs = Array.from({ length: 12 }, (_, i) => ({
+      id: `job-${i + 1}`,
+      filename: `import${i + 1}.xlsx`,
+      fileType: 'PLANFUL',
+      rowCount: 10,
+      successCount: 10,
+      errorCount: 0,
+      completedAt: '2024-01-01T00:00:00Z',
+      startedAt: '2024-01-01T00:00:00Z',
+      startedBy: 'user1',
+      startedByName: 'User One',
+      status: 'Completed',
+    }));
+    renderPage();
+    // The oldest job is the one a 10-row window hides. Nothing in the page
+    // says the history is truncated, so a hidden job is unreachable history.
+    expect(screen.getByText('import1.xlsx')).toBeInTheDocument();
+    expect(screen.getByText('import11.xlsx')).toBeInTheDocument();
+    expect(screen.getByText('import12.xlsx')).toBeInTheDocument();
+  });
+
   it('reconciliation run button is disabled when no key/val cols are set', () => {
     glStub = {
       entries: [{ id: '1', accountCode: '1000', debit: 100, credit: 0 }],

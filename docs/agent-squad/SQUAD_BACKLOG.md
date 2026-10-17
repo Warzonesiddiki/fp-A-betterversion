@@ -77,6 +77,11 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **Import job history no longer drops jobs.** `DataImportPage`
+  rendered `importJobs.slice(0, 10)` while `dataStore` keeps the full list, with no count and no
+  way to see the rest. Every job is now rendered in a scrolling table; the newest-first order is
+  unchanged. Failing-first: 12 jobs → the 11th/12th rows were missing (1 red) → 20/20 deep tests,
+  page + money suites green.
 - 2026-10-17 (LEAD, solo): **Migration history no longer drops records.** `MigrationPage` rendered
   `history.slice(0, 10)` under the title "Recent Migrations" with no count and no way to reach the
   rest, while the KPI header and the store used the full history. The page now renders every
