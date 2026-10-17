@@ -238,7 +238,7 @@ export const ExceptionReviewCard: React.FC<ExceptionReviewCardProps> = ({
       {/* Non-negotiable Rule 7 Notice Banner */}
       {!currentStatus && (
         <div
-          className="mt-3 flex items-start gap-2 rounded bg-[var(--surface-subtle)] p-2.5 text-xs text-[var(--text-secondary)] border border-[var(--border-subtle)]"
+          className="mt-3 flex items-start gap-2 rounded bg-[var(--bg-elevated)] p-2.5 text-xs text-[var(--text-secondary)] border border-[var(--border-subtle)]"
           data-testid="rule-7-banner"
         >
           <Info className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
@@ -356,7 +356,7 @@ export const ExceptionReviewCard: React.FC<ExceptionReviewCardProps> = ({
             if (validationError) setValidationError(null);
           }}
           placeholder="Document the review justification, investigation evidence, and rationale..."
-          className="w-full rounded border border-[var(--border-default)] bg-[var(--bg-base)] p-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)] transition-colors duration-150"
+          className="w-full rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] p-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)] transition-colors duration-150"
           data-testid="disposition-rationale-input"
         />
 
@@ -441,7 +441,7 @@ export const ExceptionReviewCard: React.FC<ExceptionReviewCardProps> = ({
       {/* Collapsible Audit History (FR-009) */}
       {showHistory && auditHistory.length > 0 && (
         <div
-          className="mt-3 rounded border border-[var(--border-subtle)] bg-[var(--surface-subtle)] p-3 text-xs space-y-2"
+          className="mt-3 rounded border border-[var(--border-subtle)] bg-[var(--bg-elevated)] p-3 text-xs space-y-2"
           data-testid="audit-history-list"
         >
           <div className="font-semibold text-[var(--text-primary)] flex items-center gap-1.5 pb-1 border-b border-[var(--border-subtle)]">

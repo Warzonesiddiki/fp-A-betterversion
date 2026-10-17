@@ -152,7 +152,7 @@ export const ExceptionReviewList: React.FC<ExceptionReviewListProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search candidate ID, rule ID, or description..."
-            className="w-full rounded border border-[var(--border-default)] bg-[var(--bg-base)] pl-8 pr-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)] transition-colors duration-150"
+            className="w-full rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] pl-8 pr-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)] transition-colors duration-150"
             data-testid="exception-search-input"
           />
         </div>
@@ -165,7 +165,7 @@ export const ExceptionReviewList: React.FC<ExceptionReviewListProps> = ({
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-              className="rounded border border-[var(--border-default)] bg-[var(--bg-base)] px-2 py-1 text-xs text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)] transition-colors duration-150"
+              className="rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 py-1 text-xs text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)] transition-colors duration-150"
               data-testid="status-filter-select"
             >
               <option value="ALL">All Statuses</option>
@@ -183,7 +183,7 @@ export const ExceptionReviewList: React.FC<ExceptionReviewListProps> = ({
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value as SeverityFilter)}
-              className="rounded border border-[var(--border-default)] bg-[var(--bg-base)] px-2 py-1 text-xs text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)] transition-colors duration-150"
+              className="rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 py-1 text-xs text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--accent-primary)] transition-colors duration-150"
               data-testid="severity-filter-select"
             >
               <option value="ALL">All Severities</option>
