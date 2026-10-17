@@ -77,6 +77,11 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **Migration history no longer drops records.** `MigrationPage` rendered
+  `history.slice(0, 10)` under the title "Recent Migrations" with no count and no way to reach the
+  rest, while the KPI header and the store used the full history. The page now renders every
+  snapshot in a scrolling list, states `N migrations`, and the card is titled "Migration History".
+  Failing-first: 12 stored snapshots produced 10 list items and no count line (2 red) → 6/6 tests.
 - 2026-10-17 (LEAD, solo): **Evidence record corrected for FR-008/FR-009.** The register said
   "Not met" / "no persisted disposition" while the tree contains a versioned rule catalogue
   (13 tests), a `masterStorage`-persisted disposition audit trail that survives rehydrate

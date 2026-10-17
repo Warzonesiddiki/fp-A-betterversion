@@ -6,6 +6,41 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
+// The page reads its history from MigrationEngine at mount. Stub it so the
+// history list can be exercised with a known number of snapshots.
+const engineMock = vi.hoisted(() => ({
+  getMigrationSnapshots: vi.fn(),
+  clearMigrationSnapshots: vi.fn(),
+}));
+vi.mock('@/engines/MigrationEngine', () => ({
+  MigrationEngine: class {
+    getMigrationSnapshots = engineMock.getMigrationSnapshots;
+    clearMigrationSnapshots = engineMock.clearMigrationSnapshots;
+  },
+}));
+
+const snapshots: Array<{
+  id: string;
+  timestamp: string;
+  source: 'excel';
+  fileName: string;
+  plan: { mappings: never[] };
+  data: { account: string; amount: number }[];
+  applied: boolean;
+}> = [];
+
+function makeSnapshot(index: number) {
+  return {
+    id: `migration-${String(index).padStart(2, '0')}`,
+    timestamp: new Date(Date.UTC(2026, 0, index)).toISOString(),
+    source: 'excel' as const,
+    fileName: `migration-${index}.xlsx`,
+    plan: { mappings: [] },
+    data: Array.from({ length: index }, () => ({ account: '1000', amount: 1 })),
+    applied: true,
+  };
+}
+
 vi.mock('@/components/migration/MigrationWizard', () => ({
   default: ({
     onComplete,
@@ -68,6 +103,10 @@ import MigrationPage from '@/pages/data/MigrationPage';
 
 describe('MigrationPage', () => {
   beforeEach(() => {
+    snapshots.length = 0;
+    engineMock.getMigrationSnapshots.mockReset();
+    engineMock.getMigrationSnapshots.mockImplementation(() => snapshots);
+    engineMock.clearMigrationSnapshots.mockReset();
     vi.clearAllMocks();
   });
 
@@ -98,5 +137,21 @@ describe('MigrationPage', () => {
   it('renders the back button', () => {
     render(<MigrationPage />);
     expect(screen.getByText(/Back to Data/i)).toBeInTheDocument();
+  });
+
+  it('renders every stored migration, not only the newest ten', () => {
+    for (let i = 1; i <= 12; i += 1) snapshots.push(makeSnapshot(i));
+    render(<MigrationPage />);
+
+    expect(screen.getAllByRole('listitem')).toHaveLength(12);
+    // The oldest snapshot carries one record; its text exists only on row 12,
+    // the row a 10-row window used to drop without any notice.
+    expect(screen.getByText(/^1 records ·/)).toBeInTheDocument();
+  });
+
+  it('states how many migrations the history holds', () => {
+    for (let i = 1; i <= 3; i += 1) snapshots.push(makeSnapshot(i));
+    render(<MigrationPage />);
+    expect(screen.getByText('3 migrations')).toBeInTheDocument();
   });
 });
