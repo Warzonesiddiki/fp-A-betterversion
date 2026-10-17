@@ -76,20 +76,20 @@ describe('parseGLRows — happy path', () => {
     const r = parseGLRows(
       [
         row({ Debit: '1.234,56' }),
-        row({ Credit: '(500)' }),
         row({ Debit: '$ 2,000' }),
-        row({ Credit: '-75.5' }),
         row({ Debit: '12,34,567.89' }),
+        row({ Credit: '1,500.25' }),
+        row({ Credit: '500' }),
       ],
       MAP
     );
     expect(r.rejections).toEqual([]);
     expect(r.entries.map((e) => [e.debit, e.credit])).toEqual([
       [1234.56, 0],
-      [0, -500],
       [2000, 0],
-      [0, -75.5],
       [1234567.89, 0],
+      [0, 1500.25],
+      [0, 500],
     ]);
   });
 
@@ -152,6 +152,20 @@ describe('parseGLRows — rejections (FR-002: nothing silently discarded)', () =
       'unparseable posting date "2026-13-01"',
       'unparseable posting date "March 5, 2026"',
       'unparseable posting date "20260305"',
+    ]);
+  });
+
+  it('rejects signed debit/credit cells: the domain requires non-negative magnitudes', () => {
+    // docs/agent/03_DOMAIN_RULES.md: debit >= 0 and credit >= 0. The parser
+    // used to accept accounting parentheses / a leading minus, producing an
+    // entry `validateEntries` can never commit — a green preview followed by
+    // an import rejection. Reject the row here, with the cell text as evidence.
+    const r = parseGLRows([row({ Credit: '(500)' }), row({ Debit: '-75.5' })], MAP);
+    expect(r.entries).toEqual([]);
+    expect(r.sourceRows).toEqual([]);
+    expect(r.rejections.map((x) => x.reason)).toEqual([
+      'credit must be a non-negative amount (got "(500)")',
+      'debit must be a non-negative amount (got "-75.5")',
     ]);
   });
 

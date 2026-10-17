@@ -639,3 +639,22 @@ abandoned remit; no file exists).
 **Verify first:** `npx vitest run src/components/data/GLDataPreview.test.tsx
 src/pages/data/GLUploadPage.interop.test.tsx`.
 **Action requested:** none — solo mode. D365 remains "expected, not verified" (DEC-001).
+
+## 2026-10-17 15:45 UTC — LEAD — DONE: parser enforces the domain amount rule
+
+**File:** `src/services/import/parseGLRows.ts` (+ tests, docs).
+
+**What:** `parseFinancialAmount` supports accounting parentheses and a leading minus, and
+`parseGLRows` passed those through unchanged — `Credit: "(500)"` became `credit: -500`. The domain
+rule is `debit >= 0`, `credit >= 0` (`docs/agent/03_DOMAIN_RULES.md`), so `validateEntries` always
+rejected the row at import: the preview said "0 errors", the import then failed. The parser now
+rejects a signed debit/credit cell with `debit|credit must be a non-negative amount (got "<cell>")`,
+so preview and import agree at every row-level rule.
+
+**Evidence (pipefail):** failing-first test added → red; after the guard
+`npx vitest run src/services/import/parseGLRows.test.ts` **14/14**; combined
+`GLDataPreview.test.tsx` + `GLUploadPage.interop.test.tsx` + `src/services/import/` →
+**13 files / 138 tests** green; format 0.
+
+**Verify first:** `npx vitest run src/services/import/parseGLRows.test.ts`.
+**Action requested:** none — solo mode.

@@ -11,6 +11,10 @@
 
 ## Newest (solo session, 2026-10-17 — third block)
 
+- **Signed debit/credit cells now rejected at parse time.** `parseGLRows` accepted `(500)` /
+  `-75.5` and produced entries the store's `debit >= 0` / `credit >= 0` rule can never commit —
+  the last row-level preview/import disagreement. New failing-first test; `parseGLRows.test.ts`
+  **14/14**, preview **27/27**, import surfaces **138/138**.
 - **Preview gate/import divergence fixed at the cause.** `GLDataPreview` validated only the first
   20 rows with its own `parseFloat` rules while claiming "N errors detected in M rows"; a bad row
   past the window left Confirm enabled. It now validates every row through `parseGLRows` (the

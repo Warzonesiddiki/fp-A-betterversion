@@ -77,6 +77,12 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **Signed debit/credit cells rejected at parse time.** `parseGLRows`
+  accepted accounting parentheses/leading minus (`(500)`, `-75.5`), producing entries the store's
+  domain rule (`debit >= 0`, `credit >= 0`) can never commit — a green preview followed by an
+  import rejection. The parser now rejects the row with the cell text, closing the last row-level
+  preview/import disagreement. Failing-first: `parseGLRows.test.ts` 14/14, preview 27/27,
+  import surfaces 138/138.
 - 2026-10-17 (LEAD, solo): **Preview gate/import divergence closed** — `GLDataPreview` had its own
   validation rules (float `parseFloat`, only the first 20 rows, blank cells rejected) while the
   banner claimed the error count covered the whole file; a broken row past row 20 left Confirm

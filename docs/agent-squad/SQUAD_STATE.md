@@ -88,6 +88,17 @@ guards → reviewed exception output — is the priority surface.
   evidence of record.
 - Next lead unit: backlog P1-5 template-clone honesty audit, or another measured P0/P1 gap.
 
+## 2026-10-17 15:45 UTC — LEAD: parser now enforces the domain amount rule
+
+- `parseGLRows` accepted signed debit/credit cells (`(500)` in Credit → -500, `-75.5` in Debit),
+  producing entries `validateEntries` rejects (`debit >= 0`, `credit >= 0`,
+  `docs/agent/03_DOMAIN_RULES.md`). That was the last row-level disagreement between the preview
+  and the import: a green preview, then an import rejection. The parser now rejects the row with
+  `debit/credit must be a non-negative amount (got "<cell>")`.
+- Evidence: `parseGLRows.test.ts` 14/14 (one new failing-first test); `GLDataPreview.test.tsx`
+  27/27; `src/services/import/` + preview + wizard interop 13 files / 138 tests green.
+- Nothing else changed; the store invariant is untouched.
+
 ## What is blocked
 
 - Anything that assumes a verified D365 schema or a real source sample without that sample

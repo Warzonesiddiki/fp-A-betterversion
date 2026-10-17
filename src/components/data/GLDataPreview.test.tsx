@@ -196,6 +196,17 @@ describe('GLDataPreview', () => {
     expect(screen.getByText('Confirm & Import Data')).not.toBeDisabled();
   });
 
+  // The domain forbids negative debit/credit magnitudes; the preview must not
+  // green-light a row the store will reject.
+  it('blocks a signed debit/credit cell, as the import parser does', () => {
+    const data = [{ acct: '1000', date: '2024-01-01', dr: '0', cr: '(500)' }];
+    render(<GLDataPreview {...defaultProps} data={data} />);
+    expect(
+      screen.getByText(/credit must be a non-negative amount \(got "\(500\)"\)/)
+    ).toBeInTheDocument();
+    expect(screen.getByText('Fix Errors to Continue')).toBeDisabled();
+  });
+
   // The defect this replaces: only the first 20 rows were validated, while
   // the banner claimed "N errors detected in 25 rows". A broken row past the
   // window left Confirm enabled and the user imported a file the preview had

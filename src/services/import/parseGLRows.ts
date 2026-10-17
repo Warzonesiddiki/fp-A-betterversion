@@ -10,6 +10,10 @@
  *  - Dates go through `parseImportDate` (canonical YYYY-MM-DD or reject).
  *  - Amounts go through `parseFinancialAmount`; blank cells are 0; anything
  *    unparseable rejects the row. A field with no column mapping is 0.
+ *  - Debit and credit are magnitudes: a signed cell (``(500)``, ``-75.5``)
+ *    rejects the row. The store enforces `debit >= 0` / `credit >= 0`
+ *    (docs/agent/03_DOMAIN_RULES.md); rejecting here keeps the preview and
+ *    the import from disagreeing about a row the ledger can never accept.
  *  - A row collects every reason that applies (one `ImportRejection` per
  *    reason) and is excluded from `entries` — nothing is silently dropped.
  *  - `sourceRows[i]` is the 1-based source-file row of `entries[i]`
@@ -99,6 +103,10 @@ export function parseGLRows(
       const value = parseFinancialAmount(cell);
       if (Number.isNaN(value)) {
         reject(`unparseable ${field} amount "${cell}"`);
+        return Number.NaN;
+      }
+      if (value < 0) {
+        reject(`${field} must be a non-negative amount (got "${cell}")`);
         return Number.NaN;
       }
       return value;
