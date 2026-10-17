@@ -77,6 +77,14 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **SOX checks run on the whole ledger.** `SOXCompliancePage` sliced
+  `entries` to 20 before the double-entry check and 10 before the closed-period check, so the
+  verdict depended on row order (first-20 unbalanced + rest balanced = false failure). Both now
+  map every entry; the fabricated `new Date()` fallback timestamp is gone. New interop suite
+  drives the real `glStore` and records the engine arguments. Failing-first: 20/25 and 10/15
+  (2 red) → 3/3 interop, 13/13 including the page and money suites.
+  Still open and recorded: the audit/SOD/approval checks are computed from demo audit/RBAC/workflow
+  objects at `SOXCompliancePage.tsx:269-343` — see `docs/agent/09_KNOWN_GAPS.md`.
 - 2026-10-17 (LEAD, solo): **Import job history no longer drops jobs.** `DataImportPage`
   rendered `importJobs.slice(0, 10)` while `dataStore` keeps the full list, with no count and no
   way to see the rest. Every job is now rendered in a scrolling table; the newest-first order is

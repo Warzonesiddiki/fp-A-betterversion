@@ -394,15 +394,19 @@ export default function SOXCompliancePage() {
       equity: equityR,
     };
 
-    // Derive ledger + recent entries from REAL GL entries only (no fabricated
-    // stand-ins when the store is empty — that path now shows the empty state).
-    const ledgerEntries = entries.slice(0, 20).map((e) => ({
-      debit: e.debit ?? 0,
-      credit: e.credit ?? 0,
+    // Every GL row feeds the checks. Slicing to 20/10 made the reported
+    // controls depend on which rows happened to be first: a balanced ledger
+    // could "fail" the double-entry check and an unbalanced one could "pass"
+    // it, while the closed-period scan never saw rows past the tenth.
+    const ledgerEntries = entries.map((e) => ({
+      debit: e.debit,
+      credit: e.credit,
     }));
-    const recentEntries = entries.slice(0, 10).map((e) => ({
-      period: e.period ?? 'Unknown',
-      timestamp: e.date ?? new Date().toISOString(),
+    const recentEntries = entries.map((e) => ({
+      period: e.period,
+      // The real posting date. Never substitute "now": an old entry would
+      // look recent and the closed-period check would judge the wrong period.
+      timestamp: e.date,
       action: 'create' as const,
     }));
 
