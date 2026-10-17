@@ -77,6 +77,28 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **The documented ratchet numbers are now the enforced ones.** The
+  "Ratchet baselines" table in `docs/agent/09_KNOWN_GAPS.md` claimed determinism 345 / 80 (gate:
+  344 / 79), type-safety escapes 116 (tree: 47) and a money-adoption floor of 28.89 % (baseline
+  JSON: 23.54 %, tree: 29.16 %) — two of four rows described gates that were not in force, and the
+  type-escape row advertised a budget 69 casts looser than the tree. `docs/agent/05_COMMANDS_AND_GATES.md`
+  repeated all three stale numbers. Two parts: (1) measured the tree and locked in the improvements
+  that had never been recorded — `type-safety-ratchet --update` 116 → **47** (0 `as any`,
+  47 `as unknown as`) and `money-adoption --update` 209 → **289 modules** (23.54 % → **29.16 %**;
+  server 2 → 3 modules); (2) added `scripts/ratchet-docs-check.mjs`, wired into `npm run
+docs:verify`, which compares every row of that table with the baseline JSON the gate reads and
+  fails on drift, on an unparseable value, or on a deleted row — so the table cannot silently
+  describe a gate nobody enforces. Failing-first: the new check exited 1 on the stale doc
+  (`doc says 345 / 80, gate enforces 344 / 79`; `doc says 28.89, gate enforces 23.54`) and
+  `src/__tests__/ratchetDocsScript.test.ts` was 1 red / 2 green → after the doc fix: 3/3 green and
+  `✓ All 4 documented ratchet values match the gates that enforce them`. Negative control for the
+  tightened budget: adding one `as unknown as` to `src/utils` made the ratchet fail
+  (`INCREASED: 47 -> 48`, exit 1); removing it restored exit 0. Also recorded in KNOWN_GAPS: on
+  Node v22.22.3 (the targeted version) `npm run check` is 8/8 shards, 15,739 passed | 1 skipped,
+  0 failed — the three `Storage.prototype` failures are Node-26 symptoms and the tests are
+  unchanged. Gates: tsc 0, lint 0, format:check 0, engines:verify 182, money:ast 0,
+  determinism:ratchet 344/79, type-safety:ratchet 47, architecture:guardrails 0, fabrication:audit
+  0, docs:links strict 0, docs:verify (now 4 checks) 0.
 - 2026-10-17 (LEAD, solo): **Migration readiness no longer scores a file it never assessed.**
   `assessReadiness` began at `score = 100` and only deducted, so a workbook with a header row and no
   data rows came back as "Migration Readiness: 100 %" with a GREEN badge, and an entirely empty sheet

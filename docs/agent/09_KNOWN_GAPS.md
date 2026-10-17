@@ -90,15 +90,29 @@ Measured 2026-10-16 on this sandbox (Node **26.10.0**). The project targets Node
 Full-suite evidence for this environment: `npm run test:sharded` → 7/8 shards
 PASS, 15,597 tests, 3 failed — all three being the rows above.
 
+Measured 2026-10-17 on Node **v22.22.3** (the version the project targets): `npm run check`
+→ exit 0, **8/8 shards PASS** in 1013 s, 15,739 passed | 1 skipped, 0 failed at `c49a3e7`.
+The three `Storage.prototype` rows above do not reproduce on Node 22; they are Node-26
+symptoms and the tests are unchanged.
+
 ## Ratchet baselines (direction: down only)
 
 | Ratchet                   | Value at tip                | File                                   |
 | ------------------------- | --------------------------- | -------------------------------------- |
-| determinism sites / files | 345 / 80                    | `scripts/determinism-baseline.json`    |
-| type-safety escapes       | 116                         | `scripts/type-safety-baseline.json`    |
+| determinism sites / files | 344 / 79                    | `scripts/determinism-baseline.json`    |
+| type-safety escapes       | 47                          | `scripts/type-safety-baseline.json`    |
 | money AST violations      | 0                           | `scripts/money-ast-baseline.json`      |
-| money adoption            | 28.89 % (floor)             | `scripts/money-adoption-baseline.json` |
+| money adoption            | 29.16 % (floor)             | `scripts/money-adoption-baseline.json` |
 | eslint-disable ledger     | see `npm run escape:ledger` | —                                      |
+
+Every number in that table is script-checked: `scripts/ratchet-docs-check.mjs` (inside
+`npm run docs:verify`) compares each row with the baseline JSON the gate reads and fails on
+drift, on an unparseable value, or on a deleted row — so the table cannot quietly describe
+gates that are not the gates in force. Pinned by `src/__tests__/ratchetDocsScript.test.ts`.
+Re-recorded 2026-10-17 after measuring the tree: type-safety escapes **116 → 47** (0 `as any`,
+47 `as unknown as`) and the money-adoption floor **209 → 289 modules** (23.54 % → 29.16 %;
+server 2 → 3 modules). Both were improvements that had never been locked in, so the gates were
+69 casts and 80 modules looser than the tree.
 
 ## Decision-neutral work that is always welcome
 
