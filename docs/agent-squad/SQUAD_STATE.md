@@ -109,6 +109,15 @@ guards → reviewed exception output — is the priority surface.
   `VersionDiffPage.test.tsx` (60-entry ledger and 60-item budget must reach `commit` whole, with an
   accurate message).
 
+## 2026-10-17 16:05 UTC — LEAD: explorer display window made explicit
+
+- `GLExplorerPage` rendered at most 200 rows after filtering but the footer said only
+  "N total · showing first 200", so the number of matching rows that were dropped was invisible.
+  The memo now returns `{ rows, matchedCount }`; the footer reads `N total · M matching` and adds
+  `· showing first 200` only when the window actually truncates.
+- Evidence: failing-first 2 red → `GLExplorerPage.interop.test.tsx` 4/4, including a 250-line
+  ledger asserting `250 total · 250 matching · showing first 200` and exactly 200 data rows.
+
 ## What is blocked
 
 - Anything that assumes a verified D365 schema or a real source sample without that sample

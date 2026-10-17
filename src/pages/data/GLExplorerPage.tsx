@@ -92,6 +92,9 @@ export function computeAccountSummaries(
     .sort((a, b) => a.code.localeCompare(b.code));
 }
 
+/** Rows rendered in the explorer table; the footer states this limit. */
+const DISPLAY_LIMIT = 200;
+
 export default function GLExplorerPage() {
   const fmt = useCurrencyFormatter();
   const { entries, accounts } = useGLStore(
@@ -119,16 +122,17 @@ export default function GLExplorerPage() {
           entry.reference.toLowerCase().includes(q)
       );
     }
-    return list
-      .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id))
-      .slice(0, 200);
+    const matched = list.sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+    // The table window is 200 rows; the footer must say how many rows matched
+    // and that only the first 200 are shown, or the limit is silent.
+    return { rows: matched.slice(0, DISPLAY_LIMIT), matchedCount: matched.length };
   }, [entries, typeFilter, search]);
 
   const totals = useMemo(() => computeGLExplorerTotals(entries), [entries]);
 
   const exportVisibleRows = () => {
     const csv = toCSV(
-      filtered.map((entry) => ({
+      filtered.rows.map((entry) => ({
         Date: entry.date || entry.period,
         Account: entry.accountCode,
         Name: entry.accountName,
@@ -289,7 +293,7 @@ export default function GLExplorerPage() {
                 </tr>
               </thead>
               <tbody className={`divide-y divide-slate-800 ${isPending ? 'opacity-60' : ''}`}>
-                {filtered.map((entry) => (
+                {filtered.rows.map((entry) => (
                   <tr key={entry.id} className="hover:bg-slate-900/50">
                     <td className="px-4 py-2 text-xs text-slate-400">
                       {entry.date || entry.period}
@@ -339,7 +343,10 @@ export default function GLExplorerPage() {
       </Card>
 
       <p className="text-xs text-[var(--text-muted)]">
-        {entries.length.toLocaleString()} total · showing first {filtered.length.toLocaleString()}
+        {entries.length.toLocaleString()} total · {filtered.matchedCount.toLocaleString()} matching
+        {filtered.matchedCount > filtered.rows.length
+          ? ` · showing first ${filtered.rows.length.toLocaleString()}`
+          : ''}
       </p>
     </div>
   );

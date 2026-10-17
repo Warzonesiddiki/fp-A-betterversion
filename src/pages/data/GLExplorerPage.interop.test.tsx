@@ -110,7 +110,39 @@ describe('GLExplorerPage ↔ glStore interop (P1-4 consumer coverage)', () => {
     expect(within(table).getByText('explorer.csv:2')).toBeTruthy();
     expect(within(table).getByText('explorer.csv:3')).toBeTruthy();
 
-    expect(screen.getByText(/2 total · showing first 2/)).toBeTruthy();
+    expect(screen.getByText(/2 total · 2 matching/)).toBeTruthy();
+  });
+
+  it('states the matching count and the display limit exactly when the ledger is longer', () => {
+    // 125 balanced pairs = 250 journal lines in one committed batch.
+    const pairs = Array.from({ length: 125 }, (_, i) => [
+      {
+        accountCode: '5000',
+        accountName: 'Supplies',
+        date: '2026-03-15',
+        debit: 1,
+        credit: 0,
+        description: `Supplies ${i}`,
+      },
+      {
+        accountCode: '6000',
+        accountName: 'Payable',
+        date: '2026-03-15',
+        debit: 0,
+        credit: 1,
+        description: `Payable ${i}`,
+      },
+    ]).flat();
+    const result = useGLStore.getState().importGLData(pairs, 'long.csv');
+    expect(result.success).toBe(true);
+
+    renderPage();
+
+    expect(screen.getByText(/250 total · 250 matching · showing first 200/)).toBeTruthy();
+
+    // The table really is windowed at 200 data rows (plus the header row).
+    const table = screen.getByRole('table', { name: /General ledger explorer/i });
+    expect(within(table).getAllByRole('row')).toHaveLength(201);
   });
 
   it('filters the store-derived rows through the screen search box', () => {

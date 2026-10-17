@@ -77,6 +77,10 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **Explorer footer states its window.** `GLExplorerPage` capped the
+  table at 200 rows and said "showing first 200" without saying how many rows matched. The footer
+  now reads `N total · M matching · showing first 200` when the window truncates, and the memo
+  returns `matchedCount` separately from the displayed rows. Failing-first: 2 red → 4/4 interop.
 - 2026-10-17 (LEAD, solo): **Version Diff commits the whole baseline.** The page sampled the first
   50 GL entries and 50 budget line items while its commit messages stated the full counts — history
   described rows it never captured. Both loops now commit every row. Failing-first: 2 red → 4/4
