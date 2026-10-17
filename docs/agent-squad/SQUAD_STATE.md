@@ -14,9 +14,11 @@ guards → reviewed exception output — is the priority surface.
 - Core spine is present and tested: GL import, provenance, duplicate/file-hash guard, period
   write guards on the local write paths, and a money-integrity guard on the GL store mutation
   paths.
-- Rules-for-exceptions capability is partly present but not yet fully delivered as a governed
-  review path. The anomaly explainer exists; the versioned rule catalogue and persisted
-  disposition path are the remaining pieces to align with FR-008/FR-009.
+- Rules-for-exceptions: the versioned catalogue, canonical finding key and persisted disposition
+  audit trail are built and tested (13 + 8 + 2 + 9 = 32 tests, rehydration included). What is
+  missing is a page/route consumer for the review queue — blocked by the roadmap's no-new-surface
+  rule (Gate 2 is not provably green without the owner's real D365 export, DEC-001). The register
+  has been corrected from "Not met" to "Partial" with this evidence.
 - Export surfaces exist and are tested against synthetic ledgers; board-pack tie-out is the next
   evidence layer to tighten, not a new feature to invent.
 - Documentation consolidation was already done. There is one authoritative live doc set.

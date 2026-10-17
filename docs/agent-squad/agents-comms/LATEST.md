@@ -11,6 +11,13 @@
 
 ## Newest (solo session, 2026-10-17 — third block)
 
+- **Full sharded suite measured** (this environment, Node 22.22.3): 7/8 shards green;
+  **15,683 passed / 1 skipped / 1 failed**. The single failure was a deep upload test asserting
+  the now-rejected signed amount; corrected and re-verified. Shard 6 re-run result recorded below
+  when it finishes.
+- **Requirements register corrected** where it understated the tree: FR-008/FR-009 are built and
+  tested (32 tests, including rehydrate), so they are "Partial (branch)" — the missing piece is a
+  page consumer, blocked by Gate 2/DEC-001, not the store work.
 - **Signed debit/credit cells now rejected at parse time.** `parseGLRows` accepted `(500)` /
   `-75.5` and produced entries the store's `debit >= 0` / `credit >= 0` rule can never commit —
   the last row-level preview/import disagreement. New failing-first test; `parseGLRows.test.ts`
@@ -69,6 +76,7 @@
 | `GLDataPreview.test.tsx` | GREEN 26/26 (was 8 red; 20-row window + private rules) |
 | `GLUploadPage.interop.test.tsx` | GREEN 7/7 (was 5/5; gate now blocks row 26, UX-002 reprocess) |
 | `masterStorage.test.ts` | GREEN 9/9 (exists; handover's "missing" claim corrected) |
+| `npm run test:sharded` | 7/8 shards green; 15,683 passed / 1 skipped / 1 failed pre-fix; shard 6 re-run after fix |
 | Alert-consumer suites (final files) | 9 files / 116 tests green |
 | Theme + exception suites | 4 files / 152 tests green |
 

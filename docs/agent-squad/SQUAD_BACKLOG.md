@@ -77,6 +77,11 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **Evidence record corrected for FR-008/FR-009.** The register said
+  "Not met" / "no persisted disposition" while the tree contains a versioned rule catalogue
+  (13 tests), a `masterStorage`-persisted disposition audit trail that survives rehydrate
+  (8 + 2 tests), and tested review components (9). Status is now "Partial (branch)" with the
+  remaining gap stated exactly: no page/route consumer (blocked by Gate 2/DEC-001), no answer key.
 - 2026-10-17 (LEAD, solo): **Explorer footer states its window.** `GLExplorerPage` capped the
   table at 200 rows and said "showing first 200" without saying how many rows matched. The footer
   now reads `N total · M matching · showing first 200` when the window truncates, and the memo
