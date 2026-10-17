@@ -345,19 +345,19 @@ export default function SecuritySettingsPage() {
           </div>
           <div
             data-testid="security-activity-unavailable"
-            className="p-3 rounded-lg border border-slate-700/60 space-y-1"
+            className="p-3 rounded-lg border border-[var(--border-default)] space-y-1"
           >
-            <p className="text-sm font-medium text-white">
+            <p className="text-sm font-medium text-[var(--text-primary)]">
               No security activity log is available in this build.
             </p>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[var(--text-muted)]">
               Sign-in attempts, password changes and permission changes are recorded server-side
               (audit_login_attempts, audit_log, audit_permission_changes), and the desktop build
               does not reach those tables. The only security fact this app holds locally is the last
               sign-in timestamp on your user entry, shown above — so no activity feed is invented
               here.
             </p>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[var(--text-muted)]">
               Data-change history (who changed which value, and when) is recorded on the client and
               is on the Audit Trail page at /audit/trail.
             </p>
