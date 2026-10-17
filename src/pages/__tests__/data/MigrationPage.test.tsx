@@ -149,6 +149,18 @@ describe('MigrationPage', () => {
     expect(screen.getByText(/^1 records ·/)).toBeInTheDocument();
   });
 
+  it('shows the success rate as unavailable, not 0%, when nothing has run', () => {
+    render(<MigrationPage />);
+    expect(screen.getByTestId('migration-success-rate')).toHaveTextContent('—');
+    expect(screen.getByTestId('migration-success-rate')).not.toHaveTextContent('0.0%');
+  });
+
+  it('computes the success rate from applied migrations', () => {
+    snapshots.push(makeSnapshot(1), makeSnapshot(2), { ...makeSnapshot(3), applied: false });
+    render(<MigrationPage />);
+    expect(screen.getByTestId('migration-success-rate')).toHaveTextContent('66.7%');
+  });
+
   it('states how many migrations the history holds', () => {
     for (let i = 1; i <= 3; i += 1) snapshots.push(makeSnapshot(i));
     render(<MigrationPage />);

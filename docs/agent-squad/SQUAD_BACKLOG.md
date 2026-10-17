@@ -77,6 +77,11 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **Migration success rate stops lying at zero.** With no migrations the
+  KPI computed `0` and rendered "0.0%", which reads as "every migration failed". The rate is now
+  `null` and renders the unavailable marker (`—`) with a muted colour and
+  `title="No migrations recorded"`; two applied of three still renders `66.7%`. Failing-first:
+  missing `data-testid` + 0.0% (2 red) → 8/8 page tests, 51/51 with the all-pages smoke suite.
 - 2026-10-17 (LEAD, solo): **SOX checks run on the whole ledger.** `SOXCompliancePage` sliced
   `entries` to 20 before the double-entry check and 10 before the closed-period check, so the
   verdict depended on row order (first-20 unbalanced + rest balanced = false failure). Both now

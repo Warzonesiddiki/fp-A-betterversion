@@ -107,7 +107,10 @@ export default function MigrationPage() {
     );
     const totalRecords = history.reduce((sum, m) => sum + (m.data?.length || 0), 0);
     const successCount = history.filter((m) => m.applied).length;
-    const successRate = history.length > 0 ? (successCount / history.length) * 100 : 0;
+    // No migrations means the rate is undefined, not 0%: a 0% rate reads as
+    // "every migration failed". `formatPercent(null)` renders the unavailable
+    // marker instead of a number.
+    const successRate = history.length > 0 ? (successCount / history.length) * 100 : null;
     return {
       total: history.length,
       last7d: last7d.length,
@@ -227,12 +230,16 @@ export default function MigrationPage() {
               Success Rate
             </div>
             <div
+              data-testid="migration-success-rate"
+              title={stats.successRate == null ? 'No migrations recorded' : undefined}
               className={`text-2xl font-bold tabular-nums mt-1 ${
-                stats.successRate >= 95
-                  ? 'text-green-400'
-                  : stats.successRate >= 80
-                    ? 'text-amber-400'
-                    : 'text-red-400'
+                stats.successRate == null
+                  ? 'text-[var(--text-muted)]'
+                  : stats.successRate >= 95
+                    ? 'text-green-400'
+                    : stats.successRate >= 80
+                      ? 'text-amber-400'
+                      : 'text-red-400'
               }`}
             >
               {formatPercent(stats.successRate)}
