@@ -48,6 +48,7 @@ by code · **DECIDED** = owner decision recorded · **OPEN** = needs owner.
 | "Feature complete" / phase badges in legacy plans | not true; legacy plans are superseded (see `00_INDEX.md`)                                                                                           |
 | Tauri native layer verified                       | NOT VERIFIABLE here — no Rust toolchain in the sandbox; label `NATIVE-UNVERIFIED`                                                                   |
 | CI green                                          | FALSE: `main` CI red since 2026-08-20; patches in `ci-patches/` not yet applied                                                                     |
+| Version Diff baseline = the whole ledger          | FORMERLY FALSE: the page committed only the first 50 GL entries / budget items while the commit message claimed the full count. Fixed 2026-10-17 — every row is committed and the message states the committed count (`VersionDiffPage.test.tsx` 4 tests, 2 red before the fix). |
 
 ## Decisions still open (do not resolve in code)
 

@@ -99,6 +99,16 @@ guards → reviewed exception output — is the priority surface.
   27/27; `src/services/import/` + preview + wizard interop 13 files / 138 tests green.
 - Nothing else changed; the store invariant is untouched.
 
+## 2026-10-17 15:55 UTC — LEAD: Version Diff baseline no longer samples the ledger
+
+- `VersionDiffPage` built its version baseline from `glEntries.slice(0, 50)` and
+  `lineItems.slice(0, 50)` but wrote commit messages claiming the full counts
+  (`Imported ${glEntries.length} GL entries`, `Current budget state (${lineItems.length} items)`).
+  The diff history therefore described a baseline it had not recorded.
+- Fixed at the cause: both loops commit every row. Failing-first: 2 red → 4/4 in
+  `VersionDiffPage.test.tsx` (60-entry ledger and 60-item budget must reach `commit` whole, with an
+  accurate message).
+
 ## What is blocked
 
 - Anything that assumes a verified D365 schema or a real source sample without that sample

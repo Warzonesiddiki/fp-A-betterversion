@@ -77,6 +77,10 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **Version Diff commits the whole baseline.** The page sampled the first
+  50 GL entries and 50 budget line items while its commit messages stated the full counts — history
+  described rows it never captured. Both loops now commit every row. Failing-first: 2 red → 4/4
+  `VersionDiffPage.test.tsx`.
 - 2026-10-17 (LEAD, solo): **Signed debit/credit cells rejected at parse time.** `parseGLRows`
   accepted accounting parentheses/leading minus (`(500)`, `-75.5`), producing entries the store's
   domain rule (`debit >= 0`, `credit >= 0`) can never commit — a green preview followed by an
