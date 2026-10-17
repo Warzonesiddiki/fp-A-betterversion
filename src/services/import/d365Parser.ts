@@ -210,8 +210,15 @@ const BC_DEBIT_CANDIDATES = ['Debit Amount', 'Debit_Amount', 'DebitAmount', 'Deb
 const BC_CREDIT_CANDIDATES = ['Credit Amount', 'Credit_Amount', 'CreditAmount', 'Credit'];
 const BC_AMOUNT_CANDIDATES = ['Amount'];
 const BC_ENTITY_CANDIDATES = ['Business Unit Code', 'Global Dimension 1 Code', 'Department Code'];
+const BC_CURRENCY_CANDIDATES = ['Currency Code', 'Currency_Code', 'CurrencyCode', 'Currency'];
 
-function isNonTransactionRow(accountRaw: string): boolean {
+/**
+ * True for the non-transaction lines a D365 export can carry inside the data
+ * range: grand-total lines and opening/closing balance rows. Such a line is
+ * not a posting — importing it would double every total it summarises — so the
+ * GL import path rejects it with this reason instead of adopting it.
+ */
+export function isNonTransactionRow(accountRaw: string): boolean {
   const lower = accountRaw.toLowerCase();
   return (
     lower.startsWith('total') ||
@@ -425,4 +432,83 @@ export function parseD365Rows(
     rejections,
     rowErrors,
   };
+}
+
+/**
+ * Column mapping from a D365 header row onto the GL import fields, so a
+ * standard Dynamics 365 export needs no hand-mapping in the upload wizard.
+ *
+ * This is the single source of truth for D365 column names: the candidate
+ * lists above are the ones `parseD365Rows` uses, and the wizard's auto-map and
+ * `parseGLRows`' dialect detection both read them from here rather than
+ * keeping a second copy. The app imports through `parseGLRows` (one validation
+ * path, one money path); this module supplies the dialect facts it lacks —
+ * which columns mean what, which date formats are legal, and which lines are
+ * not transactions.
+ *
+ * Field order is declaration order; the first candidate present wins, and no
+ * source column is ever claimed by two fields. Returns `null` when the headers
+ * are not a recognised D365 export, so a generic file's behaviour is
+ * unchanged.
+ */
+export interface D365GLMappingSuggestion {
+  readonly flavor: D365Flavor;
+  /** GL import field key → the exact source header to map onto it. */
+  readonly mappings: Record<string, string>;
+}
+
+const D365_FIELD_CANDIDATES: Record<D365Flavor, Record<string, readonly string[]>> = {
+  d365_fo: {
+    accountCode: FO_ACCOUNT_CANDIDATES,
+    accountName: FO_ACCOUNT_NAME_CANDIDATES,
+    postDate: FO_DATE_CANDIDATES,
+    debit: FO_DEBIT_CANDIDATES,
+    credit: FO_CREDIT_CANDIDATES,
+    currency: FO_CURRENCY_CANDIDATES,
+    entityId: FO_ENTITY_CANDIDATES,
+    reference: FO_VOUCHER_CANDIDATES,
+    description: FO_DESC_CANDIDATES,
+  },
+  d365_bc: {
+    accountCode: BC_ACCOUNT_CANDIDATES,
+    accountName: BC_ACCOUNT_NAME_CANDIDATES,
+    postDate: BC_DATE_CANDIDATES,
+    debit: BC_DEBIT_CANDIDATES,
+    credit: BC_CREDIT_CANDIDATES,
+    currency: BC_CURRENCY_CANDIDATES,
+    entityId: BC_ENTITY_CANDIDATES,
+    reference: BC_VOUCHER_CANDIDATES,
+    description: BC_DESC_CANDIDATES,
+  },
+};
+
+function findHeader(headers: readonly string[], candidates: readonly string[]): string | undefined {
+  for (const candidate of candidates) {
+    const exact = headers.find((h) => h === candidate);
+    if (exact) return exact;
+  }
+  for (const candidate of candidates) {
+    const normalizedCandidate = normalizeKey(candidate);
+    const match = headers.find((h) => normalizeKey(h) === normalizedCandidate);
+    if (match) return match;
+  }
+  return undefined;
+}
+
+export function suggestGLImportMappings(
+  headers: readonly string[]
+): D365GLMappingSuggestion | null {
+  const flavor = detectD365Flavor(headers);
+  if (!flavor) return null;
+
+  const mappings: Record<string, string> = {};
+  const claimed = new Set<string>();
+  for (const [field, candidates] of Object.entries(D365_FIELD_CANDIDATES[flavor])) {
+    const header = findHeader(headers, candidates);
+    if (header && !claimed.has(header)) {
+      mappings[field] = header;
+      claimed.add(header);
+    }
+  }
+  return { flavor, mappings };
 }

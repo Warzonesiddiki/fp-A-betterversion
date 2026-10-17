@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { suggestGLImportMappings } from '@/services/import/d365Parser';
 import { Select } from '@/components/ui/Select';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -74,9 +75,17 @@ export function GLColumnMapper({ csvColumns, mappings, onMap, onAutoMap }: GLCol
   useEffect(() => {
     if (onAutoMap && Object.keys(mappings).length === 0 && csvColumns.length > 0) {
       const newMappings: Record<string, string> = {};
+      // A standard Dynamics 365 export is mapped from its own column names
+      // (`MainAccount`, `AccountingDate`, `AccountingCurrencyDebitAmount`,
+      // `G/L Account No.`, ...), which the generic dictionary below does not
+      // know. `suggestGLImportMappings` returns null for any other header set,
+      // so a generic file is auto-mapped exactly as before; where the dialect
+      // claimed a field, the generic pass may not overwrite that choice.
+      const d365 = suggestGLImportMappings(csvColumns);
+      if (d365) Object.assign(newMappings, d365.mappings);
       csvColumns.forEach((col) => {
         const field = autoDetect(col);
-        if (field && !Object.values(newMappings).includes(col)) {
+        if (field && !Object.values(newMappings).includes(col) && !(d365 && newMappings[field])) {
           newMappings[field] = col;
         }
       });

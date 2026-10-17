@@ -250,6 +250,87 @@ describe('parseGLRows — facts the file carries but the parser used to drop', (
   });
 });
 
+describe('parseGLRows — Dynamics 365 dialect (detected from the headers)', () => {
+  const FO_MAP = {
+    accountCode: 'MainAccount',
+    postDate: 'AccountingDate',
+    debit: 'AccountingCurrencyDebitAmount',
+    credit: 'AccountingCurrencyCreditAmount',
+  } as const;
+  const foRow = (o: Partial<Record<string, string>>): Record<string, string> => ({
+    MainAccount: '1000',
+    AccountingDate: '31-Jan-2026',
+    AccountingCurrencyDebitAmount: '',
+    AccountingCurrencyCreditAmount: '',
+    ...o,
+  });
+
+  it('canonicalises the dd-MMM-yyyy posting date a D365 export carries', () => {
+    const r = parseGLRows([foRow({ AccountingCurrencyDebitAmount: '1,250.00' })], FO_MAP);
+    expect(r.rejections).toEqual([]);
+    expect(r.entries[0]).toMatchObject({
+      accountCode: '1000',
+      date: '2026-01-31',
+      postDate: '2026-01-31',
+      period: '2026-01',
+      debit: 1250,
+    });
+  });
+
+  it('still rejects a calendar-invalid text date', () => {
+    const r = parseGLRows([foRow({ AccountingDate: '31-Feb-2026' })], FO_MAP);
+    expect(r.entries).toHaveLength(0);
+    expect(r.rejections).toEqual([
+      {
+        row: 2,
+        code: 'VALIDATION',
+        reason: 'unparseable posting date "31-Feb-2026"',
+      },
+    ]);
+  });
+
+  it('rejects a grand-total line by source row instead of adopting it as an account', () => {
+    const r = parseGLRows(
+      [
+        foRow({ AccountingCurrencyDebitAmount: '100.00' }),
+        foRow({
+          MainAccount: 'Total',
+          AccountingCurrencyDebitAmount: '100.00',
+          AccountingCurrencyCreditAmount: '100.00',
+        }),
+      ],
+      FO_MAP
+    );
+    expect(r.entries).toHaveLength(1);
+    expect(r.sourceRows).toEqual([2]);
+    expect(r.rejections).toEqual([
+      {
+        row: 3,
+        code: 'VALIDATION',
+        reason: 'non-transaction summary or header row "Total"',
+      },
+    ]);
+  });
+
+  it('keeps the generic dialect when the caller states the file is not D365', () => {
+    const r = parseGLRows([foRow({})], FO_MAP, 2, { flavor: null });
+    expect(r.entries).toHaveLength(0);
+    expect(r.rejections[0]!.reason).toBe('unparseable posting date "31-Jan-2026"');
+  });
+
+  it('keeps the generic dialect for headers that are not a D365 export', () => {
+    // Same cell text, generic headers: "31-Jan-2026" is not a date the generic
+    // import path accepts, and an account named "Total" is the user's own data.
+    const r = parseGLRows([row({ Account: 'Total', Date: '31-Jan-2026', Debit: '5' })], MAP);
+    expect(r.entries).toHaveLength(0);
+    expect(r.rejections[0]!.reason).toBe('unparseable posting date "31-Jan-2026"');
+
+    const named = parseGLRows([row({ Account: 'Total Revenue', Debit: '5' })], MAP);
+    expect(named.rejections).toEqual([]);
+    expect(named.entries[0]).toMatchObject({ accountCode: 'Total Revenue' });
+  });
+});
+
 describe('missingRequiredMappings', () => {
   it('lists unmapped required fields in a stable order', () => {
     expect(missingRequiredMappings({})).toEqual(['accountCode', 'postDate']);

@@ -77,6 +77,25 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **A standard D365 export now imports end to end, and NFR-004 has its
+  import-to-output test.** `src/services/import/d365Parser.ts` had 0 non-test callers: the wizard's
+  auto-map knew only generic column names, so an F&O `GeneralJournalAccountEntryEntity` or a BC
+  `G/L Entries` export mapped nothing (Preview stayed locked), its `dd-MMM-yyyy` posting dates were
+  unparseable, and a trailing grand-total line would have been adopted as an account called "Total"
+  — double-counting every total it summarises. The parser's dialect facts are now live:
+  `suggestGLImportMappings` feeds the wizard auto-map, and `parseGLRows` detects the flavor from the
+  headers, uses `parseD365Date`, and rejects non-transaction lines by source row. One validation
+  path and one money path are kept — `parseD365Rows` itself stays test-only and is recorded as such
+  in `docs/agent/09_KNOWN_GAPS.md`. Failing-first, measured with the implementation reverted
+  (`git stash` of the three source files): **11 red** — 3 integration
+  (`expect(element).toBeEnabled()`), 6 mapping-suggestion
+  (`TypeError: suggestGLImportMappings is not a function`), 2 dialect. Green after:
+  `GLUploadPage.d365.integration.test.tsx` 3/3 (outputs asserted: trial balance per account,
+  `computeBalanceSheet` 545000/45000/545000, `diff 0`, `isBalanced`, control totals 695000.00 both
+  sides), `d365Parser.test.ts` 22/22, `parseGLRows.test.ts` 23/23, `GLColumnMapper.test.tsx` 11/11,
+  `GLUploadPage.interop.test.tsx` 8/8; 116 files / 1381 tests across `src/services/import`,
+  `src/components/data`, `src/pages/data`, `src/store`. DEC-001 is **not** resolved: synthetic
+  fixtures only, no real customer export, no verified-support claim.
 - 2026-10-17 (LEAD, solo): **The wizard can now map every fact the parser understands.**
   `GLColumnMapper` offered 7 fields while `parseGLRows` also accepted `reference`, and neither
   exposed `accountName` or `currency` — a file carrying them had the fact dropped, the ledger
