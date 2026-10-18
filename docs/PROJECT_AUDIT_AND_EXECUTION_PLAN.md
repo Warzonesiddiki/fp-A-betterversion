@@ -199,7 +199,7 @@ Tauri SQLite 35-table schema ──✗ client never writes it               AI c
 | IMP-02 | The export's *own* control totals (the totals the owner reads in D365) cannot be entered/compared — reconciliation is internal-only (FR-004 open half). | P1 |
 | IMP-03 | No saved mapping profiles. A monthly repeat import re-does mapping; DEC-015 multiplies this by flavour. Mapping must be saveable per flavour/source and re-applied automatically on header match. | P1 |
 | IMP-04 | `DynamicsConnector` is Dataverse CRM, not GL. Any future direct D365 pull (F&O OData / BC API) is a new connector, DEC-gated, and **not** required for v1 — file import is the contract. | P2 (defer) |
-| IMP-05 | Trial-balance snapshot files must be *recognised and refused as GL dumps* with a clear reason (they are balances, not transactions) — part of DEC-015(d). | P1 |
+| IMP-05 | Trial-balance snapshot files must be *recognised and refused as GL dumps* with a clear reason (they are balances, not transactions) — part of DEC-015(d). | P1 — **CLOSED 2026-10-18**: `detectTrialBalanceSnapshot` (balances present + no posting-date column) refuses the file by name in the wizard (CSV + XLSX), imports nothing; F&O "GL statement by main account" shape is now also detected/auto-mapped/parsed. Evidence: `d365Parser.test.ts` 27/27, `GLUploadPage.d365.integration.test.tsx` refusal test, import regression set 192/192 |
 
 ### 5.2 Trial balance, statements, period close (CLOSE pillar)
 

@@ -335,3 +335,37 @@ describe('D365 import → output integration (NFR-004)', () => {
     expect(st.importStatus).toBe('idle');
   });
 });
+
+describe('DEC-015(d) — trial-balance snapshot refusal', () => {
+  beforeEach(() => {
+    actAs('Admin');
+    setClock(PINNED);
+    resetGLStore();
+  });
+  afterEach(() => {
+    resetClock();
+  });
+
+  it('refuses a trial-balance snapshot by name and imports nothing', async () => {
+    const tbCsv = [
+      'Main account,Main account name,Opening balance,Debit,Credit,Closing balance',
+      '1000,Cash,"400,000.00","150,000.00","50,000.00","500,000.00"',
+      '3000,Common Stock,"-500,000.00",,"100,000.00","-600,000.00"',
+      '',
+    ].join('\n');
+
+    renderPage();
+    const input = await screen.findByLabelText('Upload file');
+    fireEvent.change(input, {
+      target: { files: [new File([tbCsv], 'TrialBalance_USMF.csv', { type: 'text/csv' })] },
+    });
+
+    // The refusal names what the file IS and what to export instead.
+    expect(await screen.findByText(/trial balance snapshot/i, {}, { timeout: 5000 })).toBeTruthy();
+    expect(screen.queryByText('Map Columns')).toBeNull();
+
+    const st = useGLStore.getState();
+    expect(st.entries).toHaveLength(0);
+    expect(st.importHistory).toHaveLength(0);
+  });
+});

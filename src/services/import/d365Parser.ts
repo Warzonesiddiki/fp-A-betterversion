@@ -107,6 +107,14 @@ export function detectD365Flavor(headers: readonly string[]): D365Flavor | null 
     'subledgervoucher',
     'generaljournalaccountentry',
     'dataareaid',
+    // "General ledger statement by main account" (Electronic Reporting):
+    // human-readable headers, normalised the same way (DEC-015).
+    'mainaccount',
+    'transactionpostingdate',
+    'transactionnumber',
+    'transactioncurrency',
+    'debitintransactioncurrency',
+    'creditintransactioncurrency',
   ];
 
   const bcMarkers = [
@@ -124,6 +132,32 @@ export function detectD365Flavor(headers: readonly string[]): D365Flavor | null 
   if (foScore >= 2 && foScore >= bcScore) return 'd365_fo';
   if (bcScore >= 2) return 'd365_bc';
   return null;
+}
+
+/**
+ * DEC-015(d): a trial-balance export is a *balance snapshot* per account
+ * (opening/closing balances, or net-change/balance), not transaction detail.
+ * Importing it as a GL dump would invent postings. Recognition rule: balance
+ * columns are present AND no posting/transaction date column exists — a real
+ * GL statement carries both balances (accumulated) and dates, and must pass.
+ * The wizard refuses a recognised snapshot with this reason; the parser
+ * itself stays a transaction parser.
+ */
+export function detectTrialBalanceSnapshot(headers: readonly string[]): boolean {
+  const normalized = new Set(headers.map(normalizeKey));
+  const dateColumns = [
+    'accountingdate',
+    'transactiondate',
+    'transactionpostingdate',
+    'postingdate',
+    'transdate',
+    'documentdate',
+    'date',
+  ];
+  if (dateColumns.some((c) => normalized.has(c))) return false;
+  const openingClosing = normalized.has('openingbalance') && normalized.has('closingbalance');
+  const changeAndBalance = normalized.has('netchange') && normalized.has('balance');
+  return openingClosing || changeAndBalance;
 }
 
 function getFirstMatchingField(
@@ -156,6 +190,7 @@ const FO_ACCOUNT_NAME_CANDIDATES = ['MainAccountName', 'AccountName'];
 const FO_DATE_CANDIDATES = [
   'AccountingDate',
   'TransactionDate',
+  'Transaction posting date',
   'PostingDate',
   'TRANSDATE',
   'Date',
@@ -163,6 +198,7 @@ const FO_DATE_CANDIDATES = [
 const FO_VOUCHER_CANDIDATES = [
   'SubledgerVoucher',
   'Voucher',
+  'Transaction number',
   'GeneralJournalEntryNumber',
   'JournalNumber',
 ];
@@ -170,16 +206,25 @@ const FO_DESC_CANDIDATES = ['Text', 'Description', 'TransactionText'];
 const FO_DEBIT_CANDIDATES = [
   'AccountingCurrencyDebitAmount',
   'TransactionCurrencyDebitAmount',
+  'Debit in accounting currency',
+  'Debit in transaction currency',
   'DebitAmount',
   'Debit',
 ];
 const FO_CREDIT_CANDIDATES = [
   'AccountingCurrencyCreditAmount',
   'TransactionCurrencyCreditAmount',
+  'Credit in accounting currency',
+  'Credit in transaction currency',
   'CreditAmount',
   'Credit',
 ];
-const FO_CURRENCY_CANDIDATES = ['TransactionCurrencyCode', 'AccountingCurrencyCode', 'Currency'];
+const FO_CURRENCY_CANDIDATES = [
+  'TransactionCurrencyCode',
+  'AccountingCurrencyCode',
+  'Transaction currency',
+  'Currency',
+];
 const FO_ENTITY_CANDIDATES = ['DataAreaId', 'LegalEntity', 'Company'];
 
 const BC_ACCOUNT_CANDIDATES = [

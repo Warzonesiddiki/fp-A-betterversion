@@ -18,6 +18,7 @@ import { hasDuplicateHeaders, parseCSV } from '@/utils/csv';
 import type { ImportControlTotals, ImportRejection, ImportScope } from '@/types';
 import { hashFileBytes } from '@/services/import/importProvenance';
 import { parseGLRows, missingRequiredMappings } from '@/services/import/parseGLRows';
+import { detectTrialBalanceSnapshot } from '@/services/import/d365Parser';
 import {
   CheckCircle2,
   Upload,
@@ -157,6 +158,18 @@ export default function GLUploadPage() {
             setImportStatus('idle');
             return;
           }
+          if (detectTrialBalanceSnapshot(headers)) {
+            // Status first: setImportStatus clears importError in the store,
+            // so the refusal message must be written after it.
+            setImportStatus('idle');
+            setImportError(
+              'This file is a trial balance snapshot (balances per account), not a general ledger transaction dump. ' +
+                'Importing it would invent postings. Export the GL transaction detail instead ' +
+                '(e.g. D365 Finance "General ledger statement by main account" or Business Central "G/L Entries"). ' +
+                'Nothing was imported.'
+            );
+            return;
+          }
           if (data.length === 0) {
             setImportError('No data rows found after the header. Please check your file.');
             setImportStatus('idle');
@@ -213,6 +226,16 @@ export default function GLUploadPage() {
             return stringRow;
           });
 
+          if (detectTrialBalanceSnapshot(activeSheet!.headers)) {
+            setImportStatus('idle');
+            setImportError(
+              'This file is a trial balance snapshot (balances per account), not a general ledger transaction dump. ' +
+                'Importing it would invent postings. Export the GL transaction detail instead ' +
+                '(e.g. D365 Finance "General ledger statement by main account" or Business Central "G/L Entries"). ' +
+                'Nothing was imported.'
+            );
+            return;
+          }
           setCsvColumns(activeSheet!.headers);
           setRawData(stringRows);
           setImportStatus('idle');
