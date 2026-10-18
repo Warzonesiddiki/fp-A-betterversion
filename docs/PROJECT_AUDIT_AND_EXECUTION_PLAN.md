@@ -622,6 +622,21 @@ the zero-compromise rule: the consolidation page's methodology
 footer asserts eliminations/NCI treatments broader than the derived
 worksheet proves - copy correction is a follow-up slice.
 
+**Checkpoint 2026-10-18 (HEAD `62bc8ea`):** Phases 8-14 each have
+their measurable core landed and committed: modelling oracles (8),
+reporting completion incl. changes-in-equity/direct-method CF/
+scheduler governance (9), GL-derived AR/AP aging + 13-week ladder +
+payroll decontamination (10), sector verification labelling (11),
+RBAC on financial-truth stores (12), AI-001 gate wired at NLQ (13),
+formula census + designer GL wire with a CubeEngine measure fix
+(14). Full-suite failures found at the checkpoint (6 files) were
+fixed at their causes. Targeted regression sweep at this HEAD: 391
+files / 6,234 tests green; tsc clean; palette ratchet holds at the
+tightened 5,502 baseline. Still owner-gated: Phase 1V real D365
+samples, `main` merge/CI, key-escrow policy DEC, DEC-019 roll
+semantics, native (Tauri) verification, SOX authority DEC, E5
+sector certification depth.
+
 ## 11. How I will work — the commitment
 
 **Session ritual (every session, no exceptions):**
