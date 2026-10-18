@@ -313,6 +313,21 @@ Rules are deterministic (same ledger + same rule version → identical finding k
 - **No invented drivers.** The grid shows _what moved and by how much_; "why" is the reviewer's disposition text, or a rule's stated formula — never canned labels.
 - **Performance bar:** 100k-entry ledger, grid + drill interactive; proven by bench/load suite, not by opinion.
 
+### Phase 3 — scoped 2026-10-18
+
+Assets in tree: catalogue R-001…R-005 (aggregate rules, data only), finding
+model + deterministic keys, disposition store with audit + correction
+types, `ExceptionReviewCard/List` components. Missing: a runner that
+evaluates rules over the GL, catalogue v2 entry-level rules (§7), and a
+queue page/route. Build order: catalogue v2 (R-006…R-017 with tiers) →
+pure deterministic runner (`src/services/exceptions/runExceptionRules.ts`)
+→ planted-exception answer-key fixtures (recall + false-positive report,
+run twice identical) → `/data/exceptions` queue page reusing
+`ExceptionReviewList`. R-001…R-005 aggregate evaluators need prior-period
+baselines and land with the Phase 4 comparison workspace; until then they
+stay catalogue-only and the queue says so — a rule that cannot run is never
+presented as running.
+
 ## 9. Target design — J3 correction hand-off (DEC-018)
 
 - **Excel correction list** generated from the disposition/correction stores (same records as the screen): finding key, rule id, account, date, amount, source locator (file · batch · row), suspected issue in plain language, correction instruction, assignee, due date, status. Percentages formatted as percentages, money as money (the P1-14 lesson).

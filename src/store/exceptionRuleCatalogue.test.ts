@@ -29,7 +29,12 @@ describe('Exception Rule Catalogue (FR-008)', () => {
         expect(rule.metric).toBeTruthy();
         expect(rule.threshold).toBeDefined();
         expect(typeof rule.threshold.deviation).toBe('number');
-        expect(rule.threshold.deviation).not.toBe(0);
+        // Phase 3 catalogue v2: structural rules (R-006+) carry deviation 0 —
+        // an exact-cent tolerance, the strictest setting, not a missing one.
+        // Deviation-based rules (R-001…R-005, R-011, R-015, R-017) stay non-zero.
+        if (rule.type !== 'structural' && rule.type !== 'pattern' && rule.type !== 'movement') {
+          expect(rule.threshold.deviation).not.toBe(0);
+        }
         expect(rule.evidence.description).toBeTruthy();
         expect(rule.recommendedAction).toBeTruthy();
         expect(rule.status).toBeDefined();
