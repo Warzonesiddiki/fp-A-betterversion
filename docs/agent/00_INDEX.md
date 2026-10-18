@@ -24,6 +24,7 @@ The product goal is [`docs/VISION.md`](../VISION.md).
 | 08  | [`08_DATA_MODEL.md`](08_DATA_MODEL.md)                 | Core types with file locations, persistence truth, schema homes          |
 | 09  | [`09_KNOWN_GAPS.md`](09_KNOWN_GAPS.md)                 | What works, what is unwired, what is false, what is decided/undecided    |
 | 10  | [`10_GLOSSARY.md`](10_GLOSSARY.md)                     | Domain and repository vocabulary                                         |
+| —   | [`WORKING_AGREEMENT.md`](WORKING_AGREEMENT.md)         | The owner's stated goal, the bar a work item must clear, the live queue   |
 | —   | [`HANDOVER_TEMPLATE.md`](HANDOVER_TEMPLATE.md)         | End-of-session report format                                             |
 
 ## Source-of-truth matrix
@@ -34,6 +35,7 @@ The product goal is [`docs/VISION.md`](../VISION.md).
 | Product goal, all-in-one module map, non-goals                       | `docs/VISION.md`                                                                                | review                                         |
 | Documentation map / authority definition                             | `docs/README.md`                                                                                | review                                         |
 | Product scope, requirements, acceptance criteria                     | `docs/discovery/requirements-register.md`                                                       | — (owner approval pending)                     |
+| The owner's goal as stated, the done bar, the live work queue        | `docs/agent/WORKING_AGREEMENT.md`                                                                | review                                         |
 | Decisions (made or open)                                             | `docs/discovery/decision-log.md`                                                                | —                                              |
 | Risks                                                                | `docs/discovery/risk-register.md`                                                               | —                                              |
 | Delivery sequence / gates                                            | `docs/discovery/roadmap.md`                                                                     | —                                              |

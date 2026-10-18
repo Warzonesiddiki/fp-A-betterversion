@@ -373,10 +373,11 @@ describe('F-0010 backup/restore', () => {
 
     it('collects per-key errors instead of throwing when a key is unreadable', async () => {
       localStorage.setItem('bad-key', 'unreachable');
-      const getItemSpy = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(function (
-        this: Storage,
-        key: string
-      ) {
+      // Instance injection: the runtime's localStorage owns getItem as an own
+      // property (the Node-v22+ polyfill in src/test/setup.ts), so a
+      // `Storage.prototype` spy silently no-ops — same NOTE as
+      // src/utils/__tests__/masterStorage.security.test.ts.
+      const getItemSpy = vi.spyOn(localStorage, 'getItem').mockImplementation((key: string) => {
         if (key === 'bad-key') throw new Error('permission denied');
         return null;
       });

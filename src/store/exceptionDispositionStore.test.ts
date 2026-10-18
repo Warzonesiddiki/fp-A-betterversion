@@ -13,6 +13,8 @@ describe('useExceptionDispositionStore', () => {
     const state = useExceptionDispositionStore.getState();
     expect(state.dispositions).toEqual([]);
     expect(state.getAuditTrail()).toEqual([]);
+    expect(state.corrections).toEqual([]);
+    expect(state.correctionAuditTrail).toEqual([]);
   });
 
   it('records a new disposition with deterministic clock timestamp', () => {
@@ -179,6 +181,215 @@ describe('useExceptionDispositionStore', () => {
     expect(state.getAuditTrail('E-NONEXISTENT')).toHaveLength(0);
   });
 
+  describe('correction requests (FR-010)', () => {
+    const DISPOSITIONED = {
+      exceptionId: 'EXC-500',
+      disposition: 'REVIEW' as DispositionStatus,
+      rationale: 'Posting looks duplicated',
+      recordedBy: 'analyst-1',
+    };
+
+    it('records what has to change, who fixes it and by when, pinned to the clock', () => {
+      const fixedIso = '2026-10-18T09:15:00.000Z';
+      setClock(new Date(fixedIso).getTime());
+
+      const store = useExceptionDispositionStore.getState();
+      const request = store.requestCorrection({
+        exceptionId: 'EXC-500',
+        ruleId: 'RULE-DUP',
+        instruction: 'Reverse the duplicate invoice posting and re-bill under PO-4471',
+        assignee: 'accounts-team',
+        dueDate: '2026-10-25',
+        source: 'batch-7 · row 214',
+      });
+
+      expect(request).toEqual({
+        exceptionId: 'EXC-500',
+        ruleId: 'RULE-DUP',
+        instruction: 'Reverse the duplicate invoice posting and re-bill under PO-4471',
+        assignee: 'accounts-team',
+        dueDate: '2026-10-25',
+        source: 'batch-7 · row 214',
+        status: 'REQUESTED',
+        requestedAt: fixedIso,
+        requestedBy: 'user',
+      });
+      expect(useExceptionDispositionStore.getState().getCorrection('EXC-500')).toEqual(request);
+      // A request is not a fix: nothing marks it applied on its own.
+      expect(useExceptionDispositionStore.getState().getCorrection('EXC-500')?.status).toBe(
+        'REQUESTED'
+      );
+    });
+
+    it('keeps an unagreed due date as null, and never substitutes today', () => {
+      setClock(new Date('2026-10-18T09:15:00.000Z').getTime());
+
+      const request = useExceptionDispositionStore.getState().requestCorrection({
+        exceptionId: 'EXC-501',
+        instruction: 'Reclassify to the correct cost centre',
+        assignee: 'accounts-team',
+      });
+
+      expect(request.dueDate).toBeNull();
+      expect(request.source).toBeNull();
+      expect(useExceptionDispositionStore.getState().getCorrection('EXC-501')?.dueDate).toBeNull();
+    });
+
+    it('canonicalises a supplied due date and refuses one that is not a real date', () => {
+      const store = useExceptionDispositionStore.getState();
+
+      const request = store.requestCorrection({
+        exceptionId: 'EXC-502',
+        instruction: 'Post the missing accrual',
+        assignee: 'accounts-team',
+        dueDate: '10/25/2026',
+      });
+      expect(request.dueDate).toBe('2026-10-25');
+
+      expect(() =>
+        store.requestCorrection({
+          exceptionId: 'EXC-503',
+          instruction: 'Post the missing accrual',
+          assignee: 'accounts-team',
+          dueDate: '2026-02-30',
+        })
+      ).toThrow(/not a valid calendar date/);
+      expect(store.getCorrection('EXC-503')).toBeUndefined();
+      expect(store.getCorrectionHistory('EXC-503')).toEqual([]);
+    });
+
+    it('refuses an instruction-less or unassigned request and writes nothing', () => {
+      const store = useExceptionDispositionStore.getState();
+
+      expect(() =>
+        store.requestCorrection({ exceptionId: 'EXC-504', instruction: '   ', assignee: 'team' })
+      ).toThrow(/instruction is required/);
+      expect(() =>
+        store.requestCorrection({ exceptionId: 'EXC-504', instruction: 'Fix it', assignee: '' })
+      ).toThrow(/assignee is required/);
+      expect(() =>
+        store.requestCorrection({
+          exceptionId: '   ',
+          instruction: 'Fix it',
+          assignee: 'team',
+        })
+      ).toThrow(/exceptionId is required/);
+
+      const state = useExceptionDispositionStore.getState();
+      expect(state.getCorrections()).toEqual([]);
+      expect(state.correctionAuditTrail).toEqual([]);
+    });
+
+    it('keeps one active request per entry and an append-only trail', () => {
+      const t1 = '2026-10-18T09:00:00.000Z';
+      const t2 = '2026-10-18T10:00:00.000Z';
+      const store = useExceptionDispositionStore.getState();
+
+      setClock(new Date(t1).getTime());
+      store.requestCorrection({
+        exceptionId: 'EXC-600',
+        instruction: 'Reverse the double posting',
+        assignee: 'accounts-team',
+      });
+
+      setClock(new Date(t2).getTime());
+      store.requestCorrection({
+        exceptionId: 'EXC-600',
+        instruction: 'Reverse the double posting and re-code to 6150',
+        assignee: 'controller',
+        dueDate: '2026-10-31',
+      });
+
+      const state = useExceptionDispositionStore.getState();
+      const active = state.getCorrections().filter((c) => c.exceptionId === 'EXC-600');
+      expect(active).toHaveLength(1);
+      expect(active[0]?.assignee).toBe('controller');
+      expect(active[0]?.status).toBe('REQUESTED');
+
+      const history = state.getCorrectionHistory('EXC-600');
+      expect(history).toHaveLength(2);
+      expect(history[0]).toMatchObject({
+        sequenceNumber: 1,
+        instruction: 'Reverse the double posting',
+        status: 'REQUESTED',
+        previousStatus: undefined,
+        requestedAt: t1,
+      });
+      expect(history[1]).toMatchObject({
+        sequenceNumber: 2,
+        assignee: 'controller',
+        previousStatus: 'REQUESTED',
+        requestedAt: t2,
+      });
+    });
+
+    it('moves a request to APPLIED only on an explicit human action, audited', () => {
+      const store = useExceptionDispositionStore.getState();
+      store.requestCorrection({
+        exceptionId: 'EXC-700',
+        instruction: 'Reverse the duplicate',
+        assignee: 'accounts-team',
+        requestedBy: 'controller-1',
+      });
+
+      const applied = store.updateCorrectionStatus('EXC-700', 'APPLIED', { by: 'accounts-lead' });
+      expect(applied.status).toBe('APPLIED');
+
+      const history = useExceptionDispositionStore.getState().getCorrectionHistory('EXC-700');
+      expect(history).toHaveLength(2);
+      expect(history[1]).toMatchObject({
+        sequenceNumber: 2,
+        status: 'APPLIED',
+        previousStatus: 'REQUESTED',
+        requestedBy: 'accounts-lead',
+        instruction: 'Reverse the duplicate',
+      });
+
+      expect(() => store.updateCorrectionStatus('EXC-NONE', 'APPLIED')).toThrow(
+        /no correction request on file/
+      );
+    });
+
+    it('filters the correction trail per entry', () => {
+      const store = useExceptionDispositionStore.getState();
+      store.requestCorrection({ exceptionId: 'C-1', instruction: 'Fix one', assignee: 'team' });
+      store.requestCorrection({ exceptionId: 'C-2', instruction: 'Fix two', assignee: 'team' });
+      store.updateCorrectionStatus('C-1', 'WITHDRAWN');
+
+      const state = useExceptionDispositionStore.getState();
+      expect(state.getCorrections()).toHaveLength(2);
+      expect(state.getCorrectionHistory('C-1')).toHaveLength(2);
+      expect(state.getCorrectionHistory('C-2')).toHaveLength(1);
+      expect(state.getCorrectionHistory('C-MISSING')).toEqual([]);
+      expect(state.getCorrection('C-1')?.status).toBe('WITHDRAWN');
+    });
+
+    it('clearCorrections clears only the hand-off work, reset clears both', () => {
+      const store = useExceptionDispositionStore.getState();
+      store.setDisposition(DISPOSITIONED);
+      store.requestCorrection({
+        exceptionId: 'EXC-500',
+        instruction: 'Reverse the duplicate',
+        assignee: 'accounts-team',
+      });
+
+      store.clearCorrections();
+      expect(store.getCorrections()).toEqual([]);
+      expect(store.getCorrectionHistory('EXC-500')).toEqual([]);
+      expect(useExceptionDispositionStore.getState().getDisposition('EXC-500')).toBeDefined();
+
+      store.requestCorrection({
+        exceptionId: 'EXC-500',
+        instruction: 'Reverse the duplicate',
+        assignee: 'accounts-team',
+      });
+      store.reset();
+      const cleared = useExceptionDispositionStore.getState();
+      expect(cleared.getCorrections()).toEqual([]);
+      expect(cleared.dispositions).toEqual([]);
+    });
+  });
+
   it('clears state on reset and clearDispositions', () => {
     useExceptionDispositionStore.getState().recordDisposition('E-999', 'ACCEPT', 'All good');
     expect(useExceptionDispositionStore.getState().dispositions).toHaveLength(1);
@@ -193,5 +404,35 @@ describe('useExceptionDispositionStore', () => {
     useExceptionDispositionStore.getState().reset();
     expect(useExceptionDispositionStore.getState().dispositions).toHaveLength(0);
     expect(useExceptionDispositionStore.getState().getAuditTrail()).toHaveLength(0);
+  });
+
+  it('persist contract: a v1 blob gains empty corrections and keeps its dispositions', () => {
+    const options = useExceptionDispositionStore.persist.getOptions();
+    expect(options.version).toBe(2);
+
+    const migrated = options.migrate?.(
+      {
+        dispositions: [{ exceptionId: 'E-1', disposition: 'ACCEPT', rationale: 'ok' }],
+        auditTrail: [{ exceptionId: 'E-1', sequenceNumber: 1 }],
+      },
+      1
+    ) as Record<string, unknown>;
+
+    expect(migrated.dispositions).toHaveLength(1);
+    expect(migrated.auditTrail).toHaveLength(1);
+    // A blob that never carried a correction does not acquire one on upgrade.
+    expect(migrated.corrections).toEqual([]);
+    expect(migrated.correctionAuditTrail).toEqual([]);
+
+    const persisted = options.partialize?.(useExceptionDispositionStore.getState()) as Record<
+      string,
+      unknown
+    >;
+    expect(Object.keys(persisted).sort()).toEqual([
+      'auditTrail',
+      'correctionAuditTrail',
+      'corrections',
+      'dispositions',
+    ]);
   });
 });

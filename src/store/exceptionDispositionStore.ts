@@ -2,13 +2,24 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { nowISO } from '@/utils/clock';
 import { masterStorage } from '@/utils/masterStorage';
+import { parseImportDate } from '@/utils/parseImportDate';
 import type {
+  CorrectionAuditRecord,
+  CorrectionRequest,
+  CorrectionStatus,
   ExceptionDisposition,
   ExceptionDispositionAuditRecord,
   DispositionStatus,
 } from '@/types/exceptions';
 
-export type { ExceptionDisposition, ExceptionDispositionAuditRecord, DispositionStatus };
+export type {
+  ExceptionDisposition,
+  ExceptionDispositionAuditRecord,
+  DispositionStatus,
+  CorrectionRequest,
+  CorrectionAuditRecord,
+  CorrectionStatus,
+};
 
 export interface SetDispositionInput {
   exceptionId: string;
@@ -20,9 +31,56 @@ export interface SetDispositionInput {
   action?: string;
 }
 
+/** FR-010: the reviewer's ask to the accounts team, before it is normalised. */
+export interface RequestCorrectionInput {
+  exceptionId: string;
+  /** What has to change. Required — a hand-off with no instruction is not one. */
+  instruction: string;
+  /** Who fixes it. Required — an unassigned correction has no owner. */
+  assignee: string;
+  /** `YYYY-MM-DD` (or any form the import date parser canonicalises). Optional. */
+  dueDate?: string | null;
+  /** Where the entry is: batch and source row, so it can be found. */
+  source?: string | null;
+  ruleId?: string;
+  requestedBy?: string;
+  requestedAt?: string;
+}
+
+function requireText(value: unknown, action: string, field: string, why: string): string {
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    throw new Error(`${action}: ${field} is required — ${why}`);
+  }
+  return value.trim();
+}
+
+/**
+ * Canonical due date, or `null` when the caller agreed on none.
+ *
+ * A supplied date is parsed by the importer's own calendar-checked parser, so
+ * `2026-02-30` is refused rather than stored, and an absent date stays `null`
+ * — it is never replaced by "today", which would invent a commitment nobody
+ * made.
+ */
+function normaliseDueDate(value: unknown): string | null {
+  if (value === null || value === undefined) return null;
+  const raw = String(value).trim();
+  if (raw === '') return null;
+  const canonical = parseImportDate(raw);
+  if (canonical === null) {
+    throw new Error(
+      `requestCorrection: due date "${raw}" is not a valid calendar date (use YYYY-MM-DD)`
+    );
+  }
+  return canonical;
+}
+
 export interface ExceptionDispositionState {
   dispositions: ExceptionDisposition[];
   auditTrail: ExceptionDispositionAuditRecord[];
+  /** FR-010 — one active correction request per exception, with its history. */
+  corrections: CorrectionRequest[];
+  correctionAuditTrail: CorrectionAuditRecord[];
 
   setDisposition: (input: SetDispositionInput) => void;
   recordDisposition: (
@@ -43,7 +101,18 @@ export interface ExceptionDispositionState {
   getHistory: (exceptionId: string) => ExceptionDispositionAuditRecord[];
   getAuditTrail: (exceptionId?: string) => ExceptionDispositionAuditRecord[];
 
+  requestCorrection: (input: RequestCorrectionInput) => CorrectionRequest;
+  updateCorrectionStatus: (
+    exceptionId: string,
+    status: CorrectionStatus,
+    options?: { by?: string }
+  ) => CorrectionRequest;
+  getCorrection: (exceptionId: string) => CorrectionRequest | undefined;
+  getCorrectionHistory: (exceptionId: string) => CorrectionAuditRecord[];
+  getCorrections: () => CorrectionRequest[];
+
   clearDispositions: () => void;
+  clearCorrections: () => void;
   reset: () => void;
 }
 
@@ -52,6 +121,8 @@ export const useExceptionDispositionStore = create<ExceptionDispositionState>()(
     (set, get) => ({
       dispositions: [],
       auditTrail: [],
+      corrections: [],
+      correctionAuditTrail: [],
 
       setDisposition: (input: SetDispositionInput) => {
         const state = get();
@@ -106,6 +177,85 @@ export const useExceptionDispositionStore = create<ExceptionDispositionState>()(
         });
       },
 
+      requestCorrection: (input) => {
+        const exceptionId = requireText(
+          input.exceptionId,
+          'requestCorrection',
+          'exceptionId',
+          'a correction belongs to one flagged entry'
+        );
+        const instruction = requireText(
+          input.instruction,
+          'requestCorrection',
+          'instruction',
+          'say what has to change'
+        );
+        const assignee = requireText(
+          input.assignee,
+          'requestCorrection',
+          'assignee',
+          'say who in the accounts team fixes it'
+        );
+        const dueDate = normaliseDueDate(input.dueDate);
+        const source =
+          typeof input.source === 'string' && input.source.trim() !== ''
+            ? input.source.trim()
+            : null;
+
+        const state = get();
+        const current = state.corrections.find((c) => c.exceptionId === exceptionId);
+
+        const request: CorrectionRequest = {
+          exceptionId,
+          ruleId: input.ruleId ?? current?.ruleId,
+          instruction,
+          assignee,
+          dueDate,
+          source,
+          status: 'REQUESTED',
+          requestedAt: input.requestedAt ?? nowISO(),
+          requestedBy: input.requestedBy ?? 'user',
+        };
+
+        const auditRecord: CorrectionAuditRecord = {
+          ...request,
+          previousStatus: current?.status,
+          sequenceNumber: state.correctionAuditTrail.length + 1,
+        };
+
+        set({
+          corrections: [...state.corrections.filter((c) => c.exceptionId !== exceptionId), request],
+          correctionAuditTrail: [...state.correctionAuditTrail, auditRecord],
+        });
+
+        return request;
+      },
+
+      updateCorrectionStatus: (exceptionId, status, options) => {
+        const state = get();
+        const current = state.corrections.find((c) => c.exceptionId === exceptionId);
+        if (!current) {
+          throw new Error(
+            `updateCorrectionStatus: no correction request on file for "${exceptionId}"`
+          );
+        }
+
+        const updated: CorrectionRequest = { ...current, status };
+        const auditRecord: CorrectionAuditRecord = {
+          ...updated,
+          previousStatus: current.status,
+          sequenceNumber: state.correctionAuditTrail.length + 1,
+          requestedBy: options?.by ?? current.requestedBy,
+        };
+
+        set({
+          corrections: [...state.corrections.filter((c) => c.exceptionId !== exceptionId), updated],
+          correctionAuditTrail: [...state.correctionAuditTrail, auditRecord],
+        });
+
+        return updated;
+      },
+
       getDisposition: (exceptionId: string) => {
         return get().dispositions.find((d) => d.exceptionId === exceptionId);
       },
@@ -119,34 +269,61 @@ export const useExceptionDispositionStore = create<ExceptionDispositionState>()(
         return exceptionId ? trail.filter((r) => r.exceptionId === exceptionId) : trail;
       },
 
+      getCorrection: (exceptionId: string) => {
+        return (get().corrections ?? []).find((c) => c.exceptionId === exceptionId);
+      },
+
+      getCorrectionHistory: (exceptionId: string) => {
+        return (get().correctionAuditTrail ?? []).filter((r) => r.exceptionId === exceptionId);
+      },
+
+      getCorrections: () => {
+        return get().corrections ?? [];
+      },
+
       clearDispositions: () => {
         set({ dispositions: [], auditTrail: [] });
       },
 
+      clearCorrections: () => {
+        set({ corrections: [], correctionAuditTrail: [] });
+      },
+
       reset: () => {
-        set({ dispositions: [], auditTrail: [] });
+        set({ dispositions: [], auditTrail: [], corrections: [], correctionAuditTrail: [] });
       },
     }),
     {
       name: 'finplan_exception_dispositions',
       storage: masterStorage,
-      version: 1,
+      // v1 → v2 introduces correction requests (FR-010). A v1 blob has no
+      // `corrections`/`correctionAuditTrail`; both default to empty rather than
+      // to an invented request.
+      version: 2,
       migrate: (persistedState: unknown) => {
         if (!persistedState || typeof persistedState !== 'object') {
-          return { dispositions: [], auditTrail: [] };
+          return { dispositions: [], auditTrail: [], corrections: [], correctionAuditTrail: [] };
         }
         const stateObj = persistedState as Record<string, unknown>;
         const dispositions = Array.isArray(stateObj.dispositions) ? stateObj.dispositions : [];
         const auditTrail = Array.isArray(stateObj.auditTrail) ? stateObj.auditTrail : [];
+        const corrections = Array.isArray(stateObj.corrections) ? stateObj.corrections : [];
+        const correctionAuditTrail = Array.isArray(stateObj.correctionAuditTrail)
+          ? stateObj.correctionAuditTrail
+          : [];
         return {
           ...stateObj,
           dispositions,
           auditTrail,
+          corrections,
+          correctionAuditTrail,
         };
       },
       partialize: (state) => ({
         dispositions: state.dispositions,
         auditTrail: state.auditTrail,
+        corrections: state.corrections,
+        correctionAuditTrail: state.correctionAuditTrail,
       }),
     }
   )

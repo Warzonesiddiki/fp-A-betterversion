@@ -17,6 +17,7 @@ produced by a command named next to it. Do not update a number by hand.
 ```text
 AGENTS.md                       rules, session protocol, commands (read first)
   → docs/README.md              this page: the doc map
+  → docs/agent/WORKING_AGREEMENT.md  the owner's goal as stated + the queue I work in
   → docs/VISION.md              the product goal and the all-in-one module map
   → docs/agent/00_INDEX.md      engineering handbook index + source-of-truth matrix
   → docs/agent/09_KNOWN_GAPS.md what works, what is unwired, what is false
@@ -83,6 +84,7 @@ per file and long on precision. See `docs/agent/00_INDEX.md` for the full table.
 | `docs/agent/08_DATA_MODEL.md`   | Core types, persistence truth, schema homes.               |
 | `docs/agent/09_KNOWN_GAPS.md`   | What works / is unwired / is false / is decided.           |
 | `docs/agent/10_GLOSSARY.md`     | Domain and repository vocabulary.                          |
+| `docs/agent/WORKING_AGREEMENT.md` | The owner's stated goal, the done bar, the live queue.    |
 | `docs/agent/HANDOVER_TEMPLATE.md` | End-of-session report format.                            |
 
 ### Squad coordination — `docs/agent-squad/`

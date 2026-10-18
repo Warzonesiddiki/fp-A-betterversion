@@ -24,6 +24,16 @@ import {
   Info,
 } from 'lucide-react';
 
+/**
+ * One wording for a ratio the posted GL may not support, shared by the PDF and
+ * the Excel branches so the two cannot drift. `null` means the file carries no
+ * premium to divide by: that is "N/A", never zero — and never `$0.00`, which is
+ * what the Excel engine's currency format made of the `?? 0` this replaces.
+ */
+function ratioText(value: number | null): string {
+  return value === null ? 'N/A' : `${value}%`;
+}
+
 export function InsurancePage() {
   const { entries } = useGLStore();
   const { lossPicks } = useInsuranceStore();
@@ -74,19 +84,15 @@ export function InsurancePage() {
           ],
           [
             'Loss Ratio',
-            insuranceStats.lossRatio !== null ? `${insuranceStats.lossRatio}%` : 'N/A',
+            ratioText(insuranceStats.lossRatio),
             'Loss & LAE (51xx) / Earned Premium (42xx)',
           ],
           [
             'Expense Ratio',
-            insuranceStats.expenseRatio !== null ? `${insuranceStats.expenseRatio}%` : 'N/A',
+            ratioText(insuranceStats.expenseRatio),
             'Underwriting & Commissions (52xx/53xx) / Written Premium (41xx)',
           ],
-          [
-            'Combined Ratio',
-            insuranceStats.combinedRatio !== null ? `${insuranceStats.combinedRatio}%` : 'N/A',
-            'Loss Ratio + Expense Ratio',
-          ],
+          ['Combined Ratio', ratioText(insuranceStats.combinedRatio), 'Loss Ratio + Expense Ratio'],
           ['Actuarial Loss Picks', String(lossPicks.length), 'Recorded loss-pick rows on file'],
         ],
       },
@@ -102,9 +108,9 @@ export function InsurancePage() {
           ['Gross Written Premium', insuranceStats.grossWrittenPremium, 'GL 41xx'],
           ['Earned Premium', insuranceStats.earnedPremium, 'GL 42xx'],
           ['Net Written Premium', insuranceStats.netWrittenPremium ?? 0, 'Gross less 43xx ceded'],
-          ['Loss Ratio (%)', insuranceStats.lossRatio ?? 0, 'Loss / Earned'],
-          ['Expense Ratio (%)', insuranceStats.expenseRatio ?? 0, 'Expense / Written'],
-          ['Combined Ratio (%)', insuranceStats.combinedRatio ?? 0, 'Loss + Expense'],
+          ['Loss Ratio (%)', ratioText(insuranceStats.lossRatio), 'Loss / Earned'],
+          ['Expense Ratio (%)', ratioText(insuranceStats.expenseRatio), 'Expense / Written'],
+          ['Combined Ratio (%)', ratioText(insuranceStats.combinedRatio), 'Loss + Expense'],
           ['Actuarial Loss Picks', lossPicks.length, 'Store rows'],
         ],
       },

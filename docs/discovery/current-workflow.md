@@ -7,8 +7,30 @@
 1. The user exports a GL dump from Dynamics 365 each month.
 2. The user performs FP&A-related work using/around the export.
 3. The user highlights abnormalities and entries they believe may be wrong.
+4. **The user guides the accounts team to fix those entries.** (Owner-stated
+   2026-10-18: *"i have to identify the wrong entries and guide accounts team to
+   fix it"* — the output of the review is a correction the accounting team acts
+   on, not a private note.)
+5. **The comparison work is day-over-day, month-over-month and year-over-year,
+   in extreme detail.** (Owner-stated 2026-10-18: *"as i compare day by day,
+   month by month, year on year compariosion where i compare and check each and
+   everything in extreme detail"* — all three grains matter, and the review is
+   exhaustive rather than a top-line scan.)
 
-The steps between export and review, the exact analyses, and the resolution process are not yet documented. Do not assume the user imports into the target application today.
+Recorded as FR-010 (correction hand-off with owner and due date) and FR-011
+(day / month / year comparison at account level) in
+[`requirements-register.md`](requirements-register.md); the working order for
+building them is [`../agent/WORKING_AGREEMENT.md`](../agent/WORKING_AGREEMENT.md) §4.
+
+Still not documented, and not to be assumed:
+
+- what "extreme detail" is scoped to (which accounts, entities and periods),
+- the materiality threshold that decides which differences are worth surfacing,
+- how the accounts team receives and closes a correction today (email, a
+  spreadsheet, an ERP note?), and what proves it was fixed,
+- the exact analyses performed between export and review.
+
+Do not assume the user imports into the target application today.
 
 ## Workflow map to validate
 

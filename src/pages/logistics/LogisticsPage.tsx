@@ -67,6 +67,14 @@ export default function LogisticsPage() {
     return typeof getOnTimeRate === 'function' ? getOnTimeRate() : 0;
   }, [getOnTimeRate]);
 
+  /**
+   * One wording for the on-time rate, shared by the PDF and the Excel branches
+   * below. A percentage handed to `exportToExcel` as a number is stamped
+   * `$75.00` by the engine's currency format, and a rate no carrier record
+   * supports is stated as unavailable — not as 0%.
+   */
+  const onTimeText = onTimeRate > 0 ? `${fmt.number(onTimeRate)}%` : 'N/A (No Carrier Telemetry)';
+
   const accountRows: AccountBreakdownRow[] = useMemo(() => aggregateAccounts(entries), [entries]);
 
   const handleExportPDF = () => {
@@ -87,11 +95,7 @@ export default function LogisticsPage() {
           ['Net Balance Change', fmt.currency(netChange), 'GL Balance Net Change'],
           ['Active General Accounts', fmt.number(uniqueAccounts), 'GL Chart of Accounts'],
           ['Active In-Transit Shipments', fmt.number(activeShipments), 'Logistics Store Shipments'],
-          [
-            'On-Time Delivery Performance',
-            onTimeRate > 0 ? `${fmt.number(onTimeRate)}%` : 'N/A (No Carrier Telemetry)',
-            'Carrier Performance Tracking',
-          ],
+          ['On-Time Delivery Performance', onTimeText, 'Carrier Performance Tracking'],
           [
             'Active Carrier Partners',
             fmt.number(carrierPerformance.length),
@@ -114,7 +118,7 @@ export default function LogisticsPage() {
           ['Net Change', netChange, 'GL Net Change'],
           ['Active Accounts', uniqueAccounts, 'Account count'],
           ['Active Shipments', activeShipments, 'Store records'],
-          ['On-Time Delivery Rate (%)', onTimeRate, 'Carrier telemetry'],
+          ['On-Time Delivery Rate (%)', onTimeText, 'Carrier telemetry'],
         ],
       },
       { title: 'Logistics_Operations_Review' }

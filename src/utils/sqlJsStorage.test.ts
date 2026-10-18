@@ -210,7 +210,12 @@ describe('sqlJsStorage error propagation (W6-P0-04)', () => {
     const quotaError = Object.assign(new Error('exceeded storage quota'), {
       name: 'QuotaExceededError',
     });
-    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    // Measured: the runtime's localStorage exposes setItem as an OWN instance
+    // property (the Node-v22+ polyfill in src/test/setup.ts), so spying
+    // `Storage.prototype` silently no-ops — the fault must be injected on the
+    // instance the storage layer actually calls (same NOTE as
+    // src/utils/__tests__/masterStorage.security.test.ts).
+    const setItemSpy = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
       throw quotaError;
     });
 
@@ -252,7 +257,9 @@ describe('sqlJsStorage error propagation (W6-P0-04)', () => {
     const quotaError = Object.assign(new Error('exceeded storage quota'), {
       name: 'QuotaExceededError',
     });
-    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    // Instance injection, not Storage.prototype — see the note in the setItem
+    // quota test above: the polyfilled localStorage owns its own setItem.
+    const setItemSpy = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
       throw quotaError;
     });
 

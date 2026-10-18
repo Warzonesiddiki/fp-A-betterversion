@@ -33,6 +33,7 @@
 | `src/test/fixtures/syntheticTieOutLedger.ts`                                                 | G-09 | Task 01a145a6-3e0c: Multi-period synthetic GL fixture with 3-statement tie-out | 2026-10-16 17:25 | RELEASED — landed by LEAD, commit `eb7c4880` (test repaired: journalId) |
 | `src/store/exceptionPipeline.integration.test.ts`                                           | G-03 | Task 01a145ac-9e43: FR-008/009 End-to-end exception pipeline integration test | 2026-10-16 17:40 | RELEASED                     |
 | `src/test/fixtures/syntheticTieOutLedger.test.ts`                                            | G-09 | Task 01a145a6-3e0c: Multi-period synthetic GL fixture with 3-statement tie-out | 2026-10-16 17:25 | RELEASED — landed by LEAD, commit `eb7c4880` |
+| `src/pages/reports/BoardPackPage.exportTieOut.test.tsx`                                         | LEAD | P0 backlog item 2: board-pack Excel export ↔ screen tie-out              | 2026-10-18 16:30 | RELEASED — verified on disk; not yet committed |
 
 ## Rules
 

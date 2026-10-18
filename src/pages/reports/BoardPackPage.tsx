@@ -116,7 +116,12 @@ export default function BoardPackPage() {
         ['Exec Summary', 'Revenue', report.revenue],
         ['Exec Summary', 'Expenses', report.expenses],
         ['Exec Summary', 'Net Income', report.netIncome],
-        ['Exec Summary', 'Gross Margin %', report.grossMargin],
+        // Export the percentage the same way the PDF and the screen do. A bare
+        // number here is not money: `ExportEngine.exportToExcel` applies its
+        // currency number format to every numeric data cell, so `76` rendered
+        // as `$76.00` under a "Gross Margin %" label while the screen showed
+        // "76.0%". The string also keeps the export honest for a null margin.
+        ['Exec Summary', 'Gross Margin %', report.grossMargin === null ? '—' : formatPercent(report.grossMargin, 1)],
         ['P&L', 'Revenue', report.revenue],
         ['P&L', 'Expenses', report.expenses],
         ['P&L', 'Net Income', report.netIncome],

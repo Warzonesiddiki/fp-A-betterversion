@@ -20,7 +20,9 @@ D365 GL export (CSV/XLSX)
   → period scope: which period/entity/currency this batch covers [partially built]
   → trial balance tie-out and statement views with drill-to-source [TB exists; drill open]
   → exception review: versioned rules → findings with evidence → human disposition [not built]
-  → board outputs: Excel / PDF / (PPT) that tie out to the screen   [Excel/PDF exist, no tie-out test]
+  → board outputs: Excel / PDF / (PPT) that tie out to the screen   [Excel/PDF exist;
+    board-pack Excel tied out by test 2026-10-18, PDF + the other
+    export surfaces untested]
 ```
 
 Everything else in the codebase — 18 sector dashboards, consolidation,

@@ -19,7 +19,11 @@
    - Goal: a synthetic workspace Excel/PPTX output tied to the same numbers the UI shows.
    - Evidence needed: a test that asserts the export matches the in-app view for one concrete
      synthetic ledger.
-   - Current state: export exists; tie-out evidence is the part to tighten.
+   - Closed 2026-10-18: `src/pages/reports/BoardPackPage.exportTieOut.test.tsx` pins the Excel
+     button's workbook cell-by-cell to the figures the pack renders from one synthetic ledger
+     (3 tests; **2 red** without the one-line page fix). PPTX export does not exist — it needs a
+     new dependency and therefore an owner decision, so it stays open (audit gap 14), not quietly
+     renamed "done". The other export surfaces are item 4 below.
 
 3. **FR-006 residual behavior still worth closing**
    - Goal: make sure invalid/missing money cannot slip through any remaining non-validated write
@@ -29,26 +33,41 @@
 
 ### P1 — Reduce real documented gaps instead of adding surfaces
 
-4. **Confirm nothing imported-dependent is silently broken by recent store/import changes**
+4. **No export may print a percentage or an absent value as money**
+   - Goal: `ExportEngine.exportToExcel` formats every numeric data cell as `$#,##0.00`, so a
+     percentage passed as a number becomes `$12.00` and a `null` ratio written as `0` becomes
+     `$0.00` — where the same page's PDF branch prints `12%` or `N/A`.
+   - Evidence needed: failing-first tests per page, or one shared guard that fails when an export
+     cell labelled `%` carries a bare number.
+   - Closed 2026-10-18: `src/pages/exportPercentHonesty.test.tsx` is one guard over all six pages
+     (real pages, real stores, real `ExportEngine`, parsed workbook) — **6 red → 6/6 green** — and
+     the pages now print the string their own screen prints. `InsurancePage`'s `?? 0` is gone with
+     it: an unsupportable ratio is `N/A`, never `$0.00`. Detail and the file:line evidence are in
+     `docs/agent/09_KNOWN_GAPS.md` (claim row "Exports never label a percentage or an absent value
+     as money"). Three assertions are inverted on purpose so "stringify everything" cannot pass.
+     This was a correctness repair to existing exports, not new surface — no Gate 2 exemption was
+     needed, and none was used. Not measured: every other export surface in the repo.
+
+5. **Confirm nothing imported-dependent is silently broken by recent store/import changes**
    - Goal: verify the touched surfaces across their real consumers, not just the folder they live in.
    - Evidence needed: targeted test runs with the actual affected suites.
 
-5. **Reduce the “template clone” surface where it is real and testable**
+6. **Reduce the “template clone” surface where it is real and testable**
    - Goal: if a page is a thin reskin with no real engine backing, document that honestly and
      either wire it or stop implying capability.
    - Evidence needed: a measured note or a wired path, not both at once.
 
-6. **Tighten documentation claims to match what the tree proves**
+7. **Tighten documentation claims to match what the tree proves**
    - Goal: any doc number, claim, or grade should be reproducible from the repo.
    - Evidence needed: `docs:verify`-style checks and any other gate that the project already uses.
 
 ### P2 — Only after the above, and only if scope is already agreed
 
-7. **Real-source-dependent items**
+8. **Real-source-dependent items**
    - Anything that depends on an actual D365 sample, country/currency scope, or company identity
      belongs here until that source is available. Do not mock it into existence as “done.”
 
-8. **Enterprise/team/deployment scope**
+9. **Enterprise/team/deployment scope**
    - Auth model, backup/restore, multi-user, hosted path, and similar items are not automatic
      next steps. They belong behind an explicit owner decision and a data-boundary agreement.
 
@@ -76,6 +95,27 @@ finish it end-to-end, do not start it. Leave a note in `agents-comms/` instead a
 next finishable item.
 
 ## Done notes
+
+- 2026-10-18 (LEAD, solo): **Q7 items 5 and 6 closed; item 7's number refresh lands with the
+  final `npm run check` tally.** *Item 5* — the import/store regression pass over real
+  consumers: `npx vitest run src/store src/services/import src/components/data
+  src/components/exceptions src/pages/data src/utils` → **198 files / 2,725 tests, 0 failures**
+  (Node 26.10.0), plus the server suite from a clean install: `cd server && npm ci && npm test`
+  → **32 files / 323 tests green** — the suite could not run at all only because
+  `server/node_modules` had never been installed in this checkout; the native binding
+  bootstraps through `ensure-native-db.mjs` and better-sqlite3 13.0.3 ships an ABI-147 prebuild.
+  *Item 6* — the template-clone cut is re-measured and written down in
+  `docs/agent/09_KNOWN_GAPS.md` (Unwired table + the three commands that reproduce every
+  number): **60** non-test pages read `useGLStore` without importing `@/engines`, **20** of them
+  build stats inline, and only **7** page files declare a top-level `compute*` today (the
+  Aug-25 audit counted 19 byte-identical bodies); `ConsolidationPage`/`ManufacturingPage` are
+  wired since, while the collaboration trio, `LeaseAccountingPage` and `ChartOfAccountsPage`
+  still compute inline. Note-only by design — wiring formulas changes money semantics, which is
+  DEC-002's order, and `npm run mock-data:audit` stays green (wired=7, disclosed=20).
+  *Item 7 so far* — the env-caveat row in `09_KNOWN_GAPS.md` now records the storage-spy fix
+  instead of three phantom failures, FR-010's register evidence says **Partial (17 tests)**
+  instead of "Not built", and the census row's first draft claim ("no page-level formula test")
+  was cut back to what was measured (no engine import).
 
 - 2026-10-18 (LEAD, solo): **The raw-palette count is now a ratchet, so the UI restyle cannot
   quietly grow the surface it is meant to shrink.** The restyle starts from a half-migrated tree:

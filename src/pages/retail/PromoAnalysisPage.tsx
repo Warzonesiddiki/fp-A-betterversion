@@ -176,7 +176,10 @@ export default function PromoAnalysisPage() {
           p.id,
           p.name,
           p.type,
-          p.discountPercent,
+          // The same string the table column renders, so the column is a
+          // percentage in both places. As a number the engine stamped it
+          // `$15.00`.
+          formatPercent(p.discountPercent, 0),
           p.cost,
           p.revenue,
           p.baselineRevenue,

@@ -36,9 +36,22 @@ export default function UnderwritingPage() {
       ['Posted claims', d.claims],
       ['Posted underwriting expense', d.expense],
       ['Underwriting income', d.underwritingIncome],
-      ['Loss ratio %', d.lossRatioPct === null ? 'not derivable' : d.lossRatioPct],
-      ['Expense ratio %', d.expenseRatioPct === null ? 'not derivable' : d.expenseRatioPct],
-      ['Combined ratio %', d.combinedRatioPct === null ? 'not derivable' : d.combinedRatioPct],
+      // Percentages, formatted the way the KPI above renders them. As bare
+      // numbers the Excel engine stamped them `$40.00` under a `%` label; a
+      // ratio the posted GL cannot support stays the explicit “not derivable”
+      // reason rather than becoming 0.
+      [
+        'Loss ratio %',
+        d.lossRatioPct === null ? 'not derivable' : formatPercent(d.lossRatioPct, 1),
+      ],
+      [
+        'Expense ratio %',
+        d.expenseRatioPct === null ? 'not derivable' : formatPercent(d.expenseRatioPct, 1),
+      ],
+      [
+        'Combined ratio %',
+        d.combinedRatioPct === null ? 'not derivable' : formatPercent(d.combinedRatioPct, 1),
+      ],
       ...d.unavailable.map((item): (string | number)[] => [
         `Not derivable — ${item.label}`,
         item.reason,

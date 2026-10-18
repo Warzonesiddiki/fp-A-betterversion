@@ -225,8 +225,11 @@ export default function FXExposurePage() {
           e.currency,
           e.exposure,
           e.hedged,
-          e.hedgeRatio,
-          e.rate,
+          // The hedge ratio and the spot rate are rates, not amounts. As
+          // numbers the engine stamped them `$64.00` and `$1.08`; these are
+          // the same strings the table column and the PDF branch print.
+          `${e.hedgeRatio}%`,
+          String(Math.round(e.rate * 10000) / 10000),
           e.unrealizedGL,
         ]),
       },

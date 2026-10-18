@@ -63,6 +63,14 @@ export default function GovernmentPage() {
     return roundTo(divideMoney(totalCredit, totalDebit).times(100), 2);
   }, [totalDebit, totalCredit]);
 
+  /**
+   * One wording for the utilization rate, shared by the PDF and the Excel
+   * branches below. It is a percentage, not money: passed to `exportToExcel`
+   * as a number it would be published under a `(%)` label stamped `$25.00`
+   * by the engine's currency format.
+   */
+  const utilizationText = `${fmt.number(utilization)}%`;
+
   const compliantItemsCount = useMemo(
     () => compliance.filter((c) => c.status === 'Compliant').length,
     [compliance]
@@ -86,7 +94,7 @@ export default function GovernmentPage() {
             'GL Expenditures (Credit-Normal)',
           ],
           ['Departmental Entities', fmt.number(uniqueDepartments), 'GL Departmental Cost Centers'],
-          ['Budget Utilization', `${fmt.number(utilization)}%`, 'Disbursements / Appropriations'],
+          ['Budget Utilization', utilizationText, 'Disbursements / Appropriations'],
           ['Monitored Special Funds', fmt.number(funds.length), 'Government Fund Allocations'],
           [
             'Compliance Status',
@@ -110,7 +118,7 @@ export default function GovernmentPage() {
           ['Total Appropriations', totalDebit, 'GL Appropriations'],
           ['Total Expenditures', totalCredit, 'GL Disbursements'],
           ['Departments', uniqueDepartments, 'Department IDs'],
-          ['Budget Utilization (%)', utilization, 'Disbursements / Appropriations'],
+          ['Budget Utilization (%)', utilizationText, 'Disbursements / Appropriations'],
           ['Monitored Funds', funds.length, 'Fund allocations'],
           ['Compliant Audits', compliantItemsCount, 'Statutory items'],
         ],

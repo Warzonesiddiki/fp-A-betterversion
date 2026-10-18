@@ -78,7 +78,12 @@ re-read this file and move at least one rule toward Enforced.
 
 - Exports consume the same calculation objects the screen uses; never
   recompute in the exporter. A cross-artifact tie-out test (UI == Excel ==
-  PDF) is **required, not yet enforced** (P1-14).
+  PDF) is **required**. Enforced on one surface today: the board pack's
+  Excel button is pinned cell-by-cell to the figures the pack renders, and
+  to the workbook bytes it writes
+  (`src/pages/reports/BoardPackPage.exportTieOut.test.tsx`). The PDF leg and
+  every other export surface are still unenforced, and at least six of them
+  publish a percentage as a currency cell (P1-14).
 - Colour is never the only signal (favourable/unfavourable also by sign,
   label or icon).
 

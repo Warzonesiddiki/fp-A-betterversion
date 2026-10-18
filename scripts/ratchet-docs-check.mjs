@@ -34,7 +34,7 @@
  *                                                       #  by basename)
  */
 import { readFileSync, existsSync } from 'node:fs';
-import { join, relative, resolve } from 'node:path';
+import { basename, join, relative, resolve } from 'node:path';
 
 const ROOT = process.cwd();
 
@@ -182,7 +182,14 @@ const PROSE_OVERRIDES = process.argv
 
 function prosePath(defaultRel) {
   const base = defaultRel.split('/').pop();
-  const hit = PROSE_OVERRIDES.find((p) => p.endsWith(`/${base}`));
+  // Compare basenames with `path.basename`, not a literal "/" separator: on
+  // Windows `resolve()` returns `C:\\…\\03_DOMAIN_RULES.md`, an `endsWith('/…')`
+  // test never matched, and every `--prose=` override silently fell back to the
+  // live repo file — so the checker's own mutation tests could not detect a
+  // mutation they had written to a temp copy (measured 2026-10-18: the three
+  // "fails when …" cases in `src/__tests__/ratchetDocsScript.test.ts` returned
+  // the unmutated verdict on this platform).
+  const hit = PROSE_OVERRIDES.find((p) => basename(p) === base);
   return hit ?? resolve(ROOT, defaultRel);
 }
 

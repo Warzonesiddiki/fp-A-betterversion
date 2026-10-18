@@ -658,3 +658,159 @@ so preview and import agree at every row-level rule.
 
 **Verify first:** `npx vitest run src/services/import/parseGLRows.test.ts`.
 **Action requested:** none — solo mode.
+
+---
+
+## 2026-10-18 16:30 UTC — LEAD — DONE: board-pack Excel export ties out to the screen (P0 backlog item 2)
+
+**Files:** `src/pages/reports/BoardPackPage.tsx`,
+`src/pages/reports/BoardPackPage.exportTieOut.test.tsx` (new), `docs/agent/09_KNOWN_GAPS.md`,
+`docs/agent/01_PROJECT_BRIEF.md`, `docs/agent/03_DOMAIN_RULES.md`, `../SQUAD_BACKLOG.md`.
+
+**What:** two evidence paths existed for the board pack and neither covered the button the user
+presses — `BoardPackPage.probe.test.tsx` holds the screen to an independent ledger oracle but
+**mocks `ExportEngine`**, and `boardPackTieOut.integration.test.ts` holds the *consolidation*
+package export, a different screen and a different export path. The new suite closes the link:
+one synthetic ledger seeded into the real `glStore`/`budgetStore`, the real page rendered, the real
+**Export Excel** button pressed, the real workbook parsed back, and every published cell held to
+*oracle == on-screen figure == cell*. Only the browser ends are mocked (`file-saver`; the global
+lucide mock).
+
+It caught one real divergence. `report.grossMargin` was published **as a bare number** under a
+"Gross Margin %" label, and `exportExcel` applies `$#,##0.00` to every numeric data cell — so the
+workbook said **$76.00** where the screen, the PDF branch and the pack said **76.0%**. Fixed at the
+cause by publishing the same `formatPercent(x, 1)` string the PDF branch already used (a null
+margin stays `—`), rather than by teaching the engine which columns are money.
+
+**Evidence (this tree, pipefail):**
+- Failing-first: reverting only that line → **2 of 3** red
+  (`expected 76 to be '76.0%'`; `expected 76 not to be 76`); restored → **3/3**.
+- Existing board-pack suites unchanged: `BoardPackPage.test.tsx` 2/2, `.probe.test.tsx` 3/3,
+  `.money.test.ts` 10/10 → **18/18** with the new file.
+- Gates: `tsc` 0 · `lint` 0 · `format:check` 0 · `docs:verify` 0 · `engines:verify` 182 ·
+  `money:ast` 0 unsafe · `determinism:ratchet` 344/79 holds · `palette:ratchet` holds ·
+  `fabrication:audit` 0 findings.
+- `test:sharded` at hand-off: shard 1/8 measured — 2 failed files / 3 failed tests, both
+  **pre-existing and unrelated** (`src/utils/sqlJsStorage.test.ts`, `src/utils/backupRestore.test.ts`;
+  they fail in isolation too, on a `Storage.prototype.setItem` quota spy this environment's missing
+  `localStorage` never reaches); shards 2-8 were still running. No "suite green" claim is made —
+  see the measured table in `LATEST.md`.
+
+**New defect found by the same measuring pass — recorded, not started.** The currency rule is
+engine-wide: six pages still publish a percentage into their Excel export while their PDF branch
+prints a percent — `GovernmentPage.tsx:113`, `InsurancePage.tsx:105-107` (where `?? 0` is also a
+missing-not-zero violation: the PDF says `N/A`, the workbook says `$0.00`),
+`LogisticsPage.tsx:117`, `UnderwritingPage.tsx:39-41`, `FXExposurePage.tsx:228`,
+`PromoAnalysisPage.tsx:179`. No test asserts those cells. Logged as **P1 item 4** in
+`../SQUAD_BACKLOG.md` with the claim row in `docs/agent/09_KNOWN_GAPS.md`, and deliberately not
+started in this block (one item at a time).
+
+**Honesty note:** the PPT deck `docs/VISION.md` asks for does not exist and needs a new dependency,
+so P0 item 2 closes for Excel only; the PDF leg is still untested.
+
+**Verify first:**
+`npx vitest run src/pages/reports/BoardPackPage.exportTieOut.test.tsx`.
+**Action requested:** none — solo mode.
+
+---
+
+## 2026-10-18 17:05 UTC — LEAD — DONE: the class guard for percentages-as-money (P1 item 4), plus a vacuous gate repaired
+
+**Files:** `src/pages/exportPercentHonesty.test.tsx` (new), `src/pages/government/GovernmentPage.tsx`,
+`src/pages/insurance/InsurancePage.tsx`, `src/pages/insurance/UnderwritingPage.tsx`,
+`src/pages/logistics/LogisticsPage.tsx`, `src/pages/treasury/FXExposurePage.tsx`,
+`src/pages/retail/PromoAnalysisPage.tsx`, `scripts/ratchet-docs-check.mjs`,
+`docs/agent/WORKING_AGREEMENT.md` (new), `docs/agent/09_KNOWN_GAPS.md`,
+`docs/agent/00_INDEX.md`, `docs/README.md`, `docs/discovery/current-workflow.md`,
+`docs/discovery/requirements-register.md`, `../SQUAD_BACKLOG.md`.
+
+**What:** the defect measured here yesterday is closed as a *class*. One guard drives the six real
+pages (real stores, real `ExportEngine`, the real workbook parsed back) and asserts the mechanical
+rule: a cell whose label is a percentage reaches the workbook as a **string**, never as a number
+the engine will stamp `$#,##0.00`; an unsupportable ratio is `N/A`, never `0`; and money stays
+numeric (three assertions are inverted to prove the fix is not "stringify everything"). The pages
+now print what their own screen prints — `InsurancePage`, `LogisticsPage` and `GovernmentPage`
+share one wording between their PDF and Excel branches so the two branches cannot drift again.
+
+**Evidence (this tree, pipefail):** failing-first `exportPercentHonesty.test.tsx` **6 red → 6/6**
+(`the workbook cell is a number (64)`); affected suites **14 files / 92 tests** green; `tsc` 0 ·
+`lint` 0 · `format:check` 0 · `money:ast` 0 unsafe · `determinism:ratchet` 344/79 holds ·
+`palette:ratchet` holds · `fabrication:audit` 0.
+
+**Second fix, same block — a gate that could not fail.** `scripts/ratchet-docs-check.mjs` matched a
+`--prose=` override with `endsWith('/' + basename)`. On Windows every `resolve()` path uses
+backslashes instead of `/`, so the override never matched and the checker silently re-read the
+**live** repo file. Its own
+mutation tests therefore returned the unmutated verdict: 3 of the 7 cases in
+`src/__tests__/ratchetDocsScript.test.ts` were vacuous on this platform (measured 2026-10-18:
+the first full sharded run failed shard 8 on exactly those three). Now matched with
+`path.basename`; **7/7**. `npm run docs:verify` still exits 0.
+
+**Also this block:** `docs/agent/WORKING_AGREEMENT.md` — the owner's goal verbatim (D365 GL dump →
+find the wrong entries → guide the accounts team to fix them → day/month/year comparison in extreme
+detail), what the tree does and does not do for each of the four jobs, the done bar, and the live
+queue; registered in `docs/agent/00_INDEX.md` and `docs/README.md` so it is authoritative. The two
+new owner requirements are FR-010 (correction hand-off with owner + due date) and FR-011
+(day/month/year comparison at account level); `docs/discovery/current-workflow.md` now records the
+owner-stated steps instead of saying they are undocumented.
+
+**Verify first:** `npx vitest run src/pages/exportPercentHonesty.test.tsx
+src/__tests__/ratchetDocsScript.test.ts`.
+**Action requested:** none — solo mode.
+
+## 2026-10-18 12:10 UTC (17:10 local) — LEAD — DONE: FR-010 store layer, the accounts-team hand-off (queue Q3)
+
+**What:** `src/types/exceptions.ts` gains `CorrectionRequest` / `CorrectionStatus`
+(`REQUESTED → APPLIED | WITHDRAWN`) / `CorrectionAuditRecord`; `src/store/exceptionDispositionStore.ts`
+gains `requestCorrection` / `updateCorrectionStatus` / `getCorrection` / `getCorrectionHistory` /
+`getCorrections` / `clearCorrections` with an append-only correction audit trail, persist
+version 1 → 2 (a v1 blob migrates to *empty* corrections, never an invented one) and a
+partialize over all four arrays.
+
+**Honesty properties, each asserted in the test file:** instruction and assignee are refused
+when empty; the due date goes through the importer's `parseImportDate`, so `2026-02-30` throws
+and an agreed absence stays `null` — never "today"; `updateCorrectionStatus` throws when no
+request is on file; no code path sets `APPLIED` by itself.
+
+**Failing-first, measured:** with `src/types/exceptions.ts` +
+`src/store/exceptionDispositionStore.ts` reverted to HEAD (`git checkout HEAD -- …`, then
+restored from `/tmp/backup`), **10 of 17** tests fail; restored, **17/17** pass
+(`npx vitest run src/store/exceptionDispositionStore.test.ts`, 2026-10-18 17:32 local).
+
+**Gates after:** `tsc`, `lint`, `format:check`, `money:ast`, `determinism:ratchet`,
+`type-safety:ratchet`, `persistence:map` (42/42 — the store's persist key pre-existed),
+`palette:ratchet`, `fabrication:audit` — all exit 0.
+
+**Not done, deliberately:** the reviewer follow-up UI and the exported list the accounts team
+works from — new surface, rides on FR-008/Q4 and DEC-002. `docs/discovery/requirements-register.md`
+FR-010 now reads **Partial (2026-10-18)** with this evidence; queue Q3 is closed in
+`docs/agent/WORKING_AGREEMENT.md` and Q7 is the next unblocked item.
+
+**Full-suite note:** `npm run test:sharded` on this tree reported **7/8 shards passed** —
+shard 1 fails only in `src/utils/sqlJsStorage.test.ts` + `src/utils/backupRestore.test.ts`,
+the two pre-existing environment failures (quota spy vs. this machine's missing `localStorage`),
+reproduced in isolation in files this session never touched.
+
+**Verify first:** `npx vitest run src/store/exceptionDispositionStore.test.ts`.
+**Action requested:** none — solo mode.
+
+## 2026-10-18 12:55 UTC (17:55 local) — LEAD — DONE: the sandbox's 3 storage-spy suite failures fixed at the injection point
+
+**What:** the environment-caveat row in `docs/agent/09_KNOWN_GAPS.md` (2 quota tests in
+`src/utils/sqlJsStorage.test.ts`, 1 per-key-error test in `src/utils/backupRestore.test.ts`)
+— `Storage.prototype` spies that never intercept on Node 26, because the polyfill in
+`src/test/setup.ts` installs a plain-object `localStorage` that owns its methods. The correct
+injection point was already documented in `src/utils/__tests__/masterStorage.security.test.ts`.
+
+**Fix:** all three spy sites now target the `localStorage` instance — exactly the action the
+prescribed ("fix the proxy target deliberately"). **No assertion changed**: same
+`StorageBackendError`, operation, store key, `cause.name` and `dump.errors` checks.
+
+**Measured:** before — 2 failed | 14 passed in `sqlJsStorage`, 1 red in `backupRestore`
+(shard-1 log, reproduced in isolation); after — both files **39/39**, exit 0 on Node 26.10.0.
+A throwaway probe proved the instance spy also intercepts *inherited* methods, so the Node-22
+real-jsdom path (which never reproduced these failures) still intercepts; probe deleted.
+`tsc`, `lint`, `format:check`, `determinism:ratchet` green after the edit.
+
+**Verify first:** `npx vitest run src/utils/sqlJsStorage.test.ts src/utils/backupRestore.test.ts`.
+**Action requested:** none — solo mode.
