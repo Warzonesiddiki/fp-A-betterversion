@@ -389,6 +389,19 @@ Work top-to-bottom. A phase starts only when the previous phase's exit evidence 
 | **7 — All-in-one depth**              | PLAN/MODEL/REPORT hardening one workflow at a time; orphan wiring-or-freeze decisions; route consolidation 242 → owner's working set                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Per-workflow Connected evidence in the capability matrix                                                        |
 | **8 — Optional**                      | Direct D365 connector (new DEC), AI commentary behind verified-facts gate (AI-001), team/server use                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Own DEC + acceptance criteria before any code                                                                   |
 
+**Phase 6 progress 2026-10-18:** DEC-014 offline sign-in implemented
+(cached session in the auth store, 30-day clock expiry, revoke-and-wipe,
+device-profile binding v1 — OS-user binding awaits the native Tauri OS
+plugin); REP-01 screen == Excel == PDF tie-out test added for the
+correction hand-off (real Excel writer read back; PDF table captured at
+the renderer sink); T3 100k-row GL load bench added
+(`glStore.loadBench.test.ts` — measured 2026-10-18: setEntries(100k)
+1283ms, period totals 100ms in this sandbox). Still open in Phase 6: CI
+green on `main` (main's own test-unit run is red at the base commit;
+the branch PR + merge is the owner action), the key-escrow owner DEC
+(engine + store exist, 25/25 tests, deliberately no UI wiring until the
+policy is decided), DEC-005 SQLite migration (native-blocked).
+
 **Frozen until Phase 4 exits:** new routes, pages, engines, stores, sector packs, connectors (AGENTS.md rule 8). Repairs, tests, guards and ratchet-lowering are always welcome.
 
 ### Phase 2 — scoped 2026-10-18 (read-only, before failing tests)
