@@ -89,7 +89,7 @@ export function diffBudgetVersions(
     }
   }
 
-  const byCell = (a: CellRef, b: CellRef) =>
+  const byCell = <T extends { accountCode: string; month: number }>(a: T, b: T) =>
     a.accountCode.localeCompare(b.accountCode) || a.month - b.month;
   changed.sort(byCell);
   added.sort(byCell);
