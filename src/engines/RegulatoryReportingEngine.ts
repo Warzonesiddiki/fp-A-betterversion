@@ -184,12 +184,45 @@ export class RegulatoryReportingEngine {
   }
 
   // 4. Compute ESG composite score (0-100)
+  /**
+   * An empty metric set is not a perfect environmental record. With nothing
+   * supplied, every pillar and the composite are `null` and `evaluated` is
+   * false, because scoring zeros produced `e: 100` (no emissions reported read
+   * as a perfect E pillar) and a composite of 52 for an entity that had
+   * reported nothing at all.
+   *
+   * A record in which *something* was supplied is scored exactly as before:
+   * deciding what a genuine 0 emissions figure means next to an unknown
+   * diversity percentage is a per-pillar availability decision for the owner,
+   * not for this engine.
+   */
   static computeESGScore(metrics: ESGMetrics): {
-    composite: number;
-    e: number;
-    s: number;
-    g: number;
+    composite: number | null;
+    e: number | null;
+    s: number | null;
+    g: number | null;
+    evaluated: boolean;
+    reason?: string;
   } {
+    const nothingSupplied =
+      metrics.scope1Emissions === 0 &&
+      metrics.scope2Emissions === 0 &&
+      metrics.scope3Emissions === 0 &&
+      metrics.waterUsage === 0 &&
+      metrics.wasteRecycled === 0 &&
+      metrics.diversityPct === 0 &&
+      metrics.boardIndependence === 0;
+    if (nothingSupplied) {
+      return {
+        composite: null,
+        e: null,
+        s: null,
+        g: null,
+        evaluated: false,
+        reason: 'no ESG metrics supplied (every field is zero) — nothing to assess',
+      };
+    }
+
     const e = Math.max(0, 100 - (metrics.scope1Emissions + metrics.scope2Emissions) / 1000);
     const s = metrics.diversityPct * 0.6 + (metrics.waterUsage < 1000000 ? 40 : 20);
     const g = metrics.boardIndependence;
@@ -198,33 +231,96 @@ export class RegulatoryReportingEngine {
       e: Math.round(e),
       s: Math.round(s),
       g: Math.round(g),
+      evaluated: true,
     };
   }
 
   // 5. Compute SOX 404 control coverage (% of controls tested)
+  /**
+   * Absence of controls, and absence of testing, are not findings. With no
+   * controls in scope this used to return `materialWeakness: true` (effectiveness
+   * 0 < 80) — the strongest possible adverse SOX conclusion, asserted over an
+   * empty input; `(100, 0, 0)` did the same, so nothing tested read as a
+   * weakness. Now: no controls in scope → everything `null`, `evaluated: false`;
+   * controls in scope but none tested → coverage 0 (a real fact) with
+   * effectiveness and weakness `null` (unknown). Only tested controls can
+   * produce a weakness, and the comparison still uses the unrounded
+   * effectiveness, so a supplied-data result is bit-for-bit what it was.
+   */
   static computeSOXControlsCoverage(
     totalControls: number,
     testedControls: number,
     passedControls: number
-  ): { coverage: number; effectiveness: number; materialWeakness: boolean } {
-    const coverage = totalControls === 0 ? 0 : (testedControls / totalControls) * 100;
-    const effectiveness = testedControls === 0 ? 0 : (passedControls / testedControls) * 100;
-    const materialWeakness = effectiveness < 80;
+  ): {
+    coverage: number | null;
+    effectiveness: number | null;
+    materialWeakness: boolean | null;
+    evaluated: boolean;
+    reason?: string;
+  } {
+    if (totalControls === 0) {
+      return {
+        coverage: null,
+        effectiveness: null,
+        materialWeakness: null,
+        evaluated: false,
+        reason:
+          'no controls in scope — coverage and effectiveness cannot be computed, and a material weakness cannot be asserted',
+      };
+    }
+
+    const coverage = Math.round((testedControls / totalControls) * 100);
+
+    if (testedControls === 0) {
+      return {
+        coverage,
+        effectiveness: null,
+        materialWeakness: null,
+        evaluated: true,
+        reason: `${totalControls} control(s) in scope but none were tested — effectiveness is unknown, and untested is not a weakness`,
+      };
+    }
+
+    const rawEffectiveness = (passedControls / testedControls) * 100;
     return {
-      coverage: Math.round(coverage),
-      effectiveness: Math.round(effectiveness),
-      materialWeakness,
+      coverage,
+      effectiveness: Math.round(rawEffectiveness),
+      materialWeakness: rawEffectiveness < 80,
+      evaluated: true,
     };
   }
 
   // 6. Compute GDPR compliance score (0-100)
+  /**
+   * Every deduction is guarded by a `> 0` / `<` comparison, so an empty input
+   * triggered none of them and returned `score: 100, issues: []`: no records on
+   * file read as full GDPR compliance. With nothing supplied the score is now
+   * `null` and `evaluated` is false. A supplied record is scored exactly as
+   * before.
+   */
   static computeGDPRScore(
     processingActivities: number,
     dpiaCompleted: number,
     breachIncidents: number,
     consentRecords: number
-  ): { score: number; issues: string[] } {
+  ): { score: number | null; issues: string[]; evaluated: boolean; reason?: string } {
     const issues: string[] = [];
+
+    if (
+      processingActivities === 0 &&
+      dpiaCompleted === 0 &&
+      breachIncidents === 0 &&
+      consentRecords === 0
+    ) {
+      return {
+        score: null,
+        issues,
+        evaluated: false,
+        reason:
+          'no processing activities, DPIAs, breach incidents or consent records supplied — nothing to assess',
+      };
+    }
+
     let score = 100;
     if (processingActivities > 0 && dpiaCompleted < processingActivities) {
       score -= 20;
@@ -238,7 +334,7 @@ export class RegulatoryReportingEngine {
       score -= 10;
       issues.push(`Incomplete consent records (${consentRecords}/${processingActivities})`);
     }
-    return { score: Math.max(0, score), issues };
+    return { score: Math.max(0, score), issues, evaluated: true };
   }
 
   // 7. Detect material misstatements (delta > threshold)

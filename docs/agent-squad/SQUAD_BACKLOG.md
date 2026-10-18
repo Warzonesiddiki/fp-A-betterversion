@@ -77,6 +77,27 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-18 (LEAD, solo): **`RegulatoryReportingEngine` stopped scoring records that were never
+  supplied.** Three static scorers answered questions nobody had asked: `computeGDPRScore(0, 0, 0, 0)`
+  returned `{ score: 100, issues: [] }` because every deduction is guarded by a `> 0` / `<` test that
+  zero inputs never trigger — no processing activities, no DPIAs, no breaches and no consent records
+  read as full GDPR compliance. `computeESGScore` on an all-zero `ESGMetrics` returned `e: 100` (no
+  emissions reported = a perfect environmental pillar) and `composite: 52`. And
+  `computeSOXControlsCoverage(0, 0, 0)` returned `materialWeakness: true` — with no controls in scope
+  at all the engine asserted the strongest possible adverse SOX finding; `(100, 0, 0)` did the same, so
+  "nothing was tested" read as a weakness. The same absence produced a perfect score in one method and
+  the worst finding in another. Now: nothing supplied → `null` scores, `evaluated: false`, and a reason
+  naming what is missing; controls in scope but none tested → coverage the real 0 with effectiveness and
+  weakness `null`; and the weakness comparison still uses the unrounded effectiveness, so every
+  supplied-data result is bit-for-bit what it was. Failing-first: **4 red | 3 green** (`expected 100 to
+be null`, `expected 52 to be null`, `expected +0 to be null` twice; the three guards pin the unchanged
+  arithmetic — GDPR `(10, 5, 2, 8)` = 60 with 3 issues, ESG composite 82 / e 100 / s 70 / g 70, SOX
+  `(100, 100, 70)` weakness true) → 7/7 after, engine suite 12/12, all of `src/engines` 312 files /
+  5,709 tests. This engine has 0 non-test callers, so no screen showed these numbers; the point is that
+  the first caller cannot inherit them. Gates: tsc 0, lint 0. Not decided here (owner): per-pillar
+  availability for a _partially_ supplied record — e.g. emissions genuinely 0 while `diversityPct` is
+  unknown — so a partial record is still scored with the zeros it carries, which is the pre-existing
+  formula rather than a new claim.
 - 2026-10-17 (LEAD, solo): **The ratchet checker now reads the prose claims too, and four of
   them were wrong.** `scripts/ratchet-docs-check.mjs` only compared the KNOWN_GAPS table, so the
   same numbers stated as sentences elsewhere drifted unchecked: `docs/discovery/requirements-register.md`
