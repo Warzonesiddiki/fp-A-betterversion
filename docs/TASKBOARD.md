@@ -6,8 +6,7 @@ board — superseded rows are struck through with the reason. Statuses:
 `DONE` · `NEXT` (unblocked, do in order) · `QUEUED` · `OWNER` (blocked on
 owner input/decision) · `EVIDENCE-OWED` (claim exists, proof missing).
 
-Last updated: 2026-10-19 (handover session; branch tip `a8462e5` + handover
-commits, merged to `main` via PR — see `docs/HANDOVER_NEXT_SESSION.md`).
+Last updated: 2026-10-19 (N1 full frontend-suite rerun on `19801a4`; N1 closure evidence below).
 
 ---
 
@@ -15,7 +14,7 @@ commits, merged to `main` via PR — see `docs/HANDOVER_NEXT_SESSION.md`).
 
 | #   | Task                                                                                                                                                                   | Evidence required to close                                                                | Anchor                                            |
 | --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| N1  | Re-run full frontend suite (`npm run test:sharded`) on merged `main`; record file/test tallies here; fix or ticket every failure with root cause                       | Tally line in this board + green re-run                                                   | Plan §19 definition of complete                   |
+| N1  | **DONE** — Re-ran full frontend suite on merged `main`; fixed the sole palette-ratchet regression (raw `text-emerald-600` in `StateReconstructionPanel.tsx` replaced with semantic `--text-positive` token) | `npm run test:sharded`: 8/8 shards green; 1,395 files passed, 16,018 tests passed, 1 skipped; `npm run palette:ratchet`: 5,502 sites / 370 files; `./node_modules/.bin/vitest run src/__tests__/paletteRatchetScript.test.ts`: 7/7 | Plan §19 definition of complete |
 | N2  | Audit-chain consolidation: three mechanisms (`auditTrailStore`, `CellAuditTrailEngine`, `eventLedger`) → one canonical chain; others retired by DEC or adapter-proven  | Reachability map + migration/compat test; coverage row 45 updated                         | Coverage row 45; Phase 12 tail                    |
 | N3  | RBAC completeness proof (W6-P0-14 class): enumerate every store mutator, assert each is permission-guarded or listed as intentionally unguarded with reason            | Completeness test green; unguarded list in test or doc                                    | Coverage row 26                                   |
 | N4  | E1 sector operational adapters (sub-ledgers & operations): pick next sector adapter from coverage annex order; oracle-first, EXPERIMENTAL label until certified        | Adapter + oracle tests; sectorVerification registry updated                               | Plan E1; `src/pages/sector/sectorVerification.ts` |
