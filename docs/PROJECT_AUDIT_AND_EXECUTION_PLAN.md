@@ -599,6 +599,19 @@ any external provider or new narrative surface needs an owner DEC
 first. Anomaly-explanation wiring into J2 remains open (Phase 13
 tail / E3).
 
+**Phase 14 slices 1-2 2026-10-18:** DEC-020 census guard pins the
+canonical-formula boundary (duplicate evaluators cannot gain product
+paths silently; FormulaEngine catalogued EXPERIMENTAL), and the
+report designer is WIRED to the ledger: the cube previously
+initialized empty - nothing loaded GL data into it - so
+`buildGLActualsCells` + `syncGLActuals` now load posted entries into
+GL_Actuals (Scenario 'Actual'), with an engine-level tie-out proving
+cube queries reproduce direct GL sums to the cent. That tie-out
+caught a real CubeEngine defect: queries ignored their measure
+selection, summing debit+credit+netChange into cancelling totals;
+filterCells now honours query.measures. This also closes Phase 9's
+deferred designer verification.
+
 ## 11. How I will work — the commitment
 
 **Session ritual (every session, no exceptions):**
