@@ -433,8 +433,13 @@ badge in the engine catalog, honesty tests) because no product path
 consumes its roll/blend semantics — wiring awaits the owner's
 roll-semantics answer. Budget version diff DONE
 (`src/services/budget/diffBudgetVersions.ts`, cent-exact cell diff).
-Remaining in Phase 7: backtest UI wiring, scenario UI wiring
-(WhatIfPage assumptions are still not GL-derived).
+Backtest wiring resolved by measurement 2026-10-18: the shipped
+surfaces already backtest honestly (rolling page backtests its own
+projection rule; the forecast builder backtests its four methods).
+The ForecastMethodEngine method library has no product consumer, so
+it is labelled EXPERIMENTAL under DEC-019 with the Phase 7 harness as
+its evidence; adopting its methods is E3 scope. Remaining in Phase 7:
+scenario UI wiring (WhatIfPage assumptions are still not GL-derived).
 
 **Frozen until Phase 4 exits:** new routes, pages, engines, stores, sector packs, connectors (AGENTS.md rule 8). Repairs, tests, guards and ratchet-lowering are always welcome.
 

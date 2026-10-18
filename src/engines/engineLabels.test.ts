@@ -20,4 +20,8 @@ describe('EXPERIMENTAL engine labels (DEC-019)', () => {
   it('RollingForecastEngine is labelled experimental (roll semantics unconsumed by any product path)', () => {
     expect(EXPERIMENTAL_ENGINES['RollingForecastEngine']).toMatch(/rollingForecastModel/);
   });
+
+  it('ForecastMethodEngine is labelled experimental (builder page ships its own methods)', () => {
+    expect(EXPERIMENTAL_ENGINES['ForecastMethodEngine']).toMatch(/Forecast builder/);
+  });
 });
