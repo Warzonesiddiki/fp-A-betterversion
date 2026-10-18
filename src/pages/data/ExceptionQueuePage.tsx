@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { ShieldAlert } from 'lucide-react';
 import { useGLStore } from '@/store/glStore';
 import { runExceptionRules } from '@/services/exceptions/runExceptionRules';
+import { runAggregateRules } from '@/services/exceptions/runAggregateRules';
 import { EXCEPTION_RULES, type ExceptionFinding } from '@/store/exceptionRuleCatalogue';
 import { ExceptionReviewList } from '@/components/exceptions/ExceptionReviewList';
 import type { ExceptionReviewCandidate } from '@/components/exceptions/ExceptionReviewCard';
@@ -27,11 +28,17 @@ export default function ExceptionQueuePage() {
   }, []);
 
   const result = useMemo(() => (entries.length > 0 ? runExceptionRules(entries) : null), [entries]);
+  const aggregateFindings = useMemo(
+    () => (entries.length > 0 ? runAggregateRules(entries) : []),
+    [entries]
+  );
 
   const candidates: ExceptionReviewCandidate[] = useMemo(() => {
     if (!result) return [];
-    return result.findings.map((finding) => toCandidate(finding));
-  }, [result]);
+    return [...result.findings, ...aggregateFindings]
+      .sort((a, b) => a.findingKey.localeCompare(b.findingKey))
+      .map((finding) => toCandidate(finding));
+  }, [result, aggregateFindings]);
 
   if (isLoading) {
     return (
@@ -75,7 +82,7 @@ export default function ExceptionQueuePage() {
         <CardContent className="px-6 py-3 text-sm text-[var(--text-secondary)] space-y-1">
           <p role="status">
             {result!.examinedEntries.toLocaleString()} entries examined ·{' '}
-            {result!.findings.length.toLocaleString()} review candidates ·{' '}
+            {candidates.length.toLocaleString()} review candidates ·{' '}
             {result!.skippedJournalEntries.toLocaleString()} entries without a journal id or
             reference (journal rules could not group them — counted, never hidden)
           </p>
@@ -85,8 +92,9 @@ export default function ExceptionQueuePage() {
             {result!.options.roundAmountMultiple.toLocaleString()}), dormancy{' '}
             {result!.options.dormancyDays} days, outlier accounts with ≥{' '}
             {result!.options.outlierMinEntries} entries at {result!.options.outlierMadFactor}× MAD.
-            Aggregate rules R-001…R-005 need prior-period baselines and run in the comparison
-            workspace (Phase 4); they are not evaluated here.
+            Aggregate rules R-001…R-004 also ran over monthly baselines (prior-month averages,
+            month-over-month, prior-year, per-account z-scores). R-005 (margin trend break) is
+            still PROPOSED in the catalogue and is not run.
           </p>
         </CardContent>
       </Card>
