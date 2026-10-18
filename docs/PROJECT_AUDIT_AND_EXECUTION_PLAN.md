@@ -21,6 +21,50 @@
 > All counts below are from `find`/`grep` commands run on 2026-10-18 (named
 > next to each figure). Test-pass claims from earlier sessions are cited as
 > dated history, never as today's result.
+>
+> ---
+>
+> ## 0. v2 revision — why v1 of this plan was incomplete, and what changed
+>
+> **Owner ruling, 2026-10-18: "ONE RULE FOR THIS PROJECT — ZERO COMPROMISES."**
+> v1 of this plan failed that rule in four ways, stated plainly so they are
+> never repeated:
+>
+> 1. **It deferred most of the product.** PLAN / MODEL / REPORT depth, sector
+>    packs, AI, server, collaboration and platform work were labelled
+>    "frozen / P2 / later" with no completion criteria. Under
+>    zero-compromise, *deferred without a completion definition is just
+>    unplanned.* v2 gives every pillar, every route class and every engine
+>    cluster a disposition and an exit gate (§14–§18). Sequencing still
+>    matters — spine first — but nothing in the supported product is allowed
+>    to remain undefined.
+> 2. **It carried an incomplete flaw register.** v1 listed 6 P0s. The repo's
+>    own evidence base is far larger: the Wave-6 zero-flaw audit
+>    (16 P0 / 99 P1 / 62 P2, `docs/audit/WAVE6_ZERO_FLAW_AUDIT_2026-08-24.md`),
+>    the all-in-one distance report (`ALL_IN_ONE_GAP_REPORT_2026-08-25.md`),
+>    `09_KNOWN_GAPS.md` (87 orphan engines, unwired staging pipeline, dead
+>    service layer, 60 GL pages with no engine), risks R-001…R-013 and the
+>    capability matrix's per-route UNVERIFIED grades. v2 consolidates **all**
+>    of it (§15) — a flaw that is known anywhere in this repo is tracked in
+>    this plan or explicitly retired with evidence.
+> 3. **It had no definition of "project complete".** v1 ended at a roadmap.
+>    v2 defines the finish line measurably (§19): supported-scope statement,
+>    per-pillar ENTERPRISE-READY evidence, a parallel-run acceptance
+>    (tool vs the owner's manual process, on real months, tied to the cent),
+>    and a release gate. "Complete" is a ceremony with evidence, not a claim.
+> 4. **It under-specified the target product.** "Most advanced and smart
+>    all-in-one FP&A" is now a concrete functional taxonomy (§14): data,
+>    close, analysis, planning, modelling, reporting, governance, AI,
+>    sectors, platform — each with the capabilities a serious FP&A tool is
+>    expected to have, and the state of each in this tree.
+>
+> **Zero-compromise, defined operationally (the ZC gates, §17):** no mock or
+> fabricated figure in a supported path; no claimed capability without a
+> consumer and a test; no float money math; no silent discard; missing never
+> rendered as zero; no export that does not tie to the screen; no
+> non-determinism in calculation paths; no UNVERIFIED grade inside the
+> supported scope. Any exception requires an owner DEC — never an agent's
+> quiet judgement. Where v1 and v2 conflict, **v2 wins**.
 
 ---
 
@@ -340,3 +384,131 @@ END    npm run check (or the justified subset — named as partial, never "green
 ---
 
 *Audit evidence for this document: file/line citations were read directly from the tree on 2026-10-18 (`src/types/index.ts:719-724`, `src/services/api-integration/DynamicsConnector.ts`, `src/store/exceptionRuleCatalogue.ts`, consumer greps for `useExceptionRuleCatalogueStore`/`ExceptionReviewList`, route grep in `src/App.tsx`, orphan census `node scripts/verify-readme-stats.mjs --list` → 87 orphans). Full gate suite not re-run in the audit sandbox (no `node_modules`) — Phase 0 exists precisely to re-establish that baseline.*
+
+---
+
+# Part II — The complete zero-compromise completion blueprint (v2)
+
+*§1–§13 remain in force (goal, spine audit, J1–J4 designs, working method). Part II removes every "out of scope / later / undefined" from the project's future. Sequencing is still spine-first (DEC-016); Part II defines the destination for everything.*
+
+## 14. The complete product — functional taxonomy and current state
+
+Grades: **BUILT** (code exists) · **CONN** (wired to real data + states) · **GOV** (auth/audit/scope enforced) · **READY** (evidence-complete). A capability may not be *claimed* above its evidenced grade. State summarised from the capability matrix, known-gaps and audit reports; per-route truth lives in `docs/CAPABILITY_TRUTH_MATRIX.md` and must be regenerated, never hand-edited.
+
+### 14.1 DATA pillar — get every number in, safely
+| Capability | State today | Completion definition |
+| --- | --- | --- |
+| D365 file import (all shapes, DEC-015) | BUILT (F&O-entity + BC), statement shape undetected, TB snapshot not refused | §10 Phase 1 + 1V per-shape real-sample verification |
+| Generic CSV/XLSX import + mapping | BUILT, wizard uses `parseCSV`/`ExcelImportEngine`; a second staging/tokenizer pipeline exists unwired (DEC-012 keeps `glStore` authoritative) | One import path; staging pipeline either becomes the quarantine/audit channel in the UI or is retired by DEC |
+| Saved mapping profiles (IMP-03) | Missing | Profiles per flavour/source, auto-applied on header match, versioned |
+| Source-side control totals (IMP-02) | Missing (internal totals only) | Owner-entered or file-carried totals reconciled to the cent before "reconciled" may display |
+| Other ERP connectors (QuickBooks, NetSuite, Xero, Sage, Salesforce, Stripe, Plaid, Slack) | BUILT classes, **0 wired**, Dynamics = Dataverse CRM not GL | Each connector: wired UI + credential flow + contract tests + live-sandbox evidence, or labelled EXPERIMENTAL and excluded from supported scope. No connector is "supported" on code alone |
+| Bank feeds / AR-AP sub-ledgers / operational inputs (POS/PMS/subscriber) | Missing native (gap report #3, #11) | Native AR/AP ageing feeding cash/working capital, or explicit non-goal DEC |
+| Data quality & lineage | Engines exist (DataQuality, DataLineage, DataCatalog — orphaned) | Every figure traceable figure→entries→batch→file·row; data-quality report per import |
+| Master data (COA, entities, dimensions, fiscal calendar) | Partial; 3 fiscal-calendar implementations (`FiscalCalendar.ts`, `FiscalCalendarEngine.ts`, `temporal/fiscalCalendar.ts`) | ONE canonical calendar/COA/dimension service; duplicates retired |
+
+### 14.2 CLOSE pillar — prove the books
+Trial balance + tie-out (BUILT, tested) · period-close state machine (BUILT, write-guards partial — DEC-008 completion required on **every** write surface incl. undo/redo, budget mutators) · reconciliations GL↔sub-ledger (partial: bank rec page exists; GL↔AR/AP/IC recs to complete) · close checklist over real stage records · opening balances & reversals semantics (undocumented — owner Q in §12) · audit chain (three audit engines exist — `AuditEngine`/`AuditLogEngine`/`AuditTrailEngine` — one must be canonical).
+
+### 14.3 ANALYZE pillar — explain and compare
+Statements P&L/BS/CF + three-statement articulation (BUILT, oracle-tested — the strongest area) · J4 comparison workspace (missing → §8) · variance decomposition/attribution (engines BUILT, page uses prefix rollups + canned drivers — canned drivers must be purged, §5.5) · flux analysis (new: account×period movement pack feeding J2 Tier-3) · KPI dictionary with per-KPI definition, formula, oracle (partial) · drill-to-source everywhere (partial) · dashboards (BUILT-wide; sector KPI $0 flaw class must stay dead — unit-aware formatting gate).
+
+### 14.4 PLAN pillar — budget, forecast, scenarios
+Budgeting (list/detail/BvA BUILT) · driver-based planning (DriverLibrary/DriverCascade — Wave-6 P0-15 cascade-token flaw class needs a sentinel-evaluation pass over **all** templates) · rolling forecast (engine runtime-dead per 2026-10-15 audit — wire or retire) · forecast methods per account group **with backtesting** (absent: `grep backtest` = 0 — required before any forecast may be called "smart") · scenarios/what-if/sensitivity/Monte Carlo (engines BUILT; Monte Carlo worker exists) · workforce/CapEx/cash planning (BUILT partial; payroll pages had fabricated arrays — decontamination + fabrication ratchet extended to engines) · versioning & approval workflow for plans (partial).
+
+### 14.5 MODEL pillar — the hard accounting
+Consolidation exact-string pipeline (BUILT, tested; UI wiring per DEC-012) · FX translation/CTA ASC 830 (ADR-001; engines BUILT) · intercompany matching/elimination ASC 810 (engines BUILT) · revenue recognition, leases, debt, tax provision (BUILT partial; transfer-pricing TEST-NOT-FOUND) · three-statement integrated model (BUILT) · IRR/XIRR/NPV contract (Wave-6 P0-16 flaw class: non-convergence must throw/NaN, never guess) · spreadsheet/formula engine estate (many engines: Formula, SafeMathParser, ArrayFormula, cube/OLAP ×6 — canonical subset to be chosen, rest retired; batch-calc worker must never silently zero — W6-P0-01 class).
+
+### 14.6 REPORT pillar — outputs that tie out
+Board pack Excel+PPTX tie-out (BUILT, tested — extend to **every** supported export surface) · PDF tie-out leg (missing) · correction-list Excel (missing → §9) · report designer/book/scheduler (BUILT, governance unverified) · XBRL/regulatory reporting (engine orphaned, 0 callers — wire with availability semantics or retire) · commentary (AI-gated, §14.8).
+
+### 14.7 ADMIN & GOVERN pillars — trust
+Auth: offline cached session (DEC-014, unimplemented — P1) · RBAC enforcement on **every** mutator (W6-P0-14 class: dataStore mutators had zero RBAC; completeness test required) · SOX/audit families (engines exist, authority undecided — owner decision recorded 2026-10-17 pending) · audit trail reconstruction (R-009) · backup/restore + **encryption-key escrow/recovery** (W6-P0-05: key beside data = total-loss risk; OWNER DECISION, blocks any "your data is safe" claim) · data retention/deletion (GDPR events exist) · settings/integrations administration.
+
+### 14.8 AI pillar — smart, but never a source of numbers
+Copilot/NLQ/commentary (BUILT behind flags) · completion = verified-facts gate (AI-001): every number in AI text must resolve to an approved figure or the output is rejected, tested; egress chokepoint with explicit user action (DEC-003); anomaly explanation wired to J2 findings (AnomalyExplainer orphan today). AI ships OFF by default until the gate is proven.
+
+### 14.9 Sector packs (18 industries)
+Grades from the 2026-08-25 spot-check: mostly SHALLOW template clones (19 pages shared one GL-stats body; re-measured 2026-10-18: 60 GL pages import no engine, 20 compute inline). Completion per sector = engine-wired metrics with named definitions + money tests + missing-data disclosure (the Construction/Hospitality pattern), or the sector is EXPERIMENTAL in the supported-scope statement. `SectorDriverDashboard` becomes the canonical vertical pattern. No sector may display a KPI whose inputs it does not have (DEC-017's sibling: missing ≠ 0).
+
+### 14.10 Platform
+Desktop (Tauri): native menu inert flaw class (W6-P0-07), updater channel undecided (owner), offline sign-in (§14.7) · Browser/PWA: exactly one surface story must survive (owner decision from Wave-6) · Server: integrate for real (env origin + auth token, W6-P0-13 class) or label not-integrated — no fictional endpoints · Plugins/marketplace: sandbox must be wired into the loader and pass computed-key escape tests (W6-P0-02/03), or marketplace claims are pulled · i18n en/ar parity (sound today — keep the parity test) · design system: palette migration 5,548 raw utilities / 373 files to zero in supported paths; ConfirmDialog mounted with queued confirms (W6-P0-08) · performance: selector-less subscriptions purged, heavy math in workers (wired, with progress + error channels — never silent zero), bundle budgets enforced · accessibility WCAG-AA on supported routes (a11y suites exist; populated-state coverage to complete).
+
+## 15. The complete flaw register (consolidated — nothing known stays untracked)
+
+Sources consolidated, not re-invented: Wave-6 register (16 P0/99 P1/62 P2), Wave-7 closure record (7A–7D batches closed the code P0s failing-test-first; remaining items owner-gated), the Aug-25 gap report, `09_KNOWN_GAPS.md`, risks R-001…R-013, and this audit. **Rule: historical "closed" is a claim to re-verify, not a fact.** Phase 0.5 (§18) re-runs the witnesses for every Wave-6 P0 and either confirms closure in this tree or reopens it here.
+
+| Class | Flaws (evidence anchor) | Disposition |
+| --- | --- | --- |
+| F-A Wrong numbers | Silent-zero formula evaluation (W6-P0-01); parseFloat truncation (P0-10); garbage dates (P0-09); IRR/XIRR guessing (P0-16); cascade DSL silent fallback (P0-15); percent-as-currency (P0-06/P1-14); negative-green ReportGrid (P0-12) | Wave-7 claims closure — re-verify each witness test in Phase 0.5; class-guard tests (one guard per class, not per instance) |
+| F-B Data loss / integrity | Storage errors swallowed (P0-04); encryption key beside data, no escrow (P0-05, OWNER); blob persistence scale cap; duplicate-import & unbalanced-remainder (DEC-007/009 — implemented, keep tests) | P0-05 owner DEC blocks "data is safe" claims |
+| F-C Security / governance | Plugin sandbox computed-key escape + unwired sandbox (P0-02/03); RBAC-free mutators (P0-14); fictional server endpoint (P0-13); Sentry/PWA egress vs local-first (DEC-003 enforcement pending) | Sandbox wired-or-de-advertised; RBAC completeness test over every mutator; egress inventory test |
+| F-D Unwired / false surface | 87 orphan engines; staging pipeline 0 readers; `parseD365Rows` second parser; most of `src/services/` unreachable; all connectors 0 UI consumers; server 0 frontend callers; 35-table schema never written; ~120 routes computing on empty/mock state; exception catalogue 0 consumers (P0-02/03 in §6) | Every item gets wire / retire / experimental disposition (§16) — "exists" is not a state a supported product may ship in |
+| F-E Template clones & fabrication | 19-page clone census (Aug-25), re-measured: 60 GL pages engine-less, 20 inline-compute; payroll fabricated arrays; canned variance drivers; sector $0 KPIs | Engine-wiring per page with money tests; fabrication ratchet extended into `src/engines`; canned-driver purge |
+| F-F Duplication | Fiscal calendar ×3; import paths ×4 (wizard, ImportEngine, GLImportService/ImportPipeline, staging); export engines ×4+; workflow engines ×6; audit engines ×3; cube/OLAP ×6; report scheduler ×2 | One canonical per concept (§16); duplicates retired by DEC, not polished |
+| F-G Money & determinism debt | `GLEntry` amounts are JS `number`; money adoption 29.16 % floor (289 modules); 344 determinism sites / 79 files; 47 type-safety escapes | Supported-path targets: adoption 100 %, determinism 0, escapes 0 (§17) — measured per supported module, ratchets only fall |
+| F-H UX / a11y / design | 5,548 raw palette utilities / 373 files; ConfirmDialog dead (P0-08); inert native menu (P0-07); five-states coverage incomplete; 242-route overload (R-011) | Palette to 0 in supported paths; route consolidation (§16); WCAG-AA evidence per supported route |
+| F-I Platform truth | Desktop cannot sign in offline (DEC-014 pending); browser-vs-PWA contradiction; updater channel claim; Tauri native UNVERIFIED from sandboxes | Owner decisions (§20) + native CI verification |
+| F-J Claims & docs | README false-claims history (100 % money/green/offline); 437 docs; capability matrix UNVERIFIED everywhere outside BUILT | `docs:verify` + capability regeneration as release gates; supported-scope statement (§19) is the only claim surface |
+| F-K Test evidence gaps | Transfer-pricing TEST-NOT-FOUND class; SaaS churn/cohort TEST-NOT-FOUND; PDF tie-out leg; cross-artifact tie-out beyond board pack; forecast backtesting absent; connector live evidence absent; J2 answer key absent | Each becomes a named test deliverable in its phase (§18) |
+| F-L Baseline (2026-10-18, this session) | Full sharded suite: **7/8 shards PASS; shard 1 = 3 failed / 1,878 passed** (Node v22.22.3, this tree @ `88ef97b`); static gates (tsc, lint, format, docs:verify, engines, money:ast, adoption, determinism, palette, fabrication) all exit 0. **Named (shard-1 re-run):** `sqlJsStorage.test.ts` ×2 (quota snapshot must reject with `StorageBackendError`) + `backupRestore.test.ts` ×1 (unreadable key must be collected, not thrown). Root cause probe-verified: `vi.spyOn(localStorage, …)` does not intercept under this jsdom (`Storage.prototype` resolves the method; instance spying is a silent no-op — the inverse of the Node-26 polyfill case in `09_KNOWN_GAPS.md`). **Fixed 2026-10-18:** both-targets spying (instance + `Storage.prototype`, the `masterStorage.security.test.ts` pattern), assertions unchanged — 39/39 in the two files green; full 8/8 re-run is the Phase 0 exit tally still owed | Baseline is **not** called green until the full-suite re-run pastes 8/8 |
+
+## 16. Disposition program — every artefact gets a verdict
+
+Zero-compromise does not mean "keep everything"; it means **nothing ambiguous ships**. By the §19 finish line:
+
+- **Routes (242):** each is RETAIN (supported, evidence per §17), MIGRATE (into a canonical pattern/pillar home), or RETIRE (removed with its tests, route-map regenerated). Route target: the owner's working set, not a number chosen for vanity — but every surviving route must be reachable, data-honest and tested. Census: `docs/product/ROUTE_MAP.md` regenerated + `routemap:check`.
+- **Engines (182 manifest / 87 orphan):** each orphan is WIRED (consumer + oracle test) or RETIRED (deleted with manifest regenerated). Duplicate clusters (F-F) collapse to one canonical engine per concept. `engines:verify` + orphan census at 0 for supported scope.
+- **Stores (48):** one authority per fact (`persistenceAuthority.ts`); shape changes versioned with migrations; persistence map current (`persistence:map`).
+- **Services/connectors:** wired-and-evidenced or EXPERIMENTAL-labelled in-product (not in marketing copy).
+- **Docs (437):** live set only per DEC-011; every number script-checked (`docs:verify`); archive stays provenance.
+
+## 17. The Zero-Compromise gates (ZC-01…ZC-14) — the one rule, made measurable
+
+A gate is a command or a test with a tally. "We believe" is not a gate.
+
+| ID | Gate | Command / evidence |
+| --- | --- | --- |
+| ZC-01 | Full suite green, honest exit code | `npm run check` 8/8 shards, tallies pasted |
+| ZC-02 | Money: no unsafe ops; adoption 100 % in supported modules | `money:ast` = 0; `money:adoption` per supported set |
+| ZC-03 | Determinism 0 in supported calculation paths | `determinism:ratchet` per-file, supported set only |
+| ZC-04 | Nothing silently discarded; missing ≠ zero | Import rejection contract tests; five-states + "not in file" UI tests |
+| ZC-05 | Flags are candidates, never "errors", until disposition | Copy lint over exception UI/exports + lifecycle tests |
+| ZC-06 | Everything listed (DEC-017) | Comparison/findings completeness tests (row count == ledger count) |
+| ZC-07 | Screen == Excel == PDF == PPTX on every supported export | Cross-artifact tie-out suite per surface |
+| ZC-08 | No fabricated/mock figure in supported paths | `fabrication:audit` + `mock-data:audit` incl. `src/engines` scope |
+| ZC-09 | Every supported engine has an independent oracle | Oracle test per engine; `financial:oracles` extended |
+| ZC-10 | Every supported route: real data, five states, a11y, keyboard | Journey E2E (Playwright) + `test:a11y` populated suites |
+| ZC-11 | RBAC + audit on every mutation; period locks un-bypassable | RBAC completeness test; lock-bypass test sweep (DEC-008) |
+| ZC-12 | No data leaves the machine by default | Egress inventory test; DEC-003 enforcement |
+| ZC-13 | Backup restores; key recovery works; upgrade migrates | Restore rehearsal test; migration rehearsal on prior-version data |
+| ZC-14 | Performance budgets at real scale | Bench suite: 100k-entry import/grid/drill + 1M-row staging path within budget; bundle budgets |
+
+## 18. Expanded completion roadmap (supersedes the §10 phase table's scope, keeps its order)
+
+§10 Phases 0–5 stand as written (baseline → import → trusted views → exceptions → comparison → correction loop), with these amendments and additions:
+
+- **Phase 0 exit amended:** shard-1's 3 failures (F-L) named, triaged, and either fixed or filed with owners — plus the **Wave-6 witness re-verification (Phase 0.5)**: each F-A…F-C witness re-run; closures confirmed or flaws reopened into §15.
+- **Phase 6 — Platform truth:** offline auth (DEC-014), persistence execution (DEC-005), key escrow (owner DEC), PDF tie-out, server integrate-or-label, browser-vs-PWA single story, updater honesty, native CI.
+- **Phase 7 — Planning depth (PLAN):** budget/forecast/scenario hardening, cascade sentinel pass, forecast backtesting harness, rolling-forecast wire-or-retire, plan approval workflow.
+- **Phase 8 — Modelling depth (MODEL):** consolidation/FX/IC close-loop, rev-rec/leases/tax completion incl. transfer-pricing tests, canonical spreadsheet/cube subset.
+- **Phase 9 — Reporting completion (REPORT):** tie-out on every supported export, report governance, XBRL wire-or-retire.
+- **Phase 10 — AR/AP, cash & operational inputs:** sub-ledgers feeding 13-week cash and working capital; payroll decontamination; sector operational adapters.
+- **Phase 11 — Sector certification:** one sector at a time to §14.9 completion; canonical SectorDriverDashboard; unfinished sectors labelled EXPERIMENTAL.
+- **Phase 12 — Governance & collaboration:** RBAC completeness, SOX authority implemented per owner DEC, audit reconstruction, comments/approvals if team use is confirmed (DEC-004 review trigger).
+- **Phase 13 — AI (last, off by default):** verified-facts gate (AI-001), egress chokepoint, J2 explanation wiring; unsupported-number rejection measured on a test corpus.
+- **Phase 14 — Scale, design & release readiness:** ZC-14 budgets, palette/design completion, route consolidation finished, installers signed, updater live, backup/restore rehearsal, help/onboarding/runbooks, `RELEASE_CHECKLIST.md` executed for real.
+
+## 19. Definition of "project complete"
+
+The project is complete when **all** are true and evidenced:
+
+1. **Supported-scope statement exists** (in-product + README): what is supported, what is EXPERIMENTAL, what was retired — generated from the capability matrix, with **zero UNVERIFIED grades inside supported scope**.
+2. **Owner's month-end, end-to-end, on real data:** D365 dump → import reconciled to the owner's own D365 totals → TB/statements tied → exceptions reviewed and dispositioned → corrections exported, tracked, re-verified on the next import → DoD/MoM/YoY comparison done without leaving the tool → board pack tied out. Run as a **parallel run against the owner's manual process for at least two consecutive months**, differences explained to the cent.
+3. **All ZC gates (§17) green in one `npm run check`** on the release commit, plus native (Tauri) verification on a real toolchain and green CI on `main` (`gh run list`).
+4. **No open P0/P1 in §15**; every P2 is either closed or carried in a signed known-limitations note inside the product.
+5. **Recovery proven:** fresh install → restore from backup → same totals; upgrade from the previous release migrates data losslessly.
+
+## 20. Owner decisions still required (zero-compromise means these are asked, not assumed)
+
+Encryption-key escrow model (F-B) · browser-vs-PWA single story · desktop updater channel · server: integrate or label · SOX/audit authority source · plugin marketplace: wire sandbox or pull claims · direct D365 API pull (Phase 8-optional) · plus the workflow facts in §12 (fiscal calendar, entities/currencies, assignees, watchlist accounts). Each lands as a DEC before code depends on it.
