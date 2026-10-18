@@ -283,7 +283,7 @@ export default function CashForecastPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-[var(--text-muted)]">
-              Opening cash {fmt.money(ladder.openingCash)} at {ladder.asOf}. Expected collections and
+              Opening cash {fmt.currency(ladder.openingCash)} at {ladder.asOf}. Expected collections and
               payments from open receivables/payables, by assumed due week.
             </p>
             <div className="overflow-x-auto">
@@ -302,9 +302,9 @@ export default function CashForecastPage() {
                     <tr key={w.week} className="border-b last:border-0">
                       <td className="py-1 pr-3">{w.week}</td>
                       <td className="py-1 pr-3">{w.weekStarting}</td>
-                      <td className="py-1 pr-3">{fmt.money(w.expectedCollections)}</td>
-                      <td className="py-1 pr-3">{fmt.money(w.expectedPayments)}</td>
-                      <td className="py-1">{fmt.money(w.runningCash)}</td>
+                      <td className="py-1 pr-3">{fmt.currency(w.expectedCollections)}</td>
+                      <td className="py-1 pr-3">{fmt.currency(w.expectedPayments)}</td>
+                      <td className="py-1">{fmt.currency(w.runningCash)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -312,8 +312,8 @@ export default function CashForecastPage() {
             </div>
             {(ladder.beyondHorizon.collections > 0 || ladder.beyondHorizon.payments > 0) && (
               <p className="text-xs text-[var(--text-muted)]">
-                Beyond week 13: collections {fmt.money(ladder.beyondHorizon.collections)}, payments{' '}
-                {fmt.money(ladder.beyondHorizon.payments)}.
+                Beyond week 13: collections {fmt.currency(ladder.beyondHorizon.collections)}, payments{' '}
+                {fmt.currency(ladder.beyondHorizon.payments)}.
               </p>
             )}
             <ul className="text-xs text-[var(--text-muted)] space-y-1">
