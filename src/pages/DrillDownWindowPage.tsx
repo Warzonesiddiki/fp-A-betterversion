@@ -18,6 +18,9 @@ export default function DrillDownWindowPage() {
 
   const title = searchParams.get('title') || 'Transactions';
   const accountPrefix = searchParams.get('accountPrefix') || '';
+  // Phase 4: exact account drill from the comparison grid (prefix matching
+  // would silently include sub-accounts like 40100 for account 4010).
+  const accountCode = searchParams.get('accountCode') || '';
   // Phase 2 drill-to-source: statement pages link here with the statement
   // class(es) behind the clicked figure (comma-separated, e.g.
   // "opex,interest,tax" for total expenses). Resolution goes through the
@@ -43,12 +46,13 @@ export default function DrillDownWindowPage() {
           )
         : entries;
     return classFiltered.filter((e) => {
+      const matchExact = accountCode ? e.accountCode === accountCode : true;
       const matchAccount = accountPrefix ? (e.accountCode || '').startsWith(accountPrefix) : true;
       const matchStart = startDate ? e.date >= startDate : true;
       const matchEnd = endDate ? e.date <= endDate : true;
-      return matchAccount && matchStart && matchEnd;
+      return matchExact && matchAccount && matchStart && matchEnd;
     });
-  }, [entries, accounts, statementClass, accountPrefix, startDate, endDate]);
+  }, [entries, accounts, statementClass, accountPrefix, accountCode, startDate, endDate]);
 
   const columns: Array<{
     header: string;
@@ -84,6 +88,7 @@ export default function DrillDownWindowPage() {
             <span className="flex items-center gap-4 text-sm text-slate-400">
               <span>{filteredEntries.length} transactions found</span>
               {accountPrefix && <span>Filtering by Account: {accountPrefix}*</span>}
+              {accountCode && <span>Filtering by Account: {accountCode} (exact)</span>}
               {statementClass && <span>Filtering by statement class: {statementClass}</span>}
             </span>
           }

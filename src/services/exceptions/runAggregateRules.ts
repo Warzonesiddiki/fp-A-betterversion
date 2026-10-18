@@ -24,14 +24,27 @@ import {
   signedClassAmount,
   type AccountClass,
 } from '@/utils/accountClassification';
-import { createFinding, EXCEPTION_RULES, type ExceptionFinding } from '@/store/exceptionRuleCatalogue';
+import {
+  createFinding,
+  EXCEPTION_RULES,
+  type ExceptionFinding,
+} from '@/store/exceptionRuleCatalogue';
 
 export interface AggregateEntryInput {
   readonly id: string;
   readonly date: string;
   readonly period?: string;
   readonly accountCode: string;
-  readonly accountType?: 'Revenue' | 'COGS' | 'OpEx' | 'CapEx' | 'Asset' | 'Liability' | 'Equity' | 'Unknown' | null;
+  readonly accountType?:
+    | 'Revenue'
+    | 'COGS'
+    | 'OpEx'
+    | 'CapEx'
+    | 'Asset'
+    | 'Liability'
+    | 'Equity'
+    | 'Unknown'
+    | null;
   readonly debit: number;
   readonly credit: number;
 }
@@ -65,9 +78,7 @@ function priorYearMonth(month: string): string {
   return `${Number(month.slice(0, 4)) - 1}${month.slice(4)}`;
 }
 
-export function runAggregateRules(
-  entries: readonly AggregateEntryInput[]
-): ExceptionFinding[] {
+export function runAggregateRules(entries: readonly AggregateEntryInput[]): ExceptionFinding[] {
   const findings: ExceptionFinding[] = [];
 
   // ---- R-001 / R-003 over monthly revenue --------------------------------
@@ -90,7 +101,7 @@ export function runAggregateRules(
               observedValue: total.toNumber(),
               expectedValue: baseline.toNumber(),
               deviation: deviationRatio.toNumber(),
-              message: `Revenue ${total.toString()} deviates ${(deviationRatio.times(100)).toString()}% from the ${priors.length}-month baseline average ${baseline.toString()}. Worth a second look — not a confirmed error.`,
+              message: `Revenue ${total.toString()} deviates ${deviationRatio.times(100).toString()}% from the ${priors.length}-month baseline average ${baseline.toString()}. Worth a second look — not a confirmed error.`,
             })
           );
         }
@@ -108,7 +119,7 @@ export function runAggregateRules(
             observedValue: total.toNumber(),
             expectedValue: priorYear.toNumber(),
             deviation: change.toNumber(),
-            message: `Revenue ${total.toString()} is down ${(change.times(-100)).toString()}% vs ${priorYearMonth(month)} (${priorYear.toString()}). Worth a second look — not a confirmed error.`,
+            message: `Revenue ${total.toString()} is down ${change.times(-100).toString()}% vs ${priorYearMonth(month)} (${priorYear.toString()}). Worth a second look — not a confirmed error.`,
           })
         );
       }
@@ -139,7 +150,7 @@ export function runAggregateRules(
           observedValue: total.toNumber(),
           expectedValue: prior.toNumber(),
           deviation: change.toNumber(),
-          message: `Operating expenses ${total.toString()} are up ${(change.times(100)).toString()}% vs the prior month (${prior.toString()}). Worth a second look — not a confirmed error.`,
+          message: `Operating expenses ${total.toString()} are up ${change.times(100).toString()}% vs the prior month (${prior.toString()}). Worth a second look — not a confirmed error.`,
         })
       );
     }

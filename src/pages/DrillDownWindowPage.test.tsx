@@ -155,3 +155,19 @@ describe('DrillDownWindowPage — statement-class drill (Phase 2)', () => {
     expect(screen.getByText('Rent expense')).toBeInTheDocument();
   });
 });
+
+describe('DrillDownWindowPage — exact account drill (Phase 4)', () => {
+  it('accountCode matches exactly, never by prefix', () => {
+    useGLStore.setState({
+      entries: [
+        entry('a', '2026-01-05', '4010', 0, 100, 'Revenue main'),
+        entry('b', '2026-01-06', '40100', 0, 200, 'Revenue sub-account'),
+        entry('c', '2026-01-07', '4010', 0, 300, 'Revenue main 2'),
+      ],
+    });
+    renderPage('?title=4010&accountCode=4010');
+    expect(screen.getByText(/2 transactions found/)).toBeInTheDocument();
+    expect(screen.getByText('Revenue main')).toBeInTheDocument();
+    expect(screen.queryByText('Revenue sub-account')).not.toBeInTheDocument();
+  });
+});

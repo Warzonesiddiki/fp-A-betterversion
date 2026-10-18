@@ -144,9 +144,7 @@ describe('buildComparison — 100k-entry bench (plan §8 performance bar)', () =
     for (let i = 0; i < 100_000; i += 1) {
       const month = String((i % 12) + 1).padStart(2, '0');
       const account = `4${String(i % 50).padStart(3, '0')}`;
-      entries.push(
-        e(`bench-${i}`, `2026-${month}-15`, account, 0, (i % 97) + 1)
-      );
+      entries.push(e(`bench-${i}`, `2026-${month}-15`, account, 0, (i % 97) + 1));
     }
     const started = performance.now();
     const result = buildComparison(entries, { grain: 'month', currentKey: '2026-06' });

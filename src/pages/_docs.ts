@@ -433,6 +433,21 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
       },
     ],
   },
+  '/data/comparison': {
+    title: 'Comparison',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          "One row per account at day, month or year grain: current period against the prior period and the same period last year, with the money and percent change. Amounts follow each account's natural sign (revenue positive from credits, expenses positive from debits). Every figure drills to the exact entries behind it.",
+      },
+      {
+        title: 'What does "not in file" mean?',
+        content:
+          "The imported ledger does not cover that period for that account, so the cell is stated as not in file instead of a zero that would invent a −100% change. Column headers state each period's coverage (entries and days present). When the calendar-prior period is missing, the prior column uses the latest earlier period present and the page says so.",
+      },
+    ],
+  },
   '/data/gl-journals': {
     title: 'Journals',
     sections: [

@@ -339,6 +339,20 @@ identical, MAD outlier median-exact. Remaining Phase 3 honesty items:
 R-001…R-005 aggregate evaluators land with Phase 4 baselines; correction
 requests from ACCEPTED findings are Phase 5 (store types already exist).
 
+**Phase 4 progress 2026-10-18 (code side closed):** comparison engine
+(`src/services/comparison/buildComparison.ts`) — day/month/year grains,
+natural-sign figures, null = "not in file" (never zero, never −100%),
+labelled prior fallback, per-period coverage (entries, days present/in
+period, batches), exhaustive |Δ| sort, drill selector; 100k-entry bench
+green. Workspace page `/data/comparison` (grain switch, period anchor,
+coverage on column headers, exact-account drill via extended
+`/drill-down`). Aggregate rules R-001…R-004 now evaluate monthly
+baselines in the exception queue. Still open: comparison Excel/PDF
+export with the same figures (Phase 9 tie-out), entity/dimension
+columns when files carry them (import mapping today carries entityId on
+entries — grid columns land with the first owner file that uses them),
+period-aware TB presentation on the TB page (engine now exists).
+
 ## 9. Target design — J3 correction hand-off (DEC-018)
 
 - **Excel correction list** generated from the disposition/correction stores (same records as the screen): finding key, rule id, account, date, amount, source locator (file · batch · row), suspected issue in plain language, correction instruction, assignee, due date, status. Percentages formatted as percentages, money as money (the P1-14 lesson).

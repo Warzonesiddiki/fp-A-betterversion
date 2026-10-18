@@ -99,9 +99,7 @@ function calendarPriorKey(key: string, grain: ComparisonGrain): string {
   if (grain === 'year') return String(Number(key) - 1);
   const [y, m] = key.split('-').map(Number);
   const month = (m ?? 1) - 1;
-  return month === 0
-    ? `${(y ?? 1970) - 1}-12`
-    : `${y}-${String(month).padStart(2, '0')}`;
+  return month === 0 ? `${(y ?? 1970) - 1}-12` : `${y}-${String(month).padStart(2, '0')}`;
 }
 
 function calendarPriorYearKey(key: string, grain: ComparisonGrain): string | null {
@@ -132,10 +130,7 @@ export function buildComparison(
   const sums = new Map<string, Map<string, Decimal>>();
   const names = new Map<string, string>();
   const classes = new Map<string, AccountClass>();
-  const coverageRaw = new Map<
-    string,
-    { count: number; days: Set<string>; batches: Set<string> }
-  >();
+  const coverageRaw = new Map<string, { count: number; days: Set<string>; batches: Set<string> }>();
 
   for (const entry of entries) {
     const key = periodKeyOf(entry.date, grain);
