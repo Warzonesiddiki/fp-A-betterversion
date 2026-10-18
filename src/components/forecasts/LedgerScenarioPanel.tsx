@@ -135,7 +135,7 @@ export default function LedgerScenarioPanel() {
                 <select
                   value={activePeriod}
                   onChange={(event) => setPeriod(event.target.value)}
-                  className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+                  className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5"
                   aria-label="Period"
                 >
                   {periods.map((p) => (
@@ -152,7 +152,7 @@ export default function LedgerScenarioPanel() {
             </div>
 
             {!impact.balanced && (
-              <p role="alert" className="text-sm text-amber-400">
+              <p role="alert" className="text-sm text-[var(--warning)]">
                 This what-if does not balance: debits − credits ={' '}
                 {formatCurrency(impact.adjustedImbalance)}. Add the offsetting side (for example the
                 cash change) — the tool never plugs the difference.
@@ -162,14 +162,14 @@ export default function LedgerScenarioPanel() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm" aria-label="Ledger what-if impact">
                 <thead>
-                  <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
+                  <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-[var(--border-subtle)]">
                     <th className="px-3 py-2">Line</th>
                     <th className="px-3 py-2 text-right">Base</th>
                     <th className="px-3 py-2 text-right">What-if</th>
                     <th className="px-3 py-2 text-right">Change</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800">
+                <tbody className="divide-y divide-[var(--border-subtle)]">
                   {ROW_LABELS.map((row) => {
                     const [base, adjusted, delta] = row.pick(impact);
                     return (
@@ -212,7 +212,7 @@ function PctInput({
         value={value === 0 ? '' : value}
         placeholder="0"
         onChange={(event) => onChange(Number(event.target.value) || 0)}
-        className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+        className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5"
         aria-label={label}
       />
     </label>

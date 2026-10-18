@@ -116,7 +116,7 @@ export default function CorrectionsPage() {
                 <select
                   value={selectedFinding || correctable[0]!.exceptionId}
                   onChange={(event) => setSelectedFinding(event.target.value)}
-                  className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+                  className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5"
                   aria-label="Accepted finding"
                 >
                   {correctable.map((d) => (
@@ -131,7 +131,7 @@ export default function CorrectionsPage() {
                 <input
                   value={assignee}
                   onChange={(event) => setAssignee(event.target.value)}
-                  className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+                  className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5"
                   aria-label="Assignee"
                   placeholder="Who in the accounts team fixes it"
                 />
@@ -141,7 +141,7 @@ export default function CorrectionsPage() {
                 <input
                   value={instruction}
                   onChange={(event) => setInstruction(event.target.value)}
-                  className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+                  className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5"
                   aria-label="Correction instruction"
                   placeholder="What has to change, in plain words"
                 />
@@ -152,13 +152,13 @@ export default function CorrectionsPage() {
                   type="date"
                   value={dueDate}
                   onChange={(event) => setDueDate(event.target.value)}
-                  className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+                  className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5"
                   aria-label="Due date"
                 />
               </label>
             </div>
             {formError && (
-              <p role="alert" className="text-sm text-red-400">
+              <p role="alert" className="text-sm text-[var(--text-negative)]">
                 {formError}
               </p>
             )}
@@ -209,7 +209,7 @@ export default function CorrectionsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm" aria-label="Correction requests">
                 <thead>
-                  <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
+                  <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-[var(--border-subtle)]">
                     <th className="px-6 py-3">Finding</th>
                     <th className="px-4 py-3">Instruction</th>
                     <th className="px-4 py-3">Assignee</th>
@@ -219,9 +219,9 @@ export default function CorrectionsPage() {
                     <th className="px-4 py-3">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800">
+                <tbody className="divide-y divide-[var(--border-subtle)]">
                   {corrections.map((correction) => (
-                    <tr key={correction.exceptionId} className="hover:bg-slate-900/50">
+                    <tr key={correction.exceptionId} className="hover:bg-[var(--bg-surface)]/50">
                       <td className="px-6 py-3 font-mono text-xs">{correction.exceptionId}</td>
                       <td className="px-4 py-3">{correction.instruction}</td>
                       <td className="px-4 py-3">{correction.assignee}</td>
@@ -230,7 +230,7 @@ export default function CorrectionsPage() {
                       <td className="px-4 py-3">
                         <StatusBadge status={correction.status} />
                         {proposalKeys.has(correction.exceptionId) && (
-                          <span className="block text-xs text-amber-400">
+                          <span className="block text-xs text-[var(--warning)]">
                             re-verification proposed
                           </span>
                         )}

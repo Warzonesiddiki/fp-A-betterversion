@@ -102,7 +102,17 @@ export const useBudgetStore = create<BudgetState>()(
             // frozen at the line level too — editing substance requires
             // a rejection (back to Rejected) or a new version.
             const owner = get().budgets.find((b) => b.id === existingItem.budgetId);
-            if (owner && owner.status !== 'Draft' && owner.status !== 'Rejected') {
+            // The period-close freeze is a system action, not an edit:
+            // propagateLock sets ONLY `isLocked: true`, and it must be
+            // able to freeze an Approved budget's lines precisely
+            // because that budget is final. Any other field change on
+            // a non-Draft/Rejected budget remains an error.
+            const updateKeys = Object.keys(updates);
+            const isFreezeOnly =
+              updateKeys.length > 0 &&
+              updateKeys.every((k) => k === 'isLocked') &&
+              updates.isLocked === true;
+            if (owner && !isFreezeOnly && owner.status !== 'Draft' && owner.status !== 'Rejected') {
               throw new Error(
                 `Cannot edit line items of a budget in status ${owner.status}; only Draft or Rejected budgets can be edited.`
               );

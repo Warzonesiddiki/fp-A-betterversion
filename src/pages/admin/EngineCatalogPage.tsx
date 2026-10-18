@@ -109,16 +109,22 @@ export default function EngineCatalogPage() {
           {busy ? 'Loading…' : `Load all ${ENGINE_COUNT}`}
         </Button>
         <div
-          className="text-sm text-slate-600 dark:text-slate-300"
+          className="text-sm text-[var(--text-muted)] dark:text-[var(--text-secondary)]"
           role="status"
           aria-live="polite"
         >
           <span data-testid="engine-total">{stats.total}</span> total ·{' '}
-          <span data-testid="engine-loaded" className="text-green-700 dark:text-green-400">
+          <span
+            data-testid="engine-loaded"
+            className="text-[var(--text-positive)] dark:text-[var(--text-positive)]"
+          >
             {stats.loaded} loaded
           </span>{' '}
           ·{' '}
-          <span data-testid="engine-failed" className="text-red-700 dark:text-red-400">
+          <span
+            data-testid="engine-failed"
+            className="text-[var(--text-negative)] dark:text-[var(--text-negative)]"
+          >
             {stats.failed} failed
           </span>
         </div>
@@ -130,7 +136,7 @@ export default function EngineCatalogPage() {
             Calculation engines with load status and runtime exports
           </caption>
           <thead>
-            <tr className="text-left border-b border-slate-200 dark:border-slate-700">
+            <tr className="text-left border-b border-[var(--border-default)] dark:border-[var(--border-default)]">
               <th scope="col" className="py-2 pr-4">
                 Engine
               </th>
@@ -147,12 +153,15 @@ export default function EngineCatalogPage() {
           </thead>
           <tbody>
             {filtered.map((row) => (
-              <tr key={row.id} className="border-b border-slate-100 dark:border-slate-800">
+              <tr
+                key={row.id}
+                className="border-b border-[var(--border-subtle)] dark:border-[var(--border-subtle)]"
+              >
                 <td className="py-2 pr-4 font-mono text-xs">
                   {row.id}
                   {experimentalReason(row.id) && (
                     <span
-                      className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 font-sans text-[10px] font-semibold text-amber-800 dark:bg-amber-900 dark:text-amber-200"
+                      className="ml-2 rounded bg-[var(--warning-subtle)] px-1.5 py-0.5 font-sans text-[10px] font-semibold text-[var(--warning)] dark:bg-[var(--warning-subtle)] dark:text-[var(--warning)]"
                       title={experimentalReason(row.id)!}
                     >
                       EXPERIMENTAL
@@ -161,10 +170,15 @@ export default function EngineCatalogPage() {
                 </td>
                 <td className="py-2 pr-4">
                   {row.state === 'loaded' && (
-                    <span className="text-green-700 dark:text-green-400">Loaded</span>
+                    <span className="text-[var(--text-positive)] dark:text-[var(--text-positive)]">
+                      Loaded
+                    </span>
                   )}
                   {row.state === 'error' && (
-                    <span className="text-red-700 dark:text-red-400" title={row.error}>
+                    <span
+                      className="text-[var(--text-negative)] dark:text-[var(--text-negative)]"
+                      title={row.error}
+                    >
                       Failed
                     </span>
                   )}
@@ -175,7 +189,7 @@ export default function EngineCatalogPage() {
                     <span className="text-[var(--text-muted)]">Not loaded</span>
                   )}
                 </td>
-                <td className="py-2 pr-4 text-xs text-slate-600 dark:text-slate-300">
+                <td className="py-2 pr-4 text-xs text-[var(--text-muted)] dark:text-[var(--text-secondary)]">
                   {row.state === 'loaded'
                     ? `${row.exports.length}: ${row.exports.slice(0, 4).join(', ')}${
                         row.exports.length > 4 ? '…' : ''

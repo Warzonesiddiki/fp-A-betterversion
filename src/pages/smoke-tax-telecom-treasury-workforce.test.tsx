@@ -294,7 +294,7 @@ describe('Workforce pages smoke tests', () => {
     });
     it('shows empty state with no data', () => {
       renderPage(HeadcountPlanPage, '/workforce/headcount');
-      expect(screen.getByText(/No Data/i)).toBeTruthy();
+      expect(screen.getByText(/No Workforce Data/i)).toBeTruthy();
     });
   });
 

@@ -151,7 +151,7 @@ export default function ComparisonPage() {
             <select
               value={currentKey ?? ''}
               onChange={(event) => setAnchor(event.target.value)}
-              className="bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1"
+              className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1"
               aria-label="Current period"
             >
               {[...periodKeys].reverse().map((key) => (
@@ -178,7 +178,7 @@ export default function ComparisonPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm" aria-label="Account comparison grid">
               <thead>
-                <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800">
+                <tr className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-[var(--border-subtle)]">
                   <th className="px-6 py-3">Account</th>
                   <th className="px-4 py-3">Class</th>
                   <th className="px-4 py-3 text-right">
@@ -203,14 +203,16 @@ export default function ComparisonPage() {
                   <th className="px-4 py-3 text-right">Δ %</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-[var(--border-subtle)]">
                 {result?.rows.map((row) => (
-                  <tr key={row.accountCode} className="hover:bg-slate-900/50">
-                    <td className="px-6 py-3 text-slate-200">
+                  <tr key={row.accountCode} className="hover:bg-[var(--bg-surface)]/50">
+                    <td className="px-6 py-3 text-[var(--text-primary)]">
                       {row.accountName}
-                      <span className="block text-xs text-slate-400">{row.accountCode}</span>
+                      <span className="block text-xs text-[var(--text-muted)]">
+                        {row.accountCode}
+                      </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-400">{row.accountClass}</td>
+                    <td className="px-4 py-3 text-[var(--text-muted)]">{row.accountClass}</td>
                     <td className="px-4 py-3 text-right tabular-nums">
                       {figure(row.current, row.accountCode, row.accountName, result.currentKey)}
                     </td>

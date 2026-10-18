@@ -142,7 +142,7 @@ export default function ProfitLossPage() {
   title={"Profit & Loss Statement"}
   actions={<button
               onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
+              className="p-2 hover:bg-[var(--bg-elevated)] rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
               aria-label="Help"
             ></button>}
 />
@@ -153,7 +153,7 @@ export default function ProfitLossPage() {
         <div className="flex gap-2">
           <input
             type="month"
-            className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm w-40"
+            className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg px-3 py-2 text-sm w-40"
             value={period}
             onChange={(e) => setPeriod(e.target.value)}
             aria-label="Select report period"
@@ -174,7 +174,7 @@ export default function ProfitLossPage() {
           <table className="w-full text-sm" role="grid" aria-label="Profit and Loss Report data">
             <thead>
               <tr
-                className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800"
+                className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-[var(--border-subtle)]"
                 role="row"
               >
                 <th className="px-6 py-3 w-1/2" role="columnheader" scope="col">
@@ -186,8 +186,8 @@ export default function ProfitLossPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
-              <tr className="hover:bg-slate-900/50" role="row">
-                <td className="px-6 py-3 text-slate-300" role="gridcell">
+              <tr className="hover:bg-[var(--bg-surface)]/50" role="row">
+                <td className="px-6 py-3 text-[var(--text-secondary)]" role="gridcell">
                   Revenue
                   <Button
                     size="sm"
@@ -200,14 +200,14 @@ export default function ProfitLossPage() {
                   </Button>
                 </td>
                 <td
-                  className="px-6 py-3 text-right tabular-nums font-medium text-green-400"
+                  className="px-6 py-3 text-right tabular-nums font-medium text-[var(--text-positive)]"
                   role="gridcell"
                 >
                   {fmt.currency0(report.totalRevenue)}
                 </td>
               </tr>
-              <tr className="hover:bg-slate-900/50" role="row">
-                <td className="px-6 py-3 text-slate-300 pl-10" role="gridcell">
+              <tr className="hover:bg-[var(--bg-surface)]/50" role="row">
+                <td className="px-6 py-3 text-[var(--text-secondary)] pl-10" role="gridcell">
                   Cost of Goods Sold
                   <Button
                     size="sm"
@@ -219,28 +219,28 @@ export default function ProfitLossPage() {
                     Drill
                   </Button>
                 </td>
-                <td className="px-6 py-3 text-right tabular-nums text-red-400" role="gridcell">
+                <td className="px-6 py-3 text-right tabular-nums text-[var(--text-negative)]" role="gridcell">
                   {fmt.currency0(report.totalCOGS)}
                 </td>
               </tr>
-              <tr className="bg-slate-900/50 font-medium" role="row">
-                <td className="px-6 py-3 text-slate-200" role="gridcell">
+              <tr className="bg-[var(--bg-surface)]/50 font-medium" role="row">
+                <td className="px-6 py-3 text-[var(--text-primary)]" role="gridcell">
                   Gross Profit
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums font-semibold" role="gridcell">
                   {fmt.currency0(report.grossProfit)}
                 </td>
               </tr>
-              <tr className="border-t-2 border-slate-700 hover:bg-slate-900/50" role="row">
-                <td className="px-6 py-3 text-xs text-slate-400 pl-10" role="gridcell">
+              <tr className="border-t-2 border-[var(--border-default)] hover:bg-[var(--bg-surface)]/50" role="row">
+                <td className="px-6 py-3 text-xs text-[var(--text-muted)] pl-10" role="gridcell">
                   Gross Margin
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums text-xs" role="gridcell">
                   {formatPercent(report.grossMargin, 1)}
                 </td>
               </tr>
-              <tr className="hover:bg-slate-900/50" role="row">
-                <td className="px-6 py-3 text-slate-300 pl-10" role="gridcell">
+              <tr className="hover:bg-[var(--bg-surface)]/50" role="row">
+                <td className="px-6 py-3 text-[var(--text-secondary)] pl-10" role="gridcell">
                   Operating Expenses
                   <Button
                     size="sm"
@@ -252,32 +252,32 @@ export default function ProfitLossPage() {
                     Drill
                   </Button>
                 </td>
-                <td className="px-6 py-3 text-right tabular-nums text-red-400" role="gridcell">
+                <td className="px-6 py-3 text-right tabular-nums text-[var(--text-negative)]" role="gridcell">
                   {fmt.currency0(report.totalExpenses)}
                 </td>
               </tr>
-              <tr className="bg-slate-800/50 font-semibold text-base" role="row">
+              <tr className="bg-[var(--bg-elevated)]/50 font-semibold text-base" role="row">
                 <td className="px-6 py-4 text-white" role="gridcell">
                   Net Income
                 </td>
                 <td
                   className={
                     'px-6 py-4 text-right tabular-nums text-lg ' +
-                    (report.netIncome >= 0 ? 'text-green-400' : 'text-red-400')
+                    (report.netIncome >= 0 ? 'text-[var(--text-positive)]' : 'text-[var(--text-negative)]')
                   }
                   role="gridcell"
                 >
                   {fmt.currency0(report.netIncome)}
                 </td>
               </tr>
-              <tr className="hover:bg-slate-900/50" role="row">
-                <td className="px-6 py-3 text-xs text-slate-400 pl-10" role="gridcell">
+              <tr className="hover:bg-[var(--bg-surface)]/50" role="row">
+                <td className="px-6 py-3 text-xs text-[var(--text-muted)] pl-10" role="gridcell">
                   Net Margin
                 </td>
                 <td
                   className={
                     'px-6 py-3 text-right tabular-nums text-xs ' +
-                    (report.netMargin >= 0 ? 'text-green-400' : 'text-red-400')
+                    (report.netMargin >= 0 ? 'text-[var(--text-positive)]' : 'text-[var(--text-negative)]')
                   }
                   role="gridcell"
                 >
@@ -290,7 +290,7 @@ export default function ProfitLossPage() {
       </Card>
 
       {report.unclassifiedCount > 0 && (
-        <p className="text-sm text-amber-400" role="note">
+        <p className="text-sm text-[var(--warning)]" role="note">
           {report.unclassifiedCount.toLocaleString()} entries have no account type and an account
           code outside the 1–8 convention, and are in no total above (net debit movement{' '}
           {fmt.custom({ decimals: 2 })(report.unclassifiedMovement)}). Until they are mapped to a

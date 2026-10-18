@@ -116,11 +116,11 @@ export default function TransferPricingPage() {
           const status = v as string;
           const icon =
             status === 'compliant' ? (
-              <CheckCircle className="h-4 w-4 text-green-400" />
+              <CheckCircle className="h-4 w-4 text-[var(--text-positive)]" />
             ) : status === 'review' ? (
-              <Clock className="h-4 w-4 text-yellow-400" />
+              <Clock className="h-4 w-4 text-[var(--warning)]" />
             ) : (
-              <AlertCircle className="h-4 w-4 text-red-400" />
+              <AlertCircle className="h-4 w-4 text-[var(--text-negative)]" />
             );
           const label =
             status === 'compliant'
@@ -299,7 +299,7 @@ export default function TransferPricingPage() {
               <select
                 value={benchTxId || transactions[0]?.id || ''}
                 onChange={(event) => setBenchTxId(event.target.value)}
-                className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+                className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5"
                 aria-label="Benchmark transaction"
               >
                 {transactions.map((tx) => (
@@ -315,7 +315,7 @@ export default function TransferPricingPage() {
                 type="number"
                 value={benchMargin}
                 onChange={(event) => setBenchMargin(event.target.value)}
-                className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+                className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5"
                 aria-label="Observed margin percent"
               />
             </label>
@@ -324,7 +324,7 @@ export default function TransferPricingPage() {
               <input
                 value={benchRef}
                 onChange={(event) => setBenchRef(event.target.value)}
-                className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+                className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5"
                 aria-label="Benchmark study reference"
                 placeholder="e.g. 2026 TNMM benchmark study"
               />
@@ -335,7 +335,7 @@ export default function TransferPricingPage() {
                 type="number"
                 value={benchLow}
                 onChange={(event) => setBenchLow(event.target.value)}
-                className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+                className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5"
                 aria-label="Arm's-length range low percent"
               />
             </label>
@@ -345,13 +345,13 @@ export default function TransferPricingPage() {
                 type="number"
                 value={benchHigh}
                 onChange={(event) => setBenchHigh(event.target.value)}
-                className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+                className="w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded px-2 py-1.5"
                 aria-label="Arm's-length range high percent"
               />
             </label>
           </div>
           {benchError && (
-            <p role="alert" className="text-sm text-red-400">
+            <p role="alert" className="text-sm text-[var(--text-negative)]">
               {benchError}
             </p>
           )}
