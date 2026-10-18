@@ -34,6 +34,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 import GLUploadPage from '@/pages/data/GLUploadPage';
 import { useGLStore } from '@/store/glStore';
+import { useGLUploadStore } from '@/store/glUploadStore';
 import { actAs } from '@/test/rbacFixtures';
 import { setClock, resetClock } from '@/utils/clock';
 import { hashFileBytes } from '@/services/import/importProvenance';
@@ -414,5 +415,52 @@ describe('IMP-02 — source-side control totals in the wizard', () => {
     expect(evidence).toContain('Does not match');
     expect(evidence).toContain('-5000.00');
     expect(useGLStore.getState().importHistory[0]?.reconciliation?.status).toBe('mismatch');
+  });
+});
+
+describe('IMP-03 — saved mapping profiles in the wizard', () => {
+  beforeEach(() => {
+    actAs('Admin');
+    setClock(PINNED);
+    resetGLStore();
+    useGLUploadStore.setState({ mappingProfiles: [] });
+  });
+  afterEach(() => {
+    resetClock();
+  });
+
+  it('applies a saved profile automatically when the same header set returns', async () => {
+    useGLUploadStore.getState().saveMappingProfile({
+      name: 'Monthly ERP',
+      headers: ['Acct', 'When', 'Dr', 'Cr'],
+      mappings: { accountCode: 'Acct', postDate: 'When', debit: 'Dr', credit: 'Cr' },
+    });
+    const csv = ['Acct,When,Dr,Cr', '1000,2026-01-05,100,', '4000,2026-01-05,,100', ''].join('\n');
+
+    renderPage();
+    const input = await screen.findByLabelText('Upload file');
+    fireEvent.change(input, {
+      target: { files: [new File([csv], 'erp-jan.csv', { type: 'text/csv' })] },
+    });
+
+    expect(await screen.findByText(/Mapping profile "Monthly ERP" applied/i)).toBeTruthy();
+    // 'When' is a column the built-in auto-mapper cannot map to Posting Date;
+    // Preview unlocking proves the profile — not the dictionary — mapped it.
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Preview Data' })).toBeEnabled());
+  });
+
+  it('saves the current mapping as a named profile from the Map step', async () => {
+    renderPage();
+    await upload(D365_FO_CSV, 'GeneralJournalAccountEntry_USMF_2026-01.csv');
+
+    fireEvent.change(screen.getByLabelText(/profile name/i), {
+      target: { value: 'USMF monthly' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save mapping profile/i }));
+
+    expect(await screen.findByText(/Profile "USMF monthly" saved/i)).toBeTruthy();
+    const profiles = useGLUploadStore.getState().mappingProfiles;
+    expect(profiles).toHaveLength(1);
+    expect(profiles[0]?.mappings.accountCode).toBe('MainAccount');
   });
 });

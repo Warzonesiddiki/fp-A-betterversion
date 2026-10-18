@@ -26,6 +26,7 @@ import { parseFinancialAmountExact } from '@/utils/parseFinancialAmount';
 import { hashFileBytes } from '@/services/import/importProvenance';
 import { parseGLRows, missingRequiredMappings } from '@/services/import/parseGLRows';
 import { detectTrialBalanceSnapshot } from '@/services/import/d365Parser';
+import { findMappingProfile, useGLUploadStore } from '@/store/glUploadStore';
 import {
   CheckCircle2,
   Upload,
@@ -114,6 +115,11 @@ export default function GLUploadPage() {
   const [expectedDebit, setExpectedDebit] = useState('');
   const [expectedCredit, setExpectedCredit] = useState('');
 
+  // IMP-03: saved mapping profile applied to this file, and the save flow.
+  const [appliedProfileName, setAppliedProfileName] = useState<string | null>(null);
+  const [profileName, setProfileName] = useState('');
+  const [savedProfileName, setSavedProfileName] = useState<string | null>(null);
+
   const resetWizard = useCallback(() => {
     setStep(0);
     setCurrentFile(null);
@@ -130,6 +136,9 @@ export default function GLUploadPage() {
     setExpectedRows('');
     setExpectedDebit('');
     setExpectedCredit('');
+    setAppliedProfileName(null);
+    setProfileName('');
+    setSavedProfileName(null);
   }, [setImportError, setImportStatus, setImportProgress]);
 
   const [sheetNames, setSheetNames] = useState<string[]>([]);
@@ -199,6 +208,14 @@ export default function GLUploadPage() {
             setImportStatus('idle');
             return;
           }
+          const csvProfile = findMappingProfile(
+            useGLUploadStore.getState().mappingProfiles,
+            headers
+          );
+          if (csvProfile) {
+            setMappings({ ...csvProfile.mappings });
+            setAppliedProfileName(csvProfile.name);
+          }
           setCsvColumns(headers);
           setRawData(data);
           setSheetNames([]);
@@ -252,6 +269,14 @@ export default function GLUploadPage() {
                 'Nothing was imported.'
             );
             return;
+          }
+          const sheetProfile = findMappingProfile(
+            useGLUploadStore.getState().mappingProfiles,
+            activeSheet!.headers
+          );
+          if (sheetProfile) {
+            setMappings({ ...sheetProfile.mappings });
+            setAppliedProfileName(sheetProfile.name);
           }
           setCsvColumns(activeSheet!.headers);
           setRawData(stringRows);
@@ -635,6 +660,48 @@ export default function GLUploadPage() {
                 </p>
               </div>
             )}
+            {appliedProfileName && (
+              <p className="mt-4 text-sm" role="status">
+                Mapping profile {'"'}
+                {appliedProfileName}
+                {'"'} applied automatically — these are the columns you saved for this header set.
+                Adjust any field below if this file differs.
+              </p>
+            )}
+            <div className="mt-4 flex flex-wrap items-end gap-3">
+              <label className="text-xs">
+                Profile name
+                <input
+                  className="mt-1 block w-52 rounded border border-[var(--border)] bg-transparent px-2 py-1 text-sm"
+                  value={profileName}
+                  onChange={(e) => setProfileName(e.target.value)}
+                  placeholder={currentFile?.name ?? 'Monthly export'}
+                />
+              </label>
+              <Button
+                variant="secondary"
+                disabled={!mappings.accountCode || !mappings.postDate}
+                onClick={() => {
+                  const name = profileName.trim() || currentFile?.name || 'Monthly export';
+                  useGLUploadStore.getState().saveMappingProfile({
+                    name,
+                    headers: csvColumns,
+                    mappings,
+                  });
+                  setSavedProfileName(name);
+                }}
+              >
+                Save mapping profile
+              </Button>
+              {savedProfileName && (
+                <span className="text-sm" role="status">
+                  Profile {'"'}
+                  {savedProfileName}
+                  {'"'} saved — it will be applied automatically next time this header set is
+                  uploaded.
+                </span>
+              )}
+            </div>
             <div className="flex justify-between mt-6">
               <Button variant="ghost" onClick={() => setStep(0)}>
                 Back
