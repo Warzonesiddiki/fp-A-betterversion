@@ -32,6 +32,7 @@ import {
 import { formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { PageHeader } from '@/components/ui/PageHeader';
+import LedgerScenarioPanel from '@/components/forecasts/LedgerScenarioPanel';
 // Assumption starting points for newly created sandboxes. These are editable
 // input defaults, NOT figures derived from the user's ledger — the UI labels
 // them as such (K17/K18 honest labeling).
@@ -213,6 +214,7 @@ export default function WhatIfPage() {
           titleId="what-if-heading"
           purpose="Create scenarios, modify assumptions, compare results side-by-side"
         />
+        <LedgerScenarioPanel />
         <EmptyState
           variant="no-data"
           title="No what-if scenarios yet"
@@ -246,6 +248,7 @@ export default function WhatIfPage() {
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <LedgerScenarioPanel />
         <Card>
           <CardContent className="p-4">
             <KPIValue

@@ -438,8 +438,13 @@ surfaces already backtest honestly (rolling page backtests its own
 projection rule; the forecast builder backtests its four methods).
 The ForecastMethodEngine method library has no product consumer, so
 it is labelled EXPERIMENTAL under DEC-019 with the Phase 7 harness as
-its evidence; adopting its methods is E3 scope. Remaining in Phase 7:
-scenario UI wiring (WhatIfPage assumptions are still not GL-derived).
+its evidence; adopting its methods is E3 scope. Scenario UI wiring DONE 2026-10-18: WhatIfPage now carries a
+"Ledger what-if (from your posted GL)" panel — percentage changes by
+account prefix run through scenarioImpact against the user's entries,
+statements re-derived, imbalance flagged never plugged (the sandbox
+assumptions above it remain clearly-labelled starting points, not
+ledger figures). **Phase 7 code side is closed.** Standing owner
+inputs: rolling-forecast roll semantics (DEC-019), Phase 1V samples.
 
 **Frozen until Phase 4 exits:** new routes, pages, engines, stores, sector packs, connectors (AGENTS.md rule 8). Repairs, tests, guards and ratchet-lowering are always welcome.
 
