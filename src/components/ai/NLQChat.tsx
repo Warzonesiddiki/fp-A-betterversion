@@ -7,6 +7,8 @@ import { NLQEngine } from '@/engines/NLQEngine';
 import type { NLQResult } from '@/engines/NLQEngine';
 import { Card, CardContent } from '@/components/ui/Card';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { verifyNarrative, type VerifiedFact } from '@/services/ai/verifiedFactsGate';
+import { roundTo, sumMoney } from '@/utils/money';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -92,6 +94,31 @@ export function NLQChat({ className, maxHeight = '400px' }: NLQChatProps) {
           responseText = result.summary;
           if (query.confidence < 0.6) {
             responseText += `\n(Low confidence ${confidence}%)`;
+          }
+
+          // AI-001 verified-facts gate: the summary may only state
+          // figures that resolve to THIS query result (its rows, its
+          // total as displayed, its row count, the stated confidence).
+          // Anything else withholds the narrative — the data table and
+          // chart below still show the verified result itself.
+          const total = sumMoney(result.data.map((d) => d.value));
+          const facts: VerifiedFact[] = [
+            { label: 'Query total', value: roundTo(total, 0), kind: 'money' },
+            { label: 'Result rows', value: result.data.length, kind: 'count' },
+            { label: 'Query confidence', value: confidence, kind: 'percent' },
+            ...result.data.map((d) => ({
+              label: d.label,
+              value: roundTo(d.value, 0),
+              kind: 'money' as const,
+            })),
+          ];
+          const verdict = verifyNarrative(responseText, facts);
+          if (!verdict.accepted) {
+            responseText =
+              `Answer withheld by the verified-facts gate: the generated summary contained ` +
+              `figures that do not resolve to this query result (${verdict.unsupported
+                .map((u) => u.raw)
+                .join(', ')}). The verified data is shown below.`;
           }
         }
 

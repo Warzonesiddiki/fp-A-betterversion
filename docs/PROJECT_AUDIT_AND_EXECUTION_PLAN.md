@@ -588,6 +588,17 @@ and leave state untouched. SOX authority remains an owner DEC
 (Phase 12/E4); audit reconstruction rides the append-only trails
 these guards now protect.
 
+**Phase 13 core 2026-10-18:** AI-001 verified-facts gate built
+(`verifiedFactsGate`, corpus-tested: exact/display-rounded/scaled/
+percent forms resolve to approved facts; invented figures reject
+with the offending numbers named) and WIRED at the NLQ response
+boundary — facts are the query result itself, and a failing summary
+is withheld with the rejection disclosed while the verified data
+still renders. DEC-022 records: AI stays local (DEC-003, no egress);
+any external provider or new narrative surface needs an owner DEC
+first. Anomaly-explanation wiring into J2 remains open (Phase 13
+tail / E3).
+
 ## 11. How I will work — the commitment
 
 **Session ritual (every session, no exceptions):**
