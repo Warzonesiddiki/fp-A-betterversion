@@ -77,6 +77,30 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-18 (LEAD, solo): **The raw-palette count is now a ratchet, so the UI restyle cannot
+  quietly grow the surface it is meant to shrink.** The restyle starts from a half-migrated tree:
+  measured at `6d25994`, **5,548** numbered Tailwind palette utilities across **373** non-test
+  modules under `src/` (src/components 3,147, src/pages 2,398, src/engines 3; 1,168 modules
+  scanned) against 4,648 semantic `var(--…)` usages in those same two trees. A numbered stop hardcodes one
+  colour: it does not flip with the theme, it cannot be re-valued centrally, and the seven theme
+  contract suites in `src/theme/` cannot see it — the defect class `lightContrast.contract.test.ts` caught
+  in `76ed099`. A 373-file migration only finishes if it cannot grow while it is in progress, so
+  `scripts/palette-ratchet.mjs` (modelled line-for-line on `scripts/determinism-ratchet.mjs`: same
+  `walk`/`isTest`/`stripComments`, same per-file attribution, same `--update`-refuses-worse rule)
+  now fails if any FILE's count rises or a new file appears with any, and runs inside `npm run check`
+  after `determinism:ratchet`. Baseline recorded from measurement, not typed: 5548 / 373. The row
+  `palette migration` is script-checked in `docs/agent/09_KNOWN_GAPS.md` too (`ratchet-docs-check.mjs`
+  now verifies 9 values: 5 table rows + 4 prose claims), so lowering the baseline forces the doc to
+  move in the same commit. Worst offenders at recording: `src/components/audit/auditTokens.ts` 161
+  (a pseudo-token module of hardcoded `dark:` pairs), `src/pages/ai/AIIntelligencePage.tsx` 158,
+  `src/pages/periods/PeriodClosePage.tsx` 114. Failing-first: **7 red** (all seven with `Cannot find
+  module .../scripts/palette-ratchet.mjs`) → **7/7 green**; `ratchetDocsScript.test.ts` 7/7 with
+  `EXPECTED_ROWS` extended in the same commit. Negative control on the real tree: appended
+  `text-slate-500` to `src/components/ai/AICopilotPanel.tsx` (baseline 1) → `PALETTE RATCHET FAILED:
+  ✗ ... 1 -> 2 (+1)`, exit 1; restored → exit 0. Every fixture lives in `mkdtempSync(tmpdir())`
+  reached with `--root=`, never a probe inside `src/`, because the contrast contracts scan
+  `src/components` and `src/pages` while vitest runs files in parallel. Docs in the same commit:
+  `docs/agent/05_COMMANDS_AND_GATES.md`, `docs/agent/09_KNOWN_GAPS.md`, `README.md`, `AGENTS.md`.
 - 2026-10-18 (LEAD, solo): **`RegulatoryReportingEngine` stopped scoring records that were never
   supplied.** Three static scorers answered questions nobody had asked: `computeGDPRScore(0, 0, 0, 0)`
   returned `{ score: 100, issues: [] }` because every deduction is guarded by a `> 0` / `<` test that

@@ -108,6 +108,7 @@ symptoms and the tests are unchanged.
 | type-safety escapes       | 47                          | `scripts/type-safety-baseline.json`    |
 | money AST violations      | 0                           | `scripts/money-ast-baseline.json`      |
 | money adoption            | 29.16 % (floor)             | `scripts/money-adoption-baseline.json` |
+| palette migration         | 5548 / 373                  | `scripts/palette-baseline.json`        |
 | eslint-disable ledger     | see `npm run escape:ledger` | —                                      |
 
 Every number in that table is script-checked: `scripts/ratchet-docs-check.mjs` (inside
@@ -115,8 +116,24 @@ Every number in that table is script-checked: `scripts/ratchet-docs-check.mjs` (
 drift, on an unparseable value, or on a deleted row — so the table cannot quietly describe
 gates that are not the gates in force. Pinned by `src/__tests__/ratchetDocsScript.test.ts`.
 
+The **palette migration** row is the UI restyle's Phase 1 guard, added 2026-10-18. Measured at
+`6d25994`: **5,548** raw numbered Tailwind palette utilities across **373** non-test modules under
+`src/` (src/components 3,147, src/pages 2,398, src/engines 3), against 4,648 semantic `var(--…)`
+usages in those same two trees (`grep -roE "var\(--[a-z0-9-]+\)" src/pages src/components
+--include=*.ts --include=*.tsx`) — the surface is half migrated, so "restyle everything" means finishing the
+token migration before moving the tokens. A numbered stop hardcodes one colour: it does not flip
+with the theme, it cannot be re-valued centrally, and the contrast contracts in `src/theme/` cannot
+see it. `scripts/palette-ratchet.mjs` therefore fails if any FILE's count rises or a new file
+appears with any, and it runs inside `npm run check`. Because the baseline is per file, the only
+escape from a rising count is to remove at least as many utilities elsewhere **in the same file** —
+an unrelated fix cannot hide a regression. `--update` records a decrease and refuses a worse
+baseline; lowering it means updating this row in the same commit, which is the point of the row.
+Worst offenders when the baseline was recorded: `src/components/audit/auditTokens.ts` 161 (a
+pseudo-token module of hardcoded `dark:` pairs), `src/pages/ai/AIIntelligencePage.tsx` 158,
+`src/pages/periods/PeriodClosePage.tsx` 114. Pinned by `src/__tests__/paletteRatchetScript.test.ts`.
+
 The same numbers are also stated in prose in three other live documents, and the checker reads
-those sentences too (4 prose claims, 8 checked values in total): `docs/discovery/requirements-register.md`
+those sentences too (4 prose claims, 9 checked values in total): `docs/discovery/requirements-register.md`
 NFR-001 ("baselines 344 sites across 79 calculation-path files"), `docs/agent/01_PROJECT_BRIEF.md`
 (the Determinism row and the Money row's adoption floor) and `docs/agent/03_DOMAIN_RULES.md`
 ("344 legacy sites remain"). On 2026-10-17 all four had drifted — the register said 345 / 160,

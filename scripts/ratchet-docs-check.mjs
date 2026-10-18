@@ -10,7 +10,7 @@
  * document that describes gates which are not the gates in force is worse than
  * no document: it is the number a reviewer plans against.
  *
- * This script converts those four documented claims into script-checked
+ * This script converts those five documented claims into script-checked
  * numbers: every value in the table must equal the baseline JSON the
  * corresponding gate reads. Missing or unparseable rows fail too, so the check
  * cannot be disabled by deleting a row.
@@ -59,6 +59,7 @@ function expectations() {
   const typeSafety = readBaseline('type-safety-baseline.json');
   const moneyAst = readBaseline('money-ast-baseline.json');
   const moneyAdoption = readBaseline('money-adoption-baseline.json');
+  const palette = readBaseline('palette-baseline.json');
 
   return [
     {
@@ -98,6 +99,16 @@ function expectations() {
         return m ? m[1] : null;
       },
       expected: String(moneyAdoption.adoptionPercent),
+    },
+    {
+      row: 'palette migration',
+      file: 'scripts/palette-baseline.json',
+      // Rendered as "<raw palette utilities> / <files with sites>".
+      parse: (value) => {
+        const m = value.match(/^(\d+)\s*\/\s*(\d+)$/);
+        return m ? `${m[1]} / ${m[2]}` : null;
+      },
+      expected: `${palette.total} / ${palette.filesWithSites}`,
     },
   ];
 }
