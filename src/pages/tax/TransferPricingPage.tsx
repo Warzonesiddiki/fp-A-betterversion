@@ -14,7 +14,12 @@ import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney } from '@/utils/money';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-import { deriveTPTransactions, computeMethodDistribution } from './transferPricingData';
+import {
+  deriveTPTransactions,
+  computeMethodDistribution,
+  applyBenchmarks,
+} from './transferPricingData';
+import { useTPBenchmarkStore } from '@/store/tpBenchmarkStore';
 
 export default function TransferPricingPage() {
   const fmt = useCurrencyFormatter();
@@ -26,7 +31,41 @@ export default function TransferPricingPage() {
     document.title = 'FinPlan Pro — Transfer Pricing';
   }, []);
 
-  const transactions = useMemo(() => deriveTPTransactions(entries), [entries]);
+  const benchmarks = useTPBenchmarkStore((s) => s.benchmarks);
+  const attachBenchmark = useTPBenchmarkStore((s) => s.attachBenchmark);
+  const [benchTxId, setBenchTxId] = useState('');
+  const [benchMargin, setBenchMargin] = useState('');
+  const [benchLow, setBenchLow] = useState('');
+  const [benchHigh, setBenchHigh] = useState('');
+  const [benchRef, setBenchRef] = useState('');
+  const [benchError, setBenchError] = useState<string | null>(null);
+
+  // Derived rows carry no margin/range/status conclusion; a row leaves
+  // 'review' only through human-attached benchmark evidence (Phase 8).
+  const transactions = useMemo(
+    () => applyBenchmarks(deriveTPTransactions(entries), benchmarks),
+    [entries, benchmarks]
+  );
+
+  const handleAttachBenchmark = useCallback(() => {
+    const txId = benchTxId || transactions[0]?.id || '';
+    if (!txId) return;
+    try {
+      attachBenchmark(txId, {
+        margin: Number(benchMargin),
+        rangeLow: Number(benchLow),
+        rangeHigh: Number(benchHigh),
+        studyRef: benchRef,
+      });
+      setBenchError(null);
+      setBenchMargin('');
+      setBenchLow('');
+      setBenchHigh('');
+      setBenchRef('');
+    } catch (error) {
+      setBenchError(error instanceof Error ? error.message : 'Could not attach the benchmark.');
+    }
+  }, [attachBenchmark, benchTxId, benchMargin, benchLow, benchHigh, benchRef, transactions]);
 
   const methodDistribution = useMemo(() => computeMethodDistribution(transactions), [transactions]);
 
@@ -243,6 +282,84 @@ export default function TransferPricingPage() {
           </CardContent>
         </Card>
       )}
+
+      <Card aria-label="Attach benchmark study">
+        <CardHeader>
+          <CardTitle>Attach benchmark study</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-[var(--text-muted)]">
+            Margins and arm's-length ranges come from your benchmark study, not from the ledger.
+            Attaching one records the study reference; compliance is then computed against the range
+            — a margin outside it is reported non-compliant.
+          </p>
+          <div className="grid gap-3 md:grid-cols-3">
+            <label className="text-sm space-y-1">
+              <span className="text-[var(--text-muted)]">Transaction</span>
+              <select
+                value={benchTxId || transactions[0]?.id || ''}
+                onChange={(event) => setBenchTxId(event.target.value)}
+                className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+                aria-label="Benchmark transaction"
+              >
+                {transactions.map((tx) => (
+                  <option key={tx.id} value={tx.id}>
+                    {tx.id} — {tx.service}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="text-sm space-y-1">
+              <span className="text-[var(--text-muted)]">Observed margin %</span>
+              <input
+                type="number"
+                value={benchMargin}
+                onChange={(event) => setBenchMargin(event.target.value)}
+                className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+                aria-label="Observed margin percent"
+              />
+            </label>
+            <label className="text-sm space-y-1">
+              <span className="text-[var(--text-muted)]">Study reference</span>
+              <input
+                value={benchRef}
+                onChange={(event) => setBenchRef(event.target.value)}
+                className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+                aria-label="Benchmark study reference"
+                placeholder="e.g. 2026 TNMM benchmark study"
+              />
+            </label>
+            <label className="text-sm space-y-1">
+              <span className="text-[var(--text-muted)]">Arm's-length range low %</span>
+              <input
+                type="number"
+                value={benchLow}
+                onChange={(event) => setBenchLow(event.target.value)}
+                className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+                aria-label="Arm's-length range low percent"
+              />
+            </label>
+            <label className="text-sm space-y-1">
+              <span className="text-[var(--text-muted)]">Arm's-length range high %</span>
+              <input
+                type="number"
+                value={benchHigh}
+                onChange={(event) => setBenchHigh(event.target.value)}
+                className="w-full bg-[var(--bg-elevated)] border border-slate-700 rounded px-2 py-1.5"
+                aria-label="Arm's-length range high percent"
+              />
+            </label>
+          </div>
+          {benchError && (
+            <p role="alert" className="text-sm text-red-400">
+              {benchError}
+            </p>
+          )}
+          <Button size="sm" onClick={handleAttachBenchmark}>
+            Attach benchmark
+          </Button>
+        </CardContent>
+      </Card>
 
       <Card aria-label="Intercompany Transactions Table">
         <CardHeader>

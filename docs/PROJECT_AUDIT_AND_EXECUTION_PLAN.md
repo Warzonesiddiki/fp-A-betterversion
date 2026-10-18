@@ -526,9 +526,14 @@ margins 8.5/10.2/9.0 and benchmark ranges — a GL entry carries neither
 a cost base nor a benchmark study, so margin is now null/'Not
 benchmarked' and no derived row may call itself compliant); the
 consolidation oracle (row 10) already existed in the exact-pipeline
-tests. Remaining in Phase 8: goodwill/PPA/VIE, transfer-pricing
-benchmark attachment (human study data), spreadsheet/cube canonical
-subset.
+tests. PPA/goodwill DONE (AcquisitionAccounting, ASC 805/350, EXPERIMENTAL
+label pending a workflow UI); transfer-pricing benchmark attachment
+DONE (human-attached study evidence via tpBenchmarkStore; compliance
+computed against the range, never granted by attachment); canonical
+formula subset DECLARED (DEC-020) with the W6-P0-01 class guard.
+Remaining in Phase 8: acquisition workflow UI for the PPA engine, a
+dedicated VIE oracle, duplicate formula/cube engine retire-or-wire
+(Phase 14). Phase 8's measurable core is complete.
 
 ## 11. How I will work — the commitment
 

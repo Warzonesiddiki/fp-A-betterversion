@@ -34,6 +34,37 @@ export interface TPTransaction {
   readonly status: TPStatus;
 }
 
+/** Human-attached benchmark evidence for one transaction (Phase 8). */
+export interface TPBenchmark {
+  readonly margin: number;
+  readonly rangeLow: number;
+  readonly rangeHigh: number;
+  readonly studyRef: string;
+  readonly attestedAt: string;
+}
+
+/**
+ * Overlay human-attached benchmarks onto derived transactions. Only a
+ * benchmarked row can leave 'review', and even then compliance is
+ * computed — an attached margin outside its own arm's-length range is
+ * 'non-compliant', not laundered into 'compliant' by the attachment.
+ */
+export function applyBenchmarks(
+  transactions: readonly TPTransaction[],
+  benchmarks: Record<string, TPBenchmark>
+): TPTransaction[] {
+  return transactions.map((t) => {
+    const b = benchmarks[t.id];
+    if (!b) return t;
+    return {
+      ...t,
+      margin: b.margin,
+      armRange: `${b.rangeLow}% - ${b.rangeHigh}% (${b.studyRef})`,
+      status: b.margin >= b.rangeLow && b.margin <= b.rangeHigh ? 'compliant' : 'non-compliant',
+    };
+  });
+}
+
 export interface MethodDistribution {
   readonly method: TPMethod;
   readonly count: number;

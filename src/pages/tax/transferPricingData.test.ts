@@ -3,6 +3,7 @@ import {
   deriveTPTransactions,
   computeMethodDistribution,
   classifyMethodFromText,
+  applyBenchmarks,
 } from './transferPricingData';
 import { IntercompanyMatchingEngine } from '@/engines/IntercompanyMatchingEngine';
 import type { GLEntry } from '@/types';
@@ -75,6 +76,32 @@ describe('deriveTPTransactions — derived, never fabricated', () => {
     const dist = computeMethodDistribution(txs);
     expect(dist.reduce((a, d) => a + d.count, 0)).toBe(txs.length);
     expect(dist.reduce((a, d) => a + d.amount, 0)).toBe(165000);
+  });
+
+  it('benchmarks: attached evidence computes compliance — attachment alone does not grant it', () => {
+    const txs = deriveTPTransactions(ENTRIES);
+    const benchmarked = applyBenchmarks(txs, {
+      'gl-1': {
+        margin: 10,
+        rangeLow: 7,
+        rangeHigh: 12,
+        studyRef: '2026 TNMM benchmark study',
+        attestedAt: '2026-10-15T09:00:00.000Z',
+      },
+      'gl-2': {
+        margin: 25,
+        rangeLow: 7,
+        rangeHigh: 12,
+        studyRef: '2026 TNMM benchmark study',
+        attestedAt: '2026-10-15T09:00:00.000Z',
+      },
+    });
+    const gl1 = benchmarked.find((t) => t.id === 'gl-1')!;
+    expect(gl1.margin).toBe(10);
+    expect(gl1.armRange).toContain('2026 TNMM benchmark study');
+    expect(gl1.status).toBe('compliant'); // 10 within [7, 12]
+    // 25 is outside its own range: reported non-compliant, not laundered.
+    expect(benchmarked.find((t) => t.id === 'gl-2')!.status).toBe('non-compliant');
   });
 
   it('classifies methods from service text', () => {
