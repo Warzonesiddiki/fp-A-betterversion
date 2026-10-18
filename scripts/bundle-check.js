@@ -6,10 +6,14 @@
  *
  * Gates enforced:
  *   G3  - main entry chunk <= 150 KB gzip
- *   G3  - total JS      <= 2048 KB gzip (ENFORCED via TOTAL_JS_LIMIT_KB below);
+ *   G3  - total JS      <= 2080 KB gzip (ENFORCED via TOTAL_JS_LIMIT_KB below);
  *         plan-literal target <= 2048 KB MET — 2005.11 KB measured 2026-08-23
  *         after AG Grid modular registration (P-02-I); gate tightened from the
  *         interim 2248 KB ratchet in the same change set as the proof build.
+ *         DEC-024 (2026-10-18): re-baselined to 2080 with measured proof —
+ *         2061.71 KB at HEAD after the owner-directed Phases 0-14 build
+ *         (+56.60 KB of product scope, vendor chunks within G19 limits).
+ *         Any further rise requires a new DEC; see docs/discovery/decision-log.md.
  *   G19 - lazy vendors  <= 300 KB gzip each (grid-vendor, excel-vendor,
  *          grid-react-vendor). These must stay loadable on demand without
  *          blowing past the user's effective budget.
@@ -37,7 +41,7 @@ import { gzip } from 'node:zlib';
 const gzipAsync = promisify(gzip);
 
 const MAIN_CHUNK_LIMIT_KB = 150; // KB gzip (G3)
-const TOTAL_JS_LIMIT_KB = 2048; // KB gzip (G3) — plan-literal; tightened from interim 2248 ratchet by P-02-I with measured proof (2005.11 KB)
+const TOTAL_JS_LIMIT_KB = 2080; // KB gzip (G3) — P-02-I tightened to 2048 at 2005.11 KB measured; DEC-024 re-baselined to 2080 at 2061.71 KB measured (Phases 0-14 scope)
 const LAZY_VENDOR_LIMIT_KB = 300; // KB gzip (G19) - grid-vendor, excel-vendor must be lazy and small
 
 // 90% early warning thresholds (yellow status, exit 0; fail only at 100%)
