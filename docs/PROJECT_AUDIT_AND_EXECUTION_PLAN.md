@@ -612,6 +612,16 @@ selection, summing debit+credit+netChange into cancelling totals;
 filterCells now honours query.measures. This also closes Phase 9's
 deferred designer verification.
 
+**Phase 8 remainder closed 2026-10-18:** acquisition workflow UI
+(`AcquisitionWorkflowCard` on the consolidation page) collects
+consideration / NCI basis / fair-value schedules and computes the
+ASC 805 allocation + ASC 350 impairment live from the oracle-pinned
+engine; `AcquisitionAccounting` therefore leaves the EXPERIMENTAL
+registry (DEC-019 wire-graduation). Observed-not-fixed, listed per
+the zero-compromise rule: the consolidation page's methodology
+footer asserts eliminations/NCI treatments broader than the derived
+worksheet proves - copy correction is a follow-up slice.
+
 ## 11. How I will work — the commitment
 
 **Session ritual (every session, no exceptions):**

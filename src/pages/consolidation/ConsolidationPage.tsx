@@ -8,6 +8,7 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { Badge } from '@/components/ui/Badge';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { ConsolidationWorksheet } from '@/components/consolidation/ConsolidationWorksheet';
+import { AcquisitionWorkflowCard } from '@/components/consolidation/AcquisitionWorkflowCard';
 import { AccountOverviewCard } from './AccountOverviewCard';
 import { aggregateAccounts } from './accountOverview';
 import { ConsolidationEngine } from '@/engines/ConsolidationEngine';
@@ -272,6 +273,8 @@ export function ConsolidationPage() {
       )}
 
       <AccountOverviewCard accountBreakdown={accountBreakdown} />
+
+      <AcquisitionWorkflowCard />
 
       <Card className="border-[var(--border-subtle)] bg-[var(--bg-surface)]">
         <CardHeader>
