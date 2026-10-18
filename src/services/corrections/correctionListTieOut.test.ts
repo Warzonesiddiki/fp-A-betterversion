@@ -5,7 +5,7 @@ import { buildCorrectionList } from './buildCorrectionList';
 import { runExceptionRules } from '@/services/exceptions/runExceptionRules';
 import { useExceptionDispositionStore } from '@/store/exceptionDispositionStore';
 import { setClock, resetClock } from '@/utils/clock';
-import type { GLEntry } from '@/types/gl';
+import type { GLEntry } from '@/types';
 
 /**
  * REP-01 tie-out for the correction hand-off: the records on the tracker

@@ -402,6 +402,17 @@ the branch PR + merge is the owner action), the key-escrow owner DEC
 (engine + store exist, 25/25 tests, deliberately no UI wiring until the
 policy is decided), DEC-005 SQLite migration (native-blocked).
 
+**Phase 7 progress 2026-10-18 (slice 1):** forecast backtesting harness
+(`src/services/forecast/backtestForecast.ts`) — walk-forward scoring of
+the existing forecast methods (naive/SMA/SES/linear) against held-out
+actuals with MAE/RMSE/MAPE, zero-actual exclusions counted, honest
+INSUFFICIENT_HISTORY refusal, plus a GL adapter that discloses missing
+months instead of zero-filling them. Monte-Carlo seeded determinism was
+already tested. Remaining in Phase 7: scenario→3-statement impact tests
+(the ScenarioEngine is currently only fed by mock data), budget cascade
+sentinel pass, rolling-forecast wire-or-retire, plan approval workflow,
+backtest UI wiring.
+
 **Frozen until Phase 4 exits:** new routes, pages, engines, stores, sector packs, connectors (AGENTS.md rule 8). Repairs, tests, guards and ratchet-lowering are always welcome.
 
 ### Phase 2 — scoped 2026-10-18 (read-only, before failing tests)
