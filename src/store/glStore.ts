@@ -40,6 +40,7 @@ import {
   findPriorImport,
   hashRowContent,
   makeBatchId,
+  reconcileControlTotals,
   stampProvenance,
 } from '@/services/import/importProvenance';
 import type { ImportRejection, ImportSource } from '@/types';
@@ -907,6 +908,7 @@ export const useGLStore = create<GLState>()(
               )
             );
             const controlTotals = computeControlTotals(finalEntries);
+            const reconciliation = reconcileControlTotals(controlTotals, source?.expectedTotals);
             const scope = computeImportScope(finalEntries, importedAtISO);
 
             const ids = finalEntries.map((e) => e.id);
@@ -932,6 +934,7 @@ export const useGLStore = create<GLState>()(
               fileHash,
               rejections,
               controlTotals,
+              reconciliation,
               scope,
             };
 
@@ -946,6 +949,7 @@ export const useGLStore = create<GLState>()(
               fileHash,
               rejections,
               controlTotals,
+              reconciliation,
               scope,
             };
           }

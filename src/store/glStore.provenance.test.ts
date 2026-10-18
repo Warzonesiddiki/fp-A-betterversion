@@ -383,4 +383,29 @@ describe('glStore import provenance (Gate 2)', () => {
     expect(retry.success).toBe(true);
     expect(useGLStore.getState().importHistory).toHaveLength(1);
   });
+
+  it('IMP-02: source-side expected totals reconcile the batch — or explicitly do not', () => {
+    const rows = [
+      { accountCode: '1000', accountName: 'Cash', date: '2026-01-05', debit: 100, credit: 0 },
+      { accountCode: '4000', accountName: 'Revenue', date: '2026-01-05', debit: 0, credit: 100 },
+    ];
+    const ok = useGLStore
+      .getState()
+      .importGLData(rows, 'd365-jan.csv', {
+        expectedTotals: { rows: 2, debit: '100.00', credit: '100' },
+      });
+    expect(ok.success).toBe(true);
+    expect(ok.reconciliation?.status).toBe('reconciled');
+    expect(useGLStore.getState().importHistory[0]?.reconciliation?.status).toBe('reconciled');
+
+    useGLStore.setState({ entries: [], importHistory: [], lastImportEntryIds: [] });
+    const bad = useGLStore
+      .getState()
+      .importGLData(rows, 'd365-jan.csv', { expectedTotals: { debit: '999.00' } });
+    // A mismatch never blocks the import and never earns the word reconciled.
+    expect(bad.success).toBe(true);
+    expect(bad.reconciliation?.status).toBe('mismatch');
+    expect(bad.reconciliation?.differences?.debit).toBe('-899.00');
+    expect(useGLStore.getState().importHistory[0]?.reconciliation?.status).toBe('mismatch');
+  });
 });

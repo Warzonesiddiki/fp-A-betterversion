@@ -15,7 +15,14 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { ExcelImportEngine } from '@/engines/ExcelImportEngine';
 import { hasDuplicateHeaders, parseCSV } from '@/utils/csv';
-import type { ImportControlTotals, ImportRejection, ImportScope } from '@/types';
+import type {
+  ExpectedControlTotals,
+  ImportControlTotals,
+  ImportReconciliation,
+  ImportRejection,
+  ImportScope,
+} from '@/types';
+import { parseFinancialAmountExact } from '@/utils/parseFinancialAmount';
 import { hashFileBytes } from '@/services/import/importProvenance';
 import { parseGLRows, missingRequiredMappings } from '@/services/import/parseGLRows';
 import { detectTrialBalanceSnapshot } from '@/services/import/d365Parser';
@@ -98,7 +105,14 @@ export default function GLUploadPage() {
     controlTotals: ImportControlTotals;
     rejections: readonly ImportRejection[];
     scope: ImportScope;
+    reconciliation?: ImportReconciliation;
   } | null>(null);
+
+  // IMP-02: totals the owner read in Dynamics 365 for this file, entered at
+  // Preview. Optional — absent means the batch cannot claim "reconciled".
+  const [expectedRows, setExpectedRows] = useState('');
+  const [expectedDebit, setExpectedDebit] = useState('');
+  const [expectedCredit, setExpectedCredit] = useState('');
 
   const resetWizard = useCallback(() => {
     setStep(0);
@@ -113,6 +127,9 @@ export default function GLUploadPage() {
     setImportedErrorCount(0);
     setFileHash(null);
     setBatchEvidence(null);
+    setExpectedRows('');
+    setExpectedDebit('');
+    setExpectedCredit('');
   }, [setImportError, setImportStatus, setImportProgress]);
 
   const [sheetNames, setSheetNames] = useState<string[]>([]);
@@ -340,11 +357,43 @@ export default function GLUploadPage() {
       return;
     }
 
+    let expectedRowsValue: number | undefined;
+    if (expectedRows.trim() !== '') {
+      const rows = Number(expectedRows.trim());
+      if (!Number.isInteger(rows) || rows < 0) {
+        setImportError('Expected rows must be a whole number of rows, as read in Dynamics 365.');
+        setImportStatus('idle');
+        return;
+      }
+      expectedRowsValue = rows;
+    }
+    const expectedAmounts: Partial<Record<'debit' | 'credit', string>> = {};
+    for (const [label, raw, key] of [
+      ['debit', expectedDebit, 'debit'],
+      ['credit', expectedCredit, 'credit'],
+    ] as const) {
+      if (raw.trim() !== '') {
+        if (parseFinancialAmountExact(raw.trim()) === null) {
+          setImportError(
+            `Expected total ${label} "${raw}" is not a parseable amount. Copy it exactly as shown in Dynamics 365.`
+          );
+          setImportStatus('idle');
+          return;
+        }
+        expectedAmounts[key] = raw.trim();
+      }
+    }
+    const expectedTotals: ExpectedControlTotals = {
+      ...(expectedRowsValue !== undefined ? { rows: expectedRowsValue } : {}),
+      ...expectedAmounts,
+    };
+
     // Use the new robust high-level import action
     const result = useGLStore.getState().importGLData(parsedEntries, currentFile?.name, {
       fileHash: fileHash ?? undefined,
       sourceRows,
       rejections: preRejections,
+      expectedTotals,
     });
 
     if (!result.success) {
@@ -368,6 +417,7 @@ export default function GLUploadPage() {
       controlTotals: result.controlTotals,
       rejections: result.rejections,
       scope: result.scope,
+      reconciliation: result.reconciliation,
     });
 
     // Simulate nice progress bar
@@ -393,6 +443,9 @@ export default function GLUploadPage() {
     mappings,
     currentFile,
     fileHash,
+    expectedRows,
+    expectedDebit,
+    expectedCredit,
     setImportStatus,
     setImportProgress,
     setImportError,
@@ -606,6 +659,45 @@ export default function GLUploadPage() {
                 {rawData.length.toLocaleString()} total rows
               </span>
             </div>
+            <fieldset className="mb-4 rounded-md border border-[var(--border)] p-3">
+              <legend className="px-1 text-xs font-medium">
+                Reconcile to Dynamics 365 (optional)
+              </legend>
+              <p className="mb-3 text-xs text-[var(--text-muted)]">
+                Enter the totals Dynamics 365 shows for this same export. If they match the file to
+                the cent, the batch is marked reconciled; if they differ, the difference is shown —
+                the batch is never called reconciled on its own numbers alone.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <label className="text-xs">
+                  Expected rows (from Dynamics 365)
+                  <input
+                    className="mt-1 block w-32 rounded border border-[var(--border)] bg-transparent px-2 py-1 text-sm tabular-nums"
+                    inputMode="numeric"
+                    value={expectedRows}
+                    onChange={(e) => setExpectedRows(e.target.value)}
+                  />
+                </label>
+                <label className="text-xs">
+                  Expected total debit (from Dynamics 365)
+                  <input
+                    className="mt-1 block w-44 rounded border border-[var(--border)] bg-transparent px-2 py-1 text-sm tabular-nums"
+                    inputMode="decimal"
+                    value={expectedDebit}
+                    onChange={(e) => setExpectedDebit(e.target.value)}
+                  />
+                </label>
+                <label className="text-xs">
+                  Expected total credit (from Dynamics 365)
+                  <input
+                    className="mt-1 block w-44 rounded border border-[var(--border)] bg-transparent px-2 py-1 text-sm tabular-nums"
+                    inputMode="decimal"
+                    value={expectedCredit}
+                    onChange={(e) => setExpectedCredit(e.target.value)}
+                  />
+                </label>
+              </div>
+            </fieldset>
             <GLDataPreview
               data={rawData}
               mappings={mappings}
@@ -673,6 +765,15 @@ export default function GLUploadPage() {
                     </dd>
                     <dt className="text-[var(--text-muted)]">Imported at</dt>
                     <dd className="tabular-nums">{batchEvidence.scope.importedAt}</dd>
+                    <dt className="text-[var(--text-muted)]">Source reconciliation</dt>
+                    <dd>
+                      {!batchEvidence.reconciliation ||
+                      batchEvidence.reconciliation.status === 'not-provided'
+                        ? 'Not reconciled — no totals from Dynamics 365 were entered for this batch.'
+                        : batchEvidence.reconciliation.status === 'reconciled'
+                          ? 'Reconciled to the totals read in Dynamics 365.'
+                          : `Does not match the totals read in Dynamics 365 — debit difference ${batchEvidence.reconciliation.differences?.debit ?? '—'}, credit difference ${batchEvidence.reconciliation.differences?.credit ?? '—'}, rows difference ${batchEvidence.reconciliation.differences?.rows ?? '—'}. This batch is not reconciled.`}
+                    </dd>
                   </dl>
                   {batchEvidence.rejections.length > 0 && (
                     <div className="mt-3">

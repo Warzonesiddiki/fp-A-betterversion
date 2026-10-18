@@ -9,9 +9,17 @@
  * on the entry itself, so it survives whichever store of record is chosen.
  */
 
-import type { GLEntry, GLEntryProvenance, ImportControlTotals, ImportScope } from '@/types';
+import type {
+  ExpectedControlTotals,
+  GLEntry,
+  GLEntryProvenance,
+  ImportControlTotals,
+  ImportReconciliation,
+  ImportScope,
+} from '@/types';
 import { sha256Hex, sha256HexBytes } from '@/utils/sha256';
 import { subtractMoney, sumMoney, toFixedMoneyString } from '@/utils/money';
+import { parseFinancialAmountExact } from '@/utils/parseFinancialAmount';
 
 /** SHA-256 of raw file bytes — the file's identity for duplicate detection. */
 export function hashFileBytes(bytes: ArrayBuffer | Uint8Array): string {
@@ -94,6 +102,52 @@ export function computeControlTotals(
     debit: toFixedMoneyString(debit),
     credit: toFixedMoneyString(credit),
     net: toFixedMoneyString(subtractMoney(debit, credit)),
+  };
+}
+
+/**
+ * Compare a batch's committed control totals against the totals the owner
+ * read in the source system (FR-004 / IMP-02). Only fields the owner
+ * actually supplied are compared; an unparseable supplied figure throws —
+ * it is a bad input to fix, never a zero to reconcile against. Differences
+ * are actual − expected in decimal strings, so a mismatch is explainable
+ * to the cent on screen and in history.
+ */
+export function reconcileControlTotals(
+  actual: ImportControlTotals,
+  expected?: ExpectedControlTotals
+): ImportReconciliation {
+  const provided =
+    expected !== undefined &&
+    (expected.rows !== undefined || expected.debit !== undefined || expected.credit !== undefined);
+  if (!provided) return { status: 'not-provided' };
+
+  const parseExpected = (label: string, raw?: string): string | null => {
+    if (raw === undefined) return null;
+    const exact = parseFinancialAmountExact(raw);
+    if (exact === null) {
+      throw new Error(`Expected ${label} total "${raw}" is not a parseable amount.`);
+    }
+    return exact;
+  };
+  const expectedDebit = parseExpected('debit', expected.debit);
+  const expectedCredit = parseExpected('credit', expected.credit);
+
+  const debitDiff =
+    expectedDebit === null
+      ? '0.00'
+      : toFixedMoneyString(subtractMoney(actual.debit, expectedDebit));
+  const creditDiff =
+    expectedCredit === null
+      ? '0.00'
+      : toFixedMoneyString(subtractMoney(actual.credit, expectedCredit));
+  const rowsDiff = expected.rows === undefined ? 0 : actual.rows - expected.rows;
+
+  const reconciled = rowsDiff === 0 && debitDiff === '0.00' && creditDiff === '0.00';
+  return {
+    status: reconciled ? 'reconciled' : 'mismatch',
+    expected,
+    differences: { rows: rowsDiff, debit: debitDiff, credit: creditDiff },
   };
 }
 

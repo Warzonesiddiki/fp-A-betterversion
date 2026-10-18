@@ -369,3 +369,50 @@ describe('DEC-015(d) — trial-balance snapshot refusal', () => {
     expect(st.importHistory).toHaveLength(0);
   });
 });
+
+describe('IMP-02 — source-side control totals in the wizard', () => {
+  beforeEach(() => {
+    actAs('Admin');
+    setClock(PINNED);
+    resetGLStore();
+  });
+  afterEach(() => {
+    resetClock();
+  });
+
+  it('reconciles the batch against totals the owner read in D365', async () => {
+    renderPage();
+    await upload(D365_FO_CSV, 'GeneralJournalAccountEntry_USMF_2026-01.csv');
+    await preview('0 errors detected in 8 rows');
+
+    fireEvent.change(screen.getByLabelText(/expected total debit/i), {
+      target: { value: '695,000.00' },
+    });
+    fireEvent.change(screen.getByLabelText(/expected total credit/i), {
+      target: { value: '695000.00' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm & Import Data' }));
+
+    expect(await screen.findByText('Import Complete')).toBeTruthy();
+    const evidence = screen.getByTestId('import-batch-evidence').textContent ?? '';
+    expect(evidence).toContain('Reconciled to the totals read in Dynamics 365');
+    expect(useGLStore.getState().importHistory[0]?.reconciliation?.status).toBe('reconciled');
+  });
+
+  it('shows the mismatch difference and never calls the batch reconciled', async () => {
+    renderPage();
+    await upload(D365_FO_CSV, 'GeneralJournalAccountEntry_USMF_2026-01.csv');
+    await preview('0 errors detected in 8 rows');
+
+    fireEvent.change(screen.getByLabelText(/expected total debit/i), {
+      target: { value: '700,000.00' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm & Import Data' }));
+
+    expect(await screen.findByText('Import Complete')).toBeTruthy();
+    const evidence = screen.getByTestId('import-batch-evidence').textContent ?? '';
+    expect(evidence).toContain('Does not match');
+    expect(evidence).toContain('-5000.00');
+    expect(useGLStore.getState().importHistory[0]?.reconciliation?.status).toBe('mismatch');
+  });
+});
