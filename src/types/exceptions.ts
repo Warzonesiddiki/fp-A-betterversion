@@ -22,11 +22,12 @@ export interface ExceptionDispositionAuditRecord extends ExceptionDisposition {
 
 /**
  * Where the accounts team stands on a correction the reviewer asked for
- * (FR-010). `REQUESTED → APPLIED` is the normal path; `WITHDRAWN` records a
- * request the reviewer took back. Nothing sets `APPLIED` by itself: only a
- * human action does, because "we asked" is not "it is fixed".
+ * (FR-010, DEC-018). The lifecycle is `REQUESTED → APPLIED → REVERIFIED`;
+ * `WITHDRAWN` records a request the reviewer took back. Nothing advances a
+ * status by itself: only a human action does, because "we asked" is not
+ * "it is fixed", and "they say it is fixed" is not "we checked".
  */
-export type CorrectionStatus = 'REQUESTED' | 'APPLIED' | 'WITHDRAWN';
+export type CorrectionStatus = 'REQUESTED' | 'APPLIED' | 'REVERIFIED' | 'WITHDRAWN';
 
 export interface CorrectionRequest {
   readonly exceptionId: string;

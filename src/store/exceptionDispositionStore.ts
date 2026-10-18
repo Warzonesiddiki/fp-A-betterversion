@@ -240,6 +240,25 @@ export const useExceptionDispositionStore = create<ExceptionDispositionState>()(
           );
         }
 
+        // DEC-018 lifecycle: REQUESTED → APPLIED → REVERIFIED, WITHDRAWN
+        // from REQUESTED/APPLIED. Everything else is refused — in
+        // particular REVERIFIED before APPLIED ("we checked" before
+        // "they fixed it") and any move out of a terminal state. The only
+        // way back is an audited re-request, which restarts at REQUESTED.
+        const LEGAL: Record<CorrectionStatus, readonly CorrectionStatus[]> = {
+          REQUESTED: ['APPLIED', 'WITHDRAWN'],
+          APPLIED: ['REVERIFIED', 'WITHDRAWN'],
+          REVERIFIED: [],
+          WITHDRAWN: [],
+        };
+        if (!LEGAL[current.status].includes(status)) {
+          throw new Error(
+            current.status === 'REVERIFIED' || current.status === 'WITHDRAWN'
+              ? `updateCorrectionStatus: correction for "${exceptionId}" is ${current.status} (terminal) — re-request to start a new cycle`
+              : `updateCorrectionStatus: cannot move correction for "${exceptionId}" from ${current.status} to ${status} — the lifecycle is REQUESTED → APPLIED → REVERIFIED`
+          );
+        }
+
         const updated: CorrectionRequest = { ...current, status };
         const auditRecord: CorrectionAuditRecord = {
           ...updated,
