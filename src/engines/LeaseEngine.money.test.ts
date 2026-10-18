@@ -126,11 +126,19 @@ describe('LeaseEngine — money primitive known answers (GAP-1 / F-0006)', () =>
       expect(sched.at(-1)!.closingBalance).toBe(0);
     });
 
-    it('uses a constant cent-rounded monthly depreciation', () => {
+    it('depreciation is straight-line within a cent and the column foots to the PV', () => {
       const sched = LeaseEngine.calculateROUAsset(centLease());
-      // PV 82,390.52 / 36 = 2,288.6255... -> 2,288.63
+      // PV 82,390.52 / 36 = 2,288.6255... — periods carry 2,288.62 or
+      // 2,288.63 and the final period absorbs the remainder so the
+      // reported column sums to the opening balance exactly. (The
+      // previous "all periods identical" contract left the column
+      // short of the asset; Phase 8 schedule oracle.)
       expect(sched[0]!.depreciation).toBe(2288.63);
-      expect(new Set(sched.map((s) => s.depreciation)).size).toBe(1);
+      const distinct = new Set(sched.map((s) => s.depreciation));
+      expect(distinct.size).toBeLessThanOrEqual(2);
+      const total = sched.reduce((a, s) => a + Math.round(s.depreciation * 100), 0);
+      expect(total).toBe(8239052);
+      expect(sched[sched.length - 1]!.closingBalance).toBe(0);
     });
 
     it('opens at the present value of the payments', () => {

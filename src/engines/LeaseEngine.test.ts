@@ -29,10 +29,18 @@ describe('LeaseEngine', () => {
       expect(result![11]!.closingBalance).toBeCloseTo(0, 10);
     });
 
-    it('should have consistent depreciation across periods', () => {
+    it('should have consistent depreciation across periods (within a cent; column foots)', () => {
       const result = LeaseEngine.calculateROUAsset(baseLease);
       const depExpenses = result.map((r) => r.depreciation);
-      depExpenses.forEach((d) => expect(d).toBeCloseTo(depExpenses[0]!, 8));
+      // Straight-line to the cent: periods may differ by one cent so
+      // that the reported column sums exactly to the opening balance
+      // (Phase 8 schedule oracle supersedes exact-constant emission).
+      const first = depExpenses[0]!;
+      depExpenses.forEach((d) =>
+        expect(Math.abs(Math.round(d * 100) - Math.round(first * 100))).toBeLessThanOrEqual(1)
+      );
+      const total = depExpenses.reduce((a, d) => a + Math.round(d * 100), 0);
+      expect(total).toBe(Math.round(result[0]!.openingBalance * 100));
     });
   });
 

@@ -98,6 +98,11 @@ export class LeaseEngine {
     const monthlyDepreciation = pvPayments.div(term);
 
     let balance = pvPayments;
+    // Depreciation is emitted as deltas of the rounded cumulative, so the
+    // reported depreciation column FOOTS to the initial asset over the
+    // life (11,255.08 over 12 months must emit a final 937.96, not twelve
+    // 937.92s summing to 11,255.04). Schedule oracle, Phase 8.
+    let emittedDepreciation = new Decimal(0);
     for (let i = 0; i < lease.leaseTerm; i++) {
       const opening = balance;
       balance = balance.minus(monthlyDepreciation);
@@ -108,10 +113,17 @@ export class LeaseEngine {
       // Period index (last month of the term), not money.
       const isFinal = i === term - 1;
       const closing = isFinal || balance.isNegative() ? new Decimal(0) : balance;
+      const cumulativeRounded = new Decimal(
+        roundTo(monthlyDepreciation.times(i + 1), CURRENCY_PLACES)
+      );
+      const depreciationEmitted = isFinal
+        ? pvPayments.minus(emittedDepreciation)
+        : cumulativeRounded.minus(emittedDepreciation);
+      emittedDepreciation = emittedDepreciation.plus(depreciationEmitted);
       schedules.push({
         period: `Month ${i + 1}`,
         openingBalance: roundTo(opening, CURRENCY_PLACES),
-        depreciation: roundTo(monthlyDepreciation, CURRENCY_PLACES),
+        depreciation: roundTo(depreciationEmitted, CURRENCY_PLACES),
         closingBalance: roundTo(closing, CURRENCY_PLACES),
       });
     }
