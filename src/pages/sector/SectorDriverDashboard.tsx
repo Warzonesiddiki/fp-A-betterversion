@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { useGLStore } from '@/store/glStore';
+import { sectorVerification } from './sectorVerification';
 import { useShallow } from 'zustand/react/shallow';
 import { getSectorConfig, type SectorConfig, type SectorKPI } from '@/config/sectors';
 import { divideMoney, formatMoney, roundTo, subtractMoney, toDecimal } from '@/utils/money';
@@ -888,8 +889,21 @@ export function SectorDriverDashboard({ sectorId }: { sectorId: SectorDriverId }
     { key: 'riskPct', label: 'Risk / leakage', min: 0, max: 30, step: 0.5 },
   ];
 
+  const verification = sectorVerification(sectorId);
+
   return (
     <main className="space-y-6 p-6" role="main" aria-label={`${config.name} driver model`}>
+      {verification === 'experimental' && (
+        <div
+          role="note"
+          className="rounded-md border border-[var(--border-default)] bg-[var(--warning-subtle)] p-3 text-sm"
+        >
+          <strong>Experimental sector view.</strong> This sector does not yet expose any KPI derived
+          from your posted ledger, so everything below is simulator projection — not a measurement.
+          Treat it as a modelling sketch until sector certification (checklist E5) lands derived
+          KPIs here.
+        </div>
+      )}
       <header className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-blue-500">

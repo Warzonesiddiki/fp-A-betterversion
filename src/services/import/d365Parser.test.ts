@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   parseD365Rows,
   detectD365Flavor,
+  detectTrialBalanceSnapshot,
   parseD365Date,
   suggestGLImportMappings,
 } from './d365Parser';
@@ -397,5 +398,108 @@ describe('suggestGLImportMappings — the wizard auto-map contract', () => {
       suggestGLImportMappings(['Account Code', 'Posting Date', 'Debit', 'Credit', 'Description'])
     ).toBeNull();
     expect(suggestGLImportMappings([])).toBeNull();
+  });
+});
+
+describe('DEC-015 remaining shapes — F&O GL statement + trial-balance snapshot', () => {
+  // Documented columns of the Electronic Reporting "General ledger statement
+  // by main account" (docs/discovery/d365-export-contract.md §2), grouping
+  // cleared: separate Debit/Credit, voucher = "Transaction number".
+  const FO_STATEMENT_HEADERS = [
+    'Transaction posting date',
+    'Transaction number',
+    'Main account',
+    'Main account name',
+    'Ledger account',
+    'Description',
+    'Transaction currency',
+    'Debit',
+    'Credit',
+    'Accumulated balance',
+  ];
+
+  it('detects the F&O GL statement shape as d365_fo', () => {
+    expect(detectD365Flavor(FO_STATEMENT_HEADERS)).toBe('d365_fo');
+  });
+
+  it('auto-maps the F&O GL statement headers for the wizard', () => {
+    const suggestion = suggestGLImportMappings(FO_STATEMENT_HEADERS);
+    expect(suggestion?.flavor).toBe('d365_fo');
+    expect(suggestion?.mappings.accountCode).toBe('Main account');
+    expect(suggestion?.mappings.postDate).toBe('Transaction posting date');
+    expect(suggestion?.mappings.debit).toBe('Debit');
+    expect(suggestion?.mappings.credit).toBe('Credit');
+    expect(suggestion?.mappings.currency).toBe('Transaction currency');
+    expect(suggestion?.mappings.reference).toBe('Transaction number');
+  });
+
+  it('parses F&O GL statement rows (dd-MMM-yyyy, grouped amounts, balance column ignored)', () => {
+    const rows = [
+      {
+        'Transaction posting date': '05-Jan-2026',
+        'Transaction number': 'US-1001',
+        'Main account': '1000',
+        'Main account name': 'Cash',
+        'Ledger account': '1000-001',
+        Description: 'Capital injection',
+        'Transaction currency': 'USD',
+        Debit: '500,000.00',
+        Credit: '',
+        'Accumulated balance': '500,000.00',
+      },
+      {
+        'Transaction posting date': '05-Jan-2026',
+        'Transaction number': 'US-1001',
+        'Main account': '3000',
+        'Main account name': 'Common Stock',
+        'Ledger account': '3000-001',
+        Description: 'Capital injection',
+        'Transaction currency': 'USD',
+        Debit: '',
+        Credit: '500,000.00',
+        'Accumulated balance': '-500,000.00',
+      },
+    ];
+    const result = parseD365Rows(rows);
+    expect(result.flavor).toBe('d365_fo');
+    expect(result.rejections).toEqual([]);
+    expect(result.entries).toHaveLength(2);
+    expect(result.entries[0]).toMatchObject({
+      accountCode: '1000',
+      postDate: '2026-01-05',
+      debit: 500000,
+      credit: 0,
+      currency: 'USD',
+      reference: 'US-1001',
+    });
+    expect(result.entries[1]).toMatchObject({ accountCode: '3000', credit: 500000 });
+  });
+
+  it('recognises a trial-balance snapshot (balances, no posting date) as not-a-GL-dump', () => {
+    expect(
+      detectTrialBalanceSnapshot([
+        'Main account',
+        'Main account name',
+        'Opening balance',
+        'Debit',
+        'Credit',
+        'Closing balance',
+      ])
+    ).toBe(true);
+    expect(detectTrialBalanceSnapshot(['No.', 'Name', 'Net Change', 'Balance'])).toBe(true);
+  });
+
+  it('does not mistake transaction files for trial-balance snapshots', () => {
+    expect(detectTrialBalanceSnapshot(FO_STATEMENT_HEADERS)).toBe(false);
+    expect(
+      detectTrialBalanceSnapshot([
+        'Entry No.',
+        'G/L Account No.',
+        'Posting Date',
+        'Debit Amount',
+        'Credit Amount',
+      ])
+    ).toBe(false);
+    expect(detectTrialBalanceSnapshot(['Account', 'Date', 'Debit', 'Credit'])).toBe(false);
   });
 });

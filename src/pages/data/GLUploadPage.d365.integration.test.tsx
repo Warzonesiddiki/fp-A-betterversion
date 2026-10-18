@@ -34,6 +34,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 import GLUploadPage from '@/pages/data/GLUploadPage';
 import { useGLStore } from '@/store/glStore';
+import { useGLUploadStore } from '@/store/glUploadStore';
 import { actAs } from '@/test/rbacFixtures';
 import { setClock, resetClock } from '@/utils/clock';
 import { hashFileBytes } from '@/services/import/importProvenance';
@@ -333,5 +334,180 @@ describe('D365 import → output integration (NFR-004)', () => {
     expect(st.entries).toHaveLength(0);
     expect(st.importHistory).toHaveLength(0);
     expect(st.importStatus).toBe('idle');
+  });
+});
+
+describe('DEC-015(d) — trial-balance snapshot refusal', () => {
+  beforeEach(() => {
+    actAs('Admin');
+    setClock(PINNED);
+    resetGLStore();
+  });
+  afterEach(() => {
+    resetClock();
+  });
+
+  it('refuses a trial-balance snapshot by name and imports nothing', async () => {
+    const tbCsv = [
+      'Main account,Main account name,Opening balance,Debit,Credit,Closing balance',
+      '1000,Cash,"400,000.00","150,000.00","50,000.00","500,000.00"',
+      '3000,Common Stock,"-500,000.00",,"100,000.00","-600,000.00"',
+      '',
+    ].join('\n');
+
+    renderPage();
+    const input = await screen.findByLabelText('Upload file');
+    fireEvent.change(input, {
+      target: { files: [new File([tbCsv], 'TrialBalance_USMF.csv', { type: 'text/csv' })] },
+    });
+
+    // The refusal names what the file IS and what to export instead.
+    expect(await screen.findByText(/trial balance snapshot/i, {}, { timeout: 5000 })).toBeTruthy();
+    expect(screen.queryByText('Map Columns')).toBeNull();
+
+    const st = useGLStore.getState();
+    expect(st.entries).toHaveLength(0);
+    expect(st.importHistory).toHaveLength(0);
+  });
+});
+
+describe('IMP-02 — source-side control totals in the wizard', () => {
+  beforeEach(() => {
+    actAs('Admin');
+    setClock(PINNED);
+    resetGLStore();
+  });
+  afterEach(() => {
+    resetClock();
+  });
+
+  it('reconciles the batch against totals the owner read in D365', async () => {
+    renderPage();
+    await upload(D365_FO_CSV, 'GeneralJournalAccountEntry_USMF_2026-01.csv');
+    await preview('0 errors detected in 8 rows');
+
+    fireEvent.change(screen.getByLabelText(/expected total debit/i), {
+      target: { value: '695,000.00' },
+    });
+    fireEvent.change(screen.getByLabelText(/expected total credit/i), {
+      target: { value: '695000.00' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm & Import Data' }));
+
+    expect(await screen.findByText('Import Complete')).toBeTruthy();
+    const evidence = screen.getByTestId('import-batch-evidence').textContent ?? '';
+    expect(evidence).toContain('Reconciled to the totals read in Dynamics 365');
+    expect(useGLStore.getState().importHistory[0]?.reconciliation?.status).toBe('reconciled');
+  });
+
+  it('shows the mismatch difference and never calls the batch reconciled', async () => {
+    renderPage();
+    await upload(D365_FO_CSV, 'GeneralJournalAccountEntry_USMF_2026-01.csv');
+    await preview('0 errors detected in 8 rows');
+
+    fireEvent.change(screen.getByLabelText(/expected total debit/i), {
+      target: { value: '700,000.00' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm & Import Data' }));
+
+    expect(await screen.findByText('Import Complete')).toBeTruthy();
+    const evidence = screen.getByTestId('import-batch-evidence').textContent ?? '';
+    expect(evidence).toContain('Does not match');
+    expect(evidence).toContain('-5000.00');
+    expect(useGLStore.getState().importHistory[0]?.reconciliation?.status).toBe('mismatch');
+  });
+});
+
+describe('IMP-03 — saved mapping profiles in the wizard', () => {
+  beforeEach(() => {
+    actAs('Admin');
+    setClock(PINNED);
+    resetGLStore();
+    useGLUploadStore.setState({ mappingProfiles: [] });
+  });
+  afterEach(() => {
+    resetClock();
+  });
+
+  it('applies a saved profile automatically when the same header set returns', async () => {
+    useGLUploadStore.getState().saveMappingProfile({
+      name: 'Monthly ERP',
+      headers: ['Acct', 'When', 'Dr', 'Cr'],
+      mappings: { accountCode: 'Acct', postDate: 'When', debit: 'Dr', credit: 'Cr' },
+    });
+    const csv = ['Acct,When,Dr,Cr', '1000,2026-01-05,100,', '4000,2026-01-05,,100', ''].join('\n');
+
+    renderPage();
+    const input = await screen.findByLabelText('Upload file');
+    fireEvent.change(input, {
+      target: { files: [new File([csv], 'erp-jan.csv', { type: 'text/csv' })] },
+    });
+
+    expect(await screen.findByText(/Mapping profile "Monthly ERP" applied/i)).toBeTruthy();
+    // 'When' is a column the built-in auto-mapper cannot map to Posting Date;
+    // Preview unlocking proves the profile — not the dictionary — mapped it.
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Preview Data' })).toBeEnabled());
+  });
+
+  it('saves the current mapping as a named profile from the Map step', async () => {
+    renderPage();
+    await upload(D365_FO_CSV, 'GeneralJournalAccountEntry_USMF_2026-01.csv');
+
+    fireEvent.change(screen.getByLabelText(/profile name/i), {
+      target: { value: 'USMF monthly' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /save mapping profile/i }));
+
+    expect(await screen.findByText(/Profile "USMF monthly" saved/i)).toBeTruthy();
+    const profiles = useGLUploadStore.getState().mappingProfiles;
+    expect(profiles).toHaveLength(1);
+    expect(profiles[0]?.mappings.accountCode).toBe('MainAccount');
+  });
+});
+
+describe('DEC-013 §4.1 — headerless CSV (mapped by the user, never guessed)', () => {
+  beforeEach(() => {
+    actAs('Admin');
+    setClock(PINNED);
+    resetGLStore();
+    useGLUploadStore.setState({ mappingProfiles: [] });
+  });
+  afterEach(() => {
+    resetClock();
+  });
+
+  it('imports a headerless file by position with source rows starting at row 1', async () => {
+    // A positional profile is how a recurring headerless export gets mapped.
+    useGLUploadStore.getState().saveMappingProfile({
+      name: 'DMF headerless',
+      headers: ['Column 1', 'Column 2', 'Column 3', 'Column 4'],
+      mappings: {
+        accountCode: 'Column 1',
+        postDate: 'Column 2',
+        debit: 'Column 3',
+        credit: 'Column 4',
+      },
+    });
+    const csv = ['1000,2026-01-05,250.00,', '4000,2026-01-05,,250.00', ''].join('\n');
+
+    renderPage();
+    fireEvent.click(await screen.findByLabelText(/no header row/i));
+    const input = await screen.findByLabelText('Upload file');
+    fireEvent.change(input, {
+      target: { files: [new File([csv], 'dmf-export.csv', { type: 'text/csv' })] },
+    });
+
+    expect(await screen.findByText('Map Columns')).toBeTruthy();
+    expect(screen.getByText('4 columns detected')).toBeTruthy();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Preview Data' })).toBeEnabled());
+
+    fireEvent.click(screen.getByRole('button', { name: 'Preview Data' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Confirm & Import Data' }));
+    expect(await screen.findByText('Import Complete')).toBeTruthy();
+
+    const st = useGLStore.getState();
+    expect(st.entries).toHaveLength(2);
+    // No header exists in this file, so the first posting IS source row 1.
+    expect(st.entries.map((e) => e.provenance?.sourceRow)).toEqual([1, 2]);
   });
 });

@@ -551,7 +551,7 @@ describe('ConsolidationEngine', () => {
       expect(result![0]!.goodwill).toBeLessThan(0); // Negative goodwill (bargain purchase)
     });
 
-    it('should calculate amortization', () => {
+    it('never amortises goodwill (ASC 350 is impairment-only)', () => {
       const entityMap = new Map([['sub', createSubsidiary('sub', 'Sub Inc')]]);
       const ownerships: OwnershipStructure[] = [
         {
@@ -567,8 +567,12 @@ describe('ConsolidationEngine', () => {
       const result = ConsolidationEngine.calculateGoodwill(ownerships, entityMap);
 
       expect(result).toHaveLength(1);
-      expect(result![0]!.amortizationPerYear).toBeGreaterThan(0);
-      expect(result![0]!.amortizationPerYear).toBeCloseTo(result![0]!.goodwill / 10, 2);
+      // The legacy worksheet used to emit goodwill/10 as an annual
+      // amortization charge — wrong under ASC 350 and bookable by
+      // consumers. It is now always zero; PPA and impairment live in
+      // AcquisitionAccounting (Phase 8).
+      expect(result![0]!.amortizationPerYear).toBe(0);
+      expect(result![0]!.netGoodwill).toBe(result![0]!.goodwill);
     });
   });
 

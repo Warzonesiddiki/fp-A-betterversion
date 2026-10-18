@@ -272,3 +272,35 @@ describe('balanceSheetData — source guards', () => {
     expect(pageCode).not.toMatch(/<h2/);
   });
 });
+
+describe('computeBalanceSheet — Phase 2 classification (F-P2-01)', () => {
+  type TypedBSEntry = Entry & { accountType?: string };
+  const te = (code: string, type: string, debit: number, credit: number): TypedBSEntry => ({
+    accountCode: code,
+    accountType: type,
+    debit,
+    credit,
+    date: '2026-06-30',
+  });
+
+  it('account type beats code prefix on both sides and the sheet still balances', () => {
+    const r = computeBalanceSheet([
+      te('4010', 'Asset', 1000, 0), // cash, coded like revenue
+      te('1010', 'Liability', 0, 1000), // loan, coded like an asset
+    ] as TypedBSEntry[]);
+    expect(r.totalAssets).toBe(1000);
+    expect(r.totalLiabilities).toBe(1000);
+    expect(r.isBalanced).toBe(true);
+  });
+
+  it('P&L articulation: typed revenue/interest drive current-period earnings', () => {
+    const r = computeBalanceSheet([
+      te('1010', 'Asset', 800, 0),
+      te('2010', 'Revenue', 0, 1000),
+      te('7010', 'OpEx', 200, 0), // interest expense, OpEx-typed, prefix 7
+    ] as TypedBSEntry[]);
+    expect(r.currentPeriodEarnings).toBe(800);
+    expect(r.totalAssets).toBe(800);
+    expect(r.isBalanced).toBe(true);
+  });
+});

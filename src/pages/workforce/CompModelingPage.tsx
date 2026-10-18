@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
-import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -18,49 +17,28 @@ import {
   Line,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import {
-  roundTo,
-  sumMoney,
-  multiplyMoney,
-  addMoney,
-  subtractMoney,
-  divideMoney,
-} from '@/utils/money';
+import { roundTo, sumMoney, multiplyMoney, subtractMoney } from '@/utils/money';
 import { formatCompact } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-const LEVELS = [
-  { level: 'Junior', min: 50000, max: 75000, headcount: 45, avgPerf: 3.2 },
-  { level: 'Mid', min: 75000, max: 110000, headcount: 80, avgPerf: 3.5 },
-  { level: 'Senior', min: 110000, max: 160000, headcount: 55, avgPerf: 3.8 },
-  { level: 'Staff', min: 160000, max: 220000, headcount: 25, avgPerf: 4.0 },
-  { level: 'Principal', min: 220000, max: 300000, headcount: 10, avgPerf: 4.2 },
-  { level: 'Director', min: 280000, max: 400000, headcount: 8, avgPerf: 4.1 },
-];
+import { useWorkforceStore } from '@/store/workforceStore';
+import { useShallow } from 'zustand/react/shallow';
+import { derivePositionComp, applyMeritIncrease } from './compModelData';
 
 export default function CompModelingPage() {
   const fmt = useCurrencyFormatter();
-  const entries = useGLStore((s) => s.entries);
+  const employees = useWorkforceStore(useShallow((s) => s.employees));
   const navigate = useNavigate();
   const [meritPct, setMeritPct] = useState(3.5);
   useEffect(() => {
     document.title = 'FinPlan Pro — Compensation Modeling';
   }, []);
 
+  // Phase 10 decontamination: every figure derives from ACTUAL active
+  // employees in the workforce store. The previous hardcoded LEVELS
+  // table (invented bands, headcounts and performance ratings) is gone.
   const compData = useMemo(
-    () =>
-      LEVELS.map((l) => {
-        const midpoint = divideMoney(addMoney(l.min, l.max), 2).toNumber();
-        const totalCost = multiplyMoney(midpoint, l.headcount).toNumber();
-        const newCost = multiplyMoney(totalCost, 1 + meritPct / 100).toNumber();
-        return {
-          ...l,
-          midpoint,
-          totalCost,
-          newCost,
-          increase: roundTo(subtractMoney(newCost, totalCost)),
-        };
-      }),
-    [meritPct]
+    () => applyMeritIncrease(derivePositionComp(employees ?? []), meritPct),
+    [employees, meritPct]
   );
 
   const projections = useMemo(() => {
@@ -89,21 +67,21 @@ export default function CompModelingPage() {
     void ExportEngine.exportToExcel(
       {
         headers: [
-          'Level',
+          'Position',
           'Headcount',
-          'Min',
-          'Max',
-          'Midpoint',
+          'Min Salary',
+          'Max Salary',
+          'Avg Salary',
           'Current Cost',
           'New Cost',
           'Increase',
         ],
         rows: compData.map((l) => [
-          l.level,
+          l.position,
           l.headcount,
-          l.min,
-          l.max,
-          l.midpoint,
+          l.minSalary,
+          l.maxSalary,
+          l.avgSalary,
           l.totalCost,
           l.newCost,
           l.increase,
@@ -113,16 +91,17 @@ export default function CompModelingPage() {
     ).catch(reportExportFailure);
   };
 
-  if (entries.length === 0)
+  if (compData.length === 0)
     return (
       <main className="p-12 text-center" role="main" aria-label="Compensation Modeling - No Data">
         <BarChart3 className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" aria-hidden="true" />
         <h1 className="text-xl font-semibold mb-2">No Compensation Data</h1>
         <p className="text-[var(--text-muted)] mb-6 max-w-md mx-auto">
-          Import payroll or general ledger data with compensation accounts to model salary, bonus
-          and merit scenarios.
+          Compensation modelling derives from your actual workforce records. Add active employees
+          with positions and salaries in Workforce Planning to model merit scenarios — no sample
+          bands are shown.
         </p>
-        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
+        <Button onClick={() => navigate('/workforce/headcount')}>Open Workforce Planning</Button>
       </main>
     );
 
@@ -187,7 +166,7 @@ export default function CompModelingPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Compensation Bands</CardTitle>
+          <CardTitle>Compensation by Position</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -201,7 +180,7 @@ export default function CompModelingPage() {
                     scope="col"
                     className="text-left py-2 px-3 text-[var(--text-muted)] font-medium"
                   >
-                    Level
+                    Position
                   </th>
                   <th
                     scope="col"
@@ -237,11 +216,11 @@ export default function CompModelingPage() {
               </thead>
               <tbody>
                 {compData.map((l) => (
-                  <tr key={l.level} className="border-b border-slate-800">
-                    <td className="py-2 px-3 font-medium">{l.level}</td>
+                  <tr key={l.position} className="border-b border-slate-800">
+                    <td className="py-2 px-3 font-medium">{l.position}</td>
                     <td className="text-right py-2 px-3">{l.headcount}</td>
                     <td className="text-right py-2 px-3">
-                      {fmt.currency0(l.min)} – {fmt.currency0(l.max)}
+                      {fmt.currency0(l.minSalary)} – {fmt.currency0(l.maxSalary)}
                     </td>
                     <td className="text-right py-2 px-3">{fmt.currency0(l.totalCost)}</td>
                     <td className="text-right py-2 px-3 text-blue-400">

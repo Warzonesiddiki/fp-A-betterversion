@@ -8,6 +8,7 @@ import { withCache, invalidateStoreCache } from '@/utils/storeCache';
 // (dimension/cube/member) registration are permission-guarded. Reads
 // (query/aggregate/readCell) and bootstrap initialize() stay unguarded.
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
+import { buildGLActualsCells, type GLActualsEntry } from '@/services/cube/loadGLActuals';
 import type {
   CubeCell,
   CubeQuery,
@@ -70,6 +71,7 @@ export interface CubeState {
   addMember: (dimension: string, member: Omit<DimensionMember, 'id'>) => DimensionMember;
   getMembers: (dimension: string) => DimensionMember[];
   bulkWriteCells: (cells: { cube: string; cell: CubeCell }[]) => void;
+  syncGLActuals: (entries: readonly GLActualsEntry[]) => number;
   clearAll: () => void;
   refreshCounts: () => void;
   resetUndoRedo: () => void;
@@ -355,6 +357,19 @@ export const useCubeStore = create<CubeState>()(
             }
             invalidateStoreCache('cube');
             refreshFromEngine();
+          }),
+
+          syncGLActuals: enforce(Permissions.CUBE_WRITE, 'syncGLActuals', (entries) => {
+            // Phase 14: load the posted ledger into GL_Actuals so the
+            // report designer renders real figures (previously the
+            // cube initialized empty and could only show hand-typed
+            // cells). Imported cells carry dataType 'imported' under
+            // Scenario 'Actual'; user cells are untouched.
+            const cells = buildGLActualsCells(entries);
+            if (cells.length > 0) {
+              get().bulkWriteCells(cells);
+            }
+            return cells.length;
           }),
 
           clearAll: enforce(Permissions.CUBE_DELETE, 'clearAll', () => {

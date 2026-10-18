@@ -373,14 +373,23 @@ describe('F-0010 backup/restore', () => {
 
     it('collects per-key errors instead of throwing when a key is unreadable', async () => {
       localStorage.setItem('bad-key', 'unreachable');
-      // Instance injection: the runtime's localStorage owns getItem as an own
-      // property (the Node-v22+ polyfill in src/test/setup.ts), so a
-      // `Storage.prototype` spy silently no-ops — same NOTE as
-      // src/utils/__tests__/masterStorage.security.test.ts.
+      // Fault injection must land on whichever target the runtime resolves:
+      // see the both-targets note at the spy below.
+      // Both targets: jsdom resolves getItem on Storage.prototype, while a
+      // plain-object polyfilled localStorage owns it on the instance.
+      // Spying only one silently no-ops in the other environment
+      // (probe-verified 2026-10-18; same pattern as
+      // src/utils/__tests__/masterStorage.security.test.ts).
       const getItemSpy = vi.spyOn(localStorage, 'getItem').mockImplementation((key: string) => {
         if (key === 'bad-key') throw new Error('permission denied');
         return null;
       });
+      const getItemProtoSpy = vi
+        .spyOn(Storage.prototype, 'getItem')
+        .mockImplementation((key: string) => {
+          if (key === 'bad-key') throw new Error('permission denied');
+          return null;
+        });
 
       try {
         const dump = await createRawEmergencyBackup();
@@ -391,6 +400,7 @@ describe('F-0010 backup/restore', () => {
         expect(dump.kind).toBe('finplan-emergency-dump');
       } finally {
         getItemSpy.mockRestore();
+        getItemProtoSpy.mockRestore();
         localStorage.removeItem('bad-key');
       }
     });

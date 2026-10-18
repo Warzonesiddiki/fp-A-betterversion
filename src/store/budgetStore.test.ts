@@ -329,7 +329,7 @@ describe('budgetStore', () => {
 
   // --- rejectBudget ---
 
-  it('should change budget status back to Draft', () => {
+  it('should change budget status to Rejected (Phase 7 lifecycle; resubmission returns it to review)', () => {
     const budgets = [
       {
         ...createBudgetInput({ status: 'InReview' }),
@@ -341,7 +341,7 @@ describe('budgetStore', () => {
     ] as Budget[];
     useBudgetStore.setState({ budgets });
     useBudgetStore.getState().rejectBudget('bgt-1');
-    expect(useBudgetStore!.getState().budgets[0]!.status).toBe('Draft');
+    expect(useBudgetStore!.getState().budgets[0]!.status).toBe('Rejected');
   });
 
   it('should reject non-existent budget without error', () => {

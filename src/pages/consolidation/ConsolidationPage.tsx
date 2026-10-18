@@ -8,6 +8,7 @@ import { KPIValue } from '@/components/ui/KPIValue';
 import { Badge } from '@/components/ui/Badge';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { ConsolidationWorksheet } from '@/components/consolidation/ConsolidationWorksheet';
+import { AcquisitionWorkflowCard } from '@/components/consolidation/AcquisitionWorkflowCard';
 import { AccountOverviewCard } from './AccountOverviewCard';
 import { aggregateAccounts } from './accountOverview';
 import { ConsolidationEngine } from '@/engines/ConsolidationEngine';
@@ -273,6 +274,8 @@ export function ConsolidationPage() {
 
       <AccountOverviewCard accountBreakdown={accountBreakdown} />
 
+      <AcquisitionWorkflowCard />
+
       <Card className="border-[var(--border-subtle)] bg-[var(--bg-surface)]">
         <CardHeader>
           <CardTitle className="text-sm">
@@ -281,24 +284,27 @@ export function ConsolidationPage() {
         </CardHeader>
         <CardContent className="text-xs text-[var(--text-muted)] space-y-2">
           <p>
-            • <strong>Consolidation Scope:</strong> Financial results reflect group entities under
-            direct or indirect controlling financial interest pursuant to ASC 810 / IFRS 10
-            guidelines.
+            • <strong>Consolidation Scope:</strong> Entities shown are those present in the imported
+            ledger and the entity register. Whether an entity is controlled (ASC 810 / IFRS 10) —
+            including any variable-interest analysis — is a judgement for your accounting team; this
+            page aggregates what it is given and does not make that determination.
           </p>
           <p>
-            • <strong>Intercompany Eliminations:</strong> All reciprocal accounts, intercompany
-            trade receivables/payables, transfer revenues, and unrealized intra-group profits have
-            been eliminated in full.
+            • <strong>Intercompany Eliminations:</strong> The worksheet eliminates intercompany
+            pairs it can match in the imported entries; the Eliminations tab lists exactly what was
+            eliminated and the amounts involved. Unmatched intercompany balances are not assumed
+            away — review them in the worksheet.
           </p>
           <p>
-            • <strong>Non-Controlling Interest (NCI):</strong> Minority interests are recognized
-            based on minority equity ownership percentages applied against subsidiary net income,
-            presented within consolidated equity.
+            • <strong>Non-Controlling Interest (NCI):</strong> Where ownership percentages are
+            maintained in the entity register, the NCI tab presents the minority share computed from
+            them. Entities without a recorded ownership percentage need one before their NCI figure
+            can be relied on.
           </p>
           <p>
-            • <strong>Cent-Exact Precision:</strong> Multi-entity aggregations and currency
-            translations are calculated with exact decimal arithmetic ensuring zero IEEE-754 drift
-            across all reporting periods.
+            • <strong>Cent-Exact Precision:</strong> Aggregations on this page use exact decimal
+            arithmetic (decimal.js via the money utilities), so displayed totals foot to the cent.
+            Equity pickup across periods still depends on the completeness of the imported ledger.
           </p>
         </CardContent>
       </Card>

@@ -57,6 +57,7 @@ export const PERSISTED_STORE_KEYS: readonly string[] = [
   'settings-store',
   'telecom-store',
   'tour-store',
+  'tp-benchmark-store',
   'ui-store',
   'variance-store',
   'workflow-store',

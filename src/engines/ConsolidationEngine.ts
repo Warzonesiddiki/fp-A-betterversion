@@ -932,10 +932,13 @@ export class ConsolidationEngine {
       );
       const goodwill = roundTo(addMoney(goodwillRaw, fairValueAdjustments * -1)); // preserve prior sign intent, fairValue usually 0
 
-      // Amortize over 10 years (simplified — goodwill is actually not amortized under ASC 350,
-      // but we provide the calculation for impairment testing)
-      const amortizationPerYear = goodwill > 0 ? roundTo(divideMoney(goodwill, 10)) : 0;
-      const accumulatedAmortization = 0; // Would need acquisition date
+      // ASC 350: goodwill is NOT amortised — it is impairment-tested.
+      // This legacy worksheet path previously emitted goodwill/10 as an
+      // "amortizationPerYear" (a wrong-under-GAAP figure consumers could
+      // book). It is now always 0; purchase-price allocation and the
+      // impairment test live in AcquisitionAccounting (Phase 8).
+      const amortizationPerYear = 0;
+      const accumulatedAmortization = 0;
 
       calculations.push({
         acquisitionCost: ownership.acquisitionCost,

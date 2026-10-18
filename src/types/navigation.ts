@@ -301,6 +301,9 @@ export const NAV_SECTIONS: readonly NavSection[] = [
           { path: '/data/gl-upload', label: 'GL Upload', permission: 'import:read' },
           { path: '/data/gl-explorer', label: 'GL Explorer', permission: 'import:read' },
           { path: '/data/gl-trial-balance', label: 'Trial Balance', permission: 'import:read' },
+          { path: '/data/exceptions', label: 'Exception Queue', permission: 'import:read' },
+          { path: '/data/comparison', label: 'Comparison', permission: 'import:read' },
+          { path: '/data/corrections', label: 'Corrections', permission: 'import:read' },
           { path: '/data/gl-journals', label: 'Journals', permission: 'import:read' },
           {
             path: '/data/gl-account-analysis',

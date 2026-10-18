@@ -2,6 +2,8 @@ import { useEffect, useMemo } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
+import { deriveSettlementLadder } from '@/services/subledgers/settlementLadder';
+import { deriveOpenItemAging } from '@/services/subledgers/openItemAging';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
@@ -53,6 +55,18 @@ export default function CashForecastPage() {
   }, []);
 
   const data = useMemo(() => deriveCashPosition(entries), [entries]);
+
+  // Phase 10: with GL-derived AR/AP aging the 13-week ladder the model
+  // used to declare impossible can be shown — as an assumption-stated
+  // settlement expectation, only when open items actually exist.
+  const ladder = useMemo(() => {
+    if (entries.length === 0) return null;
+    const asOf = entries.reduce((max, e) => (e.date > max ? e.date : max), '');
+    if (!asOf) return null;
+    const aging = deriveOpenItemAging(entries, asOf);
+    if (aging.items.length === 0) return null;
+    return deriveSettlementLadder(entries, { asOf });
+  }, [entries]);
 
   const handleExportPDF = () => {
     if (!data) return;
@@ -262,18 +276,69 @@ export default function CashForecastPage() {
         </CardContent>
       </Card>
 
+      {ladder && (
+        <Card>
+          <CardHeader>
+            <CardTitle>13-Week Settlement Ladder (from AR/AP aging)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-[var(--text-muted)]">
+              Opening cash {fmt.currency(ladder.openingCash)} at {ladder.asOf}. Expected collections
+              and payments from open receivables/payables, by assumed due week.
+            </p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm" aria-label="13-week settlement ladder">
+                <thead>
+                  <tr className="text-left border-b">
+                    <th className="py-1 pr-3">Week</th>
+                    <th className="py-1 pr-3">Starting</th>
+                    <th className="py-1 pr-3">Collections</th>
+                    <th className="py-1 pr-3">Payments</th>
+                    <th className="py-1">Running cash</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ladder.weeks.map((w) => (
+                    <tr key={w.week} className="border-b last:border-0">
+                      <td className="py-1 pr-3">{w.week}</td>
+                      <td className="py-1 pr-3">{w.weekStarting}</td>
+                      <td className="py-1 pr-3">{fmt.currency(w.expectedCollections)}</td>
+                      <td className="py-1 pr-3">{fmt.currency(w.expectedPayments)}</td>
+                      <td className="py-1">{fmt.currency(w.runningCash)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {(ladder.beyondHorizon.collections > 0 || ladder.beyondHorizon.payments > 0) && (
+              <p className="text-xs text-[var(--text-muted)]">
+                Beyond week 13: collections {fmt.currency(ladder.beyondHorizon.collections)},
+                payments {fmt.currency(ladder.beyondHorizon.payments)}.
+              </p>
+            )}
+            <ul className="text-xs text-[var(--text-muted)] space-y-1">
+              {ladder.assumptions.map((a) => (
+                <li key={a}>{a}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>Not derivable from the general ledger</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2 text-sm">
-            {data.unavailable.map((u) => (
-              <li key={u.label}>
-                <span className="font-semibold">{u.label}</span>
-                <span className="text-[var(--text-muted)]"> — {u.reason}</span>
-              </li>
-            ))}
+            {data.unavailable
+              .filter((u) => !(ladder && u.label.startsWith('Forward 13-week')))
+              .map((u) => (
+                <li key={u.label}>
+                  <span className="font-semibold">{u.label}</span>
+                  <span className="text-[var(--text-muted)]"> — {u.reason}</span>
+                </li>
+              ))}
           </ul>
         </CardContent>
       </Card>

@@ -93,7 +93,6 @@ export default function BudgetDetailPage() {
     activeBudgetId,
     setActiveBudget,
     updateLineItem,
-    updateBudget,
     undo,
     redo,
     historyIndex,
@@ -101,6 +100,8 @@ export default function BudgetDetailPage() {
     submitBudget,
     approveBudget,
     rejectBudget,
+    lockBudget,
+    unlockBudget,
     // W-K30-001 (2): gate the not-found flash while the store hydrates.
     isLoading: budgetLoading,
   } = useBudgetStore(
@@ -110,7 +111,6 @@ export default function BudgetDetailPage() {
       activeBudgetId: s.activeBudgetId,
       setActiveBudget: s.setActiveBudget,
       updateLineItem: s.updateLineItem,
-      updateBudget: s.updateBudget,
       undo: s.undo,
       redo: s.redo,
       historyIndex: s.historyIndex,
@@ -118,6 +118,8 @@ export default function BudgetDetailPage() {
       submitBudget: s.submitBudget,
       approveBudget: s.approveBudget,
       rejectBudget: s.rejectBudget,
+      lockBudget: s.lockBudget,
+      unlockBudget: s.unlockBudget,
       isLoading: s.isLoading,
     }))
   );
@@ -277,9 +279,10 @@ export default function BudgetDetailPage() {
 
   const handleApprove = useCallback(() => {
     if (!budget) return;
+    // Phase 7: approval goes through the store lifecycle (InReview ->
+    // Approved, actor + timestamp recorded). The previous second call
+    // wrote status through updateBudget — that spoof path is now closed.
     approveBudget(budget.id);
-    // Auto-lock on approval
-    updateBudget(budget.id, { status: 'Approved' } as never);
     setAuditLog((prev) => [
       ...prev,
       {
@@ -289,7 +292,7 @@ export default function BudgetDetailPage() {
         timestamp: new Date().toISOString(),
       },
     ]);
-  }, [budget, approveBudget, updateBudget, user]);
+  }, [budget, approveBudget, user]);
 
   const handleRejectConfirm = useCallback(() => {
     if (!budget || !rejectReason.trim()) return;
@@ -319,7 +322,8 @@ export default function BudgetDetailPage() {
   const handleLockToggle = useCallback(() => {
     if (!budget || !isAdmin) return;
     const newStatus = budget.status === 'Locked' ? 'Approved' : 'Locked';
-    updateBudget(budget.id, { status: newStatus } as never);
+    if (newStatus === 'Locked') lockBudget(budget.id);
+    else unlockBudget(budget.id);
     setAuditLog((prev) => [
       ...prev,
       {
@@ -329,7 +333,7 @@ export default function BudgetDetailPage() {
         timestamp: new Date().toISOString(),
       },
     ]);
-  }, [budget, isAdmin, updateBudget, user]);
+  }, [budget, isAdmin, lockBudget, unlockBudget, user]);
 
   const gridColumns = useMemo(
     () => [

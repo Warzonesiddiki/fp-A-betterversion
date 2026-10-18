@@ -172,7 +172,9 @@ const ROWS: readonly DenialRow[] = [
     seedStatus: 'InReview',
     expectedTitle: 'Could not reject budget',
     assertSuccess: () => {
-      expect(useBudgetStore.getState().budgets[0]?.status).toBe('Draft');
+      // Phase 7 lifecycle: rejection lands in the auditable Rejected
+      // state (resubmittable), not silently back in Draft.
+      expect(useBudgetStore.getState().budgets[0]?.status).toBe('Rejected');
     },
   },
   {

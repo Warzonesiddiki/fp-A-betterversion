@@ -5,7 +5,11 @@
 > `CLAUDE.md` and `GEMINI.md` only point here.
 >
 > The documentation map is [`docs/README.md`](docs/README.md). The product goal
-> is [`docs/VISION.md`](docs/VISION.md). If another document contradicts this
+> is [`docs/VISION.md`](docs/VISION.md). **The master audit and execution
+> plan I follow is
+> [`docs/PROJECT_AUDIT_AND_EXECUTION_PLAN.md`](docs/PROJECT_AUDIT_AND_EXECUTION_PLAN.md)**
+> (owner's four jobs J1–J4, findings register, phase queue, definition of
+> done; owner decisions DEC-015…DEC-018 recorded 2026-10-18). If another document contradicts this
 > file or `docs/agent/`, this file wins — and the contradiction is a bug to be
 > fixed, not a choice to be made.
 

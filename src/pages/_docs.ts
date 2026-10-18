@@ -418,6 +418,51 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
       },
     ],
   },
+  '/data/exceptions': {
+    title: 'Exception Queue',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'Every imported entry is checked by the exception rules (R-006…R-017): unbalanced or one-sided journals, possible duplicates, large round amounts, weekend postings, dormant accounts, amount outliers and more. Each match appears as a review candidate with its rule, formula and source rows. A candidate is never a confirmed error — only your disposition (accept, reject, review, escalate) decides what it means.',
+      },
+      {
+        title: 'What should I do with a candidate?',
+        content:
+          'Open the candidate, compare the evidence rows with the source system, then record a disposition with your rationale. Accepted candidates can become correction requests for the accounts team (Phase 5) and are re-verified after the fix is imported.',
+      },
+    ],
+  },
+  '/data/comparison': {
+    title: 'Comparison',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          "One row per account at day, month or year grain: current period against the prior period and the same period last year, with the money and percent change. Amounts follow each account's natural sign (revenue positive from credits, expenses positive from debits). Every figure drills to the exact entries behind it.",
+      },
+      {
+        title: 'What does "not in file" mean?',
+        content:
+          "The imported ledger does not cover that period for that account, so the cell is stated as not in file instead of a zero that would invent a −100% change. Column headers state each period's coverage (entries and days present). When the calendar-prior period is missing, the prior column uses the latest earlier period present and the page says so.",
+      },
+    ],
+  },
+  '/data/corrections': {
+    title: 'Corrections',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'The correction hand-off to the accounts team. When you accept an exception candidate as a real problem, you request the correction here: what has to change, who owns it, and by when. The Excel correction list is generated from these same records, so the file and this screen can never disagree.',
+      },
+      {
+        title: 'How does a correction close?',
+        content:
+          'Only by human action, in order: REQUESTED → APPLIED (the accounts team says it is fixed, recorded by your click) → REVERIFIED (you checked the fix in the ledger). When a later import makes the rule stop flagging the item, the tool proposes re-verification — it never confirms it for you. Withdrawn requests stay visible in the audit history.',
+      },
+    ],
+  },
   '/data/gl-journals': {
     title: 'Journals',
     sections: [

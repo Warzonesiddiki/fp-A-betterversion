@@ -12,6 +12,8 @@ import { DollarSign, HelpCircle, FileText, Table as TableIcon, AlertTriangle } f
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
+import { withAccountTypes } from '@/utils/accountClassification';
+import { computeProfitLoss } from './profitLossData';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { PageHeader } from '@/components/ui/PageHeader';
 
@@ -51,8 +53,8 @@ export default function CashFlowPage() {
     document.title = 'FinPlan Pro — Cash Flow Statement';
   }, []);
 
-  const { entries, importError } = useGLStore(
-    useShallow((s) => ({ entries: s.entries, importError: s.importError }))
+  const { entries, accounts, importError } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, accounts: s.accounts, importError: s.importError }))
   );
   const navigate = useNavigate();
   const [period, setPeriod] = useState(() => {
@@ -79,28 +81,11 @@ export default function CashFlowPage() {
       return roundTo(sumMoney(filtered.map((e) => subtractMoney(e.debit, e.credit))), 2);
     };
 
-    const netIncome = (() => {
-      const rev = roundTo(
-        sumMoney(
-          periodEntries
-            .filter((e) => (e.accountCode || '').startsWith('4'))
-            .map((e) => subtractMoney(e.credit, e.debit))
-        ),
-        2
-      );
-      const exp = roundTo(
-        sumMoney(
-          periodEntries
-            .filter(
-              (e) =>
-                (e.accountCode || '').startsWith('5') || (e.accountCode || '').startsWith('6')
-            )
-            .map((e) => subtractMoney(e.debit, e.credit))
-        ),
-        2
-      );
-      return roundTo(subtractMoney(rev, exp), 2);
-    })();
+    // Phase 2 articulation: net income IS the P&L's net income on the same
+    // period entries — one computation, shared with ProfitLossPage, so the
+    // two statements can never disagree (the old inline prefix 4/5/6 math
+    // silently dropped interest and tax).
+    const netIncome = computeProfitLoss(withAccountTypes(periodEntries, accounts)).netIncome;
 
     const depreciation = roundTo(
       sumMoney(
@@ -175,7 +160,7 @@ export default function CashFlowPage() {
       hasMovement,
       entryCount: periodEntries.length,
     };
-  }, [entries, period]);
+  }, [entries, accounts, period]);
 
   const handleExportPDF = () => {
     if (!report) return;

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 
@@ -12,73 +12,11 @@ import { BarChart3, FileText, Table as TableIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
-import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
+import { withAccountTypes } from '@/utils/accountClassification';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-/** Money-primitive P&L statement totals (GAP-1 F-0006). The three account-class
- *  sums (Revenue/COGS/Expenses) accumulate via decimal to keep a balanced
- *  ledger on the cent; grossProfit/netIncome are subtractions; grossMargin
- *  is a percentage computed via divideMoney so 1/3 * 100 lands on 33.33 exactly. */
-export interface ProfitLossReport {
-  totalRevenue: number;
-  totalCOGS: number;
-  totalExpenses: number;
-  grossProfit: number;
-  netIncome: number;
-  grossMargin: number;
-  netMargin: number;
-  entryCount: number;
-}
-
-export function computeProfitLoss(
-  entries: readonly { accountCode?: string; debit: number; credit: number; period?: string; date: string }[],
-  period?: string
-): ProfitLossReport {
-  const filtered = period
-    ? entries.filter((e) => (e.period || e.date.slice(0, 7)) <= period)
-    : entries;
-  const totalRevenue = roundTo(
-    sumMoney(
-      filtered
-        .filter((e) => (e.accountCode || '').startsWith('4'))
-        .map((e) => subtractMoney(e.credit, e.debit))
-    ),
-    2
-  );
-  const totalCOGS = roundTo(
-    sumMoney(
-      filtered
-        .filter((e) => (e.accountCode || '').startsWith('5'))
-        .map((e) => Math.abs(subtractMoney(e.debit, e.credit).toNumber()))
-    ),
-    2
-  );
-  const totalExpenses = roundTo(
-    sumMoney(
-      filtered
-        .filter((e) => (e.accountCode || '').startsWith('6'))
-        .map((e) => Math.abs(subtractMoney(e.debit, e.credit).toNumber()))
-    ),
-    2
-  );
-  const grossProfit = roundTo(subtractMoney(totalRevenue, totalCOGS), 2);
-  const netIncome = roundTo(subtractMoney(grossProfit, totalExpenses), 2);
-  const grossMargin =
-    totalRevenue > 0
-      ? roundTo(divideMoney(grossProfit, totalRevenue).times(100), 2)
-      : 0;
-  const netMargin =
-    totalRevenue > 0 ? roundTo(divideMoney(netIncome, totalRevenue).times(100), 2) : 0;
-  return {
-    totalRevenue,
-    totalCOGS,
-    totalExpenses,
-    grossProfit,
-    netIncome,
-    grossMargin,
-    netMargin,
-    entryCount: filtered.length,
-  };
-}
+import { computeProfitLoss, type ProfitLossReport } from './profitLossData';
+export { computeProfitLoss };
+export type { ProfitLossReport };
 
 export default function ProfitLossPage() {
   const fmt = useCurrencyFormatter();
@@ -88,9 +26,10 @@ export default function ProfitLossPage() {
     document.title = 'FinPlan Pro — Profit Loss';
   }, []);
 
-  const { entries, importError, isLoading } = useGLStore(
+  const { entries, accounts, importError, isLoading } = useGLStore(
     useShallow((s) => ({
       entries: s.entries,
+      accounts: s.accounts,
       importError: s.importError,
       isLoading: s.isLoading,
     }))
@@ -103,8 +42,20 @@ export default function ProfitLossPage() {
 
   const report = useMemo(() => {
     if (entries.length === 0) return null;
-    return computeProfitLoss(entries, period);
-  }, [entries, period]);
+    // Phase 2: classify by account-master type where known (prefix fallback
+    // inside the resolver), so a real D365 COA is not read by code prefix.
+    return computeProfitLoss(withAccountTypes(entries, accounts), period);
+  }, [entries, accounts, period]);
+
+  // Phase 2 drill-to-source: every class figure lists exactly the entries it
+  // was summed from (the drill page resolves the same classes the same way).
+  const drillToClass = useCallback(
+    (label: string, classes: string) =>
+      navigate(
+        `/drill-down?title=${encodeURIComponent(label)}&statementClass=${classes}&endDate=${period}-31`
+      ),
+    [navigate, period]
+  );
 
   // K30 hydrate gate (W-A11Y-002 M5): one shared skeleton state, announced
   // once via srLabel — shown while the GL store hydrates and, defensively,
@@ -191,7 +142,7 @@ export default function ProfitLossPage() {
   title={"Profit & Loss Statement"}
   actions={<button
               onClick={() => setHelpOpen(true)}
-              className="p-2 hover:bg-slate-800 rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
+              className="p-2 hover:bg-[var(--bg-elevated)] rounded-full text-[var(--text-muted)] hover:text-white transition-colors"
               aria-label="Help"
             ></button>}
 />
@@ -202,7 +153,7 @@ export default function ProfitLossPage() {
         <div className="flex gap-2">
           <input
             type="month"
-            className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm w-40"
+            className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-lg px-3 py-2 text-sm w-40"
             value={period}
             onChange={(e) => setPeriod(e.target.value)}
             aria-label="Select report period"
@@ -223,7 +174,7 @@ export default function ProfitLossPage() {
           <table className="w-full text-sm" role="grid" aria-label="Profit and Loss Report data">
             <thead>
               <tr
-                className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-slate-800"
+                className="text-left text-[var(--text-muted)] text-xs uppercase border-b border-[var(--border-subtle)]"
                 role="row"
               >
                 <th className="px-6 py-3 w-1/2" role="columnheader" scope="col">
@@ -235,71 +186,98 @@ export default function ProfitLossPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
-              <tr className="hover:bg-slate-900/50" role="row">
-                <td className="px-6 py-3 text-slate-300" role="gridcell">
+              <tr className="hover:bg-[var(--bg-surface)]/50" role="row">
+                <td className="px-6 py-3 text-[var(--text-secondary)]" role="gridcell">
                   Revenue
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="ml-2 h-6 px-2 text-xs"
+                    aria-label="Drill into Revenue entries"
+                    onClick={() => drillToClass('Revenue', 'revenue')}
+                  >
+                    Drill
+                  </Button>
                 </td>
                 <td
-                  className="px-6 py-3 text-right tabular-nums font-medium text-green-400"
+                  className="px-6 py-3 text-right tabular-nums font-medium text-[var(--text-positive)]"
                   role="gridcell"
                 >
                   {fmt.currency0(report.totalRevenue)}
                 </td>
               </tr>
-              <tr className="hover:bg-slate-900/50" role="row">
-                <td className="px-6 py-3 text-slate-300 pl-10" role="gridcell">
+              <tr className="hover:bg-[var(--bg-surface)]/50" role="row">
+                <td className="px-6 py-3 text-[var(--text-secondary)] pl-10" role="gridcell">
                   Cost of Goods Sold
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="ml-2 h-6 px-2 text-xs"
+                    aria-label="Drill into Cost of Goods Sold entries"
+                    onClick={() => drillToClass('Cost of Goods Sold', 'cogs')}
+                  >
+                    Drill
+                  </Button>
                 </td>
-                <td className="px-6 py-3 text-right tabular-nums text-red-400" role="gridcell">
+                <td className="px-6 py-3 text-right tabular-nums text-[var(--text-negative)]" role="gridcell">
                   {fmt.currency0(report.totalCOGS)}
                 </td>
               </tr>
-              <tr className="bg-slate-900/50 font-medium" role="row">
-                <td className="px-6 py-3 text-slate-200" role="gridcell">
+              <tr className="bg-[var(--bg-surface)]/50 font-medium" role="row">
+                <td className="px-6 py-3 text-[var(--text-primary)]" role="gridcell">
                   Gross Profit
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums font-semibold" role="gridcell">
                   {fmt.currency0(report.grossProfit)}
                 </td>
               </tr>
-              <tr className="border-t-2 border-slate-700 hover:bg-slate-900/50" role="row">
-                <td className="px-6 py-3 text-xs text-slate-400 pl-10" role="gridcell">
+              <tr className="border-t-2 border-[var(--border-default)] hover:bg-[var(--bg-surface)]/50" role="row">
+                <td className="px-6 py-3 text-xs text-[var(--text-muted)] pl-10" role="gridcell">
                   Gross Margin
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums text-xs" role="gridcell">
                   {formatPercent(report.grossMargin, 1)}
                 </td>
               </tr>
-              <tr className="hover:bg-slate-900/50" role="row">
-                <td className="px-6 py-3 text-slate-300 pl-10" role="gridcell">
+              <tr className="hover:bg-[var(--bg-surface)]/50" role="row">
+                <td className="px-6 py-3 text-[var(--text-secondary)] pl-10" role="gridcell">
                   Operating Expenses
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="ml-2 h-6 px-2 text-xs"
+                    aria-label="Drill into Operating Expenses entries"
+                    onClick={() => drillToClass('Operating Expenses', 'opex,interest,tax')}
+                  >
+                    Drill
+                  </Button>
                 </td>
-                <td className="px-6 py-3 text-right tabular-nums text-red-400" role="gridcell">
+                <td className="px-6 py-3 text-right tabular-nums text-[var(--text-negative)]" role="gridcell">
                   {fmt.currency0(report.totalExpenses)}
                 </td>
               </tr>
-              <tr className="bg-slate-800/50 font-semibold text-base" role="row">
+              <tr className="bg-[var(--bg-elevated)]/50 font-semibold text-base" role="row">
                 <td className="px-6 py-4 text-white" role="gridcell">
                   Net Income
                 </td>
                 <td
                   className={
                     'px-6 py-4 text-right tabular-nums text-lg ' +
-                    (report.netIncome >= 0 ? 'text-green-400' : 'text-red-400')
+                    (report.netIncome >= 0 ? 'text-[var(--text-positive)]' : 'text-[var(--text-negative)]')
                   }
                   role="gridcell"
                 >
                   {fmt.currency0(report.netIncome)}
                 </td>
               </tr>
-              <tr className="hover:bg-slate-900/50" role="row">
-                <td className="px-6 py-3 text-xs text-slate-400 pl-10" role="gridcell">
+              <tr className="hover:bg-[var(--bg-surface)]/50" role="row">
+                <td className="px-6 py-3 text-xs text-[var(--text-muted)] pl-10" role="gridcell">
                   Net Margin
                 </td>
                 <td
                   className={
                     'px-6 py-3 text-right tabular-nums text-xs ' +
-                    (report.netMargin >= 0 ? 'text-green-400' : 'text-red-400')
+                    (report.netMargin >= 0 ? 'text-[var(--text-positive)]' : 'text-[var(--text-negative)]')
                   }
                   role="gridcell"
                 >
@@ -310,6 +288,15 @@ export default function ProfitLossPage() {
           </table>
         </CardContent>
       </Card>
+
+      {report.unclassifiedCount > 0 && (
+        <p className="text-sm text-[var(--warning)]" role="note">
+          {report.unclassifiedCount.toLocaleString()} entries have no account type and an account
+          code outside the 1–8 convention, and are in no total above (net debit movement{' '}
+          {fmt.custom({ decimals: 2 })(report.unclassifiedMovement)}). Until they are mapped to a
+          class, the statement cannot be reconciled.
+        </p>
+      )}
     </div>
   );
 }

@@ -387,8 +387,26 @@ export interface ApiResponse<T> {
 
 // --- Store Types ---
 
+/**
+ * DEC-014 cached local session: written by a successful online login
+ * (enrollment), restored offline with no network call. Carries the user
+ * profile only — never tokens. `bindingHash` ties the cache to this
+ * device profile (see src/utils/sessionBinding.ts).
+ */
+export interface CachedSession {
+  user: User;
+  email: string;
+  issuedAt: string;
+  expiresAt: string;
+  bindingHash: string;
+}
+
+export type SessionMode = 'online' | 'offline-cache';
+
 export interface AuthState {
   user: User | null;
+  cachedSession: CachedSession | null;
+  sessionMode: SessionMode | null;
   readonly accessToken: string | null;
   readonly refreshToken: string | null;
   readonly isAuthenticated: boolean;
@@ -404,6 +422,8 @@ export interface AuthState {
   readonly loginReal: (email: string, password: string) => Promise<void>;
   readonly register: (name: string, email: string, password: string) => Promise<void>;
   readonly logout: () => void;
+  readonly restoreCachedSession: (binding: string) => boolean;
+  readonly revokeCachedSession: () => void;
   readonly refreshAccessToken: () => Promise<void>;
   readonly setUser: (user: User) => void;
   readonly switchEntity: (entityId: string) => void;
@@ -508,6 +528,9 @@ export interface ScheduledReport {
   readonly recipients: string[];
   readonly nextRun: string;
   readonly isActive: boolean;
+  /** Governance (Phase 9): when a human last actioned this schedule. */
+  readonly lastRunAt?: string;
+  readonly lastRunStatus?: string;
 }
 
 // --- Store State Types ---
@@ -539,6 +562,8 @@ export interface BudgetState {
   readonly submitBudget: (id: string) => Promise<void>;
   readonly approveBudget: (id: string) => void;
   readonly rejectBudget: (id: string) => void;
+  readonly lockBudget: (id: string) => void;
+  readonly unlockBudget: (id: string) => void;
   readonly updateBudget: (id: string, updates: Partial<Budget>) => void;
   readonly undo: () => void;
   readonly redo: () => void;
@@ -634,6 +659,7 @@ export interface ReportState {
   readonly addScheduledReport: (scheduled: Omit<ScheduledReport, 'id'>) => string;
   readonly deleteScheduledReport: (id: string) => void;
   readonly toggleScheduledReport: (id: string) => void;
+  readonly recordScheduleRun: (id: string, status: string) => void;
   readonly setError: (error: string | null) => void;
   readonly clearError: () => void;
   readonly setLoading: (loading: boolean) => void;
@@ -815,6 +841,30 @@ export interface ColumnMapping {
   isRequired: boolean;
 }
 
+/**
+ * Totals the owner read on the source side (e.g. in Dynamics 365) for the
+ * same file, supplied at import time (FR-004 / IMP-02). Every field is
+ * optional; an absent field is simply not compared — never treated as 0.
+ * Amounts are decimal strings as entered (grouping tolerated).
+ */
+export interface ExpectedControlTotals {
+  readonly rows?: number;
+  readonly debit?: string;
+  readonly credit?: string;
+}
+
+/**
+ * Outcome of comparing a batch's committed control totals against the
+ * owner-supplied source-side totals. `not-provided` is a first-class state:
+ * no comparison was possible, and no screen may call such a batch reconciled.
+ * Differences are actual − expected, as decimal strings.
+ */
+export interface ImportReconciliation {
+  readonly status: 'reconciled' | 'mismatch' | 'not-provided';
+  readonly expected?: ExpectedControlTotals;
+  readonly differences?: { readonly rows: number; readonly debit: string; readonly credit: string };
+}
+
 export interface ImportResult {
   filename: string;
   rowCount: number;
@@ -830,6 +880,8 @@ export interface ImportResult {
   rejections?: ImportRejection[];
   /** Control totals of the rows actually committed (FR-004). */
   controlTotals?: ImportControlTotals;
+  /** Source-side reconciliation outcome (FR-004 / IMP-02). */
+  reconciliation?: ImportReconciliation;
   /** Period / entity / currency coverage of the committed rows (FR-001). */
   scope?: ImportScope;
 }
@@ -846,6 +898,8 @@ export interface ImportSource {
    * Returned to the caller; no financial entries or success history are written.
    */
   readonly rejections?: readonly ImportRejection[];
+  /** Totals the owner read in the source system for this file (FR-004 / IMP-02). */
+  readonly expectedTotals?: ExpectedControlTotals;
 }
 
 export interface ImportHistoryEntry extends ImportResult {
@@ -956,6 +1010,7 @@ export interface GLState {
         fileHash: string;
         rejections: readonly ImportRejection[];
         controlTotals: ImportControlTotals;
+        reconciliation: ImportReconciliation;
         scope: ImportScope;
       }
     | {

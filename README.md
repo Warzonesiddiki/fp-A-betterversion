@@ -19,20 +19,20 @@
 
 ## What is true today
 
-| Area                       | Measured state                                                                                                                                                                                                                                                                                                           |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Type check / lint / format | `tsc --noEmit`, `eslint src --max-warnings 0`, `prettier --check` are clean.                                                                                                                                                                                                                                             |
-| Unit tests (frontend)      | ~1,315 files · ~13,350 tests via `npm run test:sharded`. Green on this branch after the 2026-10-15 fixes (clock-dependent period-close suites, stale icon mock). `main` CI has been red since 2026-08-20 — see the audit.                                                                                                |
-| Unit tests (server)        | 32 files, green after the 2026-10-15 fix (clock-relative audit-prune fixture).                                                                                                                                                                                                                                           |
-| Money primitive            | `src/utils/money.ts` is correct and tested. **Adoption is 28.9 %** of financial modules (`npm run money:adoption`). The AST ratchet (`npm run money:ast`) reports 0 _detected_ unsafe ops in scanned paths; that is a ratchet floor, not proof. Core domain types (`GLEntry.debit/credit/amount`) are still JS `number`. |
-| Engines                    | 182 engine modules in `src/engines`; **95 reachable engines** from runtime code, **87 orphan engines** with no page/store/service caller (`node scripts/verify-readme-stats.mjs --list`).                                                                                                                                |
-| Stores                     | 46 Zustand store modules; 42 persisted. Financial data is persisted as encrypted JSON blobs in a single key-value table; the 35-table relational schema in `src-tauri/migrations` is not written by the app.                                                                                                             |
-| Server (`server/`)         | Express + SQLite with JWT, RBAC, tenancy and period-close routes. **No frontend module calls it.** It is not bundled with the desktop app.                                                                                                                                                                               |
-| Runtime                    | Desktop-only: a plain browser is blocked by the Tauri runtime gate (`src/utils/tauriRuntime.ts`). Production builds refuse mock auth; real auth needs a running server — so an offline desktop build cannot currently sign in. Decision pending (audit §8, P0-3).                                                        |
-| Integrations               | Connector classes for QuickBooks, NetSuite, Xero, Sage, Dynamics (Dataverse), Salesforce, Stripe, Plaid, Slack exist with OAuth/HTTP code and tests, but **none is wired to a page**. CSV/Excel GL import is wired.                                                                                                      |
-| Exports                    | Excel (`exceljs`) and PDF (`jspdf`). No PowerPoint. No cross-artifact tie-out test.                                                                                                                                                                                                                                      |
-| Coverage gate              | 50 % statements/branches/functions/lines in `vite.config.ts` (a floor, not a measured figure).                                                                                                                                                                                                                           |
-| Dependency advisories      | `npm audit --omit=dev` on 2026-10-15: root 3 high / 1 moderate / 1 low; server 1 critical / 4 moderate. Open.                                                                                                                                                                                                            |
+| Area                       | Measured state                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| Type check / lint / format | `tsc --noEmit`, `eslint src --max-warnings 0`, `prettier --check` are clean.                                                                                                                                                                                                                                                                                                                                                      |
+| Unit tests (frontend)      | ~1,315 files · ~13,350 tests via `npm run test:sharded`. Green on this branch after the 2026-10-15 fixes (clock-dependent period-close suites, stale icon mock). `main` CI has been red since 2026-08-20 — see the audit.                                                                                                                                                                                                         |
+| Unit tests (server)        | 32 files, green after the 2026-10-15 fix (clock-relative audit-prune fixture).                                                                                                                                                                                                                                                                                                                                                    |
+| Money primitive            | `src/utils/money.ts` is correct and tested. Measured adoption: 89 of 267 engine/store modules import `src/utils/money.ts` directly (gate-measured); broader financial-module adoption is 29.83 % (`npm run money:adoption`). The AST ratchet (`npm run money:ast`) reports 0 _detected_ unsafe ops in scanned paths; that is a ratchet floor, not proof. Core domain types (`GLEntry.debit/credit/amount`) are still JS `number`. |
+| Engines                    | 183 engine modules in `src/engines`; **101 shipped engines** reachable from runtime code, **82 orphan engines** with no page/store/service caller (`node scripts/verify-readme-stats.mjs --list`). Unwired engines are labelled EXPERIMENTAL in the catalog (DEC-019) or retired (DEC-023).                                                                                                                                       |     |
+| Stores                     | Zustand Stores (49 stores); persisted subset via `masterStorage`. Financial data is persisted as encrypted JSON blobs in a single key-value table; the 35-table relational schema in `src-tauri/migrations` is not written by the app.                                                                                                                                                                                            |
+| Server (`server/`)         | Express + SQLite with JWT, RBAC, tenancy and period-close routes. **No frontend module calls it.** It is not bundled with the desktop app.                                                                                                                                                                                                                                                                                        |
+| Runtime                    | Desktop-only: a plain browser is blocked by the Tauri runtime gate (`src/utils/tauriRuntime.ts`). Production builds refuse mock auth; real auth needs a running server — so an offline desktop build cannot currently sign in. Decision pending (audit §8, P0-3).                                                                                                                                                                 |
+| Integrations               | Connector classes for QuickBooks, NetSuite, Xero, Sage, Dynamics (Dataverse), Salesforce, Stripe, Plaid, Slack exist with OAuth/HTTP code and tests, but **none is wired to a page**. CSV/Excel GL import is wired.                                                                                                                                                                                                               |
+| Exports                    | Excel (`exceljs`) and PDF (`jspdf`). No PowerPoint. No cross-artifact tie-out test.                                                                                                                                                                                                                                                                                                                                               |
+| Coverage gate              | The coverage thresholds in `vite.config.ts` are 50% (statements/branches/functions/lines) — a floor, not a measured figure.                                                                                                                                                                                                                                                                                                       |     |
+| Dependency advisories      | `npm audit --omit=dev` on 2026-10-15: root 3 high / 1 moderate / 1 low; server 1 critical / 4 moderate. Open.                                                                                                                                                                                                                                                                                                                     |
 
 ---
 
@@ -50,22 +50,22 @@ npm run tauri:dev                # desktop shell (requires Rust + Tauri prerequi
 npm run check                    # the whole gate: tsc · eslint · prettier · docs · engines · money · determinism · fabrication · sharded tests
 ```
 
-| Script                            | Purpose                                                                          |
-| --------------------------------- | -------------------------------------------------------------------------------- |
-| `npm run tsc`                     | TypeScript strict check (`--noEmit`)                                             |
-| `npm run lint` / `lint:fix`       | ESLint with `--max-warnings 0` / with `--fix`                                    |
-| `npm run format` / `format:check` | Prettier write / check                                                           |
-| `npm test`                        | Full Vitest suite in one process (asks for an 8 GB heap)                         |
-| `npm run test:sharded`            | Same suite in 8 sequential shards — use this on machines with < 8 GB free        |
-| `npm run test:e2e`                | Playwright (shims the Tauri runtime; it does not exercise the real shell)        |
-| `npm run money:ast`               | AST money-safety ratchet                                                         |
-| `npm run money:adoption`          | Money-primitive adoption (percentage of financial modules on `@/utils/money`)    |
+| Script                            | Purpose                                                                           |
+| --------------------------------- | --------------------------------------------------------------------------------- |
+| `npm run tsc`                     | TypeScript strict check (`--noEmit`)                                              |
+| `npm run lint` / `lint:fix`       | ESLint with `--max-warnings 0` / with `--fix`                                     |
+| `npm run format` / `format:check` | Prettier write / check                                                            |
+| `npm test`                        | Full Vitest suite in one process (asks for an 8 GB heap)                          |
+| `npm run test:sharded`            | Same suite in 8 sequential shards — use this on machines with < 8 GB free         |
+| `npm run test:e2e`                | Playwright (shims the Tauri runtime; it does not exercise the real shell)         |
+| `npm run money:ast`               | AST money-safety ratchet                                                          |
+| `npm run money:adoption`          | Money-primitive adoption (percentage of financial modules on `@/utils/money`)     |
 | `npm run determinism:ratchet`     | Wall-clock / `Math.random` call sites in calculation paths must not rise per file |
 | `npm run palette:ratchet`         | Raw numbered Tailwind palette utilities under `src/` must not rise per file       |
-| `npm run docs:verify`             | README / persistence-map / schema-home truth checks (fails on unmeasured claims) |
-| `npm run engines:verify`          | Engine manifest is current                                                       |
-| `npm run check`                   | Everything above plus the sharded suite, with an honest exit code                |
-| `cd server && npm test`           | Server suite (Supertest + SQLite)                                                |
+| `npm run docs:verify`             | README / persistence-map / schema-home truth checks (fails on unmeasured claims)  |
+| `npm run engines:verify`          | Engine manifest is current                                                        |
+| `npm run check`                   | Everything above plus the sharded suite, with an honest exit code                 |
+| `cd server && npm test`           | Server suite (Supertest + SQLite)                                                 |
 
 ---
 
@@ -73,11 +73,11 @@ npm run check                    # the whole gate: tsc · eslint · prettier · 
 
 ```
 src/
-├── engines/        # Financial Engines (182 modules) — 95 reachable, 87 orphans (see audit P1-12)
-├── store/          # Store Architecture (48 Stores) — Zustand; 44 persisted via masterStorage
+├── engines/        # Financial Engines (183 modules) — 101 shipped, 82 orphans (see audit P1-12)
+├── store/          # Store Architecture (49 Stores) — Zustand; 43 persisted via masterStorage
 ├── pages/          # routed page modules (242 <Route>s — scope reduction is audit P1-6)
 ├── components/     # UI, charts, sectors, AI copilot, spreadsheet
-├── workers/        # Active Workers (5) — consolidation, Monte Carlo, batch calc, storage, GL staging
+├── workers/        # Web Workers (5 active) — consolidation, Monte Carlo, batch calc, storage, GL staging
 ├── services/       # connectors (unwired), import pipeline, client-side security modules (several unused)
 ├── utils/          # money primitive, clock, formatters, validation, storage
 server/src/         # Express routes, auth, tenancy, period close (not called by the client)

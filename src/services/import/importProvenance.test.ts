@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   computeControlTotals,
+  reconcileControlTotals,
   computeImportScope,
   defaultSourceRows,
   findPriorImport,
@@ -194,5 +195,34 @@ describe('importProvenance', () => {
         importedAt: at,
       });
     });
+  });
+});
+
+describe('reconcileControlTotals (IMP-02 / FR-004 source-side totals)', () => {
+  const actual = { rows: 8, debit: '695000.00', credit: '695000.00', net: '0.00' };
+
+  it('is not-provided when the owner supplied no expected totals', () => {
+    expect(reconcileControlTotals(actual).status).toBe('not-provided');
+    expect(reconcileControlTotals(actual, {}).status).toBe('not-provided');
+  });
+
+  it('reconciles to the cent, accepting grouped formatting in the expected figures', () => {
+    const r = reconcileControlTotals(actual, { rows: 8, debit: '695,000.00', credit: '695000.0' });
+    expect(r.status).toBe('reconciled');
+    expect(r.differences).toEqual({ rows: 0, debit: '0.00', credit: '0.00' });
+  });
+
+  it('reports a mismatch with signed differences (actual − expected) and never calls it reconciled', () => {
+    const r = reconcileControlTotals(actual, {
+      rows: 9,
+      debit: '700,000.00',
+      credit: '695,000.00',
+    });
+    expect(r.status).toBe('mismatch');
+    expect(r.differences).toEqual({ rows: -1, debit: '-5000.00', credit: '0.00' });
+  });
+
+  it('rejects an unparseable expected figure instead of treating it as zero', () => {
+    expect(() => reconcileControlTotals(actual, { debit: 'not-a-number' })).toThrow();
   });
 });

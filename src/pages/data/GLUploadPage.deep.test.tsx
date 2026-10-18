@@ -987,7 +987,12 @@ describe('GLUploadPage — import provenance', () => {
     expect(filename).toBe('gl.csv');
     // NIST-style known answer: sha256 of exactly these bytes.
     const { sha256Hex } = await import('@/utils/sha256');
-    expect(source).toEqual({ fileHash: sha256Hex(csv), sourceRows: [2, 3], rejections: [] });
+    expect(source).toEqual({
+      fileHash: sha256Hex(csv),
+      sourceRows: [2, 3],
+      rejections: [],
+      expectedTotals: {},
+    });
   });
 
   it('skips a broken row but keeps the true source row numbers of the rows it sends', async () => {

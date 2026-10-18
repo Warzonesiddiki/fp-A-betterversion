@@ -87,7 +87,11 @@ describe('route shell contract (UI-03)', () => {
     // shell-target roots that never had a route (/workforce /treasury /currency
     // /revenue /tax /accounting /admin) gained Navigate aliases to their
     // canonical first children instead of falling through to the 404 catch-all.
-    expect(all).toHaveLength(228);
+    // Pin delta in the spine build (Phases 3-5, DEC-016): 228 -> 231 (Δ+3).
+    // The three owner-job surfaces were declared as real routes:
+    // /data/exceptions (J2 exception queue), /data/corrections (J3
+    // correction hand-off) and /data/comparison (J4 comparison workspace).
+    expect(all).toHaveLength(231);
     // Aliases to the same page are allowed; identical path strings are not.
     expect(new Set(all).size).toBe(all.length);
   });

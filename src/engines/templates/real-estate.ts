@@ -275,7 +275,12 @@ export function buildRealEstateTemplate(): FPTemplate {
       cascadeType: 'formula',
       impactType: 'replacement',
       weight: 1,
-      formula: 'x > 0 ? current / (x / 100) : 0',
+      // Was 'x > 0 ? current / (x / 100) : 0' — SafeMathParser has no
+      // ternary operator, so the cap-rate valuation could never
+      // evaluate (W6-P0-15 sentinel pass, 2026-10-18). A zero cap rate
+      // now surfaces as a formula error instead of silently zeroing
+      // the property value.
+      formula: 'current / (x / 100)',
       description: 'Cap rate drives property value',
     },
   ];

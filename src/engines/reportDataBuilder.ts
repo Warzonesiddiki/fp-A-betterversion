@@ -2,17 +2,28 @@
 // REPORT DATA BUILDER — real-data report rows for ReportBookEngine
 // -----------------------------------------------------------------------------
 // Replaces the previous hardcoded "mock" report rows ('Revenue 1,250,000 …')
-// with rows computed from actual GL entries + budget line items, using the
-// SAME chart-of-accounts conventions and money primitives as the live
-// statement pages (ProfitLossPage / BalanceSheetPage / CashFlowPage /
-// BudgetVsActualPage): account-code prefixes 1=Assets 2=Liabilities 3=Equity
-// 4=Revenue 5=COGS 6=Expenses; exact decimal arithmetic via @/utils/money.
+// with rows computed from actual GL entries + budget line items. Statement
+// figures delegate to the SAME canonical computations as the live statement
+// pages (Phase 2 contract, docs/product/STATEMENT_SIGN_CONTRACT.md):
+// computeProfitLoss / computeBalanceSheet classify by account type with the
+// documented prefix fallback, sign naturally and never absolutise, so an
+// exported statement can never disagree with its screen (ZC-07). Sub-account
+// layout lines (cash 11, capex 15, debt 22, dividends 31) keep the two-digit
+// layout convention of the cash-flow page. Exact decimals via @/utils/money.
 //
 // When no data exists for an entity the builder returns an explicit, honest
 // "no data" row set (zeros + footer) — never fabricated figures.
 // =============================================================================
 
 import type { ExportData } from './ExportEngine';
+import { computeProfitLoss } from '@/pages/reports/profitLossData';
+import { computeBalanceSheet } from '@/pages/reports/balanceSheetData';
+import {
+  entriesForClass,
+  signedClassAmount,
+  type AccountClass,
+} from '@/utils/accountClassification';
+import type { AccountType } from '@/types';
 import {
   divideMoney,
   multiplyMoney,
@@ -27,8 +38,10 @@ import {
 // ---------------------------------------------------------------------------
 
 export interface GlLikeEntry {
+  readonly accountId?: string;
   readonly accountCode?: string;
   readonly accountName?: string;
+  readonly accountType?: AccountType | 'Unknown' | null;
   readonly debit: number;
   readonly credit: number;
   readonly period?: string;
@@ -74,13 +87,8 @@ function sumCredit(entries: readonly GlLikeEntry[], prefixes: readonly string[])
   return roundTo(sumMoney(values), 2);
 }
 
-/** Sum `|debit − credit|` (expense magnitude convention). */
-function sumAbs(entries: readonly GlLikeEntry[], prefixes: readonly string[]): number {
-  const values = entries
-    .filter((e) => prefixes.some((p) => (e.accountCode || '').startsWith(p)))
-    .map((e) => Math.abs(roundTo(subtractMoney(e.debit, e.credit), 2)));
-  return roundTo(sumMoney(values), 2);
-}
+/* Phase 2: the old `sumAbs` magnitude helper was deleted — statement sums
+   are signed through `classTotal`; absolutising an expense is F-P2-02. */
 
 /** Sum budget amounts for the given account-code prefixes. */
 function sumBudget(budgetItems: readonly BudgetLikeItem[], prefixes: readonly string[]): number {
@@ -104,6 +112,11 @@ function formatPct(value: number | null): string {
   return value === null ? '—' : `${value}%`;
 }
 
+/** Signed canonical class total (Phase 2 resolver; never absolutised). */
+function classTotal(entries: readonly GlLikeEntry[], cls: AccountClass): number {
+  return roundTo(sumMoney(entriesForClass(entries, cls).map((e) => signedClassAmount(e, cls))), 2);
+}
+
 // ---------------------------------------------------------------------------
 // P&L (preset-pl) — mirrors ProfitLossPage.computeProfitLoss + budget variance
 // ---------------------------------------------------------------------------
@@ -111,9 +124,9 @@ function formatPct(value: number | null): string {
 export function buildPnlRows(input: ReportDataInput): ExportData {
   const { entries, budgetItems = [], entityName, currency, periodLabel } = input;
 
-  const revenue = sumCredit(entries, ['4']);
-  const cogs = sumAbs(entries, ['5']);
-  const opex = sumAbs(entries, ['6']);
+  const revenue = classTotal(entries, 'revenue');
+  const cogs = classTotal(entries, 'cogs');
+  const opex = classTotal(entries, 'opex');
   const grossProfit = roundTo(subtractMoney(revenue, cogs), 2);
   const ebitda = roundTo(subtractMoney(grossProfit, opex), 2);
 
@@ -154,12 +167,16 @@ export function buildPnlRows(input: ReportDataInput): ExportData {
 export function buildBalanceSheetRows(input: ReportDataInput): ExportData {
   const { entries, entityName, currency, periodLabel } = input;
 
-  const assets = sumDebit(entries, ['1']);
-  const liabilities = sumCredit(entries, ['2']);
-  const equity = sumCredit(entries, ['3']);
-  const totalLiabilityEquity = roundTo(sumMoney([liabilities, equity]), 2);
-  const diff = roundTo(subtractMoney(assets, totalLiabilityEquity), 2);
-  const isBalanced = Math.abs(diff) < 0.01;
+  // Canonical balance sheet: closing equity includes current-period
+  // earnings and the balance check is exact (no tolerance window), so the
+  // exported sheet articulates with the live Balance Sheet page.
+  const sheet = computeBalanceSheet(entries);
+  const assets = sheet.totalAssets;
+  const liabilities = sheet.totalLiabilities;
+  const equity = sheet.totalEquity;
+  const totalLiabilityEquity = sheet.totalLiabilitiesAndEquity;
+  const diff = sheet.diff;
+  const isBalanced = sheet.isBalanced;
 
   return {
     headers: ['Line Item', 'Current Period', 'Prior Period', 'Change', 'Change %'],
@@ -200,11 +217,9 @@ export function buildCashFlowRows(input: ReportDataInput): ExportData {
   const { entries, entityName, currency, periodLabel } = input;
   const hasData = hasAnyData(entries, []);
 
-  const netIncome = (() => {
-    const rev = sumCredit(entries, ['4']);
-    const exp = sumDebit(entries, ['5', '6']);
-    return roundTo(subtractMoney(rev, exp), 2);
-  })();
+  // Canonical P&L net income (includes interest/tax, signed) — the export
+  // articulates with both the P&L and Cash Flow pages.
+  const netIncome = computeProfitLoss(entries).netIncome;
 
   const operating = netIncome;
   const capex = sumDebit(entries, ['15']);

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 
@@ -12,6 +12,7 @@ import { Scale, FileText, Table as TableIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { computeBalanceSheet, type BalanceSheetReport } from './balanceSheetData';
+import { withAccountTypes } from '@/utils/accountClassification';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 /**
@@ -32,16 +33,27 @@ export default function BalanceSheetPage() {
     document.title = 'FinPlan Pro — Balance Sheet';
   }, []);
 
-  const { entries, importError } = useGLStore(
-    useShallow((s) => ({ entries: s.entries, importError: s.importError }))
+  const { entries, accounts, importError } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, accounts: s.accounts, importError: s.importError }))
   );
   const navigate = useNavigate();
   const [asOfDate, setAsOfDate] = useState(() => new Date().toISOString().slice(0, 10));
 
   const report: BalanceSheetReport | null = useMemo(() => {
     if (entries.length === 0) return null;
-    return computeBalanceSheet(entries, asOfDate);
-  }, [entries, asOfDate]);
+    // Phase 2: account-master type beats code prefix (see balanceSheetData).
+    return computeBalanceSheet(withAccountTypes(entries, accounts), asOfDate);
+  }, [entries, accounts, asOfDate]);
+
+  // Phase 2 drill-to-source: every class figure lists exactly the entries
+  // it was summed from (same resolver, same classes, as-of the same date).
+  const drillToClass = useCallback(
+    (label: string, classes: string) =>
+      navigate(
+        `/drill-down?title=${encodeURIComponent(label)}&statementClass=${classes}&endDate=${asOfDate}`
+      ),
+    [navigate, asOfDate]
+  );
 
   const exportRows = (report: BalanceSheetReport): (string | number)[][] => [
     ['Total Assets', report.totalAssets],
@@ -158,8 +170,8 @@ export default function BalanceSheetPage() {
 
       {report.unclassifiedCount > 0 && (
         <p className="text-sm text-amber-400" role="note">
-          {report.unclassifiedCount.toLocaleString()} entries carry an account code outside the
-          1–8 class prefixes and are in no total above (net debit movement{' '}
+          {report.unclassifiedCount.toLocaleString()} entries have no account type and an account
+          code outside the 1–8 convention, and are in no total above (net debit movement{' '}
           {fmt.custom({ decimals: 2 })(report.unclassifiedMovement)}). Until they are mapped to a
           class, the
           statement cannot be reconciled.
@@ -186,6 +198,15 @@ export default function BalanceSheetPage() {
               <tr className="bg-slate-900/50 font-medium" role="row">
                 <td className="px-6 py-3 text-slate-200" role="gridcell">
                   Assets
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="ml-2 h-6 px-2 text-xs"
+                    aria-label="Drill into Assets entries"
+                    onClick={() => drillToClass('Assets', 'asset')}
+                  >
+                    Drill
+                  </Button>
                 </td>
                 <td
                   className="px-6 py-3 text-right tabular-nums font-semibold text-green-400"
@@ -197,6 +218,15 @@ export default function BalanceSheetPage() {
               <tr className="bg-slate-900/50 font-medium" role="row">
                 <td className="px-6 py-3 text-slate-200" role="gridcell">
                   Liabilities
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="ml-2 h-6 px-2 text-xs"
+                    aria-label="Drill into Liabilities entries"
+                    onClick={() => drillToClass('Liabilities', 'liability')}
+                  >
+                    Drill
+                  </Button>
                 </td>
                 <td
                   className="px-6 py-3 text-right tabular-nums font-semibold text-red-400"
@@ -208,6 +238,15 @@ export default function BalanceSheetPage() {
               <tr role="row">
                 <td className="px-6 py-2 pl-10 text-[var(--text-muted)]" role="gridcell">
                   Contributed capital and prior retained earnings
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="ml-2 h-6 px-2 text-xs"
+                    aria-label="Drill into Contributed capital and prior retained earnings entries"
+                    onClick={() => drillToClass('Contributed capital and prior retained earnings', 'equity')}
+                  >
+                    Drill
+                  </Button>
                 </td>
                 <td className="px-6 py-2 text-right tabular-nums text-[var(--text-secondary)]" role="gridcell">
                   {fmt.currency0(report.postedEquity)}
@@ -216,6 +255,15 @@ export default function BalanceSheetPage() {
               <tr role="row">
                 <td className="px-6 py-2 pl-10 text-[var(--text-muted)]" role="gridcell">
                   Current-period earnings (open P&amp;L accounts)
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="ml-2 h-6 px-2 text-xs"
+                    aria-label="Drill into Current-period earnings entries"
+                    onClick={() => drillToClass('Current-period earnings', 'revenue,cogs,opex,interest,tax')}
+                  >
+                    Drill
+                  </Button>
                 </td>
                 <td className="px-6 py-2 text-right tabular-nums text-[var(--text-secondary)]" role="gridcell">
                   {fmt.currency0(report.currentPeriodEarnings)}

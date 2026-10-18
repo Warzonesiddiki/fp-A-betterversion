@@ -4,11 +4,11 @@
 > Source of truth: `src/domain/persistenceAuthority.ts`.
 > Drift against `persist()` keys in `src/store` fails CI (`npm run persistence:map`).
 
-**Measured 2026-08-25.** 42 persisted Zustand stores.
+**Measured 2026-10-18.** 43 persisted Zustand stores.
 
 | Classification  | Count | Authority rule                                              |
 | --------------- | ----- | ----------------------------------------------------------- |
-| financial-truth | 30    | Server must be SoR. Today **30 local-draft**, **0 server**. |
+| financial-truth | 31    | Server must be SoR. Today **31 local-draft**, **0 server**. |
 | user-preference | 8     | Local is legitimate.                                        |
 | derived-cache   | 3     | Rebuildable; never the system of record (ST2).              |
 | session         | 1     | Tokens; not financial truth.                                |
@@ -47,6 +47,7 @@ after tenancy (W0.2).
 | `period-close-store` | `src/store/periodCloseStore.ts`  | **local-draft** | /api/periods         | Close-task UI state. Period lock itself must be DB-level (F-CLOSE-002).                                                                                                                     |
 | `realestate-store`   | `src/store/realEstateStore.ts`   | **local-draft** | —                    | Real-estate pack (properties, REIT inputs).                                                                                                                                                 |
 | `report-store`       | `src/store/reportStore.ts`       | **local-draft** | /api/reports         | Saved report definitions. Snapshots must be server-side (Phase 2).                                                                                                                          |
+| `tp-benchmark-store` | `src/store/tpBenchmarkStore.ts`  | **local-draft** | —                    | Human-attached transfer-pricing benchmark studies (Phase 8). Evidence attachments, never a compliance grant.                                                                                |
 | `retail-store`       | `src/store/retailStore.ts`       | **local-draft** | —                    | Retail-pack operational inputs (promotions).                                                                                                                                                |
 | `scenario-store`     | `src/store/scenarioStore.ts`     | **local-draft** | /api/scenarios       | Scenario versions. Server route exists; store is unwired.                                                                                                                                   |
 | `telecom-store`      | `src/store/telecomStore.ts`      | **local-draft** | —                    | Telecom-pack operational inputs (subscribers, ARPU).                                                                                                                                        |
@@ -87,17 +88,3 @@ after tenancy (W0.2).
 | `server`      | Control Plane is the system of record. Client is a replica/cache. |
 | `local-draft` | Client copy is a **draft**. Must be labelled. Not official.       |
 | `local`       | Local is the legitimate authority (preferences, session).         |
-
-## Temporary exact GL staging (non-Zustand, not a financial authority)
-
-The import staging repository uses the existing encrypted `masterStorage` API with
-keys `gl-ingestion-stage:v1:<batchId>:manifest` and
-`gl-ingestion-stage:v1:<batchId>:chunk:<index>`. Payloads retain monetary strings
-and raw quarantine text inside an opaque JSON envelope. These are temporary stage
-records, not another `persist()` store or the ledger system of record. A `ready`
-manifest does not authorize or perform financial posting.
-
-Staging is not wired to the upload UI yet. Backup inclusion, retention/discard,
-orphan cleanup, discovery/resume, cross-window locking and transactional promotion
-are open gates. No committed ledger data should depend on these keys. Existing
-native schema authority and the registered store count remain unchanged.

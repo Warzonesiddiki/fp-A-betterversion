@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { useGLUploadStore, type UploadFileInfo } from './glUploadStore';
+import { useGLUploadStore, findMappingProfile, type UploadFileInfo } from './glUploadStore';
 import { useAuthStore } from './authStore';
 
 // F-0026: RBAC-aware fixture covering exactly the permissions the store's
@@ -40,6 +40,7 @@ describe('glUploadStore', () => {
       session: null,
       sessionHistory: [],
       isAutoMapping: false,
+      mappingProfiles: [],
     });
   });
 
@@ -175,5 +176,48 @@ describe('glUploadStore', () => {
     }
     expect(useGLUploadStore.getState().sessionHistory).toHaveLength(3);
     expect(useGLUploadStore.getState().sessionHistory[0]?.id).toBe('session-2');
+  });
+});
+
+describe('glUploadStore mapping profiles (IMP-03)', () => {
+  const headers = ['Acct', 'When', 'Dr', 'Cr'];
+  const mappings = { accountCode: 'Acct', postDate: 'When', debit: 'Dr', credit: 'Cr' };
+
+  it('saves a profile keyed by the header signature and finds it for reordered headers', () => {
+    useGLUploadStore.getState().saveMappingProfile({
+      name: 'My ERP export',
+      headers,
+      mappings,
+    });
+    const profiles = useGLUploadStore.getState().mappingProfiles;
+    expect(profiles).toHaveLength(1);
+    expect(profiles[0]?.name).toBe('My ERP export');
+    expect(findMappingProfile(profiles, ['cr', 'WHEN', 'acct', 'dr'])?.mappings).toEqual(mappings);
+    expect(findMappingProfile(profiles, ['Acct', 'When', 'Dr'])).toBeUndefined();
+  });
+
+  it('re-saving the same header set updates the profile instead of duplicating it', () => {
+    const store = useGLUploadStore.getState();
+    store.saveMappingProfile({ name: 'First', headers, mappings });
+    store.saveMappingProfile({
+      name: 'Renamed',
+      headers: [...headers].reverse(),
+      mappings: { ...mappings, description: 'Cr' },
+    });
+    const profiles = useGLUploadStore.getState().mappingProfiles;
+    expect(profiles).toHaveLength(1);
+    expect(profiles[0]?.name).toBe('Renamed');
+  });
+
+  it('deletes a profile and includes profiles in the persisted slice', () => {
+    const store = useGLUploadStore.getState();
+    store.saveMappingProfile({ name: 'To delete', headers, mappings });
+    const id = useGLUploadStore.getState().mappingProfiles[0]!.id;
+    store.deleteMappingProfile(id);
+    expect(useGLUploadStore.getState().mappingProfiles).toHaveLength(0);
+
+    store.saveMappingProfile({ name: 'Persisted', headers, mappings });
+    const partial = useGLUploadStore.persist.getOptions().partialize(useGLUploadStore.getState());
+    expect(partial.mappingProfiles).toHaveLength(1);
   });
 });

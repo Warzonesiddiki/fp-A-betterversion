@@ -1,10 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { actAs } from '@/test/rbacFixtures';
 import { useExceptionDispositionStore } from './exceptionDispositionStore';
 import { setClock, resetClock } from '@/utils/clock';
 import type { DispositionStatus } from '@/types/exceptions';
 
 describe('useExceptionDispositionStore', () => {
   beforeEach(() => {
+    actAs('Admin'); // Phase 12: disposition/rule actions require permissions
     resetClock();
     useExceptionDispositionStore.getState().reset();
   });
@@ -434,5 +436,32 @@ describe('useExceptionDispositionStore', () => {
       'corrections',
       'dispositions',
     ]);
+  });
+});
+
+describe('authorization (Phase 12)', () => {
+  it('refuses dispositions while signed out and leaves state untouched', async () => {
+    const { signOut, expectPermissionDenied } = await import('@/test/rbacFixtures');
+    signOut();
+    expectPermissionDenied(() =>
+      useExceptionDispositionStore.getState().setDisposition({
+        exceptionId: 'exc-1',
+        disposition: 'confirmed-error',
+        rationale: 'checked',
+      })
+    );
+    expect(useExceptionDispositionStore.getState().dispositions).toEqual([]);
+  });
+
+  it('an Analyst (dispose, no configure) cannot wipe the audit trail', async () => {
+    const { actAs, expectPermissionDenied } = await import('@/test/rbacFixtures');
+    actAs('Analyst');
+    useExceptionDispositionStore.getState().setDisposition({
+      exceptionId: 'exc-1',
+      disposition: 'confirmed-error',
+      rationale: 'checked',
+    });
+    expectPermissionDenied(() => useExceptionDispositionStore.getState().reset());
+    expect(useExceptionDispositionStore.getState().auditTrail.length).toBeGreaterThan(0);
   });
 });

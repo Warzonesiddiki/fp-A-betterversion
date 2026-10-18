@@ -317,6 +317,15 @@ export const PERSISTED_STORES = [
     notes: 'Saved report definitions. Snapshots must be server-side (Phase 2).',
   },
   {
+    persistKey: 'tp-benchmark-store',
+    module: 'src/store/tpBenchmarkStore.ts',
+    classification: 'financial-truth',
+    authority: 'local-draft',
+    serverRoute: null,
+    notes:
+      'Human-attached transfer-pricing benchmark studies (Phase 8). Evidence attachments, never a compliance grant.',
+  },
+  {
     persistKey: 'retail-store',
     module: 'src/store/retailStore.ts',
     classification: 'financial-truth',

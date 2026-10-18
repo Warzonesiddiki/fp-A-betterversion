@@ -575,6 +575,10 @@ export class CubeEngine {
       // When using cube index, cells are already filtered by cube; otherwise verify
       if (!cubeCellKeys && this.findCubeForCell(cell) !== query.cube) continue;
       if (!cubeDef.measures.some((m) => m.name === cell.measure)) continue;
+      // The query's measure selection is authoritative: without this,
+      // debit + credit + netChange cells summed together and cancelled
+      // (Phase 14 tie-out catch).
+      if (query.measures.length > 0 && !query.measures.includes(cell.measure)) continue;
 
       let matches = true;
       for (const filter of query.filters) {

@@ -23,6 +23,8 @@ import {
 } from 'lucide-react';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { deriveThreeStatement } from './threeStatementData';
+import { deriveChangesInEquity } from '@/services/statements/changesInEquity';
+import { deriveDirectCashFlow } from '@/services/statements/directCashFlow';
 
 function fmt(n: number | { toNumber(): number }): string {
   const value = typeof n === 'number' ? n : n.toNumber();
@@ -43,17 +45,22 @@ export default function ThreeStatementDashboardPage() {
     document.title = 'FinPlan Pro — Three-Statement Model';
   }, []);
 
-  const { incomeStatement, balanceSheet, cashFlow, totals, result } = useMemo(() => {
+  const { incomeStatement, balanceSheet, cashFlow, totals, changesInEquity, directCashFlow, result } =
+    useMemo(() => {
     if (entries.length === 0)
       return {
         incomeStatement: null,
         balanceSheet: null,
         cashFlow: null,
         totals: null,
+        changesInEquity: null,
+        directCashFlow: null,
         result: null,
       };
 
     const derived = deriveThreeStatement(entries, period);
+    const changesInEquity = deriveChangesInEquity(entries, period);
+    const directCashFlow = deriveDirectCashFlow(entries, period);
 
     // Linking may fail with incomplete data — the page still renders the statements.
     let linkResult = null;
@@ -69,7 +76,7 @@ export default function ThreeStatementDashboardPage() {
       linkResult = null;
     }
 
-    return { ...derived, result: linkResult };
+    return { ...derived, changesInEquity, directCashFlow, result: linkResult };
   }, [entries, period]);
 
   const handleExport = () => {
@@ -268,18 +275,26 @@ export default function ThreeStatementDashboardPage() {
             <CardTitle className="text-base">Cash Flow</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span>Operating</span>
-              <span className="text-[var(--text-muted)]">—</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Investing</span>
-              <span className="text-[var(--text-muted)]">—</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Financing</span>
-              <span className="text-[var(--text-muted)]">—</span>
-            </div>
+            {directCashFlow && (
+              <>
+                <div className="flex justify-between">
+                  <span>Receipts from customers ({period}, direct)</span>
+                  <span>{fmt(directCashFlow.receiptsFromCustomers)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Payments to suppliers &amp; employees ({period}, direct)</span>
+                  <span>{fmt(directCashFlow.paymentsToSuppliersAndEmployees)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Net cash from operations ({period})</span>
+                  <span>{fmt(directCashFlow.netCashFromOperations)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Investing &amp; financing, combined ({period})</span>
+                  <span>{fmt(directCashFlow.investingAndFinancingCombined)}</span>
+                </div>
+              </>
+            )}
             <div className="flex justify-between font-bold border-t pt-2 text-base">
               <span>Net Change in Cash</span>
               <span className={cashFlow.netChangeInCash >= 0 ? 'text-green-600' : 'text-red-600'}>
@@ -287,9 +302,11 @@ export default function ThreeStatementDashboardPage() {
               </span>
             </div>
             <p className="text-xs text-[var(--text-muted)] pt-1">
-              Net change in cash is measured directly on the cash account. Splitting it into
-              operating, investing and financing activities requires per-account activity
-              mapping that the posted ledger does not carry, so those lines are not estimated.
+              Operating lines use the direct method for the selected period (revenue adjusted for
+              receivable movements; expenses adjusted for inventory and payable movements) and
+              foot to the period&apos;s change in cash. Investing and financing stay combined: the
+              posted ledger carries no per-activity mapping that would justify splitting them,
+              so they are not estimated apart.
             </p>
           </CardContent>
         </Card>
@@ -324,6 +341,40 @@ export default function ThreeStatementDashboardPage() {
                   ))}
                 </div>
               )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Statement of Changes in Equity */}
+      {changesInEquity && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Statement of Changes in Equity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 text-sm max-w-md">
+              <div className="flex justify-between">
+                <span>Opening equity (incl. prior earnings)</span>
+                <span>{fmt(changesInEquity.openingEquity)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>+ Net income for {period}</span>
+                <span>{fmt(changesInEquity.netIncome)}</span>
+              </div>
+              {changesInEquity.equityMovements.map((m) => (
+                <div key={m.accountCode} className="flex justify-between">
+                  <span>Account {m.accountCode} movement</span>
+                  <span>{fmt(m.amount)}</span>
+                </div>
+              ))}
+              <div className="flex justify-between font-bold border-t pt-2 text-base">
+                <span>Closing equity</span>
+                <span>{fmt(changesInEquity.closingEquity)}</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Closing equity ties to the balance sheet total equity above.
+              </p>
             </div>
           </CardContent>
         </Card>

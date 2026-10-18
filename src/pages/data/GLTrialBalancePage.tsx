@@ -270,6 +270,15 @@ export default function GLTrialBalancePage() {
 
       <Card>
         <CardContent className="p-0">
+          {/* Phase 2 honesty (F-P2-04): beginning balances are not imported
+              yet, so Beginning is the position before the earliest imported
+              entry (0) and Ending is cumulative over all imported entries —
+              not an opening-balance trial balance (period-aware TB: Phase 4). */}
+          <p className="px-6 py-2 text-xs text-[var(--text-muted)]" role="note">
+            Basis: all imported entries to date. Beginning balance is the position before the
+            earliest imported entry (zero unless opening balances were imported); Ending = Beginning
+            + Net Change over the imported history.
+          </p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm" aria-label="GL trial balance">
               <caption className="sr-only">Detailed gl trial balance</caption>

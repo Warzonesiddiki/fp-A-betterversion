@@ -23,9 +23,46 @@ export interface TPTransaction {
   readonly service: string;
   readonly amount: number;
   readonly method: TPMethod;
-  readonly margin: number;
+  /**
+   * Observed margin percent. Null when not derivable: a margin needs a
+   * cost base and a benchmark study, neither of which a GL entry or an
+   * IC match carries. (This used to hardcode 8.5/10.2/9.0 — invented
+   * numbers, removed under the zero-fabrication charter, Phase 8.)
+   */
+  readonly margin: number | null;
   readonly armRange: string;
   readonly status: TPStatus;
+}
+
+/** Human-attached benchmark evidence for one transaction (Phase 8). */
+export interface TPBenchmark {
+  readonly margin: number;
+  readonly rangeLow: number;
+  readonly rangeHigh: number;
+  readonly studyRef: string;
+  readonly attestedAt: string;
+}
+
+/**
+ * Overlay human-attached benchmarks onto derived transactions. Only a
+ * benchmarked row can leave 'review', and even then compliance is
+ * computed — an attached margin outside its own arm's-length range is
+ * 'non-compliant', not laundered into 'compliant' by the attachment.
+ */
+export function applyBenchmarks(
+  transactions: readonly TPTransaction[],
+  benchmarks: Record<string, TPBenchmark>
+): TPTransaction[] {
+  return transactions.map((t) => {
+    const b = benchmarks[t.id];
+    if (!b) return t;
+    return {
+      ...t,
+      margin: b.margin,
+      armRange: `${b.rangeLow}% - ${b.rangeHigh}% (${b.studyRef})`,
+      status: b.margin >= b.rangeLow && b.margin <= b.rangeHigh ? 'compliant' : 'non-compliant',
+    };
+  });
 }
 
 export interface MethodDistribution {
@@ -62,8 +99,8 @@ export function deriveTPTransactions(entries: readonly GLEntry[]): TPTransaction
       service: tx.description || 'Intercompany Service',
       amount: Math.abs(tx.amount),
       method: classifyMethodFromText(tx.description),
-      margin: 8.5,
-      armRange: '7.0% - 12.0%',
+      margin: null,
+      armRange: 'Not benchmarked',
       status: 'review',
     });
   }
@@ -80,9 +117,12 @@ export function deriveTPTransactions(entries: readonly GLEntry[]): TPTransaction
       service: tx.description || 'Cross-Entity Supply',
       amount: Math.abs(tx.amount),
       method: classifyMethodFromText(tx.description),
-      margin: 10.2,
-      armRange: '8.0% - 15.0%',
-      status: tx.status === 'eliminated' || tx.status === 'matched' ? 'compliant' : 'review',
+      margin: null,
+      armRange: 'Not benchmarked',
+      // IC matched/eliminated is a bookkeeping state, not a transfer-
+      // pricing conclusion: compliance requires a benchmark study, so
+      // every derived row stays 'review' until a human attaches one.
+      status: 'review',
     });
   }
 
@@ -107,9 +147,9 @@ export function deriveTPTransactions(entries: readonly GLEntry[]): TPTransaction
         service: e.description || e.accountName,
         amount,
         method: classifyMethodFromText(e.description || e.accountName),
-        margin: 9.0,
-        armRange: '7.5% - 13.0%',
-        status: 'compliant',
+        margin: null,
+        armRange: 'Not benchmarked',
+        status: 'review',
       });
     }
   }

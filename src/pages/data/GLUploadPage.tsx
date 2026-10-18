@@ -14,10 +14,19 @@ import { Alert } from '@/components/ui/Alert';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { ExcelImportEngine } from '@/engines/ExcelImportEngine';
-import { hasDuplicateHeaders, parseCSV } from '@/utils/csv';
-import type { ImportControlTotals, ImportRejection, ImportScope } from '@/types';
+import { hasDuplicateHeaders, parseCSV, parseCSVRecords } from '@/utils/csv';
+import type {
+  ExpectedControlTotals,
+  ImportControlTotals,
+  ImportReconciliation,
+  ImportRejection,
+  ImportScope,
+} from '@/types';
+import { parseFinancialAmountExact } from '@/utils/parseFinancialAmount';
 import { hashFileBytes } from '@/services/import/importProvenance';
 import { parseGLRows, missingRequiredMappings } from '@/services/import/parseGLRows';
+import { detectTrialBalanceSnapshot } from '@/services/import/d365Parser';
+import { findMappingProfile, useGLUploadStore } from '@/store/glUploadStore';
 import {
   CheckCircle2,
   Upload,
@@ -97,7 +106,19 @@ export default function GLUploadPage() {
     controlTotals: ImportControlTotals;
     rejections: readonly ImportRejection[];
     scope: ImportScope;
+    reconciliation?: ImportReconciliation;
   } | null>(null);
+
+  // IMP-02: totals the owner read in Dynamics 365 for this file, entered at
+  // Preview. Optional — absent means the batch cannot claim "reconciled".
+  const [expectedRows, setExpectedRows] = useState('');
+  const [expectedDebit, setExpectedDebit] = useState('');
+  const [expectedCredit, setExpectedCredit] = useState('');
+
+  // IMP-03: saved mapping profile applied to this file, and the save flow.
+  const [appliedProfileName, setAppliedProfileName] = useState<string | null>(null);
+  const [profileName, setProfileName] = useState('');
+  const [savedProfileName, setSavedProfileName] = useState<string | null>(null);
 
   const resetWizard = useCallback(() => {
     setStep(0);
@@ -112,10 +133,20 @@ export default function GLUploadPage() {
     setImportedErrorCount(0);
     setFileHash(null);
     setBatchEvidence(null);
+    setExpectedRows('');
+    setExpectedDebit('');
+    setExpectedCredit('');
+    setAppliedProfileName(null);
+    setProfileName('');
+    setSavedProfileName(null);
   }, [setImportError, setImportStatus, setImportProgress]);
 
   const [sheetNames, setSheetNames] = useState<string[]>([]);
   const [selectedSheet, setSelectedSheet] = useState<string>('');
+  // DEC-013 §4.1: a headerless CSV (a legal D365 data-management export)
+  // must be mapped by position by the user — never headed by guessing that
+  // the first posting is a header row.
+  const [noHeaderRow, setNoHeaderRow] = useState(false);
 
   const handleFile = useCallback(
     async (file: File) => {
@@ -142,7 +173,25 @@ export default function GLUploadPage() {
 
         if (ext === 'csv') {
           const text = new TextDecoder().decode(bytes);
-          const { headers, rows: data } = parseCSV(text);
+          const { headers, rows: data } = noHeaderRow
+            ? (() => {
+                const records = parseCSVRecords(text).filter(
+                  (r) => r.length > 0 && r.some((c) => c.trim() !== '')
+                );
+                const width = records.reduce((max, r) => Math.max(max, r.length), 0);
+                const synthHeaders = Array.from({ length: width }, (_, i) => `Column ${i + 1}`);
+                return {
+                  headers: synthHeaders,
+                  rows: records.map((record) => {
+                    const row: Record<string, string> = {};
+                    synthHeaders.forEach((h, i) => {
+                      row[h] = (record[i] ?? '').trim();
+                    });
+                    return row;
+                  }),
+                };
+              })()
+            : parseCSV(text);
           if (headers.length === 0 || data.length === 0) {
             setImportError(
               'File contains no data. The file must have a header row and at least one data row.'
@@ -157,6 +206,18 @@ export default function GLUploadPage() {
             setImportStatus('idle');
             return;
           }
+          if (detectTrialBalanceSnapshot(headers)) {
+            // Status first: setImportStatus clears importError in the store,
+            // so the refusal message must be written after it.
+            setImportStatus('idle');
+            setImportError(
+              'This file is a trial balance snapshot (balances per account), not a general ledger transaction dump. ' +
+                'Importing it would invent postings. Export the GL transaction detail instead ' +
+                '(e.g. D365 Finance "General ledger statement by main account" or Business Central "G/L Entries"). ' +
+                'Nothing was imported.'
+            );
+            return;
+          }
           if (data.length === 0) {
             setImportError('No data rows found after the header. Please check your file.');
             setImportStatus('idle');
@@ -168,6 +229,14 @@ export default function GLUploadPage() {
             );
             setImportStatus('idle');
             return;
+          }
+          const csvProfile = findMappingProfile(
+            useGLUploadStore.getState().mappingProfiles,
+            headers
+          );
+          if (csvProfile) {
+            setMappings({ ...csvProfile.mappings });
+            setAppliedProfileName(csvProfile.name);
           }
           setCsvColumns(headers);
           setRawData(data);
@@ -213,6 +282,24 @@ export default function GLUploadPage() {
             return stringRow;
           });
 
+          if (detectTrialBalanceSnapshot(activeSheet!.headers)) {
+            setImportStatus('idle');
+            setImportError(
+              'This file is a trial balance snapshot (balances per account), not a general ledger transaction dump. ' +
+                'Importing it would invent postings. Export the GL transaction detail instead ' +
+                '(e.g. D365 Finance "General ledger statement by main account" or Business Central "G/L Entries"). ' +
+                'Nothing was imported.'
+            );
+            return;
+          }
+          const sheetProfile = findMappingProfile(
+            useGLUploadStore.getState().mappingProfiles,
+            activeSheet!.headers
+          );
+          if (sheetProfile) {
+            setMappings({ ...sheetProfile.mappings });
+            setAppliedProfileName(sheetProfile.name);
+          }
           setCsvColumns(activeSheet!.headers);
           setRawData(stringRows);
           setImportStatus('idle');
@@ -223,7 +310,7 @@ export default function GLUploadPage() {
         setImportStatus('idle');
       }
     },
-    [setImportError, setImportStatus]
+    [setImportError, setImportStatus, noHeaderRow]
   );
 
   const handleSheetChange = useCallback(
@@ -306,7 +393,7 @@ export default function GLUploadPage() {
       sourceRows,
       rejections: preRejections,
       rowErrors,
-    } = parseGLRows(rawData, mappings);
+    } = parseGLRows(rawData, mappings, noHeaderRow ? 1 : 2);
 
     if (parsedEntries.length === 0) {
       setImportError(
@@ -317,11 +404,43 @@ export default function GLUploadPage() {
       return;
     }
 
+    let expectedRowsValue: number | undefined;
+    if (expectedRows.trim() !== '') {
+      const rows = Number(expectedRows.trim());
+      if (!Number.isInteger(rows) || rows < 0) {
+        setImportError('Expected rows must be a whole number of rows, as read in Dynamics 365.');
+        setImportStatus('idle');
+        return;
+      }
+      expectedRowsValue = rows;
+    }
+    const expectedAmounts: Partial<Record<'debit' | 'credit', string>> = {};
+    for (const [label, raw, key] of [
+      ['debit', expectedDebit, 'debit'],
+      ['credit', expectedCredit, 'credit'],
+    ] as const) {
+      if (raw.trim() !== '') {
+        if (parseFinancialAmountExact(raw.trim()) === null) {
+          setImportError(
+            `Expected total ${label} "${raw}" is not a parseable amount. Copy it exactly as shown in Dynamics 365.`
+          );
+          setImportStatus('idle');
+          return;
+        }
+        expectedAmounts[key] = raw.trim();
+      }
+    }
+    const expectedTotals: ExpectedControlTotals = {
+      ...(expectedRowsValue !== undefined ? { rows: expectedRowsValue } : {}),
+      ...expectedAmounts,
+    };
+
     // Use the new robust high-level import action
     const result = useGLStore.getState().importGLData(parsedEntries, currentFile?.name, {
       fileHash: fileHash ?? undefined,
       sourceRows,
       rejections: preRejections,
+      expectedTotals,
     });
 
     if (!result.success) {
@@ -345,6 +464,7 @@ export default function GLUploadPage() {
       controlTotals: result.controlTotals,
       rejections: result.rejections,
       scope: result.scope,
+      reconciliation: result.reconciliation,
     });
 
     // Simulate nice progress bar
@@ -368,8 +488,12 @@ export default function GLUploadPage() {
   }, [
     rawData,
     mappings,
+    noHeaderRow,
     currentFile,
     fileHash,
+    expectedRows,
+    expectedDebit,
+    expectedCredit,
     setImportStatus,
     setImportProgress,
     setImportError,
@@ -466,6 +590,14 @@ export default function GLUploadPage() {
           computer.
         </p>
         <FileDropZone onFile={handleFile} accept=".csv,.xlsx,.xls" />
+        <label className="mt-4 flex items-center justify-center gap-2 text-xs">
+          <input
+            type="checkbox"
+            checked={noHeaderRow}
+            onChange={(e) => setNoHeaderRow(e.target.checked)}
+          />
+          This CSV has no header row — map its columns by position (Column 1, Column 2, …)
+        </label>
         <div className="flex gap-4 justify-center mt-4 text-xs text-[var(--text-muted)]">
           <span>Max: 50MB</span>
           <span>Formats: CSV, XLSX, XLS</span>
@@ -513,6 +645,14 @@ export default function GLUploadPage() {
       {step === 0 && importHistory.length > 0 && (
         <div className="text-center py-12">
           <FileDropZone onFile={handleFile} accept=".csv,.xlsx,.xls" />
+          <label className="mt-4 flex items-center justify-center gap-2 text-xs">
+            <input
+              type="checkbox"
+              checked={noHeaderRow}
+              onChange={(e) => setNoHeaderRow(e.target.checked)}
+            />
+            This CSV has no header row — map its columns by position (Column 1, Column 2, …)
+          </label>
         </div>
       )}
 
@@ -559,6 +699,48 @@ export default function GLUploadPage() {
                 </p>
               </div>
             )}
+            {appliedProfileName && (
+              <p className="mt-4 text-sm" role="status">
+                Mapping profile {'"'}
+                {appliedProfileName}
+                {'"'} applied automatically — these are the columns you saved for this header set.
+                Adjust any field below if this file differs.
+              </p>
+            )}
+            <div className="mt-4 flex flex-wrap items-end gap-3">
+              <label className="text-xs">
+                Profile name
+                <input
+                  className="mt-1 block w-52 rounded border border-[var(--border)] bg-transparent px-2 py-1 text-sm"
+                  value={profileName}
+                  onChange={(e) => setProfileName(e.target.value)}
+                  placeholder={currentFile?.name ?? 'Monthly export'}
+                />
+              </label>
+              <Button
+                variant="secondary"
+                disabled={!mappings.accountCode || !mappings.postDate}
+                onClick={() => {
+                  const name = profileName.trim() || currentFile?.name || 'Monthly export';
+                  useGLUploadStore.getState().saveMappingProfile({
+                    name,
+                    headers: csvColumns,
+                    mappings,
+                  });
+                  setSavedProfileName(name);
+                }}
+              >
+                Save mapping profile
+              </Button>
+              {savedProfileName && (
+                <span className="text-sm" role="status">
+                  Profile {'"'}
+                  {savedProfileName}
+                  {'"'} saved — it will be applied automatically next time this header set is
+                  uploaded.
+                </span>
+              )}
+            </div>
             <div className="flex justify-between mt-6">
               <Button variant="ghost" onClick={() => setStep(0)}>
                 Back
@@ -583,6 +765,45 @@ export default function GLUploadPage() {
                 {rawData.length.toLocaleString()} total rows
               </span>
             </div>
+            <fieldset className="mb-4 rounded-md border border-[var(--border)] p-3">
+              <legend className="px-1 text-xs font-medium">
+                Reconcile to Dynamics 365 (optional)
+              </legend>
+              <p className="mb-3 text-xs text-[var(--text-muted)]">
+                Enter the totals Dynamics 365 shows for this same export. If they match the file to
+                the cent, the batch is marked reconciled; if they differ, the difference is shown —
+                the batch is never called reconciled on its own numbers alone.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <label className="text-xs">
+                  Expected rows (from Dynamics 365)
+                  <input
+                    className="mt-1 block w-32 rounded border border-[var(--border)] bg-transparent px-2 py-1 text-sm tabular-nums"
+                    inputMode="numeric"
+                    value={expectedRows}
+                    onChange={(e) => setExpectedRows(e.target.value)}
+                  />
+                </label>
+                <label className="text-xs">
+                  Expected total debit (from Dynamics 365)
+                  <input
+                    className="mt-1 block w-44 rounded border border-[var(--border)] bg-transparent px-2 py-1 text-sm tabular-nums"
+                    inputMode="decimal"
+                    value={expectedDebit}
+                    onChange={(e) => setExpectedDebit(e.target.value)}
+                  />
+                </label>
+                <label className="text-xs">
+                  Expected total credit (from Dynamics 365)
+                  <input
+                    className="mt-1 block w-44 rounded border border-[var(--border)] bg-transparent px-2 py-1 text-sm tabular-nums"
+                    inputMode="decimal"
+                    value={expectedCredit}
+                    onChange={(e) => setExpectedCredit(e.target.value)}
+                  />
+                </label>
+              </div>
+            </fieldset>
             <GLDataPreview
               data={rawData}
               mappings={mappings}
@@ -650,6 +871,15 @@ export default function GLUploadPage() {
                     </dd>
                     <dt className="text-[var(--text-muted)]">Imported at</dt>
                     <dd className="tabular-nums">{batchEvidence.scope.importedAt}</dd>
+                    <dt className="text-[var(--text-muted)]">Source reconciliation</dt>
+                    <dd>
+                      {!batchEvidence.reconciliation ||
+                      batchEvidence.reconciliation.status === 'not-provided'
+                        ? 'Not reconciled — no totals from Dynamics 365 were entered for this batch.'
+                        : batchEvidence.reconciliation.status === 'reconciled'
+                          ? 'Reconciled to the totals read in Dynamics 365.'
+                          : `Does not match the totals read in Dynamics 365 — debit difference ${batchEvidence.reconciliation.differences?.debit ?? '—'}, credit difference ${batchEvidence.reconciliation.differences?.credit ?? '—'}, rows difference ${batchEvidence.reconciliation.differences?.rows ?? '—'}. This batch is not reconciled.`}
+                    </dd>
                   </dl>
                   {batchEvidence.rejections.length > 0 && (
                     <div className="mt-3">

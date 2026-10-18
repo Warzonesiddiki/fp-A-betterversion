@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
+import { useAuthStore } from './store/authStore';
+import { resolveDeviceBinding } from './utils/sessionBinding';
 import { ThemeProvider } from './context/ThemeContext';
 import AppLayout from './components/layout/AppLayout';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
@@ -78,6 +80,9 @@ const AIIntelligencePage = lazy(() => import('./pages/ai/AIIntelligencePage'));
 const GLUploadPage = lazy(() => import('./pages/data/GLUploadPage'));
 const GLExplorerPage = lazy(() => import('./pages/data/GLExplorerPage'));
 const GLTrialBalancePage = lazy(() => import('./pages/data/GLTrialBalancePage'));
+const ExceptionQueuePage = lazy(() => import('./pages/data/ExceptionQueuePage'));
+const ComparisonPage = lazy(() => import('./pages/data/ComparisonPage'));
+const CorrectionsPage = lazy(() => import('./pages/data/CorrectionsPage'));
 const GLJournalsPage = lazy(() => import('./pages/data/GLJournalsPage'));
 const GLAccountAnalysisPage = lazy(() => import('./pages/data/GLAccountAnalysisPage'));
 const GLReportingPage = lazy(() => import('./pages/data/GLReportingPage'));
@@ -307,6 +312,13 @@ const _DOMAIN_MAP = {
 export default function App() {
   const { isFirstRun, completeSetup } = useFirstRun();
 
+  // DEC-014: on cold start, try the cached local session (offline
+  // sign-in). No-op when there is no cache, the binding differs, or the
+  // cache has expired; the login screen remains the fallback.
+  useEffect(() => {
+    useAuthStore.getState().restoreCachedSession(resolveDeviceBinding());
+  }, []);
+
   // Desktop-only runtime gate (owner decision 2026-08-12: the F-05 browser
   // beta channel — VITE_BETA_WEB + data-beta-web marker — was removed; the
   // product is a desktop app, not a web app). A plain browser is blocked
@@ -446,6 +458,9 @@ export default function App() {
                 <Route path="/data/gl-upload" element={<GLUploadPage />} />
                 <Route path="/data/gl-explorer" element={<GLExplorerPage />} />
                 <Route path="/data/gl-trial-balance" element={<GLTrialBalancePage />} />
+                <Route path="/data/exceptions" element={<ExceptionQueuePage />} />
+                <Route path="/data/comparison" element={<ComparisonPage />} />
+                <Route path="/data/corrections" element={<CorrectionsPage />} />
                 <Route path="/data/gl-journals" element={<GLJournalsPage />} />
                 <Route path="/data/gl-account-analysis" element={<GLAccountAnalysisPage />} />
                 <Route path="/data/gl-reporting" element={<GLReportingPage />} />

@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { actAs } from '@/test/rbacFixtures';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ExceptionReviewCard, type ExceptionReviewCandidate } from './ExceptionReviewCard';
@@ -24,6 +25,7 @@ describe('ExceptionReviewCard', () => {
   };
 
   beforeEach(() => {
+    actAs('Admin'); // Phase 12: disposition/correction actions require permissions
     useExceptionDispositionStore.getState().reset();
   });
 

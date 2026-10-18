@@ -1,42 +1,43 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Selector-aware mocks: the page subscribes via useGLStore((s) => s.entries),
-// so the mock must apply a selector when one is passed.
-vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn((selector?: (s: { entries: unknown[] }) => unknown) => {
+// Phase 10 decontamination: the page derives from ACTUAL workforce
+// records, so the mock supplies real employees (the GL store is no
+// longer consulted by this page).
+vi.mock('@/store/workforceStore', () => ({
+  useWorkforceStore: vi.fn((selector?: (s: { employees: unknown[] }) => unknown) => {
     const state = {
-      entries: [
+      employees: [
         {
-          id: '1',
-          account: '4000',
-          accountName: 'Revenue',
-          amount: 100000,
-          period: '2026-01',
-          department: 'Sales',
-          type: 'revenue',
+          id: 'e1',
+          name: 'A',
+          department: 'Engineering',
+          position: 'Engineer',
+          salary: 100000,
+          startDate: '2025-11-15',
+          status: 'active',
         },
         {
-          id: '2',
-          account: '5000',
-          accountName: 'COGS',
-          amount: 30000,
-          period: '2026-01',
-          department: 'COGS',
-          type: 'expense',
+          id: 'e2',
+          name: 'B',
+          department: 'Engineering',
+          position: 'Engineer',
+          salary: 120000,
+          startDate: '2026-02-01',
+          status: 'active',
+        },
+        {
+          id: 'e3',
+          name: 'C',
+          department: 'Sales',
+          position: 'Rep',
+          salary: 80000,
+          startDate: '2026-03-10',
+          status: 'active',
         },
       ],
     };
     return selector ? selector(state) : state;
   }),
-}));
-
-vi.mock('@/store/workforceStore', () => ({
-  useWorkforceStore: vi.fn(
-    (selector?: (s: { departments: unknown[]; roles: unknown[] }) => unknown) => {
-      const state = { departments: [], roles: [] };
-      return selector ? selector(state) : state;
-    }
-  ),
 }));
 
 vi.mock('@/engines/ExportEngine', () => ({
@@ -109,6 +110,14 @@ describe('HeadcountPlanPage', () => {
   it('renders treemap chart', () => {
     render(<HeadcountPlanPage />);
     expect(screen.getByTestId('treemap-chart')).toBeDefined();
+  });
+
+  it('shows ACTUAL department headcounts from employee records', () => {
+    render(<HeadcountPlanPage />);
+    const row = screen.getByRole('row', { name: /Engineering/ });
+    expect(row.textContent).toContain('2');
+    // The invented departments of the old page must never appear.
+    expect(screen.queryByText('Marketing')).toBeNull();
   });
 
   it('renders export button', () => {
