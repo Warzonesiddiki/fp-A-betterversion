@@ -99,6 +99,11 @@ export class RevRecEngine {
         : weights.map(() => new Decimal(0));
 
     let totalRecognizedSoFar = new Decimal(0);
+    // Emitted (cent-rounded) cumulative recognition. Period amounts are
+    // emitted as deltas of the rounded cumulative so the schedule FOOTS:
+    // 100,000 over 3 months emits 33,333.33 / 33,333.33 / 33,333.34, not
+    // three 33,333.33s that sum to 99,999.99 (contract-life oracle).
+    let emittedRecognizedSoFar = new Decimal(0);
 
     const poRecognitionState = new Map<string, Decimal>(); // poId -> recognizedAmount
     const poCompletionHistory = new Map<string, number[]>(); // poId -> completion metrics per period
@@ -167,12 +172,15 @@ export class RevRecEngine {
       });
 
       totalRecognizedSoFar = totalRecognizedSoFar.plus(periodAmount);
+      const cumulativeRounded = new Decimal(roundTo(totalRecognizedSoFar));
+      const emittedAmount = cumulativeRounded.minus(emittedRecognizedSoFar);
+      emittedRecognizedSoFar = cumulativeRounded;
       schedules.push({
         period,
-        amount: roundTo(periodAmount),
-        recognizedToDate: roundTo(totalRecognizedSoFar),
+        amount: emittedAmount.toNumber(),
+        recognizedToDate: cumulativeRounded.toNumber(),
         remainingToRecognize: roundTo(
-          Decimal.max(new Decimal(0), totalContractValue.minus(totalRecognizedSoFar))
+          Decimal.max(new Decimal(0), totalContractValue.minus(cumulativeRounded))
         ),
       });
     });
