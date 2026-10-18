@@ -535,6 +535,18 @@ Remaining in Phase 8: acquisition workflow UI for the PPA engine, a
 dedicated VIE oracle, duplicate formula/cube engine retire-or-wire
 (Phase 14). Phase 8's measurable core is complete.
 
+**Phase 9 progress 2026-10-18:** XBRL wire-or-retire DECIDED as
+DEC-021 (engine labelled EXPERIMENTAL; no filing claim until the owner
+names jurisdiction + taxonomy, E4); statement of changes in equity
+added (`deriveChangesInEquity`, proven to tie to the balance-sheet
+total equity) and rendered on the three-statement dashboard alongside
+the retained-earnings roll-forward; REP-01 tie-out for the correction
+hand-off landed in Phase 6 and the board-pack/financial-package
+tie-outs already existed. Remaining in Phase 9: report governance
+verification (scheduler/designer), direct-method cash-flow derivation
+(journal-grouped cash classification), tie-out registry for the
+remaining page exports.
+
 ## 11. How I will work — the commitment
 
 **Session ritual (every session, no exceptions):**

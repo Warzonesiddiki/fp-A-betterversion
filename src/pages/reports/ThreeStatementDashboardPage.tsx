@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { deriveThreeStatement } from './threeStatementData';
+import { deriveChangesInEquity } from '@/services/statements/changesInEquity';
 
 function fmt(n: number | { toNumber(): number }): string {
   const value = typeof n === 'number' ? n : n.toNumber();
@@ -43,17 +44,19 @@ export default function ThreeStatementDashboardPage() {
     document.title = 'FinPlan Pro — Three-Statement Model';
   }, []);
 
-  const { incomeStatement, balanceSheet, cashFlow, totals, result } = useMemo(() => {
+  const { incomeStatement, balanceSheet, cashFlow, totals, changesInEquity, result } = useMemo(() => {
     if (entries.length === 0)
       return {
         incomeStatement: null,
         balanceSheet: null,
         cashFlow: null,
         totals: null,
+        changesInEquity: null,
         result: null,
       };
 
     const derived = deriveThreeStatement(entries, period);
+    const changesInEquity = deriveChangesInEquity(entries, period);
 
     // Linking may fail with incomplete data — the page still renders the statements.
     let linkResult = null;
@@ -69,7 +72,7 @@ export default function ThreeStatementDashboardPage() {
       linkResult = null;
     }
 
-    return { ...derived, result: linkResult };
+    return { ...derived, changesInEquity, result: linkResult };
   }, [entries, period]);
 
   const handleExport = () => {
@@ -324,6 +327,40 @@ export default function ThreeStatementDashboardPage() {
                   ))}
                 </div>
               )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Statement of Changes in Equity */}
+      {changesInEquity && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Statement of Changes in Equity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 text-sm max-w-md">
+              <div className="flex justify-between">
+                <span>Opening equity (incl. prior earnings)</span>
+                <span>{fmt(changesInEquity.openingEquity)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>+ Net income for {period}</span>
+                <span>{fmt(changesInEquity.netIncome)}</span>
+              </div>
+              {changesInEquity.equityMovements.map((m) => (
+                <div key={m.accountCode} className="flex justify-between">
+                  <span>Account {m.accountCode} movement</span>
+                  <span>{fmt(m.amount)}</span>
+                </div>
+              ))}
+              <div className="flex justify-between font-bold border-t pt-2 text-base">
+                <span>Closing equity</span>
+                <span>{fmt(changesInEquity.closingEquity)}</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Closing equity ties to the balance sheet total equity above.
+              </p>
             </div>
           </CardContent>
         </Card>

@@ -25,3 +25,9 @@ describe('EXPERIMENTAL engine labels (DEC-019)', () => {
     expect(EXPERIMENTAL_ENGINES['ForecastMethodEngine']).toMatch(/Forecast builder/);
   });
 });
+
+describe('DEC-021 XBRL label', () => {
+  it('XBRLEngine is labelled experimental pending a jurisdiction decision', () => {
+    expect(EXPERIMENTAL_ENGINES['XBRLEngine']).toMatch(/jurisdiction/);
+  });
+});

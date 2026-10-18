@@ -14,6 +14,8 @@
 export const EXPERIMENTAL_ENGINES: Record<string, string> = {
   RollingForecastEngine:
     'Tested roll/blend state machine with no product path: the shipped rolling-forecast page derives figures from posted GL via rollingForecastModel, and no store or page consumes this engine. Wiring it in changes planning behaviour and awaits the owner roll-semantics answer (DEC-019).',
+  XBRLEngine:
+    'Tested XBRL mapping/fact/XML logic with no product path and no filing claim: a valid filing needs an owner-chosen jurisdiction taxonomy, entity identifiers and assurance rules (DEC-021, extension E4). Must not be presented as a supported export until then.',
   AcquisitionAccounting:
     'ASC 805 purchase-price allocation and ASC 350 goodwill impairment with hand-computed oracles, but no product path yet: no acquisition workflow page collects consideration/NCI/fair-value inputs. Catalogued for evaluation only until the consolidation workflow wires it (Phase 8 remainder).',
   ForecastMethodEngine:
