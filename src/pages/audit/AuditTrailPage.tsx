@@ -18,6 +18,7 @@ import { ScrollText, Download, RefreshCw, ChevronUp, ChevronDown, Search } from 
 // per Clio T-N+1 ↔ Demeter PICK CHAIN.
 import { formatRelativeTimeBudget as formatRelativeTime } from '@/engines/temporal';
 import { auditOpBadges, auditFiltersTokens } from '@/components/audit/auditTokens';
+import { StateReconstructionPanel } from '@/components/audit/StateReconstructionPanel';
 import { useAuditTrailStore, GDPR_AUDIT_VIEW_ROLES, redactPII } from '@/store/auditTrailStore';
 import { PageHeader } from '@/components/ui/PageHeader';
 
@@ -320,6 +321,9 @@ function AuditTrailContent() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Phase 12 (R-009): rebuild prior cell state from this trail. */}
+      <StateReconstructionPanel />
 
       <Card>
         <CardContent className="p-4 space-y-3">
