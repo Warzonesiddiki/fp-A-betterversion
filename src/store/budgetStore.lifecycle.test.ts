@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useBudgetStore } from './budgetStore';
-import { setClock, resetClock } from '@/utils/clock';
+import { setClock, resetClock, nowISO } from '@/utils/clock';
 import { actAs } from '@/test/rbacFixtures';
 import type { Budget } from '@/types';
 
@@ -141,8 +141,13 @@ describe('budgetStore approval lifecycle', () => {
 });
 
 describe('budgetStore lifecycle teardown', () => {
-  it('clock resets', () => {
+  it('clock resets to wall time after resetClock', () => {
+    setClock('2026-01-01T00:00:00.000Z');
+    expect(nowISO()).toBe('2026-01-01T00:00:00.000Z');
     resetClock();
-    expect(true).toBe(true);
+    // Back to wall clock: no longer the frozen test instant, and
+    // within a generous window of the real now.
+    expect(nowISO()).not.toBe('2026-01-01T00:00:00.000Z');
+    expect(Math.abs(Date.parse(nowISO()) - Date.now())).toBeLessThan(60_000);
   });
 });
