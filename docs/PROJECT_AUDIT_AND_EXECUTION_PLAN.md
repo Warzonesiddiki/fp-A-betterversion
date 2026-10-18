@@ -542,10 +542,14 @@ added (`deriveChangesInEquity`, proven to tie to the balance-sheet
 total equity) and rendered on the three-statement dashboard alongside
 the retained-earnings roll-forward; REP-01 tie-out for the correction
 hand-off landed in Phase 6 and the board-pack/financial-package
-tie-outs already existed. Remaining in Phase 9: report governance
-verification (scheduler/designer), direct-method cash-flow derivation
-(journal-grouped cash classification), tie-out registry for the
-remaining page exports.
+tie-outs already existed. Direct-method operating cash flow landed
+(`deriveDirectCashFlow`, receipts/payments exact conversions footing
+to the cash account; investing/financing one disclosed residual), and
+report-scheduler governance: due schedules are detected, run by a
+human, recorded, and advanced — the false "automatically generate and
+distribute" copy was corrected; distribution stays manual until a
+connector exists (E2). Remaining in Phase 9: report designer
+verification, tie-out registry for the remaining page exports.
 
 ## 11. How I will work — the commitment
 

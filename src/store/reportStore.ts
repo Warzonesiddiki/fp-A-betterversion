@@ -5,7 +5,8 @@ import { immer } from 'zustand/middleware/immer';
 import type { FinanceReport, ScheduledReport, ReportState } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
-import { nowMs } from '@/utils/clock';
+import { nowMs, nowISO } from '@/utils/clock';
+import { markScheduleRun } from '@/services/reports/scheduleRuns';
 
 export const useReportStore = create<ReportState>()(
   subscribeWithSelector(
@@ -89,6 +90,19 @@ export const useReportStore = create<ReportState>()(
             const idx = state.scheduledReports.findIndex((s) => s.id === id);
             if (idx !== -1) {
               state.scheduledReports[idx]!.isActive = !state.scheduledReports[idx]!.isActive;
+            }
+          })
+        ),
+
+        recordScheduleRun: enforce(Permissions.REPORT_SCHEDULE, 'recordScheduleRun', (id, status) =>
+          set((state) => {
+            const idx = state.scheduledReports.findIndex((s) => s.id === id);
+            if (idx !== -1) {
+              state.scheduledReports[idx] = markScheduleRun(
+                state.scheduledReports[idx]!,
+                nowISO(),
+                status
+              );
             }
           })
         ),

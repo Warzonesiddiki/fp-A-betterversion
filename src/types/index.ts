@@ -528,6 +528,9 @@ export interface ScheduledReport {
   readonly recipients: string[];
   readonly nextRun: string;
   readonly isActive: boolean;
+  /** Governance (Phase 9): when a human last actioned this schedule. */
+  readonly lastRunAt?: string;
+  readonly lastRunStatus?: string;
 }
 
 // --- Store State Types ---
@@ -656,6 +659,7 @@ export interface ReportState {
   readonly addScheduledReport: (scheduled: Omit<ScheduledReport, 'id'>) => string;
   readonly deleteScheduledReport: (id: string) => void;
   readonly toggleScheduledReport: (id: string) => void;
+  readonly recordScheduleRun: (id: string, status: string) => void;
   readonly setError: (error: string | null) => void;
   readonly clearError: () => void;
   readonly setLoading: (loading: boolean) => void;

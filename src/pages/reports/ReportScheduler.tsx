@@ -3,6 +3,9 @@ import { useShallow } from 'zustand/react/shallow';
 import { useNavigate } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { useReportStore } from '@/store/reportStore';
+import { findDueSchedules } from '@/services/reports/scheduleRuns';
+import { nowISO } from '@/utils/clock';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { HelpPanel } from '@/components/ui/HelpPanel';
@@ -14,17 +17,17 @@ const HELP_SECTIONS = [
   {
     title: 'What is Report Scheduling?',
     content:
-      'Automate the generation and distribution of financial reports on a recurring basis. Schedules can be daily, weekly, monthly, or quarterly.',
+      'Track recurring report obligations. When a schedule falls due it is flagged here for you to run; automatic generation and email distribution are not performed by this app — recipients are recorded so you can send the report yourself. Schedules can be daily, weekly, monthly, or quarterly.',
   },
   {
     title: 'Setting Up a Schedule',
     content:
-      'Click "Add Schedule", select a report, choose frequency, and configure recipients. The system will automatically generate and distribute the report at the specified interval.',
+      'Click "Add Schedule", select a report, choose frequency, and configure recipients. When the schedule comes due, use "Run now" here: the run is recorded, the next run date advances, and the report opens for you to generate and distribute.',
   },
   {
     title: 'Managing Schedules',
     content:
-      'Toggle active/inactive to pause or resume a schedule. Remove schedules that are no longer needed. Each schedule tracks its next run date.',
+      'Toggle active/inactive to pause or resume a schedule. Remove schedules that are no longer needed. Each schedule tracks its next run date and its last recorded run.',
   },
 ];
 
@@ -44,6 +47,7 @@ export default function ReportSchedulerPage() {
     addScheduledReport,
     deleteScheduledReport,
     toggleScheduledReport,
+    recordScheduleRun,
   } = useReportStore(
     useShallow((s) => ({
       reports: s.reports,
@@ -51,6 +55,7 @@ export default function ReportSchedulerPage() {
       addScheduledReport: s.addScheduledReport,
       deleteScheduledReport: s.deleteScheduledReport,
       toggleScheduledReport: s.toggleScheduledReport,
+      recordScheduleRun: s.recordScheduleRun,
     }))
   );
   const navigate = useNavigate();
@@ -76,6 +81,17 @@ export default function ReportSchedulerPage() {
       });
     },
     [addScheduledReport]
+  );
+
+  const dueSchedules = findDueSchedules(scheduledReports, nowISO());
+
+  const handleRunNow = useCallback(
+    (id: string, reportId: string) => {
+      recordScheduleRun(id, 'opened-for-generation');
+      navigate('/reports');
+      void reportId;
+    },
+    [recordScheduleRun, navigate]
   );
 
   const handleRemove = useCallback(
@@ -138,6 +154,48 @@ export default function ReportSchedulerPage() {
 
   return (
     <div className="p-6 space-y-6" role="main" aria-label="Report Scheduler page">
+      {dueSchedules.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Schedules due ({dueSchedules.length})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {dueSchedules.map((s) => {
+                const matchedReport = reports.find((r) => r.id === s.reportId);
+                return (
+                  <div key={s.id} className="flex items-center gap-3 text-sm">
+                    <span className="flex-1">
+                      {matchedReport?.name ?? 'Unknown Report'} — due {s.nextRun}
+                      {s.recipients.length > 0 &&
+                        ` · recipients: ${s.recipients.join(', ')} (send manually)`}
+                    </span>
+                    <Button size="sm" onClick={() => handleRunNow(s.id, s.reportId)}>
+                      Run now
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-xs text-[var(--text-muted)] mt-3">
+              Running records the run and advances the next run date. This app does not email
+              reports automatically.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+      {scheduledReports.some((s) => s.lastRunAt) && (
+        <div className="space-y-1">
+          {scheduledReports
+            .filter((s) => s.lastRunAt)
+            .map((s) => (
+              <p key={s.id} className="text-xs text-[var(--text-muted)]">
+                {reports.find((r) => r.id === s.reportId)?.name ?? 'Unknown Report'}: last run{' '}
+                {s.lastRunAt} ({s.lastRunStatus})
+              </p>
+            ))}
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <div>
           <PageHeader
