@@ -74,7 +74,7 @@ npm run check                    # the whole gate: tsc · eslint · prettier · 
 ```
 src/
 ├── engines/        # Financial Engines (183 modules) — 101 shipped, 82 orphans (see audit P1-12)
-├── store/          # Store Architecture (48 Stores) — Zustand; 44 persisted via masterStorage
+├── store/          # Store Architecture (49 Stores) — Zustand; 43 persisted via masterStorage
 ├── pages/          # routed page modules (242 <Route>s — scope reduction is audit P1-6)
 ├── components/     # UI, charts, sectors, AI copilot, spreadsheet
 ├── workers/        # Web Workers (5 active) — consolidation, Monte Carlo, batch calc, storage, GL staging

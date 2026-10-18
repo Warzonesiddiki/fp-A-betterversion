@@ -97,14 +97,14 @@ next finishable item.
 ## Done notes
 
 - 2026-10-18 (LEAD, solo): **Q7 items 5 and 6 closed; item 7's number refresh lands with the
-  final `npm run check` tally.** *Item 5* — the import/store regression pass over real
+  final `npm run check` tally.** _Item 5_ — the import/store regression pass over real
   consumers: `npx vitest run src/store src/services/import src/components/data
-  src/components/exceptions src/pages/data src/utils` → **198 files / 2,725 tests, 0 failures**
+src/components/exceptions src/pages/data src/utils` → **198 files / 2,725 tests, 0 failures**
   (Node 26.10.0), plus the server suite from a clean install: `cd server && npm ci && npm test`
   → **32 files / 323 tests green** — the suite could not run at all only because
   `server/node_modules` had never been installed in this checkout; the native binding
   bootstraps through `ensure-native-db.mjs` and better-sqlite3 13.0.3 ships an ABI-147 prebuild.
-  *Item 6* — the template-clone cut is re-measured and written down in
+  _Item 6_ — the template-clone cut is re-measured and written down in
   `docs/agent/09_KNOWN_GAPS.md` (Unwired table + the three commands that reproduce every
   number): **60** non-test pages read `useGLStore` without importing `@/engines`, **20** of them
   build stats inline, and only **7** page files declare a top-level `compute*` today (the
@@ -112,7 +112,7 @@ next finishable item.
   wired since, while the collaboration trio, `LeaseAccountingPage` and `ChartOfAccountsPage`
   still compute inline. Note-only by design — wiring formulas changes money semantics, which is
   DEC-002's order, and `npm run mock-data:audit` stays green (wired=7, disclosed=20).
-  *Item 7 so far* — the env-caveat row in `09_KNOWN_GAPS.md` now records the storage-spy fix
+  _Item 7 so far_ — the env-caveat row in `09_KNOWN_GAPS.md` now records the storage-spy fix
   instead of three phantom failures, FR-010's register evidence says **Partial (17 tests)**
   instead of "Not built", and the census row's first draft claim ("no page-level formula test")
   was cut back to what was measured (no engine import).
@@ -128,16 +128,16 @@ next finishable item.
   `scripts/palette-ratchet.mjs` (modelled line-for-line on `scripts/determinism-ratchet.mjs`: same
   `walk`/`isTest`/`stripComments`, same per-file attribution, same `--update`-refuses-worse rule)
   now fails if any FILE's count rises or a new file appears with any, and runs inside `npm run check`
-  after `determinism:ratchet`. Baseline recorded from measurement, not typed: 5548 / 373. The row
+  after `determinism:ratchet`. Baseline recorded from measurement, not typed: 5502 / 370. The row
   `palette migration` is script-checked in `docs/agent/09_KNOWN_GAPS.md` too (`ratchet-docs-check.mjs`
   now verifies 9 values: 5 table rows + 4 prose claims), so lowering the baseline forces the doc to
   move in the same commit. Worst offenders at recording: `src/components/audit/auditTokens.ts` 161
   (a pseudo-token module of hardcoded `dark:` pairs), `src/pages/ai/AIIntelligencePage.tsx` 158,
   `src/pages/periods/PeriodClosePage.tsx` 114. Failing-first: **7 red** (all seven with `Cannot find
-  module .../scripts/palette-ratchet.mjs`) → **7/7 green**; `ratchetDocsScript.test.ts` 7/7 with
+module .../scripts/palette-ratchet.mjs`) → **7/7 green**; `ratchetDocsScript.test.ts` 7/7 with
   `EXPECTED_ROWS` extended in the same commit. Negative control on the real tree: appended
   `text-slate-500` to `src/components/ai/AICopilotPanel.tsx` (baseline 1) → `PALETTE RATCHET FAILED:
-  ✗ ... 1 -> 2 (+1)`, exit 1; restored → exit 0. Every fixture lives in `mkdtempSync(tmpdir())`
+✗ ... 1 -> 2 (+1)`, exit 1; restored → exit 0. Every fixture lives in `mkdtempSync(tmpdir())`
   reached with `--root=`, never a probe inside `src/`, because the contrast contracts scan
   `src/components` and `src/pages` while vitest runs files in parallel. Docs in the same commit:
   `docs/agent/05_COMMANDS_AND_GATES.md`, `docs/agent/09_KNOWN_GAPS.md`, `README.md`, `AGENTS.md`.
