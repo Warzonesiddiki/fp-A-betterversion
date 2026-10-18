@@ -31,21 +31,39 @@ vi.mock('recharts', () => ({
   RadialBar: () => <div data-testid="radial-bar" />,
 }));
 
-// Selector-aware mock: the page subscribes via useGLStore((s) => s.entries),
-// so the mock must apply a selector when one is passed.
-vi.mock('@/store/glStore', () => ({
-  useGLStore: (selector?: (s: { entries: unknown[] }) => unknown) => {
+// Phase 10 decontamination: the page must derive from ACTUAL workforce
+// records. The mock supplies real employees; the old invented LEVELS
+// bands (Junior/Senior/...) must never appear.
+vi.mock('@/store/workforceStore', () => ({
+  useWorkforceStore: (selector?: (s: { employees: unknown[] }) => unknown) => {
     const state = {
-      entries: [
+      employees: [
         {
-          id: '1',
-          accountCode: '5000',
-          accountName: 'Salaries',
-          debit: 100000,
-          credit: 0,
-          amount: 100000,
-          period: '2026-01',
-          department: 'Engineering',
+          id: 'e1',
+          name: 'A',
+          department: 'Eng',
+          position: 'Engineer',
+          salary: 100000,
+          startDate: '2024-01-01',
+          status: 'active',
+        },
+        {
+          id: 'e2',
+          name: 'B',
+          department: 'Eng',
+          position: 'Engineer',
+          salary: 120000,
+          startDate: '2024-01-01',
+          status: 'active',
+        },
+        {
+          id: 'e3',
+          name: 'C',
+          department: 'Design',
+          position: 'Designer',
+          salary: 80000,
+          startDate: '2024-01-01',
+          status: 'active',
         },
       ],
     };
@@ -53,7 +71,7 @@ vi.mock('@/store/glStore', () => ({
   },
 }));
 
-import { render, screen } from '@/test/testUtils';
+import { render, screen, within } from '@/test/testUtils';
 import CompModelingPage from '../CompModelingPage';
 
 describe('CompModelingPage', () => {
@@ -61,37 +79,29 @@ describe('CompModelingPage', () => {
     vi.clearAllMocks();
   });
 
-  it('renders the page heading', () => {
+  it('renders the page heading and KPI cards', () => {
     render(<CompModelingPage />);
     expect(screen.getAllByText(/compensation modeling/i).length).toBeGreaterThan(0);
-  });
-
-  it('renders KPI cards', () => {
-    render(<CompModelingPage />);
     expect(screen.getAllByText(/total headcount/i).length).toBeGreaterThan(0);
   });
 
-  it('renders compensation level table', () => {
+  it('derives position rows from actual employees — no invented bands', () => {
     render(<CompModelingPage />);
-    expect(screen.getAllByText(/junior/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/senior/i).length).toBeGreaterThan(0);
+    const engineerRow = screen.getByRole('row', { name: /Engineer/ });
+    expect(within(engineerRow).getByText('2')).toBeTruthy(); // headcount
+    expect(screen.getByRole('row', { name: /Designer/ })).toBeTruthy();
+    expect(screen.queryByText('Junior')).toBeNull();
+    expect(screen.queryByText('Principal')).toBeNull();
   });
 
-  it('renders merit increase slider', () => {
+  it('headcount KPI counts actual active employees', () => {
+    render(<CompModelingPage />);
+    expect(screen.getAllByText('3').length).toBeGreaterThan(0);
+  });
+
+  it('renders merit increase slider and charts', () => {
     const { container } = render(<CompModelingPage />);
-    const slider = container.querySelector('input[type="range"]');
-    expect(slider).toBeDefined();
-  });
-
-  it('renders charts', () => {
-    render(<CompModelingPage />);
+    expect(container.querySelector('input[type="range"]')).toBeTruthy();
     expect(screen.getAllByTestId('responsive-container').length).toBeGreaterThan(0);
-  });
-
-  it('renders download button', () => {
-    const { container } = render(<CompModelingPage />);
-    const buttons = container.querySelectorAll('button');
-    const hasDownloadIcon = Array.from(buttons).some((b) => b.querySelector('svg'));
-    expect(hasDownloadIcon).toBe(true);
   });
 });

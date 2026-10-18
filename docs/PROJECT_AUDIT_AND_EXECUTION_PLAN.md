@@ -555,6 +555,16 @@ page-level export tie-outs (financial package, board pack,
 corrections CSV/Excel/PDF, comparison, trial balance) were pinned in
 Phases 2/6. **Phase 9 closed on that basis 2026-10-18.**
 
+**Phase 10 progress 2026-10-18:** GL-derived AR/AP open-item aging
+(reference match -> FIFO -> disclosed unapplied; control-identity
+pinned), the 13-week settlement ladder on the cash page (assumed
+terms stated, beyond-horizon reported), and payroll
+decontamination: CompModelingPage's invented LEVELS bands and
+HeadcountPlanPage's formula-invented headcounts/attrition replaced
+by derivations from actual workforce records (planned headcount and
+attrition no longer displayed - no source data exists). Remaining:
+sector operational adapters (with Phase 11/E1).
+
 ## 11. How I will work — the commitment
 
 **Session ritual (every session, no exceptions):**

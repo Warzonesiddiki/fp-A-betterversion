@@ -1,21 +1,12 @@
 import { useEffect, useMemo } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
-import { useGLStore } from '@/store/glStore';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { KPIValue } from '@/components/ui/KPIValue';
 import { DataTable, type Column } from '@/components/ui/DataTable';
-import {
-  Headphones,
-  FileText,
-  Table as TableIcon,
-  Users,
-  DollarSign,
-  TrendingDown,
-} from 'lucide-react';
+import { Headphones, FileText, Table as TableIcon, Users, DollarSign } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
-import { roundTo, sumMoney, multiplyMoney, divideMoney, subtractMoney } from '@/utils/money';
 
 import {
   ResponsiveContainer,
@@ -32,75 +23,38 @@ import {
 import { TreemapChart } from '@/components/charts/TreemapChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-interface DeptRow {
-  department: string;
-  current: number;
-  planned: number;
-  variance: number;
-  cost: number;
-}
+import { useWorkforceStore } from '@/store/workforceStore';
+import { useShallow } from 'zustand/react/shallow';
+import { todayISO } from '@/utils/clock';
+import { deriveHeadcountPlan, type DepartmentHeadcount } from './headcountPlanData';
 
+/**
+ * Phase 10 decontamination: this page previously multiplied a real
+ * GL average cost by invented department headcounts and an invented
+ * attrition trend. It now derives entirely from actual workforce
+ * records (see headcountPlanData). Planned headcount and attrition
+ * are not displayed — no plan or termination-date data exists to
+ * derive them from.
+ */
 export default function HeadcountPlanPage() {
   const fmt = useCurrencyFormatter();
-  const entries = useGLStore((s) => s.entries);
+  const employees = useWorkforceStore(useShallow((s) => s.employees)) ?? [];
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Headcount Plan';
   }, []);
 
-  const data = useMemo(() => {
-    if (entries.length === 0) return null;
-    const salaryEntries = entries.filter(
-      (e) => (e.accountCode || '').startsWith('71') || (e.accountCode || '').startsWith('72')
-    );
-    const totalCost = sumMoney(
-      salaryEntries.map((e) => Math.abs(roundTo(subtractMoney(e.debit, e.credit))))
-    ).toNumber();
-    const count = salaryEntries.length;
-    const avgCost = count > 0 ? divideMoney(totalCost, count).toNumber() : 0;
-    const departments = ['Engineering', 'Sales', 'Marketing', 'Finance', 'Operations', 'HR'];
-    const deptData: DeptRow[] = departments.map((dept, idx) => {
-      const current = Math.floor(15 + ((idx * 7) % 40));
-      const planned = current + Math.floor(((idx * 3) % 10) - 3);
-      return {
-        department: dept,
-        current,
-        planned,
-        variance: planned - current,
-        cost: roundTo(multiplyMoney(current, avgCost), 2),
-      };
-    });
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    const trend = months.map((m, i) => ({
-      month: m,
-      headcount: Math.floor(80 + i * 5 + ((i * 3) % 10)),
-      attrition: roundTo(2 + ((i * 7) % 3), 1),
-    }));
-    return {
-      totalCost,
-      count,
-      avgCost,
-      deptData,
-      trend,
-      chartData: deptData.map((d) => ({
-        name: d.department,
-        current: d.current,
-        planned: d.planned,
-      })),
-    };
-  }, [entries]);
+  const data = useMemo(() => deriveHeadcountPlan(employees, todayISO().slice(0, 7)), [employees]);
+  const hasData = data.totalHeadcount > 0;
 
   const handleExportPDF = () => {
-    if (!data) return;
     void ExportEngine.exportToPDF(
       {
-        headers: ['Department', 'Current', 'Planned', 'Variance', 'Cost'],
-        rows: data.deptData.map((d) => [
+        headers: ['Department', 'Current Headcount', 'Annual Salary Cost'],
+        rows: data.departments.map((d) => [
           d.department,
           d.current.toString(),
-          d.planned.toString(),
-          d.variance.toString(),
           fmt.currency0(d.cost),
         ]),
       },
@@ -109,38 +63,18 @@ export default function HeadcountPlanPage() {
   };
 
   const handleExportExcel = () => {
-    if (!data) return;
     void ExportEngine.exportToExcel(
       {
-        headers: ['Department', 'Current', 'Planned', 'Variance', 'Cost'],
-        rows: data.deptData.map((d) => [
-          d.department,
-          d.current.toString(),
-          d.planned.toString(),
-          d.variance.toString(),
-          fmt.currency0(d.cost),
-        ]),
+        headers: ['Department', 'Current Headcount', 'Annual Salary Cost'],
+        rows: data.departments.map((d) => [d.department, d.current, d.cost]),
       },
       { title: 'Headcount_Plan_Report' }
     ).catch(reportExportFailure);
   };
 
-  const columns: Column<DeptRow>[] = [
+  const columns: Column<DepartmentHeadcount>[] = [
     { key: 'department', header: 'Department', sortable: true },
     { key: 'current', header: 'Current', align: 'right', sortable: true },
-    { key: 'planned', header: 'Planned', align: 'right', sortable: true },
-    {
-      key: 'variance',
-      header: 'Variance',
-      align: 'right',
-      render: (_, r) => (
-        <span className={r.variance >= 0 ? 'text-green-400' : 'text-red-400'}>
-          {r.variance > 0 ? '+' : ''}
-          {r.variance}
-        </span>
-      ),
-      sortable: true,
-    },
     {
       key: 'cost',
       header: 'Annual Cost',
@@ -150,13 +84,16 @@ export default function HeadcountPlanPage() {
     },
   ];
 
-  if (entries.length === 0)
+  if (!hasData)
     return (
       <div className="p-12 text-center">
         <Headphones className="h-10 w-10 text-[var(--text-muted)] mx-auto mb-4" />
-        <h2 className="text-xl font-semibold mb-2">No Data</h2>
-        <p className="text-[var(--text-muted)] mb-6">Import payroll data to plan headcount.</p>
-        <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
+        <h2 className="text-xl font-semibold mb-2">No Workforce Data</h2>
+        <p className="text-[var(--text-muted)] mb-6">
+          Headcount planning derives from your actual employee records. Add active employees with
+          departments, salaries and start dates — no sample headcounts are shown.
+        </p>
+        <Button onClick={() => navigate('/workforce/headcount')}>Open Workforce Planning</Button>
       </div>
     );
 
@@ -177,109 +114,95 @@ export default function HeadcountPlanPage() {
           </div>
         }
       />
-      {data && (
-        <>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <KPIValue
-              label="Total Headcount"
-              value={data.count.toString()}
-              icon={<Users className="h-4 w-4" />}
-            />
-            <KPIValue
-              label="Total Cost"
-              value={fmt.currency0(data.totalCost)}
-              icon={<DollarSign className="h-4 w-4" />}
-            />
-            <KPIValue label="Avg Cost/Head" value={fmt.currency0(data.avgCost)} />
-            <KPIValue
-              label="Attrition Rate"
-              value={`${data!.trend[data.trend.length - 1]!.attrition}%`}
-              icon={<TrendingDown className="h-4 w-4" />}
-            />
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Headcount by Department</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={data.chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                    <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
-                    <YAxis stroke="#94a3b8" fontSize={12} />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                    />
-                    <Legend />
-                    <Bar dataKey="current" fill="#3b82f6" name="Current" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="planned" fill="#8b5cf6" name="Planned" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Headcount & Attrition Trend</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={data.trend}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                    <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} />
-                    <YAxis yAxisId="left" stroke="#94a3b8" fontSize={12} />
-                    <YAxis yAxisId="right" orientation="right" stroke="#94a3b8" fontSize={12} />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
-                    />
-                    <Legend />
-                    <Line
-                      yAxisId="left"
-                      type="monotone"
-                      dataKey="headcount"
-                      stroke="#3b82f6"
-                      strokeWidth={2}
-                      name="Headcount"
-                      dot={{ r: 4 }}
-                    />
-                    <Line
-                      yAxisId="right"
-                      type="monotone"
-                      dataKey="attrition"
-                      stroke="#ef4444"
-                      strokeWidth={2}
-                      name="Attrition %"
-                      dot={{ r: 4 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-          <Card>
-            <CardHeader>
-              <CardTitle>Headcount Allocation</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <TreemapChart
-                data={data.deptData.map((d: { department: string; current: number }) => ({
-                  name: d.department,
-                  size: d.current,
-                }))}
-                height={200}
-                formatValue={(v) => `${v} heads`}
-                ariaLabel="Headcount allocation treemap"
-              />
-            </CardContent>
-          </Card>
-          <DataTable
-            columns={columns}
-            data={data.deptData}
-            caption="Headcount allocation table"
-            ariaLabel="Headcount allocation data table for headcount plan"
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <KPIValue
+          label="Total Headcount"
+          value={data.totalHeadcount.toString()}
+          icon={<Users className="h-4 w-4" />}
+        />
+        <KPIValue
+          label="Total Cost"
+          value={fmt.currency0(data.totalCost)}
+          icon={<DollarSign className="h-4 w-4" />}
+        />
+        <KPIValue label="Avg Cost/Head" value={fmt.currency0(data.avgCostPerHead)} />
+        <KPIValue label="Departments" value={data.departments.length.toString()} />
+      </div>
+      <p className="text-xs text-[var(--text-muted)]">
+        Current headcount and salary cost derive from active employee records. Planned headcount and
+        attrition are not shown: no plan or termination-date data exists to derive them from.
+      </p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Headcount by Department</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart
+                data={data.departments.map((d) => ({ name: d.department, current: d.current }))}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
+                <YAxis stroke="#94a3b8" fontSize={12} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                />
+                <Legend />
+                <Bar dataKey="current" fill="#3b82f6" name="Current" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Headcount Trend (by start date)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <LineChart data={data.trend}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} />
+                <YAxis stroke="#94a3b8" fontSize={12} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="headcount"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  name="Headcount"
+                  dot={{ r: 4 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Headcount Allocation</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TreemapChart
+            data={data.departments.map((d) => ({
+              name: d.department,
+              size: d.current,
+            }))}
+            height={200}
+            formatValue={(v) => `${v} heads`}
+            ariaLabel="Headcount allocation treemap"
           />
-        </>
-      )}
+        </CardContent>
+      </Card>
+      <DataTable
+        columns={columns}
+        data={data.departments}
+        caption="Headcount allocation table"
+        ariaLabel="Headcount allocation data table for headcount plan"
+      />
     </div>
   );
 }
