@@ -825,6 +825,13 @@ compliance authority, key escrow, sector/jurisdiction tiering) are listed in
 that annex's conflicts table and require owner DECs before build — they are
 never silently dropped and never silently built.
 
+Honesty note (2026-10-19): the coverage annex has NO mechanical guard —
+no test or gate parses its rows; row statuses are hand-verified against
+code evidence at edit time (as done for rows 16/23/25/26/45 after Phases
+8/12/13). Building a row-claim checker (in the style of
+`check-readme-claims.mjs`) is an open E6 hygiene item; until it exists,
+every row edit must cite the verifying command in its commit message.
+
 ## 19. Definition of "project complete"
 
 The project is complete when **all** are true and evidenced:
