@@ -110,6 +110,7 @@ deliver CI changes as patches in `ci-patches/` for a human.
 | `npm run docs:links`                          | every live doc link resolves                     |
 | `npm run money:ast` / `money:adoption`        | money ratchets                                   |
 | `npm run determinism:ratchet`                 | wall-clock/random ratchet (`--list`, `--update`) |
+| `npm run palette:ratchet`                     | raw-palette ratchet (`--list`, `--update`)       |
 | `npm run engines:verify`                      | engine manifest current                          |
 | `node scripts/verify-readme-stats.mjs --list` | reachable vs orphan engines                      |
 | `npm run check`                               | the whole gate, honest exit code                 |

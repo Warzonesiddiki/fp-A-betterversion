@@ -1,5 +1,5 @@
 /**
- * The four ratchet numbers in `docs/agent/09_KNOWN_GAPS.md` must be the four
+ * The five ratchet numbers in `docs/agent/09_KNOWN_GAPS.md` must be the five
  * numbers the gates enforce.
  *
  * WHY THIS EXISTS
@@ -34,6 +34,7 @@ const EXPECTED_ROWS = [
   'type-safety escapes',
   'money AST violations',
   'money adoption',
+  'palette migration',
 ];
 
 interface Checked {
@@ -91,7 +92,7 @@ describe('ratchet-docs-check', () => {
     const report = JSON.parse(output) as Report;
     expect(report.ok).toBe(true);
     expect(report.problems).toEqual([]);
-    // All four rows are checked: a renamed row would silently drop a gate.
+    // All five rows are checked: a renamed row would silently drop a gate.
     expect(report.checked.map((c) => c.row)).toEqual(EXPECTED_ROWS);
     for (const c of report.checked) {
       expect(c.ok, `${c.row}: doc ${c.documented} vs gate ${c.expected}`).toBe(true);

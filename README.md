@@ -61,6 +61,7 @@ npm run check                    # the whole gate: tsc · eslint · prettier · 
 | `npm run money:ast`               | AST money-safety ratchet                                                         |
 | `npm run money:adoption`          | Money-primitive adoption (percentage of financial modules on `@/utils/money`)    |
 | `npm run determinism:ratchet`     | Wall-clock / `Math.random` call sites in calculation paths must not rise per file |
+| `npm run palette:ratchet`         | Raw numbered Tailwind palette utilities under `src/` must not rise per file       |
 | `npm run docs:verify`             | README / persistence-map / schema-home truth checks (fails on unmeasured claims) |
 | `npm run engines:verify`          | Engine manifest is current                                                       |
 | `npm run check`                   | Everything above plus the sharded suite, with an honest exit code                |
