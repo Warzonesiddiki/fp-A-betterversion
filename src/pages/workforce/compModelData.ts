@@ -50,16 +50,23 @@ export function derivePositionComp(employees: readonly CompEmployee[]): Position
   return [...groups.entries()]
     .map(([position, salaries]) => {
       const total = sumMoney(salaries);
+      const decimals = salaries.map((s) => toDecimal(s));
+      const min = decimals.reduce((a, b) => (b.lessThan(a) ? b : a));
+      const max = decimals.reduce((a, b) => (b.greaterThan(a) ? b : a));
       return {
         position,
         headcount: salaries.length,
-        minSalary: roundTo(Math.min(...salaries), 2),
-        maxSalary: roundTo(Math.max(...salaries), 2),
+        minSalary: roundTo(min, 2),
+        maxSalary: roundTo(max, 2),
         avgSalary: roundTo(divideMoney(total, salaries.length), 2),
         totalCost: roundTo(total, 2),
       };
     })
-    .sort((a, b) => b.totalCost - a.totalCost || a.position.localeCompare(b.position));
+    .sort(
+      (a, b) =>
+        toDecimal(b.totalCost).comparedTo(toDecimal(a.totalCost)) ||
+        a.position.localeCompare(b.position)
+    );
 }
 
 export function applyMeritIncrease(
