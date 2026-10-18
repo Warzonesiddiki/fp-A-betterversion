@@ -324,7 +324,8 @@ Work top-to-bottom. A phase starts only when the previous phase's exit evidence 
 
 | Phase | Scope | Exit evidence |
 | --- | --- | --- |
-| **0 — Baseline** | `npm ci`, full `npm run check` tally recorded; orphan/route census refreshed | Pasted gate tallies in the handover; this doc's §3 numbers re-measured |
+| **1 — progress 2026-10-18** | Closed so far: shard-1 baseline failures fixed (F-L); F&O GL-statement shape detected/mapped/parsed + TB-snapshot refusal (IMP-05); source-side control totals (IMP-02); saved mapping profiles (IMP-03); headerless CSV by position with row-1 provenance. Still open in Phase 1: BOM/thousands/total-row fixtures are covered by existing tokenizer/parser tests (cited, not re-proven this session); per-shape **real-sample** verification is Phase 1V (owner input). Full-suite 8/8 re-run owed as Phase 0/1 exit tally. | Commits `ad4300a`, `b096a8e`, `804f532`, `3ef5230` + headerless commit; targeted suites cited per commit |
+| **0 — Baseline** | | `npm ci`, full `npm run check` tally recorded; orphan/route census refreshed | Pasted gate tallies in the handover; this doc's §3 numbers re-measured |
 | **1 — Universal import (J1)** | All DEC-015 shapes detected/mapped; TB-snapshot refusal (IMP-05); saved mapping profiles (IMP-03); source-side control totals entry (IMP-02); fixtures per shape incl. BOM, no-header, thousands separators, total rows, `dd-MMM-yyyy` | Per-shape fixture tests green; synthetic file of each shape imports atomically with provenance + control totals |
 | **1V — Owner validation** | Owner imports one real anonymised file per shape they use; D365-side totals reconciled to the cent | Owner-confirmed reconciliation; only then may docs say "verified" for that shape |
 | **2 — Trusted views** | TB/statements sign contract documented + oracle tests; drill-to-source from every statement figure | Oracle tests; statement figure → entries trace test |

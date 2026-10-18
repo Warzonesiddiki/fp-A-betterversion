@@ -14,7 +14,7 @@ import { Alert } from '@/components/ui/Alert';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { ExcelImportEngine } from '@/engines/ExcelImportEngine';
-import { hasDuplicateHeaders, parseCSV } from '@/utils/csv';
+import { hasDuplicateHeaders, parseCSV, parseCSVRecords } from '@/utils/csv';
 import type {
   ExpectedControlTotals,
   ImportControlTotals,
@@ -143,6 +143,10 @@ export default function GLUploadPage() {
 
   const [sheetNames, setSheetNames] = useState<string[]>([]);
   const [selectedSheet, setSelectedSheet] = useState<string>('');
+  // DEC-013 §4.1: a headerless CSV (a legal D365 data-management export)
+  // must be mapped by position by the user — never headed by guessing that
+  // the first posting is a header row.
+  const [noHeaderRow, setNoHeaderRow] = useState(false);
 
   const handleFile = useCallback(
     async (file: File) => {
@@ -169,7 +173,25 @@ export default function GLUploadPage() {
 
         if (ext === 'csv') {
           const text = new TextDecoder().decode(bytes);
-          const { headers, rows: data } = parseCSV(text);
+          const { headers, rows: data } = noHeaderRow
+            ? (() => {
+                const records = parseCSVRecords(text).filter(
+                  (r) => r.length > 0 && r.some((c) => c.trim() !== '')
+                );
+                const width = records.reduce((max, r) => Math.max(max, r.length), 0);
+                const synthHeaders = Array.from({ length: width }, (_, i) => `Column ${i + 1}`);
+                return {
+                  headers: synthHeaders,
+                  rows: records.map((record) => {
+                    const row: Record<string, string> = {};
+                    synthHeaders.forEach((h, i) => {
+                      row[h] = (record[i] ?? '').trim();
+                    });
+                    return row;
+                  }),
+                };
+              })()
+            : parseCSV(text);
           if (headers.length === 0 || data.length === 0) {
             setImportError(
               'File contains no data. The file must have a header row and at least one data row.'
@@ -288,7 +310,7 @@ export default function GLUploadPage() {
         setImportStatus('idle');
       }
     },
-    [setImportError, setImportStatus]
+    [setImportError, setImportStatus, noHeaderRow]
   );
 
   const handleSheetChange = useCallback(
@@ -371,7 +393,7 @@ export default function GLUploadPage() {
       sourceRows,
       rejections: preRejections,
       rowErrors,
-    } = parseGLRows(rawData, mappings);
+    } = parseGLRows(rawData, mappings, noHeaderRow ? 1 : 2);
 
     if (parsedEntries.length === 0) {
       setImportError(
@@ -466,6 +488,7 @@ export default function GLUploadPage() {
   }, [
     rawData,
     mappings,
+    noHeaderRow,
     currentFile,
     fileHash,
     expectedRows,
@@ -567,6 +590,14 @@ export default function GLUploadPage() {
           computer.
         </p>
         <FileDropZone onFile={handleFile} accept=".csv,.xlsx,.xls" />
+        <label className="mt-4 flex items-center justify-center gap-2 text-xs">
+          <input
+            type="checkbox"
+            checked={noHeaderRow}
+            onChange={(e) => setNoHeaderRow(e.target.checked)}
+          />
+          This CSV has no header row — map its columns by position (Column 1, Column 2, …)
+        </label>
         <div className="flex gap-4 justify-center mt-4 text-xs text-[var(--text-muted)]">
           <span>Max: 50MB</span>
           <span>Formats: CSV, XLSX, XLS</span>
@@ -614,6 +645,14 @@ export default function GLUploadPage() {
       {step === 0 && importHistory.length > 0 && (
         <div className="text-center py-12">
           <FileDropZone onFile={handleFile} accept=".csv,.xlsx,.xls" />
+          <label className="mt-4 flex items-center justify-center gap-2 text-xs">
+            <input
+              type="checkbox"
+              checked={noHeaderRow}
+              onChange={(e) => setNoHeaderRow(e.target.checked)}
+            />
+            This CSV has no header row — map its columns by position (Column 1, Column 2, …)
+          </label>
         </div>
       )}
 

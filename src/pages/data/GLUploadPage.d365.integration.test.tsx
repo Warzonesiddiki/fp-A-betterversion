@@ -464,3 +464,50 @@ describe('IMP-03 — saved mapping profiles in the wizard', () => {
     expect(profiles[0]?.mappings.accountCode).toBe('MainAccount');
   });
 });
+
+describe('DEC-013 §4.1 — headerless CSV (mapped by the user, never guessed)', () => {
+  beforeEach(() => {
+    actAs('Admin');
+    setClock(PINNED);
+    resetGLStore();
+    useGLUploadStore.setState({ mappingProfiles: [] });
+  });
+  afterEach(() => {
+    resetClock();
+  });
+
+  it('imports a headerless file by position with source rows starting at row 1', async () => {
+    // A positional profile is how a recurring headerless export gets mapped.
+    useGLUploadStore.getState().saveMappingProfile({
+      name: 'DMF headerless',
+      headers: ['Column 1', 'Column 2', 'Column 3', 'Column 4'],
+      mappings: {
+        accountCode: 'Column 1',
+        postDate: 'Column 2',
+        debit: 'Column 3',
+        credit: 'Column 4',
+      },
+    });
+    const csv = ['1000,2026-01-05,250.00,', '4000,2026-01-05,,250.00', ''].join('\n');
+
+    renderPage();
+    fireEvent.click(await screen.findByLabelText(/no header row/i));
+    const input = await screen.findByLabelText('Upload file');
+    fireEvent.change(input, {
+      target: { files: [new File([csv], 'dmf-export.csv', { type: 'text/csv' })] },
+    });
+
+    expect(await screen.findByText('Map Columns')).toBeTruthy();
+    expect(screen.getByText('4 columns detected')).toBeTruthy();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Preview Data' })).toBeEnabled());
+
+    fireEvent.click(screen.getByRole('button', { name: 'Preview Data' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Confirm & Import Data' }));
+    expect(await screen.findByText('Import Complete')).toBeTruthy();
+
+    const st = useGLStore.getState();
+    expect(st.entries).toHaveLength(2);
+    // No header exists in this file, so the first posting IS source row 1.
+    expect(st.entries.map((e) => e.provenance?.sourceRow)).toEqual([1, 2]);
+  });
+});
