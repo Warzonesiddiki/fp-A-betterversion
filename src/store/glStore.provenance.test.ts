@@ -389,11 +389,9 @@ describe('glStore import provenance (Gate 2)', () => {
       { accountCode: '1000', accountName: 'Cash', date: '2026-01-05', debit: 100, credit: 0 },
       { accountCode: '4000', accountName: 'Revenue', date: '2026-01-05', debit: 0, credit: 100 },
     ];
-    const ok = useGLStore
-      .getState()
-      .importGLData(rows, 'd365-jan.csv', {
-        expectedTotals: { rows: 2, debit: '100.00', credit: '100' },
-      });
+    const ok = useGLStore.getState().importGLData(rows, 'd365-jan.csv', {
+      expectedTotals: { rows: 2, debit: '100.00', credit: '100' },
+    });
     expect(ok.success).toBe(true);
     expect(ok.reconciliation?.status).toBe('reconciled');
     expect(useGLStore.getState().importHistory[0]?.reconciliation?.status).toBe('reconciled');

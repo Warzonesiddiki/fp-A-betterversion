@@ -38,14 +38,17 @@ import { deriveHeadcountPlan, type DepartmentHeadcount } from './headcountPlanDa
  */
 export default function HeadcountPlanPage() {
   const fmt = useCurrencyFormatter();
-  const employees = useWorkforceStore(useShallow((s) => s.employees)) ?? [];
+  const employees = useWorkforceStore(useShallow((s) => s.employees));
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Headcount Plan';
   }, []);
 
-  const data = useMemo(() => deriveHeadcountPlan(employees, todayISO().slice(0, 7)), [employees]);
+  const data = useMemo(
+    () => deriveHeadcountPlan(employees ?? [], todayISO().slice(0, 7)),
+    [employees]
+  );
   const hasData = data.totalHeadcount > 0;
 
   const handleExportPDF = () => {

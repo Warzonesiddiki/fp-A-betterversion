@@ -17,7 +17,7 @@ import {
   Line,
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { roundTo, sumMoney, multiplyMoney, subtractMoney, divideMoney } from '@/utils/money';
+import { roundTo, sumMoney, multiplyMoney, subtractMoney } from '@/utils/money';
 import { formatCompact } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useWorkforceStore } from '@/store/workforceStore';
@@ -26,7 +26,7 @@ import { derivePositionComp, applyMeritIncrease } from './compModelData';
 
 export default function CompModelingPage() {
   const fmt = useCurrencyFormatter();
-  const employees = useWorkforceStore(useShallow((s) => s.employees)) ?? [];
+  const employees = useWorkforceStore(useShallow((s) => s.employees));
   const navigate = useNavigate();
   const [meritPct, setMeritPct] = useState(3.5);
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function CompModelingPage() {
   // employees in the workforce store. The previous hardcoded LEVELS
   // table (invented bands, headcounts and performance ratings) is gone.
   const compData = useMemo(
-    () => applyMeritIncrease(derivePositionComp(employees), meritPct),
+    () => applyMeritIncrease(derivePositionComp(employees ?? []), meritPct),
     [employees, meritPct]
   );
 

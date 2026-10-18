@@ -10,7 +10,7 @@ import { BrowserRouter } from 'react-router-dom';
 import CorrectionsPage from './CorrectionsPage';
 import { useGLStore } from '@/store/glStore';
 import { useExceptionDispositionStore } from '@/store/exceptionDispositionStore';
-import { setClock, resetClock } from '@/utils/clock';
+import { setClock } from '@/utils/clock';
 import type { GLEntry } from '@/types';
 
 const FIXED = '2026-10-15T09:30:00.000Z';

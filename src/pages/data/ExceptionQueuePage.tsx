@@ -93,8 +93,8 @@ export default function ExceptionQueuePage() {
             {result!.options.dormancyDays} days, outlier accounts with ≥{' '}
             {result!.options.outlierMinEntries} entries at {result!.options.outlierMadFactor}× MAD.
             Aggregate rules R-001…R-004 also ran over monthly baselines (prior-month averages,
-            month-over-month, prior-year, per-account z-scores). R-005 (margin trend break) is
-            still PROPOSED in the catalogue and is not run.
+            month-over-month, prior-year, per-account z-scores). R-005 (margin trend break) is still
+            PROPOSED in the catalogue and is not run.
           </p>
         </CardContent>
       </Card>

@@ -30,7 +30,6 @@ function lease(overrides: Partial<LeaseContract>): LeaseContract {
 
 /** Independent PV: 1000 x a-angle-12 at 1% per month. */
 function oraclePV(): Decimal {
-  const r = new Decimal('0.01');
   let pv = new Decimal(0);
   for (let i = 1; i <= 12; i += 1) pv = pv.plus(new Decimal(1000).div(new Decimal('1.01').pow(i)));
   return pv;

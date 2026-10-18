@@ -304,7 +304,7 @@ export default function ThreeStatementDashboardPage() {
             <p className="text-xs text-[var(--text-muted)] pt-1">
               Operating lines use the direct method for the selected period (revenue adjusted for
               receivable movements; expenses adjusted for inventory and payable movements) and
-              foot to the period's change in cash. Investing and financing stay combined: the
+              foot to the period&apos;s change in cash. Investing and financing stay combined: the
               posted ledger carries no per-activity mapping that would justify splitting them,
               so they are not estimated apart.
             </p>

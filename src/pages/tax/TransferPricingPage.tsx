@@ -289,9 +289,9 @@ export default function TransferPricingPage() {
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-[var(--text-muted)]">
-            Margins and arm's-length ranges come from your benchmark study, not from the ledger.
-            Attaching one records the study reference; compliance is then computed against the range
-            — a margin outside it is reported non-compliant.
+            Margins and arm&apos;s-length ranges come from your benchmark study, not from the
+            ledger. Attaching one records the study reference; compliance is then computed against
+            the range — a margin outside it is reported non-compliant.
           </p>
           <div className="grid gap-3 md:grid-cols-3">
             <label className="text-sm space-y-1">
@@ -330,7 +330,7 @@ export default function TransferPricingPage() {
               />
             </label>
             <label className="text-sm space-y-1">
-              <span className="text-[var(--text-muted)]">Arm's-length range low %</span>
+              <span className="text-[var(--text-muted)]">Arm&apos;s-length range low %</span>
               <input
                 type="number"
                 value={benchLow}
@@ -340,7 +340,7 @@ export default function TransferPricingPage() {
               />
             </label>
             <label className="text-sm space-y-1">
-              <span className="text-[var(--text-muted)]">Arm's-length range high %</span>
+              <span className="text-[var(--text-muted)]">Arm&apos;s-length range high %</span>
               <input
                 type="number"
                 value={benchHigh}

@@ -283,8 +283,8 @@ export default function CashForecastPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-[var(--text-muted)]">
-              Opening cash {fmt.currency(ladder.openingCash)} at {ladder.asOf}. Expected collections and
-              payments from open receivables/payables, by assumed due week.
+              Opening cash {fmt.currency(ladder.openingCash)} at {ladder.asOf}. Expected collections
+              and payments from open receivables/payables, by assumed due week.
             </p>
             <div className="overflow-x-auto">
               <table className="w-full text-sm" aria-label="13-week settlement ladder">
@@ -312,8 +312,8 @@ export default function CashForecastPage() {
             </div>
             {(ladder.beyondHorizon.collections > 0 || ladder.beyondHorizon.payments > 0) && (
               <p className="text-xs text-[var(--text-muted)]">
-                Beyond week 13: collections {fmt.currency(ladder.beyondHorizon.collections)}, payments{' '}
-                {fmt.currency(ladder.beyondHorizon.payments)}.
+                Beyond week 13: collections {fmt.currency(ladder.beyondHorizon.collections)},
+                payments {fmt.currency(ladder.beyondHorizon.payments)}.
               </p>
             )}
             <ul className="text-xs text-[var(--text-muted)] space-y-1">
