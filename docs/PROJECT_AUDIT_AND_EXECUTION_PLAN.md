@@ -359,6 +359,18 @@ period-aware TB presentation on the TB page (engine now exists).
 - **Tracker:** in-tool list with status ageing; only humans set `APPLIED`; on a later import the tool may attach a _proposed_ re-verification (e.g. "reversal of batch 7 · row 214 appears in batch 9") which a human confirms to `RE-VERIFIED`.
 - The Excel file is a working document for the accounts team, not a report: they can return it with status updates, and re-importing that status sheet is a Phase-5 nicety — **not** v1 scope.
 
+**Phase 5 progress 2026-10-18 (code side closed):** correction lifecycle
+enforced in the store (REQUESTED → APPLIED → REVERIFIED, WITHDRAWN from
+open states, terminal states locked, re-request is the audited restart);
+Excel correction list generated from the tracker records and tied to them
+field-by-field by test (`src/services/corrections/buildCorrectionList.ts`);
+tracker page `/data/corrections` (create from ACCEPTED findings, ageing,
+human-only status actions, Excel export); re-verification proposals when
+an APPLIED finding goes quiet — proposed by the tool, confirmed only by
+a human click. The spine J1 → J2 → J3 → J4 is now connected end to end.
+Remaining: Phase 6 platform truth (offline auth DEC-014, persistence
+DEC-005 execution, PDF tie-out leg, CI on main, key-escrow DEC).
+
 ## 10. Roadmap — phases, gates, exit evidence
 
 Work top-to-bottom. A phase starts only when the previous phase's exit evidence exists.

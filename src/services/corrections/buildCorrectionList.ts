@@ -72,8 +72,7 @@ export function buildCorrectionList(input: {
 
     const account = first?.accountCode ?? parsed?.targetId ?? '';
     const date = first?.date ?? '';
-    const amount =
-      typeof finding?.observedValue === 'number' ? finding.observedValue : null;
+    const amount = typeof finding?.observedValue === 'number' ? finding.observedValue : null;
     const locator = first?.provenance
       ? `${first.provenance.sourceFile} · ${first.provenance.batchId} · row ${first.provenance.sourceRow}`
       : (correction.source ?? '');

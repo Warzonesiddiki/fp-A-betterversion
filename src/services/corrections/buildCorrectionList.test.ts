@@ -5,7 +5,10 @@
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { buildCorrectionList } from './buildCorrectionList';
-import { runExceptionRules, type ExceptionEntryInput } from '@/services/exceptions/runExceptionRules';
+import {
+  runExceptionRules,
+  type ExceptionEntryInput,
+} from '@/services/exceptions/runExceptionRules';
 import { useExceptionDispositionStore } from '@/store/exceptionDispositionStore';
 import { setClock, resetClock } from '@/utils/clock';
 import type { CorrectionRequest } from '@/types/exceptions';

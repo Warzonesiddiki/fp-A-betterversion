@@ -448,6 +448,21 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
       },
     ],
   },
+  '/data/corrections': {
+    title: 'Corrections',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'The correction hand-off to the accounts team. When you accept an exception candidate as a real problem, you request the correction here: what has to change, who owns it, and by when. The Excel correction list is generated from these same records, so the file and this screen can never disagree.',
+      },
+      {
+        title: 'How does a correction close?',
+        content:
+          'Only by human action, in order: REQUESTED → APPLIED (the accounts team says it is fixed, recorded by your click) → REVERIFIED (you checked the fix in the ledger). When a later import makes the rule stop flagging the item, the tool proposes re-verification — it never confirms it for you. Withdrawn requests stay visible in the audit history.',
+      },
+    ],
+  },
   '/data/gl-journals': {
     title: 'Journals',
     sections: [
