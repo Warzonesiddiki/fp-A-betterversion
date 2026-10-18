@@ -3,10 +3,10 @@
  * Regenerate with: node scripts/generate-engine-manifest.mjs
  *
  * Maps every engine id to a dynamic import (N-0013). Hand-maintaining this
- * list is exactly how EngineRegistry ended up knowing only 40 of 184
+ * list is exactly how EngineRegistry ended up knowing only 40 of 183
  * engines while the rest were unreachable at runtime.
  *
- * Engines: 184
+ * Engines: 183
  */
 
 export type EngineId =
@@ -21,7 +21,6 @@ export type EngineId =
   | 'AllocationEngine'
   | 'AllocationRuleEngine'
   | 'AnomalyDetectionEngine'
-  | 'AnomalyExplainer'
   | 'ArrayFormulaEngine'
   | 'AssumptionEngine'
   | 'AuditEngine'
@@ -210,7 +209,6 @@ export const ENGINE_MANIFEST: Record<EngineId, () => Promise<EngineModule>> = {
   AllocationEngine: () => import('./AllocationEngine'),
   AllocationRuleEngine: () => import('./AllocationRuleEngine'),
   AnomalyDetectionEngine: () => import('./AnomalyDetectionEngine'),
-  AnomalyExplainer: () => import('./AnomalyExplainer'),
   ArrayFormulaEngine: () => import('./ArrayFormulaEngine'),
   AssumptionEngine: () => import('./AssumptionEngine'),
   AuditEngine: () => import('./AuditEngine'),

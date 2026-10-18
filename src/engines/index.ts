@@ -10,7 +10,6 @@ export { AggregationDesigner } from './AggregationDesigner';
 // export { AllocationEngine } from './AllocationEngine'; // barrel-export disabled for dynamic import splitting
 export { AllocationRuleEngine } from './AllocationRuleEngine';
 export { AnomalyDetectionEngine } from './AnomalyDetectionEngine'; // RE-ENABLED 2026-06-15
-export { AnomalyExplainer } from './AnomalyExplainer';
 export { ArrayFormulaEngine } from './ArrayFormulaEngine';
 export { AssumptionEngine } from './AssumptionEngine';
 // export { AuditEngine } from './AuditEngine'; // barrel-export disabled for dynamic import splitting
