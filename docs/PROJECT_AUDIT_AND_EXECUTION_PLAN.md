@@ -415,10 +415,15 @@ its cell; the pass caught a real defect: the real-estate cap-rate
 valuation formula used a ternary operator the SafeMathParser cannot
 evaluate, so property value could never cascade; the formula is now
 parser-supported and a zero cap rate surfaces as an error instead of
-silently zeroing the value. Remaining in Phase 7: scenario→3-statement
-impact tests (the ScenarioEngine is currently only fed by mock data),
+silently zeroing the value. Scenario→3-statement impact DONE 2026-10-18
+(`src/services/scenario/scenarioImpact.ts`): scenarios scale the GL
+entries (exact code or prefix, first match wins, cent-rounded) and both
+statement sets are re-derived by the same deriveThreeStatement the
+reports use; a scenario that breaks double-entry reports its exact
+imbalance with balanced:false — never plugged. Remaining in Phase 7:
 rolling-forecast wire-or-retire, plan approval workflow, backtest UI
-wiring, budget version diff tests.
+wiring, budget version diff tests, scenario UI wiring (WhatIfPage
+assumptions are still not GL-derived).
 
 **Frozen until Phase 4 exits:** new routes, pages, engines, stores, sector packs, connectors (AGENTS.md rule 8). Repairs, tests, guards and ratchet-lowering are always welcome.
 
