@@ -14,6 +14,8 @@
 export const EXPERIMENTAL_ENGINES: Record<string, string> = {
   RollingForecastEngine:
     'Tested roll/blend state machine with no product path: the shipped rolling-forecast page derives figures from posted GL via rollingForecastModel, and no store or page consumes this engine. Wiring it in changes planning behaviour and awaits the owner roll-semantics answer (DEC-019).',
+  AcquisitionAccounting:
+    'ASC 805 purchase-price allocation and ASC 350 goodwill impairment with hand-computed oracles, but no product path yet: no acquisition workflow page collects consideration/NCI/fair-value inputs. Catalogued for evaluation only until the consolidation workflow wires it (Phase 8 remainder).',
   ForecastMethodEngine:
     'Forecast method library (SMA/WMA/exponential smoothing/Holt-Winters/ensemble) with no product path: the shipped Forecast builder page implements its own four methods (linear/CAGR/last-3/flat) with their own walk-forward backtest, and no page or store calls this engine. Its measured evidence is the walk-forward backtest harness in src/services/forecast; adopting these methods in the builder is extension-scope work (E3), per DEC-019 labelling.',
 };

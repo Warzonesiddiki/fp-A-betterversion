@@ -3,15 +3,16 @@
  * Regenerate with: node scripts/generate-engine-manifest.mjs
  *
  * Maps every engine id to a dynamic import (N-0013). Hand-maintaining this
- * list is exactly how EngineRegistry ended up knowing only 40 of 182
+ * list is exactly how EngineRegistry ended up knowing only 40 of 184
  * engines while the rest were unreachable at runtime.
  *
- * Engines: 182
+ * Engines: 184
  */
 
 export type EngineId =
   | 'AICopilotEngine'
   | 'AIEngine'
+  | 'AcquisitionAccounting'
   | 'AdvancedExcelEngine'
   | 'AdvancedOLAPEngine'
   | 'AdvancedPDFEngine'
@@ -187,6 +188,7 @@ export type EngineId =
   | 'WorkingCapitalEngine'
   | 'XBRLEngine'
   | 'YieldCurveEngine'
+  | 'engineLabels'
   | 'exportExcel'
   | 'report-builder-export'
   | 'report-builder-formulas'
@@ -199,6 +201,7 @@ export type EngineModule = Record<string, unknown>;
 export const ENGINE_MANIFEST: Record<EngineId, () => Promise<EngineModule>> = {
   AICopilotEngine: () => import('./AICopilotEngine'),
   AIEngine: () => import('./AIEngine'),
+  AcquisitionAccounting: () => import('./AcquisitionAccounting'),
   AdvancedExcelEngine: () => import('./AdvancedExcelEngine'),
   AdvancedOLAPEngine: () => import('./AdvancedOLAPEngine'),
   AdvancedPDFEngine: () => import('./AdvancedPDFEngine'),
@@ -374,6 +377,7 @@ export const ENGINE_MANIFEST: Record<EngineId, () => Promise<EngineModule>> = {
   WorkingCapitalEngine: () => import('./WorkingCapitalEngine'),
   XBRLEngine: () => import('./XBRLEngine'),
   YieldCurveEngine: () => import('./YieldCurveEngine'),
+  engineLabels: () => import('./engineLabels'),
   exportExcel: () => import('./exportExcel'),
   'report-builder-export': () => import('./report-builder-export'),
   'report-builder-formulas': () => import('./report-builder-formulas'),

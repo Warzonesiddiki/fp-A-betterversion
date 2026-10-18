@@ -215,6 +215,14 @@ export { ReportSchedulingEngine } from './ReportSchedulingEngine';
 export { ReportVersionEngine } from './ReportVersionEngine';
 export { RetailEngine } from './RetailEngine';
 export { RevRecEngine } from './RevRecEngine';
+export {
+  allocatePurchasePrice,
+  testGoodwillImpairment,
+  type PurchasePriceAllocationInput,
+  type PurchasePriceAllocation,
+  type GoodwillImpairmentInput,
+  type GoodwillImpairment,
+} from './AcquisitionAccounting';
 // export { RollingForecastEngine } from './RollingForecastEngine'; // barrel-export disabled for dynamic import splitting
 export { SOXComplianceEngine } from './SOXComplianceEngine';
 export { SaaSMetricsEngine } from './SaaSMetricsEngine';
