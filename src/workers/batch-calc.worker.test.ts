@@ -254,6 +254,62 @@ describe('batch-calc.worker', () => {
   });
 
   // ---------------------------------------------------------------------------
+  // W6-P0-01 class guard: a failing formula must never silently zero.
+  // One guard for the whole silent-zero class, not per instance.
+  // ---------------------------------------------------------------------------
+  describe('W6-P0-01 silent-zero class guard', () => {
+    it('erroring cells are listed in errors and keep their prior value — never a fresh 0', () => {
+      self.onmessage?.(
+        new MessageEvent('message', {
+          data: {
+            id: 'w6p001',
+            type: 'compute',
+            payload: {
+              cells: [
+                { sheet: 'Sheet', col: 'A', row: 1 },
+                { sheet: 'Sheet', col: 'A', row: 2 },
+                { sheet: 'Sheet', col: 'A', row: 3 },
+              ],
+              dependencies: [
+                {
+                  cell: { sheet: 'Sheet', col: 'A', row: 1 },
+                  dependsOn: [
+                    { sheet: 'Sheet', col: 'B', row: 1 },
+                    { sheet: 'Sheet', col: 'C', row: 1 },
+                  ],
+                },
+                { cell: { sheet: 'Sheet', col: 'A', row: 2 }, dependsOn: [] },
+                {
+                  cell: { sheet: 'Sheet', col: 'A', row: 3 },
+                  dependsOn: [{ sheet: 'Sheet', col: 'B', row: 1 }],
+                },
+              ],
+              formulas: {
+                'Sheet!A1': 'Sheet!B1+Sheet!C1',
+                'Sheet!A2': '1/0',
+                'Sheet!A3': 'FOO(Sheet!B1)',
+              },
+              values: { 'Sheet!A1': 0, 'Sheet!A2': 777, 'Sheet!A3': 555, 'Sheet!B1': 100, 'Sheet!C1': 200 },
+              maxIterations: 10,
+              convergenceThreshold: 1e-10,
+            },
+          },
+        })
+      );
+      const payload = getLastPayload();
+      // Good cells still compute.
+      expect(payload?.updatedValues['Sheet!A1']).toBe(300);
+      // Both bad cells are reported by key...
+      expect(payload?.errors).toContain('Sheet!A2');
+      expect(payload?.errors).toContain('Sheet!A3');
+      // ...and neither was silently zeroed: the prior value survives so a
+      // consumer can show "stale", not a fabricated 0.
+      expect(payload?.updatedValues['Sheet!A2']).toBe(777);
+      expect(payload?.updatedValues['Sheet!A3']).toBe(555);
+    });
+  });
+
+  // ---------------------------------------------------------------------------
   // W7E / W6-P1: request validation before math
   // ---------------------------------------------------------------------------
   describe('W7E/W6-P1 request validation', () => {
