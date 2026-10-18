@@ -77,6 +77,23 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-17 (LEAD, solo): **The ratchet checker now reads the prose claims too, and four of
+  them were wrong.** `scripts/ratchet-docs-check.mjs` only compared the KNOWN_GAPS table, so the
+  same numbers stated as sentences elsewhere drifted unchecked: `docs/discovery/requirements-register.md`
+  NFR-001 said the determinism ratchet "baselines 345 sites across 160 calculation-path files"
+  (the gate enforces 344 / 79), `docs/agent/01_PROJECT_BRIEF.md` said "345 wall-clock/random
+  sites" and "adoption 28.9 %" (floor 29.16 %), `docs/agent/03_DOMAIN_RULES.md` said "345 legacy
+  sites remain". Added 4 prose rules (matched line-by-line, so a claim cannot be assembled from
+  two rows), a repeatable `--prose=<path>` override for fixture tests, and a `prose` array in the
+  `--json` report; `--doc=` still means "table doc only" so the three existing fixture tests are
+  unchanged. The script reported all four drifts (exit 1) before the docs were fixed, and reports
+  "All 8 documented ratchet values (4 table rows, 4 prose claims) match" after. A claim that
+  cannot be found fails like a wrong number, so rewording a sentence cannot switch the check off.
+  Historical records are excluded on purpose — docs/archive and the dated
+  `docs/discovery/audit-progress-2026-10-15.md` describe the state on the day they were written.
+  Failing-first: `src/__tests__/ratchetDocsScript.test.ts` **4 red | 3 green** (prose array
+  missing; `--prose` ignored so drifted fixtures exited 0) → 7/7 after. Gates: tsc 0, lint 0,
+  format:check 0, docs:verify 0, docs:links strict 0.
 - 2026-10-17 (LEAD, solo): **The security settings page stopped inventing its own evidence.**
   `/settings/security` showed "Security Status: Protected" in green for any session, took MFA from a
   local `useState(false)` (a user recorded as `mfaEnabled: true` was shown "Disabled"), took the

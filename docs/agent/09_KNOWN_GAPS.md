@@ -111,6 +111,18 @@ Every number in that table is script-checked: `scripts/ratchet-docs-check.mjs` (
 `npm run docs:verify`) compares each row with the baseline JSON the gate reads and fails on
 drift, on an unparseable value, or on a deleted row — so the table cannot quietly describe
 gates that are not the gates in force. Pinned by `src/__tests__/ratchetDocsScript.test.ts`.
+
+The same numbers are also stated in prose in three other live documents, and the checker reads
+those sentences too (4 prose claims, 8 checked values in total): `docs/discovery/requirements-register.md`
+NFR-001 ("baselines 344 sites across 79 calculation-path files"), `docs/agent/01_PROJECT_BRIEF.md`
+(the Determinism row and the Money row's adoption floor) and `docs/agent/03_DOMAIN_RULES.md`
+("344 legacy sites remain"). On 2026-10-17 all four had drifted — the register said 345 / 160,
+the brief said 345 sites and 28.9 % adoption, the domain rules said 345 — so a reviewer reading
+any of them would have planned against numbers that were not in force. Historical records are
+deliberately excluded: docs/archive and the dated `docs/discovery/audit-progress-2026-10-15.md`
+describe the state on the day they were written, and rewriting them would falsify the record.
+A claim that cannot be found (reworded or deleted) fails just like a wrong number, so the prose
+checks cannot be switched off by rewriting the sentence.
 Re-recorded 2026-10-17 after measuring the tree: type-safety escapes **116 → 47** (0 `as any`,
 47 `as unknown as`) and the money-adoption floor **209 → 289 modules** (23.54 % → 29.16 %;
 server 2 → 3 modules). Both were improvements that had never been locked in, so the gates were
