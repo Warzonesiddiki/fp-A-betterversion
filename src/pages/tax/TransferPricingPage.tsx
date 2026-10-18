@@ -67,7 +67,7 @@ export default function TransferPricingPage() {
         key: 'margin',
         header: 'Margin %',
         align: 'right',
-        render: (v) => `${formatPercent(v as number, 1)}`,
+        render: (v) => (v === null || v === undefined ? '—' : `${formatPercent(v as number, 1)}`),
       },
       { key: 'armRange', header: "Arm's Range", align: 'center' },
       {

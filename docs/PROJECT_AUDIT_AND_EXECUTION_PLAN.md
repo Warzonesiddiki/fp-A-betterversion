@@ -515,6 +515,21 @@ F-P2-07 BvA export builder still uses per-entry `Math.abs` actuals and
 prefix favourability (Phase 7); period-aware TB (opening/activity/closing
 by period) is Phase 4's to build on this contract.
 
+**Phase 8 progress 2026-10-18:** RevRec contract-life oracle (row 18)
+and lease schedule oracles (row 17) added — both caught the same
+cent-footing defect class (period columns summing a few cents short of
+the contract/asset) and both engines now emit cumulative-rounded
+deltas; tax provision validation (row 16: current+deferred=total,
+hand-computed incl. DTA/valuation-allowance and loss carryforward);
+transfer-pricing fabrication removed (derived transactions hardcoded
+margins 8.5/10.2/9.0 and benchmark ranges — a GL entry carries neither
+a cost base nor a benchmark study, so margin is now null/'Not
+benchmarked' and no derived row may call itself compliant); the
+consolidation oracle (row 10) already existed in the exact-pipeline
+tests. Remaining in Phase 8: goodwill/PPA/VIE, transfer-pricing
+benchmark attachment (human study data), spreadsheet/cube canonical
+subset.
+
 ## 11. How I will work — the commitment
 
 **Session ritual (every session, no exceptions):**
