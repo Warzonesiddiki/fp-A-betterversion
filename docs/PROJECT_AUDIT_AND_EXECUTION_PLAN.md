@@ -339,6 +339,54 @@ Work top-to-bottom. A phase starts only when the previous phase's exit evidence 
 
 **Frozen until Phase 4 exits:** new routes, pages, engines, stores, sector packs, connectors (AGENTS.md rule 8). Repairs, tests, guards and ratchet-lowering are always welcome.
 
+### Phase 2 — scoped 2026-10-18 (read-only, before failing tests)
+
+Measured current state (code read this session, witnesses owed by tests):
+
+- **F-P2-01 (P0 for J1→J4 trust): statement classification is hard-coded
+  account-code prefixes, not account type.** `computeProfitLoss`
+  (`src/pages/reports/ProfitLossPage.tsx:32`) classifies revenue/COGS/expense
+  by `accountCode.startsWith('4'/'5'/'6')`; `computeBalanceSheet`
+  (`src/pages/reports/balanceSheetData.ts`) by `'1'..'8'` incl. interest `'7'`
+  and tax `'8'`. D365/BC main accounts are owner-defined (DEC-015), so a real
+  COA silently yields empty or wrong statements. The BS at least surfaces
+  `unclassifiedCount/unclassifiedMovement`; the P&L hides everything
+  unclassified. Fix: classify by `GLAccount.type` (glStore is DEC-012
+  authoritative); prefix only as an explicit, labelled fallback when type is
+  `Unknown`; unclassified movement always shown, never dropped.
+- **F-P2-02: the P&L destroys signs.** COGS/expenses pass through `Math.abs`
+  (a credit-heavy expense account — refunds exceeding postings — displays as
+  positive expense) while revenue is signed. One signed convention
+  everywhere: debit-normal `Dr−Cr`, credit-normal `Cr−Dr`, negatives shown
+  as negatives.
+- **F-P2-03: the canonical sign engine is unused.**
+  `src/engines/SignConventionEngine.ts` (natural sign, contra set, variance
+  favourability) has zero consumers in pages/components/store, and its
+  contra set is itself hard-coded US-style codes. Phase 2 adopts one
+  documented sign contract (natural balance by account type; contra by
+  account type/flag, not code list), wires the statements + TB to it, and
+  deletes or demotes the orphan engine per the wire-or-retire rule.
+- **F-P2-04: TB "Beginning Balance" is always 0.**
+  `glStore.generateTrialBalance` seeds `beginningBalance: toDecimal(0)` and
+  `endingBalance = beginning + netChange` over **all** entries; the cube path
+  (~`glStore.ts:1496`) repeats it with `accountName: ''`. With complete
+  history that is an inception balance, but the page presents
+  Beginning/Net-change/Ending without saying so, and there is no as-of or
+  period TB (Phase 4 depends on one). Phase 2 labels honestly and adds the
+  period-aware computation the comparison workspace will consume.
+- **F-P2-05: drill-to-source exists for TB rows only** (Eye → journals /
+  account analysis by `accountId`). Statement headline figures (P&L/BS
+  totals and lines) are not drillable; `/drill-down` is linked only from
+  dashboard KPIs. Phase 2 exit requires a figure→entries trace test: pick a
+  statement figure, list its contributing entries, re-sum independently,
+  tie to the cent.
+
+Phase 2 work order (failing-test-first each): (1) sign contract documented
+in `docs/product/` + oracle tests against `SignConventionEngine` semantics;
+(2) type-based classification for P&L + BS with unclassified honesty;
+(3) remove `Math.abs` sign destruction; (4) TB period/opening honesty;
+(5) drill from every statement figure + trace test.
+
 ## 11. How I will work — the commitment
 
 **Session ritual (every session, no exceptions):**
