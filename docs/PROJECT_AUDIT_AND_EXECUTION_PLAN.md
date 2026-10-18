@@ -565,6 +565,15 @@ by derivations from actual workforce records (planned headcount and
 attrition no longer displayed - no source data exists). Remaining:
 sector operational adapters (with Phase 11/E1).
 
+**Phase 11 first slice 2026-10-18:** sector verification registry
+(`sectorVerification.ts`): every SectorDriverId classified against
+the money-oracle derived-KPI table; government and education expose
+no GL-derived KPI and now render an EXPERIMENTAL banner on the
+canonical dashboard ("simulator projection - not a measurement");
+unknown sectors fail closed to experimental. Full §14.9/E5 sector
+certification (sector packs in healthcare/insurance/realestate/etc.)
+remains phased work - no sector is labelled certified.
+
 ## 11. How I will work — the commitment
 
 **Session ritual (every session, no exceptions):**
