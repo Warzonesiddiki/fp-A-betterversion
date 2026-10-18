@@ -210,12 +210,16 @@ describe('sqlJsStorage error propagation (W6-P0-04)', () => {
     const quotaError = Object.assign(new Error('exceeded storage quota'), {
       name: 'QuotaExceededError',
     });
-    // Measured: the runtime's localStorage exposes setItem as an OWN instance
-    // property (the Node-v22+ polyfill in src/test/setup.ts), so spying
-    // `Storage.prototype` silently no-ops — the fault must be injected on the
-    // instance the storage layer actually calls (same NOTE as
-    // src/utils/__tests__/masterStorage.security.test.ts).
+    // Fault injection must land on whichever target the runtime resolves:
+    // see the both-targets note at the spy below.
+    // Both targets: jsdom resolves setItem on Storage.prototype, while a
+    // plain-object polyfilled localStorage owns it on the instance. Spying
+    // only one silently no-ops in the other environment (probe-verified
+    // 2026-10-18; same pattern as masterStorage.security.test.ts).
     const setItemSpy = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
+      throw quotaError;
+    });
+    const setItemProtoSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw quotaError;
     });
 
@@ -232,6 +236,7 @@ describe('sqlJsStorage error propagation (W6-P0-04)', () => {
       }
     } finally {
       setItemSpy.mockRestore();
+      setItemProtoSpy.mockRestore();
     }
   });
 
@@ -257,9 +262,15 @@ describe('sqlJsStorage error propagation (W6-P0-04)', () => {
     const quotaError = Object.assign(new Error('exceeded storage quota'), {
       name: 'QuotaExceededError',
     });
-    // Instance injection, not Storage.prototype — see the note in the setItem
-    // quota test above: the polyfilled localStorage owns its own setItem.
+    // Both-targets injection — see the note in the setItem quota test above.
+    // Both targets: jsdom resolves setItem on Storage.prototype, while a
+    // plain-object polyfilled localStorage owns it on the instance. Spying
+    // only one silently no-ops in the other environment (probe-verified
+    // 2026-10-18; same pattern as masterStorage.security.test.ts).
     const setItemSpy = vi.spyOn(localStorage, 'setItem').mockImplementation(() => {
+      throw quotaError;
+    });
+    const setItemProtoSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw quotaError;
     });
 
@@ -269,6 +280,7 @@ describe('sqlJsStorage error propagation (W6-P0-04)', () => {
       );
     } finally {
       setItemSpy.mockRestore();
+      setItemProtoSpy.mockRestore();
     }
   });
 
