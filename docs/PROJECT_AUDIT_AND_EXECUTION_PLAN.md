@@ -426,10 +426,15 @@ InReview -> Rejected -> resubmit) with actor + clock timestamps;
 approved/locked budgets refuse header AND line-item edits; workflow
 fields can no longer be spoofed through updateBudget (BudgetDetailPage
 was doing exactly that and is rewired to lock/unlock actions); the fake
-1-second submit latency is gone. Remaining in Phase 7:
-rolling-forecast wire-or-retire, backtest UI wiring, budget version
-diff tests, scenario UI wiring (WhatIfPage assumptions are still not
-GL-derived).
+1-second submit latency is gone. Rolling-forecast wire-or-retire DECIDED as DEC-019 (2026-10-18): the
+page model stays the shipped behaviour; RollingForecastEngine is
+labelled EXPERIMENTAL (label registry `src/engines/engineLabels.ts`,
+badge in the engine catalog, honesty tests) because no product path
+consumes its roll/blend semantics — wiring awaits the owner's
+roll-semantics answer. Budget version diff DONE
+(`src/services/budget/diffBudgetVersions.ts`, cent-exact cell diff).
+Remaining in Phase 7: backtest UI wiring, scenario UI wiring
+(WhatIfPage assumptions are still not GL-derived).
 
 **Frozen until Phase 4 exits:** new routes, pages, engines, stores, sector packs, connectors (AGENTS.md rule 8). Repairs, tests, guards and ratchet-lowering are always welcome.
 

@@ -21,6 +21,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { engineRegistry } from '@/engines/EngineRegistry';
 import { ENGINE_IDS, ENGINE_COUNT } from '@/engines/engineManifest.generated';
+import { experimentalReason } from '@/engines/engineLabels';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
@@ -147,7 +148,17 @@ export default function EngineCatalogPage() {
           <tbody>
             {filtered.map((row) => (
               <tr key={row.id} className="border-b border-slate-100 dark:border-slate-800">
-                <td className="py-2 pr-4 font-mono text-xs">{row.id}</td>
+                <td className="py-2 pr-4 font-mono text-xs">
+                  {row.id}
+                  {experimentalReason(row.id) && (
+                    <span
+                      className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 font-sans text-[10px] font-semibold text-amber-800 dark:bg-amber-900 dark:text-amber-200"
+                      title={experimentalReason(row.id)!}
+                    >
+                      EXPERIMENTAL
+                    </span>
+                  )}
+                </td>
                 <td className="py-2 pr-4">
                   {row.state === 'loaded' && (
                     <span className="text-green-700 dark:text-green-400">Loaded</span>
