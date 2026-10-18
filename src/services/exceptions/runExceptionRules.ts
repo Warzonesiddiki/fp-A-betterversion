@@ -147,9 +147,7 @@ export function runExceptionRules(
   }
 
   // ---- R-006 unbalanced journal / R-008 one-sided journal ----------------
-  for (const [journalId, lines] of [...journals.entries()].sort(([a], [b]) =>
-    a.localeCompare(b)
-  )) {
+  for (const [journalId, lines] of [...journals.entries()].sort(([a], [b]) => a.localeCompare(b))) {
     const totalDebit = lines.reduce((sum, x) => sum.plus(toDecimal(x.debit)), new Decimal(0));
     const totalCredit = lines.reduce((sum, x) => sum.plus(toDecimal(x.credit)), new Decimal(0));
     const net = totalDebit.minus(totalCredit);
@@ -224,7 +222,12 @@ export function runExceptionRules(
     const debit = toDecimal(entry.debit);
     const credit = toDecimal(entry.credit);
     const periodKey = periodOf(entry);
-    const base = { targetId: entry.accountCode, periodKey, qualifier: entry.id, ...evidenceOf([entry]) };
+    const base = {
+      targetId: entry.accountCode,
+      periodKey,
+      qualifier: entry.id,
+      ...evidenceOf([entry]),
+    };
 
     if (debit.greaterThan(0) && credit.greaterThan(0)) {
       push(
@@ -242,7 +245,8 @@ export function runExceptionRules(
           rule: rule('R-010'),
           ...base,
           observedValue: 0,
-          message: 'Entry has zero debit and zero credit. Worth a second look — not a confirmed error.',
+          message:
+            'Entry has zero debit and zero credit. Worth a second look — not a confirmed error.',
         })
       );
     }

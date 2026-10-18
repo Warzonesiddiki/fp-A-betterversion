@@ -78,6 +78,7 @@ const AIIntelligencePage = lazy(() => import('./pages/ai/AIIntelligencePage'));
 const GLUploadPage = lazy(() => import('./pages/data/GLUploadPage'));
 const GLExplorerPage = lazy(() => import('./pages/data/GLExplorerPage'));
 const GLTrialBalancePage = lazy(() => import('./pages/data/GLTrialBalancePage'));
+const ExceptionQueuePage = lazy(() => import('./pages/data/ExceptionQueuePage'));
 const GLJournalsPage = lazy(() => import('./pages/data/GLJournalsPage'));
 const GLAccountAnalysisPage = lazy(() => import('./pages/data/GLAccountAnalysisPage'));
 const GLReportingPage = lazy(() => import('./pages/data/GLReportingPage'));
@@ -446,6 +447,7 @@ export default function App() {
                 <Route path="/data/gl-upload" element={<GLUploadPage />} />
                 <Route path="/data/gl-explorer" element={<GLExplorerPage />} />
                 <Route path="/data/gl-trial-balance" element={<GLTrialBalancePage />} />
+                <Route path="/data/exceptions" element={<ExceptionQueuePage />} />
                 <Route path="/data/gl-journals" element={<GLJournalsPage />} />
                 <Route path="/data/gl-account-analysis" element={<GLAccountAnalysisPage />} />
                 <Route path="/data/gl-reporting" element={<GLReportingPage />} />

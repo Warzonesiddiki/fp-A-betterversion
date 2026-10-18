@@ -328,6 +328,17 @@ baselines and land with the Phase 4 comparison workspace; until then they
 stay catalogue-only and the queue says so — a rule that cannot run is never
 presented as running.
 
+**Phase 3 progress 2026-10-18 (code side closed):** catalogue v2
+(R-006…R-017, tiers 1–3) + deterministic runner
+(`src/services/exceptions/runExceptionRules.ts`, every entry examined,
+exact-decimal, options recorded on the run) + `/data/exceptions` queue
+page reusing `ExceptionReviewList` (dispositions persist by findingKey;
+nav + help coverage wired). Answer-key evidence: planted ledger produces
+exactly the 19 expected finding keys, clean ledger zero, run-twice
+identical, MAD outlier median-exact. Remaining Phase 3 honesty items:
+R-001…R-005 aggregate evaluators land with Phase 4 baselines; correction
+requests from ACCEPTED findings are Phase 5 (store types already exist).
+
 ## 9. Target design — J3 correction hand-off (DEC-018)
 
 - **Excel correction list** generated from the disposition/correction stores (same records as the screen): finding key, rule id, account, date, amount, source locator (file · batch · row), suspected issue in plain language, correction instruction, assignee, due date, status. Percentages formatted as percentages, money as money (the P1-14 lesson).

@@ -418,6 +418,21 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
       },
     ],
   },
+  '/data/exceptions': {
+    title: 'Exception Queue',
+    sections: [
+      {
+        title: 'What is this page?',
+        content:
+          'Every imported entry is checked by the exception rules (R-006…R-017): unbalanced or one-sided journals, possible duplicates, large round amounts, weekend postings, dormant accounts, amount outliers and more. Each match appears as a review candidate with its rule, formula and source rows. A candidate is never a confirmed error — only your disposition (accept, reject, review, escalate) decides what it means.',
+      },
+      {
+        title: 'What should I do with a candidate?',
+        content:
+          'Open the candidate, compare the evidence rows with the source system, then record a disposition with your rationale. Accepted candidates can become correction requests for the accounts team (Phase 5) and are re-verified after the fix is imported.',
+      },
+    ],
+  },
   '/data/gl-journals': {
     title: 'Journals',
     sections: [
