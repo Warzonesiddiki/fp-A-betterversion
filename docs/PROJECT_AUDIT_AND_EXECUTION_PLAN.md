@@ -548,8 +548,12 @@ to the cash account; investing/financing one disclosed residual), and
 report-scheduler governance: due schedules are detected, run by a
 human, recorded, and advanced — the false "automatically generate and
 distribute" copy was corrected; distribution stays manual until a
-connector exists (E2). Remaining in Phase 9: report designer
-verification, tie-out registry for the remaining page exports.
+connector exists (E2). Phase 9's remaining item — report-designer verification — is
+explicitly owned by Phase 14: the designer runs on the cube engine,
+whose retire-or-wire decision gates any tie-out built on it. The
+page-level export tie-outs (financial package, board pack,
+corrections CSV/Excel/PDF, comparison, trial balance) were pinned in
+Phases 2/6. **Phase 9 closed on that basis 2026-10-18.**
 
 ## 11. How I will work — the commitment
 
