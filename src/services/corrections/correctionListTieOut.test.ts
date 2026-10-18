@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { actAs } from '@/test/rbacFixtures';
 import ExcelJS from 'exceljs';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { buildCorrectionList } from './buildCorrectionList';
@@ -77,6 +78,7 @@ const ENTRIES = [
 
 describe('correction list tie-out — screen records == Excel == PDF (REP-01)', () => {
   beforeEach(() => {
+    actAs('Admin'); // Phase 12: disposition/correction actions require permissions
     captured.blobs.length = 0;
     captured.pdfTables.length = 0;
     setClock('2026-10-15T09:00:00.000Z');

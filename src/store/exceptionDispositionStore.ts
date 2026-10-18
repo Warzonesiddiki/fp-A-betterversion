@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { nowISO } from '@/utils/clock';
+import { assertPermission, Permissions } from '@/utils/rbacEnforcer';
 import { masterStorage } from '@/utils/masterStorage';
 import { parseImportDate } from '@/utils/parseImportDate';
 import type {
@@ -125,6 +126,7 @@ export const useExceptionDispositionStore = create<ExceptionDispositionState>()(
       correctionAuditTrail: [],
 
       setDisposition: (input: SetDispositionInput) => {
+        assertPermission(Permissions.EXCEPTION_DISPOSE, 'setDisposition');
         const state = get();
         const current = state.dispositions.find((d) => d.exceptionId === input.exceptionId);
         const recordedAt = input.recordedAt ?? nowISO();
@@ -178,6 +180,7 @@ export const useExceptionDispositionStore = create<ExceptionDispositionState>()(
       },
 
       requestCorrection: (input) => {
+        assertPermission(Permissions.EXCEPTION_DISPOSE, 'requestCorrection');
         const exceptionId = requireText(
           input.exceptionId,
           'requestCorrection',
@@ -232,6 +235,7 @@ export const useExceptionDispositionStore = create<ExceptionDispositionState>()(
       },
 
       updateCorrectionStatus: (exceptionId, status, options) => {
+        assertPermission(Permissions.EXCEPTION_DISPOSE, 'updateCorrectionStatus');
         const state = get();
         const current = state.corrections.find((c) => c.exceptionId === exceptionId);
         if (!current) {
@@ -301,14 +305,17 @@ export const useExceptionDispositionStore = create<ExceptionDispositionState>()(
       },
 
       clearDispositions: () => {
+        assertPermission(Permissions.EXCEPTION_CONFIGURE, 'clearDispositions');
         set({ dispositions: [], auditTrail: [] });
       },
 
       clearCorrections: () => {
+        assertPermission(Permissions.EXCEPTION_CONFIGURE, 'clearCorrections');
         set({ corrections: [], correctionAuditTrail: [] });
       },
 
       reset: () => {
+        assertPermission(Permissions.EXCEPTION_CONFIGURE, 'reset');
         set({ dispositions: [], auditTrail: [], corrections: [], correctionAuditTrail: [] });
       },
     }),

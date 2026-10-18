@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { masterStorage } from '@/utils/masterStorage';
 import { nowISO } from '@/utils/clock';
+import { assertPermission, Permissions } from '@/utils/rbacEnforcer';
 import type { TPBenchmark } from '@/pages/tax/transferPricingData';
 
 /**
@@ -29,6 +30,7 @@ export const useTPBenchmarkStore = create<TPBenchmarkState>()(
       benchmarks: {},
 
       attachBenchmark: (transactionId, data) => {
+        assertPermission(Permissions.TAX_UPDATE, 'attachBenchmark');
         if (!transactionId) throw new Error('A transaction is required to attach a benchmark');
         if (!data.studyRef.trim()) {
           throw new Error('A benchmark study reference is required — evidence, not assertion');
@@ -55,12 +57,14 @@ export const useTPBenchmarkStore = create<TPBenchmarkState>()(
         }));
       },
 
-      removeBenchmark: (transactionId) =>
-        set((s) => {
+      removeBenchmark: (transactionId) => {
+        assertPermission(Permissions.TAX_UPDATE, 'removeBenchmark');
+        return set((s) => {
           const next = { ...s.benchmarks };
           delete next[transactionId];
           return { benchmarks: next };
-        }),
+        });
+      },
     }),
     { name: 'tp-benchmark-store', storage: masterStorage, version: 1 }
   )

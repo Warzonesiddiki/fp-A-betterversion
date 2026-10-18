@@ -13,6 +13,7 @@
 
 import React from 'react';
 import { describe, it, expect, beforeEach } from 'vitest';
+import { actAs } from '@/test/rbacFixtures';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
@@ -32,6 +33,7 @@ import { setClock, resetClock } from '@/utils/clock';
 
 describe('Exception Pipeline End-to-End Integration (FR-008 & FR-009)', () => {
   beforeEach(() => {
+    actAs('Admin'); // Phase 12: disposition/rule actions require permissions
     resetClock();
     useExceptionRuleCatalogueStore.getState().resetToDefaults();
     useExceptionDispositionStore.getState().reset();

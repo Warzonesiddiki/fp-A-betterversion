@@ -4,6 +4,7 @@
  * records, and re-verified only after a human confirms the proposal.
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { actAs } from '@/test/rbacFixtures';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import CorrectionsPage from './CorrectionsPage';
@@ -61,6 +62,7 @@ function renderPage() {
 
 describe('CorrectionsPage (Phase 5)', () => {
   beforeEach(() => {
+    actAs('Admin'); // Phase 12: disposition/correction actions require permissions
     setClock(FIXED);
     useGLStore.setState({ entries: UNBALANCED, accounts: [] });
     useExceptionDispositionStore.getState().reset();

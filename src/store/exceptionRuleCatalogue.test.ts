@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { actAs } from '@/test/rbacFixtures';
 import {
   EXCEPTION_RULES,
   BUILT_IN_RULES,
@@ -12,6 +13,7 @@ import { setClock, resetClock } from '@/utils/clock';
 
 describe('Exception Rule Catalogue (FR-008)', () => {
   beforeEach(() => {
+    actAs('Admin'); // Phase 12: disposition/rule actions require permissions
     resetClock();
     useExceptionRuleCatalogueStore.getState().resetToDefaults();
   });
@@ -226,5 +228,15 @@ describe('Exception Rule Catalogue (FR-008)', () => {
       store.resetToDefaults();
       expect(store.getRule('R-001')?.version).toBe(1);
     });
+  });
+});
+
+describe('authorization (Phase 12)', () => {
+  it('refuses rule configuration without exception:configure', async () => {
+    const { actAsRoleWithout, expectPermissionDenied } = await import('@/test/rbacFixtures');
+    actAsRoleWithout('Admin', 'exception:configure');
+    expectPermissionDenied(() =>
+      useExceptionRuleCatalogueStore.getState().updateRuleStatus('R-001', 'DISABLED')
+    );
   });
 });

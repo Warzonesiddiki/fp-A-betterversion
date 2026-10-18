@@ -167,6 +167,20 @@ export function enforce<TArgs extends unknown[], TReturn>(
   };
 }
 
+/**
+ * Guard-clause form of `enforce` for store actions whose bodies are
+ * too large to wrap inline: call FIRST in the action; throws
+ * PermissionError before any state mutation when the current user
+ * lacks the permission. Signed-out sessions have no permissions, so
+ * financial-truth actions are unreachable while signed out.
+ */
+export function assertPermission(permission: string, action: string): void {
+  const user = getCurrentUser();
+  if (!hasPermission(user, permission)) {
+    throw new PermissionError(permission, action, user?.id ?? null);
+  }
+}
+
 // ============================================================================
 // Core: enforceMany (multiple actions)
 // ============================================================================
@@ -335,6 +349,13 @@ export const Permissions = {
   // Settings
   SETTINGS_READ: 'settings:read',
   SETTINGS_UPDATE: 'settings:update',
+
+  // Exceptions (J2/J3 spine)
+  EXCEPTION_DISPOSE: 'exception:dispose',
+  EXCEPTION_CONFIGURE: 'exception:configure',
+
+  // Tax
+  TAX_UPDATE: 'tax:update',
 
   // Audit
   AUDIT_READ: 'audit:read',

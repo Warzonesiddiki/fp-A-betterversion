@@ -6,6 +6,7 @@
  * way to restart a cycle.
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { actAs } from '@/test/rbacFixtures';
 import { useExceptionDispositionStore } from './exceptionDispositionStore';
 import { setClock, resetClock } from '@/utils/clock';
 
@@ -22,6 +23,7 @@ function seed() {
 
 describe('correction lifecycle (DEC-018)', () => {
   beforeEach(() => {
+    actAs('Admin'); // Phase 12: disposition/rule actions require permissions
     setClock(FIXED);
     seed();
   });
@@ -52,7 +54,9 @@ describe('correction lifecycle (DEC-018)', () => {
     const store = useExceptionDispositionStore.getState();
     store.updateCorrectionStatus('EXC-L1', 'APPLIED');
     store.updateCorrectionStatus('EXC-L1', 'REVERIFIED');
-    expect(() => store.updateCorrectionStatus('EXC-L1', 'WITHDRAWN')).toThrow(/terminal|REVERIFIED/);
+    expect(() => store.updateCorrectionStatus('EXC-L1', 'WITHDRAWN')).toThrow(
+      /terminal|REVERIFIED/
+    );
   });
 
   it('no code path sets APPLIED or REVERIFIED without an explicit call', () => {

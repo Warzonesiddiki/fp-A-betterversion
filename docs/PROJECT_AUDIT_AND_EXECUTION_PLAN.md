@@ -574,6 +574,20 @@ unknown sectors fail closed to experimental. Full §14.9/E5 sector
 certification (sector packs in healthcare/insurance/realestate/etc.)
 remains phased work - no sector is labelled certified.
 
+**Phase 12 first slice 2026-10-18:** RBAC completeness for the
+spine's financial-truth stores. exceptionDispositionStore,
+exceptionRuleCatalogue and tpBenchmarkStore previously mutated with
+no permission check at all. New permissions exception:dispose
+(Admin, Analyst), exception:configure (Admin) and tax:update
+(Admin) in the role matrix; an assertPermission guard now heads
+every mutating action (dispositions, correction requests/status,
+rule register/supersede/status/reset, benchmark attach/remove, and
+the audit-trail wipes, which require configure). Negative tests
+prove signed-out and under-privileged calls throw PermissionError
+and leave state untouched. SOX authority remains an owner DEC
+(Phase 12/E4); audit reconstruction rides the append-only trails
+these guards now protect.
+
 ## 11. How I will work — the commitment
 
 **Session ritual (every session, no exceptions):**

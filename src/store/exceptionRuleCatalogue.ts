@@ -11,13 +11,22 @@ import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { nowISO } from '@/utils/clock';
+import { assertPermission, Permissions } from '@/utils/rbacEnforcer';
 import { masterStorage } from '@/utils/masterStorage';
 
 export interface ExceptionRule {
   readonly ruleId: string; // e.g. "R-001", "R-008"
   readonly version: number; // version sequence e.g. 1, 2
   readonly name: string;
-  readonly type: 'variance' | 'spike' | 'drop' | 'trend_break' | 'outlier' | 'structural' | 'pattern' | 'movement';
+  readonly type:
+    | 'variance'
+    | 'spike'
+    | 'drop'
+    | 'trend_break'
+    | 'outlier'
+    | 'structural'
+    | 'pattern'
+    | 'movement';
   readonly metric: string; // e.g. "revenue", "cost", "netChange"
   readonly threshold: {
     min?: number;
@@ -177,9 +186,12 @@ export const EXCEPTION_RULES: readonly ExceptionRule[] = [
       formula: 'sum(debit) - sum(credit) != 0 per journal',
       sourceRows: true,
     },
-    rationale: 'A journal that does not balance cannot have posted cleanly in D365; a partial or transformed export is the usual cause.',
-    knownLimits: 'Entries with neither journal id nor reference cannot be grouped and are skipped; the skip is stated on the run.',
-    recommendedAction: 'Compare the journal against the D365 posting, then re-export or correct the missing side.',
+    rationale:
+      'A journal that does not balance cannot have posted cleanly in D365; a partial or transformed export is the usual cause.',
+    knownLimits:
+      'Entries with neither journal id nor reference cannot be grouped and are skipped; the skip is stated on the run.',
+    recommendedAction:
+      'Compare the journal against the D365 posting, then re-export or correct the missing side.',
     status: 'ACCEPTED',
     createdAt: nowISO(),
     createdBy: 'system',
@@ -197,9 +209,12 @@ export const EXCEPTION_RULES: readonly ExceptionRule[] = [
       formula: 'count(group by accountCode|date|debit|credit|reference) > 1',
       sourceRows: true,
     },
-    rationale: 'Duplicate postings double-count revenue or cost; legitimate repeats (recurring charges) are for the reviewer to accept, not the rule to hide.',
-    knownLimits: 'Flags candidates only — identical recurring entries are expected to be dispositioned ACCEPT with rationale.',
-    recommendedAction: 'Check the source documents; if duplicated, ask the accounts team to reverse one posting.',
+    rationale:
+      'Duplicate postings double-count revenue or cost; legitimate repeats (recurring charges) are for the reviewer to accept, not the rule to hide.',
+    knownLimits:
+      'Flags candidates only — identical recurring entries are expected to be dispositioned ACCEPT with rationale.',
+    recommendedAction:
+      'Check the source documents; if duplicated, ask the accounts team to reverse one posting.',
     status: 'ACCEPTED',
     createdAt: nowISO(),
     createdBy: 'system',
@@ -237,7 +252,8 @@ export const EXCEPTION_RULES: readonly ExceptionRule[] = [
       formula: 'debit > 0 and credit > 0',
       sourceRows: true,
     },
-    rationale: 'GL lines post one side; both-sides lines usually mean a netted export column or a mapping error.',
+    rationale:
+      'GL lines post one side; both-sides lines usually mean a netted export column or a mapping error.',
     recommendedAction: 'Inspect the source row and the column mapping that produced it.',
     status: 'ACCEPTED',
     createdAt: nowISO(),
@@ -256,7 +272,8 @@ export const EXCEPTION_RULES: readonly ExceptionRule[] = [
       formula: 'debit == 0 and credit == 0',
       sourceRows: true,
     },
-    rationale: 'Zero lines add noise to counts and often mark rows the export should not have carried.',
+    rationale:
+      'Zero lines add noise to counts and often mark rows the export should not have carried.',
     recommendedAction: 'Confirm the row belongs in the export; otherwise fix the export selection.',
     status: 'ACCEPTED',
     createdAt: nowISO(),
@@ -276,7 +293,8 @@ export const EXCEPTION_RULES: readonly ExceptionRule[] = [
       sourceRows: true,
     },
     rationale: 'Large round figures are where estimates, plugs and manual journals concentrate.',
-    knownLimits: 'Size and round unit are run options (defaults 10,000 / 1,000); the options used are recorded on the run.',
+    knownLimits:
+      'Size and round unit are run options (defaults 10,000 / 1,000); the options used are recorded on the run.',
     recommendedAction: 'Ask for the supporting calculation or document behind the figure.',
     status: 'ACCEPTED',
     createdAt: nowISO(),
@@ -295,7 +313,8 @@ export const EXCEPTION_RULES: readonly ExceptionRule[] = [
       formula: 'dayOfWeek(date) in {Sat, Sun}',
       sourceRows: true,
     },
-    rationale: 'Out-of-hours postings can be legitimate period-end work or a sign of backdating; only a human can tell.',
+    rationale:
+      'Out-of-hours postings can be legitimate period-end work or a sign of backdating; only a human can tell.',
     knownLimits: 'Uses the entry date; no holiday calendar is applied.',
     recommendedAction: 'Confirm the posting was expected (period-end close) or query the poster.',
     status: 'ACCEPTED',
@@ -315,7 +334,8 @@ export const EXCEPTION_RULES: readonly ExceptionRule[] = [
       formula: 'period != month(date)',
       sourceRows: true,
     },
-    rationale: 'Period/date mismatches distort month-by-month comparison (J4) even when the journal balances.',
+    rationale:
+      'Period/date mismatches distort month-by-month comparison (J4) even when the journal balances.',
     recommendedAction: 'Confirm the intended period in D365; correct the posting period if wrong.',
     status: 'ACCEPTED',
     createdAt: nowISO(),
@@ -335,7 +355,8 @@ export const EXCEPTION_RULES: readonly ExceptionRule[] = [
       sourceRows: true,
     },
     rationale: 'Blank evidence fields make an entry untraceable for the accounts team.',
-    knownLimits: 'Some D365 flavours legitimately omit references on certain journals; disposition those ACCEPT once, with rationale.',
+    knownLimits:
+      'Some D365 flavours legitimately omit references on certain journals; disposition those ACCEPT once, with rationale.',
     recommendedAction: 'Ask the poster to complete the missing field in D365.',
     status: 'ACCEPTED',
     createdAt: nowISO(),
@@ -354,8 +375,10 @@ export const EXCEPTION_RULES: readonly ExceptionRule[] = [
       formula: 'gap between consecutive posting dates > dormancyDays (default 180)',
       sourceRows: true,
     },
-    rationale: 'Revived dormant accounts are a classic misposting target (wrong code picked from an old list).',
-    knownLimits: 'Dormancy window is a run option; the first posting ever is R-016 territory, not dormancy.',
+    rationale:
+      'Revived dormant accounts are a classic misposting target (wrong code picked from an old list).',
+    knownLimits:
+      'Dormancy window is a run option; the first posting ever is R-016 territory, not dormancy.',
     recommendedAction: 'Confirm the account is still the right one for this posting.',
     status: 'ACCEPTED',
     createdAt: nowISO(),
@@ -374,9 +397,12 @@ export const EXCEPTION_RULES: readonly ExceptionRule[] = [
       formula: 'min(period over account) == max(period over ledger) and ledger spans >= 2 periods',
       sourceRows: true,
     },
-    rationale: 'New accounts change every comparison; the reviewer should know each one exists and why.',
-    knownLimits: 'On a single-period ledger every account is "new"; the rule stays silent until two periods exist.',
-    recommendedAction: 'Confirm the account was created deliberately and mapped to the right statement class.',
+    rationale:
+      'New accounts change every comparison; the reviewer should know each one exists and why.',
+    knownLimits:
+      'On a single-period ledger every account is "new"; the rule stays silent until two periods exist.',
+    recommendedAction:
+      'Confirm the account was created deliberately and mapped to the right statement class.',
     status: 'ACCEPTED',
     createdAt: nowISO(),
     createdBy: 'system',
@@ -391,12 +417,16 @@ export const EXCEPTION_RULES: readonly ExceptionRule[] = [
     threshold: { deviation: 5, operator: 'gt' },
     evidence: {
       description: "An entry's amount is far from the account's own median (median/MAD)",
-      formula: '|x - median| > 5 * MAD over |debit - credit| per account (accounts with >= 5 entries)',
+      formula:
+        '|x - median| > 5 * MAD over |debit - credit| per account (accounts with >= 5 entries)',
       sourceRows: true,
     },
-    rationale: 'Outliers against an account’s own history catch wrong-amount and wrong-account postings that totals hide.',
-    knownLimits: 'Needs >= 5 entries per account (run option). When MAD is 0, any amount different from the median is flagged; both facts are stated on the finding.',
-    recommendedAction: 'Compare with the source document; check for extra zeros or a wrong account.',
+    rationale:
+      'Outliers against an account’s own history catch wrong-amount and wrong-account postings that totals hide.',
+    knownLimits:
+      'Needs >= 5 entries per account (run option). When MAD is 0, any amount different from the median is flagged; both facts are stated on the finding.',
+    recommendedAction:
+      'Compare with the source document; check for extra zeros or a wrong account.',
     status: 'ACCEPTED',
     createdAt: nowISO(),
     createdBy: 'system',
@@ -532,6 +562,7 @@ export const useExceptionRuleCatalogueStore = create<ExceptionRuleCatalogueStore
         },
 
         registerRule: (newRule) => {
+          assertPermission(Permissions.EXCEPTION_CONFIGURE, 'registerRule');
           const existing = get().rules.find(
             (r) => r.ruleId === newRule.ruleId && r.version === newRule.version
           );
@@ -551,6 +582,7 @@ export const useExceptionRuleCatalogueStore = create<ExceptionRuleCatalogueStore
         },
 
         supersedeRule: (ruleId, updates, author) => {
+          assertPermission(Permissions.EXCEPTION_CONFIGURE, 'supersedeRule');
           const rules = get().rules.filter((r) => r.ruleId === ruleId);
           if (rules.length === 0) {
             throw new Error(`Rule ${ruleId} not found in catalogue`);
@@ -584,6 +616,7 @@ export const useExceptionRuleCatalogueStore = create<ExceptionRuleCatalogueStore
         },
 
         updateRuleStatus: (ruleId, status, version) => {
+          assertPermission(Permissions.EXCEPTION_CONFIGURE, 'updateRuleStatus');
           set((state) => {
             const target =
               version !== undefined
@@ -598,6 +631,7 @@ export const useExceptionRuleCatalogueStore = create<ExceptionRuleCatalogueStore
         },
 
         resetToDefaults: () => {
+          assertPermission(Permissions.EXCEPTION_CONFIGURE, 'resetToDefaults');
           set((state) => {
             state.rules = initialRules();
           });

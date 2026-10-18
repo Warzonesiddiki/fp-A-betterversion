@@ -4,6 +4,7 @@
  * back to the store, so the hand-off can never drift from the tracker.
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { actAs } from '@/test/rbacFixtures';
 import { buildCorrectionList } from './buildCorrectionList';
 import {
   runExceptionRules,
@@ -59,6 +60,7 @@ function seedCorrection(): CorrectionRequest {
 
 describe('buildCorrectionList — store == Excel tie-out (DEC-018)', () => {
   beforeEach(() => {
+    actAs('Admin'); // Phase 12: disposition/correction actions require permissions
     setClock(FIXED);
     useExceptionDispositionStore.getState().reset();
   });

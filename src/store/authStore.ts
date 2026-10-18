@@ -145,6 +145,9 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
     'audit:update',
     'audit:delete',
     'audit:export',
+    'exception:dispose',
+    'exception:configure',
+    'tax:update',
     // Period close (F-01)
     'period:read',
     'period:close',
@@ -285,6 +288,7 @@ export const ROLE_PERMISSIONS: Record<Role, readonly string[]> = {
     'notification:read',
     'notification:update',
     'export:data',
+    'exception:dispose',
     'auth:login',
     'auth:logout',
     'auth:refresh',
