@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
+import { useAuthStore } from './store/authStore';
+import { resolveDeviceBinding } from './utils/sessionBinding';
 import { ThemeProvider } from './context/ThemeContext';
 import AppLayout from './components/layout/AppLayout';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
@@ -309,6 +311,13 @@ const _DOMAIN_MAP = {
 
 export default function App() {
   const { isFirstRun, completeSetup } = useFirstRun();
+
+  // DEC-014: on cold start, try the cached local session (offline
+  // sign-in). No-op when there is no cache, the binding differs, or the
+  // cache has expired; the login screen remains the fallback.
+  useEffect(() => {
+    useAuthStore.getState().restoreCachedSession(resolveDeviceBinding());
+  }, []);
 
   // Desktop-only runtime gate (owner decision 2026-08-12: the F-05 browser
   // beta channel — VITE_BETA_WEB + data-beta-web marker — was removed; the

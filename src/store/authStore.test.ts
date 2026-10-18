@@ -530,10 +530,19 @@ describe('authStore real-auth path (VITE_USE_MOCK_AUTH=false)', () => {
       activeEntityId: 'entity-001',
     });
     const persisted = options.partialize?.(useAuthStore.getState()) as Record<string, unknown>;
+    // DEC-014 (2026-10-18) evolves this contract: the cached local session
+    // (user profile only — never tokens) persists inside masterStorage
+    // encryption so desktop sign-in works offline. Live session truth
+    // (user / isAuthenticated / tokens / expiry) still NEVER persists.
     expect(Object.keys(persisted).sort()).toEqual([
       'activeEntityId',
+      'cachedSession',
       'lockedUntil',
       'loginAttempts',
     ]);
+    expect(persisted.user).toBeUndefined();
+    expect(persisted.accessToken).toBeUndefined();
+    expect(persisted.refreshToken).toBeUndefined();
+    expect(persisted.isAuthenticated).toBeUndefined();
   });
 });

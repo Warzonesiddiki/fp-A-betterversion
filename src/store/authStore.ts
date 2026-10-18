@@ -3,6 +3,8 @@ import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { User, AuthState, Role } from '../types';
 import { masterStorage } from '../utils/masterStorage';
+import { resolveDeviceBinding, hashBinding } from '../utils/sessionBinding';
+import type { CachedSession } from '../types';
 import { parseTokenExpiry, startRotation, stopRotation } from '../utils/tokenRotation';
 import { randomId } from '@/utils/cryptoId';
 import { AuthRequestError, authClient, type AuthUserDto } from '@/services/authClient';
@@ -478,6 +480,8 @@ export const useAuthStore = create<AuthState>()(
         loginAttempts: 0,
         lockedUntil: null as string | null,
         tokenExpiry: null as number | null,
+        cachedSession: null as CachedSession | null,
+        sessionMode: null as 'online' | 'offline-cache' | null,
 
         /**
          * PUBLIC login entry. Branches on the VITE_USE_MOCK_AUTH env var
@@ -632,6 +636,19 @@ export const useAuthStore = create<AuthState>()(
             const user = toStoreUser(res.user);
             const tokenExpiry = parseTokenExpiry(res.accessToken);
 
+            // DEC-014 enrollment: a successful online login also writes
+            // the cached local session (profile only, never tokens) so
+            // the desktop app can sign in offline until the explicit
+            // 30-day expiry. At-rest protection is masterStorage's.
+            const issuedAt = nowISO();
+            const cachedSession: CachedSession = {
+              user: user as User,
+              email: res.user.email,
+              issuedAt,
+              expiresAt: new Date(Date.parse(issuedAt) + 30 * 86_400_000).toISOString(),
+              bindingHash: hashBinding(resolveDeviceBinding()),
+            };
+
             set((s) => {
               s.user = user as typeof s.user;
               s.accessToken = res.accessToken;
@@ -643,6 +660,8 @@ export const useAuthStore = create<AuthState>()(
               s.lockedUntil = null;
               s.error = null;
               s.tokenExpiry = tokenExpiry;
+              s.cachedSession = cachedSession as typeof s.cachedSession;
+              s.sessionMode = 'online';
             });
 
             startRotation();
@@ -683,6 +702,48 @@ export const useAuthStore = create<AuthState>()(
             s.error = null;
             s.loginAttempts = 0;
             s.lockedUntil = null;
+            s.tokenExpiry = null;
+            s.cachedSession = null;
+            s.sessionMode = null;
+          });
+        },
+
+        /**
+         * DEC-014 offline sign-in: restore the cached session with NO
+         * network call. Refuses (returns false) when there is no cache,
+         * when the device binding does not match, or when the explicit
+         * expiry has passed — an expired cache is wiped, never revived.
+         */
+        restoreCachedSession: (binding: string) => {
+          const cache = get().cachedSession;
+          if (!cache) return false;
+          if (Date.parse(cache.expiresAt) <= Date.parse(nowISO())) {
+            set((s) => {
+              s.cachedSession = null;
+            });
+            return false;
+          }
+          if (hashBinding(binding) !== cache.bindingHash) return false;
+          set((s) => {
+            s.user = cache.user as typeof s.user;
+            s.isAuthenticated = true;
+            s.activeEntityId = cache.user.entityId ?? '';
+            s.sessionMode = 'offline-cache';
+            s.error = null;
+          });
+          return true;
+        },
+
+        /** DEC-014 revoke-and-wipe: drop the cache and any live session. */
+        revokeCachedSession: () => {
+          stopRotation();
+          set((s) => {
+            s.cachedSession = null;
+            s.sessionMode = null;
+            s.user = null;
+            s.accessToken = null;
+            s.refreshToken = null;
+            s.isAuthenticated = false;
             s.tokenExpiry = null;
           });
         },
@@ -860,11 +921,15 @@ export const useAuthStore = create<AuthState>()(
           return { ...next, version: 2 } as unknown;
         },
         partialize: (state) => ({
-          // Only persist non-sensitive, non-auth-truth fields. Session truth
-          // (user / isAuthenticated / tokens / expiry) NEVER persists.
+          // Only persist non-sensitive, non-auth-truth fields. Live session
+          // truth (tokens / token expiry) NEVER persists. The DEC-014
+          // cached session DOES persist — user profile only, no tokens —
+          // inside masterStorage encryption, and is only honoured through
+          // restoreCachedSession (binding + expiry checked).
           activeEntityId: state.activeEntityId,
           loginAttempts: state.loginAttempts,
           lockedUntil: state.lockedUntil,
+          cachedSession: state.cachedSession,
         }),
       }
     )

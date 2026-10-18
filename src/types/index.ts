@@ -387,8 +387,26 @@ export interface ApiResponse<T> {
 
 // --- Store Types ---
 
+/**
+ * DEC-014 cached local session: written by a successful online login
+ * (enrollment), restored offline with no network call. Carries the user
+ * profile only — never tokens. `bindingHash` ties the cache to this
+ * device profile (see src/utils/sessionBinding.ts).
+ */
+export interface CachedSession {
+  user: User;
+  email: string;
+  issuedAt: string;
+  expiresAt: string;
+  bindingHash: string;
+}
+
+export type SessionMode = 'online' | 'offline-cache';
+
 export interface AuthState {
   user: User | null;
+  cachedSession: CachedSession | null;
+  sessionMode: SessionMode | null;
   readonly accessToken: string | null;
   readonly refreshToken: string | null;
   readonly isAuthenticated: boolean;
@@ -404,6 +422,8 @@ export interface AuthState {
   readonly loginReal: (email: string, password: string) => Promise<void>;
   readonly register: (name: string, email: string, password: string) => Promise<void>;
   readonly logout: () => void;
+  readonly restoreCachedSession: (binding: string) => boolean;
+  readonly revokeCachedSession: () => void;
   readonly refreshAccessToken: () => Promise<void>;
   readonly setUser: (user: User) => void;
   readonly switchEntity: (entityId: string) => void;
