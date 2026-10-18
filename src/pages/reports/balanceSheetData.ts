@@ -31,35 +31,45 @@
  *    silently passes books that are out by up to a cent in either direction.
  *    Balanced means the cent-rounded difference is exactly zero.
  *
- * 5. **Nothing is silently dropped.** Entries whose account code carries no
- *    known class prefix (1–8) used to vanish from every total while still
- *    affecting the ledger, so the sheet could not balance and the page could
- *    not say why. They are counted and reported.
+ * 5. **Nothing is silently dropped.** Entries no statement class claims used
+ *    to vanish from every total while still affecting the ledger, so the
+ *    sheet could not balance and the page could not say why. They are
+ *    counted and reported.
  *
- * Account-code prefixes are the app-wide convention:
- *   1 Asset · 2 Liability · 3 Equity · 4 Revenue · 5 COGS · 6 OpEx
- *   7 Interest · 8 Income tax
+ * Classification follows the Phase 2 contract
+ * (`docs/product/STATEMENT_SIGN_CONTRACT.md`, implemented once in
+ * `@/utils/accountClassification`): the account master's type wins; the
+ * code-prefix convention (1 Asset · 2 Liability · 3 Equity · 4 Revenue ·
+ * 5 COGS · 6 OpEx · 7 Interest · 8 Income tax) is the fallback.
  * The GL carries no jurisdiction, D&A or cash-flow-activity dimension; none is
  * inferred here.
  */
 
 import Decimal from 'decimal.js';
-import { roundTo, sumMoney, toDecimal, type MoneyInput } from '@/utils/money';
+import { roundTo, sumMoney, type MoneyInput } from '@/utils/money';
+import {
+  entriesForClass,
+  signedClassAmount,
+  type AccountClass,
+} from '@/utils/accountClassification';
+import type { AccountType } from '@/types';
 
 /** Minimal shape this module needs from a posted GL entry. */
 export interface BalanceSheetGLEntry {
   readonly accountCode?: string;
+  /** Account-master type when known; beats the code-prefix convention. */
+  readonly accountType?: AccountType | 'Unknown' | null;
   readonly debit?: MoneyInput | null;
   readonly credit?: MoneyInput | null;
   readonly date?: string;
 }
 
 export interface BalanceSheetReport {
-  /** Prefix 1, debit-normal. */
+  /** Asset class, debit-normal. */
   readonly totalAssets: number;
-  /** Prefix 2, credit-normal. */
+  /** Liability class, credit-normal. */
   readonly totalLiabilities: number;
-  /** Prefix 3, credit-normal: contributed capital and prior retained earnings. */
+  /** Equity class, credit-normal: contributed capital and prior retained earnings. */
   readonly postedEquity: number;
   /** Revenue (4) − COGS (5) − OpEx (6) − Interest (7) − Tax (8). */
   readonly currentPeriodEarnings: number;
@@ -73,22 +83,10 @@ export interface BalanceSheetReport {
   readonly isBalanced: boolean;
   /** Entries included after the as-of cutoff. */
   readonly entryCount: number;
-  /** Entries whose account code has no class prefix in 1–8. */
+  /** Entries no statement class claimed (no type, no 1–8 prefix). */
   readonly unclassifiedCount: number;
   /** Debit-normal movement of those entries, so the gap can be explained. */
   readonly unclassifiedMovement: number;
-}
-
-const ZERO = new Decimal(0);
-const CLASS_PREFIXES = ['1', '2', '3', '4', '5', '6', '7', '8'] as const;
-
-function money(value: MoneyInput | null | undefined): Decimal {
-  if (value === null || value === undefined) return ZERO;
-  return toDecimal(value);
-}
-
-function codeOf(entry: BalanceSheetGLEntry): string {
-  return entry.accountCode ?? '';
 }
 
 /**
@@ -102,21 +100,14 @@ function dayOf(entry: BalanceSheetGLEntry): string {
   return (entry.date ?? '').slice(0, 10);
 }
 
-function withPrefix(
-  entries: readonly BalanceSheetGLEntry[],
-  prefix: string
-): readonly BalanceSheetGLEntry[] {
-  return entries.filter((e) => codeOf(e).startsWith(prefix));
-}
-
-/** Debit-normal movement: debit − credit (assets, expenses). */
-function debitNormal(entries: readonly BalanceSheetGLEntry[]): Decimal {
-  return sumMoney(entries.map((e) => money(e.debit).minus(money(e.credit))));
-}
-
-/** Credit-normal movement: credit − debit (liabilities, equity, revenue). */
-function creditNormal(entries: readonly BalanceSheetGLEntry[]): Decimal {
-  return sumMoney(entries.map((e) => money(e.credit).minus(money(e.debit))));
+/**
+ * Signed movement of one statement class in its natural direction, through
+ * the canonical Phase 2 resolver (`@/utils/accountClassification`): account
+ * type beats code prefix, amounts are never absolutised, and entries no
+ * class claims are reported as unclassified rather than dropped.
+ */
+function classSum(entries: readonly BalanceSheetGLEntry[], cls: AccountClass): Decimal {
+  return sumMoney(entriesForClass(entries, cls).map((e) => signedClassAmount(e, cls)));
 }
 
 /**
@@ -129,25 +120,23 @@ export function computeBalanceSheet(
 ): BalanceSheetReport {
   const filtered = asOfDate ? entries.filter((e) => dayOf(e) <= asOfDate) : entries;
 
-  const assets = debitNormal(withPrefix(filtered, '1'));
-  const liabilities = creditNormal(withPrefix(filtered, '2'));
-  const postedEquity = creditNormal(withPrefix(filtered, '3'));
+  const assets = classSum(filtered, 'asset');
+  const liabilities = classSum(filtered, 'liability');
+  const postedEquity = classSum(filtered, 'equity');
 
   // Current-period earnings from the still-open P&L accounts. Revenue is
   // credit-normal; every expense class is debit-normal and reduces earnings.
-  const revenue = creditNormal(withPrefix(filtered, '4'));
-  const cogs = debitNormal(withPrefix(filtered, '5'));
-  const opex = debitNormal(withPrefix(filtered, '6'));
-  const interest = debitNormal(withPrefix(filtered, '7'));
-  const tax = debitNormal(withPrefix(filtered, '8'));
+  const revenue = classSum(filtered, 'revenue');
+  const cogs = classSum(filtered, 'cogs');
+  const opex = classSum(filtered, 'opex');
+  const interest = classSum(filtered, 'interest');
+  const tax = classSum(filtered, 'tax');
   const currentPeriodEarnings = revenue.minus(cogs).minus(opex).minus(interest).minus(tax);
 
   const totalEquity = postedEquity.plus(currentPeriodEarnings);
   const totalLiabilitiesAndEquity = liabilities.plus(totalEquity);
 
-  const unclassified = filtered.filter(
-    (e) => !CLASS_PREFIXES.some((p) => codeOf(e).startsWith(p))
-  );
+  const unclassified = entriesForClass(filtered, 'unclassified');
 
   // One rounding, applied to the unrounded difference: differencing two sides
   // that were each rounded first manufactures a phantom cent.
@@ -164,6 +153,6 @@ export function computeBalanceSheet(
     isBalanced: diff === 0,
     entryCount: filtered.length,
     unclassifiedCount: unclassified.length,
-    unclassifiedMovement: roundTo(debitNormal(unclassified), 2),
+    unclassifiedMovement: roundTo(classSum(unclassified, 'unclassified'), 2),
   };
 }

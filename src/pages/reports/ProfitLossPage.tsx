@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { PageHeader } from '@/components/ui/PageHeader';
 
@@ -12,73 +12,11 @@ import { BarChart3, FileText, Table as TableIcon } from 'lucide-react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent } from '@/utils/financialFormatting';
-import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
+import { withAccountTypes } from '@/utils/accountClassification';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-/** Money-primitive P&L statement totals (GAP-1 F-0006). The three account-class
- *  sums (Revenue/COGS/Expenses) accumulate via decimal to keep a balanced
- *  ledger on the cent; grossProfit/netIncome are subtractions; grossMargin
- *  is a percentage computed via divideMoney so 1/3 * 100 lands on 33.33 exactly. */
-export interface ProfitLossReport {
-  totalRevenue: number;
-  totalCOGS: number;
-  totalExpenses: number;
-  grossProfit: number;
-  netIncome: number;
-  grossMargin: number;
-  netMargin: number;
-  entryCount: number;
-}
-
-export function computeProfitLoss(
-  entries: readonly { accountCode?: string; debit: number; credit: number; period?: string; date: string }[],
-  period?: string
-): ProfitLossReport {
-  const filtered = period
-    ? entries.filter((e) => (e.period || e.date.slice(0, 7)) <= period)
-    : entries;
-  const totalRevenue = roundTo(
-    sumMoney(
-      filtered
-        .filter((e) => (e.accountCode || '').startsWith('4'))
-        .map((e) => subtractMoney(e.credit, e.debit))
-    ),
-    2
-  );
-  const totalCOGS = roundTo(
-    sumMoney(
-      filtered
-        .filter((e) => (e.accountCode || '').startsWith('5'))
-        .map((e) => Math.abs(subtractMoney(e.debit, e.credit).toNumber()))
-    ),
-    2
-  );
-  const totalExpenses = roundTo(
-    sumMoney(
-      filtered
-        .filter((e) => (e.accountCode || '').startsWith('6'))
-        .map((e) => Math.abs(subtractMoney(e.debit, e.credit).toNumber()))
-    ),
-    2
-  );
-  const grossProfit = roundTo(subtractMoney(totalRevenue, totalCOGS), 2);
-  const netIncome = roundTo(subtractMoney(grossProfit, totalExpenses), 2);
-  const grossMargin =
-    totalRevenue > 0
-      ? roundTo(divideMoney(grossProfit, totalRevenue).times(100), 2)
-      : 0;
-  const netMargin =
-    totalRevenue > 0 ? roundTo(divideMoney(netIncome, totalRevenue).times(100), 2) : 0;
-  return {
-    totalRevenue,
-    totalCOGS,
-    totalExpenses,
-    grossProfit,
-    netIncome,
-    grossMargin,
-    netMargin,
-    entryCount: filtered.length,
-  };
-}
+import { computeProfitLoss, type ProfitLossReport } from './profitLossData';
+export { computeProfitLoss };
+export type { ProfitLossReport };
 
 export default function ProfitLossPage() {
   const fmt = useCurrencyFormatter();
@@ -88,9 +26,10 @@ export default function ProfitLossPage() {
     document.title = 'FinPlan Pro — Profit Loss';
   }, []);
 
-  const { entries, importError, isLoading } = useGLStore(
+  const { entries, accounts, importError, isLoading } = useGLStore(
     useShallow((s) => ({
       entries: s.entries,
+      accounts: s.accounts,
       importError: s.importError,
       isLoading: s.isLoading,
     }))
@@ -103,8 +42,20 @@ export default function ProfitLossPage() {
 
   const report = useMemo(() => {
     if (entries.length === 0) return null;
-    return computeProfitLoss(entries, period);
-  }, [entries, period]);
+    // Phase 2: classify by account-master type where known (prefix fallback
+    // inside the resolver), so a real D365 COA is not read by code prefix.
+    return computeProfitLoss(withAccountTypes(entries, accounts), period);
+  }, [entries, accounts, period]);
+
+  // Phase 2 drill-to-source: every class figure lists exactly the entries it
+  // was summed from (the drill page resolves the same classes the same way).
+  const drillToClass = useCallback(
+    (label: string, classes: string) =>
+      navigate(
+        `/drill-down?title=${encodeURIComponent(label)}&statementClass=${classes}&endDate=${period}-31`
+      ),
+    [navigate, period]
+  );
 
   // K30 hydrate gate (W-A11Y-002 M5): one shared skeleton state, announced
   // once via srLabel — shown while the GL store hydrates and, defensively,
@@ -238,6 +189,15 @@ export default function ProfitLossPage() {
               <tr className="hover:bg-slate-900/50" role="row">
                 <td className="px-6 py-3 text-slate-300" role="gridcell">
                   Revenue
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="ml-2 h-6 px-2 text-xs"
+                    aria-label="Drill into Revenue entries"
+                    onClick={() => drillToClass('Revenue', 'revenue')}
+                  >
+                    Drill
+                  </Button>
                 </td>
                 <td
                   className="px-6 py-3 text-right tabular-nums font-medium text-green-400"
@@ -249,6 +209,15 @@ export default function ProfitLossPage() {
               <tr className="hover:bg-slate-900/50" role="row">
                 <td className="px-6 py-3 text-slate-300 pl-10" role="gridcell">
                   Cost of Goods Sold
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="ml-2 h-6 px-2 text-xs"
+                    aria-label="Drill into Cost of Goods Sold entries"
+                    onClick={() => drillToClass('Cost of Goods Sold', 'cogs')}
+                  >
+                    Drill
+                  </Button>
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums text-red-400" role="gridcell">
                   {fmt.currency0(report.totalCOGS)}
@@ -273,6 +242,15 @@ export default function ProfitLossPage() {
               <tr className="hover:bg-slate-900/50" role="row">
                 <td className="px-6 py-3 text-slate-300 pl-10" role="gridcell">
                   Operating Expenses
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="ml-2 h-6 px-2 text-xs"
+                    aria-label="Drill into Operating Expenses entries"
+                    onClick={() => drillToClass('Operating Expenses', 'opex,interest,tax')}
+                  >
+                    Drill
+                  </Button>
                 </td>
                 <td className="px-6 py-3 text-right tabular-nums text-red-400" role="gridcell">
                   {fmt.currency0(report.totalExpenses)}
@@ -310,6 +288,15 @@ export default function ProfitLossPage() {
           </table>
         </CardContent>
       </Card>
+
+      {report.unclassifiedCount > 0 && (
+        <p className="text-sm text-amber-400" role="note">
+          {report.unclassifiedCount.toLocaleString()} entries have no account type and an account
+          code outside the 1–8 convention, and are in no total above (net debit movement{' '}
+          {fmt.custom({ decimals: 2 })(report.unclassifiedMovement)}). Until they are mapped to a
+          class, the statement cannot be reconciled.
+        </p>
+      )}
     </div>
   );
 }

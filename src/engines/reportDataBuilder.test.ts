@@ -162,3 +162,51 @@ describe('reportDataBuilder — empty state & dispatch', () => {
     expect(buildReportData(input, 'preset-kpi').rows[0]).toContain('No data source defined');
   });
 });
+
+describe('reportDataBuilder — Phase 2 canonical statements (F-P2-01/F-P2-02)', () => {
+  it('P&L export signs a credit-heavy COGS line negative (no sumAbs)', () => {
+    const data = buildPnlRows({
+      entries: [
+        { accountCode: '4000', debit: 0, credit: 1000, date: '2026-01-31', period: '2026-01' },
+        { accountCode: '5000', debit: 0, credit: 200, date: '2026-01-31', period: '2026-01' },
+      ],
+      entityName: 'Acme',
+      currency: 'USD',
+      periodLabel: 'Jan 2026',
+    });
+    const cogs = data.rows.find((r) => r[0] === 'Cost of Goods Sold');
+    expect(cogs?.[1]).toBe(-200);
+    const gross = data.rows.find((r) => r[0] === 'Gross Profit');
+    expect(gross?.[1]).toBe(1200);
+  });
+
+  it('BS export closes current-period earnings into equity so traded books balance', () => {
+    const data = buildBalanceSheetRows({
+      entries: [
+        { accountCode: '1100', debit: 1000, credit: 0, date: '2026-01-31', period: '2026-01' },
+        { accountCode: '4000', debit: 0, credit: 1000, date: '2026-01-31', period: '2026-01' },
+      ],
+      entityName: 'Acme',
+      currency: 'USD',
+      periodLabel: 'Jan 2026',
+    });
+    const equity = data.rows.find((r) => r[0] === 'Total Equity');
+    expect(equity?.[1]).toBe(1000);
+    const balanced = data.rows.find((r) => String(r[0]).includes('A = L + E'));
+    expect(balanced).toEqual(['A = L + E ✓', 0, '', '', '']);
+  });
+
+  it('CF export net income includes interest (canonical P&L)', () => {
+    const data = buildCashFlowRows({
+      entries: [
+        { accountCode: '4000', debit: 0, credit: 1000, date: '2026-01-31', period: '2026-01' },
+        { accountCode: '7010', debit: 50, credit: 0, date: '2026-01-31', period: '2026-01' },
+      ],
+      entityName: 'Acme',
+      currency: 'USD',
+      periodLabel: 'Jan 2026',
+    });
+    const ni = data.rows.find((r) => r[0] === 'Net Income');
+    expect(ni).toEqual(['Net Income', 950, '', '']);
+  });
+});

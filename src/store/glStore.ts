@@ -31,6 +31,7 @@ import { useUIStore } from './uiStore';
 import { useAuthStore } from './authStore';
 import { usePeriodCloseStore } from './periodCloseStore';
 import { getGLPeriodWriteIssues } from '@/services/import/glPeriodWriteGuard';
+import { deriveAccountsFromEntries } from '@/utils/accountClassification';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
 import { now } from '../utils/clock';
 import {
@@ -915,6 +916,12 @@ export const useGLStore = create<GLState>()(
 
             set((state) => {
               state.entries.push(...finalEntries);
+              // Phase 2 (F-P2-01): derive the account master for codes the
+              // file introduces, so trial-balance rows carry real types and
+              // statements classify by type instead of raw code prefixes.
+              // Unclassifiable codes get no account (no fabricated types);
+              // owner-maintained accounts are never overwritten.
+              state.accounts.push(...deriveAccountsFromEntries(finalEntries, state.accounts));
               state.lastImportEntryIds = ids;
               state.importStatus = 'complete';
               state.importProgress = 100;

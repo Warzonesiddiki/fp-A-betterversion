@@ -180,7 +180,9 @@ describe('BalanceSheetPage (deep tests)', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByRole('note').textContent).toMatch(/1 entries carry an account code outside/);
+    expect(screen.getByRole('note').textContent).toMatch(
+      /1 entries have no account type and an account code outside/
+    );
   });
 
   it('displays imbalance status when books are off', () => {
@@ -212,5 +214,31 @@ describe('BalanceSheetPage (deep tests)', () => {
     const excelBtn = screen.getByRole('button', { name: 'Export Excel' });
     await user.click(excelBtn);
     expect(ExportEngine.exportToExcel).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('BalanceSheetPage — drill-to-source (Phase 2)', () => {
+  it('every class figure drills to its source entries via statementClass', async () => {
+    const entries = [
+      { id: 'd1', accountId: '1010', accountCode: '1010', accountName: 'Cash', period: '2026-08', periodName: 'Aug 2026', debit: 1000, credit: 0, netChange: 1000, amount: 1000, date: '2026-08-01', description: '', reference: '' },
+      { id: 'd2', accountId: '3010', accountCode: '3010', accountName: 'Equity', period: '2026-08', periodName: 'Aug 2026', debit: 0, credit: 1000, netChange: -1000, amount: -1000, date: '2026-08-01', description: '', reference: '' },
+    ] as GLEntry[];
+    useGLStore.setState({ entries, accounts: [] });
+    render(
+      <BrowserRouter>
+        <BalanceSheetPage />
+      </BrowserRouter>
+    );
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: /Drill into Assets entries/i }));
+    expect(mockNavigate).toHaveBeenCalledWith(expect.stringContaining('statementClass=asset'));
+    await user.click(screen.getByRole('button', { name: /Drill into Liabilities entries/i }));
+    expect(mockNavigate).toHaveBeenCalledWith(expect.stringContaining('statementClass=liability'));
+    await user.click(
+      screen.getByRole('button', { name: /Drill into Current-period earnings entries/i })
+    );
+    expect(mockNavigate).toHaveBeenCalledWith(
+      expect.stringContaining('statementClass=revenue,cogs,opex,interest,tax')
+    );
   });
 });

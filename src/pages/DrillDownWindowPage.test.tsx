@@ -123,3 +123,35 @@ describe('DrillDownWindowPage', () => {
     expect(screen.getByText('0 transactions found')).toBeInTheDocument();
   });
 });
+
+describe('DrillDownWindowPage — statement-class drill (Phase 2)', () => {
+  it('statementClass selects by resolved class, including typed non-prefix accounts', () => {
+    useGLStore.setState({
+      entries: [
+        ...mockEntries,
+        entry('6', '2023-01-22', '1010', 0, 777, 'Typed revenue sale'),
+        entry('7', '2023-01-23', '7010', 55, 0, 'Interest charge'),
+      ],
+      accounts: [{ id: 'acc-1010', code: '1010', type: 'Revenue' }] as never,
+    });
+    renderPage('?title=Revenue&statementClass=revenue');
+    expect(screen.getByText(/4 transactions found/)).toBeInTheDocument();
+    expect(screen.getByText('Typed revenue sale')).toBeInTheDocument();
+    expect(screen.queryByText('Jan cogs')).not.toBeInTheDocument();
+    expect(screen.queryByText('Interest charge')).not.toBeInTheDocument();
+  });
+
+  it('statementClass accepts comma-separated classes (expenses = opex,interest,tax)', () => {
+    useGLStore.setState({
+      entries: [
+        ...mockEntries,
+        entry('7', '2023-01-23', '7010', 55, 0, 'Interest charge'),
+        entry('8', '2023-01-24', '6010', 65, 0, 'Rent expense'),
+      ],
+    });
+    renderPage('?title=Expenses&statementClass=opex,interest,tax');
+    expect(screen.getByText(/2 transactions found/)).toBeInTheDocument();
+    expect(screen.getByText('Interest charge')).toBeInTheDocument();
+    expect(screen.getByText('Rent expense')).toBeInTheDocument();
+  });
+});

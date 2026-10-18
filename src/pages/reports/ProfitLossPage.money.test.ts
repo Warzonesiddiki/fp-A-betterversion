@@ -134,3 +134,65 @@ describe('computeProfitLoss — money known answers (GAP-1)', () => {
     expect(r.totalCOGS).toBe(50);
   });
 });
+
+describe('computeProfitLoss — Phase 2 classification & sign contract (F-P2-01/F-P2-02)', () => {
+  type TypedEntry = Entry & { accountType?: string };
+
+  it('account type beats code prefix: Revenue typed 1010 counts as revenue', () => {
+    const r = computeProfitLoss([
+      { accountCode: '1010', accountType: 'Revenue', debit: 0, credit: 500, date: '2026-01-01', period: '2026-01' },
+    ] as TypedEntry[]);
+    expect(r.totalRevenue).toBe(500);
+  });
+
+  it('account type beats code prefix: OpEx typed 4010 counts as expense, not revenue', () => {
+    const r = computeProfitLoss([
+      { accountCode: '4010', accountType: 'OpEx', debit: 200, credit: 0, date: '2026-01-01', period: '2026-01' },
+    ] as TypedEntry[]);
+    expect(r.totalExpenses).toBe(200);
+    expect(r.totalRevenue).toBe(0);
+  });
+
+  it('a credit-heavy expense is negative — Math.abs sign destruction removed', () => {
+    const r = computeProfitLoss([e('4000', 0, 1000), e('6010', 50, 100)]);
+    expect(r.totalExpenses).toBe(-50);
+    expect(r.netIncome).toBe(1050);
+  });
+
+  it('interest and tax classes are inside total expenses so P&L articulates with the BS', () => {
+    const r = computeProfitLoss([e('4000', 0, 1000), e('7010', 120, 0), e('8010', 80, 0)]);
+    expect(r.totalExpenses).toBe(200);
+    expect(r.netIncome).toBe(800);
+  });
+
+  it('unclassified entries are counted and reported, never dropped silently', () => {
+    const r = computeProfitLoss([e('4000', 0, 1000), e('9010', 70, 0)]);
+    expect(r.totalRevenue).toBe(1000);
+    expect(r.unclassifiedCount).toBe(1);
+    expect(r.unclassifiedMovement).toBe(70);
+  });
+});
+
+describe('computeProfitLoss — figure → entries trace (Phase 2 exit)', () => {
+  it('every headline figure re-derives from its class entries to the cent', async () => {
+    const { entriesForClass, signedClassAmount } = await import('@/utils/accountClassification');
+    const { sumMoney, roundTo } = await import('@/utils/money');
+    const fixture = [
+      e('4000', 0, 1000.1),
+      e('4010', 0, 0.2),
+      e('5000', 300.05, 0),
+      e('6010', 50, 100), // credit-heavy expense: −50
+      e('7010', 25, 0),
+      e('9010', 999, 0), // unclassified: in no figure
+    ];
+    const r = computeProfitLoss(fixture);
+    const trace = (cls: Parameters<typeof entriesForClass>[1]) =>
+      roundTo(sumMoney(entriesForClass(fixture, cls).map((x) => signedClassAmount(x, cls))), 2);
+    expect(trace('revenue')).toBe(r.totalRevenue);
+    expect(trace('cogs')).toBe(r.totalCOGS);
+    expect(roundTo(sumMoney([trace('opex'), trace('interest'), trace('tax')]), 2)).toBe(
+      r.totalExpenses
+    );
+    expect(r.netIncome).toBe(roundTo(r.totalRevenue - r.totalCOGS - r.totalExpenses, 2));
+  });
+});

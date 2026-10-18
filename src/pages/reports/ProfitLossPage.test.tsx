@@ -116,3 +116,26 @@ describe('ProfitLossPage — loading branch announce-once', () => {
     expect(container.querySelectorAll('[aria-hidden="true"]').length).toBeGreaterThan(0);
   });
 });
+
+describe('ProfitLossPage — drill-to-source (Phase 2)', () => {
+  beforeEach(() => {
+    glState.value.isLoading = false;
+    glState.value.entries = [
+      { id: 'pl-1', accountCode: '4000', debit: 0, credit: 100, period: '2026-01', date: '2026-01-01' },
+    ];
+  });
+
+  it('every class figure offers a drill into its source entries', async () => {
+    const { fireEvent } = await import('@testing-library/react');
+    renderPage();
+    expect(screen.getByRole('button', { name: /Drill into Revenue entries/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Drill into Cost of Goods Sold entries/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Drill into Operating Expenses entries/i })
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Drill into Revenue entries/i }));
+    expect(await screen.findByText('Redirected')).toBeInTheDocument();
+  });
+});
