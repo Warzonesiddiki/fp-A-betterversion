@@ -2,12 +2,48 @@ import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { WritableDraft } from 'immer';
-import type { Budget, BudgetState } from '../types';
+import type { Budget, BudgetState, BudgetStatus } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { useUIStore } from './uiStore';
+import { useAuthStore } from './authStore';
 import { enforce, Permissions } from '../utils/rbacEnforcer';
 import { assertSnapshotReplayAllowed, assertUpdateAllowed } from './periodLockGuard';
 import { now } from '@/utils/clock';
+
+/**
+ * Phase 7 — plan approval lifecycle (enforced here, not by page convention):
+ *   Draft -> InReview -> Approved -> Locked; InReview -> Rejected -> InReview.
+ * Illegal moves throw with the current status named. Workflow fields
+ * (status, submittedAt, approvedAt, approvedBy, ...) can never be written
+ * through the generic update path.
+ */
+const BUDGET_TRANSITIONS: Record<BudgetStatus, readonly BudgetStatus[]> = {
+  Draft: ['InReview'],
+  InReview: ['Approved', 'Rejected'],
+  Rejected: ['InReview'],
+  Approved: ['Locked'],
+  Locked: ['Approved'],
+};
+
+function assertBudgetTransition(budget: Budget, to: BudgetStatus, action: string): void {
+  if (!BUDGET_TRANSITIONS[budget.status].includes(to)) {
+    throw new Error(
+      `Cannot ${action} a budget in status ${budget.status}; it must be ` +
+        `${BUDGET_TRANSITIONS[budget.status].join(' or ') || 'in a movable status'} first.`
+    );
+  }
+}
+
+const WORKFLOW_FIELDS = [
+  'status',
+  'submittedAt',
+  'approvedAt',
+  'approvedBy',
+  'id',
+  'createdAt',
+  'createdBy',
+  'version',
+] as const;
 
 export const useBudgetStore = create<BudgetState>()(
   subscribeWithSelector(
@@ -62,6 +98,15 @@ export const useBudgetStore = create<BudgetState>()(
           const existingItem = get().lineItems.find((i) => i.id === id);
           if (existingItem) {
             assertUpdateAllowed(existingItem, updates);
+            // Phase 7 lifecycle: a plan under review or approved is
+            // frozen at the line level too — editing substance requires
+            // a rejection (back to Rejected) or a new version.
+            const owner = get().budgets.find((b) => b.id === existingItem.budgetId);
+            if (owner && owner.status !== 'Draft' && owner.status !== 'Rejected') {
+              throw new Error(
+                `Cannot edit line items of a budget in status ${owner.status}; only Draft or Rejected budgets can be edited.`
+              );
+            }
           }
           set((state) => {
             const idx = state.lineItems.findIndex((i) => i.id === id);
@@ -166,15 +211,26 @@ export const useBudgetStore = create<BudgetState>()(
         }),
 
         submitBudget: enforce(Permissions.BUDGET_UPDATE, 'submitBudget', async (id) => {
+          const existing = get().budgets.find((b) => b.id === id);
+          if (!existing) return;
+          if (existing.status !== 'Draft' && existing.status !== 'Rejected') {
+            throw new Error(
+              `Cannot submit a budget in status ${existing.status}; only a Draft or Rejected budget can be submitted.`
+            );
+          }
+          set((state) => {
+            state.isSubmitting = true;
+          });
           try {
-            set((state) => {
-              state.isSubmitting = true;
-            });
-            await new Promise((r) => setTimeout(r, 1000));
+            await Promise.resolve();
             set((state) => {
               const budget = state.budgets.find((b) => b.id === id);
               if (budget) {
                 budget.status = 'InReview';
+                budget.submittedAt = now().toISOString();
+                budget.approvedAt = null;
+                budget.approvedBy = null;
+                budget.updatedAt = now().toISOString();
                 useUIStore.getState().addToast({
                   type: 'success',
                   title: 'Budget Submitted',
@@ -196,10 +252,17 @@ export const useBudgetStore = create<BudgetState>()(
         }),
 
         approveBudget: enforce(Permissions.BUDGET_UPDATE, 'approveBudget', (id) => {
+          const existing = get().budgets.find((b) => b.id === id);
+          if (!existing) return;
+          assertBudgetTransition(existing, 'Approved', 'approve');
+          const actor = useAuthStore.getState().user?.id ?? 'unknown';
           set((state) => {
             const budget = state.budgets.find((b) => b.id === id);
             if (budget) {
               budget.status = 'Approved';
+              budget.approvedAt = now().toISOString();
+              budget.approvedBy = actor;
+              budget.updatedAt = now().toISOString();
               useUIStore.getState().addToast({
                 type: 'success',
                 title: 'Budget Approved',
@@ -210,15 +273,44 @@ export const useBudgetStore = create<BudgetState>()(
         }),
 
         rejectBudget: enforce(Permissions.BUDGET_UPDATE, 'rejectBudget', (id) => {
+          const existing = get().budgets.find((b) => b.id === id);
+          if (!existing) return;
+          assertBudgetTransition(existing, 'Rejected', 'reject');
           set((state) => {
             const budget = state.budgets.find((b) => b.id === id);
             if (budget) {
-              budget.status = 'Draft';
+              budget.status = 'Rejected';
               useUIStore.getState().addToast({
                 type: 'info',
                 title: 'Budget Rejected',
-                message: `Budget ${budget.name} has been rejected and returned to draft`,
+                message: `Budget ${budget.name} has been rejected; edit and resubmit when ready`,
               });
+            }
+          });
+        }),
+
+        lockBudget: enforce(Permissions.BUDGET_UPDATE, 'lockBudget', (id) => {
+          const existing = get().budgets.find((b) => b.id === id);
+          if (!existing) return;
+          assertBudgetTransition(existing, 'Locked', 'lock');
+          set((state) => {
+            const budget = state.budgets.find((b) => b.id === id);
+            if (budget) {
+              budget.status = 'Locked';
+              budget.updatedAt = now().toISOString();
+            }
+          });
+        }),
+
+        unlockBudget: enforce(Permissions.BUDGET_UPDATE, 'unlockBudget', (id) => {
+          const existing = get().budgets.find((b) => b.id === id);
+          if (!existing) return;
+          assertBudgetTransition(existing, 'Approved', 'unlock');
+          set((state) => {
+            const budget = state.budgets.find((b) => b.id === id);
+            if (budget) {
+              budget.status = 'Approved';
+              budget.updatedAt = now().toISOString();
             }
           });
         }),
@@ -227,6 +319,20 @@ export const useBudgetStore = create<BudgetState>()(
           Permissions.BUDGET_UPDATE,
           'updateBudget',
           (id: string, updates: Partial<Budget>) => {
+            for (const field of WORKFLOW_FIELDS) {
+              if (field in updates) {
+                throw new Error(
+                  `updateBudget cannot change workflow field "${field}"; use the lifecycle actions (submit/approve/reject/lock) instead.`
+                );
+              }
+            }
+            const existing = get().budgets.find((b) => b.id === id);
+            if (!existing) return;
+            if (existing.status !== 'Draft' && existing.status !== 'Rejected') {
+              throw new Error(
+                `Cannot edit a budget in status ${existing.status}; only Draft or Rejected budgets can be edited.`
+              );
+            }
             set((state) => {
               const budget = state.budgets.find((b) => b.id === id);
               if (budget) {

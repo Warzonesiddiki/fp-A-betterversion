@@ -420,10 +420,16 @@ silently zeroing the value. Scenario→3-statement impact DONE 2026-10-18
 entries (exact code or prefix, first match wins, cent-rounded) and both
 statement sets are re-derived by the same deriveThreeStatement the
 reports use; a scenario that breaks double-entry reports its exact
-imbalance with balanced:false — never plugged. Remaining in Phase 7:
-rolling-forecast wire-or-retire, plan approval workflow, backtest UI
-wiring, budget version diff tests, scenario UI wiring (WhatIfPage
-assumptions are still not GL-derived).
+imbalance with balanced:false — never plugged. Plan approval workflow DONE 2026-10-18: the budget lifecycle is now
+enforced in budgetStore (Draft -> InReview -> Approved -> Locked,
+InReview -> Rejected -> resubmit) with actor + clock timestamps;
+approved/locked budgets refuse header AND line-item edits; workflow
+fields can no longer be spoofed through updateBudget (BudgetDetailPage
+was doing exactly that and is rewired to lock/unlock actions); the fake
+1-second submit latency is gone. Remaining in Phase 7:
+rolling-forecast wire-or-retire, backtest UI wiring, budget version
+diff tests, scenario UI wiring (WhatIfPage assumptions are still not
+GL-derived).
 
 **Frozen until Phase 4 exits:** new routes, pages, engines, stores, sector packs, connectors (AGENTS.md rule 8). Repairs, tests, guards and ratchet-lowering are always welcome.
 

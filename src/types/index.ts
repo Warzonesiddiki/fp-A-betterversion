@@ -559,6 +559,8 @@ export interface BudgetState {
   readonly submitBudget: (id: string) => Promise<void>;
   readonly approveBudget: (id: string) => void;
   readonly rejectBudget: (id: string) => void;
+  readonly lockBudget: (id: string) => void;
+  readonly unlockBudget: (id: string) => void;
   readonly updateBudget: (id: string, updates: Partial<Budget>) => void;
   readonly undo: () => void;
   readonly redo: () => void;
