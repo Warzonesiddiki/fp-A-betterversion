@@ -98,10 +98,29 @@ export interface AuditTrailComplianceResult {
   status: SOXCheckStatus;
 }
 
+/**
+ * Whole-report verdict.
+ *
+ * `insufficient_data` is not a fourth flavour of bad news: it means at least
+ * one control family had no source data to evaluate, so no posture can be
+ * reported at all. Publishing `compliant` (or a score) over families that were
+ * never evaluated is fabricated assurance — the defect this vocabulary exists
+ * to prevent.
+ */
+export type SOXOverallStatus =
+  | 'compliant'
+  | 'non_compliant'
+  | 'partially_compliant'
+  | 'insufficient_data';
+
 export interface SOXReport {
   generatedAt: string;
-  overallStatus: 'compliant' | 'non_compliant' | 'partially_compliant';
-  overallScore: number; // 0-100
+  overallStatus: SOXOverallStatus;
+  /**
+   * 0-100 over the evaluated checks, or `null` when any control family could
+   * not be evaluated. `null` is never rendered as 0 and never as 100.
+   */
+  overallScore: number | null;
   checks: SOXCheckResult[];
   summary: {
     total: number;
@@ -110,7 +129,10 @@ export interface SOXReport {
     warnings: number;
     notApplicable: number;
   };
-  byCategory: Record<SOXControlCategory, { passed: number; failed: number; total: number }>;
+  byCategory: Record<
+    SOXControlCategory,
+    { passed: number; failed: number; notApplicable: number; total: number }
+  >;
   criticalFindings: SOXCheckResult[];
   recommendations: string[];
 }
@@ -757,12 +779,17 @@ export class SOXComplianceEngine {
       }
     }
 
+    // No entries for a required resource is not a clean audit trail: it is the
+    // absence of the thing being verified. Reporting 'pass' here let an empty
+    // (or demo-seeded) log claim the control operated.
     const status: SOXCheckStatus =
-      missingFields.length > 0 || tamperDetected
-        ? 'fail'
-        : gapsDetected.length > 0
-          ? 'warning'
-          : 'pass';
+      entries.length === 0
+        ? 'not_applicable'
+        : missingFields.length > 0 || tamperDetected
+          ? 'fail'
+          : gapsDetected.length > 0
+            ? 'warning'
+            : 'pass';
 
     return {
       requirementId: requirement.id,
@@ -1064,45 +1091,96 @@ export class SOXComplianceEngine {
     const checks: SOXCheckResult[] = [];
     const now = nowISO();
 
+    // Which sources actually hold data. A check whose source is empty is not
+    // evaluated: reporting it as 'pass' would claim a control operated on the
+    // strength of nothing (or of demo data a caller seeded).
+    const workflowStats = this.workflowEngine.getStats();
+    const workflowCount = this.workflowEngine.listWorkflows().length;
+    const requestCount =
+      workflowStats.pending +
+      workflowStats.approved +
+      workflowStats.rejected +
+      workflowStats.locked;
+    const hasWorkflowData = workflowCount > 0 || requestCount > 0;
+    const roleAssignments = this.rbacEngine.listUsers();
+    const hasRbacData = roleAssignments.length > 0;
+
+    const NOT_EVALUATED =
+      'Wire an authoritative source for this control family; until then it is not evaluated and cannot pass.';
+
     // 1. Approval workflow checks
     const pendingApprovals = this.getPendingApprovals();
     const slaBreaches = this.checkApprovalSLABreaches();
 
-    checks.push({
-      id: 'chk-approval-1',
-      controlId: 'SOX-302-01',
-      category: 'approval_workflow',
-      name: 'Pending Approvals Review',
-      description: 'Check for overdue approval requests',
-      status: slaBreaches.length === 0 ? 'pass' : 'fail',
-      severity: slaBreaches.length > 0 ? 'high' : 'low',
-      details: `${pendingApprovals.length} pending, ${slaBreaches.length} SLA breaches`,
-      evidence: slaBreaches.map((r) => `Request ${r.id}: ${r.title}`),
-      timestamp: now,
-      remediation:
-        slaBreaches.length > 0 ? 'Review and process overdue approval requests' : undefined,
-    });
+    checks.push(
+      hasWorkflowData
+        ? {
+            id: 'chk-approval-1',
+            controlId: 'SOX-302-01',
+            category: 'approval_workflow',
+            name: 'Pending Approvals Review',
+            description: 'Check for overdue approval requests',
+            status: slaBreaches.length === 0 ? 'pass' : 'fail',
+            severity: slaBreaches.length > 0 ? 'high' : 'low',
+            details: `${pendingApprovals.length} pending, ${slaBreaches.length} SLA breaches`,
+            evidence: slaBreaches.map((r) => `Request ${r.id}: ${r.title}`),
+            timestamp: now,
+            remediation:
+              slaBreaches.length > 0 ? 'Review and process overdue approval requests' : undefined,
+          }
+        : {
+            id: 'chk-approval-1',
+            controlId: 'SOX-302-01',
+            category: 'approval_workflow',
+            name: 'Pending Approvals Review',
+            description: 'Check for overdue approval requests',
+            status: 'not_applicable',
+            severity: 'info',
+            details: `no approval workflow data recorded (0 workflows, 0 requests) — nothing to evaluate`,
+            evidence: [],
+            timestamp: now,
+            remediation: NOT_EVALUATED,
+          }
+    );
 
     // 2. Segregation of duties checks
     const sodViolations = this.scanAllSODViolations();
-    checks.push({
-      id: 'chk-sod-1',
-      controlId: 'SOX-404-01',
-      category: 'segregation_of_duties',
-      name: 'Segregation of Duties Scan',
-      description: 'Scan all users for conflicting role assignments',
-      status: sodViolations.length === 0 ? 'pass' : 'fail',
-      severity: sodViolations.length > 0 ? 'critical' : 'low',
-      details: `${sodViolations.length} SOD violations detected`,
-      evidence: sodViolations.map((v) => v.details),
-      timestamp: now,
-      remediation: sodViolations.length > 0 ? 'Remove conflicting role assignments' : undefined,
-    });
+    checks.push(
+      hasRbacData
+        ? {
+            id: 'chk-sod-1',
+            controlId: 'SOX-404-01',
+            category: 'segregation_of_duties',
+            name: 'Segregation of Duties Scan',
+            description: 'Scan all users for conflicting role assignments',
+            status: sodViolations.length === 0 ? 'pass' : 'fail',
+            severity: sodViolations.length > 0 ? 'critical' : 'low',
+            details: `${sodViolations.length} SOD violations detected`,
+            evidence: sodViolations.map((v) => v.details),
+            timestamp: now,
+            remediation:
+              sodViolations.length > 0 ? 'Remove conflicting role assignments' : undefined,
+          }
+        : {
+            id: 'chk-sod-1',
+            controlId: 'SOX-404-01',
+            category: 'segregation_of_duties',
+            name: 'Segregation of Duties Scan',
+            description: 'Scan all users for conflicting role assignments',
+            status: 'not_applicable',
+            severity: 'info',
+            details: `no role assignments recorded (${roleAssignments.length} users) — nothing to evaluate`,
+            evidence: [],
+            timestamp: now,
+            remediation: NOT_EVALUATED,
+          }
+    );
 
     // 3. Audit trail checks
     const auditResources = ['journal_entry', 'budget', 'user_access', 'financial_report'];
     for (const resource of auditResources) {
       const result = this.verifyAuditTrailCompliance(resource);
+      const notEvaluated = result.status === 'not_applicable' && result.totalEntries === 0;
       checks.push({
         id: `chk-audit-${resource}`,
         controlId: 'SOX-404-03',
@@ -1110,18 +1188,30 @@ export class SOXComplianceEngine {
         name: `Audit Trail: ${resource}`,
         description: `Verify audit trail completeness for ${resource}`,
         status: result.status,
-        severity:
-          result.status === 'fail' ? 'critical' : result.status === 'warning' ? 'medium' : 'low',
-        details: `${result.totalEntries} entries, ${result.missingFields.length} missing fields, tamper: ${result.tamperDetected}`,
-        evidence: [
-          ...result.missingFields,
-          ...result.gapsDetected.map(
-            (g) => `Gap: ${g.startDate} to ${g.endDate} (${g.durationHours}h)`
-          ),
-        ],
+        severity: notEvaluated
+          ? 'info'
+          : result.status === 'fail'
+            ? 'critical'
+            : result.status === 'warning'
+              ? 'medium'
+              : 'low',
+        details: notEvaluated
+          ? `no audit entries recorded for ${resource} — nothing to evaluate`
+          : `${result.totalEntries} entries, ${result.missingFields.length} missing fields, tamper: ${result.tamperDetected}`,
+        evidence: notEvaluated
+          ? []
+          : [
+              ...result.missingFields,
+              ...result.gapsDetected.map(
+                (g) => `Gap: ${g.startDate} to ${g.endDate} (${g.durationHours}h)`
+              ),
+            ],
         timestamp: now,
-        remediation:
-          result.status !== 'pass' ? 'Ensure all required audit fields are populated' : undefined,
+        remediation: notEvaluated
+          ? NOT_EVALUATED
+          : result.status !== 'pass'
+            ? 'Ensure all required audit fields are populated'
+            : undefined,
       });
     }
 
@@ -1192,19 +1282,36 @@ export class SOXComplianceEngine {
     // 5. Access control checks
     const privileged = this.reviewPrivilegedAccess();
     const orphaned = this.checkOrphanedRoles();
-    checks.push({
-      id: 'chk-access-1',
-      controlId: 'SOX-404-07',
-      category: 'access_control',
-      name: 'Privileged Access Review',
-      description: 'Review users with elevated access',
-      status: orphaned.length === 0 ? 'pass' : 'warning',
-      severity: orphaned.length > 0 ? 'medium' : 'low',
-      details: `${privileged.length} privileged users, ${orphaned.length} potentially orphaned roles`,
-      evidence: orphaned.map((o) => `User ${o.userId}: ${o.daysInactive} days inactive`),
-      timestamp: now,
-      remediation: orphaned.length > 0 ? 'Review and remove inactive privileged access' : undefined,
-    });
+    checks.push(
+      hasRbacData
+        ? {
+            id: 'chk-access-1',
+            controlId: 'SOX-404-07',
+            category: 'access_control',
+            name: 'Privileged Access Review',
+            description: 'Review users with elevated access',
+            status: orphaned.length === 0 ? 'pass' : 'warning',
+            severity: orphaned.length > 0 ? 'medium' : 'low',
+            details: `${privileged.length} privileged users, ${orphaned.length} potentially orphaned roles`,
+            evidence: orphaned.map((o) => `User ${o.userId}: ${o.daysInactive} days inactive`),
+            timestamp: now,
+            remediation:
+              orphaned.length > 0 ? 'Review and remove inactive privileged access' : undefined,
+          }
+        : {
+            id: 'chk-access-1',
+            controlId: 'SOX-404-07',
+            category: 'access_control',
+            name: 'Privileged Access Review',
+            description: 'Review users with elevated access',
+            status: 'not_applicable',
+            severity: 'info',
+            details: `no role assignments recorded — nothing to evaluate`,
+            evidence: [],
+            timestamp: now,
+            remediation: NOT_EVALUATED,
+          }
+    );
 
     // Calculate summary
     const summary = {
@@ -1217,14 +1324,14 @@ export class SOXComplianceEngine {
 
     const byCategory: Record<
       SOXControlCategory,
-      { passed: number; failed: number; total: number }
+      { passed: number; failed: number; notApplicable: number; total: number }
     > = {
-      approval_workflow: { passed: 0, failed: 0, total: 0 },
-      segregation_of_duties: { passed: 0, failed: 0, total: 0 },
-      audit_trail: { passed: 0, failed: 0, total: 0 },
-      data_integrity: { passed: 0, failed: 0, total: 0 },
-      access_control: { passed: 0, failed: 0, total: 0 },
-      financial_reporting: { passed: 0, failed: 0, total: 0 },
+      approval_workflow: { passed: 0, failed: 0, notApplicable: 0, total: 0 },
+      segregation_of_duties: { passed: 0, failed: 0, notApplicable: 0, total: 0 },
+      audit_trail: { passed: 0, failed: 0, notApplicable: 0, total: 0 },
+      data_integrity: { passed: 0, failed: 0, notApplicable: 0, total: 0 },
+      access_control: { passed: 0, failed: 0, notApplicable: 0, total: 0 },
+      financial_reporting: { passed: 0, failed: 0, notApplicable: 0, total: 0 },
     };
 
     for (const check of checks) {
@@ -1232,25 +1339,39 @@ export class SOXComplianceEngine {
       cat.total++;
       if (check.status === 'pass') cat.passed++;
       if (check.status === 'fail') cat.failed++;
+      if (check.status === 'not_applicable') cat.notApplicable++;
     }
 
     const criticalFindings = checks.filter(
       (c) => c.status === 'fail' && (c.severity === 'critical' || c.severity === 'high')
     );
 
+    const evaluated = summary.total - summary.notApplicable;
+    // No score while any family is unevaluated: a percentage over the checks
+    // that happened to have data reads as a posture over all of them. And no
+    // score at all (rather than 0 or 100) when nothing was evaluated.
     const overallScore =
-      summary.total > 0
-        ? Math.round((summary.passed / (summary.total - summary.notApplicable)) * 100)
-        : 100;
+      summary.notApplicable > 0 || evaluated === 0
+        ? null
+        : Math.round((summary.passed / evaluated) * 100);
 
-    const overallStatus: SOXReport['overallStatus'] =
+    // A critical finding outranks everything: an unbalanced book is
+    // non-compliant even while other families wait for a source.
+    const overallStatus: SOXOverallStatus =
       criticalFindings.length > 0
         ? 'non_compliant'
-        : summary.failed > 0 || summary.warnings > 0
-          ? 'partially_compliant'
-          : 'compliant';
+        : summary.notApplicable > 0 || evaluated === 0
+          ? 'insufficient_data'
+          : summary.failed > 0 || summary.warnings > 0
+            ? 'partially_compliant'
+            : 'compliant';
 
     const recommendations: string[] = [];
+    if (summary.notApplicable > 0) {
+      recommendations.push(
+        `Wire an authoritative source for the ${summary.notApplicable} unevaluated control check(s); no compliance score or verdict is published until every control family can be evaluated.`
+      );
+    }
     if (criticalFindings.length > 0) {
       recommendations.push('Address all critical findings immediately before external audit');
     }
@@ -1286,7 +1407,9 @@ export class SOXComplianceEngine {
       action: 'create',
       resource: 'sox_report',
       resourceId: 'report-' + nowMs(),
-      details: `SOX compliance report generated: ${overallStatus} (${overallScore}%)`,
+      details: `SOX compliance report generated: ${overallStatus} (${
+        overallScore === null ? 'score unavailable' : `${overallScore}%`
+      })`,
       metadata: { overallStatus, overallScore, criticalFindings: criticalFindings.length },
     });
 

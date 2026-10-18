@@ -257,6 +257,58 @@ describe('MigrationEngine', () => {
     });
   });
 
+  describe('readiness is not earned by an empty file', () => {
+    it('reports no score and no posture for a workbook that has a header but no data rows', async () => {
+      // assessReadiness starts at 100 and only deducts, so a header-only file
+      // used to come back as score 100 / status 'green' — "Migration
+      // Readiness: 100%" for a workbook with nothing in it to migrate.
+      const file = await createXlsxFile([['Account', 'Amount']], 'header-only.xlsx');
+
+      const { readiness, plan } = await engine.analyzeMigration(file);
+
+      expect(readiness.score).toBeNull();
+      expect(readiness.status).toBe('unknown');
+      expect(readiness.totalRows).toBe(0);
+      expect(readiness.issues.map((i) => i.message).join(' ')).toMatch(/no data rows/i);
+      // The reason must also reach the import plan the UI shows.
+      expect(plan.warnings.join(' ')).toMatch(/no data rows/i);
+    });
+
+    it('reports no score for a workbook with no columns at all', async () => {
+      const file = await createXlsxFile([], 'empty.xlsx');
+
+      const { readiness } = await engine.analyzeMigration(file);
+
+      expect(readiness.score).toBeNull();
+      expect(readiness.status).toBe('unknown');
+      expect(readiness.totalRows).toBe(0);
+      // An empty sheet used to read as 70% YELLOW "Required columns not
+      // mapped", which blames the user's mapping for an empty file.
+      expect(readiness.issues.map((i) => i.message).join(' ')).toMatch(/no columns/i);
+      expect(readiness.issues.map((i) => i.message).join(' ')).not.toMatch(
+        /Required columns not mapped/i
+      );
+    });
+
+    it('still scores a workbook that has data rows', async () => {
+      const file = await createXlsxFile(
+        [
+          ['Account', 'Amount'],
+          ['4000', '50000'],
+          ['5000', '20000'],
+        ],
+        'budget.xlsx'
+      );
+
+      const { readiness } = await engine.analyzeMigration(file);
+
+      expect(typeof readiness.score).toBe('number');
+      expect(readiness.score).not.toBeNull();
+      expect(readiness.status).not.toBe('unknown');
+      expect(readiness.totalRows).toBe(2);
+    });
+  });
+
   describe('migration execution', () => {
     it('should execute migration and create snapshot', async () => {
       const file = await createXlsxFile(

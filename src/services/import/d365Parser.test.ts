@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { parseD365Rows, detectD365Flavor, parseD365Date } from './d365Parser';
+import {
+  parseD365Rows,
+  detectD365Flavor,
+  parseD365Date,
+  suggestGLImportMappings,
+} from './d365Parser';
 
 describe('d365Parser', () => {
   describe('detectD365Flavor', () => {
@@ -288,5 +293,109 @@ describe('d365Parser', () => {
       expect(result.rejections).toHaveLength(1);
       expect(result.rejections[0]?.reason).toMatch(/non-transaction/i);
     });
+  });
+});
+
+describe('suggestGLImportMappings — the wizard auto-map contract', () => {
+  const FO_HEADERS = [
+    'DataAreaId',
+    'MainAccount',
+    'MainAccountName',
+    'LedgerAccount',
+    'AccountingDate',
+    'SubledgerVoucher',
+    'TransactionCurrencyCode',
+    'AccountingCurrencyDebitAmount',
+    'AccountingCurrencyCreditAmount',
+    'Text',
+  ];
+
+  it('maps a standard F&O export, preferring MainAccount over the composite LedgerAccount', () => {
+    const suggestion = suggestGLImportMappings(FO_HEADERS);
+    expect(suggestion?.flavor).toBe('d365_fo');
+    expect(suggestion?.mappings).toEqual({
+      accountCode: 'MainAccount',
+      accountName: 'MainAccountName',
+      postDate: 'AccountingDate',
+      debit: 'AccountingCurrencyDebitAmount',
+      credit: 'AccountingCurrencyCreditAmount',
+      currency: 'TransactionCurrencyCode',
+      entityId: 'DataAreaId',
+      reference: 'SubledgerVoucher',
+      description: 'Text',
+    });
+  });
+
+  it('falls back to the composite LedgerAccount when it is the only account column', () => {
+    const suggestion = suggestGLImportMappings(
+      FO_HEADERS.filter((h) => h !== 'MainAccount' && h !== 'MainAccountName')
+    );
+    expect(suggestion?.mappings.accountCode).toBe('LedgerAccount');
+    expect(suggestion?.mappings.accountName).toBeUndefined();
+  });
+
+  it('maps a Business Central G/L Entries export', () => {
+    const suggestion = suggestGLImportMappings([
+      'Entry No.',
+      'G/L Account No.',
+      'G/L Account Name',
+      'Posting Date',
+      'Document No.',
+      'Description',
+      'Debit Amount',
+      'Credit Amount',
+      'Currency Code',
+      'Business Unit Code',
+    ]);
+    expect(suggestion?.flavor).toBe('d365_bc');
+    expect(suggestion?.mappings).toEqual({
+      accountCode: 'G/L Account No.',
+      accountName: 'G/L Account Name',
+      postDate: 'Posting Date',
+      debit: 'Debit Amount',
+      credit: 'Credit Amount',
+      currency: 'Currency Code',
+      entityId: 'Business Unit Code',
+      reference: 'Document No.',
+      description: 'Description',
+    });
+  });
+
+  it('matches headers case- and punctuation-insensitively, as the row parser does', () => {
+    const suggestion = suggestGLImportMappings([
+      'DATAAREAID',
+      'mainaccount',
+      'accounting date',
+      'AccountingCurrencyDebitAmount',
+      'AccountingCurrencyCreditAmount',
+    ]);
+    expect(suggestion?.flavor).toBe('d365_fo');
+    expect(suggestion?.mappings).toEqual({
+      accountCode: 'mainaccount',
+      postDate: 'accounting date',
+      debit: 'AccountingCurrencyDebitAmount',
+      credit: 'AccountingCurrencyCreditAmount',
+      entityId: 'DATAAREAID',
+    });
+  });
+
+  it('never claims one source column for two fields', () => {
+    const suggestion = suggestGLImportMappings([
+      'GLAccountNo',
+      'PostingDate',
+      'DebitAmount',
+      'CreditAmount',
+      'DocumentNo',
+      'Description',
+    ]);
+    const columns = Object.values(suggestion!.mappings);
+    expect(new Set(columns).size).toBe(columns.length);
+  });
+
+  it('returns null for headers that are not a D365 export, leaving a generic file alone', () => {
+    expect(
+      suggestGLImportMappings(['Account Code', 'Posting Date', 'Debit', 'Credit', 'Description'])
+    ).toBeNull();
+    expect(suggestGLImportMappings([])).toBeNull();
   });
 });

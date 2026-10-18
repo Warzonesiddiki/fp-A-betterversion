@@ -1,7 +1,7 @@
 # FinPlan Pro — Squad Activity & Status Tracker
 
 > **Maintained by:** Aion CLI (Lead: `01a1457a-2e72-7e92-a237-f33dfcbc65b1`) & Squad Teammates  
-> **Last Updated:** 2026-10-16  
+> **Last Updated:** 2026-10-17  
 > **Purpose:** Single source of truth for team structure, active allocations, and status tracking so the Leader and user always know what each agent is executing.
 
 ---
@@ -76,7 +76,7 @@ Aligned with `docs/agent-squad/SQUAD_BACKLOG.md`:
     0 importers, removed from tree.
   - Honesty note: `GLDataPreview` says "N errors detected in 25 rows" while only validating the first
     20 — the late-row rejection test works around that. This is observed but out of scope for F-02.
-  - Next: re-state the verified state into `LATEST.md`/`COMMS_LOG.md`/`STATUS_BOARD.md` under a single
+  - Next: re-state the verified state into `docs/agent-squad/agents-comms/LATEST.md`/`docs/agent-squad/agents-comms/COMMS_LOG.md`/`docs/agent-squad/agents-comms/STATUS_BOARD.md` under a single
     commit if the tree is still clean after F-02's files settle.
 
 - **2026-10-17 19:23 UTC — verification-before-completion gate (final):**
@@ -92,3 +92,21 @@ Aligned with `docs/agent-squad/SQUAD_BACKLOG.md`:
     - engines:verify — 0
   - No command on the current files returned non-zero; no test was skipped, weakened, or retouched to
     pass; no `as any` / `@ts-expect-error` / `eslint-disable` was added to make a green gate.
+
+- **2026-10-17 15:30 UTC — LEAD: preview gate shares the import contract (F-02 follow-up).**
+  - `GLDataPreview` no longer runs a private validation rule set. Every row is validated through
+    `parseGLRows` — the same function `handleImport` uses — so preview and import cannot disagree;
+    only the table is windowed at 20 rows. Source-file row numbers (header = row 1) match
+    `ImportRejection.row`; rejected rows outside the window are listed with the importer's reason;
+    the scope line reads "All N data rows checked against the import rules · Showing the first 20
+    of N data rows"; confirmation is blocked on any rejected row.
+  - This closes handover limitation #2 and upgrades UX-002 for the GL upload surface: a corrected
+    file reprocesses successfully in the same session (interop case).
+  - Failing-first evidence: `GLDataPreview.test.tsx` 8 failed → 26/26; `GLUploadPage.interop.test.tsx`
+    7/7; consumers `GLUploadPage.test.tsx` 4/4, `.deep` 44/44, smoke 10/10 (58/58). Gates: tsc 0,
+    lint 0, format:check 0, money:ast 0 unsafe, determinism 344/79.
+  - Install gate repaired: `npm ci` failed at HEAD (brace-expansion 1.1.21 vs override ^2.1.7);
+    one-target lockfile resync verified with `npm ci --ignore-scripts` exit 0.
+  - Correction: `src/utils/masterStorage.test.ts` exists and is green (9/9); handover limitation #5
+    and task K2 are stale. The four local-only commits named in the handover are absent from this
+    checkout's squashed history, so this entry is the evidence of record.

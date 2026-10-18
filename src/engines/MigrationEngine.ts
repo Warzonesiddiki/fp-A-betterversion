@@ -15,9 +15,23 @@ export interface ColumnMapping {
   matchType: 'exact' | 'fuzzy' | 'alias' | 'manual';
 }
 
+/**
+ * Posture of an analysed file.
+ *
+ * `unknown` is not a fourth flavour of bad news: it means the file held
+ * nothing to assess (no data rows), so no readiness posture can be reported.
+ * Rendering that as a score — 100 for a header-only file, 70 for an empty
+ * sheet — is a fabricated claim about a file nobody could migrate.
+ */
+export type MigrationReadinessStatus = 'green' | 'yellow' | 'red' | 'unknown';
+
 export interface MigrationReadiness {
-  score: number; // 0-100
-  status: 'green' | 'yellow' | 'red';
+  /**
+   * 0-100 over the file that was analysed, or `null` when there was nothing to
+   * assess. `null` is never rendered as 0 and never as 100.
+   */
+  score: number | null;
+  status: MigrationReadinessStatus;
   issues: { severity: 'error' | 'warning' | 'info'; message: string }[];
   sheetCount: number;
   totalRows: number;
@@ -272,6 +286,37 @@ function assessReadiness(
   const issues: MigrationReadiness['issues'] = [];
   let score = 100;
 
+  // Nothing to assess. The score below starts at 100 and only deducts, so a
+  // workbook with a header row and no data rows used to come back as
+  // score 100 / status 'green' — "Migration Readiness: 100%" with a green
+  // badge for a file with nothing in it — and a sheet with no columns at all
+  // came back as 70 / 'yellow' for "Required columns not mapped", blaming the
+  // user's mapping for an empty file. Report the absence instead.
+  if (data.length === 0) {
+    const mappedSources = new Set(mappings.map((m) => m.sourceColumn));
+    return {
+      score: null,
+      status: 'unknown',
+      issues: [
+        {
+          severity: 'error',
+          message:
+            headers.length === 0
+              ? 'no columns and no data rows found — nothing to assess'
+              : `no data rows found below the header row (${headers.join(', ')}) — nothing to assess`,
+        },
+      ],
+      sheetCount: workbook?.worksheets.length ?? 1,
+      totalRows: 0,
+      detectedColumns: mappings,
+      unmappedColumns: headers.filter((h) => !mappedSources.has(h)),
+      formulaComplexity: 'simple',
+      hasExternalLinks: false,
+      hasMergedCells: false,
+      hasHiddenRows: false,
+    };
+  }
+
   // Check for required columns
   const requiredFields = ['account', 'amount'];
   const mappedTargets = new Set(mappings.map((m) => m.targetField));
@@ -388,8 +433,8 @@ function assessReadiness(
     });
   }
 
-  // Determine status
-  let status: 'green' | 'yellow' | 'red' = 'green';
+  // Determine status. Only reachable when there were data rows to assess.
+  let status: MigrationReadinessStatus = 'green';
   if (score < 60) status = 'red';
   else if (score < 80) status = 'yellow';
 

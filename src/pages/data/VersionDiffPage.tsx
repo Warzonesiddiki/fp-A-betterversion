@@ -41,9 +41,12 @@ function createEngineFromStores(
     mainBranch.id
   );
 
-  // Commit GL entries as the baseline
+  // Commit GL entries as the baseline. Every entry must be recorded: the
+  // commit message states the ledger count, and a sampled baseline would make
+  // the version history describe rows it never captured (nothing silently
+  // discarded).
   if (glEntries.length > 0) {
-    const changes = glEntries.slice(0, 50).map((e) => ({
+    const changes = glEntries.map((e) => ({
       cube: 'gl' as const,
       coords: {
         entity: e.entityId ?? 'default',
@@ -57,9 +60,10 @@ function createEngineFromStores(
     engine.commit(mainBranch.id, `Imported ${glEntries.length} GL entries`, 'system', changes);
   }
 
-  // Commit budget line items as current state
+  // Commit budget line items as current state — all of them, for the same
+  // reason: the commit message states the item count.
   if (lineItems.length > 0) {
-    const changes = lineItems.slice(0, 50).map((item) => ({
+    const changes = lineItems.map((item) => ({
       cube: 'budget' as const,
       coords: {
         entity: 'default',

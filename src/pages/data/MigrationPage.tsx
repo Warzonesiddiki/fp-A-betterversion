@@ -107,7 +107,10 @@ export default function MigrationPage() {
     );
     const totalRecords = history.reduce((sum, m) => sum + (m.data?.length || 0), 0);
     const successCount = history.filter((m) => m.applied).length;
-    const successRate = history.length > 0 ? (successCount / history.length) * 100 : 0;
+    // No migrations means the rate is undefined, not 0%: a 0% rate reads as
+    // "every migration failed". `formatPercent(null)` renders the unavailable
+    // marker instead of a number.
+    const successRate = history.length > 0 ? (successCount / history.length) * 100 : null;
     return {
       total: history.length,
       last7d: last7d.length,
@@ -173,7 +176,11 @@ export default function MigrationPage() {
             </Button>
           }
         />
-        <MigrationWizard onComplete={handleComplete} onCancel={handleCancel} />
+        <MigrationWizard
+          engine={migrationEngine}
+          onComplete={handleComplete}
+          onCancel={handleCancel}
+        />
       </div>
     );
   }
@@ -227,12 +234,16 @@ export default function MigrationPage() {
               Success Rate
             </div>
             <div
+              data-testid="migration-success-rate"
+              title={stats.successRate == null ? 'No migrations recorded' : undefined}
               className={`text-2xl font-bold tabular-nums mt-1 ${
-                stats.successRate >= 95
-                  ? 'text-green-400'
-                  : stats.successRate >= 80
-                    ? 'text-amber-400'
-                    : 'text-red-400'
+                stats.successRate == null
+                  ? 'text-[var(--text-muted)]'
+                  : stats.successRate >= 95
+                    ? 'text-green-400'
+                    : stats.successRate >= 80
+                      ? 'text-amber-400'
+                      : 'text-red-400'
               }`}
             >
               {formatPercent(stats.successRate)}
@@ -374,7 +385,14 @@ export default function MigrationPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Recent Migrations</CardTitle>
+            <div className="flex items-baseline gap-2">
+              <CardTitle className="text-base">Migration History</CardTitle>
+              {history.length > 0 && (
+                <span className="text-xs text-[var(--text-muted)] tabular-nums">
+                  {history.length} migration{history.length === 1 ? '' : 's'}
+                </span>
+              )}
+            </div>
             {history.length > 0 && (
               <Button size="sm" variant="ghost" onClick={handleClearHistory}>
                 <Trash2 className="h-3.5 w-3.5 mr-1.5" />
@@ -397,8 +415,14 @@ export default function MigrationPage() {
               </Button>
             </div>
           ) : (
-            <div className="divide-y divide-slate-800" role="list" aria-label="Recent migrations">
-              {history.slice(0, 10).map((m, i) => (
+            <div
+              className="divide-y divide-slate-800 max-h-[28rem] overflow-y-auto"
+              role="list"
+              aria-label="Migration history"
+            >
+              {/* Every snapshot is rendered: a 10-row window with no notice made
+                  older migrations unreachable. The list scrolls instead. */}
+              {history.map((m, i) => (
                 <div
                   key={m.id || `${m.timestamp}-${i}`}
                   className="py-3 flex items-center justify-between"

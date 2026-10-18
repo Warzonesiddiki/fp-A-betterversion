@@ -23,6 +23,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { SOXComplianceEngine } from './SOXComplianceEngine';
 import { AuditLogEngine } from './AuditLogEngine';
+import { WorkflowEngine } from './WorkflowEngine';
+import { RBACEngine } from './RBACEngine';
 import type { Role } from '@/types/rbac';
 
 describe('SOXComplianceEngine', () => {
@@ -557,9 +559,17 @@ describe('SOXComplianceEngine', () => {
       expect(report.generatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
       expect(Array.isArray(report.checks)).toBe(true);
       expect(report.checks.length).toBeGreaterThan(0);
-      expect(report.overallScore).toBeGreaterThanOrEqual(0);
-      expect(report.overallScore).toBeLessThanOrEqual(100);
-      expect(['compliant', 'non_compliant', 'partially_compliant']).toContain(report.overallStatus);
+      expect(['compliant', 'non_compliant', 'partially_compliant', 'insufficient_data']).toContain(
+        report.overallStatus
+      );
+      // Contract change 2026-10-17: a fresh engine holds no workflow, RBAC or
+      // audit data, so no control family is evaluated. The old assertions
+      // (`overallScore >= 0`, `<= 100`) accepted the fabricated answer that
+      // produced — score 100 and status 'compliant' from nothing. The score is
+      // now `null` and the verdict `insufficient_data`; see the
+      // "Empty sources are not evidence" suite below.
+      expect(report.overallScore).toBeNull();
+      expect(report.overallStatus).toBe('insufficient_data');
     });
 
     it('generateReport() includes the 5 check categories from default report', () => {
@@ -833,6 +843,154 @@ describe('SOXComplianceEngine', () => {
       // Report should be non-compliant or partially compliant
       expect(['non_compliant', 'partially_compliant']).toContain(report.overallStatus);
       expect(report.criticalFindings.length).toBeGreaterThan(0);
+    });
+  });
+
+  // ==========================================================================
+  // 13. EMPTY SOURCES ARE NOT EVIDENCE — fabricated-assurance guard
+  // ==========================================================================
+
+  describe('Empty sources are not evidence', () => {
+    it('marks every control family not_applicable when no source data exists', () => {
+      const report = engine.generateReport();
+      expect(report.checks).toHaveLength(7);
+      for (const check of report.checks) {
+        expect(check.status).toBe('not_applicable');
+        expect(check.severity).toBe('info');
+        expect(check.details).toMatch(/nothing to evaluate/i);
+        expect(check.remediation).toMatch(/source/i);
+      }
+      expect(report.summary.passed).toBe(0);
+      expect(report.summary.failed).toBe(0);
+      expect(report.summary.notApplicable).toBe(7);
+    });
+
+    it('publishes no score and no compliant verdict when nothing could be evaluated', () => {
+      const report = engine.generateReport();
+      expect(report.overallScore).toBeNull();
+      expect(report.overallStatus).toBe('insufficient_data');
+      expect(report.recommendations.join(' ')).toMatch(/authoritative source/i);
+    });
+
+    it('counts the unevaluated checks per category', () => {
+      const report = engine.generateReport();
+      expect(report.byCategory.approval_workflow).toEqual({
+        passed: 0,
+        failed: 0,
+        notApplicable: 1,
+        total: 1,
+      });
+      expect(report.byCategory.segregation_of_duties.notApplicable).toBe(1);
+      expect(report.byCategory.audit_trail).toEqual({
+        passed: 0,
+        failed: 0,
+        notApplicable: 4,
+        total: 4,
+      });
+      expect(report.byCategory.access_control.notApplicable).toBe(1);
+      expect(report.byCategory.data_integrity).toEqual({
+        passed: 0,
+        failed: 0,
+        notApplicable: 0,
+        total: 0,
+      });
+    });
+
+    it('still evaluates the GL data-integrity checks but refuses a whole-posture verdict', () => {
+      const report = engine.generateReport({
+        balanceSheet: { assets: 1000, liabilities: 600, equity: 400 },
+        ledgerEntries: [
+          { debit: 100, credit: 0 },
+          { debit: 0, credit: 100 },
+        ],
+        closedPeriods: [],
+        recentEntries: [{ period: '2026-03', timestamp: '2026-03-15T10:00:00Z', action: 'create' }],
+      });
+      const integrity = report.checks.filter((c) => c.category === 'data_integrity');
+      expect(integrity).toHaveLength(3);
+      expect(integrity.map((c) => c.status)).toEqual(['pass', 'pass', 'pass']);
+      expect(report.summary.notApplicable).toBe(7);
+      expect(report.overallStatus).toBe('insufficient_data');
+      expect(report.overallScore).toBeNull();
+    });
+
+    it('lets a critical finding outrank the unevaluated families', () => {
+      const report = engine.generateReport({
+        balanceSheet: { assets: 1000, liabilities: 600, equity: 300 },
+        ledgerEntries: [{ debit: 100, credit: 0 }],
+      });
+      expect(report.overallStatus).toBe('non_compliant');
+      expect(report.criticalFindings.length).toBeGreaterThan(0);
+      expect(report.overallScore).toBeNull();
+    });
+
+    it('resumes a numeric score and a verdict once every family holds real data', () => {
+      const audit = new AuditLogEngine({ retentionDays: 2555 });
+      const workflow = new WorkflowEngine();
+      const rbac = new RBACEngine();
+      const populated = new SOXComplianceEngine(audit, workflow, rbac);
+
+      rbac.assignRole('controller-1', 'admin', ['*'], 'system');
+      rbac.assignRole('analyst-1', 'viewer', ['entity-1'], 'controller-1');
+
+      const wf = workflow.createWorkflow({
+        name: 'Journal Approval',
+        description: 'Two-step journal approval',
+        steps: [
+          {
+            id: 's1',
+            name: 'Controller Review',
+            type: 'sequential',
+            approvers: ['controller-1'],
+            order: 0,
+            timeoutHours: 48,
+          },
+        ],
+        createdBy: 'controller-1',
+        isTemplate: false,
+      });
+      workflow.submitRequest(wf.id, 'March journal', 'Accruals', 'analyst-1', 1000);
+
+      audit.log({
+        userId: 'analyst-1',
+        userName: 'Analyst',
+        action: 'create',
+        resource: 'journal_entry',
+        resourceId: 'je-1',
+        details: 'Created journal entry',
+        oldValue: { amount: 0 },
+        newValue: { amount: 1000 },
+      });
+      audit.log({
+        userId: 'analyst-1',
+        userName: 'Analyst',
+        action: 'create',
+        resource: 'budget',
+        resourceId: 'b-1',
+        details: 'Created Q1 budget',
+      });
+      audit.log({
+        userId: 'controller-1',
+        userName: 'Controller',
+        action: 'update',
+        resource: 'user_access',
+        resourceId: 'u-1',
+        details: 'Granted entity access',
+      });
+      audit.log({
+        userId: 'controller-1',
+        userName: 'Controller',
+        action: 'export',
+        resource: 'financial_report',
+        resourceId: 'r-1',
+        details: 'Exported the board pack',
+      });
+
+      const report = populated.generateReport();
+      expect(report.summary.notApplicable).toBe(0);
+      expect(report.checks.every((c) => c.status === 'pass')).toBe(true);
+      expect(report.overallStatus).toBe('compliant');
+      expect(report.overallScore).toBe(100);
     });
   });
 });

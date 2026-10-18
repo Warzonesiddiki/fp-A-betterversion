@@ -31,7 +31,7 @@
     "mock-data:audit": "node scripts/mock-data-audit.mjs",
     "type-safety:ratchet": "node scripts/type-safety-ratchet.mjs",
     "determinism:ratchet": "node scripts/determinism-ratchet.mjs",
-    "docs:verify": "node scripts/verify-readme-stats.mjs && node scripts/persistence-map-check.mjs && node scripts/schema-equality-check.mjs",
+    "docs:verify": "node scripts/verify-readme-stats.mjs && node scripts/persistence-map-check.mjs && node scripts/schema-equality-check.mjs && node scripts/ratchet-docs-check.mjs",
     "engines:manifest": "node scripts/generate-engine-manifest.mjs",
     "engines:verify": "node scripts/generate-engine-manifest.mjs --check",
     "export:verify": "node scripts/export-verify.mjs",

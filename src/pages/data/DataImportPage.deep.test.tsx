@@ -88,9 +88,18 @@ vi.mock('@/store/dataStore', () => ({
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let lastFileDropProps: any = null;
 let lastMigrationOnProgress: ((p: { percent: number }) => void) | null = null;
+// The page builds its MigrationEngine at module scope (DataImportPage.tsx:35),
+// which runs while this test module is still initialising, so the capture has
+// to be vi.hoisted — a plain `let` here is still in its TDZ when the
+// constructor fires.
+type AnalyzeMock = { analyzeMigration: { mockResolvedValueOnce: (value: unknown) => void } };
+const engineCapture = vi.hoisted(() => ({ current: null as unknown }));
 
 vi.mock('@/engines/MigrationEngine', () => ({
   MigrationEngine: class {
+    constructor() {
+      engineCapture.current = this;
+    }
     detectMigrationSource = vi.fn(async () => 'planful' as const);
     analyzeMigration = vi.fn(async () => ({
       readiness: {
@@ -371,6 +380,74 @@ describe('DataImportPage (data-driven)', () => {
     expect(screen.getByText(/Migration Wizard/i)).toBeInTheDocument();
   });
 
+  it('shows readiness as unavailable, not 100%, when the file has no data rows', async () => {
+    // The migration drop zone renders only once the page has a ledger to show.
+    glStub = {
+      entries: [{ id: '1', accountCode: '1000', debit: 100, credit: 0 }],
+      accounts: [{ id: '1' }],
+      importHistory: [],
+    };
+    renderPage();
+    // A header-only workbook: the engine reports no score and no posture.
+    (engineCapture.current as AnalyzeMock).analyzeMigration.mockResolvedValueOnce({
+      readiness: {
+        score: null,
+        status: 'unknown' as const,
+        sheetCount: 1,
+        totalRows: 0,
+        formulaComplexity: 'simple' as const,
+        issues: [
+          {
+            severity: 'error' as const,
+            message:
+              'no data rows found below the header row (Account, Amount) — nothing to assess',
+          },
+        ],
+        detectedColumns: [],
+        unmappedColumns: [],
+        hasExternalLinks: false,
+        hasMergedCells: false,
+        hasHiddenRows: false,
+      },
+      plan: { mappings: [] },
+    });
+
+    await act(async () => {
+      const migDrop = screen
+        .getAllByTestId('file-drop-zone')
+        .find((el) => el.getAttribute('data-aria-label') === 'Upload file for migration')!;
+      (migDrop.querySelector('[data-testid="file-drop-trigger"]') as HTMLElement).click();
+    });
+
+    expect(screen.getByTestId('migration-readiness-score')).toHaveTextContent('—');
+    expect(screen.queryByText(/Migration Readiness: null%/)).toBeNull();
+    expect(screen.queryByText(/Migration Readiness: 100%/)).toBeNull();
+    expect(screen.getByText('NOT ASSESSED')).toBeInTheDocument();
+    expect(screen.getByText(/no data rows found below the header row/i)).toBeInTheDocument();
+    // Nothing to migrate means the run must not be startable.
+    expect(screen.getByRole('button', { name: /Start migration/i })).toBeDisabled();
+  });
+
+  it('still shows a numeric readiness score when the file has rows', async () => {
+    glStub = {
+      entries: [{ id: '1', accountCode: '1000', debit: 100, credit: 0 }],
+      accounts: [{ id: '1' }],
+      importHistory: [],
+    };
+    renderPage();
+
+    await act(async () => {
+      const migDrop = screen
+        .getAllByTestId('file-drop-zone')
+        .find((el) => el.getAttribute('data-aria-label') === 'Upload file for migration')!;
+      (migDrop.querySelector('[data-testid="file-drop-trigger"]') as HTMLElement).click();
+    });
+
+    expect(screen.getByTestId('migration-readiness-score')).toHaveTextContent('85%');
+    expect(screen.getByText('GREEN')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Start migration/i })).not.toBeDisabled();
+  });
+
   it('handles file upload and advances the wizard through analyze to map', async () => {
     glStub = {
       entries: [{ id: '1', accountCode: '1000', debit: 100, credit: 0 }],
@@ -463,6 +540,33 @@ describe('DataImportPage (data-driven)', () => {
     ];
     renderPage();
     expect(screen.getByText('import1.xlsx')).toBeInTheDocument();
+  });
+
+  it('renders every import job in the history, not just the newest ten', () => {
+    glStub = {
+      entries: [{ id: '1', accountCode: '1000', debit: 100, credit: 0 }],
+      accounts: [],
+      importHistory: [],
+    };
+    dataStub.importJobs = Array.from({ length: 12 }, (_, i) => ({
+      id: `job-${i + 1}`,
+      filename: `import${i + 1}.xlsx`,
+      fileType: 'PLANFUL',
+      rowCount: 10,
+      successCount: 10,
+      errorCount: 0,
+      completedAt: '2024-01-01T00:00:00Z',
+      startedAt: '2024-01-01T00:00:00Z',
+      startedBy: 'user1',
+      startedByName: 'User One',
+      status: 'Completed',
+    }));
+    renderPage();
+    // The oldest job is the one a 10-row window hides. Nothing in the page
+    // says the history is truncated, so a hidden job is unreachable history.
+    expect(screen.getByText('import1.xlsx')).toBeInTheDocument();
+    expect(screen.getByText('import11.xlsx')).toBeInTheDocument();
+    expect(screen.getByText('import12.xlsx')).toBeInTheDocument();
   });
 
   it('reconciliation run button is disabled when no key/val cols are set', () => {

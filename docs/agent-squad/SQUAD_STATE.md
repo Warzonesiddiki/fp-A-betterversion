@@ -14,9 +14,11 @@ guards → reviewed exception output — is the priority surface.
 - Core spine is present and tested: GL import, provenance, duplicate/file-hash guard, period
   write guards on the local write paths, and a money-integrity guard on the GL store mutation
   paths.
-- Rules-for-exceptions capability is partly present but not yet fully delivered as a governed
-  review path. The anomaly explainer exists; the versioned rule catalogue and persisted
-  disposition path are the remaining pieces to align with FR-008/FR-009.
+- Rules-for-exceptions: the versioned catalogue, canonical finding key and persisted disposition
+  audit trail are built and tested (13 + 8 + 2 + 9 = 32 tests, rehydration included). What is
+  missing is a page/route consumer for the review queue — blocked by the roadmap's no-new-surface
+  rule (Gate 2 is not provably green without the owner's real D365 export, DEC-001). The register
+  has been corrected from "Not met" to "Partial" with this evidence.
 - Export surfaces exist and are tested against synthetic ledgers; board-pack tie-out is the next
   evidence layer to tighten, not a new feature to invent.
 - Documentation consolidation was already done. There is one authoritative live doc set.
@@ -66,6 +68,57 @@ guards → reviewed exception output — is the priority surface.
 - Gates on final files: tsc 0, lint 0, format:check 0, money:ast 0 unsafe, determinism 344/79,
   docs:verify 0, docs:links 0/0, engines:verify 0; Alert-consumer suites 9 files/116 tests.
 - Next lead unit: `masterStorage` test suite (G-06's abandoned remit — no file exists).
+
+## 2026-10-17 15:30 UTC — LEAD: preview gate now shares the import contract
+
+- `GLDataPreview` was validating its own invented rule set: only the first 20 rows, amounts through
+  `parseFloat`, blank amount cells rejected, row numbers 1-based instead of source-file rows — while
+  the banner claimed "N errors detected in M rows". A structurally broken row past row 20 passed the
+  gate with Confirm enabled. Fixed at the cause: every row is now validated through `parseGLRows` (the
+  same function `handleImport` uses), rejected rows are named by source-file row with the importer's
+  reason (including rows outside the 20-row table window), the scope/window copy is exact, and
+  confirmation is blocked. Failing-first: 8 red on the component suite.
+- Evidence: `GLDataPreview.test.tsx` 26/26; `GLUploadPage.interop.test.tsx` 7/7 (clean import with a
+  blank amount cell, FR-003 duplicate refusal, source-row-26 gate block, store-level double-entry
+  atomic rejection, corrected-file reprocessing for UX-002); consumers `GLUploadPage.test.tsx` 4/4,
+  `.deep` 44/44, smoke 10/10; tsc 0, lint 0, format 0, money:ast 0 unsafe, determinism 344/79.
+- Install gate: `npm ci` failed at HEAD (lockfile 1.1.21 vs override ^2.1.7 for `brace-expansion`);
+  resynced minimally and verified `npm ci` exit 0.
+- Correction to the inherited handover: `src/utils/masterStorage.test.ts` **does exist and is green**
+  (9/9); it is not an open gap. The F-02 doc note and the four local-only commits named in the
+  handover are not present in this checkout (squashed history), so the re-verification above is the
+  evidence of record.
+- Next lead unit: backlog P1-5 template-clone honesty audit, or another measured P0/P1 gap.
+
+## 2026-10-17 15:45 UTC — LEAD: parser now enforces the domain amount rule
+
+- `parseGLRows` accepted signed debit/credit cells (`(500)` in Credit → -500, `-75.5` in Debit),
+  producing entries `validateEntries` rejects (`debit >= 0`, `credit >= 0`,
+  `docs/agent/03_DOMAIN_RULES.md`). That was the last row-level disagreement between the preview
+  and the import: a green preview, then an import rejection. The parser now rejects the row with
+  `debit/credit must be a non-negative amount (got "<cell>")`.
+- Evidence: `parseGLRows.test.ts` 14/14 (one new failing-first test); `GLDataPreview.test.tsx`
+  27/27; `src/services/import/` + preview + wizard interop 13 files / 138 tests green.
+- Nothing else changed; the store invariant is untouched.
+
+## 2026-10-17 15:55 UTC — LEAD: Version Diff baseline no longer samples the ledger
+
+- `VersionDiffPage` built its version baseline from `glEntries.slice(0, 50)` and
+  `lineItems.slice(0, 50)` but wrote commit messages claiming the full counts
+  (`Imported ${glEntries.length} GL entries`, `Current budget state (${lineItems.length} items)`).
+  The diff history therefore described a baseline it had not recorded.
+- Fixed at the cause: both loops commit every row. Failing-first: 2 red → 4/4 in
+  `VersionDiffPage.test.tsx` (60-entry ledger and 60-item budget must reach `commit` whole, with an
+  accurate message).
+
+## 2026-10-17 16:05 UTC — LEAD: explorer display window made explicit
+
+- `GLExplorerPage` rendered at most 200 rows after filtering but the footer said only
+  "N total · showing first 200", so the number of matching rows that were dropped was invisible.
+  The memo now returns `{ rows, matchedCount }`; the footer reads `N total · M matching` and adds
+  `· showing first 200` only when the window actually truncates.
+- Evidence: failing-first 2 red → `GLExplorerPage.interop.test.tsx` 4/4, including a 250-line
+  ledger asserting `250 total · 250 matching · showing first 200` and exactly 200 data rows.
 
 ## What is blocked
 

@@ -23,6 +23,9 @@ vi.mock('lucide-react', () => ({
   AlertCircle: () => <span data-testid="alert-circle" />,
 }));
 
+/** GLImportField keys the wizard exposes: 2 required + 8 optional. */
+const MAPPABLE_FIELD_COUNT = 10;
+
 describe('GLColumnMapper', () => {
   const defaultProps = {
     csvColumns: ['Account', 'Date', 'Debit', 'Credit'],
@@ -38,9 +41,21 @@ describe('GLColumnMapper', () => {
     render(<GLColumnMapper {...defaultProps} />);
     expect(screen.getByText('Account Code')).toBeInTheDocument();
     expect(screen.getByText('Posting Date')).toBeInTheDocument();
+    expect(screen.getByText('Account Name')).toBeInTheDocument();
+    expect(screen.getByText('Currency')).toBeInTheDocument();
     expect(screen.getByText('Entity ID')).toBeInTheDocument();
     expect(screen.getByText('Department ID')).toBeInTheDocument();
     expect(screen.getByText('Description')).toBeInTheDocument();
+    expect(screen.getByText('Reference')).toBeInTheDocument();
+  });
+
+  // The mapper must offer a control for every field `parseGLRows` understands:
+  // a fact the source file carries but the wizard cannot map is a fact the
+  // ledger silently loses (the account name collapses to the code, and the
+  // import scope reports a currency that was in the file as unavailable).
+  it('offers one control per mappable field', () => {
+    render(<GLColumnMapper {...defaultProps} />);
+    expect(screen.getAllByTestId('select')).toHaveLength(MAPPABLE_FIELD_COUNT);
   });
 
   it('renders Debit and Credit as field labels', () => {
@@ -57,16 +72,10 @@ describe('GLColumnMapper', () => {
     expect(requiredMarkers.length).toBe(2); // Account Code, Posting Date
   });
 
-  it('renders select dropdowns for each field', () => {
-    render(<GLColumnMapper {...defaultProps} />);
-    const selects = screen.getAllByTestId('select');
-    expect(selects.length).toBe(7); // 7 target fields
-  });
-
   it('shows skip column option in each select', () => {
     render(<GLColumnMapper {...defaultProps} />);
     const skipOptions = screen.getAllByText('-- Skip Column --');
-    expect(skipOptions.length).toBe(7);
+    expect(skipOptions.length).toBe(MAPPABLE_FIELD_COUNT);
   });
 
   it('shows csv columns as options', () => {

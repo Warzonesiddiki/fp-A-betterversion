@@ -76,20 +76,20 @@ describe('parseGLRows — happy path', () => {
     const r = parseGLRows(
       [
         row({ Debit: '1.234,56' }),
-        row({ Credit: '(500)' }),
         row({ Debit: '$ 2,000' }),
-        row({ Credit: '-75.5' }),
         row({ Debit: '12,34,567.89' }),
+        row({ Credit: '1,500.25' }),
+        row({ Credit: '500' }),
       ],
       MAP
     );
     expect(r.rejections).toEqual([]);
     expect(r.entries.map((e) => [e.debit, e.credit])).toEqual([
       [1234.56, 0],
-      [0, -500],
       [2000, 0],
-      [0, -75.5],
       [1234567.89, 0],
+      [0, 1500.25],
+      [0, 500],
     ]);
   });
 
@@ -155,6 +155,20 @@ describe('parseGLRows — rejections (FR-002: nothing silently discarded)', () =
     ]);
   });
 
+  it('rejects signed debit/credit cells: the domain requires non-negative magnitudes', () => {
+    // docs/agent/03_DOMAIN_RULES.md: debit >= 0 and credit >= 0. The parser
+    // used to accept accounting parentheses / a leading minus, producing an
+    // entry `validateEntries` can never commit — a green preview followed by
+    // an import rejection. Reject the row here, with the cell text as evidence.
+    const r = parseGLRows([row({ Credit: '(500)' }), row({ Debit: '-75.5' })], MAP);
+    expect(r.entries).toEqual([]);
+    expect(r.sourceRows).toEqual([]);
+    expect(r.rejections.map((x) => x.reason)).toEqual([
+      'credit must be a non-negative amount (got "(500)")',
+      'debit must be a non-negative amount (got "-75.5")',
+    ]);
+  });
+
   it('rejects unparseable amounts instead of storing 0 or a truncated value', () => {
     const r = parseGLRows(
       [row({ Debit: 'abc' }), row({ Credit: '1,2345' }), row({ Debit: '1.2.3' })],
@@ -196,6 +210,124 @@ describe('parseGLRows — rejections (FR-002: nothing silently discarded)', () =
     const b = parseGLRows(input, MAP);
     expect(a).toEqual(b);
     expect(JSON.stringify(input)).toBe(snapshot);
+  });
+});
+
+describe('parseGLRows — facts the file carries but the parser used to drop', () => {
+  // A source file that names its accounts and its currency must not have those
+  // facts discarded: the ledger then reports the code as the account name and
+  // the import scope claims the currency was "not in file" when it was.
+  const FACT_MAP = { ...MAP, accountName: 'Account Name', currency: 'Currency' } as const;
+  const factRow = (o: Partial<Record<string, string>>): Record<string, string> => ({
+    ...row(o),
+    'Account Name': '',
+    Currency: '',
+    ...o,
+  });
+
+  it('carries a mapped account name instead of repeating the account code', () => {
+    const r = parseGLRows(
+      [factRow({ Account: '4000', 'Account Name': 'Product Revenue', Debit: '10' })],
+      FACT_MAP
+    );
+    expect(r.rejections).toEqual([]);
+    expect(r.entries[0]).toMatchObject({ accountCode: '4000', accountName: 'Product Revenue' });
+  });
+
+  it('falls back to the account code when the name column is blank', () => {
+    const r = parseGLRows([factRow({ Account: '4000', Debit: '10' })], FACT_MAP);
+    expect(r.entries[0]).toMatchObject({ accountCode: '4000', accountName: '4000' });
+  });
+
+  it('carries a mapped currency so the import scope can name it', () => {
+    const r = parseGLRows([factRow({ Account: '4000', Currency: 'USD', Debit: '10' })], FACT_MAP);
+    expect(r.entries[0]).toMatchObject({ currency: 'USD' });
+  });
+
+  it('leaves the currency absent when no column is mapped to it', () => {
+    const r = parseGLRows([row({ Debit: '10' })], MAP);
+    expect(r.entries[0]!.currency).toBeUndefined();
+  });
+});
+
+describe('parseGLRows — Dynamics 365 dialect (detected from the headers)', () => {
+  const FO_MAP = {
+    accountCode: 'MainAccount',
+    postDate: 'AccountingDate',
+    debit: 'AccountingCurrencyDebitAmount',
+    credit: 'AccountingCurrencyCreditAmount',
+  } as const;
+  const foRow = (o: Partial<Record<string, string>>): Record<string, string> => ({
+    MainAccount: '1000',
+    AccountingDate: '31-Jan-2026',
+    AccountingCurrencyDebitAmount: '',
+    AccountingCurrencyCreditAmount: '',
+    ...o,
+  });
+
+  it('canonicalises the dd-MMM-yyyy posting date a D365 export carries', () => {
+    const r = parseGLRows([foRow({ AccountingCurrencyDebitAmount: '1,250.00' })], FO_MAP);
+    expect(r.rejections).toEqual([]);
+    expect(r.entries[0]).toMatchObject({
+      accountCode: '1000',
+      date: '2026-01-31',
+      postDate: '2026-01-31',
+      period: '2026-01',
+      debit: 1250,
+    });
+  });
+
+  it('still rejects a calendar-invalid text date', () => {
+    const r = parseGLRows([foRow({ AccountingDate: '31-Feb-2026' })], FO_MAP);
+    expect(r.entries).toHaveLength(0);
+    expect(r.rejections).toEqual([
+      {
+        row: 2,
+        code: 'VALIDATION',
+        reason: 'unparseable posting date "31-Feb-2026"',
+      },
+    ]);
+  });
+
+  it('rejects a grand-total line by source row instead of adopting it as an account', () => {
+    const r = parseGLRows(
+      [
+        foRow({ AccountingCurrencyDebitAmount: '100.00' }),
+        foRow({
+          MainAccount: 'Total',
+          AccountingCurrencyDebitAmount: '100.00',
+          AccountingCurrencyCreditAmount: '100.00',
+        }),
+      ],
+      FO_MAP
+    );
+    expect(r.entries).toHaveLength(1);
+    expect(r.sourceRows).toEqual([2]);
+    expect(r.rejections).toEqual([
+      {
+        row: 3,
+        code: 'VALIDATION',
+        reason: 'non-transaction summary or header row "Total"',
+      },
+    ]);
+  });
+
+  it('keeps the generic dialect when the caller states the file is not D365', () => {
+    const r = parseGLRows([foRow({})], FO_MAP, 2, { flavor: null });
+    expect(r.entries).toHaveLength(0);
+    expect(r.rejections[0]!.reason).toBe('unparseable posting date "31-Jan-2026"');
+  });
+
+  it('keeps the generic dialect for headers that are not a D365 export', () => {
+    // Same cell text, generic headers: "31-Jan-2026" is not a date the generic
+    // import path accepts, and an account named "Total" is the user's own data.
+    const r = parseGLRows([row({ Account: 'Total', Date: '31-Jan-2026', Debit: '5' })], MAP);
+    expect(r.entries).toHaveLength(0);
+    expect(r.rejections[0]!.reason).toBe('unparseable posting date "31-Jan-2026"');
+
+    const named = parseGLRows([row({ Account: 'Total Revenue', Debit: '5' })], MAP);
+    expect(named.rejections).toEqual([]);
+    expect(named.entries[0]).toMatchObject({ accountCode: 'Total Revenue' });
   });
 });
 

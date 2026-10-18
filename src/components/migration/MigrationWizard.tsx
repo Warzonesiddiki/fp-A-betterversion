@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ProgressStepper } from '@/components/ui/ProgressStepper';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -11,6 +11,7 @@ import {
   type MigrationReadiness,
   type MigrationPlan,
   type ColumnMapping,
+  type ImportValidationResult,
 } from '@/engines/MigrationEngine';
 import {
   Upload,
@@ -28,6 +29,13 @@ type Step = 'source' | 'upload' | 'mapping' | 'preview' | 'confirm' | 'progress'
 interface MigrationWizardProps {
   onComplete: (snapshotId: string) => void;
   onCancel: () => void;
+  /**
+   * Engine to migrate with. Callers that render a migration history must pass
+   * their own instance: snapshots live on the instance, so a wizard migrating
+   * through a private one records a snapshot the caller's history can never
+   * show. Omitted only by callers that do not display migration history.
+   */
+  engine?: MigrationEngine;
 }
 const SOURCE_OPTIONS: { value: MigrationSource; label: string; description: string }[] = [
   { value: 'excel', label: 'Excel (.xlsx/.xls)', description: 'Import from Excel workbooks' },
@@ -36,8 +44,16 @@ const SOURCE_OPTIONS: { value: MigrationSource; label: string; description: stri
   { value: 'adaptive', label: 'Adaptive Insights', description: 'Export from Adaptive and import' },
   { value: 'anaplan', label: 'Anaplan', description: 'Export from Anaplan and import' },
 ];
-export default function MigrationWizard({ onComplete, onCancel }: MigrationWizardProps) {
-  const engineRef = useRef(new MigrationEngine());
+export default function MigrationWizard({
+  onComplete,
+  onCancel,
+  engine: injectedEngine,
+}: MigrationWizardProps) {
+  // Created once, and only used when the caller did not supply an engine. The
+  // previous `useRef(new MigrationEngine())` built a throwaway engine on every
+  // render; a lazy useState initialiser builds exactly one.
+  const [fallbackEngine] = useState(() => new MigrationEngine());
+  const engine = injectedEngine ?? fallbackEngine;
   const [step, setStep] = useState<Step>('source');
   const [source, setSource] = useState<MigrationSource>('excel');
   const [file, setFile] = useState<File | null>(null);
@@ -48,6 +64,7 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
   const [progress, setProgress] = useState({ status: 'idle' as string, percent: 0, message: '' });
   const [error, setError] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
+  const [importErrors, setImportErrors] = useState<ImportValidationResult['errors']>([]);
   const steps = [
     { id: 'source', label: 'Source' },
     { id: 'upload', label: 'Upload' },
@@ -58,67 +75,68 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
   ];
   const currentStepIndex = steps.findIndex((s) => s.id === step);
   useEffect(() => {
-    const engine = engineRef.current;
     const unsub = engine.onProgress(setProgress);
     return unsub;
-  }, []);
-  const handleFileSelect = useCallback(async (f: File) => {
-    setFile(f);
-    setError(null);
-    setAnalyzing(true);
-    try {
-      const engine = engineRef.current;
-      const result = await engine.analyzeMigration(f);
-      setReadiness(result.readiness);
-      setPlan(result.plan);
-      setMappings(result.readiness.detectedColumns);
-      setSource(result.source);
-      // Generate preview data from first sheet
-      const ExcelJS = await import('exceljs');
-      const buffer = await f.arrayBuffer();
-      const workbook = new ExcelJS.Workbook();
-      await workbook.xlsx.load(buffer);
-      const ws = workbook.worksheets[0];
-      if (ws) {
-        const raw: string[][] = [];
-        ws.eachRow({ includeEmpty: false }, (row) => {
-          const values: string[] = [];
-          for (let i = 1; i <= row.cellCount; i++) {
-            const cell = row.getCell(i);
-            const val = cell.value;
-            if (val === null || val === undefined) {
-              values.push('');
-            } else if (typeof val === 'object' && 'result' in val) {
-              values.push(String(val.result ?? ''));
-            } else if (val instanceof Date) {
-              values.push(val.toISOString());
-            } else {
-              values.push(String(val));
+  }, [engine]);
+  const handleFileSelect = useCallback(
+    async (f: File) => {
+      setFile(f);
+      setError(null);
+      setAnalyzing(true);
+      try {
+        const result = await engine.analyzeMigration(f);
+        setReadiness(result.readiness);
+        setPlan(result.plan);
+        setMappings(result.readiness.detectedColumns);
+        setSource(result.source);
+        // Generate preview data from first sheet
+        const ExcelJS = await import('exceljs');
+        const buffer = await f.arrayBuffer();
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.load(buffer);
+        const ws = workbook.worksheets[0];
+        if (ws) {
+          const raw: string[][] = [];
+          ws.eachRow({ includeEmpty: false }, (row) => {
+            const values: string[] = [];
+            for (let i = 1; i <= row.cellCount; i++) {
+              const cell = row.getCell(i);
+              const val = cell.value;
+              if (val === null || val === undefined) {
+                values.push('');
+              } else if (typeof val === 'object' && 'result' in val) {
+                values.push(String(val.result ?? ''));
+              } else if (val instanceof Date) {
+                values.push(val.toISOString());
+              } else {
+                values.push(String(val));
+              }
             }
+            raw.push(values);
+          });
+          if (raw.length > 1 && raw[0]!) {
+            const headers = raw[0]!.map(String);
+            const rows = raw.slice(1, 11).map((row) =>
+              headers.reduce(
+                (obj, h, i) => ({
+                  ...obj,
+                  [h]: i < row.length ? (row[i] ?? '') : '',
+                }),
+                {} as Record<string, unknown>
+              )
+            );
+            setPreviewData(rows);
           }
-          raw.push(values);
-        });
-        if (raw.length > 1 && raw[0]!) {
-          const headers = raw[0]!.map(String);
-          const rows = raw.slice(1, 11).map((row) =>
-            headers.reduce(
-              (obj, h, i) => ({
-                ...obj,
-                [h]: i < row.length ? (row[i] ?? '') : '',
-              }),
-              {} as Record<string, unknown>
-            )
-          );
-          setPreviewData(rows);
         }
+        setStep('mapping');
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Failed to analyze file');
+      } finally {
+        setAnalyzing(false);
       }
-      setStep('mapping');
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to analyze file');
-    } finally {
-      setAnalyzing(false);
-    }
-  }, []);
+    },
+    [engine]
+  );
   const handleMappingChange = (index: number, targetField: string) => {
     setMappings((prev) =>
       prev.map((m, i) =>
@@ -128,21 +146,63 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
   };
   const handleImport = useCallback(async () => {
     setStep('progress');
-    // Simulate import with progress updates
-    const engine = engineRef.current;
-    const unsub = engine.onProgress((p) => setProgress(p));
-    // In a real implementation, this would call engine.importData()
-    for (let i = 0; i <= 100; i += 10) {
-      await new Promise((r) => setTimeout(r, 200));
+    setImportErrors([]);
+
+    if (!file) {
+      // No file means nothing was read and nothing was imported. Reporting a
+      // completed run here is the fabrication this handler used to perform for
+      // every file, empty or not.
       setProgress({
-        status: i < 100 ? 'reading' : 'complete',
-        percent: i,
-        message: i < 100 ? `Importing... ${i}%` : 'Import complete',
+        status: 'error',
+        percent: 0,
+        message: 'No file was selected — nothing was imported.',
+      });
+      return;
+    }
+
+    try {
+      const { result, snapshot } = await engine.executeMigration(file, mappings, {
+        sheetName: plan?.sheets[0]?.name,
+      });
+
+      if (!result.valid) {
+        // Every rejected row is listed with its row number and reason; nothing
+        // is discarded silently and no success is claimed.
+        setImportErrors(result.errors);
+        setProgress({
+          status: 'error',
+          percent: 100,
+          message: `${result.errors.length} error${result.errors.length === 1 ? '' : 's'} — nothing was imported.`,
+        });
+        return;
+      }
+
+      if (!snapshot) {
+        // A run that validates rows but records no snapshot cannot be rolled
+        // back or audited, so it is not a completed migration.
+        setProgress({
+          status: 'error',
+          percent: 100,
+          message: `${result.rowCount} row(s) validated but no snapshot was recorded — the migration cannot be verified or rolled back.`,
+        });
+        return;
+      }
+
+      const sheetName = snapshot.plan.sheets[0]?.name ?? file.name;
+      setProgress({
+        status: 'complete',
+        percent: 100,
+        message: `Imported ${result.rowCount} rows from "${sheetName}"`,
+      });
+      onComplete(snapshot.id);
+    } catch (e) {
+      setProgress({
+        status: 'error',
+        percent: 0,
+        message: e instanceof Error ? e.message : 'Import failed',
       });
     }
-    unsub();
-    onComplete('snapshot-' + Date.now());
-  }, [onComplete]);
+  }, [engine, file, mappings, onComplete, plan]);
   const getReadinessColor = (status: string) => {
     switch (status) {
       case 'green':
@@ -151,6 +211,9 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
         return 'text-yellow-600';
       case 'red':
         return 'fin-negative';
+      case 'unknown':
+        // Nothing was assessed: no colour-coded posture, good or bad.
+        return 'text-muted-foreground';
       default:
         return '';
     }
@@ -243,7 +306,7 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <KPIValue
                 label="Readiness Score"
-                value={`${readiness.score}%`}
+                value={readiness.score === null ? '—' : `${readiness.score}%`}
                 icon={<CheckCircle className={`h-4 w-4 ${getReadinessColor(readiness.status)}`} />}
               />
               <KPIValue
@@ -257,6 +320,11 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
                 icon={<FileSpreadsheet className="h-4 w-4" />}
               />
             </div>
+            {readiness.score === null && (
+              <p data-testid="readiness-not-assessed" className="text-sm text-muted-foreground">
+                Readiness was not assessed: {readiness.issues[0]?.message ?? 'no reason recorded'}.
+              </p>
+            )}
             {readiness.issues.length > 0 && (
               <div className="space-y-2">
                 {readiness.issues.map((issue, i) => (
@@ -486,6 +554,17 @@ export default function MigrationWizard({ onComplete, onCancel }: MigrationWizar
                   <AlertTriangle className="h-4 w-4" />
                   Import failed. {progress.message}
                 </div>
+                {importErrors.length > 0 && (
+                  <ul data-testid="import-error-list" className="space-y-1 text-sm text-red-700">
+                    {importErrors.map((e, i) => (
+                      <li key={i}>
+                        {e.column
+                          ? `Row ${e.row}, column ${e.column}: ${e.message}`
+                          : `Row ${e.row}: ${e.message}`}
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 <Button variant="outline" onClick={() => setStep('confirm')}>
                   <RotateCcw className="h-4 w-4 mr-1" /> Try Again
                 </Button>

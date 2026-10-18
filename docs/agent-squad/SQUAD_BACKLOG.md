@@ -77,6 +77,231 @@ next finishable item.
 
 ## Done notes
 
+- 2026-10-18 (LEAD, solo): **`RegulatoryReportingEngine` stopped scoring records that were never
+  supplied.** Three static scorers answered questions nobody had asked: `computeGDPRScore(0, 0, 0, 0)`
+  returned `{ score: 100, issues: [] }` because every deduction is guarded by a `> 0` / `<` test that
+  zero inputs never trigger — no processing activities, no DPIAs, no breaches and no consent records
+  read as full GDPR compliance. `computeESGScore` on an all-zero `ESGMetrics` returned `e: 100` (no
+  emissions reported = a perfect environmental pillar) and `composite: 52`. And
+  `computeSOXControlsCoverage(0, 0, 0)` returned `materialWeakness: true` — with no controls in scope
+  at all the engine asserted the strongest possible adverse SOX finding; `(100, 0, 0)` did the same, so
+  "nothing was tested" read as a weakness. The same absence produced a perfect score in one method and
+  the worst finding in another. Now: nothing supplied → `null` scores, `evaluated: false`, and a reason
+  naming what is missing; controls in scope but none tested → coverage the real 0 with effectiveness and
+  weakness `null`; and the weakness comparison still uses the unrounded effectiveness, so every
+  supplied-data result is bit-for-bit what it was. Failing-first: **4 red | 3 green** (`expected 100 to
+be null`, `expected 52 to be null`, `expected +0 to be null` twice; the three guards pin the unchanged
+  arithmetic — GDPR `(10, 5, 2, 8)` = 60 with 3 issues, ESG composite 82 / e 100 / s 70 / g 70, SOX
+  `(100, 100, 70)` weakness true) → 7/7 after, engine suite 12/12, all of `src/engines` 312 files /
+  5,709 tests. This engine has 0 non-test callers, so no screen showed these numbers; the point is that
+  the first caller cannot inherit them. Gates: tsc 0, lint 0. Not decided here (owner): per-pillar
+  availability for a _partially_ supplied record — e.g. emissions genuinely 0 while `diversityPct` is
+  unknown — so a partial record is still scored with the zeros it carries, which is the pre-existing
+  formula rather than a new claim.
+- 2026-10-17 (LEAD, solo): **The ratchet checker now reads the prose claims too, and four of
+  them were wrong.** `scripts/ratchet-docs-check.mjs` only compared the KNOWN_GAPS table, so the
+  same numbers stated as sentences elsewhere drifted unchecked: `docs/discovery/requirements-register.md`
+  NFR-001 said the determinism ratchet "baselines 345 sites across 160 calculation-path files"
+  (the gate enforces 344 / 79), `docs/agent/01_PROJECT_BRIEF.md` said "345 wall-clock/random
+  sites" and "adoption 28.9 %" (floor 29.16 %), `docs/agent/03_DOMAIN_RULES.md` said "345 legacy
+  sites remain". Added 4 prose rules (matched line-by-line, so a claim cannot be assembled from
+  two rows), a repeatable `--prose=<path>` override for fixture tests, and a `prose` array in the
+  `--json` report; `--doc=` still means "table doc only" so the three existing fixture tests are
+  unchanged. The script reported all four drifts (exit 1) before the docs were fixed, and reports
+  "All 8 documented ratchet values (4 table rows, 4 prose claims) match" after. A claim that
+  cannot be found fails like a wrong number, so rewording a sentence cannot switch the check off.
+  Historical records are excluded on purpose — docs/archive and the dated
+  `docs/discovery/audit-progress-2026-10-15.md` describe the state on the day they were written.
+  Failing-first: `src/__tests__/ratchetDocsScript.test.ts` **4 red | 3 green** (prose array
+  missing; `--prose` ignored so drifted fixtures exited 0) → 7/7 after. Gates: tsc 0, lint 0,
+  format:check 0, docs:verify 0, docs:links strict 0.
+- 2026-10-17 (LEAD, solo): **The security settings page stopped inventing its own evidence.**
+  `/settings/security` showed "Security Status: Protected" in green for any session, took MFA from a
+  local `useState(false)` (a user recorded as `mfaEnabled: true` was shown "Disabled"), took the
+  session timeout from a local `useState(30)` nothing enforced, offered an MFA toggle and an
+  audit-logging toggle with no capability behind either, listed four hard-coded "Recent Security
+  Activity" rows (a password change "2 days ago", a failed login "5 days ago" from an "Unknown IP", a
+  full backup export "1 week ago"), and printed "Password updated successfully." from a handler that
+  called nothing — there is no password-change capability in `src/store`, `src/services` or
+  `src/utils`, and its own smoke test mocked an `updatePassword` that does not exist. Now: posture is
+  derived (Unknown / Locked / Protected / Signed in) from `user`, `lockedUntil` and `user.mfaEnabled`
+  against `nowMs()`; session lifetime is read from `tokenExpiry`; MFA reads "Not available" when
+  there is no user record; the three do-nothing controls are read-only rows that say why they cannot
+  be changed here (auth backend = DEC-004); the invented feed is the real `user.lastLoginAt` plus an
+  explicit "No security activity log is available in this build" panel naming the server-only tables
+  (`audit_login_attempts`, `audit_log`, `audit_permission_changes`) and pointing at `/audit/trail`
+  for data-change history; the password submit is disabled with a note that nothing typed is stored
+  or applied, while the strength meter — a real local computation — stays. Failing-first: **9 red**
+  (no `mfa-status` / `security-status` / `session-timeout` / `last-sign-in` testids, the invented
+  feed present, the password button enabled with no note, the fake toggles present) with 1 green
+  guard (`Strength: Very Strong` for a typed password) → green after: 10/10, plus the two existing
+  smoke suites, 14 files / 83 tests across `src/pages/settings` and both all-pages smoke suites.
+  Gates: tsc 0, lint 0 (unused `CheckCircle` import removed), format:check 0, docs:verify (4 checks)
+  0, engines:verify 182, money:ast 0, determinism 344/79, type-safety 47, money:adoption 289/0,
+  architecture:guardrails 0, fabrication:audit 0, docs:links strict 0. Not claimed: a real password
+  change or MFA enrolment — both need DEC-004.
+- 2026-10-17 (LEAD, solo): **The documented ratchet numbers are now the enforced ones.** The
+  "Ratchet baselines" table in `docs/agent/09_KNOWN_GAPS.md` claimed determinism 345 / 80 (gate:
+  344 / 79), type-safety escapes 116 (tree: 47) and a money-adoption floor of 28.89 % (baseline
+  JSON: 23.54 %, tree: 29.16 %) — two of four rows described gates that were not in force, and the
+  type-escape row advertised a budget 69 casts looser than the tree. `docs/agent/05_COMMANDS_AND_GATES.md`
+  repeated all three stale numbers. Two parts: (1) measured the tree and locked in the improvements
+  that had never been recorded — `type-safety-ratchet --update` 116 → **47** (0 `as any`,
+  47 `as unknown as`) and `money-adoption --update` 209 → **289 modules** (23.54 % → **29.16 %**;
+  server 2 → 3 modules); (2) added `scripts/ratchet-docs-check.mjs`, wired into `npm run
+docs:verify`, which compares every row of that table with the baseline JSON the gate reads and
+  fails on drift, on an unparseable value, or on a deleted row — so the table cannot silently
+  describe a gate nobody enforces. Failing-first: the new check exited 1 on the stale doc
+  (`doc says 345 / 80, gate enforces 344 / 79`; `doc says 28.89, gate enforces 23.54`) and
+  `src/__tests__/ratchetDocsScript.test.ts` was 1 red / 2 green → after the doc fix: 3/3 green and
+  `✓ All 4 documented ratchet values match the gates that enforce them`. Negative control for the
+  tightened budget: adding one `as unknown as` to `src/utils` made the ratchet fail
+  (`INCREASED: 47 -> 48`, exit 1); removing it restored exit 0. Also recorded in KNOWN_GAPS: on
+  Node v22.22.3 (the targeted version) `npm run check` is 8/8 shards, 15,739 passed | 1 skipped,
+  0 failed — the three `Storage.prototype` failures are Node-26 symptoms and the tests are
+  unchanged. Gates: tsc 0, lint 0, format:check 0, engines:verify 182, money:ast 0,
+  determinism:ratchet 344/79, type-safety:ratchet 47, architecture:guardrails 0, fabrication:audit
+  0, docs:links strict 0, docs:verify (now 4 checks) 0.
+- 2026-10-17 (LEAD, solo): **Migration readiness no longer scores a file it never assessed.**
+  `assessReadiness` began at `score = 100` and only deducted, so a workbook with a header row and no
+  data rows came back as "Migration Readiness: 100 %" with a GREEN badge, and an entirely empty sheet
+  came back as 70 % YELLOW for "Required columns not mapped" — blaming the user's mapping for a file
+  with nothing in it. `MigrationReadiness.score` is now `number | null`, `status` gains `unknown`
+  (exported as `MigrationReadinessStatus`), and the engine returns early with the reason, which also
+  reaches `plan.warnings`. `MigrationWizard` renders "—" in the Readiness Score KPI plus a
+  `readiness-not-assessed` note and a muted icon; `DataImportPage` renders "—" with a neutral
+  `NOT ASSESSED` badge (not the red failure styling, not the green all-clear) and disables
+  "Start Migration". Files that do hold rows score exactly as before. Failing-first with the three
+  sources stashed: **5 red** (`expected 100 to be null`, `expected 70 to be null`, no "—" in the
+  readiness KPI, 2× missing `migration-readiness-score`) → green after: `MigrationEngine.test.ts`
+  (3 new in "readiness is not earned by an empty file"), `DataImportPage.deep.test.tsx` (2 new, one
+  of them the numeric-score guard), `MigrationWizard.execute.test.tsx` (1 new), 6 files / 77 tests
+  targeted and 35 files / 305 tests across `src/pages/data`, `src/pages/__tests__/data`,
+  `src/components/migration`, the engine suite and the all-pages smoke suite. Gates: tsc 0, lint 0,
+  format:check 0, engines:verify 182, money:ast 0, determinism 344/79, architecture:guardrails 0,
+  fabrication:audit 0, docs:links strict 0, docs:verify 0.
+- 2026-10-17 (LEAD, solo): **The migration wizard now migrates.** `handleImport` simulated the
+  run — `setTimeout` 0→100 %, message "Import complete", `onComplete('snapshot-' + Date.now())`,
+  with the comment "In a real implementation, this would call engine.importData()". No row was
+  read, no snapshot recorded, yet `MigrationPage.handleComplete` navigated to `/data` with
+  `migrationComplete: true` and that invented id and refreshed a history that could not contain it.
+  The wizard also built its own `MigrationEngine` (a fresh throwaway per render, via
+  `useRef(new MigrationEngine())`), so even a real run would have been invisible to the page.
+  Now: the wizard calls `executeMigration(file, mappings, { sheetName })`, reports the engine's own
+  `migration-<nowMs()>` snapshot id and its validated row count, renders every rejected row with
+  row/column/reason (`import-error-list`), claims no success and calls no `onComplete` when the run
+  is invalid or records no snapshot, and takes an optional `engine` prop; `MigrationPage` injects
+  its own instance. `useState(() => new MigrationEngine())` replaces the per-render throwaway, and
+  the `Date.now()` in the component is gone. Failing-first: **5 red** (4 wizard: no
+  `Imported 2 rows from "Data"`, `expected 'snapshot-1792272293253' to match /^migration-\d+$/`,
+  header-only file claimed success, injected engine's `executeMigration` never called; 1 page:
+  `expected undefined to be MigrationEngine{}`) → green after: `MigrationWizard.execute` 5/5,
+  `MigrationPage` 10/10, 4 files / 28 tests in `src/components/migration` + the page suite, and
+  35 files / 299 tests across `src/pages/data`, `src/pages/__tests__/data`, the all-pages smoke
+  suite and `MigrationEngine.test.ts`. Gates: tsc 0, lint 0 (after moving the fallback engine off a
+  ref — `react-hooks/refs` rejects reading a ref during render), format:check 0, engines:verify 182,
+  money:ast 0, determinism 344/79, architecture:guardrails 0, fabrication:audit 0, docs:verify 0.
+  Queued next, recorded as STILL FALSE in `docs/agent/09_KNOWN_GAPS.md`: readiness reports 100 % GREEN for a
+  header-only file and 70 % YELLOW for an empty sheet.
+- 2026-10-17 (LEAD, solo): **The SOX report no longer publishes assurance it does not have.**
+  `SOXCompliancePage` seeded a demo `AuditLogEngine` (3 entries), four demo RBAC roles and a demo
+  workflow with a submitted request, and `SOXComplianceEngine.generateReport` turned that invented
+  data into `pass` verdicts for the approval-workflow, segregation-of-duties, audit-trail (×4) and
+  access-control families — on screen: a 100 gauge and a "compliant" badge. A disclosure note said
+  sample events were involved; the verdict still read as the user's posture. The demo seeding is
+  deleted, a family whose source holds no data is now `not_applicable` with the reason,
+  `overallScore` is `number | null` (null while any family is unevaluated, so never 0 and never
+  100), `overallStatus` gains `insufficient_data` (a critical GL finding still outranks it as
+  `non_compliant`), `byCategory` counts `notApplicable`, and the page renders "—", a
+  "Not evaluated" KPI, per-family "not evaluated" cards and the reason. Two `new Date()` wall-clock
+  reads in the page now come from `@/utils/clock`. The authoritative audit/workflow/RBAC source is
+  still an owner decision and was **not** made here. Failing-first: **9 red** (5 engine:
+  `expected 'pass' to be 'not_applicable'`, `expected 100 to be null`, `expected 78 to be null`;
+  4 page: no `not applicable` badges, no `sox-score-unavailable`, audit trail still read
+  "2 entries", old sample-events note present) → green after: `SOXComplianceEngine.test.ts` 83/83,
+  `SOXCompliancePage.assurance.test.tsx` 5/5, 10 files / 169 tests across that engine suite,
+  `src/pages/audit` and the all-pages smoke suite. Gates: tsc 0, lint 0, format:check 0, engines:manifest+verify 182,
+  money:ast 0, determinism 344/79, architecture:guardrails 0, fabrication:audit 0, docs:verify 0.
+- 2026-10-17 (LEAD, solo): **A standard D365 export now imports end to end, and NFR-004 has its
+  import-to-output test.** `src/services/import/d365Parser.ts` had 0 non-test callers: the wizard's
+  auto-map knew only generic column names, so an F&O `GeneralJournalAccountEntryEntity` or a BC
+  `G/L Entries` export mapped nothing (Preview stayed locked), its `dd-MMM-yyyy` posting dates were
+  unparseable, and a trailing grand-total line would have been adopted as an account called "Total"
+  — double-counting every total it summarises. The parser's dialect facts are now live:
+  `suggestGLImportMappings` feeds the wizard auto-map, and `parseGLRows` detects the flavor from the
+  headers, uses `parseD365Date`, and rejects non-transaction lines by source row. One validation
+  path and one money path are kept — `parseD365Rows` itself stays test-only and is recorded as such
+  in `docs/agent/09_KNOWN_GAPS.md`. Failing-first, measured with the implementation reverted
+  (`git stash` of the three source files): **11 red** — 3 integration
+  (`expect(element).toBeEnabled()`), 6 mapping-suggestion
+  (`TypeError: suggestGLImportMappings is not a function`), 2 dialect. Green after:
+  `GLUploadPage.d365.integration.test.tsx` 3/3 (outputs asserted: trial balance per account,
+  `computeBalanceSheet` 545000/45000/545000, `diff 0`, `isBalanced`, control totals 695000.00 both
+  sides), `d365Parser.test.ts` 22/22, `parseGLRows.test.ts` 23/23, `GLColumnMapper.test.tsx` 11/11,
+  `GLUploadPage.interop.test.tsx` 8/8; 116 files / 1381 tests across `src/services/import`,
+  `src/components/data`, `src/pages/data`, `src/store`. DEC-001 is **not** resolved: synthetic
+  fixtures only, no real customer export, no verified-support claim.
+- 2026-10-17 (LEAD, solo): **The wizard can now map every fact the parser understands.**
+  `GLColumnMapper` offered 7 fields while `parseGLRows` also accepted `reference`, and neither
+  exposed `accountName` or `currency` — a file carrying them had the fact dropped, the ledger
+  showed the account code as the account name, and the Done step claimed `Currencies not in file`
+  for a column that was in the file. `GLImportField` gained `accountName`/`currency`, the mapper
+  renders 10 controls, and blank/unmapped optional columns stay absent (no invented default).
+  Failing-first: 3 red (parser name, parser currency, page panel `expected [ undefined, undefined ]
+to deeply equal [ 'USD', 'USD' ]`) → `parseGLRows.test.ts` 18/18, `GLUploadPage.interop.test.tsx`
+  8/8, `GLColumnMapper.test.tsx` 11/11, `GLDataPreview.test.tsx` 27/27; 49 files / 397 tests across
+  `src/pages/data`, `src/components/data`, `src/services/import` and the data smoke suite. Gates:
+  tsc 0, eslint 0, prettier 0.
+- 2026-10-17 (LEAD, solo): **Migration success rate stops lying at zero.** With no migrations the
+  KPI computed `0` and rendered "0.0%", which reads as "every migration failed". The rate is now
+  `null` and renders the unavailable marker (`—`) with a muted colour and
+  `title="No migrations recorded"`; two applied of three still renders `66.7%`. Failing-first:
+  missing `data-testid` + 0.0% (2 red) → 8/8 page tests, 51/51 with the all-pages smoke suite.
+- 2026-10-17 (LEAD, solo): **SOX checks run on the whole ledger.** `SOXCompliancePage` sliced
+  `entries` to 20 before the double-entry check and 10 before the closed-period check, so the
+  verdict depended on row order (first-20 unbalanced + rest balanced = false failure). Both now
+  map every entry; the fabricated `new Date()` fallback timestamp is gone. New interop suite
+  drives the real `glStore` and records the engine arguments. Failing-first: 20/25 and 10/15
+  (2 red) → 3/3 interop, 13/13 including the page and money suites.
+  Still open and recorded: the audit/SOD/approval checks are computed from demo audit/RBAC/workflow
+  objects at `SOXCompliancePage.tsx:269-343` — see `docs/agent/09_KNOWN_GAPS.md`.
+- 2026-10-17 (LEAD, solo): **Import job history no longer drops jobs.** `DataImportPage`
+  rendered `importJobs.slice(0, 10)` while `dataStore` keeps the full list, with no count and no
+  way to see the rest. Every job is now rendered in a scrolling table; the newest-first order is
+  unchanged. Failing-first: 12 jobs → the 11th/12th rows were missing (1 red) → 20/20 deep tests,
+  page + money suites green.
+- 2026-10-17 (LEAD, solo): **Migration history no longer drops records.** `MigrationPage` rendered
+  `history.slice(0, 10)` under the title "Recent Migrations" with no count and no way to reach the
+  rest, while the KPI header and the store used the full history. The page now renders every
+  snapshot in a scrolling list, states `N migrations`, and the card is titled "Migration History".
+  Failing-first: 12 stored snapshots produced 10 list items and no count line (2 red) → 6/6 tests.
+- 2026-10-17 (LEAD, solo): **Evidence record corrected for FR-008/FR-009.** The register said
+  "Not met" / "no persisted disposition" while the tree contains a versioned rule catalogue
+  (13 tests), a `masterStorage`-persisted disposition audit trail that survives rehydrate
+  (8 + 2 tests), and tested review components (9). Status is now "Partial (branch)" with the
+  remaining gap stated exactly: no page/route consumer (blocked by Gate 2/DEC-001), no answer key.
+- 2026-10-17 (LEAD, solo): **Explorer footer states its window.** `GLExplorerPage` capped the
+  table at 200 rows and said "showing first 200" without saying how many rows matched. The footer
+  now reads `N total · M matching · showing first 200` when the window truncates, and the memo
+  returns `matchedCount` separately from the displayed rows. Failing-first: 2 red → 4/4 interop.
+- 2026-10-17 (LEAD, solo): **Version Diff commits the whole baseline.** The page sampled the first
+  50 GL entries and 50 budget line items while its commit messages stated the full counts — history
+  described rows it never captured. Both loops now commit every row. Failing-first: 2 red → 4/4
+  `VersionDiffPage.test.tsx`.
+- 2026-10-17 (LEAD, solo): **Signed debit/credit cells rejected at parse time.** `parseGLRows`
+  accepted accounting parentheses/leading minus (`(500)`, `-75.5`), producing entries the store's
+  domain rule (`debit >= 0`, `credit >= 0`) can never commit — a green preview followed by an
+  import rejection. The parser now rejects the row with the cell text, closing the last row-level
+  preview/import disagreement. Failing-first: `parseGLRows.test.ts` 14/14, preview 27/27,
+  import surfaces 138/138.
+- 2026-10-17 (LEAD, solo): **Preview gate/import divergence closed** — `GLDataPreview` had its own
+  validation rules (float `parseFloat`, only the first 20 rows, blank cells rejected) while the
+  banner claimed the error count covered the whole file; a broken row past row 20 left Confirm
+  enabled. It now derives every row's status from `parseGLRows` (the import's parser), numbers rows
+  by source-file position, lists rejected rows outside the display window, and blocks confirmation.
+  Failing-first: 8 red → `GLDataPreview.test.tsx` 26/26; `GLUploadPage.interop.test.tsx` 7/7
+  (incl. corrected-file reprocessing, UX-002). Also repaired `npm ci` at HEAD via a one-target
+  lockfile resync. Gates: tsc 0, lint 0, format 0, money:ast 0, determinism 344/79.
 - 2026-10-17 (LEAD, solo): P1-4 consumer coverage completed across all four GL screens —
   `GLUploadPage` real-store interop 5/5 (`c879d3e8`) plus the Alert display-only renders-nothing
   fix (`0751af7f`); pre-existing tokenBridge dangling-token red repaired (`d5702168`).

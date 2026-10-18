@@ -399,34 +399,48 @@ export default function DataImportPage() {
               {/* Readiness Report */}
               <div
                 className={`p-4 rounded-lg border ${
-                  readiness.status === 'green'
-                    ? 'bg-green-900/20 border-green-800/30'
-                    : readiness.status === 'yellow'
-                      ? 'bg-yellow-900/20 border-yellow-800/30'
-                      : 'bg-red-900/20 border-red-800/30'
+                  // 'unknown' is neutral: nothing was assessed, which is
+                  // neither a good nor a bad posture, so it must not borrow the
+                  // red failure styling or the green all-clear.
+                  readiness.status === 'unknown'
+                    ? 'bg-slate-800/20 border-slate-700/30'
+                    : readiness.status === 'green'
+                      ? 'bg-green-900/20 border-green-800/30'
+                      : readiness.status === 'yellow'
+                        ? 'bg-yellow-900/20 border-yellow-800/30'
+                        : 'bg-red-900/20 border-red-800/30'
                 }`}
               >
                 <div className="flex items-center gap-3 mb-2">
                   <Shield
                     className={`h-5 w-5 ${
-                      readiness.status === 'green'
-                        ? 'text-green-400'
-                        : readiness.status === 'yellow'
-                          ? 'text-yellow-400'
-                          : 'text-red-400'
+                      readiness.status === 'unknown'
+                        ? 'text-slate-400'
+                        : readiness.status === 'green'
+                          ? 'text-green-400'
+                          : readiness.status === 'yellow'
+                            ? 'text-yellow-400'
+                            : 'text-red-400'
                     }`}
                   />
-                  <span className="font-semibold">Migration Readiness: {readiness.score}%</span>
+                  <span className="font-semibold">
+                    Migration Readiness:{' '}
+                    <span data-testid="migration-readiness-score">
+                      {readiness.score === null ? '—' : `${readiness.score}%`}
+                    </span>
+                  </span>
                   <Badge
                     variant={
-                      readiness.status === 'green'
-                        ? 'default'
-                        : readiness.status === 'yellow'
-                          ? 'secondary'
+                      readiness.status === 'unknown' || readiness.status === 'yellow'
+                        ? 'secondary'
+                        : readiness.status === 'green'
+                          ? 'default'
                           : 'destructive'
                     }
                   >
-                    {readiness.status.toUpperCase()}
+                    {readiness.status === 'unknown'
+                      ? 'NOT ASSESSED'
+                      : readiness.status.toUpperCase()}
                   </Badge>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3 text-sm">
@@ -565,7 +579,7 @@ export default function DataImportPage() {
                 </Button>
                 <Button
                   onClick={handleExecuteMigration}
-                  disabled={readiness.status === 'red'}
+                  disabled={readiness.status === 'red' || readiness.status === 'unknown'}
                   aria-label="Start migration"
                 >
                   <Globe className="h-4 w-4 mr-2" />
@@ -897,7 +911,10 @@ export default function DataImportPage() {
               <Database className="h-5 w-5 text-purple-400" aria-hidden="true" />
               <h3 className="font-semibold">Import Job History</h3>
             </div>
-            <div className="overflow-x-auto">
+            {/* Every job is rendered: the store keeps the full history, and a
+                10-row window with no truncation notice made older imports
+                unreachable. The container scrolls instead of hiding rows. */}
+            <div className="overflow-x-auto max-h-96 overflow-y-auto">
               <table className="w-full text-sm" role="grid" aria-label="Import job history">
                 <thead>
                   <tr
@@ -922,7 +939,7 @@ export default function DataImportPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800">
-                  {importJobs.slice(0, 10).map((job) => (
+                  {importJobs.map((job) => (
                     <tr key={job.id} className="hover:bg-slate-900/50" role="row">
                       <td className="py-2 pr-4 font-mono text-xs" role="gridcell">
                         {job.filename}
