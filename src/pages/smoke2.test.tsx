@@ -49,12 +49,6 @@ vi.mock('@/engines/ExportEngine', () => ({
   },
 }));
 
-vi.mock('@/engines/CellAuditTrailEngine', () => ({
-  CellAuditTrailEngine: vi.fn(function () {
-    return { getAllEntries: vi.fn(() => []) };
-  }),
-}));
-
 vi.mock('@/engines/AIEngine', () => ({
   // AIEngine exposes only static methods (init, getStatus, detectAnomalies,
   // classify, dispose) — it is never instantiated with `new`. The previous
@@ -264,7 +258,7 @@ import InvestmentPage from '@/pages/treasury/InvestmentPage';
 import ConsolidationDashboard from '@/pages/consolidation/ConsolidationDashboard';
 import FXRatesPage from '@/pages/currency/FXRatesPage';
 import AuditTrailPage from '@/pages/audit/AuditTrailPage';
-import { useAuditTrailStore } from '@/store/auditTrailStore';
+import { actAs, signOut } from '@/test/rbacFixtures';
 import CapExDashboard from '@/pages/capex/CapExDashboard';
 import AIIntelligencePage from '@/pages/ai/AIIntelligencePage';
 import LeaseDashboard from '@/pages/lease/LeaseDashboard';
@@ -292,6 +286,7 @@ function renderPage(PageComponent: React.ComponentType, initialPath = '/', route
 
 describe('Page Smoke Tests (Batch 2)', () => {
   beforeEach(() => {
+    signOut();
     vi.clearAllMocks();
     vi.stubGlobal('localStorage', {
       getItem: vi.fn(),
@@ -375,13 +370,13 @@ describe('Page Smoke Tests (Batch 2)', () => {
     });
 
     it('denies access to roles without GDPR audit permission (RBAC gate)', () => {
-      useAuditTrailStore.setState({ currentUserRole: 'viewer' });
+      actAs('Viewer');
       renderPage(AuditTrailPage, '/audit', '/audit');
       expect(screen.getByText(/Access Denied/i)).toBeInTheDocument();
     });
 
     it('displays the empty state (authorized role)', () => {
-      useAuditTrailStore.setState({ currentUserRole: 'admin' });
+      actAs('Admin');
       renderPage(AuditTrailPage, '/audit', '/audit');
       expect(screen.getByText(/No Audit Entries/i)).toBeInTheDocument();
     });

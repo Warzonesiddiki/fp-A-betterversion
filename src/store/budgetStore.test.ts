@@ -5,7 +5,8 @@ import { PeriodLockedError } from './periodLockGuard';
 import { useUIStore } from './uiStore';
 import type { Budget, BudgetLineItem } from '@/types';
 import type { AccountType } from '@/types';
-import { actAs } from '@/test/rbacFixtures';
+import { actAs, actAsRoleWithout, expectPermissionDenied } from '@/test/rbacFixtures';
+import { Permissions } from '@/utils/rbacEnforcer';
 
 describe('budgetStore', () => {
   beforeEach(() => {
@@ -126,6 +127,24 @@ describe('budgetStore', () => {
     expect(useBudgetStore!.getState().budgets[0]!.name).toBe('Second');
   });
 
+  it('rejects setBudgets without budget:update and leaves state unchanged', () => {
+    const budgets = [
+      {
+        ...createBudgetInput(),
+        id: 'bgt-denied',
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z',
+        createdBy: 'usr-001',
+      },
+    ] as Budget[];
+    actAsRoleWithout('Admin', Permissions.BUDGET_UPDATE);
+
+    const denied = expectPermissionDenied(() => useBudgetStore.getState().setBudgets(budgets));
+
+    expect(denied.message).toContain(Permissions.BUDGET_UPDATE);
+    expect(useBudgetStore.getState().budgets).toEqual([]);
+  });
+
   // --- setActiveBudget ---
 
   it('should set active budget id for existing budget', () => {
@@ -163,7 +182,31 @@ describe('budgetStore', () => {
     expect(useBudgetStore!.getState().lineItems[0]!.amount).toBe(2000);
   });
 
+  it('rejects setLineItems without budget:update and leaves state unchanged', () => {
+    const items = [createLineItem()];
+    actAsRoleWithout('Admin', Permissions.BUDGET_UPDATE);
+
+    const denied = expectPermissionDenied(() => useBudgetStore.getState().setLineItems(items));
+
+    expect(denied.message).toContain(Permissions.BUDGET_UPDATE);
+    expect(useBudgetStore.getState().lineItems).toEqual([]);
+  });
+
   // --- updateLineItem ---
+
+  it('rejects updateLineItem without budget:update and leaves state unchanged', () => {
+    const item = createLineItem({ id: 'item-denied', amount: 1000 });
+    useBudgetStore.setState({ lineItems: [item] });
+    actAsRoleWithout('Admin', Permissions.BUDGET_UPDATE);
+
+    const denied = expectPermissionDenied(() =>
+      useBudgetStore.getState().updateLineItem('item-denied', { amount: 2000 })
+    );
+
+    expect(denied.message).toContain(Permissions.BUDGET_UPDATE);
+    expect(useBudgetStore.getState().lineItems[0]?.amount).toBe(1000);
+    expect(useBudgetStore.getState().lastChange).toBeNull();
+  });
 
   it('should update amount of existing line item', () => {
     useBudgetStore.setState({ lineItems: [createLineItem({ id: 'item-1', amount: 1000 })] });

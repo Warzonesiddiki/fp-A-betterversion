@@ -7,6 +7,8 @@
 **Source PATCHes:** PATCH 15 — `src/services/TauriSecureStorage.ts` (NEW, 358L), `src-tauri/src/secure_storage.rs` (NEW, 290L), `src-tauri/src/lib.rs` (UPDATED, secure_storage module + 7 IPC commands registered), `src-tauri/Cargo.toml` (keyring 3 + base64 0.22 added)
 **Authoritative cross-references:** SECURITY.md v1.0.0 §11 @ 384b8ac96; PATCH 12 SecretRotation @ db1b5bfd3; SECRET_ROTATION_AUDIT_LOGGING_POLICY.md
 
+> **Audit sink status (2026-10-19):** Statements below that require or describe persistence through PATCH 12 `AuditLogger` are requirements/design assumptions only. The repository has no production caller or durable adapter for that class; these references are not evidence that audit events are currently persisted or that a compliance control is operating. See `../architecture/AUDIT_CHAIN_REACHABILITY.md`.
+
 ---
 
 ## §1. Purpose and Scope

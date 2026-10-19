@@ -31,7 +31,9 @@ export const useFxRateStore = create<FxRateState>()(
           }))
         ),
 
-        deleteRate: (id) => set((state) => ({ rates: state.rates.filter((r) => r.id !== id) })),
+        deleteRate: enforce(Permissions.FORECAST_DELETE, 'deleteRate', (id) =>
+          set((state) => ({ rates: state.rates.filter((r) => r.id !== id) }))
+        ),
       })),
       {
         name: 'fx-rate-store',

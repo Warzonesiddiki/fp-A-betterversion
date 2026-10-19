@@ -59,11 +59,11 @@ export const useBudgetStore = create<BudgetState>()(
         historyIndex: 0,
         selectedCellId: null,
 
-        setBudgets: (budgets) => {
+        setBudgets: enforce(Permissions.BUDGET_UPDATE, 'setBudgets', (budgets) => {
           set((state) => {
             state.budgets = budgets as typeof state.budgets;
           });
-        },
+        }),
 
         setActiveBudget: (id) => {
           const budget = get().budgets.find((b) => b.id === id);
@@ -73,13 +73,13 @@ export const useBudgetStore = create<BudgetState>()(
           });
         },
 
-        setLineItems: (items) => {
+        setLineItems: enforce(Permissions.BUDGET_UPDATE, 'setLineItems', (items) => {
           set((state) => {
             state.lineItems = items;
           });
-        },
+        }),
 
-        updateLineItem: (id, updates) => {
+        updateLineItem: enforce(Permissions.BUDGET_UPDATE, 'updateLineItem', (id, updates) => {
           // Input validation
           if (!id || typeof id !== 'string') {
             throw new Error('id must be a non-empty string');
@@ -131,7 +131,7 @@ export const useBudgetStore = create<BudgetState>()(
               };
             }
           });
-        },
+        }),
 
         createBudget: enforce(Permissions.BUDGET_CREATE, 'createBudget', (budget) => {
           try {
@@ -353,7 +353,7 @@ export const useBudgetStore = create<BudgetState>()(
           }
         ),
 
-        undo: () => {
+        undo: enforce(Permissions.BUDGET_UPDATE, 'undo', () => {
           const { historyIndex, history } = get();
           if (historyIndex > 0) {
             // W6-P0-11: replay must not resurrect changes in hard-locked periods.
@@ -363,9 +363,9 @@ export const useBudgetStore = create<BudgetState>()(
               state.historyIndex = historyIndex - 1;
             });
           }
-        },
+        }),
 
-        redo: () => {
+        redo: enforce(Permissions.BUDGET_UPDATE, 'redo', () => {
           const { historyIndex, history } = get();
           if (historyIndex < history.length - 1) {
             // W6-P0-11: replay must not apply changes to hard-locked periods.
@@ -375,7 +375,7 @@ export const useBudgetStore = create<BudgetState>()(
               state.historyIndex = historyIndex + 1;
             });
           }
-        },
+        }),
 
         setSelectedCell: enforce(Permissions.UI_UPDATE, 'setSelectedCell', (id) => {
           set((state) => {

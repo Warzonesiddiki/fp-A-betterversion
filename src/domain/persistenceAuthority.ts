@@ -64,7 +64,8 @@ export const PERSISTED_STORES = [
     classification: 'financial-truth',
     authority: 'local-draft',
     serverRoute: '/api/audit',
-    notes: 'Client-side audit chain. Official trail is server audit_log (F-AUDIT-001).',
+    notes:
+      'Canonical client-side audit chain per DEC-025; server audit_log is a separate, unintegrated server log pending Q6. Local-draft durability remains.',
   },
   {
     persistKey: 'auth-store',
@@ -96,7 +97,8 @@ export const PERSISTED_STORES = [
     classification: 'financial-truth',
     authority: 'local-draft',
     serverRoute: null,
-    notes: 'Client lineage. Governed lineage graph is F-PLAT-005 (Phase 1).',
+    notes:
+      'Local-draft lineage; v2 persists/revives Map-backed chains and reconstructs v1 history from pendingEntries. No production writer; encrypted restart and general-audit integration remain unverified.',
   },
   {
     persistKey: 'collaboration-store',

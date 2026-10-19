@@ -17,8 +17,12 @@
 //     type, status, timestamps, fingerprint — never the secret material.
 //   - CWE-613 (Insufficient session expiration): every secret has a TTL
 //     and an explicit revocation path independent of expiry.
-//   - CWE-778 (Insufficient logging): every create/rotate/verify/revoke
-//     emits a SecretRotationAuditEvent the host can persist.
+//   - An optional `onAudit` callback receives lifecycle events only when a host
+//     configures one. No default sink or persistence adapter is supplied here;
+//     absent callback means no event is delivered. Callback failures are swallowed
+//     by design, so this is not a delivery guarantee or compliance control.
+//   - Repository census found no production caller/wiring for this class; its
+//     callback tests do not prove an active product audit integration.
 //
 // DEPENDENCIES:
 //   - Web Crypto API (crypto.subtle for fingerprint, crypto.getRandomValues

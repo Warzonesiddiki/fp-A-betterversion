@@ -1,12 +1,10 @@
 /**
- * Immutable Cell Lineage Types — Complete Provenance Tracking
+ * Cell lineage data contracts — local-draft provenance, not a compliance log.
  *
- * Every single atomic metric adjustment is recorded immutably:
- * UserID, Timestamp, OldValue, NewValue, ModifyingEngineVersion, DataOrigin.
- *
- * Unlike the existing auditTrailStore (which tracks GDPR/SOX events),
- * this tracks the COMPLETE LINEAGE of every cell value from creation
- * to its current state, enabling "rewind to any point in time."
+ * Entries carry values, actor, time, reason and origin for per-cell history.
+ * The current store is not wired to a production producer or general audit
+ * surface. Hashes are unkeyed consistency checks without an external anchor;
+ * they do not make the records immutable or regulatory evidence.
  */
 
 import type { PreciseAmount } from './precision';
@@ -14,8 +12,8 @@ import type { PreciseAmount } from './precision';
 // ─── Cell Lineage Entry ────────────────────────────────────────────────────
 
 /**
- * A single immutable record in a cell's lineage chain.
- * Once written, this record can NEVER be modified or deleted.
+ * One entry in a cell's local lineage sequence.
+ * Append-only is a store convention, not an enforced or externally anchored guarantee.
  */
 export interface CellLineageEntry {
   /** Globally unique entry ID (ULID for time-ordered sorting) */
@@ -36,9 +34,9 @@ export interface CellLineageEntry {
   readonly engineVersion: string | null;
   /** Data origin classification */
   readonly dataOrigin: DataOrigin;
-  /** Hash of the previous lineage entry (blockchain-style chain) */
+  /** Unkeyed SHA-256 of the prior entry payload; not an external anchor. */
   readonly previousHash: string;
-  /** Hash of this entry (for integrity verification) */
+  /** Unkeyed SHA-256 payload digest; recomputation checks internal consistency only. */
   readonly entryHash: string;
   /** Metadata for debugging and traceability */
   readonly metadata: Readonly<Record<string, unknown>>;
@@ -138,7 +136,7 @@ export interface CellLineageChain {
   readonly changeCount: number;
   /** Number of unique actors */
   readonly uniqueActors: number;
-  /** The hash chain is valid (no tampering) */
+  /** Whether the last local consistency check passed; not proof against a full rewrite. */
   readonly integrityValid: boolean;
 }
 
@@ -171,7 +169,7 @@ export interface LineageQuery {
 export interface CellLineageState {
   /** All lineage chains indexed by cellId */
   readonly chains: ReadonlyMap<string, CellLineageChain>;
-  /** Pending entries not yet persisted */
+  /** Append-ordered entry copy retained for v1 persistence reconstruction and replay. */
   readonly pendingEntries: readonly CellLineageEntry[];
   /** Whether integrity verification has been run */
   readonly integrityVerified: boolean;

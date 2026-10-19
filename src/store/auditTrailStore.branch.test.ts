@@ -20,6 +20,7 @@ import {
   AUDIT_CHAIN_GENESIS_HASH,
 } from './auditTrailStore';
 import type { ExtendedAuditEntry } from '@/types/audit';
+import { actAs } from '@/test/rbacFixtures';
 
 enableMapSet();
 
@@ -49,6 +50,7 @@ vi.mock('@/utils/spreadsheetSanitize', () => ({
 describe('auditTrailStore — branch sweep', () => {
   beforeEach(() => {
     idCounter = 0;
+    actAs('Admin');
     useAuditTrailStore.setState({
       entries: [],
       filters: { userId: null, operation: null, source: null, severity: null },
@@ -58,7 +60,6 @@ describe('auditTrailStore — branch sweep', () => {
       sortDir: 'desc',
       selectedEntryId: null,
       loading: false,
-      currentUserRole: 'admin',
       chainHead: AUDIT_CHAIN_GENESIS_HASH,
     });
   });
@@ -125,11 +126,9 @@ describe('auditTrailStore — branch sweep', () => {
     expect(useAuditTrailStore.getState().selectedEntryId).toBeNull();
   });
 
-  it('revertToState is denied for non-privileged roles', () => {
-    useAuditTrailStore.getState().setCurrentUserRole('analyst');
-    expect(() => useAuditTrailStore.getState().revertToState('anything')).toThrow(
-      /insufficient role/
-    );
+  it('revertToState is denied without audit:delete', () => {
+    actAs('Viewer');
+    expect(() => useAuditTrailStore.getState().revertToState('anything')).toThrow(/audit:delete/);
   });
 
   it('revertToState appends a chained revert entry for an existing entry', () => {
@@ -173,6 +172,35 @@ describe('auditTrailStore — branch sweep', () => {
       .getState()
       .filterByGdprAccess(useAuditTrailStore.getState().entries);
     expect(filtered.map((e) => e.id).sort()).toEqual([gdprId, consentId, breachId].sort());
+  });
+
+  it('filterByGdprAccess returns no protected entries to an unauthorized role', () => {
+    const store = useAuditTrailStore.getState();
+    const gdprId = store.recordWrite(baseInput({ operation: 'write', source: 'gdpr' }));
+    actAs('Viewer');
+
+    expect(
+      useAuditTrailStore.getState().filterByGdprAccess(useAuditTrailStore.getState().entries)
+    ).toEqual([]);
+    expect(gdprId).toBeTruthy();
+  });
+
+  it('exports omit GDPR-source and cross-referenced entries for Viewer', () => {
+    const store = useAuditTrailStore.getState();
+    store.recordWrite(baseInput({ newValue: 'ordinary-value' }));
+    store.recordWrite(baseInput({ newValue: 'protected-gdpr', source: 'gdpr' }));
+    store.recordWrite(baseInput({ newValue: 'protected-consent', consentId: 'consent-1' }));
+    store.recordWrite(baseInput({ newValue: 'protected-breach', breachEventId: 'breach-1' }));
+    actAs('Viewer');
+
+    const exported = useAuditTrailStore.getState().exportToJSON();
+    const parsed = JSON.parse(exported) as ExtendedAuditEntry[];
+    expect(parsed).toHaveLength(1);
+    expect(exported).toContain('ordinary-value');
+    expect(exported).not.toContain('protected-gdpr');
+    expect(exported).not.toContain('protected-consent');
+    expect(exported).not.toContain('protected-breach');
+    expect(useAuditTrailStore.getState().exportToCSV()).not.toContain('protected-');
   });
 
   it('verifyIntegrity reports missing hash material as tampered', () => {
@@ -255,13 +283,14 @@ describe('auditTrailStore — branch sweep', () => {
     expect(redactPII({ ...redacted, userId: 'no-email' }).userId).toBe('no-email');
   });
 
-  it('GDPR_AUDIT_VIEW_ROLES and the RBAC selector agree', () => {
+  it('GDPR_AUDIT_VIEW_ROLES and the authenticated-role selector agree', () => {
     expect(GDPR_AUDIT_VIEW_ROLES).toContain('admin');
-    for (const role of ['admin', 'compliance', 'data-protection-officer']) {
-      useAuditTrailStore.getState().setCurrentUserRole(role as never);
-      expect(selectCanViewGdprAudit(useAuditTrailStore.getState())).toBe(true);
-    }
-    useAuditTrailStore.getState().setCurrentUserRole('analyst');
+    actAs('Admin');
+    expect(selectCanViewGdprAudit(useAuditTrailStore.getState())).toBe(true);
+
+    // The current User role model has no compliance or DPO roles, so an
+    // Analyst session must not inherit visibility from caller-controlled state.
+    actAs('Analyst');
     expect(selectCanViewGdprAudit(useAuditTrailStore.getState())).toBe(false);
   });
 

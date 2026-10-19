@@ -19,7 +19,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
-import { join, extname, basename } from 'node:path';
+import { dirname, extname, join, resolve } from 'node:path';
+import * as ts from 'typescript';
 import { ROLE_PERMISSIONS, ALL_ROLES } from './authStore';
 import { Permissions } from '@/utils/rbacEnforcer';
 
@@ -195,40 +196,495 @@ describe('F-0026 RBAC matrix completeness', () => {
 // ZERO RBAC checks (contrast periodCloseStore/budgetStore which wrap each
 // mutator in `enforce(permission, 'action', fn)`). Two complementary tiers:
 //
-// Tier A (generic): ANY Zustand store file under src/store that exposes an
-// action whose name matches the mutating-shape regex MUST contain at least
-// one `enforce(` call, unless the file is on the reviewed exception list.
-// A brand-new store shipping unguarded mutators fails this test.
+// Tier A (AST census): discover every Zustand state-returning callback under
+// src/store, identify mutating action-shaped properties, and require each one
+// to have a direct permission guard or an exact action-level exception with a
+// written reason. This is per-action (not per-file), so one guarded action
+// cannot mask another unguarded action in the same store.
 //
-// Tier B (registry): each specific (store file, action, permission) triple
-// below MUST appear in source as `enforce(Permissions.X, 'action', ...`.
-// Silently deleting or weakening one guard fails this test.
+// Tier B (registry): selected high-risk actions must use the exact permission
+// symbol in source. This pins the intended policy, not only guard presence.
 // ---------------------------------------------------------------------------
 
 /** Action names that look like state mutations and therefore require a guard. */
 const MUTATING_ACTION_NAME =
-  /^(set|add|update|remove|delete|create|import|approve|post|lock|close|reopen|rename|move|assign|archive|restore|submit|record|seed|toggle|write|bulk|connect|disconnect|sync|clear)[A-Z0-9_]*$/;
+  /^(set|add|update|remove|delete|create|import|approve|post|lock|close|reopen|rename|move|assign|archive|restore|submit|record|seed|toggle|write|bulk|connect|disconnect|sync|clear|reset|refresh|initialize|select|calculate|generate|switch|login|logout|register|revoke|rotate|upload|request|mark|resolve|cancel|run|apply|rebuild|load|save|transition|execute|complete|reject|revert|undo|redo|check|enter|exit|open|next|prev|attach|detach|flush)[A-Za-z0-9_]*$/;
+
+const STORE_CREATOR_WRAPPERS = new Set([
+  'create',
+  'persist',
+  'immer',
+  'subscribeWithSelector',
+  'devtools',
+  'combine',
+]);
+const RBAC_ACTION_WRAPPERS = new Set(['enforce', 'withRBAC']);
+const RBAC_ASSERTION_CALLS = new Set(['assertPermission', 'assertPermissions']);
+const RBAC_GUARD_EXPORTS = new Set([...RBAC_ACTION_WRAPPERS, ...RBAC_ASSERTION_CALLS]);
+
+function collectImportedRbacGuards(sourceFile: ts.SourceFile): Set<string> {
+  const imported = new Set<string>();
+  for (const statement of sourceFile.statements) {
+    if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier))
+      continue;
+    const modulePath = statement.moduleSpecifier.text;
+    const isCanonicalRbacModule =
+      modulePath === '@/utils/rbacEnforcer' ||
+      (modulePath.startsWith('.') &&
+        resolve(dirname(sourceFile.fileName), modulePath) ===
+          resolve(SRC_ROOT, 'utils/rbacEnforcer'));
+    if (!isCanonicalRbacModule) continue;
+    const bindings = statement.importClause?.namedBindings;
+    if (!bindings || !ts.isNamedImports(bindings)) continue;
+    for (const element of bindings.elements) {
+      const exportedName = element.propertyName?.text ?? element.name.text;
+      if (RBAC_GUARD_EXPORTS.has(exportedName)) imported.add(element.name.text);
+    }
+  }
+  return imported;
+}
+
+interface StoreActionSource {
+  readonly file: string;
+  readonly action: string;
+  readonly line: number;
+  readonly guarded: boolean;
+}
+
+function unwrapParentheses(node: ts.Expression): ts.Expression {
+  let current = node;
+  while (ts.isParenthesizedExpression(current)) current = current.expression;
+  return current;
+}
+
+function expressionName(node: ts.Expression): string | undefined {
+  let current = unwrapParentheses(node);
+  while (ts.isCallExpression(current)) current = unwrapParentheses(current.expression);
+  if (ts.isIdentifier(current)) return current.text;
+  if (ts.isPropertyAccessExpression(current)) return current.name.text;
+  return undefined;
+}
+
+function bindingContainsName(bindingName: ts.BindingName, soughtName: string): boolean {
+  if (ts.isIdentifier(bindingName)) return bindingName.text === soughtName;
+  return bindingName.elements.some((element) => bindingContainsName(element.name, soughtName));
+}
+
+function hasDirectRbacGuard(actionNode: ts.Node, importedGuards: ReadonlySet<string>): boolean {
+  const isImportedActionWrapper = (expression: ts.Expression): boolean => {
+    const name = expressionName(expression);
+    return Boolean(name && importedGuards.has(name) && RBAC_ACTION_WRAPPERS.has(name));
+  };
+  if (ts.isCallExpression(actionNode)) {
+    return isImportedActionWrapper(actionNode.expression);
+  }
+
+  if (
+    !ts.isArrowFunction(actionNode) &&
+    !ts.isFunctionExpression(actionNode) &&
+    !ts.isMethodDeclaration(actionNode)
+  ) {
+    return false;
+  }
+
+  const isImportedAssertion = (expression: ts.Expression): boolean => {
+    const name = expressionName(expression);
+    return Boolean(
+      name &&
+      importedGuards.has(name) &&
+      RBAC_ASSERTION_CALLS.has(name) &&
+      !actionNode.parameters.some((parameter) => bindingContainsName(parameter.name, name))
+    );
+  };
+
+  const body = actionNode.body;
+  if (!body) return false;
+  if (!ts.isBlock(body)) {
+    const root = unwrapParentheses(body);
+    return ts.isCallExpression(root) && isImportedAssertion(root.expression);
+  }
+
+  const firstExecutable = body.statements.find(
+    (statement) =>
+      !ts.isEmptyStatement(statement) &&
+      !(ts.isExpressionStatement(statement) && ts.isStringLiteral(statement.expression))
+  );
+  if (!firstExecutable || !ts.isExpressionStatement(firstExecutable)) return false;
+  const expression = unwrapParentheses(firstExecutable.expression);
+  return ts.isCallExpression(expression) && isImportedAssertion(expression.expression);
+}
+
+function storeObjectFromCallback(
+  callback: ts.ArrowFunction
+): ts.ObjectLiteralExpression | undefined {
+  const body = callback.body;
+  if (!ts.isBlock(body)) {
+    const expressionBody = unwrapParentheses(body);
+    return ts.isObjectLiteralExpression(expressionBody) ? expressionBody : undefined;
+  }
+  for (const statement of body.statements) {
+    if (
+      ts.isReturnStatement(statement) &&
+      statement.expression &&
+      ts.isObjectLiteralExpression(unwrapParentheses(statement.expression))
+    ) {
+      return unwrapParentheses(statement.expression) as ts.ObjectLiteralExpression;
+    }
+  }
+  return undefined;
+}
+
+/** AST inventory of the state-returning callbacks supplied to Zustand creators. */
+function collectMutatingStoreActions(): StoreActionSource[] {
+  const rows: StoreActionSource[] = [];
+  const seenObjects = new Set<ts.ObjectLiteralExpression>();
+
+  for (const file of walkSourceFiles(join(SRC_ROOT, 'store'))) {
+    const source = readFileSync(file, 'utf8');
+    const relativeFile = file.slice(join(SRC_ROOT, 'store').length + 1);
+    const scriptKind = file.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
+    const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, scriptKind);
+    const importedRbacGuards = collectImportedRbacGuards(sourceFile);
+
+    const visit = (node: ts.Node): void => {
+      if (ts.isArrowFunction(node)) {
+        const stateObject = storeObjectFromCallback(node);
+        const callbackCall = node.parent;
+        if (stateObject && ts.isCallExpression(callbackCall)) {
+          const wrapperName = expressionName(callbackCall.expression);
+          let hasCreateAncestor = false;
+          for (
+            let ancestor: ts.Node | undefined = callbackCall;
+            ancestor;
+            ancestor = ancestor.parent
+          ) {
+            if (ts.isCallExpression(ancestor) && expressionName(ancestor.expression) === 'create') {
+              hasCreateAncestor = true;
+              break;
+            }
+          }
+
+          if (
+            hasCreateAncestor &&
+            wrapperName &&
+            STORE_CREATOR_WRAPPERS.has(wrapperName) &&
+            !seenObjects.has(stateObject)
+          ) {
+            seenObjects.add(stateObject);
+            for (const property of stateObject.properties) {
+              let actionName: string | undefined;
+              let actionNode: ts.Node | undefined;
+              if (ts.isPropertyAssignment(property)) {
+                actionName =
+                  ts.isIdentifier(property.name) || ts.isStringLiteral(property.name)
+                    ? property.name.text
+                    : undefined;
+                actionNode = property.initializer;
+              } else if (ts.isMethodDeclaration(property)) {
+                actionName =
+                  ts.isIdentifier(property.name) || ts.isStringLiteral(property.name)
+                    ? property.name.text
+                    : undefined;
+                actionNode = property;
+              }
+              if (!actionName || !actionNode) continue;
+              if (
+                !ts.isArrowFunction(actionNode) &&
+                !ts.isFunctionExpression(actionNode) &&
+                !ts.isMethodDeclaration(actionNode) &&
+                !ts.isCallExpression(actionNode)
+              ) {
+                continue;
+              }
+
+              const guarded = hasDirectRbacGuard(actionNode, importedRbacGuards);
+              let writesStoreState = false;
+              const inspectWrites = (child: ts.Node): void => {
+                if (
+                  ts.isCallExpression(child) &&
+                  ts.isIdentifier(child.expression) &&
+                  child.expression.text === 'set'
+                ) {
+                  writesStoreState = true;
+                }
+                ts.forEachChild(child, inspectWrites);
+              };
+              inspectWrites(actionNode);
+              if (!MUTATING_ACTION_NAME.test(actionName) && !writesStoreState) continue;
+              rows.push({
+                file: relativeFile,
+                action: actionName,
+                line: sourceFile.getLineAndCharacterOfPosition(property.getStart()).line + 1,
+                guarded,
+              });
+            }
+          }
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(sourceFile);
+  }
+  return rows;
+}
+
+/** Find production code that calls Zustand's public setState API on an imported store. */
+function collectExternalStoreSetStateAccesses(): string[] {
+  const writes: string[] = [];
+  const storeRoot = resolve(SRC_ROOT, 'store');
+
+  for (const file of walkSourceFiles(SRC_ROOT)) {
+    const relativeFile = file.slice(SRC_ROOT.length + 1);
+    if (relativeFile.startsWith('test/') || relativeFile.startsWith('__tests__/')) continue;
+
+    const source = readFileSync(file, 'utf8');
+    const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true);
+    const storeBindings = new Set<string>();
+
+    for (const statement of sourceFile.statements) {
+      if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier))
+        continue;
+      const modulePath = statement.moduleSpecifier.text;
+      const resolvedModule = modulePath.startsWith('@/')
+        ? resolve(SRC_ROOT, modulePath.slice(2))
+        : modulePath.startsWith('.')
+          ? resolve(dirname(file), modulePath)
+          : undefined;
+      if (
+        !resolvedModule ||
+        (resolvedModule !== storeRoot && !resolvedModule.startsWith(`${storeRoot}/`))
+      ) {
+        continue;
+      }
+
+      if (statement.importClause?.name) storeBindings.add(statement.importClause.name.text);
+      const bindings = statement.importClause?.namedBindings;
+      if (!bindings) continue;
+      if (ts.isNamespaceImport(bindings)) {
+        storeBindings.add(bindings.name.text);
+      } else {
+        for (const element of bindings.elements) storeBindings.add(element.name.text);
+      }
+    }
+
+    const rootIdentifier = (expression: ts.Expression): ts.Identifier | undefined => {
+      let current = expression;
+      while (ts.isPropertyAccessExpression(current)) current = current.expression;
+      return ts.isIdentifier(current) ? current : undefined;
+    };
+    const visit = (node: ts.Node): void => {
+      if (ts.isPropertyAccessExpression(node) && node.name.text === 'setState') {
+        const receiver = rootIdentifier(node.expression);
+        if (receiver && storeBindings.has(receiver.text)) {
+          writes.push(
+            `${relativeFile}:${sourceFile.getLineAndCharacterOfPosition(node.getStart()).line + 1}`
+          );
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(sourceFile);
+  }
+
+  return writes.sort();
+}
 
 /**
- * Reviewed exceptions to Tier A. Every entry states WHY enforcement does not
- * apply — entries without a real reason are regressions, not exceptions.
+ * Exact action-level exceptions to RBAC enforcement. The AST census below
+ * applies these only to the named store methods; a new method in the same file
+ * is still required to have a guard or an explicit exception.
  */
-const STORE_ENFORCE_EXCEPTIONS: Record<string, string> = {
-  // The permission SOURCE cannot be guarded by permissions (circularity):
-  // login/logout/mfa are the authentication boundary itself.
-  'authStore.ts': 'Authentication boundary — login/logout/MFA issue the credentials RBAC consumes',
-  // Transient (never persisted) DISPLAY context: reporting currency/locale used
-  // by rendering hooks (useCurrencyFormatter) for every role including Viewer.
-  // Holds no financial data; closest catalogue permission ui:update is held by
-  // every role, so a guard would add zero security value while breaking
-  // unauthenticated render paths.
-  'financialContextStore.ts':
-    'Transient display-only context (reporting currency/locale); no persisted or financial data',
-  // Not Zustand stores — helper/class modules that merely live in src/store:
-  'auditTrailGdprEvents.ts': 'GDPR→audit-trail event bridge module, not a store',
-  'periodLockGuard.ts': 'Period-freeze assertion helpers, not a store',
-  'eventLedger.ts': 'Event-sourcing ledger class library, not a store',
-};
+interface UnguardedActionException {
+  readonly file: string;
+  readonly actions: readonly string[];
+  readonly reason: string;
+}
+
+const UNGUARDED_ACTION_EXCEPTIONS: readonly UnguardedActionException[] = [
+  {
+    file: '*',
+    actions: ['setError', 'clearError', 'setLoading'],
+    reason: 'Transient error/loading UI status only; does not mutate business records.',
+  },
+  {
+    file: 'analyticsStore.ts',
+    actions: [
+      'setSelectedChart',
+      'setDateRange',
+      'setSelectedMetrics',
+      'setFilter',
+      'clearFilters',
+      'enterDrillDown',
+      'exitDrillDown',
+    ],
+    reason:
+      'Local analytics-view configuration; data mutation is performed by separately guarded stores.',
+  },
+  {
+    file: 'auditTrailStore.ts',
+    actions: ['recordWrite', 'recordUpdate', 'recordDelete', 'recordRead'],
+    reason:
+      'The in-repository caller is the GDPR event bridge; do not require Admin-only audit:create for lower-role event capture. These public methods trust caller-supplied payloads and do not authenticate the source; the local unkeyed chain is not general audit authority.',
+  },
+  {
+    file: 'auditTrailStore.ts',
+    actions: ['setFilter', 'clearFilters', 'setSort', 'setPage', 'setPageSize', 'selectEntry'],
+    reason: 'Local audit-trail view state only; no audit records are changed.',
+  },
+  {
+    file: 'auditTrailStore.ts',
+    actions: ['refreshEntries'],
+    reason: 'Refreshes only the transient loading indicator; source audit entries are unchanged.',
+  },
+  {
+    file: 'cellLineageStore.ts',
+    actions: ['verifyIntegrity'],
+    reason:
+      'Recomputes derived integrity-valid flags and timestamp only; immutable lineage entries and their hashes are not rewritten.',
+  },
+  {
+    file: 'authStore.ts',
+    actions: [
+      'login',
+      'loginMock',
+      'loginReal',
+      'logout',
+      'restoreCachedSession',
+      'revokeCachedSession',
+      'refreshAccessToken',
+    ],
+    reason:
+      'Authentication/session lifecycle boundary; these establish, refresh, or revoke the identity consumed by RBAC rather than acting under it.',
+  },
+  {
+    file: 'authStore.ts',
+    actions: ['register'],
+    reason:
+      'Unauthenticated registration is a separate identity-establishment boundary, not RBAC-authorized work. No verified backend registration flow exists, so production builds and builds without mock auth reject this local/mock-user path; it is available only in explicitly mock-auth non-production builds.',
+  },
+  {
+    file: 'authStore.ts',
+    actions: ['setUser'],
+    reason:
+      'Compatibility setter is disabled in production builds and has no product call site; in development/test it still derives permissions from role and discards caller-supplied permissions.',
+  },
+  {
+    file: 'authStore.ts',
+    actions: ['switchEntity'],
+    reason:
+      'Auth context selector used by the entity-switching flow; unresolved owner/product decision because the User model does not define the authorized entity set. Entity-scoped authorization must be specified before this action can be guarded safely; do not infer access from the activeEntityId.',
+  },
+  {
+    file: 'budgetStore.ts',
+    actions: ['setActiveBudget'],
+    reason:
+      'Current-budget UI selection only; budget records and line items are changed by guarded actions.',
+  },
+  {
+    file: 'cubeStore.ts',
+    actions: ['initialize'],
+    reason:
+      'System bootstrap registers engine dimensions/cubes; it does not write cube cell values.',
+  },
+  {
+    file: 'cubeStore.ts',
+    actions: ['refreshCounts', 'resetUndoRedo'],
+    reason:
+      'Derived counters and session-local undo/redo bookkeeping only; financial cube writes remain guarded.',
+  },
+  {
+    file: 'dashboardStore.ts',
+    actions: ['setActiveDashboard'],
+    reason:
+      'Current-dashboard UI selection only; dashboard records and widgets are changed by guarded actions.',
+  },
+  {
+    file: 'dataStore.ts',
+    actions: ['setSelectedAccount'],
+    reason: 'Current-account UI selection only; account master data is changed by guarded actions.',
+  },
+  {
+    file: 'driverStore.ts',
+    actions: ['selectDriver'],
+    reason:
+      'Driver selection only; driver records and applied cascades are changed by guarded actions.',
+  },
+  {
+    file: 'driverStore.ts',
+    actions: ['calculateCascade'],
+    reason:
+      'Computes and stores a preview result only; applying the preview to financial cells requires driver:update.',
+  },
+  {
+    file: 'driverStore.ts',
+    actions: ['createSnapshot'],
+    reason:
+      'Creates a read-only engine snapshot for preview/undo; restoring or applying changes is separately guarded.',
+  },
+  {
+    file: 'financialContextStore.ts',
+    actions: ['setContext', 'resetContext'],
+    reason:
+      'Display-only reporting currency/locale context; no persisted or financial data is held here.',
+  },
+  {
+    file: 'glStore.ts',
+    actions: ['generateTrialBalance'],
+    reason:
+      'Derives a read-only trial-balance view from existing ledger entries; it does not create or edit ledger records.',
+  },
+  {
+    file: 'glStore.ts',
+    actions: ['checkDuplicates'],
+    reason:
+      'Read-only duplicate-candidate analysis; it returns findings without changing ledger state.',
+  },
+  {
+    file: 'glStore.ts',
+    actions: ['analyzeAccount'],
+    reason:
+      'Builds the selected account analysis view from existing ledger entries; it writes only derived presentation state, not financial records.',
+  },
+  {
+    file: 'uiStore.ts',
+    actions: [
+      'toggleSidebar',
+      'openMobileSidebar',
+      'closeMobileSidebar',
+      'toggleCommandPalette',
+      'toggleHelpPanel',
+      'setHelpPanelOpen',
+      'removeToast',
+      'setOnline',
+    ],
+    reason:
+      'Transient presentation, notification, or connectivity state only; no business records are changed.',
+  },
+  {
+    file: 'tourStore.ts',
+    actions: ['nextStep', 'prevStep'],
+    reason:
+      'Advances or reverses the currently displayed onboarding step; tour setup/completion uses the guarded UI update actions.',
+  },
+  {
+    file: 'workflowStore.ts',
+    actions: ['refreshState'],
+    reason:
+      'Refreshes workflow-derived state; approval and workflow transitions are guarded separately.',
+  },
+  {
+    file: 'exceptionDispositionStore.ts',
+    actions: ['recordDisposition', 'updateDisposition'],
+    reason:
+      'Delegates disposition changes to the store action that applies exception:disposition; delegated authorization is covered by the permission-denial tests.',
+  },
+];
+
+function unguardedActionReason(file: string, action: string): string | undefined {
+  return UNGUARDED_ACTION_EXCEPTIONS.find(
+    (entry) => (entry.file === file || entry.file === '*') && entry.actions.includes(action)
+  )?.reason;
+}
 
 interface GuardedAction {
   /** Store file under src/store. */
@@ -246,16 +702,14 @@ interface GuardedAction {
  * - dataStore.setSelectedAccount / dashboardStore.setActiveDashboard /
  *   auditTrail filters/sort/page/selectEntry: selection & view state.
  * - *Store.setError/clearError/setLoading: transient flags.
- * - auditTrailStore.record{Write,Update,Delete,Read,Bulk}: append-only
- *   instrumentation invoked cross-store by the GDPR bridge
- *   (auditTrailGdprEvents.recordGdprEntry) on behalf of ANY acting user;
- *   gating with Admin-only audit:create would break non-admin event capture,
- *   and tampering is already blocked by revertToState's role gate + F-0015
- *   hash chain verification.
- * - auditTrailStore.revertToState: pre-existing internal AuditRole gate
- *   (admin/compliance/DPO), production caller AuditRow.tsx.
- * - auditTrailStore.setCurrentUserRole: ephemeral view-filter role (excluded
- *   from persistence via partialize).
+ * - auditTrailStore.record{Write,Update,Delete,Read}: append-only calls
+ *   currently originate in the GDPR event bridge; requiring Admin-only
+ *   audit:create would drop lower-role event capture. These public methods
+ *   trust caller payloads and do not authenticate source; the client chain is
+ *   not general audit authority. recordBulk is guarded with audit:create.
+ * - auditTrailStore.revertToState is registered below with audit:delete.
+ * - Audit-trail filtering/pagination state is ephemeral view state; GDPR
+ *   visibility derives from the authenticated session, never a mutable role.
  * - cubeStore.initialize: engine bootstrap (system dimensions/cubes);
  *   cubeStore.refreshCounts/resetUndoRedo: derived counters & session-local
  *   undo stacks.
@@ -263,6 +717,40 @@ interface GuardedAction {
  *   writes only derived status flags.
  */
 const GUARDED_ACTIONS: GuardedAction[] = [
+  // periodCloseStore — fiscal calendar initialization is a period-close write
+  { file: 'periodCloseStore.ts', action: 'initialize', permission: 'PERIOD_CLOSE' },
+  // workflowStore — timeout escalation advances approval requests
+  { file: 'workflowStore.ts', action: 'checkEscalations', permission: 'WORKFLOW_UPDATE' },
+  // budgetStore — direct financial-data mutation paths
+  { file: 'budgetStore.ts', action: 'setBudgets', permission: 'BUDGET_UPDATE' },
+  { file: 'budgetStore.ts', action: 'setLineItems', permission: 'BUDGET_UPDATE' },
+  { file: 'budgetStore.ts', action: 'updateLineItem', permission: 'BUDGET_UPDATE' },
+  { file: 'budgetStore.ts', action: 'undo', permission: 'BUDGET_UPDATE' },
+  { file: 'budgetStore.ts', action: 'redo', permission: 'BUDGET_UPDATE' },
+  { file: 'budgetStore.ts', action: 'duplicateBudget', permission: 'BUDGET_CREATE' },
+  { file: 'budgetStore.ts', action: 'unlockBudget', permission: 'BUDGET_UPDATE' },
+  { file: 'documentStore.ts', action: 'tagDocument', permission: 'IMPORT_UPDATE' },
+  { file: 'documentStore.ts', action: 'linkDocumentToEntity', permission: 'IMPORT_UPDATE' },
+  { file: 'driverStore.ts', action: 'batchUpdate', permission: 'DRIVER_UPDATE' },
+  { file: 'glStore.ts', action: 'commitDraftsToServer', permission: 'IMPORT_CREATE' },
+  { file: 'glStore.ts', action: 'hydrateCommittedFromServer', permission: 'IMPORT_CREATE' },
+  { file: 'glStore.ts', action: 'filterByDate', permission: 'UI_UPDATE' },
+  { file: 'glStore.ts', action: 'filterByAccount', permission: 'UI_UPDATE' },
+  { file: 'integrationStore.ts', action: 'test', permission: 'IMPORT_UPDATE' },
+  { file: 'scenarioStore.ts', action: 'unlockScenario', permission: 'SCENARIO_LOCK' },
+  { file: 'scenarioStore.ts', action: 'mergeScenarios', permission: 'SCENARIO_CREATE' },
+  { file: 'tourStore.ts', action: 'startTour', permission: 'UI_UPDATE' },
+  { file: 'tourStore.ts', action: 'stopTour', permission: 'UI_UPDATE' },
+  { file: 'workflowStore.ts', action: 'delegateRequest', permission: 'WORKFLOW_UPDATE' },
+  // collaborationStore — bulk setters must match the guarded single-record actions
+  { file: 'collaborationStore.ts', action: 'setComments', permission: 'COLLAB_UPDATE' },
+  { file: 'collaborationStore.ts', action: 'setTasks', permission: 'COLLAB_UPDATE' },
+  { file: 'collaborationStore.ts', action: 'setApprovals', permission: 'WORKFLOW_APPROVE' },
+  { file: 'collaborationStore.ts', action: 'setActivityLog', permission: 'COLLAB_UPDATE' },
+  // esgStore — clearing all records is the delete operation
+  { file: 'esgStore.ts', action: 'clearAll', permission: 'ANALYTICS_DELETE' },
+  // fxRateStore — exchange rates are forecast inputs
+  { file: 'fxRateStore.ts', action: 'deleteRate', permission: 'FORECAST_DELETE' },
   // dataStore — GL accounts & import jobs
   { file: 'dataStore.ts', action: 'setAccounts', permission: 'IMPORT_UPDATE' },
   { file: 'dataStore.ts', action: 'addAccount', permission: 'IMPORT_CREATE' },
@@ -280,8 +768,10 @@ const GUARDED_ACTIONS: GuardedAction[] = [
   { file: 'settingsStore.ts', action: 'setRoles', permission: 'USER_ASSIGN_ROLE' },
   { file: 'settingsStore.ts', action: 'updateRolePermissions', permission: 'USER_ASSIGN_ROLE' },
   { file: 'settingsStore.ts', action: 'updatePreferences', permission: 'UI_UPDATE' },
-  // auditTrailStore — demo seeding pollutes the persisted hash chain
+  // auditTrailStore — demo seed, bulk append and revert mutate the persisted hash chain
   { file: 'auditTrailStore.ts', action: 'seedDemoData', permission: 'AUDIT_CREATE' },
+  { file: 'auditTrailStore.ts', action: 'recordBulk', permission: 'AUDIT_CREATE' },
+  { file: 'auditTrailStore.ts', action: 'revertToState', permission: 'AUDIT_DELETE' },
   // cellLineageStore — immutable provenance chain appends
   { file: 'cellLineageStore.ts', action: 'recordChange', permission: 'AUDIT_CREATE' },
   // cubeStore — OLAP cube writes
@@ -348,30 +838,148 @@ const GUARDED_ACTIONS: GuardedAction[] = [
   { file: 'workforceStore.ts', action: 'clearAll', permission: 'ENTITY_DELETE' },
 ];
 
-describe('W6-P0-14 store RBAC guards', () => {
-  it('Tier A: every store exposing mutating actions contains an enforce() call', () => {
-    const offenders: string[] = [];
-    for (const file of walkSourceFiles(join(SRC_ROOT, 'store'))) {
-      const rel = file.slice(SRC_ROOT.length + 1);
-      const name = basename(file);
-      if (name in STORE_ENFORCE_EXCEPTIONS) {
-        continue; // reviewed exception — reason recorded in the allowlist
-      }
-      const source = readFileSync(file, 'utf8');
-      if (source.includes('enforce(')) continue;
-      // Store-level action declarations appear as `    actionName: (` / `: async (` /
-      // `: () =>` inside the create() body (2+ spaces of indent). Interface type
-      // rows share the shape, which is fine: they mirror the same API surface.
-      const exposesMutatingAction = [...source.matchAll(/(?:^|\n)\s{2,}(\w+)\s*:/g)].some((m) =>
-        MUTATING_ACTION_NAME.test(m[1]!)
-      );
-      if (!exposesMutatingAction) continue;
-      offenders.push(`${rel}: no enforce() call found`);
-    }
+describe('W6-P0-14 AST guard classification', () => {
+  function parseAction(expression: string, includeRbacImport = true) {
+    const importLine = includeRbacImport
+      ? "import { enforce, assertPermission } from '@/utils/rbacEnforcer';\n"
+      : '';
+    const sourceFile = ts.createSourceFile(
+      'rbac-guard-fixture.ts',
+      `${importLine}const action = ${expression};`,
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TS
+    );
+    const declarationStatement = sourceFile.statements.find(ts.isVariableStatement);
+    const declaration = declarationStatement?.declarationList.declarations[0];
+    return {
+      action: declaration!.initializer!,
+      importedGuards: collectImportedRbacGuards(sourceFile),
+    };
+  }
+
+  function isGuarded(expression: string, includeRbacImport = true): boolean {
+    const parsed = parseAction(expression, includeRbacImport);
+    return hasDirectRbacGuard(parsed.action, parsed.importedGuards);
+  }
+
+  it('recognizes imported direct wrappers and first-statement permission assertions', () => {
+    expect(isGuarded("enforce('audit:create', 'write', () => {})")).toBe(true);
     expect(
-      offenders,
-      `Stores exposing mutating actions without any RBAC enforce() call:\n${offenders.join('\n')}`
+      isGuarded("() => { assertPermission('audit:create', 'write'); set({ value: 1 }); }")
+    ).toBe(true);
+  });
+
+  it('does not count nested, unused, or unimported lookalike checks as a guard', () => {
+    expect(
+      isGuarded(
+        "() => { if (ready) enforce('audit:create', 'write', () => {}); set({ value: 1 }); }"
+      )
+    ).toBe(false);
+    expect(
+      isGuarded(
+        "() => { const unused = enforce('audit:create', 'write', () => {}); set({ value: 1 }); }"
+      )
+    ).toBe(false);
+    expect(
+      isGuarded("() => { enforce('audit:create', 'write', () => {}); set({ value: 1 }); }")
+    ).toBe(false);
+    expect(isGuarded("enforce('audit:create', 'write', () => {})", false)).toBe(false);
+    expect(
+      isGuarded("() => { assertPermission('audit:create', 'write'); set({ value: 1 }); }", false)
+    ).toBe(false);
+    expect(
+      isGuarded(
+        "(assertPermission) => { assertPermission('audit:create', 'write'); set({ value: 1 }); }"
+      )
+    ).toBe(false);
+  });
+});
+
+describe('W6-P0-14 store RBAC guards', () => {
+  it('prevents production callers from bypassing store actions with Zustand setState', () => {
+    const bypasses = collectExternalStoreSetStateAccesses();
+    expect(
+      bypasses,
+      `Use store actions rather than public Zustand setState outside test helpers:\n${bypasses.join('\n')}`
     ).toEqual([]);
+  });
+
+  it('Tier A: every AST-discovered mutating store action is guarded or explicitly justified', () => {
+    const actions = collectMutatingStoreActions();
+    expect(
+      actions.length,
+      'AST census should discover a substantial action surface'
+    ).toBeGreaterThan(350);
+    const discoveredFiles = new Set(actions.map((entry) => entry.file));
+    const storeCreatorFiles = walkSourceFiles(join(SRC_ROOT, 'store')).filter((file) => {
+      const source = readFileSync(file, 'utf8');
+      return (
+        /from\s*['"]zustand['"]/.test(source) &&
+        /\bcreate(?:Store|WithEqualityFn)?\s*[<(]/.test(source)
+      );
+    });
+    const unscannedCreators = storeCreatorFiles
+      .map((file) => file.slice(join(SRC_ROOT, 'store').length + 1))
+      .filter((file) => !discoveredFiles.has(file));
+    expect(
+      storeCreatorFiles.length,
+      'creator census should match the repository store surface'
+    ).toBeGreaterThan(40);
+    expect(
+      unscannedCreators,
+      `Zustand creator files missing from the AST inventory:\\n${unscannedCreators.join('\\n')}`
+    ).toEqual([]);
+
+    const unexplained = actions
+      .filter((entry) => !entry.guarded)
+      .filter((entry) => !unguardedActionReason(entry.file, entry.action))
+      .map((entry) => `${entry.file}:${entry.line} ${entry.action} (no guard or exception reason)`)
+      .sort();
+    expect(
+      unexplained,
+      `Mutating store actions need a direct RBAC guard or an exact, reasoned exception:\n${unexplained.join('\n')}`
+    ).toEqual([]);
+
+    const pinnedInventory = actions
+      .map((entry) => {
+        const disposition = entry.guarded
+          ? 'GUARDED'
+          : `EXCEPTION: ${unguardedActionReason(entry.file, entry.action)}`;
+        return `${entry.file}.${entry.action} — ${disposition}`;
+      })
+      .sort();
+    expect(pinnedInventory).toMatchSnapshot('store mutator authorization inventory');
+
+    const unusedExceptions = UNGUARDED_ACTION_EXCEPTIONS.flatMap((entry) =>
+      entry.actions
+        .filter(
+          (action) =>
+            !actions.some(
+              (candidate) =>
+                !candidate.guarded &&
+                candidate.action === action &&
+                (entry.file === '*' || candidate.file === entry.file)
+            )
+        )
+        .map((action) => `${entry.file}.${action} (no unguarded AST action found)`)
+    );
+    expect(
+      unusedExceptions,
+      `Remove stale unguarded-action exceptions or update the AST census:\n${unusedExceptions.join('\n')}`
+    ).toEqual([]);
+
+    const exceptionKeys = UNGUARDED_ACTION_EXCEPTIONS.flatMap((entry) =>
+      entry.actions.map((action) => `${entry.file}.${action}`)
+    );
+    const duplicateExceptions = [...new Set(exceptionKeys)].filter(
+      (key) => exceptionKeys.filter((candidate) => candidate === key).length > 1
+    );
+    expect(duplicateExceptions, 'Each unguarded action should have one review reason').toEqual([]);
+    const emptyReasons = UNGUARDED_ACTION_EXCEPTIONS.filter(
+      (entry) => entry.reason.trim().length < 30
+    ).map((entry) => entry.file);
+    expect(emptyReasons, 'Every unguarded-action exception needs a substantive reason').toEqual([]);
   });
 
   it('Tier B: every registered mutating action is wrapped with its permission', () => {

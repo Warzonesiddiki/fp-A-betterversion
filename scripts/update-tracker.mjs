@@ -86,10 +86,17 @@ function main() {
   const components = countFiles(join(ROOT, 'src/components'), '.tsx');
   const engines = countFiles(join(ROOT, 'src/engines'), '.ts');
   const stores = countFiles(join(ROOT, 'src/store'), '.ts');
-  const testFiles = countTestFiles(join(ROOT, 'src'), '.test.ts') + countTestFiles(join(ROOT, 'src'), '.test.tsx');
-  const moneyTests = countTestFiles(join(ROOT, 'src'), 'money.test.ts') + countTestFiles(join(ROOT, 'src'), 'money.test.tsx');
-  const pagesTest = countTestFiles(join(ROOT, 'src/pages'), '.test.tsx') + countTestFiles(join(ROOT, 'src/pages'), '.test.ts');
-  const componentsTest = countTestFiles(join(ROOT, 'src/components'), '.test.tsx') + countTestFiles(join(ROOT, 'src/components'), '.test.ts');
+  const testFiles =
+    countTestFiles(join(ROOT, 'src'), '.test.ts') + countTestFiles(join(ROOT, 'src'), '.test.tsx');
+  const moneyTests =
+    countTestFiles(join(ROOT, 'src'), 'money.test.ts') +
+    countTestFiles(join(ROOT, 'src'), 'money.test.tsx');
+  const pagesTest =
+    countTestFiles(join(ROOT, 'src/pages'), '.test.tsx') +
+    countTestFiles(join(ROOT, 'src/pages'), '.test.ts');
+  const componentsTest =
+    countTestFiles(join(ROOT, 'src/components'), '.test.tsx') +
+    countTestFiles(join(ROOT, 'src/components'), '.test.ts');
 
   // Format timestamp
   const now = new Date().toISOString().replace('T', ' ').slice(0, 16);
@@ -120,14 +127,32 @@ function main() {
   // Inject values into the HTML using regex-based replacement
   // (the HTML has static values, we replace them).
   const replacements = [
-    { from: /"stat-value">\d+<span class="stat-delta">\/ \d+<\/span>/, to: `"stat-value">${metrics.modulesUsingMoney}<span class="stat-delta">/ ${metrics.financialModules}</span>` },
-    { from: /"stat-value" style="color: var\(--green-ink\)">\d+<\/div>\s*<div class="stat-sub">Zero float-money sites/, to: `"stat-value" style="color: var(--green-ink)">${metrics.rawToFixed}</div>\n      <div class="stat-sub">Zero float-money sites` },
-    { from: /"stat-value">\d[\d,]*<span class="stat-delta amber">[+-]\d+ this wave<\/span>/, to: `"stat-value">${metrics.testFiles.toLocaleString()}<span class="stat-delta amber">+${metrics.moneyTests - 9} this wave</span>` },
+    {
+      from: /"stat-value">\d+<span class="stat-delta">\/ \d+<\/span>/,
+      to: `"stat-value">${metrics.modulesUsingMoney}<span class="stat-delta">/ ${metrics.financialModules}</span>`,
+    },
+    {
+      from: /"stat-value" style="color: var\(--green-ink\)">\d+<\/div>\s*<div class="stat-sub">Zero float-money sites/,
+      to: `"stat-value" style="color: var(--green-ink)">${metrics.rawToFixed}</div>\n      <div class="stat-sub">Zero float-money sites`,
+    },
+    {
+      from: /"stat-value">\d[\d,]*<span class="stat-delta amber">[+-]\d+ this wave<\/span>/,
+      to: `"stat-value">${metrics.testFiles.toLocaleString()}<span class="stat-delta amber">+${metrics.moneyTests - 9} this wave</span>`,
+    },
     // The stat-sub pattern consumes the WHOLE sub-div so stale appended
     // segments from older corrupt runs cannot accumulate again.
-    { from: /"stat-value">\d[\d,]*<\/div>\s*<div class="stat-sub">[^<]*<\/div>/, to: `"stat-value">${metrics.srcFiles.toLocaleString()}</div>\n      <div class="stat-sub">${metrics.components} components + ${metrics.engines} engines + ${metrics.stores} stores + ${metrics.pages} pages</div>` },
-    { from: /<code>[a-f0-9]{7}<\/code>/, to: `<code>${git.head.split(' ')[0]}</code>` },
-    { from: /Last updated: <code>[^<]*<\/code>/, to: `Last updated: <code>${now} UTC</code>` },
+    {
+      from: /"stat-value">\d[\d,]*<\/div>\s*<div class="stat-sub">[^<]*<\/div>/,
+      to: `"stat-value">${metrics.srcFiles.toLocaleString()}</div>\n      <div class="stat-sub">${metrics.components} components + ${metrics.engines} engines + ${metrics.stores} stores + ${metrics.pages} pages</div>`,
+    },
+    {
+      from: /<span class="badge-info">Branch: [^<]*<\/span>/,
+      to: `<span class="badge-info">Branch: ${git.branch}</span>`,
+    },
+    {
+      from: /Last updated: <code>[^<]*<\/code> · Branch: <code>[^<]*<\/code> · Commit: <code>[^<]*<\/code>/,
+      to: `Last updated: <code>${now} UTC</code> · Branch: <code>${git.branch}</code> · Commit: <code>${git.head.split(' ')[0]}</code>`,
+    },
   ];
 
   let updated = 0;
@@ -142,8 +167,12 @@ function main() {
 
   writeFileSync(TRACKER_PATH, html, 'utf8');
   console.log(`✓ Updated PROGRESS_TRACKER.html (${updated} replacements)`);
-  console.log(`  ${metrics.modulesUsingMoney}/${metrics.financialModules} modules on money primitive (${metrics.adoption}%)`);
-  console.log(`  ${metrics.rawToFixed} raw toFixed sites, ${metrics.testFiles} test files, ${metrics.srcFiles} source files`);
+  console.log(
+    `  ${metrics.modulesUsingMoney}/${metrics.financialModules} modules on money primitive (${metrics.adoption}%)`
+  );
+  console.log(
+    `  ${metrics.rawToFixed} raw toFixed sites, ${metrics.testFiles} test files, ${metrics.srcFiles} source files`
+  );
   console.log(`  Branch: ${git.branch}, head: ${git.head.split(' ')[0]}`);
 }
 

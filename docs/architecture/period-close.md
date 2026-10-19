@@ -2,10 +2,10 @@
 
 ## Overview
 
-FinPlan Pro implements SOX-compliant period locking via `PeriodCloseEngine`.
+FinPlan Pro has a local period-close state machine and workflow. This is not a SOX-compliance claim: owner O4 blocks SOX audit authority, and DEC-008 write-guard coverage remains partial.
 
 ## Key Controls
 
-- **Period Locks**: Prevents back-posting or mutations to closed fiscal periods in GL entries, budgets, forecasts, and actuals.
+- **Period Locks**: The client state machine locks a period and the current transition tests cover budget-line-item/scenario propagation. DEC-008 still requires guards on every write surface; do not infer GL, forecast, undo/redo, and all actuals are covered.
 - **Workflow & Dependencies**: Task dependency graph validation ensures all closing checklist items (reconciliations, adjustments, approvals) are completed before period closure.
-- **Audit & Reopen**: Reopening a closed period requires administrative permission, a mandatory justification reason, and triggers an immutable audit log entry.
+- **Close-event history & Reopen**: Reopen transitions require authorization and a meaningful reason, and append to a per-period close-event sequence. Its unkeyed SHA-256 consistency check preserves stored append order and verifies each period separately; it has no external anchor and is not tamper-proof against a full rewrite. This domain journal is separate from `auditTrailStore` and is not SOX evidence.

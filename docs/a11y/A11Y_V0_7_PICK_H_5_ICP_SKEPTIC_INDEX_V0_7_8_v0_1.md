@@ -10,6 +10,8 @@
 **RULE #56 60s PICK-CHAIN:** GREEN (60s SLA HELD per LEADER TURN 142+ directive)
 **RULE #47 6-WAY:** GREEN (no CAVEMAN PERSIST spam per TURN 129+ LEADER directive "NO STATUS BROADCASTS")
 
+> **Current-state correction (2026-10-19):** This dated document is retained as planning provenance. Its PATCH 12 `AuditLogger` integration references describe design assumptions and are not verified product wiring; no production `AuditLogger` caller or persistence adapter was found. See `../architecture/AUDIT_CHAIN_REACHABILITY.md`.
+
 ---
 
 ## §1. PURPOSE & CONTEXT

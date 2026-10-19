@@ -13,6 +13,7 @@ import { usePeriodCloseStore } from './periodCloseStore';
 import { useBudgetStore } from './budgetStore';
 import { useScenarioStore } from './scenarioStore';
 import { actAs, actAsRoleWithout } from '@/test/rbacFixtures';
+import { resetClock, setClock } from '@/utils/clock';
 import type { FiscalPeriod, Budget, BudgetLineItem, Scenario } from '@/types';
 
 function makePeriods(): FiscalPeriod[] {
@@ -189,6 +190,46 @@ describe('periodCloseStore', () => {
     const broken = await usePeriodCloseStore.getState().verifyChain('P01');
     expect(broken.ok).toBe(false);
     expect(broken.reason).toBe('BROKEN_HASH_MISMATCH');
+  });
+
+  it('rejects reordered persisted entries instead of sorting away the append order', async () => {
+    let timestamp = Date.parse('2026-01-01T00:00:00.000Z');
+    setClock(() => new Date(timestamp));
+    try {
+      const store = usePeriodCloseStore.getState();
+      await store.transition('P01', 'soft-close', 'close');
+      timestamp += 1_000;
+      await store.transition('P01', 'hard-close', 'close', balancedTrialBalance());
+      expect((await usePeriodCloseStore.getState().verifyChain('P01')).ok).toBe(true);
+
+      usePeriodCloseStore.setState((state) => ({ chain: [...state.chain].reverse() }));
+      const reordered = await usePeriodCloseStore.getState().verifyChain('P01');
+      expect(reordered.ok).toBe(false);
+      expect(reordered.reason).toBe('BROKEN_PREV_HASH');
+    } finally {
+      resetClock();
+    }
+  });
+
+  it('verifies each period chain independently when checking all close events', async () => {
+    let timestamp = Date.parse('2026-01-01T00:00:00.000Z');
+    setClock(() => new Date(timestamp));
+    try {
+      const store = usePeriodCloseStore.getState();
+      await store.transition('P01', 'soft-close', 'close P01');
+      timestamp += 1_000;
+      await store.transition('P02', 'soft-close', 'close P02');
+      timestamp += 1_000;
+      await store.transition('P01', 'hard-close', 'finish P01', balancedTrialBalance());
+      timestamp += 1_000;
+      await store.transition('P02', 'hard-close', 'finish P02', balancedTrialBalance());
+
+      const result = await usePeriodCloseStore.getState().verifyChain();
+      expect(result.ok).toBe(true);
+      expect(result.totalEntries).toBe(4);
+    } finally {
+      resetClock();
+    }
   });
 
   it('updateTaskStatus + assignTask update the checklist (assignApprover marks in-progress)', () => {

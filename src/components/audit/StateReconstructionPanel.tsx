@@ -76,7 +76,7 @@ export function StateReconstructionPanel() {
             {result?.ok && (
               <div className="space-y-2">
                 <p className="flex items-center gap-2 text-sm">
-                  <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                  <ShieldCheck className="h-4 w-4" style={{ color: 'var(--text-positive)' }} />
                   Chain verified · {result.cells.size} cell(s) rebuilt · {result.applied}{' '}
                   state-changing entr{result.applied === 1 ? 'y' : 'ies'} applied
                   {result.asOf !== null && ` · as of ${new Date(result.asOf).toLocaleString()}`}

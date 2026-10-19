@@ -1,22 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { act, render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 import i18next from 'i18next';
-
-const mockAuditEngine = vi.hoisted(() => ({
-  getAllEntries: vi.fn(),
-}));
-
-vi.mock('@/engines/CellAuditTrailEngine', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/engines/CellAuditTrailEngine')>();
-  return {
-    ...actual,
-    CellAuditTrailEngine: class {
-      getAllEntries = mockAuditEngine.getAllEntries;
-    },
-  };
-});
 
 vi.mock('@/store/auditTrailStore', async () => {
   const actual =
@@ -41,15 +27,14 @@ import {
 import type {
   ExtendedAuditEntry as StoreAuditEntry,
   AuditFilters as AuditFiltersState,
-  AuditRole,
 } from '@/store/auditTrailStore';
-import type { ExtendedAuditEntry as EngineAuditEntry } from '@/engines/CellAuditTrailEngine';
 import AuditTrailPage from '@/pages/audit/AuditTrailPage';
 import { AuditFilters } from '@/components/audit/AuditFilters';
 import { AuditRow } from '@/components/audit/AuditRow';
 import { AuditDiff } from '@/components/audit/AuditDiff';
 import { AuditCompliancePanel } from '@/components/audit/AuditCompliancePanel';
 import { AuditExportButton } from '@/components/audit/AuditExportButton';
+import { actAs, signOut } from '@/test/rbacFixtures';
 
 const baseCell = {
   sectorId: 'retail',
@@ -101,18 +86,18 @@ const mockEntries: StoreAuditEntry[] = [
   },
 ];
 
-const pageEntries: EngineAuditEntry[] = [
+const pageStoreEntries: StoreAuditEntry[] = [
   {
+    ...mockEntries[0]!,
     id: 'audit-1',
-    cellId: 'retail/base/q1/revenue',
+    cellId: { ...baseCell, lineItemId: 'revenue' },
     accountId: '4000',
     accountName: 'Revenue',
-    month: 1,
-    oldValue: 1000,
+    previousValue: 1000,
     newValue: 1500,
     userId: 'u-alice',
     userName: 'Alice Analyst',
-    timestamp: '2026-07-27T06:00:00.000Z',
+    timestamp: new Date('2026-07-27T06:00:00.000Z').getTime(),
     reason: 'Monthly close adjustment',
     operation: 'update',
     dataType: 'number',
@@ -122,16 +107,15 @@ const pageEntries: EngineAuditEntry[] = [
     metadata: { importId: 'imp-1' },
   },
   {
+    ...mockEntries[1]!,
     id: 'audit-2',
-    cellId: 'retail/base/q1/cash',
+    cellId: { ...baseCell, lineItemId: 'cash' },
     accountId: '1000',
     accountName: 'Cash',
-    month: 1,
-    oldValue: null,
     newValue: 500,
     userId: 'u-bob',
     userName: 'Bob Builder',
-    timestamp: '2026-07-26T06:00:00.000Z',
+    timestamp: new Date('2026-07-26T06:00:00.000Z').getTime(),
     reason: 'Imported from GL',
     operation: 'write',
     dataType: 'number',
@@ -147,7 +131,6 @@ const createMockStoreState = (
     currentPage: number;
     pageSize: 25 | 50 | 100 | 500;
     selectedEntryId: string | null;
-    currentUserRole: AuditRole;
   }> = {}
 ) => {
   const state = {
@@ -173,7 +156,6 @@ const createMockStoreState = (
     sortDir: 'desc' as const,
     selectedEntryId: overrides.selectedEntryId ?? null,
     loading: false,
-    currentUserRole: overrides.currentUserRole ?? 'viewer',
     seedDemoData: vi.fn(),
     recordWrite: vi.fn(() => 'new-id'),
     recordUpdate: vi.fn(() => 'new-id'),
@@ -189,7 +171,6 @@ const createMockStoreState = (
     refreshEntries: vi.fn(),
     exportToCSV: vi.fn(() => ''),
     exportToJSON: vi.fn(() => ''),
-    setCurrentUserRole: vi.fn(),
   };
   return state;
 };
@@ -205,6 +186,8 @@ const mockUseAuditTrailStore = (state: MockAuditStoreState) => {
   );
 };
 
+beforeEach(() => signOut());
+
 const renderWithProviders = (ui: React.ReactElement) =>
   render(
     <BrowserRouter>
@@ -214,22 +197,45 @@ const renderWithProviders = (ui: React.ReactElement) =>
 
 describe('AuditTrailPage', () => {
   beforeEach(() => {
+    actAs('Admin');
     vi.clearAllMocks();
     mockCreateObjectURL.mockClear();
     mockRevokeObjectURL.mockClear();
-    mockAuditEngine.getAllEntries.mockReturnValue(pageEntries);
-    // Set up store mock with admin role so the GDPR gate passes
-    const adminState = createMockStoreState({ currentUserRole: 'admin' });
+    // The page now consumes the persisted chain; this fixture uses that store's schema.
+    const adminState = createMockStoreState({ entries: pageStoreEntries });
     mockUseAuditTrailStore(adminState);
   });
 
-  it('renders audit entries from the page audit engine', () => {
+  it('renders persisted audit entries through the page compatibility adapter', () => {
     renderWithProviders(<AuditTrailPage />);
 
     expect(screen.getByRole('heading', { name: /audit trail/i })).toBeInTheDocument();
     expect(screen.getByText(/Alice Analyst/i)).toBeInTheDocument();
     expect(screen.getByText(/Bob Builder/i)).toBeInTheDocument();
+    expect(screen.getByText('Revenue')).toBeInTheDocument();
+    expect(screen.getByText('Cash')).toBeInTheDocument();
     expect(screen.getByText(/2 of 2 entries shown/i)).toBeInTheDocument();
+  });
+
+  it('revokes mounted page access immediately when the authenticated session ends', () => {
+    renderWithProviders(<AuditTrailPage />);
+    expect(screen.getByRole('heading', { name: /audit trail/i })).toBeInTheDocument();
+
+    act(() => signOut());
+
+    expect(screen.getByRole('heading', { name: /access denied/i })).toBeInTheDocument();
+    expect(screen.queryByText(/Alice Analyst/i)).not.toBeInTheDocument();
+  });
+
+  it('states the actual recorder boundary when the persisted trail is empty', () => {
+    mockUseAuditTrailStore(createMockStoreState({ entries: [] }));
+
+    renderWithProviders(<AuditTrailPage />);
+
+    expect(screen.getByRole('heading', { name: /no audit entries/i })).toBeInTheDocument();
+    expect(
+      screen.getByText(/general budget, forecast, and GL edits are not yet wired/i)
+    ).toBeInTheDocument();
   });
 
   it('filters page entries by operation and search text', () => {
@@ -261,7 +267,8 @@ describe('AuditFilters RBAC gating', () => {
   });
 
   it('viewer role does NOT see "gdpr" source option', () => {
-    mockUseAuditTrailStore(createMockStoreState({ currentUserRole: 'viewer' }));
+    actAs('Viewer');
+    mockUseAuditTrailStore(createMockStoreState());
 
     renderWithProviders(<AuditFilters />);
     const sourceSelect = screen.getByLabelText(/source/i) as HTMLSelectElement;
@@ -269,10 +276,16 @@ describe('AuditFilters RBAC gating', () => {
     expect(optionTexts).not.toContain('gdpr');
     expect(optionTexts).toContain('manual');
     expect(optionTexts).toContain('automation');
+
+    const userSelect = screen.getByLabelText(/filter by user/i) as HTMLSelectElement;
+    expect(Array.from(userSelect.options).map((option) => option.textContent)).not.toContain(
+      'dave@finplan.io'
+    );
   });
 
   it('admin role DOES see "gdpr" source option', () => {
-    mockUseAuditTrailStore(createMockStoreState({ currentUserRole: 'admin' }));
+    actAs('Admin');
+    mockUseAuditTrailStore(createMockStoreState());
 
     renderWithProviders(<AuditFilters />);
     const sourceSelect = screen.getByLabelText(/source/i) as HTMLSelectElement;
@@ -280,31 +293,43 @@ describe('AuditFilters RBAC gating', () => {
     expect(optionTexts).toContain('gdpr');
   });
 
+  it('revokes the GDPR source option immediately when the authenticated session ends', () => {
+    actAs('Admin');
+    mockUseAuditTrailStore(createMockStoreState());
+    renderWithProviders(<AuditFilters />);
+
+    const sourceSelect = screen.getByLabelText(/source/i) as HTMLSelectElement;
+    expect(Array.from(sourceSelect.options).map((option) => option.textContent)).toContain('gdpr');
+
+    act(() => signOut());
+
+    expect(Array.from(sourceSelect.options).map((option) => option.textContent)).not.toContain(
+      'gdpr'
+    );
+  });
+
   it('viewer role does NOT see "Has GDPR consent" checkbox', () => {
-    mockUseAuditTrailStore(createMockStoreState({ currentUserRole: 'viewer' }));
+    actAs('Viewer');
+    mockUseAuditTrailStore(createMockStoreState());
 
     renderWithProviders(<AuditFilters />);
     expect(screen.queryByLabelText(/has gdpr consent/i)).not.toBeInTheDocument();
   });
 
-  it('compliance role DOES see "Has GDPR consent" checkbox', () => {
-    mockUseAuditTrailStore(createMockStoreState({ currentUserRole: 'compliance' }));
+  it('admin role DOES see "Has GDPR consent" checkbox', () => {
+    actAs('Admin');
+    mockUseAuditTrailStore(createMockStoreState());
 
     renderWithProviders(<AuditFilters />);
     expect(screen.getByLabelText(/has gdpr consent/i)).toBeInTheDocument();
   });
 
-  it('selectCanViewGdprAudit selector returns correct boolean for each role', () => {
-    const allowedRoles: AuditRole[] = ['admin', 'compliance', 'data-protection-officer'];
-    const deniedRoles: AuditRole[] = ['auditor', 'manager', 'analyst', 'viewer'];
-
-    for (const role of allowedRoles) {
-      expect(selectCanViewGdprAudit(createMockStoreState({ currentUserRole: role }))).toBe(true);
-    }
-
-    for (const role of deniedRoles) {
-      expect(selectCanViewGdprAudit(createMockStoreState({ currentUserRole: role }))).toBe(false);
-    }
+  it('selectCanViewGdprAudit ignores mutable store fields and follows the session', () => {
+    expect(selectCanViewGdprAudit(createMockStoreState())).toBe(false);
+    actAs('Admin');
+    expect(selectCanViewGdprAudit(createMockStoreState())).toBe(true);
+    actAs('Viewer');
+    expect(selectCanViewGdprAudit(createMockStoreState())).toBe(false);
   });
 
   it('GDPR_AUDIT_VIEW_ROLES const has 3 expected roles', () => {
@@ -375,7 +400,7 @@ describe('AuditCompliancePanel', () => {
   });
 });
 
-describe('AuditExportButton + PIIRedactor', () => {
+describe('Audit export + local email redaction', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCreateObjectURL.mockClear();

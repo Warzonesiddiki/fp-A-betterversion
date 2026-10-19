@@ -33,7 +33,7 @@ function makeUser(permissions: readonly string[] = []): User {
 }
 
 beforeEach(() => {
-  useAuthStore.setState({ user: null });
+  useAuthStore.setState({ user: null, isAuthenticated: false });
 });
 
 describe('getCurrentUser', () => {
@@ -41,10 +41,15 @@ describe('getCurrentUser', () => {
     expect(getCurrentUser()).toBeNull();
   });
 
-  it('returns the current user from authStore', () => {
+  it('returns the current user from an authenticated authStore session', () => {
     const user = makeUser(['budget:create']);
-    useAuthStore.setState({ user });
+    useAuthStore.setState({ user, isAuthenticated: true });
     expect(getCurrentUser()?.id).toBe('user-1');
+  });
+
+  it('fails closed when a user object exists but the session is unauthenticated', () => {
+    useAuthStore.setState({ user: makeUser(['budget:create']), isAuthenticated: false });
+    expect(getCurrentUser()).toBeNull();
   });
 });
 
@@ -69,7 +74,7 @@ describe('PermissionError', () => {
 
 describe('enforce', () => {
   it('invokes the action when the user has the permission', () => {
-    useAuthStore.setState({ user: makeUser(['budget:create']) });
+    useAuthStore.setState({ user: makeUser(['budget:create']), isAuthenticated: true });
     const fn = vi.fn((budget) => budget.id);
     const wrapped = enforce('budget:create', 'createBudget', fn);
     const result = wrapped({ id: 'b1' });
@@ -78,26 +83,26 @@ describe('enforce', () => {
   });
 
   it('throws PermissionError when permission is missing and throwOnDeny=true (default)', () => {
-    useAuthStore.setState({ user: makeUser([]) });
+    useAuthStore.setState({ user: makeUser([]), isAuthenticated: true });
     const wrapped = enforce('budget:create', 'createBudget', vi.fn());
     expect(() => wrapped()).toThrow(PermissionError);
   });
 
   it('grants access when ANY permission in an array matches (any-of)', () => {
-    useAuthStore.setState({ user: makeUser(['forecast:run']) });
+    useAuthStore.setState({ user: makeUser(['forecast:run']), isAuthenticated: true });
     const fn = vi.fn(() => 'ok');
     const wrapped = enforce(['forecast:read', 'forecast:run'], 'runForecast', fn);
     expect(wrapped()).toBe('ok');
   });
 
   it('denies when none of an array of permissions match', () => {
-    useAuthStore.setState({ user: makeUser(['forecast:read']) });
+    useAuthStore.setState({ user: makeUser(['forecast:read']), isAuthenticated: true });
     const wrapped = enforce(['budget:update', 'budget:delete'], 'updateBudget', vi.fn());
     expect(() => wrapped()).toThrow(PermissionError);
   });
 
   it('silently no-ops (returns undefined) when throwOnDeny=false', () => {
-    useAuthStore.setState({ user: makeUser([]) });
+    useAuthStore.setState({ user: makeUser([]), isAuthenticated: true });
     const wrapped = enforce('budget:create', 'createBudget', vi.fn(), { throwOnDeny: false });
     expect(wrapped()).toBeUndefined();
   });
@@ -107,8 +112,14 @@ describe('enforce', () => {
     expect(() => wrapped()).toThrow(PermissionError);
   });
 
+  it('denies when stale user data remains but the session is unauthenticated', () => {
+    useAuthStore.setState({ user: makeUser(['budget:create']), isAuthenticated: false });
+    const wrapped = enforce('budget:create', 'createBudget', vi.fn());
+    expect(() => wrapped()).toThrow(PermissionError);
+  });
+
   it('emits an onCheck audit event for both allow and deny', () => {
-    useAuthStore.setState({ user: makeUser(['budget:create']) });
+    useAuthStore.setState({ user: makeUser(['budget:create']), isAuthenticated: true });
     const onCheck = vi.fn();
     const allow = enforce('budget:create', 'createBudget', vi.fn(), { onCheck });
     allow();
@@ -121,7 +132,7 @@ describe('enforce', () => {
       })
     );
 
-    useAuthStore.setState({ user: makeUser([]) });
+    useAuthStore.setState({ user: makeUser([]), isAuthenticated: true });
     const deny = enforce('budget:create', 'createBudget', vi.fn(), { onCheck });
     expect(() => deny()).toThrow(PermissionError);
     expect(onCheck).toHaveBeenLastCalledWith(
@@ -130,7 +141,7 @@ describe('enforce', () => {
   });
 
   it('passes the original args through to the wrapped function', () => {
-    useAuthStore.setState({ user: makeUser(['budget:update']) });
+    useAuthStore.setState({ user: makeUser(['budget:update']), isAuthenticated: true });
     const fn = vi.fn((a, b) => a + b);
     const wrapped = enforce('budget:update', 'updateBudget', fn);
     expect(wrapped(2, 3)).toBe(5);
@@ -139,7 +150,7 @@ describe('enforce', () => {
 
 describe('enforceMany', () => {
   it('wraps only handlers that have a mapped permission', () => {
-    useAuthStore.setState({ user: makeUser(['budget:create']) });
+    useAuthStore.setState({ user: makeUser(['budget:create']), isAuthenticated: true });
     const wrapped = enforceMany(
       () => undefined,
       () => ({}),
@@ -193,7 +204,7 @@ describe('Permissions constants', () => {
 
 describe('withRBAC', () => {
   it('wraps write actions declared in the permission map', () => {
-    useAuthStore.setState({ user: makeUser(['budget:create']) });
+    useAuthStore.setState({ user: makeUser(['budget:create']), isAuthenticated: true });
     const creator = () => ({
       value: 0,
       createBudget: () => 'created',

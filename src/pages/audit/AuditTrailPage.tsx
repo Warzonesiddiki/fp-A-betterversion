@@ -1,11 +1,10 @@
 import { Fragment, useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { activateOnKey } from '@/utils/a11yActivate';
 import { useNavigate } from 'react-router-dom';
-import { CellAuditTrailEngine } from '@/engines/CellAuditTrailEngine';
-import type { AuditOperation } from '@/engines/CellAuditTrailEngine';
+import type { ExtendedAuditEntry as StoreAuditEntry, AuditOperation } from '@/types/audit';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
-import { ScrollText, Download, RefreshCw, ChevronUp, ChevronDown, Search } from 'lucide-react';
+import { ScrollText, Download, ChevronUp, ChevronDown, Search } from 'lucide-react';
 // CHRONOS 2026-06-15: replaced local formatRelativeTime (BUG-CHR-D-1) with
 // canonical import from src/engines/temporal. Audit-trail page now uses 30-day
 // cap (was 24h jumps to date) for better SOX auditor UX.
@@ -19,12 +18,70 @@ import { ScrollText, Download, RefreshCw, ChevronUp, ChevronDown, Search } from 
 import { formatRelativeTimeBudget as formatRelativeTime } from '@/engines/temporal';
 import { auditOpBadges, auditFiltersTokens } from '@/components/audit/auditTokens';
 import { StateReconstructionPanel } from '@/components/audit/StateReconstructionPanel';
-import { useAuditTrailStore, GDPR_AUDIT_VIEW_ROLES, redactPII } from '@/store/auditTrailStore';
+import { useAuditTrailStore, canRoleViewGdprAudit, redactPII } from '@/store/auditTrailStore';
+import { useAuthStore } from '@/store/authStore';
 import { PageHeader } from '@/components/ui/PageHeader';
 
-const auditEngine = new CellAuditTrailEngine();
+interface AuditTrailRow {
+  id: string;
+  cellId: string;
+  accountId: string;
+  accountName: string;
+  oldValue?: unknown;
+  newValue: unknown;
+  userId: string;
+  userName: string;
+  timestamp: string;
+  reason: string | null;
+  operation: AuditOperation;
+  dataType: string;
+  source?: string;
+  approvalStatus?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  metadata?: Record<string, unknown>;
+  storeEntry: StoreAuditEntry;
+}
 
-const OPERATION_OPTIONS: AuditOperation[] = ['write', 'update', 'delete', 'bulk'];
+/** Adapt the persisted chain schema to the legacy page's row-shaped display model. */
+function toAuditTrailRow(entry: StoreAuditEntry): AuditTrailRow {
+  const cellParts = [
+    entry.cellId.sectorId,
+    entry.cellId.scenarioId,
+    entry.cellId.periodId,
+    entry.cellId.lineItemId,
+  ].filter((part): part is string => Boolean(part));
+  const cellId = cellParts.length > 0 ? cellParts.join('/') : JSON.stringify(entry.cellId);
+  const accountId = entry.accountId ?? entry.cellId.lineItemId ?? '';
+  const previousValue = entry.oldValue !== undefined ? entry.oldValue : entry.previousValue;
+
+  return {
+    id: entry.id,
+    cellId,
+    accountId,
+    accountName: entry.accountName ?? entry.cellId.lineItemId ?? accountId,
+    oldValue: previousValue,
+    newValue: entry.newValue,
+    userId: entry.userId,
+    userName: entry.userName ?? entry.userId,
+    timestamp: new Date(entry.timestamp).toISOString(),
+    reason: entry.reason ?? null,
+    operation: entry.operation,
+    dataType: entry.dataType,
+    source: entry.source,
+    approvalStatus: entry.approvalStatus,
+    approvedBy: entry.approvedBy ?? entry.approvalUserId,
+    approvedAt:
+      entry.approvedAt ??
+      (entry.approvalTimestamp === undefined
+        ? undefined
+        : new Date(entry.approvalTimestamp).toISOString()),
+    metadata: entry.metadata,
+    storeEntry: entry,
+  };
+}
+
+const OPERATION_OPTIONS: AuditOperation[] = ['read', 'write', 'update', 'delete', 'bulk'];
 
 // Date preset helpers
 type DatePreset = '24h' | '7d' | '30d' | 'all';
@@ -87,7 +144,8 @@ function SortHeader({
 function AuditTrailContent() {
   const navigate = useNavigate();
   const [nowTick, setNowTick] = useState(() => Date.now());
-  const [entries, setEntries] = useState(() => auditEngine.getAllEntries());
+  const storedEntries = useAuditTrailStore((state) => state.entries);
+  const entries = useMemo(() => storedEntries.map(toAuditTrailRow), [storedEntries]);
   const [filters, setFilters] = useState({
     startDate: '',
     endDate: '',
@@ -104,12 +162,9 @@ function AuditTrailContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const intervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
-  // Auto-refresh every 5 seconds
+  // Refresh relative-time labels; entries themselves are subscribed from the persisted store.
   useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setEntries(auditEngine.getAllEntries());
-      setNowTick(Date.now());
-    }, 5000);
+    intervalRef.current = setInterval(() => setNowTick(Date.now()), 5000);
     return () => clearInterval(intervalRef.current);
   }, []);
 
@@ -196,16 +251,16 @@ function AuditTrailContent() {
       'New Value',
       'Reason',
     ];
-    // SECURITY FIX (C-03): Apply PIIRedactor before CSV export
+    // Apply the store's local email-focused redaction helper before CSV export.
     const rows = filtered.map((e) => {
-      const redacted = redactPII(e as unknown as Parameters<typeof redactPII>[0]);
+      const redacted = redactPII(e.storeEntry);
       return [
-        redacted.timestamp,
+        new Date(redacted.timestamp).toISOString(),
         redacted.userId,
         redacted.operation,
-        redacted.accountName || redacted.accountId,
+        redacted.accountName || redacted.accountId || e.accountName,
         redacted.dataType || '',
-        JSON.stringify(redacted.previousValue ?? ''),
+        JSON.stringify(redacted.oldValue ?? redacted.previousValue ?? ''),
         JSON.stringify(redacted.newValue),
         redacted.reason ?? '',
       ];
@@ -236,8 +291,9 @@ function AuditTrailContent() {
         </div>
         <h2 className="text-xl font-semibold mb-2">No Audit Entries</h2>
         <p className="text-[var(--text-muted)] mb-6">
-          Changes appear automatically as you edit budgets, forecasts, and other data. Import data
-          and make changes to see them recorded here.
+          No events have been recorded in this client audit trail. GDPR events are bridged into this
+          chain; general budget, forecast, and GL edits are not yet wired to the client recorder.
+          Importing data or editing a workbook by itself does not guarantee an audit entry here.
         </p>
         <Button onClick={() => navigate('/data/gl-upload')}>Import Data</Button>
       </div>
@@ -263,14 +319,6 @@ function AuditTrailContent() {
               aria-pressed={showDiff}
             >
               {showDiff ? '✓ Diff View' : 'Diff View'}
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => setEntries(auditEngine.getAllEntries())}
-            >
-              <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
-              Refresh
             </Button>
             <Button size="sm" variant="ghost" onClick={handleExport}>
               <Download className="h-3.5 w-3.5 mr-1.5" />
@@ -675,10 +723,12 @@ export default function AuditTrailPage() {
 
   const navigate = useNavigate();
 
-  // SECURITY FIX (C-03): Enforce GDPR audit view roles (F-CLIO-2/7 RBAC gating)
-  const userRole = useAuditTrailStore((s) => s.currentUserRole);
+  // Subscribe to auth state directly so logout/role changes revoke access
+  // immediately; audit-store changes are not an auth-session notification.
+  const authenticatedRole = useAuthStore((state) => state.user?.role);
+  const canViewGdprAudit = canRoleViewGdprAudit(authenticatedRole);
 
-  if (!GDPR_AUDIT_VIEW_ROLES.includes(userRole as (typeof GDPR_AUDIT_VIEW_ROLES)[number])) {
+  if (!canViewGdprAudit) {
     return (
       <div className="p-12 text-center max-w-md mx-auto">
         <div className="p-4 bg-red-900/30 rounded-full inline-block mb-4">

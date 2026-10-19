@@ -3,13 +3,13 @@ import { enableMapSet } from 'immer';
 import {
   useAuditTrailStore,
   redactPII,
-  GDPR_AUDIT_VIEW_ROLES,
   canonicalizeForHash,
   computeAuditEntryHash,
   selectCanViewGdprAudit,
   AUDIT_CHAIN_GENESIS_HASH,
 } from './auditTrailStore';
 import type { ExtendedAuditEntry } from '@/types/audit';
+import { actAs, expectPermissionDenied, signOut } from '@/test/rbacFixtures';
 
 enableMapSet();
 
@@ -44,6 +44,7 @@ vi.mock('@/utils/spreadsheetSanitize', () => ({
 
 describe('auditTrailStore', () => {
   beforeEach(() => {
+    signOut();
     idCounter = 0;
     useAuditTrailStore.setState({
       entries: [],
@@ -54,7 +55,6 @@ describe('auditTrailStore', () => {
       sortDir: 'desc',
       selectedEntryId: null,
       loading: false,
-      currentUserRole: 'admin',
       chainHead: AUDIT_CHAIN_GENESIS_HASH,
     });
   });
@@ -80,6 +80,7 @@ describe('auditTrailStore', () => {
   });
 
   it('recordBulk appends multiple entries in a single batch and links the chain', () => {
+    actAs('Admin');
     const ids = useAuditTrailStore
       .getState()
       .recordBulk([
@@ -104,6 +105,7 @@ describe('auditTrailStore', () => {
   });
 
   it('verifyIntegrity reports valid for an intact chain', () => {
+    actAs('Admin');
     useAuditTrailStore
       .getState()
       .recordBulk([
@@ -120,6 +122,7 @@ describe('auditTrailStore', () => {
   });
 
   it('verifyIntegrity flags a tampered entry', () => {
+    actAs('Admin');
     useAuditTrailStore
       .getState()
       .recordBulk([
@@ -156,6 +159,7 @@ describe('auditTrailStore', () => {
   });
 
   it('setPageSize resets to page 1 and clamps pages', () => {
+    actAs('Admin');
     useAuditTrailStore
       .getState()
       .recordBulk(Array.from({ length: 80 }, (_, i) => baseInput({ newValue: i })));
@@ -181,15 +185,17 @@ describe('auditTrailStore', () => {
     expect(redacted.metadata?.note).toBe('plain-text-note');
   });
 
-  it('selectCanViewGdprAudit permits admin/compliance/dpo only', () => {
-    useAuditTrailStore.setState({ currentUserRole: 'admin' });
-    expect(selectCanViewGdprAudit(useAuditTrailStore.getState())).toBe(true);
-    useAuditTrailStore.setState({ currentUserRole: 'viewer' });
+  it('selectCanViewGdprAudit derives visibility from the authenticated session', () => {
+    signOut();
+    // A stale/tampered legacy role field cannot grant GDPR visibility.
+    useAuditTrailStore.setState({ currentUserRole: 'admin' } as never);
     expect(selectCanViewGdprAudit(useAuditTrailStore.getState())).toBe(false);
-    for (const role of GDPR_AUDIT_VIEW_ROLES) {
-      useAuditTrailStore.setState({ currentUserRole: role });
-      expect(selectCanViewGdprAudit(useAuditTrailStore.getState())).toBe(true);
-    }
+
+    actAs('Admin');
+    expect(selectCanViewGdprAudit(useAuditTrailStore.getState())).toBe(true);
+    actAs('Viewer');
+    expect(selectCanViewGdprAudit(useAuditTrailStore.getState())).toBe(false);
+    signOut();
   });
 
   it('exportToJSON returns parseable JSON', () => {
@@ -207,9 +213,25 @@ describe('auditTrailStore', () => {
     expect(csv.split('\n').length).toBeGreaterThanOrEqual(2);
   });
 
-  it('setCurrentUserRole updates role for RBAC gating', () => {
-    useAuditTrailStore.getState().setCurrentUserRole('auditor');
-    expect(useAuditTrailStore.getState().currentUserRole).toBe('auditor');
+  it('revertToState requires audit:delete despite an injected legacy role field', () => {
+    signOut();
+    useAuditTrailStore.setState({ currentUserRole: 'admin' } as never);
+    const entryId = useAuditTrailStore.getState().recordWrite(baseInput());
+    const before = useAuditTrailStore.getState().entries;
+
+    const loggedOutError = expectPermissionDenied(() =>
+      useAuditTrailStore.getState().revertToState(entryId)
+    );
+    expect(loggedOutError.message).toContain('audit:delete');
+    expect(useAuditTrailStore.getState().entries).toEqual(before);
+
+    actAs('Viewer');
+    const viewerError = expectPermissionDenied(() =>
+      useAuditTrailStore.getState().revertToState(entryId)
+    );
+    expect(viewerError.message).toContain('audit:delete');
+    expect(useAuditTrailStore.getState().entries).toEqual(before);
+    signOut();
   });
 
   it('recordRead produces a read-typed entry', () => {

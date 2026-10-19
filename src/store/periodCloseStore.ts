@@ -4,8 +4,8 @@
 // Offline-first client counterpart to server/src/routes/periods.ts. Owns the
 // period close state machine (PeriodCloseStateMachine: open → soft-close →
 // hard-close → locked), the close checklist (FinancialCloseEngine), and a
-// SHA-256 chained audit log per period (same canonical hashing as
-// AuditLogEngine so the panel can be verified end-to-end).
+// separate per-period close-event hash sequence. Its unkeyed SHA-256 check is
+// local consistency evidence, not the general audit authority or SOX proof.
 //
 // RBAC (defense in depth):
 //   1. The whole transition action is wrapped with enforce(PERIOD_CLOSE) —
@@ -117,8 +117,8 @@ interface PeriodCloseStateShape {
 }
 
 // ---------------------------------------------------------------------------
-// SHA-256 chain helpers (canonical hashing aligned with AuditLogEngine so the
-// verification panel is honest about the same chain the audit engine builds).
+// Per-period close-event hash helpers. Hashes are unkeyed and not externally
+// anchored; this verifier checks local sequence consistency only.
 // ---------------------------------------------------------------------------
 
 const EMPTY_HASH = '0'.repeat(64);
@@ -140,7 +140,11 @@ async function hashCloseEvent(event: PeriodCloseAuditEvent, prevHash: string): P
   return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-/** Recompute the hash chain over persisted entries and report integrity. */
+/**
+ * Recompute each persisted period chain in its stored append order.
+ * Timestamp sorting would hide entry reordering, and each period has its own
+ * genesis hash, so entries must be grouped by period before verification.
+ */
 export async function verifyCloseChain(
   entries: readonly CloseChainEntry[]
 ): Promise<ChainVerification> {
@@ -148,32 +152,49 @@ export async function verifyCloseChain(
   if (entries.length === 0) {
     return { ok: true, totalEntries: 0, reason: 'EMPTY_CHAIN', checkedAt };
   }
-  const ordered = [...entries].sort((a, b) => a.event.timestamp.localeCompare(b.event.timestamp));
-  let prevHash = EMPTY_HASH;
-  for (let i = 0; i < ordered.length; i++) {
-    const stored = ordered[i]!;
-    if (stored.prevHash !== prevHash) {
-      return {
-        ok: false,
-        totalEntries: ordered.length,
-        brokenAt: i,
-        reason: 'BROKEN_PREV_HASH',
-        checkedAt,
-      };
+
+  const byPeriod = new Map<string, { entry: CloseChainEntry; index: number }[]>();
+  entries.forEach((entry, index) => {
+    const periodEntries = byPeriod.get(entry.periodId) ?? [];
+    periodEntries.push({ entry, index });
+    byPeriod.set(entry.periodId, periodEntries);
+  });
+
+  for (const periodEntries of byPeriod.values()) {
+    let prevHash = EMPTY_HASH;
+    for (const { entry: stored, index } of periodEntries) {
+      if (stored.id !== stored.event.id || stored.periodId !== stored.event.periodId) {
+        return {
+          ok: false,
+          totalEntries: entries.length,
+          brokenAt: index,
+          reason: 'PERIOD_EVENT_ID_MISMATCH',
+          checkedAt,
+        };
+      }
+      if (stored.prevHash !== prevHash) {
+        return {
+          ok: false,
+          totalEntries: entries.length,
+          brokenAt: index,
+          reason: 'BROKEN_PREV_HASH',
+          checkedAt,
+        };
+      }
+      const recomputed = await hashCloseEvent(stored.event, prevHash);
+      if (recomputed !== stored.entryHash) {
+        return {
+          ok: false,
+          totalEntries: entries.length,
+          brokenAt: index,
+          reason: 'BROKEN_HASH_MISMATCH',
+          checkedAt,
+        };
+      }
+      prevHash = recomputed;
     }
-    const recomputed = await hashCloseEvent(stored.event, prevHash);
-    if (recomputed !== stored.entryHash) {
-      return {
-        ok: false,
-        totalEntries: ordered.length,
-        brokenAt: i,
-        reason: 'BROKEN_HASH_MISMATCH',
-        checkedAt,
-      };
-    }
-    prevHash = recomputed;
   }
-  return { ok: true, totalEntries: ordered.length, checkedAt };
+  return { ok: true, totalEntries: entries.length, checkedAt };
 }
 
 // ---------------------------------------------------------------------------
@@ -242,73 +263,77 @@ export const usePeriodCloseStore = create<PeriodCloseStateShape>()(
       immer((set, get) => ({
         ...initialState,
 
-        initialize: (periods, jurisdiction, entityId = 'entity-001') => {
-          if (!usePeriodCloseStore.persist.hasHydrated()) {
-            throw new Error(
-              'Period-close storage hydration has not succeeded. Retry before initializing the fiscal calendar.'
-            );
-          }
-          // Preflight the entire calendar before any mutation. Period IDs are
-          // currently single-entity keys: never silently reuse P01 for another
-          // year/entity, or rewrite the date range attached to a closed period.
-          const current = get();
-          const seen = new Set<string>();
-          for (const p of periods) {
-            if (!p.id.trim() || seen.has(p.id)) {
-              throw new Error(`Invalid or duplicate fiscal period ID: ${p.id}`);
-            }
-            seen.add(p.id);
-            if (
-              parseImportDate(p.startDate) !== p.startDate ||
-              parseImportDate(p.endDate) !== p.endDate ||
-              p.startDate > p.endDate
-            ) {
-              throw new Error(`Invalid fiscal date range for ${p.id}`);
-            }
-            const entry = current.entries[p.id];
-            const checklist = current.checklists[p.id];
-            const scope = checklist?.fiscalScope;
-            if (
-              (entry && entry.entityId !== entityId) ||
-              (checklist &&
-                (checklist.plan.fiscalYear !== p.year ||
-                  checklist.plan.fiscalPeriod !== p.periodNumber ||
-                  checklist.plan.deadline !== p.endDate)) ||
-              (scope &&
-                (scope.startDate !== p.startDate ||
-                  scope.endDate !== p.endDate ||
-                  scope.isAdjustingPeriod !== p.isAdjustingPeriod))
-            ) {
+        initialize: enforce(
+          Permissions.PERIOD_CLOSE,
+          'initialize',
+          (periods, jurisdiction, entityId = 'entity-001') => {
+            if (!usePeriodCloseStore.persist.hasHydrated()) {
               throw new Error(
-                `Fiscal period ${p.id} is already bound to another calendar scope or entity; migration required.`
+                'Period-close storage hydration has not succeeded. Retry before initializing the fiscal calendar.'
               );
             }
-          }
-          set((state) => {
+            // Preflight the entire calendar before any mutation. Period IDs are
+            // currently single-entity keys: never silently reuse P01 for another
+            // year/entity, or rewrite the date range attached to a closed period.
+            const current = get();
+            const seen = new Set<string>();
             for (const p of periods) {
-              if (!state.entries[p.id]) {
-                state.entries[p.id] = PeriodCloseStateMachine.createEntry(p.id, entityId);
+              if (!p.id.trim() || seen.has(p.id)) {
+                throw new Error(`Invalid or duplicate fiscal period ID: ${p.id}`);
               }
-              if (!state.checklists[p.id]) {
-                // Immer's draft strips readonly (plan.tasks is a readonly
-                // array) — same cast convention as budgetStore.push.
-                state.checklists[p.id] = buildChecklist(
-                  p,
-                  jurisdiction
-                ) as WritableDraft<PeriodChecklist>;
-              } else if (!state.checklists[p.id]!.fiscalScope) {
-                // Compatible legacy checklist: add explicit dates from the
-                // supplied calendar, preserving tasks, close state and audit.
-                state.checklists[p.id]!.fiscalScope = {
-                  startDate: p.startDate,
-                  endDate: p.endDate,
-                  isAdjustingPeriod: p.isAdjustingPeriod,
-                };
+              seen.add(p.id);
+              if (
+                parseImportDate(p.startDate) !== p.startDate ||
+                parseImportDate(p.endDate) !== p.endDate ||
+                p.startDate > p.endDate
+              ) {
+                throw new Error(`Invalid fiscal date range for ${p.id}`);
+              }
+              const entry = current.entries[p.id];
+              const checklist = current.checklists[p.id];
+              const scope = checklist?.fiscalScope;
+              if (
+                (entry && entry.entityId !== entityId) ||
+                (checklist &&
+                  (checklist.plan.fiscalYear !== p.year ||
+                    checklist.plan.fiscalPeriod !== p.periodNumber ||
+                    checklist.plan.deadline !== p.endDate)) ||
+                (scope &&
+                  (scope.startDate !== p.startDate ||
+                    scope.endDate !== p.endDate ||
+                    scope.isAdjustingPeriod !== p.isAdjustingPeriod))
+              ) {
+                throw new Error(
+                  `Fiscal period ${p.id} is already bound to another calendar scope or entity; migration required.`
+                );
               }
             }
-            state.initialized = true;
-          });
-        },
+            set((state) => {
+              for (const p of periods) {
+                if (!state.entries[p.id]) {
+                  state.entries[p.id] = PeriodCloseStateMachine.createEntry(p.id, entityId);
+                }
+                if (!state.checklists[p.id]) {
+                  // Immer's draft strips readonly (plan.tasks is a readonly
+                  // array) — same cast convention as budgetStore.push.
+                  state.checklists[p.id] = buildChecklist(
+                    p,
+                    jurisdiction
+                  ) as WritableDraft<PeriodChecklist>;
+                } else if (!state.checklists[p.id]!.fiscalScope) {
+                  // Compatible legacy checklist: add explicit dates from the
+                  // supplied calendar, preserving tasks, close state and audit.
+                  state.checklists[p.id]!.fiscalScope = {
+                    startDate: p.startDate,
+                    endDate: p.endDate,
+                    isAdjustingPeriod: p.isAdjustingPeriod,
+                  };
+                }
+              }
+              state.initialized = true;
+            });
+          }
+        ),
 
         transition: enforce(
           Permissions.PERIOD_CLOSE,

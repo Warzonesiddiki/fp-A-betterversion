@@ -7,6 +7,8 @@
 **Source PATCHes:** PATCH 14 — `src/services/RateLimiter.ts`, `src/services/CircuitBreaker.ts`
 **Authoritative cross-references:** SECURITY.md v1.0.0 §12 @ 384b8ac96; THREAT_MODEL.md (PATCH 10 `d0fe9107`); INCIDENT_RESPONSE.md (PATCH 9 GHOST-SHA `d445b721`)
 
+> **Audit sink status (2026-10-19):** Statements below that require or describe persistence through PATCH 12 `AuditLogger` are requirements/design assumptions only. The repository has no production caller or durable adapter for that class; these references are not evidence that audit events are currently persisted or that a compliance control is operating. See `../architecture/AUDIT_CHAIN_REACHABILITY.md`.
+
 ---
 
 ## §1. Purpose and Scope

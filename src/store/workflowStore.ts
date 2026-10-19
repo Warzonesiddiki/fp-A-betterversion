@@ -186,7 +186,7 @@ export const useWorkflowStore = create<WorkflowStoreState>()(
           });
         }),
 
-        checkEscalations: () => {
+        checkEscalations: enforce(Permissions.WORKFLOW_UPDATE, 'checkEscalations', () => {
           let escalated: string[] = [];
           set((state) => {
             escalated = engine.checkEscalations();
@@ -197,7 +197,7 @@ export const useWorkflowStore = create<WorkflowStoreState>()(
             }
           });
           return escalated;
-        },
+        }),
 
         refreshState: () => {
           set((state) => {

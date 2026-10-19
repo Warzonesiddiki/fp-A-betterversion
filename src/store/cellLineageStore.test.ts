@@ -1,10 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { enableMapSet } from 'immer';
 import { useCellLineageStore, cellLineageSelectors } from './cellLineageStore';
 import { useAuthStore } from './authStore';
 import { PermissionError } from '@/utils/rbacEnforcer';
-
-enableMapSet();
+import { actAs, actAsRoleWithout, expectPermissionDenied } from '@/test/rbacFixtures';
 
 vi.mock('@/utils/cryptoId', () => ({
   randomId: (prefix: string) => `${prefix}-${Math.random().toString(36).slice(2, 8)}`,
@@ -51,10 +49,27 @@ describe('cellLineageStore', () => {
     });
   });
 
-  const snapshot = (v: unknown) => ({ value: v, dataType: 'number' as const });
-  const actor = { id: 'u1', role: 'user' as const, name: 'Test' };
-  const reason = 'manual-edit' as const;
-  const origin = 'user' as const;
+  const snapshot = (v: unknown) => ({
+    value: v,
+    dataType: 'number' as const,
+    preciseValue: null,
+    formula: null,
+    dependencies: null,
+  });
+  const actor = {
+    userId: 'u1',
+    userName: 'Test',
+    engineId: null,
+    engineVersion: null,
+    actorType: 'user' as const,
+  };
+  const reason = {
+    category: 'manual-edit' as const,
+    description: 'test edit',
+    referenceId: null,
+    referenceType: null,
+  };
+  const origin = 'manual-override' as const;
 
   it('records a change and creates a chain', async () => {
     const id = await useCellLineageStore
@@ -106,18 +121,32 @@ describe('cellLineageStore', () => {
     expect(v).toEqual(snapshot(1));
   });
 
-  it('verifyIntegrity walks chains and updates the verified flag + timestamp', async () => {
-    const s0 = useCellLineageStore.getState();
-    await s0.recordChange('c1', snapshot(null), snapshot(1), actor, reason, origin);
-    // invoke verifyIntegrity on live state; we don't assert ok===true since
-    // immer produces draft proxies that may mutate the previousHash linkage
-    // during push — what we care about is that the function walks every
-    // chain, sets integrityVerified+lastIntegrityCheck, and returns a bool.
+  it('verifyIntegrity verifies an intact chain and records the result', async () => {
+    await useCellLineageStore
+      .getState()
+      .recordChange('c1', snapshot(null), snapshot(1), actor, reason, origin);
+
     const ok = await useCellLineageStore.getState().verifyIntegrity();
-    expect(typeof ok).toBe('boolean');
+    expect(ok).toBe(true);
     const after = useCellLineageStore.getState();
     expect(after.lastIntegrityCheck).toBeTruthy();
-    expect(after.integrityVerified).toBe(ok);
+    expect(after.integrityVerified).toBe(true);
+    expect(after.chains.get('c1')?.integrityValid).toBe(true);
+  });
+
+  it('verifyIntegrity rejects a payload whose stored entry hash no longer matches', async () => {
+    await useCellLineageStore
+      .getState()
+      .recordChange('c1', snapshot(null), snapshot(1), actor, reason, origin);
+    const state = useCellLineageStore.getState();
+    const original = state.chains.get('c1')!;
+    const forged = { ...original.entries[0]!, newValue: snapshot(999) };
+    const chains = new Map(state.chains);
+    chains.set('c1', { ...original, entries: [forged], currentValue: forged.newValue });
+    useCellLineageStore.setState({ chains });
+
+    expect(await useCellLineageStore.getState().verifyIntegrity()).toBe(false);
+    expect(useCellLineageStore.getState().chains.get('c1')?.integrityValid).toBe(false);
   });
 
   it('queryEntries returns entries sorted by timestamp desc', async () => {
@@ -148,6 +177,40 @@ describe('cellLineageStore', () => {
     const status = cellLineageSelectors.integrityStatus(s2);
     expect(status.verified).toBe(false);
   });
+
+  it('round-trips Map-backed chains and migrates v1 blobs whose Map serialized as empty', async () => {
+    const store = useCellLineageStore.getState();
+    await store.recordChange('c1', snapshot(null), snapshot(1), actor, reason, origin);
+
+    const options = useCellLineageStore.persist.getOptions();
+    expect(options.version).toBe(2);
+    const partial = options.partialize!(useCellLineageStore.getState());
+    const persisted = JSON.parse(JSON.stringify(partial)) as Record<string, unknown>;
+    const current = useCellLineageStore.getInitialState();
+    const merge = options.merge!;
+    const restored = merge(persisted, current);
+
+    expect(restored.chains).toBeInstanceOf(Map);
+    expect(restored.chains.get('c1')?.entries).toHaveLength(1);
+
+    const legacyV1 = JSON.parse(
+      JSON.stringify({
+        chains: {},
+        pendingEntries: useCellLineageStore.getState().pendingEntries,
+        integrityVerified: true,
+        lastIntegrityCheck: '2026-01-01T00:00:00.000Z',
+      })
+    ) as Record<string, unknown>;
+    const migrated = options.migrate!(legacyV1, 1);
+    const restoredV1 = merge(migrated, current);
+    expect(restoredV1.chains).toBeInstanceOf(Map);
+    expect(restoredV1.chains.get('c1')?.entries).toHaveLength(1);
+    expect(restoredV1.integrityVerified).toBe(false);
+    expect(restoredV1.lastIntegrityCheck).toBeNull();
+
+    useCellLineageStore.setState(restoredV1);
+    expect(await useCellLineageStore.getState().verifyIntegrity()).toBe(true);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -155,10 +218,27 @@ describe('cellLineageStore', () => {
 // ---------------------------------------------------------------------------
 
 describe('cellLineageStore RBAC (W6-P0-14)', () => {
-  const snapshot = (v: unknown) => ({ value: v, dataType: 'number' as const });
-  const actor = { id: 'u1', role: 'user' as const, name: 'Test' };
-  const reason = 'manual-edit' as const;
-  const origin = 'user' as const;
+  const snapshot = (v: unknown) => ({
+    value: v,
+    dataType: 'number' as const,
+    preciseValue: null,
+    formula: null,
+    dependencies: null,
+  });
+  const actor = {
+    userId: 'u1',
+    userName: 'Test',
+    engineId: null,
+    engineVersion: null,
+    actorType: 'user' as const,
+  };
+  const reason = {
+    category: 'manual-edit' as const,
+    description: 'test edit',
+    referenceId: null,
+    referenceType: null,
+  };
+  const origin = 'manual-override' as const;
 
   beforeEach(() => {
     useAuthStore.setState({ user: null, isAuthenticated: false });
@@ -178,6 +258,28 @@ describe('cellLineageStore RBAC (W6-P0-14)', () => {
         .getState()
         .recordChange('c1', snapshot(null), snapshot(1), actor, reason, origin)
     ).toThrow(PermissionError);
+    expect(useCellLineageStore.getState().chains.size).toBe(0);
+  });
+
+  it('recordChange denies an authenticated Viewer without mutating the chain', () => {
+    actAs('Viewer');
+    const denied = expectPermissionDenied(() =>
+      useCellLineageStore
+        .getState()
+        .recordChange('c1', snapshot(null), snapshot(1), actor, reason, origin)
+    );
+    expect(denied.message).toContain('audit:create');
+    expect(useCellLineageStore.getState().chains.size).toBe(0);
+  });
+
+  it('recordChange denies Admin when audit:create is withheld', () => {
+    actAsRoleWithout('Admin', 'audit:create');
+    const denied = expectPermissionDenied(() =>
+      useCellLineageStore
+        .getState()
+        .recordChange('c1', snapshot(null), snapshot(1), actor, reason, origin)
+    );
+    expect(denied.message).toContain('audit:create');
     expect(useCellLineageStore.getState().chains.size).toBe(0);
   });
 

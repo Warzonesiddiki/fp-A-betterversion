@@ -9,8 +9,8 @@
 //   - close state machine from PeriodCloseStateMachine (persisted offline)
 //   - close checklist from FinancialCloseEngine (never invented per-page)
 //   - pre-close validation via evaluateCloseReadiness (money-exact TB check)
-//   - chained SHA-256 audit panel (verifyCloseChain — same canonical hashing
-//     as AuditLogEngine)
+//   - per-period close-event hash consistency panel (not a general audit
+//     authority or a SOX-compliance claim)
 //   - post-close report pack via reportDataBuilder + ExportEngine (real GL)
 // RBAC: read-only for every role; close/reopen gated by period:close /
 // period:reopen (Admin, FP&A_Manager) — mirrors server TRANSITION_ROLES.
@@ -156,6 +156,10 @@ export default function PeriodClosePage() {
   }, []);
 
   const initializeCalendar = useCallback(() => {
+    // Calendar creation/backfill persists fiscal-period records and is a
+    // PERIOD_CLOSE write. A read-only viewer may load the existing calendar,
+    // but must never initialize or rebind it from this page.
+    if (!hasPermission(user, Permissions.PERIOD_CLOSE)) return;
     try {
       // Also checks existing bindings and backfills compatible legacy scopes.
       initialize(periods, DEFAULT_JURISDICTION);
@@ -165,7 +169,7 @@ export default function PeriodClosePage() {
         error instanceof Error ? error.message : 'Fiscal calendar initialization failed.'
       );
     }
-  }, [initialize, periods]);
+  }, [initialize, periods, user]);
 
   useEffect(() => {
     initializeCalendar();
@@ -259,6 +263,17 @@ export default function PeriodClosePage() {
     );
   }
 
+  if (!initialized && !canClose) {
+    return (
+      <div className="p-6 space-y-6 max-w-7xl">
+        <PageHeader title="Period Close" purpose="Fiscal calendar is not initialized." />
+        <p role="status" className="text-sm text-[var(--text-secondary)]">
+          Read-only view — an authorized period-close user must initialize the fiscal calendar.
+        </p>
+      </div>
+    );
+  }
+
   if (!initialized) {
     // K30 four-states: skeleton while the close store hydrates, so a cold
     // start never flashes the degenerate "no periods" text. PageHeader stays
@@ -286,11 +301,17 @@ export default function PeriodClosePage() {
         <EmptyState
           variant="no-data"
           title="No fiscal periods to close"
-          description="The period close workflow has no initialized fiscal periods yet. Initialize the close workflow to build periods from the fiscal calendar, then start closing."
+          description={
+            canClose
+              ? 'The period close workflow has no initialized fiscal periods yet. Initialize the close workflow to build periods from the fiscal calendar, then start closing.'
+              : 'No fiscal periods are available. An authorized period-close user must initialize the fiscal calendar.'
+          }
           action={
-            <Button onClick={initializeCalendar} data-testid="period-close-init">
-              Initialize period close
-            </Button>
+            canClose ? (
+              <Button onClick={initializeCalendar} data-testid="period-close-init">
+                Initialize period close
+              </Button>
+            ) : undefined
           }
         />
       </div>
@@ -377,8 +398,9 @@ export default function PeriodClosePage() {
         title="Period Close"
         purpose={
           <>
-            Month-end close workflow — state machine, checklist, validation and audit trail. Base
-            currency: {organization.baseCurrency || 'USD'}
+            Month-end close workflow — state machine, checklist, validation and close-event history.
+            The unkeyed hash check is local consistency evidence, not SOX authority. Base currency:{' '}
+            {organization.baseCurrency || 'USD'}
           </>
         }
         actions={
@@ -393,8 +415,8 @@ export default function PeriodClosePage() {
               >
                 <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
                 {chainVerified.ok
-                  ? `Audit chain verified (${chainVerified.total} event${chainVerified.total === 1 ? '' : 's'})`
-                  : 'Audit chain BROKEN — investigate'}
+                  ? `Close-event chain consistent (${chainVerified.total} event${chainVerified.total === 1 ? '' : 's'})`
+                  : 'Close-event chain BROKEN — investigate'}
               </span>
             )}
             <Link
@@ -857,7 +879,7 @@ export default function PeriodClosePage() {
                       setChainVerified({ ok: v.ok, total: v.totalEntries })
                     );
                   }}
-                  aria-label="Re-verify audit chain"
+                  aria-label="Re-verify close-event chain"
                 >
                   <RefreshCw className="w-3 h-3" aria-hidden="true" />
                   Verify

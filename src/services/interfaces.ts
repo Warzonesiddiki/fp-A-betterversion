@@ -14,9 +14,9 @@
  *  - TauriSecureStorage (line 45-47 of SecretsVault.ts)  ← PATCH 15 @ 8a1eea3cc
  *  - ThreatSignal       (line 45-48 of SecretsVault.ts)  ← PATCH 10 @ d0fe9107
  *
- * @runtime_references (NOT shipped in this file — these are external deps)
+ * @runtime_references (this type-only bundle does not implement these runtime dependencies)
  *  - TauriSecureStorage runtime: tauri-plugin-stronghold (Rust core)
- *  - AuditLogger runtime:        src/services/AuditLogger.ts (PATCH 12)
+ *  - AuditLogger concrete class: isolated in-memory helper only; not wired to this interface
  *  - ThreatModel runtime:        src/services/ThreatModel.ts (PATCH 10)
  *
  * @co_signs
@@ -64,9 +64,10 @@ export interface TauriSecureStorage {
 
 // ============================================================================
 // AuditLogger — PATCH 12 @ fa02aad4
-// Type-only mirror of the runtime AuditLogger shipped in PATCH 12. The
-// runtime class emits structured events to an append-only store; this
-// surface captures the three log() call sites in SecretsVault.ts
+// Type-only dependency-injection contract for a host-provided SecretsVault
+// audit sink. No production implementation/wiring is supplied here; the
+// standalone `src/services/AuditLogger.ts` class has a different `log` API.
+// This surface captures the log() call sites in SecretsVault.ts
 // (lines 240, 295, 318) and the auditLogId string return contract.
 // ============================================================================
 
@@ -107,7 +108,7 @@ export interface AuditEvent {
 
 export interface AuditLogger {
   /**
-   * Persist an audit event. Returns a stable `auditLogId` string that the
+   * Host-provided sink contract: persist an audit event and return a stable `auditLogId` string that the
    * caller can use for downstream correlation (SecretsVault returns this
    * from set/delete/rotate as `auditLogId`).
    */

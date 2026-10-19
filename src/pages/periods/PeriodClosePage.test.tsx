@@ -192,6 +192,9 @@ describe('PeriodClosePage', () => {
   });
 
   it('RBAC: Viewer sees a read-only page with no close actions', async () => {
+    // Initialize the fiscal calendar through its authorized setup path before
+    // switching to Viewer; viewing must not itself create persisted periods.
+    usePeriodCloseStore.getState().initialize(buildFiscalPeriods(), 'US-GAAP');
     actAs('Viewer');
     useGLStore.setState({ entries: balancedAugustEntries() });
     render(<PeriodClosePage />);
@@ -199,6 +202,18 @@ describe('PeriodClosePage', () => {
     expect(screen.queryByRole('button', { name: /Start soft close/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Hard close/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Lock period/i })).not.toBeInTheDocument();
+  });
+
+  it('RBAC: Viewer cannot initialize an uninitialized fiscal calendar', async () => {
+    actAs('Viewer');
+    render(<PeriodClosePage />);
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      /authorized period-close user must initialize/i
+    );
+    expect(usePeriodCloseStore.getState().initialized).toBe(false);
+    expect(
+      screen.queryByRole('button', { name: /initialize period close/i })
+    ).not.toBeInTheDocument();
   });
 
   it('checklist renders REAL FinancialCloseEngine tasks and progress', async () => {
@@ -229,6 +244,7 @@ describe('PeriodClosePage', () => {
         return el?.tagName === 'P' && content.includes('open') && content.includes('soft-close');
       })
     ).toBeInTheDocument();
+    expect(await screen.findByText(/Close-event chain consistent/)).toBeInTheDocument();
   });
 
   it('renders the close checklist status change via the select (Admin only)', async () => {

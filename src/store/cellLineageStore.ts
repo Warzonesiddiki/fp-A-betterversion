@@ -1,15 +1,15 @@
 /**
- * Cell Lineage Store — Immutable Provenance Tracking
+ * Cell Lineage Store — client-local lineage prototype
  *
- * Every cell value change is recorded as an immutable entry in a hash chain.
- * Enables "rewind to any point in time" and complete audit trails.
- *
- * DIFFERS FROM auditTrailStore: That store tracks GDPR/SOX compliance events.
- * This store tracks the COMPLETE VALUE HISTORY of every cell.
+ * The store appends cell-value snapshots and can reconstruct a per-cell
+ * sequence. It has no production caller today and is not the product audit
+ * authority. Its unkeyed hashes detect inconsistent payload/link changes but
+ * are not tamper-proof against a complete rewrite and have no external anchor.
  *
  * @module cellLineageStore
  */
 
+import { enableMapSet } from 'immer';
 import { randomId } from '@/utils/cryptoId';
 import { create } from 'zustand';
 import { subscribeWithSelector, persist } from 'zustand/middleware';
@@ -35,14 +35,108 @@ async function hashEntry(data: string): Promise<string> {
     .join('');
 }
 
+type CellLineageHashInput = Pick<
+  CellLineageEntry,
+  | 'id'
+  | 'cellId'
+  | 'oldValue'
+  | 'newValue'
+  | 'actor'
+  | 'timestamp'
+  | 'reason'
+  | 'dataOrigin'
+  | 'engineVersion'
+  | 'previousHash'
+>;
+
+/** Keep field order identical to the v1 hash contract; metadata is non-authoritative. */
+function serializeHashInput(entry: CellLineageHashInput): string {
+  return JSON.stringify({
+    id: entry.id,
+    cellId: entry.cellId,
+    oldValue: entry.oldValue,
+    newValue: entry.newValue,
+    actor: entry.actor,
+    timestamp: entry.timestamp,
+    reason: entry.reason,
+    dataOrigin: entry.dataOrigin,
+    engineVersion: entry.engineVersion ?? null,
+    previousHash: entry.previousHash,
+  });
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function rebuildChainsFromEntries(
+  entries: readonly CellLineageEntry[]
+): Map<string, CellLineageChain> {
+  const grouped = new Map<string, CellLineageEntry[]>();
+  for (const entry of entries) {
+    const cellEntries = grouped.get(entry.cellId) ?? [];
+    cellEntries.push(entry);
+    grouped.set(entry.cellId, cellEntries);
+  }
+
+  return new Map(
+    Array.from(grouped, ([cellId, cellEntries]) => {
+      const first = cellEntries[0]!;
+      const last = cellEntries[cellEntries.length - 1]!;
+      const actorIds = new Set(
+        cellEntries.map((entry) =>
+          [entry.actor.actorType, entry.actor.userId, entry.actor.engineId].join('|')
+        )
+      );
+      return [
+        cellId,
+        {
+          cellId,
+          entries: cellEntries,
+          currentValue: last.newValue,
+          createdAt: first.timestamp,
+          changeCount: cellEntries.length,
+          uniqueActors: actorIds.size,
+          integrityValid: false,
+        },
+      ];
+    })
+  );
+}
+
+function restoreChains(chains: unknown, pendingEntries: unknown): Map<string, CellLineageChain> {
+  const markUnverified = (source: Map<string, CellLineageChain>) =>
+    new Map(Array.from(source, ([cellId, chain]) => [cellId, { ...chain, integrityValid: false }]));
+
+  if (chains instanceof Map) return markUnverified(chains);
+
+  let restored: Map<string, CellLineageChain>;
+  if (Array.isArray(chains)) {
+    restored = new Map(chains as [string, CellLineageChain][]);
+  } else if (isRecord(chains)) {
+    restored = new Map(Object.entries(chains) as [string, CellLineageChain][]);
+  } else {
+    restored = new Map();
+  }
+
+  // v1 wrote a Map through JSON.stringify, which stored `{}`. Its append-ordered
+  // pendingEntries array is the only surviving copy; rebuild chains from it.
+  if (restored.size === 0 && Array.isArray(pendingEntries) && pendingEntries.length > 0) {
+    return rebuildChainsFromEntries(pendingEntries as CellLineageEntry[]);
+  }
+  return markUnverified(restored);
+}
+
 // ─── Store ─────────────────────────────────────────────────────────────────
 
-// W6-P0-14: recordChange appends an immutable provenance entry to the hash
-// chain — audit-grade write (audit:create). rewindTo/verifyIntegrity/
-// queryEntries/getChain/getCurrentValue/getValueAtTime are reads or derived
-// status only and stay unguarded.
+// W6-P0-14: recordChange appends a local lineage entry — permission-guarded
+// with audit:create. rewindTo/verifyIntegrity/queryEntries/getChain/
+// getCurrentValue/getValueAtTime are reads or derived status and stay unguarded.
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
 import { nowISO } from '@/utils/clock';
+
+// The store updates Map-backed chains through Immer drafts.
+enableMapSet();
 
 interface CellLineageActions {
   /** Record a new lineage entry for a cell */
@@ -92,20 +186,20 @@ export const useCellLineageStore = create<CellLineageStoreState>()(
             const entryId = randomId('lin');
             const timestamp = nowISO();
 
-            const entryData = JSON.stringify({
-              id: entryId,
-              cellId,
-              oldValue,
-              newValue,
-              actor,
-              timestamp,
-              reason,
-              dataOrigin,
-              engineVersion: engineVersion ?? null,
-              previousHash,
-            });
-
-            const entryHash = await hashEntry(entryData);
+            const entryHash = await hashEntry(
+              serializeHashInput({
+                id: entryId,
+                cellId,
+                oldValue,
+                newValue,
+                actor,
+                timestamp,
+                reason,
+                dataOrigin,
+                engineVersion: engineVersion ?? null,
+                previousHash,
+              })
+            );
 
             const entry: CellLineageEntry = {
               id: entryId,
@@ -122,25 +216,29 @@ export const useCellLineageStore = create<CellLineageStoreState>()(
               metadata: {},
             };
 
-            set((state) => {
-              const existing = state.chains.get(cellId);
-              if (existing) {
-                (existing.entries as CellLineageEntry[]).push(entry as CellLineageEntry);
-                (existing as { currentValue: CellValueSnapshot }).currentValue = newValue;
-                existing.changeCount++;
-              } else {
-                state.chains.set(cellId, {
-                  cellId,
-                  entries: [entry as CellLineageEntry],
-                  currentValue: newValue as unknown as CellValueSnapshot,
-                  createdAt: timestamp,
-                  changeCount: 1,
-                  uniqueActors: 1,
-                  integrityValid: true,
-                } as unknown as Parameters<typeof state.chains.set>[1]);
-              }
-              (state.pendingEntries as CellLineageEntry[]).push(entry as CellLineageEntry);
-            });
+            const currentState = get();
+            const chains = new Map(currentState.chains);
+            const existing = chains.get(cellId);
+            if (existing) {
+              chains.set(cellId, {
+                ...existing,
+                entries: [...existing.entries, entry],
+                currentValue: newValue,
+                changeCount: existing.changeCount + 1,
+                integrityValid: false,
+              });
+            } else {
+              chains.set(cellId, {
+                cellId,
+                entries: [entry],
+                currentValue: newValue,
+                createdAt: timestamp,
+                changeCount: 1,
+                uniqueActors: 1,
+                integrityValid: false,
+              });
+            }
+            set({ chains, pendingEntries: [...currentState.pendingEntries, entry] });
 
             return entryId;
           }
@@ -183,22 +281,32 @@ export const useCellLineageStore = create<CellLineageStoreState>()(
         verifyIntegrity: async () => {
           const state = get();
           let allValid = true;
+          const chainValidity = new Map<string, boolean>();
 
-          for (const [, chain] of state.chains) {
+          for (const [cellId, chain] of state.chains) {
+            let chainValid = chain.cellId === cellId;
             let previousHash = '0'.repeat(64);
 
             for (const entry of chain.entries) {
-              if (entry.previousHash !== previousHash) {
-                allValid = false;
+              const expectedHash = await hashEntry(serializeHashInput(entry));
+              if (entry.previousHash !== previousHash || entry.entryHash !== expectedHash) {
+                chainValid = false;
                 break;
               }
               previousHash = entry.entryHash;
             }
 
-            if (!allValid) break;
+            chainValidity.set(cellId, chainValid);
+            if (!chainValid) allValid = false;
           }
 
           set((state) => {
+            for (const [cellId, chain] of state.chains) {
+              state.chains.set(cellId, {
+                ...chain,
+                integrityValid: chainValidity.get(cellId) ?? false,
+              });
+            }
             state.integrityVerified = allValid;
             state.lastIntegrityCheck = nowISO();
           });
@@ -225,8 +333,34 @@ export const useCellLineageStore = create<CellLineageStoreState>()(
       {
         name: 'cell-lineage-store',
         storage: masterStorage,
-        version: 1,
-        migrate: (state: unknown) => state,
+        version: 2,
+        partialize: (state) =>
+          ({
+            chains: Object.fromEntries(state.chains),
+            pendingEntries: state.pendingEntries,
+            integrityVerified: state.integrityVerified,
+            lastIntegrityCheck: state.lastIntegrityCheck,
+          }) as unknown as CellLineageStoreState,
+        migrate: (persistedState: unknown) => {
+          const persisted = isRecord(persistedState) ? persistedState : {};
+          const chains = restoreChains(persisted.chains, persisted.pendingEntries);
+          return {
+            ...persisted,
+            chains: Object.fromEntries(chains),
+            integrityVerified: false,
+            lastIntegrityCheck: null,
+          } as unknown as CellLineageStoreState;
+        },
+        merge: (persistedState, currentState) => {
+          const persisted = isRecord(persistedState) ? persistedState : {};
+          return {
+            ...currentState,
+            ...persisted,
+            chains: restoreChains(persisted.chains, persisted.pendingEntries),
+            integrityVerified: false,
+            lastIntegrityCheck: null,
+          } as CellLineageStoreState;
+        },
       }
     )
   )

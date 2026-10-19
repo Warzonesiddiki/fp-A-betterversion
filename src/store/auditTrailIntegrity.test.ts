@@ -14,6 +14,7 @@ import {
   type ExtendedAuditEntry,
 } from './auditTrailStore';
 import { useAuthStore } from './authStore';
+import { actAs } from '@/test/rbacFixtures';
 import { sha256Hex } from '@/utils/sha256';
 
 // W6-P0-14: seedDemoData is guarded by audit:create — authenticate an
@@ -66,7 +67,6 @@ const resetStore = () =>
   useAuditTrailStore.setState({
     entries: [],
     chainHead: AUDIT_CHAIN_GENESIS_HASH,
-    currentUserRole: 'viewer',
   });
 
 const recordThree = (): [string, string, string] => {
@@ -176,13 +176,14 @@ describe('KAV-11 audit chain integrity', () => {
   });
 
   it('KAV-11.1 intact chain verifies clean across write/update/delete/bulk/revert', () => {
+    actAs('Admin');
     const s = useAuditTrailStore.getState();
     recordThree();
     s.recordBulk([
       { ...input, operation: 'bulk', newValue: 2000 },
       { ...input, operation: 'bulk', newValue: 2100 },
     ]);
-    s.setCurrentUserRole('admin');
+    actAs('Admin');
     const revertTarget = useAuditTrailStore.getState().entries[3]!.id;
     s.revertToState(revertTarget);
     const v = useAuditTrailStore.getState().verifyIntegrity();
