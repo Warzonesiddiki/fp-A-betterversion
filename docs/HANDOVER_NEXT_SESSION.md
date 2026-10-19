@@ -1,9 +1,39 @@
 # Handover — 2026-10-19 — next-session prompt + state of the tree
 
+> **Latest N3 RBAC continuation (2026-10-19):** The pinned AST census is 409 store actions: 302 guarded, 107 explicit exceptions. A failing-first review found `auditTrailStore.recordBulk` had no in-repository caller and was incorrectly grouped with GDPR bridge recording; it now requires `audit:create`. Denial cases reproduced three allowed calls (no session, Viewer, Admin missing `audit:create`) before the fix. The four GDPR bridge recorder exceptions remain scoped and explicitly disclaim payload-source authentication and general audit authority. Source review also found `src/services/api.ts` calling `useAuthStore.setState` after a successful 401 refresh; the interceptor now delegates to `authStore.refreshAccessToken`, and the AST ratchet rejects direct `.setState` access on imported stores in production code. `authStore.register` is allowed only when mock auth is explicitly enabled in a non-production build; a failing-first test proved the previous local-registration bypass when `VITE_USE_MOCK_AUTH=false`. `authStore.switchEntity` remains blocked by O9—do not infer entity access from `activeEntityId`. Latest focused RBAC/auth run: 5 files / 206 tests passed. The first full sharded run found eight failures in four test fixtures that relied on ambient role state after the RBAC hardening. Fixtures now use real authenticated roles; the final `npm run test:sharded` passed 8/8 shards in 1187s (one test skipped). `npm run tsc`, full `npm run lint` (138s), `npm run format:check`, `docs:verify`, strict `docs:links`, and `git diff --check` passed. Pre-push remains unrun. Consolidated N3 implementation/snapshot is committed as `9aab152`; authorized test-fixture follow-up is committed as `e185e04` (tracker hook `02e8394`). N5 E6 hygiene is now implemented: `scripts/check-coverage-annex.mjs` validates five-column row shape/statuses and contiguous numbering, pins row 26 to the AST census and row 45 to source store counts, and surfaces the unresolved 108–110 scope gap. A deliberately wrong row-26 count is rejected by a 2-test suite. The script is part of `npm run docs:verify`; it does not claim full semantic verification of free-text evidence. `docs:verify` passes with an explicit warning for missing rows 108–110. N3 remains active, not complete.
+
+> **Previous continuation update (2026-10-19):** checklist census and phase/dependency sweep recorded in the Master Coverage Snapshot; 107 rows exist (1–107), and missing rows 108–110 remain an unresolved scope discrepancy. N2 remains active. DEC-027 retires the former in-memory `CellAuditTrailEngine` after a pre-removal census found no remaining production consumer/writer or persistence; its tests, benchmark, export, manifest entry, smoke mocks and stale type comments are removed/updated. No durable history required migration. The `AuditEngine` and `AuditTrailEngine` prototypes have also been retired by DEC-028 after a no-caller/no-persistence census; measured engine inventory is 180 modules / 98 shipped / 82 orphan. DEC-028 verification: 6 focused files / 69 tests passed; `npm run tsc`, full `npm run lint` (164.8s), `format:check`, `docs:verify`, `engines:verify`, strict `docs:links`, and `git diff --check` passed. Full sharded suite and pre-push remain unrun. Server `/api/audit` remains Q6-blocked and SOX authority remains O4-blocked. DEC-031 records the concrete `AuditLogger` boundary as an isolated, in-memory helper—not a product audit authority. DEC-032 retains `PIIRedactor` only as an isolated in-memory helper: no production caller or persistence adapter was found; its 70 unit tests prove helper behavior only, not product-wide PII coverage. Security/threat-model claims were corrected to mark this runtime control unverified. N3 RBAC review also tested and fixed `getCurrentUser()` so stale `user` data is ignored unless `isAuthenticated === true` (code/test commit `80371c5`); a failing-first regression proved the prior implementation returned permissions for an unauthenticated stored user. The RBAC AST census now accepts only top-level imported permission wrappers or first-statement imported assertions; synthetic tests reject nested, unused, unimported, and parameter-shadowed checks. A checked-in snapshot pins the 400+ action/disposition inventory, and failing-first denial cases cover delegated `recordDisposition`/`updateDisposition` actions (tests committed in `04478a2` and `3ac1173`). The audit-record exception now states that the GDPR bridge is the only in-repo caller found and caller-source authenticity is unverified (commit `3b19bfa`). Latest focused run: 16 RBAC/audit files / 392 tests; period/document impact set: 5 files / 95 tests. `npm run tsc`, full `npm run lint` (205s), `npm run format:check`, `docs:verify`, strict links, and `git diff --check` passed. `authStore.switchEntity` remains blocked on owner decision O9; do not infer authorized entity scope. DEC-030 fixes period-close chain verification so it preserves append order and verifies per-period genesis; the close log remains unanchored and separate from general audit/SOX authority. `periodCloseStore.test.ts` and `PeriodClosePage.test.tsx` pass 50/50; tsc, full lint (165s), format, docs truth, engine manifest, money/determinism/palette/fabrication ratchets, strict links, and diff check all pass. Full sharded suite/pre-push remain unrun. DEC-031 retains `AuditLogger` only as an isolated in-memory helper; no production wiring/persistence was found, and its historic security/A11Y policy references are not runtime evidence. `SecretRotation-AuditLogger.test.ts` + `SecretsVault.test.ts` pass 138/138; tsc, full lint (169s), format, docs truth, strict links, and diff checks pass. Q6/O4 remain owner blockers. Cell-lineage is retained separately by DEC-029; its v1 JSON Map-loss and link-only integrity gaps were reproduced failing-first, then repaired with a v2 migration and hash-recompute check. `cellLineageStore.test.ts` is 12/12; combined lineage/audit tests passed 3 files / 39 tests. Full lint passed in 176.0s; tsc, targeted ESLint, format, docs truth, engine manifest and strict links passed. Full sharded suite, pre-push and encrypted-backend restart proof remain unrun. Post-removal evidence: 5 focused files / 68 tests passed; `npm run tsc`, full `npm run lint` (121.9s), `format:check`, `docs:verify`, `engines:verify`, strict `docs:links`, and `git diff --check` passed. Full sharded suite and pre-push remain unrun.
+
 > **How to use this file:** start the new session, open the repo, and paste the
 > prompt in §1 verbatim. Everything after §1 is the evidence pack the prompt
 > points at. Facts here were measured in this tree; anything not measured is
 > labelled as owed.
+>
+> **Continuation override (2026-10-19):** this session is on
+> `arena/b72c910a-fp-a-betterversion` at `7be001e` when started. N2 remains
+> the first active task. The reachability map/page adapter exist; the persistence
+> contract test now covers audit-store v0→v1 migration and verified restored
+> chain state. Focused evidence from this slice is 27/27 tests across
+> `auditTrailPersistence.test.ts` (7) and `AuditTrailPage.test.tsx` (20), plus
+> `npm run tsc` passed. Baseline `npm run lint` flagged formatting at
+> `src/domain/persistenceAuthority.ts:67`; that correction is in the worktree.
+> Final focused run: 27/27 tests across migration and page-adapter files;
+> `format:check`, `docs:verify`, `engines:verify`, strict `docs:links`, and
+> targeted ESLint for both touched source files passed. Full `npm run lint`
+> timed out at 180 seconds; no full suite/pre-push run was made. Coverage row 45
+> and the reachability map now record this evidence. Remaining N2 path
+> dispositions and Q6/O4 boundaries are open; this is not a product-wide
+> audit-chain completion claim.
+>
+> **Follow-on N2 slice (2026-10-19):** starting from `9a38cb9`, DEC-026
+> retires the unconsumed EventLedger prototype. `eventLedger.ts`, its tests and
+> test-only RBAC exclusion were removed after a source census found no production
+> caller, writer or persistence path. Regenerated capability matrix; corrected
+> README/data model count to 48 Zustand stores, 43 persisted. Focused tests after
+> removal: 3 files / 36 tests passed; `npm run tsc`, `format:check`, targeted
+> ESLint, `docs:verify`, `engines:verify`, and strict `docs:links` passed. Full
+> suite, full lint and pre-push remain unrun this slice. N2 still open for other
+> dormant paths, period-close/cell-lineage treatment, Q6 server and O4 SOX.
 
 ---
 
@@ -25,7 +55,7 @@ READ FIRST, IN ORDER:
 2. docs/TASKBOARD.md — the live task board; pick up the top unblocked item
 3. docs/PROJECT_AUDIT_AND_EXECUTION_PLAN.md — governing plan (Parts I+II, §18.1)
 4. docs/MASTER_CHECKLIST_COVERAGE.md — 110-section coverage annex (status per row)
-5. docs/discovery/decision-log.md — DEC-001…DEC-024; owner rulings are binding
+5. docs/discovery/decision-log.md — DEC-001…DEC-025; owner rulings are binding
 6. AGENTS.md + docs/agent/ — standing engineering rules
 
 OWNER RULINGS ALREADY DECIDED (do not re-ask, do not re-narrow):
@@ -140,5 +170,4 @@ SOX authority DEC, external-AI DEC-022 follow-up, native/Tauri verification).
   `src/test/rbacFixtures.ts` (`actAs`, …).
 - Money: cent-round BEFORE subtracting; test comparisons in integer cents;
   independently rounded periods don't foot — use deltas of rounded cumulative.
-- MASTER_CHECKLIST_COVERAGE.md has **no mechanical guard**: every row edit
-  must cite its verifying command in the commit message (plan §18.1).
+- MASTER_CHECKLIST_COVERAGE.md now has a mechanical structural/pinned-claim guard in `scripts/check-coverage-annex.mjs`, wired into `npm run docs:verify`: five-column shape/status/sequence, row 26 RBAC census, row 45 store counts, and explicit 108–110 unresolved warning. Free-text semantics still require source evidence and owner/phase review; cite verification commands when changing claims.
