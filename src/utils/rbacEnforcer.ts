@@ -103,7 +103,8 @@ export interface EnforceOptions {
  */
 export function getCurrentUser(): User | null {
   try {
-    return useAuthStore.getState().user;
+    const { user, isAuthenticated } = useAuthStore.getState();
+    return isAuthenticated ? user : null;
   } catch {
     return null;
   }

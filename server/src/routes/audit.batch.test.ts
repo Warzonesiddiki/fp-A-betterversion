@@ -9,7 +9,7 @@ import { db } from '../db/connection.js';
 
 /**
  * R43 — POST /api/audit/batch client ingestion into the server audit_log
- * (the PERSISTENCE_MAP official trail for auditTrailStore).
+ * (a separate server log; it is not wired to the client auditTrailStore per DEC-025).
  *
  * Contract pinned here:
  *   - JWT-scoped: actor + tenant always derive from the token, never the body.
@@ -377,7 +377,6 @@ describe('R43 POST /api/audit/batch ingestion', () => {
       .set('Authorization', `Bearer ${adminA}`)
       .send(batchPayload(batchId));
     expect(first.status).toBe(201);
-    const originalIds = (first.body as { ids: string[] }).ids;
 
     // Retention pass deletes the 2026-08-20-stamped ENTRY rows; the commit
     // marker was inserted today, so a 2-day cutoff leaves it standing.

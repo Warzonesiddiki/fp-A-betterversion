@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { enableMapSet } from 'immer';
 import { useWorkflowStore } from './workflowStore';
+import { actAs, signOut } from '@/test/rbacFixtures';
 
 enableMapSet();
 
@@ -48,8 +49,10 @@ describe('workflowStore', () => {
   });
 
   it('checkEscalations returns escalated ids and refreshes snapshots', () => {
+    actAs('Admin');
     const s = useWorkflowStore.getState();
     const esc = s.checkEscalations();
     expect(Array.isArray(esc)).toBe(true);
+    signOut();
   });
 });

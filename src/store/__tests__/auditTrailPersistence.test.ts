@@ -133,6 +133,55 @@ describe('N-0003: audit trail survives a persistence round trip', () => {
     expect(useAuditTrailStore.getState().verifyIntegrity().valid).toBe(false);
   });
 
+  it('migrates a v0 persisted blob to v1 without losing the chain or persisting view state', () => {
+    const state = useAuditTrailStore.getState();
+    state.recordWrite({
+      cellId: {
+        cube: 'gl',
+        coords: { account: '1000' },
+        measure: 'value',
+        sectorId: 'retail',
+        scenarioId: 'actual',
+        periodId: '2026-01',
+        lineItemId: 'cash',
+      },
+      userId: 'controller-1',
+      operation: 'write',
+      dataType: 'number',
+      previousValue: null,
+      newValue: 1250,
+      source: 'manual',
+    });
+
+    const { entries, chainHead } = useAuditTrailStore.getState();
+    const legacyV0 = JSON.parse(JSON.stringify({ entries, chainHead })) as {
+      entries: ExtendedAuditEntry[];
+      chainHead: string;
+    };
+    const options = useAuditTrailStore.persist.getOptions();
+    expect(options.version).toBe(1);
+
+    const migrated = options.migrate?.(legacyV0, 0) as typeof legacyV0;
+    expect(migrated).toEqual(legacyV0);
+
+    const persisted = options.partialize?.(useAuditTrailStore.getState()) as Record<
+      string,
+      unknown
+    >;
+    expect(Object.keys(persisted).sort()).toEqual(['chainHead', 'entries']);
+
+    reset();
+    useAuditTrailStore.setState(migrated as never);
+    const restored = useAuditTrailStore.getState();
+    expect(restored.entries).toEqual(legacyV0.entries);
+    expect(restored.chainHead).toBe(legacyV0.chainHead);
+    expect(restored.verifyIntegrity()).toMatchObject({
+      valid: true,
+      entryCount: 1,
+      headIntact: true,
+    });
+  });
+
   it('an empty restored trail reports the genesis head, not a broken chain', () => {
     reset();
     const verdict = useAuditTrailStore.getState().verifyIntegrity();

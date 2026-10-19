@@ -3,10 +3,10 @@
  * Regenerate with: node scripts/generate-engine-manifest.mjs
  *
  * Maps every engine id to a dynamic import (N-0013). Hand-maintaining this
- * list is exactly how EngineRegistry ended up knowing only 40 of 183
+ * list is exactly how EngineRegistry ended up knowing only 40 of 180
  * engines while the rest were unreachable at runtime.
  *
- * Engines: 183
+ * Engines: 180
  */
 
 export type EngineId =
@@ -23,9 +23,7 @@ export type EngineId =
   | 'AnomalyDetectionEngine'
   | 'ArrayFormulaEngine'
   | 'AssumptionEngine'
-  | 'AuditEngine'
   | 'AuditLogEngine'
-  | 'AuditTrailEngine'
   | 'AutoCommentaryEngine'
   | 'AutoSaveEngine'
   | 'BankingEngine'
@@ -40,7 +38,6 @@ export type EngineId =
   | 'CascadeCalculationEngine'
   | 'CashEngine'
   | 'CashFlowWaterfallEngine'
-  | 'CellAuditTrailEngine'
   | 'CellCommentEngine'
   | 'CellProtectionEngine'
   | 'CellValidationEngine'
@@ -211,9 +208,7 @@ export const ENGINE_MANIFEST: Record<EngineId, () => Promise<EngineModule>> = {
   AnomalyDetectionEngine: () => import('./AnomalyDetectionEngine'),
   ArrayFormulaEngine: () => import('./ArrayFormulaEngine'),
   AssumptionEngine: () => import('./AssumptionEngine'),
-  AuditEngine: () => import('./AuditEngine'),
   AuditLogEngine: () => import('./AuditLogEngine'),
-  AuditTrailEngine: () => import('./AuditTrailEngine'),
   AutoCommentaryEngine: () => import('./AutoCommentaryEngine'),
   AutoSaveEngine: () => import('./AutoSaveEngine'),
   BankingEngine: () => import('./BankingEngine'),
@@ -228,7 +223,6 @@ export const ENGINE_MANIFEST: Record<EngineId, () => Promise<EngineModule>> = {
   CascadeCalculationEngine: () => import('./CascadeCalculationEngine'),
   CashEngine: () => import('./CashEngine'),
   CashFlowWaterfallEngine: () => import('./CashFlowWaterfallEngine'),
-  CellAuditTrailEngine: () => import('./CellAuditTrailEngine'),
   CellCommentEngine: () => import('./CellCommentEngine'),
   CellProtectionEngine: () => import('./CellProtectionEngine'),
   CellValidationEngine: () => import('./CellValidationEngine'),

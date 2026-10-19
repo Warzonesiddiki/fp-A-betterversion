@@ -1,5 +1,7 @@
 # TEMPORAL_ENGINE_CORRECTNESS — Chronos Audit v0.1
 
+> **Historical evidence only (2026-10-19):** this report does not constitute current compliance or SOX approval. `AuditTrailEngine` was retired by DEC-028: its former hash was 32-bit FNV-1a, not cryptographic, and the class was not wired to product audit authority. This report remains provenance only. See [docs/architecture/AUDIT_CHAIN_REACHABILITY.md](../architecture/AUDIT_CHAIN_REACHABILITY.md) for current authority boundaries.
+
 **Author:** Chronos (slot `019ecc6f-1c46-78e0-b122-15d43a3f1900`)
 **Date:** 2026-06-15
 **Scope:** Time-zone + DST + leap-year correctness for 4 temporal engines

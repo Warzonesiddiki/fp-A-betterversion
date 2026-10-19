@@ -155,7 +155,11 @@ function matrixRows(files, area) {
     const path = relativePosix.replaceAll('|', '\\|');
     const displayName = basenameOf(file);
     const [category, disposition, owner] = moduleClassification(file, area);
-    return `| ${titleCase(displayName.replace(extname(displayName), ''))} | ${category} | ${disposition} | ${owner} | \`${path}\` | ${evidenceStatus(file)} | UNVERIFIED | UNVERIFIED | UNVERIFIED | Static inventory only; see evidence protocol. |`;
+    const evidenceNote =
+      relativePosix === 'src/services/PIIRedactor.ts'
+        ? 'DEC-032: no production caller or persistence; isolated in-memory helper, not a product-wide PII control/audit authority; preserve export/token-map compatibility.'
+        : 'Static inventory only; see evidence protocol.';
+    return `| ${titleCase(displayName.replace(extname(displayName), ''))} | ${category} | ${disposition} | ${owner} | \`${path}\` | ${evidenceStatus(file)} | UNVERIFIED | UNVERIFIED | UNVERIFIED | ${evidenceNote} |`;
   });
 }
 

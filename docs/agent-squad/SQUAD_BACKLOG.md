@@ -43,7 +43,7 @@
      (real pages, real stores, real `ExportEngine`, parsed workbook) — **6 red → 6/6 green** — and
      the pages now print the string their own screen prints. `InsurancePage`'s `?? 0` is gone with
      it: an unsupportable ratio is `N/A`, never `$0.00`. Detail and the file:line evidence are in
-     `docs/agent/09_KNOWN_GAPS.md` (claim row "Exports never label a percentage or an absent value
+     [`docs/agent/09_KNOWN_GAPS.md`](../agent/09_KNOWN_GAPS.md) (claim row "Exports never label a percentage or an absent value
      as money"). Three assertions are inverted on purpose so "stringify everything" cannot pass.
      This was a correctness repair to existing exports, not new surface — no Gate 2 exemption was
      needed, and none was used. Not measured: every other export surface in the repo.
@@ -112,7 +112,7 @@ src/components/exceptions src/pages/data src/utils` → **198 files / 2,725 test
   wired since, while the collaboration trio, `LeaseAccountingPage` and `ChartOfAccountsPage`
   still compute inline. Note-only by design — wiring formulas changes money semantics, which is
   DEC-002's order, and `npm run mock-data:audit` stays green (wired=7, disclosed=20).
-  _Item 7 so far_ — the env-caveat row in `09_KNOWN_GAPS.md` now records the storage-spy fix
+  _Item 7 so far_ — the env-caveat row in [`docs/agent/09_KNOWN_GAPS.md`](../agent/09_KNOWN_GAPS.md) now records the storage-spy fix
   instead of three phantom failures, FR-010's register evidence says **Partial (17 tests)**
   instead of "Not built", and the census row's first draft claim ("no page-level formula test")
   was cut back to what was measured (no engine import).

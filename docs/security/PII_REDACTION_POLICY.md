@@ -1,20 +1,26 @@
 # PII Redaction Policy
 
-> **FinPlan Pro v1.0.0 — Phase 7, PATCH 13 (Hephaestus, 2026-06-16)**
-> Owners: Security (Hephaestus) · Privacy (Themis) · Data (Mnemosyne)
-> Status: **SHIPPED** · Review cycle: **Quarterly** · Next review: 2026-09-16
+> **FinPlan Pro v1.0.0 — Phase 7, PATCH 13 design specification (2026-06-16)**
+> Owners: Security (historical author) · Privacy · Data
+> Status: **DESIGN ONLY — runtime coverage unverified** · Reviewed for reachability: 2026-10-19 (DEC-032)
+>
+> The `PIIRedactor` class has no production caller or persistence adapter. Its passing unit tests prove helper behavior only; they do not prove redaction across product logs, exports, telemetry, or audit sinks. Do not use this document as compliance evidence or claim PATCH 13 is production-wired.
 
 ---
 
 ## 1. Scope
 
-This policy governs the last-line-of-defense redaction of personally
-identifiable information (PII) flowing through FinPlan Pro v1.0.0 logs,
-exports, telemetry, and audit trails. The `PIIRedactor` service is applied
-**before** any value reaches a logger, exporter, or third-party sink.
+This document describes the intended last-line-of-defense redaction behavior
+for personally identifiable information (PII) in logs, exports, telemetry, and
+audit trails. It is not a live control: the `PIIRedactor` service is not wired
+before product loggers, exporters, or third-party sinks. Current surfaces must
+be assessed and tested independently; `auditTrailStore` applies its local
+`redactPII` helper to its JSON/CSV exports and the audit page's CSV export.
+That helper does not establish coverage for displayed values, logs, telemetry,
+or other sinks.
 
-This document is binding on every code path that emits a structured log
-record, audit event, or export payload.
+Treat this as an implementation specification, not a binding claim about every
+emitting code path or evidence of GDPR, SOC 2, CCPA, or SOX compliance.
 
 ## 2. Classification
 
@@ -208,7 +214,7 @@ that needs to correlate them uses the `actor` + `timestamp` fields.
 
 ## 8. Operational procedures
 
-### 8.1 Wiring the redactor
+### 8.1 Example integration (not currently wired)
 
 ```ts
 import { PIIRedactor } from '@/services/PIIRedactor';
@@ -219,7 +225,7 @@ const redactor = PIIRedactor.getInstance({
   hmacKey: crypto.getRandomValues(new Uint8Array(32)),
   source: 'auth-svc',
   onAudit: async (e) => {
-    // forward to the AuditLogger or your durable queue
+    // Example only: no production AuditLogger/durable-queue wiring is verified.
   },
 });
 
@@ -231,11 +237,16 @@ console.log(JSON.stringify(output)); // safe to log
 ### 8.2 Test mode
 
 Use `PIIRedactor.createForTest(config)` to obtain a fresh instance with
-custom config without disturbing the production singleton. Both factory
-methods are public; the singleton `getInstance` is intended for runtime
-use, `createForTest` for unit tests.
+custom config without disturbing the singleton. Both factory methods are
+public; `createForTest` is used by the unit tests. A source census found no
+production caller of `getInstance`; the name does not prove that a production
+singleton is wired.
 
 ### 8.3 Performance
+
+The figures below are historical estimates from the design document, not
+measurements from the current repository/runtime. Treat them as unverified;
+no performance gate is based on them.
 
 | Operation                  | Typical | P99    | Notes                       |
 | -------------------------- | ------- | ------ | --------------------------- |
@@ -249,16 +260,20 @@ FNV-1a 64-bit hashing is O(string length); at <1µs per 1KB string, this
 is negligible. SHA-256 audit hash via Web Crypto runs at ~1 GB/s on
 modern CPUs.
 
-## 9. Compliance traceability
+## 9. Design-to-control mapping (not compliance evidence)
 
-| Control                | Evidence                                           |
-| ---------------------- | -------------------------------------------------- |
-| SOC 2 P4.1             | Multi-strategy redaction, allowlist, default mode. |
-| GDPR Art. 5            | `permissive` mode supports minimization.           |
-| GDPR Art. 25           | Default is `mask` + `strict` (deny-by-default).    |
-| GDPR Art. 32           | Hash-chained audit log.                            |
-| CCPA §1798.105         | `rehydrate` supports erasure-by-reference flows.   |
-| CWE-200, 213, 359, 532 | See §7.                                            |
+The table maps helper features to intended control concepts only. No row proves
+that a product sink is wired, meets a legal requirement, or is independently
+validated.
+
+| Control                | Design feature (runtime coverage unverified)                                                  |
+| ---------------------- | --------------------------------------------------------------------------------------------- |
+| SOC 2 P4.1             | Multi-strategy redaction, allowlist, and default mode are implemented in the isolated helper. |
+| GDPR Art. 5            | `permissive` mode is a configurable helper behavior.                                          |
+| GDPR Art. 25           | The helper defaults to `mask` + `strict`; product-wide defaults are not established.          |
+| GDPR Art. 32           | The helper has an in-memory, unkeyed event hash chain with no external anchor.                |
+| CCPA §1798.105         | `rehydrate` reverses tokens in the instance map; this is not an erasure workflow.             |
+| CWE-200, 213, 359, 532 | Unit tests exercise helper behavior only; see §7.                                             |
 
 ## 10. References
 
@@ -269,4 +284,4 @@ modern CPUs.
 
 ---
 
-_End of policy — Hephaestus, 2026-06-16. CAVEMAN 19/19 HOLDS._
+_Historical document attribution: Hephaestus, 2026-06-16. The former “CAVEMAN 19/19 HOLDS” annotation is not current verification evidence._

@@ -1,29 +1,15 @@
-// AuditLogger — Tamper-evident, hash-chained audit log
-// FinPlan Pro v1.0.0 — Phase 7 PATCH 12 (Hephaestus, 2026-06-16)
+// AuditLogger — standalone in-memory hash-sequence utility (not product authority)
+// FinPlan Pro v1.0.0 — historical PATCH 12 implementation; bounded by DEC-031
 //
-// SECURITY RATIONALE:
-//   Persists security-relevant events with a SHA-256 hash chain so that any
-//   after-the-fact tampering is detectable. Each event's hash includes the
-//   previous chain head, the canonicalized event fields, and a per-event
-//   nonce — meaning no two events in the same log share a hash. Verifying
-//   the chain is O(N) but O(1) per event for incremental integrity checks.
-//
-// THREAT MODEL ADDRESSED:
-//   - CWE-778 (Insufficient logging): persistent, structured, categorized.
-//   - CWE-345 (Insufficient verification of data authenticity): every event
-//     is bound to a chain; verification detects insertion, deletion, mutation.
-//   - CWE-779 (Logging of excessive data): payload size capped at
-//     MAX_PAYLOAD_BYTES; redaction hooks supported via 'redacted: true' field.
-//   - CWE-532 (Insertion of sensitive info into log file): payload is
-//     caller-controlled but the chain head is opaque — we never log
-//     payloads recursively, only by reference.
-//
-// COMPLIANCE:
-//   - SOC 2 CC7.1 (system monitoring): per-event actor + category + severity.
-//   - SOC 2 CC7.2 (anomaly detection): severity + category allow alerting.
-//   - SOC 2 CC7.3 (security event evaluation): timestamp + correlationId
-//     permit timeline reconstruction.
-//   - SOC 2 CC7.4 (incident response): export() supports forensics pull.
+// LIMITS:
+//   - This class has no production caller or persistence adapter in this repo.
+//   - SHA-256 links are unkeyed and have no external anchor. Verification can
+//     detect accidental or partial mutation relative to the retained head, but
+//     a writer able to replace the whole snapshot can recompute every link.
+//   - Export/restore are local snapshot APIs, not durable storage, delivery,
+//     authenticity, non-repudiation, SOX, or SOC 2 evidence.
+//   - This class does not implement the type-only AuditLogger sink interface
+//     used by SecretsVault; no production adapter connects the two.
 //
 // DEPENDENCIES:
 //   - Web Crypto API (crypto.subtle.digest for SHA-256).
@@ -113,7 +99,7 @@ export interface AuditEvent {
   correlationId: string | null;
   /** SHA-256 of the event (hex). */
   eventHash: string;
-  /** Chain head at the time this event was appended (hex). */
+  /** Previous chain value at append time (the first value is the literal genesis marker). */
   prevChainHash: string;
   /** Per-event nonce (16 bytes hex). */
   nonce: string;
@@ -156,7 +142,7 @@ export interface AuditChainVerificationResult {
   firstFailure: number;
   /** Reason for failure, or null. */
   reason: string | null;
-  /** The current chain head (hex). */
+  /** Current chain value (literal genesis marker before the first event, then a digest). */
   chainHead: string;
 }
 
@@ -164,7 +150,7 @@ export interface AuditLoggerConfig {
   /** Source label written into every event by default. */
   source?: string;
   category?: AuditCategory;
-  /** Initial chain head. Defaults to SHA-256(GENESIS_PREIMAGE). */
+  /** Initial predecessor marker. Defaults to the literal GENESIS_PREIMAGE string; no digest is applied. */
   genesisChainHead?: string;
   /** Maximum events to retain. Defaults to MAX_EVENTS. */
   maxEvents?: number;
@@ -234,7 +220,7 @@ export class AuditLogger {
   private category: AuditCategory;
   private maxEvents: number;
   private nextSequence: number = 0;
-  /** Cache of the SHA-256 of GENESIS_PREIMAGE used to bootstrap the chain. */
+  /** Initial predecessor marker; the default is a literal constant, not a hashed genesis anchor. */
   private readonly genesisChainHead: string;
 
   private constructor(config: AuditLoggerConfig = {}) {
@@ -380,7 +366,7 @@ export class AuditLogger {
     return event;
   }
 
-  /** Current chain head (hex SHA-256). */
+  /** Current chain value (literal genesis marker before the first event, then a digest). */
   getChainHead(): string {
     return this.chainHead;
   }

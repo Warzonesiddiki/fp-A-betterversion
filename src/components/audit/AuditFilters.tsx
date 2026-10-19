@@ -4,7 +4,12 @@
 
 import { useCallback, type JSX } from 'react';
 import { Search, X } from 'lucide-react';
-import { useAuditTrailStore, selectCanViewGdprAudit } from '@/store/auditTrailStore';
+import {
+  useAuditTrailStore,
+  canRoleViewGdprAudit,
+  excludeGdprEntriesByRole,
+} from '@/store/auditTrailStore';
+import { useAuthStore } from '@/store/authStore';
 import type {
   AuditOperation,
   ApprovalStatus,
@@ -59,8 +64,9 @@ export function AuditFilters(): JSX.Element {
   const setFilter = useAuditTrailStore((s) => s.setFilter);
   const clearFilters = useAuditTrailStore((s) => s.clearFilters);
   const entries = useAuditTrailStore((s) => s.entries);
-  // F-CLIO-2/7 FIX: RBAC gating for GDPR-source filter and hasConsent checkbox
-  const canViewGdprAudit = useAuditTrailStore(selectCanViewGdprAudit);
+  // Subscribe directly to auth state so role changes revoke GDPR controls immediately.
+  const authenticatedRole = useAuthStore((state) => state.user?.role);
+  const canViewGdprAudit = canRoleViewGdprAudit(authenticatedRole);
   const visibleSources = canViewGdprAudit ? ALL_SOURCES : ALL_SOURCES.filter((s) => s !== 'gdpr');
 
   const toggleArrayFilter = useCallback(
@@ -74,7 +80,8 @@ export function AuditFilters(): JSX.Element {
     [filters, setFilter]
   );
 
-  const uniqueUsers = Array.from(new Set(entries.map((e) => e.userId))).sort();
+  const visibleEntries = excludeGdprEntriesByRole(entries, canViewGdprAudit);
+  const uniqueUsers = Array.from(new Set(visibleEntries.map((e) => e.userId))).sort();
 
   const hasAnyFilter =
     !!filters.cellId ||

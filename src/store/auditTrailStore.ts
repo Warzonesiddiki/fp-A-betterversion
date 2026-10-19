@@ -17,14 +17,13 @@ export type { ExtendedAuditEntry, AuditSource, AuditOperation };
 import { sanitizeSpreadsheetText } from '@/utils/spreadsheetSanitize';
 import { sha256Hex } from '@/utils/sha256';
 import { randomId } from '@/utils/cryptoId';
-// W6-P0-14: seedDemoData writes 50 chained entries into the PERSISTED
-// compliance trail — admin-grade (audit:create). The record* family stays
-// unguarded BY DESIGN: it is append-only instrumentation invoked cross-store
-// by the GDPR bridge (auditTrailGdprEvents.recordGdprEntry) on behalf of any
-// acting user; tampering paths are covered by revertToState's role gate and
-// the F-0015 hash chain. setCurrentUserRole is ephemeral view state
-// (excluded from persistence via partialize).
-import { enforce, Permissions } from '@/utils/rbacEnforcer';
+// W6-P0-14: seedDemoData and the currently unused recordBulk helper require
+// audit:create. recordWrite/Update/Delete/Read stay outside RBAC because the
+// in-repository caller is the GDPR event bridge; requiring an Admin-only
+// permission would drop lower-role event capture. These public methods trust
+// caller-supplied payloads and do not authenticate source identity. The local
+// unkeyed hash chain is not general audit authority; revert requires audit:delete.
+import { enforce, getCurrentUser, Permissions } from '@/utils/rbacEnforcer';
 import { now as clockNow } from '@/utils/clock';
 
 // ---------------------------------------------------------------------------
@@ -87,8 +86,6 @@ interface State {
   sortDir: 'asc' | 'desc';
   selectedEntryId: string | null;
   loading: boolean;
-  /** F-CLIO-2/7 RBAC gating — current user's role (Hera T-4.30 RBAC coupling) */
-  currentUserRole: AuditRole;
   /**
    * F-0015: hash of the most recently appended entry (the SHA-256 chain head).
    * `AUDIT_CHAIN_GENESIS_HASH` when the trail is empty. Stored separately from
@@ -120,14 +117,11 @@ interface Actions {
   refreshEntries: () => void;
   exportToCSV: () => string;
   exportToJSON: () => string;
-  /** F-CLIO-2/7 RBAC gating — sets current user role for GDPR audit visibility check */
-  setCurrentUserRole: (role: AuditRole) => void;
   /**
    * GDPR audit review filter (DPO/compliance view): returns only entries that
    * are GDPR-relevant — source 'gdpr', carrying a consentId, or carrying a
-   * breachEventId. Pure predicate over the caller-provided array.
-   * (Distinct from the RBAC visibility gate, which HIDES gdpr entries from
-   * roles outside GDPR_AUDIT_VIEW_ROLES — see excludeGdprEntriesByRole.)
+   * breachEventId. Returns no entries unless the authenticated role is allowed
+   * to view GDPR audit data; it is not a chain-integrity proof.
    */
   filterByGdprAccess: (entries: ExtendedAuditEntry[]) => ExtendedAuditEntry[];
   /**
@@ -174,15 +168,10 @@ const uid = (): string => randomId();
 const now = (): number => clockNow().getTime();
 
 /**
- * F-CLIO-3 FIX (Sentinel-SecurityAuditor BRUTAL v2.0 P0 — GDPR Art. 5(1)(c) + Art. 32 + CWE-359):
- * PIIRedactor redacts PII fields before export to prevent leakage of email addresses
- * (e.g., userId = "alice@finplan.io"). Pattern per Hades T-15 PIIRedactor.
- *
- * Rules:
- * - Email addresses (userId, approvalUserId) → first 3 chars + "***" + domain
- * - Version/Consent/Breach/RBAC IDs → unchanged (not PII, system identifiers)
- * - Cell address → unchanged (sector/scenario/period/lineItem not PII)
- * - Metadata → recursively redact string fields matching PII patterns
+ * Local audit-export helper: masks email-formatted values in `userId`,
+ * `approvalUserId`, and direct metadata string fields. It is not the standalone
+ * PIIRedactor service and is not a general PII classifier or compliance proof.
+ * Other sensitive categories and nested metadata are not comprehensively covered.
  */
 const PII_EMAIL_PATTERN = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -354,8 +343,6 @@ export const useAuditTrailStore = create<State & Actions>()(
         sortDir: 'desc',
         selectedEntryId: null,
         loading: false,
-        // F-CLIO-2/7 RBAC gating — default to 'viewer' (no GDPR audit access)
-        currentUserRole: 'viewer' as AuditRole,
         // F-0015: empty trail starts at the genesis hash
         chainHead: AUDIT_CHAIN_GENESIS_HASH,
 
@@ -432,7 +419,7 @@ export const useAuditTrailStore = create<State & Actions>()(
           return entry.id;
         },
 
-        recordBulk: (inputs) => {
+        recordBulk: enforce(Permissions.AUDIT_CREATE, 'recordBulk', (inputs) => {
           const txId = uid();
           const ids = inputs.map((input) => {
             const entry = makeEntry('bulk', { ...input, transactionId: txId });
@@ -442,7 +429,7 @@ export const useAuditTrailStore = create<State & Actions>()(
             return entry.id;
           });
           return ids;
-        },
+        }),
 
         setFilter: (key, value) => {
           set((state) => {
@@ -488,17 +475,10 @@ export const useAuditTrailStore = create<State & Actions>()(
           });
         },
 
-        revertToState: (entryId) => {
-          // SECURITY FIX (C-03): revertToState is restricted to prevent
-          // unauthorized mutation of the audit trail. Only admin / compliance
-          // / data-protection-officer roles may revert. The original entry
-          // remains intact; a new revert audit entry is added (append-only).
-          const allowedRoles: AuditRole[] = ['admin', 'compliance', 'data-protection-officer'];
-          if (!allowedRoles.includes(get().currentUserRole)) {
-            throw new Error(
-              'Audit trail revert denied: insufficient role. Required: admin, compliance, or data-protection-officer.'
-            );
-          }
+        revertToState: enforce(Permissions.AUDIT_DELETE, 'revertToState', (entryId) => {
+          // The original entry remains intact; reversion appends a new chained
+          // entry and requires the central audit:delete permission.
+
           const entry = get().entries.find((e) => e.id === entryId);
           if (!entry) return;
           // Generate a new audit entry recording the revert action (Hades GDPR Article 16).
@@ -520,7 +500,7 @@ export const useAuditTrailStore = create<State & Actions>()(
           set((state) => {
             appendChained(state, revertEntry);
           });
-        },
+        }),
 
         refreshEntries: () => {
           set((state) => {
@@ -535,9 +515,12 @@ export const useAuditTrailStore = create<State & Actions>()(
         },
 
         exportToCSV: () => {
-          const { entries } = get();
-          // F-CLIO-3 FIX (Sentinel-SecurityAuditor BRUTAL v2.0 P0 — GDPR Art. 5(1)(c) + Art. 32 + CWE-359):
-          // Apply PIIRedactor before CSV export to redact email addresses.
+          // Export is a role-filtered extract, not a complete-chain verification artifact.
+          const entries = excludeGdprEntriesByRole(
+            get().entries,
+            canRoleViewGdprAudit(getCurrentUser()?.role)
+          );
+          // Apply the local email-focused redactPII helper to CSV export rows.
           const header = [
             'id',
             'timestamp',
@@ -573,24 +556,22 @@ export const useAuditTrailStore = create<State & Actions>()(
         },
 
         exportToJSON: () => {
-          const { entries } = get();
-          // F-CLIO-3 FIX: Apply PIIRedactor before JSON export
+          const entries = excludeGdprEntriesByRole(
+            get().entries,
+            canRoleViewGdprAudit(getCurrentUser()?.role)
+          );
+          // Apply the local email-focused redactPII helper to JSON export rows.
           return JSON.stringify(entries.map(redactPII), null, 2);
-        },
-
-        // F-CLIO-2/7 RBAC gating — set current user role for GDPR audit visibility check
-        setCurrentUserRole: (role: AuditRole) => {
-          set((state) => {
-            state.currentUserRole = role;
-          });
         },
 
         // GDPR review-view filter: entries relevant to GDPR audit review
         // (DPO/compliance), i.e. GDPR-sourced or GDPR-cross-referenced.
-        filterByGdprAccess: (entries) =>
-          entries.filter(
+        filterByGdprAccess: (entries) => {
+          if (!canRoleViewGdprAudit(getCurrentUser()?.role)) return [];
+          return entries.filter(
             (e) => e.source === 'gdpr' || e.consentId !== undefined || e.breachEventId !== undefined
-          ),
+          );
+        },
 
         verifyIntegrity: () => {
           const { entries, chainHead } = get();
@@ -648,8 +629,8 @@ export const useAuditTrailStore = create<State & Actions>()(
         version: 1,
         migrate: (state: unknown) => state,
         // Persist ONLY the integrity-bearing data. Filters, pagination,
-        // selection and the RBAC view role are ephemeral UI state; persisting
-        // them would let a stale view role survive a session.
+        // and selection are ephemeral UI state; permissions are always derived
+        // from the authenticated session, never persisted as a client role.
         partialize: (state) => ({
           entries: state.entries,
           chainHead: state.chainHead,
@@ -668,8 +649,13 @@ export const useAuditTrailStore = create<State & Actions>()(
  * Selector that checks whether the current user role can view GDPR-source audit entries.
  * Only admin / compliance / data-protection-officer roles are permitted.
  */
-export const selectCanViewGdprAudit = (state: State & Actions): boolean =>
-  GDPR_AUDIT_VIEW_ROLES.includes(state.currentUserRole);
+export function canRoleViewGdprAudit(role: string | null | undefined): boolean {
+  const normalizedRole = role?.toLowerCase().replaceAll('_', '-');
+  return normalizedRole ? GDPR_AUDIT_VIEW_ROLES.includes(normalizedRole as AuditRole) : false;
+}
+
+export const selectCanViewGdprAudit = (_state?: State & Actions): boolean =>
+  canRoleViewGdprAudit(getCurrentUser()?.role);
 
 /**
  * F-CLIO-2/7 FIX: Helper that filters GDPR-source entries from the entries array
@@ -677,10 +663,18 @@ export const selectCanViewGdprAudit = (state: State & Actions): boolean =>
  * (Inverse purpose of the store action filterByGdprAccess: this gate HIDES
  * gdpr entries from roles without GDPR-audit visibility.)
  */
-const excludeGdprEntriesByRole = (
+export const excludeGdprEntriesByRole = (
   entries: ExtendedAuditEntry[],
   canViewGdpr: boolean
-): ExtendedAuditEntry[] => (canViewGdpr ? entries : entries.filter((e) => e.source !== 'gdpr'));
+): ExtendedAuditEntry[] =>
+  canViewGdpr
+    ? entries
+    : entries.filter(
+        (entry) =>
+          entry.source !== 'gdpr' &&
+          entry.consentId === undefined &&
+          entry.breachEventId === undefined
+      );
 
 export const selectFilteredEntries = (state: State & Actions): ExtendedAuditEntry[] => {
   const { entries, filters, sortField, sortDir } = state;
@@ -759,8 +753,11 @@ export const selectTotalPages = (state: State & Actions): number => {
   return Math.max(1, Math.ceil(filtered.length / state.pageSize));
 };
 
-export const selectStats = (state: State & Actions) => {
-  const { entries } = state;
+export const selectStats = (
+  state: State & Actions,
+  canViewGdpr = selectCanViewGdprAudit(state)
+) => {
+  const entries = excludeGdprEntriesByRole(state.entries, canViewGdpr);
   const uniqueUsers = new Set(entries.map((e) => e.userId));
   const uniqueCells = new Set(
     entries.map((e) => `${e.cellId.sectorId}/${e.cellId.periodId}/${e.cellId.lineItemId}`)

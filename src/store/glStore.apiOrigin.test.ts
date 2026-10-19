@@ -177,7 +177,10 @@ describe('glStore default commit channel — api-origin-truth wiring (W6-P0-13)'
     });
 
     const { addEntries, commitDraftsToServer } = useGLStore.getState();
+    actAs('Admin');
     addEntries(balancedBatch('gl-anon'));
+    // Keep the authorized user but remove the bearer token to exercise transport fail-closed behavior.
+    useAuthStore.setState({ accessToken: null });
 
     const summary = await commitDraftsToServer();
     expect(summary.committed).toBe(0);

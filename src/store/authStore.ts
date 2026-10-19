@@ -753,6 +753,20 @@ export const useAuthStore = create<AuthState>()(
         },
 
         register: async (name: string, email: string, password: string) => {
+          const registrationUnavailableMessage =
+            import.meta.env.PROD === true
+              ? 'register() is unavailable in production until a verified backend registration flow exists.'
+              : !isMockAuthEnabled()
+                ? 'register() requires mock authentication; no verified backend registration flow exists.'
+                : null;
+          if (registrationUnavailableMessage) {
+            set((s) => {
+              s.isLoading = false;
+              s.error = registrationUnavailableMessage;
+            });
+            throw new Error(registrationUnavailableMessage);
+          }
+
           set((s) => {
             s.isLoading = true;
             s.error = null;
@@ -861,14 +875,13 @@ export const useAuthStore = create<AuthState>()(
         },
 
         setUser: (user: User) => {
-          // SECURITY (C-01 FIX): setUser is restricted to prevent client-side
-          // role escalation. Only allow changes that do not modify the role
-          // or permissions array directly. Real auth backend must validate
-          // the user server-side before applying state changes.
-          if (import.meta.env.PROD === true && user.role === 'Admin') {
+          // SECURITY: This compatibility setter is used by tests and local
+          // development only. Production auth flows write state only after
+          // backend validation; exposing this public Zustand action in a
+          // production bundle would let a caller choose another non-Admin role.
+          if (import.meta.env.PROD === true) {
             throw new Error(
-              'Direct role escalation to Admin via setUser() is blocked. ' +
-                'Use the authenticated login flow instead.'
+              'setUser() is unavailable in production. Use the verified authentication flow.'
             );
           }
           // SECURITY (Wave-7B): effective permissions are ALWAYS derived from
@@ -881,6 +894,9 @@ export const useAuthStore = create<AuthState>()(
           });
         },
 
+        // Entity context selector only — not an authorization check. The User
+        // model has no authorized-entity set; entity-scoped access must remain
+        // an explicit owner/product policy decision before this is hardened.
         switchEntity: (entityId: string) => {
           set((s) => {
             s.activeEntityId = entityId;

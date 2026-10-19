@@ -9,6 +9,8 @@
 **D-007 5-min SLA:** GREEN
 **RULE #56 PICK-CHAIN:** GREEN (PICK I.2 — 11th pick in TURN 99-105 window)
 
+> **Current-state correction (2026-10-19):** This dated document is retained as planning provenance. Its PATCH 12 `AuditLogger` integration references describe design assumptions and are not verified product wiring; no production `AuditLogger` caller or persistence adapter was found. See `../architecture/AUDIT_CHAIN_REACHABILITY.md`.
+
 ---
 
 ## §1. PURPOSE & SCOPE

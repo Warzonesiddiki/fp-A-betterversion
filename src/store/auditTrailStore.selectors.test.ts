@@ -15,6 +15,7 @@ import {
   type State,
 } from './auditTrailStore';
 import type { ExtendedAuditEntry } from '@/types/audit';
+import { actAs } from '@/test/rbacFixtures';
 
 enableMapSet();
 
@@ -68,6 +69,7 @@ function makeEntry(over: Partial<ExtendedAuditEntry>): ExtendedAuditEntry {
 describe('auditTrailStore selectors', () => {
   beforeEach(() => {
     idCounter = 0;
+    actAs('Admin');
     useAuditTrailStore.setState({
       entries: [
         makeEntry({
@@ -105,7 +107,6 @@ describe('auditTrailStore selectors', () => {
       sortDir: 'desc',
       selectedEntryId: null,
       loading: false,
-      currentUserRole: 'admin',
       chainHead: AUDIT_CHAIN_GENESIS_HASH,
     });
   });
@@ -114,10 +115,25 @@ describe('auditTrailStore selectors', () => {
     expect(selectFilteredEntries(useAuditTrailStore.getState())).toHaveLength(3);
   });
 
-  it('excludes gdpr entries for non-privileged roles', () => {
-    useAuditTrailStore.getState().setCurrentUserRole('analyst');
+  it('excludes GDPR-source entries for non-privileged roles', () => {
+    actAs('Analyst');
     const filtered = selectFilteredEntries(useAuditTrailStore.getState());
     expect(filtered.map((e) => e.id)).toEqual(['e1', 'e2']);
+  });
+
+  it('also excludes consent- and breach-linked entries for non-privileged roles', () => {
+    actAs('Analyst');
+    useAuditTrailStore.setState({
+      entries: [
+        makeEntry({ id: 'ordinary', userId: 'ordinary-user' }),
+        makeEntry({ id: 'consent', userId: 'consent-user', consentId: 'consent-1' }),
+        makeEntry({ id: 'breach', userId: 'breach-user', breachEventId: 'breach-1' }),
+      ],
+    });
+
+    expect(selectFilteredEntries(useAuditTrailStore.getState()).map((entry) => entry.id)).toEqual([
+      'ordinary',
+    ]);
   });
 
   it('filters by userId, operation, source, dataType, approvalStatus, transactionId, dateRange, valueRange, fullText, hasVersion, hasConsent and cellId', () => {
@@ -269,9 +285,27 @@ describe('auditTrailStore selectors', () => {
     expect(stats.topUsers[0]).toEqual({ userId: 'u1', count: 2 });
   });
 
-  it('selectCanViewGdprAudit gates on role', () => {
+  it('selectStats excludes GDPR-source and cross-referenced entries for non-privileged roles', () => {
+    const entries = [
+      makeEntry({ id: 'manual', userId: 'manual-user' }),
+      makeEntry({ id: 'gdpr', userId: 'gdpr-user', source: 'gdpr' }),
+      makeEntry({ id: 'consent', userId: 'consent-user', consentId: 'consent-1' }),
+      makeEntry({ id: 'breach', userId: 'breach-user', breachEventId: 'breach-1' }),
+    ];
+    useAuditTrailStore.setState({ entries });
+
+    actAs('Viewer');
+    const viewerStats = selectStats(useAuditTrailStore.getState());
+    expect(viewerStats.total).toBe(1);
+    expect(viewerStats.topUsers.map(({ userId }) => userId)).toEqual(['manual-user']);
+
+    actAs('Admin');
+    expect(selectStats(useAuditTrailStore.getState()).total).toBe(4);
+  });
+
+  it('selectCanViewGdprAudit gates on the authenticated role', () => {
     expect(selectCanViewGdprAudit(useAuditTrailStore.getState())).toBe(true);
-    useAuditTrailStore.getState().setCurrentUserRole('analyst');
+    actAs('Analyst');
     expect(selectCanViewGdprAudit(useAuditTrailStore.getState())).toBe(false);
   });
 });

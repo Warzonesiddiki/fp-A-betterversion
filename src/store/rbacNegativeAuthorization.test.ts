@@ -24,6 +24,15 @@ import { useEntityStore } from './entityStore';
 import { useForecastStore } from './forecastStore';
 import { useESGStore } from './esgStore';
 import { useCollaborationStore } from './collaborationStore';
+import { useFxRateStore } from './fxRateStore';
+import { usePeriodCloseStore } from './periodCloseStore';
+import { useWorkflowStore } from './workflowStore';
+import { useAuditTrailStore, AUDIT_CHAIN_GENESIS_HASH } from './auditTrailStore';
+import { useGLStore } from './glStore';
+import { useSettingsStore } from './settingsStore';
+import { useCubeStore } from './cubeStore';
+import { useExceptionDispositionStore } from './exceptionDispositionStore';
+import type { GLEntry, UserProfile, UserRole } from '@/types';
 
 const budgetInput = (name: string) => ({
   name,
@@ -74,6 +83,40 @@ interface DenialCase {
   readonly count: () => number;
 }
 
+const glRbacProbe: GLEntry = {
+  id: 'rbac-gl-probe',
+  accountId: '1000',
+  accountCode: '1000',
+  accountName: 'Cash',
+  period: '2026-01',
+  periodName: 'January 2026',
+  debit: 100,
+  credit: 0,
+  netChange: 100,
+  date: '2026-01-15',
+  description: 'RBAC authorization probe',
+  reference: 'RBAC-PROBE',
+  amount: 100,
+};
+
+const settingsRoleProbe: UserRole = {
+  id: 'rbac-role-probe',
+  name: 'RBAC probe role',
+  permissions: ['budget:read'],
+};
+
+const settingsUserProbe: UserProfile = {
+  id: 'rbac-user-probe',
+  email: 'rbac-probe@finplan.test',
+  firstName: 'RBAC',
+  lastName: 'Probe',
+  role: 'Viewer',
+  department: 'Finance',
+  status: 'Pending',
+};
+
+let auditRevertEntryId = '';
+
 const DENIAL_CASES: readonly DenialCase[] = [
   {
     name: 'budgetStore.createBudget',
@@ -86,6 +129,50 @@ const DENIAL_CASES: readonly DenialCase[] = [
     permission: 'budget:delete',
     run: () => useBudgetStore.getState().deleteBudget('any-id'),
     count: () => useBudgetStore.getState().budgets.length,
+  },
+  {
+    name: 'budgetStore.setBudgets',
+    permission: 'budget:update',
+    run: () => useBudgetStore.getState().setBudgets([]),
+    count: () => useBudgetStore.getState().budgets.length,
+  },
+  {
+    name: 'budgetStore.setLineItems',
+    permission: 'budget:update',
+    run: () => useBudgetStore.getState().setLineItems([]),
+    count: () => useBudgetStore.getState().lineItems.length,
+  },
+  {
+    name: 'budgetStore.updateLineItem',
+    permission: 'budget:update',
+    run: () => useBudgetStore.getState().updateLineItem('missing-line', { amount: 1 }),
+    count: () => useBudgetStore.getState().lineItems.length,
+  },
+  {
+    name: 'budgetStore.undo',
+    permission: 'budget:update',
+    run: () => useBudgetStore.getState().undo(),
+    count: () =>
+      useBudgetStore.getState().lineItems.length + useBudgetStore.getState().historyIndex,
+  },
+  {
+    name: 'budgetStore.redo',
+    permission: 'budget:update',
+    run: () => useBudgetStore.getState().redo(),
+    count: () =>
+      useBudgetStore.getState().lineItems.length + useBudgetStore.getState().historyIndex,
+  },
+  {
+    name: 'periodCloseStore.initialize',
+    permission: 'period:close',
+    run: () => usePeriodCloseStore.getState().initialize([] as never, {} as never),
+    count: () => (usePeriodCloseStore.getState().initialized ? 1 : 0),
+  },
+  {
+    name: 'workflowStore.checkEscalations',
+    permission: 'workflow:update',
+    run: () => useWorkflowStore.getState().checkEscalations(),
+    count: () => useWorkflowStore.getState().requests.length,
   },
   {
     name: 'capexStore.addProject',
@@ -135,6 +222,12 @@ const DENIAL_CASES: readonly DenialCase[] = [
     count: () => useESGStore.getState().metrics.length,
   },
   {
+    name: 'esgStore.clearAll',
+    permission: 'analytics:delete',
+    run: () => useESGStore.getState().clearAll(),
+    count: () => useESGStore.getState().metrics.length + useESGStore.getState().initiatives.length,
+  },
+  {
     name: 'collaborationStore.addComment',
     permission: 'collab:update',
     run: () =>
@@ -146,12 +239,144 @@ const DENIAL_CASES: readonly DenialCase[] = [
       } as never),
     count: () => useCollaborationStore.getState().comments.length,
   },
+  {
+    name: 'collaborationStore.setComments',
+    permission: 'collab:update',
+    run: () => useCollaborationStore.getState().setComments([]),
+    count: () => useCollaborationStore.getState().comments.length,
+  },
+  {
+    name: 'collaborationStore.setTasks',
+    permission: 'collab:update',
+    run: () => useCollaborationStore.getState().setTasks([]),
+    count: () => useCollaborationStore.getState().tasks.length,
+  },
+  {
+    name: 'collaborationStore.setApprovals',
+    permission: 'workflow:approve',
+    run: () => useCollaborationStore.getState().setApprovals([]),
+    count: () => useCollaborationStore.getState().approvals.length,
+  },
+  {
+    name: 'collaborationStore.setActivityLog',
+    permission: 'collab:update',
+    run: () => useCollaborationStore.getState().setActivityLog([]),
+    count: () => useCollaborationStore.getState().activityLog.length,
+  },
+  {
+    name: 'fxRateStore.deleteRate',
+    permission: 'forecast:delete',
+    run: () => useFxRateStore.getState().deleteRate('missing-rate'),
+    count: () => useFxRateStore.getState().rates.length,
+  },
+  {
+    name: 'glStore.setEntries',
+    permission: 'import:create',
+    run: () => useGLStore.getState().setEntries([]),
+    count: () => useGLStore.getState().entries.length,
+  },
+  {
+    name: 'settingsStore.addUser',
+    permission: 'user:create',
+    run: () => useSettingsStore.getState().addUser(settingsUserProbe),
+    count: () => useSettingsStore.getState().users.length,
+  },
+  {
+    name: 'settingsStore.setUsers',
+    permission: 'user:update',
+    run: () => useSettingsStore.getState().setUsers([settingsUserProbe]),
+    count: () => useSettingsStore.getState().users.length,
+  },
+  {
+    name: 'settingsStore.setRoles',
+    permission: 'user:assign-role',
+    run: () => useSettingsStore.getState().setRoles([settingsRoleProbe]),
+    count: () => useSettingsStore.getState().roles.length,
+  },
+  {
+    name: 'cubeStore.clearAll',
+    permission: 'cube:delete',
+    run: () => useCubeStore.getState().clearAll(),
+    count: () => useCubeStore.getState().cellCount + useCubeStore.getState().snapshots.length,
+  },
+  {
+    name: 'exceptionDispositionStore.recordDisposition (delegates to setDisposition)',
+    permission: 'exception:dispose',
+    run: () =>
+      useExceptionDispositionStore
+        .getState()
+        .recordDisposition('rbac-denied-record', 'ACCEPT', 'authorization probe'),
+    count: () => useExceptionDispositionStore.getState().auditTrail.length,
+  },
+  {
+    name: 'exceptionDispositionStore.updateDisposition (delegates to setDisposition)',
+    permission: 'exception:dispose',
+    run: () =>
+      useExceptionDispositionStore
+        .getState()
+        .updateDisposition('rbac-denied-update', 'REVIEW', 'authorization probe'),
+    count: () => useExceptionDispositionStore.getState().auditTrail.length,
+  },
+  {
+    name: 'auditTrailStore.recordBulk',
+    permission: 'audit:create',
+    run: () =>
+      useAuditTrailStore.getState().recordBulk([
+        {
+          cellId: {
+            sectorId: 'rbac-security-test',
+            scenarioId: 'base',
+            periodId: '2026-01',
+            lineItemId: 'bulk-probe',
+          },
+          userId: 'rbac-test-user',
+          operation: 'write',
+          dataType: 'number',
+          newValue: 1,
+        },
+      ]),
+    count: () => useAuditTrailStore.getState().entries.length,
+  },
+  {
+    name: 'auditTrailStore.seedDemoData',
+    permission: 'audit:create',
+    run: () => useAuditTrailStore.getState().seedDemoData(),
+    count: () => useAuditTrailStore.getState().entries.length,
+  },
+  {
+    name: 'auditTrailStore.revertToState',
+    permission: 'audit:delete',
+    run: () => useAuditTrailStore.getState().revertToState(auditRevertEntryId),
+    count: () => useAuditTrailStore.getState().entries.length,
+  },
 ];
 
 describe('F-0026 negative authorization — stores deny unauthorized writes', () => {
   beforeEach(() => {
     resetEngine();
     signOut();
+    useGLStore.setState({ entries: [glRbacProbe] });
+    useSettingsStore.setState({ users: [], roles: [] });
+    useCubeStore.setState({ cellCount: 1, snapshots: [] });
+    useExceptionDispositionStore.setState({
+      dispositions: [],
+      auditTrail: [],
+      corrections: [],
+      correctionAuditTrail: [],
+    });
+    useAuditTrailStore.setState({ entries: [], chainHead: AUDIT_CHAIN_GENESIS_HASH });
+    auditRevertEntryId = useAuditTrailStore.getState().recordWrite({
+      cellId: {
+        sectorId: 'rbac-security-test',
+        scenarioId: 'base',
+        periodId: '2026-01',
+        lineItemId: 'revert-probe',
+      },
+      userId: 'rbac-test-user',
+      operation: 'write',
+      dataType: 'number',
+      newValue: 100,
+    });
   });
   afterEach(() => {
     signOut();

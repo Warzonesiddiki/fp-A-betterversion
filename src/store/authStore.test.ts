@@ -122,6 +122,47 @@ describe('authStore', () => {
     expect(state.lockedUntil).toBeNull();
   });
 
+  it('refuses local account registration in production without a verified backend flow', async () => {
+    vi.stubEnv('PROD', true);
+    try {
+      await expect(
+        useAuthStore.getState().register('Unverified User', 'new@example.com', 'password123')
+      ).rejects.toThrow('register() is unavailable in production');
+      const state = useAuthStore.getState();
+      expect(state.isLoading).toBe(false);
+      expect(state.error).toBe(
+        'register() is unavailable in production until a verified backend registration flow exists.'
+      );
+      expect(state.isAuthenticated).toBe(false);
+      expect(state.user).toBeNull();
+      expect(state.accessToken).toBeNull();
+      expect(state.refreshToken).toBeNull();
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
+  it('refuses local account registration when mock authentication is disabled', async () => {
+    vi.stubEnv('PROD', false);
+    vi.stubEnv('VITE_USE_MOCK_AUTH', 'false');
+    try {
+      await expect(
+        useAuthStore.getState().register('Unverified User', 'new@example.com', 'password123')
+      ).rejects.toThrow('register() requires mock authentication');
+      const state = useAuthStore.getState();
+      expect(state.isLoading).toBe(false);
+      expect(state.error).toBe(
+        'register() requires mock authentication; no verified backend registration flow exists.'
+      );
+      expect(state.isAuthenticated).toBe(false);
+      expect(state.user).toBeNull();
+      expect(state.accessToken).toBeNull();
+      expect(state.refreshToken).toBeNull();
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
   it('should logout and clear state', () => {
     useAuthStore.setState({
       user: mockAdmin as any,
@@ -156,7 +197,9 @@ describe('authStore', () => {
     });
   });
 
-  it('should switch entity', () => {
+  it('updates the active entity selector (entity-scope authorization remains owner-blocked)', () => {
+    // This only tests the context setter. It does NOT prove the user is authorized
+    // for this entity; User does not yet define an authorized entity set.
     useAuthStore.getState().switchEntity('ent-123');
     expect(useAuthStore.getState().activeEntityId).toBe('ent-123');
   });
@@ -225,6 +268,19 @@ describe('authStore', () => {
 });
 
 describe('setUser permission derivation (P1 security)', () => {
+  it('disables the compatibility setter in production builds', () => {
+    const before = useAuthStore.getState().user;
+    vi.stubEnv('PROD', true);
+    try {
+      expect(() => useAuthStore.getState().setUser(mockViewer)).toThrow(
+        'setUser() is unavailable in production'
+      );
+      expect(useAuthStore.getState().user).toBe(before);
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
   it('ignores client-injected admin permissions on a Viewer role', () => {
     const escalated: User = { ...mockViewer, permissions: [...ROLE_PERMISSIONS.Admin] };
     useAuthStore.getState().setUser(escalated);

@@ -92,13 +92,14 @@ export const useESGStore = create<ESGState>()(
             state.error = error;
           }),
 
-        clearAll: () =>
+        clearAll: enforce(Permissions.ANALYTICS_DELETE, 'clearAll', () =>
           set((state) => {
             state.metrics = [];
             state.initiatives = [];
             state.isLoading = false;
             state.error = null;
-          }),
+          })
+        ),
 
         getMetricsByCategory: (category) => get().metrics.filter((m) => m.category === category),
 

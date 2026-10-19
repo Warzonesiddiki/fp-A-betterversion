@@ -23,7 +23,9 @@ export const useCollaborationStore = create<CollaborationState>()(
         clearError: () => set({ error: null }),
         setLoading: (isLoading: boolean) => set({ isLoading }),
 
-        setComments: (comments) => set({ comments }),
+        setComments: enforce(Permissions.COLLAB_UPDATE, 'setComments', (comments) =>
+          set({ comments })
+        ),
 
         addComment: enforce(Permissions.COLLAB_UPDATE, 'addComment', (comment) => {
           const id = `cmt-${nowMs()}`;
@@ -47,7 +49,7 @@ export const useCollaborationStore = create<CollaborationState>()(
           });
         }),
 
-        setTasks: (tasks) => set({ tasks }),
+        setTasks: enforce(Permissions.COLLAB_UPDATE, 'setTasks', (tasks) => set({ tasks })),
 
         addTask: enforce(Permissions.COLLAB_UPDATE, 'addTask', (task) => {
           const id = `tsk-${nowMs()}`;
@@ -76,7 +78,9 @@ export const useCollaborationStore = create<CollaborationState>()(
           }));
         }),
 
-        setApprovals: (approvals) => set({ approvals }),
+        setApprovals: enforce(Permissions.WORKFLOW_APPROVE, 'setApprovals', (approvals) =>
+          set({ approvals })
+        ),
 
         updateApprovalStatus: enforce(
           Permissions.WORKFLOW_APPROVE,
@@ -98,7 +102,9 @@ export const useCollaborationStore = create<CollaborationState>()(
           }
         ),
 
-        setActivityLog: (log) => set({ activityLog: log }),
+        setActivityLog: enforce(Permissions.COLLAB_UPDATE, 'setActivityLog', (log) =>
+          set({ activityLog: log })
+        ),
 
         addActivity: enforce(Permissions.COLLAB_UPDATE, 'addActivity', (activity) => {
           set((state) => ({

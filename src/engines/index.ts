@@ -12,18 +12,7 @@ export { AllocationRuleEngine } from './AllocationRuleEngine';
 export { AnomalyDetectionEngine } from './AnomalyDetectionEngine'; // RE-ENABLED 2026-06-15
 export { ArrayFormulaEngine } from './ArrayFormulaEngine';
 export { AssumptionEngine } from './AssumptionEngine';
-// export { AuditEngine } from './AuditEngine'; // barrel-export disabled for dynamic import splitting
 export { AuditLogEngine } from './AuditLogEngine';
-export {
-  AuditTrailEngine,
-  type AuditEntry,
-  type AuditQuery,
-  type AuditAction,
-  type EntityType,
-  type MerkleProof,
-  type TamperDetectionResult,
-  type SOXExport,
-} from './AuditTrailEngine';
 export { AutoCommentaryEngine } from './AutoCommentaryEngine';
 // export { AutoSaveEngine } from './AutoSaveEngine'; // barrel-export disabled for dynamic import splitting
 export { BankingEngine } from './BankingEngine';
@@ -46,7 +35,6 @@ export {
 } from './CascadeCalculationEngine';
 export { CashEngine } from './CashEngine';
 export { CashFlowWaterfallEngine } from './CashFlowWaterfallEngine';
-export { CellAuditTrailEngine } from './CellAuditTrailEngine';
 export { CellCommentEngine } from './CellCommentEngine';
 export { CellProtectionEngine } from './CellProtectionEngine';
 export { CellValidationEngine } from './CellValidationEngine';

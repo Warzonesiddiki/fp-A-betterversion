@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
-import { authClient } from '@/services/authClient';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
@@ -87,9 +86,11 @@ api.interceptors.response.use(
       // now-revoked refresh token in state, so the NEXT refresh replays a
       // dead token, trips reuse detection (family revocation) and force-logs
       // the user out.
-      const { accessToken: newToken, refreshToken: newRefreshToken } =
-        await authClient.refresh(refreshToken);
-      useAuthStore.setState({ accessToken: newToken, refreshToken: newRefreshToken });
+      await useAuthStore.getState().refreshAccessToken();
+      const newToken = useAuthStore.getState().accessToken;
+      if (!newToken) {
+        throw new Error('Token refresh did not provide an access token');
+      }
       processPendingQueue(null, newToken);
 
       originalRequest.headers.Authorization = `Bearer ${newToken}`;

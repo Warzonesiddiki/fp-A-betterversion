@@ -2,7 +2,9 @@
 
 > **FinPlan Pro v1.0.0 — Phase 7, PATCH 12 (Hephaestus, 2026-06-16)**
 > Owners: Security (Hephaestus) · Compliance (Themis) · Reliability (Atlas)
-> Status: **SHIPPED** · Review cycle: **Quarterly** · Next review: 2026-09-16
+> Status: **REFERENCE DESIGN — NOT OPERATIONAL / NOT IMPLEMENTED** · Reviewed against source on 2026-10-19
+
+> **Current implementation boundary (2026-10-19):** This document is a target design, not evidence that secret rotation or audit controls are active in the product. Source census found no production caller of `SecretRotation` or `AuditLogger`, no durable `AuditLogger` adapter, and no product-owned snapshot persistence. The code example in §5 is illustrative only. Do not use this document to claim SOC 2, SOX, non-repudiation, or operating control effectiveness.
 
 ---
 
@@ -160,7 +162,7 @@ tampering without trusting the sender.
 
 ## 5. Integration
 
-### 5.1 Wiring the audit sink
+### 5.1 Illustrative future wiring (not connected in the product)
 
 ```ts
 import { SecretRotation, type SecretRotationAuditEvent } from '@/services/SecretRotation';
@@ -267,25 +269,25 @@ Web Crypto runs at ~1 GB/s on typical CPUs.
 
 ## 9. Compliance traceability
 
-| Control                                    | Evidence                                           |
-| ------------------------------------------ | -------------------------------------------------- |
-| SOC 2 CC6.1                                | `SecretRotation` class, `listSecrets()`            |
-| SOC 2 CC6.7                                | TTL + rotation policy (§2.1, §2.2)                 |
-| SOC 2 CC7.1                                | `AuditLogger` with category/severity fields        |
-| SOC 2 CC7.2                                | Severity taxonomy (NIST SP 800-61r2)               |
-| SOC 2 CC7.3                                | `eventHash` chain, `verifyChain()`                 |
-| SOC 2 CC7.4                                | `export()`, `revokeSecret(..., 'compromised')`     |
-| SOC 2 P4.1                                 | PII redaction deferred to PATCH 13 (`PIIRedactor`) |
-| GDPR Art. 32                               | SHA-256 + CSRNG + zero-fill on revoke              |
-| CWE-200, 321, 345, 532, 613, 778, 779, 798 | See §4                                             |
+| Control                                    | Evidence                                                     |
+| ------------------------------------------ | ------------------------------------------------------------ |
+| SOC 2 CC6.1                                | `SecretRotation` class, `listSecrets()`                      |
+| SOC 2 CC6.7                                | TTL + rotation policy (§2.1, §2.2)                           |
+| SOC 2 CC7.1                                | `AuditLogger` with category/severity fields                  |
+| SOC 2 CC7.2                                | Severity taxonomy (NIST SP 800-61r2)                         |
+| SOC 2 CC7.3                                | `eventHash` chain, `verifyChain()`                           |
+| SOC 2 CC7.4                                | `export()`, `revokeSecret(..., 'compromised')`               |
+| SOC 2 P4.1                                 | Unverified — `PIIRedactor` is not production-wired (DEC-032) |
+| GDPR Art. 32                               | SHA-256 + CSRNG + zero-fill on revoke                        |
+| CWE-200, 321, 345, 532, 613, 778, 779, 798 | See §4                                                       |
 
 ## 10. References
 
 - `src/services/SecretRotation.ts` — implementation.
-- `src/services/SecretRotation-AuditLogger.test.ts` — 63 tests, all passing.
-- `src/services/AuditLogger.ts` — hash-chained log.
+- `src/services/SecretRotation-AuditLogger.test.ts` — 63 passing unit tests of isolated classes and a test-assembled callback bridge; not production integration evidence.
+- `src/services/AuditLogger.ts` — isolated in-memory hash sequence with JSON/JSONL export/restore; not connected to a product persistence or audit authority.
 - `docs/security/SECURITY_HEADERS_POLICY.md` — PATCH 11.
 
 ---
 
-_End of policy — Hephaestus, 2026-06-16. CAVEMAN 19/19 HOLDS._
+_Historical document attribution: Hephaestus, 2026-06-16. The former “CAVEMAN 19/19 HOLDS” annotation is not current verification evidence._

@@ -41,15 +41,15 @@ export interface ExtendedAuditEntry extends CellAuditEntry {
   tags?: string[];
   /** GDPR Art. 33 breach severity — first-class field so breach entries are triageable/filterable */
   severity?: 'low' | 'medium' | 'high' | 'critical';
-  /** Account ID (from CellAuditTrailEngine) */
+  /** Legacy optional account identifier retained for persisted-entry compatibility. */
   accountId?: string;
-  /** Account name (from CellAuditTrailEngine) */
+  /** Legacy optional account label retained for persisted-entry compatibility. */
   accountName?: string;
-  /** Month index (from CellAuditTrailEngine) */
+  /** Legacy optional month index retained for persisted-entry compatibility. */
   month?: number;
-  /** Old value alias (from CellAuditTrailEngine) */
+  /** Legacy old-value alias retained for persisted-entry compatibility. */
   oldValue?: unknown;
-  /** User display name (from CellAuditTrailEngine) */
+  /** Legacy display-name alias retained for persisted-entry compatibility. */
   userName?: string;
   /** Human-readable reason for the change */
   reason?: string | null;

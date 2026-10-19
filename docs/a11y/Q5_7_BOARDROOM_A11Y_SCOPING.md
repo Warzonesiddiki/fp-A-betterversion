@@ -5,6 +5,8 @@
 **Source:** PICK I (A11Y v0.7 FORWARD PATH PLANNING) — first of 5 P2 items
 **Status:** 🟡 **SCOPING DRAFT** — Boardroom A11Y highest-impact P2 item (18.7M users)
 
+> **Current-state correction (2026-10-19):** This dated document is retained as planning provenance. Its PATCH 12 `AuditLogger` integration references describe design assumptions and are not verified product wiring; no production `AuditLogger` caller or persistence adapter was found. See `../architecture/AUDIT_CHAIN_REACHABILITY.md`.
+
 ---
 
 ## 1. Scope

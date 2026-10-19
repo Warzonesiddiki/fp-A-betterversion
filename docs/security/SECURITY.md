@@ -4,8 +4,10 @@
 **Author:** Hephaestus (Security Muse) — domain owner
 **Effective date:** 2026-06-16
 **Review cycle:** 90 days
-**Status:** LIVE (PICK A of CAVEMAN PERSIST PICK-CHAIN 2026-06-16)
+**Status:** Requirements/design document; runtime implementation claims are not generally re-verified (reviewed 2026-10-19)
 **Authoritative cross-references:** A11Y_READINESS v0.5 v2 §3 P1-2 (Q5.3) @ 0b979c10a; A11Y_READINESS v0.6 (forthcoming); PATCH 11 `3547f51e`; PATCH 12 `db1b5bfd3`; PATCH 13 `edff05258`; SECURITY_HEADERS_POLICY.md; SECRET_ROTATION_AUDIT_LOGGING_POLICY.md; PII_REDACTION_POLICY.md
+
+> **Runtime-evidence boundary (2026-10-19, DEC-031/032):** This document states security requirements, not proof they are implemented. `AuditLogger` and `PIIRedactor` have no production caller or durable adapter; references to them below are design assumptions, not evidence of event persistence or product-wide PII redaction. See `../architecture/AUDIT_CHAIN_REACHABILITY.md` and `../discovery/decision-log.md`.
 
 ---
 
@@ -15,22 +17,22 @@ This document is the **master security policy** for FinPlan Pro v1.0.0, owned by
 
 ### §1.1 Sub-policies under this master
 
-| ID       | Sub-policy                                                    | File                                                       | Patch reference                                              |
-| -------- | ------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------ |
-| §2       | Security Headers (CSP/HSTS/COOP/COEP/CORP/Permissions-Policy) | `docs/security/SECURITY_HEADERS_POLICY.md`                 | PATCH 11 `3547f51e`                                          |
-| §3       | CSRF Protection (Double-Submit Cookie + HMAC-SHA256)          | §3 of SECURITY_HEADERS_POLICY.md                           | PATCH 11 `3547f51e`                                          |
-| **§4**   | **Session Management**                                        | **§4 of this document**                                    | **(PATCH 11 + PATCH 12 + PATCH 13)**                         |
-| §4.1     | Session token format & lifetime                               | §4.1 of this document                                      | PATCH 12 `db1b5bfd3`                                         |
-| **§4.2** | **Session timeout policy (Q5.3 anchor)**                      | **§4.2 of this document**                                  | **PATCH 12 `db1b5bfd3` (audit), PATCH 13 `edff05258` (PII)** |
-| §4.3     | Session fixation & hijack defenses                            | §4.3 of this document                                      | PATCH 11 + PATCH 12                                          |
-| §5       | Secret Rotation                                               | `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` §2 | PATCH 12 `db1b5bfd3`                                         |
-| §6       | Audit Logging (hash-chained)                                  | `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` §3 | PATCH 12 `db1b5bfd3`                                         |
-| §7       | PII Redaction                                                 | `docs/security/PII_REDACTION_POLICY.md`                    | PATCH 13 `edff05258`                                         |
-| §8       | Threat Model                                                  | [`docs/architecture/threat-model.md`](../architecture/threat-model.md)                            | PATCH 10 `d0fe9107`                                          |
-| §9       | Incident Response                                             | (playbook archived in the 2026-08-07 docs triage)                       | PATCH 9 GHOST-SHA `d445b721` + `5223d3b5`                    |
-| §10      | Encryption-in-transit (TLS)                                   | `docs/security/SECURITY_HEADERS_POLICY.md` §2 (HSTS)       | PATCH 11 `3547f51e`                                          |
-| §11      | Encryption-at-rest (Tauri IPC)                                | (forthcoming PATCH 15)                                     | PATCH 15 (PICK D future)                                     |
-| §12      | Rate Limiting & Circuit Breaking                              | (forthcoming PATCH 14)                                     | PATCH 14 (PICK B current)                                    |
+| ID       | Sub-policy                                                    | File                                                                   | Patch reference                                              |
+| -------- | ------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------ |
+| §2       | Security Headers (CSP/HSTS/COOP/COEP/CORP/Permissions-Policy) | `docs/security/SECURITY_HEADERS_POLICY.md`                             | PATCH 11 `3547f51e`                                          |
+| §3       | CSRF Protection (Double-Submit Cookie + HMAC-SHA256)          | §3 of SECURITY_HEADERS_POLICY.md                                       | PATCH 11 `3547f51e`                                          |
+| **§4**   | **Session Management**                                        | **§4 of this document**                                                | **(PATCH 11 + PATCH 12 + PATCH 13)**                         |
+| §4.1     | Session token format & lifetime                               | §4.1 of this document                                                  | PATCH 12 `db1b5bfd3`                                         |
+| **§4.2** | **Session timeout policy (Q5.3 anchor)**                      | **§4.2 of this document**                                              | **PATCH 12 `db1b5bfd3` (audit), PATCH 13 `edff05258` (PII)** |
+| §4.3     | Session fixation & hijack defenses                            | §4.3 of this document                                                  | PATCH 11 + PATCH 12                                          |
+| §5       | Secret Rotation                                               | `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` §2             | PATCH 12 `db1b5bfd3`                                         |
+| §6       | Audit Logging (hash-chained)                                  | `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` §3             | PATCH 12 `db1b5bfd3`                                         |
+| §7       | PII Redaction                                                 | `docs/security/PII_REDACTION_POLICY.md`                                | PATCH 13 `edff05258`                                         |
+| §8       | Threat Model                                                  | [`docs/architecture/threat-model.md`](../architecture/threat-model.md) | PATCH 10 `d0fe9107`                                          |
+| §9       | Incident Response                                             | (playbook archived in the 2026-08-07 docs triage)                      | PATCH 9 GHOST-SHA `d445b721` + `5223d3b5`                    |
+| §10      | Encryption-in-transit (TLS)                                   | `docs/security/SECURITY_HEADERS_POLICY.md` §2 (HSTS)                   | PATCH 11 `3547f51e`                                          |
+| §11      | Encryption-at-rest (Tauri IPC)                                | (forthcoming PATCH 15)                                                 | PATCH 15 (PICK D future)                                     |
+| §12      | Rate Limiting & Circuit Breaking                              | (forthcoming PATCH 14)                                                 | PATCH 14 (PICK B current)                                    |
 
 ### §1.2 Authority and supersession
 
@@ -157,11 +159,9 @@ The session token is bound to a `sessionId` in the server-side session store. Th
 
 This is implemented in `src/services/SessionManager.ts` (forthcoming — implementation tracked under §4.1 of the RATIFICATION_GATE_RUNBOOK).
 
-#### §4.2.7 Cross-reference to PATCH 12 AuditLogger
+#### §4.2.7 Audit and redaction status (design requirements; not wired)
 
-Every session event (creation, idle timeout, absolute timeout, step-up challenge, step-up success/failure, termination, revocation) is emitted to the hash-chained audit log via PATCH 12's `AuditLogger.addEvent()`. The chain head advances by exactly 1 event per session event, providing a non-repudiable record. Cross-witness with V3 e.ix.7 Edge Case #14 (Audit chain integrity) — Chronos has independently verified the chain will remain valid under all session lifecycle events.
-
-**Defense-in-depth:** PATCH 13's PIIRedactor redacts any PII that might leak into audit payloads (e.g., user-supplied data in a session.terminated audit event), enforcing the chain-integrity + PII-confidentiality property required by GDPR Art. 5(1)(c) and Art. 32.
+The historical design required session events to flow through PATCH 12 `AuditLogger` and to be redacted by PATCH 13 `PIIRedactor`. The 2026-10-19 source census (DEC-031/032) found no production caller or durable adapter for either helper. Therefore no session-event chain, non-repudiable record, or PIIRedactor-based confidentiality control is established by this repository. These are requirements for future reviewed wiring, not operating controls. The current client `auditTrailStore` is a separate, bounded chain with no general session-event or workbook-edit producer; see `../architecture/AUDIT_CHAIN_REACHABILITY.md`. Q6/O4 authority questions remain open.
 
 #### §4.2.8 WCAG 2.2 alignment (cross-witness with Artemis)
 
@@ -185,7 +185,7 @@ Every session event (creation, idle timeout, absolute timeout, step-up challenge
 | SOC 2 CC6.7       | Restriction of data flow                 | §4.2.5, §4.2.6 (token invalidation)                                                  |
 | SOC 2 CC6.8       | Unauthorized changes prevented/detected  | §4.2.4 (step-up re-auth)                                                             |
 | SOC 2 P5.2        | Privacy — choice/consent on data sharing | §4.2.5 (logout of all devices)                                                       |
-| GDPR Art. 5(1)(c) | Data minimization                        | §4.2.7 (PII redaction in audit)                                                      |
+| GDPR Art. 5(1)(c) | Data minimization                        | Unverified: §4.2.7 describes unwired design intent (DEC-031/032)                     |
 | GDPR Art. 25      | Privacy by Design                        | §4.2.1-§4.2.7 (defaults to 15-min idle)                                              |
 | GDPR Art. 32      | Security of processing                   | §4.2.4 (step-up), §4.2.5 (atomic termination)                                        |
 | CCPA §1798.105    | Right to erasure                         | §4.2.5 (user-initiated session deletion cascade)                                     |
@@ -195,9 +195,9 @@ Every session event (creation, idle timeout, absolute timeout, step-up challenge
 | Threat (STRIDE)                                          | Mitigation in §4.2                                                         |
 | -------------------------------------------------------- | -------------------------------------------------------------------------- |
 | **S**poofing (stolen token reuse)                        | §4.2.6 (sessionId invalidation on termination); §4.3 (session binding)     |
-| **T**ampering (audit log forgery)                        | §4.2.7 (PATCH 12 hash chain); §4.2.5 (every termination is audited)        |
-| **R**epudiation (user denies logout)                     | §4.2.5, §4.2.7 (audit log with actor, sessionId, timestamp)                |
-| **I**nformation disclosure (PII in session)              | §4.2.7 (PATCH 13 PIIRedactor on audit payloads)                            |
+| **T**ampering (audit log forgery)                        | Unverified — §4.2.7's AuditLogger chain is not production-wired (DEC-031)  |
+| **R**epudiation (user denies logout)                     | Unverified — no verified session-event audit path (DEC-031)                |
+| **I**nformation disclosure (PII in session)              | Unverified — PIIRedactor has no production caller (DEC-032)                |
 | **D**enial of service (session-table flooding)           | §4.2.1 (timeout reduces table bloat); PATCH 14 (rate limiting) forthcoming |
 | **E**levation of privilege (idle hijack → high-value op) | §4.2.4 (step-up re-auth)                                                   |
 
@@ -225,11 +225,11 @@ A user MAY have up to **5 concurrent active sessions** across devices (desktop, 
 
 ---
 
-## §6. Audit Logging (hash-chained)
+## §6. Audit Logging (design requirement; helper not product-wired)
 
 **See:** `docs/security/SECRET_ROTATION_AUDIT_LOGGING_POLICY.md` §3 for full policy.
 
-**Summary:** SHA-256 hash-chained event log. Genesis preimage: `finplan-pro-audit-log-genesis-v1`. 8 NIST SP 800-61r2 severity levels. 13 event categories. Max 100,000 events in memory, 64KB max payload. Every session event (§4) and every secret rotation event (§5) and every PII redaction event (§7) flows through this log. Maps to SOC 2 CC7.2, CC7.3, CC7.4. PATCH 12 `db1b5bfd3`.
+**Runtime status (DEC-031, 2026-10-19):** `AuditLogger` remains an isolated in-memory helper with JSON/JSONL snapshot APIs. No production caller or persistence adapter was found; no session, secret-rotation, or PIIRedactor event flow to it is established. The helper's tests and policy text do not prove product logging or SOC 2 controls. The requirements below are design intent only; Q6/O4 remain open.
 
 ---
 
@@ -237,7 +237,7 @@ A user MAY have up to **5 concurrent active sessions** across devices (desktop, 
 
 **See:** `docs/security/PII_REDACTION_POLICY.md` for full policy.
 
-**Summary:** Multi-strategy (mask, hash, tokenize, drop) PII redaction for all user-data exports, audit payloads, and log emissions. ~40 safe-fields allowlist, 13 PII field patterns, 9 value patterns. Hash-chained internal audit log (separate from §6). Maps to GDPR Art. 5, 25, 32; CCPA §1798.105; SOC 2 P4.1. PATCH 13 `edff05258`.
+**Runtime status (DEC-032, 2026-10-19):** The multi-strategy `PIIRedactor` helper has no production caller or persistence adapter. Its in-memory chain and unit tests do not prove redaction of product exports, audit payloads, logs, or telemetry. The audit store has a separate `redactPII` helper for its JSON/CSV exports; coverage of other sinks remains unverified. The sub-policy is design intent, not evidence of GDPR, CCPA, or SOC 2 controls.
 
 ---
 
@@ -245,7 +245,7 @@ A user MAY have up to **5 concurrent active sessions** across devices (desktop, 
 
 **See:** [`docs/architecture/threat-model.md`](../architecture/threat-model.md) for full STRIDE/PASTA analysis.
 
-**Summary:** 11 attacker personas, 27 assets, 67 threats, 92 mitigations. Top 5 threats: session hijack (mitigated §4.2 + §4.3), CSRF (mitigated §3), XSS (mitigated §2 CSP), secret exfiltration (mitigated §5), audit log tampering (mitigated §6). Maps to SOC 2 CC7.1. PATCH 10 `d0fe9107`.
+**Scope note:** This is a historical threat-model inventory, not a current verification of 92 operating mitigations. In particular, audit logging and PIIRedactor controls described in §§4.2.7, 6, and 7 are unverified and not wired as product-wide controls (DEC-031/032). Do not treat the historical threat count or mitigation labels as a current risk assessment.
 
 ---
 

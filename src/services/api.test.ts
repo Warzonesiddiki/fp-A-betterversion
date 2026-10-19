@@ -12,27 +12,11 @@ const testState = vi.hoisted(() => ({
   mockResUse: vi.fn(),
 }));
 
-const authClientState = vi.hoisted(() => ({
-  login: vi.fn(),
-  logout: vi.fn(),
-  me: vi.fn(),
-  refresh: vi.fn(),
-}));
-
 vi.mock('@/store/authStore', () => ({
   useAuthStore: Object.assign(vi.fn(), {
     getState: testState.mockGetState,
     setState: testState.mockSetState,
   }),
-}));
-
-vi.mock('@/services/authClient', () => ({
-  authClient: {
-    login: authClientState.login,
-    logout: authClientState.logout,
-    me: authClientState.me,
-    refresh: authClientState.refresh,
-  },
 }));
 
 vi.mock('axios', async () => {
@@ -71,6 +55,7 @@ describe('api', () => {
       accessToken: 'test-token',
       refreshToken: 'test-refresh',
       logout: vi.fn(),
+      refreshAccessToken: vi.fn(),
     });
 
     // Load module to trigger interceptor registration
@@ -164,43 +149,45 @@ describe('api', () => {
       });
     });
 
-    it('persists BOTH rotated tokens after a successful refresh', async () => {
+    it('uses the auth-store refresh action after a successful refresh', async () => {
       const mockLogout = vi.fn();
+      const mockRefreshAccessToken = vi.fn();
+      mockRefreshAccessToken.mockImplementation(async () => {
+        testState.mockGetState.mockReturnValue({
+          accessToken: 'at-2',
+          refreshToken: 'rt-2',
+          logout: mockLogout,
+          refreshAccessToken: mockRefreshAccessToken,
+        });
+      });
       testState.mockGetState.mockReturnValue({
         accessToken: 'expired-at',
         refreshToken: 'stale-rt',
         logout: mockLogout,
+        refreshAccessToken: mockRefreshAccessToken,
       });
-      authClientState.refresh.mockResolvedValue({ accessToken: 'at-2', refreshToken: 'rt-2' });
-
-      const error = {
-        response: { status: 401 },
-        config: { url: '/budgets', _retry: false, headers: {} },
-      };
+      const originalRequest = { url: '/budgets', _retry: false, headers: {} };
+      const error = { response: { status: 401 }, config: originalRequest };
       // The retried original request goes back through the axios instance and
-      // fails in jsdom; only the token-persistence side effect is under test.
+      // fails in jsdom; the refreshed auth action and attached token are under test.
       await onResponseRejected(error).catch(() => 'replay-rejected');
 
-      expect(authClientState.refresh).toHaveBeenCalledWith('stale-rt');
-      // Saving only the access token would strand the revoked 'stale-rt' in
-      // state and trip SEC-2 family revocation on the NEXT refresh.
-      expect(testState.mockSetState).toHaveBeenCalledWith({
-        accessToken: 'at-2',
-        refreshToken: 'rt-2',
-      });
+      expect(mockRefreshAccessToken).toHaveBeenCalledOnce();
+      expect(originalRequest.headers.Authorization).toBe('Bearer at-2');
+      expect(testState.mockSetState).not.toHaveBeenCalled();
       expect(mockLogout).not.toHaveBeenCalled();
     });
 
-    it('logs out and redirects when the refresh call itself fails', async () => {
+    it('logs out and redirects when the refresh action itself fails', async () => {
       const mockLogout = vi.fn();
+      const refreshError = new Error('Refresh token reuse detected; all sessions revoked');
+      const mockRefreshAccessToken = vi.fn().mockRejectedValue(refreshError);
       testState.mockGetState.mockReturnValue({
         accessToken: 'at',
         refreshToken: 'revoked-rt',
         logout: mockLogout,
+        refreshAccessToken: mockRefreshAccessToken,
       });
-      authClientState.refresh.mockRejectedValue(
-        new Error('Refresh token reuse detected; all sessions revoked')
-      );
 
       const origHref = window.location.href;
       Object.defineProperty(window, 'location', { value: { href: '' }, writable: true });
@@ -216,7 +203,7 @@ describe('api', () => {
         Object.defineProperty(window, 'location', { value: { href: origHref }, writable: true });
       }
 
-      expect(authClientState.refresh).toHaveBeenCalledWith('revoked-rt');
+      expect(mockRefreshAccessToken).toHaveBeenCalledOnce();
       expect(mockLogout).toHaveBeenCalled();
     });
   });

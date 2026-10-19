@@ -65,11 +65,6 @@ export default function ApiReferencePage() {
           desc: 'Manages the sandbox lifecycle for external connectors.',
           methods: ['loadPlugin(manifest)', 'executeHook(name, context)'],
         },
-        {
-          name: 'AuditTrailEngine',
-          desc: 'Produces immutable, cryptographically verifiable SOX audit logs.',
-          methods: ['log(action, payload)', 'verifyIntegrity(hash)'],
-        },
       ],
     },
   ];

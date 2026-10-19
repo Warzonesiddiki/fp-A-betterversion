@@ -23,7 +23,6 @@ beforeEach(() => {
   useAuditTrailStore.setState({
     entries: [],
     chainHead: AUDIT_CHAIN_GENESIS_HASH,
-    currentUserRole: 'viewer',
   });
 });
 afterEach(() => resetClock());

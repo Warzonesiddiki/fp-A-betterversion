@@ -6,9 +6,11 @@ import { FileText, Users, Hash, ListChecks, Shield, ShieldCheck } from 'lucide-r
 import {
   useAuditTrailStore,
   selectStats,
+  canRoleViewGdprAudit,
   type AuditOperation,
   type ApprovalStatus,
 } from '@/store/auditTrailStore';
+import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/Button';
 import { formatPercent } from '@/utils/financialFormatting';
 import { auditPanelTokens, auditComplianceStatsTokens, auditProgressTokens } from './auditTokens';
@@ -18,7 +20,9 @@ import { auditPanelTokens, auditComplianceStatsTokens, auditProgressTokens } fro
 // ---------------------------------------------------------------------------
 
 export function AuditCompliancePanel(): JSX.Element {
-  const stats = useAuditTrailStore(selectStats);
+  const authenticatedRole = useAuthStore((state) => state.user?.role);
+  const canViewGdprAudit = canRoleViewGdprAudit(authenticatedRole);
+  const stats = useAuditTrailStore((state) => selectStats(state, canViewGdprAudit));
 
   const totalEntries = stats.total;
 

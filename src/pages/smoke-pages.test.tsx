@@ -49,12 +49,6 @@ vi.mock('@/engines/ExportEngine', () => ({
   },
 }));
 
-vi.mock('@/engines/CellAuditTrailEngine', () => ({
-  CellAuditTrailEngine: vi.fn(function () {
-    return { getAllEntries: vi.fn(() => []) };
-  }),
-}));
-
 // ---------------------------------------------------------------------------
 // Mock recharts (used by InvestmentPage)
 // ---------------------------------------------------------------------------
@@ -98,7 +92,7 @@ import InvestmentPage from '@/pages/treasury/InvestmentPage';
 import ICEliminationPage from '@/pages/consolidation/ICEliminationPage';
 import FXRatesPage from '@/pages/currency/FXRatesPage';
 import AuditTrailPage from '@/pages/audit/AuditTrailPage';
-import { useAuditTrailStore } from '@/store/auditTrailStore';
+import { actAs, signOut } from '@/test/rbacFixtures';
 
 // ---------------------------------------------------------------------------
 // Helper
@@ -121,6 +115,7 @@ function renderPage(PageComponent: React.ComponentType, initialPath = '/', route
 
 describe('Page Smoke Tests — 5 Additional Pages', () => {
   beforeEach(() => {
+    signOut();
     vi.clearAllMocks();
     vi.stubGlobal('localStorage', {
       getItem: vi.fn(),
@@ -215,14 +210,14 @@ describe('Page Smoke Tests — 5 Additional Pages', () => {
     });
 
     it('denies access to roles without GDPR audit permission (RBAC gate)', () => {
-      // Default role is 'viewer'. The page must fail CLOSED, not render data.
-      useAuditTrailStore.setState({ currentUserRole: 'viewer' });
+      // An authenticated Viewer must fail CLOSED, not render GDPR data.
+      actAs('Viewer');
       const { getByText } = renderPage(AuditTrailPage, '/audit/trail', '/audit/trail');
       expect(getByText(/Access Denied/i)).toBeInTheDocument();
     });
 
     it('displays the empty state when no audit entries exist (authorized role)', () => {
-      useAuditTrailStore.setState({ currentUserRole: 'admin' });
+      actAs('Admin');
       const { getByText } = renderPage(AuditTrailPage, '/audit/trail', '/audit/trail');
       expect(getByText(/No Audit Entries/i)).toBeInTheDocument();
     });

@@ -6,6 +6,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { useAuditTrailStore } from './auditTrailStore';
+import { actAs, signOut } from '@/test/rbacFixtures';
 import {
   subscribeToGdprEvents,
   __testEmitGdprEvent,
@@ -115,6 +116,7 @@ const makeBreachDetected = (): GdprEvent => ({
 
 describe('auditTrailGdprEvents — F-CLIO-4 (CWE-778 Audit Completeness Gap) P1', () => {
   beforeEach(() => {
+    signOut();
     // Reset audit store state before each test
     useAuditTrailStore.setState({
       entries: [],
@@ -304,6 +306,7 @@ describe('auditTrailGdprEvents — F-CLIO-4 (CWE-778 Audit Completeness Gap) P1'
       const allEntries = useAuditTrailStore.getState().entries;
       expect(allEntries).toHaveLength(8);
 
+      actAs('Admin');
       const gdprFiltered = useAuditTrailStore.getState().filterByGdprAccess(allEntries);
       expect(gdprFiltered).toHaveLength(8);
       expect(
@@ -331,6 +334,7 @@ describe('auditTrailGdprEvents — F-CLIO-4 (CWE-778 Audit Completeness Gap) P1'
       const allEntries = useAuditTrailStore.getState().entries;
       expect(allEntries).toHaveLength(2);
 
+      actAs('Admin');
       const gdprFiltered = useAuditTrailStore.getState().filterByGdprAccess(allEntries);
       expect(gdprFiltered).toHaveLength(1);
       expect(gdprFiltered[0]!.source).toBe('gdpr');
