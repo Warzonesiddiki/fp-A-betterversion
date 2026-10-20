@@ -13,13 +13,13 @@ import { proposeReverifications } from '@/services/corrections/proposeReverifica
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { nowISO } from '@/utils/clock';
-import type { CorrectionStatus } from '@/types/exceptions';
+import type { CorrectionAuditRecord, CorrectionStatus } from '@/types/exceptions';
 
 /**
- * Phase 5 correction tracker (DEC-018, FR-010): the reviewer asks, the
- * accounts team fixes, a human confirms. Statuses move only on the
- * buttons below — the tool proposes re-verification when a fixed finding
- * goes quiet, and even that takes a human click.
+ * Phase 5 correction tracker (DEC-035, FR-010): the reviewer asks, the
+ * accounts team fixes, a human confirms. Statuses move only on explicit
+ * actions; the persisted event history records the authenticated actor/time.
+ * Excel remains an optional export of the same in-tool records.
  */
 export default function CorrectionsPage() {
   const navigate = useNavigate();
@@ -27,6 +27,7 @@ export default function CorrectionsPage() {
 
   const dispositions = useExceptionDispositionStore((s) => s.dispositions);
   const corrections = useExceptionDispositionStore((s) => s.corrections);
+  const correctionAuditTrail = useExceptionDispositionStore((s) => s.correctionAuditTrail);
   const requestCorrection = useExceptionDispositionStore((s) => s.requestCorrection);
   const updateCorrectionStatus = useExceptionDispositionStore((s) => s.updateCorrectionStatus);
 
@@ -35,6 +36,8 @@ export default function CorrectionsPage() {
   const [assignee, setAssignee] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<CorrectionStatus | 'ALL'>('ALL');
+  const [assigneeFilter, setAssigneeFilter] = useState('ALL');
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Corrections';
@@ -59,6 +62,22 @@ export default function CorrectionsPage() {
     [corrections, findings, result, entries.length]
   );
   const proposalKeys = useMemo(() => new Set(proposals.map((p) => p.exceptionId)), [proposals]);
+  const assignees = useMemo(
+    () =>
+      [...new Set(corrections.map((correction) => correction.assignee))].sort((a, b) =>
+        a.localeCompare(b)
+      ),
+    [corrections]
+  );
+  const filteredCorrections = useMemo(
+    () =>
+      corrections.filter(
+        (correction) =>
+          (statusFilter === 'ALL' || correction.status === statusFilter) &&
+          (assigneeFilter === 'ALL' || correction.assignee === assigneeFilter)
+      ),
+    [corrections, statusFilter, assigneeFilter]
+  );
 
   const handleCreate = () => {
     const findingKey = selectedFinding || correctable[0]?.exceptionId || '';
@@ -92,7 +111,7 @@ export default function CorrectionsPage() {
     <div className="p-6 space-y-4">
       <PageHeader
         title="Corrections"
-        purpose="What the accounts team has been asked to fix, where each request stands, and the Excel hand-off generated from these same records."
+        purpose="Track correction requests, human status changes, and their history here. Excel export is optional."
         actions={
           <Button
             size="sm"
@@ -206,6 +225,46 @@ export default function CorrectionsPage() {
       ) : (
         <Card>
           <CardContent className="p-0">
+            <div className="flex flex-wrap items-end gap-3 border-b border-[var(--border-subtle)] px-6 py-4">
+              <label className="grid gap-1 text-xs text-[var(--text-muted)]">
+                <span>Status</span>
+                <select
+                  aria-label="Filter by status"
+                  value={statusFilter}
+                  onChange={(event) =>
+                    setStatusFilter(event.target.value as CorrectionStatus | 'ALL')
+                  }
+                  className="rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 py-1.5 text-sm text-[var(--text-primary)]"
+                >
+                  <option value="ALL">All statuses</option>
+                  {(['REQUESTED', 'APPLIED', 'REVERIFIED', 'WITHDRAWN'] as const).map((status) => (
+                    <option key={status} value={status}>
+                      {displayCorrectionStatus(status)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="grid gap-1 text-xs text-[var(--text-muted)]">
+                <span>Assignee</span>
+                <select
+                  aria-label="Filter by assignee"
+                  value={assigneeFilter}
+                  onChange={(event) => setAssigneeFilter(event.target.value)}
+                  className="rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 py-1.5 text-sm text-[var(--text-primary)]"
+                >
+                  <option value="ALL">All assignees</option>
+                  {assignees.map((assignee) => (
+                    <option key={assignee} value={assignee}>
+                      {assignee}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <p aria-live="polite" className="ml-auto text-xs text-[var(--text-muted)]">
+                Showing {filteredCorrections.length} of {corrections.length} correction requests.
+                Excel export includes all requests.
+              </p>
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm" aria-label="Correction requests">
                 <thead>
@@ -220,31 +279,44 @@ export default function CorrectionsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border-subtle)]">
-                  {corrections.map((correction) => (
-                    <tr key={correction.exceptionId} className="hover:bg-[var(--bg-surface)]/50">
-                      <td className="px-6 py-3 font-mono text-xs">{correction.exceptionId}</td>
-                      <td className="px-4 py-3">{correction.instruction}</td>
-                      <td className="px-4 py-3">{correction.assignee}</td>
-                      <td className="px-4 py-3">{correction.dueDate ?? '—'}</td>
-                      <td className="px-4 py-3">{ageInDays(correction.requestedAt)}d</td>
-                      <td className="px-4 py-3">
-                        <StatusBadge status={correction.status} />
-                        {proposalKeys.has(correction.exceptionId) && (
-                          <span className="block text-xs text-[var(--warning)]">
-                            re-verification proposed
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <CorrectionActions
-                          status={correction.status}
-                          onStatus={(status) =>
-                            updateCorrectionStatus(correction.exceptionId, status)
-                          }
-                        />
+                  {filteredCorrections.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-8 text-center text-[var(--text-muted)]">
+                        No correction requests match these filters.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    filteredCorrections.map((correction) => (
+                      <tr key={correction.exceptionId} className="hover:bg-[var(--bg-surface)]/50">
+                        <td className="px-6 py-3 font-mono text-xs">{correction.exceptionId}</td>
+                        <td className="px-4 py-3">{correction.instruction}</td>
+                        <td className="px-4 py-3">{correction.assignee}</td>
+                        <td className="px-4 py-3">{correction.dueDate ?? '—'}</td>
+                        <td className="px-4 py-3">{ageInDays(correction.requestedAt)}d</td>
+                        <td className="px-4 py-3">
+                          <StatusBadge status={correction.status} />
+                          {proposalKeys.has(correction.exceptionId) && (
+                            <span className="block text-xs text-[var(--warning)]">
+                              re-verification proposed
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          <CorrectionActions
+                            status={correction.status}
+                            onStatus={(status) =>
+                              updateCorrectionStatus(correction.exceptionId, status)
+                            }
+                          />
+                          <CorrectionHistory
+                            events={correctionAuditTrail
+                              .filter((event) => event.exceptionId === correction.exceptionId)
+                              .sort((a, b) => a.sequenceNumber - b.sequenceNumber)}
+                          />
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -256,7 +328,36 @@ export default function CorrectionsPage() {
 }
 
 function StatusBadge({ status }: { status: CorrectionStatus }) {
-  return <span className="font-mono text-xs">{status}</span>;
+  return <span className="font-mono text-xs">{displayCorrectionStatus(status)}</span>;
+}
+
+function CorrectionHistory({ events }: { events: readonly CorrectionAuditRecord[] }) {
+  return (
+    <details className="mt-2 text-xs">
+      <summary className="cursor-pointer text-[var(--text-secondary)]">
+        Correction history ({events.length})
+      </summary>
+      {events.length === 0 ? (
+        <p className="mt-1 text-[var(--text-muted)]">No audit events recorded for this request.</p>
+      ) : (
+        <ol className="mt-1 space-y-1">
+          {events.map((event) => (
+            <li key={event.sequenceNumber} className="flex flex-wrap gap-x-2">
+              <strong>{displayCorrectionStatus(event.status)}</strong>
+              <span>{event.recordedAt ?? 'Time not recorded (legacy event)'}</span>
+              <span>
+                {event.recordedBy ? `by ${event.recordedBy}` : 'Actor not recorded (legacy event)'}
+              </span>
+            </li>
+          ))}
+        </ol>
+      )}
+    </details>
+  );
+}
+
+function displayCorrectionStatus(status: CorrectionStatus): string {
+  return status === 'REVERIFIED' ? 'RE-VERIFIED' : status;
 }
 
 function CorrectionActions({

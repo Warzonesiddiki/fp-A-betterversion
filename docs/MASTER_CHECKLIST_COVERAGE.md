@@ -2,11 +2,18 @@
 
 > **Known unresolved owner-list gap:** this annex currently maps rows 1–107, while the owner supplied a 110-section checklist. Rows 108–110 remain unresolved: their source text and evidence have not been recovered or reviewed in this checkout. Missing is not zero, not complete, and must not be inferred.
 >
-> **Scope of record, owner-supplied 2026-10-18.** The owner's complete
-> all-in-one FP&A checklist (110 numbered sections plus the final
-> cross-cutting requirements) is the product's scope universe. This annex is
-> the coverage map the project is executed against: every section has a
-> current-state verdict, a disposition and a completion gate. It is owned by
+> **Current scope directive, DEC-033 (owner, 2026-10-20):** the product's
+> ultimate scope is everything that falls under FP&A. The 110-section checklist
+> supplied 2026-10-18 is a coverage baseline and execution map, not an exhaustive
+> boundary. Any FP&A responsibility discovered outside these rows must be added
+> and gated; it is not complete or out of scope merely because this annex does
+> not yet name it.
+>
+> **Scope baseline, owner-supplied 2026-10-18.** The owner's all-in-one FP&A
+> checklist (110 numbered sections plus the final cross-cutting requirements) is
+> mapped here. This annex is the coverage map the project is executed against:
+> every listed section has a current-state verdict, a disposition and a completion
+> gate. It is owned by
 > [`docs/PROJECT_AUDIT_AND_EXECUTION_PLAN.md`](PROJECT_AUDIT_AND_EXECUTION_PLAN.md)
 > (Part II); where they disagree, the plan's measured evidence wins and this
 > annex is the bug.

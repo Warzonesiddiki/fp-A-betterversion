@@ -69,6 +69,32 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+function valuesEqual(left: unknown, right: unknown): boolean {
+  if (Object.is(left, right)) return true;
+  if (typeof left !== 'object' || left === null || typeof right !== 'object' || right === null) {
+    return false;
+  }
+  if (Array.isArray(left) || Array.isArray(right)) {
+    return (
+      Array.isArray(left) &&
+      Array.isArray(right) &&
+      left.length === right.length &&
+      left.every((value, index) => valuesEqual(value, right[index]))
+    );
+  }
+
+  const leftKeys = Object.keys(left).sort();
+  const rightKeys = Object.keys(right).sort();
+  return (
+    leftKeys.length === rightKeys.length &&
+    leftKeys.every(
+      (key, index) =>
+        key === rightKeys[index] &&
+        valuesEqual((left as Record<string, unknown>)[key], (right as Record<string, unknown>)[key])
+    )
+  );
+}
+
 function rebuildChainsFromEntries(
   entries: readonly CellLineageEntry[]
 ): Map<string, CellLineageChain> {
@@ -249,7 +275,8 @@ export const useCellLineageStore = create<CellLineageStoreState>()(
         },
 
         getCurrentValue: (cellId) => {
-          return get().chains.get(cellId)?.currentValue ?? null;
+          const chain = get().chains.get(cellId);
+          return chain?.entries.at(-1)?.newValue ?? null;
         },
 
         getValueAtTime: (cellId, timestamp) => {
@@ -280,25 +307,77 @@ export const useCellLineageStore = create<CellLineageStoreState>()(
 
         verifyIntegrity: async () => {
           const state = get();
-          let allValid = true;
+          const pendingEntryById = new Map<string, unknown>();
+          let pendingEntriesValid = Array.isArray(state.pendingEntries);
+          if (pendingEntriesValid) {
+            for (const entry of state.pendingEntries) {
+              if (
+                !isRecord(entry) ||
+                typeof entry.id !== 'string' ||
+                pendingEntryById.has(entry.id)
+              ) {
+                pendingEntriesValid = false;
+                continue;
+              }
+              pendingEntryById.set(entry.id, entry);
+            }
+          }
+
+          let allValid = pendingEntriesValid;
+          const chainEntryIds = new Set<string>();
           const chainValidity = new Map<string, boolean>();
 
           for (const [cellId, chain] of state.chains) {
-            let chainValid = chain.cellId === cellId;
+            let chainValid = chain.cellId === cellId && chain.entries.length > 0;
             let previousHash = '0'.repeat(64);
 
             for (const entry of chain.entries) {
+              const pendingEntry = pendingEntryById.get(entry.id);
+              if (
+                typeof entry.id !== 'string' ||
+                chainEntryIds.has(entry.id) ||
+                !pendingEntry ||
+                !valuesEqual(pendingEntry, entry)
+              ) {
+                chainValid = false;
+              }
+              chainEntryIds.add(entry.id);
+
               const expectedHash = await hashEntry(serializeHashInput(entry));
-              if (entry.previousHash !== previousHash || entry.entryHash !== expectedHash) {
+              if (
+                entry.cellId !== cellId ||
+                entry.previousHash !== previousHash ||
+                entry.entryHash !== expectedHash
+              ) {
                 chainValid = false;
                 break;
               }
               previousHash = entry.entryHash;
             }
 
+            const firstEntry = chain.entries[0];
+            const lastEntry = chain.entries.at(-1);
+            const uniqueActors = new Set(
+              chain.entries.map((entry) =>
+                [entry.actor.actorType, entry.actor.userId, entry.actor.engineId].join('|')
+              )
+            );
+            if (
+              !firstEntry ||
+              !lastEntry ||
+              chain.createdAt !== firstEntry.timestamp ||
+              chain.changeCount !== chain.entries.length ||
+              chain.uniqueActors !== uniqueActors.size ||
+              !valuesEqual(chain.currentValue, lastEntry.newValue)
+            ) {
+              chainValid = false;
+            }
+
             chainValidity.set(cellId, chainValid);
             if (!chainValid) allValid = false;
           }
+
+          if (pendingEntryById.size !== chainEntryIds.size) allValid = false;
 
           set((state) => {
             for (const [cellId, chain] of state.chains) {

@@ -14,6 +14,7 @@ import {
   type PeriodCoverage,
 } from '@/services/comparison/buildComparison';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { formatPercent } from '@/utils/financialFormatting';
 
 /**
  * Phase 4 comparison workspace (FR-011, plan §8): one row per account,
@@ -233,7 +234,7 @@ export default function ComparisonPage() {
                       {row.deltaPct === null ? (
                         <span className="text-[var(--text-muted)]">—</span>
                       ) : (
-                        `${row.deltaPct >= 0 ? '+' : '-'}${Math.abs(row.deltaPct).toFixed(2)}%`
+                        `${row.deltaPct >= 0 ? '+' : '-'}${formatPercent(Math.abs(row.deltaPct), 2)}`
                       )}
                     </td>
                   </tr>

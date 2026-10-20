@@ -214,13 +214,19 @@ describe('useExceptionDispositionStore', () => {
         source: 'batch-7 · row 214',
         status: 'REQUESTED',
         requestedAt: fixedIso,
-        requestedBy: 'user',
+        requestedBy: 'test-user-admin',
       });
       expect(useExceptionDispositionStore.getState().getCorrection('EXC-500')).toEqual(request);
       // A request is not a fix: nothing marks it applied on its own.
       expect(useExceptionDispositionStore.getState().getCorrection('EXC-500')?.status).toBe(
         'REQUESTED'
       );
+      expect(
+        useExceptionDispositionStore.getState().getCorrectionHistory('EXC-500')[0]
+      ).toMatchObject({
+        recordedAt: fixedIso,
+        recordedBy: 'test-user-admin',
+      });
     });
 
     it('keeps an unagreed due date as null, and never substitutes today', () => {
@@ -325,25 +331,38 @@ describe('useExceptionDispositionStore', () => {
       });
     });
 
-    it('moves a request to APPLIED only on an explicit human action, audited', () => {
+    it('records each human action with its authenticated actor and action time', () => {
       const store = useExceptionDispositionStore.getState();
+      const requestedAt = '2026-10-18T09:00:00.000Z';
+      const appliedAt = '2026-10-18T09:30:00.000Z';
+      setClock(new Date(requestedAt).getTime());
       store.requestCorrection({
         exceptionId: 'EXC-700',
         instruction: 'Reverse the duplicate',
         assignee: 'accounts-team',
-        requestedBy: 'controller-1',
       });
 
-      const applied = store.updateCorrectionStatus('EXC-700', 'APPLIED', { by: 'accounts-lead' });
+      setClock(new Date(appliedAt).getTime());
+      const applied = store.updateCorrectionStatus('EXC-700', 'APPLIED');
       expect(applied.status).toBe('APPLIED');
 
       const history = useExceptionDispositionStore.getState().getCorrectionHistory('EXC-700');
       expect(history).toHaveLength(2);
+      expect(history[0]).toMatchObject({
+        status: 'REQUESTED',
+        requestedAt,
+        requestedBy: 'test-user-admin',
+        recordedAt: requestedAt,
+        recordedBy: 'test-user-admin',
+      });
       expect(history[1]).toMatchObject({
         sequenceNumber: 2,
         status: 'APPLIED',
         previousStatus: 'REQUESTED',
-        requestedBy: 'accounts-lead',
+        requestedAt,
+        requestedBy: 'test-user-admin',
+        recordedAt: appliedAt,
+        recordedBy: 'test-user-admin',
         instruction: 'Reverse the duplicate',
       });
 
@@ -410,7 +429,7 @@ describe('useExceptionDispositionStore', () => {
 
   it('persist contract: a v1 blob gains empty corrections and keeps its dispositions', () => {
     const options = useExceptionDispositionStore.persist.getOptions();
-    expect(options.version).toBe(2);
+    expect(options.version).toBe(3);
 
     const migrated = options.migrate?.(
       {
@@ -436,6 +455,24 @@ describe('useExceptionDispositionStore', () => {
       'corrections',
       'dispositions',
     ]);
+  });
+
+  it('v2 correction audit history is preserved without inventing legacy actor or timestamp data', () => {
+    const options = useExceptionDispositionStore.persist.getOptions();
+    const legacyEvent = {
+      exceptionId: 'E-2',
+      status: 'APPLIED',
+      requestedAt: '2026-01-01T00:00:00.000Z',
+      requestedBy: 'original-requester',
+      previousStatus: 'REQUESTED',
+      sequenceNumber: 2,
+    };
+    const migrated = options.migrate?.(
+      { corrections: [], correctionAuditTrail: [legacyEvent] },
+      2
+    ) as Record<string, unknown>;
+
+    expect(migrated.correctionAuditTrail).toEqual([legacyEvent]);
   });
 });
 

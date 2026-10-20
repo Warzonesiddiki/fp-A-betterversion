@@ -454,12 +454,12 @@ export const PAGE_HELP: Record<string, PageHelpDef> = {
       {
         title: 'What is this page?',
         content:
-          'The correction hand-off to the accounts team. When you accept an exception candidate as a real problem, you request the correction here: what has to change, who owns it, and by when. The Excel correction list is generated from these same records, so the file and this screen can never disagree.',
+          'The in-tool correction workflow is sufficient to complete supported work. When you accept an exception candidate, record what has to change, who owns it, and any agreed due date here. An Excel correction list is available as an optional export from these same records; it is not a required hand-off.',
       },
       {
         title: 'How does a correction close?',
         content:
-          'Only by human action, in order: REQUESTED → APPLIED (the accounts team says it is fixed, recorded by your click) → REVERIFIED (you checked the fix in the ledger). When a later import makes the rule stop flagging the item, the tool proposes re-verification — it never confirms it for you. Withdrawn requests stay visible in the audit history.',
+          'Only by human action, in order: REQUESTED → APPLIED (the accounts team says it is fixed) → RE-VERIFIED (a reviewer checked the ledger/source evidence). Each new event records the authenticated actor and time in the visible history. When a non-empty rule run no longer flags an applied item, the tool offers a review cue — not proof that the correction worked; inspect the entry and source evidence before confirming. An empty ledger produces no cue. Withdrawn requests remain in history; legacy events without actor/time stay marked as unrecorded.',
       },
     ],
   },

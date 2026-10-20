@@ -1,8 +1,7 @@
 /**
- * Phase 5 (DEC-018): after a fix lands, the tool may PROPOSE
- * re-verification — it never sets it. A proposal exists only when the
- * correction is APPLIED and the current rule run no longer raises the
- * finding. A human still confirms every one.
+ * Phase 5 (DEC-035): a non-empty current run may cue human review when an
+ * APPLIED finding disappears. The cue is not proof of correction, and only
+ * a human can confirm re-verification.
  */
 import { describe, it, expect } from 'vitest';
 import { proposeReverifications } from './proposeReverifications';
@@ -35,7 +34,12 @@ describe('proposeReverifications', () => {
     expect(proposals).toHaveLength(1);
     expect(proposals[0]?.exceptionId).toBe('R-006:J-9:2026-01');
     expect(proposals[0]?.reason).toContain('no longer flags');
+    expect(proposals[0]?.reason).toContain('not proof of correction');
     expect(proposals[0]?.examinedEntries).toBe(12_345);
+  });
+
+  it('does not treat an empty ledger as evidence that the finding disappeared', () => {
+    expect(proposeReverifications([correction('APPLIED')], [], 0)).toEqual([]);
   });
 
   it('no proposal while the rule still flags the item', () => {

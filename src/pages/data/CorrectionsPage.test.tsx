@@ -1,6 +1,6 @@
 /**
- * Phase 5 tracker (DEC-018): corrections are created from accepted
- * findings, advanced only by human clicks, exported from the same
+ * Phase 5 tracker (DEC-035): corrections are created from accepted
+ * findings, advanced only by human clicks, optionally exported from the same
  * records, and re-verified only after a human confirms the proposal.
  */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -81,7 +81,7 @@ describe('CorrectionsPage (Phase 5)', () => {
     fireEvent.click(screen.getByRole('button', { name: /Request correction/i }));
 
     expect(screen.getByText('Find the missing 50 credit')).toBeInTheDocument();
-    expect(screen.getByText('REQUESTED')).toBeInTheDocument();
+    expect(screen.getAllByText('REQUESTED')[0]).toBeInTheDocument();
     expect(useExceptionDispositionStore.getState().getCorrection(FINDING_KEY)?.assignee).toBe(
       'accounts-team'
     );
@@ -99,7 +99,11 @@ describe('CorrectionsPage (Phase 5)', () => {
     expect(useExceptionDispositionStore.getState().getCorrection(FINDING_KEY)?.status).toBe(
       'APPLIED'
     );
-    expect(screen.getByText('APPLIED')).toBeInTheDocument();
+    expect(screen.getAllByText('APPLIED')[0]).toBeInTheDocument();
+    const historySummary = screen.getByText('Correction history (2)');
+    fireEvent.click(historySummary);
+    expect(historySummary.closest('details')).toHaveProperty('open', true);
+    expect(screen.getAllByText('by test-user-admin')).toHaveLength(2);
   });
 
   it('proposes re-verification when the finding is gone, human confirms', () => {
@@ -119,6 +123,63 @@ describe('CorrectionsPage (Phase 5)', () => {
     expect(
       useExceptionDispositionStore.getState().getCorrection('R-006:J-OLD:2025-12')?.status
     ).toBe('REVERIFIED');
+  });
+
+  it('filters by status and assignee without restricting the full Excel export', async () => {
+    const store = useExceptionDispositionStore.getState();
+    store.requestCorrection({
+      exceptionId: 'R-006:J-A:2026-01',
+      instruction: 'First correction',
+      assignee: 'team-a',
+    });
+    store.updateCorrectionStatus('R-006:J-A:2026-01', 'APPLIED');
+    store.requestCorrection({
+      exceptionId: 'R-006:J-B:2026-01',
+      instruction: 'Second correction',
+      assignee: 'team-b',
+    });
+    store.requestCorrection({
+      exceptionId: 'R-006:J-C:2026-01',
+      instruction: 'Third correction',
+      assignee: 'team-a',
+    });
+    store.updateCorrectionStatus('R-006:J-C:2026-01', 'APPLIED');
+
+    renderPage();
+    fireEvent.change(screen.getByLabelText('Filter by status'), {
+      target: { value: 'APPLIED' },
+    });
+    fireEvent.change(screen.getByLabelText('Filter by assignee'), {
+      target: { value: 'team-a' },
+    });
+
+    expect(screen.getByText(/Showing 2 of 3 correction requests/)).toBeInTheDocument();
+    expect(screen.getByText('First correction')).toBeInTheDocument();
+    expect(screen.getByText('Third correction')).toBeInTheDocument();
+    expect(screen.queryByText('Second correction')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Export correction list to Excel/i }));
+    const { ExportEngine } = await import('@/engines/ExportEngine');
+    const exportCalls = vi.mocked(ExportEngine.exportToExcel).mock.calls;
+    expect(exportCalls).toHaveLength(1);
+    expect(exportCalls[0]?.[0].rows).toHaveLength(3);
+  });
+
+  it('does not propose re-verification when there is no ledger to examine', () => {
+    useExceptionDispositionStore.getState().requestCorrection({
+      exceptionId: 'R-006:J-OLD:2025-12',
+      ruleId: 'R-006',
+      instruction: 'Fix old journal',
+      assignee: 'accounts-team',
+    });
+    useExceptionDispositionStore
+      .getState()
+      .updateCorrectionStatus('R-006:J-OLD:2025-12', 'APPLIED');
+    useGLStore.setState({ entries: [], accounts: [] });
+
+    renderPage();
+
+    expect(screen.queryByText('Proposed re-verifications')).not.toBeInTheDocument();
   });
 
   it('empty tracker points at the exception queue', () => {

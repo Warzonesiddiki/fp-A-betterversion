@@ -149,6 +149,52 @@ describe('cellLineageStore', () => {
     expect(useCellLineageStore.getState().chains.get('c1')?.integrityValid).toBe(false);
   });
 
+  it.each([
+    ['currentValue', { currentValue: snapshot(999) }],
+    ['createdAt', { createdAt: '2026-10-01T00:00:00.000Z' }],
+    ['changeCount', { changeCount: 2 }],
+    ['uniqueActors', { uniqueActors: 2 }],
+  ] as const)(
+    'verifyIntegrity rejects inconsistent derived chain field %s',
+    async (_field, patch) => {
+      await useCellLineageStore
+        .getState()
+        .recordChange('c1', snapshot(null), snapshot(1), actor, reason, origin);
+      const state = useCellLineageStore.getState();
+      const original = state.chains.get('c1')!;
+      const chains = new Map(state.chains);
+      chains.set('c1', { ...original, ...patch });
+      useCellLineageStore.setState({ chains });
+
+      expect(await useCellLineageStore.getState().verifyIntegrity()).toBe(false);
+      expect(useCellLineageStore.getState().chains.get('c1')?.integrityValid).toBe(false);
+      expect(useCellLineageStore.getState().getCurrentValue('c1')).toEqual(snapshot(1));
+    }
+  );
+
+  it('verifyIntegrity rejects a pending-entry mirror that omits a chained entry', async () => {
+    await useCellLineageStore
+      .getState()
+      .recordChange('c1', snapshot(null), snapshot(1), actor, reason, origin);
+    useCellLineageStore.setState({ pendingEntries: [] });
+
+    expect(await useCellLineageStore.getState().verifyIntegrity()).toBe(false);
+    expect(useCellLineageStore.getState().integrityVerified).toBe(false);
+    expect(useCellLineageStore.getState().chains.get('c1')?.integrityValid).toBe(false);
+  });
+
+  it('verifyIntegrity rejects pending-entry data that disagrees with its hashed chain entry', async () => {
+    await useCellLineageStore
+      .getState()
+      .recordChange('c1', snapshot(null), snapshot(1), actor, reason, origin);
+    const entry = useCellLineageStore.getState().chains.get('c1')!.entries[0]!;
+    useCellLineageStore.setState({ pendingEntries: [{ ...entry, newValue: snapshot(999) }] });
+
+    expect(await useCellLineageStore.getState().verifyIntegrity()).toBe(false);
+    expect(useCellLineageStore.getState().integrityVerified).toBe(false);
+    expect(useCellLineageStore.getState().chains.get('c1')?.integrityValid).toBe(false);
+  });
+
   it('queryEntries returns entries sorted by timestamp desc', async () => {
     const s = useCellLineageStore.getState();
     await s.recordChange('c1', snapshot(null), snapshot(1), actor, reason, origin);

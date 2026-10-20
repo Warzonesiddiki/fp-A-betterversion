@@ -1,7 +1,7 @@
 /**
- * Phase 5 (DEC-018): the Excel correction list for the accounts team,
- * generated from the same correction-store records the tracker screen
- * shows — one source, two renderings, tied out by test.
+ * Phase 5 (DEC-035): optional Excel interoperability export, generated
+ * from the same correction-store records the tracker screen shows — one
+ * source, two renderings, tied out by test.
  *
  * The file is a working document, not a report: finding key, rule,
  * account, date, amount, source locator (file · batch · row), the
