@@ -1,5 +1,7 @@
 # Handover — 2026-10-19 — next-session prompt + state of the tree
 
+> **Session-3 update (2026-10-20; branch `arena/05b88142-fp-a-betterversion` @ `9f6d6a02d3cd885350469ebdf17b80c0b6b82837`, merge of PR #81):** Notion-only documentation session; no product code changed. Every gate in the continuation-prompt §3 baseline was re-run in this checkout and passed: `tsc` zero errors; `lint` zero warnings under `--max-warnings 0`; `format:check`; `docs:verify` (43/43 persistence, 9/9 ratchet docs match, annex 107 PASS with the standing 108–110 warning); `docs:links` 0 broken; `engines:verify` 180; `money:ast` 978/978 SAFE, 0 unsafe; `money:adoption` 305/1,017 = 29.99 %, 0 raw `toFixed` (the 29.16 % doc lines stay the locked floor, not a stale figure); `determinism:ratchet` 344/79 at baseline; `palette:ratchet` 5,502/370 at baseline; `fabrication:audit` 0 findings; `repo:hygiene` 3,610 files; `type-safety:ratchet` 46 live escapes vs documented baseline 47, 0 `as any`; `escape:ledger` advisory (16 Core-20 hard). `npm run test:sharded`: 8/8 shards in 856 s, 16,097 passed + 1 skipped (16,098 total), `SHARDED_EXIT=0`; each shard executes 174 test files under name-partitioned sharding, and the runner prints no unique-file aggregate. Vite build exit 0; `bundle-check` PASSED WITH 1 WARNING: 2,059.69 KB gzip = 99.0 % of the DEC-024 2,080 KB ceiling (20.31 KB headroom), critical path 424.16 KB / 9 chunks. CI remains UNVERIFIED — 403: `gh run list --branch main` returns "Resource not accessible by integration" and `gh pr checks 81` returns the GraphQL equivalent; neither red nor green is claimed. Notion work: Current Status & Baseline regenerated above the retained prior snapshot (dated SUPERSEDED marker, nothing deleted), Handover Log Entry 003, and dated correction/traceability callouts on eight mirror pages including the J2–J3 DEC-035 Excel-optional correction. Full §13 report and Appendix B scorecard for this session are appended as §6 and §7 below. Programme completion: NO; N2 remains active on Q6/O4 and restart/keying/anchoring proofs; 93 of 200 checklist sections remain unassessed.
+
 > **Latest continuation update (2026-10-20; branch `arena/d9a8f733-fp-a-betterversion`):** N2 remains active. Added `src/store/cellLineageStore.persistence.test.ts`; it verifies encrypted `masterStorage` round-trip and fresh-module hydration while the lower SQL.js layer is a persistent in-memory mock. Focused run passed 1/1; combined lineage/storage/audit run passed 5 files / 38 tests. This is not native Tauri, OS-keychain, disk-durability, or application-restart proof. Initial `npm run tsc`, `npm run lint`, and `npm run format:check` attempts were aborted without exit codes; complete reruns subsequently passed (`tsc`, lint 125.5s, format, `docs:verify` with the existing 108–110 warning, and strict docs links with 0 broken links/citations). The final focused suite passed 6 files / 40 tests, including the coverage-annex checker tests. Owner sections 111–200 are now recorded in DEC-034 and `docs/discovery/OWNER_SCOPE_REGISTER_111_200.md` as 90 individual SOURCE TEXT OWED / UNASSESSED placeholders; the carried-forward context did not preserve their verbatim titles/sub-items. The original 110-section annex and its unresolved 108–110 warning are unchanged. Next: recover the verbatim extension (and 108–110 source), then revise the annex/checker deliberately; continue N2 first. No native restart, Q6 server fate, or O4 SOX authority is closed.
 
 > **Current-session update (2026-10-20; branch `arena/d9a8f733-fp-a-betterversion`):** Started from the verified PR #78 merge commit `b2cff437293a37366fbc6187ca4859c71194b6bd`, also observed at `origin/main`. The owner added DEC-033: the ultimate scope is everything under FP&A, with analyst replacement/better accuracy as an ambition that needs owner-accepted real-data measurements—not a shipped claim. N2 remains active. A failing-first lineage regression showed `verifyIntegrity()` accepted a chain whose cached `currentValue` disagreed with the last verified entry; the verifier now checks derived chain summaries and `getCurrentValue()` derives from the final entry. Focused lineage/audit/page tests passed 3 files / 47 tests; precision rounding and comparison display tests passed 2 files / 32 tests. `toPrecise()` now uses the canonical money primitive after a failing-first midpoint regression; ComparisonPage uses the percentage formatter, removing the existing raw `.toFixed()` adoption-gate violation. Latest measured money adoption: 305/1,017 modules (29.99%), zero raw `toFixed` sites; gate passed. Current `npm run build` passed (including TypeScript and lint); `npm run format:check`, `npm run docs:verify`, `npm run engines:verify`, strict `npm run docs:links` (0 broken links/citations), `git diff --check`, money AST/adoption, determinism, type-safety, escape, palette, and fabrication checks passed. Docs verification explicitly warns that rows 108–110 remain unresolved. `npm run financial:oracles` passed 25/25. `npm run bundle-check` passed with a warning: 2,058.84 KB gzip, 99.0% of the 2,080 KB ceiling; no budget increase was made. The first current-session `npm run test:sharded` attempt was interrupted during shard 8; a completed rerun passed 8/8 shards in 1,112 seconds. Shard 8 reported 1,843 passed and 1 skipped; the sharder did not provide an aggregate test total. GitHub CI status remains unverified: `gh pr checks 78` failed with GraphQL resource-access denial and `gh run list --branch main` returned HTTP 403. Encrypted/native masterStorage restart proof, pre-push, Q6, and O4 remain open. Full handoff details are below; this does not close N2 or the project.
@@ -189,3 +191,140 @@ SOX authority DEC, external-AI DEC-022 follow-up, native/Tauri verification).
 - Money: cent-round BEFORE subtracting; test comparisons in integer cents;
   independently rounded periods don't foot — use deltas of rounded cumulative.
 - MASTER_CHECKLIST_COVERAGE.md remains the original 110-section annex with its 108–110 warning. Its mechanical structural/pinned-claim guard is `scripts/check-coverage-annex.mjs`, wired into `npm run docs:verify`: five-column shape/status/sequence, row 26 RBAC census, and row 45 store counts. The 111–200 intake is separate and unassessed; do not append it until the source gap and checker are deliberately reconciled. Free-text semantics still require source evidence and owner/phase review.
+
+## 6. End-of-session report (continuation prompt §13 shape) — 2026-10-20, session 3
+
+```
+SESSION 2026-10-20 — arena/05b88142-fp-a-betterversion @ 9f6d6a02d3cd885350469ebdf17b80c0b6b82837
+Scope: Notion-only documentation sync; no product code changed. PR #81 merged to
+main 2026-10-20T15:25:04Z (gh pr view 81). All measurements below come from
+commands run in this checkout during this session.
+
+1. Baseline
+   tsc (npm run tsc): PASS — zero errors, exit 0.
+   lint (npm run lint, eslint src --max-warnings 0): PASS — zero warnings, exit 0.
+   format (npm run format:check): PASS — "All matched files use Prettier code style!".
+   docs (npm run docs:verify): PASS — persistence 43/43; schema homes 35 SQL /
+     10 server DDL / 1 shared; 9/9 ratchet doc values match; annex 107 rows PASS,
+     WARN owner sections 108-110 unresolved.
+   docs:links (--strict): PASS — 0 broken links, 0 broken citations.
+   engines (npm run engines:verify): PASS — "Engine manifest is current (180 engines)"
+     (98 shipped / 82 orphan; 48 stores; 5 workers).
+   money:ast: PASS — 1,074 scanned; 978 handle money; 978 SAFE; 0 UNSAFE; 0 unsafe ops.
+   money:adoption: PASS — 305/1,017 = 29.99%; 0 raw toFixed; server 31 scanned,
+     3 on decimal.js, 0 raw toFixed. Locked floor remains 29.16% / 289 (separate fact).
+   determinism:ratchet: PASS — 344 sites / 79 files, at baseline.
+   palette:ratchet: PASS — 5,502 utilities / 370 files, at baseline.
+   type-safety:ratchet: PASS — 46 live escapes (0 "as any") vs documented baseline 47.
+   fabrication:audit: PASS — 845 scanned; 0 files with findings; 0 findings.
+   repo:hygiene: PASS — 3,610 tracked files, 0 tracked ignored.
+   escape:ledger: advisory only — rows=30, built=7, hard=20, soft=3, 76.7% escape,
+     16 Core-20 hard offenders; script states advisory mode (--phase p1|p2|ga to enforce).
+   test:sharded: 8 shards, 174 test files executed per shard (name-partitioned;
+     runner prints no unique-file aggregate), 16,097 passed + 1 skipped = 16,098,
+     0 failed, 856 s, SHARDED_EXIT=0.
+   bundle (vite build exit 0; node scripts/bundle-check.js): PASSED WITH 1 WARNING —
+     6,812.51 KB raw / 2,059.69 KB gzip vs DEC-024 2,080 KB limit (99.0%; 20.31 KB
+     headroom); critical path 424.16 KB gzip / 9 chunks; G19 vendors all <= 300 KB;
+     ai-vendor SKIP (optional peer not installed).
+   CI main: BLOCKED — gh run list --branch main -> HTTP 403 "Resource not accessible
+     by integration"; gh pr checks 81 -> GraphQL resource-access denial. Neither
+     verified green nor verified red.
+
+2. Closed this session (evidence, not activity)
+   No product task moved to DONE; the session scope was documentation.
+   Notion Current Status & Baseline — regenerated from the commands above and
+     inserted above the retained prior snapshot with a dated SUPERSEDED marker
+     (page 3ff1d643-919f-81f2-a1e4-ef6eac7200c7; 36 new blocks; no block deleted).
+   Notion Session Handover Log — Entry 003 appended, append-only rule kept
+     (page 3ff1d643-919f-818f-9158-e94a111cd497).
+   Correction/traceability callouts (dated 2026-10-20, bodies retained): Decision
+     Register (DEC-026..DEC-036 verbatim headers), N2 Reachability (DEC-036 census
+     classification-only scope), Continuation-Prompt mirror (959 lines measured at
+     9f6d6a0 vs 934-line b2cff43 snapshot), Documentation Governance (PR #81 review
+     trigger), Repository Documentation Library (133/446/455 doc counts; five
+     program target files absent), Product Vision & Brief (traceability only; owner
+     prose and the one-stop vs DEC-018 conflict language untouched), historical
+     Control Room (6dd33fb -> 9f6d6a0), J2-J3 correction page (DEC-035: Excel
+     export optional; in-tool REQUESTED -> APPLIED -> RE-VERIFIED sufficient;
+     rollback page 3ff1d643-919f-819c-aa17-f052a75c4f80), Knowledge Center change
+     log third pass. Nine mirror pages; no page or block deleted.
+   Repository: this section and the top blockquote are the only repo edits;
+     PR #81 file census (gh api pulls/81/files) shows no new .md documents, so the
+     library map gains no rows.
+
+3. Status changes
+   No product artifact changed WORKS/EXPERIMENTAL/RETIRED status this session.
+   Documentation labels corrected only: prior Notion snapshot labels FAIL
+   (money:adoption), BLOCKED (money:ast) and NOT RUN (tsc, lint, sharded, bundle)
+   are superseded by measured PASS results at 9f6d6a0; the old labels remain on the
+   page as history under the SUPERSEDED marker.
+
+4. Still open
+   N2 — audit-chain authority; next action is owner/evidence work (Q6 server fate,
+     O4 SOX authority, restart/keying/external-anchoring proofs); DEC-036 census at
+     src/services/audit/auditChainCensus.test.ts proves classification only.
+   N3 — RBAC completeness; 409-action census (302 guarded / 107 reasoned exceptions);
+     next missing negative test.
+   N4 — sector operational adapters; oracle-first, EXPERIMENTAL until certified.
+   N6 — sector certification depth; blocked on evidence packs and O5 tiering.
+   N7 — bundle structural reduction; 20.31 KB gzip headroom under the DEC-024 limit.
+   N8 — money ratchet from 29.99% toward 100% of supported modules; floor 29.16%.
+   Q6 — server/ fate decision; README states measured truth meanwhile.
+   Checklist 108-110 unresolved; 111-200 UNASSESSED — SOURCE TEXT OWED (DEC-034);
+     93 of 200 sections have no assessment; no titles invented.
+   DEC-035 in-tool correction lifecycle — real accounts-team workflow validation
+     still required; unproven, not passed.
+
+5. Owner decisions needed
+   Checklist source (108-200) — paste the exact current checklist with sub-items and
+     acceptance criteria — blocks annex reconciliation and any 111-200 assessment.
+   O1 — anonymised D365 exports per shape plus control totals — blocks "verified"
+     labels; recommended default: remain mapping-driven with synthetic fixtures only.
+   O3 — key escrow/recovery ruling — blocks any "your data is safe" claim;
+     recommended default: user-held key, no safety claim until a restore test passes.
+   O4 — SOX/audit authority ruling — blocks SOX engine graduation; recommended
+     default: not SOX; local chain is client evidence only.
+   O7 — native Tauri verification on a real desktop build — blocks offline/desktop
+     claims; recommended default: no native claim until verified.
+   O9 — authorized-entity set and switch policy — blocks authStore.switchEntity;
+     recommended default: deny by default; never infer access from active entity.
+
+6. Next slice
+   N3 RBAC: re-run the 409-action AST census, take the next action without a guard
+   or reasoned exception, and add its failing-first negative authorization case
+   alongside src/store/rbacNegativeAuthorization.test.ts (the file PR #81 extended).
+   Expected evidence: red test naming the unguarded action, then the guard or
+   documented exception, then green with the census tally updated in the same commit.
+
+7. Honest completion status
+   Known-work complete: not asserted as a number this session — no product task was
+     closed; the documentation scope assigned for this session is delivered with the
+     evidence named in part 2.
+   Programme complete: NO — missing owner samples/control totals (O1), SOX authority
+     (O4), key-custody wording (O3), native proof (O7), entity grants (O9), checklist
+     sections 108-200 source, real-workflow validation of DEC-035, and the N2
+     durability/anchoring proofs. CI was not read (403). None of the six §9.2
+     completion proofs is satisfied.
+```
+
+## 7. Session scorecard (continuation prompt Appendix B) — 2026-10-20, session 3
+
+| Area                   | Status                          | Evidence |
+| ---------------------- | ------------------------------- | -------- |
+| Baseline gates         | PASS                            | All §3 baseline commands exit 0 this session; exact tallies in §6 part 1; escape ledger advisory (not an enforcing gate). |
+| Full suite             | PASS                            | `npm run test:sharded` 8/8 shards, 856 s, 16,097 passed + 1 skipped, `SHARDED_EXIT=0`. |
+| Money adoption         | PASS at floor; N8 still open    | 305/1,017 = 29.99 %, 0 raw `toFixed`; locked floor 29.16 % / 289; money:ast 978/978 SAFE, 0 unsafe. |
+| Determinism            | PASS at baseline                | 344 sites / 79 files; ratchet holds. |
+| Bundle                 | PASS with 1 WARNING             | 2,059.69 KB gzip = 99.0 % of the 2,080 KB DEC-024 ceiling; 20.31 KB headroom; N7 reduction still queued. |
+| N2 audit authority     | OPEN                            | DEC-036 executable census gates classification (10 modules); durability, anchoring, key custody and SOX authority unproven; Q6/O4 unanswered. |
+| N3 RBAC                | OPEN (active)                   | 409-action census stands (302 guarded / 107 exceptions); PR #81 added cube/GL write denials; next negative test queued in §6 part 6. |
+| N4 adapter             | QUEUED                          | No adapter work this session; next sector adapter per coverage-annex order, oracle-first. |
+| N6 certification       | BLOCKED                         | Owner O5 tiering and per-sector evidence packs absent; sector packs stay EXPERIMENTAL. |
+| N7 bundle              | OPEN                            | Measured at 99.0 % of ceiling; structural chunk reduction not started. |
+| N8 money               | OPEN (ratchet, not red-gate)    | Live 29.99 % above the 29.16 % floor; module-by-module adoption toward supported paths continues. |
+| Q1 connector           | QUEUED                          | Connector classes exist unwired; real-page wiring awaits the O1 sample route. |
+| 108–200 source         | BLOCKED — SOURCE OWED           | 108–110 unresolved; 111–200 UNASSESSED per DEC-034; 90 placeholders held without invented titles. |
+| Owner packet           | AWAITING OWNER                  | `docs/discovery/OWNER_DECISION_PACKET.md` holds O1–O9; no owner replies received this session. |
+| Supported-scope claims | UNCHANGED — no new claims       | Notion vision work was traceability only; owner prose untouched; no capability claim added. |
+| Programme completion   | NO                              | None of the six §9.2 proofs satisfied; details in §6 part 7; CI unverified (403). |
