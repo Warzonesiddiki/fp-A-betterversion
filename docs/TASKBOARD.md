@@ -8,6 +8,30 @@ owner input/decision) · `EVIDENCE-OWED` (claim exists, proof missing).
 
 Last updated: 2026-10-20 (DEC-033 all-FP&A scope remains binding; DEC-034 records owner sections 111–200. The supplemental intake register preserves 90 numbered placeholders as SOURCE TEXT OWED / UNASSESSED; the original annex and 108–110 warning remain unchanged. DEC-035 resolves correction completion in-tool with optional Excel; this session adds authenticated status-event actor/time history and blocks empty-ledger re-verification proposals. N1 closed; N2 active with Q6/O4 and evidence gaps; N3 remains active; N5 is the original mechanical 110-section gate, not semantic certification. Current bounded persistence evidence and unknown aborted-check outcomes are recorded in N2) Session 2 of 2026-10-20 (base `260c2d6`): all baseline gates green; full sharded suite re-run 8/8 shards passed in 988s (14,023 tests known-summed; shard 3/8's summary line printed a test name, re-run standalone at 174 files / 2,058 tests / 115s — total 16,081 tests across 8 shards); `npm run build` + `node scripts/bundle-check.js` measured 415 JS assets, 6,812.51 KB raw / 2,059.69 KB gzip (99.0% of the 2,080 KB limit, 1 warning); PR #78 and PR #79 are MERGED and `gh run list --branch main` returned HTTP 403 again, so CI remains UNVERIFIABLE — neither red nor green. HEAD re-run 2026-10-20 (a94a752, runner fixed): `npm run test:sharded` 8/8 shards in 984s, all eight tallies parsed — 1,901 + 1,558 + 2,067 + 2,307 + 2,033 + 2,054 + 2,231 + 1,946 passed (+1 skipped) = 16,097 passed / 16,098 total. N3 slice: denial coverage for the cube write/delete path and GL addEntry/setAccounts (mutation-verified). N2 slice: DEC-036 makes the audit-chain census a build gate (`src/services/audit/auditChainCensus.test.ts`, 5/5 after a failing-first run named all 10 modules); N2 stays open on Q6/O4 and restart/keying/anchoring proofs.)
 
+## Continuation 2 — 2026-10-20, start `80117954`
+
+Fresh baseline before code edits: `npm run check` passed **8/8 shards,
+1,395 files, 16,110 passed + 1 existing skipped in 1,100s** (suite component).
+Separate build/bundle, adoption, strict links, hygiene and route-map checks pass;
+bundle **2,059.60 KB gzip / 2,080 KB**, one warning. Root dependency audit still
+reports 5 affected packages (2 moderate / 3 high); main Actions read still HTTP 403.
+
+**DEC-039 bounded N3 closure:** all 14 financial budget actions now have
+populated-state negative witnesses (no session, Viewer, withheld permission,
+stale user), full-Admin mutation witnesses, and a source-inventory assertion.
+The additional UI-only selection guard has explicit positive/negative evidence.
+Approval/rejection/lock/unlock enforce the existing `budget:approve` grant;
+bulk setters no longer bypass lifecycle or create/delete authority; pending
+submission rejects revoked sessions and concurrent replacement. Failing-first:
+**38 failed / 62 passed → 100/100 passed**. Combined command:
+`vitest run src/store/budgetStore.authorization.test.ts src/store/budgetStore.test.ts src/store/budgetStore.lifecycle.test.ts src/store/rbacNegativeAuthorization.test.ts src/store/rbacMatrixCompleteness.test.ts`
+— **5 files / 299 tests passed**. TypeScript, targeted ESLint, money AST/adoption
+and determinism pass; AST inventory remains 409 = 302 guarded + 107 exceptions.
+No grant, schema, namespace or ratchet baseline changed. N3 remains active,
+not product-wide authorization certification. Final changed-tree full gates are
+still owed at this checkpoint. Next: reproduce and close bulk/destination/header
+closed-period bypasses, then budget edit provenance and dependency patches.
+
 ## Session baseline — 2026-10-20, `arena/efe658d1-fp-a-betterversion` at `9f6d6a02`
 
 Measured here before edits (Node `v22.22.3`; clean tree): `npm run tsc`,

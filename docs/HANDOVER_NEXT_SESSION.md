@@ -1,5 +1,15 @@
 # Handover — current continuation and historical session records
 
+> **Continuation 2 checkpoint — 2026-10-20:** fresh baseline at `80117954`:
+> `npm run check` 8/8 shards, 1,395 files, 16,110 passed + 1 existing skipped,
+> 1,100s. DEC-039 fixes approval authority and bulk/lifecycle/async budget
+> bypasses; failing-first 38 failed / 62 passed → 100 passed; combined budget
+> trust run 5 files / 299 passed. TypeScript, targeted lint, money and
+> determinism pass. N2/N3 remain active, CI still HTTP 403, owner source/native
+> proofs remain owed. Final changed-tree full check is not yet run at this
+> checkpoint. Next: closed-period bulk/destination/header guards. Earlier
+> records below are historical, not current pending-gate status.
+
 > **Closing record — 2026-10-20, `arena/efe658d1-fp-a-betterversion`:**
 > code commit `0f750d50`; baseline reconciliation `aa32e18e`; scope gate
 > `6b9c74d6`. Final `npm run check` passed: 8/8 shards, 1,395 files, 16,110
