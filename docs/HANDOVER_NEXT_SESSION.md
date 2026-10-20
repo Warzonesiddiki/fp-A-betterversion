@@ -1,5 +1,21 @@
 # Handover — current continuation and historical session records
 
+> **Closing record — 2026-10-20, `arena/efe658d1-fp-a-betterversion`:**
+> code commit `0f750d50`; baseline reconciliation `aa32e18e`; scope gate
+> `6b9c74d6`. Final `npm run check` passed: 8/8 shards, 1,395 files, 16,110
+> passed + 1 existing skipped in 1,066s (suite component). Final build passed;
+> bundle 2,059.60 KB gzip / unchanged 2,080 KB ceiling, one warning. Money
+> adoption 305/1,017 (29.99%), zero raw sites; money AST zero unsafe ops.
+> Strict links, hygiene and route-map checks pass. CI main is still HTTP 403,
+> unverifiable. Selected Wave-6 witnesses: 21 files / 472 tests, not native
+> proof. See [session evidence](audit/CONTINUATION_2026_10_20_EVIDENCE.md) for
+> exact commands, all closed slices, provisional defaults and unrun programme
+> proofs. N2/N3 stay active; known-work complete NO; programme complete NO.
+> Development-inclusive audit findings (2 moderate / 3 high affected packages)
+> remain open; production-only audit is clean. Next trust slice: mutation-verified
+> negative tests for populated `budgetStore.updateBudget`, without inferring
+> entity grants. Keep the dependency review isolated from financial fixes.
+
 > **N2/N3 attribution follow-up (DEC-038):** a failing-first run reproduced
 > two false historical-author attributions; four denial cases already passed.
 > New reversion records now use the current authenticated actor; prior records
@@ -139,7 +155,7 @@ Commit in small slices with evidence in the message; push; confirm
 
 ---
 
-## 2. State of the tree
+## 2. Historical state of the tree (superseded by the closing record above)
 
 - Branch at handover: `arena/2b91a53b-fp-a-betterversion` @ `a8462e5`
   (tracker-bot tip; last human commit `e6b1f27`).

@@ -13,7 +13,8 @@
 > file or `docs/agent/`, this file wins — and the contradiction is a bug to be
 > fixed, not a choice to be made.
 
-Last verified against the tree: **2026-10-16**. Every number below is produced
+Handbook baseline: **2026-10-16**; inventory refreshed via `docs:verify` on
+**2026-10-20**. Every number below is produced
 by a script named next to it; do not update a number by hand.
 
 ---
