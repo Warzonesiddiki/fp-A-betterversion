@@ -1,5 +1,13 @@
 # Handover — current continuation and historical session records
 
+> **Caller checkpoint:** existing budget list/detail now catch synchronous and
+> async submission failure into shared ErrorState; list Retry can recover, and
+> failures do not change budget data. Failing-first 3 UI regressions; final
+> unfiltered page/deep/a11y/grid/money + authorization impact sweep **8 files /
+> 138 passed**. Approval page fixtures pin DEC-039's approval permission. Full
+> changed-tree check/build have restarted after the caller fix and are pending
+> at this checkpoint. N2/N3 and owner/native/CI obligations remain open.
+
 > **Dependency checkpoint:** root audit findings remediated in the lockfile:
 > fresh full-root and production-only audits both zero; Vitest 4.1.12, js-yaml
 > 4.3.2, source-map-js 1.2.2, undici 7.30.1. No package paths added/removed or

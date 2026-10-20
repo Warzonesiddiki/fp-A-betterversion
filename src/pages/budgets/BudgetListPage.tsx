@@ -56,7 +56,7 @@ export default function BudgetListPage() {
   const [search, setSearch] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   // K30 four-states (N8): budgetStore exposes no load-error field — its write
-  // actions are RBAC-enforced and THROW synchronously on permission denial
+  // actions can deny synchronously or reject after asynchronous revalidation
   // (rbacEnforcer PermissionError). The failure is captured here so it can
   // render as an ErrorState whose Retry re-runs exactly the failed action.
   const [actionError, setActionError] = useState<{
@@ -67,14 +67,17 @@ export default function BudgetListPage() {
 
   const runBudgetAction = (label: string, action: () => void) => {
     setActionError(null);
-    try {
-      action();
-    } catch (err) {
+    const reportFailure = (err: unknown) => {
       setActionError({
         label,
         message: err instanceof Error ? err.message : `${label} failed`,
         retry: () => runBudgetAction(label, action),
       });
+    };
+    try {
+      void Promise.resolve(action()).catch(reportFailure);
+    } catch (err) {
+      reportFailure(err);
     }
   };
 

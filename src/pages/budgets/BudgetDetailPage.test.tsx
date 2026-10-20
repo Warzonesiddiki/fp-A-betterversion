@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import React from 'react';
 
@@ -11,6 +11,7 @@ type BudgetMockState = {
   activeBudgetId: string | null;
   lineItems: Array<Record<string, unknown>>;
   isLoading: boolean;
+  submitBudget?: () => Promise<void> | void;
 };
 let budgetState: BudgetMockState = {
   budgets: [],
@@ -44,7 +45,7 @@ vi.mock('@/store/budgetStore', () => ({
     redo: vi.fn(),
     canUndo: vi.fn(() => false),
     canRedo: vi.fn(() => false),
-    submitBudget: vi.fn(),
+    submitBudget: budgetState.submitBudget ?? vi.fn(),
     approveBudget: vi.fn(),
     rejectBudget: vi.fn(),
     updateBudget: vi.fn(),
@@ -124,6 +125,34 @@ describe('BudgetDetailPage', () => {
     renderPage('/budgets/nonexistent', '/budgets/:id');
     expect(screen.getByText(/Budget not found/i)).toBeInTheDocument();
   });
+  for (const mode of ['synchronous', 'asynchronous'] as const) {
+    it(`submission failure is surfaced for a ${mode} rejection without changing the budget`, async () => {
+      const failure = new Error('Submission authorization expired');
+      const rejected = Promise.reject(failure);
+      void rejected.catch(() => undefined);
+      budgetState = {
+        budgets: [DRAFT_BUDGET],
+        activeBudgetId: 'b1',
+        lineItems: [],
+        isLoading: false,
+        submitBudget: () => {
+          if (mode === 'synchronous') throw failure;
+          return rejected;
+        },
+      };
+      const before = JSON.stringify(budgetState.budgets);
+      vi.spyOn(window, 'confirm').mockReturnValue(true);
+      renderPage('/budgets/b1', '/budgets/:id');
+      fireEvent.click(screen.getByRole('button', { name: 'Submit' }));
+      await waitFor(() =>
+        expect(screen.getByRole('alert')).toHaveTextContent('Submission authorization expired')
+      );
+      expect(JSON.stringify(budgetState.budgets)).toBe(before);
+      expect(screen.getByRole('heading', { level: 1, name: 'FY24 Budget' })).toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+  }
 });
 
 describe('BudgetDetailPage — W-K30-001 state coverage', () => {

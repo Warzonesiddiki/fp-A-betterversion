@@ -104,13 +104,45 @@ describe('BudgetListPage', () => {
     expect(screen.getByRole('heading', { level: 3, name: /No Budgets Yet/i })).toBeInTheDocument();
     expect(screen.getByTestId('budget-empty-create')).toHaveTextContent('Create Budget');
   });
+  it('submission failure is surfaced after an asynchronous rejection and Retry can succeed', async () => {
+    const realSubmit = useBudgetStore.getState().submitBudget;
+    const user = userEvent.setup();
+    const failure = Promise.reject(new Error('Session expired while submitting'));
+    // Keep the injected promise handled in the failing implementation too; the
+    // regression must fail for absent UI feedback, not an unrelated runner error.
+    void failure.catch(() => undefined);
+    let attempts = 0;
+    useBudgetStore.setState({
+      budgets: [makeBudget()],
+      submitBudget: (id) => {
+        attempts += 1;
+        return attempts === 1 ? failure : realSubmit(id);
+      },
+    });
+    try {
+      renderPage('/budgets', '/budgets');
+      await user.click(screen.getByRole('button', { name: 'Submit budget for approval' }));
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'Session expired while submitting'
+      );
+      expect(useBudgetStore.getState().budgets[0]?.status).toBe('Draft');
+      await user.click(screen.getByRole('button', { name: 'Retry' }));
+      await waitFor(() => expect(useBudgetStore.getState().budgets[0]?.status).toBe('InReview'));
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(attempts).toBe(2);
+    } finally {
+      useBudgetStore.setState({ submitBudget: realSubmit });
+    }
+  });
 });
 
 // ---------------------------------------------------------------------------
 // R18 — RBAC denial matrix (real roles, real enforce(), no stubs).
 //
 // Call-site permissions come straight from budgetStore.ts:
-//   submitBudget / approveBudget / rejectBudget → 'budget:update'
+//   submitBudget                              → 'budget:update'
+//   approveBudget / rejectBudget              → 'budget:approve'
+// DEC-039 separates existing edit and approval authority.
 //   duplicateBudget                             → 'budget:create'
 //   deleteBudget                                → 'budget:delete'
 // Each row withholds exactly ONE permission from Admin so the other four
@@ -154,9 +186,9 @@ const ROWS: readonly DenialRow[] = [
   {
     action: 'approve',
     buttonName: 'Approve budget',
-    withheld: 'budget:update',
+    withheld: 'budget:approve',
     deniedAction: 'approveBudget',
-    deniedPermission: 'budget:update',
+    deniedPermission: 'budget:approve',
     seedStatus: 'InReview',
     expectedTitle: 'Could not approve budget',
     assertSuccess: () => {
@@ -166,9 +198,9 @@ const ROWS: readonly DenialRow[] = [
   {
     action: 'reject',
     buttonName: 'Reject budget',
-    withheld: 'budget:update',
+    withheld: 'budget:approve',
     deniedAction: 'rejectBudget',
-    deniedPermission: 'budget:update',
+    deniedPermission: 'budget:approve',
     seedStatus: 'InReview',
     expectedTitle: 'Could not reject budget',
     assertSuccess: () => {

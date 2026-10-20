@@ -77,6 +77,21 @@ passed**. No new direct dependency or broad audit-fix command. Final full
 changed-tree gates remain owed; a caller review also requires asynchronous
 submission errors to be surfaced in existing budget pages before final checks.
 
+### Submission caller impact — existing list/detail pages
+
+Caller review found both existing pages ignored asynchronous submission
+rejections, and the detail page also let synchronous denial escape its event
+handler. Failing-first UI filter: **3 failed**, plus the expected uncaught
+synchronous event error (18 unrelated tests filtered out, no skip added).
+Both callers now surface rejection through the shared ErrorState without
+changing budget state; list Retry re-runs the failed action and succeeds after
+recovery. Existing page-denial tests now pin `budget:approve` for approval/
+rejection, consistent with DEC-039 rather than weakening enforcement.
+Unfiltered list/detail/deep/grid/a11y/money + authorization impact sweep:
+**8 files / 138 tests passed**. No new route, local persisted record or
+calculation was added. Full changed-tree check and production build restarted
+after this source fix; outcomes are pending, not inferred from targeted green.
+
 ## Session baseline — 2026-10-20, `arena/efe658d1-fp-a-betterversion` at `9f6d6a02`
 
 Measured here before edits (Node `v22.22.3`; clean tree): `npm run tsc`,
