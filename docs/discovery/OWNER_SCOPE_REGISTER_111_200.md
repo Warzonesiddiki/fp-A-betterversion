@@ -19,12 +19,12 @@
 
 ## 1. What is known, exactly
 
-| Range | Count | State | Evidence |
-| --- | --- | --- | --- |
-| 1–107 | 107 | Mapped in the coverage annex | `node scripts/check-coverage-annex.mjs` → 107 rows |
-| 108–110 | 3 | **Unresolved** — source text not recovered | Annex warning |
-| 111–200 | 90 | **Unassessed** — recorded as source text owed | Owner register, 2026-10-20 |
-| **Total expected** | **200** | **93 sections unassessed** | 200 − 107 = 93 |
+| Range              | Count   | State                                         | Evidence                                           |
+| ------------------ | ------- | --------------------------------------------- | -------------------------------------------------- |
+| 1–107              | 107     | Mapped in the coverage annex                  | `node scripts/check-coverage-annex.mjs` → 107 rows |
+| 108–110            | 3       | **Unresolved** — source text not recovered    | Annex warning                                      |
+| 111–200            | 90      | **Unassessed** — recorded as source text owed | Owner register, 2026-10-20                         |
+| **Total expected** | **200** | **93 sections unassessed**                    | 200 − 107 = 93                                     |
 
 The arithmetic is deliberate: 200 expected − 107 mapped = **93 sections** with no
 reviewed source. "Missing" is not zero, not complete, and not permission to
@@ -50,6 +50,26 @@ Initial result at `b2cff43`: the searches above found **no source text for
 sections 108–200** in the repository or its reachable history. Owner-connected
 sources (Notion, Google Drive, Gmail, Google Docs) have not been treated as
 evidence unless the agent quotes an attributable location.
+
+### 2.1 Owner-connected sources — searched 2026-10-20 (session 2, base `260c2d6`)
+
+Searched, with the connected account, for the missing text:
+
+| Source       | Query                                                                                                                                 | Result                                                                                                                                                                                                                                                           |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Google Drive | file names containing `checklist`, `scope`, `register`, `requirement`, `FP&A`, `FinPlan`                                              | 23 files. Relevant-looking: `FP&A Master Model — Dynamics 365 GL Import` (Sheet, modified 2026-10-19), `FinPlan_Pro_System_Prompt_Part1`–`Part15` + `Prompt_Upgrade_Log` + `GAP_ANALYSIS_v5` (all 2026-05-18), `FinPlanPro-Executive-Investor-Report-2026-08-04` |
+| Google Drive | full text `checklist`; full text `Keyboard shortcuts (complete map)`                                                                  | 20 and 10 files. `SUGGESTION.md` (Doc, 2026-09-01) is a 7.5 KB engineering directive — not a numbered checklist. `Paste July 27, 2026 - 9:52AM` is a 342 KB userscript — not a checklist                                                                         |
+| Notion       | page search for `Data Model`, `Traceability`, `Testing Gates Release`, `Security Egress AI`, `Repository Documentation Library`, `J1` | 12 project pages, all mirrors of repository documents; no owner checklist page                                                                                                                                                                                   |
+
+**Verdict: not recovered.** The May-2026 prompt lineage in Drive is the ancestor
+of the _system prompt_, not the 110/200-section coverage checklist; nothing found
+numbers its sections. Do not treat any of these files as source text for
+sections 108–200. The blocker stands: **93 sections unassessed** (108–110 plus
+111–200).
+
+What would close it: one pasted list, or one file, whose sections are numbered
+continuously through 110 or through 200. A domain-level summary is not
+acceptable and must not be promoted into numbered requirements.
 
 ## 3. Hard rules for this file
 
@@ -77,11 +97,11 @@ unassessed. A summary is not a substitute for the section text.
 
 ## 5. Intake format (use only when the source arrives)
 
-| # | Exact title (verbatim) | Sub-items (verbatim) | Acceptance criteria | Source location | Status |
-| --- | --- | --- | --- | --- | --- |
-| 108 | _owed_ | _owed_ | _owed_ | _owed_ | `UNASSESSED — SOURCE OWED` |
-| … | … | … | … | … | … |
-| 200 | _owed_ | _owed_ | _owed_ | _owed_ | `UNASSESSED — SOURCE OWED` |
+| #   | Exact title (verbatim) | Sub-items (verbatim) | Acceptance criteria | Source location | Status                     |
+| --- | ---------------------- | -------------------- | ------------------- | --------------- | -------------------------- |
+| 108 | _owed_                 | _owed_               | _owed_              | _owed_          | `UNASSESSED — SOURCE OWED` |
+| …   | …                      | …                    | …                   | …               | …                          |
+| 200 | _owed_                 | _owed_               | _owed_              | _owed_          | `UNASSESSED — SOURCE OWED` |
 
 ## 6. Gate change required with the source
 
@@ -94,6 +114,6 @@ Update `scripts/check-coverage-annex.mjs` and its test so that:
 
 ## 7. Change log
 
-| Date | Change | Evidence |
-| --- | --- | --- |
+| Date       | Change                                                                | Evidence                                                   |
+| ---------- | --------------------------------------------------------------------- | ---------------------------------------------------------- |
 | 2026-10-20 | Blocker record created; 93 sections confirmed unassessed at `b2cff43` | `node scripts/check-coverage-annex.mjs`; repository search |
