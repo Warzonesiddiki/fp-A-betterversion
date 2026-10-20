@@ -58,8 +58,16 @@ for (const shard of targets) {
 
   // Vitest's summary lines, stripped of ANSI, e.g. "Tests  1568 passed (1568)".
   const plain = out.replace(/\u001b\[[0-9;]*m/g, '');
-  const files = /Test Files\s+(.*)/.exec(plain)?.[1]?.trim() ?? 'unknown';
-  const tests = /\bTests\s+(.*)/.exec(plain)?.[1]?.trim() ?? 'unknown';
+  // Anchor to the start of the summary line. An unanchored /\bTests\s+/ also
+  // matches test *names* ("... GL Invariant Property Tests > ..."), which is
+  // how shard 3/8 printed a test name instead of a tally. Take the last
+  // anchored match so no earlier line can win.
+  const summaryValue = (re) => {
+    const matches = [...plain.matchAll(re)];
+    return matches.length ? matches[matches.length - 1][1].trim() : 'unknown';
+  };
+  const files = summaryValue(/^[ \t]*Test Files\s+(.*)$/gm);
+  const tests = summaryValue(/^[ \t]*Tests\s+(.*)$/gm);
 
   results.push({
     shard,
