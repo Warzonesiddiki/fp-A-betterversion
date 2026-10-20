@@ -1,124 +1,99 @@
-# Owner-scope extension intake — sections 111–200
+# Owner scope register — sections 108–200
 
-**Intake date:** 2026-10-20
-**Status:** Received as scope direction; verbatim checklist transcription and repository assessment remain **OPEN / UNASSESSED**.
-**Authority:** Owner-provided extension described in the 2026-10-20 session. This register is an intake control, not implementation evidence or a semantic coverage certification.
+> **STATUS: SOURCE OWED — NOT A REQUIREMENTS SOURCE.**
+> This file is a blocker record, not the owner's checklist. It exists so the
+> missing scope cannot be mistaken for "nothing to do" or for "all requirements
+> mapped". Do not infer, paraphrase, or invent section titles from this page.
 
-## Relationship to the existing checklist
+**Prepared:** 2026-10-20
+**Base:** `b2cff43` (merge of PR #78)
+**Owner-supplied scope of record:** a 200-section all-in-one FP&A checklist
+(2026-10-18), of which sections 1–107 are mapped in
+[MASTER_CHECKLIST_COVERAGE.md](../MASTER_CHECKLIST_COVERAGE.md).
 
-The extension does not replace, narrow, or rewrite the original 110-section annex. `docs/MASTER_CHECKLIST_COVERAGE.md` remains the original annex, including its explicit unresolved warning for sections 108–110. Do not append rows 111–200 to that mechanically checked table while sections 108–110 are still absent; that would create an internal sequence gap and would erase the current disclosure unless the checker and source capture are deliberately revised together.
+> **Numbering ambiguity:** the coverage annex header still describes a
+> **110-section** checklist; the owner's 2026-10-20 register describes **200**.
+> This is not resolved. Ask the owner which version is current before mapping.
+> Do not truncate at 110 and do not assume 111–200 are new sections rather than
+> a re-numbering.
 
-The extension broadens the already binding all-FP&A scope in DEC-033. It is not evidence that any of the newly listed domains are implemented, wired, tested, verified, or supported. No status may be inferred from the existence of a nearby route, engine, connector, type, or test. Missing is not zero or complete. The binding J1→J2→J3→J4 workflow, owner decisions, and dependency order remain in force.
+## 1. What is known, exactly
 
-## Domain index from the carried-forward owner-scope summary
+| Range | Count | State | Evidence |
+| --- | --- | --- | --- |
+| 1–107 | 107 | Mapped in the coverage annex | `node scripts/check-coverage-annex.mjs` → 107 rows |
+| 108–110 | 3 | **Unresolved** — source text not recovered | Annex warning |
+| 111–200 | 90 | **Unassessed** — recorded as source text owed | Owner register, 2026-10-20 |
+| **Total expected** | **200** | **93 sections unassessed** | 200 − 107 = 93 |
 
-The 111–200 extension covers additional technical architecture and native/OS integration; payroll, procure-to-pay (P2P), order-to-cash (O2C), and billing; government, nonprofit, and fiduciary work; board, legal, and corporate governance; advanced operations and industry-specific requirements; regulatory obligations and external data; advanced analytics; accessibility; automation; and other FP&A domains.
+The arithmetic is deliberate: 200 expected − 107 mapped = **93 sections** with no
+reviewed source. "Missing" is not zero, not complete, and not permission to
+guess.
 
-This index intentionally does **not** assign these clusters to particular section numbers: the carried-forward source did not preserve the exact section titles or their full sub-item wording. Do not treat this summary as a substitute for the owner's numbered source.
+## 2. Search record
 
-## Numbered transcription and assessment register
+Run these and record the exact result; the next agent must repeat and extend the
+list.
 
-Each numbered section is retained individually so the extension cannot silently disappear into a single “future breadth” item. For every entry below, **the exact owner title and every sub-item must be transcribed verbatim from the source before assessment**. Current state for all entries: **SOURCE TEXT OWED / UNASSESSED**. This is not a claim that the corresponding capability is missing or present.
+```text
+git log --all --oneline -S "111-200"
+git log --all --oneline -S "200 sections"
+git grep -n "108" -- docs
+git grep -n "111" -- docs
+find . -iname "*checklist*" -o -iname "*owner*" -o -iname "*scope*"
+docs/archive/legacy-2026-10/_bmad/research/owner-direction-record-*.md
+reports/
+plan/
+```
 
-| Section | Required intake and assessment                                                                                                                                     |
-| ------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-|     111 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     112 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     113 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     114 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     115 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     116 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     117 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     118 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     119 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     120 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     121 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     122 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     123 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     124 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     125 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     126 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     127 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     128 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     129 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     130 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     131 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     132 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     133 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     134 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     135 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     136 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     137 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     138 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     139 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     140 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     141 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     142 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     143 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     144 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     145 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     146 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     147 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     148 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     149 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     150 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     151 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     152 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     153 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     154 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     155 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     156 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     157 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     158 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     159 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     160 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     161 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     162 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     163 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     164 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     165 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     166 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     167 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     168 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     169 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     170 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     171 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     172 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     173 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     174 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     175 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     176 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     177 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     178 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     179 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     180 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     181 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     182 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     183 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     184 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     185 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     186 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     187 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     188 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     189 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     190 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     191 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     192 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     193 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     194 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     195 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     196 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     197 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     198 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     199 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
-|     200 | **SOURCE TEXT OWED / UNASSESSED** — transcribe the exact owner title and every sub-item; then assess against repository evidence without inferring implementation. |
+Initial result at `b2cff43`: the searches above found **no source text for
+sections 108–200** in the repository or its reachable history. Owner-connected
+sources (Notion, Google Drive, Gmail, Google Docs) have not been treated as
+evidence unless the agent quotes an attributable location.
 
-## Exit criteria for this intake
+## 3. Hard rules for this file
 
-1. Recover and preserve the owner’s exact source text for sections 111–200, including every sub-item and any acceptance criteria; do not paraphrase away line items.
-2. Review the recovered text with the owner if any wording, boundaries, or section numbering is ambiguous.
-3. Reconcile the original 108–110 gap separately. Keep its warning visible until the missing source is recovered and reviewed.
-4. Only then update the master coverage annex and its mechanical checker in one evidence-bearing change. Add an explicit `UNASSESSED` status if needed; the gate must report unassessed rows rather than count them as verified.
-5. Audit each section against code, consumers, persistence, tests, and runtime proof as applicable. Record owner/dependency decisions and completion gates; do not imply support or completion from this intake register.
+1. Do not create numbered headings for 108–200 until the owner's exact text is
+   available. A guessed title is a fabricated requirement.
+2. Do not mark any row `WORKS`, `PARTIAL`, `RETIRED`, or `NOT-SUPPORTED` without
+   a source line and a decision id (for retirement).
+3. Do not let the coverage gate pass silently: every unassessed row stays
+   visible as `UNASSESSED — SOURCE OWED`.
+4. Do not claim "all project requirements are accounted for" in any report,
+   README, or in-product text while this file is in this state.
+5. When the source arrives, replace this blocker record with the verbatim
+   register, preserving sub-items and acceptance criteria. Keep the change in a
+   dedicated commit so the scope expansion is reviewable.
 
-Until those criteria are met, this document records receipt and preserves numbered placeholders only. It is not the detailed 111–200 checklist and does not close N2, N5, or the project.
+## 4. Exact owner request
+
+> Please provide the exact checklist text for sections 108–200, including every
+> sub-item and acceptance criterion, and identify which document or message it
+> came from. If the list changed since 2026-10-18, send the current version and
+> say what changed. I will map it verbatim; I will not infer titles or statuses.
+
+If the owner supplies only a summary, record it as a summary and keep the rows
+unassessed. A summary is not a substitute for the section text.
+
+## 5. Intake format (use only when the source arrives)
+
+| # | Exact title (verbatim) | Sub-items (verbatim) | Acceptance criteria | Source location | Status |
+| --- | --- | --- | --- | --- | --- |
+| 108 | _owed_ | _owed_ | _owed_ | _owed_ | `UNASSESSED — SOURCE OWED` |
+| … | … | … | … | … | … |
+| 200 | _owed_ | _owed_ | _owed_ | _owed_ | `UNASSESSED — SOURCE OWED` |
+
+## 6. Gate change required with the source
+
+Update `scripts/check-coverage-annex.mjs` and its test so that:
+
+- the expected row count is 200 once the source exists;
+- any row without a reviewed source is `UNASSESSED — SOURCE OWED`;
+- an unassessed row cannot be silently upgraded to a closing status;
+- `npm run docs:verify` keeps the gap visible until every row is dispositioned.
+
+## 7. Change log
+
+| Date | Change | Evidence |
+| --- | --- | --- |
+| 2026-10-20 | Blocker record created; 93 sections confirmed unassessed at `b2cff43` | `node scripts/check-coverage-annex.mjs`; repository search |

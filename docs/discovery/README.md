@@ -24,8 +24,10 @@
 7. [Risk and controls register](risk-register.md) — initial FP&A, data, AI, security, and product risks.
 8. [Audit evidence checklist](audit-evidence-checklist.md) — evidence to collect before making claims or prioritizing remediation.
 9. [Proposed roadmap](roadmap.md) — discovery-to-vertical-slice sequence, conditional on audit findings.
-10. [Decision log](decision-log.md) — DEC-001…DEC-006; all Proposed, awaiting owner.
+10. [Decision log](decision-log.md) — DEC-001 onward; owner rulings are binding, agent technical dispositions are marked delegated.
 11. [Full repository audit vs. FPA-modular](../audit/AUDIT_VS_FPA_MODULAR_2026-10-15.md) — measured findings and the 25-item prioritised list (outside this folder).
+12. [Owner scope register 108–200](OWNER_SCOPE_REGISTER_111_200.md) — blocker record: 93 owner-checklist sections remain unassessed until the exact source is recovered; do not infer titles.
+13. [Owner decision packet](OWNER_DECISION_PACKET.md) — one-page O1–O9 and §12 request with recommended safe defaults and a reply template.
 
 ## How to use this pack
 

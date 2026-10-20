@@ -64,6 +64,7 @@ docs/CAPABILITY_TRUTH_MATRIX.md          per-route/per-module maturity (generate
 | `docs/discovery/risk-register.md`     | Risks with likelihood/impact/mitigation.                              |
 | `docs/discovery/current-workflow.md`   | The owner's real monthly workflow and its open questions.            |
 | `docs/discovery/d365-export-contract.md` | Cited D365 GL export contract (expected shape; not verified support). |
+| `docs/AGENT_CONTINUATION_PROMPT.md` | Paste-ready continuation prompt: execution order, decision authority, evidence contract and owner blockers for the working agent. |
 
 ### Engineering handbook — `docs/agent/`
 
