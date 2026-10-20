@@ -45,6 +45,22 @@ rewrite or entity authorization inference. N2/N3 remain active; this is a bounde
 budget proof, not certification of every financial writer. Next: budget edit
 provenance/ID collisions, followed by isolated dependency remediation.
 
+### DEC-041 — budget mutation provenance and ID safety
+
+Reproduced a draft-alias bug that overwrote `lastChange.oldValue`, hardcoded/
+inherited creator metadata, same-clock ID collisions, and ambiguous ID edits.
+New records now carry the authenticated creator and deterministic collision-safe
+IDs, including reserved line/history references. Old records are not rewritten;
+ambiguous legacy identities fail closed instead of choosing a record.
+Failing-first provenance suite: **12 failed / 1 passed**; additional ambiguous
+line case **1 failed / 13 passed**; final **14/14 passed**. Combined exact
+budget/close/RBAC command: **8 files / 367 passed**. Money AST/adoption,
+determinism and type-safety ratchets pass. No new financial calculation,
+amount-type change, namespace/schema migration or randomness was introduced.
+This is producer metadata correctness, not closure of the canonical audit
+chain, native durability, N2 or N3. Next: isolated dependency remediation, then
+full changed-tree gates and build/bundle measurement.
+
 ## Session baseline — 2026-10-20, `arena/efe658d1-fp-a-betterversion` at `9f6d6a02`
 
 Measured here before edits (Node `v22.22.3`; clean tree): `npm run tsc`,

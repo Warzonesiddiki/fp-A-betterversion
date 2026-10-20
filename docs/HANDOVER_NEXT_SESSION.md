@@ -1,5 +1,13 @@
 # Handover — current continuation and historical session records
 
+> **DEC-041 checkpoint:** budget provenance suite reproduced 12 failed /
+> 1 passed; an additional ambiguous-line case failed before its guard. Final
+> 14/14; combined budget/close/RBAC sweep 8 files / 367 passed. Old amount is
+> captured before mutation, new/copy creators are authenticated, clock-collision
+> IDs reserve existing header/line/history references, and legacy ambiguous IDs
+> fail closed. No persisted history was rewritten or guessed. N2/N3 remain open;
+> next is isolated dependency remediation followed by final full gates/build.
+
 > **DEC-040 checkpoint:** budget closed-write regressions reproduced 14 failed /
 > 5 passed; final closed-write suite 21 passed, combined budget/close/RBAC run
 > 7 files / 353 passed. Guards cover bulk replacement, source AND destination
