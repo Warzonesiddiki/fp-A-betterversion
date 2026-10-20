@@ -55,6 +55,20 @@ in the source blocker register; verbatim source remains not recovered. Issues
 read access and Actions are blocked by the integration; no CI claim follows.
 Owner packet reissued in conversation, with provisional defaults only.
 
+### N2/N3 attribution slice — DEC-038 (2026-10-20)
+
+`auditTrailStore.revertToState` now records the authenticated reviewer rather
+than falsely repeating the historical author. Prior entries, hashes, namespace
+and schema are untouched. No ledger rollback or wider audit authority claim.
+Failing-first: attribution suite 2 failed / 4 passed; after fix, the combined
+attribution/audit/census/RBAC/period-lock/reconstruction command in
+`docs/architecture/AUDIT_CHAIN_REACHABILITY.md` passes 8 files / 204 tests.
+The AST census remains 409 = 302 guarded + 107 exceptions. New negative evidence
+includes stale-session denial preserving the entries reference and pinned head.
+N2/N3 stay open; Q6/O4/O9/native proof are not closed. `tsc`, targeted ESLint,
+`docs:verify` and strict links passed after this change. Re-run final full gates
+before push; baseline evidence is not substituted for the changed tree.
+
 ---
 
 ## NEXT (unblocked, in order)

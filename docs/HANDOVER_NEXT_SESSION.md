@@ -1,5 +1,13 @@
 # Handover — current continuation and historical session records
 
+> **N2/N3 attribution follow-up (DEC-038):** a failing-first run reproduced
+> two false historical-author attributions; four denial cases already passed.
+> New reversion records now use the current authenticated actor; prior records
+> are never rewritten. Combined trust slice passed 8 files / 204 tests;
+> `tsc`, targeted ESLint, `docs:verify` and strict links passed. The audit map
+> contains the exact command and remaining boundaries. Full final gates will
+> be recorded below when completed, not inferred from baseline evidence.
+
 > **Wave-0 gap gate follow-up (DEC-037):** `coverageAnnexClaims.test.ts`
 > passed 9/9 after a failing-first run (7 failed / 1 passed). `docs:verify`
 > now warns about all 93 source-owed sections (108–200), in addition to the
