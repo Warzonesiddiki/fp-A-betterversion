@@ -61,6 +61,22 @@ This is producer metadata correctness, not closure of the canonical audit
 chain, native durability, N2 or N3. Next: isolated dependency remediation, then
 full changed-tree gates and build/bundle measurement.
 
+### Root dependency findings remediated (isolated lockfile slice)
+
+`npm update vitest @vitest/coverage-v8 @vitest/ui js-yaml source-map-js undici
+--package-lock-only --ignore-scripts`, then `npm ci --ignore-scripts` and
+`npm run prepare`: 14 existing package versions changed; zero package paths
+added/removed; root package metadata/ranges unchanged. Vitest family 4.1.7 →
+4.1.12 (plus compatible Chai 6.3.0), js-yaml 4.3.1 → 4.3.2, source-map-js
+1.2.1 → 1.2.2, undici 7.29.0 → 7.30.1. Fresh `npm audit --json` **5 → 0**
+affected packages; `npm audit --omit=dev --json` also **0**. All changed lockfile
+licenses are MIT except source-map-js BSD-3-Clause. `license:check` exits zero
+but reports UNKNOWN top-level metadata: that best-effort script is not global
+license certification. Patched-runner budget impact sweep: **8 files / 367
+passed**. No new direct dependency or broad audit-fix command. Final full
+changed-tree gates remain owed; a caller review also requires asynchronous
+submission errors to be surfaced in existing budget pages before final checks.
+
 ## Session baseline — 2026-10-20, `arena/efe658d1-fp-a-betterversion` at `9f6d6a02`
 
 Measured here before edits (Node `v22.22.3`; clean tree): `npm run tsc`,

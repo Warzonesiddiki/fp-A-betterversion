@@ -1,5 +1,15 @@
 # Handover — current continuation and historical session records
 
+> **Dependency checkpoint:** root audit findings remediated in the lockfile:
+> fresh full-root and production-only audits both zero; Vitest 4.1.12, js-yaml
+> 4.3.2, source-map-js 1.2.2, undici 7.30.1. No package paths added/removed or
+> direct ranges changed; changed licenses MIT/BSD-3-Clause. Patched-runner
+> budget/close/RBAC tests 8 files / 367 passed. The best-effort license script
+> reports UNKNOWN and is not global legal certification. Next: surface async
+> submission failures at both existing budget call sites, then complete final
+> full gates/build. Initial final processes were stopped for this caller review;
+> they are not completed evidence. N2/N3/programme remain open.
+
 > **DEC-041 checkpoint:** budget provenance suite reproduced 12 failed /
 > 1 passed; an additional ambiguous-line case failed before its guard. Final
 > 14/14; combined budget/close/RBAC sweep 8 files / 367 passed. Old amount is
