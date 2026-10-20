@@ -21,7 +21,7 @@ Read this before touching anything that persists. Line numbers refer to
 | `ImportHistoryEntry`                     | `:851`                        | `ImportResult` + `id` + `timestamp`                                                                                                                                               |
 | `GLState`                                | `:856`                        | the GL store contract                                                                                                                                                             |
 
-72 exported types/interfaces live in that one file; domain-specific types
+Shared exported types/interfaces live in that file; domain-specific types
 also live beside their stores/engines. There is no generated schema from
 these types (K3 risk — see `09_KNOWN_GAPS.md`).
 
@@ -105,20 +105,25 @@ The client talks to the server via `src/sdk/FpaClient` /
 - Ids: imported rows derive from content + batch (`importProvenance.ts`);
   user-created objects may use a random id; never derive an id from
   `Date.now()` alone.
-- All 42 persisted stores declare `version: 1` with an identity `migrate`;
-  bump the version and write a real migration when a shape changes.
+- Persisted versions/migrations differ by store; use the
+  [persistence map](../architecture/PERSISTENCE_MAP.md) and each declared
+  contract, not a blanket version-one assumption. Bump the version and write
+  a tested migration when a persisted shape changes.
 - Dates: ISO `YYYY-MM-DD`; periods `YYYY-MM`; instants ISO 8601 UTC from
   `now()`.
 - Amounts in persisted stores are numbers today; new fields that carry money
   should be **decimal strings** (as `ImportControlTotals` does) — do not add
   new float money fields.
 
-## Things not modelled (do not pretend they are)
+## Unverified boundaries (not absence of all prototype code)
 
-Fiscal calendars other than calendar months, multi-currency translation,
-consolidation eliminations, intercompany, account mapping versions, period
-lock state as data (there is a `period-close-store`, but the GL store does
-not consult it before writing), per-tenant separation on the client.
+Types and prototype engines do not establish certified multi-currency,
+consolidation/intercompany, native recovery, client tenancy or application-wide
+financial immutability. These require per-pillar witnesses. The GL close guards
+are described below; budget bulk/destination/header guards have bounded
+[DEC-040 evidence](../audit/BUDGET_TRUST_CONTINUATION_2026_10_20.md). Raw
+backup/native mutation paths remain uncertified. Do not repeat the obsolete
+claim that the GL store never consults close state.
 
 ## Fiscal close identity and reopen safety (DEC-008; partial)
 

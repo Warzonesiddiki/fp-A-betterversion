@@ -1,9 +1,10 @@
-# 02 — Architecture (as built, measured 2026-10-15)
+# 02 — Architecture (live structure; inventory source linked below)
 
 ## Stack and pinned versions
 
-From `package.json` (39 runtime deps, 38 dev deps — far above the ≤ 12 the
-reference method recommends; do not add more without deleting one).
+Direct dependency ranges live in `package.json`; installed versions live in
+`package-lock.json`. Do not duplicate their counts here or add packages without
+the standing dependency/license review.
 
 | Layer         | Library                                                                        | Version                                             |
 | ------------- | ------------------------------------------------------------------------------ | --------------------------------------------------- |
@@ -37,8 +38,8 @@ regressions.
 index.html → src/main.tsx → src/App.tsx
 ```
 
-- `App.tsx` declares **206 `<Route>`s**, **182 via `React.lazy`**, and a
-  runtime gate: if `isTauriRuntime()` is false (`'__TAURI_INTERNALS__' in
+- `App.tsx` owns the JSX routes and lazy modules; the generated
+  [route map](../product/ROUTE_MAP.md) tracks current source. Its runtime gate: if `isTauriRuntime()` is false (`'__TAURI_INTERNALS__' in
 window`), the app calls `alert()` and renders `null`. A plain browser
   therefore shows nothing — this is by design (desktop-only) and is why
   `npm run dev` on :5173 is only useful with the Tauri shell or with tests.
@@ -66,32 +67,38 @@ Rules:
   outputs out. `src/engines/` modules that import a store are defects.
 - **Exports consume calculation objects; they never recompute.**
 - **No circular imports** across these layers. `npm run architecture:guardrails`
-  exists but is not in `npm run check`; run it when you touch imports.
+  exists but is not in `npm run check`; run it when you touch imports. It
+  checks source presence/keywords, not the dependency graph or absence of cycles.
 - **One storage engine per environment.** `masterStorage` chooses Tauri SQL
   (desktop) or sql.js/IndexedDB (browser/test). Do not add another.
 
-## Directory map (counts measured; use the scripts to refresh)
+## Directory map (inventory is not hand-maintained here)
 
-| Path                                                                     | What                                                                                                                                                                 | Count                                  |
-| ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| `src/pages/<domain>/`                                                    | route pages; colocated `*.test.tsx`, `*.deep.test.tsx`, `*.a11y.test.tsx`, `*.money.test.ts`                                                                         | 216 page files                         |
-| `src/components/ui/`                                                     | primitives, barrel `index.ts`; six "migrated" primitives are lint-locked to semantic tokens                                                                          | 122                                    |
-| `src/components/<domain>/`                                               | domain components (data, budget, reports, consolidation, …)                                                                                                          | —                                      |
-| `src/store/`                                                             | Zustand stores (`persist` + `immer` + `subscribeWithSelector`), 42 persisted                                                                                         | 46                                     |
-| `src/engines/`                                                           | calculation modules + `manifest.generated` + `__tests__/` (financial oracles)                                                                                        | 182 modules (95 reachable, 87 orphans) |
-| `src/services/`                                                          | `GLImportService`, `ImportPipeline` (both unwired), `import/importProvenance.ts` (wired), export engines, `api-integration/*Connector.ts` (unwired), `commandClient` | 70 non-test TS files                   |
-| `src/sdk/`                                                               | `FpaClient`, `gl/GlCommitNamespace` — the only client code that talks to `server/`; refuses to call anything unless `VITE_API_URL` is set                            | —                                      |
-| `src/hooks/`                                                             | `use*` hooks incl. `useCurrencyFormatter`                                                                                                                            | 47                                     |
-| `src/workers/`                                                           | Monte Carlo, consolidation, formula, storage and exact GL staging workers                                                                                            | 11 files / 5 worker entrypoints        |
-| `src/utils/`                                                             | `money.ts`, `clock.ts`, `sha256.ts`, `csv.ts`, `parseFinancialAmount.ts`, `parseImportDate.ts`, storage adapters, `rbacEnforcer.ts`, `logger.ts`                     | —                                      |
-| `src/types/index.ts`                                                     | all domain and store-state types                                                                                                                                     | 1 file                                 |
-| `src/domain/`                                                            | `chartOfAccounts.ts`, `persistenceAuthority.ts` (which store owns which fact)                                                                                        | —                                      |
-| `src/test/`                                                              | `setup.ts` (global mocks), `__mocks__/`                                                                                                                              | —                                      |
-| `src/plugins/`, `src/templates/`, `src/i18n/`, `src/theme/`, `src/wasm/` | out-of-spine surface                                                                                                                                                 | —                                      |
-| `src-tauri/`                                                             | Rust shell, `tauri.conf.json`, `migrations/` (35 tables, **unused by the app**)                                                                                      | —                                      |
-| `server/`                                                                | Express + SQLite; own `package.json`, 32 test files                                                                                                                  | —                                      |
-| `scripts/`                                                               | all gates/generators (see 05)                                                                                                                                        | —                                      |
-| `e2e/`, `tests/`                                                         | Playwright (shims Tauri; does not exercise the real shell)                                                                                                           | —                                      |
+| Path                                                                     | What                                                                                                                                                                 |
+| ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/pages/<domain>/`                                                    | route pages; colocated `*.test.tsx`, `*.deep.test.tsx`, `*.a11y.test.tsx`, `*.money.test.ts`                                                                         |
+| `src/components/ui/`                                                     | primitives, barrel `index.ts`; six "migrated" primitives are lint-locked to semantic tokens                                                                          |
+| `src/components/<domain>/`                                               | domain components (data, budget, reports, consolidation, …)                                                                                                          |
+| `src/store/`                                                             | Zustand stores (`persist` + `immer` + `subscribeWithSelector`); authority and keys in the persistence map                                                            |
+| `src/engines/`                                                           | calculation modules + `manifest.generated` + `__tests__/` (financial oracles)                                                                                        |
+| `src/services/`                                                          | `GLImportService`, `ImportPipeline` (both unwired), `import/importProvenance.ts` (wired), export engines, `api-integration/*Connector.ts` (unwired), `commandClient` |
+| `src/sdk/`                                                               | `FpaClient`, `gl/GlCommitNamespace` — the only client code that talks to `server/`; refuses to call anything unless `VITE_API_URL` is set                            |
+| `src/hooks/`                                                             | `use*` hooks incl. `useCurrencyFormatter`                                                                                                                            |
+| `src/workers/`                                                           | Monte Carlo, consolidation, formula, storage and exact GL staging workers                                                                                            |
+| `src/utils/`                                                             | `money.ts`, `clock.ts`, `sha256.ts`, `csv.ts`, `parseFinancialAmount.ts`, `parseImportDate.ts`, storage adapters, `rbacEnforcer.ts`, `logger.ts`                     |
+| `src/types/index.ts`                                                     | all domain and store-state types                                                                                                                                     |
+| `src/domain/`                                                            | `chartOfAccounts.ts`, `persistenceAuthority.ts` (which store owns which fact)                                                                                        |
+| `src/test/`                                                              | `setup.ts` (global mocks), `__mocks__/`                                                                                                                              |
+| `src/plugins/`, `src/templates/`, `src/i18n/`, `src/theme/`, `src/wasm/` | out-of-spine surface                                                                                                                                                 |
+| `src-tauri/`                                                             | Rust shell, `tauri.conf.json`, `migrations/` (35 tables, **unused by the app**)                                                                                      |
+| `server/`                                                                | Express + SQLite; own `package.json` and separate test suite                                                                                                         |
+| `scripts/`                                                               | all gates/generators (see 05)                                                                                                                                        |
+| `e2e/`, `tests/`                                                         | Playwright (shims Tauri; does not exercise the real shell)                                                                                                           |
+
+Canonical measured engine/store/worker inventory: [README](../../README.md),
+asserted by `npm run docs:verify`; `npm run engines:verify` checks the manifest.
+Page/route mapping: `npm run routemap:check`. Directory roles above do not
+certify module reachability, financial correctness or supported maturity.
 
 ## State management pattern (required shape)
 
@@ -144,7 +151,8 @@ export const useXStore = create<XState>()(
 
 Express + better-sqlite3-style SQLite, JWT auth, RBAC, tenancy, period-close
 and GL commit routes, audit logging. **Status:** complete enough to run and
-test (323 tests green) but: not bundled with the desktop app; only
+test via its separate package scripts (not covered by client-suite totals), but:
+not bundled with the desktop app; only
 `src/sdk/gl/GlCommitNamespace` targets it, and it is inert without
 `VITE_API_URL`. Its role is **DEC-004 / P1-13**. Do not add client calls to
 it before that decision.
@@ -170,9 +178,11 @@ key material.
 `npm run build` = `tsc --noEmit && eslint --max-warnings 0 && vite build`.
 Manual chunks split vendors (react, ag-grid, recharts, exceljs, jspdf, sql.js,
 ai). `npm run bundle-check` enforces the size budget from `scripts/bundle-check.js`:
-main entry chunk ≤ 150 KB gzip, total JS ≤ 2048 KB gzip (2005 KB measured
-2026-08-23), lazy vendor chunks ≤ 300 KB gzip each; it warns at 90 % of each
-cap. Re-measure after `vite build` before quoting a number.
+The executable limits currently include main entry ≤ 150 KB gzip, total JS
+≤ 2080 KB gzip (existing DEC-024, not the superseded 2048 KB target), and
+lazy vendor chunks ≤ 300 KB gzip each. The script also checks critical-path
+size and placement. Re-measure after `vite build` before quoting a result;
+passing the ceiling is not completion of N7 structural reduction.
 
 ## Desktop shell
 

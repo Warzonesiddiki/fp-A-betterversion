@@ -1,5 +1,42 @@
 # Handover — current continuation and historical session records
 
+## Final budget trust checkpoint — 2026-10-20
+
+**Current result (supersedes pending-gate/next-step statements in historical
+checkpoints below):** `npm run check` passed **8/8 shards, 1,398 files,
+16,248 passed + 1 existing skipped = 16,249 total**, suite component **1,057s**.
+Production build and bundle check passed: **6,815.88 KB raw / 2,060.77 KB gzip
+vs unchanged 2,080 KB**, one warning; critical path **425.06 KB gzip**, main
+**69.74 KB gzip**. Money adoption **305/1,017 = 29.99%, zero raw sites**.
+Root/prod audits both zero at the dependency-remediation checkpoint.
+
+DEC-039/040/041, submission caller error/retry handling and a repeatable
+`node scripts/verify-budget-guard-mutation.mjs` proof are closed only within
+their witnessed budget scope. Mutation proof: normal 5/5; mutant exactly four
+named denial failures and one Admin pass, production source unchanged.
+Handbook inventory/migration/GL-close/bundle contradictions reconciled;
+architecture keyword checks, docs truth, strict links, route map and hygiene
+pass. Architecture checks are not a cycle-graph or product certification.
+
+Durable commands, per-shard tally, failing-first results, commits and boundaries:
+[budget trust continuation evidence](audit/BUDGET_TRUST_CONTINUATION_2026_10_20.md).
+No new route/store/engine/connector, persisted schema/namespace, authority grant,
+ratchet baseline or CI workflow edit. No new DEC-042 authority was needed.
+
+**Known-work complete: NO. Programme complete: NO.** N2/N3 remain active;
+N-register **2/8 DONE** only for prior bounded N1/N5. **107 mapped / 93
+source-owed (108–200)** remains unchanged. CI is unverifiable (HTTP 403),
+not green. Owner data/control totals, two-month parallel run, supported-scope,
+native/recovery/key-custody, Q6/O4/O9 and other certification proofs remain owed.
+
+**Next unblocked work:** forecast writer denial/mutation evidence starting
+`forecastStore.updateForecast`; verify other budget detail action error channels;
+isolated failing-first license-check fix for UNKNOWN metadata / fail-open
+execution. The current license script is not global legal certification. N7
+structural reduction and N8 complete supported-module adoption remain open.
+Existing PR #82 is for review only, not merge/release; push/pre-push outcome is
+recorded on the PR after execution, not inferred here.
+
 > **Caller checkpoint:** existing budget list/detail now catch synchronous and
 > async submission failure into shared ErrorState; list Retry can recover, and
 > failures do not change budget data. Failing-first 3 UI regressions; final
