@@ -32,6 +32,19 @@ not product-wide authorization certification. Final changed-tree full gates are
 still owed at this checkpoint. Next: reproduce and close bulk/destination/header
 closed-period bypasses, then budget edit provenance and dependency patches.
 
+### DEC-040 — bounded closed-period budget write closure
+
+Reproduced **14 failed / 5 passed** before the guard changes. Bulk line
+replacement, source/destination movement (including undo/redo), and header
+fiscal-year changes/deletion now consult close state before financial mutation.
+Duplicate IDs are rejected, never collapsed. The permitted marker-only system
+freeze and identical replacements still work. Final closed-write suite:
+**21/21 passed**; combined budget/close/RBAC command: **7 files / 353 passed**.
+Money AST/adoption and determinism pass. No reasonless reopen, persisted-history
+rewrite or entity authorization inference. N2/N3 remain active; this is a bounded
+budget proof, not certification of every financial writer. Next: budget edit
+provenance/ID collisions, followed by isolated dependency remediation.
+
 ## Session baseline — 2026-10-20, `arena/efe658d1-fp-a-betterversion` at `9f6d6a02`
 
 Measured here before edits (Node `v22.22.3`; clean tree): `npm run tsc`,

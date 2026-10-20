@@ -1,5 +1,13 @@
 # Handover — current continuation and historical session records
 
+> **DEC-040 checkpoint:** budget closed-write regressions reproduced 14 failed /
+> 5 passed; final closed-write suite 21 passed, combined budget/close/RBAC run
+> 7 files / 353 passed. Guards cover bulk replacement, source AND destination
+> identity, fiscal-year header changes/removal, and duplicate replay IDs before
+> mutation. Exact no-ops and system marker-only freeze remain usable. N2/N3
+> remain active; no native, entity-policy or programme closure follows. Next:
+> budget edit provenance and clock-collision IDs, then dependency patches.
+
 > **Continuation 2 checkpoint — 2026-10-20:** fresh baseline at `80117954`:
 > `npm run check` 8/8 shards, 1,395 files, 16,110 passed + 1 existing skipped,
 > 1,100s. DEC-039 fixes approval authority and bulk/lifecycle/async budget

@@ -7,7 +7,11 @@ import { masterStorage } from '../utils/masterStorage';
 import { useUIStore } from './uiStore';
 import { useAuthStore } from './authStore';
 import { assertPermission, enforce, Permissions } from '../utils/rbacEnforcer';
-import { assertSnapshotReplayAllowed, assertUpdateAllowed } from './periodLockGuard';
+import {
+  assertBudgetHeaderChangesAllowed,
+  assertSnapshotReplayAllowed,
+  assertUpdateAllowed,
+} from './periodLockGuard';
 import { now } from '@/utils/clock';
 
 /**
@@ -151,6 +155,7 @@ export const useBudgetStore = create<BudgetState>()(
 
         setBudgets: enforce(Permissions.BUDGET_UPDATE, 'setBudgets', (budgets) => {
           assertBudgetReplacement(get().budgets, budgets);
+          assertBudgetHeaderChangesAllowed(get().budgets, budgets, get().lineItems);
           set((state) => {
             state.budgets = budgets as typeof state.budgets;
           });
@@ -165,6 +170,7 @@ export const useBudgetStore = create<BudgetState>()(
         },
 
         setLineItems: enforce(Permissions.BUDGET_UPDATE, 'setLineItems', (items) => {
+          assertSnapshotReplayAllowed(get().lineItems, items);
           assertLineReplacement(get().lineItems, items, get().budgets);
           set((state) => {
             state.lineItems = items;
@@ -271,6 +277,11 @@ export const useBudgetStore = create<BudgetState>()(
         deleteBudget: enforce(Permissions.BUDGET_DELETE, 'deleteBudget', (id) => {
           const budget = get().budgets.find((b) => b.id === id);
           if (budget) assertEditableBudget(budget, 'delete');
+          assertBudgetHeaderChangesAllowed(
+            get().budgets,
+            get().budgets.filter((item) => item.id !== id),
+            get().lineItems
+          );
           set((state) => {
             const idx = state.budgets.findIndex((b) => b.id === id);
             if (idx !== -1) state.budgets.splice(idx, 1);
@@ -450,6 +461,13 @@ export const useBudgetStore = create<BudgetState>()(
                 `Cannot edit a budget in status ${existing.status}; only Draft or Rejected budgets can be edited.`
               );
             }
+            assertBudgetHeaderChangesAllowed(
+              get().budgets,
+              get().budgets.map((budget) =>
+                budget.id === id ? { ...budget, ...updates } : budget
+              ),
+              get().lineItems
+            );
             set((state) => {
               const budget = state.budgets.find((b) => b.id === id);
               if (budget) {
