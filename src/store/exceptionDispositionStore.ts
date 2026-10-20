@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { nowISO } from '@/utils/clock';
-import { assertPermission, Permissions } from '@/utils/rbacEnforcer';
+import { assertPermission, getCurrentUser, Permissions } from '@/utils/rbacEnforcer';
 import { masterStorage } from '@/utils/masterStorage';
 import { parseImportDate } from '@/utils/parseImportDate';
 import type {
@@ -44,8 +44,6 @@ export interface RequestCorrectionInput {
   /** Where the entry is: batch and source row, so it can be found. */
   source?: string | null;
   ruleId?: string;
-  requestedBy?: string;
-  requestedAt?: string;
 }
 
 function requireText(value: unknown, action: string, field: string, why: string): string {
@@ -53,6 +51,14 @@ function requireText(value: unknown, action: string, field: string, why: string)
     throw new Error(`${action}: ${field} is required — ${why}`);
   }
   return value.trim();
+}
+
+function requireCorrectionActor(action: string): string {
+  const actorId = getCurrentUser()?.id;
+  if (typeof actorId !== 'string' || actorId.trim() === '') {
+    throw new Error(`${action}: authenticated actor ID is required for correction history`);
+  }
+  return actorId.trim();
 }
 
 /**
@@ -103,11 +109,7 @@ export interface ExceptionDispositionState {
   getAuditTrail: (exceptionId?: string) => ExceptionDispositionAuditRecord[];
 
   requestCorrection: (input: RequestCorrectionInput) => CorrectionRequest;
-  updateCorrectionStatus: (
-    exceptionId: string,
-    status: CorrectionStatus,
-    options?: { by?: string }
-  ) => CorrectionRequest;
+  updateCorrectionStatus: (exceptionId: string, status: CorrectionStatus) => CorrectionRequest;
   getCorrection: (exceptionId: string) => CorrectionRequest | undefined;
   getCorrectionHistory: (exceptionId: string) => CorrectionAuditRecord[];
   getCorrections: () => CorrectionRequest[];
@@ -181,6 +183,8 @@ export const useExceptionDispositionStore = create<ExceptionDispositionState>()(
 
       requestCorrection: (input) => {
         assertPermission(Permissions.EXCEPTION_DISPOSE, 'requestCorrection');
+        const actorId = requireCorrectionActor('requestCorrection');
+        const recordedAt = nowISO();
         const exceptionId = requireText(
           input.exceptionId,
           'requestCorrection',
@@ -216,12 +220,14 @@ export const useExceptionDispositionStore = create<ExceptionDispositionState>()(
           dueDate,
           source,
           status: 'REQUESTED',
-          requestedAt: input.requestedAt ?? nowISO(),
-          requestedBy: input.requestedBy ?? 'user',
+          requestedAt: recordedAt,
+          requestedBy: actorId,
         };
 
         const auditRecord: CorrectionAuditRecord = {
           ...request,
+          recordedAt,
+          recordedBy: actorId,
           previousStatus: current?.status,
           sequenceNumber: state.correctionAuditTrail.length + 1,
         };
@@ -234,8 +240,9 @@ export const useExceptionDispositionStore = create<ExceptionDispositionState>()(
         return request;
       },
 
-      updateCorrectionStatus: (exceptionId, status, options) => {
+      updateCorrectionStatus: (exceptionId, status) => {
         assertPermission(Permissions.EXCEPTION_DISPOSE, 'updateCorrectionStatus');
+        const actorId = requireCorrectionActor('updateCorrectionStatus');
         const state = get();
         const current = state.corrections.find((c) => c.exceptionId === exceptionId);
         if (!current) {
@@ -244,8 +251,9 @@ export const useExceptionDispositionStore = create<ExceptionDispositionState>()(
           );
         }
 
-        // DEC-018 lifecycle: REQUESTED → APPLIED → REVERIFIED, WITHDRAWN
-        // from REQUESTED/APPLIED. Everything else is refused — in
+        // DEC-035 lifecycle (internal enum retained for persisted compatibility):
+        // REQUESTED → APPLIED → REVERIFIED, WITHDRAWN from REQUESTED/APPLIED.
+        // Everything else is refused — in
         // particular REVERIFIED before APPLIED ("we checked" before
         // "they fixed it") and any move out of a terminal state. The only
         // way back is an audited re-request, which restarts at REQUESTED.
@@ -266,9 +274,10 @@ export const useExceptionDispositionStore = create<ExceptionDispositionState>()(
         const updated: CorrectionRequest = { ...current, status };
         const auditRecord: CorrectionAuditRecord = {
           ...updated,
+          recordedAt: nowISO(),
+          recordedBy: actorId,
           previousStatus: current.status,
           sequenceNumber: state.correctionAuditTrail.length + 1,
-          requestedBy: options?.by ?? current.requestedBy,
         };
 
         set({
@@ -322,10 +331,10 @@ export const useExceptionDispositionStore = create<ExceptionDispositionState>()(
     {
       name: 'finplan_exception_dispositions',
       storage: masterStorage,
-      // v1 → v2 introduces correction requests (FR-010). A v1 blob has no
-      // `corrections`/`correctionAuditTrail`; both default to empty rather than
-      // to an invented request.
-      version: 2,
+      // v1 → v2 introduced corrections (FR-010); v2 → v3 adds authenticated
+      // event actor/time metadata. Legacy audit rows remain byte-for-byte
+      // intact: absent actor/time is unknown and is never fabricated.
+      version: 3,
       migrate: (persistedState: unknown) => {
         if (!persistedState || typeof persistedState !== 'object') {
           return { dispositions: [], auditTrail: [], corrections: [], correctionAuditTrail: [] };

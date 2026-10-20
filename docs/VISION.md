@@ -1,15 +1,17 @@
 # FinPlan Pro — Product Vision
 
-> **Goal:** one all-in-one FP&A workspace — a single tool that carries a finance
-> team from raw GL data to reviewed, board-ready output without leaving the app.
-> This document owns *what the product is and where it is going*. The evidence
-> for what actually exists lives in
+> **Goal:** cover **everything that falls under FP&A** in one ultimate workspace—
+> from trusted source data through planning, analysis, close, collaboration,
+> governance, and board-ready outputs. The owner's ambition is a tool that can
+> replace an army of FP&A analysts and perform more accurately and intelligently.
+> This is the product's north-star, not a statement of current capability or
+> proven replacement performance. Evidence for what exists lives in
 > [`docs/CAPABILITY_TRUTH_MATRIX.md`](CAPABILITY_TRUTH_MATRIX.md) and
 > [`docs/agent/09_KNOWN_GAPS.md`](agent/09_KNOWN_GAPS.md).
 
-Last reviewed: **2026-10-16**. Aligned with
+Last reviewed: **2026-10-20**. Aligned with
 [`docs/discovery/roadmap.md`](discovery/roadmap.md) and
-[`docs/discovery/decision-log.md`](discovery/decision-log.md) (DEC-010, DEC-011).
+[`docs/discovery/decision-log.md`](discovery/decision-log.md) (DEC-010, DEC-011, DEC-033).
 
 ---
 
@@ -18,7 +20,18 @@ Last reviewed: **2026-10-16**. Aligned with
 The owner is an FP&A practitioner. Every month they export a General Ledger dump
 from **Microsoft Dynamics 365**, do FP&A work on it, and highlight abnormalities
 and potentially wrong entries by hand. That manual month-end review is the
-product's reason to exist.
+product's starting workflow, not the limit of product scope. Per DEC-033, the
+ultimate scope is all FP&A work. J1–J4 and the current pillar/checklist maps
+structure the first workflow and execution evidence; they do not narrow the
+destination. Any discovered FP&A responsibility must be made visible in the
+live scope records rather than silently deferred or omitted.
+
+The ambition to replace analyst capacity and improve accuracy/intelligence is
+not yet a verified claim. It requires owner-accepted parallel runs on real
+work, with measured accuracy, coverage, and time outcomes. Human dispositions
+remain the authority for correction decisions (DEC-018, refined by DEC-035:
+in-tool completion, optional Excel export); AI remains local-only
+behind the verified-facts gate (DEC-022).
 
 "All-in-one / one-stop" means: the practitioner never has to export the GL into
 one tool, build the analysis in a spreadsheet, check a rule in another script,
@@ -49,14 +62,14 @@ shell ([`docs/product/ROUTE_MAP.md`](product/ROUTE_MAP.md)). Each pillar is a
 claim about capability; each capability is only "real" at the maturity the
 generated matrix can prove.
 
-| Pillar      | Job to be done                                                    | Core capability                                                           |
-| ----------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| **DATA**    | Get the ledger in, safely, and know exactly what arrived.          | D365/CSV/XLSX import, schema validation, quarantine, control totals, provenance |
-| **CLOSE**   | Prove the books are tied out and locked for the period.           | Trial balance, tie-out, period close state machine, write guards, audit chain |
-| **PLAN**    | Build budgets, forecasts, scenarios and drivers.                  | Budgeting, rolling forecasts, scenarios, workforce/CapEx/cash planning      |
-| **ANALYZE** | Explain the numbers and surface what is worth a second look.      | Statements, variance decomposition, drill-to-source, exception detection    |
+| Pillar      | Job to be done                                                       | Core capability                                                                       |
+| ----------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **DATA**    | Get the ledger in, safely, and know exactly what arrived.            | D365/CSV/XLSX import, schema validation, quarantine, control totals, provenance       |
+| **CLOSE**   | Prove the books are tied out and locked for the period.              | Trial balance, tie-out, period close state machine, write guards, audit chain         |
+| **PLAN**    | Build budgets, forecasts, scenarios and drivers.                     | Budgeting, rolling forecasts, scenarios, workforce/CapEx/cash planning                |
+| **ANALYZE** | Explain the numbers and surface what is worth a second look.         | Statements, variance decomposition, drill-to-source, exception detection              |
 | **MODEL**   | Handle the hard accounting: consolidation, FX, revenue, leases, tax. | Exact-string consolidation, ASC 830 CTA, ASC 810 IC elimination, rev-rec, leases, tax |
-| **REPORT**  | Produce trustworthy, tie-out-verified outputs.                    | Financial statements, board pack, formula-preserving XLSX, editable PPTX    |
+| **REPORT**  | Produce trustworthy, tie-out-verified outputs.                       | Financial statements, board pack, formula-preserving XLSX, editable PPTX              |
 
 Cross-cutting: **ADMIN** (settings, users, integrations, data management),
 **GOVERN** (RBAC, SOX/audit, security policy), and **AI** (commentary drafted
@@ -66,12 +79,12 @@ only from verified facts — deferred, never a source of numbers).
 
 Every capability is graded, and grades may not be claimed without evidence:
 
-| Grade               | Meaning                                                                 | Evidence required                                  |
-| ------------------- | ----------------------------------------------------------------------- | -------------------------------------------------- |
-| **BUILT**           | Source exists.                                                          | Source path and owner.                             |
-| **CONNECTED**       | Uses real domain contracts and handles loading/empty/error states.       | Integration test or E2E run, data contract.        |
-| **GOVERNED**        | Authorization, validation, audit and entity scope are enforced.         | API/authz tests, audit record, policy reference.   |
-| **ENTERPRISE-READY**| Governed and operationally fit for a supported workflow.                 | Performance, a11y, backup/rollback, runbook, acceptance. |
+| Grade                | Meaning                                                            | Evidence required                                        |
+| -------------------- | ------------------------------------------------------------------ | -------------------------------------------------------- |
+| **BUILT**            | Source exists.                                                     | Source path and owner.                                   |
+| **CONNECTED**        | Uses real domain contracts and handles loading/empty/error states. | Integration test or E2E run, data contract.              |
+| **GOVERNED**         | Authorization, validation, audit and entity scope are enforced.    | API/authz tests, audit record, policy reference.         |
+| **ENTERPRISE-READY** | Governed and operationally fit for a supported workflow.           | Performance, a11y, backup/rollback, runbook, acceptance. |
 
 A blank or `UNVERIFIED` grade is not a failure — it is a prohibition on making
 the claim. Per-capability grades are generated by
@@ -140,12 +153,12 @@ A working week that satisfies the roadmap's Gate 2–4:
 
 ## 6. Where the detail lives
 
-| Question                                   | Document                                        |
-| ------------------------------------------ | ----------------------------------------------- |
-| What was asked, and is it done?            | `docs/discovery/requirements-register.md`       |
-| In what order do we build it?              | `docs/discovery/roadmap.md`                     |
-| What has been decided?                     | `docs/discovery/decision-log.md`                |
-| What can go wrong?                         | `docs/discovery/risk-register.md`               |
+| Question                                   | Document                                                         |
+| ------------------------------------------ | ---------------------------------------------------------------- |
+| What was asked, and is it done?            | `docs/discovery/requirements-register.md`                        |
+| In what order do we build it?              | `docs/discovery/roadmap.md`                                      |
+| What has been decided?                     | `docs/discovery/decision-log.md`                                 |
+| What can go wrong?                         | `docs/discovery/risk-register.md`                                |
 | What actually exists right now?            | `docs/CAPABILITY_TRUTH_MATRIX.md`, `docs/agent/09_KNOWN_GAPS.md` |
-| How do we build it without breaking money? | `docs/agent/03_DOMAIN_RULES.md`                 |
-| How is each rule enforced?                 | `docs/agent/05_COMMANDS_AND_GATES.md`           |
+| How do we build it without breaking money? | `docs/agent/03_DOMAIN_RULES.md`                                  |
+| How is each rule enforced?                 | `docs/agent/05_COMMANDS_AND_GATES.md`                            |

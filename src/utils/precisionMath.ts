@@ -14,6 +14,7 @@
 
 import { FINANCIAL_SCALE, SCALE_FACTOR } from '@/types/precision';
 import type { PrecisionResult } from '@/types/precision';
+import { toFixedMoneyString } from '@/utils/money';
 
 // ─── Conversion: Decimal ↔ Integer ─────────────────────────────────────────
 
@@ -27,11 +28,11 @@ import type { PrecisionResult } from '@/types/precision';
 export function toPrecise(value: number): bigint {
   if (!Number.isFinite(value)) return 0n;
 
-  // Convert to string with enough decimal places, then strip the decimal point
-  const str = value.toFixed(FINANCIAL_SCALE);
-  const cleaned = str.replace('-', '').replace('.', '');
-  const result = BigInt(cleaned);
-  return value < 0 ? -result : result;
+  // Use the canonical decimal.js-backed money primitive for scale rounding.
+  // Native Number#toFixed can round a decimal literal down at a binary midpoint
+  // (for example, 1.23495 to four places becomes 1.2349 in JavaScript).
+  const fixed = toFixedMoneyString(value, FINANCIAL_SCALE);
+  return BigInt(fixed.replace('.', ''));
 }
 
 /**

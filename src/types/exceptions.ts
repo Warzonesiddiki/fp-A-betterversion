@@ -46,6 +46,10 @@ export interface CorrectionRequest {
 }
 
 export interface CorrectionAuditRecord extends CorrectionRequest {
+  /** Authenticated time of this request/status-change event; absent on legacy records. */
+  readonly recordedAt?: string;
+  /** Authenticated actor ID for this event; absent on legacy records. */
+  readonly recordedBy?: string;
   readonly previousStatus?: CorrectionStatus;
   readonly sequenceNumber: number;
 }

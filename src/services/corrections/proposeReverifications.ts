@@ -1,8 +1,9 @@
 /**
- * Phase 5 (DEC-018): proposed re-verifications. When a correction is
+ * Phase 5 (DEC-035): proposed re-verifications. When a correction is
  * APPLIED and the current rule run no longer raises its finding, the tool
- * attaches a proposal — evidence that the flag has gone quiet. It never
- * confirms anything: a human reads the proposal and sets REVERIFIED.
+ * attaches a review cue — not proof that the correction worked. It never
+ * confirms anything: a human checks the underlying ledger evidence and sets
+ * REVERIFIED.
  */
 import type { CorrectionRequest } from '@/types/exceptions';
 import type { ExceptionFinding } from '@/store/exceptionRuleCatalogue';
@@ -19,12 +20,16 @@ export function proposeReverifications(
   currentFindings: readonly ExceptionFinding[],
   examinedEntries: number
 ): ReverificationProposal[] {
+  // An empty run means there is no current ledger evidence. Absence of a
+  // finding in zero rows must never be presented as progress toward a fix.
+  if (!Number.isFinite(examinedEntries) || examinedEntries <= 0) return [];
+
   const stillFlagged = new Set(currentFindings.map((f) => f.findingKey));
   return corrections
     .filter((c) => c.status === 'APPLIED' && !stillFlagged.has(c.exceptionId))
     .map((c) => ({
       exceptionId: c.exceptionId,
-      reason: `The current rule run no longer flags this item across ${examinedEntries.toLocaleString()} examined entries. Confirm the fix in the ledger, then mark it re-verified.`,
+      reason: `The current rule run no longer flags this item across ${examinedEntries.toLocaleString()} examined entries. This is a review cue, not proof of correction: verify the underlying ledger entry and source evidence before marking it re-verified.`,
       examinedEntries,
     }))
     .sort((a, b) => a.exceptionId.localeCompare(b.exceptionId));

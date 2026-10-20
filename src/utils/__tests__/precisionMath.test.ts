@@ -46,6 +46,11 @@ describe('precisionMath', () => {
       expect(fromPrecise(precise)).toBeCloseTo(0.0001, 4);
     });
 
+    it('uses decimal half-up rounding at the storage scale', () => {
+      expect(toPrecise(1.23495)).toBe(12350n);
+      expect(toPrecise(-1.23495)).toBe(-12350n);
+    });
+
     it('handles Infinity as 0n', () => {
       expect(toPrecise(Infinity)).toBe(0n);
       expect(toPrecise(-Infinity)).toBe(0n);
