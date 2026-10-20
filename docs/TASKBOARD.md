@@ -42,6 +42,19 @@ Known-work complete: **NO**, no authoritative total of remaining semantic tasks
 is established. Programme complete: **NO**; real-data, parallel-run, native,
 recovery, scope and CI proofs remain owed.
 
+### Wave-0 source-gap enforcement — DEC-037
+
+Completed bounded slice (not semantic N5 recertification): the coverage checker
+now reads the supplemental scope contract, retains the legacy header and
+requires explicit `UNASSESSED — SOURCE OWED` status until reviewed source lands.
+Failing-first: `vitest run src/__tests__/coverageAnnexClaims.test.ts` produced
+7 failures / 1 pass before implementation. Final focused run: 1 file / 9 tests passed; `npm run tsc`, targeted ESLint,
+`docs:verify` and strict `docs:links` passed. The gate now prints 107 mapped
+rows and 93 unassessed source-owed sections (108–200). The bounded repository/PR/Notion/Drive/Gmail search is
+in the source blocker register; verbatim source remains not recovered. Issues
+read access and Actions are blocked by the integration; no CI claim follows.
+Owner packet reissued in conversation, with provisional defaults only.
+
 ---
 
 ## NEXT (unblocked, in order)

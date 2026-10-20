@@ -1,5 +1,12 @@
 # Handover — current continuation and historical session records
 
+> **Wave-0 gap gate follow-up (DEC-037):** `coverageAnnexClaims.test.ts`
+> passed 9/9 after a failing-first run (7 failed / 1 passed). `docs:verify`
+> now warns about all 93 source-owed sections (108–200), in addition to the
+> legacy 108–110 disclosure. The original header is unchanged. No section
+> titles were invented, and no source-owed row can be silently closed. See
+> the source blocker register for this session's bounded recovery search.
+
 > **Latest measured baseline, 2026-10-20:** session branch
 > `arena/efe658d1-fp-a-betterversion`, base `9f6d6a02`. Baseline gates pass;
 > full suite 8/8 shards, 1,394 files, 16,097 passed + 1 skipped in 1,204s.

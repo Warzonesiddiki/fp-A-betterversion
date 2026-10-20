@@ -6,12 +6,13 @@
  * numbering, and status vocabulary. It also checks two machine-backed claims:
  * the RBAC AST inventory in row 26 against its committed snapshot, and the
  * store/persisted-store counts in row 45 against source files. The owner
- * supplied 110 sections, but only rows 1–107 are present: the explicit
- * unresolved 108–110 gap is required and reported, never treated as zero.
+ * original annex retains its 110-section header; the supplemental scope
+ * contract (DEC-034/037) records the current expected scope and source-owed
+ * range. Both gaps are enforced, never silently truncated at the old header.
  * Other free-text claims remain subject to the plan's evidence/owner-DEC gates;
  * this script does not certify the prose semantically.
  *
- * Usage: node scripts/check-coverage-annex.mjs [--file path]
+ * Usage: node scripts/check-coverage-annex.mjs [--file path] [--scope-file path]
  */
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -19,13 +20,15 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DEFAULT_FILE = join(ROOT, 'docs/MASTER_CHECKLIST_COVERAGE.md');
+const DEFAULT_SCOPE_FILE = join(ROOT, 'docs/discovery/OWNER_SCOPE_REGISTER_111_200.md');
 const RBAC_SNAPSHOT = join(ROOT, 'src/store/__snapshots__/rbacMatrixCompleteness.test.ts.snap');
 const STORE_DIR = join(ROOT, 'src/store');
-const STATUS_PREFIX = /^(?:WORKS|PARTIAL|UNWIRED|MISSING|DECIDE|EVIDENCE-OWED)(?:\b|\s|\/|—)/;
+const STATUS_PREFIX =
+  /^(?:WORKS|PARTIAL|UNWIRED|MISSING|DECIDE|EVIDENCE-OWED|UNASSESSED)(?:\b|\s|\/|—)/;
 
-function getCliFile(argv) {
-  const index = argv.indexOf('--file');
-  return index >= 0 && argv[index + 1] ? resolve(argv[index + 1]) : DEFAULT_FILE;
+function getCliFile(argv, flag, fallback) {
+  const index = argv.indexOf(flag);
+  return index >= 0 && argv[index + 1] ? resolve(argv[index + 1]) : fallback;
 }
 
 function parseRows(markdown) {
@@ -72,7 +75,31 @@ function getStoreCounts() {
   return { stores: files.length, persisted: persistKeys.size };
 }
 
-export function checkCoverageAnnex(markdown) {
+function parseScopeContract(markdown) {
+  const match = markdown.match(/<!-- coverage-scope: (.+) -->/);
+  if (!match) return null;
+  try {
+    const contract = JSON.parse(match[1]);
+    const { expectedSections, sourceOwed, decision } = contract;
+    if (
+      !Number.isSafeInteger(expectedSections) ||
+      expectedSections < 1 ||
+      !Array.isArray(sourceOwed) ||
+      !sourceOwed.every(
+        (number) => Number.isSafeInteger(number) && number > 0 && number <= expectedSections
+      ) ||
+      new Set(sourceOwed).size !== sourceOwed.length ||
+      typeof decision !== 'string' ||
+      !/^DEC-\d+$/.test(decision)
+    )
+      return null;
+    return { expectedSections, sourceOwed, decision };
+  } catch {
+    return null;
+  }
+}
+
+export function checkCoverageAnnex(markdown, scopeMarkdown) {
   const failures = [];
   const warnings = [];
   const declared = markdown.match(
@@ -82,6 +109,24 @@ export function checkCoverageAnnex(markdown) {
     return { failures: ['missing declared owner checklist section count'], warnings, rowCount: 0 };
   }
   const ownerSections = Number(declared[1]);
+  const scope = parseScopeContract(scopeMarkdown);
+  if (!scope) {
+    return {
+      failures: ['missing or invalid coverage-scope contract in owner scope register'],
+      warnings,
+      rowCount: 0,
+    };
+  }
+  if (scope.expectedSections < ownerSections) {
+    failures.push('supplemental owner scope cannot truncate the declared annex scope');
+  }
+  if (scope.expectedSections > ownerSections) {
+    warnings.push(
+      `legacy annex declares ${ownerSections} sections; ${scope.decision} scope contract expects ` +
+        `${scope.expectedSections}; preserve the header until source/version reconciliation`
+    );
+  }
+  const sourceOwed = new Set(scope.sourceOwed);
   const rows = parseRows(markdown);
   if (rows.length === 0) {
     return { failures: ['no numbered coverage rows found'], warnings, rowCount: 0 };
@@ -101,6 +146,15 @@ export function checkCoverageAnnex(markdown) {
         `row ${row.number} contains an empty title, evidence, disposition, or completion-gate cell`
       );
     }
+    if (sourceOwed.has(row.number) && row.cells[2] !== 'UNASSESSED — SOURCE OWED') {
+      failures.push(
+        `row ${row.number} is source-owed; only UNASSESSED — SOURCE OWED is allowed until ` +
+          'the source register is reviewed and its contract deliberately updated by decision'
+      );
+    }
+    if (row.cells[2].startsWith('UNASSESSED') && row.cells[2] !== 'UNASSESSED — SOURCE OWED') {
+      failures.push(`row ${row.number} must use the explicit UNASSESSED — SOURCE OWED status`);
+    }
     if (!STATUS_PREFIX.test(row.cells[2])) {
       failures.push(
         `row ${row.number} has an unrecognized evidence status prefix: ${row.cells[2].slice(0, 32)}`
@@ -115,9 +169,9 @@ export function checkCoverageAnnex(markdown) {
   if (internalMissing.length > 0) {
     failures.push(`coverage row sequence has an internal gap: ${formatRange(internalMissing)}`);
   }
-  if (Math.max(...numbers) > ownerSections) {
+  if (Math.max(...numbers) > scope.expectedSections) {
     failures.push(
-      `coverage row ${Math.max(...numbers)} exceeds declared owner scope ${ownerSections}`
+      `coverage row ${Math.max(...numbers)} exceeds expected owner scope ${scope.expectedSections}`
     );
   }
 
@@ -142,6 +196,27 @@ export function checkCoverageAnnex(markdown) {
   } else if (/Rows\s+\d+[–-]\d+\s+remain unresolved/.test(markdown)) {
     failures.push(
       'stale unresolved-owner-row disclosure remains after all declared rows are mapped'
+    );
+  }
+
+  const reviewedMissing = [];
+  for (let number = 1; number <= scope.expectedSections; number += 1) {
+    if (!seen.has(number) && !sourceOwed.has(number)) reviewedMissing.push(number);
+  }
+  if (reviewedMissing.length > 0) {
+    failures.push(`reviewed owner sections ${formatRange(reviewedMissing)} require coverage rows`);
+  }
+  const unassessed = new Set(scope.sourceOwed);
+  for (let number = 1; number <= scope.expectedSections; number += 1) {
+    if (!seen.has(number)) unassessed.add(number);
+  }
+  for (const row of rows) {
+    if (row.cells[2] === 'UNASSESSED — SOURCE OWED') unassessed.add(row.number);
+  }
+  if (unassessed.size > 0) {
+    warnings.push(
+      `${unassessed.size} sections UNASSESSED — SOURCE OWED ` +
+        `(${formatRange([...unassessed].sort((a, b) => a - b))}); missing is not zero or complete`
     );
   }
 
@@ -186,11 +261,13 @@ export function checkCoverageAnnex(markdown) {
     }
   }
 
-  return { failures, warnings, rowCount: rows.length, ownerSections };
+  return { failures, warnings, rowCount: rows.length, ownerSections: scope.expectedSections };
 }
 
 function main() {
-  const file = getCliFile(process.argv.slice(2));
+  const args = process.argv.slice(2);
+  const file = getCliFile(args, '--file', DEFAULT_FILE);
+  const scopeFile = getCliFile(args, '--scope-file', DEFAULT_SCOPE_FILE);
   let markdown;
   try {
     markdown = readFileSync(file, 'utf8');
@@ -200,7 +277,15 @@ function main() {
     return;
   }
 
-  const result = checkCoverageAnnex(markdown);
+  let scopeMarkdown;
+  try {
+    scopeMarkdown = readFileSync(scopeFile, 'utf8');
+  } catch (error) {
+    console.error(`FAIL  cannot read owner scope register ${scopeFile}: ${error.message}`);
+    process.exitCode = 1;
+    return;
+  }
+  const result = checkCoverageAnnex(markdown, scopeMarkdown);
   for (const warning of result.warnings) console.warn(`WARN  ${warning}`);
   for (const failure of result.failures) console.error(`FAIL  ${failure}`);
   if (result.failures.length > 0) {

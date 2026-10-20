@@ -2,6 +2,12 @@
 
 > **Known unresolved owner-list gap:** this annex currently maps rows 1–107, while the owner supplied a 110-section checklist. Rows 108–110 remain unresolved: their source text and evidence have not been recovered or reviewed in this checkout. Missing is not zero, not complete, and must not be inferred.
 >
+> **Extended source gap (DEC-034/037):** the supplemental
+> [owner scope register](discovery/OWNER_SCOPE_REGISTER_111_200.md) records
+> 111–200 as an extension with source text owed. The gate reads that register
+> as well as this legacy header; it must never silently truncate the scope at
+> 110. Missing sections stay `UNASSESSED — SOURCE OWED`, not guessed titles.
+>
 > **Current scope directive, DEC-033 (owner, 2026-10-20):** the product's
 > ultimate scope is everything that falls under FP&A. The 110-section checklist
 > supplied 2026-10-18 is a coverage baseline and execution map, not an exhaustive
@@ -22,7 +28,8 @@
 > `WORKS` proven wired + tested · `PARTIAL` built, gaps named · `UNWIRED`
 > code exists, no consumer · `MISSING` no code · `DECIDE` conflicts a standing
 > DEC or needs an owner ruling before any build · `EVIDENCE-OWED` a prior
-> audit claimed closure; the witness must be re-run in this tree.
+> audit claimed closure; the witness must be re-run in this tree ·
+> `UNASSESSED — SOURCE OWED` no reviewed section source (never a support claim).
 >
 > **Zero-compromise rule for this annex:** no row may end the project as
 > PARTIAL/UNWIRED/MISSING inside the supported scope. Every row terminates as
