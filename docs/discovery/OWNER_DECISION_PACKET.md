@@ -7,7 +7,11 @@
 > versioning default. All are reversible by a later decision.
 
 **Prepared:** 2026-10-20
-**Base:** `b2cff43`
+**Original base:** `b2cff43`
+**Reissued in conversation:** 2026-10-20 on `arena/efe658d1-fp-a-betterversion`
+(base `9f6d6a02`); one batched request for source text, D365 samples, workflow
+facts and owner rulings. O8 recheck: `gh run list --branch main --limit 5`
+still returns HTTP 403. No answer or certification is inferred.
 **Reply rule:** reply with corrections only. Silence means the recommended
 default is adopted as a **provisional default**, recorded in
 [`decision-log.md`](decision-log.md), and named as provisional in every report.
@@ -69,7 +73,7 @@ O9:  [accept default / provide grants and policy: ...]
 §20: [accept defaults / corrections: ...]
 
 108–200 source: [attached / pasted / not available]
-Checklist version: [110 sections / 200 sections / other: ...]
+Checklist version/source: [confirm current source; DEC-034 records 111–200 as an extension]
 D365 samples + control totals: [attached / not available]
 ```
 

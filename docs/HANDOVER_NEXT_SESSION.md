@@ -1,4 +1,12 @@
-# Handover — 2026-10-19 — next-session prompt + state of the tree
+# Handover — current continuation and historical session records
+
+> **Latest measured baseline, 2026-10-20:** session branch
+> `arena/efe658d1-fp-a-betterversion`, base `9f6d6a02`. Baseline gates pass;
+> full suite 8/8 shards, 1,394 files, 16,097 passed + 1 skipped in 1,204s.
+> Build passes; bundle 2,059.69 KB gzip / 2,080 KB, one warning. CI `main`
+> remains unverifiable (Actions HTTP 403). See the taskboard session baseline
+> for exact commands/tallies. N2/N3 remain active; no programme completion claim.
+> Earlier dated updates below are historical, not the current branch state.
 
 > **Latest continuation update (2026-10-20; branch `arena/d9a8f733-fp-a-betterversion`):** N2 remains active. Added `src/store/cellLineageStore.persistence.test.ts`; it verifies encrypted `masterStorage` round-trip and fresh-module hydration while the lower SQL.js layer is a persistent in-memory mock. Focused run passed 1/1; combined lineage/storage/audit run passed 5 files / 38 tests. This is not native Tauri, OS-keychain, disk-durability, or application-restart proof. Initial `npm run tsc`, `npm run lint`, and `npm run format:check` attempts were aborted without exit codes; complete reruns subsequently passed (`tsc`, lint 125.5s, format, `docs:verify` with the existing 108–110 warning, and strict docs links with 0 broken links/citations). The final focused suite passed 6 files / 40 tests, including the coverage-annex checker tests. Owner sections 111–200 are now recorded in DEC-034 and `docs/discovery/OWNER_SCOPE_REGISTER_111_200.md` as 90 individual SOURCE TEXT OWED / UNASSESSED placeholders; the carried-forward context did not preserve their verbatim titles/sub-items. The original 110-section annex and its unresolved 108–110 warning are unchanged. Next: recover the verbatim extension (and 108–110 source), then revise the annex/checker deliberately; continue N2 first. No native restart, Q6 server fate, or O4 SOX authority is closed.
 
@@ -128,10 +136,11 @@ Commit in small slices with evidence in the message; push; confirm
   README claims, dep audit, tautology scan, money-AST ratchet, fabrication
   ratchet, financial oracles, persistence/schema, route map, docs+manifest
   verify, cascade-hold).
-- Engines: 183 (101 shipped / 82 orphan) · stores 49 · workers 5 ·
-  money-primitive adoption 29.83 % of financial modules (89 of 267
-  engine/store modules import `money.ts`) · coverage thresholds 50 %.
-  All from `node scripts/verify-readme-stats.mjs` / `scripts/money-adoption.mjs`.
+- Superseded inventory corrected on 2026-10-20 at `9f6d6a02`: engines 180
+  (98 shipped / 82 orphan), stores 48, workers 5, coverage threshold 50
+  (`npm run docs:verify`); money adoption 305/1,017 (29.99%), zero raw sites
+  (`npm run money:adoption`). These replace the stale 183-engine/49-store
+  handover figures; the floor remains 29.16%, not the measured adoption.
 - Last broad targeted regression before this handover: engines/statements/
   subledgers/AI/cube/reports/tax/workforce/cash/consolidation/sector + touched
   stores — 391 files / 6,234 tests green; audit cluster 11 files / 81 tests;

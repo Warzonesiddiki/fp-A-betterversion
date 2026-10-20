@@ -8,6 +8,40 @@ owner input/decision) · `EVIDENCE-OWED` (claim exists, proof missing).
 
 Last updated: 2026-10-20 (DEC-033 all-FP&A scope remains binding; DEC-034 records owner sections 111–200. The supplemental intake register preserves 90 numbered placeholders as SOURCE TEXT OWED / UNASSESSED; the original annex and 108–110 warning remain unchanged. DEC-035 resolves correction completion in-tool with optional Excel; this session adds authenticated status-event actor/time history and blocks empty-ledger re-verification proposals. N1 closed; N2 active with Q6/O4 and evidence gaps; N3 remains active; N5 is the original mechanical 110-section gate, not semantic certification. Current bounded persistence evidence and unknown aborted-check outcomes are recorded in N2) Session 2 of 2026-10-20 (base `260c2d6`): all baseline gates green; full sharded suite re-run 8/8 shards passed in 988s (14,023 tests known-summed; shard 3/8's summary line printed a test name, re-run standalone at 174 files / 2,058 tests / 115s — total 16,081 tests across 8 shards); `npm run build` + `node scripts/bundle-check.js` measured 415 JS assets, 6,812.51 KB raw / 2,059.69 KB gzip (99.0% of the 2,080 KB limit, 1 warning); PR #78 and PR #79 are MERGED and `gh run list --branch main` returned HTTP 403 again, so CI remains UNVERIFIABLE — neither red nor green. HEAD re-run 2026-10-20 (a94a752, runner fixed): `npm run test:sharded` 8/8 shards in 984s, all eight tallies parsed — 1,901 + 1,558 + 2,067 + 2,307 + 2,033 + 2,054 + 2,231 + 1,946 passed (+1 skipped) = 16,097 passed / 16,098 total. N3 slice: denial coverage for the cube write/delete path and GL addEntry/setAccounts (mutation-verified). N2 slice: DEC-036 makes the audit-chain census a build gate (`src/services/audit/auditChainCensus.test.ts`, 5/5 after a failing-first run named all 10 modules); N2 stays open on Q6/O4 and restart/keying/anchoring proofs.)
 
+
+## Session baseline — 2026-10-20, `arena/efe658d1-fp-a-betterversion` at `9f6d6a02`
+
+Measured here before edits (Node `v22.22.3`; clean tree): `npm run tsc`,
+`lint` (confirmed by the completed build's lint stage after the initial tool
+lost its exit status), `format:check`, `docs:verify`, `engines:verify`,
+`money:ast`, `money:adoption`, `determinism:ratchet`, `palette:ratchet`,
+`fabrication:audit`, `docs:links`, and `repo:hygiene` pass.
+`docs:verify`: 180 engines (98 shipped / 82 orphan), 48 stores, 43 persisted;
+107 mapped coverage rows, warning for 108–110 only (extension visibility is
+next). Money: 305/1,017 modules (29.99%), zero raw `toFixed` sites; AST: 978/978
+money-handling modules safe, zero unsafe operations. The 29.16% documentation
+value is the locked adoption **floor**, not current adoption; no ratchet was
+weakened or edited. Determinism: 344 sites / 79 files. Palette: 5,502 sites /
+370 files. Fabrication: zero findings. Links: zero broken links/citations.
+Hygiene: 3,610 tracked files, zero tracked ignored files (baseline inventory).
+
+`npm run test:sharded`: 8/8 shards, 1,394 files, 16,097 passed, 1 skipped,
+16,098 total, 1,204 seconds (concurrent baseline build affected wall time).
+Per-shard passed tests: 1,901 / 1,558 / 2,067 / 2,307 / 2,033 / 2,054 / 2,231 /
+1,946. `npm run build` + `node scripts/bundle-check.js`: 6,812.51 KB raw /
+2,059.69 KB gzip vs unchanged 2,080 KB ceiling, one size warning; critical
+path 424.16 KB gzip. `npm audit --omit=dev --json`: zero production advisories;
+install reported development-inclusive advisories, not remediated here.
+
+O8: `gh pr view 78 --json number,state,mergedAt,mergeCommit` confirms MERGED
+at `b2cff437293a37366fbc6187ca4859c71194b6bd`.
+`gh run list --branch main --limit 5` returns **HTTP 403: Resource not
+accessible by integration**. CI is UNVERIFIABLE, neither red nor green.
+The pasted money-red instruction is superseded by this measured green state.
+Known-work complete: **NO**, no authoritative total of remaining semantic tasks
+is established. Programme complete: **NO**; real-data, parallel-run, native,
+recovery, scope and CI proofs remain owed.
+
 ---
 
 ## NEXT (unblocked, in order)

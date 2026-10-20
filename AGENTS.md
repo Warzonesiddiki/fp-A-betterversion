@@ -32,11 +32,11 @@ by a script named next to it; do not update a number by hand.
   risk register, decision log, gated roadmap) + [`docs/audit/`](docs/audit/)
   (the measured audit). Everything under
   [`docs/archive/`](docs/archive/) is **provenance, not instructions**.
-- **Current truth:** the codebase is wide (182 engines, 48 stores) and shallow
+- **Current truth:** the codebase is wide (180 engines, 48 stores) and shallow
   where it matters. The GL ingestion spine (exact-string staging, promotion,
-  consolidation, board-pack export) is built and tested; there is still **no
-  D365 export contract, no exception catalogue, no answer key, no disposition
-  workflow, and the desktop build cannot sign in offline.** Details:
+  consolidation, board-pack export) is built and tested; synthetic tests are not real-owner D365 verification or an accounts-team
+  acceptance run. **Native/offline sign-in and programme completion remain
+  unverified.** Current limitations and evidence:
   [`docs/agent/09_KNOWN_GAPS.md`](docs/agent/09_KNOWN_GAPS.md).
 
 ## 2. Non-negotiable rules (the short list)
