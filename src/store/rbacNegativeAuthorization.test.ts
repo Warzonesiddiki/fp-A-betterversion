@@ -276,6 +276,18 @@ const DENIAL_CASES: readonly DenialCase[] = [
     count: () => useGLStore.getState().entries.length,
   },
   {
+    name: 'glStore.addEntry',
+    permission: 'import:create',
+    run: () => useGLStore.getState().addEntry({ ...glRbacProbe, id: 'rbac-gl-add-probe' }),
+    count: () => useGLStore.getState().entries.length,
+  },
+  {
+    name: 'glStore.setAccounts',
+    permission: 'import:update',
+    run: () => useGLStore.getState().setAccounts([]),
+    count: () => useGLStore.getState().accounts.length,
+  },
+  {
     name: 'settingsStore.addUser',
     permission: 'user:create',
     run: () => useSettingsStore.getState().addUser(settingsUserProbe),
@@ -455,6 +467,38 @@ describe('F-0026 negative authorization — stores deny unauthorized writes', ()
         useCollaborationStore.getState().updateApprovalStatus('apr-1', 'Approved')
       ).not.toThrow();
       expect(useCollaborationStore.getState().approvals[0]!.status).toBe('Approved');
+    });
+  });
+
+  describe('modeling writes are denied at the guard, before the cube engine runs', () => {
+    // The cell write is the product's core modeling mutation. It is tested for
+    // denial only: a full-Admin success path would need a registered cube and
+    // dimensions, and the guard throws before the engine is touched, so the
+    // denial classes are provable without a live engine.
+    const coords = { Account: '4000', Period: '2026-01' };
+
+    it('cubeStore.writeCell is denied for Viewer', () => {
+      actAs('Viewer');
+      const error = expectPermissionDenied(() =>
+        useCubeStore.getState().writeCell('Budget', coords, 'Amount', 100)
+      );
+      expect(error.message).toContain('cube:write');
+    });
+
+    it('cubeStore.writeCell is denied when only cube:write is withheld from Admin', () => {
+      actAsRoleWithout('Admin', 'cube:write');
+      const error = expectPermissionDenied(() =>
+        useCubeStore.getState().writeCell('Budget', coords, 'Amount', 100)
+      );
+      expect(error.message).toContain('cube:write');
+    });
+
+    it('cubeStore.deleteCell is denied for Viewer', () => {
+      actAs('Viewer');
+      const error = expectPermissionDenied(() =>
+        useCubeStore.getState().deleteCell('Budget', coords, 'Amount')
+      );
+      expect(error.message).toContain('cube:delete');
     });
   });
 
