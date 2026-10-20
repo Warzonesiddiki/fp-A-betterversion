@@ -62,7 +62,7 @@ READ FIRST, IN ORDER:
 2. docs/TASKBOARD.md — the live task board; pick up the top unblocked item
 3. docs/PROJECT_AUDIT_AND_EXECUTION_PLAN.md — governing plan (Parts I+II, §18.1)
 4. docs/MASTER_CHECKLIST_COVERAGE.md — original 110-section coverage annex (108–110 still unresolved); extension intake: `docs/discovery/OWNER_SCOPE_REGISTER_111_200.md`
-5. docs/discovery/decision-log.md — DEC-001…DEC-034; owner rulings are binding
+5. docs/discovery/decision-log.md — DEC-001…DEC-036; owner rulings are binding
 6. AGENTS.md + docs/agent/ — standing engineering rules
 
 OWNER RULINGS ALREADY DECIDED (do not re-ask, do not re-narrow):

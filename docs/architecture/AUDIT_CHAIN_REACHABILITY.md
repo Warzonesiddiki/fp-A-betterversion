@@ -61,6 +61,29 @@ A failing-first persistence contract test demonstrated that JSON round-tripping 
 
 The store now persists chains as a JSON record, revives them to `Map`, and migrates v1 `{}` chains by rebuilding from the append-ordered `pendingEntries`. Integrity verification recomputes unkeyed SHA-256 for the same ordered fields written by v1 and checks each previous-hash link; it resets global/per-chain verified state on hydration. With no external anchor, a complete rewrite can recompute the chain. Unit contract covers both current v2 round-trip and v1 reconstruction, plus altered-payload rejection. `cellLineageStore.test.ts` passes 12/12; the combined lineage/audit-page/persistence run passed 3 files / 39 tests. `npm run tsc`, full `npm run lint` (176.0s), targeted ESLint, `npm run format:check`, `docs:verify`, `engines:verify`, strict `docs:links`, and `git diff --check` passed after the repair. The full sharded suite and pre-push remain unrun; `metadata` remains outside the digest. A later bounded test, `src/store/cellLineageStore.persistence.test.ts`, passed 2/2, and the combined lineage/storage/audit run passed 5 files / 38 tests at that point. It exercises real `masterStorage` encryption/decryption and fresh-module hydration; one case uses a persistent in-memory SQL.js adapter mock and another exports/reopens a real SQL.js/WASM database image through the test adapter. A subsequent `src/store/cellLineageStore.sqljsPersistence.test.ts` adds a round-trip through the production `sqlJsStorage` implementation and real SQL.js/WASM database image backed by localStorage; it passes 1/1. After the pending-entry mirror consistency guard was added, the combined lineage/audit/page/persistence run passed 6 files / 59 tests. Final integration after these fixes: `npm run check` passed, including 8/8 shards in 1,154s (shard 8 reported 1,946 passed and 1 skipped; the sharder does not provide an aggregate test count). These tests establish a bounded browser-storage/module-reload contract only—not native Tauri SQL persistence, OS-key custody, native disk durability, or an actual application-process restart. Those proofs remain open.
 
+## DEC-036 executable census evidence
+
+The inventory above is now enforced by a test rather than by review. `src/services/audit/auditChainCensus.test.ts` scans every non-test `.ts`/`.tsx` file under `src/` and `server/src/` and selects modules that both compute a digest (`sha-256` / `subtle.digest` / `createHash`) and carry chain-link state (`chainHead`, `prevHash`, `previousHash`, `entryHash`, `eventHash`). Each selected module must carry a disposition row with a persistence flag, an authority statement and a bounding decision.
+
+Measured on 2026-10-20 at base `260c2d6`, the scan selects exactly ten modules:
+
+| Module                                              | Disposition       | Persisted | Boundary                                                |
+| --------------------------------------------------- | ----------------- | --------- | ------------------------------------------------------- |
+| `src/store/auditTrailStore.ts`                      | canonical-client  | yes       | DEC-025 — client chain only; no server or SOX authority |
+| `src/store/cellLineageStore.ts`                     | local-draft       | yes       | DEC-029 — no producer, no external anchor               |
+| `src/store/periodCloseStore.ts`                     | domain-partition  | yes       | DEC-030 — per-period close evidence, not SOX            |
+| `src/engines/AuditLogEngine.ts`                     | engine-dependency | no        | DEC-036 — in-memory, constructed only by SOX engine     |
+| `src/services/AuditLogger.ts`                       | in-memory-helper  | no        | DEC-031 — no product caller or vault wiring             |
+| `src/services/PIIRedactor.ts`                       | in-memory-helper  | no        | DEC-032 — no product sink                               |
+| `src/services/audit/reconstructState.ts`            | verifier          | no        | DEC-025 — replays supplied entries only                 |
+| `src/components/audit/StateReconstructionPanel.tsx` | ui-reader         | no        | DEC-025 — read-only over the verifier                   |
+| `src/types/audit.ts`                                | type-only         | no        | DEC-025 — declarations only                             |
+| `src/types/cell-lineage.ts`                         | type-only         | no        | DEC-029 — declarations only                             |
+
+Failing-first evidence: with an empty table the census failed and named all ten modules as unclassified; after the rows were written it passes 5/5 (classification completeness, no stale rows, exactly one canonical authority, persistence flags agree with source, every row has an authority statement and decision reference).
+
+Scope of the proof: the census establishes **classification**, not integrity. It does not show that any chain survives an application-process restart, that hashes are keyed or externally anchored, that `AuditLogEngine` entries outlive the page session (they do not), or that any path satisfies SOX. `AuditLogEngine` remains reachable only through `SOXComplianceEngine`, which `SOXCompliancePage` constructs at `/audit/sox`; O4 still blocks any SOX-authority claim and Q6 still blocks server authority.
+
 ## Unresolved authority decisions (N2 remains open)
 
 1. DEC-025 selects `auditTrailStore` for the current client-side audit authority. The frontend still has no `/api/audit` caller; Q6 must decide server integration or retirement before any product-wide/server-authority claim.
@@ -75,5 +98,6 @@ The store now persists chains as a JSON record, revives them to `Map`, and migra
 rg -n 'useAuditTrailStore|auditTrailStore|recordGdprEntry|AuditEngine|AuditTrailEngine|AuditLogEngine|createSecretsVault|AuditLogger' src server/src --glob '!**/*.test.*' --glob '!**/*.bench.*'
 rg -n 'hash chain|chainHead|entryHash|prevHash|auditTrail:' src/store src/engines src/services server/src
 ./node_modules/.bin/vitest run src/pages/audit/AuditTrailPage.test.tsx
+./node_modules/.bin/vitest run src/services/audit/auditChainCensus.test.ts
 ./node_modules/.bin/tsc --noEmit
 ```
