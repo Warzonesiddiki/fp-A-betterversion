@@ -3,8 +3,8 @@
 // -----------------------------------------------------------------------------
 // periodCloseStore.propagateLock stamps isLocked onto existing lines when a
 // period reaches 'locked', but the budget line-item mutation chokepoints in
-// budgetStore (updateLineItem + undo/redo snapshot replay) never consulted the
-// close state, so edits/new writes could still slip into a hard-locked period.
+// budgetStore (line edits, bulk replacement, header context and undo/redo) must consult the
+// close state so edits/new writes cannot slip into a hard-locked period.
 //
 // This module centralizes that check: it maps a BudgetLineItem to a locked
 // period (direct periodId match OR month + budget-fiscal-year match, mirroring
@@ -21,7 +21,7 @@
 // is safe under ESM/Vite.
 // =============================================================================
 
-import type { BudgetLineItem } from '@/types';
+import type { Budget, BudgetLineItem } from '@/types';
 import { useBudgetStore } from './budgetStore';
 import { usePeriodCloseStore } from './periodCloseStore';
 import { useUIStore } from './uiStore';
@@ -59,14 +59,18 @@ export function collectLockedPeriods(): readonly LockedPeriodInfo[] {
 }
 
 /** The locked period this line belongs to (periodId match or month+fiscal-year match), or null. */
-export function findLockedPeriodForItem(item: BudgetLineItem): string | null {
-  const budgets = useBudgetStore.getState().budgets;
+export function findLockedPeriodForItem(
+  item: BudgetLineItem,
+  budgets: readonly Budget[] = useBudgetStore.getState().budgets
+): string | null {
   for (const lp of collectLockedPeriods()) {
     if (item.periodId === lp.periodId) return lp.periodId;
     const periodNumber = periodNumberOf(lp.periodId);
     if (lp.fiscalYear !== null && Number.isFinite(periodNumber) && item.month === periodNumber) {
-      const budget = budgets.find((b) => b.id === item.budgetId);
-      if (budget && budget.fiscalYear === lp.fiscalYear) return lp.periodId;
+      if (
+        budgets.some((budget) => budget.id === item.budgetId && budget.fiscalYear === lp.fiscalYear)
+      )
+        return lp.periodId;
     }
   }
   return null;
@@ -108,8 +112,10 @@ export function assertUpdateAllowed(
   updates: Partial<BudgetLineItem>
 ): void {
   if (isFreezeMarkerOnly(updates)) return;
-  const lockedPeriodId = findLockedPeriodForItem(existing);
-  if (lockedPeriodId !== null) rejectLocked(lockedPeriodId);
+  for (const item of [existing, { ...existing, ...updates }]) {
+    const lockedPeriodId = findLockedPeriodForItem(item);
+    if (lockedPeriodId !== null) rejectLocked(lockedPeriodId);
+  }
 }
 
 function lineFieldsDiffer(a: BudgetLineItem | undefined, b: BudgetLineItem | undefined): boolean {
@@ -133,16 +139,50 @@ export function assertSnapshotReplayAllowed(
   target: readonly BudgetLineItem[]
 ): void {
   const byId = new Map<string, { cur?: BudgetLineItem; tgt?: BudgetLineItem }>();
-  for (const line of current) byId.set(line.id, { cur: line });
+  for (const line of current) {
+    if (byId.has(line.id)) throw new Error(`Duplicate current budget line ID: ${line.id}`);
+    byId.set(line.id, { cur: line });
+  }
+  const targetIds = new Set<string>();
   for (const line of target) {
+    if (targetIds.has(line.id)) throw new Error(`Duplicate target budget line ID: ${line.id}`);
+    targetIds.add(line.id);
     const entry = byId.get(line.id);
     if (entry) entry.tgt = line;
     else byId.set(line.id, { tgt: line });
   }
   for (const { cur, tgt } of byId.values()) {
     if (!lineFieldsDiffer(cur, tgt)) continue;
-    const representative = (cur ?? tgt)!;
-    const lockedPeriodId = findLockedPeriodForItem(representative);
+    for (const item of [cur, tgt]) {
+      if (!item) continue;
+      const lockedPeriodId = findLockedPeriodForItem(item);
+      if (lockedPeriodId !== null) rejectLocked(lockedPeriodId);
+    }
+  }
+}
+
+/**
+ * A header's fiscal year is part of a line's close-period identity. Check both
+ * collections before replacing/removing headers so callers cannot detach a
+ * closed line or relabel its fiscal year to evade subsequent line guards.
+ * Strict field equality is an immutability check, not rounded monetary math.
+ */
+export function assertBudgetHeaderChangesAllowed(
+  current: readonly Budget[],
+  target: readonly Budget[],
+  lines: readonly BudgetLineItem[]
+): void {
+  for (const line of lines) {
+    const previous = current.find((budget) => budget.id === line.budgetId);
+    const next = target.find((budget) => budget.id === line.budgetId);
+    if (!previous && !next) continue;
+    if (previous && next) {
+      const keys = Object.keys({ ...previous, ...next }) as (keyof Budget)[];
+      if (keys.every((key) => JSON.stringify(previous[key]) === JSON.stringify(next[key])))
+        continue;
+    }
+    const lockedPeriodId =
+      findLockedPeriodForItem(line, current) ?? findLockedPeriodForItem(line, target);
     if (lockedPeriodId !== null) rejectLocked(lockedPeriodId);
   }
 }

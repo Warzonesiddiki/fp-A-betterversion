@@ -32,8 +32,8 @@ one-stop FP&A workspace that must do four jobs without lying about a number:
   workspace.
 - **J2 — Find the wrong entries:** flag candidates with rule ids and evidence;
   a flag is never called an error until a human dispositions it.
-- **J3 — Guide the accounts team to fix them:** an Excel hand-off plus in-tool
-  tracking (`REQUESTED → APPLIED → RE-VERIFIED`), human action only.
+- **J3 — Guide the accounts team to fix them:** human-led in-tool tracking
+  (Excel export optional under DEC-035) (`REQUESTED → APPLIED → RE-VERIFIED`), human action only.
 - **J4 — Compare day/month/year in extreme detail:** account-level DoD/MoM/YoY
   with source drill-down and explicit "not in file" semantics.
 
@@ -134,7 +134,8 @@ pick the more convenient number.
 - **DEC-016:** build all surfaces, but in dependency order: spine (J1) →
   exception queue (J2) → correction hand-off (J3) → comparison (J4).
 - **DEC-017:** materiality ranks and tiers; it never suppresses a finding.
-- **DEC-018:** correction hand-off is an Excel list plus in-tool tracking
+- **DEC-018 / DEC-035:** human-led in-tool correction tracking is sufficient;
+  Excel export is optional
   (`REQUESTED → APPLIED → RE-VERIFIED`); human action only.
 - **DEC-019 / DEC-020 / DEC-021 / DEC-023:** the rolling-forecast page model
   stays authoritative and `RollingForecastEngine` stays EXPERIMENTAL until O2;

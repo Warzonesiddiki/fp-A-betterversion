@@ -140,6 +140,19 @@ export default function BudgetDetailPage() {
 
   const [editCell, setEditCell] = useState<{ lineItemId: string; month: number } | null>(null);
   const [editValue, setEditValue] = useState('');
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const handleSubmit = useCallback(() => {
+    if (!budget) return;
+    setSubmissionError(null);
+    const reportFailure = (error: unknown) => {
+      setSubmissionError(error instanceof Error ? error.message : 'Budget submission failed');
+    };
+    try {
+      void Promise.resolve(submitBudget(budget.id)).catch(reportFailure);
+    } catch (error) {
+      reportFailure(error);
+    }
+  }, [budget, submitBudget]);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [showSnapshotsModal, setShowSnapshotsModal] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -475,6 +488,13 @@ export default function BudgetDetailPage() {
 
   return (
     <div className="p-6 space-y-6">
+      {submissionError && (
+        <ErrorState
+          title="Could not submit budget"
+          message={submissionError}
+          secondaryAction={{ label: 'Dismiss', onClick: () => setSubmissionError(null) }}
+        />
+      )}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
@@ -545,7 +565,7 @@ export default function BudgetDetailPage() {
                 size="sm"
                 variant="ghost"
                 onClick={() => {
-                  if (window.confirm('Submit this budget for approval?')) submitBudget(budget.id);
+                  if (window.confirm('Submit this budget for approval?')) handleSubmit();
                 }}
                 title="Submit for approval"
               >

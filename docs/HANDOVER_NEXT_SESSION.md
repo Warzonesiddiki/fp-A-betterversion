@@ -1,4 +1,124 @@
-# Handover — 2026-10-19 — next-session prompt + state of the tree
+# Handover — current continuation and historical session records
+
+## Final budget trust checkpoint — 2026-10-20
+
+**Current result (supersedes pending-gate/next-step statements in historical
+checkpoints below):** `npm run check` passed **8/8 shards, 1,398 files,
+16,248 passed + 1 existing skipped = 16,249 total**, suite component **1,057s**.
+Production build and bundle check passed: **6,815.88 KB raw / 2,060.77 KB gzip
+vs unchanged 2,080 KB**, one warning; critical path **425.06 KB gzip**, main
+**69.74 KB gzip**. Money adoption **305/1,017 = 29.99%, zero raw sites**.
+Root/prod audits both zero at the dependency-remediation checkpoint.
+
+DEC-039/040/041, submission caller error/retry handling and a repeatable
+`node scripts/verify-budget-guard-mutation.mjs` proof are closed only within
+their witnessed budget scope. Mutation proof: normal 5/5; mutant exactly four
+named denial failures and one Admin pass, production source unchanged.
+Handbook inventory/migration/GL-close/bundle contradictions reconciled;
+architecture keyword checks, docs truth, strict links, route map and hygiene
+pass. Architecture checks are not a cycle-graph or product certification.
+
+Durable commands, per-shard tally, failing-first results, commits and boundaries:
+[budget trust continuation evidence](audit/BUDGET_TRUST_CONTINUATION_2026_10_20.md).
+No new route/store/engine/connector, persisted schema/namespace, authority grant,
+ratchet baseline or CI workflow edit. No new DEC-042 authority was needed.
+
+**Known-work complete: NO. Programme complete: NO.** N2/N3 remain active;
+N-register **2/8 DONE** only for prior bounded N1/N5. **107 mapped / 93
+source-owed (108–200)** remains unchanged. CI is unverifiable (HTTP 403),
+not green. Owner data/control totals, two-month parallel run, supported-scope,
+native/recovery/key-custody, Q6/O4/O9 and other certification proofs remain owed.
+
+**Next unblocked work:** forecast writer denial/mutation evidence starting
+`forecastStore.updateForecast`; verify other budget detail action error channels;
+isolated failing-first license-check fix for UNKNOWN metadata / fail-open
+execution. The current license script is not global legal certification. N7
+structural reduction and N8 complete supported-module adoption remain open.
+Existing PR #82 is for review only, not merge/release; push/pre-push outcome is
+recorded on the PR after execution, not inferred here.
+
+> **Caller checkpoint:** existing budget list/detail now catch synchronous and
+> async submission failure into shared ErrorState; list Retry can recover, and
+> failures do not change budget data. Failing-first 3 UI regressions; final
+> unfiltered page/deep/a11y/grid/money + authorization impact sweep **8 files /
+> 138 passed**. Approval page fixtures pin DEC-039's approval permission. Full
+> changed-tree check/build have restarted after the caller fix and are pending
+> at this checkpoint. N2/N3 and owner/native/CI obligations remain open.
+
+> **Dependency checkpoint:** root audit findings remediated in the lockfile:
+> fresh full-root and production-only audits both zero; Vitest 4.1.12, js-yaml
+> 4.3.2, source-map-js 1.2.2, undici 7.30.1. No package paths added/removed or
+> direct ranges changed; changed licenses MIT/BSD-3-Clause. Patched-runner
+> budget/close/RBAC tests 8 files / 367 passed. The best-effort license script
+> reports UNKNOWN and is not global legal certification. Next: surface async
+> submission failures at both existing budget call sites, then complete final
+> full gates/build. Initial final processes were stopped for this caller review;
+> they are not completed evidence. N2/N3/programme remain open.
+
+> **DEC-041 checkpoint:** budget provenance suite reproduced 12 failed /
+> 1 passed; an additional ambiguous-line case failed before its guard. Final
+> 14/14; combined budget/close/RBAC sweep 8 files / 367 passed. Old amount is
+> captured before mutation, new/copy creators are authenticated, clock-collision
+> IDs reserve existing header/line/history references, and legacy ambiguous IDs
+> fail closed. No persisted history was rewritten or guessed. N2/N3 remain open;
+> next is isolated dependency remediation followed by final full gates/build.
+
+> **DEC-040 checkpoint:** budget closed-write regressions reproduced 14 failed /
+> 5 passed; final closed-write suite 21 passed, combined budget/close/RBAC run
+> 7 files / 353 passed. Guards cover bulk replacement, source AND destination
+> identity, fiscal-year header changes/removal, and duplicate replay IDs before
+> mutation. Exact no-ops and system marker-only freeze remain usable. N2/N3
+> remain active; no native, entity-policy or programme closure follows. Next:
+> budget edit provenance and clock-collision IDs, then dependency patches.
+
+> **Continuation 2 checkpoint — 2026-10-20:** fresh baseline at `80117954`:
+> `npm run check` 8/8 shards, 1,395 files, 16,110 passed + 1 existing skipped,
+> 1,100s. DEC-039 fixes approval authority and bulk/lifecycle/async budget
+> bypasses; failing-first 38 failed / 62 passed → 100 passed; combined budget
+> trust run 5 files / 299 passed. TypeScript, targeted lint, money and
+> determinism pass. N2/N3 remain active, CI still HTTP 403, owner source/native
+> proofs remain owed. Final changed-tree full check is not yet run at this
+> checkpoint. Next: closed-period bulk/destination/header guards. Earlier
+> records below are historical, not current pending-gate status.
+
+> **Closing record — 2026-10-20, `arena/efe658d1-fp-a-betterversion`:**
+> code commit `0f750d50`; baseline reconciliation `aa32e18e`; scope gate
+> `6b9c74d6`. Final `npm run check` passed: 8/8 shards, 1,395 files, 16,110
+> passed + 1 existing skipped in 1,066s (suite component). Final build passed;
+> bundle 2,059.60 KB gzip / unchanged 2,080 KB ceiling, one warning. Money
+> adoption 305/1,017 (29.99%), zero raw sites; money AST zero unsafe ops.
+> Strict links, hygiene and route-map checks pass. CI main is still HTTP 403,
+> unverifiable. Selected Wave-6 witnesses: 21 files / 472 tests, not native
+> proof. See [session evidence](audit/CONTINUATION_2026_10_20_EVIDENCE.md) for
+> exact commands, all closed slices, provisional defaults and unrun programme
+> proofs. N2/N3 stay active; known-work complete NO; programme complete NO.
+> Development-inclusive audit findings (2 moderate / 3 high affected packages)
+> remain open; production-only audit is clean. Next trust slice: mutation-verified
+> negative tests for populated `budgetStore.updateBudget`, without inferring
+> entity grants. Keep the dependency review isolated from financial fixes.
+
+> **N2/N3 attribution follow-up (DEC-038):** a failing-first run reproduced
+> two false historical-author attributions; four denial cases already passed.
+> New reversion records now use the current authenticated actor; prior records
+> are never rewritten. Combined trust slice passed 8 files / 204 tests;
+> `tsc`, targeted ESLint, `docs:verify` and strict links passed. The audit map
+> contains the exact command and remaining boundaries. Full final gates will
+> be recorded below when completed, not inferred from baseline evidence.
+
+> **Wave-0 gap gate follow-up (DEC-037):** `coverageAnnexClaims.test.ts`
+> passed 9/9 after a failing-first run (7 failed / 1 passed). `docs:verify`
+> now warns about all 93 source-owed sections (108–200), in addition to the
+> legacy 108–110 disclosure. The original header is unchanged. No section
+> titles were invented, and no source-owed row can be silently closed. See
+> the source blocker register for this session's bounded recovery search.
+
+> **Latest measured baseline, 2026-10-20:** session branch
+> `arena/efe658d1-fp-a-betterversion`, base `9f6d6a02`. Baseline gates pass;
+> full suite 8/8 shards, 1,394 files, 16,097 passed + 1 skipped in 1,204s.
+> Build passes; bundle 2,059.69 KB gzip / 2,080 KB, one warning. CI `main`
+> remains unverifiable (Actions HTTP 403). See the taskboard session baseline
+> for exact commands/tallies. N2/N3 remain active; no programme completion claim.
+> Earlier dated updates below are historical, not the current branch state.
 
 > **Latest continuation update (2026-10-20; branch `arena/d9a8f733-fp-a-betterversion`):** N2 remains active. Added `src/store/cellLineageStore.persistence.test.ts`; it verifies encrypted `masterStorage` round-trip and fresh-module hydration while the lower SQL.js layer is a persistent in-memory mock. Focused run passed 1/1; combined lineage/storage/audit run passed 5 files / 38 tests. This is not native Tauri, OS-keychain, disk-durability, or application-restart proof. Initial `npm run tsc`, `npm run lint`, and `npm run format:check` attempts were aborted without exit codes; complete reruns subsequently passed (`tsc`, lint 125.5s, format, `docs:verify` with the existing 108–110 warning, and strict docs links with 0 broken links/citations). The final focused suite passed 6 files / 40 tests, including the coverage-annex checker tests. Owner sections 111–200 are now recorded in DEC-034 and `docs/discovery/OWNER_SCOPE_REGISTER_111_200.md` as 90 individual SOURCE TEXT OWED / UNASSESSED placeholders; the carried-forward context did not preserve their verbatim titles/sub-items. The original 110-section annex and its unresolved 108–110 warning are unchanged. Next: recover the verbatim extension (and 108–110 source), then revise the annex/checker deliberately; continue N2 first. No native restart, Q6 server fate, or O4 SOX authority is closed.
 
@@ -116,7 +236,7 @@ Commit in small slices with evidence in the message; push; confirm
 
 ---
 
-## 2. State of the tree
+## 2. Historical state of the tree (superseded by the closing record above)
 
 - Branch at handover: `arena/2b91a53b-fp-a-betterversion` @ `a8462e5`
   (tracker-bot tip; last human commit `e6b1f27`).
@@ -128,10 +248,11 @@ Commit in small slices with evidence in the message; push; confirm
   README claims, dep audit, tautology scan, money-AST ratchet, fabrication
   ratchet, financial oracles, persistence/schema, route map, docs+manifest
   verify, cascade-hold).
-- Engines: 183 (101 shipped / 82 orphan) · stores 49 · workers 5 ·
-  money-primitive adoption 29.83 % of financial modules (89 of 267
-  engine/store modules import `money.ts`) · coverage thresholds 50 %.
-  All from `node scripts/verify-readme-stats.mjs` / `scripts/money-adoption.mjs`.
+- Superseded inventory corrected on 2026-10-20 at `9f6d6a02`: engines 180
+  (98 shipped / 82 orphan), stores 48, workers 5, coverage threshold 50
+  (`npm run docs:verify`); money adoption 305/1,017 (29.99%), zero raw sites
+  (`npm run money:adoption`). These replace the stale 183-engine/49-store
+  handover figures; the floor remains 29.16%, not the measured adoption.
 - Last broad targeted regression before this handover: engines/statements/
   subledgers/AI/cube/reports/tax/workforce/cash/consolidation/sector + touched
   stores — 391 files / 6,234 tests green; audit cluster 11 files / 81 tests;

@@ -2,12 +2,22 @@ import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { WritableDraft } from 'immer';
-import type { Budget, BudgetState, BudgetStatus } from '../types';
+import type { Budget, BudgetLineItem, BudgetState, BudgetStatus } from '../types';
 import { masterStorage } from '../utils/masterStorage';
 import { useUIStore } from './uiStore';
 import { useAuthStore } from './authStore';
-import { enforce, Permissions } from '../utils/rbacEnforcer';
-import { assertSnapshotReplayAllowed, assertUpdateAllowed } from './periodLockGuard';
+import {
+  assertPermission,
+  enforce,
+  getCurrentUser,
+  PermissionError,
+  Permissions,
+} from '../utils/rbacEnforcer';
+import {
+  assertBudgetHeaderChangesAllowed,
+  assertSnapshotReplayAllowed,
+  assertUpdateAllowed,
+} from './periodLockGuard';
 import { now } from '@/utils/clock';
 
 /**
@@ -45,6 +55,126 @@ const WORKFLOW_FIELDS = [
   'version',
 ] as const;
 
+function assertEditableBudget(budget: Budget, action: string): void {
+  if (budget.status !== 'Draft' && budget.status !== 'Rejected') {
+    throw new Error(
+      `Cannot ${action} a budget in status ${budget.status}; only Draft or Rejected budgets can be edited.`
+    );
+  }
+}
+
+function assertDraftCreation(
+  budget: Budget | Omit<Budget, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>
+): void {
+  if (
+    budget.status !== 'Draft' ||
+    budget.submittedAt !== null ||
+    budget.approvedAt !== null ||
+    budget.approvedBy !== null
+  ) {
+    throw new Error(
+      'New budgets must start as Draft with no submission or approval; use the lifecycle actions.'
+    );
+  }
+}
+
+function fieldsDiffer<T extends Budget | BudgetLineItem>(
+  a: T | undefined,
+  b: T | undefined
+): boolean {
+  if (!a || !b) return true;
+  const keys = Object.keys({ ...a, ...b }) as (keyof T)[];
+  return keys.some((key) => JSON.stringify(a[key]) !== JSON.stringify(b[key]));
+}
+
+function assertBudgetReplacement(current: readonly Budget[], target: readonly Budget[]): void {
+  const currentById = new Map(current.map((budget) => [budget.id, budget]));
+  const targetById = new Map(target.map((budget) => [budget.id, budget]));
+  if (currentById.size !== current.length || targetById.size !== target.length) {
+    throw new Error('Duplicate budget IDs are ambiguous; no budget replacement was applied.');
+  }
+  for (const budget of target) {
+    const existing = currentById.get(budget.id);
+    if (!existing) {
+      assertPermission(Permissions.BUDGET_CREATE, 'setBudgets insertion');
+      assertDraftCreation(budget);
+    } else if (fieldsDiffer(existing, budget)) {
+      for (const field of WORKFLOW_FIELDS) {
+        if (existing[field] !== budget[field]) {
+          throw new Error(
+            `setBudgets cannot change workflow field "${field}"; use the lifecycle actions.`
+          );
+        }
+      }
+      assertEditableBudget(existing, 'replace');
+    }
+  }
+  for (const budget of current) {
+    if (!targetById.has(budget.id)) {
+      assertPermission(Permissions.BUDGET_DELETE, 'setBudgets removal');
+      assertEditableBudget(budget, 'delete');
+    }
+  }
+}
+
+function assertLineReplacement(
+  current: readonly BudgetLineItem[],
+  target: readonly BudgetLineItem[],
+  budgets: readonly Budget[]
+): void {
+  const byId = new Map(current.map((line) => [line.id, line]));
+  const nextById = new Map(target.map((line) => [line.id, line]));
+  if (byId.size !== current.length || nextById.size !== target.length) {
+    throw new Error('Duplicate budget line IDs are ambiguous; no line replacement was applied.');
+  }
+  for (const id of new Set([...byId.keys(), ...nextById.keys()])) {
+    const previous = byId.get(id);
+    const next = nextById.get(id);
+    if (!fieldsDiffer(previous, next)) continue;
+    // Preserve the system's idempotent freeze-marker-only path, never other edits.
+    const freezeOnly =
+      previous &&
+      next &&
+      next.isLocked === true &&
+      !fieldsDiffer({ ...previous, isLocked: true }, next);
+    if (freezeOnly) continue;
+    for (const line of [previous, next]) {
+      const owner = line && findUniqueBudget(budgets, line.budgetId);
+      if (owner) assertEditableBudget(owner, 'replace line items of');
+    }
+  }
+}
+
+function findUniqueBudget(budgets: readonly Budget[], id: string): Budget | undefined {
+  const matches = budgets.filter((budget) => budget.id === id);
+  if (matches.length > 1) {
+    throw new Error(
+      `Budget ID ${id} is ambiguous; preserve the records and resolve their identity before editing.`
+    );
+  }
+  return matches[0];
+}
+
+function nextBudgetId(
+  state: Pick<BudgetState, 'budgets' | 'lineItems' | 'history'>,
+  epochMs: number
+): string {
+  // Never reuse the identity of a current header, orphaned line or replay image.
+  const used = new Set([
+    ...state.budgets.map((budget) => budget.id),
+    ...state.lineItems.map((line) => line.budgetId),
+    ...state.history.flatMap((snapshot) => snapshot.map((line) => line.budgetId)),
+  ]);
+  const base = `bgt-${epochMs}`;
+  let id = base;
+  let ordinal = 1;
+  while (used.has(id)) {
+    id = `${base}-${ordinal}`;
+    ordinal += 1;
+  }
+  return id;
+}
+
 export const useBudgetStore = create<BudgetState>()(
   subscribeWithSelector(
     persist(
@@ -60,13 +190,15 @@ export const useBudgetStore = create<BudgetState>()(
         selectedCellId: null,
 
         setBudgets: enforce(Permissions.BUDGET_UPDATE, 'setBudgets', (budgets) => {
+          assertBudgetReplacement(get().budgets, budgets);
+          assertBudgetHeaderChangesAllowed(get().budgets, budgets, get().lineItems);
           set((state) => {
             state.budgets = budgets as typeof state.budgets;
           });
         }),
 
         setActiveBudget: (id) => {
-          const budget = get().budgets.find((b) => b.id === id);
+          const budget = findUniqueBudget(get().budgets, id);
           if (!budget) return;
           set((state) => {
             state.activeBudgetId = id;
@@ -74,6 +206,8 @@ export const useBudgetStore = create<BudgetState>()(
         },
 
         setLineItems: enforce(Permissions.BUDGET_UPDATE, 'setLineItems', (items) => {
+          assertSnapshotReplayAllowed(get().lineItems, items);
+          assertLineReplacement(get().lineItems, items, get().budgets);
           set((state) => {
             state.lineItems = items;
           });
@@ -95,13 +229,17 @@ export const useBudgetStore = create<BudgetState>()(
           }
           // W6-P0-11: hard-locked periods are immutable — reject (typed
           // PeriodLockedError + error toast) before any state mutation.
-          const existingItem = get().lineItems.find((i) => i.id === id);
+          const matchingItems = get().lineItems.filter((item) => item.id === id);
+          if (matchingItems.length > 1) {
+            throw new Error(`Budget line ID ${id} is ambiguous; no edit was applied.`);
+          }
+          const existingItem = matchingItems[0];
           if (existingItem) {
             assertUpdateAllowed(existingItem, updates);
             // Phase 7 lifecycle: a plan under review or approved is
             // frozen at the line level too — editing substance requires
             // a rejection (back to Rejected) or a new version.
-            const owner = get().budgets.find((b) => b.id === existingItem.budgetId);
+            const owner = findUniqueBudget(get().budgets, existingItem.budgetId);
             // The period-close freeze is a system action, not an edit:
             // propagateLock sets ONLY `isLocked: true`, and it must be
             // able to freeze an Approved budget's lines precisely
@@ -121,12 +259,12 @@ export const useBudgetStore = create<BudgetState>()(
           set((state) => {
             const idx = state.lineItems.findIndex((i) => i.id === id);
             if (idx !== -1) {
-              const oldItem = state.lineItems[idx];
+              const oldValue = state.lineItems[idx]!.amount;
               Object.assign(state.lineItems[idx]!, updates);
               state.lastChange = {
                 cellId: id,
-                oldValue: oldItem!.amount,
-                newValue: updates.amount ?? oldItem!.amount,
+                oldValue,
+                newValue: updates.amount ?? oldValue,
                 timestamp: now().toISOString(),
               };
             }
@@ -149,12 +287,17 @@ export const useBudgetStore = create<BudgetState>()(
             if (budget.name.length > 200) {
               throw new Error('budget name must be 200 characters or less');
             }
+            assertDraftCreation(budget);
+            const actor = getCurrentUser();
+            if (!actor) throw new PermissionError(Permissions.BUDGET_CREATE, 'createBudget');
+            const instant = now();
             const newBudget: Budget = {
               ...budget,
-              id: `bgt-${now().getTime()}`,
-              createdAt: now().toISOString(),
-              updatedAt: now().toISOString(),
-              createdBy: 'usr-001',
+              id: nextBudgetId(get(), instant.getTime()),
+              createdAt: instant.toISOString(),
+              updatedAt: instant.toISOString(),
+              createdBy: actor.id,
+              createdByName: `${actor.firstName} ${actor.lastName}`,
             };
             set((state) => {
               state.budgets.push(newBudget as WritableDraft<Budget>);
@@ -176,7 +319,13 @@ export const useBudgetStore = create<BudgetState>()(
         }),
 
         deleteBudget: enforce(Permissions.BUDGET_DELETE, 'deleteBudget', (id) => {
-          const budget = get().budgets.find((b) => b.id === id);
+          const budget = findUniqueBudget(get().budgets, id);
+          if (budget) assertEditableBudget(budget, 'delete');
+          assertBudgetHeaderChangesAllowed(
+            get().budgets,
+            get().budgets.filter((item) => item.id !== id),
+            get().lineItems
+          );
           set((state) => {
             const idx = state.budgets.findIndex((b) => b.id === id);
             if (idx !== -1) state.budgets.splice(idx, 1);
@@ -192,15 +341,26 @@ export const useBudgetStore = create<BudgetState>()(
         }),
 
         duplicateBudget: enforce(Permissions.BUDGET_CREATE, 'duplicateBudget', (id) => {
-          const budget = get().budgets.find((b) => b.id === id);
+          const budget = findUniqueBudget(get().budgets, id);
           if (budget) {
-            const newId = `bgt-${now().getTime()}`;
+            const actor = getCurrentUser();
+            if (!actor) throw new PermissionError(Permissions.BUDGET_CREATE, 'duplicateBudget');
+            const instant = now();
+            const newId = nextBudgetId(get(), instant.getTime());
             const newBudget: Budget = {
               ...budget,
               id: newId,
               name: `${budget.name} (Copy)`,
-              createdAt: now().toISOString(),
-              updatedAt: now().toISOString(),
+              status: 'Draft',
+              submittedAt: null,
+              approvedAt: null,
+              approvedBy: null,
+              version: 1,
+              progress: 0,
+              createdAt: instant.toISOString(),
+              updatedAt: instant.toISOString(),
+              createdBy: actor.id,
+              createdByName: `${actor.firstName} ${actor.lastName}`,
             };
             set((state) => {
               state.budgets.push(newBudget as WritableDraft<Budget>);
@@ -221,7 +381,7 @@ export const useBudgetStore = create<BudgetState>()(
         }),
 
         submitBudget: enforce(Permissions.BUDGET_UPDATE, 'submitBudget', async (id) => {
-          const existing = get().budgets.find((b) => b.id === id);
+          const existing = findUniqueBudget(get().budgets, id);
           if (!existing) return;
           if (existing.status !== 'Draft' && existing.status !== 'Rejected') {
             throw new Error(
@@ -233,6 +393,12 @@ export const useBudgetStore = create<BudgetState>()(
           });
           try {
             await Promise.resolve();
+            assertPermission(Permissions.BUDGET_UPDATE, 'submitBudget commit');
+            if (findUniqueBudget(get().budgets, id) !== existing) {
+              throw new Error(
+                'Budget changed while submission was pending; review the current version and retry.'
+              );
+            }
             set((state) => {
               const budget = state.budgets.find((b) => b.id === id);
               if (budget) {
@@ -249,7 +415,7 @@ export const useBudgetStore = create<BudgetState>()(
               }
               state.isSubmitting = false;
             });
-          } catch (_error) {
+          } catch (error) {
             set((state) => {
               state.isSubmitting = false;
             });
@@ -258,11 +424,12 @@ export const useBudgetStore = create<BudgetState>()(
               title: 'Submission Failed',
               message: 'Failed to submit budget for review',
             });
+            throw error;
           }
         }),
 
-        approveBudget: enforce(Permissions.BUDGET_UPDATE, 'approveBudget', (id) => {
-          const existing = get().budgets.find((b) => b.id === id);
+        approveBudget: enforce(Permissions.BUDGET_APPROVE, 'approveBudget', (id) => {
+          const existing = findUniqueBudget(get().budgets, id);
           if (!existing) return;
           assertBudgetTransition(existing, 'Approved', 'approve');
           const actor = useAuthStore.getState().user?.id ?? 'unknown';
@@ -282,8 +449,8 @@ export const useBudgetStore = create<BudgetState>()(
           });
         }),
 
-        rejectBudget: enforce(Permissions.BUDGET_UPDATE, 'rejectBudget', (id) => {
-          const existing = get().budgets.find((b) => b.id === id);
+        rejectBudget: enforce(Permissions.BUDGET_APPROVE, 'rejectBudget', (id) => {
+          const existing = findUniqueBudget(get().budgets, id);
           if (!existing) return;
           assertBudgetTransition(existing, 'Rejected', 'reject');
           set((state) => {
@@ -299,8 +466,8 @@ export const useBudgetStore = create<BudgetState>()(
           });
         }),
 
-        lockBudget: enforce(Permissions.BUDGET_UPDATE, 'lockBudget', (id) => {
-          const existing = get().budgets.find((b) => b.id === id);
+        lockBudget: enforce(Permissions.BUDGET_APPROVE, 'lockBudget', (id) => {
+          const existing = findUniqueBudget(get().budgets, id);
           if (!existing) return;
           assertBudgetTransition(existing, 'Locked', 'lock');
           set((state) => {
@@ -312,8 +479,8 @@ export const useBudgetStore = create<BudgetState>()(
           });
         }),
 
-        unlockBudget: enforce(Permissions.BUDGET_UPDATE, 'unlockBudget', (id) => {
-          const existing = get().budgets.find((b) => b.id === id);
+        unlockBudget: enforce(Permissions.BUDGET_APPROVE, 'unlockBudget', (id) => {
+          const existing = findUniqueBudget(get().budgets, id);
           if (!existing) return;
           assertBudgetTransition(existing, 'Approved', 'unlock');
           set((state) => {
@@ -336,13 +503,20 @@ export const useBudgetStore = create<BudgetState>()(
                 );
               }
             }
-            const existing = get().budgets.find((b) => b.id === id);
+            const existing = findUniqueBudget(get().budgets, id);
             if (!existing) return;
             if (existing.status !== 'Draft' && existing.status !== 'Rejected') {
               throw new Error(
                 `Cannot edit a budget in status ${existing.status}; only Draft or Rejected budgets can be edited.`
               );
             }
+            assertBudgetHeaderChangesAllowed(
+              get().budgets,
+              get().budgets.map((budget) =>
+                budget.id === id ? { ...budget, ...updates } : budget
+              ),
+              get().lineItems
+            );
             set((state) => {
               const budget = state.budgets.find((b) => b.id === id);
               if (budget) {

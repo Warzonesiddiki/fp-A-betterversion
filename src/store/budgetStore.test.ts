@@ -235,7 +235,7 @@ describe('budgetStore', () => {
     expect(state.budgets).toHaveLength(1);
     expect(state!.budgets[0]!.id).toBe(id);
     expect(state!.budgets[0]!.name).toBe('FY2024 Budget');
-    expect(state!.budgets[0]!.createdBy).toBe('usr-001');
+    expect(state!.budgets[0]!.createdBy).toBe('test-user-admin');
     expect(state!.budgets[0]!.createdAt).toBeDefined();
     expect(state!.budgets[0]!.updatedAt).toBeDefined();
   });

@@ -23,7 +23,7 @@ import { randomId } from '@/utils/cryptoId';
 // permission would drop lower-role event capture. These public methods trust
 // caller-supplied payloads and do not authenticate source identity. The local
 // unkeyed hash chain is not general audit authority; revert requires audit:delete.
-import { enforce, getCurrentUser, Permissions } from '@/utils/rbacEnforcer';
+import { enforce, getCurrentUser, PermissionError, Permissions } from '@/utils/rbacEnforcer';
 import { now as clockNow } from '@/utils/clock';
 
 // ---------------------------------------------------------------------------
@@ -481,11 +481,16 @@ export const useAuditTrailStore = create<State & Actions>()(
 
           const entry = get().entries.find((e) => e.id === entryId);
           if (!entry) return;
+          // DEC-038: a new action belongs to the authenticated reviewer, not
+          // the historical author. Never rewrite old entries to fix attribution.
+          const actor = getCurrentUser();
+          if (!actor) throw new PermissionError(Permissions.AUDIT_DELETE, 'revertToState');
+          // This appends audit evidence only; it does not mutate the source ledger.
           // Generate a new audit entry recording the revert action (Hades GDPR Article 16).
           // F-0015: the revert entry is chained like every other append.
           const revertEntry = makeEntry('update', {
             cellId: entry.cellId,
-            userId: entry.userId,
+            userId: actor.id,
             operation: 'update',
             dataType: entry.dataType,
             previousValue: entry.newValue,

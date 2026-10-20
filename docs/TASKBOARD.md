@@ -1,5 +1,42 @@
 # Taskboard — FinPlan Pro (live; update in the same commit as the work)
 
+## Final budget trust checkpoint — 2026-10-20
+
+**Current result (supersedes pending-gate/next-step statements in historical
+checkpoints below):** `npm run check` passed **8/8 shards, 1,398 files,
+16,248 passed + 1 existing skipped = 16,249 total**, suite component **1,057s**.
+Production build and bundle check passed: **6,815.88 KB raw / 2,060.77 KB gzip
+vs unchanged 2,080 KB**, one warning; critical path **425.06 KB gzip**, main
+**69.74 KB gzip**. Money adoption **305/1,017 = 29.99%, zero raw sites**.
+Root/prod audits both zero at the dependency-remediation checkpoint.
+
+DEC-039/040/041, submission caller error/retry handling and a repeatable
+`node scripts/verify-budget-guard-mutation.mjs` proof are closed only within
+their witnessed budget scope. Mutation proof: normal 5/5; mutant exactly four
+named denial failures and one Admin pass, production source unchanged.
+Handbook inventory/migration/GL-close/bundle contradictions reconciled;
+architecture keyword checks, docs truth, strict links, route map and hygiene
+pass. Architecture checks are not a cycle-graph or product certification.
+
+Durable commands, per-shard tally, failing-first results, commits and boundaries:
+[budget trust continuation evidence](audit/BUDGET_TRUST_CONTINUATION_2026_10_20.md).
+No new route/store/engine/connector, persisted schema/namespace, authority grant,
+ratchet baseline or CI workflow edit. No new DEC-042 authority was needed.
+
+**Known-work complete: NO. Programme complete: NO.** N2/N3 remain active;
+N-register **2/8 DONE** only for prior bounded N1/N5. **107 mapped / 93
+source-owed (108–200)** remains unchanged. CI is unverifiable (HTTP 403),
+not green. Owner data/control totals, two-month parallel run, supported-scope,
+native/recovery/key-custody, Q6/O4/O9 and other certification proofs remain owed.
+
+**Next unblocked work:** forecast writer denial/mutation evidence starting
+`forecastStore.updateForecast`; verify other budget detail action error channels;
+isolated failing-first license-check fix for UNKNOWN metadata / fail-open
+execution. The current license script is not global legal certification. N7
+structural reduction and N8 complete supported-module adoption remain open.
+Existing PR #82 is for review only, not merge/release; push/pre-push outcome is
+recorded on the PR after execution, not inferred here.
+
 Rule (ZERO COMPROMISES): a task moves to DONE only with evidence (test file,
 script output, or gate line) named in its row. Nothing is deleted from this
 board — superseded rows are struck through with the reason. Statuses:
@@ -7,6 +44,182 @@ board — superseded rows are struck through with the reason. Statuses:
 owner input/decision) · `EVIDENCE-OWED` (claim exists, proof missing).
 
 Last updated: 2026-10-20 (DEC-033 all-FP&A scope remains binding; DEC-034 records owner sections 111–200. The supplemental intake register preserves 90 numbered placeholders as SOURCE TEXT OWED / UNASSESSED; the original annex and 108–110 warning remain unchanged. DEC-035 resolves correction completion in-tool with optional Excel; this session adds authenticated status-event actor/time history and blocks empty-ledger re-verification proposals. N1 closed; N2 active with Q6/O4 and evidence gaps; N3 remains active; N5 is the original mechanical 110-section gate, not semantic certification. Current bounded persistence evidence and unknown aborted-check outcomes are recorded in N2) Session 2 of 2026-10-20 (base `260c2d6`): all baseline gates green; full sharded suite re-run 8/8 shards passed in 988s (14,023 tests known-summed; shard 3/8's summary line printed a test name, re-run standalone at 174 files / 2,058 tests / 115s — total 16,081 tests across 8 shards); `npm run build` + `node scripts/bundle-check.js` measured 415 JS assets, 6,812.51 KB raw / 2,059.69 KB gzip (99.0% of the 2,080 KB limit, 1 warning); PR #78 and PR #79 are MERGED and `gh run list --branch main` returned HTTP 403 again, so CI remains UNVERIFIABLE — neither red nor green. HEAD re-run 2026-10-20 (a94a752, runner fixed): `npm run test:sharded` 8/8 shards in 984s, all eight tallies parsed — 1,901 + 1,558 + 2,067 + 2,307 + 2,033 + 2,054 + 2,231 + 1,946 passed (+1 skipped) = 16,097 passed / 16,098 total. N3 slice: denial coverage for the cube write/delete path and GL addEntry/setAccounts (mutation-verified). N2 slice: DEC-036 makes the audit-chain census a build gate (`src/services/audit/auditChainCensus.test.ts`, 5/5 after a failing-first run named all 10 modules); N2 stays open on Q6/O4 and restart/keying/anchoring proofs.)
+
+## Continuation 2 — 2026-10-20, start `80117954`
+
+Fresh baseline before code edits: `npm run check` passed **8/8 shards,
+1,395 files, 16,110 passed + 1 existing skipped in 1,100s** (suite component).
+Separate build/bundle, adoption, strict links, hygiene and route-map checks pass;
+bundle **2,059.60 KB gzip / 2,080 KB**, one warning. Root dependency audit still
+reports 5 affected packages (2 moderate / 3 high); main Actions read still HTTP 403.
+
+**DEC-039 bounded N3 closure:** all 14 financial budget actions now have
+populated-state negative witnesses (no session, Viewer, withheld permission,
+stale user), full-Admin mutation witnesses, and a source-inventory assertion.
+The additional UI-only selection guard has explicit positive/negative evidence.
+Approval/rejection/lock/unlock enforce the existing `budget:approve` grant;
+bulk setters no longer bypass lifecycle or create/delete authority; pending
+submission rejects revoked sessions and concurrent replacement. Failing-first:
+**38 failed / 62 passed → 100/100 passed**. Combined command:
+`vitest run src/store/budgetStore.authorization.test.ts src/store/budgetStore.test.ts src/store/budgetStore.lifecycle.test.ts src/store/rbacNegativeAuthorization.test.ts src/store/rbacMatrixCompleteness.test.ts`
+— **5 files / 299 tests passed**. TypeScript, targeted ESLint, money AST/adoption
+and determinism pass; AST inventory remains 409 = 302 guarded + 107 exceptions.
+No grant, schema, namespace or ratchet baseline changed. N3 remains active,
+not product-wide authorization certification. Final changed-tree full gates are
+still owed at this checkpoint. Next: reproduce and close bulk/destination/header
+closed-period bypasses, then budget edit provenance and dependency patches.
+
+### DEC-040 — bounded closed-period budget write closure
+
+Reproduced **14 failed / 5 passed** before the guard changes. Bulk line
+replacement, source/destination movement (including undo/redo), and header
+fiscal-year changes/deletion now consult close state before financial mutation.
+Duplicate IDs are rejected, never collapsed. The permitted marker-only system
+freeze and identical replacements still work. Final closed-write suite:
+**21/21 passed**; combined budget/close/RBAC command: **7 files / 353 passed**.
+Money AST/adoption and determinism pass. No reasonless reopen, persisted-history
+rewrite or entity authorization inference. N2/N3 remain active; this is a bounded
+budget proof, not certification of every financial writer. Next: budget edit
+provenance/ID collisions, followed by isolated dependency remediation.
+
+### DEC-041 — budget mutation provenance and ID safety
+
+Reproduced a draft-alias bug that overwrote `lastChange.oldValue`, hardcoded/
+inherited creator metadata, same-clock ID collisions, and ambiguous ID edits.
+New records now carry the authenticated creator and deterministic collision-safe
+IDs, including reserved line/history references. Old records are not rewritten;
+ambiguous legacy identities fail closed instead of choosing a record.
+Failing-first provenance suite: **12 failed / 1 passed**; additional ambiguous
+line case **1 failed / 13 passed**; final **14/14 passed**. Combined exact
+budget/close/RBAC command: **8 files / 367 passed**. Money AST/adoption,
+determinism and type-safety ratchets pass. No new financial calculation,
+amount-type change, namespace/schema migration or randomness was introduced.
+This is producer metadata correctness, not closure of the canonical audit
+chain, native durability, N2 or N3. Next: isolated dependency remediation, then
+full changed-tree gates and build/bundle measurement.
+
+### Root dependency findings remediated (isolated lockfile slice)
+
+`npm update vitest @vitest/coverage-v8 @vitest/ui js-yaml source-map-js undici
+--package-lock-only --ignore-scripts`, then `npm ci --ignore-scripts` and
+`npm run prepare`: 14 existing package versions changed; zero package paths
+added/removed; root package metadata/ranges unchanged. Vitest family 4.1.7 →
+4.1.12 (plus compatible Chai 6.3.0), js-yaml 4.3.1 → 4.3.2, source-map-js
+1.2.1 → 1.2.2, undici 7.29.0 → 7.30.1. Fresh `npm audit --json` **5 → 0**
+affected packages; `npm audit --omit=dev --json` also **0**. All changed lockfile
+licenses are MIT except source-map-js BSD-3-Clause. `license:check` exits zero
+but reports UNKNOWN top-level metadata: that best-effort script is not global
+license certification. Patched-runner budget impact sweep: **8 files / 367
+passed**. No new direct dependency or broad audit-fix command. Final full
+changed-tree gates remain owed; a caller review also requires asynchronous
+submission errors to be surfaced in existing budget pages before final checks.
+
+### Submission caller impact — existing list/detail pages
+
+Caller review found both existing pages ignored asynchronous submission
+rejections, and the detail page also let synchronous denial escape its event
+handler. Failing-first UI filter: **3 failed**, plus the expected uncaught
+synchronous event error (18 unrelated tests filtered out, no skip added).
+Both callers now surface rejection through the shared ErrorState without
+changing budget state; list Retry re-runs the failed action and succeeds after
+recovery. Existing page-denial tests now pin `budget:approve` for approval/
+rejection, consistent with DEC-039 rather than weakening enforcement.
+Unfiltered list/detail/deep/grid/a11y/money + authorization impact sweep:
+**8 files / 138 tests passed**. No new route, local persisted record or
+calculation was added. Full changed-tree check and production build restarted
+after this source fix; outcomes are pending, not inferred from targeted green.
+
+### Reproducible updateBudget guard-removal proof
+
+`node scripts/verify-budget-guard-mutation.mjs` passes: normal targeted witnesses
+**5/5 pass**; removing only `updateBudget`'s guard through a test-only Vite
+transform yields **4 denied-case failures / 1 Admin pass**. The script checks
+exact witness names and unchanged checked-out source, and fails if the mutant
+survives. No production source is edited or gate weakened. This closes the
+previously requested mutation-proof subtask, not N3 as a whole. Full check/build
+continue on unchanged application source; results still pending here.
+
+## Session baseline — 2026-10-20, `arena/efe658d1-fp-a-betterversion` at `9f6d6a02`
+
+Measured here before edits (Node `v22.22.3`; clean tree): `npm run tsc`,
+`lint` (confirmed by the completed build's lint stage after the initial tool
+lost its exit status), `format:check`, `docs:verify`, `engines:verify`,
+`money:ast`, `money:adoption`, `determinism:ratchet`, `palette:ratchet`,
+`fabrication:audit`, `docs:links`, and `repo:hygiene` pass.
+`docs:verify`: 180 engines (98 shipped / 82 orphan), 48 stores, 43 persisted;
+107 mapped coverage rows, warning for 108–110 only (extension visibility is
+next). Money: 305/1,017 modules (29.99%), zero raw `toFixed` sites; AST: 978/978
+money-handling modules safe, zero unsafe operations. The 29.16% documentation
+value is the locked adoption **floor**, not current adoption; no ratchet was
+weakened or edited. Determinism: 344 sites / 79 files. Palette: 5,502 sites /
+370 files. Fabrication: zero findings. Links: zero broken links/citations.
+Hygiene: 3,610 tracked files, zero tracked ignored files (baseline inventory).
+
+`npm run test:sharded`: 8/8 shards, 1,394 files, 16,097 passed, 1 skipped,
+16,098 total, 1,204 seconds (concurrent baseline build affected wall time).
+Per-shard passed tests: 1,901 / 1,558 / 2,067 / 2,307 / 2,033 / 2,054 / 2,231 /
+1,946. `npm run build` + `node scripts/bundle-check.js`: 6,812.51 KB raw /
+2,059.69 KB gzip vs unchanged 2,080 KB ceiling, one size warning; critical
+path 424.16 KB gzip. `npm audit --omit=dev --json`: zero production advisories;
+install reported development-inclusive advisories, not remediated here.
+
+O8: `gh pr view 78 --json number,state,mergedAt,mergeCommit` confirms MERGED
+at `b2cff437293a37366fbc6187ca4859c71194b6bd`.
+`gh run list --branch main --limit 5` returns **HTTP 403: Resource not
+accessible by integration**. CI is UNVERIFIABLE, neither red nor green.
+The pasted money-red instruction is superseded by this measured green state.
+Known-work complete: **NO**, no authoritative total of remaining semantic tasks
+is established. Programme complete: **NO**; real-data, parallel-run, native,
+recovery, scope and CI proofs remain owed.
+
+### Wave-0 source-gap enforcement — DEC-037
+
+Completed bounded slice (not semantic N5 recertification): the coverage checker
+now reads the supplemental scope contract, retains the legacy header and
+requires explicit `UNASSESSED — SOURCE OWED` status until reviewed source lands.
+Failing-first: `vitest run src/__tests__/coverageAnnexClaims.test.ts` produced
+7 failures / 1 pass before implementation. Final focused run: 1 file / 9 tests passed; `npm run tsc`, targeted ESLint,
+`docs:verify` and strict `docs:links` passed. The gate now prints 107 mapped
+rows and 93 unassessed source-owed sections (108–200). The bounded repository/PR/Notion/Drive/Gmail search is
+in the source blocker register; verbatim source remains not recovered. Issues
+read access and Actions are blocked by the integration; no CI claim follows.
+Owner packet reissued in conversation, with provisional defaults only.
+
+### N2/N3 attribution slice — DEC-038 (2026-10-20)
+
+`auditTrailStore.revertToState` now records the authenticated reviewer rather
+than falsely repeating the historical author. Prior entries, hashes, namespace
+and schema are untouched. No ledger rollback or wider audit authority claim.
+Failing-first: attribution suite 2 failed / 4 passed; after fix, the combined
+attribution/audit/census/RBAC/period-lock/reconstruction command in
+`docs/architecture/AUDIT_CHAIN_REACHABILITY.md` passes 8 files / 204 tests.
+The AST census remains 409 = 302 guarded + 107 exceptions. New negative evidence
+includes stale-session denial preserving the entries reference and pinned head.
+N2/N3 stay open; Q6/O4/O9/native proof are not closed. `tsc`, targeted ESLint,
+`docs:verify` and strict links passed after this change. Re-run final full gates
+before push; baseline evidence is not substituted for the changed tree.
+
+### Closing engineering evidence — code `0f750d50`, 2026-10-20
+
+Closed bounded slices: `aa32e18e` baseline/owner packet; `6b9c74d6` source-gap
+gate (DEC-037); `0f750d50` authenticated reversion attribution (DEC-038).
+`npm run check` passed: **8/8 shards, 1,395 files, 16,110 passed + 1 existing
+skipped (16,111 total), 1,066 seconds** for the sharded component. Fresh
+`npm run build` + `node scripts/bundle-check.js`: **6,812.58 KB raw / 2,059.60 KB
+gzip vs 2,080 KB**, one warning. Money adoption, strict links, hygiene and route
+map checks pass separately. No new skip, dependency, baseline or route change.
+Selected Phase-0.5 witness run: **21 files / 472 tests passed**, not native or
+all-domain certification. Full commands/boundaries and owner blockers:
+[session evidence](audit/CONTINUATION_2026_10_20_EVIDENCE.md).
+
+`npm audit --json` also identified development-inclusive findings in
+`@vitest/mocker`, `vitest`, `js-yaml`, `source-map-js` and `undici` (5 affected
+packages: 2 moderate / 3 high; fixes reported available). They remain open for a
+lockfile-focused review, not silently accepted. Production-only audit is clean;
+that does not certify the whole dependency tree. CI main recheck still HTTP 403.
+Known-work and programme completion remain **NO**; no defensible total semantic
+task denominator exists yet. Next trust slice: populated-fixture negative tests
+for `budgetStore.updateBudget`, mutation-verified, preserving O9's boundary.
 
 ---
 

@@ -12,6 +12,35 @@ The standalone `AuditLogger` remains in the source tree for its isolated snapsho
 
 This does **not** close N2. There are additional persisted domain chains, an active but in-memory SOX log path, a server `audit_log` that documentation calls authoritative but the frontend does not call, and multiple unconsumed/test-only implementations. Their owners/authority boundaries are recorded below; none is silently treated as retired or equivalent.
 
+## 2026-10-20 continuation — authenticated reversion attribution (DEC-038)
+
+The source census (`rg -n "hash|chain|audit|lineage|ledger|SOX" src server`)
+and `src/services/audit/auditChainCensus.test.ts` were re-run. All existing
+chain dispositions remain bounded; the census passed 5/5. No chain, producer,
+persisted namespace or native durability claim was added.
+
+A failing-first `auditTrailStore.attribution.test.ts` run produced **2 failures /
+4 passes**: reversion evidence falsely named the historical author instead of
+the current reviewer. It now uses the authenticated actor for each call,
+preserves prior records and links, and retains the existing clock/RBAC. The
+four denial cases include a stale user object with `isAuthenticated: false`;
+entries and pinned head stay unchanged. Legacy misattributed records cannot be
+repaired by guessing actors; no history rewrite or migration is performed.
+**This action records local audit evidence only, not a source-ledger rollback.**
+
+Focused command (all paths are repository-relative):
+
+```bash
+./node_modules/.bin/vitest run src/store/auditTrailStore.attribution.test.ts src/store/auditTrailStore.test.ts src/services/audit/auditChainCensus.test.ts src/store/rbacMatrixCompleteness.test.ts src/store/rbacNegativeAuthorization.test.ts src/store/glStore.periodClose.test.ts src/services/audit/reconstructState.test.ts src/components/audit/StateReconstructionPanel.test.tsx
+```
+
+Result: **8 files / 204 tests passed**, including the census and GL period-lock
+sweep. RBAC snapshot still pins 409 actions: 302 guarded / 107 exceptions;
+this is not proof of negative coverage for every action. N2/N3 remain active;
+Q6 server fate, O4 SOX authority, O9 entity grants and native restart proof
+remain open. Cell lineage still has no production producer or native restart
+proof; the existing mocked-backend hydration tests do not establish either.
+
 ## Reachability inventory
 
 | Mechanism                                                              | Runtime reachability and producer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Persistence / integrity                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Disposition and evidence                                                                                                                                                                                                                                                                                                                                                               |
