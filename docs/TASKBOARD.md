@@ -92,6 +92,16 @@ Unfiltered list/detail/deep/grid/a11y/money + authorization impact sweep:
 calculation was added. Full changed-tree check and production build restarted
 after this source fix; outcomes are pending, not inferred from targeted green.
 
+### Reproducible updateBudget guard-removal proof
+
+`node scripts/verify-budget-guard-mutation.mjs` passes: normal targeted witnesses
+**5/5 pass**; removing only `updateBudget`'s guard through a test-only Vite
+transform yields **4 denied-case failures / 1 Admin pass**. The script checks
+exact witness names and unchanged checked-out source, and fails if the mutant
+survives. No production source is edited or gate weakened. This closes the
+previously requested mutation-proof subtask, not N3 as a whole. Full check/build
+continue on unchanged application source; results still pending here.
+
 ## Session baseline — 2026-10-20, `arena/efe658d1-fp-a-betterversion` at `9f6d6a02`
 
 Measured here before edits (Node `v22.22.3`; clean tree): `npm run tsc`,
