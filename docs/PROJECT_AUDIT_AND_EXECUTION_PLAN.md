@@ -12,7 +12,7 @@
 > [`docs/VISION.md`](VISION.md) (product goal) ·
 > [`docs/agent/WORKING_AGREEMENT.md`](agent/WORKING_AGREEMENT.md) (owner's goal + live queue) ·
 > [`docs/discovery/requirements-register.md`](discovery/requirements-register.md) (FR/NFR register) ·
-> [`docs/discovery/decision-log.md`](discovery/decision-log.md) (DEC-001…DEC-035) ·
+> [`docs/discovery/decision-log.md`](discovery/decision-log.md) (DEC-001…DEC-036) ·
 > [`docs/agent/09_KNOWN_GAPS.md`](agent/09_KNOWN_GAPS.md) (measured gaps) ·
 > [`docs/discovery/d365-export-contract.md`](discovery/d365-export-contract.md) (D365 mapping contract)
 >

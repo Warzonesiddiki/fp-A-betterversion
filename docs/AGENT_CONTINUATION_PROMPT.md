@@ -14,8 +14,8 @@ end-of-session report.
 
 **Prepared:** 2026-10-20, against base commit `b2cff43` (merge of PR #78).
 **Status of this document:** instruction, not a certification. Any number in it
-is either labelled *recorded* (from the taskboard/register) or *measured in this
-checkout*; re-run the named command before repeating it.
+is either labelled _recorded_ (from the taskboard/register) or _measured in this
+checkout_; re-run the named command before repeating it.
 
 ---
 
@@ -228,27 +228,29 @@ feature work. Never build on a red tree.**
 
 ### 3.1 Known reconciliation items — do not copy stale numbers
 
-These were measured in this checkout at `b2cff43` on 2026-10-20. The register
+First measured at `b2cff43` on 2026-10-20; **re-measured at `260c2d6` on
+2026-10-20 (session 2)** because three rows did not reproduce. The register
 records different values. Treat the difference as work, not as a choice.
 
-| Fact | Register / taskboard records | Measured in this checkout | Action |
-| --- | --- | --- | --- |
-| Coverage rows | 107 mapped; 108–110 unresolved; 111–200 unassessed | `check-coverage-annex` passes with 107 rows and the 108–110 warning | Recover the source; reconcile the annex's 110-section header vs the owner's 200-section register; do not invent titles |
-| Money adoption | Register says 305 / 1,017 (29.99 %), zero raw sites; taskboard still says 29.83 % | 304 / 1,017 (29.89 %), **one** raw `toFixed(2)` at `src/pages/data/ComparisonPage.tsx:236` | Reconcile all three; fix through the display helper; update the baseline only after the improvement (raw sites down, primitive modules up) |
-| Engines | Handover says 183 (101 shipped / 82 orphan) | `verify-readme-stats` says **180** (98 shipped / 82 orphan) | The handover is stale; fix it |
-| Stores | Handover says 49 | `verify-readme-stats` says **48** | Fix the stale doc |
-| Full suite | 8/8 shards, 1,395 files, 16,018 tests | Not re-run here (no `node_modules`) | Run it and record the real tally |
-| Bundle | 2,061.71 KB gzip vs 2,080 KB limit | Not re-run here (no `dist`) | Build and measure before N7 |
-| CI on `main` | O8 unverified | `gh run list --branch main` → HTTP 403 "Resource not accessible by integration"; PR #78 confirmed MERGED at `b2cff43` | Record as a blocker; claim neither red nor green |
-| PR #78 | Merged; do not reopen | Confirmed merged 2026-10-19T18:30:02Z | Fix forward only |
+| Fact                        | Register / taskboard records                       | Measured in this checkout (`260c2d6`)                                                                                                                                                                                 | Action                                                                                                                 |
+| --------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Coverage rows               | 107 mapped; 108–110 unresolved; 111–200 unassessed | `check-coverage-annex` passes with 107 rows and the 108–110 warning                                                                                                                                                   | Recover the source; reconcile the annex's 110-section header vs the owner's 200-section register; do not invent titles |
+| Money adoption              | Taskboard: 305 / 1,017 (29.99 %), zero raw sites   | **305 / 1,017 (29.99 %), 0 raw `toFixed(n)` sites** — `npm run money:adoption`. The earlier "304 / 29.89 % / one raw site at `ComparisonPage.tsx:236`" did **not** reproduce; that file has no `toFixed` at this base | Gate is green; N8 stays open only against the 100 % supported-module target. Do not "fix" a site that does not exist   |
+| Ratchet floor vs live value | Docs quote 29.16 % (floor 289 modules)             | Floor is `scripts/money-adoption-baseline.json` (29.16 % / 289); live measurement is 29.99 % / 305. `npm run docs:verify` compares the docs to the **floor**, by design                                               | Do not "correct" the 29.16 % doc lines to 29.99 %; they describe the locked floor, not current adoption                |
+| Engines                     | Handover says 183 (101 shipped / 82 orphan)        | `engines:verify` → **180 engines**, manifest current                                                                                                                                                                  | The handover is stale; fix it                                                                                          |
+| Stores                      | Handover says 49                                   | `verify-readme-stats` says **48**                                                                                                                                                                                     | Fix the stale doc                                                                                                      |
+| Full suite                  | 8/8 shards, 1,395 files, 16,018 tests              | See the session-2 record in §3.2 after the run                                                                                                                                                                        | Run it and record the real tally                                                                                       |
+| Bundle                      | 2,061.71 KB gzip vs 2,080 KB limit                 | See §3.2                                                                                                                                                                                                              | Build and measure before N7                                                                                            |
+| CI on `main`                | O8 unverified                                      | `gh run list --branch main` → HTTP 403 "Resource not accessible by integration"; PR #78 confirmed MERGED at `b2cff43`                                                                                                 | Record as a blocker; claim neither red nor green                                                                       |
+| PR #78                      | Merged; do not reopen                              | Confirmed merged 2026-10-19T18:30:02Z                                                                                                                                                                                 | Fix forward only                                                                                                       |
 
-**The money item is a measured red gate and the cheapest first fix.** Fix it
-before N8. The likely fix is to
-route the percentage through the existing display formatter, not to add an
-exception. After the fix, run `npm run money:adoption` and confirm the raw-site
-count is zero; only then run `--update` if the adoption percentage genuinely
-rose. Check the baseline diff: raw-site allowance must go down (or stay at 0)
-and primitive-adopting modules must go up. Never edit
+**The money gate is green at this base** — 0 unsafe AST operations and 0 raw
+`toFixed(n)` sites. N8 is therefore not a red-gate rescue; it is the longer
+ratchet from 29.99 % toward 100 % of **supported** financial modules. Raise it
+module by module along the supported paths defined in the capability matrix, and
+only run `npm run money:adoption -- --update` after a real improvement. Check the
+baseline diff: the raw-site allowance must go down (or stay at 0) and
+primitive-adopting modules must go up. Never edit
 `scripts/money-adoption-baseline.json` by hand to make a gate pass.
 
 The plan's §16 inventory (242 routes, 182 engines, 437 docs) is historical.
@@ -466,7 +468,7 @@ exists.
 
 **Do:**
 
-1. O5 blocks *which* sectors are supported. Until it is answered, certify none;
+1. O5 blocks _which_ sectors are supported. Until it is answered, certify none;
    build the harness.
 2. For each candidate sector, require: named KPI definitions, source
    requirements, independent oracle results, data-missing behavior, and an
@@ -567,17 +569,17 @@ measured truth.
 Resolve these in one packet (Appendix A). Do not work around them. Until they
 are answered, use the default and label it provisional.
 
-| ID | Owner input needed | Safe default until answered | What stays blocked |
-| --- | --- | --- | --- |
-| O1 | One real anonymized D365 export per shape (F&O GL, journal entity, BC G/L) + control totals | All shapes "mapping-driven, unverified"; synthetic fixtures only | "Verified D365" label; Q1 live claim |
-| O2 | Rolling-forecast semantics: replace vs blend, periods rolled, approval interaction | Versioned **replace**: actuals replace closed periods, new version, prior approved version retained | Wiring `RollingForecastEngine` as supported |
-| O3 | Encryption-key escrow/recovery model | No escrow claim; user-held recovery key; no "your data is safe" statement | Backup/restore certification; security claims |
-| O4 | SOX/audit authority source | Not SOX; local chain is client evidence only, unanchored | SOX engine graduation; compliance claims |
-| O5 | Supported sectors and jurisdiction tiers | None certified; generic FP&A only; all sector packs `EXPERIMENTAL` | E4 builds; E5 certification order |
-| O6 | External AI provider decision | Local-only AI; no egress | Any non-local AI |
-| O7 | Native Tauri verification on a real desktop toolchain | No offline/desktop claim until verified | Offline auth, native persistence, installer claims |
-| O8 | Verify CI green on `main` after PR #78 | Record the `gh` 403 accurately; claim neither red nor green | Release posture |
-| O9 | Authoritative authorized-entity set + switch policy | Deny by default; never infer access from the active entity | `switchEntity` authorization |
+| ID  | Owner input needed                                                                          | Safe default until answered                                                                         | What stays blocked                                 |
+| --- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| O1  | One real anonymized D365 export per shape (F&O GL, journal entity, BC G/L) + control totals | All shapes "mapping-driven, unverified"; synthetic fixtures only                                    | "Verified D365" label; Q1 live claim               |
+| O2  | Rolling-forecast semantics: replace vs blend, periods rolled, approval interaction          | Versioned **replace**: actuals replace closed periods, new version, prior approved version retained | Wiring `RollingForecastEngine` as supported        |
+| O3  | Encryption-key escrow/recovery model                                                        | No escrow claim; user-held recovery key; no "your data is safe" statement                           | Backup/restore certification; security claims      |
+| O4  | SOX/audit authority source                                                                  | Not SOX; local chain is client evidence only, unanchored                                            | SOX engine graduation; compliance claims           |
+| O5  | Supported sectors and jurisdiction tiers                                                    | None certified; generic FP&A only; all sector packs `EXPERIMENTAL`                                  | E4 builds; E5 certification order                  |
+| O6  | External AI provider decision                                                               | Local-only AI; no egress                                                                            | Any non-local AI                                   |
+| O7  | Native Tauri verification on a real desktop toolchain                                       | No offline/desktop claim until verified                                                             | Offline auth, native persistence, installer claims |
+| O8  | Verify CI green on `main` after PR #78                                                      | Record the `gh` 403 accurately; claim neither red nor green                                         | Release posture                                    |
+| O9  | Authoritative authorized-entity set + switch policy                                         | Deny by default; never infer access from the active entity                                          | `switchEntity` authorization                       |
 
 **§12 workflow inputs to request in the same packet:** D365 product/version and
 export route; fiscal calendar and close timing; entity/currency scope;
@@ -589,13 +591,13 @@ queues, and a top-N materiality watchlist. Mark them provisional.
 
 ### 7.1 Other §20 decisions — same packet, same safe defaults
 
-| Decision | Safe default until answered | What stays blocked |
-| --- | --- | --- |
-| Browser versus PWA positioning | The browser build is a development/preview surface; no supported offline/PWA claim | PWA/offline positioning |
-| Desktop updater channel | No auto-update claim; manual, signed installer only after O7 | Updater UI, release claims |
-| Server fate (Q6) | Retire from supported scope; keep code non-shipping until the owner signs | Server integration claims |
-| Plugin marketplace/sandbox | No marketplace; no sandbox-isolation claim until isolation tests and a threat model exist | Plugin listings, marketplace claims |
-| Direct D365 API pull | Not supported; file import is the supported route until O1 and a connector contract exist | API-pull feature |
+| Decision                       | Safe default until answered                                                               | What stays blocked                  |
+| ------------------------------ | ----------------------------------------------------------------------------------------- | ----------------------------------- |
+| Browser versus PWA positioning | The browser build is a development/preview surface; no supported offline/PWA claim        | PWA/offline positioning             |
+| Desktop updater channel        | No auto-update claim; manual, signed installer only after O7                              | Updater UI, release claims          |
+| Server fate (Q6)               | Retire from supported scope; keep code non-shipping until the owner signs                 | Server integration claims           |
+| Plugin marketplace/sandbox     | No marketplace; no sandbox-isolation claim until isolation tests and a threat model exist | Plugin listings, marketplace claims |
+| Direct D365 API pull           | Not supported; file import is the supported route until O1 and a connector contract exist | API-pull feature                    |
 
 These are scope decisions, not engineering preferences. Do not build the feature
 while the default is "not supported".
@@ -609,39 +611,39 @@ results of the two-month parallel run.
 Close phases in dependency order. "Exists in the repository" is not a completion
 state.
 
-| Phase | Scope | Exit evidence |
-| --- | --- | --- |
-| 0 / 0.5 | Reproducible baseline, Wave-6 witness review | Named witnesses re-run; historical closures confirmed or reopened; failures triaged |
-| 1 / 1V | Source contract | Owner D365 exports inspected; verified shapes and acceptance criteria defined |
-| 2 | Import and reconciliation | Schema validation, preview/errors, duplicates/atomicity, row and financial-total reconciliation, malformed/missing/duplicate tests |
-| 3 | Trusted financial views | Owner-approved metrics, prerequisites, independent recalculation, source drill-down, explicit unavailable behavior |
-| 4 | Exception investigation | Owner-approved catalogue/rules, evidence inspection, false-positive and recovery tests, human disposition, J2 answer key |
-| 5 | Comparison and correction | DoD/MoM/YoY with drill-down and "not in file"; real accounts-team and cycle validation; proposals are cues, not proof |
-| 6 | Platform truth | Offline auth decision/implementation, persistence execution, key escrow, PDF tie-out, server disposition, browser/PWA story, updater truth, native CI |
-| 7 | Planning depth | Budget/forecast/scenario hardening, cascade sentinel, backtesting, rolling forecast wire-or-retire after O2, approval workflow |
-| 8 | Modelling depth | Consolidation/FX/intercompany close loop, revenue recognition/lease/tax completion incl. transfer pricing, canonical spreadsheet/cube subset |
-| 9 | Reporting | Every supported export ties out; report governance; XBRL wired or retired |
-| 10 | AR/AP, cash, operations | Sub-ledgers feed cash/working capital; payroll decontaminated; operational adapters |
-| 11 | Sector certification | One sector at a time, canonical pattern, unfinished sectors `EXPERIMENTAL` |
-| 12 | Governance/collaboration | RBAC complete, SOX authority per O4, audit reconstruction boundaries, comments/approvals only if team use confirmed |
-| 13 | AI, last and off by default | Verified-facts gate, egress chokepoint, J2 explanation wiring, measured rejection of unsupported claims |
-| 14 | Scale/design/release | Performance budgets, palette/design completion, route consolidation, signed installers, updater, backup/restore rehearsal, help/runbooks, release checklist |
+| Phase   | Scope                                        | Exit evidence                                                                                                                                               |
+| ------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0 / 0.5 | Reproducible baseline, Wave-6 witness review | Named witnesses re-run; historical closures confirmed or reopened; failures triaged                                                                         |
+| 1 / 1V  | Source contract                              | Owner D365 exports inspected; verified shapes and acceptance criteria defined                                                                               |
+| 2       | Import and reconciliation                    | Schema validation, preview/errors, duplicates/atomicity, row and financial-total reconciliation, malformed/missing/duplicate tests                          |
+| 3       | Trusted financial views                      | Owner-approved metrics, prerequisites, independent recalculation, source drill-down, explicit unavailable behavior                                          |
+| 4       | Exception investigation                      | Owner-approved catalogue/rules, evidence inspection, false-positive and recovery tests, human disposition, J2 answer key                                    |
+| 5       | Comparison and correction                    | DoD/MoM/YoY with drill-down and "not in file"; real accounts-team and cycle validation; proposals are cues, not proof                                       |
+| 6       | Platform truth                               | Offline auth decision/implementation, persistence execution, key escrow, PDF tie-out, server disposition, browser/PWA story, updater truth, native CI       |
+| 7       | Planning depth                               | Budget/forecast/scenario hardening, cascade sentinel, backtesting, rolling forecast wire-or-retire after O2, approval workflow                              |
+| 8       | Modelling depth                              | Consolidation/FX/intercompany close loop, revenue recognition/lease/tax completion incl. transfer pricing, canonical spreadsheet/cube subset                |
+| 9       | Reporting                                    | Every supported export ties out; report governance; XBRL wired or retired                                                                                   |
+| 10      | AR/AP, cash, operations                      | Sub-ledgers feed cash/working capital; payroll decontaminated; operational adapters                                                                         |
+| 11      | Sector certification                         | One sector at a time, canonical pattern, unfinished sectors `EXPERIMENTAL`                                                                                  |
+| 12      | Governance/collaboration                     | RBAC complete, SOX authority per O4, audit reconstruction boundaries, comments/approvals only if team use confirmed                                         |
+| 13      | AI, last and off by default                  | Verified-facts gate, egress chokepoint, J2 explanation wiring, measured rejection of unsupported claims                                                     |
+| 14      | Scale/design/release                         | Performance budgets, palette/design completion, route consolidation, signed installers, updater, backup/restore rehearsal, help/runbooks, release checklist |
 
 ### Flaw classes — close them, do not rename them
 
-| Class | Examples | Closure evidence |
-| --- | --- | --- |
-| Wrong numbers | Silent-zero formulas, parsing/truncation, bad dates, IRR/XIRR assumptions, cascade fallbacks, percent/currency confusion, misleading variance color | Oracle tests, formula census, sign/rounding fixtures, corrected UI |
-| Data loss/integrity | Swallowed storage errors, key recovery, persistence limits, duplicate imports, balanced-remainder guarantees | Failure-injection tests, migration/restore tests, import atomicity |
-| Security/governance | Plugin sandbox, RBAC on all mutators, server endpoint truth, default egress | Negative authorization, sandbox tests, egress inventory |
-| Unwired/false surfaces | Staging/import flows, connectors, server paths, DB/schema claims, empty/mock routes, orphan engines | Reachability census, delete/label/adapter evidence |
-| Fabrication/template clones | Canned drivers, fabricated payroll/sector data | `fabrication:audit`, `mock-data:audit`, real inputs or retirement |
-| Duplication | Calendars, imports, exports, workflows, audits, cubes, schedulers | One canonical authority per concept; equality gate |
-| Money/determinism/type safety | Float money, wall-clock, `any` escapes | Ratchets at zero/declining; 100 % supported adoption |
-| UX/accessibility/design | Five states, keyboard, WCAG, semantic palette, route consolidation | A11y tests, keyboard journeys, palette ratchet |
-| Platform truth | Offline auth, browser/PWA, updater, native claims | Native proof (O7), updater test, truthful docs |
-| Claims/docs | Live docs contradict measured code | `docs:verify`, README checks, strict links |
-| Test evidence gaps | Transfer pricing, SaaS cohorts, PDF/cross-artifact ties, backtesting, connector live evidence, J2 key | Named tests with reproducible tallies |
+| Class                         | Examples                                                                                                                                            | Closure evidence                                                   |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Wrong numbers                 | Silent-zero formulas, parsing/truncation, bad dates, IRR/XIRR assumptions, cascade fallbacks, percent/currency confusion, misleading variance color | Oracle tests, formula census, sign/rounding fixtures, corrected UI |
+| Data loss/integrity           | Swallowed storage errors, key recovery, persistence limits, duplicate imports, balanced-remainder guarantees                                        | Failure-injection tests, migration/restore tests, import atomicity |
+| Security/governance           | Plugin sandbox, RBAC on all mutators, server endpoint truth, default egress                                                                         | Negative authorization, sandbox tests, egress inventory            |
+| Unwired/false surfaces        | Staging/import flows, connectors, server paths, DB/schema claims, empty/mock routes, orphan engines                                                 | Reachability census, delete/label/adapter evidence                 |
+| Fabrication/template clones   | Canned drivers, fabricated payroll/sector data                                                                                                      | `fabrication:audit`, `mock-data:audit`, real inputs or retirement  |
+| Duplication                   | Calendars, imports, exports, workflows, audits, cubes, schedulers                                                                                   | One canonical authority per concept; equality gate                 |
+| Money/determinism/type safety | Float money, wall-clock, `any` escapes                                                                                                              | Ratchets at zero/declining; 100 % supported adoption               |
+| UX/accessibility/design       | Five states, keyboard, WCAG, semantic palette, route consolidation                                                                                  | A11y tests, keyboard journeys, palette ratchet                     |
+| Platform truth                | Offline auth, browser/PWA, updater, native claims                                                                                                   | Native proof (O7), updater test, truthful docs                     |
+| Claims/docs                   | Live docs contradict measured code                                                                                                                  | `docs:verify`, README checks, strict links                         |
+| Test evidence gaps            | Transfer pricing, SaaS cohorts, PDF/cross-artifact ties, backtesting, connector live evidence, J2 key                                               | Named tests with reproducible tallies                              |
 
 For every route, engine, store, service, connector, and live document, record a
 verdict: **supported with evidence**, **experimental and labelled**, or
@@ -852,9 +854,10 @@ Never report "all tests pass" without the tally. Never report CI green from a
 1. Check the branch and tree: `git status --short`, `git log --oneline -5`.
 2. Install if needed: `npm ci --ignore-scripts`.
 3. Run the §3 baseline set; write the real numbers into the taskboard.
-4. Fix the money-ratchet red (`ComparisonPage.tsx:236`): add or update the test
-   that proves the display path, then route it through the display helper.
-   Re-run `money:ast` and `money:adoption` and record both tallies.
+4. Re-measure `money:ast` and `money:adoption` **before** acting on any recorded
+   money number. At `260c2d6` both are green (0 unsafe ops, 0 raw `toFixed`,
+   305/1,017 = 29.99 %); the "fix `ComparisonPage.tsx:236`" step recorded in the
+   first edition of this prompt is obsolete — that file has no `toFixed`.
 5. Run `npm run test:sharded`; record the honest tally.
 6. Verify O8: `gh pr view 78` (merged) and `gh run list --branch main`. If the
    403 persists, record it as "CI status unverifiable by this integration", not
@@ -924,24 +927,24 @@ Tier C fact. Do not claim the project is complete until §9.2 is true.
 
 ## Appendix B — session scorecard (fill at the end)
 
-| Area | Status | Evidence |
-| --- | --- | --- |
-| Baseline gates | | |
-| Full suite | | |
-| Money adoption | | |
-| Determinism | | |
-| Bundle | | |
-| N2 audit authority | | |
-| N3 RBAC | | |
-| N4 adapter | | |
-| N6 certification | | |
-| N7 bundle | | |
-| N8 money | | |
-| Q1 connector | | |
-| 108–200 source | | |
-| Owner packet | | |
-| Supported-scope claims | | |
-| Programme completion | | |
+| Area                   | Status | Evidence |
+| ---------------------- | ------ | -------- |
+| Baseline gates         |        |          |
+| Full suite             |        |          |
+| Money adoption         |        |          |
+| Determinism            |        |          |
+| Bundle                 |        |          |
+| N2 audit authority     |        |          |
+| N3 RBAC                |        |          |
+| N4 adapter             |        |          |
+| N6 certification       |        |          |
+| N7 bundle              |        |          |
+| N8 money               |        |          |
+| Q1 connector           |        |          |
+| 108–200 source         |        |          |
+| Owner packet           |        |          |
+| Supported-scope claims |        |          |
+| Programme completion   |        |          |
 
 ## Appendix C — the one-sentence test for every claim
 
