@@ -127,6 +127,15 @@ const FIELD_PATTERNS: Record<
 
 // Exact aliases only. Fuzzy COA suggestions require a separate analyst review
 // contract; broad substring matches must not silently select a financial column.
+//
+// D365 aliases (added 2026-10-21) are the DOCUMENTED Microsoft column names from
+// `docs/discovery/d365-export-contract.md` §2 for "General ledger statement by
+// main account". They are exact normalised headers, never substrings, for the
+// same reason: "Main account" must not collide with "Main account name".
+// Verified failing-first: without these, a real D365-shaped export produced
+// `Missing required column: accountCode / postDate / currency` and was rejected
+// by the spine. Shapes remain UNVERIFIED per O1/DEC-043 — this maps headers, it
+// does not certify a D365 export format.
 const GL_ALIASES: Record<GLIngestField, readonly string[]> = {
   accountCode: [
     'account',
@@ -136,15 +145,42 @@ const GL_ALIASES: Record<GLIngestField, readonly string[]> = {
     'glcode',
     'glaccountcode',
     'acctnum',
+    // D365: GeneralJournalAccountEntry.MainAccount
+    'mainaccount',
   ],
-  accountName: ['accountname', 'glaccountname'],
-  postDate: ['date', 'postdate', 'postingdate', 'transactiondate', 'transdate', 'entrydate'],
+  accountName: ['accountname', 'glaccountname', 'mainaccountname'],
+  postDate: [
+    'date',
+    'postdate',
+    'postingdate',
+    'transactiondate',
+    'transdate',
+    'entrydate',
+    // D365: GeneralJournalEntry.AccountingDate, exported as
+    // "Transaction posting date"
+    'transactionpostingdate',
+  ],
   debit: ['debit', 'debitamount', 'dr'],
   credit: ['credit', 'creditamount', 'cr'],
   amount: ['amount', 'netamount', 'signedamount'],
   entityId: ['entity', 'entityid', 'company', 'companycode', 'subsidiary'],
-  currency: ['currency', 'currencycode', 'ccy'],
-  journalId: ['journal', 'journalid', 'voucher', 'voucherid', 'journalnumber'],
+  currency: [
+    'currency',
+    'currencycode',
+    'ccy',
+    // D365: GeneralJournalAccountEntry.TransactionCurrencyCode
+    'transactioncurrency',
+  ],
+  journalId: [
+    'journal',
+    'journalid',
+    'voucher',
+    'voucherid',
+    'journalnumber',
+    // D365: GeneralJournalEntry.SubledgerVoucher, exported as
+    // "Transaction number" (the VOUCHER, not JournalNumber)
+    'transactionnumber',
+  ],
   description: ['description', 'memo', 'narrative'],
   reference: ['reference', 'ref'],
 };
@@ -213,7 +249,30 @@ export function ingestGLRows(input: GLIngestInput): GLIngestResult {
       else mappings[field] = matches[0];
     }
   }
-  for (const field of ['accountCode', 'postDate', 'entityId', 'currency'] as const) {
+  // Entity and currency may legitimately arrive as EXPORT CONTEXT rather than as
+  // columns (D365's GL statement is produced per legal entity and carries no
+  // entity column). An explicit default replaces the column requirement; nothing
+  // is inferred. Validated here so the failure is a schema error, not a silent 0.
+  if (input.defaultEntityId !== undefined) {
+    if (!input.defaultEntityId.trim())
+      schemaErrors.push('Default entity must be a non-empty string when supplied.');
+    else if (!input.knownEntityIds.includes(input.defaultEntityId))
+      schemaErrors.push(
+        `Default entity is not in the supplied entity list: ${input.defaultEntityId}`
+      );
+  }
+  if (input.defaultCurrency !== undefined) {
+    if (!input.defaultCurrency.trim())
+      schemaErrors.push('Default currency must be a non-empty string when supplied.');
+    else if (input.defaultCurrency !== input.expectedCurrency)
+      schemaErrors.push(
+        `Default currency (${input.defaultCurrency}) must equal expected currency (${input.expectedCurrency}).`
+      );
+  }
+  let requiredColumns: GLIngestField[] = ['accountCode', 'postDate'];
+  if (input.defaultEntityId === undefined) requiredColumns = [...requiredColumns, 'entityId'];
+  if (input.defaultCurrency === undefined) requiredColumns = [...requiredColumns, 'currency'];
+  for (const field of requiredColumns) {
     if (!mappings[field]) schemaErrors.push(`Missing required column: ${field}`);
   }
   const mappedSources = Object.values(mappings);
@@ -278,8 +337,10 @@ export function ingestGLRows(input: GLIngestInput): GLIngestResult {
       continue;
     }
     const accountCode = cell('accountCode');
-    const entityId = cell('entityId');
-    const currency = cell('currency');
+    // A row that carries the column always wins; the export-level default only
+    // fills a column that does not exist. Never inferred from account/session.
+    const entityId = mappings.entityId ? cell('entityId') : (input.defaultEntityId ?? '');
+    const currency = mappings.currency ? cell('currency') : (input.defaultCurrency ?? '');
     if (!accountCode || !accounts.has(accountCode))
       fail(
         'UNKNOWN_ACCOUNT',
