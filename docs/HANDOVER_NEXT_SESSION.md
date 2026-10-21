@@ -1,5 +1,54 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-21 (continued) — LEDGER MONEY ADMISSION: a row carrying money passed the balance gate
+
+**The finding.** The ledger reconciled in whole cents in every aggregate, and
+stored the amount verbatim in none of them. Four measurements on `49f080eb`:
+
+| Probe                                            | Stored / returned                              | Why it matters                                                                                 |
+| ------------------------------------------------ | ---------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `setEntries([{ debit: 0.004, credit: 0 }])`      | `debit 0.004`, `netChange 0.00`, `amount 0.00` | the row carried money its own net could not see                                                |
+| `setEntries([{ debit: 0.1 + 0.2, credit: 0 }])`  | `debit 0.30000000000000004`                    | a raw read disagreed with the `0.30` the analysis view printed                                 |
+| `addEntry([{ debit: 0.005, credit: 0 }])`        | `amount 0.01` vs `debit 0.005`                 | `amount === debit − credit` did not hold                                                       |
+| `validateEntries([{ debit: 0.004, credit: 0 }])` | `isValid: true`, 0 errors                      | `toCents(0.004) === toCents(0) === 0`: the double-entry gate saw a balanced row carrying money |
+
+**The rule (DEC-048, audit P1-11 phase 1).** A ledger amount is a finite,
+non-negative (`debit`/`credit`) number with at most `LEDGER_SCALE` (2) decimal
+places. Finer precision is **refused with a named reason, never rounded on
+write** — rounding would silently discard money, which is what FR-006 forbids.
+One authority (`ledgerAmountIssue`) now serves `setEntries`, `addEntries`,
+`addEntry`, `validateEntries` and the server hydrate path; the primitive gained
+`decimalPlacesOf` (`0.1 + 0.2 → 17`, `0.3 → 1`) and `hasSubUnitPrecision`.
+
+**Evidence.** `src/store/glStore.ledgerScale.test.ts` — **9/9** (the three
+write surfaces, the gate regression, whole-cent boundary, cent-identity,
+prior FR-006 rejections unchanged) · `src/utils/money.test.ts` **34/34** (+4
+predicate tests) · `src/store/glStore.server.test.ts` **18/18** (hydrate now
+refuses a `0.004` server row and names it) · store + import regression **93
+files / 1,439 tests** · `tsc` 0 · eslint `--max-warnings 0` clean · prettier
+clean · `money:ast` 0 unsafe · determinism **344 / 79** at baseline ·
+`money:adoption` **29.99 %** / 0 raw `toFixed` · `docs:verify` 9/9 (test files
+1,402 → **1,403**) · strict links 0 broken · hygiene **3,622 / 0**.
+
+**Doc correction.** `docs/architecture/money.md` claimed "half-even / banker's
+rounding". The code has always used `ROUND_HALF_UP` (`1.005 → 1.01`) and KAV-08
+pins it. The page now states the real mode and the ledger admission rule.
+
+**Explicitly NOT claimed.** This is **not** the `Money` type. `GLEntry.debit/
+credit/amount/netChange` remain JS `number`; audit P1-11's target state is
+integer minor units + currency end to end, and that adoption sweep (242 files)
+is untouched. Sub-cent **rejection** is a policy chosen under delegated
+authority and recorded as provisional — a real export in a 3-decimal currency
+(KWD/JOD/BHD/OMR/TND) would now be refused **with reasons** rather than
+silently rounded, and that trade-off is the review trigger on DEC-048. No D365
+shape is verified (O1/DEC-043 unchanged).
+
+**Next.** (1) `Money` nominal type at the ledger boundary (P1-11 phase 2) —
+introduce the type where it is provable, keeping the 242-file sweep phased.
+(2) N7 route reduction toward ≤40 (231 now). (3) Export cross-artifact tie-out.
+Still owner-blocked: Actions read scope (CI 403), PR **#83**, real anonymised
+D365 export.
+
 ## 2026-10-21 (continued) — SPINE ACCEPTANCE: the D365 bar FAILED, now passes
 
 **The finding.** VISION §1 says the spine must work end-to-end on a synthetic

@@ -16,6 +16,8 @@ import {
   divideMoney,
   formatMoney,
   fromCents,
+  hasSubUnitPrecision,
+  LEDGER_SCALE,
   roundTo,
   subtractMoney,
   sumMoney,
@@ -379,24 +381,45 @@ function blockPeriodWrite(
 }
 
 /**
- * FR-006: a provided-but-invalid amount is not a missing one. `toFiniteNumber`
- * maps NaN / Infinity / non-numbers to 0 and `normalizeGLEntry` then treats that
- * as a real zero, silently discarding money. Rows the import path rejects are
- * rejected here too, so every write surface fails the same way (§2 rule 5/6).
+ * Ledger money admission (FR-006 · audit P1-11 phase 1).
+ *
+ * A provided-but-invalid amount is not a missing one. `toFiniteNumber` maps
+ * NaN / Infinity / non-numbers to 0 and `normalizeGLEntry` would then treat
+ * that as a real zero, silently discarding money. Rows the import path rejects
+ * are rejected here too, so every write surface fails the same way (§2 rule 5/6).
+ *
+ * Precision is part of validity. The ledger reconciles in whole minor units
+ * (`LEDGER_SCALE`) and every aggregate it derives is already quantised — but
+ * `normalizeGLEntry` stored `debit`/`credit` verbatim, so a row could hold
+ * `0.004` (which nets to `0.00`, so the double-entry gate saw it as balanced)
+ * or `0.1 + 0.2` (stored as `0.30000000000000004` while the analysis view
+ * reported `0.30`). Rounding those on write would discard money silently —
+ * exactly what FR-006 forbids — so they are refused with a reason instead.
  */
-function finiteAmountIssues(rows: readonly Partial<GLEntry>[]): string[] {
+function ledgerAmountIssue(field: 'debit' | 'credit' | 'amount', value: unknown): string | null {
+  if (value === undefined) return null;
+  const signed = field === 'amount';
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    return `${field} must be a finite ${signed ? 'number' : 'non-negative number'}`;
+  }
+  if (!signed && value < 0) {
+    return `${field} must be a finite non-negative number`;
+  }
+  if (hasSubUnitPrecision(value)) {
+    return (
+      `${field} has sub-cent precision (${String(value)}); the ledger stores ` +
+      `${LEDGER_SCALE} decimal places — round it explicitly at the source`
+    );
+  }
+  return null;
+}
+
+function ledgerAmountIssues(rows: readonly Partial<GLEntry>[]): string[] {
   const issues: string[] = [];
   rows.forEach((row, index) => {
-    const candidates = [
-      ['debit', row.debit, false],
-      ['credit', row.credit, false],
-      ['amount', row.amount, true],
-    ] as const;
-    for (const [field, value, signed] of candidates) {
-      if (value === undefined) continue;
-      if (typeof value !== 'number' || !Number.isFinite(value) || (!signed && value < 0)) {
-        issues.push(`Row ${index + 1}: ${field} must be a finite non-negative number`);
-      }
+    for (const field of ['debit', 'credit', 'amount'] as const) {
+      const issue = ledgerAmountIssue(field, row[field]);
+      if (issue) issues.push(`Row ${index + 1}: ${issue}`);
     }
   });
   return issues;
@@ -407,7 +430,7 @@ function blockInvalidAmounts(
   rows: readonly Partial<GLEntry>[],
   set: (patch: Partial<GLState>) => void
 ): boolean {
-  const issues = finiteAmountIssues(rows);
+  const issues = ledgerAmountIssues(rows);
   if (issues.length === 0) return false;
   set({
     importStatus: 'error',
@@ -580,7 +603,7 @@ export const useGLStore = create<GLState>()(
                 // Fail closed per row — reject with a reason and keep the
                 // local numbers untouched.
                 const candidate = mergeListedEntry(local, row);
-                const amountIssues = finiteAmountIssues([candidate]);
+                const amountIssues = ledgerAmountIssues([candidate]);
                 if (amountIssues.length > 0) {
                   rejected.push({ id: row.id, reason: amountIssues.join('; ') });
                   continue;
@@ -603,7 +626,7 @@ export const useGLStore = create<GLState>()(
                   });
                   continue;
                 }
-                const amountIssues = finiteAmountIssues([candidate]);
+                const amountIssues = ledgerAmountIssues([candidate]);
                 if (amountIssues.length > 0) {
                   rejected.push({ id: row.id, reason: amountIssues.join('; ') });
                   continue;
@@ -1310,9 +1333,6 @@ export const useGLStore = create<GLState>()(
             const debitProvided = e.debit !== undefined;
             const creditProvided = e.credit !== undefined;
             const amountProvided = e.amount !== undefined;
-            const debit = toFiniteNumber(e.debit, Number.NaN);
-            const credit = toFiniteNumber(e.credit, Number.NaN);
-            const amount = toFiniteNumber(e.amount, Number.NaN);
 
             const fail = (msg: string) => {
               errors.push(`Row ${row}: ${msg}`);
@@ -1324,14 +1344,18 @@ export const useGLStore = create<GLState>()(
             if (!debitProvided && !creditProvided && !amountProvided) {
               fail('missing debit, credit, or amount');
             }
-            if (debitProvided && (!Number.isFinite(debit) || debit < 0)) {
-              fail('debit must be a non-negative number');
-            }
-            if (creditProvided && (!Number.isFinite(credit) || credit < 0)) {
-              fail('credit must be a non-negative number');
-            }
-            if (amountProvided && !Number.isFinite(amount)) {
-              fail('amount must be a finite number');
+            // One authority for ledger money admission (§2 rule 5/6): the same
+            // finite / non-negative / whole-cent rule the mutation paths use,
+            // so an amount the store would refuse is never reported as valid
+            // here. Measured on the raw value, not the `toFiniteNumber` view.
+            for (const [field, provided, raw] of [
+              ['debit', debitProvided, e.debit],
+              ['credit', creditProvided, e.credit],
+              ['amount', amountProvided, e.amount],
+            ] as const) {
+              if (!provided) continue;
+              const issue = ledgerAmountIssue(field, raw);
+              if (issue) fail(issue);
             }
           });
 

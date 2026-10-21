@@ -143,6 +143,42 @@ export function fromCents(cents: number): Decimal {
   return new Decimal(cents).div(100);
 }
 
+/**
+ * The precision at which the ledger stores and reconciles money (P1-11
+ * phase 1). Mirrors the currency default: journal amounts are whole minor
+ * units, and every aggregate the store derives is already quantised to it.
+ */
+export const LEDGER_SCALE = DEFAULT_CURRENCY_PLACES;
+
+/**
+ * Decimal places carried by a value's shortest round-trip decimal form.
+ *
+ * `0.3` → 1, `0.30` → 1 (the literal 0.30 *is* 0.3), `0.1 + 0.2` → 17
+ * (the float artefact, not 0.30). The value is read through its
+ * decimal-literal form, so this reports what a caller actually passed rather
+ * than the binary expansion that produced it.
+ *
+ * Throws InvalidMoneyError for non-finite or non-numeric input — check
+ * `Number.isFinite` first when the value is untrusted.
+ */
+export function decimalPlacesOf(value: MoneyInput, field = 'value'): number {
+  return toDecimal(value, field).decimalPlaces();
+}
+
+/**
+ * True when `value` carries precision finer than the ledger can represent.
+ *
+ * Such a value is NOT rounded away here: money that cannot be represented
+ * exactly is refused at the boundary, never silently discarded (FR-006). This
+ * is a predicate, not a rounding helper — the caller decides how to report it.
+ */
+export function hasSubUnitPrecision(value: MoneyInput, places = DEFAULT_CURRENCY_PLACES): boolean {
+  if (!Number.isInteger(places) || places < 0 || places > 12) {
+    throw new InvalidMoneyError('places', places, 'must be an integer 0..12');
+  }
+  return decimalPlacesOf(value) > places;
+}
+
 /** Percentage: value × pct / 100 (exact). */
 export function percentOf(value: MoneyInput, pct: MoneyInput): Decimal {
   return toDecimal(value).times(toDecimal(pct, 'pct')).div(100);
