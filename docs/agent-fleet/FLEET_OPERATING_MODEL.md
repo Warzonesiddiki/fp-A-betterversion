@@ -1,5 +1,12 @@
 # FinPlan Pro — 15-Seat Agent Fleet: Operating Model
 
+> **NOT ADOPTED — owner decision, 2026-10-21.** The 15-agent fleet is dropped; work proceeds **solo**.
+> This document is retained as a design record only (this repository archives with a reason rather
+> than deleting). Nothing here is in force. Two findings survive the decision and remain useful:
+> **(1)** peer visibility never needed a merge — `git fetch` + `git worktree` reads and *runs* an
+> unmerged branch (§3a); **(2)** the ratchet transaction in §6 is a real constraint on any future
+> parallelisation.
+
 **Status:** proposal for owner approval · 2026-10-21
 **Author:** lead seat (this session) · **Branch:** `arena/ef7aacd6-fp-a-betterversion`
 **Supersedes:** nothing. Extends [`docs/agent-squad/agents-comms/README.md`](../agent-squad/agents-comms/README.md).
