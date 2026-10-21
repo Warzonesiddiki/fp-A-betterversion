@@ -1,5 +1,52 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-21 (continued) — N8 reframed: the 29.99 % was measuring the wrong thing
+
+**Queue audit first (three of my own entries were stale).**
+
+- N8's named red `src/pages/data/ComparisonPage.tsx:236` is **already fixed** —
+  that line goes through `fmt.currency0`, and `money:adoption` reports **0 raw
+  value-producing `toFixed(n)` sites** repo-wide.
+- The export cross-artifact tie-out already exists (see the previous entry).
+- N7 is bundle reduction, not route reduction (previous entry).
+
+**The finding.** `money:adoption` reads **29.99 % (305 / 1,017)** and N8 asked for
+100 %. Measured, the gap is not a safety gap:
+
+- `money:ast`: **0 unsafe money operations across 988 modules**, spine included.
+  The detector is deliberately conservative — absence of evidence, not proof.
+- Of **15 spine modules, 8 import the primitive**, and all **7 that do not perform
+  no money arithmetic**: they tokenise CSV/XLSX text, parse money _strings_ via
+  `parseFinancialAmount`, validate worker payloads, persist staged rows, or
+  compare dates.
+- Making those 7 `import '@/utils/money'` would move the ratio and change nothing.
+  That is the denominator-gaming N8 forbids.
+
+**The rule (DEC-050).** N8's completion test is a **property of the spine**, not a
+ratio: every DATA→CLOSE spine module either imports the money primitive or
+carries a _substantive_ non-monetary reason, and the reason is checked.
+
+**Enforcement.** `src/services/import/spineMoneyCensus.test.ts` — **6/6**:
+classification complete, no stale entries, reasons longer than a placeholder, and
+each non-monetary module must contain no `toFixed(n)`, no `Math.round`, no
+compound assignment on a money-named identifier, and must not quietly import the
+primitive. Includes a vacuity guard so a truncated list cannot pass.
+
+**Mutation-verified twice** (not asserted from a comment):
+adding `balance += 1` to a module declared non-monetary failed the arithmetic
+check; adding an unclassified `src/services/import/__mutantNewModule.ts` failed
+the census. Both reverted; `git status` clean.
+
+**Not claimed.** This does not certify safety: `money:ast` is a heuristic
+detector, and the global ratio stays at **29.99 %** as a no-regression ratchet —
+it is simply not a completion target any more. N8 is not closed by this; Q5 (the
+`GLEntry` amount _type_) is still its own DEC and staged plan.
+
+**Next.** (1) Q5 staged plan for `GLEntry` amount types (DEC first, no code).
+(2) N7 needs the owner's scope choice (previous entry). (3) N4 AR adapter
+(coverage row 5). Still owner-blocked: Actions read scope (CI 403), PR **#83**,
+real anonymised D365 export.
+
 ## 2026-10-21 (continued) — N7 MEASURED: the only config-level slice failed the gate
 
 **Two corrections to earlier entries in this file.**

@@ -3,11 +3,12 @@
 ## Final budget trust checkpoint — 2026-10-20
 
 **Current result (supersedes pending-gate/next-step statements in historical
-checkpoints below):** `npm run check` passed **8/8 shards, 1,398 files,
-16,248 passed + 1 existing skipped = 16,249 total**, suite component **1,057s**.
-Production build and bundle check passed: **6,815.88 KB raw / 2,060.77 KB gzip
-vs unchanged 2,080 KB**, one warning; critical path **425.06 KB gzip**, main
-**69.74 KB gzip**. Money adoption **305/1,017 = 29.99%, zero raw sites**.
+checkpoints below):** full single-process suite **1,403 files / 16,293 passed + 1
+skipped**, 1,054s (2026-10-21; 1,404 files now that the spine money census
+landed — its 6 tests are not in that tally).
+Production build and bundle check passed: **6,817.81 KB raw / 2,061.24 KB gzip
+vs unchanged 2,080 KB**, one warning; critical path **425.13 KB gzip**, main
+**69.73 KB gzip**. Money adoption **305/1,017 = 29.99%, zero raw sites**.
 Root/prod audits both zero at the dependency-remediation checkpoint.
 
 DEC-039/040/041, submission caller error/retry handling and a repeatable
