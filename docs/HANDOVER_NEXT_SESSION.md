@@ -1,5 +1,48 @@
 # Handover — current continuation and historical session records
 
+## Session checkpoint — 2026-10-21 (solo; fleet proposal dropped)
+
+**Owner decision:** the 15-agent fleet is **not adopted**; work proceeds solo.
+`docs/agent-fleet/FLEET_OPERATING_MODEL.md` is marked NOT ADOPTED and retained as a
+design record only. Nothing in it is in force.
+
+Two defects closed in this session. Both were gates that could not fail.
+
+**1. `docs:verify` blind spot (routes + test files).** `scripts/verify-readme-stats.mjs`
+asserted engines/stores/workers but not the two most-quoted README figures, so both had
+drifted: routes **242 claimed vs 231 measured**, test files **~1,315 vs 1,398**. The gate
+now measures both — routes with the _same regex_ as `scripts/generate-route-map.js`, test
+files with Vitest's exact discovery (`include src/**/*.test.ts(x)`, `exclude tests/,
+node_modules/, __benchmarks__/, *.bench|benchmark.test.*`). It deliberately does **not**
+assert a test tally (that needs a ~1,057 s sharded run); a tally in the README must instead
+be labelled a _recorded_ result, enforced by a new guard.
+Failing-first: 2 failures before the README fix, exit 0 after. Mutation: reverting `231→242`
+kills exactly that assertion.
+
+**2. `license:check` fail-closed (audit P2-21).** The script had three independent holes:
+`ACCEPTABLE_LICENSES` was declared and **never consulted** (denylist only, so `UNKNOWN`
+logged `✅`); a missing license field became `UNKNOWN` and passed; and the outer `catch`
+printed "best-effort" and exited **0**, so a failed `npm ls` reported success having
+verified nothing. Demonstrated on the old script: with no inventory it printed
+`✅ License check passed` and exited **0**.
+Now: allowlist is load-bearing; `UNKNOWN` / missing / `SEE LICENSE IN …` fail closed;
+SPDX `OR`/`AND` and `-only`/`-or-later` suffixes handled; exit codes are
+**0 verified · 1 rejected or unverifiable · 2 could not verify at all**.
+New suite `src/__tests__/licenseCheckScript.test.ts` — **13 tests**; failing-first against
+the old script **9 failed / 4 passed**; passing after the rewrite **13/13**.
+This is a policy check on declared metadata, **not** legal certification.
+
+**Measured this session:** `tsc` exit 0 · `eslint --max-warnings 0` on the new file exit 0 ·
+`prettier --check` clean · `docs:verify` pass (all 9 ratchet values match) ·
+`docs:link-check --strict` 0 broken · `repo:hygiene` 3,618 files / 0 tracked ignored.
+`npm ci --ignore-scripts` succeeded (835 packages), so the above ran for real rather than
+being inferred.
+
+**Still open (unchanged):** N2 blocked on **O4**, N3 on **O9**; 93 of 200 checklist sections
+**SOURCE OWED**; CI on `main` still **HTTP 403** (unverifiable, not green); PR **#83** open
+since 2026-10-20 18:08; forecast-writer denial evidence and the N7 route reduction not started.
+**Known-work complete: NO. Programme complete: NO.**
+
 ## Final budget trust checkpoint — 2026-10-20
 
 **Current result (supersedes pending-gate/next-step statements in historical
