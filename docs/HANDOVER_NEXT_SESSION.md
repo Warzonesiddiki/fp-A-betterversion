@@ -1,5 +1,41 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-21 (continued) — Q5 stage 2: the round trip is proven, and stage 4 has a gate
+
+**What was proven.** `src/store/glStore.moneyPersist.test.ts` (6 tests) runs the
+**production** persistence path — `glStore.setEntries` → `masterStorage` →
+chunked storage → a real SQL.js image in localStorage → AES-GCM — with the
+41-row synthetic tie-out ledger, then decrypts the record independently to read
+the bytes that are actually on disk.
+
+- **At rest:** every money field of all 41 rows is `$d:<canonical>`;
+  `jsonContainsNumericMoney` is false (INV-009), measured on the plaintext.
+- **Byte identity:** persisting the same ledger with `Money` objects produces the
+  identical plaintext a `number` ledger produces. Stage 4 rewrites nothing on disk.
+- **Restart:** a fresh module graph rehydrates all 41 entries exactly;
+  `trialBalance` is empty (it is not in `partialize`), regenerates, and balances.
+- **Old backups:** a pre-Q5 envelope of raw JSON numbers still hydrates — there is
+  no migration step to run, which is what makes rollback a revert.
+- **Exactness:** decoding `as: 'money'` gives integer minor units for every field
+  and debit cents equal credit cents.
+
+**Mutation-verified** three ways: disabling the money-key branch fails 3 tests,
+disabling the `Money` branch fails the byte-identity test, changing the decode
+default fails the gate test.
+
+**The gate this opened (blocking stage 4).** DEC-048 permits a stored row
+`{ debit: 0.004, credit: 0 }`; every build since W0.8.2 wrote it at rest as
+`$d:0.004`. Decoding that with `as: 'money'` throws `InvalidMoneyError` — the
+correct refusal, and the reason `masterStorage` **cannot** switch `glStore` to
+`as: 'money'` while sub-cent rows can exist on disk. Stage 4 needs either a
+hydrate policy that preserves and names such rows while excluding them from
+`Money` aggregates, or a finer minor-unit scale (which is the
+three-decimal-currency decision, DEC-048's review trigger).
+
+**Not claimed.** `GLEntry` amounts are still `number`; no page, engine or store
+consumes `Money` yet. Stage 3 (`TrialBalanceRow` / `AccountAnalysis` — derived,
+not persisted) is next and is the first change that touches behaviour.
+
 ## 2026-10-21 (continued) — Q5 opened: the type exists, the persist boundary is byte-identical
 
 **Why now.** The requirement text says the `GLEntry` amount-type migration is
