@@ -1,5 +1,49 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-21 (continued) — Q5 stage 4 precondition: quarantine, don't round (DEC-054)
+
+**Measured before deciding.** Changing `GLEntry.debit/credit/netChange/amount` to
+`Money` produces **300 type errors across 67 files** — but **164 are one test
+fixture** and only **133 are product code in 65 files**; **285 of 300 are plain
+construction/argument errors**, just 11 are comparisons. The earlier "151 files /
+1,040 reads" grep overestimated by ~2× because the money helpers already accept
+`MoneyInput`. So stage 4 is a mechanical, area-by-area change with `tsc` as the
+worklist — not an unverifiable sweep.
+
+**Why the type change still cannot go first.** `masterStorage` hydrates with
+`decodeMoneyGraph(..., { as: 'number' })`. Move the type without moving that and
+every hydrated row is _typed_ `Money` while _holding_ a float — a type lie that
+`moneyPlus` throws on at the first render. The decode path is the gate.
+
+**The policy (shipped).** `src/utils/ledgerHydration.ts`: `classifyLedgerRow`
+reports every offending money field with its exact canonical value and a reason
+(`sub-cent` / `non-finite` / `unparseable`); `partitionLedgerRows` splits rows
+into `representable` and `quarantined`, with
+`representable.length + quarantined.length === rows.length`, order preserved, and
+nothing coerced. Row-level, not cell-level — an entry whose debit cannot be
+represented has no meaningful net.
+
+Rejected: rounding on load (discards money, FR-006) and failing the whole load
+(one legacy row stops the ledger opening).
+
+**Applied at the only boundary that exists today** — the derived view.
+`generateTrialBalance` / `analyzeAccount` now name the rows
+(`"… — Entry e-1: debit 0.004 cannot be represented at 2 decimal places"`) and a
+pure `glStore.ledgerScaleAudit()` exposes the classification. Entries are never
+moved or rounded.
+
+**A behaviour improvement fell out of it:** a `NaN` amount used to be coerced to
+0 by `toFiniteNumber`, so the trial balance looked complete while quietly valuing
+an unreadable row at nothing. It is now quarantined and the view refused. The
+stage-3 test that asserted the old behaviour was corrected, not silenced.
+
+**Evidence.** `ledgerHydration.test.ts` 19/19 and `glStore.derivedMoney.test.ts`
+15/15. Mutation-verified twice: disabling the sub-cent check fails 11 tests;
+returning at the first issue fails 5.
+
+**Not claimed.** `GLEntry` fields are still `number`; the partition is not yet the
+hydrate gate; no page renders the quarantine yet.
+
 ## 2026-10-21 (continued) — Q5 stage 3: the derived rows are Money (DEC-053)
 
 **Shipped.** `TrialBalanceRow` and `AccountAnalysis` money fields are `Money`

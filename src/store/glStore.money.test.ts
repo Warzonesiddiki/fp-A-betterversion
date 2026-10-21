@@ -140,7 +140,9 @@ describe('glStore — money known answers (GAP-1 / F-0006)', () => {
 
     expect(useGLStore.getState().accountAnalysis).toBeNull();
     expect(useGLStore.getState().importStatus).toBe('error');
-    expect(useGLStore.getState().importError).toMatch(/sub-cent precision/);
+    // DEC-054: the refusal names the row and the exact value.
+    expect(useGLStore.getState().importError).toMatch(/Entry e1: debit 1\.005/);
+    expect(useGLStore.getState().importError).toMatch(/2 decimal places/);
   });
 
   it('returns exact zero aggregates for a non-matching account', () => {

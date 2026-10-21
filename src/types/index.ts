@@ -5,6 +5,7 @@
 // Q5 (DEC-051/053): derived money values are integer minor units. Type-only
 // import — this module carries no runtime code.
 import type { Money } from '@/utils/money';
+import type { LedgerHydrationPartition } from '@/utils/ledgerHydration';
 
 // --- Enums & Literals ---
 
@@ -1013,6 +1014,13 @@ export interface GLState {
     errors: string[];
     validCount: number;
   };
+  /**
+   * Q5 stage 4 precondition (DEC-054). Classifies every loaded entry by whether
+   * its money fields can be represented at `LEDGER_SCALE`. Pure: it reads state
+   * and changes nothing. A quarantined row is kept, never rounded, and is
+   * excluded from `Money`-typed aggregates.
+   */
+  ledgerScaleAudit: () => LedgerHydrationPartition<GLEntry>;
   importGLData: (
     entries: Partial<GLEntry>[],
     filename?: string,

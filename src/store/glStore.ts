@@ -26,6 +26,11 @@ import {
   toCents,
   type Money,
 } from '../utils/money';
+import {
+  describeQuarantinedRows,
+  partitionLedgerRows,
+  type LedgerHydrationPartition,
+} from '../utils/ledgerHydration';
 import { UndoRedoEngine } from '@/engines/UndoRedoEngine';
 import { FpaClient } from '@/sdk/FpaClient';
 import { GlCommitNamespace } from '@/sdk/gl/GlCommitNamespace';
@@ -476,6 +481,19 @@ function refuseDerivedAmounts(
   error: unknown
 ): void {
   const reason = error instanceof Error ? error.message : String(error);
+  reportDerivedRefusal(set, title, reason);
+}
+
+/**
+ * Publish a refused derived view. The message NAMES the rows (DEC-054): a
+ * refusal that only states the rule leaves the user to find the row themselves,
+ * and the row may have been persisted by a build that no longer exists.
+ */
+function reportDerivedRefusal(
+  set: (patch: Partial<GLState>) => void,
+  title: string,
+  reason: string
+): void {
   set({
     trialBalance: [],
     accountAnalysis: null,
@@ -484,6 +502,30 @@ function refuseDerivedAmounts(
     importError: `${title}: ${reason}`,
   });
   useUIStore.getState().addToast({ type: 'error', title, message: reason });
+}
+
+/**
+ * Return the loaded entries that can become `Money`, or `null` after publishing
+ * a row-named refusal. Hydration cannot fail on one legacy row (DEC-054), but a
+ * DERIVED VIEW cannot be shown from a partially representable ledger either —
+ * so the view is refused and the offending rows are listed.
+ */
+function representableEntriesOrRefuse(
+  rows: readonly GLEntry[],
+  set: (patch: Partial<GLState>) => void,
+  title: string
+): GLEntry[] | null {
+  const partition = partitionLedgerRows(rows);
+  if (partition.quarantined.length === 0) return partition.representable;
+  const lines = describeQuarantinedRows(partition.quarantined);
+  reportDerivedRefusal(
+    set,
+    title,
+    `${partition.quarantined.length} entr${partition.quarantined.length === 1 ? 'y' : 'ies'} ` +
+      `cannot be represented at ${LEDGER_SCALE} decimal places — ${lines.slice(0, 5).join('; ')}` +
+      (lines.length > 5 ? `; and ${lines.length - 5} more` : '')
+  );
+  return null;
 }
 
 /** Reject invalid money without mutating financial state or consuming undo history. */
@@ -1089,9 +1131,16 @@ export const useGLStore = create<GLState>()(
           // surfaced and the view is left empty rather than shown with money
           // silently rounded away, which is what the previous
           // `roundTo(...)`-at-the-boundary did.
+          const usableEntries = representableEntriesOrRefuse(
+            entries,
+            set,
+            'Trial balance not built'
+          );
+          if (usableEntries === null) return;
+
           try {
             const balanceMap = new Map<string, TrialRowAccum>();
-            for (const entry of entries) {
+            for (const entry of usableEntries) {
               const key = entry.accountId || entry.accountCode;
               const account = accountMap.get(key) ?? accountMap.get(entry.accountCode);
               const existing: TrialRowAccum = balanceMap.get(key) ?? {
@@ -1137,6 +1186,9 @@ export const useGLStore = create<GLState>()(
           }
         },
 
+        ledgerScaleAudit: (): LedgerHydrationPartition<GLEntry> =>
+          partitionLedgerRows(get().entries),
+
         analyzeAccount: (accountId) => {
           set({ isLoading: true });
           const { entries } = get();
@@ -1147,9 +1199,16 @@ export const useGLStore = create<GLState>()(
           // Q5 stage 3 (DEC-053): exact integer minor units, same refusal rule
           // as the trial balance — an unrepresentable amount is named, not
           // rounded into a figure that does not add up.
+          const usableRows = representableEntriesOrRefuse(
+            filtered,
+            set,
+            'Account analysis not built'
+          );
+          if (usableRows === null) return;
+
           try {
             const monthGroups = new Map<string, MonthGroupAccum>();
-            for (const entry of filtered) {
+            for (const entry of usableRows) {
               const month = entry.period;
               const g: MonthGroupAccum = monthGroups.get(month) ?? {
                 debit: ZERO_MONEY,

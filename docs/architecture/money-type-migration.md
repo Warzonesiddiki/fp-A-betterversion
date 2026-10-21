@@ -4,7 +4,7 @@ Audit P1-11's target state: _"amounts are a `Money` type (integer minor units +
 currency) end to end."_ The requirement text is explicit that this is **Q5 — its
 own DEC and staged plan — and must not be started under N8**.
 
-This page is that plan. Stages 1–3 are implemented; stages 4–6 are not.
+This page is that plan. Stages 1–3 and the stage-4 precondition are implemented; the type change itself and stages 5–6 are not.
 
 ## Measured blast radius (2026-10-21, HEAD `dc0f5209`)
 
@@ -14,6 +14,24 @@ This page is that plan. Stages 1–3 are implemented; stages 4–6 are not.
 | Non-test files touching `.debit` / `.credit` / `.netChange` | **151**    |
 | Object-literal constructions of a money field               | **765**    |
 | Money-field read occurrences                                | **~1,040** |
+
+### The measure that actually matters (2026-10-21, Q5 stage 4 probe)
+
+The counts above are grep hits. The real worklist is what the compiler says when
+the field type is changed, so it was measured by changing it and reverting:
+
+| Measure                        | Count                                                |
+| ------------------------------ | ---------------------------------------------------- |
+| Type errors, all files         | **300**                                              |
+| … of which one test fixture    | **164** (`syntheticTieOutLedger.ts`, mechanical)     |
+| … product code                 | **133 across 65 files**                              |
+| Construction / argument errors | **285** (`TS2322` 219, `TS2345` 66)                  |
+| Genuine comparisons            | **11** (`TS2365` 7, `TS2367` 4, `TS2363`/`TS2362` 4) |
+
+**Why the grep overestimated by ~2×:** the money helpers already take
+`MoneyInput`, so `sumMoney(entries.map((e) => e.debit))` and
+`formatMoney(entry.debit)` compile unchanged once `Money` is part of that type.
+The read side was largely already covered by stage 3.
 
 By area (files touching those fields):
 
@@ -75,14 +93,14 @@ by an in-memory type; conversion happens at that boundary either way.
 Each stage must leave `tsc` green, the targeted suites green, INV-009 green, and
 be revertible in one commit.
 
-| #     | Stage                                                                 | Blast radius          | Entry criterion                          | Verification                                                                                             |
-| ----- | --------------------------------------------------------------------- | --------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **1** | **`Money` type + exact arithmetic + serializer byte-identity**        | 0 (nothing adopts it) | —                                        | **SHIPPED** — 13 tests, mutation-checked                                                                 |
-| **2** | **Real persisted GL fixture round-trip through the production stack** | **0**                 | Stage 1                                  | **SHIPPED** — 6 tests, mutation-checked; opened the sub-cent gate below                                  |
-| **3** | **`TrialBalanceRow` + `AccountAnalysis` adopt `Money`**               | **6 files**           | Stage 2                                  | **SHIPPED** — 13 tests, mutation-checked; these are **derived, not persisted** (`partialize` omits both) |
-| 4     | `GLEntry.debit/credit/netChange/amount` adopt `Money`                 | 98 files              | Stages 2–3                               | decode-as-money path proven; type errors are the worklist; every write surface already gated by DEC-048  |
-| 5     | Engines and services adopt `Money`                                    | 32 files              | Stage 4                                  | Existing money test suites; consolidation FX converts at an explicit rate                                |
-| 6     | Pages and components adopt `Money` for display                        | 108 files             | Stage 5, plus one shared display adapter | Route smoke tests; no page does arithmetic inline (already enforced by `money:ast`)                      |
+| #     | Stage                                                                 | Blast radius              | Entry criterion                                 | Verification                                                                                             |
+| ----- | --------------------------------------------------------------------- | ------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **1** | **`Money` type + exact arithmetic + serializer byte-identity**        | 0 (nothing adopts it)     | —                                               | **SHIPPED** — 13 tests, mutation-checked                                                                 |
+| **2** | **Real persisted GL fixture round-trip through the production stack** | **0**                     | Stage 1                                         | **SHIPPED** — 6 tests, mutation-checked; opened the sub-cent gate below                                  |
+| **3** | **`TrialBalanceRow` + `AccountAnalysis` adopt `Money`**               | **6 files**               | Stage 2                                         | **SHIPPED** — 13 tests, mutation-checked; these are **derived, not persisted** (`partialize` omits both) |
+| 4     | `GLEntry.debit/credit/netChange/amount` adopt `Money`                 | **133 errors / 65 files** | Stages 2–3 **+ the hydration policy (shipped)** | decode path decided; `tsc` is the worklist; commit area by area (store → engines → services → pages)     |
+| 5     | Engines and services adopt `Money`                                    | 32 files                  | Stage 4                                         | Existing money test suites; consolidation FX converts at an explicit rate                                |
+| 6     | Pages and components adopt `Money` for display                        | 108 files                 | Stage 5, plus one shared display adapter        | Route smoke tests; no page does arithmetic inline (already enforced by `money:ast`)                      |
 
 **Stage 6 comes last and deliberately:** 102 of the 151 files are display-only,
 so they can be converted mechanically once a single adapter renders `Money`. Doing
@@ -184,6 +202,45 @@ parentheses for negatives, em dash for zero, compact, and custom. Mutation-check
 twice (sort comparator, currency merge). Five existing test files were updated
 because their expectations encoded `number` rows or the retired
 round-a-half-cent behaviour.
+
+## Stage 4 precondition (2026-10-21) — quarantine, don't round
+
+The type change cannot go first, and the reason is mechanical rather than
+stylistic: `masterStorage` hydrates with `decodeMoneyGraph(..., { as: 'number' })`.
+Change `GLEntry.debit` to `Money` without changing that and every hydrated row is
+**typed** `Money` while **holding** a float — a type lie that `moneyPlus` throws
+on at the first render.
+
+Since a stored sub-cent row (legal per DEC-048) has no `Money` equal to it, the
+decode path needs a policy. Two of the three options were already ruled out:
+
+| Option                 | Verdict                                                                            |
+| ---------------------- | ---------------------------------------------------------------------------------- |
+| Round on load          | **Rejected** — silently discards money (FR-006) and disagrees with the source file |
+| Fail the whole load    | **Rejected** — one legacy row stops a real user's ledger from opening              |
+| **Quarantine the row** | **Chosen** — kept byte-exact, named, excluded from `Money` aggregates              |
+
+`src/utils/ledgerHydration.ts` implements it as pure classification:
+
+- `classifyLedgerRow` reports **every** offending field (not just the first) with
+  the exact canonical value and a reason (`sub-cent` / `non-finite` / `unparseable`).
+- `partitionLedgerRows` guarantees `representable.length + quarantined.length ===
+rows.length`, preserves order on both sides, and coerces nothing.
+- Row-level, not cell-level: an entry whose debit cannot be represented has no
+  meaningful net, so keeping half of it would manufacture a second wrong number
+  out of the first.
+
+**Where it is applied today.** At the derived-view boundary — `generateTrialBalance`
+and `analyzeAccount` refuse the view and _name the rows_
+(`"… — Entry e-1: debit 0.004 cannot be represented at 2 decimal places"`) rather
+than stating only the rule, and the pure `glStore.ledgerScaleAudit()` exposes the
+same classification. Entries are never moved or rounded: the audit is read-only
+and the row stays at `0.004`.
+
+**Where it will be applied.** When the type moves, this same partition becomes the
+hydrate gate: `representable` becomes `Money`-typed state, `quarantined` stays out
+of it and is surfaced. That is a wiring change, not a redesign, which is why the
+policy was worth building before the type change rather than after.
 
 ## Explicitly not decided here
 

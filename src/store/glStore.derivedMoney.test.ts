@@ -150,18 +150,49 @@ describe('trial balance refuses an amount the ledger cannot represent (DEC-048/0
     expect(useGLStore.getState().trialBalance).toEqual([]);
     expect(useGLStore.getState().importStatus).toBe('error');
     expect(useGLStore.getState().importError).toMatch(/Trial balance not built/);
-    expect(useGLStore.getState().importError).toMatch(/sub-cent precision/);
+    // DEC-054: the refusal NAMES the row and the exact value, so it is
+    // actionable without knowing which rule was broken.
+    expect(useGLStore.getState().importError).toMatch(/Entry e-1: debit 0\.004/);
+    expect(useGLStore.getState().importError).toMatch(/2 decimal places/);
+    // …and the row is still there, unrounded. It is quarantined, not deleted.
+    expect(useGLStore.getState().entries[0]!.debit).toBe(0.004);
   });
 
-  it('refuses a non-finite amount rather than storing it as zero', () => {
+  it('refuses a non-finite amount instead of quietly counting it as zero', () => {
+    // Stage 3 first asserted the opposite — that `toFiniteNumber` coerced NaN
+    // to 0 and the view still built. That was a silent misstatement: a row the
+    // ledger cannot read became a row worth nothing, and the trial balance
+    // looked complete. DEC-054's audit classifies it and the view is refused.
     useGLStore.setState({ entries: [row({ debit: Number.NaN, credit: 0 })] });
     useGLStore.getState().generateTrialBalance();
-    // NaN is coerced by the store's existing input tolerance (toFiniteNumber),
-    // so this asserts the DOCUMENTED behaviour: the row contributes 0 and the
-    // view still builds — it never becomes NaN money.
-    const derived = useGLStore.getState().trialBalance;
-    expect(derived).toHaveLength(1);
-    expect(derived[0]!.debit).toEqual(zero());
+
+    expect(useGLStore.getState().trialBalance).toEqual([]);
+    expect(useGLStore.getState().importError).toMatch(/Entry e-1: debit NaN/);
+    // Tolerating NaN is still the documented behaviour of the *input* path, so
+    // this is the derived-view gate doing the work, not the entry gate.
+    expect(useGLStore.getState().importStatus).toBe('error');
+  });
+});
+
+describe('ledgerScaleAudit — the stage-4 precondition (DEC-054)', () => {
+  it('is pure: it classifies without touching state', () => {
+    useGLStore.setState({ entries: [row({ id: 'ok' }), row({ id: 'bad', debit: 0.004 })] });
+    const before = useGLStore.getState().entries;
+
+    const audit = useGLStore.getState().ledgerScaleAudit();
+
+    expect(audit.representable.map((r) => r.id)).toEqual(['ok']);
+    expect(audit.quarantined.map((q) => q.rowId)).toEqual(['bad']);
+    // Nothing was moved, rounded, or removed.
+    expect(useGLStore.getState().entries).toBe(before);
+    expect(useGLStore.getState().entries[1]!.debit).toBe(0.004);
+  });
+
+  it('reports a clean ledger as fully representable', () => {
+    useGLStore.setState({ entries: [row({ id: 'a', debit: 10 }), row({ id: 'b', debit: 20 })] });
+    const audit = useGLStore.getState().ledgerScaleAudit();
+    expect(audit.representable).toHaveLength(2);
+    expect(audit.quarantined).toHaveLength(0);
   });
 });
 
