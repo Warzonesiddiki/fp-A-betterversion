@@ -1,5 +1,49 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-21 (continued) — provisional decisions adopted; N3 forecast writers closed
+
+**Owner mandate:** take project decisions per the vision recorded in Notion.
+
+**Applied mechanism:** the Owner Decision Packet's own rule — _silence means the
+recommended default is adopted as a provisional default, recorded in
+`docs/discovery/decision-log.md`, and named as provisional in every report._
+No new authority was invented; the packet was exercised as written.
+
+| Decision    | Effect                                                                                                                                                                                                                                              |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **DEC-042** | v1 **supported** scope = the DATA→CLOSE spine; **ultimate** scope stays all of FP&A per DEC-033. Resolves the DEC-033 ↔ roadmap "no new domain feature expansion" contradiction by separating destination from supported label. No surface deleted. |
+| **DEC-043** | O1–O9 defaults adopted **provisionally**. Every default removes a claim. The packet's five absolute prohibitions are explicitly **not waived**.                                                                                                     |
+| **DEC-044** | Q6: server retired from supported scope; v1 local-first. Closes the audit **P0-3** sign-in paradox — while O7 still forbids claiming a working desktop sign-in.                                                                                     |
+| **DEC-045** | **N2 authority question closed** at "bounded client evidence" (O4). N2 stays open only on restart/keying/anchoring durability.                                                                                                                      |
+| **DEC-046** | **N3 entity authority** = deny by default, no inferred grants (O9).                                                                                                                                                                                 |
+
+**N3 engineering closed this session:** `src/store/forecastStore.authorization.test.ts`
+(7 tests) covers all six forecast/driver writers against signed-out, Viewer and
+Admin-with-permission-withheld, asserting the error **names** the required
+permission and that financial state and undo history are unchanged after a
+denial. It also pins the real role asymmetry: Analyst may create and edit but
+must not delete.
+
+**Mutation-verified** (source restored, `git diff` empty):
+
+- `updateForecast` FORECAST_UPDATE → FORECAST_READ: **3 failed / 4 passed**
+- `deleteForecast` FORECAST_DELETE → FORECAST_READ: **4 failed / 3 passed**
+
+The first mutation **disproved my own written claim** ("exactly two cases"); the
+comment now records the measured three — including that a signed-out denial still
+failed on permission _naming_, which is precisely why the name is asserted.
+
+**Gates:** `tsc` 0 · `eslint --max-warnings 0` clean · prettier clean ·
+`docs:verify` pass (9/9 ratchet values) · `docs:link-check --strict` 0 broken ·
+`repo:hygiene` 3,619/0 · regression `rbacNegativeAuthorization` +
+`budgetStore.authorization` + `rbacMatrixCompleteness` = **3 files / 250 tests**.
+
+**Still open:** 93 of 200 sections SOURCE OWED · CI HTTP 403 (unverifiable) ·
+PR **#83** open since 2026-10-20 18:08 · native/recovery/key-custody evidence
+(O7) · spine acceptance verdict · N7 route reduction · money-domain `GLEntry`
+types (P1-11) · export tie-out (no PPTX, no cross-artifact test).
+**Known-work complete: NO. Programme complete: NO** — DEC-043 O7/O4 forbid those claims.
+
 ## Session checkpoint — 2026-10-21 (solo; fleet proposal dropped)
 
 **Owner decision:** the 15-agent fleet is **not adopted**; work proceeds solo.
