@@ -28,7 +28,10 @@ refuses a `0.004` server row and names it) · store + import regression **93
 files / 1,439 tests** · `tsc` 0 · eslint `--max-warnings 0` clean · prettier
 clean · `money:ast` 0 unsafe · determinism **344 / 79** at baseline ·
 `money:adoption` **29.99 %** / 0 raw `toFixed` · `docs:verify` 9/9 (test files
-1,402 → **1,403**) · strict links 0 broken · hygiene **3,622 / 0**.
+1,402 → **1,403**) · strict links 0 broken · hygiene **3,622 / 0** ·
+**full suite 1,403 files / 16,293 passed + 1 skipped** (1,054 s, exit 0).
+
+**Commit.** `bf4c3623` on `arena/ef7aacd6-fp-a-betterversion` (pushed).
 
 **Doc correction.** `docs/architecture/money.md` claimed "half-even / banker's
 rounding". The code has always used `ROUND_HALF_UP` (`1.005 → 1.01`) and KAV-08
