@@ -1,5 +1,49 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-21 (continued) — Q5 opened: the type exists, the persist boundary is byte-identical
+
+**Why now.** The requirement text says the `GLEntry` amount-type migration is
+**Q5 — its own DEC and staged plan, do not start it under N8**. This entry is
+that DEC (051) plus its stage 1.
+
+**Measured blast radius** (HEAD `dc0f5209`): **98** non-test files reference
+`GLEntry`; **151** touch `debit`/`credit`/`netChange`; **765** object-literal
+constructions; ~**1,040** reads. By area: **`src/pages` 102**, engines 16,
+services 16, components 6, utils 4, store 3, workers 1. It is a presentation
+problem before a storage problem.
+
+**The decisive property.** `glStore` persists through `masterStorage`, and money
+keys already encode to `$d:<canonical>` (INV-009). Stage 1 encodes a `Money` value
+to **the same bytes** the numeric field produces — proved for a single row and a
+GL-shaped array. So the type change needs **no data migration**, backups stay
+readable, and a rollback is a revert.
+
+**Stage 1 shipped (nothing adopts it).** `Money = { minor, currency? }` at
+`LEDGER_SCALE` 2; `asMoney` (refuses sub-cent, DEC-048), `moneyToMinor`,
+`moneyToAmount`, `moneyCanonicalString`, exact `moneyPlus`/`moneyMinus`/
+`moneyNegate`/`moneySum`/`moneyCompareValues`/`moneyEqualsValue`/`moneyIsZero`;
+mixed currencies throw `MoneyCurrencyMismatchError`. `encodeMoneyGraph` handles
+`Money`; `decodeMoneyGraph` gained `as: 'money'` while the default stays `number`.
+
+**Evidence.** `src/utils/money.ledgerValue.test.ts` — **13/13**: exact minor
+units, sub-cent refusal, `0.1 + 0.2` → 30, a thousand cents without drift,
+currency propagation/refusal, canonical strings, `$d:` byte-identity, INV-009,
+decode-as-money, unchanged numeric default. **Mutation-verified**: disabling the
+`Money` branch in `encodeMoneyGraph` fails 4 of the 13.
+
+**The plan** (`docs/architecture/money-type-migration.md`): (2) round-trip a real
+persisted GL fixture through `as: 'money'`; (3) `TrialBalanceRow` /
+`AccountAnalysis` — **derived, not persisted**, so cheap; (4) `GLEntry`; (5)
+engines/services; (6) pages via one display adapter, deliberately last because
+102 of the 151 files are display-only.
+
+**Not claimed.** `GLEntry.debit/credit/amount` are still `number`. Stage 1 adds a
+type and a proven boundary; it changes no behaviour and converts no file.
+
+**Next.** Q5 stage 2 (persisted-fixture round-trip), then stage 3. N7 still needs
+the owner's scope choice. Owner-blocked: Actions read scope (CI 403), PR **#83**,
+real anonymised D365 export.
+
 ## 2026-10-21 (continued) — N8 reframed: the 29.99 % was measuring the wrong thing
 
 **Queue audit first (three of my own entries were stale).**

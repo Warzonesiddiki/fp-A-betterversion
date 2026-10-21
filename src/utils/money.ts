@@ -179,6 +179,163 @@ export function hasSubUnitPrecision(value: MoneyInput, places = DEFAULT_CURRENCY
   return decimalPlacesOf(value) > places;
 }
 
+/* ------------------------------------------------------------------ *
+ * Money — the ledger amount value type (Q5 / DEC-051 stage 1)
+ *
+ * An amount as EXACT integer minor units. Integer arithmetic cannot drift,
+ * so `0.1 + 0.2` is `{ minor: 30 }`, not 0.30000000000000004.
+ *
+ * Stage 1 only DEFINES the type and proves it round-trips through the persist
+ * boundary byte-for-byte. Nothing adopts it yet: `GLEntry.debit/credit/amount`
+ * remain `number` until the adoption stages in DEC-051 run.
+ * ------------------------------------------------------------------ */
+
+/**
+ * A ledger amount: integer minor units at `LEDGER_SCALE`, plus the currency
+ * when the context carries one.
+ *
+ * `currency` is optional because a `GLEntry` row may not carry one at all —
+ * absence means "scoped to its entry", never "unknown currency to be guessed".
+ */
+export interface Money {
+  readonly minor: number;
+  readonly currency?: string;
+}
+
+/** Arithmetic across two different currencies is a bug, not a rounding question. */
+export class MoneyCurrencyMismatchError extends Error {
+  readonly left: string;
+  readonly right: string;
+
+  constructor(left: string, right: string) {
+    super(`Cannot combine ${left} and ${right}: mixed-currency arithmetic is not defined`);
+    this.name = 'MoneyCurrencyMismatchError';
+    this.left = left;
+    this.right = right;
+  }
+}
+
+function assertMoney(money: Money, field = 'money'): void {
+  if (!Number.isSafeInteger(money.minor)) {
+    throw new InvalidMoneyError(field, money.minor, 'minor units must be a safe integer');
+  }
+}
+
+/**
+ * Convert a decimal amount into exact minor units. Refuses sub-cent precision
+ * and non-finite input rather than rounding (DEC-048).
+ */
+export function asMoney(value: MoneyInput, currency?: string): Money {
+  if (typeof value === 'number' && !Number.isFinite(value)) {
+    throw new InvalidMoneyError('value', value, 'must be finite');
+  }
+  if (hasSubUnitPrecision(value)) {
+    throw new InvalidMoneyError(
+      'value',
+      value,
+      `sub-cent precision exceeds the ledger scale of ${LEDGER_SCALE}`
+    );
+  }
+  const minor = toCents(value);
+  if (!Number.isSafeInteger(minor)) {
+    throw new InvalidMoneyError('value', value, 'minor units exceed the safe integer range');
+  }
+  return currency === undefined ? { minor } : { minor, currency };
+}
+
+/** Exact minor units. */
+export function moneyToMinor(money: Money): number {
+  assertMoney(money);
+  return money.minor;
+}
+
+/**
+ * Exact decimal string of the amount in whole currency units (no exponent),
+ * canonicalised like `canonicalDecimalString`: zero is `"0"` and trailing zeros
+ * are trimmed, so `{ minor: 12340 }` is `"123.4"`.
+ */
+export function moneyCanonicalString(money: Money): string {
+  assertMoney(money);
+  const d = new Decimal(money.minor).div(100);
+  return d.isZero() ? '0' : d.toFixed();
+}
+
+/**
+ * Whole-currency-unit number. A compatibility concession for consumers still
+ * typed as `number`; it is exact only up to double precision, which is why the
+ * ledger value itself stays in integer minor units.
+ */
+export function moneyToAmount(money: Money): number {
+  assertMoney(money);
+  return new Decimal(money.minor).div(100).toNumber();
+}
+
+function combineCurrency(a: Money, b: Money): string | undefined {
+  const left = a.currency;
+  const right = b.currency;
+  if (left !== undefined && right !== undefined && left !== right) {
+    throw new MoneyCurrencyMismatchError(left, right);
+  }
+  return left ?? right;
+}
+
+/** Exact addition. */
+export function moneyPlus(a: Money, b: Money): Money {
+  const currency = combineCurrency(a, b);
+  const minor = moneyToMinor(a) + moneyToMinor(b);
+  if (!Number.isSafeInteger(minor)) {
+    throw new InvalidMoneyError('minor', minor, 'sum exceeds the safe integer range');
+  }
+  return currency === undefined ? { minor } : { minor, currency };
+}
+
+/** Exact subtraction. */
+export function moneyMinus(a: Money, b: Money): Money {
+  const currency = combineCurrency(a, b);
+  const minor = moneyToMinor(a) - moneyToMinor(b);
+  if (!Number.isSafeInteger(minor)) {
+    throw new InvalidMoneyError('minor', minor, 'difference exceeds the safe integer range');
+  }
+  return currency === undefined ? { minor } : { minor, currency };
+}
+
+/** Exact negation. */
+export function moneyNegate(money: Money): Money {
+  const minor = -moneyToMinor(money);
+  if (!Number.isSafeInteger(minor)) {
+    throw new InvalidMoneyError('minor', minor, 'negation exceeds the safe integer range');
+  }
+  return money.currency === undefined ? { minor } : { minor, currency: money.currency };
+}
+
+/** Exact sum, refusing mixed currencies. */
+export function moneySum(values: readonly Money[]): Money {
+  let total: Money = { minor: 0 };
+  for (const value of values) total = moneyPlus(total, value);
+  return total;
+}
+
+/** Three-way compare. Throws `MoneyCurrencyMismatchError` across currencies. */
+export function moneyCompareValues(a: Money, b: Money): -1 | 0 | 1 {
+  combineCurrency(a, b);
+  const left = moneyToMinor(a);
+  const right = moneyToMinor(b);
+  if (left === right) return 0;
+  return left < right ? -1 : 1;
+}
+
+/** Exact equality (value and, when both are present, currency). */
+export function moneyEqualsValue(a: Money, b: Money): boolean {
+  if (a.currency !== undefined && b.currency !== undefined && a.currency !== b.currency) {
+    return false;
+  }
+  return moneyToMinor(a) === moneyToMinor(b);
+}
+
+export function moneyIsZero(money: Money): boolean {
+  return moneyToMinor(money) === 0;
+}
+
 /** Percentage: value × pct / 100 (exact). */
 export function percentOf(value: MoneyInput, pct: MoneyInput): Decimal {
   return toDecimal(value).times(toDecimal(pct, 'pct')).div(100);
