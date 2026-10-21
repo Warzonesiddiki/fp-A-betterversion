@@ -89,6 +89,8 @@ Which gives the two-mechanism design below.
 - Commit trailers for attribution: `Seat: S-06`, `Work: FP-014`, `Evidence: <command>`.
 - Only the Integrator (S-00) merges. Merge is the only serialization point.
 
+> **Correction (owner input, 2026-10-21).** The concern raised was: *"you cannot see or check another agent's files until they raise a PR and merge to main."* The first half of that is a workflow choice, not a platform limit — and the fix changes the architecture. **PR is the merge gate, not the visibility gate. Push is the visibility gate.** See §3a; it is verified by execution, not asserted.
+
 ### Plane 1 — Narrative and handoff: file-per-note in git
 
 The one thing PR metadata cannot carry is prose. Keep it, but **one file per note**, so no two seats ever write the same path:
@@ -113,6 +115,84 @@ Existing `agents-comms/` files are **preserved as history** (§8 explains why we
 ### Plane 2 — Owner's window and binary vault: Notion + Drive
 
 Notion and Drive are **single-writer surfaces**, fed by S-00/S-01. They are not collaboration surfaces. Detail in §5.
+
+---
+
+## 3a. Peer visibility: see and *run* unmerged work
+
+The concern raised was that you cannot see or check another agent's files until they open a PR and merge to `main`. **That is a workflow choice, not a platform limit.** The table below was **executed against this repository on 2026-10-21** on a genuinely unmerged branch; outputs are quoted verbatim.
+
+### Step 1 — Watch what exists (no clone, no fetch)
+
+```bash
+git ls-remote --heads origin
+```
+Returned every branch immediately, including one that has never merged:
+```
+0c85d424…  refs/heads/arena/05b88142-fp-a-betterversion  ← PR #83, never merged
+6e199226…  refs/heads/arena/5a296081-fp-a-betterversion
+bab7b621…  refs/heads/arena/efe658d1-fp-a-betterversion
+```
+
+### Step 2 — Bring a peer's tree in without touching mine
+
+```bash
+git fetch origin <peer-branch>:refs/peers/<seat>
+# → * [new branch]  arena/05b88142-… -> refs/peers/S-83
+```
+No merge, no PR, no checkout, no interference with my working tree.
+
+### Step 3 — Read their code without checking it out
+
+```bash
+git show refs/peers/S-83:docs/HANDOVER_NEXT_SESSION.md | head -40   # works
+git diff refs/remotes/origin/main...refs/peers/S-83                 # review the change
+```
+
+**Verified gotcha — this clone is shallow.** `git merge-base` first returned *nothing*, so the diff failed with **"no merge base"**. Fix in this order:
+
+```bash
+[ -f .git/shallow ] && git fetch --deepen=50 origin <peer-branch>:refs/peers/<seat>
+git merge-base refs/remotes/origin/main refs/peers/S-83    # → 9f6d6a02 (resolves)
+git diff refs/remotes/origin/main...refs/peers/S-83
+#   docs/HANDOVER_NEXT_SESSION.md | 139 +++++++++++++++++++++++++
+#   1 file changed, 139 insertions(+)
+```
+Without the `--deepen` step a reviewer concludes **"they changed nothing"** — a silent failure worse than no review.
+
+### Step 4 — *Execute* their unmerged tree (the actual answer)
+
+```bash
+git worktree add /tmp/peer-review refs/peers/S-83 --detach
+# Preparing worktree (detached HEAD 0c85d424)
+cd /tmp/peer-review && npm ci --ignore-scripts && npx vitest run <their-test>
+```
+**Verified:** the worktree materialised and `src/services/import/d365Parser.ts` was present and runnable. So:
+
+> **A reviewer can reproduce a peer's claim on the peer's code, in parallel, in a separate directory, while the author keeps working — and neither party can break the other.** It shares the object store, so it costs no extra clone. Remove with `git worktree remove /tmp/peer-review --force`.
+
+### Step 5 — Presence: what they are doing *right now*
+
+Git shows pushed state, not intent. Add a heartbeat that is **one file per seat**, so 15 writers never touch one path:
+
+`docs/agent-fleet/state/S-06.json` — written only by S-06, overwritten each heartbeat:
+```json
+{ "seat":"S-06", "model":"<id>", "work":"FP-014", "state":"WORKING",
+  "branch":"arena/<uuid>", "head":"<sha>", "lastPush":"2026-10-21T14:30Z",
+  "next":"money types phase 1", "blocker":null }
+```
+Everyone reads all 15 in one `git fetch` + `cat docs/agent-fleet/state/*.json`. This **replaces** the conflicting `docs/agent-squad/agents-comms/STATUS_BOARD.md` row-editing, and is diffable, timestamped and attributable.
+
+### What this corrects
+
+| Old assumption | Correction |
+|---|---|
+| "Merge to see the work." | **Push to see it; merge to canonicalise it.** |
+| Review = read the PR afterwards | Review = `fetch` + `show`/`diff` + `worktree`, **while it is still WIP** |
+| `docs/agent-squad/agents-comms/STATUS_BOARD.md` row editing | 15 single-writer `state/<seat>.json` files |
+| PR = visibility **and** merge gate | PR = **merge gate only** |
+
+**Consequence for R-01:** pushing every 45 minutes is no longer only a data-loss defence — it *is* the visibility mechanism. A seat that does not push is not just at risk, it is **invisible**, and S-00 revokes its claim under R-04.
 
 ---
 
@@ -243,17 +323,56 @@ Corollary — the same applies to `docs/product/ROUTE_MAP.md`, the engine manife
 
 ---
 
-## 8. Verification with 15 clones — the hard truth
+## 8. Verification: revised for heterogeneous models
 
-You asked for 15 **exact clones**. As *execution* capacity that is excellent. As *review* capacity it is worth approximately zero: identical agents share identical blind spots, so "another agent checked it" is not independent evidence. This is not speculation — the repo has already shipped a **vacuous gate** (`ratchet-docs-check.mjs` matched a hard-coded `/` so on Windows it never read the file it was given; 3 of its 7 cases could not fail) and a **false README** that a `docs:verify` gate was supposed to prevent. Both were caught by humans or by *different* kinds of checking, not by re-reading.
+**This section is rewritten because owner input materially changed the conclusion.** I originally argued that 15 exact clones give ≈ zero independent review, because identical agents share identical blind spots. With **each seat running a different model** (platform auto-selection per task, or random assignment), that objection is substantially — not entirely — answered. Different training data, different priors, different failure modes. **Cross-model review is real independence.** It is the single biggest upgrade available to this plan, and it costs nothing.
 
-So independence comes from three places, in this order of value:
+The evidence that clones alone would not have been enough still stands: this repo has already shipped a **vacuous gate** (`ratchet-docs-check.mjs` matched a hard-coded `/`, so on Windows it never read the file it was given; 3 of its 7 cases could not fail) and a **false README** that a `docs:verify` gate was meant to prevent. Both were surfaced by different *kinds* of checking, not by re-reading.
 
-1. **Mechanical gates** (free, already exist, never tire). First line and best line.
-2. **S-02 RED TEAM with a deliberately different instruction.** Not "build this", but "**falsify this**". Different objective function = genuine independence at 1/15 cost.
-3. **Reproducibility by a stranger.** A claim that cannot be re-run from a clean checkout of the branch is not a claim.
+### 8.1 Model assignment is a per-seat property — never a global random switch
 
-**What "zero compromise, no flaw" can honestly mean here:** you cannot buy absence of flaws with headcount. What you *can* enforce is that **no claim enters the tree without a command that reproduces it** — which is exactly the standard `AGENTS.md` already sets and this repo mostly meets. That is the deliverable: *zero unverified claims*, which is achievable; *zero defects*, which is not.
+Randomising the model on a financial-correctness lane is how you get a confident, wrong journal entry. Assign by **blast radius**, not by variety for its own sake:
+
+| Tier | Seats | Policy | Why |
+|---|---|---|---|
+| **Deterministic — strongest available, pinned** | S-00 Integrator, S-01 Decision, S-02 Red Team, S-04 Spine Acceptance, S-06 Money-Domain | One named model, same every run | Highest blast radius; decisions and financial semantics must not vary between sessions |
+| **Auto-selected per task** | S-05, S-07, S-09, S-11, S-13 | Platform picks by task type | Mixed work; let the platform route it |
+| **Random / rotating — diversity is the point** | S-08 Money Sweep, S-12 Reachability, S-14 Hygiene | Rotate models across PRs | Mechanical, low blast radius, high volume — here heterogeneity is cheap insurance |
+| **Always different from the author** | S-02 Red Team | Enforced per review | The rule that makes cross-model review real |
+
+### 8.2 The new verification rule
+
+> **R-10′ — A claim is `VERIFIED` only by a seat running a *different model* than the author.**
+> **R-10″ — Financial-correctness changes (money, GL, period close, persistence) need two verifiers on two different models, both different from the author.**
+
+This is now mechanically checkable because every commit and PR records its model:
+
+```
+Seat: S-06
+Work: FP-014
+Model: <model-id>
+Evidence: npx vitest run src/types/glEntry.money.test.ts   → 18/18 passed
+```
+
+The `Model:` trailer buys three things: **attribution**, **reproducibility** (a regression can be re-run on the model that produced it), and **drift detection** (if a seat's compliance falls, the model change is visible in the log).
+
+### 8.3 New risks that heterogeneity introduces
+
+| Risk | Why it bites | Mitigation |
+|---|---|---|
+| **Weakest-model bottleneck** | Protocol compliance varies wildly. One seat that never pushes, or edits a baseline under R-07, blocks the batch — and worst-case merges a confident wrong change. | **Certify before assigning a lane.** Run a control task (known-answer, e.g. "fix this failing test, push WIP, cite evidence, touch no baseline"). Measure: did it push on time · did it cite a command · did it respect R-07 · did it write a failing-first test. Fail → do not give it a high-blast-radius lane. |
+| **Illusory diversity** | If the randomiser happens to give you 15 seats of one model family, you are back to clone-on-clone review while *believing* you have diversity. | **Model-diversity audit per wave:** publish the distribution. Flag if any single model exceeds 50 % of active seats or if the same model authors and verifies any financial PR. |
+| **Style churn between models** | Different models format and structure differently → noisier diffs, more conflicts. | The repo already owns the equaliser: **Prettier + ESLint `--max-warnings 0` + `tsc`** run on every PR. Style is not a review topic; the gate decides. |
+| **Non-reproducible bug reports** | "It failed for me" from a different model on a different branch. | R-05 already requires the raw command + output. Add `Model:` and `HEAD sha`. A report without both is not a report. |
+| **Over-trust in model consensus** | Two models agreeing feels like proof. It is not — shared training data means correlated errors on well-known-but-wrong patterns. | Consensus never overrides a gate. **A gate beats any number of agreeing models.** |
+
+### 8.4 What independence is still made of, in order
+
+1. **Mechanical gates** — free, tireless, already exist. First and best line, unchanged by model choice.
+2. **A different model on the Red Team**, instructed to *falsify* rather than build. Now genuinely independent; still not infallible.
+3. **Reproducibility by a stranger** — a claim that cannot be re-run from a clean checkout of the branch, with the model and commit recorded, is not a claim.
+
+**What "zero compromise, no flaw" can honestly mean:** you cannot buy the absence of defects with headcount or with model variety. You *can* enforce that **no claim enters the tree without a command that reproduces it** — which is the standard `AGENTS.md` already sets. The deliverable is *zero unverified claims*. Model diversity raises the odds that a wrong claim gets caught before it lands; it does not change what must be proven.
 
 ---
 
@@ -308,9 +427,11 @@ The fleet is yours to approve; three things I cannot decide:
 
 1. **Wave discipline.** Launch 15 immediately (fast, high merge risk, repeats §0 at larger scale) — or Wave 1 = 6 with a hard gate to scale? *Recommendation: 6.*
 2. **S-00 authority.** The Integrator is the only seat that merges and the only writer of baselines/shared docs. That is a real bottleneck by design. Accept it, or distribute it and accept conflicts? *Recommendation: accept it.*
-3. **The four one-time unblocks only you can do:** answer **O1–O9** (or confirm the provisional defaults stand), provide the **§108–200 source text** or formally descope it, and restore **Actions read scope** so CI stops being unverifiable.
+3. **Model policy.** Per-seat pinning by blast radius (§8.1) — or a global random switch for all 15? *Recommendation: pin the five highest-blast-radius seats to one strongest model, randomise only the mechanical sweep lanes.* Randomising the Assigner or the money-domain seat is how a confident wrong journal entry lands.
+4. **Push cadence.** Accept that pushing WIP every 45 minutes is what makes peer review possible (§3a)? Without it, seats are invisible no matter how many you run. *Recommendation: accept; S-00 enforces with claim revocation.*
+5. **The four one-time unblocks only you can do:** answer **O1–O9** (or confirm the provisional defaults stand), provide the **§108–200 source text** or formally descope it, and restore **Actions read scope** so CI stops being unverifiable.
 
-> **The highest-leverage thing in this entire plan is not the 15 agents — it is item 3.** Answering O4 and O9 alone unblocks two of the three most active engineering lanes; restoring CI gives 15 agents a shared referee; and O1's sample exports turn the product's core claim from "mapping-driven, unverified" into something provable. Those three cost you one reply and one file drop. They are worth more than four extra seats.
+> **The highest-leverage thing in this entire plan is not the 15 agents — it is item 5.** Answering O4 and O9 alone unblocks two of the three most active engineering lanes; restoring CI gives 15 agents a shared referee; and O1's sample exports turn the product's core claim from "mapping-driven, unverified" into something provable. Those three cost you one reply and one file drop. They are worth more than four extra seats.
 
 ---
 
@@ -321,5 +442,7 @@ The fleet is yours to approve; three things I cannot decide:
 - **The old bus routes 15 writers through 4 shared files.** Fix: **the PR list *is* the claim ledger** (atomic, race-free), plus file-per-note for prose.
 - **The killer rule is R-07:** baselines and shared docs are Integrator-only. It collapses 90 conflicting hunks into one commit.
 - **Drive earns its 5 TB in exactly three places** — above all the O1 D365 sample vault.
-- **15 clones are throughput, not review.** Real independence = mechanical gates + one adversarial Red Team + reproducibility by a stranger.
+- **Peer visibility needs no PR and no merge — only a push.** Verified by execution: `ls-remote` → `fetch` → `show`/`diff` → **`git worktree` runs a peer's unmerged branch in its own directory**. PR is the merge gate, never the visibility gate. One gotcha: the clone is shallow, so `--deepen` first or diffs report "no merge base".
+- **Heterogeneous models upgrade verification.** With a different model per seat, cross-model review is genuine independence — the objection that 15 clones cannot review each other no longer applies. New rules: `Model:` trailer on every PR, `R-10′` verifier must differ from author, model-diversity audit per wave, and **never randomise the high-blast-radius seats**.
+- **A gate always beats model consensus.** Two models agreeing is not proof; shared training data correlates their errors.
 - **40 % of the remaining work is decision-bound and unmovable by headcount** — and it holds every release blocker.
