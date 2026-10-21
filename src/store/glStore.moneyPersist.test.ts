@@ -365,11 +365,13 @@ describe('glStore money persistence (Q5 stage 2, DEC-051)', () => {
     const trialBalance = restarted.useGLStore.getState().trialBalance;
     expect(trialBalance.length).toBeGreaterThan(0);
 
+    // Q5 stage 3: the regenerated rows are `Money`, so the tie-out is checked
+    // in integer minor units — exact equality, no epsilon.
     const totals = trialBalance.reduce(
-      (acc, row) => ({ debit: acc.debit + row.debit, credit: acc.credit + row.credit }),
+      (acc, row) => ({ debit: acc.debit + row.debit.minor, credit: acc.credit + row.credit.minor }),
       { debit: 0, credit: 0 }
     );
-    expect(totals.debit).toBeCloseTo(totals.credit, 10);
+    expect(totals.debit).toBe(totals.credit);
     expect(totals.debit).toBeGreaterThan(0);
   }, 90_000);
 

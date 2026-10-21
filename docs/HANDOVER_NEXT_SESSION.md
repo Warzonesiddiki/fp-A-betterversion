@@ -1,5 +1,43 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-21 (continued) — Q5 stage 3: the derived rows are Money (DEC-053)
+
+**Shipped.** `TrialBalanceRow` and `AccountAnalysis` money fields are `Money`
+(integer minor units) — the first adoption in the product, safe first because
+they are derived and never persisted (`glStore.partialize` omits both;
+`glTrialBalanceStore.partialize` keeps only paging and sort). Six files changed,
+not 151, because three supporting pieces did the work:
+
+- `MoneyInput` now includes `Money`; `toDecimal` converts minor units exactly, so
+  `sumMoney` / `roundTo` / `formatMoney` sites stay exact with no rewrite.
+- `useCurrencyFormatter` accepts `Money` — **one** display adapter, the leverage
+  stage 6 needs for the 102 page files.
+- `glTrialBalanceStore.applySort` compares money columns by amount; without it a
+  `Money` cell sorted every row as `"[object Object]"`.
+
+**Behaviour change (the decision).** There is no `Money` equal to `0.004`. The
+old code rounded such amounts to zero cents at the output boundary, so a legacy
+sub-cent row contributed nothing to the view — money silently gone. Now the view
+is emptied and the reason named (`importStatus: 'error'`, `importError: 'Trial
+balance not built: … sub-cent precision …'`, error toast). Currency is carried
+when every entry agrees and OMITTED when they disagree — never the first entry's
+code, which would state an FX conversion that never happened. Mixed-currency
+accounts are still summed without conversion (DEC-051's open question).
+
+**Why stage 4 is still gated.** Stage 3 refuses an aggregate, which produces no
+wrong number. Stage 4 would refuse a ROW on hydrate, which means the ledger does
+not open. The hydrate policy is still the blocker.
+
+**Evidence.** `src/store/glStore.derivedMoney.test.ts` 13/13: a thousand one-cent
+rows → exactly 1,000 minor; `0.1+0.2+0.3` → `{minor:60}` (float
+0.6000000000000001); monthly totals and average exact; currency propagation and
+mixed omission; refusal path; grid sort both directions; exact footer; formatter
+renders Money in five shapes. Mutation-checked twice. Five existing test files
+updated where they encoded `number` rows or the retired round-a-half-cent rule.
+
+**Not claimed.** `GLEntry` is still `number`; no stored shape changed; FX
+aggregation across currencies is not implemented.
+
 ## 2026-10-21 (continued) — Q5 stage 2: the round trip is proven, and stage 4 has a gate
 
 **What was proven.** `src/store/glStore.moneyPersist.test.ts` (6 tests) runs the

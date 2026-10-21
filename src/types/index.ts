@@ -2,6 +2,10 @@
 // FINPLAN PRO - COMPLETE TYPE DEFINITIONS
 // =============================================================================
 
+// Q5 (DEC-051/053): derived money values are integer minor units. Type-only
+// import — this module carries no runtime code.
+import type { Money } from '@/utils/money';
+
 // --- Enums & Literals ---
 
 export type BudgetStatus = 'Draft' | 'InReview' | 'Approved' | 'Locked' | 'Rejected';
@@ -812,26 +816,39 @@ export interface ImportControlTotals {
   readonly net: string;
 }
 
+/**
+ * One row of the derived trial balance (Q5 stage 3 / DEC-053).
+ *
+ * Every money field is a `Money` — integer minor units — because these values
+ * are produced by summing ledger amounts and a `number` here is exactly where
+ * accumulated drift used to appear. The row is DERIVED: `glStore.partialize`
+ * does not persist `trialBalance`, and `glTrialBalanceStore` persists only
+ * paging/sort, so no stored shape changes.
+ */
 export interface TrialBalanceRow {
   accountId: string;
   accountCode: string;
   accountName: string;
   accountType: AccountType | 'Unknown';
-  beginningBalance: number;
-  debit: number;
-  credit: number;
-  netChange: number;
-  endingBalance: number;
+  beginningBalance: Money;
+  debit: Money;
+  credit: Money;
+  netChange: Money;
+  endingBalance: Money;
 }
 
+/**
+ * Derived account analysis (Q5 stage 3 / DEC-053). Money fields are `Money`;
+ * `transactionCount` is a count and stays a `number`.
+ */
 export interface AccountAnalysis {
   readonly accountId: string;
   readonly accountCode: string;
   readonly accountName: string;
-  readonly monthlyTotals: { month: string; debit: number; credit: number; net: number }[];
-  readonly totalDebit: number;
-  readonly totalCredit: number;
-  readonly averageBalance: number;
+  readonly monthlyTotals: { month: string; debit: Money; credit: Money; net: Money }[];
+  readonly totalDebit: Money;
+  readonly totalCredit: Money;
+  readonly averageBalance: Money;
   readonly transactionCount: number;
 }
 

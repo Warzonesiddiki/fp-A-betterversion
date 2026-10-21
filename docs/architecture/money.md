@@ -33,9 +33,23 @@ Finer precision is **refused with a named reason**, never rounded on write. Mone
 | `debit: 0.1 + 0.2`                               | `0.30000000000000004`           | The analysis view printed `0.30`; a raw read showed the artefact.                             |
 | `validateEntries([{ debit: 0.004, credit: 0 }])` | `isValid: true`, 0 errors       | `toCents(0.004) === toCents(0) === 0`, so the balance gate saw a balanced row carrying money. |
 
-### Status — not yet a `Money` type
+### Status — the `Money` type exists; adoption is staged (Q5, DEC-051/053)
 
-`GLEntry.debit/credit/amount/netChange` remain JS `number`. This phase makes every stored amount provably whole-cent and makes the accounting identity checkable in cents (`toCents(amount) === toCents(debit) − toCents(credit)`); it does not introduce a nominal type. The `Money` type and the 242-file adoption sweep are the remaining P1-11 work.
+`GLEntry.debit/credit/amount/netChange` remain JS `number`. This phase makes
+every stored amount provably whole-cent and makes the accounting identity
+checkable in cents (`toCents(amount) === toCents(debit) − toCents(credit)`).
+
+`Money = { minor: number; currency?: string }` now exists in `src/utils/money.ts`
+with exact integer arithmetic, and the persist boundary encodes it to the same
+`$d:<canonical>` bytes a numeric field produces — so adoption needs no data
+migration. Stage 3 converted the DERIVED rows (`TrialBalanceRow`,
+`AccountAnalysis`); `GLEntry` itself is stage 4 and stays gated on a policy for
+sub-cent rows already on disk (see `docs/architecture/money-type-migration.md`).
+
+An amount finer than `LEDGER_SCALE` is refused wherever it would have to become
+`Money`. In a derived view that means the view is emptied and the reason named;
+in a stored row the hydrate policy is still undecided, which is precisely why
+`GLEntry` has not been converted.
 
 ## Migration & Enforcement
 

@@ -12,17 +12,19 @@ import type {
 } from '@/types';
 import { masterStorage } from '../utils/masterStorage';
 import {
-  addMoney,
+  asMoney,
   divideMoney,
   formatMoney,
   fromCents,
   hasSubUnitPrecision,
   LEDGER_SCALE,
+  moneyMinus,
+  moneyPlus,
+  moneySum,
   roundTo,
   subtractMoney,
-  sumMoney,
   toCents,
-  toDecimal,
+  type Money,
 } from '../utils/money';
 import { UndoRedoEngine } from '@/engines/UndoRedoEngine';
 import { FpaClient } from '@/sdk/FpaClient';
@@ -69,24 +71,61 @@ interface GLSnapshot {
   entryVersions: GLState['entryVersions'];
 }
 
-/** Trial-balance accumulator holding Decimal currency values (F-0006). */
+/**
+ * Trial-balance accumulator (Q5 stage 3 / DEC-053): exact integer minor units.
+ *
+ * The currency is tracked beside the amounts rather than inside them because a
+ * single account can carry rows in more than one transaction currency, and
+ * `moneyPlus` would (correctly) refuse to combine those. Aggregating across
+ * currencies is still not FX-aware — that is DEC-051's open question — so a
+ * mixed account produces a currency-LESS row rather than a fabricated code.
+ */
 interface TrialRowAccum {
   accountId: string;
   accountCode: string;
   accountName: string;
   accountType: TrialBalanceRow['accountType'];
-  beginningBalance: ReturnType<typeof toDecimal>;
-  debit: ReturnType<typeof toDecimal>;
-  credit: ReturnType<typeof toDecimal>;
-  netChange: ReturnType<typeof toDecimal>;
-  endingBalance: ReturnType<typeof toDecimal>;
+  beginningBalance: Money;
+  debit: Money;
+  credit: Money;
+  netChange: Money;
+  endingBalance: Money;
+  currency?: string;
+  mixedCurrency: boolean;
 }
 
-/** Account-analysis month accumulator holding Decimal currency values (F-0006). */
+/** Account-analysis month accumulator (Q5 stage 3): exact integer minor units. */
 interface MonthGroupAccum {
-  debit: ReturnType<typeof addMoney>;
-  credit: ReturnType<typeof addMoney>;
+  debit: Money;
+  credit: Money;
   count: number;
+}
+
+const ZERO_MONEY: Money = { minor: 0 };
+
+/**
+ * Track the currency of a derived aggregate without ever inventing one: the
+ * first code wins, and any disagreement marks the row mixed (currency absent).
+ */
+function mergeDerivedCurrency(
+  accum: { currency?: string; mixedCurrency: boolean },
+  next: string | undefined
+): void {
+  if (next === undefined) return;
+  if (accum.currency === undefined) {
+    accum.currency = next;
+    return;
+  }
+  if (accum.currency !== next) accum.mixedCurrency = true;
+}
+
+/** Attach the derived currency, if the aggregate has an unambiguous one. */
+function withDerivedCurrency(
+  money: Money,
+  accum: { currency?: string; mixedCurrency: boolean }
+): Money {
+  const currency = accum.mixedCurrency ? undefined : accum.currency;
+  return currency === undefined ? { minor: money.minor } : { minor: money.minor, currency };
 }
 
 const undoEngine = new UndoRedoEngine<GLSnapshot>(100);
@@ -423,6 +462,28 @@ function ledgerAmountIssues(rows: readonly Partial<GLEntry>[]): string[] {
     }
   });
   return issues;
+}
+
+/**
+ * A derived view (trial balance, account analysis) could not be expressed in
+ * `Money` — the ledger holds an amount finer than its own scale. Fail LOUDLY
+ * and leave the view empty: showing a rounded figure would silently discard
+ * money (FR-006), and showing a stale figure would misstate the period.
+ */
+function refuseDerivedAmounts(
+  set: (patch: Partial<GLState>) => void,
+  title: string,
+  error: unknown
+): void {
+  const reason = error instanceof Error ? error.message : String(error);
+  set({
+    trialBalance: [],
+    accountAnalysis: null,
+    isLoading: false,
+    importStatus: 'error',
+    importError: `${title}: ${reason}`,
+  });
+  useUIStore.getState().addToast({ type: 'error', title, message: reason });
 }
 
 /** Reject invalid money without mutating financial state or consuming undo history. */
@@ -1021,48 +1082,59 @@ export const useGLStore = create<GLState>()(
             accountMap.set(account.code, account);
           }
 
-          const balanceMap = new Map<string, TrialRowAccum>();
-          for (const entry of entries) {
-            const key = entry.accountId || entry.accountCode;
-            const account = accountMap.get(key) ?? accountMap.get(entry.accountCode);
-            const existing = balanceMap.get(key) ?? {
-              accountId: key,
-              accountCode: entry.accountCode,
-              accountName: entry.accountName,
-              accountType: account?.type ?? 'Unknown',
-              beginningBalance: toDecimal(0),
-              debit: toDecimal(0),
-              credit: toDecimal(0),
-              netChange: toDecimal(0),
-              endingBalance: toDecimal(0),
-            };
-            // GL debit/credit amounts are currency: exact decimal
-            // accumulation, cent-rounded once at the output boundary (F-0006).
-            const debit = toDecimal(toFiniteNumber(entry.debit));
-            const credit = toDecimal(toFiniteNumber(entry.credit));
-            const netChange = subtractMoney(debit, credit);
-            existing.debit = addMoney(existing.debit, debit);
-            existing.credit = addMoney(existing.credit, credit);
-            existing.netChange = addMoney(existing.netChange, netChange);
-            existing.endingBalance = addMoney(existing.beginningBalance, existing.netChange);
-            balanceMap.set(key, existing);
+          // Q5 stage 3 (DEC-053): the derived rows are `Money` — integer minor
+          // units — so the totals cannot drift. An entry the ledger cannot
+          // represent at LEDGER_SCALE (a sub-cent row persisted before
+          // DEC-048's admission gate) makes `asMoney` REFUSE; the refusal is
+          // surfaced and the view is left empty rather than shown with money
+          // silently rounded away, which is what the previous
+          // `roundTo(...)`-at-the-boundary did.
+          try {
+            const balanceMap = new Map<string, TrialRowAccum>();
+            for (const entry of entries) {
+              const key = entry.accountId || entry.accountCode;
+              const account = accountMap.get(key) ?? accountMap.get(entry.accountCode);
+              const existing: TrialRowAccum = balanceMap.get(key) ?? {
+                accountId: key,
+                accountCode: entry.accountCode,
+                accountName: entry.accountName,
+                accountType: account?.type ?? 'Unknown',
+                beginningBalance: ZERO_MONEY,
+                debit: ZERO_MONEY,
+                credit: ZERO_MONEY,
+                netChange: ZERO_MONEY,
+                endingBalance: ZERO_MONEY,
+                mixedCurrency: false,
+              };
+              const debit = asMoney(toFiniteNumber(entry.debit));
+              const credit = asMoney(toFiniteNumber(entry.credit));
+              const netChange = moneyMinus(debit, credit);
+              mergeDerivedCurrency(existing, entry.currency);
+              existing.debit = moneyPlus(existing.debit, debit);
+              existing.credit = moneyPlus(existing.credit, credit);
+              existing.netChange = moneyPlus(existing.netChange, netChange);
+              existing.endingBalance = moneyPlus(existing.beginningBalance, existing.netChange);
+              balanceMap.set(key, existing);
+            }
+
+            const balance: TrialBalanceRow[] = Array.from(balanceMap.values())
+              .map((row) => ({
+                accountId: row.accountId,
+                accountCode: row.accountCode,
+                accountName: row.accountName,
+                accountType: row.accountType,
+                beginningBalance: withDerivedCurrency(row.beginningBalance, row),
+                debit: withDerivedCurrency(row.debit, row),
+                credit: withDerivedCurrency(row.credit, row),
+                netChange: withDerivedCurrency(row.netChange, row),
+                endingBalance: withDerivedCurrency(row.endingBalance, row),
+              }))
+              .sort((a, b) => a.accountCode.localeCompare(b.accountCode));
+
+            set({ trialBalance: balance, isLoading: false });
+          } catch (error) {
+            refuseDerivedAmounts(set, 'Trial balance not built', error);
           }
-
-          const balance: TrialBalanceRow[] = Array.from(balanceMap.values())
-            .map((row) => ({
-              accountId: row.accountId,
-              accountCode: row.accountCode,
-              accountName: row.accountName,
-              accountType: row.accountType,
-              beginningBalance: roundTo(row.beginningBalance),
-              debit: roundTo(row.debit),
-              credit: roundTo(row.credit),
-              netChange: roundTo(row.netChange),
-              endingBalance: roundTo(row.endingBalance),
-            }))
-            .sort((a, b) => a.accountCode.localeCompare(b.accountCode));
-
-          set({ trialBalance: balance, isLoading: false });
         },
 
         analyzeAccount: (accountId) => {
@@ -1072,55 +1144,63 @@ export const useGLStore = create<GLState>()(
             (e) => e.accountId === accountId || e.accountCode === accountId
           );
 
-          const monthGroups = new Map<string, MonthGroupAccum>();
-          for (const entry of filtered) {
-            const month = entry.period;
-            const g = monthGroups.get(month) ?? {
-              debit: toDecimal(0),
-              credit: toDecimal(0),
-              count: 0,
-            };
-            g.debit = addMoney(g.debit, toFiniteNumber(entry.debit));
-            g.credit = addMoney(g.credit, toFiniteNumber(entry.credit));
-            g.count += 1;
-            monthGroups.set(month, g);
-          }
+          // Q5 stage 3 (DEC-053): exact integer minor units, same refusal rule
+          // as the trial balance — an unrepresentable amount is named, not
+          // rounded into a figure that does not add up.
+          try {
+            const monthGroups = new Map<string, MonthGroupAccum>();
+            for (const entry of filtered) {
+              const month = entry.period;
+              const g: MonthGroupAccum = monthGroups.get(month) ?? {
+                debit: ZERO_MONEY,
+                credit: ZERO_MONEY,
+                count: 0,
+              };
+              g.debit = moneyPlus(g.debit, asMoney(toFiniteNumber(entry.debit)));
+              g.credit = moneyPlus(g.credit, asMoney(toFiniteNumber(entry.credit)));
+              g.count += 1;
+              monthGroups.set(month, g);
+            }
 
-          const monthlyTotals = Array.from(monthGroups.entries())
-            .map(([month, g]) => ({
-              month,
-              debit: roundTo(g.debit),
-              credit: roundTo(g.credit),
-              net: roundTo(subtractMoney(g.debit, g.credit)),
-            }))
-            .sort((a, b) => a.month.localeCompare(b.month));
+            const monthlyTotals = Array.from(monthGroups.entries())
+              .map(([month, g]) => ({
+                month,
+                debit: g.debit,
+                credit: g.credit,
+                net: moneyMinus(g.debit, g.credit),
+              }))
+              .sort((a, b) => a.month.localeCompare(b.month));
 
-          const totalDebitDec = sumMoney(monthlyTotals.map((m) => m.debit));
-          const totalCreditDec = sumMoney(monthlyTotals.map((m) => m.credit));
-          const totalDebit = roundTo(totalDebitDec);
-          const totalCredit = roundTo(totalCreditDec);
+            const totalDebit = moneySum(monthlyTotals.map((m) => m.debit));
+            const totalCredit = moneySum(monthlyTotals.map((m) => m.credit));
+            const netMinor = totalDebit.minor - totalCredit.minor;
 
-          set({
-            accountAnalysis: {
-              accountId,
-              accountCode: filtered[0]?.accountCode ?? '',
-              accountName: filtered[0]?.accountName ?? '',
-              monthlyTotals,
-              totalDebit,
-              totalCredit,
-              averageBalance:
-                monthlyTotals.length > 0
-                  ? roundTo(
-                      divideMoney(
-                        subtractMoney(totalDebitDec, totalCreditDec),
-                        monthlyTotals.length
+            set({
+              accountAnalysis: {
+                accountId,
+                accountCode: filtered[0]?.accountCode ?? '',
+                accountName: filtered[0]?.accountName ?? '',
+                monthlyTotals,
+                totalDebit,
+                totalCredit,
+                // Average balance is a derived ratio, not a ledger amount: it
+                // is quantised to ledger scale the same way a reported figure
+                // is, via exact decimal division (never float division).
+                averageBalance:
+                  monthlyTotals.length > 0
+                    ? asMoney(
+                        divideMoney(fromCents(netMinor), monthlyTotals.length).toDecimalPlaces(
+                          LEDGER_SCALE
+                        )
                       )
-                    )
-                  : 0,
-              transactionCount: filtered.length,
-            },
-            isLoading: false,
-          });
+                    : ZERO_MONEY,
+                transactionCount: filtered.length,
+              },
+              isLoading: false,
+            });
+          } catch (error) {
+            refuseDerivedAmounts(set, 'Account analysis not built', error);
+          }
         },
 
         filterByDate: enforce(Permissions.UI_UPDATE, 'filterByDate', (start, end) => {
@@ -1514,23 +1594,32 @@ export const useGLStore = create<GLState>()(
             includeGrandTotal: true,
           });
 
-          const balance: TrialBalanceRow[] = result.rows.map((row) => {
-            const debit = typeof row.values[0] === 'number' ? row.values[0] : 0;
-            const credit = typeof row.values[1] === 'number' ? row.values[1] : 0;
-            const netChange = typeof row.values[2] === 'number' ? row.values[2] : 0;
-            const accountCode = row.label.split('|')[0]?.replace('Account:', '') ?? '';
-            return {
-              accountId: accountCode,
-              accountCode,
-              accountName: '',
-              accountType: 'Unknown' as const,
-              beginningBalance: 0,
-              debit,
-              credit,
-              netChange,
-              endingBalance: netChange,
-            };
-          });
+          // Q5 stage 3: cube measures are summed numbers, so they are converted
+          // to ledger `Money` here — refusing (not rounding) an amount the
+          // ledger cannot represent.
+          let balance: TrialBalanceRow[];
+          try {
+            balance = result.rows.map((row) => {
+              const debit = asMoney(typeof row.values[0] === 'number' ? row.values[0] : 0);
+              const credit = asMoney(typeof row.values[1] === 'number' ? row.values[1] : 0);
+              const netChange = asMoney(typeof row.values[2] === 'number' ? row.values[2] : 0);
+              const accountCode = row.label.split('|')[0]?.replace('Account:', '') ?? '';
+              return {
+                accountId: accountCode,
+                accountCode,
+                accountName: '',
+                accountType: 'Unknown' as const,
+                beginningBalance: ZERO_MONEY,
+                debit,
+                credit,
+                netChange,
+                endingBalance: netChange,
+              };
+            });
+          } catch (error) {
+            refuseDerivedAmounts(set, 'Cube trial balance not built', error);
+            return;
+          }
 
           set({ trialBalance: balance });
 

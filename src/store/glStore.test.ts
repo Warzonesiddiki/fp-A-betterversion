@@ -260,10 +260,11 @@ describe('glStore', () => {
     expect(isLoading).toBe(false);
     expect(trialBalance).toHaveLength(1);
     expect(trialBalance![0]!.accountId).toBe('acct-1');
-    expect(trialBalance![0]!.debit).toBe(1000);
-    expect(trialBalance![0]!.credit).toBe(0);
-    expect(trialBalance![0]!.netChange).toBe(1000);
-    expect(trialBalance![0]!.endingBalance).toBe(1000);
+    // Q5 stage 3: derived rows are `Money` (integer minor units).
+    expect(trialBalance![0]!.debit).toEqual({ minor: 100000 });
+    expect(trialBalance![0]!.credit).toEqual({ minor: 0 });
+    expect(trialBalance![0]!.netChange).toEqual({ minor: 100000 });
+    expect(trialBalance![0]!.endingBalance).toEqual({ minor: 100000 });
   });
 
   it('should aggregate multiple entries per account in trial balance', () => {
@@ -276,8 +277,8 @@ describe('glStore', () => {
     useGLStore.getState().generateTrialBalance();
     const { trialBalance } = useGLStore.getState();
     expect(trialBalance).toHaveLength(1);
-    expect(trialBalance![0]!.debit).toBe(1500);
-    expect(trialBalance![0]!.netChange).toBe(1500);
+    expect(trialBalance![0]!.debit).toEqual({ minor: 150000 });
+    expect(trialBalance![0]!.netChange).toEqual({ minor: 150000 });
   });
 
   it('should generate empty trial balance with no entries', () => {
@@ -325,8 +326,8 @@ describe('glStore', () => {
     expect(accountAnalysis!.accountId).toBe('acct-1');
     expect(accountAnalysis!.transactionCount).toBe(2);
     expect(accountAnalysis!.monthlyTotals).toHaveLength(2);
-    expect(accountAnalysis!.totalDebit).toBe(1500);
-    expect(accountAnalysis!.totalCredit).toBe(200);
+    expect(accountAnalysis!.totalDebit).toEqual({ minor: 150000 });
+    expect(accountAnalysis!.totalCredit).toEqual({ minor: 20000 });
   });
 
   it('should return empty analysis for non-matching account', () => {

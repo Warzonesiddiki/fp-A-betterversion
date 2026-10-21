@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { FileText, Download, Calendar } from 'lucide-react';
-import { sumMoney, subtractMoney, roundTo, toDecimal } from '@/utils/money';
+import { sumMoney, subtractMoney, roundTo, toDecimal, type Money } from '@/utils/money';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /** Money-primitive GL reporting account-type totals (GAP-1 F-0006). */
 export interface AccountTypeTotalRow {
@@ -39,7 +39,7 @@ export function computeGLReportingSummary(
     credit: number;
   }[],
   accounts: readonly { id: string; code: string; type: string }[],
-  trialBalance: readonly { debit: number; credit: number }[]
+  trialBalance: readonly { debit: Money; credit: Money }[]
 ): GLReportingSummary | null {
   if (entries.length === 0) return null;
   const dates = entries

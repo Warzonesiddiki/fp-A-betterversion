@@ -14,7 +14,7 @@
  * safety. Engines must still go through `@/utils/money`. This module only
  * stops JSON from being the place the float leaks.
  */
-import { asMoney, moneyCanonicalString, toDecimal, type Money, type MoneyInput } from './money';
+import { asMoney, isMoneyValue, moneyCanonicalString, toDecimal, type MoneyInput } from './money';
 
 export const MONEY_TAG = '$d:';
 
@@ -105,18 +105,6 @@ export function decodeMoneyValue(encoded: string): string {
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-/**
- * A `Money` value (Q5 / DEC-051 stage 1): integer `minor` plus an optional
- * `currency`, and nothing else. Structural rather than nominal so a Money that
- * crossed a JSON boundary is still recognised.
- */
-function isMoneyValue(value: unknown): value is Money {
-  if (!isPlainObject(value)) return false;
-  const minor = value['minor'];
-  if (typeof minor !== 'number' || !Number.isSafeInteger(minor)) return false;
-  return Object.keys(value).every((k) => k === 'minor' || k === 'currency');
 }
 
 /**

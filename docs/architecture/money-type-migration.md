@@ -4,7 +4,7 @@ Audit P1-11's target state: _"amounts are a `Money` type (integer minor units +
 currency) end to end."_ The requirement text is explicit that this is **Q5 — its
 own DEC and staged plan — and must not be started under N8**.
 
-This page is that plan. Stages 1–2 are implemented; stages 3–6 are not.
+This page is that plan. Stages 1–3 are implemented; stages 4–6 are not.
 
 ## Measured blast radius (2026-10-21, HEAD `dc0f5209`)
 
@@ -75,14 +75,14 @@ by an in-memory type; conversion happens at that boundary either way.
 Each stage must leave `tsc` green, the targeted suites green, INV-009 green, and
 be revertible in one commit.
 
-| #     | Stage                                                                 | Blast radius                    | Entry criterion                          | Verification                                                                                                 |
-| ----- | --------------------------------------------------------------------- | ------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **1** | **`Money` type + exact arithmetic + serializer byte-identity**        | 0 (nothing adopts it)           | —                                        | **SHIPPED** — 13 tests, mutation-checked                                                                     |
-| **2** | **Real persisted GL fixture round-trip through the production stack** | **0**                           | Stage 1                                  | **SHIPPED** — 6 tests, mutation-checked; opened the sub-cent gate below                                      |
-| 3     | `TrialBalanceRow` + `AccountAnalysis` adopt `Money`                   | 3 store files, 5 derived fields | Stage 2                                  | `glStore.money.test.ts` + TB tests; these are **derived, not persisted** (`partialize` omits `trialBalance`) |
-| 4     | `GLEntry.debit/credit/netChange/amount` adopt `Money`                 | 98 files                        | Stages 2–3                               | decode-as-money path proven; type errors are the worklist; every write surface already gated by DEC-048      |
-| 5     | Engines and services adopt `Money`                                    | 32 files                        | Stage 4                                  | Existing money test suites; consolidation FX converts at an explicit rate                                    |
-| 6     | Pages and components adopt `Money` for display                        | 108 files                       | Stage 5, plus one shared display adapter | Route smoke tests; no page does arithmetic inline (already enforced by `money:ast`)                          |
+| #     | Stage                                                                 | Blast radius          | Entry criterion                          | Verification                                                                                             |
+| ----- | --------------------------------------------------------------------- | --------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **1** | **`Money` type + exact arithmetic + serializer byte-identity**        | 0 (nothing adopts it) | —                                        | **SHIPPED** — 13 tests, mutation-checked                                                                 |
+| **2** | **Real persisted GL fixture round-trip through the production stack** | **0**                 | Stage 1                                  | **SHIPPED** — 6 tests, mutation-checked; opened the sub-cent gate below                                  |
+| **3** | **`TrialBalanceRow` + `AccountAnalysis` adopt `Money`**               | **6 files**           | Stage 2                                  | **SHIPPED** — 13 tests, mutation-checked; these are **derived, not persisted** (`partialize` omits both) |
+| 4     | `GLEntry.debit/credit/netChange/amount` adopt `Money`                 | 98 files              | Stages 2–3                               | decode-as-money path proven; type errors are the worklist; every write surface already gated by DEC-048  |
+| 5     | Engines and services adopt `Money`                                    | 32 files              | Stage 4                                  | Existing money test suites; consolidation FX converts at an explicit rate                                |
+| 6     | Pages and components adopt `Money` for display                        | 108 files             | Stage 5, plus one shared display adapter | Route smoke tests; no page does arithmetic inline (already enforced by `money:ast`)                      |
 
 **Stage 6 comes last and deliberately:** 102 of the 151 files are display-only,
 so they can be converted mechanically once a single adapter renders `Money`. Doing
@@ -124,6 +124,67 @@ can exist on disk. Stage 4 therefore needs one of:
 
 Today's behaviour (numbers in, numbers out, row preserved) is tested, not assumed.
 
+## Stage 3 result (2026-10-21) — the derived rows are `Money`
+
+`TrialBalanceRow` and `AccountAnalysis` money fields are `Money`. They are the
+first values in the product to adopt the type, chosen because they are **derived
+and never persisted**: `glStore.partialize` omits `trialBalance` and
+`accountAnalysis`, and `glTrialBalanceStore.partialize` keeps only paging and
+sort. Nothing on disk changed, so there was no migration to write.
+
+| Change                                   | Why it was needed                                                                                                      |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `MoneyInput` includes `Money`            | `toDecimal` converts minor units exactly, so `sumMoney` / `roundTo` / `formatMoney` sites stay exact without a rewrite |
+| `useCurrencyFormatter` accepts `Money`   | **One** display adapter — the leverage stage 6 depends on (102 page files)                                             |
+| Sort comparator in `glTrialBalanceStore` | A `Money` cell compared as an object sorted every row as `"[object Object]"` — a silent grid corruption                |
+| Integer-minor aggregation in the store   | Replaces `roundTo(...)` at the output boundary                                                                         |
+
+### The refusal policy (forced by the type)
+
+There is no `Money` equal to `0.004`. The old code accumulated in `Decimal` and
+rounded to cents at the boundary, so a legacy sub-cent row contributed **zero**
+to the view — the money disappeared rather than being refused. Stage 3 makes
+`asMoney` refuse, and the action converts that into a visible state: the view is
+emptied, `importStatus` becomes `error`, `importError` names the reason
+("Trial balance not built: … sub-cent precision …"), and an error toast fires.
+
+This is deliberate and it is the same question stage 4 faces on hydration. The
+difference matters:
+
+- **Here** it is an aggregate: refusing produces no wrong number.
+- **On hydration (stage 4)** it is a row: refusing means the ledger does not open.
+  That is why stage 4 still needs the hydrate policy described above, and why
+  stage 3 shipping does not unblock stage 4.
+
+### Display must not throw
+
+The adapter converts a non-finite or unparseable value to an em dash instead of
+raising. A formatter runs inside render, so a throw blanks the screen; the strict
+gate belongs in `@/utils/money`, where money is computed and where refusing is
+the right answer. This was found by a full-suite run: an existing panel formats
+a `NaN` variance on purpose, and the first version of the adapter crashed it.
+
+### Currency on a derived row
+
+The row carries the currency when every contributing entry agrees, and carries
+**none** when they disagree — never the first entry's code, which would state an
+FX conversion that did not happen. Mixed-currency accounts are still summed
+without conversion; that is DEC-051's open FX question and is recorded here as
+known-incomplete rather than fixed.
+
+### Evidence
+
+`src/store/glStore.derivedMoney.test.ts` — **13/13**: a thousand one-cent rows
+sum to exactly 1,000 minor units; `0.1 + 0.2 + 0.3` is `{ minor: 60 }` where the
+float path gave `0.6000000000000001`; monthly totals and average balance exact;
+currency propagation and mixed-currency omission; refusal leaves the view empty
+and named; the grid sorts by amount in both directions; footer totals exact; and
+`useCurrencyFormatter` renders `Money` at full precision, whole units,
+parentheses for negatives, em dash for zero, compact, and custom. Mutation-checked
+twice (sort comparator, currency merge). Five existing test files were updated
+because their expectations encoded `number` rows or the retired
+round-a-half-cent behaviour.
+
 ## Explicitly not decided here
 
 - **Three-decimal currencies** (KWD/JOD/BHD/OMR/TND). `LEDGER_SCALE` is 2, and
@@ -136,7 +197,8 @@ Today's behaviour (numbers in, numbers out, row preserved) is tested, not assume
 
 ## Not claimed
 
-`GLEntry` amounts are still `number`. Stages 1–2 add a type, a proven persist
-boundary and a proven round trip through the real storage stack; they change no
-behaviour, and the 151-file conversion is untouched. Nothing here says the
-migration is cheap — it says it needs no data migration.
+`GLEntry` amounts are still `number`, and stages 1–3 changed no stored shape.
+Stage 3 changed _derived_ behaviour in one visible way: an amount the ledger
+cannot represent now refuses the view instead of being rounded out of it.
+Nothing here says the migration is cheap — it says it needs no data migration,
+and that the display side has exactly one adapter to convert against.

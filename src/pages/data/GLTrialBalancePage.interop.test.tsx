@@ -78,8 +78,9 @@ describe('GLTrialBalancePage ↔ glStore interop (P1-4 consumer coverage)', () =
     // The page generated the trial balance from the real store…
     const derived = useGLStore.getState().trialBalance;
     expect(derived.map((row) => row.accountCode).sort()).toEqual(['1000', '4000']);
-    expect(derived.find((row) => row.accountCode === '1000')?.netChange).toBe(250);
-    expect(derived.find((row) => row.accountCode === '4000')?.netChange).toBe(-250);
+    // Q5 stage 3: derived rows are `Money` — exact integer minor units.
+    expect(derived.find((row) => row.accountCode === '1000')?.netChange).toEqual({ minor: 25000 });
+    expect(derived.find((row) => row.accountCode === '4000')?.netChange).toEqual({ minor: -25000 });
 
     // …and the screen shows those amounts (250 appears in no fixture).
     const table = screen.getByRole('table', { name: /GL trial balance/i });

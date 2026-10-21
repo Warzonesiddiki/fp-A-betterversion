@@ -5,7 +5,7 @@ import { immer } from 'zustand/middleware/immer';
 import type { TrialBalanceRow } from '@/types';
 import { masterStorage } from '@/utils/masterStorage';
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
-import { sumMoney } from '@/utils/money';
+import { isMoneyValue, sumMoney, toDecimal } from '@/utils/money';
 
 export type SortDirection = 'asc' | 'desc';
 export type TBFilterType = 'accountCode' | 'accountName' | 'accountType' | 'period';
@@ -45,12 +45,23 @@ export interface GLTrialBalanceState {
   reset: () => void;
 }
 
+/**
+ * Read a sortable cell. Money columns are `Money` (Q5 stage 3 / DEC-053), so
+ * they must be compared as amounts — `String({minor: 1})` would sort every row
+ * as "[object Object]" and silently scramble the grid.
+ */
+function sortableValue(value: unknown): number | string {
+  if (typeof value === 'number') return value;
+  if (isMoneyValue(value)) return toDecimal(value).toNumber();
+  return typeof value === 'string' ? value : '';
+}
+
 function applySort(rows: TrialBalanceRow[], sort: TBSortConfig | null): TrialBalanceRow[] {
   if (!sort) return rows;
   const { column, direction } = sort;
   const sorted = [...rows].sort((a, b) => {
-    const aVal = (a as unknown as Record<string, unknown>)[column] ?? '';
-    const bVal = (b as unknown as Record<string, unknown>)[column] ?? '';
+    const aVal = sortableValue((a as unknown as Record<string, unknown>)[column]);
+    const bVal = sortableValue((b as unknown as Record<string, unknown>)[column]);
     if (typeof aVal === 'number' && typeof bVal === 'number') {
       return direction === 'asc' ? aVal - bVal : bVal - aVal;
     }

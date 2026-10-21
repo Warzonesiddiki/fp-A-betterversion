@@ -97,9 +97,9 @@ describe('Phase 1 GL Smoke', () => {
     store.generateTrialBalance();
 
     const rows = useGLStore.getState().trialBalance;
-    expect(rows.find((row) => row.accountCode === '1000')?.netChange).toBe(250);
-    expect(rows.find((row) => row.accountCode === '2000')?.netChange).toBe(-250);
-    expect(rows.reduce((sum, row) => sum + row.debit, 0)).toBe(250);
-    expect(rows.reduce((sum, row) => sum + row.credit, 0)).toBe(250);
+    expect(rows.find((row) => row.accountCode === '1000')?.netChange).toEqual({ minor: 25000 });
+    expect(rows.find((row) => row.accountCode === '2000')?.netChange).toEqual({ minor: -25000 });
+    expect(rows.reduce((sum, row) => sum + row.debit.minor, 0)).toBe(25000);
+    expect(rows.reduce((sum, row) => sum + row.credit.minor, 0)).toBe(25000);
   });
 });

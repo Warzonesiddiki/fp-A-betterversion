@@ -42,10 +42,31 @@ export class InvalidMoneyError extends Error {
   }
 }
 
-export type MoneyInput = number | string | Decimal;
+/**
+ * Anything that can be read as a currency amount. `Money` is included from Q5
+ * stage 3: a derived value (trial balance, account analysis) is a `Money`, and
+ * a display layer still has to sum/format it — routing that through the same
+ * coercion keeps the read path exact without rewriting every call site.
+ */
+export type MoneyInput = number | string | Decimal | Money;
+
+/**
+ * Structural test for a `Money` value: integer `minor`, nothing but
+ * `minor`/`currency`. Structural rather than nominal so a value that crossed a
+ * JSON boundary is still recognised (the persist boundary relies on this).
+ */
+export function isMoneyValue(value: unknown): value is Money {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
+  const minor = (value as { minor?: unknown }).minor;
+  if (typeof minor !== 'number' || !Number.isSafeInteger(minor)) return false;
+  return Object.keys(value).every((k) => k === 'minor' || k === 'currency');
+}
 
 /** Decimal-literal coercion with strict validation. */
 export function toDecimal(value: MoneyInput, field = 'value'): Decimal {
+  if (isMoneyValue(value)) {
+    return new Decimal(moneyToMinor(value)).div(100);
+  }
   if (value instanceof Decimal) {
     if (!value.isFinite()) throw new InvalidMoneyError(field, value, 'non-finite Decimal');
     return value;
@@ -226,6 +247,13 @@ function assertMoney(money: Money, field = 'money'): void {
  * and non-finite input rather than rounding (DEC-048).
  */
 export function asMoney(value: MoneyInput, currency?: string): Money {
+  if (isMoneyValue(value)) {
+    if (currency === undefined) return value;
+    if (value.currency !== undefined && value.currency !== currency) {
+      throw new MoneyCurrencyMismatchError(value.currency, currency);
+    }
+    return value.currency === undefined ? { minor: value.minor, currency } : value;
+  }
   if (typeof value === 'number' && !Number.isFinite(value)) {
     throw new InvalidMoneyError('value', value, 'must be finite');
   }
@@ -334,6 +362,18 @@ export function moneyEqualsValue(a: Money, b: Money): boolean {
 
 export function moneyIsZero(money: Money): boolean {
   return moneyToMinor(money) === 0;
+}
+
+/** Sign of the amount: -1, 0 or 1. For display decisions, not arithmetic. */
+export function moneySign(money: Money): -1 | 0 | 1 {
+  const minor = moneyToMinor(money);
+  if (minor === 0) return 0;
+  return minor < 0 ? -1 : 1;
+}
+
+/** True when the amount is strictly negative (a credit-balance row, a loss). */
+export function moneyIsNegative(money: Money): boolean {
+  return moneyToMinor(money) < 0;
 }
 
 /** Percentage: value × pct / 100 (exact). */
