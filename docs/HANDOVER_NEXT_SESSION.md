@@ -1,5 +1,57 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-21 (continued) — SPINE ACCEPTANCE: the D365 bar FAILED, now passes
+
+**The finding.** VISION §1 says the spine must work end-to-end on a synthetic
+D365-shaped file. Measured on 2026-10-21, it **did not**. Feeding the documented
+"General ledger statement by main account" headers to `ingestGLRows` mapped only
+debit/credit/description and rejected the file with four `Missing required column`
+schema errors. **No real D365-shaped export could enter the spine at all.**
+
+**Why it was invisible.** The machinery is extensive — `src/services/import/` is
+7,716 LOC with integration tests, and `d365Parser.ts` has 559 LOC + 505 test lines.
+But that parser was **standalone: never wired into staging**. It proved a parser,
+not the spine. The existing pipeline test uses a _generic_ CSV shape
+(`AccountCode/PostDate/...`), which is why nothing caught it.
+
+**The fix (DEC-047).** Two documented realities modelled rather than assumed away:
+
+1. **Header names differ** — exact normalised aliases added (`mainaccount`,
+   `mainaccountname`, `transactionpostingdate`, `transactionnumber` (the voucher),
+   `transactioncurrency`). Exact, never substrings, so "Main account" cannot
+   collide with "Main account name".
+2. **The legal entity is EXPORT CONTEXT, not a column** — the statement is produced
+   per legal entity. `defaultEntityId`/`defaultCurrency` replace the column
+   requirement, must pass `knownEntityIds`/`expectedCurrency`, are validated at the
+   **worker boundary** like every other field (that validator silently dropped the
+   new fields on the first attempt — a real trap), and are **never inferred**; a
+   supplied row column always wins.
+
+**Evidence.**
+
+- `src/services/import/spineAcceptance.d365.integration.test.ts` — **5/5**:
+  D365 shape → stage → quarantine reasons → period-close guard → promote →
+  promoted ledger → exact control totals (`135250.17 == 135250.17`) → determinism.
+- `src/engines/SmartImportMapper.d365Defaults.test.ts` — **7/7** boundary:
+  missing default still rejected, unknown default entity rejected, currency
+  mismatch rejected, blank default rejected, row column beats default.
+- Regression: import + mapper + workers + `GLUploadPage.d365` = **29 files / 342 tests**.
+
+**Not claimed:** verified D365 support. The shape stays _mapping-driven,
+unverified_ (O1/DEC-043); the fixture is synthetic; no version/configuration claim.
+
+**Gates:** `tsc` 0 · eslint `--max-warnings 0` clean · prettier clean ·
+`money:ast` 0 unsafe · determinism 344/79 at baseline · `money:adoption` 29.99 % /
+0 raw sites · `docs:verify` 9/9 · strict links 0 broken · hygiene 3,620/0.
+
+**Next unblocked work:** money-domain `GLEntry` types (`number → Money`, P1-11) ·
+N7 route reduction to the ≤40 target (now decidable under DEC-042) ·
+export cross-artifact tie-out · money adoption sweep.
+
+**Still open:** 93 of 200 sections SOURCE OWED · CI HTTP 403 (unverifiable) ·
+PR #83 open since 2026-10-20 · native/recovery evidence (O7) · real anonymised
+D365 export (O1). **Known-work complete: NO. Programme complete: NO.**
+
 ## 2026-10-21 (continued) — provisional decisions adopted; N3 forecast writers closed
 
 **Owner mandate:** take project decisions per the vision recorded in Notion.
