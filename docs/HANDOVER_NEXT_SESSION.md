@@ -1,5 +1,54 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-21 (continued) — N7 MEASURED: the only config-level slice failed the gate
+
+**Two corrections to earlier entries in this file.**
+
+1. **N7 is bundle structural reduction** (DEC-024's 2,080 KB gzip ceiling), not
+   "route reduction toward ≤40". Earlier entries mislabelled it; the requirement
+   text is `docs/AGENT_CONTINUATION_PROMPT.md` §N7.
+2. **The export cross-artifact tie-out already exists.**
+   `src/services/export/boardPackTieOut.integration.test.ts` (3 tests) builds the
+   XLSX and PPTX bytes, parses the rows back out of both, ties them to the in-app
+   GL aggregates, and fails on a tampered row. Re-ran it: **3/3 pass**. The
+   "no cross-artifact test" line in an older block is stale.
+
+**Measured** (fresh build, HEAD `bbbd6b16`): total JS **2,061.24 KB gzip** at
+99.1 % of the 2,080 limit; main chunk 69.73 / 150; critical path 425.13 KB over
+9 chunks; every G19 vendor inside budget. The recorded 2,061.71 holds.
+
+**Experiment — rejected.** Splitting the merged `sector-pages` chunk back into the
+19 per-route chunks the router already declares:
+
+| Metric              | Before      | After                            |
+| ------------------- | ----------- | -------------------------------- |
+| Total gzip          | 2,061.24 KB | **2,084.01 KB — FAILS (+22.77)** |
+| Chunks              | 415         | 456                              |
+| `/sector/*` payload | 107.89 KB   | ~15 KB                           |
+
+Reverted; `vite.config.ts` is byte-identical to `bbbd6b16`. The merged chunk is
+load-bearing: nineteen dynamic entries duplicate the shared sector helpers for
+more than the per-route win returns.
+
+**Conclusion (DEC-049).** There is **no config-only reduction left**. The bytes
+are vendors (41.5 %) and 170 engine-only chunks (~268 KB) that exist to keep every
+engine reachable for N-0013; module duplication is absent (5 modules in >1 chunk).
+A real drop needs a scope choice — replace exceljs, retire the 82 orphan engines,
+or accept 2,061 KB as the v1 budget. **N7 stays open**; reported, not decided,
+because each option removes something an earlier decision added.
+
+**Full table and method:** `docs/architecture/BUNDLE_BASELINE_2026-10-21.md`.
+
+**Not claimed.** The bundle did **not** improve. No code, config or budget
+changed in this entry.
+
+**Next.** (1) Owner scope choice on N7 (above). (2) `GLEntry` amount-type
+migration is **Q5 — its own DEC and staged plan**; the requirement text forbids
+starting it under N8, so the next money step is the Q5 plan, not code. (3) N8's
+named red `src/pages/data/ComparisonPage.tsx:236` (display-path `toFixed`).
+(4) N4 sub-ledger adapter (coverage order row 5 AR). Still owner-blocked:
+Actions read scope (CI 403), PR **#83**, real anonymised D365 export.
+
 ## 2026-10-21 (continued) — LEDGER MONEY ADMISSION: a row carrying money passed the balance gate
 
 **The finding.** The ledger reconciled in whole cents in every aggregate, and
