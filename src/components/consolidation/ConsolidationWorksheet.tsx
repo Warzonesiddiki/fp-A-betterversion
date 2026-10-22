@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/utils/cn';
-import { roundTo, sumMoney } from '@/utils/money';
+import { roundTo, sumMoney, type MoneyInput } from '@/utils/money';
 import { currencyFormatter, formatPercent } from '@/utils/financialFormatting';
 import { ConsolidationEngine } from '@/engines/ConsolidationEngine';
 import type {
@@ -19,6 +19,7 @@ import type {
   FXRate,
   VIENotification,
 } from '@/engines/ConsolidationEngine';
+import { isZeroAmount } from '@/utils/glRowMoney';
 
 /**
  * GAP-1 (F-0006) — exact-decimal totals for the consolidation worksheet UI.
@@ -453,9 +454,9 @@ function WorksheetView({ ws }: { ws: WS }) {
       accountCode: string;
       accountName: string;
       entityId?: string;
-      debit: number;
-      credit: number;
-      amount: number;
+      debit: MoneyInput;
+      credit: MoneyInput;
+      amount: MoneyInput;
     }[];
   }[] = [
     { key: 'parent', label: 'Parent Entries', entries: ws.parentEntries },
@@ -541,12 +542,12 @@ function WorksheetView({ ws }: { ws: WS }) {
                           {e.entityId ?? '-'}
                         </td>
                         <td className="p-1.5 text-right font-mono">
-                          {e.debit > 0 ? fmt(e.debit) : '-'}
+                          {isZeroAmount(e.debit) ? '-' : fmt(roundTo(e.debit))}
                         </td>
                         <td className="p-1.5 text-right font-mono">
-                          {e.credit > 0 ? fmt(e.credit) : '-'}
+                          {isZeroAmount(e.credit) ? '-' : fmt(roundTo(e.credit))}
                         </td>
-                        <td className="p-1.5 text-right font-mono">{fmt(e.amount)}</td>
+                        <td className="p-1.5 text-right font-mono">{fmt(roundTo(e.amount))}</td>
                       </tr>
                     ))}
                     {s.entries.length > 100 && (

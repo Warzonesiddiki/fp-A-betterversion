@@ -17,6 +17,7 @@ import { Card, CardContent } from '@/components/ui/Card';
 
 import { BarChart3 } from 'lucide-react';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { addMoney, roundTo, subtractMoney } from '@/utils/money';
 export default function AnalyticsPage() {
   const fmt = useCurrencyFormatter();
   const [_helpOpen, setHelpOpen] = useState(false);
@@ -39,7 +40,8 @@ export default function AnalyticsPage() {
       const type = acct?.type || 'Unknown';
       const g = byType.get(type) || { count: 0, total: 0 };
       g.count++;
-      g.total += e.debit - e.credit;
+      // Q5 stage 4: exact decimal subtraction, never IEEE-754 on a currency.
+      g.total = roundTo(addMoney(g.total, subtractMoney(e.debit, e.credit)));
       byType.set(type, g);
       const month = e.period || e.date.slice(0, 7);
       byMonth.set(month, (byMonth.get(month) || 0) + 1);

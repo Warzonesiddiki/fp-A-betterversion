@@ -13,6 +13,7 @@ import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { divideMoney, multiplyMoney, roundTo, sumMoney } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 import { PageHeader } from '@/components/ui/PageHeader';
+import type { MoneyInput } from '@/utils/money';
 
 /**
  * GAP-1 (F-0006) — exact-decimal NIM component income/asset aggregates.
@@ -34,7 +35,7 @@ export interface NIMComponentRow {
   [key: string]: unknown;
 }
 export function computeNIMComponents(
-  entries: readonly { accountCode: string; amount: number }[],
+  entries: readonly { accountCode: string; amount: MoneyInput }[],
   categories: readonly NIMCategory[]
 ): NIMComponentRow[] {
   return categories

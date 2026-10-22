@@ -35,9 +35,9 @@ import { rowCarriesDebitCredit } from '@/utils/glRowMoney';
 /** Minimal shape this module needs from a posted GL entry. */
 export interface GoalSeekGLEntry {
   readonly accountCode?: string;
-  readonly debit?: number | string | Decimal | null;
-  readonly credit?: number | string | Decimal | null;
-  readonly amount?: number | string | Decimal | null;
+  readonly debit?: MoneyInput | null;
+  readonly credit?: MoneyInput | null;
+  readonly amount?: MoneyInput | null;
 }
 
 export interface GoalSeekActuals {

@@ -30,9 +30,9 @@ export interface CreditRiskGLEntry {
   readonly accountCode?: string;
   readonly accountName?: string;
   readonly entityId?: string;
-  readonly debit?: number | string | Decimal | null;
-  readonly credit?: number | string | Decimal | null;
-  readonly amount?: number | string | Decimal | null;
+  readonly debit?: MoneyInput | null;
+  readonly credit?: MoneyInput | null;
+  readonly amount?: MoneyInput | null;
 }
 
 export interface UnavailableLine {

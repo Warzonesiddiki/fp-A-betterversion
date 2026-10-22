@@ -39,9 +39,9 @@ import { rowCarriesDebitCredit } from '@/utils/glRowMoney';
 export interface EducationGLEntry {
   readonly accountCode?: string | null;
   readonly accountName?: string | null;
-  readonly debit?: number | string | Decimal | null;
-  readonly credit?: number | string | Decimal | null;
-  readonly amount?: number | string | Decimal | null;
+  readonly debit?: MoneyInput | null;
+  readonly credit?: MoneyInput | null;
+  readonly amount?: MoneyInput | null;
 }
 
 export interface EducationBudgetLine {

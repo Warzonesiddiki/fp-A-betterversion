@@ -54,9 +54,9 @@ export const SEASONALITY_WEIGHTS: Record<SeasonalityPreset, readonly number[]> =
 
 export interface ForecastGLEntry {
   readonly accountCode?: string | null;
-  readonly debit?: number | string | Decimal | null;
-  readonly credit?: number | string | Decimal | null;
-  readonly amount?: number | string | Decimal | null;
+  readonly debit?: MoneyInput | null;
+  readonly credit?: MoneyInput | null;
+  readonly amount?: MoneyInput | null;
   readonly period?: string | null;
   readonly date?: string | null;
 }

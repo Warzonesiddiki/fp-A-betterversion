@@ -1,13 +1,14 @@
 import type { GLEntry } from '@/types';
 import Decimal from 'decimal.js';
+import { asMoney, type MoneyInput, toDecimal } from '@/utils/money';
 
 interface RawGLEntry {
   readonly id: string;
   readonly accountCode: string;
   readonly accountName: string;
   readonly description: string;
-  readonly debit: number;
-  readonly credit: number;
+  readonly debit: MoneyInput;
+  readonly credit: MoneyInput;
   readonly postDate: string;
   readonly fiscalPeriod: string;
   readonly department: string;
@@ -18,14 +19,16 @@ interface RawGLEntry {
 }
 
 function toGLEntry(raw: RawGLEntry): GLEntry {
-  const netChange = new Decimal(raw.credit).minus(raw.debit).toNumber();
+  const netChange = toDecimal(raw.credit).minus(toDecimal(raw.debit)).toNumber();
   return {
     ...raw,
+    debit: asMoney(raw.debit),
+    credit: asMoney(raw.credit),
     accountId: raw.id,
     period: raw.fiscalPeriod,
     periodName: raw.fiscalPeriod,
-    netChange,
-    amount: new Decimal(raw.debit).plus(raw.credit).toNumber(),
+    netChange: asMoney(netChange),
+    amount: asMoney(toDecimal(raw.debit).plus(toDecimal(raw.credit)).toNumber()),
     date: raw.postDate,
     reference: raw.journalId,
     entityId: raw.entity,
@@ -938,8 +941,8 @@ export function computeTrialBalance(): TrialBalanceItem[] {
       credit: new Decimal(0),
       count: 0,
     };
-    existing.debit = existing.debit.plus(entry.debit);
-    existing.credit = existing.credit.plus(entry.credit);
+    existing.debit = existing.debit.plus(toDecimal(entry.debit));
+    existing.credit = existing.credit.plus(toDecimal(entry.credit));
     existing.count++;
     grouped.set(key, existing);
   }

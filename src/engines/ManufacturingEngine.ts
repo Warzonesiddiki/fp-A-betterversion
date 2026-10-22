@@ -22,7 +22,14 @@
  */
 import type { GLEntry } from '@/types';
 
-import { addMoney, divideMoney, roundTo, subtractMoney, sumMoney } from '../utils/money';
+import {
+  addMoney,
+  divideMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  moneyToAmount,
+} from '../utils/money';
 
 const CURRENCY_PLACES = 2;
 const RATIO_PLACES = 10;
@@ -74,8 +81,7 @@ export class ManufacturingEngine {
     // Per-entry net amount: prefer e.amount; fall back to debit − credit on
     // decimal. Returning a number keeps downstream `sumMoney` calls a noop
     // cast; the inner `subtractMoney` is what makes this IEEE-754-free.
-    const getAmount = (e: GLEntry): number =>
-      e.amount ?? roundTo(subtractMoney(e.debit ?? 0, e.credit ?? 0));
+    const getAmount = (e: GLEntry): number => moneyToAmount(e.amount);
 
     const revenueDec = sumMoney(
       entries
@@ -155,8 +161,7 @@ export class ManufacturingEngine {
   ): ProductionLine[] {
     if (configs.length === 0) return [];
 
-    const getAmount = (e: GLEntry): number =>
-      e.amount ?? roundTo(subtractMoney(e.debit ?? 0, e.credit ?? 0));
+    const getAmount = (e: GLEntry): number => moneyToAmount(e.amount);
 
     const totalCostDec = sumMoney(
       entries
@@ -173,8 +178,7 @@ export class ManufacturingEngine {
    * Returns an empty trend when no dated entries exist.
    */
   static getMonthlyTrend(entries: GLEntry[]): MonthlyProductionPoint[] {
-    const getAmount = (e: GLEntry): number =>
-      e.amount ?? roundTo(subtractMoney(e.debit ?? 0, e.credit ?? 0));
+    const getAmount = (e: GLEntry): number => moneyToAmount(e.amount);
 
     const buckets = new Map<string, GLEntry[]>();
     for (const e of entries) {

@@ -29,8 +29,8 @@ import { divideMoney, sumMoney, toDecimal, type MoneyInput } from '@/utils/money
 
 export interface BenchmarkGLEntry {
   readonly accountCode?: string | null;
-  readonly debit?: number | string | Decimal | null;
-  readonly credit?: number | string | Decimal | null;
+  readonly debit?: MoneyInput | null;
+  readonly credit?: MoneyInput | null;
 }
 
 export interface BenchmarkBasis {

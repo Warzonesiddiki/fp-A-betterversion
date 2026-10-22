@@ -20,7 +20,7 @@ import { useGLStore } from '@/store/glStore';
 import { BondPricingEngine } from '@/engines/BondPricingEngine';
 import type { GLEntry } from '@/types';
 import { formatNumber, formatPercent } from '@/utils/financialFormatting';
-import { sumMoney, roundTo, divideMoney, multiplyMoney } from '@/utils/money';
+import { sumMoney, roundTo, divideMoney, multiplyMoney, toDecimal } from '@/utils/money';
 
 /** Derive synthetic bond instruments from GL entries. */
 function deriveBondsFromGL(entries: GLEntry[]) {
@@ -32,7 +32,7 @@ function deriveBondsFromGL(entries: GLEntry[]) {
     .map((id) => {
       const entityEntries = entries.filter((e) => e.entityId === id);
       const name = entityEntries[0]?.accountName || 'Unknown Instrument';
-      const faceValue = roundTo(sumMoney(entityEntries.map((e) => Math.abs(e.amount))), 2);
+      const faceValue = roundTo(sumMoney(entityEntries.map((e) => toDecimal(e.amount).abs())), 2);
 
       if (faceValue === 0) return null;
 

@@ -43,6 +43,7 @@ import type { ReactElement } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import type { GLEntry } from '@/types';
+import { addMoney, asMoney, roundTo, subtractMoney } from '@/utils/money';
 
 /** A partial ledger row; everything else is filled with deterministic values. */
 export type GLSeed = Partial<GLEntry> & Pick<GLEntry, 'accountCode' | 'debit' | 'credit'>;
@@ -60,11 +61,11 @@ export function makeGLEntry(seed: GLSeed): GLEntry {
     accountName: seed.accountName ?? `Account ${seed.accountCode}`,
     period: seed.period ?? seed.date?.slice(0, 7) ?? '2026-08',
     periodName: seed.periodName ?? seed.period ?? '2026-08',
-    debit: seed.debit,
-    credit: seed.credit,
-    netChange: seed.netChange ?? seed.debit - seed.credit,
+    debit: asMoney(seed.debit),
+    credit: asMoney(seed.credit),
+    netChange: asMoney(seed.netChange ?? roundTo(subtractMoney(seed.debit, seed.credit))),
     date: seed.date ?? '2026-08-01',
-    amount: seed.amount ?? seed.debit + seed.credit,
+    amount: asMoney(seed.amount ?? roundTo(addMoney(seed.debit, seed.credit))),
     description: seed.description ?? `Render-probe entry ${id}`,
     reference: seed.reference ?? id,
     currency: seed.currency ?? 'USD',

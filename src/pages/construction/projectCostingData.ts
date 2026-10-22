@@ -24,9 +24,9 @@ import { rowCarriesDebitCredit } from '@/utils/glRowMoney';
 export interface ProjectCostingGLEntry {
   readonly accountCode?: string;
   readonly accountName?: string;
-  readonly debit?: number | string | Decimal | null;
-  readonly credit?: number | string | Decimal | null;
-  readonly amount?: number | string | Decimal | null;
+  readonly debit?: MoneyInput | null;
+  readonly credit?: MoneyInput | null;
+  readonly amount?: MoneyInput | null;
   readonly entityId?: string;
   readonly departmentId?: string;
 }

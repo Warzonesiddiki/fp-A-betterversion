@@ -10,7 +10,7 @@ import {
 } from '@/engines/DrillThroughEngine';
 import { ChevronRight, ArrowLeft, Layers, Building2, FileText } from 'lucide-react';
 import Decimal from 'decimal.js';
-import { roundTo, subtractMoney } from '@/utils/money';
+import { roundTo, subtractMoney, type MoneyInput } from '@/utils/money';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 /**
@@ -25,7 +25,7 @@ import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
  * display. Exported for *.money.test.ts.
  */
 export interface DrillEntryLike {
-  amount: number;
+  amount: MoneyInput;
 }
 
 export interface DepartmentTotal {
@@ -35,14 +35,16 @@ export interface DepartmentTotal {
 }
 
 export function deriveDrillAmount(entry: {
-  amount?: number | null;
-  debit?: number;
-  credit?: number;
+  amount?: MoneyInput | null;
+  debit?: MoneyInput;
+  credit?: MoneyInput;
 }): number {
   // Prefer `amount` when set; fall back to debit - credit through the
   // money primitive so a 0.3 debit vs 0.1 + 0.2 credit pair nets to
   // exactly 0 (not 5.55e-17).
-  if (entry.amount != null) return entry.amount;
+  // Q5 stage 4: `amount` may be a `Money`; `roundTo` reads every MoneyInput
+  // shape exactly and returns whole currency units.
+  if (entry.amount != null) return roundTo(entry.amount);
   const d = entry.debit ?? 0;
   const c = entry.credit ?? 0;
   return roundTo(subtractMoney(d, c));
@@ -76,7 +78,7 @@ interface DrillRow {
   id: string;
   date: string;
   description: string;
-  amount: number;
+  amount: MoneyInput;
   department: string;
   accountCode: string;
   accountName: string;

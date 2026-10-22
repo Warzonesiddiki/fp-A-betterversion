@@ -1,5 +1,43 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-22 (c) — Q5 stage 4: the type flip, and the gate that makes it honest (DEC-057)
+
+**What shipped.** `GLEntry.debit`, `credit`, `netChange` and `amount` are
+`Money`. The 164-line tie-out fixture converted mechanically, then the compiler
+worklist went 136 → 60 → **0** across 65 files: store, consolidation/IC/sector/
+NLQ/insurance engines, the three import services, the mock generators, the
+analysis DTOs and every page that reads a ledger amount.
+`tsc --noEmit` and `eslint src --max-warnings 0` are clean.
+
+**The gate.** Hydration is the only door into the store, so the conversion
+happens in `persist.merge`: `partitionLedgerRows` splits the persisted rows, the
+representable half is re-encoded through `normalizeGLEntry` → `Money`, and the
+unrepresentable half is kept **verbatim** in `quarantinedEntries` — never
+rounded, never dropped, never zeroed, and excluded from every `Money` aggregate.
+`ledgerScaleAudit()` now reports the load-time quarantine as well as the live
+rows. `masterStorage` deliberately stays at `as: 'number'`: 43 persisted stores
+share it, and the gate belongs in the one store that adopted `Money`.
+
+**What the compiler did not catch.** `mergeListedEntry` had become
+`asMoney(row.debit)`, which throws on an invalid server row. The old contract is
+"reject the row, name it, keep converging the rest" (FR-006); the new code
+aborted the whole boot hydrate. `crossListedAmount` now hands the raw value back
+so `ledgerAmountIssues` names it. The failure surfaced only because the
+server-path suite asserts on the _rejection reason_, not on the absence of an
+exception.
+
+**Evidence.** `glStore.hydrateGate.test.ts` 6/6 (twin ledger in both shapes;
+exact minor units; sub-cent kept as `0.005`; non-finite quarantined; partition
+completeness; both halves reported; empty envelope invents nothing),
+mutation-verified by removing the crossing (2 fail). glStore + money suites:
+**22 files / 302 tests green**. Four pre-flip suites had to be re-stated across
+the boundary with `amountFrom`/`moneyToMinor` — the assertions got stronger, not
+weaker (the numbers are now exact minor units).
+
+**Not claimed.** The full suite has **not** been re-run since the flip, so no
+"all green" statement is made. Stage 5 (engines) and stage 6 (pages/display
+adapter) are open, and **no page renders the quarantine yet**.
+
 ## 2026-10-22 (b) — Q5 stage 4: the trap sweep, beyond the GL store (DEC-056)
 
 **What I set out to do.** Start the stage-4 type flip. Converted the one huge

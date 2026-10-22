@@ -21,7 +21,14 @@ import {
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import Decimal from 'decimal.js';
-import { divideMoney, roundTo, subtractMoney, sumMoney } from '@/utils/money';
+import {
+  divideMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  type MoneyInput,
+  toDecimal,
+} from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 /**
@@ -59,7 +66,7 @@ export function computeDeprForecastTotals(assets: readonly DeprAssetLike[]): Dep
 }
 
 export function sumGLFixedAssetMovement(
-  entries: readonly { accountCode?: string; debit: number; credit: number }[]
+  entries: readonly { accountCode?: string; debit: MoneyInput; credit: MoneyInput }[]
 ): number {
   const fixed = entries.filter(
     (e) => (e.accountCode || '').startsWith('14') || (e.accountCode || '').startsWith('15')
@@ -68,7 +75,7 @@ export function sumGLFixedAssetMovement(
     sumMoney(
       fixed.map((e) =>
         // absolute net movement per entry
-        new Decimal(e.debit).sub(e.credit).abs().toNumber()
+        toDecimal(e.debit).sub(toDecimal(e.credit)).abs().toNumber()
       )
     )
   );

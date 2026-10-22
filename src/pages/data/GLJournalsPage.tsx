@@ -19,9 +19,10 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { toCSV } from '@/utils/csv';
 import { filterGLEntriesByPermission } from '@/utils/dataPermissionFilter';
-import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
+import { sumMoney, subtractMoney, roundTo, type MoneyInput } from '@/utils/money';
 import { BookOpen, ChevronLeft, ChevronRight, Download, Search, BarChart3 } from 'lucide-react';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { isZeroAmount } from '@/utils/glRowMoney';
 /** Money-primitive journal totals (GAP-1 F-0006). */
 export interface GLJournalTotals {
   debits: number;
@@ -30,7 +31,7 @@ export interface GLJournalTotals {
 }
 
 export function computeJournalTotals(
-  entries: readonly { debit: number; credit: number }[]
+  entries: readonly { debit: MoneyInput; credit: MoneyInput }[]
 ): GLJournalTotals {
   const debits = roundTo(sumMoney(entries.map((e) => e.debit)), 2);
   const credits = roundTo(sumMoney(entries.map((e) => e.credit)), 2);
@@ -349,10 +350,10 @@ export default function GLJournalsPage() {
                         {e.description || '-'}
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums text-blue-400">
-                        {e.debit > 0 ? fmt.currency0(e.debit) : ''}
+                        {isZeroAmount(e.debit) ? '' : fmt.currency0(roundTo(e.debit))}
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums text-green-400">
-                        {e.credit > 0 ? fmt.currency0(e.credit) : ''}
+                        {isZeroAmount(e.credit) ? '' : fmt.currency0(roundTo(e.credit))}
                       </td>
                       <td className="px-4 py-3 text-xs text-[var(--text-muted)]">
                         {e.reference || '-'}

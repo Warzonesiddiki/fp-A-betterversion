@@ -58,9 +58,9 @@ function moneyRow(overrides: Record<string, unknown> = {}): GLEntry {
   } as unknown as GLEntry;
 }
 
-/** Read a money field that is still typed `number` in this build. */
+/** Read a money field as a major-unit number — the test-side crossing. */
 function amountOf(entry: GLEntry, field: 'debit' | 'credit' | 'netChange' | 'amount'): number {
-  return entry[field] as unknown as number;
+  return amountFrom(entry[field]);
 }
 
 beforeEach(() => {

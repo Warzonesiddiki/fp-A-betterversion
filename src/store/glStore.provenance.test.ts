@@ -9,6 +9,7 @@ import { useGLStore } from './glStore';
 import { setClock, resetClock } from '@/utils/clock';
 import { parseGLRows } from '@/services/import/parseGLRows';
 import type { GLEntry } from '@/types';
+import { amountFrom } from '@/utils/money';
 
 const FIXED_INSTANT = '2026-10-15T09:30:00.000Z';
 
@@ -235,7 +236,8 @@ describe('glStore import provenance (Gate 2)', () => {
       mappings,
       10
     );
-    expect(parsed.entries[0]?.amount).toBe(0); // the upload parser's placeholder
+    // the upload parser's placeholder — a `Money` zero after stage 4
+    expect(amountFrom(parsed.entries[0]!.amount)).toBe(0);
     expect(
       useGLStore.getState().importGLData(parsed.entries, 'first.csv', { fileHash: FILE_HASH })
         .success

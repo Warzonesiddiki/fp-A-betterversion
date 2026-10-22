@@ -31,7 +31,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createSyntheticTieOutLedger } from '@/test/fixtures/syntheticTieOutLedger';
-import { asMoney, InvalidMoneyError, moneyToMinor } from '@/utils/money';
+import { amountFrom, asMoney, InvalidMoneyError, isMoneyValue, moneyToMinor } from '@/utils/money';
 import { decodeMoneyGraph, jsonContainsNumericMoney } from '@/utils/moneySerialize';
 import type { GLEntry } from '@/types';
 import type { SqlJsStatic } from 'sql.js';
@@ -275,7 +275,9 @@ describe('glStore money persistence (Q5 stage 2, DEC-051)', () => {
       for (const field of MONEY_FIELDS) {
         // Independent expectation: the fixture amounts are exact cents, so the
         // canonical form is their plain decimal spelling.
-        const expected = String(ledger.entries[index]![field]);
+        // The fixture is `Money` (Q5 stage 4): its canonical spelling is the
+        // major-unit amount, exactly what the pre-flip number produced.
+        const expected = String(amountFrom(ledger.entries[index]![field]));
         expect(entry[field]).toBe(`$d:${expected}` as unknown as number);
       }
     }
@@ -382,10 +384,20 @@ describe('glStore money persistence (Q5 stage 2, DEC-051)', () => {
 
     // Exactly what a build before stage 1 wrote: canonical JSON, no `$d:` tags.
     const ledger = createSyntheticTieOutLedger();
+    // Pre-Q5 rows had plain numbers at the money keys. The fixture is now
+    // `Money`, so it is flattened here to reproduce what that build wrote.
+    const legacyEntries = ledger.entries.map((entry) =>
+      Object.fromEntries(
+        Object.entries(entry).map(([key, value]) => [
+          key,
+          isMoneyValue(value) ? amountFrom(value) : value,
+        ])
+      )
+    );
     const legacyEnvelope = JSON.stringify({
-      state: { entries: ledger.entries },
+      state: { entries: legacyEntries },
       version: 1,
-    } satisfies PersistedEnvelope);
+    });
     expect(legacyEnvelope).toContain('"debit":500000');
     expect(legacyEnvelope).not.toContain('$d:');
 
@@ -410,8 +422,8 @@ describe('glStore money persistence (Q5 stage 2, DEC-051)', () => {
     const rehydrated = restarted.useGLStore.getState().entries;
     expect(rehydrated).toHaveLength(41);
     expect(rehydrated).toEqual(ledger.entries);
-    expect(rehydrated[0]?.debit).toBe(500000);
-    expect(rehydrated[1]?.netChange).toBe(-500000);
+    expect(amountFrom(rehydrated[0]!.debit)).toBe(500000);
+    expect(amountFrom(rehydrated[1]!.netChange)).toBe(-500000);
   }, 90_000);
 
   it('decodes the persisted ledger into exact integer minor units that balance', async () => {
@@ -444,7 +456,7 @@ describe('glStore money persistence (Q5 stage 2, DEC-051)', () => {
         const minor = moneyToMinor(entry[field]);
         expect(Number.isSafeInteger(minor)).toBe(true);
         // The cents are exact: no epsilon, no rounding.
-        expect(minor).toBe(Math.round(ledger.entries[index]![field] * 100));
+        expect(minor).toBe(moneyToMinor(ledger.entries[index]![field]));
       }
       debitMinor += moneyToMinor(entry.debit);
       creditMinor += moneyToMinor(entry.credit);

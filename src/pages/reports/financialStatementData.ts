@@ -24,14 +24,14 @@ import { sumMoney, toDecimal, type MoneyInput } from '@/utils/money';
 /** Minimal shape this module needs from a posted GL entry. */
 export interface StatementGLEntry {
   readonly accountCode?: string;
-  readonly debit?: number | string | Decimal | null;
-  readonly credit?: number | string | Decimal | null;
+  readonly debit?: MoneyInput | null;
+  readonly credit?: MoneyInput | null;
 }
 
 /** Minimal shape this module needs from a posted budget line item. */
 export interface StatementBudgetLine {
   readonly accountCode?: string;
-  readonly amount?: number | string | Decimal | null;
+  readonly amount?: MoneyInput | null;
 }
 
 /** A statement line that could not be derived, plus why. */

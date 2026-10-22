@@ -3,6 +3,7 @@ import { useAuthStore } from './authStore';
 import { useGLStore } from './glStore';
 import type { GLAccount } from '@/types';
 import type { AccountType } from '@/types';
+import { amountFrom } from '@/utils/money';
 
 describe('glStore', () => {
   beforeEach(() => {
@@ -178,7 +179,13 @@ describe('glStore', () => {
     const entries = [createEntry()];
     useGLStore.getState().setEntries(entries);
     const state = useGLStore.getState();
-    expect(state.entries).toEqual(entries);
+    // Q5 stage 4: the store normalizes every row to `Money`, so the value is
+    // compared across the boundary instead of by object shape.
+    expect(state.entries).toHaveLength(entries.length);
+    expect(amountFrom(state.entries[0]!.debit)).toBe(amountFrom(entries[0]!.debit));
+    expect(amountFrom(state.entries[0]!.credit)).toBe(amountFrom(entries[0]!.credit));
+    expect(amountFrom(state.entries[0]!.netChange)).toBe(amountFrom(entries[0]!.netChange));
+    expect(amountFrom(state.entries[0]!.amount)).toBe(amountFrom(entries[0]!.amount));
     expect(state.trialBalance).toEqual([]);
     expect(state.accountAnalysis).toBeNull();
   });
@@ -211,7 +218,7 @@ describe('glStore', () => {
     const state = useGLStore.getState();
     expect(state.entries).toHaveLength(1);
     expect(state!.entries[0]!.accountId).toBe('acct-1');
-    expect(state!.entries[0]!.debit).toBe(500);
+    expect(amountFrom(state!.entries[0]!.debit)).toBe(500);
     expect(state!.entries[0]!.description).toBe('Sale');
   });
 

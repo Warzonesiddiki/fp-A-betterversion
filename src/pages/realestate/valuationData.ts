@@ -41,9 +41,9 @@ export interface ValuationGLEntry {
   readonly accountCode?: string | null;
   readonly accountName?: string | null;
   readonly entityId?: string | null;
-  readonly debit?: number | string | Decimal | null;
-  readonly credit?: number | string | Decimal | null;
-  readonly amount?: number | string | Decimal | null;
+  readonly debit?: MoneyInput | null;
+  readonly credit?: MoneyInput | null;
+  readonly amount?: MoneyInput | null;
 }
 
 export interface PropertyValuationRow {

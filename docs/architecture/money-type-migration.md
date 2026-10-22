@@ -93,14 +93,14 @@ by an in-memory type; conversion happens at that boundary either way.
 Each stage must leave `tsc` green, the targeted suites green, INV-009 green, and
 be revertible in one commit.
 
-| #     | Stage                                                                 | Blast radius              | Entry criterion                                 | Verification                                                                                             |
-| ----- | --------------------------------------------------------------------- | ------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **1** | **`Money` type + exact arithmetic + serializer byte-identity**        | 0 (nothing adopts it)     | —                                               | **SHIPPED** — 13 tests, mutation-checked                                                                 |
-| **2** | **Real persisted GL fixture round-trip through the production stack** | **0**                     | Stage 1                                         | **SHIPPED** — 6 tests, mutation-checked; opened the sub-cent gate below                                  |
-| **3** | **`TrialBalanceRow` + `AccountAnalysis` adopt `Money`**               | **6 files**               | Stage 2                                         | **SHIPPED** — 13 tests, mutation-checked; these are **derived, not persisted** (`partialize` omits both) |
-| 4     | `GLEntry.debit/credit/netChange/amount` adopt `Money`                 | **133 errors / 65 files** | Stages 2–3 **+ the hydration policy (shipped)** | decode path decided; `tsc` is the worklist; commit area by area (store → engines → services → pages)     |
-| 5     | Engines and services adopt `Money`                                    | 32 files                  | Stage 4                                         | Existing money test suites; consolidation FX converts at an explicit rate                                |
-| 6     | Pages and components adopt `Money` for display                        | 108 files                 | Stage 5, plus one shared display adapter        | Route smoke tests; no page does arithmetic inline (already enforced by `money:ast`)                      |
+| #     | Stage                                                                 | Blast radius          | Entry criterion                                 | Verification                                                                                                 |
+| ----- | --------------------------------------------------------------------- | --------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **1** | **`Money` type + exact arithmetic + serializer byte-identity**        | 0 (nothing adopts it) | —                                               | **SHIPPED** — 13 tests, mutation-checked                                                                     |
+| **2** | **Real persisted GL fixture round-trip through the production stack** | **0**                 | Stage 1                                         | **SHIPPED** — 6 tests, mutation-checked; opened the sub-cent gate below                                      |
+| **3** | **`TrialBalanceRow` + `AccountAnalysis` adopt `Money`**               | **6 files**           | Stage 2                                         | **SHIPPED** — 13 tests, mutation-checked; these are **derived, not persisted** (`partialize` omits both)     |
+| **4** | **`GLEntry.debit/credit/netChange/amount` adopt `Money`**             | **65 files**          | Stages 2–3 **+ the hydration policy (shipped)** | **SHIPPED (code)** — `tsc` 0, eslint 0; hydrate gate 6 tests, mutation-checked; store/money suites 302 green |
+| 5     | Engines and services adopt `Money`                                    | 32 files              | Stage 4                                         | Existing money test suites; consolidation FX converts at an explicit rate                                    |
+| 6     | Pages and components adopt `Money` for display                        | 108 files             | Stage 5, plus one shared display adapter        | Route smoke tests; no page does arithmetic inline (already enforced by `money:ast`)                          |
 
 **Stage 6 comes last and deliberately:** 102 of the 151 files are display-only,
 so they can be converted mechanically once a single adapter renders `Money`. Doing
@@ -239,6 +239,74 @@ branch fails **8**.
 `Money` journal" passes under the first mutation, because `0 = 0` is balanced.
 An acceptance assertion cannot detect zeroing; only a value-sensitive one (an
 unbalanced journal must fail) can. Both are in the file, and both are needed.
+
+## Stage 4 result (2026-10-22) — the type flip, and the gate that makes it honest
+
+**Shipped:** `GLEntry.debit`, `credit`, `netChange` and `amount` are `Money`.
+The compiler worklist went 300 raw errors → 164 (fixture) → 136 → 60 → **0**
+across 65 files. `tsc --noEmit` and `eslint src --max-warnings 0` are clean.
+
+### The gate (`persist.merge`, DEC-057)
+
+Hydration is the only door into the store, so the conversion happens there:
+
+```
+persisted rows  →  partitionLedgerRows  →  representable: normalizeGLEntry → Money
+                                        →  unrepresentable: quarantinedEntries (verbatim)
+```
+
+- re-encoding is lossless — the at-rest form is already a canonical decimal
+  string, so the persisted bytes do not change;
+- a sub-cent / non-finite / unparseable amount is **kept verbatim** in
+  `quarantinedEntries`, named by `describeQuarantinedRows`, and excluded from
+  every `Money` aggregate — the DEC-054 rule, applied to the load path;
+- `ledgerScaleAudit()` now reports **both** halves (load-time quarantine +
+  live rows), so the exclusion is visible after state has settled.
+
+`masterStorage` stays at `as: 'number'` on purpose: it serves 43 persisted
+stores, most still numeric, and a global `as: 'money'` would make one sub-cent
+row anywhere throw on read. The gate lives in the one store that adopted
+`Money`.
+
+### The four crossings
+
+| Boundary                              | Rule                                                                                 |
+| ------------------------------------- | ------------------------------------------------------------------------------------ |
+| `GlJournalLine` / `GlJournalBatch`    | **stays `number`, major units** — `moneyToAmount` at the call site                   |
+| `GlListedEntry` (server rows)         | `number` → `crossListedAmount`; an un-crossable value is handed back to be **named** |
+| `ICTransaction.amount`, analysis DTOs | `number`, major units (derived output, not ledger state)                             |
+| NLQ projections / Excel & CSV exports | `roundTo(...)` — never `Number(...)`, never `toFixed`                                |
+| Input interfaces (28 files)           | `MoneyInput`, converted internally via `toDecimal` / `roundTo`                       |
+| Cube cells                            | `moneyToAmount`                                                                      |
+
+### Evidence
+
+- `glStore.hydrateGate.test.ts` **6/6** — the same ledger as numbers and as
+  `Money` hydrates identically; every money field is a `Money` with exact minor
+  units (`{ minor: 123456 }`, not "an object"); a sub-cent row is quarantined
+  verbatim (`0.005`, not `0.01` and not `0`) with its fields named; a non-finite
+  amount is quarantined rather than coerced to 0; the two halves partition the
+  persisted rows; `ledgerScaleAudit` reports both; an empty/absent envelope
+  invents nothing.
+- **Mutation-verified:** removing the `normalizeGLEntry` crossing (passing rows
+  through unchanged) fails 2 of the 6.
+- The glStore + money suites (**22 files, 302 tests**) are green, including the
+  four pre-flip suites that had to be re-stated across the boundary
+  (`glStore.test.ts`, `glStore.money.test.ts`, `glStore.amountIntegrity.test.ts`,
+  `glStore.ledgerScale.test.ts`, `glStore.moneyPersist.test.ts`,
+  `glStore.provenance.test.ts`, `glStore.server.test.ts`, `glStore.smoke.test.ts`).
+
+**Found by the flip, not by the compiler:** `mergeListedEntry` had become
+`asMoney(row.debit)`, which **throws** on a `NaN` server row. The old path
+rejected that row and kept converging the rest (FR-006); the new one aborted the
+whole boot hydrate. `crossListedAmount` hands the raw value back so
+`ledgerAmountIssues` names it and the loop continues. This is the same lesson as
+DEC-055 one layer out: the compiler shows the type errors, not the failure
+semantics.
+
+**Not claimed:** the full suite has not been re-run since the flip; stage 5/6
+adoption, a display adapter, and rendering the quarantine in the UI are still
+open.
 
 ## Stage 4 precondition (2026-10-21) — quarantine, don't round
 

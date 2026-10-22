@@ -11,7 +11,7 @@
 
 import type { GLEntry } from '@/types';
 import { IntercompanyMatchingEngine } from '@/engines/IntercompanyMatchingEngine';
-import { roundTo, sumMoney, subtractMoney } from '@/utils/money';
+import { roundTo, sumMoney, type MoneyInput } from '@/utils/money';
 
 export type TPMethod = 'TNMM' | 'CUP' | 'RPM' | 'CPM' | 'PSM';
 export type TPStatus = 'compliant' | 'review' | 'non-compliant';
@@ -21,7 +21,7 @@ export interface TPTransaction {
   readonly from: string;
   readonly to: string;
   readonly service: string;
-  readonly amount: number;
+  readonly amount: MoneyInput;
   readonly method: TPMethod;
   /**
    * Observed margin percent. Null when not derivable: a margin needs a
@@ -68,7 +68,7 @@ export function applyBenchmarks(
 export interface MethodDistribution {
   readonly method: TPMethod;
   readonly count: number;
-  readonly amount: number;
+  readonly amount: MoneyInput;
 }
 
 export function classifyMethodFromText(text: string): TPMethod {
@@ -139,7 +139,7 @@ export function deriveTPTransactions(entries: readonly GLEntry[]): TPTransaction
 
     if (isIC && !seenIds.has(e.id)) {
       seenIds.add(e.id);
-      const amount = Math.abs(e.amount ?? subtractMoney(e.debit ?? 0, e.credit ?? 0).toNumber());
+      const amount = Math.abs(roundTo(e.amount));
       result.push({
         id: e.id,
         from: e.entityId || 'Holding Corp',
@@ -165,7 +165,7 @@ export function computeMethodDistribution(
   for (const t of transactions) {
     const current = methodMap.get(t.method) ?? { count: 0, amounts: [] };
     current.count += 1;
-    current.amounts.push(t.amount);
+    current.amounts.push(roundTo(t.amount));
     methodMap.set(t.method, current);
   }
 

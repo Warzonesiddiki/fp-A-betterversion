@@ -13,6 +13,7 @@ import { useSettingsStore } from '@/store/settingsStore';
 import { useGLStore } from '@/store/glStore';
 import type { GLState, SettingsState } from '@/types';
 import { signedAmountOf } from '@/utils/glRowMoney';
+import { asMoney } from '@/utils/money';
 
 interface OnboardingWizardProps {
   onComplete: () => void;
@@ -135,10 +136,12 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           accountName: String(d.account),
           period: String(d.date).slice(0, 7),
           periodName: String(d.date).slice(0, 7),
-          debit: importedAmount !== null && importedAmount > 0 ? importedAmount : 0,
-          credit: importedAmount !== null && importedAmount < 0 ? Math.abs(importedAmount) : 0,
-          netChange: importedAmount ?? 0,
-          amount: importedAmount ?? 0,
+          debit: asMoney(importedAmount !== null && importedAmount > 0 ? importedAmount : 0),
+          credit: asMoney(
+            importedAmount !== null && importedAmount < 0 ? Math.abs(importedAmount) : 0
+          ),
+          netChange: asMoney(importedAmount ?? 0),
+          amount: asMoney(importedAmount ?? 0),
           date: String(d.date),
           description: 'Initial import during onboarding',
           reference: 'ONBOARDING',

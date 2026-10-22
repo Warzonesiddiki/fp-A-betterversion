@@ -31,6 +31,7 @@ import {
   subtractMoney,
   sumMoney,
   toDecimal,
+  type MoneyInput,
 } from '@/utils/money';
 import { formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
@@ -93,7 +94,7 @@ export function projectVarianceLike(p: CapExProjectLike): number {
 /** Sum of |debit − credit| for GL entries whose account code starts with
  *  the given prefix (CapEx = '1'). Exact decimal (GAP-1 F-0006). */
 export function sumGLCapexMovement(
-  entries: ReadonlyArray<{ accountCode?: string; debit: number; credit: number }>,
+  entries: ReadonlyArray<{ accountCode?: string; debit: MoneyInput; credit: MoneyInput }>,
   prefix = '1'
 ): number {
   if (entries.length === 0) return 0;

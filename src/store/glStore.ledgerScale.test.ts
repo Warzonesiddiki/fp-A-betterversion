@@ -23,7 +23,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { useAuthStore } from './authStore';
 import { useGLStore } from './glStore';
 import { setClock, resetClock } from '@/utils/clock';
-import { toCents } from '@/utils/money';
+import { toCents, amountFrom } from '@/utils/money';
 import type { GLEntry } from '@/types';
 
 const FIXED_INSTANT = '2026-10-21T09:30:00.000Z';
@@ -148,8 +148,8 @@ describe('glStore ledger money admission (FR-006 · P1-11 phase 1)', () => {
     useGLStore.getState().setEntries([entry({ debit: 1284.5, credit: 0.25 })]);
 
     const stored = useGLStore.getState().entries[0]!;
-    expect(stored.debit).toBe(1284.5);
-    expect(stored.credit).toBe(0.25);
+    expect(amountFrom(stored.debit)).toBe(1284.5);
+    expect(amountFrom(stored.credit)).toBe(0.25);
   });
 
   it('holds the accounting identity in cents on every accepted row', () => {

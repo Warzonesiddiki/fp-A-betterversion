@@ -16,6 +16,7 @@ import {
   type MatchSummary,
   type ToleranceSettings,
 } from '@/engines/ICMatchingEngine';
+import { roundTo, type MoneyInput } from '@/utils/money';
 
 // =============================================================================
 // IC MATCHING DASHBOARD
@@ -501,6 +502,6 @@ function UnmatchedPanel({
 // HELPERS
 // =============================================================================
 
-function formatAmount(amount: number): string {
-  return currencyFormatter(reportingCurrency(), { decimals: 0 })(amount);
+function formatAmount(amount: MoneyInput): string {
+  return currencyFormatter(reportingCurrency(), { decimals: 0 })(roundTo(amount));
 }

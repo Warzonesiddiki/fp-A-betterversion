@@ -1,4 +1,4 @@
-import { toDecimal, roundTo } from '@/utils/money';
+import { toDecimal, roundTo, type MoneyInput } from '@/utils/money';
 
 /**
  * Phase 10 — AR/AP open-item aging derived from the general ledger.
@@ -26,8 +26,8 @@ export interface AgingEntry {
   accountCode?: string;
   date?: string;
   period?: string;
-  debit?: number;
-  credit?: number;
+  debit?: MoneyInput;
+  credit?: MoneyInput;
   reference?: string;
 }
 

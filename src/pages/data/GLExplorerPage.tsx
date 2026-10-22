@@ -9,8 +9,9 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { useGLStore } from '@/store/glStore';
 import { toCSV } from '@/utils/csv';
 import { filterGLEntriesByPermission } from '@/utils/dataPermissionFilter';
-import { sumMoney, subtractMoney, roundTo, toDecimal } from '@/utils/money';
+import { sumMoney, subtractMoney, roundTo, toDecimal, type MoneyInput } from '@/utils/money';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { isZeroAmount } from '@/utils/glRowMoney';
 /** Money-primitive GL explorer totals (GAP-1 F-0006). */
 export interface GLExplorerTotals {
   debits: number;
@@ -18,7 +19,7 @@ export interface GLExplorerTotals {
 }
 
 export function computeGLExplorerTotals(
-  entries: readonly { debit: number; credit: number }[]
+  entries: readonly { debit: MoneyInput; credit: MoneyInput }[]
 ): GLExplorerTotals {
   return {
     debits: roundTo(sumMoney(entries.map((e) => e.debit)), 2),
@@ -31,8 +32,8 @@ export interface GLAccountSummaryRow {
   id: string;
   code: string;
   name: string;
-  debit: number;
-  credit: number;
+  debit: MoneyInput;
+  credit: MoneyInput;
   count: number;
   lastDate: string;
   net: number;
@@ -44,8 +45,8 @@ export function computeAccountSummaries(
     accountId?: string;
     accountCode: string;
     accountName: string;
-    debit: number;
-    credit: number;
+    debit: MoneyInput;
+    credit: MoneyInput;
     date: string;
   }[]
 ): GLAccountSummaryRow[] {
@@ -303,10 +304,10 @@ export default function GLExplorerPage() {
                       {entry.description || '-'}
                     </td>
                     <td className="px-4 py-2 text-right tabular-nums text-blue-400 text-xs">
-                      {entry.debit > 0 ? fmt.currency0(entry.debit) : ''}
+                      {isZeroAmount(entry.debit) ? '' : fmt.currency0(roundTo(entry.debit))}
                     </td>
                     <td className="px-4 py-2 text-right tabular-nums text-green-400 text-xs">
-                      {entry.credit > 0 ? fmt.currency0(entry.credit) : ''}
+                      {isZeroAmount(entry.credit) ? '' : fmt.currency0(roundTo(entry.credit))}
                     </td>
                     <td
                       className="px-4 py-2 text-xs text-slate-400 max-w-[200px] truncate"

@@ -43,6 +43,7 @@ export interface ICTransaction {
   accountCode: string;
   accountName: string;
   counterpartyEntityId: string;
+  /** Major currency units (the ledger's `Money` crosses at construction). */
   amount: number;
   currency: string;
   date: string;
@@ -151,8 +152,11 @@ export class ICMatchingEngine {
         if (!other.entityId || other.entityId === entry.entityId) continue;
 
         // Check if amounts are roughly opposite (IC pattern)
-        const amount = entry.amount ?? entry.netChange ?? 0;
-        const otherAmount = other.amount ?? other.netChange ?? 0;
+        // Q5 stage 4: the IC DTO below is a major-unit ANALYSIS row, not the
+        // ledger value; the crossing is explicit so the exact ledger figure is
+        // never silently read as 0 by a tolerant numeric helper.
+        const amount = roundTo(entry.amount);
+        const otherAmount = roundTo(other.amount);
         const isOpposite = Math.sign(amount) !== Math.sign(otherAmount);
         const absDiff = subtractMoney(toDecimal(amount).abs(), toDecimal(otherAmount).abs()).abs();
 

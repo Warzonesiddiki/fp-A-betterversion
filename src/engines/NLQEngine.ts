@@ -493,13 +493,15 @@ export class NLQEngine {
         return entry.description;
       case 'period':
         return entry.period;
+      // Q5 stage 4: the projection is a flat `string | number` table, so a
+      // `Money` crosses here explicitly in whole currency units.
       case 'amount':
       case 'netChange':
-        return entry.netChange;
+        return roundTo(entry.netChange);
       case 'debit':
-        return entry.debit;
+        return roundTo(entry.debit);
       case 'credit':
-        return entry.credit;
+        return roundTo(entry.credit);
       case 'entityId':
         return entry.entityId;
       case 'departmentId':

@@ -17,6 +17,7 @@ import {
   roundTo,
   toDecimal,
   formatMoney,
+  moneyToAmount,
 } from '../utils/money';
 
 export interface ConstructionStats {
@@ -59,8 +60,9 @@ export class ConstructionEngine {
     // Per-entry net amount: prefer e.amount; fall back to decimal-arithmetic
     // debit − credit. Wrapping in roundTo converts the Decimal to a number
     // for downstream `sumMoney` calls.
-    const getAmount = (e: GLEntry): number =>
-      e.amount ?? roundTo(subtractMoney(e.debit ?? 0, e.credit ?? 0));
+    // Q5 stage 4: `amount` is `Money` and always present; the crossing is
+    // explicit so the value never goes through a tolerant numeric read.
+    const getAmount = (e: GLEntry): number => moneyToAmount(e.amount);
     // Sum each account class with exact decimal arithmetic so many GL lines do
     // not accumulate IEEE-754 drift. `sumMoney` over absolute amounts.
     const sumAbs = (prefix: string): number =>
@@ -102,8 +104,9 @@ export class ConstructionEngine {
     // Derive projects from unique entity/department combos
     const projectMap = new Map<string, { revenue: number; costs: number }>();
 
-    const getAmount = (e: GLEntry): number =>
-      e.amount ?? roundTo(subtractMoney(e.debit ?? 0, e.credit ?? 0));
+    // Q5 stage 4: `amount` is `Money` and always present; the crossing is
+    // explicit so the value never goes through a tolerant numeric read.
+    const getAmount = (e: GLEntry): number => moneyToAmount(e.amount);
 
     for (const e of entries) {
       if (!e.accountCode.startsWith('45') && !e.accountCode.startsWith('56')) continue;
@@ -172,11 +175,7 @@ export class ConstructionEngine {
     return [...buckets.keys()].sort().map((month) => {
       const monthEntries = buckets.get(month)!;
       const revEntries = monthEntries.filter((e) => e.accountCode.startsWith('4'));
-      const revenue = sumMoney(
-        revEntries.map((e) =>
-          Math.abs(e.amount ?? subtractMoney(e.debit ?? 0, e.credit ?? 0).toNumber())
-        )
-      ).toNumber();
+      const revenue = sumMoney(revEntries.map((e) => Math.abs(moneyToAmount(e.amount)))).toNumber();
       return {
         month,
         backlog: 0,
