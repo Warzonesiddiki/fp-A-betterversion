@@ -112,10 +112,26 @@ either number look better (DEC-006). PR #86 seeds both figures into the register
 
 One machine-readable file, one generated markdown view, one gate.
 
-**File:** `docs/plan/completion-register.json` (**source of truth**). PR #86 adds
-`scripts/completion-register.mjs`, which renders a committed markdown view of it
-and exits non-zero when §3's gate rules fail.
-until then this document is the plan, not the register.
+**Built.** `scripts/completion-register.mjs` was implemented and seeded in PR #86;
+the register now covers **695 rows** — 231 routes, 180 engines, 19 requirements,
+200 checklist sections and 65 vision capabilities — and `npm run docs:verify` runs
+`--check` on every documentation change. The measured starting position is
+**SUPPORTED 0 · EXPERIMENTAL 468 · BLOCKED-ON-OWNER 7 · RETIRED 0 · NOT_BUILT 220**,
+which is the honest reading of a tree where 0 of 231 routes are graded CONNECTED
+or GOVERNED. Nothing seeds as SUPPORTED; that status is earned by a later PR with
+test ids that resolve.
+
+**Disposition is measured, not believed (DEC-060).** Each of the 231 route rows also
+carries the disposition from `docs/CAPABILITY_TRUTH_MATRIX.md`, re-read on every
+seed so a matrix edit cannot leave a stale grade behind: **103 `MIGRATE`, 77
+`EXPERIMENTAL`, 47 `REVIEW`, 4 `RETAIN`**, and the summary prints that table. A
+`REVIEW` row — a route that needs a human decision — may never be `SUPPORTED`;
+PR #87's exit criterion is that this count reaches 0 by deciding each route, not
+by re-grading it.
+
+**File:** `docs/plan/completion-register.json` (**source of truth**). The view in
+`docs/plan/COMPLETION_REGISTER.md` is generated from it, and `--check` fails when
+the two disagree.
 
 **Row vocabulary — closed. An unknown value fails the gate.**
 
@@ -144,6 +160,8 @@ until then this document is the plan, not the register.
   files that exist;
 - `BLOCKED-ON-OWNER` must name an `O`-id that exists in the taskboard OWNER table;
 - `RETIRED` must name a DEC id present in the decision log;
+- a `REVIEW` disposition may never be `SUPPORTED`, and an unknown disposition
+  fails the gate;
 - the rendered markdown must match the JSON (no hand-edited copy);
 - counts are printed and compared to the generators, so a new route with no row
   fails the build the day it lands.
