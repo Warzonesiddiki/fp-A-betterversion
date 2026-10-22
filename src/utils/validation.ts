@@ -3,7 +3,7 @@
 // Pure TypeScript, deterministic, zero external dependencies
 // =============================================================================
 
-import { formatMoney } from './money';
+import { formatMoney, isMoneyValue } from './money';
 
 // ---------------------------------------------------------------------------
 // Type Guards
@@ -15,6 +15,25 @@ export function isNonEmptyString(value: unknown): value is string {
 
 export function isFiniteNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value);
+}
+
+/**
+ * A finite amount of EITHER shape — a `number` or a `Money`.
+ *
+ * Q5 stage 4 turns `GLEntry.debit/credit` into `Money`. `isFiniteNumber` returns
+ * false for an object, so keeping it here would report "debit must be a finite
+ * number" for EVERY ledger entry once the type moves — the validator refusing
+ * the whole ledger, with no compile error to warn anyone. `Money` is finite by
+ * construction (integer minor units), so it is admitted on the same terms.
+ */
+export function isFiniteAmount(value: unknown): boolean {
+  return isFiniteNumber(value) || isMoneyValue(value);
+}
+
+/** Sign of an amount of either shape; false when it cannot be read as money. */
+function isNegativeAmount(value: unknown): boolean {
+  if (isMoneyValue(value)) return value.minor < 0;
+  return isFiniteNumber(value) && value < 0;
 }
 
 export function isPositiveNumber(value: unknown): value is number {
@@ -244,16 +263,16 @@ export function validateGLEntry(entry: unknown): ValidationResult {
     addError(result, 'accountCode must be a non-empty string');
   }
 
-  if (!isFiniteNumber(e.debit)) {
+  if (!isFiniteAmount(e.debit)) {
     addError(result, 'debit must be a finite number');
   }
 
-  if (!isFiniteNumber(e.credit)) {
+  if (!isFiniteAmount(e.credit)) {
     addError(result, 'credit must be a finite number');
   }
 
-  if (isFiniteNumber(e.debit) && isFiniteNumber(e.credit)) {
-    if (e.debit < 0 && e.credit < 0) {
+  if (isFiniteAmount(e.debit) && isFiniteAmount(e.credit)) {
+    if (isNegativeAmount(e.debit) && isNegativeAmount(e.credit)) {
       addError(result, 'debit and credit cannot both be negative');
     }
   }

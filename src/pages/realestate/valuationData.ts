@@ -35,6 +35,7 @@
 
 import Decimal from 'decimal.js';
 import { divideMoney, sumMoney, toDecimal, type MoneyInput } from '@/utils/money';
+import { rowCarriesDebitCredit } from '@/utils/glRowMoney';
 
 export interface ValuationGLEntry {
   readonly accountCode?: string | null;
@@ -103,26 +104,15 @@ function code(entry: ValuationGLEntry): string {
   return entry.accountCode ?? '';
 }
 
-function hasDebitCredit(entry: ValuationGLEntry): boolean {
-  const { debit, credit } = entry;
-  if (debit == null && credit == null) return false;
-  const debitN = debit == null ? 0 : Number(debit);
-  const creditN = credit == null ? 0 : Number(credit);
-  if (debitN === 0 && creditN === 0 && entry.amount != null && Number(entry.amount) !== 0) {
-    return false;
-  }
-  return true;
-}
-
 /** Assets and expenses are debit-normal. */
 function debitNormal(entry: ValuationGLEntry): Decimal {
-  if (hasDebitCredit(entry)) return money(entry.debit).minus(money(entry.credit));
+  if (rowCarriesDebitCredit(entry)) return money(entry.debit).minus(money(entry.credit));
   return money(entry.amount);
 }
 
 /** Rental income is credit-normal. */
 function creditNormal(entry: ValuationGLEntry): Decimal {
-  if (hasDebitCredit(entry)) return money(entry.credit).minus(money(entry.debit));
+  if (rowCarriesDebitCredit(entry)) return money(entry.credit).minus(money(entry.debit));
   return money(entry.amount);
 }
 

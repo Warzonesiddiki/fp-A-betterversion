@@ -1,5 +1,59 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-22 (b) — Q5 stage 4: the trap sweep, beyond the GL store (DEC-056)
+
+**What I set out to do.** Start the stage-4 type flip. Converted the one huge
+fixture mentally and re-measured: **300 errors → 164 are
+`syntheticTieOutLedger.ts`** (mechanical, exact), leaving **136 across 65
+files**. Then I stopped, because DEC-055's lesson is that the compiler's
+worklist is not the risk list.
+
+**What the grep for the _shape_ of the trap found.** Four more sites, none of
+them a type error, all with `unknown` parameters:
+
+| Site                                               | Read as                        | After the flip                                                                 |
+| -------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------ |
+| `hasDebitCredit`, **duplicated in 14 page models** | `Number(value) === 0`          | zero debit/credit stops reading as zero → **amount-only rows valued at 0 − 0** |
+| `validateGLEntry`                                  | `isFiniteNumber(e.debit)`      | **every** entry reported "debit must be a finite number"                       |
+| cube migrator                                      | `Number(entry.debit ?? 0)`     | `NaN` written into the GL cube                                                 |
+| onboarding importer                                | `typeof d.amount === 'number'` | **already** zeroes a STRING amount today                                       |
+
+The 14-copy helper matters because `Number({ minor: 0 })` is `NaN` and
+`NaN === 0` is false — so `hasDebitCredit` would answer "this row carries
+debit/credit" for a row that carries only `amount`, and the dashboard, cash
+forecast, credit risk, sector KPIs, forecasts, scenarios, real estate,
+insurance, construction and analytics would all quietly drop that money.
+
+**Shipped.** `src/utils/glRowMoney.ts` — `isZeroAmount`, `signedAmountOf`,
+`rowCarriesDebitCredit`, all written against `unknown` so they are correct
+before and after the flip. The 14 copies are deleted in favour of one
+implementation. `validateGLEntry` admits `Money` on the same terms as a number.
+The migrator writes through `signedAmountOf(...) ?? 0`. The importer reads
+numeric strings (`"1,234.56"`, `"$(2,500.50)"`), which it **did not before** — a
+live money-loss defect, independent of Q5.
+
+**Evidence.** `glRowMoney.test.ts` 16/16 · `dashboardModel.test.ts` +5 (same
+ledger in both shapes → identical KPIs, trend, sector KPIs; the amount-only
+revenue and expense rows survive) · `validation.test.ts` +3 (a `Money` entry
+validates identically to its number twin). Gates: tsc 0, eslint 0, prettier
+clean, docs:verify 9/9, full suite green.
+
+**The finding worth carrying.** Mutation (`Number(value) === 0` restored for the
+`Money` case) failed the 3 unit tests and **not one of the 72 existing
+page-model test files** — the models had no test that could see a `Money` row at
+all. That is why the dashboard twin test exists; it now fails 5 under the same
+mutation. Every remaining stage-4 area needs a twin test of this kind, not just
+a compile.
+
+**Still not done.** The `GLEntry` type flip. Worklist after the fixture converts:
+136 errors / 65 files — `ConsolidationEngine` (16), `glStore` (11, wire shape:
+`GlJournalLine` stays in major units, so `moneyToAmount` is the crossing and
+`mergeListedEntry`/`listedToGLEntry` must `asMoney` server numbers), then
+`parseGLRows`/`d365Parser`/`ImportPipeline` (4 each) and 40+ pages at 1–3 each.
+The partition is not yet the hydrate gate; no page renders the quarantine. The
+onboarding importer's wiring is covered only indirectly (through
+`signedAmountOf`), not by a component test.
+
 ## 2026-10-22 — Q5 stage 4 preparation: a `Money` read as a number is invisible to the compiler (DEC-055)
 
 **What I was doing.** Starting stage 4 (the `GLEntry` type flip) and reading the

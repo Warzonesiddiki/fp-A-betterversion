@@ -6,6 +6,7 @@
 import { CubeEngine } from '@/engines/CubeEngine';
 
 import { randomId } from '@/utils/cryptoId';
+import { signedAmountOf } from '@/utils/glRowMoney';
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -392,7 +393,7 @@ export function migrateBudgetStore(cube: CubeEngine, data: StoreData): Migration
         cube.writeCell('Budget', {
           coords,
           measure: 'amount',
-          value: Number(item.amount ?? 0),
+          value: signedAmountOf(item.amount) ?? 0,
           dataType: 'input',
         });
         cellsWritten++;
@@ -683,7 +684,7 @@ export function migrateGlStore(cube: CubeEngine, data: StoreData): MigrationResu
         cube.writeCell('GL', {
           coords,
           measure: 'debit',
-          value: Number(entry.debit ?? 0),
+          value: signedAmountOf(entry.debit) ?? 0,
           dataType: 'imported',
         });
         cellsWritten++;
@@ -691,7 +692,7 @@ export function migrateGlStore(cube: CubeEngine, data: StoreData): MigrationResu
         cube.writeCell('GL', {
           coords,
           measure: 'credit',
-          value: Number(entry.credit ?? 0),
+          value: signedAmountOf(entry.credit) ?? 0,
           dataType: 'imported',
         });
         cellsWritten++;
@@ -699,7 +700,7 @@ export function migrateGlStore(cube: CubeEngine, data: StoreData): MigrationResu
         cube.writeCell('GL', {
           coords,
           measure: 'netChange',
-          value: Number(entry.netChange ?? 0),
+          value: signedAmountOf(entry.netChange) ?? 0,
           dataType: 'imported',
         });
         cellsWritten++;

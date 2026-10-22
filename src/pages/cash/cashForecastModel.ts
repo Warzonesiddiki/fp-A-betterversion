@@ -42,6 +42,7 @@
 
 import Decimal from 'decimal.js';
 import { divideMoney, sumMoney, toDecimal, type MoneyInput } from '@/utils/money';
+import { rowCarriesDebitCredit } from '@/utils/glRowMoney';
 
 export interface CashGLEntry {
   readonly accountCode?: string | null;
@@ -128,20 +129,9 @@ export function isCashAccount(accountCode: string): boolean {
   return CASH_PREFIXES.some((p) => accountCode.startsWith(p));
 }
 
-function hasDebitCredit(entry: CashGLEntry): boolean {
-  const { debit, credit } = entry;
-  if (debit == null && credit == null) return false;
-  const debitN = debit == null ? 0 : Number(debit);
-  const creditN = credit == null ? 0 : Number(credit);
-  if (debitN === 0 && creditN === 0 && entry.amount != null && Number(entry.amount) !== 0) {
-    return false;
-  }
-  return true;
-}
-
 /** Cash is debit-normal: a debit is a receipt, a credit is a disbursement. */
 export function movement(entry: CashGLEntry): Decimal {
-  if (hasDebitCredit(entry)) return money(entry.debit).minus(money(entry.credit));
+  if (rowCarriesDebitCredit(entry)) return money(entry.debit).minus(money(entry.credit));
   return money(entry.amount);
 }
 

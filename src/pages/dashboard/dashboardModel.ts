@@ -34,6 +34,7 @@
 
 import Decimal from 'decimal.js';
 import { divideMoney, sumMoney, toDecimal, type MoneyInput } from '@/utils/money';
+import { rowCarriesDebitCredit } from '@/utils/glRowMoney';
 
 export interface DashboardGLEntry {
   readonly accountCode?: string | null;
@@ -111,30 +112,15 @@ function money(value: MoneyInput | null | undefined): Decimal {
   return toDecimal(value);
 }
 
-/**
- * Some import paths populate `amount` only. Prefer debit/credit when the row
- * genuinely carries them; fall back to the signed `amount` otherwise.
- */
-function hasDebitCredit(entry: DashboardGLEntry): boolean {
-  const { debit, credit } = entry;
-  if (debit == null && credit == null) return false;
-  const debitN = debit == null ? 0 : Number(debit);
-  const creditN = credit == null ? 0 : Number(credit);
-  if (debitN === 0 && creditN === 0 && entry.amount != null && Number(entry.amount) !== 0) {
-    return false;
-  }
-  return true;
-}
-
 /** Debit-normal accounts: assets and every expense. */
 export function debitNormal(entry: DashboardGLEntry): Decimal {
-  if (hasDebitCredit(entry)) return money(entry.debit).minus(money(entry.credit));
+  if (rowCarriesDebitCredit(entry)) return money(entry.debit).minus(money(entry.credit));
   return money(entry.amount);
 }
 
 /** Credit-normal accounts: liabilities, equity and revenue. */
 export function creditNormal(entry: DashboardGLEntry): Decimal {
-  if (hasDebitCredit(entry)) return money(entry.credit).minus(money(entry.debit));
+  if (rowCarriesDebitCredit(entry)) return money(entry.credit).minus(money(entry.debit));
   return money(entry.amount);
 }
 

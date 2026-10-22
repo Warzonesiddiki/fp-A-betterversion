@@ -12,6 +12,7 @@ import { getAllSectors } from '@/config/sectors';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useGLStore } from '@/store/glStore';
 import type { GLState, SettingsState } from '@/types';
+import { signedAmountOf } from '@/utils/glRowMoney';
 
 interface OnboardingWizardProps {
   onComplete: () => void;
@@ -119,21 +120,30 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     // Save imported data if any
     if (importedData.length > 0) {
       const timestamp = Date.now();
-      const entries = importedData.map((d, i) => ({
-        id: `gl-init-${timestamp}-${i}`,
-        accountId: String(d.account),
-        accountCode: String(d.account),
-        accountName: String(d.account),
-        period: String(d.date).slice(0, 7),
-        periodName: String(d.date).slice(0, 7),
-        debit: typeof d.amount === 'number' && d.amount > 0 ? d.amount : 0,
-        credit: typeof d.amount === 'number' && d.amount < 0 ? Math.abs(d.amount) : 0,
-        netChange: typeof d.amount === 'number' ? d.amount : 0,
-        amount: typeof d.amount === 'number' ? d.amount : 0,
-        date: String(d.date),
-        description: 'Initial import during onboarding',
-        reference: 'ONBOARDING',
-      }));
+      const entries = importedData.map((d, i) => {
+        // `importedData` is untyped (`Record<string, unknown>[]`) because it
+        // comes straight from a parsed file, so the amount may be a number, a
+        // numeric string ("1,234.56", "$(2,500.50)") or — after Q5 stage 4 — a
+        // `Money`. The previous `typeof d.amount === 'number'` test silently
+        // valued every STRING amount at 0 and dropped it from the opening
+        // ledger. `signedAmountOf` reads all three; `null` means absent.
+        const importedAmount = signedAmountOf(d.amount);
+        return {
+          id: `gl-init-${timestamp}-${i}`,
+          accountId: String(d.account),
+          accountCode: String(d.account),
+          accountName: String(d.account),
+          period: String(d.date).slice(0, 7),
+          periodName: String(d.date).slice(0, 7),
+          debit: importedAmount !== null && importedAmount > 0 ? importedAmount : 0,
+          credit: importedAmount !== null && importedAmount < 0 ? Math.abs(importedAmount) : 0,
+          netChange: importedAmount ?? 0,
+          amount: importedAmount ?? 0,
+          date: String(d.date),
+          description: 'Initial import during onboarding',
+          reference: 'ONBOARDING',
+        };
+      });
       setEntries(entries);
     }
 

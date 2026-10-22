@@ -24,6 +24,7 @@
 
 import Decimal from 'decimal.js';
 import { divideMoney, sumMoney, toDecimal, type MoneyInput } from '@/utils/money';
+import { rowCarriesDebitCredit } from '@/utils/glRowMoney';
 
 export interface CreditRiskGLEntry {
   readonly accountCode?: string;
@@ -74,25 +75,13 @@ function money(value: MoneyInput | null | undefined): Decimal {
   return toDecimal(value);
 }
 
-function hasDebitCredit(entry: CreditRiskGLEntry): boolean {
-  const debit = entry.debit;
-  const credit = entry.credit;
-  if (debit == null && credit == null) return false;
-  const debitN = debit == null ? 0 : Number(debit);
-  const creditN = credit == null ? 0 : Number(credit);
-  if (debitN === 0 && creditN === 0 && entry.amount != null && Number(entry.amount) !== 0) {
-    return false;
-  }
-  return true;
-}
-
 function debitNormal(entry: CreditRiskGLEntry): Decimal {
-  if (hasDebitCredit(entry)) return money(entry.debit).minus(money(entry.credit));
+  if (rowCarriesDebitCredit(entry)) return money(entry.debit).minus(money(entry.credit));
   return money(entry.amount);
 }
 
 function creditNormal(entry: CreditRiskGLEntry): Decimal {
-  if (hasDebitCredit(entry)) return money(entry.credit).minus(money(entry.debit));
+  if (rowCarriesDebitCredit(entry)) return money(entry.credit).minus(money(entry.debit));
   return money(entry.amount);
 }
 
