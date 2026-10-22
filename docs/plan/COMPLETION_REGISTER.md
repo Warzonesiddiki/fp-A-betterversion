@@ -1,0 +1,759 @@
+# Completion register
+
+> **Generated — do not edit.** Source of truth: docs/plan/completion-register.json.
+> Renderer and gate: `node scripts/completion-register.mjs` (`--check` in `npm run docs:verify`).
+> Vocabulary and rules: docs/plan/COMPLETION_PLAN_86_100.md §3, adopted in DEC-058.
+
+A row saying SUPPORTED means a test fails when the behaviour breaks, a gate is
+named, and a document explains it. A row saying BLOCKED-ON-OWNER names the owner
+question that stops it. Nothing here is promoted by prose.
+
+<!-- REGISTER:START -->
+
+## Summary
+
+| Measure | Value |
+| --- | --- |
+| SUPPORTED | 0 |
+| EXPERIMENTAL | 468 |
+| BLOCKED-ON-OWNER | 7 |
+| RETIRED | 0 |
+| NOT_BUILT | 220 |
+| Total rows | 695 |
+
+| Route disposition | Count |
+| --- | --- |
+| MIGRATE | 103 |
+| EXPERIMENTAL | 77 |
+| REVIEW | 47 |
+| RETAIN | 4 |
+
+| Census | Count |
+| --- | --- |
+| routes | 231 |
+| engines | 180 |
+| requirements | 19 |
+| annex | 200 |
+| capabilities | 65 |
+
+## Routed screens (231)
+
+| Id | Status | Evidence | Note |
+| --- | --- | --- | --- |
+| `route:*` | EXPERIMENTAL | gatedBy=*; disposition=REVIEW | Routed screen (NotFoundPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/` | EXPERIMENTAL | gatedBy=/; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/accounting` | EXPERIMENTAL | gatedBy=/accounting; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/accounting/depreciation` | EXPERIMENTAL | gatedBy=/accounting/depreciation; disposition=REVIEW | Routed screen (DepreciationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/accounting/multi-book` | EXPERIMENTAL | gatedBy=/accounting/multi-book; disposition=REVIEW | Routed screen (MultiBookPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/admin` | EXPERIMENTAL | gatedBy=/admin; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/admin/benchmarks` | EXPERIMENTAL | gatedBy=/admin/benchmarks; disposition=MIGRATE | Routed screen (BenchmarksPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/admin/debug` | EXPERIMENTAL | gatedBy=/admin/debug; disposition=MIGRATE | Routed screen (DebugPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/admin/engines` | EXPERIMENTAL | gatedBy=/admin/engines; disposition=MIGRATE | Routed screen (EngineCatalogPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/ai` | EXPERIMENTAL | gatedBy=/ai; disposition=MIGRATE | Routed screen (AIIntelligencePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/ai/nlq` | EXPERIMENTAL | gatedBy=/ai/nlq; disposition=MIGRATE | Routed screen (NLQChatPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/analytics` | EXPERIMENTAL | gatedBy=/analytics; disposition=MIGRATE | Routed screen (AnalyticsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/analytics/benchmarking` | EXPERIMENTAL | gatedBy=/analytics/benchmarking; disposition=MIGRATE | Routed screen (BenchmarkingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/analytics/dashboard-builder` | EXPERIMENTAL | gatedBy=/analytics/dashboard-builder; disposition=MIGRATE | Routed screen (DashboardBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/analytics/data-lineage` | EXPERIMENTAL | gatedBy=/analytics/data-lineage; disposition=MIGRATE | Routed screen (DataLineagePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/analytics/goal-seek` | EXPERIMENTAL | gatedBy=/analytics/goal-seek; disposition=MIGRATE | Routed screen (GoalSeekPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/analytics/pivot-explorer` | EXPERIMENTAL | gatedBy=/analytics/pivot-explorer; disposition=MIGRATE | Routed screen (PivotExplorerPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/audit` | EXPERIMENTAL | gatedBy=/audit; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/audit-trail` | EXPERIMENTAL | gatedBy=/audit-trail; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/audit/fair-value` | EXPERIMENTAL | gatedBy=/audit/fair-value; disposition=MIGRATE | Routed screen (FairValuePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/audit/impairment` | EXPERIMENTAL | gatedBy=/audit/impairment; disposition=MIGRATE | Routed screen (ImpairmentPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/audit/sox` | EXPERIMENTAL | gatedBy=/audit/sox; disposition=MIGRATE | Routed screen (SOXCompliancePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/audit/trail` | EXPERIMENTAL | gatedBy=/audit/trail; disposition=MIGRATE | Routed screen (AuditTrailPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/backup` | EXPERIMENTAL | gatedBy=/backup; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/backup/restore` | EXPERIMENTAL | gatedBy=/backup/restore; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/banking/banking` | EXPERIMENTAL | gatedBy=/banking/banking; disposition=EXPERIMENTAL | Routed screen (BankingDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/banking/capital` | EXPERIMENTAL | gatedBy=/banking/capital; disposition=EXPERIMENTAL | Routed screen (CapitalAdequacyPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/banking/loan-loss` | EXPERIMENTAL | gatedBy=/banking/loan-loss; disposition=EXPERIMENTAL | Routed screen (LoanLossPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/banking/nim` | EXPERIMENTAL | gatedBy=/banking/nim; disposition=EXPERIMENTAL | Routed screen (NIMDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/banking/reconciliation` | EXPERIMENTAL | gatedBy=/banking/reconciliation; disposition=EXPERIMENTAL | Routed screen (BankReconciliation); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/banking/statements` | EXPERIMENTAL | gatedBy=/banking/statements; disposition=EXPERIMENTAL | Routed screen (BankStatements); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/board-pack` | EXPERIMENTAL | gatedBy=/board-pack; disposition=REVIEW | Routed screen (BoardPackPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/bonds/portfolio` | EXPERIMENTAL | gatedBy=/bonds/portfolio; disposition=REVIEW | Routed screen (BondPortfolioPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/bonds/yield-curve` | EXPERIMENTAL | gatedBy=/bonds/yield-curve; disposition=REVIEW | Routed screen (YieldCurvePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/budgets` | EXPERIMENTAL | gatedBy=/budgets; disposition=MIGRATE | Routed screen (BudgetListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/budgets/:id` | EXPERIMENTAL | gatedBy=/budgets/:id; disposition=MIGRATE | Routed screen (BudgetDetailPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/budgets/approval` | EXPERIMENTAL | gatedBy=/budgets/approval; disposition=MIGRATE | Routed screen (BudgetApproval); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/budgets/bva` | EXPERIMENTAL | gatedBy=/budgets/bva; disposition=MIGRATE | Routed screen (BudgetVAReport); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/budgets/create` | EXPERIMENTAL | gatedBy=/budgets/create; disposition=MIGRATE | Routed screen (BudgetCreatePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/capex` | EXPERIMENTAL | gatedBy=/capex; disposition=REVIEW | Routed screen (CapExDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/capex/depreciation` | EXPERIMENTAL | gatedBy=/capex/depreciation; disposition=REVIEW | Routed screen (DepreciationForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/capex/tracker` | EXPERIMENTAL | gatedBy=/capex/tracker; disposition=REVIEW | Routed screen (CapexTracker); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/cash-forecast` | EXPERIMENTAL | gatedBy=/cash-forecast; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/cash/debt` | EXPERIMENTAL | gatedBy=/cash/debt; disposition=MIGRATE | Routed screen (DebtSchedulePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/cash/forecast` | EXPERIMENTAL | gatedBy=/cash/forecast; disposition=MIGRATE | Routed screen (CashForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/cash/working-capital` | EXPERIMENTAL | gatedBy=/cash/working-capital; disposition=MIGRATE | Routed screen (WorkingCapitalPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/charts/chart-of-accounts` | EXPERIMENTAL | gatedBy=/charts/chart-of-accounts; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/charts/showcase` | EXPERIMENTAL | gatedBy=/charts/showcase; disposition=MIGRATE | Routed screen (ChartShowcasePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/collaboration` | EXPERIMENTAL | gatedBy=/collaboration; disposition=MIGRATE | Routed screen (CollaborationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/collaboration/activity` | EXPERIMENTAL | gatedBy=/collaboration/activity; disposition=MIGRATE | Routed screen (ActivityFeed); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/collaboration/approvals` | EXPERIMENTAL | gatedBy=/collaboration/approvals; disposition=MIGRATE | Routed screen (ApprovalQueuePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/collaboration/shared` | EXPERIMENTAL | gatedBy=/collaboration/shared; disposition=MIGRATE | Routed screen (SharedReports); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/collaboration/team` | EXPERIMENTAL | gatedBy=/collaboration/team; disposition=MIGRATE | Routed screen (TeamWorkspace); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/compliance/sox` | EXPERIMENTAL | gatedBy=/compliance/sox; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/consolidation` | EXPERIMENTAL | gatedBy=/consolidation; disposition=MIGRATE | Routed screen (ConsolidationDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/consolidation/detail` | EXPERIMENTAL | gatedBy=/consolidation/detail; disposition=MIGRATE | Routed screen (ConsolidationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/consolidation/ic-eliminations` | EXPERIMENTAL | gatedBy=/consolidation/ic-eliminations; disposition=MIGRATE | Routed screen (ICEliminationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/consolidation/ownership` | EXPERIMENTAL | gatedBy=/consolidation/ownership; disposition=MIGRATE | Routed screen (OwnershipTreePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/construction/dashboard` | EXPERIMENTAL | gatedBy=/construction/dashboard; disposition=EXPERIMENTAL | Routed screen (ConstructionDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/construction/equipment` | EXPERIMENTAL | gatedBy=/construction/equipment; disposition=EXPERIMENTAL | Routed screen (EquipmentManagementPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/construction/project` | EXPERIMENTAL | gatedBy=/construction/project; disposition=EXPERIMENTAL | Routed screen (ProjectCostingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/credit/risk` | EXPERIMENTAL | gatedBy=/credit/risk; disposition=REVIEW | Routed screen (CreditRiskPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/currency` | EXPERIMENTAL | gatedBy=/currency; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/currency/fx-rates` | EXPERIMENTAL | gatedBy=/currency/fx-rates; disposition=MIGRATE | Routed screen (FXRatesPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/currency/hedging` | EXPERIMENTAL | gatedBy=/currency/hedging; disposition=MIGRATE | Routed screen (HedgeManagementPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/currency/translation` | EXPERIMENTAL | gatedBy=/currency/translation; disposition=MIGRATE | Routed screen (TranslationResultPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/dashboard` | EXPERIMENTAL | gatedBy=/dashboard; disposition=MIGRATE | Routed screen (DashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data` | EXPERIMENTAL | gatedBy=/data; disposition=REVIEW | Routed screen (DataImportPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/chart-of-accounts` | EXPERIMENTAL | gatedBy=/data/chart-of-accounts; disposition=REVIEW | Routed screen (ChartOfAccountsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/comparison` | EXPERIMENTAL | gatedBy=/data/comparison; disposition=REVIEW | Routed screen (ComparisonPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/corrections` | EXPERIMENTAL | gatedBy=/data/corrections; disposition=REVIEW | Routed screen (CorrectionsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/data-flow` | EXPERIMENTAL | gatedBy=/data/data-flow; disposition=REVIEW | Routed screen (DataFlowMapPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/exceptions` | EXPERIMENTAL | gatedBy=/data/exceptions; disposition=REVIEW | Routed screen (ExceptionQueuePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/gl-account-analysis` | EXPERIMENTAL | gatedBy=/data/gl-account-analysis; disposition=MIGRATE | Routed screen (GLAccountAnalysisPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/gl-explorer` | EXPERIMENTAL | gatedBy=/data/gl-explorer; disposition=MIGRATE | Routed screen (GLExplorerPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/gl-journals` | EXPERIMENTAL | gatedBy=/data/gl-journals; disposition=MIGRATE | Routed screen (GLJournalsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/gl-reporting` | EXPERIMENTAL | gatedBy=/data/gl-reporting; disposition=MIGRATE | Routed screen (GLReportingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/gl-trial-balance` | EXPERIMENTAL | gatedBy=/data/gl-trial-balance; disposition=MIGRATE | Routed screen (GLTrialBalancePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/gl-upload` | EXPERIMENTAL | gatedBy=/data/gl-upload; disposition=MIGRATE | Routed screen (GLUploadPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/migration` | EXPERIMENTAL | gatedBy=/data/migration; disposition=REVIEW | Routed screen (MigrationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/reconciliation` | EXPERIMENTAL | gatedBy=/data/reconciliation; disposition=REVIEW | Routed screen (ReconciliationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/version-diff` | EXPERIMENTAL | gatedBy=/data/version-diff; disposition=REVIEW | Routed screen (VersionDiffPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/docs/api` | EXPERIMENTAL | gatedBy=/docs/api; disposition=MIGRATE | Routed screen (ApiReferencePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/drill-down` | EXPERIMENTAL | gatedBy=/drill-down; disposition=MIGRATE | Routed screen (DrillDownWindowPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/education` | EXPERIMENTAL | gatedBy=/education; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/education/enrollment` | EXPERIMENTAL | gatedBy=/education/enrollment; disposition=EXPERIMENTAL | Routed screen (EnrollmentRetentionPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/education/research-grants` | EXPERIMENTAL | gatedBy=/education/research-grants; disposition=EXPERIMENTAL | Routed screen (ResearchGrantsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/energy/dashboard` | EXPERIMENTAL | gatedBy=/energy/dashboard; disposition=EXPERIMENTAL | Routed screen (EnergyDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/energy/emissions` | EXPERIMENTAL | gatedBy=/energy/emissions; disposition=EXPERIMENTAL | Routed screen (EmissionsTradingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/energy/production` | EXPERIMENTAL | gatedBy=/energy/production; disposition=EXPERIMENTAL | Routed screen (EnergyProductionDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/energy/renewable` | EXPERIMENTAL | gatedBy=/energy/renewable; disposition=EXPERIMENTAL | Routed screen (RenewableEnergyPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/energy/risk` | EXPERIMENTAL | gatedBy=/energy/risk; disposition=EXPERIMENTAL | Routed screen (EnergyRiskPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/energy/sector` | EXPERIMENTAL | gatedBy=/energy/sector; disposition=EXPERIMENTAL | Routed screen (EnergySectorPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/esg/carbon` | EXPERIMENTAL | gatedBy=/esg/carbon; disposition=REVIEW | Routed screen (CarbonDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/esg/csrd` | EXPERIMENTAL | gatedBy=/esg/csrd; disposition=REVIEW | Routed screen (CSRDReportPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/esg/overview` | EXPERIMENTAL | gatedBy=/esg/overview; disposition=REVIEW | Routed screen (ESGPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/forecasts` | EXPERIMENTAL | gatedBy=/forecasts; disposition=MIGRATE | Routed screen (ForecastListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/forecasts/:id` | EXPERIMENTAL | gatedBy=/forecasts/:id; disposition=MIGRATE | Routed screen (ForecastBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/forecasts/auto-update` | EXPERIMENTAL | gatedBy=/forecasts/auto-update; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/forecasts/compare` | EXPERIMENTAL | gatedBy=/forecasts/compare; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/forecasts/create` | EXPERIMENTAL | gatedBy=/forecasts/create; disposition=MIGRATE | Routed screen (ForecastBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/forecasts/drivers` | EXPERIMENTAL | gatedBy=/forecasts/drivers; disposition=MIGRATE | Routed screen (DriverPlanningPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/forecasts/rolling` | EXPERIMENTAL | gatedBy=/forecasts/rolling; disposition=MIGRATE | Routed screen (RollingForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/forecasts/what-if` | EXPERIMENTAL | gatedBy=/forecasts/what-if; disposition=MIGRATE | Routed screen (WhatIfPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/forgot-password` | EXPERIMENTAL | gatedBy=/forgot-password; disposition=RETAIN | Routed screen (ForgotPasswordPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/fx-rates` | EXPERIMENTAL | gatedBy=/fx-rates; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/government` | EXPERIMENTAL | gatedBy=/government; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/government/grants` | EXPERIMENTAL | gatedBy=/government/grants; disposition=EXPERIMENTAL | Routed screen (GrantDisbursementPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/government/procurement` | EXPERIMENTAL | gatedBy=/government/procurement; disposition=EXPERIMENTAL | Routed screen (ProcurementCyclePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/healthcare/clinical-trials` | EXPERIMENTAL | gatedBy=/healthcare/clinical-trials; disposition=EXPERIMENTAL | Routed screen (ClinicalTrialCostPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/healthcare/dashboard` | EXPERIMENTAL | gatedBy=/healthcare/dashboard; disposition=EXPERIMENTAL | Routed screen (HealthcareDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/healthcare/overview` | EXPERIMENTAL | gatedBy=/healthcare/overview; disposition=EXPERIMENTAL | Routed screen (HealthcarePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/healthcare/revenue` | EXPERIMENTAL | gatedBy=/healthcare/revenue; disposition=EXPERIMENTAL | Routed screen (PatientRevenuePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/healthcare/value-based` | EXPERIMENTAL | gatedBy=/healthcare/value-based; disposition=EXPERIMENTAL | Routed screen (ValueBasedCarePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/help` | EXPERIMENTAL | gatedBy=/help; disposition=MIGRATE | Routed screen (HelpPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/ic-elimination` | EXPERIMENTAL | gatedBy=/ic-elimination; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/insurance/claims` | EXPERIMENTAL | gatedBy=/insurance/claims; disposition=EXPERIMENTAL | Routed screen (ClaimsAnalyticsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/insurance/dashboard` | EXPERIMENTAL | gatedBy=/insurance/dashboard; disposition=EXPERIMENTAL | Routed screen (InsuranceDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/insurance/insurance` | EXPERIMENTAL | gatedBy=/insurance/insurance; disposition=EXPERIMENTAL | Routed screen (InsurancePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/insurance/underwriting` | EXPERIMENTAL | gatedBy=/insurance/underwriting; disposition=EXPERIMENTAL | Routed screen (UnderwritingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/intercompany/*` | EXPERIMENTAL | gatedBy=/intercompany/*; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/lease` | EXPERIMENTAL | gatedBy=/lease; disposition=REVIEW | Routed screen (LeaseDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/lease/:id` | EXPERIMENTAL | gatedBy=/lease/:id; disposition=REVIEW | Routed screen (LeaseDetailPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/lease/accounting` | EXPERIMENTAL | gatedBy=/lease/accounting; disposition=REVIEW | Routed screen (LeaseAccountingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/login` | EXPERIMENTAL | gatedBy=/login; disposition=RETAIN | Routed screen (LoginPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/logistics` | EXPERIMENTAL | gatedBy=/logistics; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/logistics/fleet-cost` | EXPERIMENTAL | gatedBy=/logistics/fleet-cost; disposition=EXPERIMENTAL | Routed screen (FleetCostDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/logistics/warehouse-cost` | EXPERIMENTAL | gatedBy=/logistics/warehouse-cost; disposition=EXPERIMENTAL | Routed screen (WarehouseCostDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/manufacturing/cogs` | EXPERIMENTAL | gatedBy=/manufacturing/cogs; disposition=EXPERIMENTAL | Routed screen (COGSVariancePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/manufacturing/inventory` | EXPERIMENTAL | gatedBy=/manufacturing/inventory; disposition=EXPERIMENTAL | Routed screen (InventoryPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/manufacturing/overview` | EXPERIMENTAL | gatedBy=/manufacturing/overview; disposition=EXPERIMENTAL | Routed screen (ManufacturingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/manufacturing/production` | EXPERIMENTAL | gatedBy=/manufacturing/production; disposition=EXPERIMENTAL | Routed screen (ProductionDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/onboarding` | EXPERIMENTAL | gatedBy=/onboarding; disposition=RETAIN | Routed screen (OnboardingWizardWrapper); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/period-close` | EXPERIMENTAL | gatedBy=/period-close; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/period-close/checklist` | EXPERIMENTAL | gatedBy=/period-close/checklist; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/period-close/consolidation` | EXPERIMENTAL | gatedBy=/period-close/consolidation; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/period-close/lock` | EXPERIMENTAL | gatedBy=/period-close/lock; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/period-close/signoff` | EXPERIMENTAL | gatedBy=/period-close/signoff; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/period-close/trial-balance` | EXPERIMENTAL | gatedBy=/period-close/trial-balance; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/periods` | EXPERIMENTAL | gatedBy=/periods; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/periods/close` | EXPERIMENTAL | gatedBy=/periods/close; disposition=MIGRATE | Routed screen (PeriodClosePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/plugins` | EXPERIMENTAL | gatedBy=/plugins; disposition=MIGRATE | Routed screen (PluginMarketplacePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/profile` | EXPERIMENTAL | gatedBy=/profile; disposition=MIGRATE | Routed screen (ProfilePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/realestate/dashboard` | EXPERIMENTAL | gatedBy=/realestate/dashboard; disposition=EXPERIMENTAL | Routed screen (RealEstateDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/realestate/facility` | EXPERIMENTAL | gatedBy=/realestate/facility; disposition=EXPERIMENTAL | Routed screen (FacilityManagementPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/realestate/portfolio` | EXPERIMENTAL | gatedBy=/realestate/portfolio; disposition=EXPERIMENTAL | Routed screen (PropertyPortfolioPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/realestate/reit` | EXPERIMENTAL | gatedBy=/realestate/reit; disposition=EXPERIMENTAL | Routed screen (REITDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/realestate/valuation` | EXPERIMENTAL | gatedBy=/realestate/valuation; disposition=EXPERIMENTAL | Routed screen (ValuationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reconciliation` | EXPERIMENTAL | gatedBy=/reconciliation; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/register` | EXPERIMENTAL | gatedBy=/register; disposition=RETAIN | Routed screen (RegisterPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports` | EXPERIMENTAL | gatedBy=/reports; disposition=MIGRATE | Routed screen (ReportsListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/balance-sheet` | EXPERIMENTAL | gatedBy=/reports/balance-sheet; disposition=MIGRATE | Routed screen (BalanceSheetPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/board-pack/new` | EXPERIMENTAL | gatedBy=/reports/board-pack/new; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/book-builder` | EXPERIMENTAL | gatedBy=/reports/book-builder; disposition=MIGRATE | Routed screen (ReportBookBuilder); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/budget-vs-actual` | EXPERIMENTAL | gatedBy=/reports/budget-vs-actual; disposition=MIGRATE | Routed screen (BudgetVsActualPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/cash-flow` | EXPERIMENTAL | gatedBy=/reports/cash-flow; disposition=MIGRATE | Routed screen (CashFlowPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/designer` | EXPERIMENTAL | gatedBy=/reports/designer; disposition=MIGRATE | Routed screen (ReportDesignerPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/library` | EXPERIMENTAL | gatedBy=/reports/library; disposition=MIGRATE | Routed screen (ReportTemplateLibraryPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/profit-loss` | EXPERIMENTAL | gatedBy=/reports/profit-loss; disposition=MIGRATE | Routed screen (ProfitLossPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/scheduler` | EXPERIMENTAL | gatedBy=/reports/scheduler; disposition=MIGRATE | Routed screen (ReportScheduler); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/segment` | EXPERIMENTAL | gatedBy=/reports/segment; disposition=MIGRATE | Routed screen (SegmentReportingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/templates` | EXPERIMENTAL | gatedBy=/reports/templates; disposition=MIGRATE | Routed screen (FinancialStatementTemplates); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/three-statement` | EXPERIMENTAL | gatedBy=/reports/three-statement; disposition=MIGRATE | Routed screen (ThreeStatementDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/trial-balance` | EXPERIMENTAL | gatedBy=/reports/trial-balance; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/variance` | EXPERIMENTAL | gatedBy=/reports/variance; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/retail/dashboard` | EXPERIMENTAL | gatedBy=/retail/dashboard; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/retail/inventory` | EXPERIMENTAL | gatedBy=/retail/inventory; disposition=EXPERIMENTAL | Routed screen (InventoryDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/retail/inventory-planning` | EXPERIMENTAL | gatedBy=/retail/inventory-planning; disposition=EXPERIMENTAL | Routed screen (InventoryPlanningPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/retail/performance` | EXPERIMENTAL | gatedBy=/retail/performance; disposition=EXPERIMENTAL | Routed screen (StorePerformancePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/retail/promo` | EXPERIMENTAL | gatedBy=/retail/promo; disposition=EXPERIMENTAL | Routed screen (PromoAnalysisPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/retail/retail` | EXPERIMENTAL | gatedBy=/retail/retail; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/retail/stores` | EXPERIMENTAL | gatedBy=/retail/stores; disposition=EXPERIMENTAL | Routed screen (StoreDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/revenue` | EXPERIMENTAL | gatedBy=/revenue; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/revenue/deferred` | EXPERIMENTAL | gatedBy=/revenue/deferred; disposition=REVIEW | Routed screen (DeferredSchedulePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/revenue/rev-rec` | EXPERIMENTAL | gatedBy=/revenue/rev-rec; disposition=REVIEW | Routed screen (RevRecDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/saas/arr` | EXPERIMENTAL | gatedBy=/saas/arr; disposition=EXPERIMENTAL | Routed screen (ARRDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/saas/churn` | EXPERIMENTAL | gatedBy=/saas/churn; disposition=EXPERIMENTAL | Routed screen (ChurnDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/saas/churn-analysis` | EXPERIMENTAL | gatedBy=/saas/churn-analysis; disposition=EXPERIMENTAL | Routed screen (ChurnAnalysisPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/saas/cohort` | EXPERIMENTAL | gatedBy=/saas/cohort; disposition=EXPERIMENTAL | Routed screen (CohortAnalysisPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/saas/overview` | EXPERIMENTAL | gatedBy=/saas/overview; disposition=EXPERIMENTAL | Routed screen (SaaSPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/scenarios` | EXPERIMENTAL | gatedBy=/scenarios; disposition=MIGRATE | Routed screen (ScenarioListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/scenarios/:id` | EXPERIMENTAL | gatedBy=/scenarios/:id; disposition=MIGRATE | Routed screen (ScenarioBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/scenarios/compare` | EXPERIMENTAL | gatedBy=/scenarios/compare; disposition=MIGRATE | Routed screen (ScenarioComparisonPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/scenarios/create` | EXPERIMENTAL | gatedBy=/scenarios/create; disposition=MIGRATE | Routed screen (ScenarioBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/scenarios/lock` | EXPERIMENTAL | gatedBy=/scenarios/lock; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/scenarios/merge` | EXPERIMENTAL | gatedBy=/scenarios/merge; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/agriculture` | EXPERIMENTAL | gatedBy=/sector/agriculture; disposition=EXPERIMENTAL | Routed screen (AgricultureDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/banking` | EXPERIMENTAL | gatedBy=/sector/banking; disposition=EXPERIMENTAL | Routed screen (SectorBankingDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/construction` | EXPERIMENTAL | gatedBy=/sector/construction; disposition=EXPERIMENTAL | Routed screen (SectorConstructionDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/education` | EXPERIMENTAL | gatedBy=/sector/education; disposition=EXPERIMENTAL | Routed screen (SectorEducationDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/emissions` | EXPERIMENTAL | gatedBy=/sector/emissions; disposition=EXPERIMENTAL | Routed screen (EmissionsDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/energy` | EXPERIMENTAL | gatedBy=/sector/energy; disposition=EXPERIMENTAL | Routed screen (SectorEnergyDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/equipment` | EXPERIMENTAL | gatedBy=/sector/equipment; disposition=EXPERIMENTAL | Routed screen (EquipmentDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/government` | EXPERIMENTAL | gatedBy=/sector/government; disposition=EXPERIMENTAL | Routed screen (SectorGovernmentDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/healthcare` | EXPERIMENTAL | gatedBy=/sector/healthcare; disposition=EXPERIMENTAL | Routed screen (SectorHealthcareDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/hospitality` | EXPERIMENTAL | gatedBy=/sector/hospitality; disposition=EXPERIMENTAL | Routed screen (HospitalityDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/insurance` | EXPERIMENTAL | gatedBy=/sector/insurance; disposition=EXPERIMENTAL | Routed screen (SectorInsuranceDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/logistics` | EXPERIMENTAL | gatedBy=/sector/logistics; disposition=EXPERIMENTAL | Routed screen (SectorLogisticsDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/manufacturing` | EXPERIMENTAL | gatedBy=/sector/manufacturing; disposition=EXPERIMENTAL | Routed screen (SectorManufacturingDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/real-estate` | EXPERIMENTAL | gatedBy=/sector/real-estate; disposition=EXPERIMENTAL | Routed screen (SectorRealEstateDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/retail` | EXPERIMENTAL | gatedBy=/sector/retail; disposition=EXPERIMENTAL | Routed screen (SectorRetailDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/sector` | EXPERIMENTAL | gatedBy=/sector/sector; disposition=EXPERIMENTAL | Routed screen (SectorDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/technology` | EXPERIMENTAL | gatedBy=/sector/technology; disposition=EXPERIMENTAL | Routed screen (TechnologyDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sector/telecommunications` | EXPERIMENTAL | gatedBy=/sector/telecommunications; disposition=EXPERIMENTAL | Routed screen (TelecommunicationsDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sectors/education` | EXPERIMENTAL | gatedBy=/sectors/education; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sectors/government` | EXPERIMENTAL | gatedBy=/sectors/government; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sectors/logistics` | EXPERIMENTAL | gatedBy=/sectors/logistics; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sectors/telecom` | EXPERIMENTAL | gatedBy=/sectors/telecom; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/settings` | EXPERIMENTAL | gatedBy=/settings; disposition=MIGRATE | Routed screen (SettingsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/settings/backup` | EXPERIMENTAL | gatedBy=/settings/backup; disposition=MIGRATE | Routed screen (BackupRestorePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/settings/connectors` | EXPERIMENTAL | gatedBy=/settings/connectors; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/settings/integrations` | EXPERIMENTAL | gatedBy=/settings/integrations; disposition=MIGRATE | Routed screen (IntegrationSettingsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/settings/security` | EXPERIMENTAL | gatedBy=/settings/security; disposition=MIGRATE | Routed screen (SecuritySettingsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/settings/users` | EXPERIMENTAL | gatedBy=/settings/users; disposition=MIGRATE | Routed screen (UserManagementPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sox` | EXPERIMENTAL | gatedBy=/sox; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/tax` | EXPERIMENTAL | gatedBy=/tax; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/tax/provision` | EXPERIMENTAL | gatedBy=/tax/provision; disposition=REVIEW | Routed screen (TaxProvisionPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/tax/transfer-pricing` | EXPERIMENTAL | gatedBy=/tax/transfer-pricing; disposition=REVIEW | Routed screen (TransferPricingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/telecom` | EXPERIMENTAL | gatedBy=/telecom; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/templates` | EXPERIMENTAL | gatedBy=/templates; disposition=MIGRATE | Routed screen (TemplateGalleryPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/templates/preview` | EXPERIMENTAL | gatedBy=/templates/preview; disposition=MIGRATE | Routed screen (TemplatePreviewPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/treasury` | EXPERIMENTAL | gatedBy=/treasury; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/treasury/fx-exposure` | EXPERIMENTAL | gatedBy=/treasury/fx-exposure; disposition=MIGRATE | Routed screen (FXExposurePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/treasury/investments` | EXPERIMENTAL | gatedBy=/treasury/investments; disposition=MIGRATE | Routed screen (InvestmentPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/treasury/loan-amortization` | EXPERIMENTAL | gatedBy=/treasury/loan-amortization; disposition=MIGRATE | Routed screen (LoanAmortizationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/variance` | EXPERIMENTAL | gatedBy=/variance; disposition=MIGRATE | Routed screen (VarianceDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/visual/atlas` | EXPERIMENTAL | gatedBy=/visual/atlas; disposition=REVIEW | Routed screen (AtlasVisualBaselinePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/workforce` | EXPERIMENTAL | gatedBy=/workforce; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/workforce/compensation` | EXPERIMENTAL | gatedBy=/workforce/compensation; disposition=MIGRATE | Routed screen (CompModelingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/workforce/headcount` | EXPERIMENTAL | gatedBy=/workforce/headcount; disposition=MIGRATE | Routed screen (HeadcountPlanPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/workforce/payroll` | EXPERIMENTAL | gatedBy=/workforce/payroll; disposition=MIGRATE | Routed screen (PayrollForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+
+## Engines (180)
+
+| Id | Status | Evidence | Note |
+| --- | --- | --- | --- |
+| `engine:AICopilotEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:AIEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:AcquisitionAccounting` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:AdvancedExcelEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:AdvancedOLAPEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:AdvancedPDFEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:AggregateTableEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:AggregationDesigner` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:AllocationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:AllocationRuleEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:AnomalyDetectionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ArrayFormulaEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:AssumptionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:AuditLogEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:AutoCommentaryEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:AutoSaveEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:BankingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:BatchOperationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:BondPricingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:BreakEvenEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:BudgetCollectionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:COGSVarianceEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CalculationGraph` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CalculationQueue` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CapExEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CascadeCalculationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CashEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CashFlowWaterfallEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CellCommentEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CellProtectionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CellValidationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ChartAnnotationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ComplianceEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ConditionalFormattingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ConnectorEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ConnectorImportEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ConsolidationAdjustmentsEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ConsolidationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ConstructionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CrashRecoveryEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CreditRiskEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CubeEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CubeEnginePersistence` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CubeMigrationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CubePartitioner` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CubeSecurityEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:CustomFieldEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DAGEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DashboardBuilderEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DataCatalogEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DataClassificationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DataGovernanceEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DataLineageEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DataMaskingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DataQualityEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DataRetentionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DebtScheduleEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DepreciationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DimensionalModelingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DocumentEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DrillThroughEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DriverCascadeEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:DriverLibrary` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ESGEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ETLPipelineEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:EncryptionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:EnergyEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ExcelImportEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ExcelKeyboardEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ExcelKeyboardShortcuts` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ExportEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ExportTemplateEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:FXEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:FairValueEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:FinPlanFileEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:FinanceCopilotEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:FinancialCloseEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:FinancialInstrumentsEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:FiscalCalendar` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:FiscalCalendarEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ForecastMethodEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ForecastReconciliationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:FormulaAutoCompleteEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:FormulaEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:FormulaFunctionRegistry` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:GlobalSearchEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:GoalSeekEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:GridOfflineEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:GroupOutlineEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:HealthcareEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ICMatchingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ImpairmentEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ImportEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:IncrementalCalcEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:InsuranceEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:IntercompanyMatchingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:InventoryEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:IterativeCalculationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:LeaseEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:LoanAmortizationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:MDXEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ManufacturingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:MasterDataEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:MigrationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:MonteCarloEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:MultiBookEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:MultiCurrencyEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:NLQEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:NamedRangeEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:OperationalDriverEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:OptionPricingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:PeriodCloseEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:PeriodCloseStateMachine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:PeriodLockEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:PivotTableEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:PluginEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ProfessionalExportEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:QueryCache` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:RBACEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:RatioAnalysisEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:RealEstateEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:RecentFilesEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ReconciliationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:RegulatoryReportingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ReportBookEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ReportBuilderEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ReportCacheEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ReportDistributionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ReportLayoutEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ReportSchedulerEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ReportSchedulingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ReportVersionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:RetailEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:RevRecEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:RollingForecastEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:SOXComplianceEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:SaaSMetricsEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:SafeMathParser` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ScenarioEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:SegmentReportingEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:SensitivityEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:SensitivityTableEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:SessionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:SignConventionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:SmartImportMapper` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:SmartImportMapping` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:SolverEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:SpreadEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:StateMachine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:StreamImportEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:SyncEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:TaxEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:TemplateEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:TemplateLibrary` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ThreeStatementEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:UndoRedoEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:ValidationEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:VarianceAttributionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:VarianceDecompositionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:VersionControlEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:VisualWorkflowEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:WaterfallBridgeEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:WhatIfSandboxEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:WindowStateManager` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:WorkflowActionEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:WorkflowBuilderEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:WorkflowEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:WorkflowSchedulerEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:WorkflowTemplateEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:WorkflowTriggerEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:WorkforceEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:WorkingCapitalEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:XBRLEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:YieldCurveEngine` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:engineLabels` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:exportExcel` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:report-builder-export` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:report-builder-formulas` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:report-builder-templates` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+| `engine:reportDataBuilder` | EXPERIMENTAL | gatedBy=src/engines/engineManifest.generated.ts | Loadable engine in the manifest; no capability claims it as supported yet. |
+
+## Requirements (19)
+
+| Id | Status | Evidence | Note |
+| --- | --- | --- | --- |
+| `req:AI-001` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:FR-001` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:FR-002` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:FR-003` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:FR-004` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:FR-005` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:FR-006` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:FR-007` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:FR-008` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:FR-009` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:FR-010` | EXPERIMENTAL | gatedBy=docs/discovery/requirements-register.md | Register status "Partial (2026-10-20)"; not verified by this register. |
+| `req:FR-011` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:NFR-001` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:NFR-002` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:NFR-003` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:NFR-004` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:UX-001` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:UX-002` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+| `req:UX-003` | NOT_BUILT | namedBy=docs/discovery/requirements-register.md | Register status "Proposed"; nothing claims it yet. |
+
+## Checklist sections (200)
+
+| Id | Status | Evidence | Note |
+| --- | --- | --- | --- |
+| `annex:1` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — file import proven (Gate 2); connector classes for QuickBooks/NetSuite/Xero/Sage/Dynamics(CRM)/Salesforce/Stripe/Plaid/Slack exist, **0 wired**; SAP/Oracle/Workday/HRIS/billing/e-comm/DB direct/market/economic feeds MISSING; OCR/email/SFTP MISSING". |
+| `annex:10` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — exact pipeline built/tested with independent CTA/elimination oracle; FX/CTA/IC engines built; UI per DEC-012; PPA + goodwill impairment engine built (AcquisitionAccounting, ASC 805/350 oracles, labelled EXPERIMENTAL — no acquisition workflow UI yet); legacy worksheet goodwill no longer emits a wrong ASC-350 amortization; VIE remains a consolidation-engine path without a dedicated oracle". |
+| `annex:100` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — money primitive exact; GLEntry numbers remain (F-A); stress suites exist, 100M-txn UNPROVEN". |
+| `annex:101` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — license inventory script exists; DPA/SLA/support-matrix docs PARTIAL". |
+| `annex:102` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — backup/restore tested; DR drill/cloud failover DECIDE". |
+| `annex:103` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "UNWIRED — plugin SDK exists; REST/GraphQL/webhooks MISSING; server 0 frontend callers (DEC-011)". |
+| `annex:104` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — shortcut system exists; financial-shortcut map PARTIAL". |
+| `annex:105` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — demo company + sector fixtures exist (labelled); sample-co rollback PARTIAL". |
+| `annex:106` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "MISSING". |
+| `annex:107` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — decimal money + JPY/BHD precision in money layer; DBL-zero/unicode/orphan handling PARTIAL". |
+| `annex:108` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:109` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:11` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — statements + oracles strong; changes-in-equity + direct-method operating CF derived and tied (Phase 9); XBRL EXPERIMENTAL (DEC-021); scheduler governed, distribution manual; report designer now GL-wired with cube tie-out (Phase 14)". |
+| `annex:110` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:111` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:112` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:113` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:114` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:115` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:116` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:117` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:118` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:119` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:12` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — widget/chart estate large; sector $0-KPI flaw class EVIDENCE-OWED (W6-P0-06); real-time refresh is local-state only". |
+| `annex:120` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:121` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:122` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:123` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:124` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:125` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:126` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:127` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:128` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:129` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:13` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — RatioAnalysis engine; variance pages use prefix rollups + canned drivers (must purge); price/volume/mix engines PARTIAL". |
+| `annex:130` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:131` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:132` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:133` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:134` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:135` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:136` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:137` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:138` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:139` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:14` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — CashEngine/13-week model disclosures; bank rec page built; bank-format imports (OFX/BAI2/MT940/CAMT) MISSING". |
+| `annex:140` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:141` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:142` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:143` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:144` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:145` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:146` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:147` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:148` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:149` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:15` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — DebtSchedule/Loan/Bond engines; covenant tracking PARTIAL". |
+| `annex:150` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:151` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:152` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:153` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:154` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:155` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:156` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:157` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:158` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:159` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:16` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — TaxEngine/provision page; transfer pricing rebuilt on entered benchmarks (Phase 8: `tpBenchmarkStore` + `applyBenchmarks`, both tested; out-of-range flags labelled judgement calls); jurisdiction packs still MISSING (E4)". |
+| `annex:160` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:161` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:162` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:163` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:164` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:165` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:166` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:167` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:168` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:169` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:17` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — LeaseEngine + dashboard; disclosure pack PARTIAL". |
+| `annex:170` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:171` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:172` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:173` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:174` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:175` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:176` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:177` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:178` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:179` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:18` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — RevRecEngine + dashboard; contract DB PARTIAL". |
+| `annex:180` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:181` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:182` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:183` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:184` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:185` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:186` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:187` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:188` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:189` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:19` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — pages decontaminated (Phase 10): comp modelling + headcount derive from actual employee records; planned headcount/attrition not displayed (no source data); WorkforceEngine paths remain". |
+| `annex:190` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:191` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:192` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:193` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:194` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:195` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:196` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:197` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:198` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:199` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:2` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — encrypted blob KV works; SQLite schema exists unwritten by client; staging pipeline UNWIRED; OLAP cube engines ×6 UNWIRED/PARTIAL; lineage/quality engines UNWIRED". |
+| `annex:20` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL/SHALLOW — sector pages largely template clones; CRM pipeline is connector-only". |
+| `annex:200` | NOT_BUILT | namedBy=docs/discovery/OWNER_SCOPE_REGISTER_111_200.md | Checklist section not yet assessed (SOURCE OWED); missing is not zero and not complete. |
+| `annex:21` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — construction/job-cost pieces; WIP/%-complete PARTIAL". |
+| `annex:22` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — NPV/IRR engines; IRR flaw class EVIDENCE-OWED (W6-P0-16); DCF/comps/LBO PARTIAL". |
+| `annex:23` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — copilot/NLQ/commentary behind flags; verified-facts gate BUILT (Phase 13, DEC-022: `verifyNarrative` + AI-001 corpus, wired at the NLQ boundary — unsupported figures are withheld, never published); ML forecasting still MISSING (statistical only, E3)". |
+| `annex:24` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — workflow engines ×6 (duplicated); close checklist built; approvals PARTIAL". |
+| `annex:25` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — SOX engine reports not-evaluated by design (authority = owner DEC, still pending); XBRL engine EXPERIMENTAL-labelled (DEC-021, export withheld until taxonomy validation exists); ESG frameworks PARTIAL". |
+| `annex:26` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — AST census pins 409 Zustand store actions (302 guarded, 107 explicit reasoned exceptions); failing-first denial tests cover consequential actions. Production callers cannot reach imported store `setState` directly; 401 refresh delegates through an auth-store action. `authStore.register` is disabled in production and when mock auth is off. `getCurrentUser()` requires `isAuthenticated`. N3 remains active; `authStore.switchEntity` is owner-blocked under O9 until authorized entity scope is defined. MFA/SSO/ABAC/cell-level authorization remain MISSING; offline auth is governed by DEC-014.". |
+| `annex:27` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — import pipeline + staging (UNWIRED); visual pipeline designer MISSING; rollback = undo-batch only". |
+| `annex:28` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — canonical subset DECLARED (DEC-020: SafeMathParser, Excel-known-answer oracle suite MISSION E passes); W6-P0-01 silent-zero class guard witness added in the batch worker (erroring cells named, prior values kept); duplicate formula/cube engines remain for Phase 14 retire-or-wire". |
+| `annex:29` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — spreadsheet components + AG Grid; cell lineage store exists; 100k-row virtualization bench exists". |
+| `annex:3` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — account types + COA domain exist; hierarchies/templates/mapping wizard PARTIAL; merge/split, impact analysis MISSING". |
+| `annex:30` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "UNWIRED — DocumentEngine 0 consumers; documentStore exists". |
+| `annex:31` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — XLSX/PDF/PPTX(board) built; DOCX/HTML/JSON/XML PARTIAL; print PARTIAL; bursting/distribution MISSING". |
+| `annex:32` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — notification store + Tauri notifications; alert rule builder MISSING; email/push channels DECIDE (egress, DEC-003)". |
+| `annex:33` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — settings/integrations pages built; feature toggles/license PARTIAL". |
+| `annex:34` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — bench/load suites exist (Monte Carlo, 100k grid, chaos); millions-of-rows UNPROVEN on blob store". |
+| `annex:35` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — desktop-local by design; offline sign-in broken (DEC-014); sync/conflict N/A in single-user v1 = DECIDE for team mode". |
+| `annex:36` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — i18n en/ar parity proven; RTL exists; 10-language set MISSING; locale number/date formats PARTIAL". |
+| `annex:37` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — help pages/\_docs map; tutorials/tours store exists; demo company exists as mock-data (must stay labelled)". |
+| `annex:38` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "WORKS as discipline (15k tests, ratchets) — gaps named per row in this annex". |
+| `annex:39` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — Tauri packaging config; signing/notarization/updater UNVERIFIED (native); delta updates MISSING". |
+| `annex:4` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — import GL proven; manual/recurring/reversing JE UI PARTIAL; approvals/attachments PARTIAL; double-entry enforced in store". |
+| `annex:40` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — plugin system + sandbox (escape class EVIDENCE-OWED W6-P0-02/03); custom fields/KPI PARTIAL". |
+| `annex:41` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — backup/restore built + tested; key escrow MISSING (owner DEC, F-B); scheduled/cloud backup DECIDE (egress)". |
+| `annex:42` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL/SHALLOW — 18 sector packs, mostly template clones (F-E)". |
+| `annex:43` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — pillar nav; command palette MISSING (global search engine UNWIRED); tabs/split PARTIAL; 242-route overload". |
+| `annex:44` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — Office/Google/Slack surfaces PARTIAL (Slack connector UNWIRED); Excel add-in/Teams/BI bridges MISSING". |
+| `annex:45` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — F-0015 SHA-256 chain + R-009 reconstruction remain proven. N2 evidence: `AuditTrailPage` consumes persisted `auditTrailStore` via typed adapter (20 tests); persistence compatibility test exercises v0→v1 migration contract, preserves entries + chain head, and verifies restored chain (7 persistence tests total); `npm run tsc` passes. `docs/architecture/AUDIT_CHAIN_REACHABILITY.md` maps additional paths. DEC-025 selects `auditTrailStore` as client-side canonical chain; DEC-026–028 retire EventLedger and three unconsumed in-memory audit engines (`CellAuditTrailEngine`, `AuditEngine`, `AuditTrailEngine`) with no production writers or persisted data. Server integration/retirement remains Q6 and SOX authority remains O4. Retirement evidence: `rbacMatrixCompleteness.test.ts` 9/9; regenerated capability matrix omits retired prototypes; current README count 48 Zustand stores, 43 persisted. Period-close remains separate and unanchored after DEC-030 repairs per-period append-order verification; `periodCloseStore.test.ts` + `PeriodClosePage.test.tsx` pass 50/50 and relevant gates pass; it is not SOX/general-audit proof. DEC-029 retains cell-lineage as separate local-draft state with v1→v2 reconstruction and digest-verification unit evidence, but no production caller/native restart or general-audit adapter. DEC-031 retains `AuditLogger` only as an isolated in-memory helper with snapshot compatibility; `SecretRotation-AuditLogger.test.ts` (63/63) and `SecretsVault.test.ts` (75/75) pass, but their callback bridge/mocks are not production wiring. DEC-032 retains `PIIRedactor` as an isolated in-memory helper (70 tests); no production caller/persistence was found, and prior policy claims of product-wide redaction are now marked unverified. Historic policy/A11Y integration claims are not runtime evidence. Server authority remains Q6-blocked. Do not claim one canonical product-wide audit chain. DEC-038 reversion attribution: authenticated per-call actor, historical record preserved, stale-session/Viewer/partial-permission denials; `auditTrailStore.attribution.test.ts` (6 tests); combined trust slice 8 files / 204 tests (2026-10-20). No ledger rollback or native/compliance proof.". |
+| `annex:46` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — error boundaries per route group; chaos benches exist; crash recovery engine UNWIRED". |
+| `annex:47` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — GDPR events; SOX/COSO PARTIAL; HIPAA/PCI/Basel etc = DECIDE (sector packs, E4/E5)". |
+| `annex:48` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — migration page exists; onboarding wizard built; parallel-run support = the plan's §19 acceptance itself". |
+| `annex:49` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — OLAP/pivot/benchmark pages built on engines PARTIAL; cohort/regression/clustering MISSING as governed features". |
+| `annex:5` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "UNWIRED/MISSING — WorkingCapital scalar AR only; cash-forecast self-discloses no AR sub-ledger". |
+| `annex:50` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — board pack is the flagship (tie-out tested); portal/watermark/versioning PARTIAL". |
+| `annex:51` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — SaaS metrics engine; revenue waterfall/RPO/cohorts PARTIAL; pricing-elasticity MISSING". |
+| `annex:52` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — allocation engines (step-down/reciprocal components); CVP/break-even engines exist UNWIRED/PARTIAL". |
+| `annex:53` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — cash waterfall engine; FCFF/FCFE/quality-of-earnings PARTIAL". |
+| `annex:54` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — customer/product/channel P&L pages PARTIAL; fully-loaded costing depends on §52". |
+| `annex:55` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — CreditRisk engine; VaR/heat-map/KRI PARTIAL; fraud indicators feed J2 rules (§7)". |
+| `annex:56` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — ESG dashboards/CSRD generator; framework templates (GRI/SASB/TCFD/CSRD/ISSB) PARTIAL". |
+| `annex:57` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — insurance dashboard/underwriting; claims register MISSING". |
+| `annex:58` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — government/education leaves FUNCTIONAL in spots; fund accounting PARTIAL". |
+| `annex:59` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — contract facts feed rev-rec; repository/alerts MISSING". |
+| `annex:6` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "MISSING native (as §5)". |
+| `annex:60` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — real-estate dashboard FUNCTIONAL(high) per gap report; rent roll/CAM PARTIAL". |
+| `annex:61` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "MISSING as a module (fleet data inside auto/mobility leaves only)". |
+| `annex:62` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — inventory planning pages; valuation methods/landed cost PARTIAL". |
+| `annex:63` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — SaaSMetricsEngine + dashboards; cohort/CAC-magic-number PARTIAL". |
+| `annex:64` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — equity plans section MISSING; 409A/comps PARTIAL; banding PARTIAL". |
+| `annex:65` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — cash positioning/hedging/investments PARTIAL; payment factory (ACH/SEPA/Wire formats) MISSING". |
+| `annex:66` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — IC matching/forensics engines; IC fees/royalties PARTIAL". |
+| `annex:67` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — country registers/templates MISSING by jurisdiction". |
+| `annex:68` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — SOX suite (authority undecided, §25)". |
+| `annex:69` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — modelling framework/pack exists; SWOT/PESTEL/Porter/Boston PARTIAL; OKR/scorecard pages exist". |
+| `annex:7` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — Depreciation/CapEx engines exist; register/dual tax-book PARTIAL/UNWIRED". |
+| `annex:70` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "MISSING as a governed module (investor leaves only)". |
+| `annex:71` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — banking dashboard FUNCTIONAL(high); CECL/ALM/Basel calculators MISSING". |
+| `annex:72` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — insurance dashboard (as §57); reserving/IFRS 17 MISSING". |
+| `annex:73` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — healthcare payroll verified in spots; payer mix/case mix MISSING". |
+| `annex:74` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — retail leaf FUNCTIONAL; same-store/marketplace fees PARTIAL". |
+| `annex:75` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — manufacturing dashboard FUNCTIONAL(high); standard cost/absorption/EVM-depth PARTIAL". |
+| `annex:76` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — buildingSuite; EVM (CPI/SPI/EAC) PARTIAL". |
+| `annex:77` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — SOW/process leaves; utilization-pyramid PARTIAL". |
+| `annex:78` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — oil&gas leaves (MRL class); rate case/fuel hedging PARTIAL". |
+| `annex:79` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — ITBM leaf set exists; TBM taxonomy/apptio-style PARTIAL". |
+| `annex:8` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — budgets/BvA built; seeding/spreading/versions PARTIAL; cascade-token flaw class EVIDENCE-OWED (W6-P0-15)". |
+| `annex:80` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — workforce pages (decontamination owed, §19); compa-ratio/attrition-cost PARTIAL". |
+| `annex:81` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — churn dashboards; segment PnL/DHCO PARTIAL; CLV models MISSING". |
+| `annex:82` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — forecasting engines (exponential smoothing etc.); ARIMA/Holt-Winters/Bayesian/Prophet/GBM MISSING; confidence intervals PARTIAL". |
+| `annex:83` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — reference-data owners PARTIAL; retention/enrichment MISSING". |
+| `annex:84` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — AI commentary UNWIRED to proof; PDF board books PARTIAL; annotation PARTIAL". |
+| `annex:85` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — fiscal/planning calendar pages; filing-deadline MISSING". |
+| `annex:86` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — driver registry exists; sensitivity-of-assumption PARTIAL; inflation/FX forecast tables PARTIAL". |
+| `annex:87` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "MISSING (no external dataset; egress DECIDE)". |
+| `annex:88` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — workflow/rules engines duplicated; scheduled auto-posting PARTIAL". |
+| `annex:89` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "UNWIRED — searchExpr engine 0 consumers; palette MISSING". |
+| `annex:9` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — Scenario/WhatIf/Sensitivity/MonteCarlo engines + worker; goal-seek page exists". |
+| `annex:90` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "MISSING (desktop-only Tauri)". |
+| `annex:91` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — print/PDF generators PARTIAL". |
+| `annex:92` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — snapshot store exists; retention/backup-drill PARTIAL". |
+| `annex:93` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — OpenTelemetryExporter engine UNWIRED; performance profiling PARTIAL". |
+| `annex:94` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — chart estate includes waterfall; Sankey/Gantt/map widgets PARTIAL". |
+| `annex:95` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — archive page exists; retention/legal-hold PARTIAL". |
+| `annex:96` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — tax engine core; country rules MISSING". |
+| `annex:97` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — several engines exist (impairment/EPS tests per gap report); hedge/FV hierarchy PARTIAL". |
+| `annex:98` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "MISSING". |
+| `annex:99` | NOT_BUILT | namedBy=docs/MASTER_CHECKLIST_COVERAGE.md | Checklist status "PARTIAL — zero-attrition a11y suites exist; WCAG 2.2 AA full coverage UNPROVEN". |
+
+## Vision capabilities (65)
+
+| Id | Status | Evidence | Note |
+| --- | --- | --- | --- |
+| `cap:admin.backup-restore` | BLOCKED-ON-OWNER | owner=O3; question=Encryption key-escrow/recovery decision (O3, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
+| `cap:admin.data-management` | EXPERIMENTAL | gatedBy=/data | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:admin.integrations` | EXPERIMENTAL | gatedBy=/settings/integrations | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:admin.settings` | EXPERIMENTAL | gatedBy=/settings | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:admin.users` | EXPERIMENTAL | gatedBy=/admin | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:ai.explicit-invocation` | EXPERIMENTAL | gatedBy=/ai | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:ai.local-only` | EXPERIMENTAL | gatedBy=/ai | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:ai.no-egress` | NOT_BUILT | namedBy=docs/plan/COMPLETION_PLAN_86_100.md | no egress path is proven; DEC-022 is policy, not a tested control |
+| `cap:ai.verified-facts-gate` | EXPERIMENTAL | gatedBy=/ai | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:analyze.drill-to-source` | EXPERIMENTAL | gatedBy=/data/gl-explorer | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:analyze.exception-rules` | EXPERIMENTAL | gatedBy=/data/exceptions | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:analyze.explanations` | EXPERIMENTAL | gatedBy=/variance | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:analyze.findings-disposition` | EXPERIMENTAL | gatedBy=/data/exceptions | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:analyze.statements` | EXPERIMENTAL | gatedBy=/reports/three-statement | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:analyze.variance-decomposition` | EXPERIMENTAL | gatedBy=/variance | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:close.audit-chain` | EXPERIMENTAL | gatedBy=/audit/trail | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:close.corrections` | EXPERIMENTAL | gatedBy=/data/corrections | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:close.period-entity-scope` | EXPERIMENTAL | gatedBy=/periods/close | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:close.state-machine` | EXPERIMENTAL | gatedBy=/periods/close | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:close.tie-out` | EXPERIMENTAL | gatedBy=/data/reconciliation | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:close.trial-balance` | EXPERIMENTAL | gatedBy=/data/gl-trial-balance | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:close.write-guards` | EXPERIMENTAL | gatedBy=/data/gl-journals | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:data.control-totals` | EXPERIMENTAL | gatedBy=/data/gl-trial-balance | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:data.csv-xlsx-intake` | EXPERIMENTAL | gatedBy=/data/gl-upload | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:data.d365-bc-gl` | BLOCKED-ON-OWNER | owner=O1; question=One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
+| `cap:data.d365-fo-gl` | BLOCKED-ON-OWNER | owner=O1; question=One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
+| `cap:data.d365-journal` | BLOCKED-ON-OWNER | owner=O1; question=One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
+| `cap:data.lineage` | EXPERIMENTAL | gatedBy=/analytics/data-lineage | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:data.mapping` | EXPERIMENTAL | gatedBy=/data/data-flow | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:data.quarantine` | EXPERIMENTAL | gatedBy=/data/gl-explorer | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:data.validation` | EXPERIMENTAL | gatedBy=/data/exceptions | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:govern.authorization` | EXPERIMENTAL | gatedBy=/settings/security | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:govern.entity-scope` | BLOCKED-ON-OWNER | owner=O9; question=Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
+| `cap:govern.security-policy` | EXPERIMENTAL | gatedBy=/settings/security | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:govern.sox-authority` | BLOCKED-ON-OWNER | owner=O4; question=SOX/audit authority decision (O4, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
+| `cap:model.consolidation` | EXPERIMENTAL | gatedBy=/consolidation | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:model.fx-translation` | EXPERIMENTAL | gatedBy=/currency/translation | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:model.ic-elimination` | EXPERIMENTAL | gatedBy=/consolidation/ic-eliminations | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:model.leases` | EXPERIMENTAL | gatedBy=/lease | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:model.multi-book` | EXPERIMENTAL | gatedBy=/accounting | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:model.revenue-recognition` | EXPERIMENTAL | gatedBy=/revenue | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:model.tax` | EXPERIMENTAL | gatedBy=/tax | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:ops.capex` | EXPERIMENTAL | gatedBy=/capex | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:ops.cash-planning` | EXPERIMENTAL | gatedBy=/cash/forecast | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:ops.workforce` | EXPERIMENTAL | gatedBy=/workforce | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:plan.assumptions` | EXPERIMENTAL | gatedBy=/forecasts/drivers | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:plan.budgets` | EXPERIMENTAL | gatedBy=/budgets | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:plan.drivers-cascades` | EXPERIMENTAL | gatedBy=/forecasts/drivers | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:plan.operational-plans` | NOT_BUILT | namedBy=docs/plan/COMPLETION_PLAN_86_100.md | Identified in plan §4; nothing claims it yet. |
+| `cap:plan.rolling-forecast` | BLOCKED-ON-OWNER | owner=O2; question=Roll semantics: replace vs blend, which months roll, approval interplay (O2, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
+| `cap:plan.scenarios` | EXPERIMENTAL | gatedBy=/scenarios | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:plan.versions` | EXPERIMENTAL | gatedBy=/budgets/bva | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:report.board-pack` | EXPERIMENTAL | gatedBy=/board-pack | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:report.pdf` | EXPERIMENTAL | gatedBy=/reports | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:report.pptx-editable` | EXPERIMENTAL | gatedBy=/board-pack | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:report.statements` | EXPERIMENTAL | gatedBy=/reports/three-statement | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:report.tie-back` | EXPERIMENTAL | gatedBy=/reports | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:report.xlsx-formula` | EXPERIMENTAL | gatedBy=/reports | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:wf.administration` | EXPERIMENTAL | gatedBy=/admin | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:wf.approvals` | EXPERIMENTAL | gatedBy=/budgets/approval | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:wf.auditability` | EXPERIMENTAL | gatedBy=/audit/trail | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:wf.correction-follow-through` | EXPERIMENTAL | gatedBy=/data/corrections | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:wf.human-attribution` | EXPERIMENTAL | gatedBy=/audit/trail | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:wf.rbac` | EXPERIMENTAL | gatedBy=/settings/security | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:wf.reviews` | EXPERIMENTAL | gatedBy=/budgets/approval | A routed screen hosts this capability; no support claim yet (see plan §5). |
+
+<!-- REGISTER:END -->

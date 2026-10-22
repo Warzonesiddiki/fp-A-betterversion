@@ -264,6 +264,17 @@ suite 1,412 files / 16,410 passed + 1 skipped.
 | #99  | Release-candidate hardening                                         | every gate green from a clean checkout; rollback rehearsal; runbook                      |
 | #100 | Release + register snapshot                                         | contract C1–C6 green; README/VISION claims match measurement                             |
 
+**PR #86 is delivered (2026-10-23).** `npm run completion:register` seeds and
+validates `docs/plan/completion-register.json`; the seeded register holds the
+measured census exactly — **231 routes + 180 engines + 19 requirements + 200 annex
+sections + 65 capabilities = 695 rows**, statuses `SUPPORTED 0 · EXPERIMENTAL 468 ·
+BLOCKED-ON-OWNER 7 · RETIRED 0 · NOT_BUILT 220`, and route dispositions
+**103 MIGRATE / 77 EXPERIMENTAL / 47 REVIEW / 4 RETAIN** (DEC-060). Eleven tests in
+`src/__tests__/completionRegister.test.ts` pin the census both ways, the closed
+vocabulary, each evidence rule, the `REVIEW ≠ SUPPORTED` rule, the rendered-view
+drift check and `--release`. `--check` runs inside `docs:verify`, so the register
+cannot go stale quietly. PR #87 inherits the 47 `REVIEW` routes as its worklist.
+
 **What still cannot be claimed at #100 without an owner answer** (register status
 `BLOCKED-ON-OWNER`, never blank): verified D365 shapes (O1), data-safety/escrow
 (O3), SOX/audit authority (O4), rolling-forecast semantics (O2), sector/

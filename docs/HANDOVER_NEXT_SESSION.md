@@ -1,5 +1,43 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-23 (f) — the completion register exists, and nothing seeds as SUPPORTED (PR #86)
+
+**What this PR added.** `scripts/completion-register.mjs` is the census → seed →
+validate → render gate for the whole programme. It measures the tree (231 routes
+from `src/App.tsx`, 180 engine modules, 19 requirements from the discovery
+register, 200 annex sections from the coverage-scope JSON, 65 named capabilities
+across the vision's 11 domains), seeds `docs/plan/completion-register.json`, and
+renders `docs/plan/COMPLETION_REGISTER.md` from it. `--check` fails when the census
+and the rows disagree in either direction, when a status is blank or outside the
+closed vocabulary, when evidence does not resolve, or when the rendered view is
+stale; `--release` refuses while any row is not `SUPPORTED` or `RETIRED`.
+`--check` is wired into `npm run docs:verify`.
+
+**The honest starting position, measured not asserted:** 695 rows —
+**SUPPORTED 0 · EXPERIMENTAL 468 · BLOCKED-ON-OWNER 7 · RETIRED 0 · NOT_BUILT 220**.
+The seven owner-blocked rows name O1, O2, O3, O4 and O9 with the exact question
+from the taskboard's OWNER table. `cap:ai.no-egress` is `NOT_BUILT` rather than
+"experimental" because DEC-022 is a policy, not a tested control.
+
+**Disposition is imported, not typed (DEC-060).** `docs/CAPABILITY_TRUTH_MATRIX.md`
+is parsed on every seed — the first attempt printed no tally because `--seed` kept
+existing rows verbatim, so a matrix edit would have left a stale grade. Now
+`103 MIGRATE / 77 EXPERIMENTAL / 47 REVIEW / 4 RETAIN` reconcile with the 47
+empty-pillar routes, and a `REVIEW` row may never be `SUPPORTED`; an unknown
+disposition fails the gate. PR #87's worklist is those 47.
+
+**Tests and gates.** `src/__tests__/completionRegister.test.ts` — 11 tests over a
+tmpdir fixture built through `--root=`, written before the script (they failed
+first). `docs:verify`, `docs:links -- --strict`, `tsc --noEmit`,
+`eslint … --max-warnings 0` and `prettier --check "src/**"` all exit 0. The
+generated register and its JSON are in `.prettierignore` for the same reason as
+`docs/product/ROUTE_MAP.md`: the drift check compares the rendered file verbatim,
+and Prettier's table padding would make it permanently stale.
+
+**Next.** PR #87 (route disposition sweep: 47 `REVIEW` → 0), then #88 (spine
+`CONNECTED` evidence). Nothing in this register may be upgraded without a
+resolving test id, a gate line and a doc link.
+
 ## 2026-10-22 (e) — the working methods are now a gate-checked library (DEC-059)
 
 **What this session added.** `docs/agent/skills/` is now a library of 50 methods,
