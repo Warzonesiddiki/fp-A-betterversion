@@ -22,7 +22,6 @@ import {
   LEDGER_SCALE,
   moneyMinus,
   moneyPlus,
-  moneyToAmount,
   moneySum,
   roundTo,
   subtractMoney,
@@ -184,8 +183,12 @@ function toJournalBatch(entries: GLEntry[], environmentId: string): GlJournalBat
       postDate: e.postDate || e.date,
       // `GlJournalLine` is a WIRE contract in whole currency units, not the
       // ledger's integer minor units. This is the explicit crossing (stage 4).
-      debit: moneyToAmount(e.debit),
-      credit: moneyToAmount(e.credit),
+      // `amountFrom` rather than `moneyToAmount`: a draft can still arrive with
+      // a major-unit number (the publish trigger reads drafts before they are
+      // normalized), and `moneyToAmount` THROWS on a number — which turned
+      // "publish these 2 drafts" into a money error in the banner.
+      debit: amountFrom(e.debit),
+      credit: amountFrom(e.credit),
       description: e.description,
       reference: e.reference,
     })),
@@ -1662,18 +1665,21 @@ export const useGLStore = create<GLState>()(
               Scenario: 'Scenario:Actual',
               Currency: 'Currency:USD',
             };
-            const amount = moneyToAmount(moneyMinus(e.debit, e.credit));
+            // Cube cells are major-unit numbers. `subtractMoney`/`roundTo` read a
+            // `Money` and a legacy number alike, so a row that has not been
+            // normalized yet cannot throw the sync.
+            const amount = roundTo(subtractMoney(e.debit, e.credit));
 
             cubeCells.push({
               cube: 'GL_Actuals',
-              cell: { coords, measure: 'debit', value: moneyToAmount(e.debit), dataType: 'input' },
+              cell: { coords, measure: 'debit', value: amountFrom(e.debit), dataType: 'input' },
             });
             cubeCells.push({
               cube: 'GL_Actuals',
               cell: {
                 coords,
                 measure: 'credit',
-                value: moneyToAmount(e.credit),
+                value: amountFrom(e.credit),
                 dataType: 'input',
               },
             });

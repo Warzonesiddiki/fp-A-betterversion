@@ -3,14 +3,12 @@ import { MissingFXRateError } from './FXEngine';
 import {
   toDecimal,
   asMoney,
-  moneyToAmount,
   compareMoney,
   addMoney,
   subtractMoney,
   multiplyMoney,
   divideMoney,
   sumMoney,
-  moneySign,
   roundTo,
   toCents,
   formatMoney,
@@ -1440,13 +1438,20 @@ export class ConsolidationEngine {
       remainingEntriesByKey.set(key, remainingEntries);
       const adjustment = adjustmentMap.get(key) ?? 0;
       let appliedAdjustment = adjustment;
-      const entrySign = moneySign(entry.amount);
+      // Tolerant read (DEC-056): `entry.amount` is `Money` after stage 4, but
+      // this engine is also called with rows built by pages that still hand it
+      // major-unit numbers. `moneySign` THROWS on a number, which the outer
+      // catch turned into a failed consolidation with ZERO entries — the whole
+      // statement silently emptied. `toDecimal(...).comparedTo(0)` reads both
+      // shapes exactly and returns the same -1 | 0 | 1.
+      const entrySign = toDecimal(entry.amount).comparedTo(0);
       if (
         remainingEntries > 0 &&
         adjustment !== 0 &&
         entrySign !== 0 &&
         entrySign === -Math.sign(adjustment) &&
-        Math.abs(adjustment) > Math.abs(moneyToAmount(entry.amount))
+        // Exact comparison, and tolerant of a major-unit number (DEC-056).
+        toDecimal(adjustment).abs().greaterThan(toDecimal(entry.amount).abs())
       ) {
         appliedAdjustment = roundTo(multiplyMoney(entry.amount, -1));
         adjustmentMap.set(key, roundTo(subtractMoney(adjustment, appliedAdjustment)));

@@ -4,7 +4,7 @@ import { useGLStore } from '@/store/glStore';
 import { todayISO } from '@/utils/clock';
 import { usePeriodCloseStore } from '@/store/periodCloseStore';
 import { buildFiscalPeriods } from '@/utils/fiscalPeriods';
-import { addMoney, roundTo, subtractMoney, toDecimal, moneyToAmount } from '@/utils/money';
+import { addMoney, amountFrom, roundTo, subtractMoney, toDecimal } from '@/utils/money';
 import { PeriodCloseStateMachine } from '@/engines/PeriodCloseStateMachine';
 import { SOXComplianceEngine } from '@/engines/SOXComplianceEngine';
 import type { SOXReport, SOXCheckResult, SOXControlCategory } from '@/engines/SOXComplianceEngine';
@@ -395,8 +395,8 @@ export default function SOXCompliancePage() {
       // The SOX engine's `{ debit, credit }` summary is a major-unit view.
       ledgerEntries: ledgerEntries.map((e) => ({
         ...e,
-        debit: moneyToAmount(e.debit),
-        credit: moneyToAmount(e.credit),
+        debit: amountFrom(e.debit),
+        credit: amountFrom(e.credit),
       })),
       closedPeriods: closedPeriodIds,
       recentEntries,

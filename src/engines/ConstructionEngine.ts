@@ -17,7 +17,7 @@ import {
   roundTo,
   toDecimal,
   formatMoney,
-  moneyToAmount,
+  amountFrom,
 } from '../utils/money';
 
 export interface ConstructionStats {
@@ -62,7 +62,9 @@ export class ConstructionEngine {
     // for downstream `sumMoney` calls.
     // Q5 stage 4: `amount` is `Money` and always present; the crossing is
     // explicit so the value never goes through a tolerant numeric read.
-    const getAmount = (e: GLEntry): number => moneyToAmount(e.amount);
+    // Tolerant crossing: these engines receive rows from pages that may still
+    // hand over major-unit numbers, and `moneyToAmount` THROWS on a number.
+    const getAmount = (e: GLEntry): number => amountFrom(e.amount);
     // Sum each account class with exact decimal arithmetic so many GL lines do
     // not accumulate IEEE-754 drift. `sumMoney` over absolute amounts.
     const sumAbs = (prefix: string): number =>
@@ -106,7 +108,9 @@ export class ConstructionEngine {
 
     // Q5 stage 4: `amount` is `Money` and always present; the crossing is
     // explicit so the value never goes through a tolerant numeric read.
-    const getAmount = (e: GLEntry): number => moneyToAmount(e.amount);
+    // Tolerant crossing: these engines receive rows from pages that may still
+    // hand over major-unit numbers, and `moneyToAmount` THROWS on a number.
+    const getAmount = (e: GLEntry): number => amountFrom(e.amount);
 
     for (const e of entries) {
       if (!e.accountCode.startsWith('45') && !e.accountCode.startsWith('56')) continue;
@@ -175,7 +179,9 @@ export class ConstructionEngine {
     return [...buckets.keys()].sort().map((month) => {
       const monthEntries = buckets.get(month)!;
       const revEntries = monthEntries.filter((e) => e.accountCode.startsWith('4'));
-      const revenue = sumMoney(revEntries.map((e) => Math.abs(moneyToAmount(e.amount)))).toNumber();
+      const revenue = sumMoney(
+        revEntries.map((e) => toDecimal(e.amount).abs().toNumber())
+      ).toNumber();
       return {
         month,
         backlog: 0,

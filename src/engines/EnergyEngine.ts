@@ -18,7 +18,14 @@ import type { GLEntry } from '@/types';
  * arithmetic is preserved. No raw + - * / on currency values remains.
  */
 
-import { divideMoney, roundTo, subtractMoney, sumMoney, moneyToAmount } from '../utils/money';
+import {
+  divideMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  amountFrom,
+  toDecimal,
+} from '../utils/money';
 
 export interface EnergyStats {
   totalRevenue: number;
@@ -64,7 +71,9 @@ export class EnergyEngine {
    * - 55xx: Fuel / Production Costs
    */
   static calculateStats(entries: GLEntry[]): EnergyStats {
-    const getAmount = (e: GLEntry): number => moneyToAmount(e.amount);
+    // Tolerant crossing: these engines receive rows from pages that may still
+    // hand over major-unit numbers, and `moneyToAmount` THROWS on a number.
+    const getAmount = (e: GLEntry): number => amountFrom(e.amount);
 
     const totalRevenueDec = sumMoney(
       entries.filter((e) => e.accountCode.startsWith('4')).map((e) => Math.abs(getAmount(e)))
@@ -107,7 +116,9 @@ export class EnergyEngine {
       { code: '435', name: 'Nuclear' },
     ];
 
-    const getAmount = (e: GLEntry): number => moneyToAmount(e.amount);
+    // Tolerant crossing: these engines receive rows from pages that may still
+    // hand over major-unit numbers, and `moneyToAmount` THROWS on a number.
+    const getAmount = (e: GLEntry): number => amountFrom(e.amount);
 
     return sources
       .map((src) => {
@@ -147,8 +158,12 @@ export class EnergyEngine {
       const costEntries = monthEntries.filter(
         (e) => e.accountCode.startsWith('5') || e.accountCode.startsWith('6')
       );
-      const revenue = sumMoney(revEntries.map((e) => Math.abs(moneyToAmount(e.amount)))).toNumber();
-      const cost = sumMoney(costEntries.map((e) => Math.abs(moneyToAmount(e.amount)))).toNumber();
+      const revenue = sumMoney(
+        revEntries.map((e) => toDecimal(e.amount).abs().toNumber())
+      ).toNumber();
+      const cost = sumMoney(
+        costEntries.map((e) => toDecimal(e.amount).abs().toNumber())
+      ).toNumber();
       return {
         month,
         revenue: roundTo(revenue, 2),
