@@ -33,6 +33,7 @@ const glState = vi.hoisted(() => ({
       },
     ] as unknown[],
     isLoading: false,
+    importError: null as string | null,
     quarantinedEntries: [] as unknown[],
   },
 }));
@@ -54,6 +55,7 @@ vi.mock('lucide-react', () => {
     return Icon;
   };
   return {
+    AlertTriangle: makeIcon(),
     Scale: makeIcon(),
     RefreshCw: makeIcon(),
     Download: makeIcon(),
@@ -83,6 +85,7 @@ describe('GLTrialBalancePage smoke test', () => {
     actAs('Admin');
     useGLTrialBalanceStore.getState().reset();
     glState.value.isLoading = false;
+    glState.value.importError = null;
   });
   it('renders without crashing', () => {
     const { container } = renderPage();
@@ -140,5 +143,19 @@ describe('GLTrialBalancePage — loading branch announce-once', () => {
     renderPage();
     // The loaded page shows the real table; no loading announcement remains.
     expect(screen.queryByText('Loading trial balance…')).not.toBeInTheDocument();
+  });
+
+  it('K30 error state: states the failed import instead of rendering the stale ledger', () => {
+    glState.value.isLoading = false;
+    glState.value.importError = 'Row 12: debit does not balance (500.00 vs 450.00)';
+    renderPage();
+
+    const alert = screen.getByRole('alert');
+    expect(alert).toHaveTextContent('Failed to load the ledger');
+    expect(alert).toHaveTextContent('Row 12: debit does not balance');
+    expect(screen.getByTestId('error-code')).toHaveTextContent('GL-IMPORT-ERROR');
+    expect(screen.getByRole('button', { name: /Go to Data Import/i })).toBeInTheDocument();
+    // The rows are not shown: a failed import must not be presented as the period's truth.
+    expect(screen.queryByText('4000')).not.toBeInTheDocument();
   });
 });

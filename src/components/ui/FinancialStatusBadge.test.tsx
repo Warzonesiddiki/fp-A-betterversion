@@ -19,4 +19,20 @@ describe('FinancialStatusBadge', () => {
       'Offline; queued changes are not official: 3 changes queued'
     );
   });
+
+  it('reads stale as stale, not as current, and says what to do about it', () => {
+    render(<FinancialStatusBadge status="stale" />);
+
+    const indicator = screen.getByRole('status');
+    expect(indicator).toHaveTextContent('Stale');
+    expect(indicator).toHaveAccessibleName('Data may be stale; refresh or inspect source health');
+  });
+
+  it('reads queued offline changes as unofficial rather than saved', () => {
+    render(<FinancialStatusBadge status="offlineQueued" />);
+
+    expect(screen.getByRole('status')).toHaveAccessibleName(
+      'Offline; queued changes are not official'
+    );
+  });
 });

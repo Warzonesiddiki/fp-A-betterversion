@@ -1,0 +1,242 @@
+{
+  "_comment": "Spine CONNECTED evidence (PR #88, DEC-062). Every claim names a test file and the exact test title inside it; scripts/verify-spine-evidence.mjs fails when the file or the title is not there. A claim is evidence that a behaviour is exercised, not a claim that the format, the customer or the governance is verified — those stay with the owner questions (O1-O9).",
+  "policy": {
+    "route": "A routed screen may be graded CONNECTED only when its journey, empty, error and loading states are each evidenced, and the shell supplies the stale/offline state.",
+    "capability": "A named capability may be graded CONNECTED when at least one test exercises it end-to-end (not a unit of a helper it happens to import).",
+    "loadingNotApplicable": "Allowed only for a page with no page-level loading branch; the page source is checked for `isLoading` and `<Skeleton` before the excuse is accepted.",
+    "governed": "Not claimed here. GOVERNED needs authorization, audit and entity-scope evidence and is PR #89."
+  },
+  "shell": {
+    "stale": {
+      "file": "src/components/ui/FinancialStatusBadge.test.tsx",
+      "title": "reads stale as stale, not as current, and says what to do about it",
+      "proves": "The shell distinguishes stale data from current data in text, not colour, and states the recovery action."
+    }
+  },
+  "routes": {
+    "/data": {
+      "page": "src/pages/data/DataImportPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/data/DataImportPage.deep.test.tsx",
+          "title": "handles file upload and advances the wizard through analyze to map"
+        },
+        "empty": {
+          "file": "src/pages/data/DataImportPage.deep.test.tsx",
+          "title": "shows the empty state when no GL entries are loaded"
+        },
+        "error": {
+          "file": "src/pages/data/DataImportPage.deep.test.tsx",
+          "title": "shows an error alert when migration analyze throws"
+        },
+        "loading": {
+          "na": "The import surface reads the local store synchronously. The only spinner is the per-column reconciliation pass inside the wizard, and a page-level skeleton would be a fake loading indicator."
+        }
+      }
+    },
+    "/data/gl-trial-balance": {
+      "page": "src/pages/data/GLTrialBalancePage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/data/GLTrialBalancePage.interop.test.tsx",
+          "title": "renders the trial balance the real store derives from an imported journal"
+        },
+        "loading": {
+          "file": "src/pages/data/GLTrialBalancePage.test.tsx",
+          "title": "hydrate skeleton announces exactly once via srLabel, bars decorative"
+        },
+        "empty": {
+          "file": "src/pages/smoke-data-pages.test.tsx",
+          "title": "displays empty state when no entries"
+        },
+        "error": {
+          "file": "src/pages/data/GLTrialBalancePage.test.tsx",
+          "title": "K30 error state: states the failed import instead of rendering the stale ledger"
+        }
+      }
+    },
+    "/periods/close": {
+      "page": "src/pages/periods/PeriodClosePage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/services/import/monthEndClosePipeline.integration.test.ts",
+          "title": "quarantines messy imports atomically, enforces period-close write guard, promotes exact-decimal USD/EUR batches, consolidates with ASC 830 CTA & ASC 810 IC, and ties out XLSX/PPTX outputs"
+        },
+        "loading": {
+          "file": "src/pages/periods/PeriodClosePage.test.tsx",
+          "title": "K30: shows the hydrate skeleton while the close workflow initializes"
+        },
+        "empty": {
+          "file": "src/pages/periods/PeriodClosePage.test.tsx",
+          "title": "K30: empty state offers a CTA that re-enters the period-close flow"
+        },
+        "error": {
+          "file": "src/pages/periods/PeriodClosePage.test.tsx",
+          "title": "K30: failed transition renders ErrorState (role=alert) whose retry succeeds"
+        }
+      }
+    },
+    "/data/exceptions": {
+      "page": "src/pages/data/ExceptionQueuePage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/data/ExceptionQueuePage.test.tsx",
+          "title": "planted unbalanced journal appears as a candidate with coverage stated"
+        },
+        "loading": {
+          "file": "src/pages/data/ExceptionQueuePage.test.tsx",
+          "title": "hydrating store shows the loading skeleton, not an empty queue"
+        },
+        "empty": {
+          "file": "src/pages/data/ExceptionQueuePage.test.tsx",
+          "title": "empty ledger invites an import instead of showing an empty queue"
+        },
+        "error": {
+          "file": "src/pages/data/ExceptionQueuePage.test.tsx",
+          "title": "K30 error state: a failed import is stated, never read as a clean ledger"
+        }
+      }
+    },
+    "/board-pack": {
+      "page": "src/pages/reports/BoardPackPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
+          "title": "exports the same figures the screen shows, derived from the ledger"
+        },
+        "empty": {
+          "file": "src/pages/reports/BoardPackPage.probe.test.tsx",
+          "title": "K30 empty state: No Data CTA before any ledger exists"
+        },
+        "error": {
+          "file": "src/pages/reports/BoardPackPage.probe.test.tsx",
+          "title": "K30 error state: ErrorState when glStore.importError is set"
+        },
+        "loading": {
+          "na": "This page renders straight from the local ledger store; its own comment records that an async skeleton here would be a fake loading indicator, so the empty and error branches carry the first-paint states."
+        }
+      }
+    }
+  },
+  "capabilities": {
+    "data.csv-xlsx-intake": [
+      {
+        "file": "src/services/import/glCsvTokenizer.test.ts",
+        "title": "fails closed on unclosed quotes, malformed quotes, extra columns, and invalid UTF-8 bytes",
+        "proves": "Malformed intake is rejected whole rather than half-imported."
+      }
+    ],
+    "data.mapping": [
+      {
+        "file": "src/services/import/spineAcceptance.d365.integration.test.ts",
+        "title": "accepts the documented D365 column set (regression: it was rejected before 2026-10-21)",
+        "proves": "The documented D365 F&O header set maps into the staging pipeline. The shape itself remains unverified (O1)."
+      }
+    ],
+    "data.validation": [
+      {
+        "file": "src/services/import/spineAcceptance.d365.integration.test.ts",
+        "title": "quarantines D365 rows with reasons and never promotes a blocked batch",
+        "proves": "Invalid rows are quarantined with reasons and the batch cannot be promoted around them."
+      }
+    ],
+    "data.quarantine": [
+      {
+        "file": "src/services/import/glStagingCoordinator.test.ts",
+        "title": "blocks a balanced remainder when any chunk has quarantined rows, retaining raw typed reasons",
+        "proves": "A balanced remainder is not promoted while any chunk is quarantined, and the typed reason survives."
+      }
+    ],
+    "data.control-totals": [
+      {
+        "file": "src/services/import/spineAcceptance.d365.integration.test.ts",
+        "title": "promotes to the ledger and ties out to exact control totals",
+        "proves": "Promotion ties out to exact-decimal control totals."
+      }
+    ],
+    "data.lineage": [
+      {
+        "file": "src/services/import/parseGLRows.test.ts",
+        "title": "maps a well-formed row into a GL entry with canonical period and provenance row",
+        "proves": "Every accepted row carries its provenance and canonical period."
+      }
+    ],
+    "close.period-entity-scope": [
+      {
+        "file": "src/services/import/glPeriodWriteGuard.test.ts",
+        "title": "unknown entity and legacy entity display labels cannot evade a lock",
+        "proves": "Entity scope comes from the period authority, not from a label that can be forged."
+      }
+    ],
+    "close.write-guards": [
+      {
+        "file": "src/services/import/spineAcceptance.d365.integration.test.ts",
+        "title": "enforces the period-close write guard on a D365 batch",
+        "proves": "A closed period refuses the batch before any financial state changes."
+      }
+    ],
+    "close.state-machine": [
+      {
+        "file": "src/engines/PeriodCloseStateMachine.test.ts",
+        "title": "hard-close → reopen is valid",
+        "proves": "Period transitions obey a closed state machine rather than ad-hoc flags."
+      }
+    ],
+    "close.trial-balance": [
+      {
+        "file": "src/pages/data/GLTrialBalancePage.interop.test.tsx",
+        "title": "renders the trial balance the real store derives from an imported journal",
+        "proves": "The trial balance on screen is derived from the imported ledger, not a fixture."
+      }
+    ],
+    "close.tie-out": [
+      {
+        "file": "src/services/import/monthEndClosePipeline.integration.test.ts",
+        "title": "quarantines messy imports atomically, enforces period-close write guard, promotes exact-decimal USD/EUR batches, consolidates with ASC 830 CTA & ASC 810 IC, and ties out XLSX/PPTX outputs",
+        "proves": "The close journey runs end-to-end over two entities and two currencies and ties out its outputs."
+      }
+    ],
+    "close.audit-chain": [
+      {
+        "file": "src/store/auditTrailIntegrity.test.ts",
+        "title": "first entry chains to the genesis hash and carries a 256-bit digest",
+        "proves": "The audit trail is a hash chain from genesis, not an append-only list with no integrity."
+      }
+    ],
+    "close.corrections": [
+      {
+        "file": "src/pages/data/CorrectionsPage.test.tsx",
+        "title": "creates a correction from an accepted finding and tracks it",
+        "proves": "A correction is created from a finding and tracked through its lifecycle."
+      }
+    ],
+    "analyze.exception-rules": [
+      {
+        "file": "src/pages/data/ExceptionQueuePage.test.tsx",
+        "title": "planted unbalanced journal appears as a candidate with coverage stated",
+        "proves": "A catalogue rule finds a planted problem and the run states what it examined."
+      }
+    ],
+    "analyze.findings-disposition": [
+      {
+        "file": "src/store/exceptionDispositionStore.lifecycle.test.ts",
+        "title": "REQUESTED → APPLIED → REVERIFIED is the legal path, each step audited",
+        "proves": "A finding disposition follows one audited path; no shortcut sets it."
+      }
+    ],
+    "report.board-pack": [
+      {
+        "file": "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
+        "title": "exports the same figures the screen shows, derived from the ledger",
+        "proves": "The exported pack carries the same figures the screen shows."
+      }
+    ],
+    "report.tie-back": [
+      {
+        "file": "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
+        "title": "follows the ledger, not a hardcoded figure",
+        "proves": "A changed ledger changes the pack, so the tie-back cannot be a stored constant."
+      }
+    ]
+  }
+}

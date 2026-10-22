@@ -4,6 +4,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { ShieldAlert } from 'lucide-react';
 import { useGLStore } from '@/store/glStore';
 import { runExceptionRules } from '@/services/exceptions/runExceptionRules';
@@ -22,6 +23,7 @@ export default function ExceptionQueuePage() {
   const navigate = useNavigate();
   const entries = useGLStore((s) => s.entries);
   const isLoading = useGLStore((s) => s.isLoading);
+  const importError = useGLStore((s) => s.importError);
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Exception Queue';
@@ -51,6 +53,21 @@ export default function ExceptionQueuePage() {
         />
         <Skeleton variant="rectangular" height="400px" />
       </div>
+    );
+  }
+
+  // K30 error state (PR #88): a failed import means the queue would be computed
+  // over a ledger that is not the one the user last loaded. Saying so is honest;
+  // showing "no candidates" would read as "the ledger is clean" (rule 7).
+  if (importError) {
+    return (
+      <ErrorState
+        title="Failed to load the ledger"
+        message={importError}
+        errorCode="GL-IMPORT-ERROR"
+        onRetry={() => window.location.reload()}
+        secondaryAction={{ label: 'Go to Data Import', onClick: () => navigate('/data') }}
+      />
     );
   }
 

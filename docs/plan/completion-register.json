@@ -1912,9 +1912,15 @@
       "id": "cap:analyze.exception-rules",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/data/exceptions"
+        "gatedBy": "/data/exceptions",
+        "connected": [
+          {
+            "file": "src/pages/data/ExceptionQueuePage.test.tsx",
+            "title": "planted unbalanced journal appears as a candidate with coverage stated"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
@@ -1930,9 +1936,15 @@
       "id": "cap:analyze.findings-disposition",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/data/exceptions"
+        "gatedBy": "/data/exceptions",
+        "connected": [
+          {
+            "file": "src/store/exceptionDispositionStore.lifecycle.test.ts",
+            "title": "REQUESTED → APPLIED → REVERIFIED is the legal path, each step audited"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
@@ -1957,81 +1969,135 @@
       "id": "cap:close.audit-chain",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/audit/trail"
+        "gatedBy": "/audit/trail",
+        "connected": [
+          {
+            "file": "src/store/auditTrailIntegrity.test.ts",
+            "title": "first entry chains to the genesis hash and carries a 256-bit digest"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
       "id": "cap:close.corrections",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/data/corrections"
+        "gatedBy": "/data/corrections",
+        "connected": [
+          {
+            "file": "src/pages/data/CorrectionsPage.test.tsx",
+            "title": "creates a correction from an accepted finding and tracks it"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
       "id": "cap:close.period-entity-scope",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/periods/close"
+        "gatedBy": "/periods/close",
+        "connected": [
+          {
+            "file": "src/services/import/glPeriodWriteGuard.test.ts",
+            "title": "unknown entity and legacy entity display labels cannot evade a lock"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
       "id": "cap:close.state-machine",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/periods/close"
+        "gatedBy": "/periods/close",
+        "connected": [
+          {
+            "file": "src/engines/PeriodCloseStateMachine.test.ts",
+            "title": "hard-close → reopen is valid"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
       "id": "cap:close.tie-out",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/data/reconciliation"
+        "gatedBy": "/data/reconciliation",
+        "connected": [
+          {
+            "file": "src/services/import/monthEndClosePipeline.integration.test.ts",
+            "title": "quarantines messy imports atomically, enforces period-close write guard, promotes exact-decimal USD/EUR batches, consolidates with ASC 830 CTA & ASC 810 IC, and ties out XLSX/PPTX outputs"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
       "id": "cap:close.trial-balance",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/data/gl-trial-balance"
+        "gatedBy": "/data/gl-trial-balance",
+        "connected": [
+          {
+            "file": "src/pages/data/GLTrialBalancePage.interop.test.tsx",
+            "title": "renders the trial balance the real store derives from an imported journal"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
       "id": "cap:close.write-guards",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/data/gl-journals"
+        "gatedBy": "/data/gl-journals",
+        "connected": [
+          {
+            "file": "src/services/import/spineAcceptance.d365.integration.test.ts",
+            "title": "enforces the period-close write guard on a D365 batch"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
       "id": "cap:data.control-totals",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/data/gl-trial-balance"
+        "gatedBy": "/data/gl-trial-balance",
+        "connected": [
+          {
+            "file": "src/services/import/spineAcceptance.d365.integration.test.ts",
+            "title": "promotes to the ledger and ties out to exact control totals"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
       "id": "cap:data.csv-xlsx-intake",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/data/gl-upload"
+        "gatedBy": "/data/gl-upload",
+        "connected": [
+          {
+            "file": "src/services/import/glCsvTokenizer.test.ts",
+            "title": "fails closed on unclosed quotes, malformed quotes, extra columns, and invalid UTF-8 bytes"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
@@ -2068,36 +2134,60 @@
       "id": "cap:data.lineage",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/analytics/data-lineage"
+        "gatedBy": "/analytics/data-lineage",
+        "connected": [
+          {
+            "file": "src/services/import/parseGLRows.test.ts",
+            "title": "maps a well-formed row into a GL entry with canonical period and provenance row"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
       "id": "cap:data.mapping",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/data/data-flow"
+        "gatedBy": "/data/data-flow",
+        "connected": [
+          {
+            "file": "src/services/import/spineAcceptance.d365.integration.test.ts",
+            "title": "accepts the documented D365 column set (regression: it was rejected before 2026-10-21)"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
       "id": "cap:data.quarantine",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/data/gl-explorer"
+        "gatedBy": "/data/gl-explorer",
+        "connected": [
+          {
+            "file": "src/services/import/glStagingCoordinator.test.ts",
+            "title": "blocks a balanced remainder when any chunk has quarantined rows, retaining raw typed reasons"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
       "id": "cap:data.validation",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/data/exceptions"
+        "gatedBy": "/data/exceptions",
+        "connected": [
+          {
+            "file": "src/services/import/spineAcceptance.d365.integration.test.ts",
+            "title": "quarantines D365 rows with reasons and never promotes a blocked batch"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
@@ -2296,9 +2386,15 @@
       "id": "cap:report.board-pack",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/board-pack"
+        "gatedBy": "/board-pack",
+        "connected": [
+          {
+            "file": "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
+            "title": "exports the same figures the screen shows, derived from the ledger"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
@@ -2332,9 +2428,15 @@
       "id": "cap:report.tie-back",
       "status": "EXPERIMENTAL",
       "evidence": {
-        "gatedBy": "/reports"
+        "gatedBy": "/reports",
+        "connected": [
+          {
+            "file": "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
+            "title": "follows the ledger, not a hardcoded figure"
+          }
+        ]
       },
-      "note": "A routed screen hosts this capability; no support claim yet (see plan §5)."
+      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
     },
     {
       "kind": "capability",
