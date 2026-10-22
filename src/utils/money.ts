@@ -298,6 +298,26 @@ export function moneyToAmount(money: Money): number {
   return new Decimal(money.minor).div(100).toNumber();
 }
 
+/**
+ * Read a money-shaped value as a whole-currency-unit NUMBER.
+ *
+ * This is the explicit crossing for consumers that still speak `number`: the
+ * server wire contract (`GlJournalLine`), legacy columns, and the GL store's
+ * own normalisation. It exists because `Money` is an OBJECT, so every
+ * `typeof value === 'number' ? value : fallback` helper silently returns its
+ * fallback for it — i.e. a `Money` read as a number becomes `0`. That failure is
+ * invisible to the compiler (the parameter is `unknown`), which is exactly the
+ * shape of a green build with a zeroed ledger.
+ *
+ * Never throws: a value that is not money-shaped yields `fallback`, matching the
+ * legacy tolerance at these boundaries. `asMoney` remains the strict gate.
+ */
+export function amountFrom(value: unknown, fallback = 0): number {
+  if (isMoneyValue(value)) return moneyToAmount(value);
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  return fallback;
+}
+
 function combineCurrency(a: Money, b: Money): string | undefined {
   const left = a.currency;
   const right = b.currency;

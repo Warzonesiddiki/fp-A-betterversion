@@ -203,6 +203,43 @@ twice (sort comparator, currency merge). Five existing test files were updated
 because their expectations encoded `number` rows or the retired
 round-a-half-cent behaviour.
 
+## Stage 4 preparation (2026-10-22) — the compiler cannot see a `Money` read as a number (DEC-055)
+
+The compiler's worklist (300 errors, 136 after the one fixture converts
+mechanically) is only the part of stage 4 that is **visible**. Reading the
+store's own numeric reads found four sites where a `Money` would be silently
+turned into `0` — none of them a type error, because every parameter is
+`unknown`:
+
+| Site                   | Pre-flip code                          | What a compiler-clean flip would have done       |
+| ---------------------- | -------------------------------------- | ------------------------------------------------ |
+| `normalizeGLEntry`     | `toFiniteNumber(entry.debit)`          | `0` on every row's debit/credit/netChange/amount |
+| `generateTrialBalance` | `asMoney(toFiniteNumber(entry.debit))` | `{ minor: 0 }` for every account                 |
+| `validateEntries`      | `toFiniteNumber(e.debit)` per journal  | every journal "balances" at `0 = 0`              |
+| `ledgerAmountIssue`    | `typeof value !== 'number'` → refuse   | **every** `Money` write refused, not zeroed      |
+
+`toFiniteNumber(value: unknown, fallback = 0)` returns its fallback for anything
+that is not a number. A `Money` is an object. So the flip would have produced a
+green build with a zeroed (or a wholly unwritable) ledger — the same defect class
+as the `NaN` → 0 coercion that DEC-054 removed, introduced _by the migration
+meant to remove it_.
+
+The fix is one explicit crossing, `amountFrom(value, fallback)` in
+`src/utils/money.ts`: a `Money` yields its exact whole-unit number, a finite
+number passes through unchanged, everything else falls back, and it never throws
+(`asMoney` stays the strict gate). All 12 money-intent reads in `glStore.ts` use
+it, `toFiniteNumber` is deleted so no tolerant reader survives, and the admission
+rule `ledgerAmountIssue` admits a `Money` on the same terms as a number.
+
+Pinned by `src/store/glStore.moneyShape.test.ts` (17 tests), mutation-verified
+twice: restoring the tolerant read fails **5**, deleting the `Money` admission
+branch fails **8**.
+
+**A vacuity trap worth remembering:** "the double-entry gate accepts a balanced
+`Money` journal" passes under the first mutation, because `0 = 0` is balanced.
+An acceptance assertion cannot detect zeroing; only a value-sensitive one (an
+unbalanced journal must fail) can. Both are in the file, and both are needed.
+
 ## Stage 4 precondition (2026-10-21) — quarantine, don't round
 
 The type change cannot go first, and the reason is mechanical rather than

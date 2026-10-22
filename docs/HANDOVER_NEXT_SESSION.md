@@ -1,5 +1,58 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-22 — Q5 stage 4 preparation: a `Money` read as a number is invisible to the compiler (DEC-055)
+
+**What I was doing.** Starting stage 4 (the `GLEntry` type flip) and reading the
+store's numeric reads before flipping. Both happened; the second stopped the
+first, correctly.
+
+**Measured, by converting and reverting again.** Under a flipped
+`GLEntry.debit/credit/netChange/amount`: **300 errors → 164 are the single
+fixture `syntheticTieOutLedger.ts`**, which converts mechanically and exactly
+(164 literal lines rewritten as `{ minor }` by decimal-string shift, verified
+`Decimal(minor) === literal × 100`, zero float multiplication) — leaving **136
+errors across 65 files**. The compiler part of stage 4 is therefore smaller than
+the 133 first reported (that count was taken before the fixture was converted).
+
+**What the compiler cannot see, and why stage 4 did not proceed.** The store's
+money reads went through `toFiniteNumber(value: unknown, fallback = 0)`, which
+returns the FALLBACK for anything that is not a number — and a `Money` is an
+object. A green flip would have shipped: every row normalized to
+`0/0/0/0` (`normalizeGLEntry`), every account aggregated as `{ minor: 0 }`
+(`generateTrialBalance`), every journal reported balanced at `0 = 0`
+(`validateEntries`), and — the other direction — **every** `Money` write refused
+by `ledgerAmountIssue` as "must be a finite number". Four silent failures, no
+type error, because all four parameters are `unknown`.
+
+**Shipped instead (DEC-055).** `amountFrom(value, fallback = 0)` in
+`src/utils/money.ts`: `Money` → exact whole-unit number via `moneyToAmount`,
+finite number → unchanged, everything else → fallback, never throws. All 12
+money-intent reads in `glStore.ts` switched; `toFiniteNumber` **deleted** so the
+tolerant helper cannot be reached for again; `ledgerAmountIssue` admits a `Money`
+on the same terms as a number (sign rule re-applied, non-safe-integer `minor`
+named explicitly).
+
+**Evidence.** `src/store/glStore.moneyShape.test.ts` **17/17**. Mutation-verified
+twice: restoring the tolerant read fails **5**; deleting the `Money` admission
+branch fails **8**. `store/ + utils/money + ledgerHydration + FXEngine` =
+**86 files / 1,438 tests** green. Gates: `tsc` 0, eslint 0, prettier clean,
+`docs:verify` 9/9, links 0 broken, hygiene clean, full suite re-run before push.
+
+**Found while mutating — keep this.** The assertion "the double-entry gate
+accepts a balanced `Money` journal" **passes under the zeroing mutation**,
+because `0 = 0` balances. Acceptance tests cannot detect zeroing. The
+value-sensitive partner (an unbalanced journal must FAIL) is what catches it.
+Apply the same rule to every stage-4 area: assert a value that can only come from
+the real amount.
+
+**Still not done.** The `GLEntry` type flip itself. Its worklist after the
+fixture is 136 errors / 65 files; the biggest are `ConsolidationEngine` (16),
+`glStore` (11, mostly wire-shape: `GlJournalLine` stays in major units, so the
+boundary crossing is `moneyToAmount`, and `mergeListedEntry`/`listedToGLEntry`
+must `asMoney` server numbers), then `parseGLRows`/`d365Parser`/`ImportPipeline`
+(4 each) and 40+ pages with 1–3 each (engine parameter shapes typed
+`readonly { debit: number }[]`). No page renders the quarantine yet.
+
 ## 2026-10-21 (continued) — Q5 stage 4 precondition: quarantine, don't round (DEC-054)
 
 **Measured before deciding.** Changing `GLEntry.debit/credit/netChange/amount` to

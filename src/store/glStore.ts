@@ -12,11 +12,13 @@ import type {
 } from '@/types';
 import { masterStorage } from '../utils/masterStorage';
 import {
+  amountFrom,
   asMoney,
   divideMoney,
   formatMoney,
   fromCents,
   hasSubUnitPrecision,
+  isMoneyValue,
   LEDGER_SCALE,
   moneyMinus,
   moneyPlus,
@@ -251,10 +253,6 @@ async function applyCommitResult(
   return { committed: false, message: result.status === 'error' ? result.message : undefined };
 }
 
-function toFiniteNumber(value: unknown, fallback = 0): number {
-  return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
-}
-
 /**
  * W0.8.6 boot hydrate: overlay one server-listed row onto a committed local
  * entry. Server-provided fields win; fields the listing does not carry keep
@@ -351,14 +349,14 @@ function normalizeGLEntry(
   index: number,
   fallbackIdPrefix = 'gl'
 ): GLEntry {
-  const sourceAmount = toFiniteNumber(entry.amount, 0);
+  const sourceAmount = amountFrom(entry.amount);
   const debit = Math.max(
     0,
-    entry.debit !== undefined ? toFiniteNumber(entry.debit) : Math.max(sourceAmount, 0)
+    entry.debit !== undefined ? amountFrom(entry.debit) : Math.max(sourceAmount, 0)
   );
   const credit = Math.max(
     0,
-    entry.credit !== undefined ? toFiniteNumber(entry.credit) : Math.max(-sourceAmount, 0)
+    entry.credit !== undefined ? amountFrom(entry.credit) : Math.max(-sourceAmount, 0)
   );
   // Net change = debit − credit is currency: exact decimal, cent-rounded
   // (F-0006) — the stored amount feeds every downstream GL aggregation.
@@ -427,8 +425,8 @@ function blockPeriodWrite(
 /**
  * Ledger money admission (FR-006 · audit P1-11 phase 1).
  *
- * A provided-but-invalid amount is not a missing one. `toFiniteNumber` maps
- * NaN / Infinity / non-numbers to 0 and `normalizeGLEntry` would then treat
+ * A provided-but-invalid amount is not a missing one. A tolerant numeric read
+ * maps NaN / Infinity / non-numbers to 0 and `normalizeGLEntry` would then treat
  * that as a real zero, silently discarding money. Rows the import path rejects
  * are rejected here too, so every write surface fails the same way (§2 rule 5/6).
  *
@@ -443,6 +441,20 @@ function blockPeriodWrite(
 function ledgerAmountIssue(field: 'debit' | 'credit' | 'amount', value: unknown): string | null {
   if (value === undefined) return null;
   const signed = field === 'amount';
+  // Q5 stage 4 prep: a `Money` is admitted on the SAME terms as a number. Whole
+  // minor units are representable by construction, so only the sign rule has to
+  // be re-applied. Without this branch the `typeof value !== 'number'` test
+  // below refuses EVERY `Money` write, and the compiler cannot see it — the
+  // parameter is `unknown`.
+  if (isMoneyValue(value)) {
+    if (!signed && value.minor < 0) return `${field} must be a finite non-negative number`;
+    return null;
+  }
+  // Money-shaped but not a representable value (fractional or unsafe `minor`):
+  // name the real defect instead of reporting it as a missing number.
+  if (typeof value === 'object' && value !== null && 'minor' in value) {
+    return `${field} minor units must be a safe integer`;
+  }
   if (typeof value !== 'number' || !Number.isFinite(value)) {
     return `${field} must be a finite ${signed ? 'number' : 'non-negative number'}`;
   }
@@ -702,7 +714,7 @@ export const useGLStore = create<GLState>()(
                 const local = before.entries[index];
                 if (!local) continue;
                 // FR-006 residual: a provided-but-invalid server amount must
-                // not be coerced to 0 by normalizeGLEntry/toFiniteNumber.
+                // not be coerced to 0 by normalizeGLEntry/amountFrom.
                 // Fail closed per row — reject with a reason and keep the
                 // local numbers untouched.
                 const candidate = mergeListedEntry(local, row);
@@ -1155,8 +1167,8 @@ export const useGLStore = create<GLState>()(
                 endingBalance: ZERO_MONEY,
                 mixedCurrency: false,
               };
-              const debit = asMoney(toFiniteNumber(entry.debit));
-              const credit = asMoney(toFiniteNumber(entry.credit));
+              const debit = asMoney(amountFrom(entry.debit));
+              const credit = asMoney(amountFrom(entry.credit));
               const netChange = moneyMinus(debit, credit);
               mergeDerivedCurrency(existing, entry.currency);
               existing.debit = moneyPlus(existing.debit, debit);
@@ -1215,8 +1227,8 @@ export const useGLStore = create<GLState>()(
                 credit: ZERO_MONEY,
                 count: 0,
               };
-              g.debit = moneyPlus(g.debit, asMoney(toFiniteNumber(entry.debit)));
-              g.credit = moneyPlus(g.credit, asMoney(toFiniteNumber(entry.credit)));
+              g.debit = moneyPlus(g.debit, asMoney(amountFrom(entry.debit)));
+              g.credit = moneyPlus(g.credit, asMoney(amountFrom(entry.credit)));
               g.count += 1;
               monthGroups.set(month, g);
             }
@@ -1486,7 +1498,7 @@ export const useGLStore = create<GLState>()(
             // One authority for ledger money admission (§2 rule 5/6): the same
             // finite / non-negative / whole-cent rule the mutation paths use,
             // so an amount the store would refuse is never reported as valid
-            // here. Measured on the raw value, not the `toFiniteNumber` view.
+            // here. Measured on the raw value, not the tolerant numeric view.
             for (const [field, provided, raw] of [
               ['debit', debitProvided, e.debit],
               ['credit', creditProvided, e.credit],
@@ -1516,16 +1528,16 @@ export const useGLStore = create<GLState>()(
               group = { debitCents: 0, creditCents: 0, rows: [] };
               groups.set(groupKey, group);
             }
-            const amount = e.amount !== undefined ? toFiniteNumber(e.amount) : undefined;
+            const amount = e.amount !== undefined ? amountFrom(e.amount) : undefined;
             const effectiveDebit =
               e.debit !== undefined
-                ? toFiniteNumber(e.debit)
+                ? amountFrom(e.debit)
                 : amount !== undefined
                   ? Math.max(amount, 0)
                   : 0;
             const effectiveCredit =
               e.credit !== undefined
-                ? toFiniteNumber(e.credit)
+                ? amountFrom(e.credit)
                 : amount !== undefined
                   ? Math.max(-(amount ?? 0), 0)
                   : 0;
@@ -1604,7 +1616,7 @@ export const useGLStore = create<GLState>()(
               Scenario: 'Scenario:Actual',
               Currency: 'Currency:USD',
             };
-            const amount = toFiniteNumber(e.debit) - toFiniteNumber(e.credit);
+            const amount = amountFrom(e.debit) - amountFrom(e.credit);
 
             cubeCells.push({
               cube: 'GL_Actuals',
