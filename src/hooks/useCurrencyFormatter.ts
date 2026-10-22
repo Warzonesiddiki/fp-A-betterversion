@@ -20,6 +20,7 @@
 import { useCallback, useMemo, useRef } from 'react';
 
 import { useFinancialContextStore } from '@/store/financialContextStore';
+import { isMoneyValue, toDecimal, type MoneyInput } from '@/utils/money';
 import {
   currencyFormatter,
   formatCompact,
@@ -29,6 +30,34 @@ import {
   type CurrencyFormatOptions,
 } from '@/utils/financialFormatting';
 
+/**
+ * The value a display formatter can render: a plain number, a decimal string,
+ * or a `Money` (Q5 stage 3). A `Money` is converted from integer minor units
+ * exactly, so a derived row needs no adapter of its own — this IS the single
+ * display adapter stage 6 of the migration plan calls for.
+ */
+export type DisplayableMoney = MoneyInput | null | undefined;
+
+/**
+ * An absent value stays absent (`—`); nothing is coerced to zero.
+ *
+ * DISPLAY MUST NOT THROW. A formatter runs inside render, so an exception here
+ * is a blank screen — and a `NaN` reaching a grid is a data defect the grid is
+ * not the place to report. Non-finite and unparseable values therefore render
+ * as an em dash; the strict gate stays in `@/utils/money`, where money is
+ * computed and where refusing is the correct behaviour.
+ */
+function toDisplayNumber(value: DisplayableMoney): number | null {
+  if (value === null || value === undefined) return null;
+  if (typeof value === 'number' && !Number.isFinite(value)) return null;
+  if (isMoneyValue(value)) return toDecimal(value).toNumber();
+  try {
+    return toDecimal(value).toNumber();
+  } catch {
+    return null;
+  }
+}
+
 /** Reporting currency from global financial context (ISO 4217). */
 export function useReportingCurrency(): string {
   return useFinancialContextStore((state) => state.context.currency.code);
@@ -36,15 +65,15 @@ export function useReportingCurrency(): string {
 
 export interface CurrencyFormatter {
   /** Full precision, e.g. `$1,234.56`; negatives in parentheses. */
-  currency: (value: number | null | undefined) => string;
+  currency: (value: DisplayableMoney) => string;
   /** Whole units, e.g. `$1,235` — the default for KPI tiles and grids. */
-  currency0: (value: number | null | undefined) => string;
+  currency0: (value: DisplayableMoney) => string;
   /** Abbreviated, e.g. `$1.2M`. */
-  compact: (value: number | null | undefined) => string;
+  compact: (value: DisplayableMoney) => string;
   /** Percent with a fixed number of decimals. */
-  percent: (value: number | null | undefined, decimals?: number) => string;
+  percent: (value: DisplayableMoney, decimals?: number) => string;
   /** Plain number, no currency symbol. */
-  number: (value: number | null | undefined, decimals?: number) => string;
+  number: (value: DisplayableMoney, decimals?: number) => string;
   /** The ISO 4217 code these formatters render in. */
   currencyCode: string;
   /**
@@ -59,7 +88,7 @@ export interface CurrencyFormatter {
    * Stable across renders for a given set of options, so it is safe to call
    * during render or inside a grid cell renderer.
    */
-  custom: (options?: CurrencyFormatOptions) => (value: number | null | undefined) => string;
+  custom: (options?: CurrencyFormatOptions) => (value: DisplayableMoney) => string;
 }
 
 /**
@@ -70,27 +99,27 @@ export function useCurrencyFormatter(): CurrencyFormatter {
   const currencyCode = useReportingCurrency();
 
   const currency = useCallback(
-    (value: number | null | undefined) => formatCurrency(value, { currency: currencyCode }),
+    (value: DisplayableMoney) => formatCurrency(toDisplayNumber(value), { currency: currencyCode }),
     [currencyCode]
   );
 
   const currency0 = useCallback(
-    (value: number | null | undefined) => {
-      if (value == null) return '—';
-      if (value === 0) return '—';
+    (value: DisplayableMoney) => {
+      const amount = toDisplayNumber(value);
+      if (amount === null || amount === 0) return '—';
       const formatted = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: currencyCode,
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
-      }).format(Math.abs(value));
-      return value < 0 ? `(${formatted})` : formatted;
+      }).format(Math.abs(amount));
+      return amount < 0 ? `(${formatted})` : formatted;
     },
     [currencyCode]
   );
 
   const compact = useCallback(
-    (value: number | null | undefined) => formatCompact(value, currencyCode),
+    (value: DisplayableMoney) => formatCompact(toDisplayNumber(value), currencyCode),
     [currencyCode]
   );
 
@@ -105,7 +134,7 @@ export function useCurrencyFormatter(): CurrencyFormatter {
   // stale currency can never be served from cache.
   const cacheRef = useRef<{
     currency: string;
-    formatters: Map<string, (value: number | null | undefined) => string>;
+    formatters: Map<string, (value: DisplayableMoney) => string>;
   }>({ currency: currencyCode, formatters: new Map() });
 
   const custom = useCallback(
@@ -119,8 +148,9 @@ export function useCurrencyFormatter(): CurrencyFormatter {
       const cached = cacheRef.current.formatters.get(key);
       if (cached) return cached;
       const formatter = currencyFormatter(currencyCode, options);
-      cacheRef.current.formatters.set(key, formatter);
-      return formatter;
+      const wrapped = (value: DisplayableMoney) => formatter(toDisplayNumber(value));
+      cacheRef.current.formatters.set(key, wrapped);
+      return wrapped;
     },
     [currencyCode]
   );
@@ -130,8 +160,10 @@ export function useCurrencyFormatter(): CurrencyFormatter {
       currency,
       currency0,
       compact,
-      percent: (value: number | null | undefined, decimals = 1) => formatPercent(value, decimals),
-      number: (value: number | null | undefined, decimals = 0) => formatNumber(value, decimals),
+      percent: (value: DisplayableMoney, decimals = 1) =>
+        formatPercent(toDisplayNumber(value), decimals),
+      number: (value: DisplayableMoney, decimals = 0) =>
+        formatNumber(toDisplayNumber(value), decimals),
       currencyCode,
       custom,
     }),

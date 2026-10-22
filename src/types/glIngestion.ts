@@ -25,6 +25,25 @@ export interface GLIngestInput {
   readonly knownEntityIds: readonly string[];
   /** This contract uses two decimal places and a single currency; translate separate batches later. */
   readonly expectedCurrency: string;
+  /**
+   * Entity for exports that carry the legal entity as EXPORT CONTEXT rather than
+   * as a column. The documented D365 "General ledger statement by main account"
+   * is produced per legal entity and contains no entity column, so requiring one
+   * would reject every real D365 export (verified 2026-10-21: the documented
+   * header set produced `Missing required column: entityId`).
+   *
+   * Supplying this REPLACES the entityId column requirement; it is never
+   * inferred from the row, from an account, or from the active session. The
+   * value must still be present in `knownEntityIds`, and a row that DOES carry
+   * an entity column keeps priority — the default only fills an absent column.
+   */
+  readonly defaultEntityId?: string;
+  /**
+   * Currency for exports with no currency column. Same rules as
+   * `defaultEntityId`: replaces the column requirement, is never inferred, and
+   * must equal `expectedCurrency` because this contract is single-currency.
+   */
+  readonly defaultCurrency?: string;
   readonly dateOrder: 'MDY' | 'DMY' | 'ISO_ONLY';
   /** Mandatory when using a signed amount column. Never infer from account type. */
   readonly amountConvention?: 'positive-debit' | 'positive-credit';

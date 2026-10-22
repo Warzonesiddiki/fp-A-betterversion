@@ -1,5 +1,507 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-22 — Q5 stage 4 preparation: a `Money` read as a number is invisible to the compiler (DEC-055)
+
+**What I was doing.** Starting stage 4 (the `GLEntry` type flip) and reading the
+store's numeric reads before flipping. Both happened; the second stopped the
+first, correctly.
+
+**Measured, by converting and reverting again.** Under a flipped
+`GLEntry.debit/credit/netChange/amount`: **300 errors → 164 are the single
+fixture `syntheticTieOutLedger.ts`**, which converts mechanically and exactly
+(164 literal lines rewritten as `{ minor }` by decimal-string shift, verified
+`Decimal(minor) === literal × 100`, zero float multiplication) — leaving **136
+errors across 65 files**. The compiler part of stage 4 is therefore smaller than
+the 133 first reported (that count was taken before the fixture was converted).
+
+**What the compiler cannot see, and why stage 4 did not proceed.** The store's
+money reads went through `toFiniteNumber(value: unknown, fallback = 0)`, which
+returns the FALLBACK for anything that is not a number — and a `Money` is an
+object. A green flip would have shipped: every row normalized to
+`0/0/0/0` (`normalizeGLEntry`), every account aggregated as `{ minor: 0 }`
+(`generateTrialBalance`), every journal reported balanced at `0 = 0`
+(`validateEntries`), and — the other direction — **every** `Money` write refused
+by `ledgerAmountIssue` as "must be a finite number". Four silent failures, no
+type error, because all four parameters are `unknown`.
+
+**Shipped instead (DEC-055).** `amountFrom(value, fallback = 0)` in
+`src/utils/money.ts`: `Money` → exact whole-unit number via `moneyToAmount`,
+finite number → unchanged, everything else → fallback, never throws. All 12
+money-intent reads in `glStore.ts` switched; `toFiniteNumber` **deleted** so the
+tolerant helper cannot be reached for again; `ledgerAmountIssue` admits a `Money`
+on the same terms as a number (sign rule re-applied, non-safe-integer `minor`
+named explicitly).
+
+**Evidence.** `src/store/glStore.moneyShape.test.ts` **17/17**. Mutation-verified
+twice: restoring the tolerant read fails **5**; deleting the `Money` admission
+branch fails **8**. `store/ + utils/money + ledgerHydration + FXEngine` =
+**86 files / 1,438 tests** green. Gates: `tsc` 0, eslint 0, prettier clean,
+`docs:verify` 9/9, links 0 broken, hygiene clean, full suite re-run before push.
+
+**Found while mutating — keep this.** The assertion "the double-entry gate
+accepts a balanced `Money` journal" **passes under the zeroing mutation**,
+because `0 = 0` balances. Acceptance tests cannot detect zeroing. The
+value-sensitive partner (an unbalanced journal must FAIL) is what catches it.
+Apply the same rule to every stage-4 area: assert a value that can only come from
+the real amount.
+
+**Still not done.** The `GLEntry` type flip itself. Its worklist after the
+fixture is 136 errors / 65 files; the biggest are `ConsolidationEngine` (16),
+`glStore` (11, mostly wire-shape: `GlJournalLine` stays in major units, so the
+boundary crossing is `moneyToAmount`, and `mergeListedEntry`/`listedToGLEntry`
+must `asMoney` server numbers), then `parseGLRows`/`d365Parser`/`ImportPipeline`
+(4 each) and 40+ pages with 1–3 each (engine parameter shapes typed
+`readonly { debit: number }[]`). No page renders the quarantine yet.
+
+## 2026-10-21 (continued) — Q5 stage 4 precondition: quarantine, don't round (DEC-054)
+
+**Measured before deciding.** Changing `GLEntry.debit/credit/netChange/amount` to
+`Money` produces **300 type errors across 67 files** — but **164 are one test
+fixture** and only **133 are product code in 65 files**; **285 of 300 are plain
+construction/argument errors**, just 11 are comparisons. The earlier "151 files /
+1,040 reads" grep overestimated by ~2× because the money helpers already accept
+`MoneyInput`. So stage 4 is a mechanical, area-by-area change with `tsc` as the
+worklist — not an unverifiable sweep.
+
+**Why the type change still cannot go first.** `masterStorage` hydrates with
+`decodeMoneyGraph(..., { as: 'number' })`. Move the type without moving that and
+every hydrated row is _typed_ `Money` while _holding_ a float — a type lie that
+`moneyPlus` throws on at the first render. The decode path is the gate.
+
+**The policy (shipped).** `src/utils/ledgerHydration.ts`: `classifyLedgerRow`
+reports every offending money field with its exact canonical value and a reason
+(`sub-cent` / `non-finite` / `unparseable`); `partitionLedgerRows` splits rows
+into `representable` and `quarantined`, with
+`representable.length + quarantined.length === rows.length`, order preserved, and
+nothing coerced. Row-level, not cell-level — an entry whose debit cannot be
+represented has no meaningful net.
+
+Rejected: rounding on load (discards money, FR-006) and failing the whole load
+(one legacy row stops the ledger opening).
+
+**Applied at the only boundary that exists today** — the derived view.
+`generateTrialBalance` / `analyzeAccount` now name the rows
+(`"… — Entry e-1: debit 0.004 cannot be represented at 2 decimal places"`) and a
+pure `glStore.ledgerScaleAudit()` exposes the classification. Entries are never
+moved or rounded.
+
+**A behaviour improvement fell out of it:** a `NaN` amount used to be coerced to
+0 by `toFiniteNumber`, so the trial balance looked complete while quietly valuing
+an unreadable row at nothing. It is now quarantined and the view refused. The
+stage-3 test that asserted the old behaviour was corrected, not silenced.
+
+**Evidence.** `ledgerHydration.test.ts` 19/19 and `glStore.derivedMoney.test.ts`
+15/15. Mutation-verified twice: disabling the sub-cent check fails 11 tests;
+returning at the first issue fails 5.
+
+**Not claimed.** `GLEntry` fields are still `number`; the partition is not yet the
+hydrate gate; no page renders the quarantine yet.
+
+## 2026-10-21 (continued) — Q5 stage 3: the derived rows are Money (DEC-053)
+
+**Shipped.** `TrialBalanceRow` and `AccountAnalysis` money fields are `Money`
+(integer minor units) — the first adoption in the product, safe first because
+they are derived and never persisted (`glStore.partialize` omits both;
+`glTrialBalanceStore.partialize` keeps only paging and sort). Six files changed,
+not 151, because three supporting pieces did the work:
+
+- `MoneyInput` now includes `Money`; `toDecimal` converts minor units exactly, so
+  `sumMoney` / `roundTo` / `formatMoney` sites stay exact with no rewrite.
+- `useCurrencyFormatter` accepts `Money` — **one** display adapter, the leverage
+  stage 6 needs for the 102 page files.
+- `glTrialBalanceStore.applySort` compares money columns by amount; without it a
+  `Money` cell sorted every row as `"[object Object]"`.
+
+**Behaviour change (the decision).** There is no `Money` equal to `0.004`. The
+old code rounded such amounts to zero cents at the output boundary, so a legacy
+sub-cent row contributed nothing to the view — money silently gone. Now the view
+is emptied and the reason named (`importStatus: 'error'`, `importError: 'Trial
+balance not built: … sub-cent precision …'`, error toast). Currency is carried
+when every entry agrees and OMITTED when they disagree — never the first entry's
+code, which would state an FX conversion that never happened. Mixed-currency
+accounts are still summed without conversion (DEC-051's open question).
+
+**Why stage 4 is still gated.** Stage 3 refuses an aggregate, which produces no
+wrong number. Stage 4 would refuse a ROW on hydrate, which means the ledger does
+not open. The hydrate policy is still the blocker.
+
+**Evidence.** `src/store/glStore.derivedMoney.test.ts` 13/13: a thousand one-cent
+rows → exactly 1,000 minor; `0.1+0.2+0.3` → `{minor:60}` (float
+0.6000000000000001); monthly totals and average exact; currency propagation and
+mixed omission; refusal path; grid sort both directions; exact footer; formatter
+renders Money in five shapes. Mutation-checked twice. Five existing test files
+updated where they encoded `number` rows or the retired round-a-half-cent rule.
+
+**Not claimed.** `GLEntry` is still `number`; no stored shape changed; FX
+aggregation across currencies is not implemented.
+
+## 2026-10-21 (continued) — Q5 stage 2: the round trip is proven, and stage 4 has a gate
+
+**What was proven.** `src/store/glStore.moneyPersist.test.ts` (6 tests) runs the
+**production** persistence path — `glStore.setEntries` → `masterStorage` →
+chunked storage → a real SQL.js image in localStorage → AES-GCM — with the
+41-row synthetic tie-out ledger, then decrypts the record independently to read
+the bytes that are actually on disk.
+
+- **At rest:** every money field of all 41 rows is `$d:<canonical>`;
+  `jsonContainsNumericMoney` is false (INV-009), measured on the plaintext.
+- **Byte identity:** persisting the same ledger with `Money` objects produces the
+  identical plaintext a `number` ledger produces. Stage 4 rewrites nothing on disk.
+- **Restart:** a fresh module graph rehydrates all 41 entries exactly;
+  `trialBalance` is empty (it is not in `partialize`), regenerates, and balances.
+- **Old backups:** a pre-Q5 envelope of raw JSON numbers still hydrates — there is
+  no migration step to run, which is what makes rollback a revert.
+- **Exactness:** decoding `as: 'money'` gives integer minor units for every field
+  and debit cents equal credit cents.
+
+**Mutation-verified** three ways: disabling the money-key branch fails 3 tests,
+disabling the `Money` branch fails the byte-identity test, changing the decode
+default fails the gate test.
+
+**The gate this opened (blocking stage 4).** DEC-048 permits a stored row
+`{ debit: 0.004, credit: 0 }`; every build since W0.8.2 wrote it at rest as
+`$d:0.004`. Decoding that with `as: 'money'` throws `InvalidMoneyError` — the
+correct refusal, and the reason `masterStorage` **cannot** switch `glStore` to
+`as: 'money'` while sub-cent rows can exist on disk. Stage 4 needs either a
+hydrate policy that preserves and names such rows while excluding them from
+`Money` aggregates, or a finer minor-unit scale (which is the
+three-decimal-currency decision, DEC-048's review trigger).
+
+**Not claimed.** `GLEntry` amounts are still `number`; no page, engine or store
+consumes `Money` yet. Stage 3 (`TrialBalanceRow` / `AccountAnalysis` — derived,
+not persisted) is next and is the first change that touches behaviour.
+
+## 2026-10-21 (continued) — Q5 opened: the type exists, the persist boundary is byte-identical
+
+**Why now.** The requirement text says the `GLEntry` amount-type migration is
+**Q5 — its own DEC and staged plan, do not start it under N8**. This entry is
+that DEC (051) plus its stage 1.
+
+**Measured blast radius** (HEAD `dc0f5209`): **98** non-test files reference
+`GLEntry`; **151** touch `debit`/`credit`/`netChange`; **765** object-literal
+constructions; ~**1,040** reads. By area: **`src/pages` 102**, engines 16,
+services 16, components 6, utils 4, store 3, workers 1. It is a presentation
+problem before a storage problem.
+
+**The decisive property.** `glStore` persists through `masterStorage`, and money
+keys already encode to `$d:<canonical>` (INV-009). Stage 1 encodes a `Money` value
+to **the same bytes** the numeric field produces — proved for a single row and a
+GL-shaped array. So the type change needs **no data migration**, backups stay
+readable, and a rollback is a revert.
+
+**Stage 1 shipped (nothing adopts it).** `Money = { minor, currency? }` at
+`LEDGER_SCALE` 2; `asMoney` (refuses sub-cent, DEC-048), `moneyToMinor`,
+`moneyToAmount`, `moneyCanonicalString`, exact `moneyPlus`/`moneyMinus`/
+`moneyNegate`/`moneySum`/`moneyCompareValues`/`moneyEqualsValue`/`moneyIsZero`;
+mixed currencies throw `MoneyCurrencyMismatchError`. `encodeMoneyGraph` handles
+`Money`; `decodeMoneyGraph` gained `as: 'money'` while the default stays `number`.
+
+**Evidence.** `src/utils/money.ledgerValue.test.ts` — **13/13**: exact minor
+units, sub-cent refusal, `0.1 + 0.2` → 30, a thousand cents without drift,
+currency propagation/refusal, canonical strings, `$d:` byte-identity, INV-009,
+decode-as-money, unchanged numeric default. **Mutation-verified**: disabling the
+`Money` branch in `encodeMoneyGraph` fails 4 of the 13.
+
+**The plan** (`docs/architecture/money-type-migration.md`): (2) round-trip a real
+persisted GL fixture through `as: 'money'`; (3) `TrialBalanceRow` /
+`AccountAnalysis` — **derived, not persisted**, so cheap; (4) `GLEntry`; (5)
+engines/services; (6) pages via one display adapter, deliberately last because
+102 of the 151 files are display-only.
+
+**Not claimed.** `GLEntry.debit/credit/amount` are still `number`. Stage 1 adds a
+type and a proven boundary; it changes no behaviour and converts no file.
+
+**Next.** Q5 stage 2 (persisted-fixture round-trip), then stage 3. N7 still needs
+the owner's scope choice. Owner-blocked: Actions read scope (CI 403), PR **#83**,
+real anonymised D365 export.
+
+## 2026-10-21 (continued) — N8 reframed: the 29.99 % was measuring the wrong thing
+
+**Queue audit first (three of my own entries were stale).**
+
+- N8's named red `src/pages/data/ComparisonPage.tsx:236` is **already fixed** —
+  that line goes through `fmt.currency0`, and `money:adoption` reports **0 raw
+  value-producing `toFixed(n)` sites** repo-wide.
+- The export cross-artifact tie-out already exists (see the previous entry).
+- N7 is bundle reduction, not route reduction (previous entry).
+
+**The finding.** `money:adoption` reads **29.99 % (305 / 1,017)** and N8 asked for
+100 %. Measured, the gap is not a safety gap:
+
+- `money:ast`: **0 unsafe money operations across 988 modules**, spine included.
+  The detector is deliberately conservative — absence of evidence, not proof.
+- Of **15 spine modules, 8 import the primitive**, and all **7 that do not perform
+  no money arithmetic**: they tokenise CSV/XLSX text, parse money _strings_ via
+  `parseFinancialAmount`, validate worker payloads, persist staged rows, or
+  compare dates.
+- Making those 7 `import '@/utils/money'` would move the ratio and change nothing.
+  That is the denominator-gaming N8 forbids.
+
+**The rule (DEC-050).** N8's completion test is a **property of the spine**, not a
+ratio: every DATA→CLOSE spine module either imports the money primitive or
+carries a _substantive_ non-monetary reason, and the reason is checked.
+
+**Enforcement.** `src/services/import/spineMoneyCensus.test.ts` — **6/6**:
+classification complete, no stale entries, reasons longer than a placeholder, and
+each non-monetary module must contain no `toFixed(n)`, no `Math.round`, no
+compound assignment on a money-named identifier, and must not quietly import the
+primitive. Includes a vacuity guard so a truncated list cannot pass.
+
+**Mutation-verified twice** (not asserted from a comment):
+adding `balance += 1` to a module declared non-monetary failed the arithmetic
+check; adding an unclassified `src/services/import/__mutantNewModule.ts` failed
+the census. Both reverted; `git status` clean.
+
+**Not claimed.** This does not certify safety: `money:ast` is a heuristic
+detector, and the global ratio stays at **29.99 %** as a no-regression ratchet —
+it is simply not a completion target any more. N8 is not closed by this; Q5 (the
+`GLEntry` amount _type_) is still its own DEC and staged plan.
+
+**Next.** (1) Q5 staged plan for `GLEntry` amount types (DEC first, no code).
+(2) N7 needs the owner's scope choice (previous entry). (3) N4 AR adapter
+(coverage row 5). Still owner-blocked: Actions read scope (CI 403), PR **#83**,
+real anonymised D365 export.
+
+## 2026-10-21 (continued) — N7 MEASURED: the only config-level slice failed the gate
+
+**Two corrections to earlier entries in this file.**
+
+1. **N7 is bundle structural reduction** (DEC-024's 2,080 KB gzip ceiling), not
+   "route reduction toward ≤40". Earlier entries mislabelled it; the requirement
+   text is `docs/AGENT_CONTINUATION_PROMPT.md` §N7.
+2. **The export cross-artifact tie-out already exists.**
+   `src/services/export/boardPackTieOut.integration.test.ts` (3 tests) builds the
+   XLSX and PPTX bytes, parses the rows back out of both, ties them to the in-app
+   GL aggregates, and fails on a tampered row. Re-ran it: **3/3 pass**. The
+   "no cross-artifact test" line in an older block is stale.
+
+**Measured** (fresh build, HEAD `bbbd6b16`): total JS **2,061.24 KB gzip** at
+99.1 % of the 2,080 limit; main chunk 69.73 / 150; critical path 425.13 KB over
+9 chunks; every G19 vendor inside budget. The recorded 2,061.71 holds.
+
+**Experiment — rejected.** Splitting the merged `sector-pages` chunk back into the
+19 per-route chunks the router already declares:
+
+| Metric              | Before      | After                            |
+| ------------------- | ----------- | -------------------------------- |
+| Total gzip          | 2,061.24 KB | **2,084.01 KB — FAILS (+22.77)** |
+| Chunks              | 415         | 456                              |
+| `/sector/*` payload | 107.89 KB   | ~15 KB                           |
+
+Reverted; `vite.config.ts` is byte-identical to `bbbd6b16`. The merged chunk is
+load-bearing: nineteen dynamic entries duplicate the shared sector helpers for
+more than the per-route win returns.
+
+**Conclusion (DEC-049).** There is **no config-only reduction left**. The bytes
+are vendors (41.5 %) and 170 engine-only chunks (~268 KB) that exist to keep every
+engine reachable for N-0013; module duplication is absent (5 modules in >1 chunk).
+A real drop needs a scope choice — replace exceljs, retire the 82 orphan engines,
+or accept 2,061 KB as the v1 budget. **N7 stays open**; reported, not decided,
+because each option removes something an earlier decision added.
+
+**Full table and method:** `docs/architecture/BUNDLE_BASELINE_2026-10-21.md`.
+
+**Not claimed.** The bundle did **not** improve. No code, config or budget
+changed in this entry.
+
+**Next.** (1) Owner scope choice on N7 (above). (2) `GLEntry` amount-type
+migration is **Q5 — its own DEC and staged plan**; the requirement text forbids
+starting it under N8, so the next money step is the Q5 plan, not code. (3) N8's
+named red `src/pages/data/ComparisonPage.tsx:236` (display-path `toFixed`).
+(4) N4 sub-ledger adapter (coverage order row 5 AR). Still owner-blocked:
+Actions read scope (CI 403), PR **#83**, real anonymised D365 export.
+
+## 2026-10-21 (continued) — LEDGER MONEY ADMISSION: a row carrying money passed the balance gate
+
+**The finding.** The ledger reconciled in whole cents in every aggregate, and
+stored the amount verbatim in none of them. Four measurements on `49f080eb`:
+
+| Probe                                            | Stored / returned                              | Why it matters                                                                                 |
+| ------------------------------------------------ | ---------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `setEntries([{ debit: 0.004, credit: 0 }])`      | `debit 0.004`, `netChange 0.00`, `amount 0.00` | the row carried money its own net could not see                                                |
+| `setEntries([{ debit: 0.1 + 0.2, credit: 0 }])`  | `debit 0.30000000000000004`                    | a raw read disagreed with the `0.30` the analysis view printed                                 |
+| `addEntry([{ debit: 0.005, credit: 0 }])`        | `amount 0.01` vs `debit 0.005`                 | `amount === debit − credit` did not hold                                                       |
+| `validateEntries([{ debit: 0.004, credit: 0 }])` | `isValid: true`, 0 errors                      | `toCents(0.004) === toCents(0) === 0`: the double-entry gate saw a balanced row carrying money |
+
+**The rule (DEC-048, audit P1-11 phase 1).** A ledger amount is a finite,
+non-negative (`debit`/`credit`) number with at most `LEDGER_SCALE` (2) decimal
+places. Finer precision is **refused with a named reason, never rounded on
+write** — rounding would silently discard money, which is what FR-006 forbids.
+One authority (`ledgerAmountIssue`) now serves `setEntries`, `addEntries`,
+`addEntry`, `validateEntries` and the server hydrate path; the primitive gained
+`decimalPlacesOf` (`0.1 + 0.2 → 17`, `0.3 → 1`) and `hasSubUnitPrecision`.
+
+**Evidence.** `src/store/glStore.ledgerScale.test.ts` — **9/9** (the three
+write surfaces, the gate regression, whole-cent boundary, cent-identity,
+prior FR-006 rejections unchanged) · `src/utils/money.test.ts` **34/34** (+4
+predicate tests) · `src/store/glStore.server.test.ts` **18/18** (hydrate now
+refuses a `0.004` server row and names it) · store + import regression **93
+files / 1,439 tests** · `tsc` 0 · eslint `--max-warnings 0` clean · prettier
+clean · `money:ast` 0 unsafe · determinism **344 / 79** at baseline ·
+`money:adoption` **29.99 %** / 0 raw `toFixed` · `docs:verify` 9/9 (test files
+1,402 → **1,403**) · strict links 0 broken · hygiene **3,622 / 0** ·
+**full suite 1,403 files / 16,293 passed + 1 skipped** (1,054 s, exit 0).
+
+**Commit.** `bf4c3623` on `arena/ef7aacd6-fp-a-betterversion` (pushed).
+
+**Doc correction.** `docs/architecture/money.md` claimed "half-even / banker's
+rounding". The code has always used `ROUND_HALF_UP` (`1.005 → 1.01`) and KAV-08
+pins it. The page now states the real mode and the ledger admission rule.
+
+**Explicitly NOT claimed.** This is **not** the `Money` type. `GLEntry.debit/
+credit/amount/netChange` remain JS `number`; audit P1-11's target state is
+integer minor units + currency end to end, and that adoption sweep (242 files)
+is untouched. Sub-cent **rejection** is a policy chosen under delegated
+authority and recorded as provisional — a real export in a 3-decimal currency
+(KWD/JOD/BHD/OMR/TND) would now be refused **with reasons** rather than
+silently rounded, and that trade-off is the review trigger on DEC-048. No D365
+shape is verified (O1/DEC-043 unchanged).
+
+**Next.** (1) `Money` nominal type at the ledger boundary (P1-11 phase 2) —
+introduce the type where it is provable, keeping the 242-file sweep phased.
+(2) N7 route reduction toward ≤40 (231 now). (3) Export cross-artifact tie-out.
+Still owner-blocked: Actions read scope (CI 403), PR **#83**, real anonymised
+D365 export.
+
+## 2026-10-21 (continued) — SPINE ACCEPTANCE: the D365 bar FAILED, now passes
+
+**The finding.** VISION §1 says the spine must work end-to-end on a synthetic
+D365-shaped file. Measured on 2026-10-21, it **did not**. Feeding the documented
+"General ledger statement by main account" headers to `ingestGLRows` mapped only
+debit/credit/description and rejected the file with four `Missing required column`
+schema errors. **No real D365-shaped export could enter the spine at all.**
+
+**Why it was invisible.** The machinery is extensive — `src/services/import/` is
+7,716 LOC with integration tests, and `d365Parser.ts` has 559 LOC + 505 test lines.
+But that parser was **standalone: never wired into staging**. It proved a parser,
+not the spine. The existing pipeline test uses a _generic_ CSV shape
+(`AccountCode/PostDate/...`), which is why nothing caught it.
+
+**The fix (DEC-047).** Two documented realities modelled rather than assumed away:
+
+1. **Header names differ** — exact normalised aliases added (`mainaccount`,
+   `mainaccountname`, `transactionpostingdate`, `transactionnumber` (the voucher),
+   `transactioncurrency`). Exact, never substrings, so "Main account" cannot
+   collide with "Main account name".
+2. **The legal entity is EXPORT CONTEXT, not a column** — the statement is produced
+   per legal entity. `defaultEntityId`/`defaultCurrency` replace the column
+   requirement, must pass `knownEntityIds`/`expectedCurrency`, are validated at the
+   **worker boundary** like every other field (that validator silently dropped the
+   new fields on the first attempt — a real trap), and are **never inferred**; a
+   supplied row column always wins.
+
+**Evidence.**
+
+- `src/services/import/spineAcceptance.d365.integration.test.ts` — **5/5**:
+  D365 shape → stage → quarantine reasons → period-close guard → promote →
+  promoted ledger → exact control totals (`135250.17 == 135250.17`) → determinism.
+- `src/engines/SmartImportMapper.d365Defaults.test.ts` — **7/7** boundary:
+  missing default still rejected, unknown default entity rejected, currency
+  mismatch rejected, blank default rejected, row column beats default.
+- Regression: import + mapper + workers + `GLUploadPage.d365` = **29 files / 342 tests**.
+
+**Not claimed:** verified D365 support. The shape stays _mapping-driven,
+unverified_ (O1/DEC-043); the fixture is synthetic; no version/configuration claim.
+
+**Gates:** `tsc` 0 · eslint `--max-warnings 0` clean · prettier clean ·
+`money:ast` 0 unsafe · determinism 344/79 at baseline · `money:adoption` 29.99 % /
+0 raw sites · `docs:verify` 9/9 · strict links 0 broken · hygiene 3,620/0.
+
+**Next unblocked work:** money-domain `GLEntry` types (`number → Money`, P1-11) ·
+N7 route reduction to the ≤40 target (now decidable under DEC-042) ·
+export cross-artifact tie-out · money adoption sweep.
+
+**Still open:** 93 of 200 sections SOURCE OWED · CI HTTP 403 (unverifiable) ·
+PR #83 open since 2026-10-20 · native/recovery evidence (O7) · real anonymised
+D365 export (O1). **Known-work complete: NO. Programme complete: NO.**
+
+## 2026-10-21 (continued) — provisional decisions adopted; N3 forecast writers closed
+
+**Owner mandate:** take project decisions per the vision recorded in Notion.
+
+**Applied mechanism:** the Owner Decision Packet's own rule — _silence means the
+recommended default is adopted as a provisional default, recorded in
+`docs/discovery/decision-log.md`, and named as provisional in every report._
+No new authority was invented; the packet was exercised as written.
+
+| Decision    | Effect                                                                                                                                                                                                                                              |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **DEC-042** | v1 **supported** scope = the DATA→CLOSE spine; **ultimate** scope stays all of FP&A per DEC-033. Resolves the DEC-033 ↔ roadmap "no new domain feature expansion" contradiction by separating destination from supported label. No surface deleted. |
+| **DEC-043** | O1–O9 defaults adopted **provisionally**. Every default removes a claim. The packet's five absolute prohibitions are explicitly **not waived**.                                                                                                     |
+| **DEC-044** | Q6: server retired from supported scope; v1 local-first. Closes the audit **P0-3** sign-in paradox — while O7 still forbids claiming a working desktop sign-in.                                                                                     |
+| **DEC-045** | **N2 authority question closed** at "bounded client evidence" (O4). N2 stays open only on restart/keying/anchoring durability.                                                                                                                      |
+| **DEC-046** | **N3 entity authority** = deny by default, no inferred grants (O9).                                                                                                                                                                                 |
+
+**N3 engineering closed this session:** `src/store/forecastStore.authorization.test.ts`
+(7 tests) covers all six forecast/driver writers against signed-out, Viewer and
+Admin-with-permission-withheld, asserting the error **names** the required
+permission and that financial state and undo history are unchanged after a
+denial. It also pins the real role asymmetry: Analyst may create and edit but
+must not delete.
+
+**Mutation-verified** (source restored, `git diff` empty):
+
+- `updateForecast` FORECAST_UPDATE → FORECAST_READ: **3 failed / 4 passed**
+- `deleteForecast` FORECAST_DELETE → FORECAST_READ: **4 failed / 3 passed**
+
+The first mutation **disproved my own written claim** ("exactly two cases"); the
+comment now records the measured three — including that a signed-out denial still
+failed on permission _naming_, which is precisely why the name is asserted.
+
+**Gates:** `tsc` 0 · `eslint --max-warnings 0` clean · prettier clean ·
+`docs:verify` pass (9/9 ratchet values) · `docs:link-check --strict` 0 broken ·
+`repo:hygiene` 3,619/0 · regression `rbacNegativeAuthorization` +
+`budgetStore.authorization` + `rbacMatrixCompleteness` = **3 files / 250 tests**.
+
+**Still open:** 93 of 200 sections SOURCE OWED · CI HTTP 403 (unverifiable) ·
+PR **#83** open since 2026-10-20 18:08 · native/recovery/key-custody evidence
+(O7) · spine acceptance verdict · N7 route reduction · money-domain `GLEntry`
+types (P1-11) · export tie-out (no PPTX, no cross-artifact test).
+**Known-work complete: NO. Programme complete: NO** — DEC-043 O7/O4 forbid those claims.
+
+## Session checkpoint — 2026-10-21 (solo; fleet proposal dropped)
+
+**Owner decision:** the 15-agent fleet is **not adopted**; work proceeds solo.
+`docs/agent-fleet/FLEET_OPERATING_MODEL.md` is marked NOT ADOPTED and retained as a
+design record only. Nothing in it is in force.
+
+Two defects closed in this session. Both were gates that could not fail.
+
+**1. `docs:verify` blind spot (routes + test files).** `scripts/verify-readme-stats.mjs`
+asserted engines/stores/workers but not the two most-quoted README figures, so both had
+drifted: routes **242 claimed vs 231 measured**, test files **~1,315 vs 1,398**. The gate
+now measures both — routes with the _same regex_ as `scripts/generate-route-map.js`, test
+files with Vitest's exact discovery (`include src/**/*.test.ts(x)`, `exclude tests/,
+node_modules/, __benchmarks__/, *.bench|benchmark.test.*`). It deliberately does **not**
+assert a test tally (that needs a ~1,057 s sharded run); a tally in the README must instead
+be labelled a _recorded_ result, enforced by a new guard.
+Failing-first: 2 failures before the README fix, exit 0 after. Mutation: reverting `231→242`
+kills exactly that assertion.
+
+**2. `license:check` fail-closed (audit P2-21).** The script had three independent holes:
+`ACCEPTABLE_LICENSES` was declared and **never consulted** (denylist only, so `UNKNOWN`
+logged `✅`); a missing license field became `UNKNOWN` and passed; and the outer `catch`
+printed "best-effort" and exited **0**, so a failed `npm ls` reported success having
+verified nothing. Demonstrated on the old script: with no inventory it printed
+`✅ License check passed` and exited **0**.
+Now: allowlist is load-bearing; `UNKNOWN` / missing / `SEE LICENSE IN …` fail closed;
+SPDX `OR`/`AND` and `-only`/`-or-later` suffixes handled; exit codes are
+**0 verified · 1 rejected or unverifiable · 2 could not verify at all**.
+New suite `src/__tests__/licenseCheckScript.test.ts` — **13 tests**; failing-first against
+the old script **9 failed / 4 passed**; passing after the rewrite **13/13**.
+This is a policy check on declared metadata, **not** legal certification.
+
+**Measured this session:** `tsc` exit 0 · `eslint --max-warnings 0` on the new file exit 0 ·
+`prettier --check` clean · `docs:verify` pass (all 9 ratchet values match) ·
+`docs:link-check --strict` 0 broken · `repo:hygiene` 3,618 files / 0 tracked ignored.
+`npm ci --ignore-scripts` succeeded (835 packages), so the above ran for real rather than
+being inferred.
+
+**Still open (unchanged):** N2 blocked on **O4**, N3 on **O9**; 93 of 200 checklist sections
+**SOURCE OWED**; CI on `main` still **HTTP 403** (unverifiable, not green); PR **#83** open
+since 2026-10-20 18:08; forecast-writer denial evidence and the N7 route reduction not started.
+**Known-work complete: NO. Programme complete: NO.**
+
 ## Final budget trust checkpoint — 2026-10-20
 
 **Current result (supersedes pending-gate/next-step statements in historical

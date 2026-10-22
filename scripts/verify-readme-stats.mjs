@@ -132,12 +132,40 @@ const viteConfig = readFileSync(join(ROOT, 'vite.config.ts'), 'utf8');
 const stmtMatch = viteConfig.match(/statements:\s*(\d+)/);
 const coverageThreshold = stmtMatch ? Number(stmtMatch[1]) : null;
 
+// --- routes -------------------------------------------------------------
+// Counted with the SAME regex as scripts/generate-route-map.js, which is the
+// canonical route inventory. Two different route counts in one repo (the 2026
+// audit found 242 in README vs 231 measured) is exactly the drift this script
+// exists to stop.
+const APP_TSX = readFileSync(join(ROOT, 'src', 'App.tsx'), 'utf8');
+const ROUTE_RE =
+  /<Route\s+path="([^"]+)"\s+element=\{\s*(?:<Navigate[\s\S]*?to="([^"]+)"|<([A-Za-z][\w.]*))/g;
+const routeCount = [...APP_TSX.matchAll(ROUTE_RE)].length;
+
+// --- test files ---------------------------------------------------------
+// Discovered exactly as Vitest does (vite.config.ts test.include/exclude):
+//   include  src/**/*.test.ts, src/**/*.test.tsx
+//   exclude  tests/**, node_modules/**, __benchmarks__/**, *.bench.test.*,
+//            *.benchmark.test.*
+// This is a FILE count. It is deliberately not a test count: a test tally can
+// only come from running the suite (~1,057 s sharded, 8 GB heap), so this gate
+// asserts what it can actually measure. A test tally in the README must be
+// labelled as a recorded run instead of masquerading as a live measurement.
+const testFiles = walk(join(ROOT, 'src')).filter((f) => {
+  const base = basename(f);
+  if (!/\.test\.(ts|tsx)$/.test(base)) return false;
+  if (/\.(bench|benchmark)\.test\.(ts|tsx)$/.test(base)) return false;
+  return !f.split(/[\\/]/).includes('__benchmarks__');
+}).length;
+
 const measured = {
   engines: engineFiles.length,
   shippedEngines: shippedEngines.length,
   orphanEngines: orphanEngines.length,
   stores: storeCount,
   workers: workerCount,
+  routes: routeCount,
+  testFiles,
   coverageThreshold,
 };
 
@@ -167,6 +195,20 @@ const forbidden = [
     expect: measured.orphanEngines,
     label: 'orphan engine count',
   },
+  {
+    // README: "routed page modules (242 <Route>s ...)"
+    pattern: /(\d+)\s*<Route>/g,
+    expect: measured.routes,
+    label: 'route count',
+  },
+  {
+    // README: "~1,315 files · ~13,350 tests"
+    pattern: /~?([\d,]+)\s+test files|~?([\d,]+)\s+files\s+·/g,
+    expect: measured.testFiles,
+    label: 'test file count',
+    // Two capture groups: use whichever matched.
+    transform: (s) => Number(s.replace(/,/g, '')),
+  },
 ];
 
 // Words that assert a measurement no script produces are forbidden outright.
@@ -181,10 +223,26 @@ for (const { re, why } of unbackedClaims) {
 
 for (const { pattern, expect, label } of forbidden) {
   for (const m of readme.matchAll(pattern)) {
-    if (Number(m[1]) !== expect) {
-      failures.push(`README ${label}: claims ${m[1]}, measured ${expect}  ("${m[0]}")`);
+    // Patterns may expose two capture groups (one per wording variant); take
+    // the first that actually matched.
+    const raw = m.slice(1).find((g) => g !== undefined);
+    if (raw === undefined) continue;
+    const claimed = Number(String(raw).replace(/,/g, ''));
+    if (claimed !== expect) {
+      failures.push(`README ${label}: claims ${raw}, measured ${expect}  ("${m[0]}")`);
     }
   }
+}
+
+// A test TALLY cannot be measured by this gate (it needs a full ~1,057 s
+// sharded run). If the README states one, it must be presented as a recorded
+// result, not as a live measurement — otherwise the number drifts unwatched.
+const tallyMatch = readme.match(/([\d,]+)\s+tests\b/);
+if (tallyMatch && !/recorded/i.test(readme)) {
+  failures.push(
+    `README states a test tally ("${tallyMatch[0]}") without labelling it a recorded run. ` +
+      'This gate measures test FILES; a test count needs `npm run test:sharded` evidence.'
+  );
 }
 
 if (/Maintain 80%\+ coverage/i.test(readme) && coverageThreshold !== 80) {

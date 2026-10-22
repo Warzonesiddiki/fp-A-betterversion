@@ -14,7 +14,7 @@
  * safety. Engines must still go through `@/utils/money`. This module only
  * stops JSON from being the place the float leaks.
  */
-import { toDecimal, type MoneyInput } from './money';
+import { asMoney, isMoneyValue, moneyCanonicalString, toDecimal, type MoneyInput } from './money';
 
 export const MONEY_TAG = '$d:';
 
@@ -122,6 +122,14 @@ function isUnsafeMoneyNumber(value: unknown): value is number {
  * Non-money numbers (counts, indexes, versions) are left as numbers.
  */
 export function encodeMoneyGraph(value: unknown, key = ''): unknown {
+  // A Money value declares itself as money, so it is encoded as the same
+  // `$d:` canonical string a numeric money field produces — at any key. The
+  // at-rest bytes are therefore IDENTICAL to the pre-Q5 form (proved in
+  // money.ledgerValue.test.ts), which is what makes the type change reversible
+  // rather than a data migration.
+  if (isMoneyValue(value)) {
+    return encodeMoneyValue(moneyCanonicalString(value));
+  }
   if (Array.isArray(value)) {
     return value.map((item) => encodeMoneyGraph(item, key));
   }
@@ -138,12 +146,14 @@ export function encodeMoneyGraph(value: unknown, key = ''): unknown {
   return value;
 }
 
-export type MoneyDecodeAs = 'string' | 'number';
+export type MoneyDecodeAs = 'string' | 'number' | 'money';
 
 /**
  * Reverse `encodeMoneyGraph`. `as: 'string'` returns the canonical decimal
- * string (lossless). `as: 'number'` uses Decimal.toNumber() so existing
- * stores typed as `number` keep working — a compatibility concession.
+ * string (lossless). `as: 'money'` returns an exact `Money` value (Q5) — note
+ * the `$d:` form carries no currency, so the caller supplies it from context.
+ * `as: 'number'` (default) uses Decimal.toNumber() so existing stores typed as
+ * `number` keep working — a compatibility concession.
  */
 export function decodeMoneyGraph(value: unknown, options: { as?: MoneyDecodeAs } = {}): unknown {
   const as = options.as ?? 'number';
@@ -160,6 +170,7 @@ export function decodeMoneyGraph(value: unknown, options: { as?: MoneyDecodeAs }
   if (typeof value === 'string' && isEncodedMoney(value)) {
     const canonical = decodeMoneyValue(value);
     if (as === 'string') return canonical;
+    if (as === 'money') return asMoney(canonical);
     return toDecimal(canonical).toNumber();
   }
   return value;

@@ -193,28 +193,29 @@ vi.mock('@/store/glStore', () => ({
   })),
 }));
 
-// Trial-balance row shape mirrors computeTrialBalanceTotals' input contract
-// (GLTrialBalancePage.tsx:36-50): per-account beginning/net/ending + period debits/credits.
+// Trial-balance row shape mirrors `TrialBalanceRow` (Q5 stage 3 / DEC-053):
+// per-account beginning/net/ending + period debits/credits, each a `Money` in
+// integer minor units.
 const TB_ROWS = [
   {
     accountId: '1000',
     accountCode: '1000',
     accountName: 'Cash — Operating',
-    beginningBalance: 50000,
-    netChange: 12500,
-    endingBalance: 62500,
-    debit: 32500,
-    credit: 20000,
+    beginningBalance: { minor: 5000000 },
+    netChange: { minor: 1250000 },
+    endingBalance: { minor: 6250000 },
+    debit: { minor: 3250000 },
+    credit: { minor: 2000000 },
   },
   {
     accountId: '4000',
     accountCode: '4000',
     accountName: 'Revenue — Services',
-    beginningBalance: 0,
-    netChange: -80000,
-    endingBalance: -80000,
-    debit: 0,
-    credit: 80000,
+    beginningBalance: { minor: 0 },
+    netChange: { minor: -8000000 },
+    endingBalance: { minor: -8000000 },
+    debit: { minor: 0 },
+    credit: { minor: 8000000 },
   },
 ];
 

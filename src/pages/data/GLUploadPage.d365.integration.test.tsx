@@ -39,6 +39,7 @@ import { actAs } from '@/test/rbacFixtures';
 import { setClock, resetClock } from '@/utils/clock';
 import { hashFileBytes } from '@/services/import/importProvenance';
 import { computeBalanceSheet } from '@/pages/reports/balanceSheetData';
+import { moneyToAmount } from '@/utils/money';
 
 /** Pinned instant: batch ids and "Imported at" must not drift (NFR-001). */
 const PINNED = '2026-02-10T09:00:00.000Z';
@@ -233,7 +234,16 @@ describe('D365 import → output integration (NFR-004)', () => {
       '5000',
       '6000',
     ]);
-    expect(tb.map((r) => [r.accountCode, r.debit, r.credit, r.netChange])).toEqual([
+    // Q5 stage 3: `Money` rows — compared in whole units via the exact
+    // minor-unit conversion, not by object identity.
+    expect(
+      tb.map((r) => [
+        r.accountCode,
+        moneyToAmount(r.debit),
+        moneyToAmount(r.credit),
+        moneyToAmount(r.netChange),
+      ])
+    ).toEqual([
       ['1000', 500000, 45000, 455000],
       ['1100', 120000, 0, 120000],
       ['1200', 0, 30000, -30000],

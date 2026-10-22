@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { toCSV } from '@/utils/csv';
-import { sumMoney, subtractMoney, roundTo } from '@/utils/money';
+import { sumMoney, subtractMoney, roundTo, moneySign, type Money } from '@/utils/money';
 import {
   Scale,
   RefreshCw,
@@ -36,11 +36,11 @@ export interface TrialBalanceTotals {
 
 export function computeTrialBalanceTotals(
   rows: readonly {
-    debit: number;
-    credit: number;
-    beginningBalance: number;
-    netChange: number;
-    endingBalance: number;
+    debit: Money;
+    credit: Money;
+    beginningBalance: Money;
+    netChange: Money;
+    endingBalance: Money;
   }[]
 ): TrialBalanceTotals {
   const totalDebits = roundTo(sumMoney(rows.map((r) => r.debit)), 2);
@@ -360,9 +360,9 @@ export default function GLTrialBalancePage() {
                     </td>
                     <td
                       className={`px-4 py-3 text-right tabular-nums font-medium ${
-                        row.netChange > 0
+                        moneySign(row.netChange) > 0
                           ? 'text-green-400'
-                          : row.netChange < 0
+                          : moneySign(row.netChange) < 0
                             ? 'text-red-400'
                             : 'text-slate-300'
                       }`}
@@ -371,9 +371,9 @@ export default function GLTrialBalancePage() {
                     </td>
                     <td
                       className={`px-4 py-3 text-right tabular-nums font-semibold ${
-                        row.endingBalance > 0
+                        moneySign(row.endingBalance) > 0
                           ? 'text-green-400'
-                          : row.endingBalance < 0
+                          : moneySign(row.endingBalance) < 0
                             ? 'text-red-400'
                             : 'text-slate-300'
                       }`}

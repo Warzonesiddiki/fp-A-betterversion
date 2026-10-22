@@ -3,11 +3,12 @@
 ## Final budget trust checkpoint — 2026-10-20
 
 **Current result (supersedes pending-gate/next-step statements in historical
-checkpoints below):** `npm run check` passed **8/8 shards, 1,398 files,
-16,248 passed + 1 existing skipped = 16,249 total**, suite component **1,057s**.
-Production build and bundle check passed: **6,815.88 KB raw / 2,060.77 KB gzip
-vs unchanged 2,080 KB**, one warning; critical path **425.06 KB gzip**, main
-**69.74 KB gzip**. Money adoption **305/1,017 = 29.99%, zero raw sites**.
+checkpoints below):** full single-process suite **1,403 files / 16,293 passed + 1
+skipped**, 1,054s (2026-10-21; 1,404 files now that the spine money census
+landed — its 6 tests are not in that tally).
+Production build and bundle check passed: **6,817.81 KB raw / 2,061.24 KB gzip
+vs unchanged 2,080 KB**, one warning; critical path **425.13 KB gzip**, main
+**69.73 KB gzip**. Money adoption **305/1,017 = 29.99%, zero raw sites**.
 Root/prod audits both zero at the dependency-remediation checkpoint.
 
 DEC-039/040/041, submission caller error/retry handling and a repeatable
@@ -238,14 +239,14 @@ for `budgetStore.updateBudget`, mutation-verified, preserving O9's boundary.
 
 ## QUEUED (scoped, start after NEXT or when a slice frees up)
 
-| #   | Task                                                                                           | Notes                                                                                      |
-| --- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Q1  | E2 connectors & ecosystem: wire one connector (owner's D365/Dataverse first) to a real page    | Connector classes exist unwired; rule 8 — spine already proven, so this is now legal scope |
-| Q2  | E3 advanced analytics/statistics: statistical forecasting depth behind the verified-facts gate | DEC-022: local only; anything generative must pass `verifyNarrative`                       |
-| Q3  | E4 jurisdictions & compliance packs                                                            | Needs jurisdiction tiering input (see OWNER O5) before build                               |
-| Q4  | Phase 12 remainder: comments/approvals if team use is confirmed                                | DEC-004 review trigger                                                                     |
-| Q5  | `GLEntry` amounts JS `number` → money type migration                                           | Needs its own DEC + staged plan; adoption ratchet N8 is the on-ramp                        |
-| Q6  | Server (`server/`) fate: frontend calls nothing today; integrate or retire deliberately        | Owner/architecture decision; README states the measured truth meanwhile                    |
+| #   | Task                                                                                           | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| --- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Q1  | E2 connectors & ecosystem: wire one connector (owner's D365/Dataverse first) to a real page    | Connector classes exist unwired; rule 8 — spine already proven, so this is now legal scope                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| Q2  | E3 advanced analytics/statistics: statistical forecasting depth behind the verified-facts gate | DEC-022: local only; anything generative must pass `verifyNarrative`                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Q3  | E4 jurisdictions & compliance packs                                                            | Needs jurisdiction tiering input (see OWNER O5) before build                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Q4  | Phase 12 remainder: comments/approvals if team use is confirmed                                | DEC-004 review trigger                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Q5  | `GLEntry` amounts JS `number` → money type migration                                           | DEC-051 staged plan · stages 1–3 shipped (type, byte-identical persist, derived rows as `Money` — DEC-052/053) · stage-4 precondition shipped: sub-cent rows are quarantined and named, never rounded (DEC-054) · stage-4 preparation shipped: money reads cross through `amountFrom` so a `Money` cannot be silently read as 0, nor refuse every write (DEC-055); the `GLEntry` type flip itself is still NOT started — measured worklist 136 errors across 65 files after the one fixture converts mechanically |
+| Q6  | Server (`server/`) fate: frontend calls nothing today; integrate or retire deliberately        | Owner/architecture decision; README states the measured truth meanwhile                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ## OWNER (blocked — do not work around, do not silently drop)
 

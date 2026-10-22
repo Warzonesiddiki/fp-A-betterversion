@@ -89,6 +89,15 @@ export function validateGLIngestionChunk(value: unknown): GLIngestChunkInput {
     knownAccountCodes: texts(input.knownAccountCodes, 'knownAccountCodes', 100000),
     knownEntityIds: texts(input.knownEntityIds, 'knownEntityIds', 100000),
     expectedCurrency: text(input.expectedCurrency, 'expectedCurrency', 16),
+    // Export-context defaults (D365's GL statement carries no entity column).
+    // Validated at the worker boundary like every other field so the mapping
+    // cannot be smuggled through unvalidated.
+    ...(input.defaultEntityId !== undefined
+      ? { defaultEntityId: text(input.defaultEntityId, 'defaultEntityId', 256) }
+      : {}),
+    ...(input.defaultCurrency !== undefined
+      ? { defaultCurrency: text(input.defaultCurrency, 'defaultCurrency', 16) }
+      : {}),
     dateOrder,
     amountConvention,
   };

@@ -397,7 +397,7 @@ describe('glStore boot hydrate — hydrateCommittedFromServer (W0.8.6 plan §5)'
     expect(useGLStore.getState().entryVersions).toEqual({ e1: 2 });
   });
 
-  it('rejects server rows with provided-but-invalid or missing amounts instead of coercing them to zero (FR-006)', async () => {
+  it('rejects server rows with invalid, sub-cent, or missing amounts instead of coercing them (FR-006 · P1-11)', async () => {
     setGlCommitClient(
       fakeListClient(() =>
         Promise.resolve({
@@ -416,6 +416,17 @@ describe('glStore boot hydrate — hydrateCommittedFromServer (W0.8.6 plan §5)'
             // Locally absent row with BOTH amounts missing — adoption would
             // fabricate a 0.00/0.00 entry (missing is not zero).
             { id: 'srv-missing', version: 1, accountCode: '4000', postDate: '2026-04-02' },
+            // Locally absent row carrying sub-cent precision. The ledger
+            // reconciles in whole cents, so adopting this would store 0.004 of
+            // debit that its own net (0.00) cannot see (P1-11 phase 1).
+            {
+              id: 'srv-subcent',
+              version: 1,
+              accountCode: '4100',
+              postDate: '2026-04-04',
+              debit: 0.004,
+              credit: 0,
+            },
             // Valid row must still hydrate — the guard must not over-block.
             {
               id: 'srv-valid',
@@ -451,6 +462,12 @@ describe('glStore boot hydrate — hydrateCommittedFromServer (W0.8.6 plan §5)'
 
     // Missing both amounts: no fabricated zero row is adopted.
     expect(state.entries.some((e) => e.id === 'srv-missing')).toBe(false);
+
+    // Sub-cent precision: refused rather than rounded into a representable
+    // 0.00, which would have discarded the debit silently.
+    expect(state.entries.some((e) => e.id === 'srv-subcent')).toBe(false);
+    expect(state.importError).toMatch(/srv-subcent/);
+    expect(state.importError).toMatch(/sub-cent precision/);
 
     // The valid row still converges.
     const valid = state.entries.find((e) => e.id === 'srv-valid');

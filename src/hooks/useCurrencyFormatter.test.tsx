@@ -36,6 +36,65 @@ function Probe(): JSX.Element {
   );
 }
 
+/**
+ * Q5 stage 3: a `Money` (integer minor units) renders through the SAME
+ * formatter as a number. This is the single display adapter later stages rely
+ * on — a page that switches from `number` to `Money` does not need its own
+ * conversion, and the value is converted from minor units exactly.
+ */
+function MoneyProbe(): JSX.Element {
+  const fmt = useCurrencyFormatter();
+  return (
+    <div>
+      <span data-testid="money">{fmt.currency({ minor: 123456 })}</span>
+      <span data-testid="money0">{fmt.currency0({ minor: 123456 })}</span>
+      <span data-testid="money-negative">{fmt.currency0({ minor: -50000 })}</span>
+      <span data-testid="money-zero">{fmt.currency0({ minor: 0 })}</span>
+      <span data-testid="money-compact">{fmt.compact({ minor: 250000000 })}</span>
+      <span data-testid="money-custom">{fmt.custom({ maxDecimals: 0 })({ minor: 99900 })}</span>
+    </div>
+  );
+}
+
+describe('useCurrencyFormatter with Money (Q5 stage 3)', () => {
+  it('renders minor units at full precision', () => {
+    render(<MoneyProbe />);
+    expect(screen.getByTestId('money').textContent).toContain('1,234.56');
+  });
+
+  it('renders whole units, parentheses for negatives, and nothing for zero', () => {
+    render(<MoneyProbe />);
+    expect(screen.getByTestId('money0').textContent).toContain('1,235');
+    expect(screen.getByTestId('money-negative').textContent).toMatch(/^\(.*\)$/);
+    expect(screen.getByTestId('money-zero')).toHaveTextContent('—');
+  });
+
+  it('NEVER throws on a non-finite or unparseable value — display degrades to an em dash', () => {
+    // A formatter runs inside render: throwing blanks the screen. The strict
+    // money gate lives in `@/utils/money` (where money is computed), not here.
+    function GarbageProbe(): JSX.Element {
+      const fmt = useCurrencyFormatter();
+      return (
+        <div>
+          <span data-testid="nan">{fmt.currency0(Number.NaN)}</span>
+          <span data-testid="inf">{fmt.currency(Number.POSITIVE_INFINITY)}</span>
+          <span data-testid="junk">{fmt.currency('not-a-number')}</span>
+        </div>
+      );
+    }
+    render(<GarbageProbe />);
+    expect(screen.getByTestId('nan')).toHaveTextContent('—');
+    expect(screen.getByTestId('inf')).toHaveTextContent('—');
+    expect(screen.getByTestId('junk')).toHaveTextContent('—');
+  });
+
+  it('renders compact and custom shapes from minor units', () => {
+    render(<MoneyProbe />);
+    expect(screen.getByTestId('money-compact').textContent).toMatch(/2\.5M/);
+    expect(screen.getByTestId('money-custom').textContent).toContain('999');
+  });
+});
+
 describe('useCurrencyFormatter', () => {
   it('defaults to the context default currency (USD)', () => {
     render(<Probe />);

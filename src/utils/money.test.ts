@@ -4,10 +4,13 @@ import {
   addMoney,
   allocateMoney,
   compareMoney,
+  decimalPlacesOf,
   divideMoney,
   formatMoney,
   fromCents,
+  hasSubUnitPrecision,
   InvalidMoneyError,
+  LEDGER_SCALE,
   moneyEquals,
   multiplyMoney,
   percentOf,
@@ -203,5 +206,41 @@ describe('property/fuzz: allocateMoney sum-preservation', () => {
         expect(p.lte(whole)).toBe(true);
       }
     }
+  });
+});
+
+describe('ledger scale predicate (P1-11 phase 1)', () => {
+  it('measures precision in decimal-literal form', () => {
+    expect(decimalPlacesOf(0.3)).toBe(1);
+    expect(decimalPlacesOf(100)).toBe(0);
+    expect(decimalPlacesOf(1.005)).toBe(3);
+    expect(decimalPlacesOf(1234567.89)).toBe(2);
+    // 0.1 + 0.2 is 0.30000000000000004, not 0.30 — reported honestly.
+    expect(decimalPlacesOf(0.1 + 0.2)).toBe(17);
+  });
+
+  it('flags only precision finer than the ledger scale', () => {
+    expect(LEDGER_SCALE).toBe(2);
+    expect(hasSubUnitPrecision(0)).toBe(false);
+    expect(hasSubUnitPrecision(0.01)).toBe(false);
+    expect(hasSubUnitPrecision(1234567.89)).toBe(false);
+    expect(hasSubUnitPrecision(0.004)).toBe(true);
+    expect(hasSubUnitPrecision(1.005)).toBe(true);
+    expect(hasSubUnitPrecision(0.1 + 0.2)).toBe(true);
+    // A 3-decimal currency can be checked explicitly, it is just not the default.
+    expect(hasSubUnitPrecision(0.005, 3)).toBe(false);
+  });
+
+  it('never rounds the value it inspects', () => {
+    const value = 1.005;
+    hasSubUnitPrecision(value);
+    expect(value).toBe(1.005);
+    expect(roundTo(value)).toBe(1.01); // rounding stays an explicit caller act
+  });
+
+  it('rejects non-finite input rather than reporting zero precision', () => {
+    expect(() => hasSubUnitPrecision(Number.NaN)).toThrow(InvalidMoneyError);
+    expect(() => hasSubUnitPrecision(Number.POSITIVE_INFINITY)).toThrow(InvalidMoneyError);
+    expect(() => decimalPlacesOf('')).toThrow(InvalidMoneyError);
   });
 });

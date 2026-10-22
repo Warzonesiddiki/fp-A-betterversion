@@ -85,10 +85,11 @@ describe('glStore — money known answers (GAP-1 / F-0006)', () => {
     useGLStore.getState().generateTrialBalance();
 
     const row = useGLStore.getState().trialBalance[0];
-    expect(row?.debit).toBe(0.3);
-    expect(row?.credit).toBe(0);
-    expect(row?.netChange).toBe(0.3);
-    expect(row?.endingBalance).toBe(0.3);
+    // Q5 stage 3: the derived row is `Money` (integer minor units).
+    expect(row?.debit).toEqual({ minor: 30 });
+    expect(row?.credit).toEqual({ minor: 0 });
+    expect(row?.netChange).toEqual({ minor: 30 });
+    expect(row?.endingBalance).toEqual({ minor: 30 });
   });
 
   it('subtracts credits in the trial balance exactly (old float: 0.09999999999999998)', () => {
@@ -101,10 +102,10 @@ describe('glStore — money known answers (GAP-1 / F-0006)', () => {
     useGLStore.getState().generateTrialBalance();
 
     const row = useGLStore.getState().trialBalance[0];
-    expect(row?.debit).toBe(0.3);
-    expect(row?.credit).toBe(0.2);
-    expect(row?.netChange).toBe(0.1);
-    expect(row?.endingBalance).toBe(0.1);
+    expect(row?.debit).toEqual({ minor: 30 });
+    expect(row?.credit).toEqual({ minor: 20 });
+    expect(row?.netChange).toEqual({ minor: 10 });
+    expect(row?.endingBalance).toEqual({ minor: 10 });
   });
 
   it('sums monthly analysis totals exactly (old float: 0.6000000000000001 / 0.5000000000000001 / 0.25000000000000006)', () => {
@@ -118,23 +119,30 @@ describe('glStore — money known answers (GAP-1 / F-0006)', () => {
     useGLStore.getState().analyzeAccount('acct-1');
 
     const analysis = useGLStore.getState().accountAnalysis;
-    expect(analysis?.monthlyTotals[0]?.debit).toBe(0.3);
-    expect(analysis?.monthlyTotals[0]?.net).toBe(0.3);
-    expect(analysis?.monthlyTotals[1]?.net).toBe(0.2);
-    expect(analysis?.totalDebit).toBe(0.6);
-    expect(analysis?.totalCredit).toBe(0.1);
-    expect(analysis?.averageBalance).toBe(0.25);
+    expect(analysis?.monthlyTotals[0]?.debit).toEqual({ minor: 30 });
+    expect(analysis?.monthlyTotals[0]?.net).toEqual({ minor: 30 });
+    expect(analysis?.monthlyTotals[1]?.net).toEqual({ minor: 20 });
+    expect(analysis?.totalDebit).toEqual({ minor: 60 });
+    expect(analysis?.totalCredit).toEqual({ minor: 10 });
+    expect(analysis?.averageBalance).toEqual({ minor: 25 });
   });
 
-  it('rounds imported half-cent debits with declared half-up (old float: 1.005)', () => {
+  it('REFUSES an analysis containing a sub-cent amount instead of rounding it (DEC-048/053)', () => {
+    // Was: "rounds imported half-cent debits with declared half-up (1.005 →
+    // 1.01)". Q5 stage 3 makes the derived values `Money`, and `asMoney` will
+    // not round money away (DEC-048), so the analysis is refused and named.
+    // A row like this can only reach the store through `setState` — every
+    // write action already rejects sub-cent precision.
     useGLStore.setState({
       entries: [createEntry({ id: 'e1', debit: 1.005, credit: 0 })],
     });
     useGLStore.getState().analyzeAccount('acct-1');
 
-    const analysis = useGLStore.getState().accountAnalysis;
-    expect(analysis?.monthlyTotals[0]?.debit).toBe(1.01);
-    expect(analysis?.totalDebit).toBe(1.01);
+    expect(useGLStore.getState().accountAnalysis).toBeNull();
+    expect(useGLStore.getState().importStatus).toBe('error');
+    // DEC-054: the refusal names the row and the exact value.
+    expect(useGLStore.getState().importError).toMatch(/Entry e1: debit 1\.005/);
+    expect(useGLStore.getState().importError).toMatch(/2 decimal places/);
   });
 
   it('returns exact zero aggregates for a non-matching account', () => {
@@ -142,9 +150,9 @@ describe('glStore — money known answers (GAP-1 / F-0006)', () => {
     useGLStore.getState().analyzeAccount('acct-1');
 
     const analysis = useGLStore.getState().accountAnalysis;
-    expect(analysis?.totalDebit).toBe(0);
-    expect(analysis?.totalCredit).toBe(0);
-    expect(analysis?.averageBalance).toBe(0);
+    expect(analysis?.totalDebit).toEqual({ minor: 0 });
+    expect(analysis?.totalCredit).toEqual({ minor: 0 });
+    expect(analysis?.averageBalance).toEqual({ minor: 0 });
     expect(analysis?.monthlyTotals).toEqual([]);
     expect(analysis?.transactionCount).toBe(0);
   });

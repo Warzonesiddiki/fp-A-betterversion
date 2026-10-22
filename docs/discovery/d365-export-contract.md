@@ -5,9 +5,35 @@
 **Prepared by:** squad lead, 2026-10-16. Consumed by G-02 (GL Ingestion Dev).
 
 > **What this document is.** A cited summary of how Microsoft documents D365 Finance GL
-> exports, turned into the mapping rules our importer must implement. It is the *expected*
+> exports, turned into the mapping rules our importer must implement. It is the _expected_
 > contract. The acceptance bar in `DEC-001` is unchanged: a real anonymized export must
 > validate it before any claim of "verified D365 support" appears in the product or docs.
+
+> **Implementation status — 2026-10-21 (DEC-047).** The documented header set in §2 now
+> enters the spine. Measured before the change: `ingestGLRows` mapped only
+> debit/credit/description for this column set and rejected the file with
+> `Missing required column: accountCode / postDate / entityId / currency`, so **no
+> D365-shaped export could be imported at all**. Now:
+>
+> - the documented headers map as **exact normalised aliases** —
+>   `Main account`→accountCode, `Main account name`→accountName,
+>   `Transaction posting date`→postDate, `Transaction number`→journalId (the voucher),
+>   `Transaction currency`→currency. Exact aliases, never substrings, so
+>   "Main account" cannot collide with "Main account name";
+> - **the legal entity is export context**, not a column — this statement is produced
+>   per legal entity. `defaultEntityId` replaces the entity-column requirement, must
+>   exist in `knownEntityIds`, is validated at the worker boundary, and is never
+>   inferred; a supplied entity column always wins;
+> - `Debit`/`Credit` (accounting currency) are the mapped pair. The
+>   transaction-currency pair is carried by fixtures but deliberately unmapped, since
+>   `GLIngestInput` is single-currency.
+>
+> **This is NOT verified D365 support.** The shape remains _mapping-driven, unverified_
+> (O1/DEC-043): the fixture is synthetic, no real anonymised export has been inspected,
+> and no version/configuration claim is made. Acceptance evidence:
+> `src/services/import/spineAcceptance.d365.integration.test.ts` (5/5, end-to-end to
+> exact control-total tie-out) and `src/engines/SmartImportMapper.d365Defaults.test.ts`
+> (7/7, boundary).
 
 ## 1. There is no single "D365 GL CSV"
 
@@ -15,12 +41,12 @@ Microsoft documents several different outputs. They have different headers, diff
 debit/credit encodings and different row semantics. The parser must therefore be
 **mapping-driven**, never a fixed-column reader.
 
-| Export path | What it is | Debit/Credit shape | Use for our slice |
-| --- | --- | --- | --- |
-| **General ledger statement by main account** (Electronic Reporting, Excel) | Posted-transaction detail; closest documented analogue of a monthly GL dump | **Separate** `Debit`/`Credit` columns (both transaction and accounting currency) | **Primary target** |
-| **General journal entity** (Data management) | Journal **create/update/import** schema, not a posted-ledger export | Separate `DEBITAMOUNT`/`CREDITAMOUNT` in its example | Reference only |
-| **Trial balance** (list page / `LedgerTrialBalanceFiscalYearSnapshotDataEntity`) | **Balance snapshot** for a financial dimension set | Balance columns (opening/closing), not transactions | Not a GL dump |
-| **Country-specific formats** (e.g. Belgium "Export ledger transactions" ASCII) | Account balances, four columns | Balance columns | Out of scope |
+| Export path                                                                      | What it is                                                                  | Debit/Credit shape                                                               | Use for our slice  |
+| -------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------ |
+| **General ledger statement by main account** (Electronic Reporting, Excel)       | Posted-transaction detail; closest documented analogue of a monthly GL dump | **Separate** `Debit`/`Credit` columns (both transaction and accounting currency) | **Primary target** |
+| **General journal entity** (Data management)                                     | Journal **create/update/import** schema, not a posted-ledger export         | Separate `DEBITAMOUNT`/`CREDITAMOUNT` in its example                             | Reference only     |
+| **Trial balance** (list page / `LedgerTrialBalanceFiscalYearSnapshotDataEntity`) | **Balance snapshot** for a financial dimension set                          | Balance columns (opening/closing), not transactions                              | Not a GL dump      |
+| **Country-specific formats** (e.g. Belgium "Export ledger transactions" ASCII)   | Account balances, four columns                                              | Balance columns                                                                  | Out of scope       |
 
 Sources: [GL statement by main account](https://learn.microsoft.com/en-us/dynamics365/finance/general-ledger/general-ledger-statement-by-main-account) ·
 [General journal entity](https://learn.microsoft.com/en-us/dynamics365/fin-ops-core/dev-itpro/data-entities/entity-general-journal) ·
@@ -62,16 +88,16 @@ range must stay within one fiscal year; the displayed language follows the user'
 
 ## 3. Mapping contract for our importer (FR-001 → FR-005)
 
-| Our field | Accepted source column(s) | Rule |
-| --- | --- | --- |
-| `accountCode` | `Main account`, or the main-account segment of `Ledger account` | Required. Missing/blank → reject with row + code + reason (FR-002). |
-| `postDate` | `Transaction posting date` / `AccountingDate` / `TRANSDATE` | Required; ISO `YYYY-MM-DD` and `dd-MMM-yyyy` (e.g. `11-Nov-2023`) must both parse; anything else rejects with the offending text. |
-| `debit` / `credit` | Either separate `Debit`/`Credit` columns, or one amount column + `IsCredit` | Exactly one encoding per file; detect it from the header, never guess per row. Never accept both encodings silently. |
-| `currency` | `Transaction currency` / `CURRENCYCODE` | If absent → **unavailable**, never a default (FR-001). |
-| `description` | `Description` / `TEXT` / `DESCRIPTION` | Optional. |
-| `reference` | `Transaction number` (voucher) / `VOUCHER`; `JournalNumber` when the export provides it | Optional; keep voucher and journal number distinct when both exist. |
-| entity / company | Company column when the export carries one | If absent → **unavailable** (FR-001); never inferred from the account string. |
-| dimension detail | `Ledger account`, or separate dimension columns (`Account.BusinessUnit`, …) | Either layout is legal. Keep the combined string as the account identity; do not silently split dimensions without a mapping for each. |
+| Our field          | Accepted source column(s)                                                               | Rule                                                                                                                                   |
+| ------------------ | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `accountCode`      | `Main account`, or the main-account segment of `Ledger account`                         | Required. Missing/blank → reject with row + code + reason (FR-002).                                                                    |
+| `postDate`         | `Transaction posting date` / `AccountingDate` / `TRANSDATE`                             | Required; ISO `YYYY-MM-DD` and `dd-MMM-yyyy` (e.g. `11-Nov-2023`) must both parse; anything else rejects with the offending text.      |
+| `debit` / `credit` | Either separate `Debit`/`Credit` columns, or one amount column + `IsCredit`             | Exactly one encoding per file; detect it from the header, never guess per row. Never accept both encodings silently.                   |
+| `currency`         | `Transaction currency` / `CURRENCYCODE`                                                 | If absent → **unavailable**, never a default (FR-001).                                                                                 |
+| `description`      | `Description` / `TEXT` / `DESCRIPTION`                                                  | Optional.                                                                                                                              |
+| `reference`        | `Transaction number` (voucher) / `VOUCHER`; `JournalNumber` when the export provides it | Optional; keep voucher and journal number distinct when both exist.                                                                    |
+| entity / company   | Company column when the export carries one                                              | If absent → **unavailable** (FR-001); never inferred from the account string.                                                          |
+| dimension detail   | `Ledger account`, or separate dimension columns (`Account.BusinessUnit`, …)             | Either layout is legal. Keep the combined string as the account identity; do not silently split dimensions without a mapping for each. |
 
 ## 4. Parser behaviours that are non-negotiable
 
