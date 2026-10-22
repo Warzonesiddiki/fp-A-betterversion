@@ -3,6 +3,8 @@ import Decimal from 'decimal.js';
 import {
   addMoney,
   allocateMoney,
+  amountFrom,
+  asMoney,
   compareMoney,
   decimalPlacesOf,
   divideMoney,
@@ -13,6 +15,7 @@ import {
   LEDGER_SCALE,
   moneyEquals,
   multiplyMoney,
+  optionalAmountFrom,
   percentOf,
   roundMoney,
   roundTo,
@@ -236,6 +239,30 @@ describe('ledger scale predicate (P1-11 phase 1)', () => {
     hasSubUnitPrecision(value);
     expect(value).toBe(1.005);
     expect(roundTo(value)).toBe(1.01); // rounding stays an explicit caller act
+  });
+
+  it('cross a Money exactly, leave a number alone, and fall back only for non-money', () => {
+    // The crossing that replaced `typeof v === 'number' ? v : 0` at cube and
+    // report boundaries — it must read a Money, not its fallback.
+    expect(amountFrom(asMoney(1234.56))).toBe(1234.56);
+    expect(amountFrom(-0.01 as never)).toBe(-0.01);
+    expect(amountFrom(2500)).toBe(2500);
+    // Not money: the aggregate's tolerance.
+    expect(amountFrom('not money')).toBe(0);
+    expect(amountFrom(undefined)).toBe(0);
+    expect(amountFrom(Number.NaN)).toBe(0);
+    expect(amountFrom(null, -1)).toBe(-1);
+  });
+
+  it('optionalAmountFrom keeps "not money at all" distinguishable from zero', () => {
+    // A binder needs "no value", not 0: collapsing them lets an unreadable cell
+    // behave like an empty one.
+    expect(optionalAmountFrom(asMoney(1234.56))).toBe(1234.56);
+    expect(optionalAmountFrom(0)).toBe(0);
+    expect(optionalAmountFrom('not money')).toBeUndefined();
+    expect(optionalAmountFrom(undefined)).toBeUndefined();
+    expect(optionalAmountFrom(Number.NaN)).toBeUndefined();
+    expect(optionalAmountFrom(Number.POSITIVE_INFINITY)).toBeUndefined();
   });
 
   it('rejects non-finite input rather than reporting zero precision', () => {

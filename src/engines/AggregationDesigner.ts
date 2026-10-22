@@ -1,4 +1,5 @@
 import { randomId } from '@/utils/cryptoId';
+import { amountFrom } from '@/utils/money';
 // =============================================================================
 // AGGREGATION DESIGNER — Pre-aggregate common queries for speed
 // Creates materialized aggregation tables for frequently-queried slices
@@ -108,7 +109,12 @@ export class AggregationDesigner {
       if (!def.measures.includes(measureKey)) continue;
 
       const fullKey = `${aggKey}|${measureKey}`;
-      const numValue = typeof value === 'number' ? value : 0;
+      // DEC-055 trap: the parameter is `unknown` because a cube cell can hold
+      // anything, and a `Money` is an OBJECT — so `typeof value === 'number'`
+      // is false for it and the materialised aggregate silently becomes 0.
+      // `amountFrom` crosses a `Money` exactly, leaves a number untouched, and
+      // falls back only for input that is not money at all.
+      const numValue = amountFrom(value);
 
       if (!aggregated.has(fullKey)) {
         aggregated.set(fullKey, {

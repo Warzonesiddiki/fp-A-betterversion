@@ -617,7 +617,12 @@ export class CubeEngine {
 
     for (const cell of cells) {
       const rowKey = this.buildRowKey(cell, query.rows);
-      const value = typeof cell.value === 'number' ? cell.value : 0;
+      // DEC-055 trap, the same one `aggregate()` carries: a `Money` written as a
+      // cell value is an OBJECT, so `typeof cell.value === 'number'` is false
+      // and the read becomes 0 — a query that reports an empty report against a
+      // full ledger. `amountFrom` crosses a `Money` exactly, leaves a number
+      // untouched, and falls back only for input that is not money at all.
+      const value = amountFrom(cell.value);
 
       const existing = aggregated.get(rowKey) ?? 0;
       switch (agg) {
