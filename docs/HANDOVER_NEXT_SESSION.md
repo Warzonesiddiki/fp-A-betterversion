@@ -1,5 +1,214 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-22 (e) — the working methods are now a gate-checked library (DEC-059)
+
+**What this session added.** `docs/agent/skills/` is now a library of 50 methods,
+not a folder of tips: 13 discipline skills (brainstorming, plans, TDD, systematic
+debugging, verification before completion, review in both directions, finishing a
+branch, onboarding, sourcing, bulk refactors, local preview), 8 finance skills
+(money, domain modelling, import, tie-out, close, lineage, no invented data,
+determinism), 13 engineering skills, 7 product/UI skills, 3 meta skills and the
+owner's 6-skill Ponytail set. Each has frontmatter and a "use it when" line; the
+index is generated.
+
+**Why a gate and not a page.** A library nobody indexes is a folder nobody reads,
+which is the same drift `verify-readme-stats.mjs` exists to stop. So
+`scripts/skills-index.mjs` (with `--check`) fails on missing frontmatter, a name
+that does not match the file, an unknown group, an index row with no file, or a
+stale index; `src/__tests__/skillsIndex.test.ts` pins all five with seven tests and
+tmp fixtures, including the exit-2 "could not verify" path. `npm run skills:index`
+rebuilds the index; `npm run skills:verify` is the gate (also listed in
+`docs/agent/05_COMMANDS_AND_GATES.md`).
+
+**Provenance.** The discipline group is adapted from obra/superpowers (MIT) — the
+methods are kept, the words are rewritten for this repo; `frontend-design` and
+`skill-authoring` acknowledge anthropics/skills; the rest are original, derived
+from this repository's own incidents (the money traps, the quarantine design, the
+ratchet culture). The owner's Ponytail files are reproduced verbatim except two
+backticked filenames, which are unbackticked because the docs-link gate resolves
+backticked names as real paths.
+
+**Two documentation defects fixed on the way, both measured.** (1) The plan quoted
+"180 engines, 180 reachable" while the README quoted "98 shipped / 82 orphan" and
+both gates passed — they measure different questions. Plan §2.3 now states both,
+names the scripts, and forbids a SUPPORTED claim on manifest registration alone.
+(2) The README's test-file claim was three files stale after the last recorded run;
+it now reads 1,416 with the 16,410 tally explicitly dated to the 1,412-file run.
+
+**The suite was then measured, not assumed.** The single-process run dies in this
+sandbox with an uncaught `Worker` exit after ~1,170 files, so the run that counts
+is `npm run test:sharded`: **8/8 shards passed in 2,170 s — 1,416 files, 16,431
+passed + 1 skipped (exit 0)**, which is 21 more tests than the previous recorded
+run and matches the discovery count `docs:verify` asserts. The README now quotes
+that run and its date. CI remains unverifiable (Actions HTTP 403).
+
+**Also fixed by the pre-push gate, not by reading.** The README claimed "91 of 267
+engine/store modules import money.ts" while the gate measured 92 importers over 262
+modules; both numbers were stale. The claim is corrected and the gate now checks
+the denominator as well as the numerator, because an adoption count over an
+unmeasured base is a ratio nobody can reproduce.
+
+**Next.** Commit and push this documentation + tooling unit, refresh the PR #85
+body with `gh api -X PATCH` (`gh pr edit` silently fails here), then start PR #86
+(the completion register). PR #85 still has no merge authorisation.
+
+## 2026-10-22 (d) — the remainder is now programmed: PR #85 → PR #100 (DEC-058)
+
+**Read this first.** The session that ends here is PR #85 (Q5 stage 4, open, no
+merge authorisation). The programme to completion is
+[`docs/plan/COMPLETION_PLAN_86_100.md`](plan/COMPLETION_PLAN_86_100.md):
+fifteen PRs, each with a named exit gate, sequenced from a register that cannot
+be filled without evidence.
+
+**Why a register and not a checklist.** The vision defines completeness as "every
+identified responsibility is either supported to an evidence-backed standard or
+explicitly recorded as not yet supported, experimental, blocked or retired by
+decision". That is a property of a register. The tree is not short of
+capability — 231 routes, 180 reachable engines, 16,410 passing tests — it is
+short of **accounting** for it: 47 routes carry a REVIEW disposition with an
+empty pillar, 231 of 231 routes are UNVERIFIED for both CONNECTED and GOVERNED,
+money adoption is 31.27 %, and 93 annex sections are source-owed.
+
+**The six contract criteria (C1–C6)** in the plan fix now what "done" means at
+PR #100, so it cannot be relaxed at the end: closed-vocabulary statuses with
+resolving evidence; one-stop acceptance proven by census; money and
+missing-is-not-zero invariants on supported surfaces; grades reproduced by tests
+not prose; operational fitness (a11y/perf/bundle/determinism/RBAC); and a
+published blocked list.
+
+**Next PR: #86 — completion register machinery.** Add
+`scripts/completion-register.mjs`, `docs/plan/completion-register.json`,
+the generated the generated register view (committed by that PR), and a test that proves
+the gate rejects a missing row, an unknown status, a `SUPPORTED` row without
+resolving test ids, an `O`-id that is not in the owner table, and a hand-edited
+rendered file. Seed statuses from the generators, never from opinion. Do not
+start #87 until #86's gate is green — #87's 47 decisions are only trustworthy if
+there is a meter that would catch a missing one.
+
+**What the plan refuses to do:** shrink the denominator (DEC-006), promote a
+grade in prose, waive the one-stop rule by wording, or claim any of O1–O9's nine
+open questions is answered. Each of those is a `BLOCKED-ON-OWNER` row, which the
+vision explicitly permits and the register demands.
+
+## 2026-10-22 (c) — Q5 stage 4: the type flip, and the gate that makes it honest (DEC-057)
+
+**What shipped.** `GLEntry.debit`, `credit`, `netChange` and `amount` are
+`Money`. The 164-line tie-out fixture converted mechanically, then the compiler
+worklist went 136 → 60 → **0** across 65 files: store, consolidation/IC/sector/
+NLQ/insurance engines, the three import services, the mock generators, the
+analysis DTOs and every page that reads a ledger amount.
+`tsc --noEmit` and `eslint src --max-warnings 0` are clean.
+
+**The gate.** Hydration is the only door into the store, so the conversion
+happens in `persist.merge`: `partitionLedgerRows` splits the persisted rows, the
+representable half is re-encoded through `normalizeGLEntry` → `Money`, and the
+unrepresentable half is kept **verbatim** in `quarantinedEntries` — never
+rounded, never dropped, never zeroed, and excluded from every `Money` aggregate.
+`ledgerScaleAudit()` now reports the load-time quarantine as well as the live
+rows. `masterStorage` deliberately stays at `as: 'number'`: 43 persisted stores
+share it, and the gate belongs in the one store that adopted `Money`.
+
+**What the compiler did not catch.** `mergeListedEntry` had become
+`asMoney(row.debit)`, which throws on an invalid server row. The old contract is
+"reject the row, name it, keep converging the rest" (FR-006); the new code
+aborted the whole boot hydrate. `crossListedAmount` now hands the raw value back
+so `ledgerAmountIssues` names it. The failure surfaced only because the
+server-path suite asserts on the _rejection reason_, not on the absence of an
+exception.
+
+**Evidence.** `glStore.hydrateGate.test.ts` 6/6 (twin ledger in both shapes;
+exact minor units; sub-cent kept as `0.005`; non-finite quarantined; partition
+completeness; both halves reported; empty envelope invents nothing),
+mutation-verified by removing the crossing (2 fail). glStore + money suites:
+**22 files / 302 tests green**. Four pre-flip suites had to be re-stated across
+the boundary with `amountFrom`/`moneyToMinor` — the assertions got stronger, not
+weaker (the numbers are now exact minor units).
+
+**Follow-up sweep (same day).** The first full run after the flip found 24
+failing tests in 11 files. Most were expectations that still spoke numbers; four
+were real defects the compiler could not see:
+
+- `CubeEngine.aggregate` read a cell as `typeof v === 'number' ? v : 0`, so a
+  `Money` cell aggregated as **0** — DEC-055's trap in a second module;
+- `mockData.generateGLEntries` emitted raw floats and `asMoney` refuses
+  sub-cent, so the generator **threw**;
+- `VersionDiffPage` had dropped its `debit/credit` fallback, so a row without
+  `netChange` threw inside `roundTo`;
+- `ImportPipeline`'s `parseMoneyCell(a) || a - b` treated a real `0.00` as
+  absent and replaced it with the net of the two sides.
+
+**Result.** Full suite: **1,412 files, 16,410 passed + 1 skipped (16,411), 1,170 s.**
+`tsc`, `eslint --max-warnings 0`, `docs:verify`, `check-readme-claims` and
+`money:ast` (0 unsafe, 100 % safe) are all green.
+
+**The quarantine is now visible.** `src/components/data/LedgerQuarantineNotice.tsx`
+reads `quarantinedEntries` and states, on the two pages whose totals are short
+by it: how many rows are held back, which fields put them out, that they are
+stored exactly as saved (not rounded, not repaired), and the exact reason line
+per offending amount (`Entry JE-1: debit 0.005 cannot be represented at 2
+decimal places`). `summarizeQuarantinedLedger` is pure, so the copy is tested
+without a DOM; 6/6 in `LedgerQuarantineNotice.test.tsx`. Mounted on **GL
+Explorer** (debit/credit totals) and **Trial Balance** (the balance verdict).
+
+**Not claimed.** Stage 5 (engines) and stage 6 (pages/display adapter) are open,
+the notice covers the two GL aggregate pages but not every derived view, and CI
+remains unverifiable from this sandbox (Actions returns 403) — the green result
+above is a local run.
+
+## 2026-10-22 (b) — Q5 stage 4: the trap sweep, beyond the GL store (DEC-056)
+
+**What I set out to do.** Start the stage-4 type flip. Converted the one huge
+fixture mentally and re-measured: **300 errors → 164 are
+`syntheticTieOutLedger.ts`** (mechanical, exact), leaving **136 across 65
+files**. Then I stopped, because DEC-055's lesson is that the compiler's
+worklist is not the risk list.
+
+**What the grep for the _shape_ of the trap found.** Four more sites, none of
+them a type error, all with `unknown` parameters:
+
+| Site                                               | Read as                        | After the flip                                                                 |
+| -------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------ |
+| `hasDebitCredit`, **duplicated in 14 page models** | `Number(value) === 0`          | zero debit/credit stops reading as zero → **amount-only rows valued at 0 − 0** |
+| `validateGLEntry`                                  | `isFiniteNumber(e.debit)`      | **every** entry reported "debit must be a finite number"                       |
+| cube migrator                                      | `Number(entry.debit ?? 0)`     | `NaN` written into the GL cube                                                 |
+| onboarding importer                                | `typeof d.amount === 'number'` | **already** zeroes a STRING amount today                                       |
+
+The 14-copy helper matters because `Number({ minor: 0 })` is `NaN` and
+`NaN === 0` is false — so `hasDebitCredit` would answer "this row carries
+debit/credit" for a row that carries only `amount`, and the dashboard, cash
+forecast, credit risk, sector KPIs, forecasts, scenarios, real estate,
+insurance, construction and analytics would all quietly drop that money.
+
+**Shipped.** `src/utils/glRowMoney.ts` — `isZeroAmount`, `signedAmountOf`,
+`rowCarriesDebitCredit`, all written against `unknown` so they are correct
+before and after the flip. The 14 copies are deleted in favour of one
+implementation. `validateGLEntry` admits `Money` on the same terms as a number.
+The migrator writes through `signedAmountOf(...) ?? 0`. The importer reads
+numeric strings (`"1,234.56"`, `"$(2,500.50)"`), which it **did not before** — a
+live money-loss defect, independent of Q5.
+
+**Evidence.** `glRowMoney.test.ts` 16/16 · `dashboardModel.test.ts` +5 (same
+ledger in both shapes → identical KPIs, trend, sector KPIs; the amount-only
+revenue and expense rows survive) · `validation.test.ts` +3 (a `Money` entry
+validates identically to its number twin). Gates: tsc 0, eslint 0, prettier
+clean, docs:verify 9/9, full suite green.
+
+**The finding worth carrying.** Mutation (`Number(value) === 0` restored for the
+`Money` case) failed the 3 unit tests and **not one of the 72 existing
+page-model test files** — the models had no test that could see a `Money` row at
+all. That is why the dashboard twin test exists; it now fails 5 under the same
+mutation. Every remaining stage-4 area needs a twin test of this kind, not just
+a compile.
+
+**Still not done.** The `GLEntry` type flip. Worklist after the fixture converts:
+136 errors / 65 files — `ConsolidationEngine` (16), `glStore` (11, wire shape:
+`GlJournalLine` stays in major units, so `moneyToAmount` is the crossing and
+`mergeListedEntry`/`listedToGLEntry` must `asMoney` server numbers), then
+`parseGLRows`/`d365Parser`/`ImportPipeline` (4 each) and 40+ pages at 1–3 each.
+The partition is not yet the hydrate gate; no page renders the quarantine. The
+onboarding importer's wiring is covered only indirectly (through
+`signedAmountOf`), not by a component test.
+
 ## 2026-10-22 — Q5 stage 4 preparation: a `Money` read as a number is invisible to the compiler (DEC-055)
 
 **What I was doing.** Starting stage 4 (the `GLEntry` type flip) and reading the

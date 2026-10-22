@@ -6,6 +6,7 @@ import {
   parseD365Date,
   suggestGLImportMappings,
 } from './d365Parser';
+import { amountFrom } from '@/utils/money';
 
 describe('d365Parser', () => {
   describe('detectD365Flavor', () => {
@@ -104,8 +105,8 @@ describe('d365Parser', () => {
       expect(result.entries[0]?.accountName).toBe('Cash and cash equivalents');
       expect(result.entries[0]?.date).toBe('2023-11-15');
       expect(result.entries[0]?.postDate).toBe('2023-11-15');
-      expect(result.entries[0]?.debit).toBe(1500.5);
-      expect(result.entries[0]?.credit).toBe(0);
+      expect(amountFrom(result.entries[0]!.debit)).toBe(1500.5);
+      expect(amountFrom(result.entries[0]!.credit)).toBe(0);
       expect(result.entries[0]?.journalId).toBe('VCH-00100');
       expect(result.entries[0]?.description).toBe('Customer payment received');
       expect(result.entries[0]?.entityId).toBe('USMF');
@@ -114,8 +115,8 @@ describe('d365Parser', () => {
       // Row 2 checks
       expect(result.sourceRows[1]).toBe(3);
       expect(result.entries[1]?.accountCode).toBe('120100');
-      expect(result.entries[1]?.debit).toBe(0);
-      expect(result.entries[1]?.credit).toBe(1500.5);
+      expect(amountFrom(result.entries[1]!.debit)).toBe(0);
+      expect(amountFrom(result.entries[1]!.credit)).toBe(1500.5);
     });
   });
 
@@ -153,8 +154,8 @@ describe('d365Parser', () => {
       expect(result.entries[0]?.accountCode).toBe('10100');
       expect(result.entries[0]?.accountName).toBe('Checking Account');
       expect(result.entries[0]?.postDate).toBe('2024-03-31');
-      expect(result.entries[0]?.debit).toBe(2400);
-      expect(result.entries[0]?.credit).toBe(0);
+      expect(amountFrom(result.entries[0]!.debit)).toBe(2400);
+      expect(amountFrom(result.entries[0]!.credit)).toBe(0);
       expect(result.entries[0]?.journalId).toBe('DOC-991');
       expect(result.entries[0]?.entityId).toBe('CORP');
     });
@@ -178,10 +179,10 @@ describe('d365Parser', () => {
       const result = parseD365Rows(rows, { flavor: 'd365_bc' });
       expect(result.rejections).toHaveLength(0);
       expect(result.entries).toHaveLength(2);
-      expect(result.entries[0]?.debit).toBe(500);
-      expect(result.entries[0]?.credit).toBe(0);
-      expect(result.entries[1]?.debit).toBe(0);
-      expect(result.entries[1]?.credit).toBe(500);
+      expect(amountFrom(result.entries[0]!.debit)).toBe(500);
+      expect(amountFrom(result.entries[0]!.credit)).toBe(0);
+      expect(amountFrom(result.entries[1]!.debit)).toBe(0);
+      expect(amountFrom(result.entries[1]!.credit)).toBe(500);
     });
   });
 
@@ -467,12 +468,12 @@ describe('DEC-015 remaining shapes — F&O GL statement + trial-balance snapshot
     expect(result.entries[0]).toMatchObject({
       accountCode: '1000',
       postDate: '2026-01-05',
-      debit: 500000,
-      credit: 0,
+      debit: { minor: 50000000 },
+      credit: { minor: 0 },
       currency: 'USD',
       reference: 'US-1001',
     });
-    expect(result.entries[1]).toMatchObject({ accountCode: '3000', credit: 500000 });
+    expect(result.entries[1]).toMatchObject({ accountCode: '3000', credit: { minor: 50000000 } });
   });
 
   it('recognises a trial-balance snapshot (balances, no posting date) as not-a-GL-dump', () => {

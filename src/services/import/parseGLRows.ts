@@ -37,6 +37,7 @@ import {
   parseD365Date,
   type D365Flavor,
 } from './d365Parser';
+import { asMoney } from '@/utils/money';
 
 /**
  * Field keys the wizard can map a source column onto.
@@ -182,10 +183,10 @@ export function parseGLRows(
       accountName: mappedName || accountCode,
       period,
       periodName: period,
-      debit,
-      credit,
-      netChange: 0,
-      amount: 0,
+      debit: asMoney(debit),
+      credit: asMoney(credit),
+      netChange: asMoney(0),
+      amount: asMoney(0),
       date: postDate,
       postDate,
       description: getVal('description') || '',

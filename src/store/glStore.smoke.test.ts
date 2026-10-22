@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useAuthStore } from './authStore';
 import { useGLStore } from './glStore';
+import { asMoney } from '@/utils/money';
 
 describe('Phase 1 GL Smoke', () => {
   beforeEach(() => {
@@ -65,10 +66,12 @@ describe('Phase 1 GL Smoke', () => {
       accountCode: '4100',
       accountName: '4100',
       period: '2026-01',
-      debit: 500,
-      credit: 0,
-      netChange: 500,
-      amount: 500,
+      // Q5 stage 4: money fields are `Money`, so they are compared by value
+      // across the boundary rather than by object identity.
+      debit: asMoney(500),
+      credit: asMoney(0),
+      netChange: asMoney(500),
+      amount: asMoney(500),
     });
   });
 

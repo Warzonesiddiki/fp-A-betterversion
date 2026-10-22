@@ -19,7 +19,7 @@
  * descending with missing deltas last — deterministically.
  */
 import Decimal from 'decimal.js';
-import { roundTo } from '@/utils/money';
+import { roundTo, type MoneyInput } from '@/utils/money';
 import {
   resolveAccountClass,
   signedClassAmount,
@@ -36,8 +36,8 @@ export interface ComparisonEntryInput {
   readonly accountCode: string;
   readonly accountName?: string;
   readonly accountType?: AccountType | 'Unknown' | null;
-  readonly debit: number;
-  readonly credit: number;
+  readonly debit: MoneyInput;
+  readonly credit: MoneyInput;
   readonly provenance?: {
     readonly batchId: string;
     readonly sourceFile: string;

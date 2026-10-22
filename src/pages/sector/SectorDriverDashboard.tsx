@@ -27,7 +27,14 @@ import { useGLStore } from '@/store/glStore';
 import { sectorVerification } from './sectorVerification';
 import { useShallow } from 'zustand/react/shallow';
 import { getSectorConfig, type SectorConfig, type SectorKPI } from '@/config/sectors';
-import { divideMoney, formatMoney, roundTo, subtractMoney, toDecimal } from '@/utils/money';
+import {
+  divideMoney,
+  formatMoney,
+  roundTo,
+  subtractMoney,
+  toDecimal,
+  type MoneyInput,
+} from '@/utils/money';
 import { formatNumber } from '@/utils/formatters';
 import { formatPercent } from '@/utils/financialFormatting';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -49,9 +56,9 @@ export type SectorDriverId =
 export interface SectorLedgerEntry {
   accountCode?: string;
   accountName?: string;
-  debit?: number;
-  credit?: number;
-  netChange?: number;
+  debit?: MoneyInput;
+  credit?: MoneyInput;
+  netChange?: MoneyInput;
   period?: string;
 }
 

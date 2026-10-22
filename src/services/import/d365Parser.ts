@@ -15,7 +15,7 @@
 
 import type { GLEntry, ImportRejection } from '@/types';
 import { parseFinancialAmount } from '@/utils/parseFinancialAmount';
-import { subtractMoney, roundTo } from '@/utils/money';
+import { subtractMoney, roundTo, asMoney } from '@/utils/money';
 import { parseImportDate } from '@/utils/parseImportDate';
 
 export type D365Flavor = 'd365_fo' | 'd365_bc';
@@ -456,10 +456,10 @@ export function parseD365Rows(
       date: postDate,
       postDate,
       period: postDate.slice(0, 7),
-      debit,
-      credit,
-      amount: roundTo(subtractMoney(debit, credit)),
-      netChange: roundTo(subtractMoney(debit, credit)),
+      debit: asMoney(debit),
+      credit: asMoney(credit),
+      amount: asMoney(roundTo(subtractMoney(debit, credit))),
+      netChange: asMoney(roundTo(subtractMoney(debit, credit))),
       ...(voucher ? { journalId: voucher, reference: voucher } : {}),
       ...(description ? { description } : {}),
       ...(entityId ? { entityId } : {}),

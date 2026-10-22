@@ -33,14 +33,16 @@ const glState = vi.hoisted(() => ({
       },
     ] as unknown[],
     isLoading: false,
+    quarantinedEntries: [] as unknown[],
   },
 }));
 
+// Selector-faithful mock: `LedgerQuarantineNotice` reads one field through a
+// selector, so the mock must apply it rather than returning the whole state.
 vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({
-    ...glState.value,
-    generateTrialBalance: vi.fn(),
-  })),
+  useGLStore: vi.fn((selector?: (s: typeof glState.value) => unknown) =>
+    selector ? selector(glState.value) : { ...glState.value, generateTrialBalance: vi.fn() }
+  ),
 }));
 
 vi.mock('lucide-react', () => {

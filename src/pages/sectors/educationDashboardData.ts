@@ -34,13 +34,14 @@
 
 import Decimal from 'decimal.js';
 import { divideMoney, sumMoney, toDecimal, type MoneyInput } from '@/utils/money';
+import { rowCarriesDebitCredit } from '@/utils/glRowMoney';
 
 export interface EducationGLEntry {
   readonly accountCode?: string | null;
   readonly accountName?: string | null;
-  readonly debit?: number | string | Decimal | null;
-  readonly credit?: number | string | Decimal | null;
-  readonly amount?: number | string | Decimal | null;
+  readonly debit?: MoneyInput | null;
+  readonly credit?: MoneyInput | null;
+  readonly amount?: MoneyInput | null;
 }
 
 export interface EducationBudgetLine {
@@ -110,24 +111,13 @@ function code(row: { accountCode?: string | null }): string {
   return row.accountCode ?? '';
 }
 
-function hasDebitCredit(entry: EducationGLEntry): boolean {
-  const { debit, credit } = entry;
-  if (debit == null && credit == null) return false;
-  const debitN = debit == null ? 0 : Number(debit);
-  const creditN = credit == null ? 0 : Number(credit);
-  if (debitN === 0 && creditN === 0 && entry.amount != null && Number(entry.amount) !== 0) {
-    return false;
-  }
-  return true;
-}
-
 function debitNormal(entry: EducationGLEntry): Decimal {
-  if (hasDebitCredit(entry)) return money(entry.debit).minus(money(entry.credit));
+  if (rowCarriesDebitCredit(entry)) return money(entry.debit).minus(money(entry.credit));
   return money(entry.amount);
 }
 
 function creditNormal(entry: EducationGLEntry): Decimal {
-  if (hasDebitCredit(entry)) return money(entry.credit).minus(money(entry.debit));
+  if (rowCarriesDebitCredit(entry)) return money(entry.credit).minus(money(entry.debit));
   return money(entry.amount);
 }
 

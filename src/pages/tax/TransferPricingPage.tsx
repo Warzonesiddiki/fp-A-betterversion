@@ -167,7 +167,7 @@ export default function TransferPricingPage() {
           t.from,
           t.to,
           t.service,
-          t.amount,
+          roundTo(t.amount),
           t.method,
           t.margin,
           t.status,

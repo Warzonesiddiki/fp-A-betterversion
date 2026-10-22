@@ -16,6 +16,7 @@ import { useAuthStore } from './authStore';
 import { useGLStore } from './glStore';
 import { setClock, resetClock } from '@/utils/clock';
 import type { GLEntry } from '@/types';
+import { amountFrom } from '@/utils/money';
 
 const FIXED_INSTANT = '2026-10-15T09:30:00.000Z';
 
@@ -111,6 +112,6 @@ describe('glStore amount integrity (FR-006)', () => {
     useGLStore.getState().setEntries([entry({ debit: 100, credit: 0 })]);
     const stored = useGLStore.getState().entries;
     expect(stored).toHaveLength(1);
-    expect(stored[0]!.debit).toBe(100);
+    expect(amountFrom(stored[0]!.debit)).toBe(100);
   });
 });

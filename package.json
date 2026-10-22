@@ -43,6 +43,8 @@
     "compliance:evidence": "node scripts/compliance-evidence.mjs",
     "release:dry-run": "node scripts/release-dry-run.mjs",
     "docs:links": "node scripts/docs-link-check.mjs --strict",
+    "skills:index": "node scripts/skills-index.mjs",
+    "skills:verify": "node scripts/skills-index.mjs --check",
     "money:ast": "node scripts/money-ast-detector.mjs",
     "money:ast:list": "node scripts/money-ast-detector.mjs --list",
     "fabrication:audit": "node scripts/fabrication-detector.mjs",

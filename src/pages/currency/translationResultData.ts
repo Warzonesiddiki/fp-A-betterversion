@@ -6,12 +6,14 @@
  * derivation-extraction pattern (W0.1.1/W0.1.6).
  */
 import Decimal from 'decimal.js';
+import type { MoneyInput } from '@/utils/money';
+import { toDecimal } from '@/utils/money';
 
 export interface TranslationInputEntry {
   readonly accountCode?: string;
   readonly accountName?: string;
-  readonly debit?: number;
-  readonly credit?: number;
+  readonly debit?: MoneyInput;
+  readonly credit?: MoneyInput;
 }
 
 export interface TranslationEntry {
@@ -24,7 +26,9 @@ export interface TranslationEntry {
 
 /** Signed net amount of one GL entry: debit − credit, exact. */
 export function entryNetAmount(entry: TranslationInputEntry): number {
-  return new Decimal(entry.debit ?? 0).minus(entry.credit ?? 0).toNumber();
+  return toDecimal(entry.debit ?? 0)
+    .minus(toDecimal(entry.credit ?? 0))
+    .toNumber();
 }
 
 export function buildTranslationEntries(
@@ -34,7 +38,7 @@ export function buildTranslationEntries(
   const accountMap = new Map<string, { name: string; total: Decimal }>();
   for (const entry of entries) {
     const code = entry.accountCode || 'Unknown';
-    const net = new Decimal(entry.debit ?? 0).minus(entry.credit ?? 0);
+    const net = toDecimal(entry.debit ?? 0).minus(toDecimal(entry.credit ?? 0));
     const existing = accountMap.get(code);
     if (existing) {
       existing.total = existing.total.plus(net);

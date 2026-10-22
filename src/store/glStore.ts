@@ -26,6 +26,7 @@ import {
   roundTo,
   subtractMoney,
   toCents,
+  toDecimal,
   type Money,
 } from '../utils/money';
 import {
@@ -180,8 +181,14 @@ function toJournalBatch(entries: GLEntry[], environmentId: string): GlJournalBat
       accountId: e.accountId || e.accountCode,
       entityId: e.entityId,
       postDate: e.postDate || e.date,
-      debit: e.debit,
-      credit: e.credit,
+      // `GlJournalLine` is a WIRE contract in whole currency units, not the
+      // ledger's integer minor units. This is the explicit crossing (stage 4).
+      // `amountFrom` rather than `moneyToAmount`: a draft can still arrive with
+      // a major-unit number (the publish trigger reads drafts before they are
+      // normalized), and `moneyToAmount` THROWS on a number — which turned
+      // "publish these 2 drafts" into a money error in the banner.
+      debit: amountFrom(e.debit),
+      credit: amountFrom(e.credit),
       description: e.description,
       reference: e.reference,
     })),
@@ -254,6 +261,27 @@ async function applyCommitResult(
 }
 
 /**
+ * Cross a server-listed amount (major units) to `Money`, or hand the raw value
+ * back so the caller's `ledgerAmountIssues` check can NAME the defect.
+ *
+ * `asMoney` refuses non-finite, sub-cent and unsafe values by throwing. On this
+ * path that throw would abort the whole boot hydrate mid-loop, so one bad
+ * server row would erase the convergence of every other row — the opposite of
+ * FR-006's "reject the row, name it, keep the rest". The un-crossable value is
+ * therefore passed through unchanged, is caught by `ledgerAmountIssues`, and
+ * the row is rejected with its reason. It can never reach `normalizeGLEntry`,
+ * because a row with an issue is always `continue`d.
+ */
+function crossListedAmount(value: GlListedEntry['debit']): GLEntry['debit'] | undefined {
+  if (value === undefined) return undefined;
+  try {
+    return asMoney(value);
+  } catch {
+    return value as unknown as GLEntry['debit'];
+  }
+}
+
+/**
  * W0.8.6 boot hydrate: overlay one server-listed row onto a committed local
  * entry. Server-provided fields win; fields the listing does not carry keep
  * their local values (accountName, journalId, entityId, …). period/periodName
@@ -270,8 +298,9 @@ function mergeListedEntry(local: GLEntry, row: GlListedEntry): Partial<GLEntry> 
     accountCode: row.accountCode ?? local.accountCode,
     postDate: date,
     date,
-    debit: row.debit,
-    credit: row.credit,
+    // Server rows are major-unit numbers; the ledger holds integer minor units.
+    debit: crossListedAmount(row.debit),
+    credit: crossListedAmount(row.credit),
     period: month,
     periodName: month,
     ...(row.description !== undefined ? { description: row.description } : {}),
@@ -289,8 +318,8 @@ function listedToGLEntry(row: GlListedEntry): Partial<GLEntry> {
     accountCode: row.accountCode ?? row.accountId ?? '',
     postDate: date,
     date,
-    debit: row.debit,
-    credit: row.credit,
+    debit: crossListedAmount(row.debit),
+    credit: crossListedAmount(row.credit),
     period: month,
     periodName: month,
     description: row.description ?? '',
@@ -349,18 +378,30 @@ function normalizeGLEntry(
   index: number,
   fallbackIdPrefix = 'gl'
 ): GLEntry {
-  const sourceAmount = amountFrom(entry.amount);
-  const debit = Math.max(
-    0,
-    entry.debit !== undefined ? amountFrom(entry.debit) : Math.max(sourceAmount, 0)
-  );
-  const credit = Math.max(
-    0,
-    entry.credit !== undefined ? amountFrom(entry.credit) : Math.max(-sourceAmount, 0)
-  );
+  // Q5 stage 4: the row is `Money` end to end. Reads cross through `amountFrom`
+  // (DEC-055) and the arithmetic is the exact decimal primitive (F-0006); only
+  // the final values are `Money`. `asMoney` is safe here because every write
+  // surface refuses sub-cent / non-finite amounts BEFORE normalisation, so a
+  // value that reached this point is representable by construction.
+  const sourceAmount = toDecimal(amountFrom(entry.amount));
+  const zero = toDecimal(0);
+  const debitDecimal =
+    entry.debit !== undefined
+      ? toDecimal(amountFrom(entry.debit))
+      : sourceAmount.greaterThan(0)
+        ? sourceAmount
+        : zero;
+  const creditDecimal =
+    entry.credit !== undefined
+      ? toDecimal(amountFrom(entry.credit))
+      : sourceAmount.lessThan(0)
+        ? sourceAmount.negated()
+        : zero;
+  const debit = asMoney(debitDecimal.isNegative() ? zero : debitDecimal);
+  const credit = asMoney(creditDecimal.isNegative() ? zero : creditDecimal);
   // Net change = debit − credit is currency: exact decimal, cent-rounded
   // (F-0006) — the stored amount feeds every downstream GL aggregation.
-  const netChange = roundTo(subtractMoney(debit, credit));
+  const netChange = asMoney(roundTo(subtractMoney(debit, credit)));
   const date = String(entry.date || entry.postDate || '');
   const period = String(entry.period || date.slice(0, 7) || 'unknown');
   const accountCode = String(entry.accountCode || entry.accountId || '').trim();
@@ -559,6 +600,7 @@ export const useGLStore = create<GLState>()(
     persist(
       immer((set, get) => ({
         entries: [],
+        quarantinedEntries: [],
         accounts: [],
         trialBalance: [],
         accountAnalysis: null,
@@ -1198,8 +1240,15 @@ export const useGLStore = create<GLState>()(
           }
         },
 
-        ledgerScaleAudit: (): LedgerHydrationPartition<GLEntry> =>
-          partitionLedgerRows(get().entries),
+        ledgerScaleAudit: (): LedgerHydrationPartition<GLEntry> => {
+          // Quarantined rows are the load-time half of the partition; the live
+          // half is audited here so one call reports the whole ledger.
+          const live = partitionLedgerRows(get().entries);
+          return {
+            representable: live.representable,
+            quarantined: [...get().quarantinedEntries, ...live.quarantined],
+          };
+        },
 
         analyzeAccount: (accountId) => {
           set({ isLoading: true });
@@ -1616,15 +1665,23 @@ export const useGLStore = create<GLState>()(
               Scenario: 'Scenario:Actual',
               Currency: 'Currency:USD',
             };
-            const amount = amountFrom(e.debit) - amountFrom(e.credit);
+            // Cube cells are major-unit numbers. `subtractMoney`/`roundTo` read a
+            // `Money` and a legacy number alike, so a row that has not been
+            // normalized yet cannot throw the sync.
+            const amount = roundTo(subtractMoney(e.debit, e.credit));
 
             cubeCells.push({
               cube: 'GL_Actuals',
-              cell: { coords, measure: 'debit', value: e.debit, dataType: 'input' },
+              cell: { coords, measure: 'debit', value: amountFrom(e.debit), dataType: 'input' },
             });
             cubeCells.push({
               cube: 'GL_Actuals',
-              cell: { coords, measure: 'credit', value: e.credit, dataType: 'input' },
+              cell: {
+                coords,
+                measure: 'credit',
+                value: amountFrom(e.credit),
+                dataType: 'input',
+              },
             });
             cubeCells.push({
               cube: 'GL_Actuals',
@@ -1716,6 +1773,34 @@ export const useGLStore = create<GLState>()(
         storage: masterStorage,
         version: 1,
         migrate: (state: unknown) => state,
+        /**
+         * Q5 stage 4 hydrate gate (DEC-057).
+         *
+         * Persisted rows still carry their pre-flip shape, so they are split
+         * here, at the ONLY door into the store: rows whose amounts are
+         * unrepresentable at `LEDGER_SCALE` go to `quarantinedEntries` and are
+         * kept verbatim, never rounded and never dropped. What reaches
+         * `entries` is exactly the half that can be `Money`, so no `Money`
+         * aggregate ever mixes in a float. Rows are re-encoded to `Money` as
+         * they come through (same canonicalisation the importer uses), which
+         * keeps the persisted format byte-compatible with the pre-flip one.
+         */
+        merge: (persisted, current) => {
+          const persistedState = (persisted ?? {}) as Partial<GLState>;
+          const rawEntries = Array.isArray(persistedState.entries)
+            ? (persistedState.entries as unknown as GLEntry[])
+            : [];
+          if (rawEntries.length === 0) {
+            return { ...current, ...persistedState } as GLState;
+          }
+          const partition = partitionLedgerRows(rawEntries);
+          return {
+            ...current,
+            ...persistedState,
+            entries: partition.representable.map((row, index) => normalizeGLEntry(row, index)),
+            quarantinedEntries: partition.quarantined,
+          } as GLState;
+        },
         partialize: (state) => ({
           entries: state.entries,
           importHistory: state.importHistory,

@@ -313,9 +313,25 @@ export function moneyToAmount(money: Money): number {
  * legacy tolerance at these boundaries. `asMoney` remains the strict gate.
  */
 export function amountFrom(value: unknown, fallback = 0): number {
+  return optionalAmountFrom(value) ?? fallback;
+}
+
+/**
+ * The same crossing as `amountFrom`, for callers whose "this is not money at
+ * all" case must stay DISTINGUISHABLE from zero.
+ *
+ * `amountFrom` defaults an unreadable value to 0, which is right for an
+ * aggregate (a non-numeric cell contributes nothing) and wrong for a binder: a
+ * formula that cannot read a cell must see *no value*, not a zero. Collapsing
+ * the two makes an unreadable cell silently behave as an empty one.
+ *
+ * Both exist because both semantics are real, and a caller that wanted the
+ * second and got the first cannot tell the difference afterwards.
+ */
+export function optionalAmountFrom(value: unknown): number | undefined {
   if (isMoneyValue(value)) return moneyToAmount(value);
   if (typeof value === 'number' && Number.isFinite(value)) return value;
-  return fallback;
+  return undefined;
 }
 
 function combineCurrency(a: Money, b: Money): string | undefined {

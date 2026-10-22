@@ -8,6 +8,7 @@ import {
 } from './ConsolidationEngine';
 import { CubeEngine } from './CubeEngine';
 import type { GLEntry } from '@/types';
+import { amountFrom } from '@/utils/money';
 
 // =============================================================================
 // INTEGRATION TEST HELPERS
@@ -489,7 +490,9 @@ describe('ConsolidationEngine + CubeEngine Integration', () => {
       await cube.writeCell('GL', {
         coords: { Account: 'Account:9000', Entity: 'Entity:parent', Scenario: 'Scenario:actual' },
         measure: 'amount',
-        value: result.consolidatedEntries.find((e) => e.accountCode === '9000')?.amount ?? 0,
+        value: amountFrom(
+          result.consolidatedEntries.find((e) => e.accountCode === '9000')?.amount ?? 0
+        ),
         dataType: 'consolidated',
       });
 
@@ -847,7 +850,8 @@ describe('ConsolidationEngine + CubeEngine Integration', () => {
       for (const entry of result.consolidatedEntries) {
         aggregatedByAccount.set(
           entry.accountCode,
-          (aggregatedByAccount.get(entry.accountCode) ?? 0) + entry.amount
+          // Q5 stage 4: cross the Money to a minor-unit-safe number for the cube.
+          (aggregatedByAccount.get(entry.accountCode) ?? 0) + amountFrom(entry.amount)
         );
       }
 
@@ -987,7 +991,7 @@ describe('ConsolidationEngine + CubeEngine Integration', () => {
             Scenario: 'Scenario:actual',
           },
           measure: 'amount',
-          value: entry.amount,
+          value: amountFrom(entry.amount),
           dataType: 'consolidated',
         });
       }
@@ -1029,7 +1033,7 @@ describe('ConsolidationEngine + CubeEngine Integration', () => {
             Scenario: 'Scenario:actual',
           },
           measure: 'amount',
-          value: entry.amount,
+          value: amountFrom(entry.amount),
           dataType: 'consolidated',
         });
       }
@@ -1157,7 +1161,8 @@ describe('ConsolidationEngine + CubeEngine Integration', () => {
       for (const entry of result.consolidatedEntries) {
         aggregatedByAccount.set(
           entry.accountCode,
-          (aggregatedByAccount.get(entry.accountCode) ?? 0) + entry.amount
+          // Q5 stage 4: cross the Money to a minor-unit-safe number for the cube.
+          (aggregatedByAccount.get(entry.accountCode) ?? 0) + amountFrom(entry.amount)
         );
       }
       for (const [accountCode, amount] of aggregatedByAccount) {

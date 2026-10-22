@@ -32,8 +32,8 @@ export interface ThreeStatementGLEntry {
   readonly description?: string;
   readonly period?: string;
   readonly date?: string;
-  readonly debit?: number | string | Decimal | null;
-  readonly credit?: number | string | Decimal | null;
+  readonly debit?: MoneyInput | null;
+  readonly credit?: MoneyInput | null;
 }
 
 /** Income-statement totals, carried as Decimals for the view to format. */

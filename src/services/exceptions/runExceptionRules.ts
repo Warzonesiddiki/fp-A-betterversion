@@ -20,7 +20,7 @@
  *   pretend to run them.
  */
 import Decimal from 'decimal.js';
-import { toDecimal } from '@/utils/money';
+import { toDecimal, type MoneyInput } from '@/utils/money';
 import {
   createFinding,
   EXCEPTION_RULES,
@@ -35,8 +35,8 @@ export interface ExceptionEntryInput {
   readonly period?: string;
   readonly accountCode: string;
   readonly accountName?: string;
-  readonly debit: number;
-  readonly credit: number;
+  readonly debit: MoneyInput;
+  readonly credit: MoneyInput;
   readonly description?: string;
   readonly reference?: string;
   readonly provenance?: {

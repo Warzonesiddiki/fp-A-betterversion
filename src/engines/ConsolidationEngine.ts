@@ -2,6 +2,7 @@ import type { GLEntry } from '@/types';
 import { MissingFXRateError } from './FXEngine';
 import {
   toDecimal,
+  asMoney,
   compareMoney,
   addMoney,
   subtractMoney,
@@ -487,11 +488,11 @@ export class ConsolidationEngine {
             accountName: 'Cumulative Translation Adjustment',
             period: sampleEntry?.period ?? '',
             periodName: sampleEntry?.periodName ?? '',
-            debit: ctaAmount > 0 ? ctaAmount : 0,
-            credit: ctaAmount < 0 ? Math.abs(ctaAmount) : 0,
-            netChange: ctaAmount,
+            debit: asMoney(ctaAmount > 0 ? ctaAmount : 0),
+            credit: asMoney(ctaAmount < 0 ? Math.abs(ctaAmount) : 0),
+            netChange: asMoney(ctaAmount),
             date: sampleEntry?.date ?? nowISO().split('T')[0] ?? '',
-            amount: ctaAmount,
+            amount: asMoney(ctaAmount),
             description: `ASC 830 CTA for ${entity.entityId}`,
             reference: `CTA-${entity.entityId}`,
             entityId: entity.entityId,
@@ -871,10 +872,10 @@ export class ConsolidationEngine {
         .filter(
           (e) =>
             e.accountCode.startsWith('3') &&
-            e.amount < 0 &&
+            toDecimal(e.amount).isNegative() &&
             (e.accountName?.toLowerCase().includes('dividend') ?? false)
         )
-        .map((e) => Math.abs(e.amount));
+        .map((e) => toDecimal(e.amount).abs());
       const dividends = dividendVals.length > 0 ? roundTo(sumMoney(dividendVals)) : 0;
 
       const minFrac = divideMoney(minorityPct, 100);
@@ -983,7 +984,7 @@ export class ConsolidationEngine {
         (e) =>
           e.accountCode.startsWith('1') &&
           (e.accountName?.toLowerCase().includes('investment') ?? false) &&
-          e.amount > 0
+          toDecimal(e.amount).greaterThan(0)
       );
 
       if (investmentEntries && investmentEntries.length > 0) {
@@ -1094,7 +1095,7 @@ export class ConsolidationEngine {
         const translatedAmount = roundTo(multiplyMoney(entry.amount, rate));
         return {
           ...entry,
-          amount: translatedAmount,
+          amount: asMoney(translatedAmount),
           currency: 'USD',
         };
       });
@@ -1437,12 +1438,20 @@ export class ConsolidationEngine {
       remainingEntriesByKey.set(key, remainingEntries);
       const adjustment = adjustmentMap.get(key) ?? 0;
       let appliedAdjustment = adjustment;
+      // Tolerant read (DEC-056): `entry.amount` is `Money` after stage 4, but
+      // this engine is also called with rows built by pages that still hand it
+      // major-unit numbers. `moneySign` THROWS on a number, which the outer
+      // catch turned into a failed consolidation with ZERO entries — the whole
+      // statement silently emptied. `toDecimal(...).comparedTo(0)` reads both
+      // shapes exactly and returns the same -1 | 0 | 1.
+      const entrySign = toDecimal(entry.amount).comparedTo(0);
       if (
         remainingEntries > 0 &&
         adjustment !== 0 &&
-        entry.amount !== 0 &&
-        Math.sign(entry.amount) === -Math.sign(adjustment) &&
-        Math.abs(adjustment) > Math.abs(entry.amount)
+        entrySign !== 0 &&
+        entrySign === -Math.sign(adjustment) &&
+        // Exact comparison, and tolerant of a major-unit number (DEC-056).
+        toDecimal(adjustment).abs().greaterThan(toDecimal(entry.amount).abs())
       ) {
         appliedAdjustment = roundTo(multiplyMoney(entry.amount, -1));
         adjustmentMap.set(key, roundTo(subtractMoney(adjustment, appliedAdjustment)));
@@ -1454,7 +1463,7 @@ export class ConsolidationEngine {
       if (Math.abs(newAmount) > 0.001) {
         result.push({
           ...entry,
-          amount: newAmount,
+          amount: asMoney(newAmount),
         });
       }
 
@@ -1473,11 +1482,11 @@ export class ConsolidationEngine {
           accountName: adjustment.accountName,
           period: '',
           periodName: '',
-          debit: adjustment.debitAmount,
-          credit: adjustment.creditAmount,
-          netChange: netChg,
+          debit: asMoney(adjustment.debitAmount),
+          credit: asMoney(adjustment.creditAmount),
+          netChange: asMoney(netChg),
           date: nowISO().split('T')[0] ?? '',
-          amount: netChg,
+          amount: asMoney(netChg),
           description: '',
           reference: '',
           entityId: adjustment.entityId,

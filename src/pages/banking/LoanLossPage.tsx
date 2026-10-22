@@ -26,6 +26,7 @@ import {
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { roundTo, sumMoney } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
+import type { MoneyInput } from '@/utils/money';
 
 /**
  * GAP-1 (F-0006) — exact-decimal loan-loss segment aggregates.
@@ -34,12 +35,12 @@ import { PageHeader } from '@/components/ui/PageHeader';
  * float reduces over GL entry amounts. They feed the bar chart and the
  * Portfolio Credit Quality DataGrid; NPL % stays a percentage metric.
  */
-export function sumEntriesAmount(entries: readonly { amount: number }[]): number {
+export function sumEntriesAmount(entries: readonly { amount: MoneyInput }[]): number {
   return roundTo(sumMoney(entries.map((e) => e.amount)));
 }
 
 export function computeLoanSegments(
-  entries: readonly { accountCode: string; amount: number }[],
+  entries: readonly { accountCode: string; amount: MoneyInput }[],
   categories: readonly { prefix: string; name: string; color: string }[]
 ): { type: string; balance: number; reserve: number; npl: number; color: string }[] {
   return categories

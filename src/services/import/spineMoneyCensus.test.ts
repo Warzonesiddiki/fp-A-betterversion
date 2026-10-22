@@ -3,6 +3,10 @@
  *
  * WHY THIS EXISTS
  * ---------------
+ * (Q5 stage 4: `parseGLRows` now emits `Money` and therefore imports the
+ * primitive, so it is no longer listed as non-monetary — that is the census
+ * tracking the code, not the code being bent to satisfy the census.)
+ *
  * `npm run money:adoption` reports 29.99 % (305 of 1,017 scanned modules) and N8
  * asks for 100 % of *supported* modules. Measured on 2026-10-21, the gap is not
  * a safety gap:
@@ -58,8 +62,6 @@ const NON_MONETARY: Record<string, string> = {
   'src/services/import/glPeriodWriteGuard.ts': 'date/period comparisons only; no amount arithmetic',
   'src/services/import/glStagingRepository.ts':
     'persists and reads staged rows; no amount arithmetic',
-  'src/services/import/parseGLRows.ts':
-    'parses money STRINGS through parseFinancialAmount (utils) and maps fields; no arithmetic',
   'src/store/periodCloseStore.ts':
     'period state machine and lock transitions; no amount arithmetic',
   'src/workers/glIngestionRequest.ts':

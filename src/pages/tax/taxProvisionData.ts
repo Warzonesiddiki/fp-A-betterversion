@@ -26,8 +26,8 @@ export interface TaxProvisionGLEntry {
   readonly accountCode?: string;
   readonly period?: string;
   readonly date?: string;
-  readonly debit?: number | string | Decimal | null;
-  readonly credit?: number | string | Decimal | null;
+  readonly debit?: MoneyInput | null;
+  readonly credit?: MoneyInput | null;
 }
 
 /** A statement line that could not be derived, plus why. */

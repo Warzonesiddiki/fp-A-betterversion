@@ -13,9 +13,25 @@ the first message. The appendices are for the human owner and for the
 end-of-session report.
 
 **Prepared:** 2026-10-20, against base commit `b2cff43` (merge of PR #78).
-**Status of this document:** instruction, not a certification. Any number in it
+**Status of this document:** instruction, not a certification.
+
+**Standing style (all sessions):** [`docs/agent/skills/ponytail.md`](agent/skills/ponytail.md)
+— smallest complete change, one-read reply, finish every caller/test the change
+reaches. It constrains how work is written, never what evidence is required. Any number in it
 is either labelled _recorded_ (from the taskboard/register) or _measured in this
 checkout_; re-run the named command before repeating it.
+
+**Standing skills (all sessions):** the library is
+[`docs/agent/skills/README.md`](agent/skills/README.md) — 50 methods, each with a
+"use it when" line, grouped as discipline, finance, engineering, product/UI,
+meta, plus the owner's Ponytail set. Two rules: **open the index before starting**
+and follow the row that matches the work; and **when the owner says "audit"**, use
+`docs/agent/skills/ponytail-audit.md` — flows first, a stated load, three severity
+groups, every finding with a concrete failing case and the smallest fix, and no
+code changed by the report. The library is gate-checked
+(`npm run skills:verify`): frontmatter, filename match, known group, current
+index. A skill constrains how work is written; it never upgrades a claim —
+evidence still comes from the gates.
 
 ---
 

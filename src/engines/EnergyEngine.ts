@@ -18,7 +18,14 @@ import type { GLEntry } from '@/types';
  * arithmetic is preserved. No raw + - * / on currency values remains.
  */
 
-import { divideMoney, roundTo, subtractMoney, sumMoney } from '../utils/money';
+import {
+  divideMoney,
+  roundTo,
+  subtractMoney,
+  sumMoney,
+  amountFrom,
+  toDecimal,
+} from '../utils/money';
 
 export interface EnergyStats {
   totalRevenue: number;
@@ -64,10 +71,9 @@ export class EnergyEngine {
    * - 55xx: Fuel / Production Costs
    */
   static calculateStats(entries: GLEntry[]): EnergyStats {
-    const getAmount = (e: GLEntry): number => {
-      if (e.amount !== undefined) return e.amount;
-      return roundTo(subtractMoney(e.debit ?? 0, e.credit ?? 0));
-    };
+    // Tolerant crossing: these engines receive rows from pages that may still
+    // hand over major-unit numbers, and `moneyToAmount` THROWS on a number.
+    const getAmount = (e: GLEntry): number => amountFrom(e.amount);
 
     const totalRevenueDec = sumMoney(
       entries.filter((e) => e.accountCode.startsWith('4')).map((e) => Math.abs(getAmount(e)))
@@ -110,10 +116,9 @@ export class EnergyEngine {
       { code: '435', name: 'Nuclear' },
     ];
 
-    const getAmount = (e: GLEntry): number => {
-      if (e.amount !== undefined) return e.amount;
-      return roundTo(subtractMoney(e.debit ?? 0, e.credit ?? 0));
-    };
+    // Tolerant crossing: these engines receive rows from pages that may still
+    // hand over major-unit numbers, and `moneyToAmount` THROWS on a number.
+    const getAmount = (e: GLEntry): number => amountFrom(e.amount);
 
     return sources
       .map((src) => {
@@ -154,14 +159,10 @@ export class EnergyEngine {
         (e) => e.accountCode.startsWith('5') || e.accountCode.startsWith('6')
       );
       const revenue = sumMoney(
-        revEntries.map((e) =>
-          Math.abs(e.amount ?? subtractMoney(e.debit ?? 0, e.credit ?? 0).toNumber())
-        )
+        revEntries.map((e) => toDecimal(e.amount).abs().toNumber())
       ).toNumber();
       const cost = sumMoney(
-        costEntries.map((e) =>
-          Math.abs(e.amount ?? subtractMoney(e.debit ?? 0, e.credit ?? 0).toNumber())
-        )
+        costEntries.map((e) => toDecimal(e.amount).abs().toNumber())
       ).toNumber();
       return {
         month,

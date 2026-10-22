@@ -15,6 +15,7 @@ import {
   roundTo,
   subtractMoney,
   sumMoney,
+  type MoneyInput,
 } from '@/utils/money';
 
 import {
@@ -50,8 +51,8 @@ interface ComponentRow {
  */
 export interface WCEntry {
   accountCode?: string;
-  debit: number;
-  credit: number;
+  debit: MoneyInput;
+  credit: MoneyInput;
 }
 export interface WCComponents {
   cash: number;

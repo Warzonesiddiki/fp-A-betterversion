@@ -37,6 +37,7 @@
 import type { GLEntry } from '@/types';
 import Decimal from 'decimal.js';
 import { divideMoney, roundTo, sumMoney, toDecimal, type MoneyInput } from '../utils/money';
+import { rowCarriesDebitCredit } from '@/utils/glRowMoney';
 
 export interface InsuranceStats {
   grossWrittenPremium: number;
@@ -86,13 +87,9 @@ function money(value: MoneyInput | null | undefined): Decimal {
   return toDecimal(value);
 }
 
-function hasDebitCredit(entry: GLEntry): boolean {
-  const debit = entry.debit;
-  const credit = entry.credit;
-  if (debit == null && credit == null) return false;
-  if (debit === 0 && credit === 0 && entry.amount != null && entry.amount !== 0) return false;
-  return true;
-}
+// One implementation for every consumer (DEC-056): the local copy tested
+// `debit === 0`, which is false for a zero `Money`.
+const hasDebitCredit = (entry: GLEntry): boolean => rowCarriesDebitCredit(entry);
 
 /** Expenses and ceded premium are debit-normal. */
 function debitNormal(entry: GLEntry): Decimal {

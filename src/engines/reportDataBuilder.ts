@@ -31,6 +31,8 @@ import {
   subtractMoney,
   sumMoney,
   toDecimal,
+  type MoneyInput,
+  addMoney,
 } from '@/utils/money';
 
 // ---------------------------------------------------------------------------
@@ -42,8 +44,8 @@ export interface GlLikeEntry {
   readonly accountCode?: string;
   readonly accountName?: string;
   readonly accountType?: AccountType | 'Unknown' | null;
-  readonly debit: number;
-  readonly credit: number;
+  readonly debit: MoneyInput;
+  readonly credit: MoneyInput;
   readonly period?: string;
   readonly date: string;
   readonly description?: string;
@@ -53,7 +55,7 @@ export interface GlLikeEntry {
 export interface BudgetLikeItem {
   readonly accountCode: string;
   readonly accountName?: string;
-  readonly amount: number;
+  readonly amount: MoneyInput;
   readonly entityId?: string;
 }
 
@@ -261,7 +263,8 @@ export function buildBudgetVsActualRows(input: ReportDataInput): ExportData {
   const budgetMap = new Map<string, number>();
   const accountNames = new Map<string, string>();
   for (const b of budgetItems) {
-    budgetMap.set(b.accountCode, (budgetMap.get(b.accountCode) ?? 0) + b.amount);
+    // Exact decimal accumulation — `amount` is a MoneyInput after Q5 stage 4.
+    budgetMap.set(b.accountCode, roundTo(addMoney(budgetMap.get(b.accountCode) ?? 0, b.amount)));
     if (b.accountName) accountNames.set(b.accountCode, b.accountName);
   }
 

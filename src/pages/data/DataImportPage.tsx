@@ -12,7 +12,7 @@ import {
   type ColumnMapping,
 } from '@/engines/MigrationEngine';
 import { parseCSV } from '@/utils/csv';
-import { sumMoney, subtractMoney, roundTo, toDecimal } from '@/utils/money';
+import { sumMoney, subtractMoney, roundTo, toDecimal, type MoneyInput } from '@/utils/money';
 
 import { FileDropZone } from '@/components/ui/FileDropZone';
 import { Button } from '@/components/ui/Button';
@@ -62,7 +62,7 @@ export interface RecResult {
 }
 
 export function computeDataImportSummary(
-  entries: readonly { debit: number; credit: number }[],
+  entries: readonly { debit: MoneyInput; credit: MoneyInput }[],
   accounts: readonly unknown[],
   importHistory: readonly { filename: string; timestamp: string }[]
 ): DataImportSummary | null {
@@ -77,7 +77,12 @@ export function computeDataImportSummary(
 }
 
 export function computeReconciliation(
-  entries: readonly { accountId: string; accountCode: string; debit: number; credit: number }[],
+  entries: readonly {
+    accountId: string;
+    accountCode: string;
+    debit: MoneyInput;
+    credit: MoneyInput;
+  }[],
   recData: readonly Record<string, string>[],
   recKeyCol: string,
   recValCol: string,

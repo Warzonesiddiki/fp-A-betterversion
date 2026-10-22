@@ -27,6 +27,7 @@ import {
   addMoney,
   divideMoney,
   multiplyMoney,
+  optionalAmountFrom,
   roundTo,
   subtractMoney,
   sumMoney,
@@ -392,7 +393,13 @@ export class DriverCascadeEngine {
                     { ...rule.targetCoords, account: accountId },
                     rule.targetMeasure
                   );
-                  return typeof v === 'number' ? v : undefined;
+                  // DEC-055 trap: `readCell` returns a cube cell, and a cell
+                  // may hold a `Money` (an OBJECT), which
+                  // `typeof v === 'number'` reads as "no value" — the formula
+                  // then treats a funded cell as empty. `optionalAmountFrom`
+                  // crosses a `Money` exactly and keeps a genuinely unreadable
+                  // value as `undefined`, which is what a binder needs.
+                  return optionalAmountFrom(v);
                 }
               );
             } catch {

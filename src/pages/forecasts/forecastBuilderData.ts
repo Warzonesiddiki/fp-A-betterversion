@@ -36,6 +36,7 @@ import {
   toDecimal,
   type MoneyInput,
 } from '@/utils/money';
+import { rowCarriesDebitCredit } from '@/utils/glRowMoney';
 
 export type ForecastMethod = 'linear' | 'cagr' | 'last-3' | 'flat';
 export type SeasonalityPreset = 'standard' | 'q4_spike' | 'summer_peak' | 'flat';
@@ -53,9 +54,9 @@ export const SEASONALITY_WEIGHTS: Record<SeasonalityPreset, readonly number[]> =
 
 export interface ForecastGLEntry {
   readonly accountCode?: string | null;
-  readonly debit?: number | string | Decimal | null;
-  readonly credit?: number | string | Decimal | null;
-  readonly amount?: number | string | Decimal | null;
+  readonly debit?: MoneyInput | null;
+  readonly credit?: MoneyInput | null;
+  readonly amount?: MoneyInput | null;
   readonly period?: string | null;
   readonly date?: string | null;
 }
@@ -102,19 +103,8 @@ function money(value: MoneyInput | null | undefined): Decimal {
   return toDecimal(value);
 }
 
-function hasDebitCredit(entry: ForecastGLEntry): boolean {
-  const { debit, credit } = entry;
-  if (debit == null && credit == null) return false;
-  const debitN = debit == null ? 0 : Number(debit);
-  const creditN = credit == null ? 0 : Number(credit);
-  if (debitN === 0 && creditN === 0 && entry.amount != null && Number(entry.amount) !== 0) {
-    return false;
-  }
-  return true;
-}
-
 function creditNormal(entry: ForecastGLEntry): Decimal {
-  if (hasDebitCredit(entry)) return money(entry.credit).minus(money(entry.debit));
+  if (rowCarriesDebitCredit(entry)) return money(entry.credit).minus(money(entry.debit));
   return money(entry.amount);
 }
 

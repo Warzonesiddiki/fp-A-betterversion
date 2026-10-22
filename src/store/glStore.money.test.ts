@@ -13,6 +13,7 @@ import { describe, expect, it, beforeEach } from 'vitest';
 import { useAuthStore } from './authStore';
 import { useGLStore } from './glStore';
 import type { GLEntry } from '@/types';
+import { amountFrom } from '@/utils/money';
 
 function createEntry(overrides: Partial<GLEntry>): GLEntry {
   return {
@@ -169,8 +170,8 @@ describe('glStore — money known answers (GAP-1 / F-0006)', () => {
     ]);
 
     const entry = useGLStore.getState().entries[0];
-    expect(entry?.netChange).toBe(0.2);
-    expect(entry?.amount).toBe(0.2);
+    expect(amountFrom(entry!.netChange)).toBe(0.2);
+    expect(amountFrom(entry!.amount)).toBe(0.2);
   });
 
   it('detects duplicates via the exact debit-minus-credit fallback key (old float: 0 duplicates)', () => {

@@ -18,7 +18,7 @@
  * are Decimal-exact; findings are sorted by findingKey (deterministic).
  */
 import Decimal from 'decimal.js';
-import { toDecimal } from '@/utils/money';
+import { toDecimal, type MoneyInput } from '@/utils/money';
 import {
   entriesForClass,
   signedClassAmount,
@@ -45,8 +45,8 @@ export interface AggregateEntryInput {
     | 'Equity'
     | 'Unknown'
     | null;
-  readonly debit: number;
-  readonly credit: number;
+  readonly debit: MoneyInput;
+  readonly credit: MoneyInput;
 }
 
 function rule(ruleId: string) {

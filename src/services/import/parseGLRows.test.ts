@@ -44,8 +44,8 @@ describe('parseGLRows — happy path', () => {
       postDate: '2026-03-15',
       period: '2026-03',
       periodName: '2026-03',
-      debit: 1234.56,
-      credit: 0,
+      debit: { minor: 123456 },
+      credit: { minor: 0 },
       description: 'Rent',
       reference: 'J-1',
       entityId: 'E1',
@@ -84,12 +84,13 @@ describe('parseGLRows — happy path', () => {
       MAP
     );
     expect(r.rejections).toEqual([]);
-    expect(r.entries.map((e) => [e.debit, e.credit])).toEqual([
-      [1234.56, 0],
-      [2000, 0],
-      [1234567.89, 0],
-      [0, 1500.25],
-      [0, 500],
+    // Q5 stage 4: exact minor units, so `1.234,56` cannot drift.
+    expect(r.entries.map((e) => [e.debit.minor, e.credit.minor])).toEqual([
+      [123456, 0],
+      [200000, 0],
+      [123456789, 0],
+      [0, 150025],
+      [0, 50000],
     ]);
   });
 
@@ -97,11 +98,11 @@ describe('parseGLRows — happy path', () => {
     const noAmounts = { accountCode: 'Account', postDate: 'Date' } as const;
     const r = parseGLRows([row({ Debit: 'garbage' })], noAmounts);
     expect(r.rejections).toEqual([]);
-    expect(r.entries[0]).toMatchObject({ debit: 0, credit: 0 });
+    expect(r.entries[0]).toMatchObject({ debit: { minor: 0 }, credit: { minor: 0 } });
 
     const r2 = parseGLRows([row({ Debit: '   ', Credit: '' })], MAP);
     expect(r2.rejections).toEqual([]);
-    expect(r2.entries[0]).toMatchObject({ debit: 0, credit: 0 });
+    expect(r2.entries[0]).toMatchObject({ debit: { minor: 0 }, credit: { minor: 0 } });
   });
 
   it('keeps source order and aligns sourceRows with entries when rows are rejected', () => {
@@ -273,7 +274,7 @@ describe('parseGLRows — Dynamics 365 dialect (detected from the headers)', () 
       date: '2026-01-31',
       postDate: '2026-01-31',
       period: '2026-01',
-      debit: 1250,
+      debit: { minor: 125000 },
     });
   });
 

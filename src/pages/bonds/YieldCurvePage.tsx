@@ -28,7 +28,7 @@ import { useGLStore } from '@/store/glStore';
 import { YieldCurveEngine, type CurvePoint } from '@/engines/YieldCurveEngine';
 import type { GLEntry } from '@/types';
 import { formatNumber, formatPercent } from '@/utils/financialFormatting';
-import { roundTo } from '@/utils/money';
+import { roundTo, toDecimal } from '@/utils/money';
 
 /** Build a yield curve from GL entries by mapping entity account codes to maturities. */
 function buildCurveFromGL(entries: GLEntry[]): CurvePoint[] {
@@ -40,7 +40,7 @@ function buildCurveFromGL(entries: GLEntry[]): CurvePoint[] {
   for (const entry of entries) {
     const prefix = entry.accountCode.substring(0, 2);
     const existing = codeGroups.get(prefix) || [];
-    existing.push(Math.abs(entry.amount));
+    existing.push(toDecimal(entry.amount).abs().toNumber());
     codeGroups.set(prefix, existing);
   }
 

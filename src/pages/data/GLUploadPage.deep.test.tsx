@@ -877,16 +877,18 @@ describe('GLUploadPage — W6-P0-09/P0-10 live import coercion', () => {
     expect(storeStub.importGLData).toHaveBeenCalledTimes(1);
     const rows = importedRows();
     expect(rows).toHaveLength(1);
-    expect(rows[0]!.debit).toBe(1234.56); // bare parseFloat would yield 1
-    expect(rows[0]!.credit).toBe(250);
+    // Q5 stage 4: rows carry `Money`; compare exact minor units. A bare
+    // parseFloat would yield 1 (100 cents), so the assertion still catches it.
+    expect(rows[0]!.debit).toEqual({ minor: 123456 });
+    expect(rows[0]!.credit).toEqual({ minor: 25000 });
   });
 
   it('parses currency-prefixed amounts', async () => {
     await runImport('accountCode,postDate,debit,credit\n1000,2024-01-15,"$500","$1,000"\n');
     expect(storeStub.importGLData).toHaveBeenCalledTimes(1);
     const rows = importedRows();
-    expect(rows[0]!.debit).toBe(500);
-    expect(rows[0]!.credit).toBe(1000);
+    expect(rows[0]!.debit).toEqual({ minor: 50000 });
+    expect(rows[0]!.credit).toEqual({ minor: 100000 });
   });
 
   it('rejects a negative parenthesized debit instead of importing it (debit >= 0)', async () => {

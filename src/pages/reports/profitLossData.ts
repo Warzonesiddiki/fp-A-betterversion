@@ -15,7 +15,7 @@
  * income articulates with the balance sheet's current-period earnings),
  * and entries no class claims are counted and reported, never dropped.
  */
-import { sumMoney, subtractMoney, divideMoney, roundTo } from '@/utils/money';
+import { sumMoney, subtractMoney, divideMoney, roundTo, MoneyInput } from '@/utils/money';
 import {
   entriesForClass,
   signedClassAmount,
@@ -42,8 +42,8 @@ export function computeProfitLoss(
   entries: readonly {
     accountCode?: string;
     accountType?: AccountType | 'Unknown' | null;
-    debit: number;
-    credit: number;
+    debit: MoneyInput;
+    credit: MoneyInput;
     period?: string;
     date: string;
   }[],

@@ -9,6 +9,7 @@ import {
   type VIENotification,
 } from './ConsolidationEngine';
 import type { GLEntry } from '@/types';
+import { amountFrom, asMoney } from '@/utils/money';
 
 // =============================================================================
 // TEST HELPERS
@@ -655,7 +656,7 @@ describe('ConsolidationEngine', () => {
 
       const result = ConsolidationEngine.translateForeignSubsidiaries(entities, fxRates);
 
-      expect(result![1]!.entries[0]!.amount).toBeCloseTo(11000, 2); // 10000 * 1.1
+      expect(amountFrom(result![1]!.entries[0]!.amount)).toBeCloseTo(11000, 2); // 10000 * 1.1
       expect(result![1]!.entries[0]!.currency).toBe('USD');
     });
 
@@ -732,11 +733,11 @@ describe('ConsolidationEngine', () => {
       const result = ConsolidationEngine.translateForeignSubsidiaries(entities, fxRates);
 
       // Asset: closing rate 1.1
-      expect(result![0]!.entries[0]!.amount).toBeCloseTo(11000, 2);
+      expect(amountFrom(result![0]!.entries[0]!.amount)).toBeCloseTo(11000, 2);
       // Revenue: average rate 1.05
-      expect(result![0]!.entries[1]!.amount).toBeCloseTo(5250, 2);
+      expect(amountFrom(result![0]!.entries[1]!.amount)).toBeCloseTo(5250, 2);
       // Equity: historical rate 1.0
-      expect(result![0]!.entries[2]!.amount).toBeCloseTo(20000, 2);
+      expect(amountFrom(result![0]!.entries[2]!.amount)).toBeCloseTo(20000, 2);
     });
   });
 
@@ -1486,6 +1487,7 @@ describe('DEC-010 Step 2: asymmetric IC pairs, ASC 830 CTA, and exact-string con
 
     const result = ConsolidationEngine.consolidate(entities, ownerships, icPairs);
 
+    expect(result.errors).toEqual([]);
     expect(result.status).toBe('success');
     expect(result.totalAssets).toBe(125000);
     expect(result.totalLiabilities).toBe(0);
@@ -1540,7 +1542,8 @@ describe('DEC-010 Step 2: asymmetric IC pairs, ASC 830 CTA, and exact-string con
     expect(result.imbalanceAmount).toBe(0);
     const ctaEntry = result.consolidatedEntries.find((e) => e.accountCode === '3900');
     expect(ctaEntry).toBeDefined();
-    expect(ctaEntry!.amount).toBe(-5000);
+    // Q5 stage 4: the ledger row carries `Money`; the CTA is exact minor units.
+    expect(ctaEntry!.amount).toEqual({ minor: -500000 });
   });
 
   it('consolidateExact translates promoted exact-decimal USD/EUR ledgers, derives exact ASC 830 CTA decomposition, and eliminates IC pairs without float coercion', () => {
@@ -1814,5 +1817,82 @@ describe('DEC-010 Step 2: asymmetric IC pairs, ASC 830 CTA, and exact-string con
     // and hasUnmatchedIC flags the IC discrepancy explicitly.
     expect(exactResult.accountingEquationImbalance).toBe('0.00');
     expect(exactResult.hasUnmatchedIC).toBe(true);
+  });
+});
+
+describe('Q5 stage 4 twin: the same ledger as numbers and as Money consolidates identically', () => {
+  /**
+   * The engine is called from pages that may still build major-unit numbers
+   * while `GLEntry` is typed `Money`. That is exactly where a conversion can go
+   * wrong invisibly: `moneySign`/`moneyToAmount` THROW on a number, the outer
+   * catch turns it into a failed result, and the statement comes back EMPTY
+   * with no compile error. This twin pins both shapes to the same answer.
+   */
+  const asMoneyRow = (row: GLEntry): GLEntry => ({
+    ...row,
+    debit: asMoney(row.debit),
+    credit: asMoney(row.credit),
+    netChange: asMoney(row.netChange),
+    amount: asMoney(row.amount),
+  });
+
+  const ledger = () => {
+    const parent = [
+      createEntry('p1', '1000', 'Cash', 90000, 'parent'),
+      createEntry('p2', '1100', 'IC Receivable', 10000, 'parent'),
+      createEntry('p3', '3000', 'Common Stock', -100000, 'parent'),
+    ];
+    const sub = [
+      createEntry('s1', '4000', 'Revenue', -40000, 'sub'),
+      createEntry('s2', '1100', 'IC Payable', -10000, 'sub'),
+      createEntry('s3', '5000', 'Expense', 30000, 'sub'),
+      createEntry('s4', '3000', 'Common Stock', -20000, 'sub'),
+      createEntry('s5', '1000', 'Cash', 40000, 'sub'),
+    ];
+    return { parent, sub };
+  };
+
+  it('derives the same totals, balance verdict and entry values in both shapes', () => {
+    const base = ledger();
+    const ownerships = [createOwnership('parent', 'sub', 100)];
+    const icPairs: ICPair[] = [createICPair('parent', 'sub', '1100', 10000, 'receivable')];
+
+    const numeric = ConsolidationEngine.consolidate(
+      [createParent(base.parent), createSubsidiary('sub', 'Sub', base.sub)],
+      ownerships,
+      icPairs
+    );
+    const money = ConsolidationEngine.consolidate(
+      [
+        createParent(base.parent.map(asMoneyRow)),
+        createSubsidiary('sub', 'Sub', base.sub.map(asMoneyRow)),
+      ],
+      ownerships,
+      icPairs
+    );
+
+    // Neither shape may fail, and neither may come back empty.
+    expect(numeric.status).toBe('success');
+    expect(money.status).toBe('success');
+    expect(numeric.consolidatedEntries.length).toBeGreaterThan(0);
+    expect(money.consolidatedEntries.length).toBe(numeric.consolidatedEntries.length);
+
+    expect(money.totalAssets).toBe(numeric.totalAssets);
+    expect(money.totalLiabilities).toBe(numeric.totalLiabilities);
+    expect(money.totalEquity).toBe(numeric.totalEquity);
+    expect(money.totalRevenue).toBe(numeric.totalRevenue);
+    expect(money.totalExpenses).toBe(numeric.totalExpenses);
+    expect(money.netIncome).toBe(numeric.netIncome);
+    expect(money.isBalanced).toBe(numeric.isBalanced);
+    expect(money.eliminations.length).toBe(numeric.eliminations.length);
+
+    // Value-sensitive: every consolidated row agrees, and the IC pair is out.
+    for (const [index, entry] of money.consolidatedEntries.entries()) {
+      expect(amountFrom(entry.amount)).toBe(amountFrom(numeric.consolidatedEntries[index]!.amount));
+    }
+    // Hand-derived: parent cash 90,000 + parent IC receivable 10,000 + sub cash
+    // 40,000 − the 10,000 IC pair eliminated = 130,000.
+    expect(numeric.totalAssets).toBe(130000);
+    expect(numeric.totalRevenue).toBe(-40000);
   });
 });

@@ -184,13 +184,19 @@ vi.mock('@/store/glStore', () => ({
   // (it calls generateTrialBalance() inside a mount effect, so it must be a
   // stub; the page renders `trialBalance` rows when the sort-store is empty).
   // Additive — existing consumers are unaffected.
-  useGLStore: vi.fn(() => ({
-    entries: POPULATED_ENTRIES,
-    accounts: ACCOUNTS,
-    trialBalance: TB_ROWS,
-    isLoading: false,
-    generateTrialBalance: vi.fn(),
-  })),
+  // Selector-faithful: `LedgerQuarantineNotice` reads one field through a
+  // selector, so the stub must apply it instead of handing back the whole state.
+  useGLStore: vi.fn((selector?: (state: unknown) => unknown) => {
+    const state = {
+      entries: POPULATED_ENTRIES,
+      accounts: ACCOUNTS,
+      trialBalance: TB_ROWS,
+      isLoading: false,
+      quarantinedEntries: [] as unknown[],
+      generateTrialBalance: vi.fn(),
+    };
+    return selector ? selector(state) : state;
+  }),
 }));
 
 // Trial-balance row shape mirrors `TrialBalanceRow` (Q5 stage 3 / DEC-053):

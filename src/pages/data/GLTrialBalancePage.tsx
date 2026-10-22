@@ -23,6 +23,7 @@ import {
   ArrowUpDown,
 } from 'lucide-react';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { LedgerQuarantineNotice } from '@/components/data/LedgerQuarantineNotice';
 /** Money-primitive trial-balance totals (GAP-1 F-0006). */
 export interface TrialBalanceTotals {
   totalDebits: number;
@@ -214,6 +215,8 @@ export default function GLTrialBalancePage() {
             : `Trial Balance is Off by ${fmt.currency0(Math.abs(diff))}`}
         </div>
       </div>
+
+      <LedgerQuarantineNotice />
 
       <div className="flex items-center justify-between">
         <div>

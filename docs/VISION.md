@@ -53,6 +53,26 @@ end-to-end on a synthetic D365-shaped file before the product can be called a
 one-stop solution. Everything else is depth added on top of a working spine —
 never instead of it.
 
+**No ceiling clause.** No feature list, current implementation, roadmap phase or
+initial data source is a permanent ceiling on scope. Dynamics 365 GL import is a
+critical starting workflow, not the product boundary; as the discipline,
+organisation or operating model evolves, newly identified FP&A responsibilities
+are added to the live scope records rather than treated as out of scope.
+
+**One-stop acceptance (a requirement, not a claim).** A user must be able to
+complete supported FP&A work without another app or tool. A connected source
+system may supply data and exports may be offered for interoperability, but a
+separate application must not be a mandatory step. Two known conflicts are
+recorded rather than smoothed over: the manual D365 export/file-intake path, and
+the DEC-018 Excel correction hand-off. Until an in-app correction path is proven
+sufficient, one-stop completion is **not** claimed (DEC-058, PR #90).
+
+**Zero compromise is an operating bar, not a promise of flawlessness.** It binds
+accuracy, traceability, security, human control and dependable operation. Claims
+about replacing analyst capacity or beating a baseline require owner-accepted
+real-data measurement; until then they are aspirations, and the repository says
+so.
+
 ---
 
 ## 2. The all-in-one module map
@@ -162,3 +182,30 @@ A working week that satisfies the roadmap's Gate 2–4:
 | What actually exists right now?            | `docs/CAPABILITY_TRUTH_MATRIX.md`, `docs/agent/09_KNOWN_GAPS.md` |
 | How do we build it without breaking money? | `docs/agent/03_DOMAIN_RULES.md`                                  |
 | How is each rule enforced?                 | `docs/agent/05_COMMANDS_AND_GATES.md`                            |
+
+---
+
+## 7. How "complete" is decided
+
+Completeness is a property of a register, not of a feature count — this is the
+vision's own test: every identified responsibility is _either_ supported to an
+evidence-backed standard _or_ explicitly recorded as not yet supported,
+experimental, blocked or retired by decision. A silent omission is the one
+outcome that cannot be described as complete.
+
+The programme that builds that register and fills it is
+[`docs/plan/COMPLETION_PLAN_86_100.md`](plan/COMPLETION_PLAN_86_100.md)
+(PRs #86–#100, DEC-058). Its six contract criteria fix what "done" will mean at
+PR #100 so the definition cannot be relaxed at the end:
+
+1. every route, engine, requirement and annex section has a closed-vocabulary
+   status plus evidence a script re-derives;
+2. every supported workflow is completable in-app (one-stop census);
+3. money and "missing is not zero" invariants hold on every supported surface;
+4. every claimed grade is reproduced by a named test or gate, not by prose;
+5. the supported set is operationally fit — a11y, performance, bundle,
+   determinism, RBAC;
+6. what is not supported is stated, with the decision that blocks it.
+
+Nothing in this document is evidence of capability. Evidence lives in the
+generated matrix and the gates that re-derive it.

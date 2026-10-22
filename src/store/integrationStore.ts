@@ -29,6 +29,7 @@ import { randomId } from '@/utils/cryptoId';
 // getConnection is a read.
 import { enforce, Permissions } from '@/utils/rbacEnforcer';
 import { nowMs } from '@/utils/clock';
+import { asMoney, roundTo, subtractMoney } from '@/utils/money';
 
 export interface IntegrationConnection {
   provider: string;
@@ -304,7 +305,18 @@ export const useIntegrationStore = create<IntegrationState>()(
               };
             }
 
-            const result = useGLStore.getState().importGLData(mapped.rows, `${provider}-connector`);
+            // Q5 stage 4: `importGLData` takes ledger rows whose money fields are
+            // `Money`; a connector row is a major-unit number, so it crosses here.
+            const result = useGLStore.getState().importGLData(
+              mapped.rows.map((row) => ({
+                ...row,
+                debit: asMoney(row.debit),
+                credit: asMoney(row.credit),
+                amount: asMoney(roundTo(subtractMoney(row.debit, row.credit))),
+                netChange: asMoney(roundTo(subtractMoney(row.debit, row.credit))),
+              })),
+              `${provider}-connector`
+            );
 
             set((state) => {
               state.busy[provider] = false;

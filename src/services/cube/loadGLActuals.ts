@@ -1,4 +1,4 @@
-import { toDecimal, roundTo } from '@/utils/money';
+import { toDecimal, roundTo, type MoneyInput } from '@/utils/money';
 import type { CubeCell } from '@/types/cube-types';
 
 /**
@@ -23,8 +23,8 @@ export interface GLActualsEntry {
   period?: string;
   date?: string;
   currency?: string;
-  debit?: number;
-  credit?: number;
+  debit?: MoneyInput;
+  credit?: MoneyInput;
 }
 
 export interface GLActualsCell {

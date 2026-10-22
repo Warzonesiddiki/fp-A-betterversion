@@ -259,8 +259,10 @@ describe('integrationStore', () => {
         [
           expect.objectContaining({
             accountCode: 'acct-1',
-            debit: 100,
-            credit: 0,
+            // Q5 stage 4: the connector's major-unit rows cross to `Money`
+            // before they reach the ledger (100.00 -> 10,000 cents).
+            debit: { minor: 10000 },
+            credit: { minor: 0 },
             date: '2026-08-01',
           }),
         ],

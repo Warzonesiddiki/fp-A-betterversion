@@ -31,8 +31,9 @@ describe('Synthetic Tie-Out Ledger Fixture', () => {
       const batchEntries = ledger.entries.filter((e) => e.journalId === batch.id);
       expect(batchEntries.length).toBe(batch.entriesCount);
 
-      const sumDebit = batchEntries.reduce((sum, e) => sum + e.debit, 0);
-      const sumCredit = batchEntries.reduce((sum, e) => sum + e.credit, 0);
+      // Q5 stage 4: fields are `Money`; sum exact minor units, never objects.
+      const sumDebit = batchEntries.reduce((sum, e) => addMoney(sum, e.debit), 0);
+      const sumCredit = batchEntries.reduce((sum, e) => addMoney(sum, e.credit), 0);
 
       expect(moneyEquals(sumDebit, batch.totalDebit)).toBe(true);
       expect(moneyEquals(sumCredit, batch.totalCredit)).toBe(true);

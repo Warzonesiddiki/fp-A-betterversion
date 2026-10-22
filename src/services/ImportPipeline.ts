@@ -1,5 +1,5 @@
 import { randomId } from '@/utils/cryptoId';
-import { subtractMoney } from '@/utils/money';
+import { subtractMoney, asMoney, isMoneyValue, moneyToAmount, roundTo } from '@/utils/money';
 import {
   GLImportService,
   type GLImportOptions,
@@ -117,6 +117,19 @@ export class ImportPipeline {
       );
 
       for (const row of validated.validRows) {
+        const parseMoneyCell = (value: unknown): number => {
+          if (typeof value === 'number' && Number.isFinite(value)) return value;
+          if (isMoneyValue(value)) return moneyToAmount(value);
+          const parsed = parseFloat(String(value ?? '0'));
+          return Number.isFinite(parsed) ? parsed : 0;
+        };
+        /** Same reader, but `null` when the cell is absent — 0 is a real amount. */
+        const parseOptionalMoneyCell = (value: unknown): number | null => {
+          if (value === undefined || value === null || value === '') return null;
+          return parseMoneyCell(value);
+        };
+        const rowDebit = parseMoneyCell(row.debit);
+        const rowCredit = parseMoneyCell(row.credit);
         const entry: GLEntry = {
           id: randomId('entry'),
           accountId: String(row.accountCode ?? ''),
@@ -124,18 +137,16 @@ export class ImportPipeline {
           accountName: String(row.accountName ?? ''),
           period: String(row.date ?? '').slice(0, 7),
           periodName: String(row.date ?? '').slice(0, 7),
-          debit:
-            typeof row.debit === 'number' ? row.debit : parseFloat(String(row.debit ?? '0')) || 0,
-          credit:
-            typeof row.credit === 'number'
-              ? row.credit
-              : parseFloat(String(row.credit ?? '0')) || 0,
-          netChange: subtractMoney(
-            typeof row.debit === 'number' ? row.debit : parseFloat(String(row.debit ?? '0')) || 0,
-            typeof row.credit === 'number' ? row.credit : parseFloat(String(row.credit ?? '0')) || 0
-          ).toNumber(),
+          // Q5 stage 4: parse the source column once, then cross to `Money`.
+          debit: asMoney(rowDebit),
+          credit: asMoney(rowCredit),
+          netChange: asMoney(roundTo(subtractMoney(rowDebit, rowCredit))),
           date: String(row.date ?? ''),
-          amount: typeof row.amount === 'number' ? row.amount : 0,
+          // `?? rowDebit - rowCredit`: an explicit 0 is an amount, not "absent".
+          // (A `||` here replaced a real 0.00 with the net of the two sides.)
+          amount: asMoney(
+            roundTo(parseOptionalMoneyCell(row.amount) ?? subtractMoney(rowDebit, rowCredit))
+          ),
           description: String(row.description ?? ''),
           reference: String(row.reference ?? ''),
           entityId: String(row.entity ?? ''),

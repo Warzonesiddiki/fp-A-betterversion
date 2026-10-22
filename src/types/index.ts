@@ -5,7 +5,7 @@
 // Q5 (DEC-051/053): derived money values are integer minor units. Type-only
 // import — this module carries no runtime code.
 import type { Money } from '@/utils/money';
-import type { LedgerHydrationPartition } from '@/utils/ledgerHydration';
+import type { LedgerHydrationPartition, QuarantinedLedgerRow } from '@/utils/ledgerHydration';
 
 // --- Enums & Literals ---
 
@@ -747,12 +747,12 @@ export interface GLEntry {
   readonly accountName: string;
   readonly period: string;
   readonly periodName: string;
-  readonly debit: number;
-  readonly credit: number;
-  readonly netChange: number;
+  readonly debit: Money;
+  readonly credit: Money;
+  readonly netChange: Money;
   readonly date: string;
   readonly postDate?: string;
-  readonly amount: number;
+  readonly amount: Money;
   readonly description: string;
   readonly reference: string;
   readonly entityId?: string;
@@ -1021,6 +1021,13 @@ export interface GLState {
    * excluded from `Money`-typed aggregates.
    */
   ledgerScaleAudit: () => LedgerHydrationPartition<GLEntry>;
+  /**
+   * Q5 stage 4 hydrate gate (DEC-057). Rows loaded from disk whose amounts
+   * cannot be represented as `Money` at `LEDGER_SCALE`. They are KEPT verbatim
+   * (never rounded, never dropped), excluded from every `Money`-typed
+   * aggregate, and named here so the exclusion is visible instead of silent.
+   */
+  quarantinedEntries: readonly QuarantinedLedgerRow<GLEntry>[];
   importGLData: (
     entries: Partial<GLEntry>[],
     filename?: string,

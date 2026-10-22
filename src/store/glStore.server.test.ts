@@ -3,6 +3,7 @@ import { useGLStore, setGlCommitClient } from './glStore';
 import type { GlCommitNamespace } from '@/sdk/gl/GlCommitNamespace';
 import type { GlCommitResult, GlListResult } from '@/sdk/gl/GlCommitNamespace';
 import { actAs } from '@/test/rbacFixtures';
+import { amountFrom } from '@/utils/money';
 
 function makeEntry(id: string, overrides: Record<string, unknown> = {}) {
   return {
@@ -333,8 +334,8 @@ describe('glStore boot hydrate — hydrateCommittedFromServer (W0.8.6 plan §5)'
 
     const state = useGLStore.getState();
     const updated = state.entries.find((e) => e.id === 'srv-committed');
-    expect(updated?.debit).toBe(250.5);
-    expect(updated?.netChange).toBe(250.5);
+    expect(amountFrom(updated!.debit)).toBe(250.5);
+    expect(amountFrom(updated!.netChange)).toBe(250.5);
     expect(updated?.description).toBe('amended upstream');
     expect(updated?.reference).toBe('REF-9');
     expect(updated?.date).toBe('2026-03-15');
@@ -344,8 +345,8 @@ describe('glStore boot hydrate — hydrateCommittedFromServer (W0.8.6 plan §5)'
 
     // Absent id → adopted as a committed replica row.
     const adopted = state.entries.find((e) => e.id === 'srv-new');
-    expect(adopted?.credit).toBe(90);
-    expect(adopted?.amount).toBe(-90);
+    expect(amountFrom(adopted!.credit)).toBe(90);
+    expect(amountFrom(adopted!.amount)).toBe(-90);
     expect(state.entrySyncState['srv-new']).toBe('committed');
     expect(state.entryVersions['srv-new']).toBe(1);
 
@@ -457,7 +458,7 @@ describe('glStore boot hydrate — hydrateCommittedFromServer (W0.8.6 plan §5)'
     // Invalid amount: the committed local row keeps its own numbers —
     // never NaN, never a coerced 0.
     const nanRow = state.entries.find((e) => e.id === 'srv-nan');
-    expect(nanRow?.debit).toBe(100);
+    expect(amountFrom(nanRow!.debit)).toBe(100);
     expect(state.entryVersions['srv-nan']).toBe(3);
 
     // Missing both amounts: no fabricated zero row is adopted.
@@ -471,8 +472,8 @@ describe('glStore boot hydrate — hydrateCommittedFromServer (W0.8.6 plan §5)'
 
     // The valid row still converges.
     const valid = state.entries.find((e) => e.id === 'srv-valid');
-    expect(valid?.credit).toBe(42.5);
-    expect(valid?.amount).toBe(-42.5);
+    expect(amountFrom(valid!.credit)).toBe(42.5);
+    expect(amountFrom(valid!.amount)).toBe(-42.5);
     expect(state.entrySyncState['srv-valid']).toBe('committed');
 
     // Nothing silently discarded: both rejections are visible with reasons.

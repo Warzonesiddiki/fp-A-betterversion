@@ -468,6 +468,39 @@ describe('validateGLEntry', () => {
     expect(result.valid).toBe(false);
     expect(result.errors.some((e) => e.includes('both be negative'))).toBe(true);
   });
+
+  /**
+   * Q5 stage 4 (DEC-056): `GLEntry.debit/credit` become `Money`, and
+   * `isFiniteNumber` returns false for an object — so keeping the old check
+   * would report "debit must be a finite number" for EVERY entry once the type
+   * moves, with no compile error to warn anyone.
+   */
+  it('accepts a Money entry on the same terms as a number entry', () => {
+    expect(
+      validateGLEntry({ accountCode: 'X', debit: { minor: 10000 }, credit: { minor: 0 } }).valid
+    ).toBe(true);
+    expect(
+      validateGLEntry({ accountCode: 'X', debit: { minor: 10000 }, credit: { minor: 0 } })
+    ).toEqual(validateGLEntry({ accountCode: 'X', debit: 100, credit: 0 }));
+  });
+
+  it('still rejects a Money entry with two negative sides', () => {
+    const result = validateGLEntry({
+      accountCode: 'X',
+      debit: { minor: -1000 },
+      credit: { minor: -500 },
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('both be negative'))).toBe(true);
+  });
+
+  it('still rejects a non-finite or missing amount of either shape', () => {
+    expect(validateGLEntry({ accountCode: 'X', debit: Number.NaN, credit: 0 }).valid).toBe(false);
+    expect(validateGLEntry({ accountCode: 'X', debit: { minor: 0.5 }, credit: 0 }).valid).toBe(
+      false
+    );
+    expect(validateGLEntry({ accountCode: 'X' }).valid).toBe(false);
+  });
 });
 
 describe('validateAllocationRule', () => {

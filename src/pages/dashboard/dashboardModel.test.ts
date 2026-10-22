@@ -252,3 +252,74 @@ describe('deriveSectorKpis', () => {
     expect(kpis[0]!.value).toBe(95000);
   });
 });
+
+/**
+ * Q5 stage-4 twin (DEC-056).
+ *
+ * `GLEntry` money fields become `Money`. Every model in this folder reads them
+ * through `rowCarriesDebitCredit`, whose predecessor tested
+ * `Number(value) === 0` — false for a zero `Money`, so an AMOUNT-ONLY row would
+ * silently be valued at `0 − 0` after the flip, with no compile error.
+ *
+ * The same ledger is therefore stated twice, once in numbers and once in the
+ * `Money` shape the store will hold, and the derived KPIs must be identical.
+ * The amount-only rows are the ones that regress; the debit/credit rows guard
+ * against over-correcting.
+ */
+describe('a Money-shaped ledger derives exactly the number-shaped one (Q5 stage 4)', () => {
+  const numbers: DashboardGLEntry[] = [
+    { accountCode: '4000', debit: 0, credit: 100000, period: '2026-01' },
+    // amount-only revenue row — the shape `rowCarriesDebitCredit` exists for
+    { accountCode: '4000', debit: 0, credit: 0, amount: 2500, period: '2026-01' },
+    { accountCode: '5000', debit: 60000, credit: 0, period: '2026-01' },
+    { accountCode: '6000', debit: 0, credit: 0, amount: 20000, period: '2026-02' },
+    { accountCode: '7000', debit: 2000, credit: 0, period: '2026-02' },
+  ];
+
+  const money: DashboardGLEntry[] = [
+    { accountCode: '4000', debit: { minor: 0 }, credit: { minor: 10000000 }, period: '2026-01' },
+    {
+      accountCode: '4000',
+      debit: { minor: 0 },
+      credit: { minor: 0 },
+      amount: { minor: 250000 },
+      period: '2026-01',
+    },
+    { accountCode: '5000', debit: { minor: 6000000 }, credit: { minor: 0 }, period: '2026-01' },
+    {
+      accountCode: '6000',
+      debit: { minor: 0 },
+      credit: { minor: 0 },
+      amount: { minor: 2000000 },
+      period: '2026-02',
+    },
+    { accountCode: '7000', debit: { minor: 200000 }, credit: { minor: 0 }, period: '2026-02' },
+  ];
+
+  it('derives identical KPIs', () => {
+    expect(deriveDashboardKpis(money, [])).toEqual(deriveDashboardKpis(numbers, []));
+  });
+
+  it('derives identical monthly trend', () => {
+    expect(deriveMonthlyTrend(money)).toEqual(deriveMonthlyTrend(numbers));
+  });
+
+  it('derives identical sector KPIs', () => {
+    const kpis = [
+      { id: 'rev', label: 'Revenue', format: 'currency' as const, accountCodes: ['4000'] },
+    ];
+    expect(deriveSectorKpis(money, kpis)).toEqual(deriveSectorKpis(numbers, kpis));
+  });
+
+  it('does not lose the amount-only revenue row', () => {
+    // 100,000 + 2,500 of credit-normal revenue; the regression reports 100,000.
+    expect(deriveDashboardKpis(money, [])!.totalRevenue).toBe(102500);
+    expect(deriveDashboardKpis(numbers, [])!.totalRevenue).toBe(102500);
+  });
+
+  it('does not lose the amount-only expense row', () => {
+    // OpEx 20,000 arrives as a signed amount with zero debit/credit.
+    expect(deriveDashboardKpis(money, [])!.totalOpex).toBe(20000);
+    expect(deriveDashboardKpis(numbers, [])!.totalOpex).toBe(20000);
+  });
+});

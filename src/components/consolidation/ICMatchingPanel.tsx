@@ -15,6 +15,7 @@ import {
 } from '@/engines/ICMatchingEngine';
 import type { GLEntry } from '@/types';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
+import { toDecimal } from '@/utils/money';
 
 // =============================================================================
 // IC MATCHING PANEL
@@ -55,11 +56,11 @@ export function ICMatchingPanel({
 
   // Split into source (positive) and target (negative) by amount sign
   const sourceTransactions = useMemo(
-    () => icTransactions.filter((t) => t.amount > 0),
+    () => icTransactions.filter((t) => toDecimal(t.amount).greaterThan(0)),
     [icTransactions]
   );
   const targetTransactions = useMemo(
-    () => icTransactions.filter((t) => t.amount < 0),
+    () => icTransactions.filter((t) => toDecimal(t.amount).lessThan(0)),
     [icTransactions]
   );
 

@@ -21,7 +21,7 @@ import { Landmark, ShieldCheck, Download } from 'lucide-react';
 import { BankingEngine } from '@/engines/BankingEngine';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
-import { multiplyMoney, roundTo, sumMoney } from '@/utils/money';
+import { multiplyMoney, roundTo, sumMoney, type MoneyInput } from '@/utils/money';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 /**
@@ -34,7 +34,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
  */
 export interface RWABreakdownRow {
   category: string;
-  amount: number;
+  amount: MoneyInput;
   weight: string;
   charge: number;
   [key: string]: unknown;
@@ -45,7 +45,7 @@ export interface AssetClass {
   weight: number;
 }
 export function computeRWABreakdown(
-  entries: readonly { accountCode: string; amount: number }[],
+  entries: readonly { accountCode: string; amount: MoneyInput }[],
   assetClasses: readonly AssetClass[]
 ): RWABreakdownRow[] {
   return assetClasses
@@ -101,7 +101,7 @@ export default function CapitalAdequacyPage() {
   const handleExport = () => {
     const data = {
       headers: ['Risk Category', 'Exposure Amount', 'RWA Weight', 'Capital Charge'],
-      rows: rwaBreakdown.map((r) => [r.category, r.amount, r.weight, r.charge]),
+      rows: rwaBreakdown.map((r) => [r.category, roundTo(r.amount), r.weight, roundTo(r.charge)]),
     };
     void ExportEngine.exportToPDF(data, {
       title: 'Capital Adequacy Report',

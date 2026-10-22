@@ -70,6 +70,7 @@ import {
   computePLStatement,
   COMPUTED_VARIANCES,
 } from './index';
+import { isMoneyValue, moneyToMinor } from '@/utils/money';
 
 const uniqueIds = (items: { id: string }[]) =>
   new Set(items.map((i) => i.id)).size === items.length;
@@ -324,8 +325,11 @@ describe('mockData generators', () => {
     }
     for (const e of generateGLEntries(3)) {
       expect(e.id).toBeTruthy();
-      expect(typeof e.debit).toBe('number');
-      expect(typeof e.credit).toBe('number');
+      // Q5 stage 4: money fields are `Money` with integer minor units.
+      expect(isMoneyValue(e.debit)).toBe(true);
+      expect(isMoneyValue(e.credit)).toBe(true);
+      expect(Number.isSafeInteger(e.debit.minor)).toBe(true);
+      expect(Number.isSafeInteger(e.credit.minor)).toBe(true);
     }
     for (const r of generateCashFlow(3)) {
       expect(r.net).toBeCloseTo(r.inflow - r.outflow, 5);
@@ -347,9 +351,10 @@ describe('mockData glData', () => {
     expect(recomputed).toEqual(mockTrialBalance);
 
     // Debits and credits across the ledger should be close to balanced
-    const totalDebit = mockGLEntries.reduce((s, e) => s + e.debit, 0);
-    const totalCredit = mockGLEntries.reduce((s, e) => s + e.credit, 0);
-    expect(Math.abs(totalDebit - totalCredit)).toBeLessThan(1);
+    // Crossed exactly: `Money` fields summed in minor units, not as objects.
+    const totalDebit = mockGLEntries.reduce((s, e) => s + moneyToMinor(e.debit), 0);
+    const totalCredit = mockGLEntries.reduce((s, e) => s + moneyToMinor(e.credit), 0);
+    expect(Math.abs(totalDebit - totalCredit)).toBeLessThan(100); // 1.00 in cents
   });
 
   it('gl entry helpers filter by account and period', () => {
