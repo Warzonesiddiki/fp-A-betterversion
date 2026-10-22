@@ -47,7 +47,7 @@ were real defects the compiler could not see:
 - `ImportPipeline`'s `parseMoneyCell(a) || a - b` treated a real `0.00` as
   absent and replaced it with the net of the two sides.
 
-**Result.** Full suite: **1,411 files, 16,404 passed + 1 skipped (16,405), 1,157 s.**
+**Result.** Full suite: **1,412 files, 16,410 passed + 1 skipped (16,411), 1,170 s.**
 `tsc`, `eslint --max-warnings 0`, `docs:verify`, `check-readme-claims` and
 `money:ast` (0 unsafe, 100 % safe) are all green.
 

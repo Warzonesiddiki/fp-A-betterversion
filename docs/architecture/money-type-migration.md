@@ -304,8 +304,8 @@ whole boot hydrate. `crossListedAmount` hands the raw value back so
 DEC-055 one layer out: the compiler shows the type errors, not the failure
 semantics.
 
-**Full suite after the flip:** 1,411 files, **16,404 passed + 1 skipped**
-(16,405), 1,157 s. The first run found 24 failures in 11 files: expectation
+**Full suite after the flip:** 1,412 files, **16,410 passed + 1 skipped**
+(16,411), 1,170 s. The first run found 24 failures in 11 files: expectation
 updates (exact minor units instead of numbers) plus four real defects —
 `CubeEngine.aggregate` aggregated a `Money` cell as 0, the mock generator emitted
 sub-cent floats that `asMoney` refuses, `VersionDiffPage` lost its
