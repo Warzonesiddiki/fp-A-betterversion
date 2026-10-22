@@ -275,6 +275,21 @@ vocabulary, each evidence rule, the `REVIEW ≠ SUPPORTED` rule, the rendered-vi
 drift check and `--release`. `--check` runs inside `docs:verify`, so the register
 cannot go stale quietly. PR #87 inherits the 47 `REVIEW` routes as its worklist.
 
+**PR #87 is delivered (2026-10-23).** The 47 `REVIEW` routes are decided in
+`docs/product/route-dispositions.json` (DEC-061): **38 MIGRATE, 7 EXPERIMENTAL,
+2 RETAIN, 0 RETIRED, 0 REVIEW**. Seventeen are one-line aliases that fold into
+their canonical target rather than being deleted; nine are the data-control
+spine; nine are close/modeling/reporting pages; three treasury and three ESG
+screens stay EXPERIMENTAL with the certification gap named (O5 for sector/
+jurisdiction tiering); `CapexTracker` stays EXPERIMENTAL until it has a colocated
+test; the dev-only `/visual/atlas` and the `*` catch-all are RETAINed as shell
+surfaces. `npm run routes:dispositions` fails on a decision for a nonexistent
+route, a blank field, an alias naming a target the router does not redirect to,
+a matrix row still `REVIEW` or a matrix row that disagrees with the decision —
+and `completion:register --check` now fails on any `REVIEW` route row, so a new
+unclassified route cannot enter the tree silently. `docs/product/ROUTE_MAP.md`
+was regenerated and is byte-identical (231 routes, 32 top-level).
+
 **What still cannot be claimed at #100 without an owner answer** (register status
 `BLOCKED-ON-OWNER`, never blank): verified D365 shapes (O1), data-safety/escrow
 (O3), SOX/audit authority (O4), rolling-forecast semantics (O2), sector/

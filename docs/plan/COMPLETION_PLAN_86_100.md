@@ -121,13 +121,18 @@ which is the honest reading of a tree where 0 of 231 routes are graded CONNECTED
 or GOVERNED. Nothing seeds as SUPPORTED; that status is earned by a later PR with
 test ids that resolve.
 
-**Disposition is measured, not believed (DEC-060).** Each of the 231 route rows also
-carries the disposition from `docs/CAPABILITY_TRUTH_MATRIX.md`, re-read on every
-seed so a matrix edit cannot leave a stale grade behind: **103 `MIGRATE`, 77
-`EXPERIMENTAL`, 47 `REVIEW`, 4 `RETAIN`**, and the summary prints that table. A
-`REVIEW` row — a route that needs a human decision — may never be `SUPPORTED`;
-PR #87's exit criterion is that this count reaches 0 by deciding each route, not
-by re-grading it.
+**Disposition is measured, not believed (DEC-060, DEC-061).** Each of the 231 route
+rows also carries the disposition from `docs/CAPABILITY_TRUTH_MATRIX.md`, re-read
+on every seed so a matrix edit cannot leave a stale grade behind: **141
+`MIGRATE`, 84 `EXPERIMENTAL`, 6 `RETAIN`, 0 `REVIEW`**, and the summary prints that
+table. The 47 routes the prefix classifier could not place were decided in
+`docs/product/route-dispositions.json` (PR #87): 38 folded into a named pattern
+(17 of them one-line aliases), 7 kept experimental with a named certification
+gap (treasury, ESG, one untested CapEx tracker), 2 retained as shell surfaces
+(the dev-only visual baseline and the 404 catch-all), and none retired. `REVIEW`
+is now a failing state rather than a resting one, so a new route cannot enter the
+tree without a decision — and an alias decision must name the redirect target the
+router actually uses.
 
 **File:** `docs/plan/completion-register.json` (**source of truth**). The view in
 `docs/plan/COMPLETION_REGISTER.md` is generated from it, and `--check` fails when
@@ -160,8 +165,8 @@ the two disagree.
   files that exist;
 - `BLOCKED-ON-OWNER` must name an `O`-id that exists in the taskboard OWNER table;
 - `RETIRED` must name a DEC id present in the decision log;
-- a `REVIEW` disposition may never be `SUPPORTED`, and an unknown disposition
-  fails the gate;
+- no route row may carry a `REVIEW` disposition (it means nobody decided), and an
+  unknown disposition fails the gate;
 - the rendered markdown must match the JSON (no hand-edited copy);
 - counts are printed and compared to the generators, so a new route with no row
   fails the build the day it lands.
@@ -225,20 +230,23 @@ writes into it.
 **#86 — Completion register machinery.** No product change. Adds
 `scripts/completion-register.mjs`, `docs/plan/completion-register.json`,
 the generated register view, and
-`src/services/governance/completionRegister.test.ts` proving the gate rejects:
+`src/__tests__/completionRegister.test.ts` proving the gate rejects:
 a missing row, an unknown status, a `SUPPORTED` row with no test id, an
 `O`-id that does not exist, and a hand-edited rendered file. Seed statuses come
 from the generators, not from opinion: routes from `App.tsx`, engines from
 `EngineRegistry`/manifest, requirements from the register, annex from the
 annex parser.
 
-**#87 — Route disposition sweep.** The 47 REVIEW/Unclassified rows are decided
-one by one, each with a one-line reason, in the matrix's own disposition column.
-Expect: some are real product (promote to MIGRATE with a pillar), some are
-developer/demo surfaces (RETIRE or gate behind a flag), some are sector
-verticals (EXPERIMENTAL with the sector rule). A census test fails if any row
-carries REVIEW or an empty pillar. This is the PR that converts "231 screens"
-from an embarrassment into a stated position.
+**#87 — Route disposition sweep (delivered 2026-10-23).** The 47 undecided rows
+are decided in `docs/product/route-dispositions.json` — pillar, disposition,
+accountable role, reason and next evidence per route — and the matrix generator
+reads the table instead of guessing from the path. Measured result: **38
+MIGRATE, 7 EXPERIMENTAL, 2 RETAIN, 0 REVIEW**; the 17 one-line aliases fold into
+their canonical targets rather than being deleted, the treasury and ESG surfaces
+stay EXPERIMENTAL with the certification gap named, and `CapexTracker` stays
+EXPERIMENTAL until it has a colocated test. `routes:dispositions` and the register
+both fail on a `REVIEW` row, so this cannot decay quietly. This is the PR that
+converts "231 screens" from an embarrassment into a stated position.
 
 **#88 — Spine CONNECTED evidence.** The supportable claim is narrow and real: a
 synthetic D365-shaped file goes in, control totals tie, quarantine is named,

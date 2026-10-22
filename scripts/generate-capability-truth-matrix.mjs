@@ -13,6 +13,15 @@ import { extname, join, relative, resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
 const output = join(root, 'docs', 'CAPABILITY_TRUTH_MATRIX.md');
 
+// Route disposition decisions (PR #87, DEC-061). The classifier below can only
+// see a path prefix, so 47 routes fell through to `REVIEW — disposition
+// required` — a question, not a decision. Those decisions are now data: each
+// entry names the pillar, the disposition, the accountable role, why, and what
+// evidence would move it. `scripts/verify-route-dispositions.mjs` keeps the
+// table honest (real routes only, every route decided, redirects named).
+const decisionsPath = join(root, 'docs', 'product', 'route-dispositions.json');
+const routeDecisions = JSON.parse(readFileSync(decisionsPath, 'utf8')).routes;
+
 // Path cells and classification inputs must be platform-stable: on Windows,
 // node:path APIs yield backslash separators, which previously leaked absolute
 // backslash paths into the Module column and defeated every forward-slash
@@ -235,8 +244,12 @@ function routeRows() {
         ? 'MISSING'
         : 'BUILT — INLINE / WRAPPED';
     const [pillar, disposition, owner] = routeDisposition(route);
+    const decision = routeDecisions[route];
+    const [finalPillar, finalDisposition, finalOwner, nextEvidence] = decision
+      ? [decision.pillar, decision.disposition, decision.role, decision.nextEvidence]
+      : [pillar, disposition, owner, 'Route evidence only; execute journey review.'];
     routes.push(
-      `| \`${route}\` | ${pillar} | ${disposition} | ${owner} | ${component} | ${sourceDisplay} | ${staticStatus} | UNVERIFIED | UNVERIFIED | UNVERIFIED | Route evidence only; execute journey review. |`
+      `| \`${route}\` | ${finalPillar} | ${finalDisposition} | ${finalOwner} | ${component} | ${sourceDisplay} | ${staticStatus} | UNVERIFIED | UNVERIFIED | UNVERIFIED | ${nextEvidence} |`
     );
   }
   return routes;

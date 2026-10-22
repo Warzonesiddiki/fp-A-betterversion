@@ -1,0 +1,340 @@
+{
+  "_comment": "Route disposition decisions for the 47 routes the capability matrix could not classify (PR #87, DEC-061). Read by scripts/generate-capability-truth-matrix.mjs; checked by scripts/verify-route-dispositions.mjs.",
+  "policy": {
+    "MIGRATE": "The route folds into a named canonical pattern; the capability is carried there.",
+    "RETAIN": "Functionality remains where it is and adopts the enterprise auth/shell contract.",
+    "EXPERIMENTAL": "It cannot be marketed as supported until certified or retired.",
+    "RETIRED": "Deliberately removed; requires a DEC id and a resolving commit."
+  },
+  "routes": {
+    "*": {
+      "pillar": "Workspace",
+      "disposition": "RETAIN — 404 shell surface",
+      "role": "Platform product owner",
+      "reason": "Catch-all route rendering NotFoundPage. It is a shell behaviour, not a capability.",
+      "nextEvidence": "A smoke test asserts an unknown path renders the 404 surface inside the shell."
+    },
+    "/accounting": {
+      "pillar": "Modeling",
+      "disposition": "MIGRATE — legacy alias of /accounting/depreciation",
+      "role": "Controller product owner",
+      "reason": "One-line alias: <Navigate to=\"/accounting/depreciation\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /accounting/depreciation; keep the alias for bookmark compatibility."
+    },
+    "/accounting/depreciation": {
+      "pillar": "Modeling",
+      "disposition": "MIGRATE — accounting calculation pattern",
+      "role": "Controller product owner",
+      "reason": "Depreciation schedules; the canonical accounting pattern.",
+      "nextEvidence": "Depreciation/multi-book calculations tie to GL in a test; multi-book scope decided by DEC."
+    },
+    "/accounting/multi-book": {
+      "pillar": "Modeling",
+      "disposition": "MIGRATE — accounting calculation pattern",
+      "role": "Controller product owner",
+      "reason": "Multi-book comparison under the accounting hub.",
+      "nextEvidence": "Depreciation/multi-book calculations tie to GL in a test; multi-book scope decided by DEC."
+    },
+    "/backup": {
+      "pillar": "Admin",
+      "disposition": "MIGRATE — legacy alias of /settings/backup",
+      "role": "Platform product owner",
+      "reason": "One-line alias: <Navigate to=\"/settings/backup\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /settings/backup; keep the alias for bookmark compatibility."
+    },
+    "/backup/restore": {
+      "pillar": "Admin",
+      "disposition": "MIGRATE — legacy alias of /settings/backup",
+      "role": "Platform product owner",
+      "reason": "One-line alias: <Navigate to=\"/settings/backup\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /settings/backup; keep the alias for bookmark compatibility."
+    },
+    "/board-pack": {
+      "pillar": "Reporting",
+      "disposition": "MIGRATE — report / board-pack pattern",
+      "role": "Reporting product owner",
+      "reason": "Board pack is a named target in the REPORT pillar; the pattern exists and this is its screen.",
+      "nextEvidence": "Pack ties back to the on-screen figures in a test; export stays optional (DEC-018)."
+    },
+    "/bonds/portfolio": {
+      "pillar": "Treasury",
+      "disposition": "EXPERIMENTAL — treasury analytics; certify or retire",
+      "role": "Controller product owner",
+      "reason": "Bond portfolio analytics; outside the five-pillar target IA.",
+      "nextEvidence": "Decide whether treasury analytics is in scope for the target IA; until then it carries no support claim. Needs the owner’s sector/scope answer (O5)."
+    },
+    "/bonds/yield-curve": {
+      "pillar": "Treasury",
+      "disposition": "EXPERIMENTAL — treasury analytics; certify or retire",
+      "role": "Controller product owner",
+      "reason": "Yield-curve analytics; outside the five-pillar target IA.",
+      "nextEvidence": "Decide whether treasury analytics is in scope for the target IA; until then it carries no support claim. Needs the owner’s sector/scope answer (O5)."
+    },
+    "/capex": {
+      "pillar": "Modeling",
+      "disposition": "MIGRATE — modeling pattern",
+      "role": "FP&A product owner",
+      "reason": "CapEx hub in the PLAN pillar; canonical.",
+      "nextEvidence": "Plan-to-actual test for the CapEx plan; then CONNECTED grading."
+    },
+    "/capex/depreciation": {
+      "pillar": "Modeling",
+      "disposition": "MIGRATE — modeling pattern",
+      "role": "FP&A product owner",
+      "reason": "Depreciation forecast of the CapEx plan; canonical.",
+      "nextEvidence": "Plan-to-actual test for the CapEx plan; then CONNECTED grading."
+    },
+    "/capex/tracker": {
+      "pillar": "Modeling",
+      "disposition": "EXPERIMENTAL — no colocated test; certify or retire",
+      "role": "FP&A product owner",
+      "reason": "Built page with no colocated test (matrix: BUILT — TEST NOT FOUND). It cannot be marketed as supported while nothing evidences it.",
+      "nextEvidence": "Add a colocated test for CapexTracker covering its rows and empty state, then re-decide."
+    },
+    "/compliance/sox": {
+      "pillar": "Admin",
+      "disposition": "MIGRATE — legacy alias of /audit/sox",
+      "role": "Platform product owner",
+      "reason": "One-line alias: <Navigate to=\"/audit/sox\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /audit/sox; keep the alias for bookmark compatibility."
+    },
+    "/credit/risk": {
+      "pillar": "Treasury",
+      "disposition": "EXPERIMENTAL — treasury analytics; certify or retire",
+      "role": "Controller product owner",
+      "reason": "Credit-risk analytics; outside the five-pillar target IA.",
+      "nextEvidence": "Decide whether treasury analytics is in scope for the target IA; until then it carries no support claim. Needs the owner’s sector/scope answer (O5)."
+    },
+    "/data": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — close / data-control pattern",
+      "role": "Controller product owner",
+      "reason": "Part of the import → reconcile → exception → correct data-control spine (ACTUALS & CLOSE); folds into the canonical /data pattern rather than carrying its own IA slot.",
+      "nextEvidence": "Integration test through import → reconcile → exception → correction with control totals, then CONNECTED grading in the register."
+    },
+    "/data/chart-of-accounts": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — close / data-control pattern",
+      "role": "Controller product owner",
+      "reason": "Part of the import → reconcile → exception → correct data-control spine (ACTUALS & CLOSE); folds into the canonical /data pattern rather than carrying its own IA slot.",
+      "nextEvidence": "Integration test through import → reconcile → exception → correction with control totals, then CONNECTED grading in the register."
+    },
+    "/data/comparison": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — close / data-control pattern",
+      "role": "Controller product owner",
+      "reason": "Part of the import → reconcile → exception → correct data-control spine (ACTUALS & CLOSE); folds into the canonical /data pattern rather than carrying its own IA slot.",
+      "nextEvidence": "Integration test through import → reconcile → exception → correction with control totals, then CONNECTED grading in the register."
+    },
+    "/data/corrections": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — close / data-control pattern",
+      "role": "Controller product owner",
+      "reason": "Part of the import → reconcile → exception → correct data-control spine (ACTUALS & CLOSE); folds into the canonical /data pattern rather than carrying its own IA slot.",
+      "nextEvidence": "Integration test through import → reconcile → exception → correction with control totals, then CONNECTED grading in the register."
+    },
+    "/data/data-flow": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — close / data-control pattern",
+      "role": "Controller product owner",
+      "reason": "Part of the import → reconcile → exception → correct data-control spine (ACTUALS & CLOSE); folds into the canonical /data pattern rather than carrying its own IA slot.",
+      "nextEvidence": "Integration test through import → reconcile → exception → correction with control totals, then CONNECTED grading in the register."
+    },
+    "/data/exceptions": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — close / data-control pattern",
+      "role": "Controller product owner",
+      "reason": "Part of the import → reconcile → exception → correct data-control spine (ACTUALS & CLOSE); folds into the canonical /data pattern rather than carrying its own IA slot.",
+      "nextEvidence": "Integration test through import → reconcile → exception → correction with control totals, then CONNECTED grading in the register."
+    },
+    "/data/migration": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — close / data-control pattern",
+      "role": "Controller product owner",
+      "reason": "Part of the import → reconcile → exception → correct data-control spine (ACTUALS & CLOSE); folds into the canonical /data pattern rather than carrying its own IA slot.",
+      "nextEvidence": "Integration test through import → reconcile → exception → correction with control totals, then CONNECTED grading in the register."
+    },
+    "/data/reconciliation": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — close / data-control pattern",
+      "role": "Controller product owner",
+      "reason": "Part of the import → reconcile → exception → correct data-control spine (ACTUALS & CLOSE); folds into the canonical /data pattern rather than carrying its own IA slot.",
+      "nextEvidence": "Integration test through import → reconcile → exception → correction with control totals, then CONNECTED grading in the register."
+    },
+    "/data/version-diff": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — close / data-control pattern",
+      "role": "Controller product owner",
+      "reason": "Part of the import → reconcile → exception → correct data-control spine (ACTUALS & CLOSE); folds into the canonical /data pattern rather than carrying its own IA slot.",
+      "nextEvidence": "Integration test through import → reconcile → exception → correction with control totals, then CONNECTED grading in the register."
+    },
+    "/esg/carbon": {
+      "pillar": "ESG",
+      "disposition": "EXPERIMENTAL — sustainability reporting; certify or retire",
+      "role": "ESG reporting owner (placeholder)",
+      "reason": "Carbon dashboard with no disclosed methodology.",
+      "nextEvidence": "Declare the reporting standard and jurisdiction tier (O5) before any report is presented as compliant."
+    },
+    "/esg/csrd": {
+      "pillar": "ESG",
+      "disposition": "EXPERIMENTAL — sustainability reporting; certify or retire",
+      "role": "ESG reporting owner (placeholder)",
+      "reason": "CSRD report screen; no audited basis or jurisdiction tier.",
+      "nextEvidence": "Declare the reporting standard and jurisdiction tier (O5) before any report is presented as compliant."
+    },
+    "/esg/overview": {
+      "pillar": "ESG",
+      "disposition": "EXPERIMENTAL — sustainability reporting; certify or retire",
+      "role": "ESG reporting owner (placeholder)",
+      "reason": "Sustainability overview with no reporting standard applied.",
+      "nextEvidence": "Declare the reporting standard and jurisdiction tier (O5) before any report is presented as compliant."
+    },
+    "/fx-rates": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — legacy alias of /currency/fx-rates",
+      "role": "Controller product owner",
+      "reason": "One-line alias: <Navigate to=\"/currency/fx-rates\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /currency/fx-rates; keep the alias for bookmark compatibility."
+    },
+    "/ic-elimination": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — legacy alias of /consolidation/ic-eliminations",
+      "role": "Controller product owner",
+      "reason": "One-line alias: <Navigate to=\"/consolidation/ic-eliminations\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /consolidation/ic-eliminations; keep the alias for bookmark compatibility."
+    },
+    "/intercompany/*": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — legacy alias of /consolidation/ic-eliminations",
+      "role": "Controller product owner",
+      "reason": "One-line alias: <Navigate to=\"/consolidation/ic-eliminations\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /consolidation/ic-eliminations; keep the alias for bookmark compatibility."
+    },
+    "/lease": {
+      "pillar": "Modeling",
+      "disposition": "MIGRATE — lease canonical pattern",
+      "role": "Controller product owner",
+      "reason": "Canonical lease hub; the pattern exists and the dashboard is its entry point.",
+      "nextEvidence": "Tie-out test from lease schedule to GL postings; then CONNECTED grading."
+    },
+    "/lease/:id": {
+      "pillar": "Modeling",
+      "disposition": "MIGRATE — lease canonical pattern",
+      "role": "Controller product owner",
+      "reason": "Detail view of the lease hub; same capability, reached by id.",
+      "nextEvidence": "Tie-out test from lease schedule to GL postings; then CONNECTED grading."
+    },
+    "/lease/accounting": {
+      "pillar": "Modeling",
+      "disposition": "MIGRATE — lease canonical pattern",
+      "role": "Controller product owner",
+      "reason": "Lease accounting schedules under the lease hub; no separate IA slot.",
+      "nextEvidence": "Tie-out test from lease schedule to GL postings; then CONNECTED grading."
+    },
+    "/period-close": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — legacy alias of /periods/close",
+      "role": "Controller product owner",
+      "reason": "One-line alias: <Navigate to=\"/periods/close\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /periods/close; keep the alias for bookmark compatibility."
+    },
+    "/period-close/checklist": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — legacy alias of /periods/close",
+      "role": "Controller product owner",
+      "reason": "One-line alias: <Navigate to=\"/periods/close\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /periods/close; keep the alias for bookmark compatibility."
+    },
+    "/period-close/consolidation": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — legacy alias of /periods/close",
+      "role": "Controller product owner",
+      "reason": "One-line alias: <Navigate to=\"/periods/close\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /periods/close; keep the alias for bookmark compatibility."
+    },
+    "/period-close/lock": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — legacy alias of /periods/close",
+      "role": "Controller product owner",
+      "reason": "One-line alias: <Navigate to=\"/periods/close\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /periods/close; keep the alias for bookmark compatibility."
+    },
+    "/period-close/signoff": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — legacy alias of /periods/close",
+      "role": "Controller product owner",
+      "reason": "One-line alias: <Navigate to=\"/periods/close\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /periods/close; keep the alias for bookmark compatibility."
+    },
+    "/period-close/trial-balance": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — legacy alias of /periods/close",
+      "role": "Controller product owner",
+      "reason": "One-line alias: <Navigate to=\"/periods/close\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /periods/close; keep the alias for bookmark compatibility."
+    },
+    "/reconciliation": {
+      "pillar": "Close",
+      "disposition": "MIGRATE — legacy alias of /data/reconciliation",
+      "role": "Controller product owner",
+      "reason": "One-line alias: <Navigate to=\"/data/reconciliation\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /data/reconciliation; keep the alias for bookmark compatibility."
+    },
+    "/revenue": {
+      "pillar": "Modeling",
+      "disposition": "MIGRATE — legacy alias of /revenue/rev-rec",
+      "role": "Controller product owner",
+      "reason": "One-line alias: <Navigate to=\"/revenue/rev-rec\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /revenue/rev-rec; keep the alias for bookmark compatibility."
+    },
+    "/revenue/deferred": {
+      "pillar": "Modeling",
+      "disposition": "MIGRATE — revenue recognition pattern",
+      "role": "Controller product owner",
+      "reason": "Deferred-revenue schedule under the revenue hub.",
+      "nextEvidence": "Recognition schedule ties to GL revenue accounts in a test; then CONNECTED grading."
+    },
+    "/revenue/rev-rec": {
+      "pillar": "Modeling",
+      "disposition": "MIGRATE — revenue recognition pattern",
+      "role": "Controller product owner",
+      "reason": "Revenue recognition dashboard; the canonical revenue pattern.",
+      "nextEvidence": "Recognition schedule ties to GL revenue accounts in a test; then CONNECTED grading."
+    },
+    "/sox": {
+      "pillar": "Admin",
+      "disposition": "MIGRATE — legacy alias of /audit/sox",
+      "role": "Platform product owner",
+      "reason": "One-line alias: <Navigate to=\"/audit/sox\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /audit/sox; keep the alias for bookmark compatibility."
+    },
+    "/tax": {
+      "pillar": "Modeling",
+      "disposition": "MIGRATE — legacy alias of /tax/provision",
+      "role": "Controller product owner",
+      "reason": "One-line alias: <Navigate to=\"/tax/provision\"> and nothing else. It adds no surface of its own; the canonical screen carries the capability.",
+      "nextEvidence": "Router test asserts the redirect target /tax/provision; keep the alias for bookmark compatibility."
+    },
+    "/tax/provision": {
+      "pillar": "Modeling",
+      "disposition": "MIGRATE — tax provision pattern",
+      "role": "Controller product owner",
+      "reason": "Tax provision calculation screen; the canonical tax pattern.",
+      "nextEvidence": "Provision calculation tie-out test; jurisdiction scope stays an owner question (O5)."
+    },
+    "/tax/transfer-pricing": {
+      "pillar": "Modeling",
+      "disposition": "MIGRATE — tax provision pattern",
+      "role": "Controller product owner",
+      "reason": "Transfer-pricing view under the tax hub.",
+      "nextEvidence": "Provision calculation tie-out test; jurisdiction scope stays an owner question (O5)."
+    },
+    "/visual/atlas": {
+      "pillar": "Workspace",
+      "disposition": "RETAIN — dev-only baseline, excluded from navigation",
+      "role": "Design system owner",
+      "reason": "Visual baseline harness for the design system; it is not a product surface and is excluded from navigation.",
+      "nextEvidence": "Keep it out of the product journey audit; no support claim is possible or wanted."
+    }
+  }
+}

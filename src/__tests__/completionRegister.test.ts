@@ -132,7 +132,7 @@ function fixture(): string {
     'docs/CAPABILITY_TRUTH_MATRIX.md',
     `| Route | Pillar | Disposition | Role | Component | Source | Built | Connected | Governed | Ready | Next |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| \`/login\` | Identity | REVIEW — disposition required | Unassigned | LoginPage | \`src/pages/auth/LoginPage.tsx\` | BUILT | UNVERIFIED | UNVERIFIED | UNVERIFIED | review |
+| \`/login\` | Identity | MIGRATE — auth pattern | Platform product owner | LoginPage | \`src/pages/auth/LoginPage.tsx\` | BUILT | UNVERIFIED | UNVERIFIED | UNVERIFIED | review |
 | \`/dashboard\` | PLAN | RETAIN — keep the screen | Owner | DashboardPage | \`src/pages/DashboardPage.tsx\` | BUILT | UNVERIFIED | UNVERIFIED | UNVERIFIED | review |
 `
   );
@@ -297,14 +297,14 @@ describe('completion-register.mjs', () => {
     expect(run(['--check'], root).status).toBe(0);
   });
 
-  it('carries the matrix disposition and refuses SUPPORTED on a REVIEW row', () => {
+  it('carries the matrix disposition and refuses any row left in REVIEW', () => {
     const root = fixture();
     expect(run(['--seed'], root).status).toBe(0);
 
     const seeded = readJson(root);
     expect(
       (row(seeded, 'route:/login') as { evidence: Record<string, string> }).evidence.disposition
-    ).toBe('REVIEW');
+    ).toBe('MIGRATE');
     expect(
       (row(seeded, 'route:/dashboard') as { evidence: Record<string, string> }).evidence.disposition
     ).toBe('RETAIN');
@@ -323,7 +323,9 @@ describe('completion-register.mjs', () => {
     saveRows(root, promoted);
     const reviewResult = run(['--check'], root);
     expect(reviewResult.status).toBe(1);
-    expect(reviewResult.stderr).toMatch(/REVIEW disposition cannot be SUPPORTED/);
+    // PR #87 decided every route, so REVIEW is no longer a state a row may rest
+    // in — not even an EXPERIMENTAL one. It means "nobody has decided this".
+    expect(reviewResult.stderr).toMatch(/disposition REVIEW — no recorded decision/);
 
     const misspelled = readJson(root);
     Object.assign(row(misspelled, 'route:/dashboard') as object, {

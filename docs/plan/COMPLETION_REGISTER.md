@@ -23,10 +23,10 @@ question that stops it. Nothing here is promoted by prose.
 
 | Route disposition | Count |
 | --- | --- |
-| MIGRATE | 103 |
-| EXPERIMENTAL | 77 |
-| REVIEW | 47 |
-| RETAIN | 4 |
+| MIGRATE | 141 |
+| EXPERIMENTAL | 84 |
+| REVIEW | 0 |
+| RETAIN | 6 |
 
 | Census | Count |
 | --- | --- |
@@ -40,11 +40,11 @@ question that stops it. Nothing here is promoted by prose.
 
 | Id | Status | Evidence | Note |
 | --- | --- | --- | --- |
-| `route:*` | EXPERIMENTAL | gatedBy=*; disposition=REVIEW | Routed screen (NotFoundPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:*` | EXPERIMENTAL | gatedBy=*; disposition=RETAIN | Routed screen (NotFoundPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/` | EXPERIMENTAL | gatedBy=/; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/accounting` | EXPERIMENTAL | gatedBy=/accounting; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/accounting/depreciation` | EXPERIMENTAL | gatedBy=/accounting/depreciation; disposition=REVIEW | Routed screen (DepreciationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/accounting/multi-book` | EXPERIMENTAL | gatedBy=/accounting/multi-book; disposition=REVIEW | Routed screen (MultiBookPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/accounting` | EXPERIMENTAL | gatedBy=/accounting; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/accounting/depreciation` | EXPERIMENTAL | gatedBy=/accounting/depreciation; disposition=MIGRATE | Routed screen (DepreciationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/accounting/multi-book` | EXPERIMENTAL | gatedBy=/accounting/multi-book; disposition=MIGRATE | Routed screen (MultiBookPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/admin` | EXPERIMENTAL | gatedBy=/admin; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/admin/benchmarks` | EXPERIMENTAL | gatedBy=/admin/benchmarks; disposition=MIGRATE | Routed screen (BenchmarksPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/admin/debug` | EXPERIMENTAL | gatedBy=/admin/debug; disposition=MIGRATE | Routed screen (DebugPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -63,25 +63,25 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/audit/impairment` | EXPERIMENTAL | gatedBy=/audit/impairment; disposition=MIGRATE | Routed screen (ImpairmentPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/audit/sox` | EXPERIMENTAL | gatedBy=/audit/sox; disposition=MIGRATE | Routed screen (SOXCompliancePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/audit/trail` | EXPERIMENTAL | gatedBy=/audit/trail; disposition=MIGRATE | Routed screen (AuditTrailPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/backup` | EXPERIMENTAL | gatedBy=/backup; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/backup/restore` | EXPERIMENTAL | gatedBy=/backup/restore; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/backup` | EXPERIMENTAL | gatedBy=/backup; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/backup/restore` | EXPERIMENTAL | gatedBy=/backup/restore; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/banking/banking` | EXPERIMENTAL | gatedBy=/banking/banking; disposition=EXPERIMENTAL | Routed screen (BankingDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/banking/capital` | EXPERIMENTAL | gatedBy=/banking/capital; disposition=EXPERIMENTAL | Routed screen (CapitalAdequacyPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/banking/loan-loss` | EXPERIMENTAL | gatedBy=/banking/loan-loss; disposition=EXPERIMENTAL | Routed screen (LoanLossPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/banking/nim` | EXPERIMENTAL | gatedBy=/banking/nim; disposition=EXPERIMENTAL | Routed screen (NIMDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/banking/reconciliation` | EXPERIMENTAL | gatedBy=/banking/reconciliation; disposition=EXPERIMENTAL | Routed screen (BankReconciliation); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/banking/statements` | EXPERIMENTAL | gatedBy=/banking/statements; disposition=EXPERIMENTAL | Routed screen (BankStatements); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/board-pack` | EXPERIMENTAL | gatedBy=/board-pack; disposition=REVIEW | Routed screen (BoardPackPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/bonds/portfolio` | EXPERIMENTAL | gatedBy=/bonds/portfolio; disposition=REVIEW | Routed screen (BondPortfolioPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/bonds/yield-curve` | EXPERIMENTAL | gatedBy=/bonds/yield-curve; disposition=REVIEW | Routed screen (YieldCurvePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/board-pack` | EXPERIMENTAL | gatedBy=/board-pack; disposition=MIGRATE | Routed screen (BoardPackPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/bonds/portfolio` | EXPERIMENTAL | gatedBy=/bonds/portfolio; disposition=EXPERIMENTAL | Routed screen (BondPortfolioPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/bonds/yield-curve` | EXPERIMENTAL | gatedBy=/bonds/yield-curve; disposition=EXPERIMENTAL | Routed screen (YieldCurvePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/budgets` | EXPERIMENTAL | gatedBy=/budgets; disposition=MIGRATE | Routed screen (BudgetListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/budgets/:id` | EXPERIMENTAL | gatedBy=/budgets/:id; disposition=MIGRATE | Routed screen (BudgetDetailPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/budgets/approval` | EXPERIMENTAL | gatedBy=/budgets/approval; disposition=MIGRATE | Routed screen (BudgetApproval); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/budgets/bva` | EXPERIMENTAL | gatedBy=/budgets/bva; disposition=MIGRATE | Routed screen (BudgetVAReport); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/budgets/create` | EXPERIMENTAL | gatedBy=/budgets/create; disposition=MIGRATE | Routed screen (BudgetCreatePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/capex` | EXPERIMENTAL | gatedBy=/capex; disposition=REVIEW | Routed screen (CapExDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/capex/depreciation` | EXPERIMENTAL | gatedBy=/capex/depreciation; disposition=REVIEW | Routed screen (DepreciationForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/capex/tracker` | EXPERIMENTAL | gatedBy=/capex/tracker; disposition=REVIEW | Routed screen (CapexTracker); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/capex` | EXPERIMENTAL | gatedBy=/capex; disposition=MIGRATE | Routed screen (CapExDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/capex/depreciation` | EXPERIMENTAL | gatedBy=/capex/depreciation; disposition=MIGRATE | Routed screen (DepreciationForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/capex/tracker` | EXPERIMENTAL | gatedBy=/capex/tracker; disposition=EXPERIMENTAL | Routed screen (CapexTracker); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/cash-forecast` | EXPERIMENTAL | gatedBy=/cash-forecast; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/cash/debt` | EXPERIMENTAL | gatedBy=/cash/debt; disposition=MIGRATE | Routed screen (DebtSchedulePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/cash/forecast` | EXPERIMENTAL | gatedBy=/cash/forecast; disposition=MIGRATE | Routed screen (CashForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -93,7 +93,7 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/collaboration/approvals` | EXPERIMENTAL | gatedBy=/collaboration/approvals; disposition=MIGRATE | Routed screen (ApprovalQueuePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/collaboration/shared` | EXPERIMENTAL | gatedBy=/collaboration/shared; disposition=MIGRATE | Routed screen (SharedReports); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/collaboration/team` | EXPERIMENTAL | gatedBy=/collaboration/team; disposition=MIGRATE | Routed screen (TeamWorkspace); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/compliance/sox` | EXPERIMENTAL | gatedBy=/compliance/sox; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/compliance/sox` | EXPERIMENTAL | gatedBy=/compliance/sox; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/consolidation` | EXPERIMENTAL | gatedBy=/consolidation; disposition=MIGRATE | Routed screen (ConsolidationDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/consolidation/detail` | EXPERIMENTAL | gatedBy=/consolidation/detail; disposition=MIGRATE | Routed screen (ConsolidationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/consolidation/ic-eliminations` | EXPERIMENTAL | gatedBy=/consolidation/ic-eliminations; disposition=MIGRATE | Routed screen (ICEliminationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -101,27 +101,27 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/construction/dashboard` | EXPERIMENTAL | gatedBy=/construction/dashboard; disposition=EXPERIMENTAL | Routed screen (ConstructionDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/construction/equipment` | EXPERIMENTAL | gatedBy=/construction/equipment; disposition=EXPERIMENTAL | Routed screen (EquipmentManagementPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/construction/project` | EXPERIMENTAL | gatedBy=/construction/project; disposition=EXPERIMENTAL | Routed screen (ProjectCostingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/credit/risk` | EXPERIMENTAL | gatedBy=/credit/risk; disposition=REVIEW | Routed screen (CreditRiskPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/credit/risk` | EXPERIMENTAL | gatedBy=/credit/risk; disposition=EXPERIMENTAL | Routed screen (CreditRiskPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/currency` | EXPERIMENTAL | gatedBy=/currency; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/currency/fx-rates` | EXPERIMENTAL | gatedBy=/currency/fx-rates; disposition=MIGRATE | Routed screen (FXRatesPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/currency/hedging` | EXPERIMENTAL | gatedBy=/currency/hedging; disposition=MIGRATE | Routed screen (HedgeManagementPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/currency/translation` | EXPERIMENTAL | gatedBy=/currency/translation; disposition=MIGRATE | Routed screen (TranslationResultPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/dashboard` | EXPERIMENTAL | gatedBy=/dashboard; disposition=MIGRATE | Routed screen (DashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/data` | EXPERIMENTAL | gatedBy=/data; disposition=REVIEW | Routed screen (DataImportPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/data/chart-of-accounts` | EXPERIMENTAL | gatedBy=/data/chart-of-accounts; disposition=REVIEW | Routed screen (ChartOfAccountsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/data/comparison` | EXPERIMENTAL | gatedBy=/data/comparison; disposition=REVIEW | Routed screen (ComparisonPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/data/corrections` | EXPERIMENTAL | gatedBy=/data/corrections; disposition=REVIEW | Routed screen (CorrectionsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/data/data-flow` | EXPERIMENTAL | gatedBy=/data/data-flow; disposition=REVIEW | Routed screen (DataFlowMapPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/data/exceptions` | EXPERIMENTAL | gatedBy=/data/exceptions; disposition=REVIEW | Routed screen (ExceptionQueuePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data` | EXPERIMENTAL | gatedBy=/data; disposition=MIGRATE | Routed screen (DataImportPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/chart-of-accounts` | EXPERIMENTAL | gatedBy=/data/chart-of-accounts; disposition=MIGRATE | Routed screen (ChartOfAccountsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/comparison` | EXPERIMENTAL | gatedBy=/data/comparison; disposition=MIGRATE | Routed screen (ComparisonPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/corrections` | EXPERIMENTAL | gatedBy=/data/corrections; disposition=MIGRATE | Routed screen (CorrectionsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/data-flow` | EXPERIMENTAL | gatedBy=/data/data-flow; disposition=MIGRATE | Routed screen (DataFlowMapPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/exceptions` | EXPERIMENTAL | gatedBy=/data/exceptions; disposition=MIGRATE | Routed screen (ExceptionQueuePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/data/gl-account-analysis` | EXPERIMENTAL | gatedBy=/data/gl-account-analysis; disposition=MIGRATE | Routed screen (GLAccountAnalysisPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/data/gl-explorer` | EXPERIMENTAL | gatedBy=/data/gl-explorer; disposition=MIGRATE | Routed screen (GLExplorerPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/data/gl-journals` | EXPERIMENTAL | gatedBy=/data/gl-journals; disposition=MIGRATE | Routed screen (GLJournalsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/data/gl-reporting` | EXPERIMENTAL | gatedBy=/data/gl-reporting; disposition=MIGRATE | Routed screen (GLReportingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/data/gl-trial-balance` | EXPERIMENTAL | gatedBy=/data/gl-trial-balance; disposition=MIGRATE | Routed screen (GLTrialBalancePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/data/gl-upload` | EXPERIMENTAL | gatedBy=/data/gl-upload; disposition=MIGRATE | Routed screen (GLUploadPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/data/migration` | EXPERIMENTAL | gatedBy=/data/migration; disposition=REVIEW | Routed screen (MigrationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/data/reconciliation` | EXPERIMENTAL | gatedBy=/data/reconciliation; disposition=REVIEW | Routed screen (ReconciliationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/data/version-diff` | EXPERIMENTAL | gatedBy=/data/version-diff; disposition=REVIEW | Routed screen (VersionDiffPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/migration` | EXPERIMENTAL | gatedBy=/data/migration; disposition=MIGRATE | Routed screen (MigrationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/reconciliation` | EXPERIMENTAL | gatedBy=/data/reconciliation; disposition=MIGRATE | Routed screen (ReconciliationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/version-diff` | EXPERIMENTAL | gatedBy=/data/version-diff; disposition=MIGRATE | Routed screen (VersionDiffPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/docs/api` | EXPERIMENTAL | gatedBy=/docs/api; disposition=MIGRATE | Routed screen (ApiReferencePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/drill-down` | EXPERIMENTAL | gatedBy=/drill-down; disposition=MIGRATE | Routed screen (DrillDownWindowPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/education` | EXPERIMENTAL | gatedBy=/education; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -133,9 +133,9 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/energy/renewable` | EXPERIMENTAL | gatedBy=/energy/renewable; disposition=EXPERIMENTAL | Routed screen (RenewableEnergyPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/energy/risk` | EXPERIMENTAL | gatedBy=/energy/risk; disposition=EXPERIMENTAL | Routed screen (EnergyRiskPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/energy/sector` | EXPERIMENTAL | gatedBy=/energy/sector; disposition=EXPERIMENTAL | Routed screen (EnergySectorPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/esg/carbon` | EXPERIMENTAL | gatedBy=/esg/carbon; disposition=REVIEW | Routed screen (CarbonDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/esg/csrd` | EXPERIMENTAL | gatedBy=/esg/csrd; disposition=REVIEW | Routed screen (CSRDReportPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/esg/overview` | EXPERIMENTAL | gatedBy=/esg/overview; disposition=REVIEW | Routed screen (ESGPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/esg/carbon` | EXPERIMENTAL | gatedBy=/esg/carbon; disposition=EXPERIMENTAL | Routed screen (CarbonDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/esg/csrd` | EXPERIMENTAL | gatedBy=/esg/csrd; disposition=EXPERIMENTAL | Routed screen (CSRDReportPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/esg/overview` | EXPERIMENTAL | gatedBy=/esg/overview; disposition=EXPERIMENTAL | Routed screen (ESGPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/forecasts` | EXPERIMENTAL | gatedBy=/forecasts; disposition=MIGRATE | Routed screen (ForecastListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/forecasts/:id` | EXPERIMENTAL | gatedBy=/forecasts/:id; disposition=MIGRATE | Routed screen (ForecastBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/forecasts/auto-update` | EXPERIMENTAL | gatedBy=/forecasts/auto-update; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -145,7 +145,7 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/forecasts/rolling` | EXPERIMENTAL | gatedBy=/forecasts/rolling; disposition=MIGRATE | Routed screen (RollingForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/forecasts/what-if` | EXPERIMENTAL | gatedBy=/forecasts/what-if; disposition=MIGRATE | Routed screen (WhatIfPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/forgot-password` | EXPERIMENTAL | gatedBy=/forgot-password; disposition=RETAIN | Routed screen (ForgotPasswordPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/fx-rates` | EXPERIMENTAL | gatedBy=/fx-rates; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/fx-rates` | EXPERIMENTAL | gatedBy=/fx-rates; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/government` | EXPERIMENTAL | gatedBy=/government; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/government/grants` | EXPERIMENTAL | gatedBy=/government/grants; disposition=EXPERIMENTAL | Routed screen (GrantDisbursementPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/government/procurement` | EXPERIMENTAL | gatedBy=/government/procurement; disposition=EXPERIMENTAL | Routed screen (ProcurementCyclePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -155,15 +155,15 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/healthcare/revenue` | EXPERIMENTAL | gatedBy=/healthcare/revenue; disposition=EXPERIMENTAL | Routed screen (PatientRevenuePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/healthcare/value-based` | EXPERIMENTAL | gatedBy=/healthcare/value-based; disposition=EXPERIMENTAL | Routed screen (ValueBasedCarePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/help` | EXPERIMENTAL | gatedBy=/help; disposition=MIGRATE | Routed screen (HelpPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/ic-elimination` | EXPERIMENTAL | gatedBy=/ic-elimination; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/ic-elimination` | EXPERIMENTAL | gatedBy=/ic-elimination; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/insurance/claims` | EXPERIMENTAL | gatedBy=/insurance/claims; disposition=EXPERIMENTAL | Routed screen (ClaimsAnalyticsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/insurance/dashboard` | EXPERIMENTAL | gatedBy=/insurance/dashboard; disposition=EXPERIMENTAL | Routed screen (InsuranceDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/insurance/insurance` | EXPERIMENTAL | gatedBy=/insurance/insurance; disposition=EXPERIMENTAL | Routed screen (InsurancePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/insurance/underwriting` | EXPERIMENTAL | gatedBy=/insurance/underwriting; disposition=EXPERIMENTAL | Routed screen (UnderwritingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/intercompany/*` | EXPERIMENTAL | gatedBy=/intercompany/*; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/lease` | EXPERIMENTAL | gatedBy=/lease; disposition=REVIEW | Routed screen (LeaseDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/lease/:id` | EXPERIMENTAL | gatedBy=/lease/:id; disposition=REVIEW | Routed screen (LeaseDetailPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/lease/accounting` | EXPERIMENTAL | gatedBy=/lease/accounting; disposition=REVIEW | Routed screen (LeaseAccountingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/intercompany/*` | EXPERIMENTAL | gatedBy=/intercompany/*; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/lease` | EXPERIMENTAL | gatedBy=/lease; disposition=MIGRATE | Routed screen (LeaseDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/lease/:id` | EXPERIMENTAL | gatedBy=/lease/:id; disposition=MIGRATE | Routed screen (LeaseDetailPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/lease/accounting` | EXPERIMENTAL | gatedBy=/lease/accounting; disposition=MIGRATE | Routed screen (LeaseAccountingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/login` | EXPERIMENTAL | gatedBy=/login; disposition=RETAIN | Routed screen (LoginPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/logistics` | EXPERIMENTAL | gatedBy=/logistics; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/logistics/fleet-cost` | EXPERIMENTAL | gatedBy=/logistics/fleet-cost; disposition=EXPERIMENTAL | Routed screen (FleetCostDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -173,12 +173,12 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/manufacturing/overview` | EXPERIMENTAL | gatedBy=/manufacturing/overview; disposition=EXPERIMENTAL | Routed screen (ManufacturingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/manufacturing/production` | EXPERIMENTAL | gatedBy=/manufacturing/production; disposition=EXPERIMENTAL | Routed screen (ProductionDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/onboarding` | EXPERIMENTAL | gatedBy=/onboarding; disposition=RETAIN | Routed screen (OnboardingWizardWrapper); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/period-close` | EXPERIMENTAL | gatedBy=/period-close; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/period-close/checklist` | EXPERIMENTAL | gatedBy=/period-close/checklist; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/period-close/consolidation` | EXPERIMENTAL | gatedBy=/period-close/consolidation; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/period-close/lock` | EXPERIMENTAL | gatedBy=/period-close/lock; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/period-close/signoff` | EXPERIMENTAL | gatedBy=/period-close/signoff; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/period-close/trial-balance` | EXPERIMENTAL | gatedBy=/period-close/trial-balance; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/period-close` | EXPERIMENTAL | gatedBy=/period-close; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/period-close/checklist` | EXPERIMENTAL | gatedBy=/period-close/checklist; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/period-close/consolidation` | EXPERIMENTAL | gatedBy=/period-close/consolidation; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/period-close/lock` | EXPERIMENTAL | gatedBy=/period-close/lock; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/period-close/signoff` | EXPERIMENTAL | gatedBy=/period-close/signoff; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/period-close/trial-balance` | EXPERIMENTAL | gatedBy=/period-close/trial-balance; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/periods` | EXPERIMENTAL | gatedBy=/periods; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/periods/close` | EXPERIMENTAL | gatedBy=/periods/close; disposition=MIGRATE | Routed screen (PeriodClosePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/plugins` | EXPERIMENTAL | gatedBy=/plugins; disposition=MIGRATE | Routed screen (PluginMarketplacePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -188,7 +188,7 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/realestate/portfolio` | EXPERIMENTAL | gatedBy=/realestate/portfolio; disposition=EXPERIMENTAL | Routed screen (PropertyPortfolioPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/realestate/reit` | EXPERIMENTAL | gatedBy=/realestate/reit; disposition=EXPERIMENTAL | Routed screen (REITDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/realestate/valuation` | EXPERIMENTAL | gatedBy=/realestate/valuation; disposition=EXPERIMENTAL | Routed screen (ValuationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/reconciliation` | EXPERIMENTAL | gatedBy=/reconciliation; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reconciliation` | EXPERIMENTAL | gatedBy=/reconciliation; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/register` | EXPERIMENTAL | gatedBy=/register; disposition=RETAIN | Routed screen (RegisterPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/reports` | EXPERIMENTAL | gatedBy=/reports; disposition=MIGRATE | Routed screen (ReportsListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/reports/balance-sheet` | EXPERIMENTAL | gatedBy=/reports/balance-sheet; disposition=MIGRATE | Routed screen (BalanceSheetPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -212,9 +212,9 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/retail/promo` | EXPERIMENTAL | gatedBy=/retail/promo; disposition=EXPERIMENTAL | Routed screen (PromoAnalysisPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/retail/retail` | EXPERIMENTAL | gatedBy=/retail/retail; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/retail/stores` | EXPERIMENTAL | gatedBy=/retail/stores; disposition=EXPERIMENTAL | Routed screen (StoreDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/revenue` | EXPERIMENTAL | gatedBy=/revenue; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/revenue/deferred` | EXPERIMENTAL | gatedBy=/revenue/deferred; disposition=REVIEW | Routed screen (DeferredSchedulePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/revenue/rev-rec` | EXPERIMENTAL | gatedBy=/revenue/rev-rec; disposition=REVIEW | Routed screen (RevRecDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/revenue` | EXPERIMENTAL | gatedBy=/revenue; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/revenue/deferred` | EXPERIMENTAL | gatedBy=/revenue/deferred; disposition=MIGRATE | Routed screen (DeferredSchedulePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/revenue/rev-rec` | EXPERIMENTAL | gatedBy=/revenue/rev-rec; disposition=MIGRATE | Routed screen (RevRecDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/saas/arr` | EXPERIMENTAL | gatedBy=/saas/arr; disposition=EXPERIMENTAL | Routed screen (ARRDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/saas/churn` | EXPERIMENTAL | gatedBy=/saas/churn; disposition=EXPERIMENTAL | Routed screen (ChurnDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/saas/churn-analysis` | EXPERIMENTAL | gatedBy=/saas/churn-analysis; disposition=EXPERIMENTAL | Routed screen (ChurnAnalysisPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -254,10 +254,10 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/settings/integrations` | EXPERIMENTAL | gatedBy=/settings/integrations; disposition=MIGRATE | Routed screen (IntegrationSettingsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/settings/security` | EXPERIMENTAL | gatedBy=/settings/security; disposition=MIGRATE | Routed screen (SecuritySettingsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/settings/users` | EXPERIMENTAL | gatedBy=/settings/users; disposition=MIGRATE | Routed screen (UserManagementPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/sox` | EXPERIMENTAL | gatedBy=/sox; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/tax` | EXPERIMENTAL | gatedBy=/tax; disposition=REVIEW | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/tax/provision` | EXPERIMENTAL | gatedBy=/tax/provision; disposition=REVIEW | Routed screen (TaxProvisionPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/tax/transfer-pricing` | EXPERIMENTAL | gatedBy=/tax/transfer-pricing; disposition=REVIEW | Routed screen (TransferPricingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/sox` | EXPERIMENTAL | gatedBy=/sox; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/tax` | EXPERIMENTAL | gatedBy=/tax; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/tax/provision` | EXPERIMENTAL | gatedBy=/tax/provision; disposition=MIGRATE | Routed screen (TaxProvisionPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/tax/transfer-pricing` | EXPERIMENTAL | gatedBy=/tax/transfer-pricing; disposition=MIGRATE | Routed screen (TransferPricingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/telecom` | EXPERIMENTAL | gatedBy=/telecom; disposition=EXPERIMENTAL | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/templates` | EXPERIMENTAL | gatedBy=/templates; disposition=MIGRATE | Routed screen (TemplateGalleryPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/templates/preview` | EXPERIMENTAL | gatedBy=/templates/preview; disposition=MIGRATE | Routed screen (TemplatePreviewPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -266,7 +266,7 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/treasury/investments` | EXPERIMENTAL | gatedBy=/treasury/investments; disposition=MIGRATE | Routed screen (InvestmentPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/treasury/loan-amortization` | EXPERIMENTAL | gatedBy=/treasury/loan-amortization; disposition=MIGRATE | Routed screen (LoanAmortizationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/variance` | EXPERIMENTAL | gatedBy=/variance; disposition=MIGRATE | Routed screen (VarianceDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/visual/atlas` | EXPERIMENTAL | gatedBy=/visual/atlas; disposition=REVIEW | Routed screen (AtlasVisualBaselinePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/visual/atlas` | EXPERIMENTAL | gatedBy=/visual/atlas; disposition=RETAIN | Routed screen (AtlasVisualBaselinePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/workforce` | EXPERIMENTAL | gatedBy=/workforce; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/workforce/compensation` | EXPERIMENTAL | gatedBy=/workforce/compensation; disposition=MIGRATE | Routed screen (CompModelingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/workforce/headcount` | EXPERIMENTAL | gatedBy=/workforce/headcount; disposition=MIGRATE | Routed screen (HeadcountPlanPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
