@@ -4205,7 +4205,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "*",
-        "disposition": "REVIEW"
+        "disposition": "RETAIN"
       },
       "note": "Routed screen (NotFoundPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4225,7 +4225,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/accounting",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4235,7 +4235,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/accounting/depreciation",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (DepreciationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4245,7 +4245,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/accounting/multi-book",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (MultiBookPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4435,7 +4435,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/backup",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4445,7 +4445,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/backup/restore",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4515,7 +4515,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/board-pack",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (BoardPackPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4525,7 +4525,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/bonds/portfolio",
-        "disposition": "REVIEW"
+        "disposition": "EXPERIMENTAL"
       },
       "note": "Routed screen (BondPortfolioPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4535,7 +4535,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/bonds/yield-curve",
-        "disposition": "REVIEW"
+        "disposition": "EXPERIMENTAL"
       },
       "note": "Routed screen (YieldCurvePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4595,7 +4595,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/capex",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (CapExDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4605,7 +4605,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/capex/depreciation",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (DepreciationForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4615,7 +4615,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/capex/tracker",
-        "disposition": "REVIEW"
+        "disposition": "EXPERIMENTAL"
       },
       "note": "Routed screen (CapexTracker); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4735,7 +4735,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/compliance/sox",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4815,7 +4815,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/credit/risk",
-        "disposition": "REVIEW"
+        "disposition": "EXPERIMENTAL"
       },
       "note": "Routed screen (CreditRiskPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4875,7 +4875,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/data",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (DataImportPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4885,7 +4885,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/data/chart-of-accounts",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (ChartOfAccountsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4895,7 +4895,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/data/comparison",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (ComparisonPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4905,7 +4905,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/data/corrections",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (CorrectionsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4915,7 +4915,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/data/data-flow",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (DataFlowMapPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4925,7 +4925,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/data/exceptions",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (ExceptionQueuePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -4995,7 +4995,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/data/migration",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (MigrationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5005,7 +5005,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/data/reconciliation",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (ReconciliationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5015,7 +5015,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/data/version-diff",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (VersionDiffPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5135,7 +5135,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/esg/carbon",
-        "disposition": "REVIEW"
+        "disposition": "EXPERIMENTAL"
       },
       "note": "Routed screen (CarbonDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5145,7 +5145,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/esg/csrd",
-        "disposition": "REVIEW"
+        "disposition": "EXPERIMENTAL"
       },
       "note": "Routed screen (CSRDReportPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5155,7 +5155,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/esg/overview",
-        "disposition": "REVIEW"
+        "disposition": "EXPERIMENTAL"
       },
       "note": "Routed screen (ESGPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5255,7 +5255,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/fx-rates",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5355,7 +5355,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/ic-elimination",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5405,7 +5405,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/intercompany/*",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5415,7 +5415,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/lease",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (LeaseDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5425,7 +5425,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/lease/:id",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (LeaseDetailPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5435,7 +5435,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/lease/accounting",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (LeaseAccountingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5535,7 +5535,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/period-close",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5545,7 +5545,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/period-close/checklist",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5555,7 +5555,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/period-close/consolidation",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5565,7 +5565,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/period-close/lock",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5575,7 +5575,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/period-close/signoff",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5585,7 +5585,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/period-close/trial-balance",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5685,7 +5685,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/reconciliation",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5925,7 +5925,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/revenue",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5935,7 +5935,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/revenue/deferred",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (DeferredSchedulePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -5945,7 +5945,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/revenue/rev-rec",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (RevRecDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -6345,7 +6345,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/sox",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -6355,7 +6355,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/tax",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -6365,7 +6365,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/tax/provision",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (TaxProvisionPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -6375,7 +6375,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/tax/transfer-pricing",
-        "disposition": "REVIEW"
+        "disposition": "MIGRATE"
       },
       "note": "Routed screen (TransferPricingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },
@@ -6465,7 +6465,7 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/visual/atlas",
-        "disposition": "REVIEW"
+        "disposition": "RETAIN"
       },
       "note": "Routed screen (AtlasVisualBaselinePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
     },

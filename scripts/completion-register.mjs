@@ -245,13 +245,15 @@ const ENGINE_PLUMBING = new Set([
 ]);
 
 /**
- * Route dispositions, from docs/CAPABILITY_TRUTH_MATRIX.md. `REVIEW` is the
- * matrix's own release blocker (47 rows at PR #86), so the register carries the
- * disposition next to the status and refuses to let a REVIEW row claim
- * SUPPORTED. Driving REVIEW to 0 is PR #87.
+ * Route dispositions, from docs/CAPABILITY_TRUTH_MATRIX.md, which reads the
+ * decisions in docs/product/route-dispositions.json. PR #86 seeded 47 REVIEW
+ * routes and forbade them from claiming SUPPORTED; PR #87 decided all 47, so a
+ * REVIEW row is now a failure in its own right: it means a route entered the
+ * tree with no recorded decision.
  */
 const DISPOSITIONS = ['MIGRATE', 'EXPERIMENTAL', 'REVIEW', 'RETAIN'];
 const MATRIX = 'docs/CAPABILITY_TRUTH_MATRIX.md';
+const ROUTE_DECISIONS = 'docs/product/route-dispositions.json';
 
 const REQUIREMENTS_REGISTER = 'docs/discovery/requirements-register.md';
 const ANNEX = 'docs/MASTER_CHECKLIST_COVERAGE.md';
@@ -305,7 +307,9 @@ function census() {
         .split('|')
         .slice(1, -1)
         .map((c) => c.trim());
-      const id = /^`(\/[^`]*)`$/.exec(cells[0] ?? '');
+      // Route ids are paths, plus the `*` catch-all: it is a route in
+      // src/App.tsx and needs a disposition like any other.
+      const id = /^`(\/[^`]*|\*)`$/.exec(cells[0] ?? '');
       if (!id) continue;
       const word = /\b(MIGRATE|RETAIN|EXPERIMENTAL|REVIEW)\b/.exec(cells[2] ?? '');
       if (word) dispositions.set(id[1], word[1]);
@@ -607,9 +611,13 @@ function validate(rows, c) {
         problems.push(
           `${row.id}: unknown disposition "${evidence.disposition}" (allowed: ${DISPOSITIONS.join(', ')})`
         );
-      } else if (evidence.disposition === 'REVIEW' && row.status === 'SUPPORTED') {
+      } else if (evidence.disposition === 'REVIEW') {
+        // PR #87 decided every route, so REVIEW is no longer a resting state:
+        // it means a route (or a newly added one) has no recorded decision.
+        // Failing here is the ratchet — a new route cannot enter the tree
+        // unclassified, and a decided route cannot quietly slide back.
         problems.push(
-          `${row.id}: a REVIEW disposition cannot be SUPPORTED (PR #87 decides it first)`
+          `${row.id}: disposition REVIEW — no recorded decision; decide it in ${ROUTE_DECISIONS}`
         );
       }
     }

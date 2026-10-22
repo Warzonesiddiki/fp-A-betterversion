@@ -1,5 +1,50 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-23 (g) — the 47 undecided routes are decided, and REVIEW no longer rests (PR #87)
+
+**The question was the defect.** The capability matrix classifies a route from its
+path prefix; 47 of 231 matched nothing and carried `REVIEW — disposition required`
+in every report since. That is not a status, it is a question addressed to nobody.
+PR #87 answers all 47 in `docs/product/route-dispositions.json`, and the matrix
+generator now reads that table instead of guessing.
+
+**The decisions, measured:** **38 MIGRATE · 7 EXPERIMENTAL · 2 RETAIN · 0 RETIRED
+· 0 REVIEW**. Seventeen are one-line `<Navigate>` aliases, each naming the target
+the router actually uses (`/period-close/*` → `/periods/close`, `/sox` →
+`/audit/sox`, `/backup` → `/settings/backup`, …). Nine are the data-control spine
+(`/data*`). Nine are close/modeling/reporting pages (`/lease*`, `/revenue*`,
+`/tax*`, `/accounting*`, `/capex*`, `/board-pack`). Three treasury and three ESG
+screens stay EXPERIMENTAL with the gap named — no methodology, no reporting
+standard, no jurisdiction tier (O5). `CapexTracker` stays EXPERIMENTAL because it
+is the one page in the set with no colocated test. `/visual/atlas` (dev-only, out
+of nav) and the `*` 404 catch-all are RETAINed as shell surfaces. Nothing was
+retired: DEC-006 still forbids shrinking the denominator.
+
+**Two taxonomy notes.** The matrix gained `Treasury` and `ESG` pillar names,
+because a vocabulary that cannot name an existing surface is what produced
+`Unclassified`. And `docs/CAPABILITY_TRUTH_MATRIX.md` was prettier-padded while
+the generator emits unpadded rows, so `npm run capability:inventory` could never
+reproduce the committed file; it is now generated verbatim and `.prettierignore`d,
+the same rule as [`docs/product/ROUTE_MAP.md`](product/ROUTE_MAP.md). That is the large reformatting diff in this PR —
+the 47 decisions are inside it.
+
+**The gate.** `scripts/verify-route-dispositions.mjs` (10 tests in
+`src/__tests__/routeDispositions.test.ts`) fails on: a decision for a route that
+does not exist, a blank field, a disposition outside the vocabulary, an alias
+decision naming a target the router does not redirect to, a matrix row still
+`REVIEW`, and a matrix row that disagrees with the decision. The completion
+register additionally fails `--check` on any `REVIEW` route row — so a new route
+cannot enter the tree undecided. `routes:dispositions` runs inside `docs:verify`.
+
+**Suite measured after the change.** `npm run test:sharded` on 2026-10-23:
+**8/8 shards, exit 0, 959 s, 1,418 files, 16,452 passed + 1 skipped** (shards
+122/119/115/113/115/141/115/119 s) — 10 more tests than the 1,417-file run, which
+are this PR's disposition tests. README quotes this run.
+
+**Next.** PR #88 (spine CONNECTED evidence): a synthetic D365-shaped file in,
+control totals tied, quarantine named, trial balance balanced, close not
+bypassable, one exception rule producing a finding.
+
 ## 2026-10-23 (f) — the completion register exists, and nothing seeds as SUPPORTED (PR #86)
 
 **What this PR added.** `scripts/completion-register.mjs` is the census → seed →
