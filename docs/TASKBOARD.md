@@ -303,6 +303,21 @@ K30 error state (`GLTrialBalancePage`, `ExceptionQueuePage`), the shell gained a
 explicit stale-state test, and `capability:inventory` now runs `--check` so the
 matrix cannot drift from its generator.
 
+**PR #89 is delivered (2026-10-23) — extension to 6 routes.** Spine GOVERNED
+evidence now covers **6 of 231 routes** (`/data`, `/data/gl-trial-balance`,
+`/data/exceptions`, `/periods/close`, `/board-pack`, `/data/corrections`) with
+**21 state claims** and **17 capabilities (17 claims)**; governance evidence
+**6 routes (18 claims)** + **17 caps (18 claims)** with RBAC 409=302+107 and O9
+boundary stated. `src/__tests__/spineGovernance.test.ts` 44/44 (was 40/40),
+`CorrectionsPage` gains error alert for invalid correction request. One-stop
+acceptance census `oneStop:acceptance` green for 6 SUPPORTED routes (Excel
+optional, D365 intake in-app, DEC-035); missing-is-not-zero census
+`missingIsNotZero:acceptance` green 0 findings after BoardPack fix (totalBudget
+from budgets sum, expenses unavailable when report null). Register
+**SUPPORTED 23** (6 routes + 17 caps) · EXP 445 · BLOCKED 7 · NOT_BUILT 220.
+DEC-064 records `/data/corrections` as 6th GOVERNED route, in-app correction
+sufficient, Excel optional.
+
 **What still cannot be claimed at #100 without an owner answer** (register status
 `BLOCKED-ON-OWNER`, never blank): verified D365 shapes (O1), data-safety/escrow
 (O3), SOX/audit authority (O4), rolling-forecast semantics (O2), sector/
