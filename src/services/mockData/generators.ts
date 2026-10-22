@@ -27,6 +27,7 @@ import type {
   TaskPriority,
 } from '@/types';
 import Decimal from 'decimal.js';
+import { moneyMinus, moneyPlus } from '@/utils/money';
 
 // Utility for ID generation
 const genId = (prefix: string) => `${prefix}-${Math.random().toString(36).substring(2, 11)}`;
@@ -165,10 +166,10 @@ export function generateGLEntries(count: number = 50): GLEntry[] {
       periodName: fiscalPeriod,
       debit: { minor: debitMinor },
       credit: { minor: creditMinor },
-      netChange: { minor: creditMinor - debitMinor },
+      netChange: moneyMinus({ minor: creditMinor }, { minor: debitMinor }),
       date: postDate,
       postDate,
-      amount: { minor: debitMinor + creditMinor },
+      amount: moneyPlus({ minor: debitMinor }, { minor: creditMinor }),
       description: `Journal Entry ${i}`,
       reference: id,
       entityId: 'Default',
