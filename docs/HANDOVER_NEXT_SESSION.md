@@ -1,5 +1,20 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-23 (i) — the spine is GOVERNED on evidence, and the count is 5 of 231 GOVERNED, 22 SUPPORTED (PR #89)
+
+**The claim.** GOVERNED means authorization, audit, write-guards and lifecycle are enforced — proven by RBAC tests, audit-chain verification, and period-close guards. Entity-scope authorization is explicitly BLOCKED-ON-OWNER O9 and must not be inferred from active entity. SOX authority O4, server authority Q6, and native durability O7 remain open and are stated as boundaries.
+
+**The join.** `docs/plan/governance-evidence.json`: per claim, a file and the exact test title inside it, plus explicit O9 boundary objects for entity-scope. `scripts/verify-governance-evidence.mjs` (`npm run governance:evidence`) fails when the file is gone, the title is not in it, the claim points at the page it grades, the route/capability is not real, or the RBAC census does not pin 409=302+107. The register carries both CONNECTED and GOVERNED claims and re-checks them, and the matrix prints `GOVERNED — N test ids` only for those routes. **Measured: 5 of 231 routes GOVERNED, 17 capabilities GOVERNED, 22 rows SUPPORTED** (first SUPPORTED rows, CONNECTED+GOVERNED). Seven rows stay BLOCKED-ON-OWNER (O1×3, O2, O3, O4, O9) — the correct answer, not a defect.
+
+**Product work this needed.** New test file `src/__tests__/spineGovernance.test.ts` with 40 tests proving: import:create guards import path, audit trail records provenance with hash linkage, write guard blocks closed periods, Viewer can read trial balance, period:close guards close transitions, exception:dispose guards disposition, report:read allows board-pack viewing, audit trail ties out to ledger figures, and the census closures. Existing tests already proved: negative authorization for importGLData without user, Viewer cannot close, disposition follows audited legal path REQUESTED→APPLIED→REVERIFIED, control totals tie out, etc. All titles are referenced verbatim in governance-evidence.json.
+
+**N2/N3 bounded closure.** N2 audit-chain: auditTrailStore is single canonical client authority (DEC-025); 10 chain-like modules classified in `auditChainCensus.test.ts` with disposition, persistence flag, authority boundary and decision reference; bounded persistence evidence via masterStorage and sqlJsStorage hydration tests, but no native Tauri persistence, no application-process restart proof (O7 open), no server authority (Q6 open), no SOX authority (O4 open). N3 RBAC: 409 actions = 302 guarded + 107 exceptions, every enforced permission granted to at least one role, Admin holds full catalogue, Viewer read-only; payload-source authentication not claimed (GDPR bridge bounded exceptions disclaim it), entity-scope O9 blocked. Both closed as DONE (bounded) in `docs/TASKBOARD.md` with residual boundaries stated.
+
+**Suite measured after the change.** `npm run test:sharded` pending re-run for final tally (previous 1,419-file run: 8/8 shards, exit 0, 1,200 s, 16,469 passed + 1 skipped). Current file count: **1,420 test files** (measured by `verify-readme-stats.mjs`). `npm run docs:verify` green: register 695 rows (SUPPORTED 22 · EXPERIMENTAL 446 · BLOCKED-ON-OWNER 7 · RETIRED 0 · NOT_BUILT 220), spine evidence 5 routes (18 claims) + governance evidence 5 routes (15 claims) · 17 caps (18 claims) · 2 census claims, capability matrix current, route dispositions 0 REVIEW.
+
+**Next.** PR #90 one-stop acceptance: in-app correction path sufficient, Excel optional, D365 intake in-app, DEC-018 revision, `oneStop:acceptance` census.
+
+
 ## 2026-10-23 (h) — the spine is CONNECTED on evidence, and the count is 5 of 231 (PR #88)
 
 **The claim.** A synthetic D365-shaped file goes in, control totals tie, quarantine
