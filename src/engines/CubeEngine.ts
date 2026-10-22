@@ -18,6 +18,7 @@ import type {
 } from '@/types/cube-types';
 import { CubeEnginePersistence } from './CubeEnginePersistence';
 import { nowISO, nowMs } from '@/utils/clock';
+import { amountFrom } from '@/utils/money';
 
 // =============================================================================
 // CUBE ENGINE — Multi-dimensional OLAP data model
@@ -295,7 +296,11 @@ export class CubeEngine {
 
     for (const c of matchingCells) {
       const v = c.value;
-      const num = typeof v === 'number' ? v : 0;
+      // DEC-055 trap: a `Money` written as a cell value is an OBJECT, so a
+      // `typeof v === 'number'` read silently aggregates it as 0. `amountFrom`
+      // reads a Money exactly, leaves a number untouched, and falls back only
+      // for input that is not money at all.
+      const num = amountFrom(v);
       if (first === undefined) first = num;
       sum += num;
       count++;

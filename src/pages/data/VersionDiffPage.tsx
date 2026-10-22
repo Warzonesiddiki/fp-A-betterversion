@@ -8,7 +8,7 @@ import { VersionControlEngine } from '@/engines/VersionControlEngine';
 import { VersionDiffViewer } from '@/components/ui/VersionDiffViewer';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
-import { roundTo } from '@/utils/money';
+import { roundTo, subtractMoney } from '@/utils/money';
 import { Badge } from '@/components/ui/Badge';
 import {
   GitBranch,
@@ -55,7 +55,9 @@ function createEngineFromStores(
       },
       measure: 'amount' as const,
       oldValue: null,
-      newValue: roundTo(e.netChange),
+      // A GL row may carry only debit/credit (or only an amount). The fallback
+      // chain is kept — dropping it made every such row throw inside `roundTo`.
+      newValue: roundTo(e.netChange ?? e.amount ?? subtractMoney(e.debit ?? 0, e.credit ?? 0)),
     }));
     engine.commit(mainBranch.id, `Imported ${glEntries.length} GL entries`, 'system', changes);
   }

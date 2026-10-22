@@ -268,13 +268,13 @@ describe('OnboardingWizard — Integration (full flow + store interactions)', ()
     expect(entriesArg).toHaveLength(2);
     expect(entriesArg[0]).toMatchObject({
       accountCode: 'Revenue',
-      debit: 50000,
-      credit: 0,
+      debit: { minor: 5000000 },
+      credit: { minor: 0 },
     });
     expect(entriesArg[1]).toMatchObject({
       accountCode: 'Payroll',
-      debit: 0,
-      credit: 20000,
+      debit: { minor: 0 },
+      credit: { minor: 2000000 },
     });
   });
 
@@ -368,10 +368,10 @@ describe('OnboardingWizard — Integration (full flow + store interactions)', ()
       accountName: 'Revenue',
       period: '2025-01', // date.slice(0, 7)
       periodName: '2025-01',
-      debit: 50000,
-      credit: 0,
-      netChange: 50000,
-      amount: 50000,
+      debit: { minor: 5000000 },
+      credit: { minor: 0 },
+      netChange: { minor: 5000000 },
+      amount: { minor: 5000000 },
       date: '2025-01-01',
       description: 'Initial import during onboarding',
       reference: 'ONBOARDING',
@@ -385,10 +385,10 @@ describe('OnboardingWizard — Integration (full flow + store interactions)', ()
       accountName: 'Payroll',
       period: '2025-01',
       periodName: '2025-01',
-      debit: 0,
-      credit: 20000,
-      netChange: -20000,
-      amount: -20000,
+      debit: { minor: 0 },
+      credit: { minor: 2000000 },
+      netChange: { minor: -2000000 },
+      amount: { minor: -2000000 },
       date: '2025-01-02',
     });
     expect(entriesArg[1]?.id).toMatch(/^gl-init-\d+-1$/);

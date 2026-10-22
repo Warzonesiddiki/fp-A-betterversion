@@ -27,7 +27,6 @@ import type {
   TaskPriority,
 } from '@/types';
 import Decimal from 'decimal.js';
-import { asMoney } from '@/utils/money';
 
 // Utility for ID generation
 const genId = (prefix: string) => `${prefix}-${Math.random().toString(36).substring(2, 11)}`;
@@ -150,8 +149,11 @@ export function generateGLEntries(count: number = 50): GLEntry[] {
   return Array.from({ length: count }, (_, i) => {
     const postDate = randomDate(new Date(2023, 0, 1), new Date());
     const fiscalPeriod = `2024-${String((i % 12) + 1).padStart(2, '0')}`;
-    const debit = Math.random() * 10000;
-    const credit = Math.random() * 5000;
+    // Demo money is generated in MINOR UNITS: `asMoney` refuses a sub-cent
+    // value, so a raw `Math.random() * 10000` float made the generator throw
+    // (and, before the flip, silently produced sub-cent ledger rows).
+    const debitMinor = Math.round(Math.random() * 1_000_000);
+    const creditMinor = Math.round(Math.random() * 500_000);
     const id = genId('je');
     const accountCode = `${1000 + i}`;
     return {
@@ -161,12 +163,12 @@ export function generateGLEntries(count: number = 50): GLEntry[] {
       accountName: `Test Account ${i}`,
       period: fiscalPeriod,
       periodName: fiscalPeriod,
-      debit: asMoney(debit),
-      credit: asMoney(credit),
-      netChange: asMoney(new Decimal(credit).minus(debit).toNumber()),
+      debit: { minor: debitMinor },
+      credit: { minor: creditMinor },
+      netChange: { minor: creditMinor - debitMinor },
       date: postDate,
       postDate,
-      amount: asMoney(new Decimal(debit).plus(credit).toNumber()),
+      amount: { minor: debitMinor + creditMinor },
       description: `Journal Entry ${i}`,
       reference: id,
       entityId: 'Default',

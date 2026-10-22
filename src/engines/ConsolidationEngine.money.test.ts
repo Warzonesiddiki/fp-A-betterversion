@@ -152,7 +152,8 @@ describe('ConsolidationEngine — money known answers (GAP-1 / F-0006)', () => {
         },
       ];
       const translated = ConsolidationEngine.translateForeignSubsidiaries([sub], rates);
-      expect(translated[0]!.entries[0]!.amount).toBe(1080);
+      // Q5 stage 4: exact minor units, so the float artefact is impossible by construction.
+      expect(translated[0]!.entries[0]!.amount).toEqual({ minor: 108000 });
     });
   });
 

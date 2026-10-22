@@ -1,5 +1,5 @@
 import { randomId } from '@/utils/cryptoId';
-import { subtractMoney, asMoney, roundTo } from '@/utils/money';
+import { subtractMoney, asMoney, isMoneyValue, moneyToAmount, roundTo } from '@/utils/money';
 import {
   GLImportService,
   type GLImportOptions,
@@ -119,8 +119,14 @@ export class ImportPipeline {
       for (const row of validated.validRows) {
         const parseMoneyCell = (value: unknown): number => {
           if (typeof value === 'number' && Number.isFinite(value)) return value;
+          if (isMoneyValue(value)) return moneyToAmount(value);
           const parsed = parseFloat(String(value ?? '0'));
           return Number.isFinite(parsed) ? parsed : 0;
+        };
+        /** Same reader, but `null` when the cell is absent — 0 is a real amount. */
+        const parseOptionalMoneyCell = (value: unknown): number | null => {
+          if (value === undefined || value === null || value === '') return null;
+          return parseMoneyCell(value);
         };
         const rowDebit = parseMoneyCell(row.debit);
         const rowCredit = parseMoneyCell(row.credit);
@@ -136,7 +142,11 @@ export class ImportPipeline {
           credit: asMoney(rowCredit),
           netChange: asMoney(roundTo(subtractMoney(rowDebit, rowCredit))),
           date: String(row.date ?? ''),
-          amount: asMoney(roundTo(parseMoneyCell(row.amount) || rowDebit - rowCredit)),
+          // `?? rowDebit - rowCredit`: an explicit 0 is an amount, not "absent".
+          // (A `||` here replaced a real 0.00 with the net of the two sides.)
+          amount: asMoney(
+            roundTo(parseOptionalMoneyCell(row.amount) ?? subtractMoney(rowDebit, rowCredit))
+          ),
           description: String(row.description ?? ''),
           reference: String(row.reference ?? ''),
           entityId: String(row.entity ?? ''),
