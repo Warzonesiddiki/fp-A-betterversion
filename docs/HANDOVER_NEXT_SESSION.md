@@ -34,9 +34,26 @@ mutation-verified by removing the crossing (2 fail). glStore + money suites:
 the boundary with `amountFrom`/`moneyToMinor` — the assertions got stronger, not
 weaker (the numbers are now exact minor units).
 
-**Not claimed.** The full suite has **not** been re-run since the flip, so no
-"all green" statement is made. Stage 5 (engines) and stage 6 (pages/display
-adapter) are open, and **no page renders the quarantine yet**.
+**Follow-up sweep (same day).** The first full run after the flip found 24
+failing tests in 11 files. Most were expectations that still spoke numbers; four
+were real defects the compiler could not see:
+
+- `CubeEngine.aggregate` read a cell as `typeof v === 'number' ? v : 0`, so a
+  `Money` cell aggregated as **0** — DEC-055's trap in a second module;
+- `mockData.generateGLEntries` emitted raw floats and `asMoney` refuses
+  sub-cent, so the generator **threw**;
+- `VersionDiffPage` had dropped its `debit/credit` fallback, so a row without
+  `netChange` threw inside `roundTo`;
+- `ImportPipeline`'s `parseMoneyCell(a) || a - b` treated a real `0.00` as
+  absent and replaced it with the net of the two sides.
+
+**Result.** Full suite: **1,411 files, 16,404 passed + 1 skipped (16,405), 1,157 s.**
+`tsc`, `eslint --max-warnings 0`, `docs:verify`, `check-readme-claims` and
+`money:ast` (0 unsafe, 100 % safe) are all green.
+
+**Not claimed.** Stage 5 (engines) and stage 6 (pages/display adapter) are open,
+**no page renders the quarantine yet**, and CI remains unverifiable from this
+sandbox (Actions returns 403) — the green result above is a local run.
 
 ## 2026-10-22 (b) — Q5 stage 4: the trap sweep, beyond the GL store (DEC-056)
 
