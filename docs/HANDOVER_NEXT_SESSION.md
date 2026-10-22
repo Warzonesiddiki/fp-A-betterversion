@@ -51,9 +51,19 @@ were real defects the compiler could not see:
 `tsc`, `eslint --max-warnings 0`, `docs:verify`, `check-readme-claims` and
 `money:ast` (0 unsafe, 100 % safe) are all green.
 
+**The quarantine is now visible.** `src/components/data/LedgerQuarantineNotice.tsx`
+reads `quarantinedEntries` and states, on the two pages whose totals are short
+by it: how many rows are held back, which fields put them out, that they are
+stored exactly as saved (not rounded, not repaired), and the exact reason line
+per offending amount (`Entry JE-1: debit 0.005 cannot be represented at 2
+decimal places`). `summarizeQuarantinedLedger` is pure, so the copy is tested
+without a DOM; 6/6 in `LedgerQuarantineNotice.test.tsx`. Mounted on **GL
+Explorer** (debit/credit totals) and **Trial Balance** (the balance verdict).
+
 **Not claimed.** Stage 5 (engines) and stage 6 (pages/display adapter) are open,
-**no page renders the quarantine yet**, and CI remains unverifiable from this
-sandbox (Actions returns 403) — the green result above is a local run.
+the notice covers the two GL aggregate pages but not every derived view, and CI
+remains unverifiable from this sandbox (Actions returns 403) — the green result
+above is a local run.
 
 ## 2026-10-22 (b) — Q5 stage 4: the trap sweep, beyond the GL store (DEC-056)
 

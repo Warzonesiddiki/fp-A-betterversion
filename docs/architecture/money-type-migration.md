@@ -311,8 +311,14 @@ updates (exact minor units instead of numbers) plus four real defects —
 sub-cent floats that `asMoney` refuses, `VersionDiffPage` lost its
 `debit/credit` fallback, and `ImportPipeline` treated a real `0.00` as absent.
 
-**Not claimed:** stage 5/6 adoption, a display adapter, and rendering the
-quarantine in the UI are still open.
+**The quarantine is rendered.** `src/components/data/LedgerQuarantineNotice.tsx`
+(summarised by the pure `summarizeQuarantinedLedger`, 6/6 tests) states the
+held-back row count, the affected fields, and each exact stored value — on GL
+Explorer and Trial Balance, i.e. the two pages whose totals are short by it. A
+total that omits a row without saying so is the failure this closes.
+
+**Not claimed:** stage 5/6 adoption and a display adapter are still open, and the
+notice is mounted on the two GL aggregate pages, not on every derived view.
 
 ## Stage 4 precondition (2026-10-21) — quarantine, don't round
 

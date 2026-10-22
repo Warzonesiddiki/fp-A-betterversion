@@ -1,9 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-vi.mock('@/store/glStore', () => ({
-  useGLStore: vi.fn(() => ({ entries: [], accounts: [] })),
-}));
+// The mock must behave like zustand's selector hook: the page reads
+// `quarantinedEntries` through a selector (LedgerQuarantineNotice), and a mock
+// that ignores the selector hands a selector a whole state object.
+vi.mock('@/store/glStore', () => {
+  const state = { entries: [], accounts: [], quarantinedEntries: [] };
+  return {
+    useGLStore: vi.fn((selector?: (s: typeof state) => unknown) =>
+      selector ? selector(state) : state
+    ),
+  };
+});
 
 vi.mock('lucide-react', () => {
   const makeIcon = () => {

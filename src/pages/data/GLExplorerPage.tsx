@@ -12,6 +12,7 @@ import { filterGLEntriesByPermission } from '@/utils/dataPermissionFilter';
 import { sumMoney, subtractMoney, roundTo, toDecimal, type MoneyInput } from '@/utils/money';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { isZeroAmount } from '@/utils/glRowMoney';
+import { LedgerQuarantineNotice } from '@/components/data/LedgerQuarantineNotice';
 /** Money-primitive GL explorer totals (GAP-1 F-0006). */
 export interface GLExplorerTotals {
   debits: number;
@@ -198,6 +199,8 @@ export default function GLExplorerPage() {
           </Button>
         }
       />
+
+      <LedgerQuarantineNotice />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card>
