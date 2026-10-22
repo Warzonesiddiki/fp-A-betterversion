@@ -1,5 +1,44 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-23 (h) — the spine is CONNECTED on evidence, and the count is 5 of 231 (PR #88)
+
+**The claim.** A synthetic D365-shaped file goes in, control totals tie, quarantine
+is named, the trial balance balances, a close cannot be bypassed, an exception rule
+produces a finding, a disposition follows one audited path, and the board pack ties
+back to the screen. All of that was already in the suite — spread across page
+tests, import tests and engine tests — but nothing joined a claim to the test that
+proves it, so "CONNECTED" would have been an opinion in a table.
+
+**The join.** `docs/plan/spine-evidence.json`: per claim, a file and the exact test
+title inside it. `scripts/verify-spine-evidence.mjs` (`npm run spine:evidence`)
+fails when the file is gone, the title is not in it, the claim points at the page
+it grades, the page has a loading branch but excuses itself from the loading state,
+or the route/capability is not real. The register carries the same claims on the
+capability row and re-checks them, and the matrix prints `CONNECTED — N test ids`
+only for those routes. **Measured: 5 of 231 routes CONNECTED, 17 capabilities with
+claims, 0 GOVERNED.**
+
+**Product work this needed.** The four-state claim was not true for two spine pages:
+`GLTrialBalancePage` and `ExceptionQueuePage` rendered the last good ledger after a
+failed import, so a failed import read as a clean ledger. Both now render the K30
+error state with the failing import's message and a route to the import surface.
+The shell's stale state got an explicit test (`FinancialStatusBadge`) instead of
+relying on an `it.each` that only proved the badge was non-empty.
+
+**What the number means.** Five screens and seventeen capabilities is the honest
+size of what the suite proves end-to-end. Everything else stays EXPERIMENTAL or
+NOT_BUILT in the register — 0 rows are SUPPORTED, because SUPPORTED needs GOVERNED
+too and that is #89.
+
+**Suite measured after the change.** `npm run test:sharded` on 2026-10-23:
+**8/8 shards, exit 0, 1,200 s, 1,419 files, 16,469 passed + 1 skipped** (shards
+147/149/144/141/144/179/148/149 s) — 17 more tests than the 1,418-file run, which
+are this PR's evidence-gate tests plus the new page and shell states.
+
+**Next.** PR #89 (spine GOVERNED evidence + N2/N3): authorization, audit, entity
+scope and write guards for the same spine, with the two active N-items closed or
+bounded in writing.
+
 ## 2026-10-23 (g) — the 47 undecided routes are decided, and REVIEW no longer rests (PR #87)
 
 **The question was the defect.** The capability matrix classifies a route from its

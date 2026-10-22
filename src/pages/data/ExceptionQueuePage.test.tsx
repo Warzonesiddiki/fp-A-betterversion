@@ -44,7 +44,7 @@ const PLANTED: GLEntry[] = [
 
 describe('ExceptionQueuePage (Phase 3)', () => {
   beforeEach(() => {
-    useGLStore.setState({ entries: [], accounts: [] });
+    useGLStore.setState({ entries: [], accounts: [], isLoading: false, importError: null });
   });
 
   it('empty ledger invites an import instead of showing an empty queue', () => {
@@ -90,5 +90,29 @@ describe('ExceptionQueuePage (Phase 3)', () => {
       </BrowserRouter>
     );
     expect(screen.getByText(/No review candidates/i)).toBeInTheDocument();
+  });
+
+  it('hydrating store shows the loading skeleton, not an empty queue', () => {
+    useGLStore.setState({ entries: [], isLoading: true });
+    render(
+      <BrowserRouter>
+        <ExceptionQueuePage />
+      </BrowserRouter>
+    );
+    expect(screen.getByText('Loading exception queue…')).toBeInTheDocument();
+    expect(screen.queryByText(/No GL Data/i)).not.toBeInTheDocument();
+  });
+
+  it('K30 error state: a failed import is stated, never read as a clean ledger', () => {
+    useGLStore.setState({ entries: [], importError: 'Row 7: unknown account code 9999' });
+    render(
+      <BrowserRouter>
+        <ExceptionQueuePage />
+      </BrowserRouter>
+    );
+    const alert = screen.getByRole('alert');
+    expect(alert).toHaveTextContent('Failed to load the ledger');
+    expect(alert).toHaveTextContent('unknown account code 9999');
+    expect(screen.getByRole('button', { name: /Go to Data Import/i })).toBeInTheDocument();
   });
 });

@@ -121,6 +121,14 @@ which is the honest reading of a tree where 0 of 231 routes are graded CONNECTED
 or GOVERNED. Nothing seeds as SUPPORTED; that status is earned by a later PR with
 test ids that resolve.
 
+**CONNECTED is graded, not asserted (DEC-062).** `docs/plan/spine-evidence.json`
+joins each claim to the test that proves it: a file and the exact test title inside
+it, resolved by `npm run spine:evidence` on every `docs:verify`. Five spine
+screens evidence their journey, empty, error and loading states plus the shell's
+stale state, and seventeen capabilities carry claims. The matrix prints
+`CONNECTED — N test ids` for those rows and nothing else, so **5 of 231 routes are
+CONNECTED and 0 are GOVERNED** — the second half is #89, not this one.
+
 **Disposition is measured, not believed (DEC-060, DEC-061).** Each of the 231 route
 rows also carries the disposition from `docs/CAPABILITY_TRUTH_MATRIX.md`, re-read
 on every seed so a matrix edit cannot leave a stale grade behind: **141
@@ -248,12 +256,18 @@ EXPERIMENTAL until it has a colocated test. `routes:dispositions` and the regist
 both fail on a `REVIEW` row, so this cannot decay quietly. This is the PR that
 converts "231 screens" from an embarrassment into a stated position.
 
-**#88 — Spine CONNECTED evidence.** The supportable claim is narrow and real: a
-synthetic D365-shaped file goes in, control totals tie, quarantine is named,
-trial balance balances, a close cannot be bypassed, one exception rule produces
-findings, a disposition survives reload, a board pack ties out. #88 is the
-CONNECTED half (data contract + all four UI states + integration test); #89 is
-the GOVERNED half (authorization, audit, entity scope, write guards).
+**#88 — Spine CONNECTED evidence (delivered 2026-10-23).** The supportable claim is
+narrow and real: a synthetic D365-shaped file goes in, control totals tie,
+quarantine is named, trial balance balances, a close cannot be bypassed, one
+exception rule produces findings, a disposition survives reload, a board pack ties
+out. Delivered as evidence rather than assertion: `docs/plan/spine-evidence.json`
+names, per claim, a test file and the exact title inside it; the gate resolves
+both. Measured: **5 of 231 routes CONNECTED** (`/data`, `/data/gl-trial-balance`,
+`/data/exceptions`, `/periods/close`, `/board-pack`), **17 capabilities** with
+claims, **0 GOVERNED** — the GOVERNED half (authorization, audit, entity scope,
+write guards) is #89. Two spine pages gained the error state they lacked
+(`GLTrialBalancePage`, `ExceptionQueuePage`) so the four-state claim is true
+rather than assumed, and the shell gained an explicit stale-state test.
 
 **#89 — Spine GOVERNED evidence + N2/N3.** Closes the two active N-items or
 states their residual boundary (N2 cannot claim restart durability without O7;

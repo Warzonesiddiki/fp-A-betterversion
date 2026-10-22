@@ -700,27 +700,27 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:ai.no-egress` | NOT_BUILT | namedBy=docs/plan/COMPLETION_PLAN_86_100.md | no egress path is proven; DEC-022 is policy, not a tested control |
 | `cap:ai.verified-facts-gate` | EXPERIMENTAL | gatedBy=/ai | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:analyze.drill-to-source` | EXPERIMENTAL | gatedBy=/data/gl-explorer | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:analyze.exception-rules` | EXPERIMENTAL | gatedBy=/data/exceptions | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:analyze.exception-rules` | EXPERIMENTAL | gatedBy=/data/exceptions; connected=1 [src/pages/data/ExceptionQueuePage.test.tsx] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
 | `cap:analyze.explanations` | EXPERIMENTAL | gatedBy=/variance | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:analyze.findings-disposition` | EXPERIMENTAL | gatedBy=/data/exceptions | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:analyze.findings-disposition` | EXPERIMENTAL | gatedBy=/data/exceptions; connected=1 [src/store/exceptionDispositionStore.lifecycle.test.ts] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
 | `cap:analyze.statements` | EXPERIMENTAL | gatedBy=/reports/three-statement | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:analyze.variance-decomposition` | EXPERIMENTAL | gatedBy=/variance | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:close.audit-chain` | EXPERIMENTAL | gatedBy=/audit/trail | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:close.corrections` | EXPERIMENTAL | gatedBy=/data/corrections | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:close.period-entity-scope` | EXPERIMENTAL | gatedBy=/periods/close | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:close.state-machine` | EXPERIMENTAL | gatedBy=/periods/close | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:close.tie-out` | EXPERIMENTAL | gatedBy=/data/reconciliation | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:close.trial-balance` | EXPERIMENTAL | gatedBy=/data/gl-trial-balance | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:close.write-guards` | EXPERIMENTAL | gatedBy=/data/gl-journals | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:data.control-totals` | EXPERIMENTAL | gatedBy=/data/gl-trial-balance | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:data.csv-xlsx-intake` | EXPERIMENTAL | gatedBy=/data/gl-upload | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:close.audit-chain` | EXPERIMENTAL | gatedBy=/audit/trail; connected=1 [src/store/auditTrailIntegrity.test.ts] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
+| `cap:close.corrections` | EXPERIMENTAL | gatedBy=/data/corrections; connected=1 [src/pages/data/CorrectionsPage.test.tsx] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
+| `cap:close.period-entity-scope` | EXPERIMENTAL | gatedBy=/periods/close; connected=1 [src/services/import/glPeriodWriteGuard.test.ts] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
+| `cap:close.state-machine` | EXPERIMENTAL | gatedBy=/periods/close; connected=1 [src/engines/PeriodCloseStateMachine.test.ts] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
+| `cap:close.tie-out` | EXPERIMENTAL | gatedBy=/data/reconciliation; connected=1 [src/services/import/monthEndClosePipeline.integration.test.ts] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
+| `cap:close.trial-balance` | EXPERIMENTAL | gatedBy=/data/gl-trial-balance; connected=1 [src/pages/data/GLTrialBalancePage.interop.test.tsx] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
+| `cap:close.write-guards` | EXPERIMENTAL | gatedBy=/data/gl-journals; connected=1 [src/services/import/spineAcceptance.d365.integration.test.ts] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
+| `cap:data.control-totals` | EXPERIMENTAL | gatedBy=/data/gl-trial-balance; connected=1 [src/services/import/spineAcceptance.d365.integration.test.ts] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
+| `cap:data.csv-xlsx-intake` | EXPERIMENTAL | gatedBy=/data/gl-upload; connected=1 [src/services/import/glCsvTokenizer.test.ts] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
 | `cap:data.d365-bc-gl` | BLOCKED-ON-OWNER | owner=O1; question=One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
 | `cap:data.d365-fo-gl` | BLOCKED-ON-OWNER | owner=O1; question=One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
 | `cap:data.d365-journal` | BLOCKED-ON-OWNER | owner=O1; question=One real anonymised D365 export sample per shape (F&O GL, journal entity, BC G/L) (O1, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
-| `cap:data.lineage` | EXPERIMENTAL | gatedBy=/analytics/data-lineage | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:data.mapping` | EXPERIMENTAL | gatedBy=/data/data-flow | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:data.quarantine` | EXPERIMENTAL | gatedBy=/data/gl-explorer | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:data.validation` | EXPERIMENTAL | gatedBy=/data/exceptions | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:data.lineage` | EXPERIMENTAL | gatedBy=/analytics/data-lineage; connected=1 [src/services/import/parseGLRows.test.ts] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
+| `cap:data.mapping` | EXPERIMENTAL | gatedBy=/data/data-flow; connected=1 [src/services/import/spineAcceptance.d365.integration.test.ts] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
+| `cap:data.quarantine` | EXPERIMENTAL | gatedBy=/data/gl-explorer; connected=1 [src/services/import/glStagingCoordinator.test.ts] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
+| `cap:data.validation` | EXPERIMENTAL | gatedBy=/data/exceptions; connected=1 [src/services/import/spineAcceptance.d365.integration.test.ts] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
 | `cap:govern.authorization` | EXPERIMENTAL | gatedBy=/settings/security | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:govern.entity-scope` | BLOCKED-ON-OWNER | owner=O9; question=Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
 | `cap:govern.security-policy` | EXPERIMENTAL | gatedBy=/settings/security | A routed screen hosts this capability; no support claim yet (see plan §5). |
@@ -742,11 +742,11 @@ question that stops it. Nothing here is promoted by prose.
 | `cap:plan.rolling-forecast` | BLOCKED-ON-OWNER | owner=O2; question=Roll semantics: replace vs blend, which months roll, approval interplay (O2, docs/TASKBOARD.md §OWNER) | Named in the plan as blocked on an owner decision. |
 | `cap:plan.scenarios` | EXPERIMENTAL | gatedBy=/scenarios | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:plan.versions` | EXPERIMENTAL | gatedBy=/budgets/bva | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:report.board-pack` | EXPERIMENTAL | gatedBy=/board-pack | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:report.board-pack` | EXPERIMENTAL | gatedBy=/board-pack; connected=1 [src/pages/reports/BoardPackPage.exportTieOut.test.tsx] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
 | `cap:report.pdf` | EXPERIMENTAL | gatedBy=/reports | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:report.pptx-editable` | EXPERIMENTAL | gatedBy=/board-pack | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:report.statements` | EXPERIMENTAL | gatedBy=/reports/three-statement | A routed screen hosts this capability; no support claim yet (see plan §5). |
-| `cap:report.tie-back` | EXPERIMENTAL | gatedBy=/reports | A routed screen hosts this capability; no support claim yet (see plan §5). |
+| `cap:report.tie-back` | EXPERIMENTAL | gatedBy=/reports; connected=1 [src/pages/reports/BoardPackPage.exportTieOut.test.tsx] | CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89. |
 | `cap:report.xlsx-formula` | EXPERIMENTAL | gatedBy=/reports | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:wf.administration` | EXPERIMENTAL | gatedBy=/admin | A routed screen hosts this capability; no support claim yet (see plan §5). |
 | `cap:wf.approvals` | EXPERIMENTAL | gatedBy=/budgets/approval | A routed screen hosts this capability; no support claim yet (see plan §5). |

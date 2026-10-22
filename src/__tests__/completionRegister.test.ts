@@ -408,6 +408,33 @@ describe('completion-register.mjs', () => {
     expect(data.rows).toHaveLength(695);
     for (const row of data.rows) expect(data.vocabulary).toContain(row.status);
   });
+
+  it('refuses a CONNECTED claim whose test file or title does not resolve', () => {
+    const root = fixture();
+    expect(run(['--seed'], root).status).toBe(0);
+
+    const missingFile = readJson(root);
+    Object.assign(row(missingFile, 'cap:close.trial-balance') as object, {
+      evidence: { connected: [{ file: 'src/pages/data/Gone.test.tsx', title: 'gone' }] },
+    });
+    saveRows(root, missingFile);
+    expect(run(['--check'], root).stderr).toMatch(
+      /connected test src\/pages\/data\/Gone\.test\.tsx does not exist/
+    );
+
+    const missingTitle = readJson(root);
+    Object.assign(row(missingTitle, 'cap:close.trial-balance') as object, {
+      evidence: {
+        connected: [
+          { file: 'src/engines/FXEngine.test.ts', title: 'a test that no longer exists' },
+        ],
+      },
+    });
+    saveRows(root, missingTitle);
+    expect(run(['--check'], root).stderr).toMatch(
+      /has no test titled "a test that no longer exists"/
+    );
+  });
 });
 
 function root(dir: string): string {

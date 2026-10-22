@@ -261,6 +261,7 @@ const SCOPE_REGISTER = 'docs/discovery/OWNER_SCOPE_REGISTER_111_200.md';
 const TASKBOARD = 'docs/TASKBOARD.md';
 const DECISION_LOG = 'docs/discovery/decision-log.md';
 const PLAN = 'docs/plan/COMPLETION_PLAN_86_100.md';
+const SPINE_EVIDENCE = 'docs/plan/spine-evidence.json';
 
 function die(code, message) {
   process.stderr.write(`${message}\n`);
@@ -315,6 +316,22 @@ function census() {
       if (word) dispositions.set(id[1], word[1]);
     }
   }
+  // Spine evidence (PR #88): capability -> the tests that exercise it. The
+  // manifest itself is gated by scripts/verify-spine-evidence.mjs; here the
+  // register re-checks the two facts it can (file exists, title is in the file)
+  // so a copied claim cannot outlive the test it names.
+  const connected = new Map();
+  if (existsSync(join(ROOT, SPINE_EVIDENCE))) {
+    try {
+      const manifest = JSON.parse(readFileSync(join(ROOT, SPINE_EVIDENCE), 'utf8'));
+      for (const [capability, claims] of Object.entries(manifest.capabilities ?? {})) {
+        if (Array.isArray(claims) && claims.length > 0) connected.set(capability, claims);
+      }
+    } catch (error) {
+      problems.push(`${SPINE_EVIDENCE} is not valid JSON: ${error.message}`);
+    }
+  }
+
   const routes = [...app.matchAll(routeRe)].map(([, path, element]) => ({
     id: `route:${path}`,
     path,
@@ -420,7 +437,10 @@ function census() {
     engines,
     requirements,
     annex,
-    capabilities: CAPABILITIES.map((id) => ({ id: `cap:${id}` })),
+    capabilities: CAPABILITIES.map((id) => ({
+      id: `cap:${id}`,
+      connected: connected.get(id) ?? [],
+    })),
     ownerIds,
     owners,
     decIds,
@@ -573,7 +593,17 @@ function seedRows(c, existingRows) {
         note: `Seed mapping expected ${plan.route}, which is not a routed screen.`,
       };
     }
-    rows.push(keep(`cap:${capability}`, derived));
+    const row = keep(`cap:${capability}`, derived);
+    const claims =
+      c.capabilities.find((entry) => entry.id === `cap:${capability}`)?.connected ?? [];
+    if (claims.length > 0) {
+      row.evidence = {
+        ...row.evidence,
+        connected: claims.map((claim) => ({ file: claim.file, title: claim.title })),
+      };
+      row.note = `CONNECTED evidence recorded (${claims.length} test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89.`;
+    }
+    rows.push(row);
   }
 
   return rows.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
@@ -619,6 +649,26 @@ function validate(rows, c) {
         problems.push(
           `${row.id}: disposition REVIEW — no recorded decision; decide it in ${ROUTE_DECISIONS}`
         );
+      }
+    }
+
+    // Spine CONNECTED evidence (PR #88): every cited test must still exist and
+    // still carry the cited title. This is the register's own copy of the check
+    // scripts/verify-spine-evidence.mjs makes, so a stale claim fails here even
+    // if the manifest is edited without the gate being run.
+    if (evidence.connected !== undefined) {
+      if (!Array.isArray(evidence.connected) || evidence.connected.length === 0) {
+        problems.push(`${row.id}: connected evidence must be a non-empty list`);
+      } else {
+        for (const claim of evidence.connected) {
+          if (!str(claim?.file) || !existsSync(join(ROOT, claim.file))) {
+            problems.push(`${row.id}: connected test ${claim?.file} does not exist`);
+            continue;
+          }
+          if (!str(claim?.title) || !read(claim.file).includes(claim.title)) {
+            problems.push(`${row.id}: ${claim.file} has no test titled "${claim?.title}"`);
+          }
+        }
       }
     }
 
@@ -720,7 +770,15 @@ function validate(rows, c) {
 // ---------------------------------------------------------------------------
 function evidenceText(evidence) {
   return Object.entries(evidence ?? {})
-    .map(([k, v]) => `${k}=${Array.isArray(v) ? v.join(' ') : String(v)}`)
+    .map(([k, v]) => {
+      if (k === 'connected') {
+        // A count plus the files, not an array dump: the claim is "these tests
+        // exercise it", and the file names are what a reader can go and run.
+        const files = (v ?? []).map((claim) => claim.file);
+        return `connected=${files.length} [${files.join(' ')}]`;
+      }
+      return `${k}=${Array.isArray(v) ? v.join(' ') : String(v)}`;
+    })
     .join('; ');
 }
 

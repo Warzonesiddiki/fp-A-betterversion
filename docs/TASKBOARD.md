@@ -290,6 +290,19 @@ and `completion:register --check` now fails on any `REVIEW` route row, so a new
 unclassified route cannot enter the tree silently. `docs/product/ROUTE_MAP.md`
 was regenerated and is byte-identical (231 routes, 32 top-level).
 
+**PR #88 is delivered (2026-10-23).** The spine is graded CONNECTED from evidence,
+not from the existence of a page: `docs/plan/spine-evidence.json` binds every claim
+to a test file and the exact test title inside it, and `npm run spine:evidence`
+resolves both on every `docs:verify`. Current position: **5 of 231 routes CONNECTED**
+(`/data`, `/data/gl-trial-balance`, `/data/exceptions`, `/periods/close`,
+`/board-pack`), **17 named capabilities with claims** (intake, mapping, validation,
+quarantine, control totals, lineage, entity scope, write guards, state machine,
+trial balance, tie-out, audit chain, corrections, exception rules, dispositions,
+board pack, tie-back), **0 of 231 GOVERNED**. Two spine pages gained the missing
+K30 error state (`GLTrialBalancePage`, `ExceptionQueuePage`), the shell gained an
+explicit stale-state test, and `capability:inventory` now runs `--check` so the
+matrix cannot drift from its generator.
+
 **What still cannot be claimed at #100 without an owner answer** (register status
 `BLOCKED-ON-OWNER`, never blank): verified D365 shapes (O1), data-safety/escrow
 (O3), SOX/audit authority (O4), rolling-forecast semantics (O2), sector/
