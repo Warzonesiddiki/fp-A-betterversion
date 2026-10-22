@@ -34,6 +34,13 @@ generated register and its JSON are in `.prettierignore` for the same reason as
 `docs/product/ROUTE_MAP.md`: the drift check compares the rendered file verbatim,
 and Prettier's table padding would make it permanently stale.
 
+**The suite was measured for this tree, not inherited.** `npm run test:sharded`
+on 2026-10-23: **8/8 shards passed in 1,467 s — 1,417 files, 16,442 passed + 1
+skipped, exit 0** (shards 325/309/226/113/113/143/118/120 s), which is 11 more
+tests than the 1,416-file run because this PR adds them. The single-process
+`npm test` is still not a recorded figure here: it dies part-way with
+`Worker is not defined`. README now quotes this run.
+
 **Next.** PR #87 (route disposition sweep: 47 `REVIEW` → 0), then #88 (spine
 `CONNECTED` evidence). Nothing in this register may be upgraded without a
 resolving test id, a gate line and a doc link.
