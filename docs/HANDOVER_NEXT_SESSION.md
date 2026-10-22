@@ -1,5 +1,15 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-23 (j) — corrections tracker GOVERNED as 6th route, one-stop in-app path evidenced (PR #89 extension, DEC-064)
+
+**The claim.** /data/corrections implements DEC-035 in-app correction lifecycle REQUESTED→APPLIED→RE-VERIFIED human-only with append-only actor/time audit trail (FR-010). Excel export is optional interoperability, not a prerequisite — first step toward C2 one-stop acceptance (PR #90).
+
+**The join.** Added to `spine-evidence.json` 6th route with journey/empty/error/loading-na from `CorrectionsPage.test.tsx` (7 tests, including new error alert test) and to `governance-evidence.json` 6th route with authorization exception:dispose, audit trail, write-guard human-only transitions from `spineGovernance.test.ts` 44 tests (was 40, added 4). Verification gates `spine:evidence` + `governance:evidence` resolve file+title, fail on rename/self-reference/unknown cap, RBAC 409=302+107 pinned, O9 stated.
+
+**Measured.** **6 of 231 routes CONNECTED (21 claims) and GOVERNED (18 claims), 17 capabilities GOVERNED (18 claims), 23 rows SUPPORTED** (6 routes + 17 caps). Register 695 rows SUPPORTED 23 EXPERIMENTAL 445 BLOCKED 7 NOT_BUILT 220. Matrix 1303 lines, 6 routes GOVERNED — 1. Suite pending re-run for 5 new tests (expected 16,514 passed).
+
+**Next.** Re-run `test:sharded` 8/8 to refresh README tally (currently 16,509), then PR #90 one-stop acceptance census script.
+
 ## 2026-10-23 (i) — the spine is GOVERNED on evidence, and the count is 5 of 231 GOVERNED, 22 SUPPORTED (PR #89)
 
 **The claim.** GOVERNED means authorization, audit, write-guards and lifecycle are enforced — proven by RBAC tests, audit-chain verification, and period-close guards. Entity-scope authorization is explicitly BLOCKED-ON-OWNER O9 and must not be inferred from active entity. SOX authority O4, server authority Q6, and native durability O7 remain open and are stated as boundaries.

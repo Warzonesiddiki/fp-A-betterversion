@@ -186,4 +186,20 @@ describe('CorrectionsPage (Phase 5)', () => {
     renderPage();
     expect(screen.getByText(/No corrections yet/i)).toBeInTheDocument();
   });
+
+  it('shows an error alert when correction request is invalid', () => {
+    useExceptionDispositionStore
+      .getState()
+      .recordDisposition(FINDING_KEY, 'ACCEPT', 'Confirmed with AP', { ruleId: 'R-006' });
+    renderPage();
+
+    // Leave instruction and assignee empty to trigger validation error
+    fireEvent.change(screen.getByLabelText(/Correction instruction/i), {
+      target: { value: '' },
+    });
+    fireEvent.change(screen.getByLabelText(/Assignee/i), { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: /Request correction/i }));
+
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+  });
 });

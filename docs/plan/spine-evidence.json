@@ -116,6 +116,26 @@
           "na": "This page renders straight from the local ledger store; its own comment records that an async skeleton here would be a fake loading indicator, so the empty and error branches carry the first-paint states."
         }
       }
+    },
+    "/data/corrections": {
+      "page": "src/pages/data/CorrectionsPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/data/CorrectionsPage.test.tsx",
+          "title": "creates a correction from an accepted finding and tracks it"
+        },
+        "empty": {
+          "file": "src/pages/data/CorrectionsPage.test.tsx",
+          "title": "empty tracker points at the exception queue"
+        },
+        "error": {
+          "file": "src/pages/data/CorrectionsPage.test.tsx",
+          "title": "shows an error alert when correction request is invalid"
+        },
+        "loading": {
+          "na": "This page reads the local disposition and correction stores synchronously; no async skeleton exists, empty state carries first-paint, and filters are client-side."
+        }
+      }
     }
   },
   "capabilities": {

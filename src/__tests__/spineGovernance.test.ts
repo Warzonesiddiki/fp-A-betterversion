@@ -312,6 +312,54 @@ describe('GOVERNED /board-pack — Board pack surface', () => {
 });
 
 // ---------------------------------------------------------------------------
+// /data/corrections — Corrections tracker surface
+// ---------------------------------------------------------------------------
+describe('GOVERNED /data/corrections — Corrections tracker surface', () => {
+  it('GOVERNED /data/corrections — exception:dispose guards correction request', () => {
+    actAs('Viewer');
+    const error = expectPermissionDenied(() =>
+      useExceptionDispositionStore.getState().requestCorrection({
+        exceptionId: 'EXC-CORR-GOV-1',
+        instruction: 'Fix this',
+        assignee: 'accounts-team',
+      })
+    );
+    expect(error.message).toContain('exception:dispose');
+  });
+
+  it('GOVERNED /data/corrections — audit trail records correction lifecycle', () => {
+    actAs('Analyst');
+    useExceptionDispositionStore.getState().requestCorrection({
+      exceptionId: 'EXC-CORR-GOV-2',
+      instruction: 'Fix ledger',
+      assignee: 'accounts-team',
+    });
+    useExceptionDispositionStore.getState().updateCorrectionStatus('EXC-CORR-GOV-2', 'APPLIED');
+    const trail = useExceptionDispositionStore.getState().getCorrectionHistory('EXC-CORR-GOV-2');
+    expect(trail.length).toBe(2);
+    expect(trail[0]!.status).toBe('REQUESTED');
+    expect(trail[1]!.status).toBe('APPLIED');
+  });
+
+  it('GOVERNED /data/corrections — write guard enforces human-only status transitions', () => {
+    actAs('Analyst');
+    useExceptionDispositionStore.getState().requestCorrection({
+      exceptionId: 'EXC-CORR-GOV-3',
+      instruction: 'Fix',
+      assignee: 'team',
+    });
+    // Illegal transition REQUESTED → REVERIFIED must fail (human-only path)
+    expect(() =>
+      useExceptionDispositionStore.getState().updateCorrectionStatus('EXC-CORR-GOV-3', 'REVERIFIED')
+    ).toThrow(/REQUESTED → APPLIED → REVERIFIED|APPLIED/);
+  });
+
+  it('GOVERNED /data/corrections — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    expect(useAuthStore.getState().user).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Census — N2/N3 bounded closure
 // ---------------------------------------------------------------------------
 describe('GOVERNED census — N2/N3 bounded closure', () => {

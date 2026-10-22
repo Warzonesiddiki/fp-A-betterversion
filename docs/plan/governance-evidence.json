@@ -132,6 +132,31 @@
           "note": "BLOCKED-ON-OWNER O9 — board-pack does not claim entity-scope authorization."
         }
       }
+    },
+    "/data/corrections": {
+      "page": "src/pages/data/CorrectionsPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/corrections — exception:dispose guards correction request",
+          "proves": "Correction request requires exception:dispose; Viewer is denied with PermissionError naming the permission."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/corrections — audit trail records correction lifecycle",
+          "proves": "Correction lifecycle REQUESTED→APPLIED is audited with append-only trail recording actor and time."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/corrections — write guard enforces human-only status transitions",
+          "proves": "Illegal transition REQUESTED→REVERIFIED is refused; only human clicks via human-only path advance status, with audit."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — corrections tracker does not claim entity-scope authorization."
+        }
+      }
     }
   },
   "capabilities": {

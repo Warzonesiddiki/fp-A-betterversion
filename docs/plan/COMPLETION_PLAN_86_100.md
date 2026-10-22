@@ -120,9 +120,9 @@ the register now covers **695 rows** — 231 routes, 180 engines, 19 requirement
 which is the honest reading of a tree where 0 of 231 routes are graded CONNECTED
 or GOVERNED. Nothing seeds as SUPPORTED; that status is earned by a later PR with
 test ids that resolve. After PR #88 (spine CONNECTED) and PR #89 (spine GOVERNED),
-the register is **SUPPORTED 22 · EXPERIMENTAL 446 · BLOCKED-ON-OWNER 7 · RETIRED 0 · NOT_BUILT 220**,
-with **5 of 231 routes CONNECTED and GOVERNED** (`/data`, `/data/gl-trial-balance`,
-`/data/exceptions`, `/periods/close`, `/board-pack`) and **17 capabilities** with
+the register is **SUPPORTED 23 · EXPERIMENTAL 445 · BLOCKED-ON-OWNER 7 · RETIRED 0 · NOT_BUILT 220**,
+with **6 of 231 routes CONNECTED and GOVERNED** (`/data`, `/data/gl-trial-balance`,
+`/data/exceptions`, `/periods/close`, `/board-pack`, `/data/corrections`) and **17 capabilities** with
 both CONNECTED and GOVERNED claims — the first SUPPORTED rows in the programme.
 
 **CONNECTED is graded, not asserted (DEC-062).** `docs/plan/spine-evidence.json`
@@ -283,7 +283,9 @@ both. Measured: **5 of 231 routes CONNECTED** (`/data`, `/data/gl-trial-balance`
 claims, **0 GOVERNED** — the GOVERNED half (authorization, audit, entity scope,
 write guards) is #89. Two spine pages gained the error state they lacked
 (`GLTrialBalancePage`, `ExceptionQueuePage`) so the four-state claim is true
-rather than assumed, and the shell gained an explicit stale-state test.
+rather than assumed, and the shell gained an explicit stale-state test. PR #89
+later adds /data/corrections as 6th CONNECTED route (in-app correction tracker,
+DEC-035) with journey/empty/error/loading-na evidence.
 
 **#89 — Spine GOVERNED evidence + N2/N3 (delivered 2026-10-23).** Spine graded
 GOVERNED with authorization evidence per surface (import:create, period:close,
