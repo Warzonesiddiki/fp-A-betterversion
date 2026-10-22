@@ -6,7 +6,10 @@ vi.mock('@/store/glStore', () => ({
 }));
 
 vi.mock('@/store/budgetStore', () => ({
-  useBudgetStore: vi.fn(() => ({ budgets: [] })),
+  useBudgetStore: vi.fn((sel?: (s: { budgets: never[] }) => unknown) => {
+    const state = { budgets: [] as never[] };
+    return sel ? sel(state) : state;
+  }),
 }));
 
 vi.mock('@/engines/ExportEngine', () => ({
