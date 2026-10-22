@@ -35,11 +35,18 @@ names the scripts, and forbids a SUPPORTED claim on manifest registration alone.
 (2) The README's test-file claim was three files stale after the last recorded run;
 it now reads 1,416 with the 16,410 tally explicitly dated to the 1,412-file run.
 
-**What is not verified.** The full vitest run did not complete in this sandbox: the
-single-process run ended with an uncaught `Worker` exit after 1,170 test files and
-`npm run test:sharded` was still running at the cut. So no new tally is claimed;
-the last complete run remains the dated 1,412-file result. CI remains
-unverifiable (Actions HTTP 403).
+**The suite was then measured, not assumed.** The single-process run dies in this
+sandbox with an uncaught `Worker` exit after ~1,170 files, so the run that counts
+is `npm run test:sharded`: **8/8 shards passed in 2,170 s — 1,416 files, 16,431
+passed + 1 skipped (exit 0)**, which is 21 more tests than the previous recorded
+run and matches the discovery count `docs:verify` asserts. The README now quotes
+that run and its date. CI remains unverifiable (Actions HTTP 403).
+
+**Also fixed by the pre-push gate, not by reading.** The README claimed "91 of 267
+engine/store modules import money.ts" while the gate measured 92 importers over 262
+modules; both numbers were stale. The claim is corrected and the gate now checks
+the denominator as well as the numerator, because an adoption count over an
+unmeasured base is a ratio nobody can reproduce.
 
 **Next.** Commit and push this documentation + tooling unit, refresh the PR #85
 body with `gh api -X PATCH` (`gh pr edit` silently fails here), then start PR #86

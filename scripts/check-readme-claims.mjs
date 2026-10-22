@@ -157,7 +157,17 @@ check('decimal.js adoption claim matches measured importers', () => {
         importers.map((f) => f.slice(ROOT.length + 1)).join(', ')
     );
   }
-  return `${importers.length} adopters`;
+  // The denominator drifts too (five modules left engines/store without the
+  // claim being updated), and an adoption count over a stale denominator is a
+  // ratio nobody can reproduce. Both numbers are measured, so both are checked.
+  const modules = [
+    ...walk(join(ROOT, 'src', 'engines'), isSource),
+    ...walk(join(ROOT, 'src', 'store'), isSource),
+  ].length;
+  if (modules !== Number(claimed[2])) {
+    throw new Error(`README claims ${claimed[2]} engine/store modules, measured ${modules}`);
+  }
+  return `${importers.length} adopters of ${modules} modules`;
 });
 
 check('coverage threshold statement matches vite.config.ts', () => {
