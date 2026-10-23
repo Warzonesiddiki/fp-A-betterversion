@@ -1,8 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ExactConsolidationResult } from '@/engines/ConsolidationEngine';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function loadExcelJS(): Promise<any> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mod: any = await import('exceljs');
   return mod.default ?? mod;
 }
@@ -483,16 +482,14 @@ export async function inspectFormulaWorkbookBytes(
   ) as ArrayBuffer;
   await workbook.xlsx.load(safeArrayBuffer);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sheetNames = workbook.worksheets.map((ws: any) => ws.name);
   const formulaCells: FormulaCellRecord[] = [];
   const keyedMetrics = new Map<string, string>();
   const sheetRows: Record<string, (string | number | null)[][]> = {};
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   for (const ws of (workbook as any).worksheets) {
     const rows: (string | number | null)[][] = [];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     ws.eachRow({ includeEmpty: false }, (row: any) => {
       const rowKey = String(row.getCell(1).value ?? '').trim();
       const rowVals: (string | number | null)[] = [];
@@ -518,7 +515,6 @@ export async function inspectFormulaWorkbookBytes(
       }
       rows.push(rowVals);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       row.eachCell((cell: any) => {
         const val = cell.value;
         if (val && typeof val === 'object' && 'formula' in val) {

@@ -87,7 +87,9 @@ repository's own incidents and decisions.
 | [`recharts-tree-shaking`](recharts-tree-shaking.md) | Use when chart bundle is large or adding a new chart: granular imports, avoid barrel, dynamic import heavy charts, measure treemap. | product-ui |
 | [`vite-bundle-deep-optimization`](vite-bundle-deep-optimization.md) | Use when bundle is near limit or a new dependency pushes total over budget: split vendors, lazy routes, avoid barrels, measure before/after. | product-ui |
 | **Documentation, traceability, authoring** | | |
+| [`connector-utilization`](connector-utilization.md) | Use when documentation, decisions, or release artifacts need to be shared with external systems. Maps repo artifacts to Notion, Google Docs, Google Drive, and other connectors. | meta |
 | [`docs-and-decisions`](docs-and-decisions.md) | Use when writing or editing project documentation: one fact, one owner, one date, one command. Documentation is a claim set, not a narrative. | meta |
+| [`owner-pack-completion`](owner-pack-completion.md) | Use when compiling owner decisions O1-O9 into a completion document. Records what is claimed, what is blocked, and what the owner must answer. | meta |
 | [`requirements-traceability`](requirements-traceability.md) | Use when claiming a requirement is met, mapping capability to evidence, or filling a register row. Every requirement resolves to a test or is labelled. | meta |
 | [`skill-authoring`](skill-authoring.md) | Use when adding a skill to this library: one job, a trigger line, the method, and the gate that proves it. Keep it short enough to be read in one pass. | meta |
 | **The owner's Ponytail set (verbatim, standing)** | | |
