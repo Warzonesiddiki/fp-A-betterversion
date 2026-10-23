@@ -982,6 +982,31 @@
           "note": "BLOCKED-ON-OWNER O9 \u2014 entity-scope not claimed"
         }
       }
+    },
+    "/audit": {
+      "page": "src/pages/audit/AuditTrailPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /audit/trail \u2014 audit:read allows viewing audit trail",
+          "proves": "Audit viewing requires audit:read permission."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /audit/trail \u2014 audit trail is hash-chained and verifiable",
+          "proves": "Audit trail produces auditable entries with hash chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /audit/trail \u2014 entity-scope remains BLOCKED-ON-OWNER O9",
+          "proves": "Entity-scope authorization remains blocked on owner decision O9."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define authoritative authorized-entity set (O9)",
+          "note": "BLOCKED-ON-OWNER O9 \u2014 entity-scope not claimed"
+        }
+      }
     }
   },
   "capabilities": {

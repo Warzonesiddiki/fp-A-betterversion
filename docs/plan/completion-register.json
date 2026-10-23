@@ -4812,7 +4812,8 @@
           "src/__tests__/spineGovernance.test.ts"
         ],
         "gate": "governance:evidence",
-        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "page": "src/pages/audit/AuditTrailPage.tsx"
       },
       "note": "SUPPORTED \u2014 CONNECTED 1 GOVERNED 1 \u2014 entity-scope BLOCKED-ON-OWNER O9",
       "tests": [

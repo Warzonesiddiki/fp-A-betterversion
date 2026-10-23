@@ -7,7 +7,6 @@
  */
 import type { CorrectionRequest } from '@/types/exceptions';
 import type { ExceptionFinding } from '@/store/exceptionRuleCatalogue';
-import { toDecimal } from '@/utils/money';
 
 export interface ReverificationProposal {
   readonly exceptionId: string;

@@ -2,7 +2,6 @@
 import type { GLEntry } from '@/types';
 import type { PeriodCloseEntry } from '@/engines/PeriodCloseStateMachine';
 import { parseImportDate } from '@/utils/parseImportDate';
-import { toDecimal } from '@/utils/money';
 
 export interface FiscalCloseScope {
   readonly startDate: string;
