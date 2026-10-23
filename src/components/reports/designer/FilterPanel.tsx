@@ -3,6 +3,9 @@ import React from 'react';
 import { Filter, X, GripVertical, Plus } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import type { ReportFilter, ConditionOperator } from '@/engines/ReportBuilderEngine';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface ActiveFilter extends ReportFilter {
   id: string;

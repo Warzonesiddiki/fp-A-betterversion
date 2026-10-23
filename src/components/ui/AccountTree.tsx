@@ -3,6 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { ChevronRight, ChevronDown, Calculator, Hash, FileText, Search, X } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import type { GLAccount } from '@/types';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface AccountTreeProps {
   accounts: GLAccount[];

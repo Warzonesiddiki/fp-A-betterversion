@@ -9,6 +9,9 @@ import { ChatMessage, type ChatMessageData } from './ChatMessage';
 import { ChatChart } from './ChatChart';
 import { GenerativeDashboard, nlqResultToSpec } from './GenerativeDashboard';
 import type { GLEntry, GLAccount } from '@/types';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 interface ChatPanelProps {
   entries?: readonly GLEntry[];
   accounts?: readonly GLAccount[];

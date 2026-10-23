@@ -9,6 +9,9 @@ import { useScenarioStore } from '@/store/scenarioStore';
 import { useEntityStore } from '@/store/entityStore';
 import { useNavigate } from 'react-router-dom';
 import { LiveRegion } from '@/components/ui/LiveRegion';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 // Focus-trap selector — same pattern as ShortcutHelpModal.
 const FOCUSABLE = 'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';

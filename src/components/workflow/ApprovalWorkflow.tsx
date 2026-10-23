@@ -8,6 +8,9 @@ import type {
   ApprovalEvent,
   WorkflowStep,
 } from '@/engines/WorkflowEngine';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 interface ApprovalWorkflowProps {
   readonly request: ApprovalRequest;

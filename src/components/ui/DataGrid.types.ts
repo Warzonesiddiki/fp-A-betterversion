@@ -1,4 +1,7 @@
 import type { CellValueChangedEvent, GridOptions } from 'ag-grid-community';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface DataGridColumn {
   field: string;

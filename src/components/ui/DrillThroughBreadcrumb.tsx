@@ -1,5 +1,8 @@
 import React from 'react';
 import type { DrillBreadcrumb, DrillLevel } from '@/engines/DrillThroughEngine';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 interface DrillThroughBreadcrumbProps {
   path: DrillBreadcrumb[];

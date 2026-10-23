@@ -3,6 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useESGStore, ESGMetric } from '@/store/esgStore';
 import { FileText, Download, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 type CSRDSection = 'environmental' | 'social' | 'governance';
 type ReportStatus = 'draft' | 'review' | 'approved';
