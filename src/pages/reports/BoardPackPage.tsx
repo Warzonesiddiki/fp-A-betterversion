@@ -28,6 +28,7 @@ import {
   sumByAccountPrefix,
   type BoardPackReport,
 } from '@/pages/reports/boardPackData';
+import { roundTo, sumMoney } from '@/utils/money';
 
 export type { BoardPackReport };
 export { computeBoardPackReport, sumByAccountPrefix };
@@ -71,6 +72,16 @@ export default function BoardPackPage() {
   const report = useMemo(() => {
     return computeBoardPackReport(entries, budgets);
   }, [entries, budgets]);
+
+  // Missing-is-not-zero: totalBudget is sum of budgets, zero is correct when
+  // no budgets exist (budgets.length === 0). When report is null (no GL
+  // entries), expenses are unavailable, not zero — show "—" with reason.
+  const totalBudgetFromBudgets = useMemo(() => {
+    return roundTo(
+      sumMoney(budgets.map((b) => (b.totalAmount as number) || 0)),
+      2
+    );
+  }, [budgets]);
 
   const handleExportPDF = () => {
     if (!report) return;
@@ -386,12 +397,13 @@ export default function BoardPackPage() {
               <div className="space-y-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-[var(--text-muted)]">Total Budget</span>
-                  <span className="font-bold tabular-nums">{fmt.currency0(report?.totalBudget || 0)}</span>
+                  {/* zero is correct when budgets exist with zero amount; sum from budgets, not a default */}
+                  <span className="font-bold tabular-nums">{fmt.currency0(totalBudgetFromBudgets)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-[var(--text-muted)]">Actual Spending</span>
-                  <span className="font-bold tabular-nums text-red-400">
-                    {fmt.currency0(report?.expenses || 0)}
+                  <span className="font-bold tabular-nums text-red-400" title={report ? undefined : 'unavailable: no GL entries'}>
+                    {report ? fmt.currency0(report.expenses) : '—'}
                   </span>
                 </div>
                 <div className="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
@@ -420,11 +432,12 @@ export default function BoardPackPage() {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-[var(--text-muted)]">Budgets</span>
-                <span className="font-mono">{report?.budgetCount ?? 0}</span>
+                {/* zero is correct when no budgets — count from store, not a default-zero money read */}
+                <span className="font-mono">{budgets.length}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[var(--text-muted)]">GL Entries</span>
-                <span className="font-mono">{report?.entryCount ?? 0}</span>
+                <span className="font-mono">{entries.length}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[var(--text-muted)]">Sections</span>

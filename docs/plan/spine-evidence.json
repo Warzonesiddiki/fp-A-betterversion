@@ -116,6 +116,109 @@
           "na": "This page renders straight from the local ledger store; its own comment records that an async skeleton here would be a fake loading indicator, so the empty and error branches carry the first-paint states."
         }
       }
+    },
+    "/data/corrections": {
+      "page": "src/pages/data/CorrectionsPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/data/CorrectionsPage.test.tsx",
+          "title": "creates a correction from an accepted finding and tracks it"
+        },
+        "empty": {
+          "file": "src/pages/data/CorrectionsPage.test.tsx",
+          "title": "empty tracker points at the exception queue"
+        },
+        "error": {
+          "file": "src/pages/data/CorrectionsPage.test.tsx",
+          "title": "shows an error alert when correction request is invalid"
+        },
+        "loading": {
+          "na": "This page reads the local disposition and correction stores synchronously; no async skeleton exists, empty state carries first-paint, and filters are client-side."
+        }
+      }
+    },
+    "/data/gl-explorer": {
+      "page": "src/pages/data/GLExplorerPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/data/GLExplorerPage.interop.test.tsx",
+          "title": "renders counts, money totals, rows and import provenance from the real store"
+        },
+        "empty": {
+          "file": "src/pages/data/GLExplorerPage.interop.test.tsx",
+          "title": "shows the empty state when the real store holds nothing"
+        },
+        "error": {
+          "file": "src/pages/data/GLExplorerPage.interop.test.tsx",
+          "title": "K30 error state: states the failed import instead of rendering the stale ledger"
+        },
+        "loading": {
+          "na": "This page reads the local GL store synchronously; entries and account summaries are computed in useMemo from persisted Zustand state, so no page-level async skeleton exists. Filter typing uses useTransition opacity, not a skeleton, and first-paint is covered by empty and error branches."
+        }
+      }
+    },
+    "/data/gl-journals": {
+      "page": "src/pages/data/GLJournalsPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/data/GLJournalsPage.test.tsx",
+          "title": "renders posted journal rows and money totals from real glStore entries (content state)"
+        },
+        "empty": {
+          "file": "src/pages/data/GLJournalsPage.test.tsx",
+          "title": "K30: an empty ledger renders the shared EmptyState under the page h1 with an import CTA"
+        },
+        "error": {
+          "file": "src/pages/data/GLJournalsPage.test.tsx",
+          "title": "K30: a failed CSV export renders ErrorState (role=alert) whose retry succeeds"
+        },
+        "loading": {
+          "file": "src/pages/data/GLJournalsPage.test.tsx",
+          "title": "K30 a11y: exposes aria-busy on the results body while the transition re-filters, clearing on settle"
+        }
+      }
+    },
+    "/budgets": {
+      "page": "src/pages/budgets/BudgetListPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/budgets/BudgetListPage.deep.test.tsx",
+          "title": "renders budget list and filters by status"
+        },
+        "empty": {
+          "file": "src/pages/budgets/BudgetListPage.test.tsx",
+          "title": "displays the empty state when no budgets exist"
+        },
+        "error": {
+          "file": "src/pages/budgets/BudgetListPage.test.tsx",
+          "title": "submission failure is surfaced after an asynchronous rejection and Retry can succeed"
+        },
+        "loading": {
+          "file": "src/pages/budgets/BudgetListPage.test.tsx",
+          "title": "keeps the page h1 mounted over a hydration skeleton instead of flashing the empty state"
+        }
+      }
+    },
+    "/data/gl-upload": {
+      "page": "src/pages/data/GLUploadPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/data/GLUploadPage.deep.test.tsx",
+          "title": "parses a valid CSV file and advances to the map step"
+        },
+        "empty": {
+          "file": "src/pages/data/GLUploadPage.deep.test.tsx",
+          "title": "renders the initial upload CTA when no data is loaded"
+        },
+        "error": {
+          "file": "src/pages/data/GLUploadPage.deep.test.tsx",
+          "title": "rejects unsupported file extensions with a friendly error"
+        },
+        "loading": {
+          "file": "src/pages/data/GLUploadPage.test.tsx",
+          "title": "parsing skeleton announces exactly once via srLabel, bars decorative"
+        }
+      }
     }
   },
   "capabilities": {

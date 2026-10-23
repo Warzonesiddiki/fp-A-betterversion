@@ -146,7 +146,7 @@ describe('verify-spine-evidence.mjs', () => {
   it('the real repository evidence resolves', () => {
     const result = run(['--check']);
     expect(result.status).toBe(0);
-    expect(result.stdout).toMatch(/5 routes \(18 state claims\)/);
+    expect(result.stdout).toMatch(/10 routes \(36 state claims\)/);
     expect(result.stdout).toMatch(/17 capabilities \(17 claims\)/);
 
     // The manifest and the pages it grades must still agree about loading.

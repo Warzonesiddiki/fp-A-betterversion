@@ -1910,17 +1910,34 @@
     {
       "kind": "capability",
       "id": "cap:analyze.exception-rules",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/data/exceptions",
         "connected": [
           {
             "file": "src/pages/data/ExceptionQueuePage.test.tsx",
             "title": "planted unbalanced journal appears as a candidate with coverage stated"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:analyze.exception-rules — exception rules guarded by exception:configure, audit trail"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/data/ExceptionQueuePage.test.tsx"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/data/ExceptionQueuePage.test.tsx"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
@@ -1934,17 +1951,34 @@
     {
       "kind": "capability",
       "id": "cap:analyze.findings-disposition",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/data/exceptions",
         "connected": [
           {
             "file": "src/store/exceptionDispositionStore.lifecycle.test.ts",
             "title": "REQUESTED → APPLIED → REVERIFIED is the legal path, each step audited"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:analyze.findings-disposition — disposition follows audited legal path"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/store/exceptionDispositionStore.lifecycle.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/store/exceptionDispositionStore.lifecycle.test.ts"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
@@ -1967,137 +2001,296 @@
     {
       "kind": "capability",
       "id": "cap:close.audit-chain",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/audit/trail",
         "connected": [
           {
             "file": "src/store/auditTrailIntegrity.test.ts",
             "title": "first entry chains to the genesis hash and carries a 256-bit digest"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:close.audit-chain — audit chain is hash-chained from genesis, single canonical authority"
+          },
+          {
+            "file": "src/services/audit/auditChainCensus.test.ts",
+            "title": "classifies every non-test module that computes a digest and carries chain state"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/services/audit/auditChainCensus.test.ts",
+          "src/store/auditTrailIntegrity.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (2 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/services/audit/auditChainCensus.test.ts",
+        "src/store/auditTrailIntegrity.test.ts"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
       "id": "cap:close.corrections",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/data/corrections",
         "connected": [
           {
             "file": "src/pages/data/CorrectionsPage.test.tsx",
             "title": "creates a correction from an accepted finding and tracks it"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:close.corrections — corrections are tracked with audit trail"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/data/CorrectionsPage.test.tsx"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/data/CorrectionsPage.test.tsx"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
       "id": "cap:close.period-entity-scope",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/periods/close",
         "connected": [
           {
             "file": "src/services/import/glPeriodWriteGuard.test.ts",
             "title": "unknown entity and legacy entity display labels cannot evade a lock"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:close.period-entity-scope — period-entity scope guard cannot be evaded, O9 boundary stated"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/services/import/glPeriodWriteGuard.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/services/import/glPeriodWriteGuard.test.ts"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
       "id": "cap:close.state-machine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/periods/close",
         "connected": [
           {
             "file": "src/engines/PeriodCloseStateMachine.test.ts",
             "title": "hard-close → reopen is valid"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:close.state-machine — state machine transitions are RBAC-guarded and audited"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/engines/PeriodCloseStateMachine.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/engines/PeriodCloseStateMachine.test.ts"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
       "id": "cap:close.tie-out",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/data/reconciliation",
         "connected": [
           {
             "file": "src/services/import/monthEndClosePipeline.integration.test.ts",
             "title": "quarantines messy imports atomically, enforces period-close write guard, promotes exact-decimal USD/EUR batches, consolidates with ASC 830 CTA & ASC 810 IC, and ties out XLSX/PPTX outputs"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:close.tie-out — tie-out enforces write guards and audit chain"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/services/import/monthEndClosePipeline.integration.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/services/import/monthEndClosePipeline.integration.test.ts"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
       "id": "cap:close.trial-balance",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/data/gl-trial-balance",
         "connected": [
           {
             "file": "src/pages/data/GLTrialBalancePage.interop.test.tsx",
             "title": "renders the trial balance the real store derives from an imported journal"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:close.trial-balance — trial balance read allowed for Viewer, audit chain intact"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/data/GLTrialBalancePage.interop.test.tsx"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/data/GLTrialBalancePage.interop.test.tsx"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
       "id": "cap:close.write-guards",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/data/gl-journals",
         "connected": [
           {
             "file": "src/services/import/spineAcceptance.d365.integration.test.ts",
             "title": "enforces the period-close write guard on a D365 batch"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:close.write-guards — write guards enforce period-close, audit records guard decisions"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/services/import/spineAcceptance.d365.integration.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/services/import/spineAcceptance.d365.integration.test.ts"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
       "id": "cap:data.control-totals",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/data/gl-trial-balance",
         "connected": [
           {
             "file": "src/services/import/spineAcceptance.d365.integration.test.ts",
             "title": "promotes to the ledger and ties out to exact control totals"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:data.control-totals — control totals tie out, audit chain verified"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/services/import/spineAcceptance.d365.integration.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/services/import/spineAcceptance.d365.integration.test.ts"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
       "id": "cap:data.csv-xlsx-intake",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/data/gl-upload",
         "connected": [
           {
             "file": "src/services/import/glCsvTokenizer.test.ts",
             "title": "fails closed on unclosed quotes, malformed quotes, extra columns, and invalid UTF-8 bytes"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:data.csv-xlsx-intake — import:create guards intake, audit records provenance"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/services/import/glCsvTokenizer.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/services/import/glCsvTokenizer.test.ts"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
@@ -2132,62 +2325,130 @@
     {
       "kind": "capability",
       "id": "cap:data.lineage",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/analytics/data-lineage",
         "connected": [
           {
             "file": "src/services/import/parseGLRows.test.ts",
             "title": "maps a well-formed row into a GL entry with canonical period and provenance row"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:data.lineage — lineage carries provenance, audit records lineage changes"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/services/import/parseGLRows.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/services/import/parseGLRows.test.ts"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
       "id": "cap:data.mapping",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/data/data-flow",
         "connected": [
           {
             "file": "src/services/import/spineAcceptance.d365.integration.test.ts",
             "title": "accepts the documented D365 column set (regression: it was rejected before 2026-10-21)"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:data.mapping — mapping respects RBAC and audit"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/services/import/spineAcceptance.d365.integration.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/services/import/spineAcceptance.d365.integration.test.ts"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
       "id": "cap:data.quarantine",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/data/gl-explorer",
         "connected": [
           {
             "file": "src/services/import/glStagingCoordinator.test.ts",
             "title": "blocks a balanced remainder when any chunk has quarantined rows, retaining raw typed reasons"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:data.quarantine — quarantine blocks promotion, audit trail append-only"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/services/import/glStagingCoordinator.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/services/import/glStagingCoordinator.test.ts"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
       "id": "cap:data.validation",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/data/exceptions",
         "connected": [
           {
             "file": "src/services/import/spineAcceptance.d365.integration.test.ts",
             "title": "quarantines D365 rows with reasons and never promotes a blocked batch"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:data.validation — validation quarantines with reasons, audit trail intact"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/services/import/spineAcceptance.d365.integration.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/services/import/spineAcceptance.d365.integration.test.ts"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
@@ -2384,17 +2645,34 @@
     {
       "kind": "capability",
       "id": "cap:report.board-pack",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/board-pack",
         "connected": [
           {
             "file": "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
             "title": "exports the same figures the screen shows, derived from the ledger"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:report.board-pack — board pack read guarded by report:read, export ties out to audited ledger"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/reports/BoardPackPage.exportTieOut.test.tsx"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/reports/BoardPackPage.exportTieOut.test.tsx"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
@@ -2426,17 +2704,34 @@
     {
       "kind": "capability",
       "id": "cap:report.tie-back",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
-        "gatedBy": "/reports",
         "connected": [
           {
             "file": "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
             "title": "follows the ledger, not a hardcoded figure"
           }
-        ]
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED cap:report.tie-back — tie-back ensures export reflects audited ledger, not hardcoded figures"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/reports/BoardPackPage.exportTieOut.test.tsx"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "CONNECTED evidence recorded (1 test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89."
+      "note": "CONNECTED evidence recorded (1 test id(s)); GOVERNED evidence recorded (1 test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/reports/BoardPackPage.exportTieOut.test.tsx"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "capability",
@@ -4614,12 +4909,54 @@
     {
       "kind": "route",
       "id": "route:/board-pack",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/board-pack",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
+            "title": "exports the same figures the screen shows, derived from the ledger"
+          },
+          {
+            "file": "src/pages/reports/BoardPackPage.probe.test.tsx",
+            "title": "K30 empty state: No Data CTA before any ledger exists"
+          },
+          {
+            "file": "src/pages/reports/BoardPackPage.probe.test.tsx",
+            "title": "K30 error state: ErrorState when glStore.importError is set"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /board-pack — report:read allows viewing board pack"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /board-pack — audit trail ties out to ledger figures"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /board-pack — write guard ensures board pack reflects closed-period state"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
+          "src/pages/reports/BoardPackPage.probe.test.tsx"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (BoardPackPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED — CONNECTED 3 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/reports/BoardPackPage.exportTieOut.test.tsx",
+        "src/pages/reports/BoardPackPage.probe.test.tsx"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "route",
@@ -4644,12 +4981,56 @@
     {
       "kind": "route",
       "id": "route:/budgets",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/budgets",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/budgets/BudgetListPage.deep.test.tsx",
+            "title": "renders budget list and filters by status"
+          },
+          {
+            "file": "src/pages/budgets/BudgetListPage.test.tsx",
+            "title": "displays the empty state when no budgets exist"
+          },
+          {
+            "file": "src/pages/budgets/BudgetListPage.test.tsx",
+            "title": "submission failure is surfaced after an asynchronous rejection and Retry can succeed"
+          },
+          {
+            "file": "src/pages/budgets/BudgetListPage.test.tsx",
+            "title": "keeps the page h1 mounted over a hydration skeleton instead of flashing the empty state"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /budgets — budget:read allows viewing budgets"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /budgets — audit trail records budget derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /budgets — write guard blocks budget:approve for Viewer"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/budgets/BudgetListPage.test.tsx",
+          "src/pages/budgets/BudgetListPage.deep.test.tsx"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (BudgetListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/budgets/BudgetListPage.test.tsx",
+        "src/pages/budgets/BudgetListPage.deep.test.tsx"
+      ]
     },
     {
       "kind": "route",
@@ -4974,12 +5355,52 @@
     {
       "kind": "route",
       "id": "route:/data",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/data",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/data/DataImportPage.deep.test.tsx",
+            "title": "handles file upload and advances the wizard through analyze to map"
+          },
+          {
+            "file": "src/pages/data/DataImportPage.deep.test.tsx",
+            "title": "shows the empty state when no GL entries are loaded"
+          },
+          {
+            "file": "src/pages/data/DataImportPage.deep.test.tsx",
+            "title": "shows an error alert when migration analyze throws"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data — import:create guards the import path"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data — audit trail records the import provenance"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data — write guard blocks closed periods"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/data/DataImportPage.deep.test.tsx"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (DataImportPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED — CONNECTED 3 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/data/DataImportPage.deep.test.tsx"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "route",
@@ -5004,12 +5425,52 @@
     {
       "kind": "route",
       "id": "route:/data/corrections",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/data/corrections",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/data/CorrectionsPage.test.tsx",
+            "title": "creates a correction from an accepted finding and tracks it"
+          },
+          {
+            "file": "src/pages/data/CorrectionsPage.test.tsx",
+            "title": "empty tracker points at the exception queue"
+          },
+          {
+            "file": "src/pages/data/CorrectionsPage.test.tsx",
+            "title": "shows an error alert when correction request is invalid"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/corrections — exception:dispose guards correction request"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/corrections — audit trail records correction lifecycle"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/corrections — write guard enforces human-only status transitions"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/data/CorrectionsPage.test.tsx"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (CorrectionsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED — CONNECTED 3 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/data/CorrectionsPage.test.tsx"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "route",
@@ -5024,12 +5485,56 @@
     {
       "kind": "route",
       "id": "route:/data/exceptions",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/data/exceptions",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/data/ExceptionQueuePage.test.tsx",
+            "title": "planted unbalanced journal appears as a candidate with coverage stated"
+          },
+          {
+            "file": "src/pages/data/ExceptionQueuePage.test.tsx",
+            "title": "hydrating store shows the loading skeleton, not an empty queue"
+          },
+          {
+            "file": "src/pages/data/ExceptionQueuePage.test.tsx",
+            "title": "empty ledger invites an import instead of showing an empty queue"
+          },
+          {
+            "file": "src/pages/data/ExceptionQueuePage.test.tsx",
+            "title": "K30 error state: a failed import is stated, never read as a clean ledger"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/exceptions — exception:dispose guards disposition"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/exceptions — audit trail records disposition lifecycle"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/exceptions — write guard prevents bypassing quarantine"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/data/ExceptionQueuePage.test.tsx"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (ExceptionQueuePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/data/ExceptionQueuePage.test.tsx"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "route",
@@ -5044,22 +5549,106 @@
     {
       "kind": "route",
       "id": "route:/data/gl-explorer",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/data/gl-explorer",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/data/GLExplorerPage.interop.test.tsx",
+            "title": "renders counts, money totals, rows and import provenance from the real store"
+          },
+          {
+            "file": "src/pages/data/GLExplorerPage.interop.test.tsx",
+            "title": "shows the empty state when the real store holds nothing"
+          },
+          {
+            "file": "src/pages/data/GLExplorerPage.interop.test.tsx",
+            "title": "K30 error state: states the failed import instead of rendering the stale ledger"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-explorer — gl:read allows viewing explorer"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-explorer — audit trail records explorer derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-explorer — write guard blocks closed periods from affecting explorer"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/data/GLExplorerPage.interop.test.tsx",
+          "src/pages/data/GLExplorerPage.test.tsx"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (GLExplorerPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED — CONNECTED 3 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/data/GLExplorerPage.interop.test.tsx",
+        "src/pages/data/GLExplorerPage.test.tsx"
+      ]
     },
     {
       "kind": "route",
       "id": "route:/data/gl-journals",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/data/gl-journals",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/data/GLJournalsPage.test.tsx",
+            "title": "renders posted journal rows and money totals from real glStore entries (content state)"
+          },
+          {
+            "file": "src/pages/data/GLJournalsPage.test.tsx",
+            "title": "K30: an empty ledger renders the shared EmptyState under the page h1 with an import CTA"
+          },
+          {
+            "file": "src/pages/data/GLJournalsPage.test.tsx",
+            "title": "K30: a failed CSV export renders ErrorState (role=alert) whose retry succeeds"
+          },
+          {
+            "file": "src/pages/data/GLJournalsPage.test.tsx",
+            "title": "K30 a11y: exposes aria-busy on the results body while the transition re-filters, clearing on settle"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-journals — gl:read allows viewing journals"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-journals — audit trail records journals derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-journals — write guard blocks closed periods from affecting journals"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/data/GLJournalsPage.test.tsx",
+          "src/pages/data/GLJournalsPage.interop.test.tsx"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (GLJournalsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/data/GLJournalsPage.test.tsx",
+        "src/pages/data/GLJournalsPage.interop.test.tsx"
+      ]
     },
     {
       "kind": "route",
@@ -5074,22 +5663,114 @@
     {
       "kind": "route",
       "id": "route:/data/gl-trial-balance",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/data/gl-trial-balance",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/data/GLTrialBalancePage.interop.test.tsx",
+            "title": "renders the trial balance the real store derives from an imported journal"
+          },
+          {
+            "file": "src/pages/data/GLTrialBalancePage.test.tsx",
+            "title": "hydrate skeleton announces exactly once via srLabel, bars decorative"
+          },
+          {
+            "file": "src/pages/smoke-data-pages.test.tsx",
+            "title": "displays empty state when no entries"
+          },
+          {
+            "file": "src/pages/data/GLTrialBalancePage.test.tsx",
+            "title": "K30 error state: states the failed import instead of rendering the stale ledger"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-trial-balance — Viewer can read trial balance (import:read)"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-trial-balance — audit trail records ledger derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-trial-balance — write guard blocks closed periods from affecting TB"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/data/GLTrialBalancePage.interop.test.tsx",
+          "src/pages/data/GLTrialBalancePage.test.tsx",
+          "src/pages/smoke-data-pages.test.tsx"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (GLTrialBalancePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/data/GLTrialBalancePage.interop.test.tsx",
+        "src/pages/data/GLTrialBalancePage.test.tsx",
+        "src/pages/smoke-data-pages.test.tsx"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "route",
       "id": "route:/data/gl-upload",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/data/gl-upload",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/data/GLUploadPage.deep.test.tsx",
+            "title": "parses a valid CSV file and advances to the map step"
+          },
+          {
+            "file": "src/pages/data/GLUploadPage.deep.test.tsx",
+            "title": "renders the initial upload CTA when no data is loaded"
+          },
+          {
+            "file": "src/pages/data/GLUploadPage.deep.test.tsx",
+            "title": "rejects unsupported file extensions with a friendly error"
+          },
+          {
+            "file": "src/pages/data/GLUploadPage.test.tsx",
+            "title": "parsing skeleton announces exactly once via srLabel, bars decorative"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-upload — import:create guards the upload path"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-upload — audit trail records upload provenance"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-upload — write guard blocks closed periods"
+          }
+        ],
+        "tests": [
+          "src/pages/data/GLUploadPage.deep.test.tsx",
+          "src/pages/data/GLUploadPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (GLUploadPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/data/GLUploadPage.deep.test.tsx",
+        "src/pages/data/GLUploadPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -5704,12 +6385,58 @@
     {
       "kind": "route",
       "id": "route:/periods/close",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/periods/close",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/services/import/monthEndClosePipeline.integration.test.ts",
+            "title": "quarantines messy imports atomically, enforces period-close write guard, promotes exact-decimal USD/EUR batches, consolidates with ASC 830 CTA & ASC 810 IC, and ties out XLSX/PPTX outputs"
+          },
+          {
+            "file": "src/pages/periods/PeriodClosePage.test.tsx",
+            "title": "K30: shows the hydrate skeleton while the close workflow initializes"
+          },
+          {
+            "file": "src/pages/periods/PeriodClosePage.test.tsx",
+            "title": "K30: empty state offers a CTA that re-enters the period-close flow"
+          },
+          {
+            "file": "src/pages/periods/PeriodClosePage.test.tsx",
+            "title": "K30: failed transition renders ErrorState (role=alert) whose retry succeeds"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /periods/close — Viewer cannot close, Admin can close (period:close)"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /periods/close — audit trail records close transitions"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /periods/close — write guard blocks GL writes in closed periods"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/periods/PeriodClosePage.test.tsx",
+          "src/services/import/monthEndClosePipeline.integration.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (PeriodClosePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/periods/PeriodClosePage.test.tsx",
+        "src/services/import/monthEndClosePipeline.integration.test.ts"
+      ],
+      "gate": "npm run governance:evidence",
+      "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
     },
     {
       "kind": "route",

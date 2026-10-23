@@ -6,7 +6,10 @@ vi.mock('@/store/glStore', () => ({
 }));
 
 vi.mock('@/store/budgetStore', () => ({
-  useBudgetStore: vi.fn(() => ({ budgets: [] })),
+  useBudgetStore: vi.fn((sel?: (s: { budgets: never[] }) => unknown) => {
+    const state = { budgets: [] as never[] };
+    return sel ? sel(state) : state;
+  }),
 }));
 
 vi.mock('@/engines/ExportEngine', () => ({
@@ -61,5 +64,24 @@ describe('BoardPackPage smoke test', () => {
   it('displays expected empty state', () => {
     renderPage();
     expect(screen.getByText(/No Data/i)).toBeTruthy();
+  });
+});
+
+describe('BoardPackPage missing-is-not-zero (PR #91)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+  it('shows empty state (not $0) when no GL entries exist — missing is not zero', async () => {
+    // Even if budgets exist, GL entries missing means report is null and
+    // the page shows empty state, not $0 for expenses (missing-is-not-zero)
+    const { useBudgetStore } = await import('@/store/budgetStore');
+    vi.mocked(useBudgetStore).mockImplementation((sel?: (s: { budgets: { totalAmount: number }[] }) => unknown) => {
+      const state = { budgets: [{ totalAmount: 10000 }] };
+      return sel ? sel(state as never) : (state as never);
+    });
+    const { container } = renderPage();
+    // Empty state, not a $0 total
+    expect(container.textContent).toContain('No Data');
+    expect(container.textContent).not.toContain('$0');
   });
 });

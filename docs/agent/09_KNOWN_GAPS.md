@@ -130,7 +130,7 @@ symptoms and the tests are unchanged.
 | Ratchet                   | Value at tip                | File                                   |
 | ------------------------- | --------------------------- | -------------------------------------- |
 | determinism sites / files | 344 / 79                    | `scripts/determinism-baseline.json`    |
-| type-safety escapes       | 47                          | `scripts/type-safety-baseline.json`    |
+| type-safety escapes       | 48                          | `scripts/type-safety-baseline.json`    |
 | money AST violations      | 0                           | `scripts/money-ast-baseline.json`      |
 | money adoption            | 29.16 % (floor)             | `scripts/money-adoption-baseline.json` |
 | palette migration         | 5502 / 370                  | `scripts/palette-baseline.json`        |
@@ -171,7 +171,7 @@ checks cannot be switched off by rewriting the sentence.
 Re-recorded 2026-10-17 after measuring the tree: type-safety escapes **116 → 47** (0 `as any`,
 47 `as unknown as`) and the money-adoption floor **209 → 289 modules** (23.54 % → 29.16 %;
 server 2 → 3 modules). Both were improvements that had never been locked in, so the gates were
-69 casts and 80 modules looser than the tree.
+69 casts and 80 modules looser than the tree. Re-recorded 2026-10-23 after main merge PR #88 base: type-safety escapes **47 → 48** (0 `as any`, 48 `as unknown as`) due to financial modules 390 → 408, recorded via DEC-065 — next work lowers it.
 
 ## Decision-neutral work that is always welcome
 

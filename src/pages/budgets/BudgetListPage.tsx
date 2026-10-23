@@ -296,7 +296,7 @@ export default function BudgetListPage() {
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums font-medium" role="gridcell">
-                        {fmt.currency0(b.totalAmount || 0)}
+                        {fmt.currency0(b.totalAmount)}
                       </td>
                       <td className="px-4 py-3 text-xs text-slate-400" role="gridcell">
                         {(b.departments || []).join(', ') || '-'}

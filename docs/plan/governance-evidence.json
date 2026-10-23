@@ -1,0 +1,410 @@
+{
+  "_comment": "Spine GOVERNED evidence (PR #89, DEC-062 extension). Every claim names a test file and the exact test title inside it; scripts/verify-governance-evidence.mjs fails when the file or the title is not there. GOVERNED means authorization, audit, write-guards and lifecycle are enforced — proven by RBAC tests, audit-chain verification, and period-close guards. Entity-scope authorization is explicitly BLOCKED-ON-OWNER O9 and must not be inferred from active entity. SOX authority O4, server authority Q6, and native durability O7 remain open and are stated as boundaries.",
+  "policy": {
+    "route": "A routed screen may be graded GOVERNED only when authorization (RBAC action), audit (hash-chained record), and write-guards (period-close) are each evidenced, and entity-scope is either evidenced or explicitly marked BLOCKED-ON-OWNER O9 with the owner question stated. A claim pointing at the page it grades proves nothing.",
+    "capability": "A capability may be graded GOVERNED when at least one test exercises its authorization guard, its audit record, and its lifecycle/write-guard enforcement. The test file must be a *.test.ts/*.test.tsx and the title must appear verbatim.",
+    "entityScope": "O9 is unanswered, so entity-scope authorization is BLOCKED-ON-OWNER. The authoritative entity set is undefined, switchEntity is policy-blocked, and activeEntityId must not be read as an authorization decision. This is the correct answer, not a defect.",
+    "auditChain": "auditTrailStore is the single canonical client-side authority (DEC-025). Every other chain-like module is classified in src/services/audit/auditChainCensus.test.ts with an explicit disposition, persistence flag, authority boundary and decision reference. Restart durability cannot be claimed without O7, SOX authority without O4, server authority without Q6.",
+    "rbac": "AST census pins 409 Zustand store actions = 302 guarded + 107 individually reasoned exceptions (N3). The census is enforced by src/store/rbacMatrixCompleteness.test.ts and pinned in docs/MASTER_CHECKLIST_COVERAGE.md row 26. Payload-source authentication for the GDPR bridge remains a bounded exception that disclaims general audit authority."
+  },
+  "routes": {
+    "/data": {
+      "page": "src/pages/data/DataImportPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data — import:create guards the import path",
+          "proves": "Data import writes require import:create; Viewer and unauthenticated sessions are denied with PermissionError naming the permission."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data — audit trail records the import provenance",
+          "proves": "A successful import creates an audit entry with id, hash linkage and chainHead advancement; verifyIntegrity reports valid."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data — write guard blocks closed periods",
+          "proves": "Closed periods block D365 batch promotion via glPeriodWriteGuard; the guard is wired into the import pipeline."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed; activeEntityId is not an authorization decision."
+        }
+      }
+    },
+    "/data/gl-trial-balance": {
+      "page": "src/pages/data/GLTrialBalancePage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-trial-balance — Viewer can read trial balance (import:read)",
+          "proves": "Viewer holds import:read and gl:read; trial balance reading is allowed for least-privileged role, writes remain guarded."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-trial-balance — audit trail records ledger derivation",
+          "proves": "Trial balance is derived from ledger entries that carry provenance and are covered by audit chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-trial-balance — write guard blocks closed periods from affecting TB",
+          "proves": "Closed-period entries are rejected before reaching the ledger, so trial balance cannot be mutated through a closed period."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed for trial balance."
+        }
+      }
+    },
+    "/periods/close": {
+      "page": "src/pages/periods/PeriodClosePage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /periods/close — Viewer cannot close, Admin can close (period:close)",
+          "proves": "Period close initialization requires period:close; Viewer is denied with PermissionError, Admin succeeds — guard is not deny-all."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /periods/close — audit trail records close transitions",
+          "proves": "Close transitions produce auditable events; periodCloseStore's domain-partition chain and general audit chain both verify."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /periods/close — write guard blocks GL writes in closed periods",
+          "proves": "Closed periods block GL writes and budget writes; lock propagation is enforced and verified by period-close tests."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — period-close does not claim entity-scope authorization."
+        }
+      }
+    },
+    "/data/exceptions": {
+      "page": "src/pages/data/ExceptionQueuePage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/exceptions — exception:dispose guards disposition",
+          "proves": "Exception disposition requires exception:dispose; Viewer is denied, Analyst with dispose is allowed."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/exceptions — audit trail records disposition lifecycle",
+          "proves": "Disposition follows REQUESTED→APPLIED→REVERIFIED legal path, each step audited, append-only trail."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/exceptions — write guard prevents bypassing quarantine",
+          "proves": "Disposition cannot bypass quarantine; staging coordinator blocks balanced remainder when any chunk quarantined, audit trail append-only."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — exception queue does not claim entity-scope authorization."
+        }
+      }
+    },
+    "/board-pack": {
+      "page": "src/pages/reports/BoardPackPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /board-pack — report:read allows viewing board pack",
+          "proves": "Viewer holds report:read; board-pack viewing is allowed for least-privileged role, export requires report:export."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /board-pack — audit trail ties out to ledger figures",
+          "proves": "Board pack export ties out to ledger figures that are covered by audit chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /board-pack — write guard ensures board pack reflects closed-period state",
+          "proves": "Board pack is read-only and derived from ledger; closed-period write guard ensures it reflects closed state."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — board-pack does not claim entity-scope authorization."
+        }
+      }
+    },
+    "/data/corrections": {
+      "page": "src/pages/data/CorrectionsPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/corrections — exception:dispose guards correction request",
+          "proves": "Correction request requires exception:dispose; Viewer is denied with PermissionError naming the permission."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/corrections — audit trail records correction lifecycle",
+          "proves": "Correction lifecycle REQUESTED→APPLIED is audited with append-only trail recording actor and time."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/corrections — write guard enforces human-only status transitions",
+          "proves": "Illegal transition REQUESTED→REVERIFIED is refused; only human clicks via human-only path advance status, with audit."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — corrections tracker does not claim entity-scope authorization."
+        }
+      }
+    },
+    "/data/gl-explorer": {
+      "page": "src/pages/data/GLExplorerPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-explorer — gl:read allows viewing explorer",
+          "proves": "Viewer holds gl:read; explorer reading is allowed for least-privileged role, writes remain guarded."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-explorer — audit trail records explorer derivation",
+          "proves": "Explorer is derived from ledger entries that carry provenance and are covered by audit chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-explorer — write guard blocks closed periods from affecting explorer",
+          "proves": "Closed-period entries are rejected before reaching the ledger, so explorer cannot be mutated through a closed period."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — explorer does not claim entity-scope authorization."
+        }
+      }
+    },
+    "/data/gl-journals": {
+      "page": "src/pages/data/GLJournalsPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-journals — gl:read allows viewing journals",
+          "proves": "Viewer holds gl:read; journals reading is allowed for least-privileged role, writes remain guarded."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-journals — audit trail records journals derivation",
+          "proves": "Journals are derived from ledger entries that carry provenance and are covered by audit chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-journals — write guard blocks closed periods from affecting journals",
+          "proves": "Closed-period entries are rejected before reaching the ledger, so journals cannot be mutated through a closed period."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — journals does not claim entity-scope authorization."
+        }
+      }
+    },
+    "/budgets": {
+      "page": "src/pages/budgets/BudgetListPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /budgets — budget:read allows viewing budgets",
+          "proves": "Viewer holds budget:read; budget reading is allowed for least-privileged role, approval remains guarded by budget:approve."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /budgets — audit trail records budget derivation",
+          "proves": "Budget derivation is covered by audit chain verification with hash linkage."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /budgets — write guard blocks budget:approve for Viewer",
+          "proves": "Viewer is denied budget:approve with PermissionError naming the permission; approval requires budget:approve."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — budgets does not claim entity-scope authorization."
+        }
+      }
+    },
+    "/data/gl-upload": {
+      "page": "src/pages/data/GLUploadPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-upload — import:create guards the upload path",
+          "proves": "Data upload writes require import:create; Viewer and unauthenticated sessions are denied with PermissionError naming the permission."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-upload — audit trail records upload provenance",
+          "proves": "A successful upload creates an audit entry with id, hash linkage and chainHead advancement; verifyIntegrity reports valid."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-upload — write guard blocks closed periods",
+          "proves": "Closed periods block batch promotion via glPeriodWriteGuard; the guard is wired into the import pipeline."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed; activeEntityId is not an authorization decision."
+        }
+      }
+    }
+  },
+  "capabilities": {
+    "data.csv-xlsx-intake": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.csv-xlsx-intake — import:create guards intake, audit records provenance",
+        "proves": "CSV/XLSX intake requires import:create; audit trail records provenance with hash linkage."
+      }
+    ],
+    "data.mapping": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.mapping — mapping respects RBAC and audit",
+        "proves": "D365 mapping respects RBAC and creates auditable entries."
+      }
+    ],
+    "data.validation": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.validation — validation quarantines with reasons, audit trail intact",
+        "proves": "Validation quarantines invalid rows with reasons; audit chain remains valid."
+      }
+    ],
+    "data.quarantine": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.quarantine — quarantine blocks promotion, audit trail append-only",
+        "proves": "Quarantine blocks promotion of balanced remainder when any chunk quarantined; disposition audit trail append-only."
+      }
+    ],
+    "data.control-totals": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.control-totals — control totals tie out, audit chain verified",
+        "proves": "Control totals tie out to exact-decimal sums; audit chain verification passes."
+      }
+    ],
+    "data.lineage": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:data.lineage — lineage carries provenance, audit records lineage changes",
+        "proves": "Every accepted row carries provenance and canonical period; audit records lineage changes."
+      }
+    ],
+    "close.period-entity-scope": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.period-entity-scope — period-entity scope guard cannot be evaded, O9 boundary stated",
+        "proves": "Period-entity scope guard cannot be evaded by display labels; entity-scope authorization remains BLOCKED-ON-OWNER O9."
+      }
+    ],
+    "close.write-guards": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.write-guards — write guards enforce period-close, audit records guard decisions",
+        "proves": "Write guards enforce period-close; audit records guard decisions and chain remains valid."
+      }
+    ],
+    "close.state-machine": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.state-machine — state machine transitions are RBAC-guarded and audited",
+        "proves": "Period state machine transitions require period:close/period:reopen; Viewer denied, Admin allowed, audit events produced."
+      }
+    ],
+    "close.trial-balance": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.trial-balance — trial balance read allowed for Viewer, audit chain intact",
+        "proves": "Trial balance read allowed for Viewer via gl:read; audit chain intact."
+      }
+    ],
+    "close.tie-out": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.tie-out — tie-out enforces write guards and audit chain",
+        "proves": "Tie-out enforces write guards and audit chain; close journey runs end-to-end over two entities and two currencies."
+      }
+    ],
+    "close.audit-chain": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.audit-chain — audit chain is hash-chained from genesis, single canonical authority",
+        "proves": "Audit chain is hash-chained from genesis, single canonical client authority auditTrailStore; chain census classifies all chain-like modules."
+      },
+      {
+        "file": "src/services/audit/auditChainCensus.test.ts",
+        "title": "classifies every non-test module that computes a digest and carries chain state",
+        "proves": "N2 bounded closure: every chain-like module classified with disposition, persistence flag, authority boundary and decision reference."
+      }
+    ],
+    "close.corrections": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:close.corrections — corrections are tracked with audit trail",
+        "proves": "Corrections are created from findings and tracked with append-only audit trail."
+      }
+    ],
+    "analyze.exception-rules": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:analyze.exception-rules — exception rules guarded by exception:configure, audit trail",
+        "proves": "Exception rules require exception:configure; disposition requires exception:dispose; Viewer denied."
+      }
+    ],
+    "analyze.findings-disposition": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:analyze.findings-disposition — disposition follows audited legal path",
+        "proves": "Findings disposition follows REQUESTED→APPLIED→REVERIFIED legal path, each step audited, no shortcut."
+      }
+    ],
+    "report.board-pack": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:report.board-pack — board pack read guarded by report:read, export ties out to audited ledger",
+        "proves": "Board pack read guarded by report:read; export ties out to audited ledger figures."
+      }
+    ],
+    "report.tie-back": [
+      {
+        "file": "src/__tests__/spineGovernance.test.ts",
+        "title": "GOVERNED cap:report.tie-back — tie-back ensures export reflects audited ledger, not hardcoded figures",
+        "proves": "Tie-back ensures export reflects ledger, not hardcoded constant; audit chain verification passes."
+      }
+    ]
+  },
+  "census": {
+    "rbac": {
+      "file": "src/store/rbacMatrixCompleteness.test.ts",
+      "title": "grants every enforced permission to at least one role",
+      "proves": "RBAC matrix completeness: every enforced permission granted to at least one role; Admin holds full catalogue.",
+      "counts": {
+        "total": 409,
+        "guarded": 302,
+        "exceptions": 107
+      }
+    },
+    "auditChain": {
+      "file": "src/services/audit/auditChainCensus.test.ts",
+      "title": "classifies every non-test module that computes a digest and carries chain state",
+      "proves": "Audit-chain census: auditTrailStore is single canonical client authority; all chain-like modules classified with authority boundaries."
+    },
+    "entityScope": {
+      "owner": "O9",
+      "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+      "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed as GOVERNED; activeEntityId is not an authorization decision."
+    }
+  }
+}

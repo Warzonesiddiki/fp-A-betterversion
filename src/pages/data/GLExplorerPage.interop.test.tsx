@@ -160,4 +160,14 @@ describe('GLExplorerPage ↔ glStore interop (P1-4 consumer coverage)', () => {
     expect(within(refreshed).getByText('9000')).toBeTruthy();
     expect(within(refreshed).queryByText('6000')).toBeNull();
   });
+
+  it('K30 error state: states the failed import instead of rendering the stale ledger', () => {
+    useGLStore.setState({
+      importError: 'Simulated import failure',
+      importStatus: 'error' as const,
+    });
+    renderPage();
+    expect(screen.getByText(/GL import failed/i)).toBeTruthy();
+    expect(screen.getByText(/Simulated import failure/)).toBeTruthy();
+  });
 });

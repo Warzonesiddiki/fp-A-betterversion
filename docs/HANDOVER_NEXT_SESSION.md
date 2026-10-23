@@ -1,5 +1,52 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-23 (n) — budgets + gl-upload GOVERNED as 9th and 10th routes, SUPPORTED 27, missing-is-not-zero hard gate (PR #92-93)
+
+**The claim.** `/budgets` and `/data/gl-upload` are CONNECTED and GOVERNED as 9th and 10th SUPPORTED routes. Budgets already had journey/empty/error/loading (list+filter, No Budgets Yet, submission failure with Retry, h1 over skeleton). Fixed `totalAmount ||0` → `totalAmount` to make missing-is-not-zero hard gate green 0. GLUpload already had journey/empty/error/loading (initial CTA, unsupported ext error, parsing skeleton, parses CSV). Added GOVERNED claims 56→60 for budgets and gl-upload (budget:read/import:create, audit, write-guard, O9). Register SUPPORTED 27 (10 routes + 17 caps), spine 10/36, governance 10/30, one-stop 10 routes, missingIsNotZero 0, matrix 1303 lines current, docs:verify green.
+
+**Next.** Continue SUPPORTED expansion to 11th route (`/scenarios` or `/forecasts`), re-run test:sharded 8/8, update README tally if moved.
+
+## 2026-10-23 (l) — gl-journals GOVERNED as 8th route, SUPPORTED 25 (PR #91)
+
+**The claim.** `/data/gl-journals` is CONNECTED and GOVERNED as 8th SUPPORTED route. Already had journey/empty/error/loading evidenced in `GLJournalsPage.test.tsx` (content state, EmptyState with import CTA, ErrorState with retry, aria-busy). Added GOVERNED claims 52/52 for gl-journals (gl:read, audit, write-guard, O9). Register SUPPORTED 25 (8 routes + 17 caps), spine 8/28, governance 8/24, one-stop 8 routes, missingIsNotZero 0, matrix 1303 lines current.
+
+**Next.** Continue SUPPORTED expansion to 9th route (`/data/gl-reporting` or `/budgets`), re-run test:sharded 8/8, update README tally if moved.
+
+## 2026-10-23 (k) — gl-explorer GOVERNED as 7th route, docs:verify wiring for one-stop and missing-is-not-zero (PR #90)
+
+**The claim.** `/data/gl-explorer` is CONNECTED and GOVERNED as 7th SUPPORTED route. It renders counts, money totals, rows and provenance from real store, shows empty state when store empty, shows ErrorState when importError set, and has no async skeleton (loading na). GOVERNED claims: gl:read allows viewing, audit trail records derivation, write guard blocks closed periods, O9 boundary stated. One-stop acceptance and missing-is-not-zero now wired into `docs:verify` (PR #90/#91 coding priority).
+
+**The join.** `spine-evidence.json` 7 routes (24 claims), `governance-evidence.json` 7 routes (21 claims), `spineGovernance.test.ts` 48/48 (was 44), `GLExplorerPage.interop.test.tsx` adds `K30 error state: states the failed import instead of rendering the stale ledger`. `completion-register.json` SUPPORTED 24 (7 routes + 17 caps), matrix 1303 lines current, `oneStop:acceptance` green 7 routes, `missingIsNotZero:acceptance` green 0. `package.json` docs:verify now includes `verify-one-stop-acceptance.mjs` and `verify-missing-is-not-zero.mjs`. Ratchet docs fix 47→48 via DEC-065.
+
+**Measured.** `docs:verify` green: register 695 SUPPORTED 24, spine 7/24, governance 7/21, matrix current, route dispositions 47 decided, one-stop 7, missingIsNotZero 0, ratchet docs 9 values match. `tsc` PASS, `eslint` PASS, `prettier` PASS for edited files, `docs:links --strict` PASS 0 broken. `GLExplorerPage.interop` 5/5 + `spineGovernance` 48/48 PASS.
+
+**Next.** Re-run `test:sharded` 8/8 to refresh full suite tally (expected ~16515), then continue PR #91+ SUPPORTED expansion, update README if tally moved.
+
+## 2026-10-23 (j) — corrections tracker GOVERNED as 6th route, one-stop in-app path evidenced (PR #89 extension, DEC-064)
+
+**The claim.** /data/corrections implements DEC-035 in-app correction lifecycle REQUESTED→APPLIED→RE-VERIFIED human-only with append-only actor/time audit trail (FR-010). Excel export is optional interoperability, not a prerequisite — first step toward C2 one-stop acceptance (PR #90).
+
+**The join.** Added to `spine-evidence.json` 6th route with journey/empty/error/loading-na from `CorrectionsPage.test.tsx` (7 tests, including new error alert test) and to `governance-evidence.json` 6th route with authorization exception:dispose, audit trail, write-guard human-only transitions from `spineGovernance.test.ts` 44 tests (was 40, added 4). Verification gates `spine:evidence` + `governance:evidence` resolve file+title, fail on rename/self-reference/unknown cap, RBAC 409=302+107 pinned, O9 stated.
+
+**Measured.** **6 of 231 routes CONNECTED (21 claims) and GOVERNED (18 claims), 17 capabilities GOVERNED (18 claims), 23 rows SUPPORTED** (6 routes + 17 caps). Register 695 rows SUPPORTED 23 EXPERIMENTAL 445 BLOCKED 7 NOT_BUILT 220. Matrix 1303 lines, 6 routes GOVERNED — 1. Suite pending re-run for 5 new tests (expected 16,514 passed).
+
+**Next.** Re-run `test:sharded` 8/8 to refresh README tally (currently 16,509), then PR #90 one-stop acceptance census script.
+
+## 2026-10-23 (i) — the spine is GOVERNED on evidence, and the count is 5 of 231 GOVERNED, 22 SUPPORTED (PR #89)
+
+**The claim.** GOVERNED means authorization, audit, write-guards and lifecycle are enforced — proven by RBAC tests, audit-chain verification, and period-close guards. Entity-scope authorization is explicitly BLOCKED-ON-OWNER O9 and must not be inferred from active entity. SOX authority O4, server authority Q6, and native durability O7 remain open and are stated as boundaries.
+
+**The join.** `docs/plan/governance-evidence.json`: per claim, a file and the exact test title inside it, plus explicit O9 boundary objects for entity-scope. `scripts/verify-governance-evidence.mjs` (`npm run governance:evidence`) fails when the file is gone, the title is not in it, the claim points at the page it grades, the route/capability is not real, or the RBAC census does not pin 409=302+107. The register carries both CONNECTED and GOVERNED claims and re-checks them, and the matrix prints `GOVERNED — N test ids` only for those routes. **Measured: 5 of 231 routes GOVERNED, 17 capabilities GOVERNED, 22 rows SUPPORTED** (first SUPPORTED rows, CONNECTED+GOVERNED). Seven rows stay BLOCKED-ON-OWNER (O1×3, O2, O3, O4, O9) — the correct answer, not a defect.
+
+**Product work this needed.** New test file `src/__tests__/spineGovernance.test.ts` with 40 tests proving: import:create guards import path, audit trail records provenance with hash linkage, write guard blocks closed periods, Viewer can read trial balance, period:close guards close transitions, exception:dispose guards disposition, report:read allows board-pack viewing, audit trail ties out to ledger figures, and the census closures. Existing tests already proved: negative authorization for importGLData without user, Viewer cannot close, disposition follows audited legal path REQUESTED→APPLIED→REVERIFIED, control totals tie out, etc. All titles are referenced verbatim in governance-evidence.json.
+
+**N2/N3 bounded closure.** N2 audit-chain: auditTrailStore is single canonical client authority (DEC-025); 10 chain-like modules classified in `auditChainCensus.test.ts` with disposition, persistence flag, authority boundary and decision reference; bounded persistence evidence via masterStorage and sqlJsStorage hydration tests, but no native Tauri persistence, no application-process restart proof (O7 open), no server authority (Q6 open), no SOX authority (O4 open). N3 RBAC: 409 actions = 302 guarded + 107 exceptions, every enforced permission granted to at least one role, Admin holds full catalogue, Viewer read-only; payload-source authentication not claimed (GDPR bridge bounded exceptions disclaim it), entity-scope O9 blocked. Both closed as DONE (bounded) in `docs/TASKBOARD.md` with residual boundaries stated.
+
+**Suite measured after the change.** `npm run test:sharded` **8/8 shards, exit 0, 980 s, 1,420 files, 16,509 passed + 1 skipped** (1921+1653+2115+2350+2063+2088+2342+1977). `npm run docs:verify` green: register 695 rows (SUPPORTED 22 · EXPERIMENTAL 446 · BLOCKED-ON-OWNER 7 · RETIRED 0 · NOT_BUILT 220), spine evidence 5 routes (18 claims) + governance evidence 5 routes (15 claims) · 17 caps (18 claims) · 2 census claims, capability matrix current, route dispositions 0 REVIEW. README updated to 16,509 tally.
+
+**Next.** PR #90 one-stop acceptance: in-app correction path sufficient, Excel optional, D365 intake in-app, DEC-018 revision, `oneStop:acceptance` census.
+
+
 ## 2026-10-23 (h) — the spine is CONNECTED on evidence, and the count is 5 of 231 (PR #88)
 
 **The claim.** A synthetic D365-shaped file goes in, control totals tie, quarantine

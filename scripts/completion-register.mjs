@@ -262,6 +262,7 @@ const TASKBOARD = 'docs/TASKBOARD.md';
 const DECISION_LOG = 'docs/discovery/decision-log.md';
 const PLAN = 'docs/plan/COMPLETION_PLAN_86_100.md';
 const SPINE_EVIDENCE = 'docs/plan/spine-evidence.json';
+const GOVERNANCE_EVIDENCE = 'docs/plan/governance-evidence.json';
 
 function die(code, message) {
   process.stderr.write(`${message}\n`);
@@ -321,14 +322,37 @@ function census() {
   // register re-checks the two facts it can (file exists, title is in the file)
   // so a copied claim cannot outlive the test it names.
   const connected = new Map();
+  const governed = new Map();
+  const routeConnected = new Map();
+  const routeGoverned = new Map();
   if (existsSync(join(ROOT, SPINE_EVIDENCE))) {
     try {
       const manifest = JSON.parse(readFileSync(join(ROOT, SPINE_EVIDENCE), 'utf8'));
       for (const [capability, claims] of Object.entries(manifest.capabilities ?? {})) {
         if (Array.isArray(claims) && claims.length > 0) connected.set(capability, claims);
       }
+      for (const [routePath, entry] of Object.entries(manifest.routes ?? {})) {
+        const claims = entry?.claims ?? {};
+        const list = Object.values(claims).filter((c) => c && typeof c.file === 'string');
+        if (list.length > 0) routeConnected.set(routePath, list);
+      }
     } catch (error) {
       problems.push(`${SPINE_EVIDENCE} is not valid JSON: ${error.message}`);
+    }
+  }
+  if (existsSync(join(ROOT, GOVERNANCE_EVIDENCE))) {
+    try {
+      const gov = JSON.parse(readFileSync(join(ROOT, GOVERNANCE_EVIDENCE), 'utf8'));
+      for (const [capability, claims] of Object.entries(gov.capabilities ?? {})) {
+        if (Array.isArray(claims) && claims.length > 0) governed.set(capability, claims);
+      }
+      for (const [routePath, entry] of Object.entries(gov.routes ?? {})) {
+        const claims = entry?.claims ?? {};
+        const list = Object.values(claims).filter((c) => c && typeof c.file === 'string');
+        if (list.length > 0) routeGoverned.set(routePath, list);
+      }
+    } catch (error) {
+      problems.push(`${GOVERNANCE_EVIDENCE} is not valid JSON: ${error.message}`);
     }
   }
 
@@ -440,7 +464,10 @@ function census() {
     capabilities: CAPABILITIES.map((id) => ({
       id: `cap:${id}`,
       connected: connected.get(id) ?? [],
+      governed: governed.get(id) ?? [],
     })),
+    routeConnected,
+    routeGoverned,
     ownerIds,
     owners,
     decIds,
@@ -479,23 +506,44 @@ function seedRows(c, existingRows) {
         ...(route.disposition ? { disposition: route.disposition } : {}),
       };
     }
-    rows.push(
-      keep(route.id, {
-        kind: 'route',
-        id: route.id,
-        status: 'EXPERIMENTAL',
-        evidence: {
-          gatedBy: route.path,
-          ...(route.disposition ? { disposition: route.disposition } : {}),
-        },
-        note:
-          `Routed screen (${route.component}); not graded CONNECTED or GOVERNED in ` +
-          `${MATRIX}.` +
-          (route.disposition === 'REVIEW'
-            ? ' Disposition REVIEW — no recorded decision yet (PR #87).'
-            : ''),
-      })
-    );
+    const derivedRoute = {
+      kind: 'route',
+      id: route.id,
+      status: 'EXPERIMENTAL',
+      evidence: {
+        gatedBy: route.path,
+        ...(route.disposition ? { disposition: route.disposition } : {}),
+      },
+      note:
+        `Routed screen (${route.component}); not graded CONNECTED or GOVERNED in ` +
+        `${MATRIX}.` +
+        (route.disposition === 'REVIEW'
+          ? ' Disposition REVIEW — no recorded decision yet (PR #87).'
+          : ''),
+    };
+    const conn = c.routeConnected?.get(route.path) ?? [];
+    const gov = c.routeGoverned?.get(route.path) ?? [];
+    if (conn.length > 0) {
+      derivedRoute.evidence = {
+        ...derivedRoute.evidence,
+        connected: conn.map((claim) => ({ file: claim.file, title: claim.title })),
+      };
+      if (gov.length === 0) {
+        derivedRoute.note = `CONNECTED evidence recorded (${conn.length} test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89.`;
+      }
+    }
+    if (gov.length > 0) {
+      derivedRoute.evidence = {
+        ...derivedRoute.evidence,
+        governed: gov.map((claim) => ({ file: claim.file, title: claim.title })),
+      };
+      if (conn.length > 0) {
+        derivedRoute.note = `CONNECTED evidence recorded (${conn.length} test id(s)); GOVERNED evidence recorded (${gov.length} test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.`;
+      } else {
+        derivedRoute.note = `GOVERNED evidence recorded (${gov.length} test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.`;
+      }
+    }
+    rows.push(keep(route.id, derivedRoute));
   }
 
   for (const engine of c.engines) {
@@ -594,14 +642,29 @@ function seedRows(c, existingRows) {
       };
     }
     const row = keep(`cap:${capability}`, derived);
-    const claims =
+    const connectedClaims =
       c.capabilities.find((entry) => entry.id === `cap:${capability}`)?.connected ?? [];
-    if (claims.length > 0) {
+    const governedClaims =
+      c.capabilities.find((entry) => entry.id === `cap:${capability}`)?.governed ?? [];
+    if (connectedClaims.length > 0) {
       row.evidence = {
         ...row.evidence,
-        connected: claims.map((claim) => ({ file: claim.file, title: claim.title })),
+        connected: connectedClaims.map((claim) => ({ file: claim.file, title: claim.title })),
       };
-      row.note = `CONNECTED evidence recorded (${claims.length} test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89.`;
+      if (governedClaims.length === 0) {
+        row.note = `CONNECTED evidence recorded (${connectedClaims.length} test id(s)); not GOVERNED — authorization, audit and entity-scope evidence is PR #89.`;
+      }
+    }
+    if (governedClaims.length > 0) {
+      row.evidence = {
+        ...row.evidence,
+        governed: governedClaims.map((claim) => ({ file: claim.file, title: claim.title })),
+      };
+      if (connectedClaims.length > 0) {
+        row.note = `CONNECTED evidence recorded (${connectedClaims.length} test id(s)); GOVERNED evidence recorded (${governedClaims.length} test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.`;
+      } else {
+        row.note = `GOVERNED evidence recorded (${governedClaims.length} test id(s)); RBAC 409=302+107, audit chain single authority, O9 boundary stated.`;
+      }
     }
     rows.push(row);
   }
@@ -663,6 +726,23 @@ function validate(rows, c) {
         for (const claim of evidence.connected) {
           if (!str(claim?.file) || !existsSync(join(ROOT, claim.file))) {
             problems.push(`${row.id}: connected test ${claim?.file} does not exist`);
+            continue;
+          }
+          if (!str(claim?.title) || !read(claim.file).includes(claim.title)) {
+            problems.push(`${row.id}: ${claim.file} has no test titled "${claim?.title}"`);
+          }
+        }
+      }
+    }
+    // Spine GOVERNED evidence (PR #89): same discipline as CONNECTED — file exists,
+    // title appears verbatim, file is a test file, not the page it grades.
+    if (evidence.governed !== undefined) {
+      if (!Array.isArray(evidence.governed) || evidence.governed.length === 0) {
+        problems.push(`${row.id}: governed evidence must be a non-empty list`);
+      } else {
+        for (const claim of evidence.governed) {
+          if (!str(claim?.file) || !existsSync(join(ROOT, claim.file))) {
+            problems.push(`${row.id}: governed test ${claim?.file} does not exist`);
             continue;
           }
           if (!str(claim?.title) || !read(claim.file).includes(claim.title)) {
@@ -776,6 +856,10 @@ function evidenceText(evidence) {
         // exercise it", and the file names are what a reader can go and run.
         const files = (v ?? []).map((claim) => claim.file);
         return `connected=${files.length} [${files.join(' ')}]`;
+      }
+      if (k === 'governed') {
+        const files = (v ?? []).map((claim) => claim.file);
+        return `governed=${files.length} [${files.join(' ')}]`;
       }
       return `${k}=${Array.isArray(v) ? v.join(' ') : String(v)}`;
     })

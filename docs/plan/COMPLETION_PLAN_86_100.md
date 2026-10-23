@@ -115,19 +115,39 @@ One machine-readable file, one generated markdown view, one gate.
 **Built.** `scripts/completion-register.mjs` was implemented and seeded in PR #86;
 the register now covers **695 rows** — 231 routes, 180 engines, 19 requirements,
 200 checklist sections and 65 vision capabilities — and `npm run docs:verify` runs
-`--check` on every documentation change. The measured starting position is
+`--check` on every documentation change. The measured starting position was
 **SUPPORTED 0 · EXPERIMENTAL 468 · BLOCKED-ON-OWNER 7 · RETIRED 0 · NOT_BUILT 220**,
 which is the honest reading of a tree where 0 of 231 routes are graded CONNECTED
 or GOVERNED. Nothing seeds as SUPPORTED; that status is earned by a later PR with
-test ids that resolve.
+test ids that resolve. After PR #88 (spine CONNECTED), PR #89 (spine GOVERNED), PR #90 (7th route),
+PR #91 (8th), PR #92 (9th) and PR #93 (10th),
+the register is **SUPPORTED 27 · EXPERIMENTAL 441 · BLOCKED-ON-OWNER 7 · RETIRED 0 · NOT_BUILT 220**,
+with **10 of 231 routes CONNECTED and GOVERNED** (`/data`, `/data/gl-trial-balance`,
+`/data/exceptions`, `/periods/close`, `/board-pack`, `/data/corrections`, `/data/gl-explorer`,
+`/data/gl-journals`, `/budgets`, `/data/gl-upload`) and **17 capabilities** with
+both CONNECTED and GOVERNED claims — the first SUPPORTED rows in the programme.
 
 **CONNECTED is graded, not asserted (DEC-062).** `docs/plan/spine-evidence.json`
 joins each claim to the test that proves it: a file and the exact test title inside
 it, resolved by `npm run spine:evidence` on every `docs:verify`. Five spine
 screens evidence their journey, empty, error and loading states plus the shell's
 stale state, and seventeen capabilities carry claims. The matrix prints
-`CONNECTED — N test ids` for those rows and nothing else, so **5 of 231 routes are
-CONNECTED and 0 are GOVERNED** — the second half is #89, not this one.
+`CONNECTED — N test ids` for those rows and nothing else.
+
+**GOVERNED is graded, not asserted (DEC-062 extension, PR #89→#93).** `docs/plan/governance-evidence.json`
+joins each GOVERNED claim to the test that proves it: authorization (RBAC action),
+audit (hash-chained record), write-guards (period-close), with entity-scope explicitly
+BLOCKED-ON-OWNER O9. The gate `npm run governance:evidence` resolves file and exact
+title, fails on a renamed title, a claim pointing at the page it grades, or an unknown
+capability. The matrix prints `GOVERNED — N test ids` for those rows. Measured after
+PR #93: **10 of 231 routes CONNECTED and GOVERNED** (`/data`, `/data/gl-trial-balance`,
+`/data/exceptions`, `/periods/close`, `/board-pack`, `/data/corrections`, `/data/gl-explorer`,
+`/data/gl-journals`, `/budgets`, `/data/gl-upload`), **17 capabilities** with both
+claims, **27 rows SUPPORTED** (the first SUPPORTED rows). Seven rows stay
+BLOCKED-ON-OWNER (O1×3, O2, O3, O4, O9) — the correct answer, not a defect. N2/N3 are
+bounded-closed with residual boundaries stated (restart durability O7, server authority Q6,
+SOX authority O4, payload-source authentication, entity-scope O9). `docs:verify` now also
+wires one-stop acceptance (10 SUPPORTED routes, Excel optional) and missing-is-not-zero hard gate (0 findings).
 
 **Disposition is measured, not believed (DEC-060, DEC-061).** Each of the 231 route
 rows also carries the disposition from `docs/CAPABILITY_TRUTH_MATRIX.md`, re-read
@@ -267,12 +287,28 @@ both. Measured: **5 of 231 routes CONNECTED** (`/data`, `/data/gl-trial-balance`
 claims, **0 GOVERNED** — the GOVERNED half (authorization, audit, entity scope,
 write guards) is #89. Two spine pages gained the error state they lacked
 (`GLTrialBalancePage`, `ExceptionQueuePage`) so the four-state claim is true
-rather than assumed, and the shell gained an explicit stale-state test.
+rather than assumed, and the shell gained an explicit stale-state test. PR #89
+later adds /data/corrections as 6th CONNECTED route (in-app correction tracker,
+DEC-035) with journey/empty/error/loading-na evidence.
 
-**#89 — Spine GOVERNED evidence + N2/N3.** Closes the two active N-items or
-states their residual boundary (N2 cannot claim restart durability without O7;
-N3 cannot claim payload-source authentication). A bounded closure with the
-boundary written down is acceptable; a silent promotion is not.
+**#89 — Spine GOVERNED evidence + N2/N3 (delivered 2026-10-23).** Spine graded
+GOVERNED with authorization evidence per surface (import:create, period:close,
+exception:dispose, report:read), audit chain (auditTrailStore single canonical
+client authority, 10 modules classified via census), RBAC census closed
+(409 pinned actions = 302 guarded + 107 individually reasoned exceptions),
+entity-scope explicitly BLOCKED-ON-OWNER O9 with question stated, period write
+guards for the spine (already tested for import; extended claim). Delivered as
+evidence: `docs/plan/governance-evidence.json` names per claim a test file and
+exact title; `scripts/verify-governance-evidence.mjs` fails on missing file,
+renamed title, claim pointing at page it grades, or unknown capability.
+Measured: **5 of 231 routes GOVERNED** (`/data`, `/data/gl-trial-balance`,
+`/data/exceptions`, `/periods/close`, `/board-pack`), **17 capabilities** with
+GOVERNED claims, **22 rows SUPPORTED** (first SUPPORTED rows, CONNECTED+GOVERNED),
+**0 GOVERNED rows with entity-scope claimed** (O9 boundary correctly BLOCKED).
+N2/N3 bounded-closed in `docs/TASKBOARD.md` with residual boundaries: N2 cannot
+claim restart durability without O7, server authority without Q6, SOX authority
+without O4; N3 cannot claim payload-source authentication. A bounded closure
+with boundary written down is acceptable; silent promotion is not.
 
 **#90 — One-stop acceptance.** The vision's acceptance rule is not met today:
 DEC-018 still describes an Excel correction hand-off. The fix is an in-app

@@ -6,6 +6,7 @@ import { BarChart3, Database, Download, Search } from 'lucide-react';
 
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { useGLStore } from '@/store/glStore';
 import { toCSV } from '@/utils/csv';
 import { filterGLEntriesByPermission } from '@/utils/dataPermissionFilter';
@@ -99,8 +100,8 @@ const DISPLAY_LIMIT = 200;
 
 export default function GLExplorerPage() {
   const fmt = useCurrencyFormatter();
-  const { entries, accounts } = useGLStore(
-    useShallow((s) => ({ entries: s.entries, accounts: s.accounts }))
+  const { entries, accounts, importError } = useGLStore(
+    useShallow((s) => ({ entries: s.entries, accounts: s.accounts, importError: s.importError }))
   );
   const navigate = useNavigate();
   const [isPending, startTransition] = useTransition();
@@ -167,6 +168,14 @@ export default function GLExplorerPage() {
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  if (importError) {
+    return (
+      <main className="p-6" role="main" aria-label="GL Explorer - Error">
+        <ErrorState message={importError} title="GL import failed" />
+      </main>
+    );
+  }
 
   if (entries.length === 0) {
     return (
