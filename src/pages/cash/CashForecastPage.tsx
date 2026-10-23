@@ -69,13 +69,28 @@ export default function CashForecastPage() {
     document.title = 'FinPlan Pro — Cash Position';
   }, []);
 
+  const data = useMemo(() => deriveCashPosition(entries), [entries]);
+
+  const ladder = useMemo(() => {
+    if (entries.length === 0) return null;
+    const asOf = entries.reduce((max, e) => (e.date > max ? e.date : max), '');
+    if (!asOf) return null;
+    const aging = deriveOpenItemAging(entries, asOf);
+    if (aging.items.length === 0) return null;
+    return deriveSettlementLadder(entries, { asOf });
+  }, [entries]);
+
   if (isLoading) {
     return (
       <div className="p-6 space-y-6" aria-busy="true" aria-label="Loading cash position">
         <div className="h-8 w-48 bg-[var(--bg-elevated)] rounded animate-pulse" />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-24 bg-[var(--bg-elevated)] rounded-lg animate-pulse" aria-label="Loading cash data" />
+            <div
+              key={i}
+              className="h-24 bg-[var(--bg-elevated)] rounded-lg animate-pulse"
+              aria-label="Loading cash data"
+            />
           ))}
         </div>
         <div className="h-64 bg-[var(--bg-elevated)] rounded-lg animate-pulse" />
@@ -93,20 +108,6 @@ export default function CashForecastPage() {
       </div>
     );
   }
-
-  const data = useMemo(() => deriveCashPosition(entries), [entries]);
-
-  // Phase 10: with GL-derived AR/AP aging the 13-week ladder the model
-  // used to declare impossible can be shown — as an assumption-stated
-  // settlement expectation, only when open items actually exist.
-  const ladder = useMemo(() => {
-    if (entries.length === 0) return null;
-    const asOf = entries.reduce((max, e) => (e.date > max ? e.date : max), '');
-    if (!asOf) return null;
-    const aging = deriveOpenItemAging(entries, asOf);
-    if (aging.items.length === 0) return null;
-    return deriveSettlementLadder(entries, { asOf });
-  }, [entries]);
 
   const handleExportPDF = () => {
     if (!data) return;

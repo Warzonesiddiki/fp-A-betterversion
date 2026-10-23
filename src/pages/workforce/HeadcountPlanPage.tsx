@@ -73,7 +73,11 @@ export default function HeadcountPlanPage() {
         <div className="h-8 w-48 bg-[var(--bg-elevated)] rounded animate-pulse" />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-24 bg-[var(--bg-elevated)] rounded-lg animate-pulse" aria-label="Loading headcount data" />
+            <div
+              key={i}
+              className="h-24 bg-[var(--bg-elevated)] rounded-lg animate-pulse"
+              aria-label="Loading headcount data"
+            />
           ))}
         </div>
         <div className="h-64 bg-[var(--bg-elevated)] rounded-lg animate-pulse" />
@@ -142,7 +146,10 @@ export default function HeadcountPlanPage() {
               with departments, salaries and start dates — no sample headcounts are shown. Driver:
               headcount → compensation → P&L cascade visible, owner-assigned assumptions.
             </p>
-            <Button onClick={() => navigate('/workforce/headcount')} aria-label="Open workforce planning to add employees">
+            <Button
+              onClick={() => navigate('/workforce/headcount')}
+              aria-label="Open workforce planning to add employees"
+            >
               Open Workforce Planning
             </Button>
           </div>

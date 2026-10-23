@@ -140,7 +140,7 @@ export default function FXExposurePage({
     document.title = 'FinPlan Pro — FX Exposure';
   }, []);
 
-  const [isLoading, setIsLoading] = React.useState(initialLoading ?? false);
+  const [isLoading] = React.useState(initialLoading ?? false);
   const [importError, setImportError] = React.useState<string | null>(initialError ?? null);
   const exposures = initialExposures ?? mockExposures;
 
@@ -158,7 +158,10 @@ export default function FXExposurePage({
     [exposures]
   );
 
-  const hedgeBreakdown = useMemo(() => exposures.map((e) => ({ name: e.currency, value: e.hedged })), [exposures]);
+  const hedgeBreakdown = useMemo(
+    () => exposures.map((e) => ({ name: e.currency, value: e.hedged })),
+    [exposures]
+  );
 
   const columns: Column[] = useMemo(
     () => [
@@ -262,7 +265,10 @@ export default function FXExposurePage({
   if (isLoading) {
     return (
       <div className="p-6 space-y-6">
-        <PageHeader title="FX Exposure" purpose="Foreign currency risk monitoring and hedging status" />
+        <PageHeader
+          title="FX Exposure"
+          purpose="Foreign currency risk monitoring and hedging status"
+        />
         <div aria-busy="true" aria-label="Loading FX exposure">
           <Skeleton className="h-24 w-full" />
           <span className="sr-only">Loading FX exposure data</span>
@@ -274,7 +280,10 @@ export default function FXExposurePage({
   if (importError) {
     return (
       <div className="p-6 space-y-6">
-        <PageHeader title="FX Exposure" purpose="Foreign currency risk monitoring and hedging status" />
+        <PageHeader
+          title="FX Exposure"
+          purpose="Foreign currency risk monitoring and hedging status"
+        />
         <ErrorState message={importError} onRetry={() => setImportError(null)} />
       </div>
     );
@@ -283,8 +292,14 @@ export default function FXExposurePage({
   if (exposures.length === 0) {
     return (
       <div className="p-6 space-y-6">
-        <PageHeader title="FX Exposure" purpose="Foreign currency risk monitoring and hedging status" />
-        <EmptyState title="No FX Exposure" description="No currency exposures found. Import FX data to monitor hedging." />
+        <PageHeader
+          title="FX Exposure"
+          purpose="Foreign currency risk monitoring and hedging status"
+        />
+        <EmptyState
+          title="No FX Exposure"
+          description="No currency exposures found. Import FX data to monitor hedging."
+        />
       </div>
     );
   }
