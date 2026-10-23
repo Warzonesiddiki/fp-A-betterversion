@@ -71,6 +71,7 @@ repository's own incidents and decisions.
 | [`incident-and-rollback`](incident-and-rollback.md) | Use when something shipped is wrong in the user's hands: stop the bleeding, preserve evidence, then fix the cause. | engineering |
 | [`observability-and-errors`](observability-and-errors.md) | Use when handling an error, adding a log, or writing a catch: the failure must be visible, attributable, and never silently converted into a default. | engineering |
 | [`react-state-and-stores`](react-state-and-stores.md) | Use when changing a Zustand store, a selector, persisted state, or a page that reads them. Wrong state shape is the most expensive kind of wrong. | engineering |
+| [`release-candidate-checklist`](release-candidate-checklist.md) | Use when preparing a release candidate. Comprehensive checklist covering all gates, evidence, and owner decisions. | engineering |
 | [`release-engineering`](release-engineering.md) | Use when preparing a release or a release candidate: gates, evidence, version, and the honest list of what is not ready. | engineering |
 | [`security-and-secrets`](security-and-secrets.md) | Use when handling credentials, auth, user input, file paths, exports or the Electron/Tauri boundary. Assume input is hostile and the disk is shared. | engineering |
 | [`sqlite-and-server`](sqlite-and-server.md) | Use in `server/`: SQLite through Express with JWT, RBAC and tenancy. Small server, strict rules — it is the only place tenancy can be enforced. | engineering |
