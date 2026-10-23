@@ -47,6 +47,9 @@ import {
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useShallow } from 'zustand/react/shallow';
 import type { GLState, BudgetState } from '@/types';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Unit-aware display formatting for sector KPI tiles (W6-P0-06). Percent

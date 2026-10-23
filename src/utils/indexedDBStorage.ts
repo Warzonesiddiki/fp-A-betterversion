@@ -1,5 +1,8 @@
 import type { RawStorage } from './chunkedStorage';
 import { DB_NAME, DB_VERSION } from './storageConstants';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {

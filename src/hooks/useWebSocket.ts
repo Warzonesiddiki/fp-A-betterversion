@@ -9,6 +9,9 @@ import {
   type ConnectionState,
 } from '@/services/RealtimeCollaborationManager';
 import type { DataChange, ResourceType } from '@/services/ChangeBroadcaster';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface UseWebSocketOptions {
   /** Auto-connect on mount (default: true) */

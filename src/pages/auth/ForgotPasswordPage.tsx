@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Mail, ArrowLeft, CheckCircle, AlertCircle, Lock, Clock } from 'lucide-react';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();

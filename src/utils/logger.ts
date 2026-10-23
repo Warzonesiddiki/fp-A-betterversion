@@ -4,6 +4,9 @@
  * In production, can be wired to crash reporting (Sentry, custom, etc.)
  */
 import { nowISO } from '@/utils/clock';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 

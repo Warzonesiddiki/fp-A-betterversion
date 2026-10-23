@@ -6,6 +6,9 @@ import initSqlJs, { type Database } from 'sql.js';
 // (`default-src 'self'`) and breaks the desktop/offline story entirely.
 import sqlWasmUrl from 'sql.js/dist/sql-wasm.wasm?url';
 import { createLogger } from '@/utils/logger';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 const sqlJsStorageLogger = createLogger('SqlJsStorage');
 

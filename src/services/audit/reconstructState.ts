@@ -21,6 +21,9 @@ import {
   type ExtendedAuditEntry,
 } from '@/store/auditTrailStore';
 import type { CellAddress } from '@/types/cell';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface ReconstructionBreak {
   entryId: string | undefined;

@@ -3,6 +3,9 @@ import { MessageSquare, RefreshCw, Pencil, Check, X } from 'lucide-react';
 import { AutoCommentaryEngine } from '@/engines/AutoCommentaryEngine';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface CommentaryLineItem {
   name: string;

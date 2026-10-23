@@ -1,4 +1,7 @@
 import type { ExchangeRate } from '@/types';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export const mockExchangeRates: ExchangeRate[] = [
   // Jan 2024

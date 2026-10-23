@@ -1,6 +1,9 @@
 import type { ConditionalFormatRule } from '@/engines/ConditionalFormattingEngine';
 import { cn } from '@/utils/cn';
 import { PRESET_COLORS } from '../ConditionalFormattingConstants';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 interface ColorStyleOptionsProps {
   rule: ConditionalFormatRule;

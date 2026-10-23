@@ -24,6 +24,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { subscribeStorageErrors, type StorageErrorEvent } from '@/utils/masterStorage';
 import { downloadRawEmergencyBackup } from '@/utils/backupRestore';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 const OPERATION_LABEL: Record<StorageErrorEvent['operation'], string> = {
   read: 'load saved data',

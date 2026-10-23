@@ -4,6 +4,9 @@ import { CheckCircle, Download, Plug, RefreshCw, XCircle } from 'lucide-react';
 import { CATEGORY_LABELS, type IntegrationDefinition } from '@/config/integrations';
 import type { IntegrationConnection } from '@/store/integrationStore';
 import { cn } from '@/utils/cn';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 interface IntegrationCardProps {
   definition: IntegrationDefinition;

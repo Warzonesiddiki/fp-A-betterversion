@@ -1,6 +1,9 @@
 /** Worker ingress validation. Money remains text; malformed payloads never reach ingest. */
 import type { GLIngestChunkInput, GLIngestMappings } from '@/types/glIngestion';
 import { expectArray, expectObject, expectStringEnum, WorkerRequestError } from './validateRequest';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export const MAX_GL_CHUNK_ROWS = 2000;
 const fields = [

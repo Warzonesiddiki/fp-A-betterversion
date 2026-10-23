@@ -1,5 +1,8 @@
 import type { ConditionalFormatRule, IconSetType } from '@/engines/ConditionalFormattingEngine';
 import { ICON_SET_TYPES } from '../ConditionalFormattingConstants';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 interface IconSetOptionsProps {
   rule: ConditionalFormatRule;

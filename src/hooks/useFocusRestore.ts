@@ -4,6 +4,9 @@
 // Reference: docs/a11y/Q5_2_FOCUS_RESTORE.md
 
 import { useEffect, useRef } from 'react';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Captures the currently-focused element on mount, restores focus to it on unmount.

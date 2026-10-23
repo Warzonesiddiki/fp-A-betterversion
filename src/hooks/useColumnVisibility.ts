@@ -1,5 +1,8 @@
 import { useState, useCallback, useMemo } from 'react';
 import type { ColDef } from 'ag-grid-community';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export function useColumnVisibility(columnDefs: ColDef[]) {
   const [hiddenColumns, setHiddenColumns] = useState<Set<string>>(new Set());

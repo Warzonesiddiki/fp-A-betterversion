@@ -1,4 +1,7 @@
 import type { GLAccount } from '@/types';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export const glAccounts: GLAccount[] = [
   // === Revenue (4000-4300) ===

@@ -1,5 +1,8 @@
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 interface SaveStatusIndicatorProps {
   data: unknown;

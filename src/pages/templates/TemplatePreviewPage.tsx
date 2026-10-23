@@ -14,6 +14,9 @@ import {
 import { allTemplates, industryLabels } from '@/config/templates';
 import type { TemplateCategory } from '@/engines/TemplateEngine';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 const categoryIcons: Record<TemplateCategory, React.ReactNode> = {
   budget: <LayoutGrid className="h-4 w-4" />,

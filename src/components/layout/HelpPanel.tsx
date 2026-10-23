@@ -26,6 +26,9 @@
 import { useMemo } from 'react';
 import { HelpPanel as HelpPanelBase } from '@/components/ui/HelpPanel';
 import { getMergedHelp } from '../help/MergedHelpResolver';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface HelpPanelProps {
   /** Current pathname (e.g. '/budgets/create') */

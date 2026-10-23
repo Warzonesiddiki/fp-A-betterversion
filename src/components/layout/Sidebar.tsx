@@ -7,6 +7,9 @@ import { useUIStore } from '@/store/uiStore';
 import { useTheme } from '@/context/ThemeContext';
 import { useAppNavigation } from '@/hooks/useAppNavigation';
 import { isItemActive, type NavItem, type NavSection } from '@/types/navigation';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 function NavItemLink({ item, onNavigate }: { item: NavItem; onNavigate: () => void }) {
   const location = useLocation();

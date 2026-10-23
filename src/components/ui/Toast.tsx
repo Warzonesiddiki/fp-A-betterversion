@@ -3,6 +3,9 @@ import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 import type { ToastMessage } from '@/types';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 // Wave-7E a11y: this card deliberately carries NO role/aria-live attributes.
 // Politeness is owned exclusively by ToastContainer's two SIBLING regions

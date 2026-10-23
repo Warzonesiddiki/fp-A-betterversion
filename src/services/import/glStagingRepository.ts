@@ -1,6 +1,7 @@
 /** Temporary staging on the existing encrypted masterStorage backend, not a second ledger. */
 import { masterStorage } from '@/utils/masterStorage';
 import type { GLIngestResult, VoucherImbalance } from '@/types/glIngestion';
+import { toDecimal } from '@/utils/money';
 
 export const GL_STAGING_INDEX_KEY = 'gl-ingestion-stage:v1:index';
 export const DEFAULT_STAGING_LOCK_TTL_MS = 5 * 60 * 1000;

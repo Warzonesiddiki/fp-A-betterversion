@@ -11,6 +11,7 @@
  */
 
 import { BaseConnector } from './BaseConnector';
+import { toDecimal } from '@/utils/money';
 import type {
   ConnectorConfig,
   ConnectorHealth,

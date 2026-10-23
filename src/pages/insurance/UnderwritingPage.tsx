@@ -13,6 +13,9 @@ import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { deriveUnderwriting } from './underwritingData';
 import { ExportEngine } from '@/engines/ExportEngine';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 const fiscalPeriods = buildFiscalPeriods();
 

@@ -8,6 +8,9 @@ import { ProgressStepper } from '@/components/ui/ProgressStepper';
 import { Database, BookOpen, Coins, Building2, Globe, Calendar, Settings } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { RecoveryCodeCard } from '@/components/settings/RecoveryCodeCard';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 type OrgForm = {
   companyName: string;

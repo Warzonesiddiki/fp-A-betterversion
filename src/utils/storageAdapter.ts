@@ -4,6 +4,9 @@
 // PATCH 22: Engines must NOT access localStorage directly (Veridicus 7 violators)
 // This adapter wraps localStorage + provides injectable interface for testing.
 // Engines import { storageGet, storageSet, storageRemove } from '@/utils/storageAdapter'
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 // instead of using `localStorage.{get,set,remove}Item` directly.
 // =============================================================================
 

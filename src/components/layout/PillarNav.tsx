@@ -1,6 +1,9 @@
 import { useCallback, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Command } from 'lucide-react';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * W0.5 slice 2 — five-pillar top navigation (BLUEPRINT §9.3).

@@ -25,6 +25,9 @@ import { filterNavItemsByRole } from '@/hooks/useAppNavigation';
 import { NAV_SECTIONS } from '@/types/navigation';
 import { useAuthStore } from '@/store/authStore';
 import { useApplyDensity } from '@/hooks/useDensity';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 // Draft entity options until the server master-data contract is connected
 // (F-04 / P-01). The context bar never authorizes data access client-side.

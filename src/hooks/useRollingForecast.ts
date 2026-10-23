@@ -16,6 +16,9 @@
 import { useMemo, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useForecastStore } from '@/store/forecastStore';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 

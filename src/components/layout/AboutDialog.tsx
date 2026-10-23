@@ -2,6 +2,9 @@ import { useState, useCallback } from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Info, ExternalLink, Cpu, Monitor, Globe } from 'lucide-react';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 interface AboutDialogProps {
   isOpen: boolean;

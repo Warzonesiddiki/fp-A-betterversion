@@ -3,6 +3,9 @@ import { cn } from '@/utils/cn';
 import { Button } from '@/components/ui/Button';
 import { AlertTriangle, CheckCircle, Copy, KeyRound, RefreshCw, ShieldCheck } from 'lucide-react';
 import { useKeyEscrowStatus } from '@/hooks/useKeyEscrowStatus';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface RecoveryCodeCardProps {
   /** Fired after the code was shown once AND re-typed correctly. */

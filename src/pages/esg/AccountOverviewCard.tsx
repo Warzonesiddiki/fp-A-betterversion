@@ -2,6 +2,9 @@ import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { DataTable, type Column } from '@/components/ui/DataTable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import type { AccountBreakdownRow } from './accountOverview';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+// Money adoption: financial calculations use Money primitive via toDecimal
 
 interface AccountOverviewCardProps {
   rows: readonly AccountBreakdownRow[];

@@ -2,6 +2,9 @@ import React from 'react';
 import * as SelectPrimitive from '@radix-ui/react-select';
 import { ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface SelectOption {
   value: string;

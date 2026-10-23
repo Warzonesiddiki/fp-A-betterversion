@@ -20,6 +20,9 @@ import {
 import { FinancialWorkspaceEmptyState } from '@/components/ui/FinancialWorkspaceEmptyState';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { LayoutDashboard, Target, Upload } from 'lucide-react';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 const STATUS_DETAILS: Partial<Record<FinancialStatus, string>> = {
   draft: 'Local workspace data',

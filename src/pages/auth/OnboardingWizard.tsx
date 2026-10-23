@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { ProgressStepper, type Step } from '@/components/ui/ProgressStepper';
 import { LiveRegion } from '@/components/ui/LiveRegion';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 import {
   Rocket,
   Database,

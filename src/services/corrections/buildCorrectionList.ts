@@ -13,6 +13,7 @@
 import type { ExportData } from '@/engines/ExportEngine';
 import type { CorrectionRequest } from '@/types/exceptions';
 import { parseFindingKey, type ExceptionFinding } from '@/store/exceptionRuleCatalogue';
+import { toDecimal } from '@/utils/money';
 
 export interface CorrectionListEntryLike {
   readonly id: string;

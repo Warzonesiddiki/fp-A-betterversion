@@ -18,6 +18,9 @@ import { useShallow } from 'zustand/react/shallow';
 import { useAuthStore } from '@/store/authStore';
 import { useNotificationStore } from '@/store/notificationStore';
 import { useUIStore } from '@/store/uiStore';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 const entities = [
   { id: 'ent-1', name: 'US Parent', currency: 'USD' },

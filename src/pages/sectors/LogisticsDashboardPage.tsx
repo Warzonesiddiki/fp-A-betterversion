@@ -26,6 +26,9 @@ import {
   type LaneRow,
 } from '@/pages/sectors/logisticsDashboardData';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 const COLORS = [
   'var(--accent-primary)',

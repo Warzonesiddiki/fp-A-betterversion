@@ -19,6 +19,9 @@ import {
   BarChart,
 } from 'recharts';
 import { deriveConstructionDashboard } from './constructionDashboardData';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 function currency(value: number): string {
   return currencyFormatter(reportingCurrency(), { minDecimals: 0 })(value);

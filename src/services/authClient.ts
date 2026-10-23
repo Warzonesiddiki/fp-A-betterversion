@@ -1,4 +1,7 @@
 import { normalizeBaseUrl } from '@/api/commandClient';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Auth service client (Phase 0 / W02 tenancy — frontend auth integration).

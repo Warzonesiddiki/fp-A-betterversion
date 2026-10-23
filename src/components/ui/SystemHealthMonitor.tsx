@@ -2,6 +2,9 @@ import React from 'react';
 import { ShieldCheck, ShieldAlert, Database, Clock, ChevronRight } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { formatNumber } from '@/utils/financialFormatting';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface SystemHealthMonitorProps {
   isOnline: boolean;

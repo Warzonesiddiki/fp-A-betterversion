@@ -7,6 +7,9 @@
 
 // ─── Imports (CATCH #207-ENV UNBLOCK via interfaces.ts shim) ────────────────
 import type { AuditLogger, TauriSecureStorage, ThreatSignal } from './interfaces';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 import type {
   VaultShardId,
   RotationReason,

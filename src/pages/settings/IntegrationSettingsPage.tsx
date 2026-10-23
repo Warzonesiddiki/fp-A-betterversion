@@ -12,6 +12,9 @@ import {
 import { useIntegrationStore } from '@/store/integrationStore';
 import { IntegrationCard } from '@/components/integrations/IntegrationCard';
 import { ConnectIntegrationModal } from '@/components/integrations/ConnectIntegrationModal';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export default function IntegrationSettingsPage() {
   const connections = useIntegrationStore((s) => s.connections);

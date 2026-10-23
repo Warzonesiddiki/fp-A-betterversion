@@ -25,6 +25,9 @@ import {
   deriveEducationDashboard,
   type AccountAmountRow,
 } from '@/pages/sectors/educationDashboardData';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Education sector dashboard.

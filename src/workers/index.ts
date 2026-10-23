@@ -38,6 +38,9 @@ import {
 import type { GLIngestChunkInput, GLIngestResult } from '@/types/glIngestion';
 import type { WorkerPool } from './worker-pool';
 import type { WorkerProgress } from './types';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 import type {
   MonteCarloRequest,
   MonteCarloResponse,

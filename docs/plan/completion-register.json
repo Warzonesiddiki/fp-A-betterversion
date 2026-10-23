@@ -4712,9 +4712,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/analytics",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/analytics",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (AnalyticsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -4812,9 +4818,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/audit/sox",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/audit/sox",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (SOXCompliancePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -4822,9 +4834,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/audit/trail",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/audit/trail",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (AuditTrailPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -5048,9 +5066,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/budgets/approval",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/budgets/approval",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (BudgetApproval); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -5068,9 +5092,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/budgets/create",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/budgets/create",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (BudgetCreatePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -5078,9 +5108,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/capex",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/capex",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (CapExDashboard); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -5118,9 +5154,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/cash/debt",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/cash/debt",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (DebtSchedulePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -5180,9 +5222,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/cash/working-capital",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/cash/working-capital",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (WorkingCapitalPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -5334,9 +5382,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/consolidation/ic-eliminations",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/consolidation/ic-eliminations",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (ICEliminationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -5344,9 +5398,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/consolidation/ownership",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/consolidation/ownership",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (OwnershipTreePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -5404,9 +5464,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/currency/fx-rates",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/currency/fx-rates",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (FXRatesPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -5424,9 +5490,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/currency/translation",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/currency/translation",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (TranslationResultPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -5434,9 +5506,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/dashboard",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/dashboard",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (DashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -6118,9 +6196,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/forecasts/create",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/forecasts/create",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (ForecastBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -6128,9 +6212,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/forecasts/drivers",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/forecasts/drivers",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (DriverPlanningPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -6138,9 +6228,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/forecasts/rolling",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/forecasts/rolling",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (RollingForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -6664,9 +6760,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/reports",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/reports",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (ReportsListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -7164,9 +7266,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/scenarios/create",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/scenarios/create",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (ScenarioBuilderPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -7374,9 +7482,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/settings",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/settings",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (SettingsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -7504,9 +7618,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/treasury",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/treasury",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",
@@ -7586,9 +7706,15 @@
       "status": "EXPERIMENTAL",
       "evidence": {
         "gatedBy": "/variance",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "status": "EXPERIMENTAL",
+        "route": "/variance",
+        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
       },
-      "note": "Routed screen (VarianceDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",

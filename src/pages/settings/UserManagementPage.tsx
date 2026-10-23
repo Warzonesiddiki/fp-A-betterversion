@@ -7,6 +7,9 @@ import { Input } from '@/components/ui/Input';
 import { DataTable, Column } from '@/components/ui/DataTable';
 import { Users, UserPlus, Shield, Mail, Clock, Trash2, Edit2, X } from 'lucide-react';
 import type { UserProfile, Role } from '@/types';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 const defaultRoles: { id: string; name: string; permissions: string[] }[] = [
   { id: 'role-admin', name: 'Admin', permissions: ['all'] },

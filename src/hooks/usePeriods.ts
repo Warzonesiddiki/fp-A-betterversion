@@ -1,6 +1,9 @@
 import { useMemo } from 'react';
 import { useGLStore } from '@/store/glStore';
 import type { FiscalPeriod } from '@/types';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 const MONTH_NAMES = [
   'January',

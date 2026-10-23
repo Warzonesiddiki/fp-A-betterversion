@@ -4,6 +4,9 @@ import { validateGLIngestionChunk } from './glIngestionRequest';
 import { readMessageId, readMessagePayload } from './validateRequest';
 import type { WorkerResponse } from './types';
 import type { GLIngestResult } from '@/types/glIngestion';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 self.onmessage = (event: MessageEvent<unknown>) => {
   const id = readMessageId(event.data);

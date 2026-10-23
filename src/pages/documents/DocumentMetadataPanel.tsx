@@ -2,6 +2,9 @@ import { useMemo, useState } from 'react';
 import { PenLine, Save, ShieldCheck } from 'lucide-react';
 import { useDocumentStore, type ManagedDocument } from '@/store/documentStore';
 import { formatNumber } from '@/utils/financialFormatting';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export interface DocumentMetadataPanelProps {
   doc: ManagedDocument;

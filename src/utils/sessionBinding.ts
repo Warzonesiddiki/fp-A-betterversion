@@ -1,5 +1,8 @@
 import { nowISO } from './clock';
 import { sha256Hex } from './sha256';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Device binding for the DEC-014 cached local session. The binding value

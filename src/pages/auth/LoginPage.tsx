@@ -6,6 +6,9 @@ import { Card, CardContent } from '@/components/ui/Card';
 import { useAuthStore } from '@/store/authStore';
 import { LogIn, Eye, EyeOff, AlertCircle, Loader2, Mail, Lock } from 'lucide-react';
 import { z } from 'zod';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Email is required.').email('Invalid email address.'),

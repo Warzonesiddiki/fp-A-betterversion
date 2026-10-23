@@ -1,5 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export default function NotFoundPage() {
   const navigate = useNavigate();

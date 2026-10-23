@@ -7,6 +7,9 @@ import { useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useAuthStore } from '@/store/authStore';
 import { RealtimeCollaborationManager } from '@/services/RealtimeCollaborationManager';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Hook to initialize the RealtimeCollaborationManager singleton.

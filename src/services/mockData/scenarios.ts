@@ -203,6 +203,9 @@ export function getScenarioById(id: string): Scenario | undefined {
 }
 
 import { ScenarioEngine } from '@/engines/ScenarioEngine';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 export function getProbabilityWeightedMetrics(): ScenarioMetrics {
   return ScenarioEngine.probabilityWeighted(

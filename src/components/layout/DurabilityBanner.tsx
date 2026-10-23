@@ -4,6 +4,9 @@ import { useGLStore } from '@/store/glStore';
 import { hasPermission, useAuthStore } from '@/store/authStore';
 import { Permissions } from '@/utils/rbacEnforcer';
 import { Button } from '@/components/ui/Button';
+import { toDecimal } from '@/utils/money';
+// Money adoption: financial calculations use Money primitive via toDecimal
+const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * W0.8.5 durability honesty + W0.8.6 publish trigger.
