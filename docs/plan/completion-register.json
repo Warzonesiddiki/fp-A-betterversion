@@ -4715,10 +4715,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/analytics",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/analytics/AnalyticsPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -4821,10 +4822,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/audit/sox",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/audit/SOXCompliancePage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -4837,10 +4839,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/audit/trail",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/audit/AuditTrailPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -5069,10 +5072,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/budgets/approval",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/budgets/BudgetApproval.deep.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -5095,10 +5099,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/budgets/create",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/budgets/BudgetCreatePage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -5111,10 +5116,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/capex",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/capex/CapExDashboard.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -5157,10 +5163,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/cash/debt",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/cash/DebtSchedulePage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -5385,10 +5392,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/consolidation/ic-eliminations",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/consolidation/ICEliminationPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -5401,10 +5409,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/consolidation/ownership",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/consolidation/OwnershipTreePage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -5467,10 +5476,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/currency/fx-rates",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/currency/FXRatesPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -5493,10 +5503,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/currency/translation",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/currency/TranslationResultPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -5509,10 +5520,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/dashboard",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/dashboard/DashboardPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -6199,10 +6211,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/forecasts/create",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/forecasts/ForecastBuilderPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -6215,10 +6228,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/forecasts/drivers",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/forecasts/DriverPlanningPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -6231,10 +6245,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/forecasts/rolling",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/forecasts/RollingForecastPage.money.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -6763,10 +6778,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/reports",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/reports/ReportsListPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -7269,10 +7285,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/scenarios/create",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/scenarios/ScenarioBuilderPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -7485,10 +7502,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/settings",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/settings/SettingsPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -7621,10 +7639,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/treasury",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/treasury/InvestmentPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
@@ -7709,10 +7728,11 @@
         "disposition": "MIGRATE",
         "status": "EXPERIMENTAL",
         "route": "/variance",
-        "note": "EXPERIMENTAL \u2014 requires journey/empty/error/loading test evidence before SUPPORTED"
+        "note": "EXPERIMENTAL \u2014 page test exists but governance evidence not yet in spineGovernance.test.ts"
       },
-      "note": "EXPERIMENTAL \u2014 requires real test evidence before SUPPORTED promotion",
+      "note": "EXPERIMENTAL \u2014 requires governance test evidence before SUPPORTED promotion",
       "tests": [
+        "src/pages/variance/__tests__/VarianceDashboardPage.test.tsx",
         "src/__tests__/spineGovernance.test.ts"
       ]
     },
