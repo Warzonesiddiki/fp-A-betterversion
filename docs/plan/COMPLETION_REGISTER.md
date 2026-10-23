@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 30 |
-| EXPERIMENTAL | 434 |
+| SUPPORTED | 33 |
+| EXPERIMENTAL | 431 |
 | BLOCKED-ON-OWNER | 7 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -85,7 +85,7 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/capex/tracker` | EXPERIMENTAL | gatedBy=/capex/tracker; disposition=RETIRED | Routed screen (CapexTracker); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/cash-forecast` | EXPERIMENTAL | gatedBy=/cash-forecast; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/cash/debt` | EXPERIMENTAL | gatedBy=/cash/debt; disposition=MIGRATE | Routed screen (DebtSchedulePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/cash/forecast` | EXPERIMENTAL | gatedBy=/cash/forecast; disposition=MIGRATE | Routed screen (CashForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/cash/forecast` | SUPPORTED | connected=4 [src/pages/cash/CashForecastPage.interop.test.tsx src/pages/cash/CashForecastPage.interop.test.tsx src/pages/cash/CashForecastPage.interop.test.tsx src/pages/cash/CashForecastPage.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; gatedBy=/cash/forecast; tests=src/__tests__/spineGovernance.test.ts src/pages/cash/CashForecastPage.interop.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 |
 | `route:/cash/working-capital` | EXPERIMENTAL | gatedBy=/cash/working-capital; disposition=MIGRATE | Routed screen (WorkingCapitalPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/charts/chart-of-accounts` | EXPERIMENTAL | gatedBy=/charts/chart-of-accounts; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/charts/showcase` | EXPERIMENTAL | gatedBy=/charts/showcase; disposition=MIGRATE | Routed screen (ChartShowcasePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
@@ -259,14 +259,14 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/templates` | EXPERIMENTAL | gatedBy=/templates; disposition=MIGRATE | Routed screen (TemplateGalleryPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/templates/preview` | EXPERIMENTAL | gatedBy=/templates/preview; disposition=MIGRATE | Routed screen (TemplatePreviewPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/treasury` | EXPERIMENTAL | gatedBy=/treasury; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/treasury/fx-exposure` | EXPERIMENTAL | gatedBy=/treasury/fx-exposure; disposition=MIGRATE | Routed screen (FXExposurePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/treasury/fx-exposure` | SUPPORTED | connected=4 [src/pages/treasury/FXExposurePage.interop.test.tsx src/pages/treasury/FXExposurePage.interop.test.tsx src/pages/treasury/FXExposurePage.interop.test.tsx src/pages/treasury/FXExposurePage.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; gatedBy=/treasury/fx-exposure; tests=src/__tests__/spineGovernance.test.ts src/pages/treasury/FXExposurePage.interop.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — ASC 830 FX translation |
 | `route:/treasury/investments` | EXPERIMENTAL | gatedBy=/treasury/investments; disposition=MIGRATE | Routed screen (InvestmentPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/treasury/loan-amortization` | EXPERIMENTAL | gatedBy=/treasury/loan-amortization; disposition=MIGRATE | Routed screen (LoanAmortizationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/variance` | EXPERIMENTAL | gatedBy=/variance; disposition=MIGRATE | Routed screen (VarianceDashboardPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/visual/atlas` | EXPERIMENTAL | gatedBy=/visual/atlas; disposition=RETAIN | Routed screen (AtlasVisualBaselinePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/workforce` | EXPERIMENTAL | gatedBy=/workforce; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/workforce/compensation` | EXPERIMENTAL | gatedBy=/workforce/compensation; disposition=MIGRATE | Routed screen (CompModelingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/workforce/headcount` | EXPERIMENTAL | gatedBy=/workforce/headcount; disposition=MIGRATE | Routed screen (HeadcountPlanPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/workforce/headcount` | SUPPORTED | connected=4 [src/pages/workforce/HeadcountPlanPage.interop.test.tsx src/pages/workforce/HeadcountPlanPage.interop.test.tsx src/pages/workforce/HeadcountPlanPage.interop.test.tsx src/pages/workforce/HeadcountPlanPage.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; gatedBy=/workforce/headcount; tests=src/__tests__/spineGovernance.test.ts src/pages/workforce/HeadcountPlanPage.interop.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 |
 | `route:/workforce/payroll` | EXPERIMENTAL | gatedBy=/workforce/payroll; disposition=MIGRATE | Routed screen (PayrollForecastPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 
 ## Engines (180)

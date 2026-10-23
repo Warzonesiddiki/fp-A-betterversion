@@ -282,6 +282,69 @@
           "title": "hydrate skeleton announces exactly once via srLabel, bars decorative"
         }
       }
+    },
+    "/cash/forecast": {
+      "page": "src/pages/cash/CashForecastPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
+          "title": "journey: renders cash position with data"
+        },
+        "empty": {
+          "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
+          "title": "empty: shows No Cash Activity with CTA"
+        },
+        "error": {
+          "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
+          "title": "error: shows role=alert with retry"
+        },
+        "loading": {
+          "file": "src/pages/cash/CashForecastPage.interop.test.tsx",
+          "title": "loading: shows Skeleton with srLabel and aria-busy"
+        }
+      }
+    },
+    "/workforce/headcount": {
+      "page": "src/pages/workforce/HeadcountPlanPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/workforce/HeadcountPlanPage.interop.test.tsx",
+          "title": "journey: renders headcount plan with data (T061)"
+        },
+        "empty": {
+          "file": "src/pages/workforce/HeadcountPlanPage.interop.test.tsx",
+          "title": "empty: shows No Workforce Data with CTA when no employees (T062)"
+        },
+        "error": {
+          "file": "src/pages/workforce/HeadcountPlanPage.interop.test.tsx",
+          "title": "error: shows role=alert with retry when error (T063)"
+        },
+        "loading": {
+          "file": "src/pages/workforce/HeadcountPlanPage.interop.test.tsx",
+          "title": "loading: shows Skeleton with srLabel and aria-busy (T064)"
+        }
+      }
+    },
+    "/treasury/fx-exposure": {
+      "page": "src/pages/treasury/FXExposurePage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/treasury/FXExposurePage.interop.test.tsx",
+          "title": "journey: renders FX exposure with data (T090)"
+        },
+        "empty": {
+          "file": "src/pages/treasury/FXExposurePage.interop.test.tsx",
+          "title": "empty: shows No FX Exposure when no exposures (T093)"
+        },
+        "error": {
+          "file": "src/pages/treasury/FXExposurePage.interop.test.tsx",
+          "title": "error: shows role=alert with retry when error (T092)"
+        },
+        "loading": {
+          "file": "src/pages/treasury/FXExposurePage.interop.test.tsx",
+          "title": "loading: shows Skeleton with srLabel and aria-busy (T091)"
+        }
+      }
     }
   },
   "capabilities": {

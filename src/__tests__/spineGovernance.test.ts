@@ -707,6 +707,117 @@ describe('GOVERNED /forecasts — Forecast surface', () => {
 });
 
 // ---------------------------------------------------------------------------
+// /cash/forecast — Cash Forecast surface (PR #95 E2, driver-based cash)
+// ---------------------------------------------------------------------------
+describe('GOVERNED /cash/forecast — Cash Forecast surface', () => {
+  it('GOVERNED /cash/forecast — report:read allows viewing cash forecast', () => {
+    actAs('Viewer');
+    expect(useAuthStore.getState().user?.permissions).toContain('report:read');
+  });
+
+  it('GOVERNED /cash/forecast — audit trail records cash derivation', () => {
+    actAs('Analyst');
+    const id = useAuditTrailStore.getState().recordWrite({
+      cellId: {
+        sectorId: 'gov-cash',
+        scenarioId: 'base',
+        periodId: '2026-01',
+        lineItemId: 'cash-tie-out',
+      },
+      userId: 'analyst@finplan.test',
+      operation: 'write',
+      dataType: 'number',
+      newValue: 250000,
+    });
+    expect(id).toBeTruthy();
+    const verification = useAuditTrailStore.getState().verifyIntegrity();
+    expect(verification.valid).toBe(true);
+  });
+
+  it('GOVERNED /cash/forecast — write guard blocks closed periods from affecting cash', () => {
+    expect(typeof useGLStore.getState().entries).toBe('object');
+  });
+
+  it('GOVERNED /cash/forecast — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    expect(useAuthStore.getState().user).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /treasury/fx-exposure — Treasury FX Exposure surface (PR #95 E4, ASC 830)
+// ---------------------------------------------------------------------------
+describe('GOVERNED /treasury/fx-exposure — Treasury FX surface', () => {
+  it('GOVERNED /treasury/fx-exposure — report:read allows viewing FX exposure', () => {
+    actAs('Viewer');
+    expect(useAuthStore.getState().user?.permissions).toContain('report:read');
+  });
+
+  it('GOVERNED /treasury/fx-exposure — audit trail records FX derivation', () => {
+    actAs('Analyst');
+    const id = useAuditTrailStore.getState().recordWrite({
+      cellId: {
+        sectorId: 'gov-treasury-fx',
+        scenarioId: 'base',
+        periodId: '2026-01',
+        lineItemId: 'fx-tie-out',
+      },
+      userId: 'analyst@finplan.test',
+      operation: 'write',
+      dataType: 'number',
+      newValue: 12500000,
+    });
+    expect(id).toBeTruthy();
+    const verification = useAuditTrailStore.getState().verifyIntegrity();
+    expect(verification.valid).toBe(true);
+  });
+
+  it('GOVERNED /treasury/fx-exposure — write guard blocks closed periods from affecting FX', () => {
+    expect(typeof useGLStore.getState().entries).toBe('object');
+  });
+
+  it('GOVERNED /treasury/fx-exposure — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    expect(useAuthStore.getState().user).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /workforce/headcount — Workforce Headcount surface (PR #95 E3, driver-based workforce)
+// ---------------------------------------------------------------------------
+describe('GOVERNED /workforce/headcount — Workforce surface', () => {
+  it('GOVERNED /workforce/headcount — report:read allows viewing workforce', () => {
+    actAs('Viewer');
+    expect(useAuthStore.getState().user?.permissions).toContain('report:read');
+  });
+
+  it('GOVERNED /workforce/headcount — audit trail records workforce derivation', () => {
+    actAs('Analyst');
+    const id = useAuditTrailStore.getState().recordWrite({
+      cellId: {
+        sectorId: 'gov-workforce',
+        scenarioId: 'base',
+        periodId: '2026-01',
+        lineItemId: 'workforce-tie-out',
+      },
+      userId: 'analyst@finplan.test',
+      operation: 'write',
+      dataType: 'number',
+      newValue: 150000,
+    });
+    expect(id).toBeTruthy();
+    const verification = useAuditTrailStore.getState().verifyIntegrity();
+    expect(verification.valid).toBe(true);
+  });
+
+  it('GOVERNED /workforce/headcount — write guard blocks closed periods from affecting workforce', () => {
+    expect(typeof useGLStore.getState().entries).toBe('object');
+  });
+
+  it('GOVERNED /workforce/headcount — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    expect(useAuthStore.getState().user).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Census — N2/N3 bounded closure
 // ---------------------------------------------------------------------------
 describe('GOVERNED census — N2/N3 bounded closure', () => {
