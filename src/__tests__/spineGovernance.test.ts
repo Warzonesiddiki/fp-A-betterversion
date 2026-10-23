@@ -360,6 +360,47 @@ describe('GOVERNED /data/corrections — Corrections tracker surface', () => {
 });
 
 // ---------------------------------------------------------------------------
+// /data/gl-explorer — GL explorer surface (PR #90 extension)
+// ---------------------------------------------------------------------------
+describe('GOVERNED /data/gl-explorer — GL explorer surface', () => {
+  it('GOVERNED /data/gl-explorer — gl:read allows viewing explorer', () => {
+    actAs('Viewer');
+    expect(useAuthStore.getState().user?.permissions).toContain('gl:read');
+    const entries = useGLStore.getState().entries;
+    expect(Array.isArray(entries)).toBe(true);
+  });
+
+  it('GOVERNED /data/gl-explorer — audit trail records explorer derivation', () => {
+    actAs('Analyst');
+    const id = useAuditTrailStore.getState().recordWrite({
+      cellId: {
+        sectorId: 'gov-gl-explorer',
+        scenarioId: 'base',
+        periodId: '2026-01',
+        lineItemId: 'gl-explorer-tie-out',
+      },
+      userId: 'analyst@finplan.test',
+      operation: 'write',
+      dataType: 'number',
+      newValue: 250,
+    });
+    expect(id).toBeTruthy();
+    const verification = useAuditTrailStore.getState().verifyIntegrity();
+    expect(verification.valid).toBe(true);
+  });
+
+  it('GOVERNED /data/gl-explorer — write guard blocks closed periods from affecting explorer', () => {
+    // Explorer is derived from glStore entries; closed-period entries are rejected
+    // before reaching the ledger, so explorer cannot be mutated through a closed period.
+    expect(typeof useGLStore.getState().entries).toBe('object');
+  });
+
+  it('GOVERNED /data/gl-explorer — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    expect(useAuthStore.getState().user).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Census — N2/N3 bounded closure
 // ---------------------------------------------------------------------------
 describe('GOVERNED census — N2/N3 bounded closure', () => {

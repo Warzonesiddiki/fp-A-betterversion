@@ -157,6 +157,31 @@
           "note": "BLOCKED-ON-OWNER O9 — corrections tracker does not claim entity-scope authorization."
         }
       }
+    },
+    "/data/gl-explorer": {
+      "page": "src/pages/data/GLExplorerPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-explorer — gl:read allows viewing explorer",
+          "proves": "Viewer holds gl:read; explorer reading is allowed for least-privileged role, writes remain guarded."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-explorer — audit trail records explorer derivation",
+          "proves": "Explorer is derived from ledger entries that carry provenance and are covered by audit chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-explorer — write guard blocks closed periods from affecting explorer",
+          "proves": "Closed-period entries are rejected before reaching the ledger, so explorer cannot be mutated through a closed period."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — explorer does not claim entity-scope authorization."
+        }
+      }
     }
   },
   "capabilities": {

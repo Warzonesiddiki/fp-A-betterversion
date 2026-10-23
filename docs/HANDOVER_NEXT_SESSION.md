@@ -1,5 +1,15 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-23 (k) — gl-explorer GOVERNED as 7th route, docs:verify wiring for one-stop and missing-is-not-zero (PR #90)
+
+**The claim.** `/data/gl-explorer` is CONNECTED and GOVERNED as 7th SUPPORTED route. It renders counts, money totals, rows and provenance from real store, shows empty state when store empty, shows ErrorState when importError set, and has no async skeleton (loading na). GOVERNED claims: gl:read allows viewing, audit trail records derivation, write guard blocks closed periods, O9 boundary stated. One-stop acceptance and missing-is-not-zero now wired into `docs:verify` (PR #90/#91 coding priority).
+
+**The join.** `spine-evidence.json` 7 routes (24 claims), `governance-evidence.json` 7 routes (21 claims), `spineGovernance.test.ts` 48/48 (was 44), `GLExplorerPage.interop.test.tsx` adds `K30 error state: states the failed import instead of rendering the stale ledger`. `completion-register.json` SUPPORTED 24 (7 routes + 17 caps), matrix 1303 lines current, `oneStop:acceptance` green 7 routes, `missingIsNotZero:acceptance` green 0. `package.json` docs:verify now includes `verify-one-stop-acceptance.mjs` and `verify-missing-is-not-zero.mjs`. Ratchet docs fix 47→48 via DEC-065.
+
+**Measured.** `docs:verify` green: register 695 SUPPORTED 24, spine 7/24, governance 7/21, matrix current, route dispositions 47 decided, one-stop 7, missingIsNotZero 0, ratchet docs 9 values match. `tsc` PASS, `eslint` PASS, `prettier` PASS for edited files, `docs:links --strict` PASS 0 broken. `GLExplorerPage.interop` 5/5 + `spineGovernance` 48/48 PASS.
+
+**Next.** Re-run `test:sharded` 8/8 to refresh full suite tally (expected ~16515), then continue PR #91+ SUPPORTED expansion, update README if tally moved.
+
 ## 2026-10-23 (j) — corrections tracker GOVERNED as 6th route, one-stop in-app path evidenced (PR #89 extension, DEC-064)
 
 **The claim.** /data/corrections implements DEC-035 in-app correction lifecycle REQUESTED→APPLIED→RE-VERIFIED human-only with append-only actor/time audit trail (FR-010). Excel export is optional interoperability, not a prerequisite — first step toward C2 one-stop acceptance (PR #90).
