@@ -83,7 +83,5 @@ if (findings === 0) {
   console.log('✓ missing-is-not-zero: 0 unannotated default-zero money reads on SUPPORTED surfaces');
 } else {
   console.log(`\n✗ missing-is-not-zero: ${findings} potential default-zero money reads on SUPPORTED surfaces — review for quarantine/unavailable`);
-  console.log('  This is a census for PR #91; not yet a hard gate, but must be fixed or annotated.');
-  // For now, warn but don't fail — PR #91 will make it a hard gate
-  process.exit(0);
+  process.exit(1);
 }

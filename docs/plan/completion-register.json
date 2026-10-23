@@ -4981,12 +4981,56 @@
     {
       "kind": "route",
       "id": "route:/budgets",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/budgets",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/budgets/BudgetListPage.deep.test.tsx",
+            "title": "renders budget list and filters by status"
+          },
+          {
+            "file": "src/pages/budgets/BudgetListPage.test.tsx",
+            "title": "displays the empty state when no budgets exist"
+          },
+          {
+            "file": "src/pages/budgets/BudgetListPage.test.tsx",
+            "title": "submission failure is surfaced after an asynchronous rejection and Retry can succeed"
+          },
+          {
+            "file": "src/pages/budgets/BudgetListPage.test.tsx",
+            "title": "keeps the page h1 mounted over a hydration skeleton instead of flashing the empty state"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /budgets — budget:read allows viewing budgets"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /budgets — audit trail records budget derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /budgets — write guard blocks budget:approve for Viewer"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/budgets/BudgetListPage.test.tsx",
+          "src/pages/budgets/BudgetListPage.deep.test.tsx"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (BudgetListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/budgets/BudgetListPage.test.tsx",
+        "src/pages/budgets/BudgetListPage.deep.test.tsx"
+      ]
     },
     {
       "kind": "route",

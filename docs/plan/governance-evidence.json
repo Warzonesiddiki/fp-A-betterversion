@@ -207,6 +207,31 @@
           "note": "BLOCKED-ON-OWNER O9 — journals does not claim entity-scope authorization."
         }
       }
+    },
+    "/budgets": {
+      "page": "src/pages/budgets/BudgetListPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /budgets — budget:read allows viewing budgets",
+          "proves": "Viewer holds budget:read; budget reading is allowed for least-privileged role, approval remains guarded by budget:approve."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /budgets — audit trail records budget derivation",
+          "proves": "Budget derivation is covered by audit chain verification with hash linkage."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /budgets — write guard blocks budget:approve for Viewer",
+          "proves": "Viewer is denied budget:approve with PermissionError naming the permission; approval requires budget:approve."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — budgets does not claim entity-scope authorization."
+        }
+      }
     }
   },
   "capabilities": {

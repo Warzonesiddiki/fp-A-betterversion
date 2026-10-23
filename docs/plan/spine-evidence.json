@@ -177,6 +177,27 @@
           "title": "K30 a11y: exposes aria-busy on the results body while the transition re-filters, clearing on settle"
         }
       }
+    },
+    "/budgets": {
+      "page": "src/pages/budgets/BudgetListPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/budgets/BudgetListPage.deep.test.tsx",
+          "title": "renders budget list and filters by status"
+        },
+        "empty": {
+          "file": "src/pages/budgets/BudgetListPage.test.tsx",
+          "title": "displays the empty state when no budgets exist"
+        },
+        "error": {
+          "file": "src/pages/budgets/BudgetListPage.test.tsx",
+          "title": "submission failure is surfaced after an asynchronous rejection and Retry can succeed"
+        },
+        "loading": {
+          "file": "src/pages/budgets/BudgetListPage.test.tsx",
+          "title": "keeps the page h1 mounted over a hydration skeleton instead of flashing the empty state"
+        }
+      }
     }
   },
   "capabilities": {

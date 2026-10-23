@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 25 |
-| EXPERIMENTAL | 443 |
+| SUPPORTED | 26 |
+| EXPERIMENTAL | 442 |
 | BLOCKED-ON-OWNER | 7 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -74,7 +74,7 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/board-pack` | SUPPORTED | gatedBy=/board-pack; disposition=MIGRATE; connected=3 [src/pages/reports/BoardPackPage.exportTieOut.test.tsx src/pages/reports/BoardPackPage.probe.test.tsx src/pages/reports/BoardPackPage.probe.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/reports/BoardPackPage.exportTieOut.test.tsx src/pages/reports/BoardPackPage.probe.test.tsx; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | SUPPORTED — CONNECTED 3 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 |
 | `route:/bonds/portfolio` | EXPERIMENTAL | gatedBy=/bonds/portfolio; disposition=EXPERIMENTAL | Routed screen (BondPortfolioPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/bonds/yield-curve` | EXPERIMENTAL | gatedBy=/bonds/yield-curve; disposition=EXPERIMENTAL | Routed screen (YieldCurvePage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/budgets` | EXPERIMENTAL | gatedBy=/budgets; disposition=MIGRATE | Routed screen (BudgetListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/budgets` | SUPPORTED | gatedBy=/budgets; disposition=MIGRATE; connected=4 [src/pages/budgets/BudgetListPage.deep.test.tsx src/pages/budgets/BudgetListPage.test.tsx src/pages/budgets/BudgetListPage.test.tsx src/pages/budgets/BudgetListPage.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/budgets/BudgetListPage.test.tsx src/pages/budgets/BudgetListPage.deep.test.tsx; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 |
 | `route:/budgets/:id` | EXPERIMENTAL | gatedBy=/budgets/:id; disposition=MIGRATE | Routed screen (BudgetDetailPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/budgets/approval` | EXPERIMENTAL | gatedBy=/budgets/approval; disposition=MIGRATE | Routed screen (BudgetApproval); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/budgets/bva` | EXPERIMENTAL | gatedBy=/budgets/bva; disposition=MIGRATE | Routed screen (BudgetVAReport); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
