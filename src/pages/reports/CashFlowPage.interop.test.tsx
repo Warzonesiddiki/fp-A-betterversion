@@ -48,7 +48,7 @@ describe('CashFlowPage interop 4-state', () => {
   });
 
   it('journey: renders cash flow with data', async () => {
-    // @ts-ignore
+    // @ts-expect-error — test fixture typing
     mockedStore.mockImplementation((selector: any) => {
       const state = {
         entries: [{ date: '2026-01-01', accountCode: '1000', debit: 1000, credit: 0, id: '1' }],
@@ -62,7 +62,7 @@ describe('CashFlowPage interop 4-state', () => {
   });
 
   it('empty: shows No Data when no entries', async () => {
-    // @ts-ignore
+    // @ts-expect-error — test fixture typing
     mockedStore.mockImplementation((selector: any) => {
       const state = { entries: [], accounts: [], importError: null };
       return typeof selector === 'function' ? selector(state) : state;
@@ -72,7 +72,7 @@ describe('CashFlowPage interop 4-state', () => {
   });
 
   it('error: shows ErrorState when importError', async () => {
-    // @ts-ignore
+    // @ts-expect-error — test fixture typing
     mockedStore.mockImplementation((selector: any) => {
       const state = { entries: [], accounts: [], importError: 'Failed to load' };
       return typeof selector === 'function' ? selector(state) : state;
@@ -82,7 +82,7 @@ describe('CashFlowPage interop 4-state', () => {
   });
 
   it('loading: shows Skeleton with srLabel when loading', async () => {
-    // @ts-ignore
+    // @ts-expect-error — test fixture typing
     mockedStore.mockImplementation((selector: any) => {
       const state = {
         entries: [{ date: '2026-01-01', accountCode: '1000', debit: 1000, id: '1' }],

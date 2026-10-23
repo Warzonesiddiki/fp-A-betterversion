@@ -50,6 +50,14 @@ export function TreemapChart({
         return (
           <div
             key={d.name}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClick?.(d, i);
+              }
+            }}
             className="relative flex items-center justify-center rounded text-white text-xs font-bold cursor-pointer hover:opacity-90 transition-opacity p-2"
             style={{
               backgroundColor: d.fill || COLORS[i % COLORS.length],

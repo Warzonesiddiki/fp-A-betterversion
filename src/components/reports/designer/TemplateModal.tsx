@@ -32,12 +32,15 @@ export function TemplateModal({
 
   return (
     <div
+      role="button"
+      tabIndex={-1}
+      aria-label="Close modal"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={onClose}
+      onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
     >
       <div
         className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-2xl shadow-2xl w-[520px] max-h-[80vh] overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-2 duration-200"
-        onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}

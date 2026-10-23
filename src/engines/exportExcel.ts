@@ -53,6 +53,7 @@ function rowValue(val: string | number | boolean | null | undefined) {
 
 export default async function exportToExcel(data: ExportData, config: ExportConfig): Promise<void> {
   const ExcelJS = await loadExcelJS();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const workbook = new (ExcelJS as any).Workbook();
   const worksheet = workbook.addWorksheet('Sheet1');
 
@@ -80,8 +81,10 @@ export default async function exportToExcel(data: ExportData, config: ExportConf
     };
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   worksheet.eachRow((row: any, rowNumber: number) => {
     if (rowNumber > 1) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       row.eachCell((cell: any, colNumber: number) => {
         if (colNumber > 1 && typeof cell.value === 'number') {
           cell.numFmt = EXCEL_CURRENCY_FMT;
@@ -106,6 +109,7 @@ export async function exportToExcelWithConditionalFormatting(
   rules: ConditionalFormatRule[]
 ): Promise<void> {
   const ExcelJS = await loadExcelJS();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const workbook = new (ExcelJS as any).Workbook();
   const worksheet = workbook.addWorksheet('Sheet1');
 
@@ -124,8 +128,10 @@ export async function exportToExcelWithConditionalFormatting(
   });
 
   // Apply currency format and conditional formatting
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   worksheet.eachRow((row: any, rowNumber: number) => {
     if (rowNumber > 1) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       row.eachCell((cell: any, colNumber: number) => {
         if (colNumber > 1 && typeof cell.value === 'number') {
           cell.numFmt = EXCEL_CURRENCY_FMT;

@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { toDecimal } from '@/utils/money';
@@ -87,22 +86,7 @@ const links: FlowLink[] = [
   { source: 13, target: 17, value: 60 },
 ];
 
-const nodeColors: Record<string, string> = {
-  source: '#3B82F6',
-  engine: '#10B981',
-  store: '#F59E0B',
-  page: '#8B5CF6',
-};
-
 export default function DataFlowMapPage() {
-  const sankeyData = useMemo(
-    () => ({
-      nodes: nodes.map((n) => ({ ...n, color: nodeColors[n.category] })),
-      links,
-    }),
-    []
-  );
-
   return (
     <div className="p-6 space-y-6">
       <PageHeader
