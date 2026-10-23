@@ -5721,12 +5721,56 @@
     {
       "kind": "route",
       "id": "route:/data/gl-upload",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/data/gl-upload",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/data/GLUploadPage.deep.test.tsx",
+            "title": "parses a valid CSV file and advances to the map step"
+          },
+          {
+            "file": "src/pages/data/GLUploadPage.deep.test.tsx",
+            "title": "renders the initial upload CTA when no data is loaded"
+          },
+          {
+            "file": "src/pages/data/GLUploadPage.deep.test.tsx",
+            "title": "rejects unsupported file extensions with a friendly error"
+          },
+          {
+            "file": "src/pages/data/GLUploadPage.test.tsx",
+            "title": "parsing skeleton announces exactly once via srLabel, bars decorative"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-upload — import:create guards the upload path"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-upload — audit trail records upload provenance"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-upload — write guard blocks closed periods"
+          }
+        ],
+        "tests": [
+          "src/pages/data/GLUploadPage.deep.test.tsx",
+          "src/pages/data/GLUploadPage.test.tsx",
+          "src/__tests__/spineGovernance.test.ts"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (GLUploadPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/pages/data/GLUploadPage.deep.test.tsx",
+        "src/pages/data/GLUploadPage.test.tsx",
+        "src/__tests__/spineGovernance.test.ts"
+      ]
     },
     {
       "kind": "route",

@@ -198,6 +198,27 @@
           "title": "keeps the page h1 mounted over a hydration skeleton instead of flashing the empty state"
         }
       }
+    },
+    "/data/gl-upload": {
+      "page": "src/pages/data/GLUploadPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/data/GLUploadPage.deep.test.tsx",
+          "title": "parses a valid CSV file and advances to the map step"
+        },
+        "empty": {
+          "file": "src/pages/data/GLUploadPage.deep.test.tsx",
+          "title": "renders the initial upload CTA when no data is loaded"
+        },
+        "error": {
+          "file": "src/pages/data/GLUploadPage.deep.test.tsx",
+          "title": "rejects unsupported file extensions with a friendly error"
+        },
+        "loading": {
+          "file": "src/pages/data/GLUploadPage.test.tsx",
+          "title": "parsing skeleton announces exactly once via srLabel, bars decorative"
+        }
+      }
     }
   },
   "capabilities": {

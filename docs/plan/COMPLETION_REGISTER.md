@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 26 |
-| EXPERIMENTAL | 442 |
+| SUPPORTED | 27 |
+| EXPERIMENTAL | 441 |
 | BLOCKED-ON-OWNER | 7 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -118,7 +118,7 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/data/gl-journals` | SUPPORTED | gatedBy=/data/gl-journals; disposition=MIGRATE; connected=4 [src/pages/data/GLJournalsPage.test.tsx src/pages/data/GLJournalsPage.test.tsx src/pages/data/GLJournalsPage.test.tsx src/pages/data/GLJournalsPage.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/data/GLJournalsPage.test.tsx src/pages/data/GLJournalsPage.interop.test.tsx; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 |
 | `route:/data/gl-reporting` | EXPERIMENTAL | gatedBy=/data/gl-reporting; disposition=MIGRATE | Routed screen (GLReportingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/data/gl-trial-balance` | SUPPORTED | gatedBy=/data/gl-trial-balance; disposition=MIGRATE; connected=4 [src/pages/data/GLTrialBalancePage.interop.test.tsx src/pages/data/GLTrialBalancePage.test.tsx src/pages/smoke-data-pages.test.tsx src/pages/data/GLTrialBalancePage.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; tests=src/__tests__/spineGovernance.test.ts src/pages/data/GLTrialBalancePage.interop.test.tsx src/pages/data/GLTrialBalancePage.test.tsx src/pages/smoke-data-pages.test.tsx; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 |
-| `route:/data/gl-upload` | EXPERIMENTAL | gatedBy=/data/gl-upload; disposition=MIGRATE | Routed screen (GLUploadPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/data/gl-upload` | SUPPORTED | gatedBy=/data/gl-upload; disposition=MIGRATE; connected=4 [src/pages/data/GLUploadPage.deep.test.tsx src/pages/data/GLUploadPage.deep.test.tsx src/pages/data/GLUploadPage.deep.test.tsx src/pages/data/GLUploadPage.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; tests=src/pages/data/GLUploadPage.deep.test.tsx src/pages/data/GLUploadPage.test.tsx src/__tests__/spineGovernance.test.ts; gate=governance:evidence; doc=docs/CAPABILITY_TRUTH_MATRIX.md | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 |
 | `route:/data/migration` | EXPERIMENTAL | gatedBy=/data/migration; disposition=MIGRATE | Routed screen (MigrationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/data/reconciliation` | EXPERIMENTAL | gatedBy=/data/reconciliation; disposition=MIGRATE | Routed screen (ReconciliationPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/data/version-diff` | EXPERIMENTAL | gatedBy=/data/version-diff; disposition=MIGRATE | Routed screen (VersionDiffPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |

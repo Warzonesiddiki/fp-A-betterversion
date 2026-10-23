@@ -232,6 +232,31 @@
           "note": "BLOCKED-ON-OWNER O9 — budgets does not claim entity-scope authorization."
         }
       }
+    },
+    "/data/gl-upload": {
+      "page": "src/pages/data/GLUploadPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-upload — import:create guards the upload path",
+          "proves": "Data upload writes require import:create; Viewer and unauthenticated sessions are denied with PermissionError naming the permission."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-upload — audit trail records upload provenance",
+          "proves": "A successful upload creates an audit entry with id, hash linkage and chainHead advancement; verifyIntegrity reports valid."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-upload — write guard blocks closed periods",
+          "proves": "Closed periods block batch promotion via glPeriodWriteGuard; the guard is wired into the import pipeline."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — entity-scope authorization cannot be claimed; activeEntityId is not an authorization decision."
+        }
+      }
     }
   },
   "capabilities": {

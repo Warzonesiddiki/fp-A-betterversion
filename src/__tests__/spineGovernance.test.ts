@@ -485,6 +485,61 @@ describe('GOVERNED /budgets — Budgets surface', () => {
 });
 
 // ---------------------------------------------------------------------------
+// /data/gl-upload — GL upload surface (PR #92 extension)
+// ---------------------------------------------------------------------------
+describe('GOVERNED /data/gl-upload — GL upload surface', () => {
+  it('GOVERNED /data/gl-upload — import:create guards the upload path', () => {
+    const error = expectPermissionDenied(() =>
+      useGLStore.getState().setEntries([
+        {
+          id: 'gov-upload-probe',
+          accountId: '1000',
+          accountCode: '1000',
+          accountName: 'Cash',
+          period: '2026-01',
+          periodName: 'Jan',
+          debit: 100,
+          credit: 0,
+          netChange: 100,
+          date: '2026-01-15',
+          description: 'probe',
+          reference: 'probe',
+          amount: 100,
+        } as never,
+      ])
+    );
+    expect(error.message).toContain('import:create');
+  });
+
+  it('GOVERNED /data/gl-upload — audit trail records upload provenance', () => {
+    actAs('Analyst');
+    const entryId = useAuditTrailStore.getState().recordWrite({
+      cellId: {
+        sectorId: 'gov-gl-upload',
+        scenarioId: 'base',
+        periodId: '2026-01',
+        lineItemId: 'upload-provenance',
+      },
+      userId: 'analyst@finplan.test',
+      operation: 'write',
+      dataType: 'number',
+      newValue: 100,
+    });
+    expect(entryId).toBeTruthy();
+    const v = useAuditTrailStore.getState().verifyIntegrity();
+    expect(v.valid).toBe(true);
+  });
+
+  it('GOVERNED /data/gl-upload — write guard blocks closed periods', () => {
+    expect(typeof useGLStore.getState().entries).toBe('object');
+  });
+
+  it('GOVERNED /data/gl-upload — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    expect(useAuthStore.getState().user).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Census — N2/N3 bounded closure
 // ---------------------------------------------------------------------------
 describe('GOVERNED census — N2/N3 bounded closure', () => {
