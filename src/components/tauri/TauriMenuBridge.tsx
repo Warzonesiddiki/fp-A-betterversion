@@ -1,7 +1,4 @@
 import { useTauriMenu } from '@/hooks/useTauriMenu';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Mounts the native-menu event listener inside the Router tree.

@@ -30,9 +30,6 @@ import type { GLEntry } from '@/types';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { formatPercent as formatPercentDisplay } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 /** Local formatPercent delegates to financialFormatting (GAP-1 F-0006). */
 function formatPercent(n: number): string {

@@ -5,9 +5,6 @@ import { LayoutGrid, Plus, Save, Download, Trash2, GripVertical } from 'lucide-r
 import { useDashboardStore, type Widget, type WidgetType } from '@/store/dashboardStore';
 import { useAuthStore } from '@/store/authStore';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 const DEFAULT_DASHBOARD_NAME = 'My Dashboard';
 

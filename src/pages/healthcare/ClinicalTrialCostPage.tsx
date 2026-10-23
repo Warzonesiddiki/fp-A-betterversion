@@ -23,9 +23,6 @@ import { useHealthcareStore } from '@/store/healthcareStore';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { formatNumber, formatPercent } from '@/utils/financialFormatting';
 import { deriveClinicalTrialAnalysis } from '@/pages/healthcare/clinicalTrialData';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 const fiscalPeriods: FiscalPeriod[] = buildFiscalPeriods();
 

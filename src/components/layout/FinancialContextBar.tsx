@@ -3,9 +3,6 @@ import { useShallow } from 'zustand/react/shallow';
 import { useFinancialContextStore } from '@/store/financialContextStore';
 import { FinancialStatusBadge } from '@/components/ui/FinancialStatusBadge';
 import type { FreshnessState } from '@/types/financialContext';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface FinancialEntityOption {
   id: string;

@@ -7,9 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Settings, LogOut, Save, Clock, Globe, DollarSign, Palette } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export default function ProfilePage() {
   const navigate = useNavigate();

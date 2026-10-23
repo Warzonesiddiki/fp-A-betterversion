@@ -6,9 +6,6 @@ import { DocumentEngine, type FinanceDocument } from '@/engines/DocumentEngine';
 import { masterStorage } from '@/utils/masterStorage';
 import { enforce, getCurrentUser, Permissions } from '@/utils/rbacEnforcer';
 import { nowISO, nowMs } from '@/utils/clock';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Categories mirror FinanceDocument['type'] so every stored document can be

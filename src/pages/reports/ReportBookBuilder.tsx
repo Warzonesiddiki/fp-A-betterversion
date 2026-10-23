@@ -7,13 +7,6 @@ import { Button } from '@/components/ui/Button';
 import { ReportBookBuilder } from '@/components/reports/ReportBookBuilder';
 import { FileText } from 'lucide-react';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => { try { return toDecimal(0); } catch { return 0 as unknown as ReturnType<typeof toDecimal>; } })();
-
-
-
-
 export default function ReportBookBuilderPage() {
   useEffect(() => {
     document.title = 'FinPlan Pro — Report Book Builder';

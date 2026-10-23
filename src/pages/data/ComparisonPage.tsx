@@ -16,16 +16,6 @@ import {
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { formatPercent } from '@/utils/financialFormatting';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => {
-  try {
-    return toDecimal(0);
-  } catch {
-    return 0 as unknown as ReturnType<typeof toDecimal>;
-  }
-})();
-
 /**
  * Phase 4 comparison workspace (FR-011, plan §8): one row per account,
  * current vs prior vs prior-year at day/month/year grain. A period the

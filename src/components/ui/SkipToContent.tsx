@@ -1,7 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface SkipToContentProps {
   /** CSS id of the target landmark element. Defaults to 'main-content'. */

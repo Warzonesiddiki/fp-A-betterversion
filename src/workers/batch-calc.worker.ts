@@ -15,9 +15,6 @@ import type {
 } from './types';
 import { evaluateExpression, SafeExpressionError } from './safeExpression';
 import { readMessageId, readMessagePayload, validateBatchCalcRequest } from './validateRequest';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 // --- Cell key helpers ---
 

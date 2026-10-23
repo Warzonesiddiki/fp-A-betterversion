@@ -1,9 +1,6 @@
 import React from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import DependencyGraph from '../../components/admin/DependencyGraph';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export default function DebugPage() {
   return (

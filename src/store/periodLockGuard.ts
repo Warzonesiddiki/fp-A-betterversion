@@ -25,9 +25,6 @@ import type { Budget, BudgetLineItem } from '@/types';
 import { useBudgetStore } from './budgetStore';
 import { usePeriodCloseStore } from './periodCloseStore';
 import { useUIStore } from './uiStore';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 /** Typed rejection for any mutation targeting a hard-locked ('locked') period. */
 export class PeriodLockedError extends Error {

@@ -12,9 +12,6 @@ import { FiscalCalendar, type FiscalPeriodInput } from '@/engines/FiscalCalendar
 import { useSettingsStore } from '@/store/settingsStore';
 import type { FiscalPeriod } from '@/types';
 import { now } from '@/utils/clock';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 const MONTH_NAMES = [
   'January',

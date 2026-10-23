@@ -6,9 +6,6 @@ import { users, departments as userDepts, entities as userEntities } from './use
 import { budgets } from './budgets';
 import { scenarios } from './scenarios';
 import { variancesData } from './variances';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 // ---------------------------------------------------------------------------
 // Re-exports

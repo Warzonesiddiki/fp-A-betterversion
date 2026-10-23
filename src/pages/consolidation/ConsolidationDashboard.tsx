@@ -13,16 +13,6 @@ import { ConsolidationEngine, EntityData, OwnershipStructure } from '@/engines/C
 
 import { Plus, Trash2, Edit2, Building2 } from 'lucide-react';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => {
-  try {
-    return toDecimal(0);
-  } catch {
-    return 0 as unknown as ReturnType<typeof toDecimal>;
-  }
-})();
-
 interface Entity {
   id: string;
   name: string;

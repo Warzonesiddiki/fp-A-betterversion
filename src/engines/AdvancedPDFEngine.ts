@@ -7,9 +7,6 @@
 
 import { formatMoney } from '../utils/money';
 import { createCanvas, createImage } from '@/utils/canvasFactory';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 type JsPDF = any;
 

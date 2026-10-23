@@ -26,16 +26,6 @@ import { deriveValuation, type PropertyValuationRow } from '@/pages/realestate/v
 import { useGLStore } from '@/store/glStore';
 import { formatCompact, formatPercent } from '@/utils/financialFormatting';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => {
-  try {
-    return toDecimal(0);
-  } catch {
-    return 0 as unknown as ReturnType<typeof toDecimal>;
-  }
-})();
-
 // Real periods from the fiscal-calendar engine (previously misnamed
 // `mockPeriods`; the data was never mock data).
 const fiscalPeriods = buildFiscalPeriods();

@@ -132,7 +132,7 @@ symptoms and the tests are unchanged.
 | determinism sites / files | 344 / 79                    | `scripts/determinism-baseline.json`    |
 | type-safety escapes       | 48                          | `scripts/type-safety-baseline.json`    |
 | money AST violations      | 0                           | `scripts/money-ast-baseline.json`      |
-| money adoption            | 87.35 % (floor)             | `scripts/money-adoption-baseline.json` |
+| money adoption            | 30.16 % (floor)             | `scripts/money-adoption-baseline.json` |
 | palette migration         | 5489 / 368                  | `scripts/palette-baseline.json`        |
 | eslint-disable ledger     | see `npm run escape:ledger` | —                                      |
 

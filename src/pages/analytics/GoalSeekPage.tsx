@@ -11,9 +11,6 @@ import { Target } from 'lucide-react';
 import { formatPercent } from '@/utils/financialFormatting';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 import {
   computeContribution,
   deriveGoalSeekActuals,

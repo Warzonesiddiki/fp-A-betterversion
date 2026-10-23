@@ -6,9 +6,6 @@ import { SectorKPIs } from './SectorKPIs';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/utils/cn';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface SectorDashboardProps {
   /** Force a specific sector ID instead of reading from settings store. */

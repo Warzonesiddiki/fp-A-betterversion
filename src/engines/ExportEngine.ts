@@ -19,9 +19,6 @@ export interface ExportData {
 import { downloadBlob } from '@/utils/canvasFactory';
 import { loadJsPDF } from '@/utils/pdfRuntime';
 import { sanitizeSpreadsheetText } from '@/utils/spreadsheetSanitize';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 interface JsPDFInstance {
   autoTable: (options: Record<string, unknown>) => void;

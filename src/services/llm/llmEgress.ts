@@ -1,6 +1,4 @@
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
+
 
 // =============================================================================
 // LLM Egress Chokepoint — FinPlan Pro (Blueprint W0.9, Phase 0)

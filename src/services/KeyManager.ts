@@ -21,9 +21,6 @@
 //   - Web Crypto API (crypto.subtle, crypto.getRandomValues)
 
 import { EncryptionEngine, ENCRYPTION_CONSTANTS } from '../engines/EncryptionEngine';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface KeyManagerConfig {
   /** Maximum number of derived keys to keep in memory (LRU). Default 16. */

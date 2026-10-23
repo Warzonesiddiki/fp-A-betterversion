@@ -1,9 +1,6 @@
 import React from 'react';
 import { Eye, Save, Undo2, Redo2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface ReportToolbarProps {
   name: string;

@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
 import { masterStorage } from '@/utils/masterStorage';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export function useFirstRun() {
   const [isFirstRun, setIsFirstRun] = useState<boolean | null>(null);

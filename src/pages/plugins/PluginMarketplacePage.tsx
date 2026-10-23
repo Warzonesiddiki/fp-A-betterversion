@@ -12,9 +12,6 @@ import { PluginDetail } from '@/components/plugins/PluginDetail';
 import { PluginMarketplace } from '@/plugins/PluginMarketplace';
 import { PluginRegistry } from '@/plugins/PluginRegistry';
 import type { MarketplacePlugin } from '@/plugins/PluginMarketplace';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 // =============================================================================
 // Filter / Sort Types

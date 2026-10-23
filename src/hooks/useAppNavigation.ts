@@ -7,9 +7,6 @@ import {
   type NavItem,
   type NavSection,
 } from '@/types/navigation';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Role-aware navigation filtering (F-03, PRD E1.1 AC1).

@@ -2,9 +2,6 @@ import { useMemo, memo } from 'react';
 // CHRONOS 2026-06-15: replaced local formatRelativeTime (BUG-CHR-D-1) with
 // canonical import. Uses default 7-day cap, "Just now" capitalization.
 import { formatRelativeTimeLegacy as formatRelativeTime } from '@/engines/temporal';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 interface ActivityItem {
   id?: string;

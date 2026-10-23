@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { ExportEngine } from '@/engines/ExportEngine';
 import type { ExportData } from '@/engines/ExportEngine';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export function useExport() {
   const [isExporting, setIsExporting] = useState(false);

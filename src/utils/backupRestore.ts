@@ -23,9 +23,6 @@ import { BACKUP_STORE_KEYS, BACKUP_EXCLUDED_KEYS, PERSISTED_STORE_KEYS } from '.
 import { isTauri, tauriSqlStorage } from './tauriSqlStorage';
 import { readEscrowRecord, type EscrowRecordV1 } from './keyEscrow';
 import { nowISO } from '@/utils/clock';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Bump when the on-disk backup shape changes incompatibly.

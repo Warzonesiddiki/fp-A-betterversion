@@ -21,9 +21,6 @@ import { useDensity, denserMetrics } from '@/hooks/useDensity';
 import { FormulaBar } from './FormulaBar';
 import { SheetTabs } from './SheetTabs';
 import { ContextMenu, type ContextMenuAction } from './ContextMenu';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 // Modular registration (P-02-I): register only the modules these grids use
 // (client-side rows, basic text/number/date filters, hand-rolled + built-in CSV

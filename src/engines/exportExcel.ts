@@ -2,9 +2,6 @@
 import { saveAs } from 'file-saver';
 import type { ExportConfig, ExportData } from './ExportEngine';
 import { sanitizeSpreadsheetCell, sanitizeSpreadsheetText } from '@/utils/spreadsheetSanitize';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 async function loadExcelJS() {
   const mod = await import('exceljs');

@@ -2,9 +2,6 @@ import type { ConditionalFormatRule } from '@/engines/ConditionalFormattingEngin
 import { evaluateRule } from '@/engines/ConditionalFormattingEngine';
 import { ConditionalCellRenderer } from './ConditionalFormattingRenderers';
 import { cn } from '@/utils/cn';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface RuleRowProps {
   rule: ConditionalFormatRule;

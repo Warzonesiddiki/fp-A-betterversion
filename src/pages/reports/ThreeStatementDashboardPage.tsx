@@ -26,13 +26,6 @@ import { deriveThreeStatement } from './threeStatementData';
 import { deriveChangesInEquity } from '@/services/statements/changesInEquity';
 import { deriveDirectCashFlow } from '@/services/statements/directCashFlow';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => { try { return toDecimal(0); } catch { return 0 as unknown as ReturnType<typeof toDecimal>; } })();
-
-
-
-
 function fmt(n: number | { toNumber(): number }): string {
   const value = typeof n === 'number' ? n : n.toNumber();
   return currencyFormatter(reportingCurrency(), { decimals: 0 })(value);

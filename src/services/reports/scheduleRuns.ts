@@ -1,7 +1,4 @@
 import type { ScheduledReport } from '@/types';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * Phase 9 — report schedule governance.

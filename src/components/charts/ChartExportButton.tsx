@@ -1,9 +1,6 @@
 import { memo, useCallback } from 'react';
 import { Image, FileImage } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 interface ChartExportButtonProps {
   chartRef: React.RefObject<HTMLDivElement | null>;

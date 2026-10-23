@@ -3,9 +3,6 @@ import { suggestGLImportMappings } from '@/services/import/d365Parser';
 import { Select } from '@/components/ui/Select';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { cn } from '@/utils/cn';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface GLColumnMapperProps {
   csvColumns: string[];

@@ -1,10 +1,12 @@
 {
-  "financialModules": 1020,
-  "modulesUsingMoneyPrimitive": 891,
-  "adoptionPercent": 87.35,
+  "financialModules": 1061,
+  "modulesUsingMoneyPrimitive": 320,
+  "modulesImportingMoney": 331,
+  "adoptionPercent": 30.16,
   "rawToFixedSites": 0,
+  "fakeAdoptionMarkers": 0,
   "serverFinancialModules": 31,
   "serverModulesUsingMoneyPrimitive": 3,
   "serverRawToFixedSites": 0,
-  "recordedAt": "2026-10-23T16:18:10.961Z"
+  "recordedAt": "2026-10-23T18:49:41.950Z"
 }

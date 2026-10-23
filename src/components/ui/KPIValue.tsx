@@ -3,9 +3,6 @@ import { ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { formatPercent } from '@/utils/financialFormatting';
 import { Sparkline } from './Sparkline';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface KPIValueProps {
   label: string;

@@ -2,9 +2,6 @@ import { useEffect } from 'react';
 import { useSettingsStore } from '@/store/settingsStore';
 import { designTokens } from '@/config/designTokens';
 import type { DensityMode } from '@/types';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 /**
  * The default density. `standard` (36px rows) is the finance-tool default:

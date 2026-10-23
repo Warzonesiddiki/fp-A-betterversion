@@ -11,9 +11,6 @@ import {
   type ConflictInfo,
   type ResourceType,
 } from './ChangeBroadcaster';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface CollaborationConfig {
   /** WebSocket URL (e.g., wss://api.example.com/ws) */

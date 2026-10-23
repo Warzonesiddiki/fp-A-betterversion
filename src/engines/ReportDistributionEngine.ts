@@ -1,7 +1,5 @@
 import { randomId } from '@/utils/cryptoId';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
+
 // =============================================================================
 // REPORT DISTRIBUTION ENGINE — Email delivery, recipient management
 // Pure TypeScript, deterministic, no external dependencies

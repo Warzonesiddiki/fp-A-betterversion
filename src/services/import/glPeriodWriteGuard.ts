@@ -2,9 +2,6 @@
 import type { GLEntry } from '@/types';
 import type { PeriodCloseEntry } from '@/engines/PeriodCloseStateMachine';
 import { parseImportDate } from '@/utils/parseImportDate';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface FiscalCloseScope {
   readonly startDate: string;

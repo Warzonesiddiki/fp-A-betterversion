@@ -3,9 +3,6 @@ import { cn } from '@/utils/cn';
 import { Button } from '../Button';
 import { X, GripVertical } from 'lucide-react';
 import type { PivotConfig, PivotField } from '@/engines/PivotTableEngine';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface PivotBuilderProps {
   availableFields: PivotField[];

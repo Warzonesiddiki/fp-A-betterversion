@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Badge } from '@/components/ui/Badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
-import { formatPercent } from '@/utils/financialFormatting';
+import { formatNumber, formatPercent } from '@/utils/financialFormatting';
 
 import {
   Cpu,
@@ -29,9 +29,6 @@ import {
   Eye,
 } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 interface AnomalyResult {
   description: string;
@@ -178,7 +175,7 @@ export function AIIntelligencePage() {
     const header = 'description,sentiment,confidence';
     const rows = filteredResults.map((r) => {
       const safeDesc = `"${r.description.replace(/"/g, '""')}"`;
-      return `${safeDesc},${r.sentiment},${r.confidence.toFixed(4)}`;
+      return `${safeDesc},${r.sentiment},${formatNumber(r.confidence, 4)}`;
     });
     const csv = [header, ...rows].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

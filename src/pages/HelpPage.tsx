@@ -16,9 +16,6 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export default function HelpPage() {
   const navigate = useNavigate();

@@ -47,9 +47,6 @@ import { useBudgetStore } from './budgetStore';
 import { useScenarioStore } from './scenarioStore';
 import { now } from '@/utils/clock';
 import { parseImportDate } from '@/utils/parseImportDate';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 // ---------------------------------------------------------------------------
 // Types

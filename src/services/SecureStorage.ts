@@ -25,9 +25,6 @@
 
 import { EncryptionEngine } from '../engines/EncryptionEngine';
 import { KeyManager, generateSalt } from './KeyManager';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface SecureStorageAdapter {
   getItem(key: string): string | null;

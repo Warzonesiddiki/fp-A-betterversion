@@ -158,6 +158,32 @@ const FINANCIAL_DIRS = [
   'src/components/reports',
   'src/components/scenarios',
   'src/components/workflow',
+  // 2026-10-23 (E6 stretch): remaining app surfaces swept into the ratchet.
+  // Consistent with the existing curation, which already includes non-financial
+  // UI dirs (components/auth, components/help, pages/collaboration, pages/charts).
+  // Every module below was audited: 0 value-producing .toFixed(n) sites on money,
+  // and the two display-only sites found (BenchmarksPage latency, AIIntelligencePage
+  // confidence) were routed through formatNumber so the simple regex sees 0.
+  //   pages/{analytics,settings,auth,scenarios,admin,ai,documents,templates,
+  //          dashboard,docs,onboarding,periods,plugins,visual}
+  //   components/{integrations,forecasts,tauri}
+  'src/pages/analytics',
+  'src/pages/settings',
+  'src/pages/auth',
+  'src/pages/scenarios',
+  'src/pages/admin',
+  'src/pages/ai',
+  'src/pages/documents',
+  'src/pages/templates',
+  'src/pages/dashboard',
+  'src/pages/docs',
+  'src/pages/onboarding',
+  'src/pages/periods',
+  'src/pages/plugins',
+  'src/pages/visual',
+  'src/components/integrations',
+  'src/components/forecasts',
+  'src/components/tauri',
 ];
 
 /**
@@ -183,17 +209,78 @@ function walk(dir, out = []) {
 const files = FINANCIAL_DIRS.flatMap((d) => walk(join(ROOT, d)));
 const serverFiles = walk(join(ROOT, SERVER_DIR));
 
+/**
+ * Money functions that count as a GENUINE use of the primitive. A module that
+ * merely imports `@/utils/money` is NOT counted: the 2026-10-23 integrity audit
+ * found 656 modules shipping `const _moneyAdoptionMarker = toDecimal(0)` — a
+ * no-op whose only purpose was to trip the import-based counter. Adoption now
+ * counts a module only when it actually CALLS a money helper, and any marker
+ * left behind fails the ratchet outright.
+ */
+const MONEY_FNS = [
+  'toDecimal',
+  'roundMoney',
+  'roundTo',
+  'toFixedMoneyString',
+  'addMoney',
+  'subtractMoney',
+  'multiplyMoney',
+  'divideMoney',
+  'sumMoney',
+  'compareMoney',
+  'moneyEquals',
+  'toCents',
+  'fromCents',
+  'asMoney',
+  'moneyToMinor',
+  'moneyCanonicalString',
+  'moneyToAmount',
+  'amountFrom',
+  'optionalAmountFrom',
+  'moneyPlus',
+  'moneyMinus',
+  'moneyNegate',
+  'moneySum',
+  'moneyCompareValues',
+  'moneyEqualsValue',
+  'moneyIsZero',
+  'moneySign',
+  'moneyIsNegative',
+  'percentOf',
+  'variancePct',
+  'allocateMoney',
+  'splitMoneyEvenly',
+  'formatMoney',
+  'isMoneyValue',
+  'decimalPlacesOf',
+  'hasSubUnitPrecision',
+];
+const MARKER_COMMENT = /[^\n]*Money (adoption|primitive adoption):[^\n]*/g;
+const MARKER_CONST =
+  /[^\n]*const _[A-Za-z]*Marker = (\(\(\)\s*=>\s*\{.*?\}\)\(\)|toDecimal\(0\));?[^\n]*/gs;
+const MARKER_ANY = /_[A-Za-z]*Marker = (\(\(\)\s*=>\s*\{|\s*toDecimal\(0\))/;
+
 let usesMoney = 0;
+let importsMoney = 0;
 const toFixedSites = [];
 const moneyModules = [];
+const fakeMarkers = [];
 
 for (const f of files) {
   const text = readFileSync(f, 'utf8');
   const rel = relative(ROOT, f).replace(/\\/g, '/');
 
+  if (MARKER_ANY.test(text)) fakeMarkers.push(rel);
+
   if (/from\s+['"](@\/utils\/money|.*\/money)['"]/.test(text)) {
-    usesMoney += 1;
-    moneyModules.push(rel);
+    importsMoney += 1;
+    // Genuine use = a money helper CALLED outside any marker.
+    const stripped = text.replace(MARKER_COMMENT, '').replace(MARKER_CONST, '');
+    const genuine = MONEY_FNS.some((fn) => new RegExp(`\\b${fn}\\s*\\(`).test(stripped));
+    if (genuine) {
+      usesMoney += 1;
+      moneyModules.push(rel);
+    }
   }
 
   // `toFixed(2)` used as a VALUE (financial truth) rather than for display.
@@ -225,18 +312,22 @@ const totalToFixed = toFixedSites.reduce((a, b) => a + b.count, 0);
 const measured = {
   financialModules: files.length,
   modulesUsingMoneyPrimitive: usesMoney,
+  modulesImportingMoney: importsMoney,
   adoptionPercent: Number(((usesMoney / files.length) * 100).toFixed(2)),
   rawToFixedSites: totalToFixed,
+  fakeAdoptionMarkers: fakeMarkers.length,
   serverFinancialModules: serverFiles.length,
   serverModulesUsingMoneyPrimitive: serverUsesMoney,
   serverRawToFixedSites: serverToFixed,
 };
 
 console.log('Money primitive adoption (financial paths only):');
-console.log(`  financial modules scanned     ${measured.financialModules}`);
-console.log(`  modules using money primitive ${measured.modulesUsingMoneyPrimitive}`);
-console.log(`  adoption                      ${measured.adoptionPercent}%`);
-console.log(`  raw toFixed(n) sites          ${measured.rawToFixedSites}`);
+console.log(`  financial modules scanned      ${measured.financialModules}`);
+console.log(`  modules importing money        ${measured.modulesImportingMoney}`);
+console.log(`  modules using money primitive  ${measured.modulesUsingMoneyPrimitive}`);
+console.log(`  adoption                       ${measured.adoptionPercent}%`);
+console.log(`  raw toFixed(n) sites           ${measured.rawToFixedSites}`);
+console.log(`  fake adoption markers          ${measured.fakeAdoptionMarkers}`);
 console.log('');
 if (moneyModules.length) {
   console.log('  Modules on the money primitive:');
@@ -280,6 +371,14 @@ if (measured.rawToFixedSites > baseline.rawToFixedSites) {
 if (measured.modulesUsingMoneyPrimitive < baseline.modulesUsingMoneyPrimitive) {
   failures.push(
     `money primitive adoption DECREASED: ${baseline.modulesUsingMoneyPrimitive} -> ${measured.modulesUsingMoneyPrimitive} modules.`
+  );
+}
+
+if (measured.fakeAdoptionMarkers > 0) {
+  failures.push(
+    `${measured.fakeAdoptionMarkers} fake adoption marker(s) found (e.g. ` +
+      '"const _moneyAdoptionMarker = toDecimal(0)"). A no-op import is not money ' +
+      'adoption; migrate the real arithmetic or remove the marker.'
   );
 }
 

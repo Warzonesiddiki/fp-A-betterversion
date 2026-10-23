@@ -2,9 +2,6 @@ import { useState } from 'react';
 import { Lightbulb, Sparkles } from 'lucide-react';
 import { AICopilotEngine } from '@/engines/AICopilotEngine';
 import { FormulaDisplay } from './CopilotFormulaDisplay';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (

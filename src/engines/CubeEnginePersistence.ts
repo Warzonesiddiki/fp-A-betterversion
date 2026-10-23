@@ -1,6 +1,4 @@
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
+
 
 /**
  * CUBE ENGINE PERSISTENCE — Dual-backend adapter (IndexedDB + Tauri SQLite)

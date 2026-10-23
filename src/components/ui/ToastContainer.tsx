@@ -3,9 +3,6 @@ import { useUIStore } from '@/store/uiStore';
 import { Toast } from './Toast';
 import { cn } from '@/utils/cn';
 import type { ToastMessage } from '@/types';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface ToastContainerProps {
   position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';

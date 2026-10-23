@@ -1,12 +1,5 @@
 import { memo } from 'react';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => { try { return toDecimal(0); } catch { return 0 as unknown as ReturnType<typeof toDecimal>; } })();
-
-
-
-
 export interface VarianceDataRow {
   account: string;
   budget: string;

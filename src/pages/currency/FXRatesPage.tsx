@@ -12,16 +12,6 @@ import { ErrorState } from '@/components/ui/ErrorState';
 import { Plus, Trash2 } from 'lucide-react';
 import { formatNumber } from '@/utils/financialFormatting';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => {
-  try {
-    return toDecimal(0);
-  } catch {
-    return 0 as unknown as ReturnType<typeof toDecimal>;
-  }
-})();
-
 // K30 four-states honesty notes:
 // - Rates are read from the persisted fxRateStore. This page previously seeded
 //   a hardcoded INITIAL_RATES table (USD→EUR 0.92 / USD→GBP 0.79 / USD→JPY

@@ -1,8 +1,5 @@
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 // Bundle diet: recharts Sankey removed — custom flow list (T019, T526-T534)
 // Previously used Sankey from recharts (heavy), now lightweight div flow

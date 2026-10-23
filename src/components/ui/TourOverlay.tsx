@@ -4,9 +4,6 @@ import { useTourStore } from '@/store/tourStore';
 // framer-motion removed for bundle diet — CSS transitions only (T011-T013)
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { Button } from './Button';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export function TourOverlay() {
   const { isActive, currentStepIndex, steps, nextStep, prevStep, stopTour } = useTourStore(

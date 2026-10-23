@@ -1,9 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { formatPercent } from '@/utils/financialFormatting';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
+
 export interface CommentaryTemplateDef {
   id: string;
   name: string;

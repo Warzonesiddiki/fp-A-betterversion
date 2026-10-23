@@ -9,9 +9,6 @@ import { createLogger } from './logger';
 
 import type { StorageRequest, StorageResult } from '../workers/storage.worker';
 import { nowMs } from '@/utils/clock';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 const storagePool = createStoragePool();
 const chunkedStorageLogger = createLogger('ChunkedStorage');

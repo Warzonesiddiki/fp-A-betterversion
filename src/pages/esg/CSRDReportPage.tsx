@@ -23,16 +23,6 @@ import {
 } from 'recharts';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => {
-  try {
-    return toDecimal(0);
-  } catch {
-    return 0 as unknown as ReturnType<typeof toDecimal>;
-  }
-})();
-
 function formatNumber(n: number): string {
   return new Intl.NumberFormat('en-US').format(n);
 }

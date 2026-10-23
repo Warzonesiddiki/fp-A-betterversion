@@ -20,9 +20,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useDensity, densityMetrics, DENSITY_MODES, DENSITY_LABELS } from '@/hooks/useDensity';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export default function SettingsPage() {
   const { organization, updateOrganization, updatePreferences } = useSettingsStore();

@@ -16,9 +16,7 @@ export {
 } from './financialLogicalTextDateStatFunctions';
 
 import { LOOKUP_FUNCTIONS, MATH_FUNCTIONS } from './lookupMathFunctions';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
+
 import {
   FINANCIAL_FUNCTIONS,
   LOGICAL_FUNCTIONS,

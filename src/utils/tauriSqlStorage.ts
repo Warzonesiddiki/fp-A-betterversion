@@ -2,9 +2,6 @@ import type { RawStorage } from './chunkedStorage';
 import { StorageBackendError } from './storageErrors';
 import { createLogger } from '@/utils/logger';
 import { isTauriRuntime } from './tauriRuntime';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 type SqlDatabase = import('@tauri-apps/plugin-sql').default;
 

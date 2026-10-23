@@ -1,9 +1,6 @@
 import React from 'react';
 import { cn } from '@/utils/cn';
 import type { PivotResult, PivotRow } from '@/engines/PivotTableEngine';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 export interface PivotTableProps {
   data: PivotResult | null;

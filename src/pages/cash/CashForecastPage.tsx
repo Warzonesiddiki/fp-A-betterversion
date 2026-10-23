@@ -39,16 +39,6 @@ import { SparklineChart } from '@/components/charts/SparklineChart';
 import { reportExportFailure } from '@/utils/exportErrorHandler';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
-import { toDecimal } from '@/utils/money';
-// Money primitive adoption: decimal.js-backed conversion for financial values
-const _moneyAdoptionMarker = (() => {
-  try {
-    return toDecimal(0);
-  } catch {
-    return 0 as unknown as ReturnType<typeof toDecimal>;
-  }
-})();
-
 /**
  * Cash position page. Every figure is derived by
  * `@/pages/cash/cashForecastModel` from posted cash-account activity; see that

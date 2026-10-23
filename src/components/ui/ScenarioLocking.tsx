@@ -7,9 +7,6 @@ import { Modal } from './Modal';
 import type { ScenarioMetrics } from '@/types';
 import { Lock, Unlock, Download, AlertTriangle, Shield } from 'lucide-react';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 interface ScenarioLockingProps {
   scenarioId: string;

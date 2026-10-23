@@ -18,9 +18,6 @@ import type { NavigateFunction } from 'react-router-dom';
 import { createLogger } from '@/utils/logger';
 import { TAURI_MENU_EVENT_IDS } from '@/config/tauriMenuEvents';
 import type { TauriMenuEventId } from '@/config/tauriMenuEvents';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
 
 const tauriMenuLogger = createLogger('TauriMenu');
 

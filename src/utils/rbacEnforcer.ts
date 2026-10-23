@@ -270,9 +270,6 @@ export function enforceMany<TState extends Record<string, unknown>, TKeys extend
  * ```ts
  * import { withAudit } from '@/utils/rbacEnforcer';
  * import { useAuditStore } from '@/store/auditStore';
-import { toDecimal } from '@/utils/money';
-// Money adoption: financial calculations use Money primitive via toDecimal
-const _moneyAdoptionMarker = toDecimal(0);
  *
  * const auditOptions = withAudit((event) => {
  *   useAuditStore.getState().logEvent({
