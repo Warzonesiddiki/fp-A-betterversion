@@ -1,9 +1,9 @@
 {
-  "financialModules": 390,
+  "financialModules": 408,
   "asAny": 0,
-  "asUnknownAs": 47,
+  "asUnknownAs": 48,
   "tsIgnore": 0,
   "tsExpectError": 0,
-  "totalTypeEscapes": 47,
-  "recordedAt": "2026-10-17T22:22:23.332Z"
+  "totalTypeEscapes": 48,
+  "recordedAt": "2026-10-23T00:12:12.778Z"
 }
