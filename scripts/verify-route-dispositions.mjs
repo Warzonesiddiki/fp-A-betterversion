@@ -119,7 +119,7 @@ for (const line of read(MATRIX).split(/\r?\n/)) {
   const id = /^`(\/[^`]*|\*)`$/.exec(cells[0] ?? '');
   if (!id) continue;
   routeRows += 1;
-  const word = /\b(MIGRATE|RETAIN|EXPERIMENTAL|REVIEW)\b/.exec(cells[2] ?? '');
+  const word = /\b(MIGRATE|RETAIN|EXPERIMENTAL|RETIRED|REVIEW)\b/.exec(cells[2] ?? '');
   const disposition = word ? word[1] : '';
   matrixDispositions.set(id[1], disposition);
   if (disposition === 'REVIEW') {

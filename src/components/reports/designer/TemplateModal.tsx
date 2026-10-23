@@ -1,5 +1,5 @@
 import React, { useId } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+// framer-motion removed for bundle diet — CSS transitions only (T011-T013)
 import {
   ReportBuilderEngine,
   type ReportDefinition,
@@ -28,24 +28,17 @@ export function TemplateModal({
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-2xl shadow-2xl w-[520px] max-h-[80vh] overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-2 duration-200"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
       >
-        <motion.div
-          initial={{ scale: 0.95, y: 20 }}
-          animate={{ scale: 1, y: 0 }}
-          exit={{ scale: 0.95, y: 20 }}
-          className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-2xl shadow-2xl w-[520px] max-h-[80vh] overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={titleId}
-        >
           <div className="p-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
             <h2 id={titleId} className="text-sm font-bold text-[var(--text-primary)]">
               New Report from Template
@@ -96,8 +89,7 @@ export function TemplateModal({
               </div>
             </div>
           )}
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+        </div>
+      </div>
   );
 }

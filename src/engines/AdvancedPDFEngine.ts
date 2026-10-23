@@ -1,11 +1,18 @@
 /**
  * AdvancedPDFEngine — Professional PDF generation for FinPlan Pro
  * Features: TOC, watermarks, headers/footers, charts, financial tables
+ * Bundle diet: jsPDF is dynamically imported so ~600KB stays in lazy pdf-vendor chunk
  */
 
-import jsPDF from 'jspdf';
 import { formatMoney } from '../utils/money';
 import { createCanvas, createImage } from '@/utils/canvasFactory';
+
+type JsPDF = any;
+
+async function loadJsPDF(): Promise<any> {
+  const mod = await import('jspdf');
+  return (mod.default ?? mod.jsPDF ?? mod) as any;
+}
 
 interface TOCEntry {
   title: string;
@@ -38,7 +45,7 @@ export class AdvancedPDFEngine {
   /**
    * Add table of contents to PDF
    */
-  static addTableOfContents(doc: jsPDF, sections: TOCEntry[]): void {
+  static addTableOfContents(doc: JsPDF, sections: TOCEntry[]): void {
     doc.setFontSize(24);
     doc.text('Table of Contents', 20, 30);
     doc.setFontSize(12);
@@ -60,7 +67,7 @@ export class AdvancedPDFEngine {
   /**
    * Add watermark to every page
    */
-  static addWatermark(doc: jsPDF, options: WatermarkOptions): void {
+  static addWatermark(doc: JsPDF, options: WatermarkOptions): void {
     const { text, fontSize = 50, color = '#cccccc', angle = -45 } = options;
     const pages = doc.getNumberOfPages();
 
@@ -87,7 +94,7 @@ export class AdvancedPDFEngine {
   /**
    * Add header and footer to every page
    */
-  static addHeaderFooter(doc: jsPDF, options: HeaderFooterOptions): void {
+  static addHeaderFooter(doc: JsPDF, options: HeaderFooterOptions): void {
     const pages = doc.getNumberOfPages();
 
     for (let i = 1; i <= pages; i++) {
@@ -127,7 +134,7 @@ export class AdvancedPDFEngine {
   /**
    * Add page break
    */
-  static addPageBreak(doc: jsPDF): void {
+  static addPageBreak(doc: JsPDF): void {
     doc.addPage();
   }
 
@@ -135,7 +142,7 @@ export class AdvancedPDFEngine {
    * Add financial table to PDF
    */
   static addFinancialTable(
-    doc: jsPDF,
+    doc: JsPDF,
     data: Record<string, unknown>[],
     columns: FinancialTableColumn[],
     startY: number = 40
@@ -213,7 +220,7 @@ export class AdvancedPDFEngine {
    * Add chart as image to PDF
    */
   static addChart(
-    doc: jsPDF,
+    doc: JsPDF,
     svgElement: SVGElement | null,
     x: number = 20,
     y: number = 40,
@@ -246,7 +253,7 @@ export class AdvancedPDFEngine {
   /**
    * Generate full report with sections
    */
-  static generateReport(
+  static async generateReport(
     sections: Array<{
       title: string;
       content?: string;
@@ -260,8 +267,9 @@ export class AdvancedPDFEngine {
       includeTOC?: boolean;
       includePageNumbers?: boolean;
     }
-  ): jsPDF {
-    const doc = new jsPDF();
+  ): Promise<JsPDF> {
+    const JsPDFCtor = await loadJsPDF();
+    const doc = new JsPDFCtor();
     const tocEntries: TOCEntry[] = [];
     let pageNum = 1;
 
@@ -333,7 +341,13 @@ export class AdvancedPDFEngine {
   /**
    * Export PDF with download
    */
-  static exportToPDF(doc: jsPDF, filename: string): void {
+  static exportToPDF(doc: JsPDF, filename: string): void {
     doc.save(filename);
+  }
+
+  /** Loader for external callers that need JsPDF ctor dynamically */
+  static async createDoc(): Promise<JsPDF> {
+    const JsPDFCtor = await loadJsPDF();
+    return new JsPDFCtor();
   }
 }

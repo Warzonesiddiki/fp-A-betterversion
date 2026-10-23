@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useGLStore } from '@/store/glStore';
 import { Modal } from './Modal';
 import { DataTable } from './DataTable';
-import { format } from 'date-fns';
+import { format } from 'date-fns/format';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 
 interface DrillDownModalProps {

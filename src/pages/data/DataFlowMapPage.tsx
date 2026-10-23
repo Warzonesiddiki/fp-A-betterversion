@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { ResponsiveContainer, Sankey, Tooltip } from 'recharts';
+// Bundle diet: recharts Sankey removed — custom flow list (T019, T526-T534)
+// Previously used Sankey from recharts (heavy), now lightweight div flow
 
 interface FlowNode {
   name: string;
@@ -138,21 +139,39 @@ export default function DataFlowMapPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Data Flow Sankey Diagram</CardTitle>
+          <CardTitle>Data Flow Diagram (Simplified)</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={500}>
-            <Sankey
-              data={sankeyData}
-              node={<></>}
-              link={<></>}
-              nodePadding={20}
-              nodeWidth={15}
-              margin={{ top: 20, right: 200, bottom: 20, left: 20 }}
-            >
-              <Tooltip />
-            </Sankey>
-          </ResponsiveContainer>
+          <div className="space-y-4" role="img" aria-label="Data flow from sources to pages">
+            <div className="flex flex-wrap gap-2">
+              {nodes.slice(0, 4).map((n) => (
+                <div key={n.name} className="px-3 py-1 rounded bg-blue-500 text-white text-xs">
+                  {n.name}
+                </div>
+              ))}
+              <span className="text-[var(--text-muted)]">→</span>
+              {nodes.slice(4, 11).map((n) => (
+                <div key={n.name} className="px-3 py-1 rounded bg-green-500 text-white text-xs">
+                  {n.name}
+                </div>
+              ))}
+              <span className="text-[var(--text-muted)]">→</span>
+              {nodes.slice(11, 17).map((n) => (
+                <div key={n.name} className="px-3 py-1 rounded bg-yellow-500 text-black text-xs">
+                  {n.name}
+                </div>
+              ))}
+              <span className="text-[var(--text-muted)]">→</span>
+              {nodes.slice(17, 25).map((n) => (
+                <div key={n.name} className="px-3 py-1 rounded bg-purple-500 text-white text-xs">
+                  {n.name}
+                </div>
+              ))}
+            </div>
+            <div className="text-xs text-[var(--text-muted)]">
+              {links.length} flow connections: Sources → ImportEngine → glStore → FormulaEngine → Stores → Pages
+            </div>
+          </div>
         </CardContent>
       </Card>
 

@@ -4,10 +4,14 @@
 // Pure TypeScript, deterministic, testable
 // =============================================================================
 
-import ExcelJS from 'exceljs';
 import { parseCSVRecords } from '@/utils/csv';
 import { sanitizeForDisplay } from '@/utils/security';
 import { subtractMoney, sumMoney, roundTo, toDecimal, formatMoney } from '@/utils/money';
+
+async function loadExcelJS() {
+  const mod = await import('exceljs');
+  return mod.default ?? mod;
+}
 
 export type FileFormat = 'xlsx' | 'csv';
 
@@ -199,7 +203,8 @@ export class ExcelImportEngine {
   async parseFile(file: File): Promise<ParsedWorkbook> {
     const buffer = await file.arrayBuffer();
     const format = this.detectFormat(file.name);
-    const workbook = new ExcelJS.Workbook();
+    const ExcelJS = await loadExcelJS();
+    const workbook = new (ExcelJS as any).Workbook();
 
     if (format === 'csv') {
       // Browser-compatible CSV parsing — no Node streams needed
@@ -215,13 +220,13 @@ export class ExcelImportEngine {
 
     const sheets: ParsedSheet[] = [];
 
-    workbook.eachSheet((worksheet) => {
+    workbook.eachSheet((worksheet: any) => {
       const rows: Record<string, unknown>[] = [];
       let headers: string[] = [];
 
-      worksheet.eachRow((row, rowNumber) => {
+      worksheet.eachRow((row: any, rowNumber: number) => {
         if (rowNumber === 1) {
-          headers = (Array.isArray(row.values) ? row.values : []).slice(1).map((v) => String(v));
+          headers = (Array.isArray(row.values) ? row.values : []).slice(1).map((v: any) => String(v));
           return;
         }
 

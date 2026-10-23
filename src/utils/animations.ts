@@ -1,9 +1,8 @@
-import { Variants, Transition } from 'framer-motion';
+// framer-motion removed for bundle diet — replaced with CSS equivalents (T011-T013)
+// Original Variants/Transition types replaced with plain objects for compatibility
 
-/**
- * Standardized Framer Motion animation variants and transitions.
- * These should be used across the app to ensure consistent motion.
- */
+type Variants = Record<string, any>;
+type Transition = Record<string, any>;
 
 const defaultTransition: Transition = {
   type: 'spring',
@@ -18,105 +17,42 @@ const easeOutTransition: Transition = {
 };
 
 export const pageTransition: Variants = {
-  initial: {
-    opacity: 0,
-    y: 10,
-  },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: easeOutTransition,
-  },
-  exit: {
-    opacity: 0,
-    y: -10,
-    transition: { ...easeOutTransition, duration: 0.2 },
-  },
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0, transition: easeOutTransition },
+  exit: { opacity: 0, y: -10, transition: { ...easeOutTransition, duration: 0.2 } },
 };
 
 export const staggerContainer: Variants = {
-  animate: {
-    transition: {
-      staggerChildren: 0.05,
-    },
-  },
+  animate: { transition: { staggerChildren: 0.05 } },
 };
 
 export const staggerItem: Variants = {
-  initial: {
-    opacity: 0,
-    y: 10,
-  },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: defaultTransition,
-  },
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0, transition: defaultTransition },
 };
 
 export const slideInRight: Variants = {
-  initial: {
-    opacity: 0,
-    x: 20,
-  },
-  animate: {
-    opacity: 1,
-    x: 0,
-    transition: defaultTransition,
-  },
-  exit: {
-    opacity: 0,
-    x: 20,
-    transition: { ...defaultTransition, duration: 0.2 },
-  },
+  initial: { opacity: 0, x: 20 },
+  animate: { opacity: 1, x: 0, transition: defaultTransition },
+  exit: { opacity: 0, x: 20, transition: { ...defaultTransition, duration: 0.2 } },
 };
 
 export const slideInLeft: Variants = {
-  initial: {
-    opacity: 0,
-    x: -20,
-  },
-  animate: {
-    opacity: 1,
-    x: 0,
-    transition: defaultTransition,
-  },
-  exit: {
-    opacity: 0,
-    x: -20,
-    transition: { ...defaultTransition, duration: 0.2 },
-  },
+  initial: { opacity: 0, x: -20 },
+  animate: { opacity: 1, x: 0, transition: defaultTransition },
+  exit: { opacity: 0, x: -20, transition: { ...defaultTransition, duration: 0.2 } },
 };
 
 export const fade: Variants = {
-  initial: {
-    opacity: 0,
-  },
-  animate: {
-    opacity: 1,
-    transition: easeOutTransition,
-  },
-  exit: {
-    opacity: 0,
-    transition: { ...easeOutTransition, duration: 0.2 },
-  },
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: easeOutTransition },
+  exit: { opacity: 0, transition: { ...easeOutTransition, duration: 0.2 } },
 };
 
 export const scaleUp: Variants = {
-  initial: {
-    opacity: 0,
-    scale: 0.95,
-  },
-  animate: {
-    opacity: 1,
-    scale: 1,
-    transition: defaultTransition,
-  },
-  exit: {
-    opacity: 0,
-    scale: 0.95,
-    transition: { ...defaultTransition, duration: 0.2 },
-  },
+  initial: { opacity: 0, scale: 0.95 },
+  animate: { opacity: 1, scale: 1, transition: defaultTransition },
+  exit: { opacity: 0, scale: 0.95, transition: { ...defaultTransition, duration: 0.2 } },
 };
 
 /**

@@ -58,12 +58,41 @@ const _moneyAdoptionMarker = (() => {
  */
 export default function CashForecastPage() {
   const fmt = useCurrencyFormatter();
-  const { entries } = useGLStore();
+  const { entries, isLoading, importError } = useGLStore((s) => ({
+    entries: s.entries,
+    isLoading: s.isLoading,
+    importError: s.importError,
+  }));
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'FinPlan Pro — Cash Position';
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="p-6 space-y-6" aria-busy="true" aria-label="Loading cash position">
+        <div className="h-8 w-48 bg-[var(--bg-elevated)] rounded animate-pulse" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-24 bg-[var(--bg-elevated)] rounded-lg animate-pulse" aria-label="Loading cash data" />
+          ))}
+        </div>
+        <div className="h-64 bg-[var(--bg-elevated)] rounded-lg animate-pulse" />
+        <span className="sr-only">Loading cash position data</span>
+      </div>
+    );
+  }
+
+  if (importError) {
+    return (
+      <div className="p-12 text-center" role="alert" aria-live="assertive">
+        <h2 className="text-xl font-semibold mb-2 text-red-400">Failed to load cash data</h2>
+        <p className="text-[var(--text-muted)] mb-6">{importError}</p>
+        <Button onClick={() => window.location.reload()}>Retry</Button>
+      </div>
+    );
+  }
 
   const data = useMemo(() => deriveCashPosition(entries), [entries]);
 

@@ -2,7 +2,7 @@ import { useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useGLStore } from '@/store/glStore';
 import { DataTable } from '@/components/ui/DataTable';
-import { format } from 'date-fns';
+import { format } from 'date-fns/format';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import {
   resolveAccountClass,

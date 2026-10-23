@@ -251,7 +251,7 @@ const ENGINE_PLUMBING = new Set([
  * REVIEW row is now a failure in its own right: it means a route entered the
  * tree with no recorded decision.
  */
-const DISPOSITIONS = ['MIGRATE', 'EXPERIMENTAL', 'REVIEW', 'RETAIN'];
+const DISPOSITIONS = ['MIGRATE', 'EXPERIMENTAL', 'REVIEW', 'RETAIN', 'RETIRED'];
 const MATRIX = 'docs/CAPABILITY_TRUTH_MATRIX.md';
 const ROUTE_DECISIONS = 'docs/product/route-dispositions.json';
 
@@ -313,7 +313,7 @@ function census() {
       // src/App.tsx and needs a disposition like any other.
       const id = /^`(\/[^`]*|\*)`$/.exec(cells[0] ?? '');
       if (!id) continue;
-      const word = /\b(MIGRATE|RETAIN|EXPERIMENTAL|REVIEW)\b/.exec(cells[2] ?? '');
+      const word = /\b(MIGRATE|RETAIN|EXPERIMENTAL|RETIRED|REVIEW)\b/.exec(cells[2] ?? '');
       if (word) dispositions.set(id[1], word[1]);
     }
   }

@@ -3,8 +3,13 @@
  * Extends ImportEngine with column auto-detection, migration readiness scoring, and rollback
  */
 
-import ExcelJS from 'exceljs';
 import { nowISO, nowMs } from '@/utils/clock';
+
+async function loadExcelJS() {
+  const mod = await import('exceljs');
+  return (mod.default ?? mod) as any;
+}
+type ExcelJS = any;
 
 export type MigrationSource = 'excel' | 'planful' | 'adaptive' | 'anaplan' | 'csv' | 'unknown';
 
@@ -171,7 +176,7 @@ const ANAPLAN_MARKERS = [
  * Extract row values from an ExcelJS row as a string array.
  * ExcelJS rows are 1-indexed, so we skip index 0.
  */
-function rowToValues(row: ExcelJS.Row): string[] {
+function rowToValues(row: any): string[] {
   const values: string[] = [];
   const cellCount = row.cellCount;
   for (let i = 1; i <= cellCount; i++) {
@@ -194,9 +199,9 @@ function rowToValues(row: ExcelJS.Row): string[] {
 /**
  * Read all rows from a worksheet as a 2D string array (first row = headers).
  */
-function worksheetToRows(worksheet: ExcelJS.Worksheet): string[][] {
+function worksheetToRows(worksheet: any): string[][] {
   const rows: string[][] = [];
-  worksheet.eachRow({ includeEmpty: false }, (row) => {
+  worksheet.eachRow({ includeEmpty: false }, (row: any) => {
     rows.push(rowToValues(row));
   });
   return rows;
@@ -281,7 +286,7 @@ function assessReadiness(
   headers: string[],
   data: Record<string, unknown>[],
   mappings: ColumnMapping[],
-  workbook?: ExcelJS.Workbook
+  workbook?: any
 ): MigrationReadiness {
   const issues: MigrationReadiness['issues'] = [];
   let score = 100;
@@ -365,11 +370,11 @@ function assessReadiness(
   let hasHiddenRows = false;
 
   if (workbook) {
-    workbook.eachSheet((worksheet) => {
+    workbook.eachSheet((worksheet: any) => {
       // Check for formulas
       let formulaCellCount = 0;
-      worksheet.eachRow({ includeEmpty: false }, (row) => {
-        row.eachCell({ includeEmpty: false }, (cell) => {
+      worksheet.eachRow({ includeEmpty: false }, (row: any) => {
+        row.eachCell({ includeEmpty: false }, (cell: any) => {
           if (cell.value && typeof cell.value === 'object' && 'formula' in cell.value) {
             formulaCellCount++;
           }
@@ -379,8 +384,8 @@ function assessReadiness(
       else if (formulaCellCount > 10) formulaComplexity = 'moderate';
 
       // Check for external links — formula strings containing [ ] (external workbook refs)
-      worksheet.eachRow({ includeEmpty: false }, (row) => {
-        row.eachCell({ includeEmpty: false }, (cell) => {
+      worksheet.eachRow({ includeEmpty: false }, (row: any) => {
+        row.eachCell({ includeEmpty: false }, (cell: any) => {
           if (cell.value && typeof cell.value === 'object' && 'formula' in cell.value) {
             const formula = String(cell.value.formula);
             if (formula.includes('[') && formula.includes(']')) {
@@ -395,7 +400,7 @@ function assessReadiness(
       if (merges && Object.keys(merges).length > 0) hasMergedCells = true;
 
       // Check for hidden rows
-      worksheet.eachRow({ includeEmpty: false }, (row) => {
+      worksheet.eachRow({ includeEmpty: false }, (row: any) => {
         if (row.hidden) hasHiddenRows = true;
       });
     });
@@ -499,8 +504,9 @@ export class MigrationEngine {
   /**
    * Load a workbook from a File using ExcelJS.
    */
-  private async loadWorkbook(file: File): Promise<ExcelJS.Workbook> {
+  private async loadWorkbook(file: File): Promise<any> {
     const buffer = await file.arrayBuffer();
+    const ExcelJS = await loadExcelJS();
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.load(buffer);
     return workbook;
@@ -509,7 +515,7 @@ export class MigrationEngine {
   /**
    * Read headers and data rows from a worksheet.
    */
-  private readSheetData(worksheet: ExcelJS.Worksheet): {
+  private readSheetData(worksheet: any): {
     headers: string[];
     dataRows: Record<string, unknown>[];
   } {
@@ -558,7 +564,7 @@ export class MigrationEngine {
     source: MigrationSource;
     readiness: MigrationReadiness;
     plan: MigrationPlan;
-    workbook: ExcelJS.Workbook;
+    workbook: any;
   }> {
     const workbook = await this.loadWorkbook(file);
     const firstSheet = workbook.worksheets[0]!;
@@ -570,7 +576,7 @@ export class MigrationEngine {
     const readiness = assessReadiness(headers, dataRows, mappings, workbook);
 
     // Build sheet info
-    const sheets = workbook.worksheets.map((worksheet) => {
+    const sheets = workbook.worksheets.map((worksheet: any) => {
       const allRows = worksheetToRows(worksheet);
       return {
         name: worksheet.name,

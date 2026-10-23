@@ -1,5 +1,5 @@
-import { Treemap, ResponsiveContainer, Tooltip } from 'recharts';
-
+// Bundle diet: recharts Treemap removed — custom flex layout (T019, T526-T534)
+// Previously used Treemap from recharts (99KB gz heavy), now lightweight divs
 export interface TreemapDataPoint {
   name: string;
   size: number;
@@ -27,78 +27,48 @@ const COLORS = [
   '#6366F1',
 ];
 
-function CustomContent(props: {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  index: number;
-  name: string;
-  size: number;
-}) {
-  const { x, y, width, height, index, name, size } = props;
-  if (width < 30 || height < 20) return null;
-
-  return (
-    <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        fill={COLORS[index % COLORS.length]}
-        stroke="#fff"
-        strokeWidth={2}
-      />
-      {width > 50 && height > 30 && (
-        <>
-          <text
-            x={x + width / 2}
-            y={y + height / 2 - 6}
-            textAnchor="middle"
-            fill="#fff"
-            fontSize={12}
-            fontWeight="bold"
-          >
-            {name}
-          </text>
-          <text
-            x={x + width / 2}
-            y={y + height / 2 + 10}
-            textAnchor="middle"
-            fill="#fff"
-            fontSize={10}
-          >
-            {size.toLocaleString()}
-          </text>
-        </>
-      )}
-    </g>
-  );
-}
-
 export function TreemapChart({
   data,
   height = 400,
   ariaLabel = 'Treemap chart',
+  formatValue,
+  onClick,
 }: TreemapChartProps) {
+  const total = data.reduce((sum, d) => sum + d.size, 0) || 1;
+
   return (
-    <div role="img" aria-label={ariaLabel} data-testid="treemap-chart">
-      <ResponsiveContainer width="100%" height={height}>
-        <Treemap
-          data={data as unknown as import('recharts/types/chart/Treemap').TreemapDataType[]}
-          dataKey="size"
-          nameKey="name"
-          content={<CustomContent x={0} y={0} width={0} height={0} index={0} name="" size={0} />}
-        >
-          <Tooltip
-            formatter={(value, name) => [
-              typeof value === 'number' ? value.toLocaleString() : String(value),
-              name,
-            ]}
-          />
-        </Treemap>
-      </ResponsiveContainer>
+    <div
+      role="img"
+      aria-label={ariaLabel}
+      data-testid="treemap-chart"
+      className="w-full flex flex-wrap gap-1"
+      style={{ minHeight: height }}
+    >
+      {data.map((d, i) => {
+        const pct = (d.size / total) * 100;
+        const widthPct = Math.max(10, pct);
+        return (
+          <div
+            key={d.name}
+            className="relative flex items-center justify-center rounded text-white text-xs font-bold cursor-pointer hover:opacity-90 transition-opacity p-2"
+            style={{
+              backgroundColor: d.fill || COLORS[i % COLORS.length],
+              width: `${widthPct}%`,
+              minWidth: 80,
+              minHeight: 60,
+              flexGrow: 1,
+            }}
+            onClick={() => onClick?.(d, i)}
+            title={`${d.name}: ${formatValue ? formatValue(d.size) : d.size.toLocaleString()}`}
+          >
+            <span className="text-center">
+              {d.name}
+              <br />
+              <span className="font-normal">{formatValue ? formatValue(d.size) : d.size.toLocaleString()}</span>
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
