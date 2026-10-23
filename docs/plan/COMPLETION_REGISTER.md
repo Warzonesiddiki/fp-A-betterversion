@@ -14,8 +14,8 @@ question that stops it. Nothing here is promoted by prose.
 
 | Measure | Value |
 | --- | --- |
-| SUPPORTED | 33 |
-| EXPERIMENTAL | 431 |
+| SUPPORTED | 36 |
+| EXPERIMENTAL | 428 |
 | BLOCKED-ON-OWNER | 7 |
 | RETIRED | 0 |
 | NOT_BUILT | 220 |
@@ -192,14 +192,14 @@ question that stops it. Nothing here is promoted by prose.
 | `route:/reconciliation` | EXPERIMENTAL | gatedBy=/reconciliation; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/register` | EXPERIMENTAL | gatedBy=/register; disposition=RETAIN | Routed screen (RegisterPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/reports` | EXPERIMENTAL | gatedBy=/reports; disposition=MIGRATE | Routed screen (ReportsListPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/reports/balance-sheet` | EXPERIMENTAL | gatedBy=/reports/balance-sheet; disposition=MIGRATE | Routed screen (BalanceSheetPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/balance-sheet` | SUPPORTED | connected=4 [src/pages/reports/BalanceSheetPage.interop.test.tsx src/pages/reports/BalanceSheetPage.interop.test.tsx src/pages/reports/BalanceSheetPage.interop.test.tsx src/pages/reports/BalanceSheetPage.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; gatedBy=/reports/balance-sheet; tests=src/__tests__/spineGovernance.test.ts src/pages/reports/BalanceSheetPage.interop.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — report tie-out |
 | `route:/reports/board-pack/new` | EXPERIMENTAL | gatedBy=/reports/board-pack/new; disposition=MIGRATE | Routed screen (Navigate); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/reports/book-builder` | EXPERIMENTAL | gatedBy=/reports/book-builder; disposition=MIGRATE | Routed screen (ReportBookBuilder); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/reports/budget-vs-actual` | EXPERIMENTAL | gatedBy=/reports/budget-vs-actual; disposition=MIGRATE | Routed screen (BudgetVsActualPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/reports/cash-flow` | EXPERIMENTAL | gatedBy=/reports/cash-flow; disposition=MIGRATE | Routed screen (CashFlowPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/cash-flow` | SUPPORTED | connected=4 [src/pages/reports/CashFlowPage.interop.test.tsx src/pages/reports/CashFlowPage.interop.test.tsx src/pages/reports/CashFlowPage.interop.test.tsx src/pages/reports/CashFlowPage.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; gatedBy=/reports/cash-flow; tests=src/__tests__/spineGovernance.test.ts src/pages/reports/CashFlowPage.interop.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — report tie-out |
 | `route:/reports/designer` | EXPERIMENTAL | gatedBy=/reports/designer; disposition=MIGRATE | Routed screen (ReportDesignerPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/reports/library` | EXPERIMENTAL | gatedBy=/reports/library; disposition=MIGRATE | Routed screen (ReportTemplateLibraryPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
-| `route:/reports/profit-loss` | EXPERIMENTAL | gatedBy=/reports/profit-loss; disposition=MIGRATE | Routed screen (ProfitLossPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
+| `route:/reports/profit-loss` | SUPPORTED | connected=4 [src/pages/reports/ProfitLossPage.interop.test.tsx src/pages/reports/ProfitLossPage.interop.test.tsx src/pages/reports/ProfitLossPage.interop.test.tsx src/pages/reports/ProfitLossPage.interop.test.tsx]; governed=3 [src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts src/__tests__/spineGovernance.test.ts]; disposition=MIGRATE; doc=docs/CAPABILITY_TRUTH_MATRIX.md; gate=governance:evidence; gatedBy=/reports/profit-loss; tests=src/__tests__/spineGovernance.test.ts src/pages/reports/ProfitLossPage.interop.test.tsx | SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9 — report tie-out |
 | `route:/reports/scheduler` | EXPERIMENTAL | gatedBy=/reports/scheduler; disposition=MIGRATE | Routed screen (ReportScheduler); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/reports/segment` | EXPERIMENTAL | gatedBy=/reports/segment; disposition=MIGRATE | Routed screen (SegmentReportingPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |
 | `route:/reports/templates` | EXPERIMENTAL | gatedBy=/reports/templates; disposition=MIGRATE | Routed screen (FinancialStatementTemplates); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md. |

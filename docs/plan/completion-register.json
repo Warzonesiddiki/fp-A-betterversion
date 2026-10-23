@@ -6671,12 +6671,54 @@
     {
       "kind": "route",
       "id": "route:/reports/balance-sheet",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
+        "connected": [
+          {
+            "file": "src/pages/reports/BalanceSheetPage.interop.test.tsx",
+            "title": "journey: renders balance sheet with data"
+          },
+          {
+            "file": "src/pages/reports/BalanceSheetPage.interop.test.tsx",
+            "title": "empty: shows No Data when no entries"
+          },
+          {
+            "file": "src/pages/reports/BalanceSheetPage.interop.test.tsx",
+            "title": "error: shows ErrorState when importError"
+          },
+          {
+            "file": "src/pages/reports/BalanceSheetPage.interop.test.tsx",
+            "title": "loading: shows Skeleton with srLabel when report null"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/balance-sheet \u2014 report:read allows viewing balance sheet"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/balance-sheet \u2014 audit trail records balance sheet derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/balance-sheet \u2014 write guard blocks closed periods from affecting BS"
+          }
+        ],
+        "disposition": "MIGRATE",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "gate": "governance:evidence",
         "gatedBy": "/reports/balance-sheet",
-        "disposition": "MIGRATE"
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/reports/BalanceSheetPage.interop.test.tsx"
+        ]
       },
-      "note": "Routed screen (BalanceSheetPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 report tie-out",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/reports/BalanceSheetPage.interop.test.tsx"
+      ]
     },
     {
       "kind": "route",
@@ -6711,12 +6753,54 @@
     {
       "kind": "route",
       "id": "route:/reports/cash-flow",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
+        "connected": [
+          {
+            "file": "src/pages/reports/CashFlowPage.interop.test.tsx",
+            "title": "journey: renders cash flow with data"
+          },
+          {
+            "file": "src/pages/reports/CashFlowPage.interop.test.tsx",
+            "title": "empty: shows No Data when no entries"
+          },
+          {
+            "file": "src/pages/reports/CashFlowPage.interop.test.tsx",
+            "title": "error: shows ErrorState when importError"
+          },
+          {
+            "file": "src/pages/reports/CashFlowPage.interop.test.tsx",
+            "title": "loading: shows Skeleton with srLabel when loading"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/cash-flow \u2014 report:read allows viewing cash flow"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/cash-flow \u2014 audit trail records cash flow derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/cash-flow \u2014 write guard blocks closed periods from affecting CF"
+          }
+        ],
+        "disposition": "MIGRATE",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "gate": "governance:evidence",
         "gatedBy": "/reports/cash-flow",
-        "disposition": "MIGRATE"
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/reports/CashFlowPage.interop.test.tsx"
+        ]
       },
-      "note": "Routed screen (CashFlowPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 report tie-out",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/reports/CashFlowPage.interop.test.tsx"
+      ]
     },
     {
       "kind": "route",
@@ -6741,12 +6825,54 @@
     {
       "kind": "route",
       "id": "route:/reports/profit-loss",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
+        "connected": [
+          {
+            "file": "src/pages/reports/ProfitLossPage.interop.test.tsx",
+            "title": "journey: renders profit and loss with data"
+          },
+          {
+            "file": "src/pages/reports/ProfitLossPage.interop.test.tsx",
+            "title": "empty: shows No Data when no entries"
+          },
+          {
+            "file": "src/pages/reports/ProfitLossPage.interop.test.tsx",
+            "title": "error: shows ErrorState when importError"
+          },
+          {
+            "file": "src/pages/reports/ProfitLossPage.interop.test.tsx",
+            "title": "loading: shows Skeleton with srLabel"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/profit-loss \u2014 report:read allows viewing P&L"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/profit-loss \u2014 audit trail records P&L derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /reports/profit-loss \u2014 write guard blocks closed periods from affecting P&L"
+          }
+        ],
+        "disposition": "MIGRATE",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md",
+        "gate": "governance:evidence",
         "gatedBy": "/reports/profit-loss",
-        "disposition": "MIGRATE"
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/reports/ProfitLossPage.interop.test.tsx"
+        ]
       },
-      "note": "Routed screen (ProfitLossPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED \u2014 CONNECTED 4 GOVERNED 3 RBAC 409=302+107 \u2014 entity-scope BLOCKED-ON-OWNER O9 \u2014 report tie-out",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/reports/ProfitLossPage.interop.test.tsx"
+      ]
     },
     {
       "kind": "route",

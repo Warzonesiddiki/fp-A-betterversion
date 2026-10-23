@@ -345,6 +345,69 @@
           "title": "loading: shows Skeleton with srLabel and aria-busy (T091)"
         }
       }
+    },
+    "/reports/balance-sheet": {
+      "page": "src/pages/reports/BalanceSheetPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/reports/BalanceSheetPage.interop.test.tsx",
+          "title": "journey: renders balance sheet with data"
+        },
+        "empty": {
+          "file": "src/pages/reports/BalanceSheetPage.interop.test.tsx",
+          "title": "empty: shows No Data when no entries"
+        },
+        "error": {
+          "file": "src/pages/reports/BalanceSheetPage.interop.test.tsx",
+          "title": "error: shows ErrorState when importError"
+        },
+        "loading": {
+          "file": "src/pages/reports/BalanceSheetPage.interop.test.tsx",
+          "title": "loading: shows Skeleton with srLabel when report null"
+        }
+      }
+    },
+    "/reports/cash-flow": {
+      "page": "src/pages/reports/CashFlowPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/reports/CashFlowPage.interop.test.tsx",
+          "title": "journey: renders cash flow with data"
+        },
+        "empty": {
+          "file": "src/pages/reports/CashFlowPage.interop.test.tsx",
+          "title": "empty: shows No Data when no entries"
+        },
+        "error": {
+          "file": "src/pages/reports/CashFlowPage.interop.test.tsx",
+          "title": "error: shows ErrorState when importError"
+        },
+        "loading": {
+          "file": "src/pages/reports/CashFlowPage.interop.test.tsx",
+          "title": "loading: shows Skeleton with srLabel when loading"
+        }
+      }
+    },
+    "/reports/profit-loss": {
+      "page": "src/pages/reports/ProfitLossPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/reports/ProfitLossPage.interop.test.tsx",
+          "title": "journey: renders profit and loss with data"
+        },
+        "empty": {
+          "file": "src/pages/reports/ProfitLossPage.interop.test.tsx",
+          "title": "empty: shows No Data when no entries"
+        },
+        "error": {
+          "file": "src/pages/reports/ProfitLossPage.interop.test.tsx",
+          "title": "error: shows ErrorState when importError"
+        },
+        "loading": {
+          "file": "src/pages/reports/ProfitLossPage.interop.test.tsx",
+          "title": "loading: shows Skeleton with srLabel"
+        }
+      }
     }
   },
   "capabilities": {
