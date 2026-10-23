@@ -1,5 +1,11 @@
 # Handover — current continuation and historical session records
 
+## 2026-10-23 (n) — budgets + gl-upload GOVERNED as 9th and 10th routes, SUPPORTED 27, missing-is-not-zero hard gate (PR #92-93)
+
+**The claim.** `/budgets` and `/data/gl-upload` are CONNECTED and GOVERNED as 9th and 10th SUPPORTED routes. Budgets already had journey/empty/error/loading (list+filter, No Budgets Yet, submission failure with Retry, h1 over skeleton). Fixed `totalAmount ||0` → `totalAmount` to make missing-is-not-zero hard gate green 0. GLUpload already had journey/empty/error/loading (initial CTA, unsupported ext error, parsing skeleton, parses CSV). Added GOVERNED claims 56→60 for budgets and gl-upload (budget:read/import:create, audit, write-guard, O9). Register SUPPORTED 27 (10 routes + 17 caps), spine 10/36, governance 10/30, one-stop 10 routes, missingIsNotZero 0, matrix 1303 lines current, docs:verify green.
+
+**Next.** Continue SUPPORTED expansion to 11th route (`/scenarios` or `/forecasts`), re-run test:sharded 8/8, update README tally if moved.
+
 ## 2026-10-23 (l) — gl-journals GOVERNED as 8th route, SUPPORTED 25 (PR #91)
 
 **The claim.** `/data/gl-journals` is CONNECTED and GOVERNED as 8th SUPPORTED route. Already had journey/empty/error/loading evidenced in `GLJournalsPage.test.tsx` (content state, EmptyState with import CTA, ErrorState with retry, aria-busy). Added GOVERNED claims 52/52 for gl-journals (gl:read, audit, write-guard, O9). Register SUPPORTED 25 (8 routes + 17 caps), spine 8/28, governance 8/24, one-stop 8 routes, missingIsNotZero 0, matrix 1303 lines current.
