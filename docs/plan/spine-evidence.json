@@ -156,6 +156,27 @@
           "na": "This page reads the local GL store synchronously; entries and account summaries are computed in useMemo from persisted Zustand state, so no page-level async skeleton exists. Filter typing uses useTransition opacity, not a skeleton, and first-paint is covered by empty and error branches."
         }
       }
+    },
+    "/data/gl-journals": {
+      "page": "src/pages/data/GLJournalsPage.tsx",
+      "claims": {
+        "journey": {
+          "file": "src/pages/data/GLJournalsPage.test.tsx",
+          "title": "renders posted journal rows and money totals from real glStore entries (content state)"
+        },
+        "empty": {
+          "file": "src/pages/data/GLJournalsPage.test.tsx",
+          "title": "K30: an empty ledger renders the shared EmptyState under the page h1 with an import CTA"
+        },
+        "error": {
+          "file": "src/pages/data/GLJournalsPage.test.tsx",
+          "title": "K30: a failed CSV export renders ErrorState (role=alert) whose retry succeeds"
+        },
+        "loading": {
+          "file": "src/pages/data/GLJournalsPage.test.tsx",
+          "title": "K30 a11y: exposes aria-busy on the results body while the transition re-filters, clearing on settle"
+        }
+      }
     }
   },
   "capabilities": {

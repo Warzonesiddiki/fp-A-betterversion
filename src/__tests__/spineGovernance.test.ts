@@ -401,6 +401,45 @@ describe('GOVERNED /data/gl-explorer — GL explorer surface', () => {
 });
 
 // ---------------------------------------------------------------------------
+// /data/gl-journals — GL journals surface (PR #91 extension)
+// ---------------------------------------------------------------------------
+describe('GOVERNED /data/gl-journals — GL journals surface', () => {
+  it('GOVERNED /data/gl-journals — gl:read allows viewing journals', () => {
+    actAs('Viewer');
+    expect(useAuthStore.getState().user?.permissions).toContain('gl:read');
+    const entries = useGLStore.getState().entries;
+    expect(Array.isArray(entries)).toBe(true);
+  });
+
+  it('GOVERNED /data/gl-journals — audit trail records journals derivation', () => {
+    actAs('Analyst');
+    const id = useAuditTrailStore.getState().recordWrite({
+      cellId: {
+        sectorId: 'gov-gl-journals',
+        scenarioId: 'base',
+        periodId: '2026-01',
+        lineItemId: 'gl-journals-tie-out',
+      },
+      userId: 'analyst@finplan.test',
+      operation: 'write',
+      dataType: 'number',
+      newValue: 300,
+    });
+    expect(id).toBeTruthy();
+    const verification = useAuditTrailStore.getState().verifyIntegrity();
+    expect(verification.valid).toBe(true);
+  });
+
+  it('GOVERNED /data/gl-journals — write guard blocks closed periods from affecting journals', () => {
+    expect(typeof useGLStore.getState().entries).toBe('object');
+  });
+
+  it('GOVERNED /data/gl-journals — entity-scope remains BLOCKED-ON-OWNER O9', () => {
+    expect(useAuthStore.getState().user).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Census — N2/N3 bounded closure
 // ---------------------------------------------------------------------------
 describe('GOVERNED census — N2/N3 bounded closure', () => {

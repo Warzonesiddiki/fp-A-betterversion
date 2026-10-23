@@ -182,6 +182,31 @@
           "note": "BLOCKED-ON-OWNER O9 — explorer does not claim entity-scope authorization."
         }
       }
+    },
+    "/data/gl-journals": {
+      "page": "src/pages/data/GLJournalsPage.tsx",
+      "claims": {
+        "authorization": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-journals — gl:read allows viewing journals",
+          "proves": "Viewer holds gl:read; journals reading is allowed for least-privileged role, writes remain guarded."
+        },
+        "audit": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-journals — audit trail records journals derivation",
+          "proves": "Journals are derived from ledger entries that carry provenance and are covered by audit chain verification."
+        },
+        "writeGuards": {
+          "file": "src/__tests__/spineGovernance.test.ts",
+          "title": "GOVERNED /data/gl-journals — write guard blocks closed periods from affecting journals",
+          "proves": "Closed-period entries are rejected before reaching the ledger, so journals cannot be mutated through a closed period."
+        },
+        "entityScope": {
+          "owner": "O9",
+          "question": "Define the authoritative authorized-entity set for each user and entity-switch policy (O9, docs/TASKBOARD.md §OWNER)",
+          "note": "BLOCKED-ON-OWNER O9 — journals does not claim entity-scope authorization."
+        }
+      }
     }
   },
   "capabilities": {

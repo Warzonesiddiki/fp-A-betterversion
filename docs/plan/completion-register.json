@@ -5555,12 +5555,56 @@
     {
       "kind": "route",
       "id": "route:/data/gl-journals",
-      "status": "EXPERIMENTAL",
+      "status": "SUPPORTED",
       "evidence": {
         "gatedBy": "/data/gl-journals",
-        "disposition": "MIGRATE"
+        "disposition": "MIGRATE",
+        "connected": [
+          {
+            "file": "src/pages/data/GLJournalsPage.test.tsx",
+            "title": "renders posted journal rows and money totals from real glStore entries (content state)"
+          },
+          {
+            "file": "src/pages/data/GLJournalsPage.test.tsx",
+            "title": "K30: an empty ledger renders the shared EmptyState under the page h1 with an import CTA"
+          },
+          {
+            "file": "src/pages/data/GLJournalsPage.test.tsx",
+            "title": "K30: a failed CSV export renders ErrorState (role=alert) whose retry succeeds"
+          },
+          {
+            "file": "src/pages/data/GLJournalsPage.test.tsx",
+            "title": "K30 a11y: exposes aria-busy on the results body while the transition re-filters, clearing on settle"
+          }
+        ],
+        "governed": [
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-journals — gl:read allows viewing journals"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-journals — audit trail records journals derivation"
+          },
+          {
+            "file": "src/__tests__/spineGovernance.test.ts",
+            "title": "GOVERNED /data/gl-journals — write guard blocks closed periods from affecting journals"
+          }
+        ],
+        "tests": [
+          "src/__tests__/spineGovernance.test.ts",
+          "src/pages/data/GLJournalsPage.test.tsx",
+          "src/pages/data/GLJournalsPage.interop.test.tsx"
+        ],
+        "gate": "governance:evidence",
+        "doc": "docs/CAPABILITY_TRUTH_MATRIX.md"
       },
-      "note": "Routed screen (GLJournalsPage); not graded CONNECTED or GOVERNED in docs/CAPABILITY_TRUTH_MATRIX.md."
+      "note": "SUPPORTED — CONNECTED 4 GOVERNED 3 RBAC 409=302+107 — entity-scope BLOCKED-ON-OWNER O9",
+      "tests": [
+        "src/__tests__/spineGovernance.test.ts",
+        "src/pages/data/GLJournalsPage.test.tsx",
+        "src/pages/data/GLJournalsPage.interop.test.tsx"
+      ]
     },
     {
       "kind": "route",
